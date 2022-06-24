@@ -1,0 +1,8 @@
+{
+  "name": "centraverse",
+  "private": true,
+  "packageManager": "yarn@3.2.1",
+  "workspaces": [
+    "packages/*"
+  ]
+}
