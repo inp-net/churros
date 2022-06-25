@@ -4,17 +4,22 @@
   "type": "module",
   "packageManager": "yarn@3.2.1",
   "scripts": {
-    "dev": "nodemon --exec ts-node-esm ./src/index.ts"
+    "dev": "NODE_ENV=development nodemon --exec ts-node-esm ./src/index.ts"
   },
   "dependencies": {
     "@graphql-yoga/node": "^2.9.2",
     "@pothos/core": "^3.12.0",
+    "@pothos/plugin-complexity": "^3.4.0",
     "@pothos/plugin-prisma": "^3.12.1",
+    "@pothos/plugin-scope-auth": "^3.9.1",
+    "@pothos/plugin-simple-objects": "^3.3.0",
+    "@pothos/plugin-validation": "^3.4.2",
     "@prisma/client": "^3.15.2",
     "argon2": "^0.28.5",
     "graphql": "^16.5.0",
     "graphql-scalars": "^1.17.0",
-    "nanoid": "^4.0.0"
+    "nanoid": "^4.0.0",
+    "zod": "^3.17.3"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",

@@ -11,7 +11,11 @@ __metadata:
   dependencies:
     "@graphql-yoga/node": ^2.9.2
     "@pothos/core": ^3.12.0
+    "@pothos/plugin-complexity": ^3.4.0
     "@pothos/plugin-prisma": ^3.12.1
+    "@pothos/plugin-scope-auth": ^3.9.1
+    "@pothos/plugin-simple-objects": ^3.3.0
+    "@pothos/plugin-validation": ^3.4.2
     "@prisma/client": ^3.15.2
     "@types/node": ^18.0.0
     argon2: ^0.28.5
@@ -22,6 +26,7 @@ __metadata:
     prisma: ^3.15.2
     ts-node: ^10.8.1
     typescript: ^4.7.4
+    zod: ^3.17.3
   languageName: unknown
   linkType: soft
 
@@ -256,6 +261,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@pothos/plugin-complexity@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@pothos/plugin-complexity@npm:3.4.0"
+  peerDependencies:
+    "@pothos/core": "*"
+    graphql: ">=15.1.0"
+  checksum: d1d27328c9dfcb9b2c61a312d4deef7210e13b8046acc01a77859ad1c064b9722d43484f3df1ff9fa1139136cd1cc303a539155760c9ec76e86071974f559460
+  languageName: node
+  linkType: hard
+
 "@pothos/plugin-prisma@npm:^3.12.1":
   version: 3.12.1
   resolution: "@pothos/plugin-prisma@npm:3.12.1"
@@ -269,6 +284,37 @@ __metadata:
   bin:
     prisma-pothos-types: bin/generator.js
   checksum: 14b804905275168d763d5a0d01b2dc4fff1af44a544de2de222b3f20a2295ba04d40890cbc8eba2e4d7da4f02b7799e53a8cd47f997ee64ceffcf3ee5d2d2362
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-scope-auth@npm:^3.9.1":
+  version: 3.9.1
+  resolution: "@pothos/plugin-scope-auth@npm:3.9.1"
+  peerDependencies:
+    "@pothos/core": "*"
+    graphql: ">=15.1.0"
+  checksum: f26f21b176cae7d60c69850edb0062e63f45daaccbe50fffbf813e1d714ab4d13abfeab7e4ad83e449c0807ae3fc1a06eacd15db7a02894deb1770f3322db3d2
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-simple-objects@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@pothos/plugin-simple-objects@npm:3.3.0"
+  peerDependencies:
+    "@pothos/core": "*"
+    graphql: ">=15.1.0"
+  checksum: 7bf7513064d9ff3c47b89c21240d12050db9a9d744b3836ad91ea7159acba1b5d060ac1f0b139a62bedd6612af8bbf56feff000f097a3bc1169f2d84089bba28
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-validation@npm:^3.4.2":
+  version: 3.4.2
+  resolution: "@pothos/plugin-validation@npm:3.4.2"
+  peerDependencies:
+    "@pothos/core": "*"
+    graphql: ">=15.1.0"
+    zod: "*"
+  checksum: bc241c88435f147e3997e721d074831a21c95bec2a051ea4267637e3352c328ea92f815cacfdb15931b4f4ed77fc2ddccde220681036da3c661c35138b6a5080
   languageName: node
   linkType: hard
 
@@ -2554,5 +2600,12 @@ __metadata:
   version: 3.1.1
   resolution: "yn@npm:3.1.1"
   checksum: 2c487b0e149e746ef48cda9f8bad10fc83693cd69d7f9dcd8be4214e985de33a29c9e24f3c0d6bcf2288427040a8947406ab27f7af67ee9456e6b84854f02dd6
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.17.3":
+  version: 3.17.3
+  resolution: "zod@npm:3.17.3"
+  checksum: f74b5d8a307cbed734e7a4a7f57a0c6b0a2d5062adee25e86eceaa1bec606621d6861804130f53342dec2d6e77fe9365f3a5118d55c81688f69f3de5fd3e59af
   languageName: node
   linkType: hard
