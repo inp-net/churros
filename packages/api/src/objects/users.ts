@@ -16,15 +16,6 @@ export const UserType = builder.prismaObject("User", {
   }),
 });
 
-/** Represents a club, mapped on the underlying database object. */
-export const ClubType = builder.prismaObject("Club", {
-  fields: (t) => ({
-    id: t.exposeID("id"),
-    name: t.exposeString("name"),
-    members: t.relation("members"),
-  }),
-});
-
 /** Represents a Session, owned by a user. */
 export const SessionType = builder.objectType(
   builder.objectRef<{ token: string }>("Session"),

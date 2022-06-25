@@ -13,6 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// A User
 model User {
   id        Int      @id @default(autoincrement())
   name      String   @unique @db.VarChar(255)
@@ -22,14 +23,16 @@ model User {
   createdAt DateTime @default(now())
 
   credentials Credential[]
-  clubs       Club[]
+  clubs       ClubMember[]
 }
 
+/// The different kinds of credentials
 enum CredentialType {
   Password
   Token
 }
 
+/// A way for a user to access their account
 model Credential {
   id        Int            @id @default(autoincrement())
   userId    Int
@@ -37,11 +40,30 @@ model Credential {
   value     String         @db.VarChar(255)
   createdAt DateTime       @default(now())
   expiresAt DateTime?
-  user      User           @relation(fields: [userId], references: [id])
+
+  user User @relation(fields: [userId], references: [id])
 }
 
+/// A Club
 model Club {
-  id      Int    @id @default(autoincrement())
-  name    String
-  members User[]
+  id   Int    @id @default(autoincrement())
+  name String
+
+  members ClubMember[]
+}
+
+model ClubMember {
+  memberId        Int
+  clubId          Int
+  title           String?  @db.VarChar(255)
+  president       Boolean  @default(false)
+  treasurer       Boolean  @default(false)
+  canAddMembers   Boolean  @default(false)
+  canPostArticles Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  member User @relation(fields: [memberId], references: [id])
+  club   Club @relation(fields: [clubId], references: [id])
+
+  @@id([memberId, clubId])
 }
