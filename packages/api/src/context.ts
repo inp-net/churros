@@ -12,6 +12,8 @@ const getUser = async ({ headers }: Request) => {
     .user();
 };
 
+export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;
+
 export const context = async ({ request }: YogaInitialContext) => ({
   user: await getUser(request),
 });
