@@ -14,11 +14,12 @@ datasource db {
 }
 
 model User {
-  id        Int    @id @default(autoincrement())
-  name      String @unique @db.VarChar(255)
-  firstname String @db.VarChar(255)
-  nickname  String @default(dbgenerated("''")) @db.VarChar(255)
-  lastname  String @db.VarChar(255)
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(255)
+  firstname String   @db.VarChar(255)
+  nickname  String   @default(dbgenerated("''")) @db.VarChar(255)
+  lastname  String   @db.VarChar(255)
+  createdAt DateTime @default(now())
 
   credentials Credential[]
   clubs       Club[]
