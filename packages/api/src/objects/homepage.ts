@@ -20,7 +20,10 @@ builder.queryField("homepage", (t) =>
         take: first,
         where: {
           published: true,
-          club: { members: { some: { memberId: user!.id } } },
+          OR: [
+            { homepage: true },
+            { club: { members: { some: { memberId: user!.id } } } },
+          ],
         },
         orderBy: { publishedAt: "desc" },
       });

@@ -85,6 +85,7 @@ await prisma.article.createMany({
       title: "Toulouse a gagné",
       body: "_youpi_",
       published: true,
+      homepage: true,
     },
   ],
 });

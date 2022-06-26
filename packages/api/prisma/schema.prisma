@@ -79,6 +79,7 @@ model Article {
   title       String   @db.VarChar(255)
   body        String   @db.Text
   published   Boolean  @default(false)
+  homepage    Boolean  @default(false)
   createdAt   DateTime @default(now())
   publishedAt DateTime @default(now())
 
