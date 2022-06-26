@@ -22,9 +22,9 @@
 
   type Props = InputType<GraphQLTypes["Query"], ReturnType<typeof propsQuery>>;
 
-  export const load: Load = async ({ fetch }) => {
+  export const load: Load = async ({ fetch, session }) => {
     return {
-      props: await query(fetch, propsQuery()),
+      props: await query(fetch, propsQuery(), { token: session.token }),
     };
   };
 </script>
