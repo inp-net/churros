@@ -11,6 +11,6 @@ const server = createServer({ schema, context, maskedErrors: false });
 await server.start();
 
 await writeFile(
-  new URL("schema.graphql", import.meta.url),
+  new URL("./src/schema.graphql", `file:///${process.env.INIT_CWD}/`),
   printSchema(schema)
 );
