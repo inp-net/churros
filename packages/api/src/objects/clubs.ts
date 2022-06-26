@@ -1,4 +1,5 @@
 import { builder } from "../builder.js";
+import { prisma } from "../prisma.js";
 import { DateTimeScalar } from "./scalars.js";
 
 /** Represents a club, mapped on the underlying database object. */
@@ -7,6 +8,7 @@ export const ClubType = builder.prismaObject("Club", {
     id: t.exposeID("id"),
     name: t.exposeString("name"),
     members: t.relation("members"),
+    articles: t.relation("articles"),
   }),
 });
 
@@ -25,5 +27,17 @@ export const ClubMemberType = builder.prismaObject("ClubMember", {
     canAddMembers: t.exposeBoolean("canAddMembers"),
     canPostArticles: t.exposeBoolean("canPostArticles"),
     createdAt: t.expose("createdAt", { type: DateTimeScalar }),
+    member: t.relation("member"),
+    club: t.relation("club"),
   }),
 });
+
+/** List clubs. */
+builder.queryField("clubs", (t) =>
+  t.prismaField({
+    type: [ClubType],
+    resolve(query) {
+      return prisma.club.findMany(query);
+    },
+  })
+);

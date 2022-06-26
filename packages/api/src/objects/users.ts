@@ -13,6 +13,7 @@ export const UserType = builder.prismaObject("User", {
     name: t.exposeString("name"),
     createdAt: t.expose("createdAt", { type: DateTimeScalar }),
     clubs: t.relation("clubs"),
+    articles: t.relation("articles"),
   }),
 });
 

@@ -14,7 +14,9 @@ export const builder = new SchemaBuilder<{
   Context: Context;
   DefaultInputFieldRequiredness: true;
   PrismaTypes: PrismaTypes;
-  Scalars: { DateTime: { Input: Date; Output: Date } };
+  Scalars: {
+    DateTime: { Input: Date; Output: Date };
+  };
 }>({
   plugins: [
     ComplexityPlugin,
@@ -24,7 +26,7 @@ export const builder = new SchemaBuilder<{
     ValidationPlugin,
   ],
   authScopes,
-  complexity: { limit: { complexity: 100, depth: 3, breadth: 30 } },
+  complexity: { limit: { complexity: 500, depth: 4, breadth: 30 } },
   defaultInputFieldRequiredness: true,
   prisma: { client: prisma },
 });

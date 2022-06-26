@@ -24,6 +24,7 @@ model User {
 
   credentials Credential[]
   clubs       ClubMember[]
+  articles    Article[]
 }
 
 /// The different kinds of credentials
@@ -41,7 +42,7 @@ model Credential {
   createdAt DateTime       @default(now())
   expiresAt DateTime?
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 /// A Club
@@ -49,9 +50,11 @@ model Club {
   id   Int    @id @default(autoincrement())
   name String
 
-  members ClubMember[]
+  members  ClubMember[]
+  articles Article[]
 }
 
+/// The intermediate table between User and Club
 model ClubMember {
   memberId        Int
   clubId          Int
@@ -62,8 +65,23 @@ model ClubMember {
   canPostArticles Boolean  @default(false)
   createdAt       DateTime @default(now())
 
-  member User @relation(fields: [memberId], references: [id])
-  club   Club @relation(fields: [clubId], references: [id])
+  member User @relation(fields: [memberId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  club   Club @relation(fields: [clubId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 
   @@id([memberId, clubId])
+}
+
+/// An article published by a member of a club
+model Article {
+  id          Int      @id @default(autoincrement())
+  authorId    Int?
+  clubId      Int
+  title       String   @db.VarChar(255)
+  body        String   @db.Text
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  publishedAt DateTime @default(now())
+
+  author User? @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  club   Club  @relation(fields: [clubId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

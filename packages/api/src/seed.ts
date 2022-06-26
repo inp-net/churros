@@ -42,9 +42,49 @@ const rugby = await prisma.club.create({ data: { name: "Rugby" } });
 // Club members
 await prisma.clubMember.createMany({
   data: [
-    { memberId: alice.id, clubId: football.id, president: true },
-    { memberId: bob.id, clubId: football.id, treasurer: true },
-    { memberId: charlie.id, clubId: rugby.id, president: true },
-    { memberId: alice.id, clubId: rugby.id, treasurer: true },
+    {
+      memberId: alice.id,
+      clubId: football.id,
+      title: "Présidente",
+      president: true,
+    },
+    {
+      memberId: bob.id,
+      clubId: football.id,
+      title: "Trésorier",
+      treasurer: true,
+    },
+    {
+      memberId: charlie.id,
+      clubId: rugby.id,
+      title: "Président",
+      president: true,
+    },
+    {
+      memberId: alice.id,
+      clubId: rugby.id,
+      title: "Trésorière",
+      treasurer: true,
+    },
+  ],
+});
+
+// Club articles
+await prisma.article.createMany({
+  data: [
+    {
+      authorId: alice.id,
+      clubId: football.id,
+      title: "Reprise des entraînements en octobre",
+      body: "Hello **World**!",
+      published: true,
+    },
+    {
+      authorId: charlie.id,
+      clubId: rugby.id,
+      title: "Toulouse a gagné",
+      body: "_youpi_",
+      published: true,
+    },
   ],
 });
