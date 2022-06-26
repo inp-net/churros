@@ -6,12 +6,24 @@ import { ArticleType } from "./articles.js";
 builder.queryField("homepage", (t) =>
   t.prismaField({
     type: [ArticleType],
-    authScopes: { loggedIn: true },
     args: {
-      first: t.arg.int({ defaultValue: 20 }),
+      first: t.arg.int({ required: false }),
       after: t.arg.id({ required: false }),
     },
     async resolve(query, _, { first, after }, { user }) {
+      first ??= 20;
+      if (!user)
+        return prisma.article.findMany({
+          ...query,
+          // Pagination
+          cursor: after ? { id: Number(after) } : undefined,
+          skip: after ? 1 : 0,
+          take: first,
+          // Only public articles
+          where: { published: true, homepage: true },
+          orderBy: { publishedAt: "desc" },
+        });
+
       return prisma.article.findMany({
         ...query,
         // Pagination
@@ -22,7 +34,8 @@ builder.queryField("homepage", (t) =>
           published: true,
           OR: [
             { homepage: true },
-            { club: { members: { some: { memberId: user!.id } } } },
+            // Show articles from clubs whose user is a member
+            { club: { members: { some: { memberId: user.id } } } },
           ],
         },
         orderBy: { publishedAt: "desc" },
