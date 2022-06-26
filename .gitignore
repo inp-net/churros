@@ -10,5 +10,6 @@
 # !.yarn/cache
 .pnp.*
 
+.svelte-kit/
 build/
 node_modules/
