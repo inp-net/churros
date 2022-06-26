@@ -41,7 +41,7 @@ export const SessionType = builder.objectType(
 builder.queryField("users", (t) =>
   t.prismaField({
     type: ["User"],
-    // authScopes: { loggedIn: true },
+    authScopes: { loggedIn: true },
     resolve: (query) => prisma.user.findMany(query),
   })
 );

@@ -1,28 +1,36 @@
 <script context="module" lang="ts">
+  import {
+    query,
+    Selector,
+    type GraphQLTypes,
+    type InputType,
+  } from "$lib/zeus.js";
   import type { Load } from "@sveltejs/kit";
-  import { Chain } from "../zeus/index.js";
 
-  export const load: Load = () => {
-    const chain = Chain("http://localhost:4000/graphql");
+  const propsQuery = () =>
+    Selector("Query")({
+      homepage: [
+        {},
+        {
+          title: true,
+          body: true,
+          club: { name: true },
+          author: { name: true },
+        },
+      ],
+    });
 
+  type Props = InputType<GraphQLTypes["Query"], ReturnType<typeof propsQuery>>;
+
+  export const load: Load = async ({ fetch }) => {
     return {
-      props: chain("query")({
-        homepage: [
-          {},
-          {
-            title: true,
-            body: true,
-            club: { name: true },
-            author: { name: true },
-          },
-        ],
-      }),
+      props: await query(fetch, propsQuery()),
     };
   };
 </script>
 
 <script lang="ts">
-  export let homepage: unknown;
+  export let homepage: Props["homepage"];
 </script>
 
 <h1>Welcome to SvelteKit</h1>
