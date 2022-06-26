@@ -1,9 +1,8 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page, session } from "$app/stores";
-
-  import { saveSessionToken } from "$lib/session.js";
-  import { mutate } from "$lib/zeus.js";
+  import { saveSessionToken } from "$lib/session";
+  import { mutate } from "$lib/zeus";
 
   let name = "";
   let password = "";
@@ -22,7 +21,7 @@
     if (then) {
       let url = new URL(then, $page.url);
       if (url.origin !== $page.url.origin) url = new URL("/", $page.url);
-      await goto(url);
+      await goto(url.toString());
     }
   };
 </script>

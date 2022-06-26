@@ -1,4 +1,5 @@
 import { builder } from "../builder.js";
+import { DateTimeScalar } from "./scalars.js";
 
 /** Represents an article, published by a member of a club. */
 export const ArticleType = builder.prismaObject("Article", {
@@ -9,8 +10,8 @@ export const ArticleType = builder.prismaObject("Article", {
     title: t.exposeString("title"),
     body: t.exposeString("body"),
     published: t.exposeBoolean("published"),
-    createdAt: t.expose("createdAt", { type: "DateTime" }),
-    publishedAt: t.expose("publishedAt", { type: "DateTime" }),
+    createdAt: t.expose("createdAt", { type: DateTimeScalar }),
+    publishedAt: t.expose("publishedAt", { type: DateTimeScalar }),
     author: t.relation("author"),
     club: t.relation("club"),
   }),

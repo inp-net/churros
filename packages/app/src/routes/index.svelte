@@ -14,6 +14,7 @@
         {
           title: true,
           body: true,
+          publishedAt: true,
           club: { name: true },
           author: { name: true },
         },

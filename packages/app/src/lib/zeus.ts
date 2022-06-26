@@ -2,6 +2,7 @@ import type { LoadEvent } from "@sveltejs/kit";
 import {
   GraphQLError,
   Thunder,
+  ZeusScalars,
   type GraphQLResponse,
   type GraphQLTypes,
   type InputType,
@@ -31,13 +32,20 @@ const chain = (fetch: LoadEvent["fetch"], { token }: Options) => {
   );
 };
 
+const scalars = ZeusScalars({
+  DateTime: {
+    decode: (value: unknown): Date => new Date(value as string),
+    encode: (value: unknown): string => (value as Date).toISOString(),
+  },
+});
+
 export const query = <Operation extends ValueTypes["Query"]>(
   fetch: LoadEvent["fetch"],
   op: Operation,
   options: Options = {}
 ) =>
-  chain(fetch, options)("query")(op) as Promise<
-    InputType<GraphQLTypes["Query"], Operation, Record<never, never>>
+  chain(fetch, options)("query", { scalars })(op) as Promise<
+    InputType<GraphQLTypes["Query"], Operation, typeof scalars>
   >;
 
 export const mutate = <Operation extends ValueTypes["Mutation"]>(
@@ -45,6 +53,6 @@ export const mutate = <Operation extends ValueTypes["Mutation"]>(
   op: Operation,
   options: Options = {}
 ) =>
-  chain(fetch, options)("mutation")(op) as Promise<
-    InputType<GraphQLTypes["Mutation"], Operation, Record<never, never>>
+  chain(fetch, options)("mutation", { scalars })(op) as Promise<
+    InputType<GraphQLTypes["Mutation"], Operation, typeof scalars>
   >;
