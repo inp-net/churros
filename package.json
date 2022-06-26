@@ -4,5 +4,8 @@
   "packageManager": "yarn@3.2.1",
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "scripts": {
+    "build": "yarn workspaces foreach --topological-dev -pv run build"
+  }
 }

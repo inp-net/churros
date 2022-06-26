@@ -4,9 +4,9 @@
   "type": "module",
   "packageManager": "yarn@3.2.1",
   "scripts": {
-    "build": "tsc",
+    "build": "prisma generate && tsc && ts-node-esm ./src/build.ts",
     "dev": "NODE_ENV=development nodemon --exec ts-node-esm ./src/index.ts",
-    "clean": "rm -rf build/ src/schema.graphql src/prisma-types.ts"
+    "clean": "git clean -Xdf ."
   },
   "dependencies": {
     "@graphql-yoga/node": "^2.9.2",
