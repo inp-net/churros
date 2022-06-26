@@ -5,7 +5,7 @@
     "build": "yarn zeus && svelte-kit build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "clean": "git clean -Xdf .",
-    "dev": "svelte-kit dev",
+    "dev": "yarn zeus && svelte-kit dev",
     "lint": "eslint .",
     "preview": "svelte-kit preview",
     "zeus": "zeus ../api/src/schema.graphql ./src --es"

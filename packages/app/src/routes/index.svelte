@@ -4,7 +4,7 @@
     Selector,
     type GraphQLTypes,
     type InputType,
-  } from "$lib/zeus.js";
+  } from "$lib/zeus";
   import type { Load } from "@sveltejs/kit";
 
   const propsQuery = () =>
