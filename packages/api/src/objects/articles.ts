@@ -12,7 +12,7 @@ export const ArticleType = builder.prismaObject("Article", {
     published: t.exposeBoolean("published"),
     createdAt: t.expose("createdAt", { type: DateTimeScalar }),
     publishedAt: t.expose("publishedAt", { type: DateTimeScalar }),
-    author: t.relation("author"),
+    author: t.relation("author", { nullable: true }),
     club: t.relation("club"),
   }),
 });
