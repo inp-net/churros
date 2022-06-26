@@ -32,5 +32,8 @@
   },
   "prisma": {
     "seed": "ts-node-esm ./src/seed.ts"
+  },
+  "volta": {
+    "extends": "../../package.json"
   }
 }
