@@ -15,8 +15,8 @@
           title: true,
           body: true,
           publishedAt: true,
-          club: { name: true },
-          author: { name: true },
+          club: { id: true, name: true },
+          author: { firstname: true, lastname: true },
         },
       ],
     });
@@ -31,12 +31,20 @@
 </script>
 
 <script lang="ts">
+  import Markdown from "$lib/Markdown.svelte";
+
   export let homepage: Props["homepage"];
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>
-  Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation
-</p>
+<h1>Welcome to Centraverse</h1>
 
-<pre>{JSON.stringify(homepage, null, 2)}</pre>
+{#each homepage as { title, body, publishedAt, club, author }}
+  <article>
+    <h2>{title}</h2>
+    <p>Par <a href="/club/{club.id}">{club.name}</a> le {publishedAt}</p>
+    <Markdown {body} />
+    {#if author}
+      <p><em>Auteur : {author.firstname} {author.lastname}</em></p>
+    {/if}
+  </article>
+{/each}

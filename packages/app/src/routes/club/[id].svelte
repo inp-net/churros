@@ -31,6 +31,8 @@
 </script>
 
 <script lang="ts">
+  import Markdown from "$lib/Markdown.svelte";
+
   export let club: Props["club"];
 </script>
 
@@ -39,6 +41,6 @@
 {#each club.articles as { title, body }}
   <article>
     <h2>{title}</h2>
-    <p>{body}</p>
+    <Markdown {body} />
   </article>
 {/each}
