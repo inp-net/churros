@@ -12,7 +12,7 @@ builder.queryField("homepage", (t) =>
     },
     async resolve(query, _, { first, after }, { user }) {
       first ??= 20;
-      if (!user)
+      if (!user) {
         return prisma.article.findMany({
           ...query,
           // Pagination
@@ -23,6 +23,7 @@ builder.queryField("homepage", (t) =>
           where: { published: true, homepage: true },
           orderBy: { publishedAt: "desc" },
         });
+      }
 
       return prisma.article.findMany({
         ...query,

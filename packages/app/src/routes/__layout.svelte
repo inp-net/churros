@@ -4,6 +4,7 @@
 </script>
 
 <p>
+  {#if $page.url.pathname !== "/"} <a href="/">Accueil</a> {/if}
   {#if $session.me && $session.token}
     {$session.me.name}
     <a href="/logout?{new URLSearchParams({ token: $session.token })}"
@@ -13,6 +14,7 @@
     <a href="/login?{new URLSearchParams({ then: $page.url.pathname })}"
       >Se connecter</a
     >
+    <a href="/register">S'inscrire</a>
   {/if}
 </p>
 

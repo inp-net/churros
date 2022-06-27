@@ -41,3 +41,14 @@ builder.queryField("clubs", (t) =>
     },
   })
 );
+
+/** Get a specific club. */
+builder.queryField("club", (t) =>
+  t.prismaField({
+    type: ClubType,
+    args: { id: t.arg.id() },
+    resolve(query, _, { id }) {
+      return prisma.club.findUnique({ ...query, where: { id: Number(id) } });
+    },
+  })
+);

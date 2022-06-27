@@ -11,6 +11,9 @@ export const UserType = builder.prismaObject("User", {
   fields: (t) => ({
     id: t.exposeID("id"),
     name: t.exposeString("name"),
+    firstname: t.exposeString("firstname"),
+    nickname: t.exposeString("nickname"),
+    lastname: t.exposeString("lastname"),
     createdAt: t.expose("createdAt", { type: DateTimeScalar }),
     clubs: t.relation("clubs"),
     articles: t.relation("articles"),
