@@ -6,7 +6,11 @@ declare namespace App {
   // interface Platform {}
   interface Session {
     token?: string;
-    me?: { id: string; name: string };
+    me?: {
+      id: string;
+      name: string;
+      clubs: Array<{ clubId: string; canPostArticles: boolean }>;
+    };
   }
   // interface Stuff {}
 }

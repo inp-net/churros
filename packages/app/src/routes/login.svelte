@@ -11,7 +11,14 @@
     const { login } = await mutate(fetch, {
       login: [
         { name, password },
-        { token: true, user: { id: true, name: true } },
+        {
+          token: true,
+          user: {
+            id: true,
+            name: true,
+            clubs: { clubId: true, canPostArticles: true },
+          },
+        },
       ],
     });
     saveSessionToken(login.token);

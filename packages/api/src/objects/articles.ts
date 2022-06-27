@@ -1,4 +1,5 @@
 import { builder } from "../builder.js";
+import { prisma } from "../prisma.js";
 import { DateTimeScalar } from "./scalars.js";
 
 /** Represents an article, published by a member of a club. */
@@ -16,3 +17,35 @@ export const ArticleType = builder.prismaObject("Article", {
     club: t.relation("club"),
   }),
 });
+
+/** Inserts a new article. */
+builder.mutationField("createArticle", (t) =>
+  t.prismaField({
+    type: ArticleType,
+    args: {
+      clubId: t.arg.id(),
+      title: t.arg.string(),
+      body: t.arg.string(),
+    },
+    async authScopes(_, { clubId }, { user }) {
+      if (!user) return false;
+      const member = await prisma.clubMember.findUnique({
+        where: {
+          memberId_clubId: { clubId: Number(clubId), memberId: user.id },
+        },
+      });
+      return member.canPostArticles;
+    },
+    resolve(query, _, { clubId, body, title }, { user }) {
+      return prisma.article.create({
+        ...query,
+        data: {
+          clubId: Number(clubId),
+          authorId: user!.id,
+          title,
+          body,
+        },
+      });
+    },
+  })
+);

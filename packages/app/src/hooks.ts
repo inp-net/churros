@@ -8,7 +8,13 @@ export const handle: Handle = async ({ event, resolve }) => {
     try {
       const { me } = await query(
         fetch,
-        { me: { id: true, name: true } },
+        {
+          me: {
+            id: true,
+            name: true,
+            clubs: { clubId: true, canPostArticles: true },
+          },
+        },
         { token }
       );
       event.locals.token = token;

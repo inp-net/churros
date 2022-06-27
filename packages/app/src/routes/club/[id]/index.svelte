@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+  import { page, session } from "$app/stores";
   import {
     query,
     Selector,
@@ -44,3 +45,7 @@
     <Markdown {body} />
   </article>
 {/each}
+
+{#if $session.me?.clubs.some(({ clubId, canPostArticles }) => clubId === $page.params.id && canPostArticles)}
+  <p><a href="/club/{$page.params.id}/write">Écrire un article</a></p>
+{/if}
