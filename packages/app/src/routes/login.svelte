@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page, session } from "$app/stores";
-  import { saveSessionToken } from "$lib/session";
+  import { saveSessionToken, sessionUserQuery } from "$lib/session";
   import { mutate } from "$lib/zeus";
 
   let name = "";
@@ -11,14 +11,7 @@
     const { login } = await mutate(fetch, {
       login: [
         { name, password },
-        {
-          token: true,
-          user: {
-            id: true,
-            name: true,
-            clubs: { clubId: true, canPostArticles: true },
-          },
-        },
+        { token: true, user: sessionUserQuery },
       ],
     });
     saveSessionToken(login.token);
