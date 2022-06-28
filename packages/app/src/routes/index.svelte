@@ -8,7 +8,7 @@
         {},
         {
           title: true,
-          body: true,
+          bodyHtml: true,
           publishedAt: true,
           club: { id: true, name: true },
           author: { firstname: true, lastname: true },
@@ -26,18 +26,16 @@
 </script>
 
 <script lang="ts">
-  import Markdown from "$lib/Markdown.svelte";
-
   export let homepage: Props["homepage"];
 </script>
 
 <h1>Welcome to Centraverse</h1>
 
-{#each homepage as { title, body, publishedAt, club, author }}
+{#each homepage as { title, bodyHtml, publishedAt, club, author }}
   <article>
     <h2>{title}</h2>
     <p>Par <a href="/club/{club.id}">{club.name}</a> le {publishedAt}</p>
-    <Markdown {body} />
+    {@html bodyHtml}
     {#if author}
       <p><em>Auteur : {author.firstname} {author.lastname}</em></p>
     {/if}

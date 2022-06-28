@@ -11,7 +11,7 @@
           ? {
               id: true,
               name: true,
-              articles: { title: true, body: true },
+              articles: { title: true, bodyHtml: true },
               members: {
                 member: { firstname: true, lastname: true },
                 title: true,
@@ -22,7 +22,7 @@
           : {
               id: true,
               name: true,
-              articles: { title: true, body: true },
+              articles: { title: true, bodyHtml: true },
             },
       ],
     });
@@ -43,8 +43,6 @@
 </script>
 
 <script lang="ts">
-  import Markdown from "$lib/Markdown.svelte";
-
   export let club: Props["club"];
 </script>
 
@@ -72,10 +70,10 @@
 
 <h2>Articles</h2>
 
-{#each club.articles as { title, body }}
+{#each club.articles as { title, bodyHtml }}
   <article>
     <h3>{title}</h3>
-    <Markdown {body} />
+    {@html bodyHtml}
   </article>
 {/each}
 
