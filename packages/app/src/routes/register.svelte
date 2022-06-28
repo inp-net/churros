@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-
   import { mutate } from "$lib/zeus";
 
   let name = "";

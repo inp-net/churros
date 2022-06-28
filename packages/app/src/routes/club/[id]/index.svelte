@@ -1,11 +1,6 @@
 <script context="module" lang="ts">
   import { page, session } from "$app/stores";
-  import {
-    query,
-    Selector,
-    type GraphQLTypes,
-    type InputType,
-  } from "$lib/zeus";
+  import { query, Selector, type PropsType } from "$lib/zeus";
   import type { Load } from "@sveltejs/kit";
 
   const propsQuery = (id: string) =>
@@ -16,7 +11,7 @@
       ],
     });
 
-  type Props = InputType<GraphQLTypes["Query"], ReturnType<typeof propsQuery>>;
+  type Props = PropsType<typeof propsQuery>;
 
   export const load: Load = async ({ fetch, params, session }) => {
     try {

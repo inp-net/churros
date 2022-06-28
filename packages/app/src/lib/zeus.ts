@@ -56,3 +56,8 @@ export const mutate = <Operation extends ValueTypes["Mutation"]>(
   chain(fetch, options)("mutation", { scalars })(op) as Promise<
     InputType<GraphQLTypes["Mutation"], Operation, typeof scalars>
   >;
+
+export type PropsType<
+  T extends (...args: never[]) => unknown,
+  U extends "Query" | "Mutation" = "Query"
+> = InputType<GraphQLTypes[U], ReturnType<T>>;
