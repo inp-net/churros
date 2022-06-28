@@ -44,13 +44,12 @@ builder.mutationField("createArticle", (t) =>
       body: t.arg.string(),
     },
     async authScopes(_, { clubId }, { user }) {
-      if (!user) return false;
-      const member = await prisma.clubMember.findUnique({
-        where: {
-          memberId_clubId: { clubId: Number(clubId), memberId: user.id },
-        },
-      });
-      return member.canPostArticles;
+      return Boolean(
+        user?.clubs.some(
+          ({ clubId: id, canPostArticles }) =>
+            canPostArticles && Number(clubId) === id
+        )
+      );
     },
     resolve(query, _, { clubId, body, title }, { user }) {
       return prisma.article.create({

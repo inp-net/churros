@@ -24,7 +24,11 @@ export const ClubMemberType = builder.prismaObject("ClubMember", {
   fields: (t) => ({
     memberId: t.exposeID("memberId"),
     clubId: t.exposeID("clubId"),
-    title: t.exposeString("title", { nullable: true }),
+    title: t.string({
+      resolve({ title }) {
+        return title || "Membre";
+      },
+    }),
     president: t.exposeBoolean("president"),
     treasurer: t.exposeBoolean("treasurer"),
     canAddMembers: t.exposeBoolean("canAddMembers"),
@@ -52,6 +56,116 @@ builder.queryField("club", (t) =>
     args: { id: t.arg.id() },
     resolve(query, _, { id }) {
       return prisma.club.findUnique({ ...query, where: { id: Number(id) } });
+    },
+  })
+);
+
+/** Adds a member to a club. The member is found by their name. */
+builder.mutationField("addClubMember", (t) =>
+  t.prismaField({
+    type: ClubMemberType,
+    args: {
+      clubId: t.arg.id(),
+      name: t.arg.string(),
+      title: t.arg.string(),
+    },
+    authScopes(_, { clubId }, { user }) {
+      return Boolean(
+        user?.clubs.some(
+          ({ clubId: id, canAddMembers }) =>
+            canAddMembers && Number(clubId) === id
+        )
+      );
+    },
+    resolve(query, _, { clubId, name, title }) {
+      return prisma.clubMember.create({
+        ...query,
+        data: {
+          member: { connect: { name } },
+          club: { connect: { id: Number(clubId) } },
+          title,
+        },
+      });
+    },
+  })
+);
+
+/** Removes a member from a club. */
+builder.mutationField("deleteClubMember", (t) =>
+  t.field({
+    type: "Boolean",
+    args: {
+      memberId: t.arg.id(),
+      clubId: t.arg.id(),
+    },
+    async authScopes(_, { memberId, clubId }, { user }) {
+      const canAddMembers = Boolean(
+        user?.clubs.some(
+          ({ clubId: id, canAddMembers }) =>
+            canAddMembers && Number(clubId) === id
+        )
+      );
+      const member = await prisma.clubMember.findUnique({
+        where: {
+          memberId_clubId: {
+            memberId: Number(memberId),
+            clubId: Number(clubId),
+          },
+        },
+      });
+      return canAddMembers && !member.canAddMembers && !member.president;
+    },
+    async resolve(_, { memberId, clubId }) {
+      await prisma.clubMember.delete({
+        where: {
+          memberId_clubId: {
+            memberId: Number(memberId),
+            clubId: Number(clubId),
+          },
+        },
+      });
+      return true;
+    },
+  })
+);
+
+/** Updates a club member. */
+builder.mutationField("updateClubMember", (t) =>
+  t.prismaField({
+    type: ClubMemberType,
+    args: {
+      memberId: t.arg.id(),
+      clubId: t.arg.id(),
+      title: t.arg.string(),
+    },
+    async authScopes(_, { memberId, clubId }, { user }) {
+      const canAddMembers = Boolean(
+        user?.clubs.some(
+          ({ clubId: id, canAddMembers }) =>
+            canAddMembers && Number(clubId) === id
+        )
+      );
+      const member = await prisma.clubMember.findUnique({
+        where: {
+          memberId_clubId: {
+            memberId: Number(memberId),
+            clubId: Number(clubId),
+          },
+        },
+      });
+      return canAddMembers && !member.canAddMembers && !member.president;
+    },
+    async resolve(query, _, { memberId, clubId, title }) {
+      return prisma.clubMember.update({
+        ...query,
+        where: {
+          memberId_clubId: {
+            memberId: Number(memberId),
+            clubId: Number(clubId),
+          },
+        },
+        data: { title },
+      });
     },
   })
 );

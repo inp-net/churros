@@ -8,7 +8,17 @@ const getUser = async ({ headers }: Request) => {
   const token = auth.slice("Bearer ".length);
   return prisma.credential
     .findFirst({ where: { type: CredentialType.Token, value: token } })
-    .user();
+    .user({
+      include: {
+        clubs: {
+          select: {
+            clubId: true,
+            canAddMembers: true,
+            canPostArticles: true,
+          },
+        },
+      },
+    });
 };
 
 export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;

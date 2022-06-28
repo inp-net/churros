@@ -58,7 +58,7 @@ model Club {
 model ClubMember {
   memberId        Int
   clubId          Int
-  title           String?  @db.VarChar(255)
+  title           String   @default(dbgenerated("''")) @db.VarChar(255)
   president       Boolean  @default(false)
   treasurer       Boolean  @default(false)
   canAddMembers   Boolean  @default(false)

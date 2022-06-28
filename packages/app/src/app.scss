@@ -18,3 +18,15 @@ article {
   padding: 0 1em;
   margin: 1em 0;
 }
+
+table {
+  border-collapse: collapse;
+}
+
+tr {
+  border-top: 1px solid black;
+
+  &:last-of-type {
+    border-bottom: 1px solid black;
+  }
+}
