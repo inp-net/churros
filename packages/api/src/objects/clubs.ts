@@ -7,7 +7,10 @@ export const ClubType = builder.prismaObject("Club", {
   fields: (t) => ({
     id: t.exposeID("id"),
     name: t.exposeString("name"),
-    members: t.relation("members"),
+    members: t.relation("members", {
+      // Seeing group members requires being logged in
+      authScopes: { loggedIn: true },
+    }),
     articles: t.relation("articles"),
   }),
 });

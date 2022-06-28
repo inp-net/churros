@@ -47,18 +47,22 @@ await prisma.clubMember.createMany({
       clubId: football.id,
       title: "Présidente",
       president: true,
+      canPostArticles: true,
     },
     {
       memberId: bob.id,
       clubId: football.id,
       title: "Trésorier",
       treasurer: true,
+      canAddMembers: true,
     },
     {
       memberId: charlie.id,
       clubId: rugby.id,
       title: "Président",
       president: true,
+      canPostArticles: true,
+      canAddMembers: true,
     },
     {
       memberId: alice.id,

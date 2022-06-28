@@ -49,6 +49,7 @@ __metadata:
     markdown-it: ^13.0.1
     prettier: ^2.7.1
     prettier-plugin-svelte: ^2.7.0
+    sanitize.css: ^13.0.0
     sass: ^1.53.0
     svelte: ^3.48.0
     svelte-check: ^2.8.0
@@ -3504,6 +3505,13 @@ __metadata:
     mkdirp: ^0.5.1
     rimraf: ^2.5.2
   checksum: 76da5b91dd7848de0c985adf035fc39ca76a3cd15d68bdae0a4672659a4bdef7b716747b31245af5dd769f19765a9e8e16ad577984b12cc041bdb09599921f3a
+  languageName: node
+  linkType: hard
+
+"sanitize.css@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "sanitize.css@npm:13.0.0"
+  checksum: a99ca77c4d135800a4a93c3555e5aa4a2eb040a833df716dbe9132e1f2086fbf9acdb8021a579f40dcf77166d2d50f3358b4b6121a247d26fed5a0e6f5af3bb7
   languageName: node
   linkType: hard
 

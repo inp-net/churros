@@ -1,1 +1,20 @@
-/* Write your global styles here, in SCSS syntax. Variables and mixins from the src/variables.scss file are available here without importing */
+@import "sanitize.css/sanitize";
+@import "sanitize.css/forms";
+@import "sanitize.css/assets";
+@import "sanitize.css/typography";
+
+:root {
+  line-height: 1.5;
+}
+
+body {
+  padding: 0 1em;
+}
+
+article {
+  overflow: hidden;
+  box-shadow: 0 0.5rem 1rem #ccc;
+  border-radius: 0.25rem;
+  padding: 0 1em;
+  margin: 1em 0;
+}
