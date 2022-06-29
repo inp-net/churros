@@ -22,6 +22,11 @@ model User {
   lastname  String   @db.VarChar(255)
   createdAt DateTime @default(now())
 
+  // Permissions
+  admin        Boolean @default(false)
+  canEditUsers Boolean @default(false)
+  canEditClubs Boolean @default(false)
+
   credentials Credential[]
   clubs       ClubMember[]
   articles    Article[]
