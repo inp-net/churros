@@ -5,7 +5,10 @@ import { Selector, type InputType, type GraphQLTypes } from "./zeus.js";
 export const sessionUserQuery = Selector("User")({
   id: true,
   name: true,
-  clubs: { clubId: true, canPostArticles: true, canAddMembers: true },
+  admin: true,
+  canEditClubs: true,
+  canEditUsers: true,
+  clubs: { clubId: true, canEditArticles: true, canEditMembers: true },
 });
 
 export type SessionUser = InputType<

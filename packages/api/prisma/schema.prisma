@@ -66,8 +66,8 @@ model ClubMember {
   title           String   @default("") @db.VarChar(255)
   president       Boolean  @default(false)
   treasurer       Boolean  @default(false)
-  canAddMembers   Boolean  @default(false)
-  canPostArticles Boolean  @default(false)
+  canEditMembers  Boolean  @default(false)
+  canEditArticles Boolean  @default(false)
   createdAt       DateTime @default(now())
 
   member User @relation(fields: [memberId], references: [id], onUpdate: Cascade, onDelete: Cascade)

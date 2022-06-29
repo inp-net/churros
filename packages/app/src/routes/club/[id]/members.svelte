@@ -14,7 +14,7 @@
             title: true,
             president: true,
             treasurer: true,
-            canAddMembers: true,
+            canEditMembers: true,
           },
         },
       ],
@@ -56,7 +56,7 @@
               title: true,
               president: true,
               treasurer: true,
-              canAddMembers: true,
+              canEditMembers: true,
               member: { firstname: true, lastname: true },
             },
           ],
@@ -114,7 +114,7 @@
 </script>
 
 <table>
-  {#each club.members as { memberId, member, president, treasurer, title, canAddMembers }, i}
+  {#each club.members as { memberId, member, president, treasurer, title, canEditMembers }, i}
     <tr>
       <td>{president ? "👑" : ""}{treasurer ? "💰" : ""}</td>
       <td>{member.firstname} {member.lastname}</td>
@@ -129,7 +129,7 @@
         <button
           type="button"
           on:click={() => deleteClubMember(memberId)}
-          disabled={president || canAddMembers}>❌</button
+          disabled={president || canEditMembers}>❌</button
         >
       </td>
     </tr>

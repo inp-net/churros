@@ -9,7 +9,7 @@
 
     if (
       !session.me.clubs.some(
-        ({ clubId, canPostArticles }) => clubId === params.id && canPostArticles
+        ({ clubId, canEditArticles }) => clubId === params.id && canEditArticles
       )
     ) {
       return { status: 307, redirect: "." };

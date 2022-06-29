@@ -13,8 +13,8 @@ const getUser = async ({ headers }: Request) => {
         clubs: {
           select: {
             clubId: true,
-            canAddMembers: true,
-            canPostArticles: true,
+            canEditMembers: true,
+            canEditArticles: true,
           },
         },
       },

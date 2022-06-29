@@ -59,7 +59,7 @@
       </tr>
     {/each}
   </table>
-  {#if $session.me?.clubs.some(({ clubId, canAddMembers }) => clubId === $page.params.id && canAddMembers)}
+  {#if $session.me?.clubs.some(({ clubId, canEditMembers }) => clubId === $page.params.id && canEditMembers)}
     <p>
       <a href="/club/{$page.params.id}/members">
         Modifier la liste des membres
@@ -77,6 +77,6 @@
   </article>
 {/each}
 
-{#if $session.me?.clubs.some(({ clubId, canPostArticles }) => clubId === $page.params.id && canPostArticles)}
+{#if $session.me?.clubs.some(({ clubId, canEditArticles }) => clubId === $page.params.id && canEditArticles)}
   <p><a href="/club/{$page.params.id}/write">Écrire un article</a></p>
 {/if}

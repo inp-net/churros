@@ -36,7 +36,7 @@ export const ArticleType = builder.prismaObject("Article", {
 
 /** Inserts a new article. */
 builder.mutationField("createArticle", (t) =>
-  t.prismaField({
+  t.withAuth({ loggedIn: true }).prismaField({
     type: ArticleType,
     args: {
       clubId: t.arg.id(),
@@ -44,10 +44,11 @@ builder.mutationField("createArticle", (t) =>
       body: t.arg.string(),
     },
     async authScopes(_, { clubId }, { user }) {
-      return Boolean(
-        user?.clubs.some(
-          ({ clubId: id, canPostArticles }) =>
-            canPostArticles && Number(clubId) === id
+      return (
+        user.canEditClubs ||
+        user.clubs.some(
+          ({ clubId: id, canEditArticles }) =>
+            canEditArticles && Number(clubId) === id
         )
       );
     },

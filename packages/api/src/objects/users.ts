@@ -8,6 +8,10 @@ import { DateTimeScalar } from "./scalars.js";
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaObject("User", {
+  grantScopes({ id }, { user }) {
+    if (user?.id === id) return ["me"];
+    return [];
+  },
   fields: (t) => ({
     id: t.exposeID("id"),
     name: t.exposeString("name"),
@@ -15,6 +19,18 @@ export const UserType = builder.prismaObject("User", {
     nickname: t.exposeString("nickname"),
     lastname: t.exposeString("lastname"),
     createdAt: t.expose("createdAt", { type: DateTimeScalar }),
+
+    // Permissions are only visible to admins
+    admin: t.exposeBoolean("admin", {
+      authScopes: { admin: true, $granted: "me" },
+    }),
+    canEditClubs: t.exposeBoolean("canEditClubs", {
+      authScopes: { admin: true, $granted: "me" },
+    }),
+    canEditUsers: t.exposeBoolean("canEditUsers", {
+      authScopes: { admin: true, $granted: "me" },
+    }),
+
     clubs: t.relation("clubs"),
     articles: t.relation("articles"),
   }),

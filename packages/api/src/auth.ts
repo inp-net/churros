@@ -3,7 +3,9 @@ import { Context } from "./context.js";
 
 export type AuthScopes = {
   loggedIn: boolean;
-  canPostArticles: boolean;
+  admin: boolean;
+  canEditUsers: boolean;
+  canEditClubs: boolean;
 };
 
 export type AuthContexts = {
@@ -12,5 +14,7 @@ export type AuthContexts = {
 
 export const authScopes = ({ user }: Context) => ({
   loggedIn: Boolean(user),
-  canPostArticles: false,
+  admin: Boolean(user?.admin),
+  canEditClubs: Boolean(user?.admin || user?.canEditClubs),
+  canEditUsers: Boolean(user?.admin || user?.canEditUsers),
 });
