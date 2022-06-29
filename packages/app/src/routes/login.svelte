@@ -21,7 +21,7 @@
     if (then) {
       let url = new URL(then, $page.url);
       if (url.origin !== $page.url.origin) url = new URL("/", $page.url);
-      await goto(url.toString());
+      await goto(url);
     }
   };
 </script>

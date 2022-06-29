@@ -55,7 +55,10 @@ builder.queryField("club", (t) =>
     type: ClubType,
     args: { id: t.arg.id() },
     resolve(query, _, { id }) {
-      return prisma.club.findUnique({ ...query, where: { id: Number(id) } });
+      return prisma.club.findUniqueOrThrow({
+        ...query,
+        where: { id: Number(id) },
+      });
     },
   })
 );
@@ -105,7 +108,7 @@ builder.mutationField("deleteClubMember", (t) =>
             canAddMembers && Number(clubId) === id
         )
       );
-      const member = await prisma.clubMember.findUnique({
+      const member = await prisma.clubMember.findUniqueOrThrow({
         where: {
           memberId_clubId: {
             memberId: Number(memberId),
@@ -145,7 +148,7 @@ builder.mutationField("updateClubMember", (t) =>
             canAddMembers && Number(clubId) === id
         )
       );
-      const member = await prisma.clubMember.findUnique({
+      const member = await prisma.clubMember.findUniqueOrThrow({
         where: {
           memberId_clubId: {
             memberId: Number(memberId),
