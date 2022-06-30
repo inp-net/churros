@@ -1,4 +1,10 @@
 <script context="module" lang="ts">
+  import { goto } from "$app/navigation";
+  import { page, session } from "$app/stores";
+  import { redirectToLogin } from "$lib/session";
+  import { mutate } from "$lib/zeus";
+  import type { Load } from "@sveltejs/kit";
+
   export const load: Load = async ({ session, url, params }) => {
     if (!session.me) {
       return redirectToLogin(url.pathname);
@@ -18,12 +24,6 @@
 </script>
 
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { page, session } from "$app/stores";
-  import { redirectToLogin } from "$lib/session.js";
-  import { mutate } from "$lib/zeus";
-  import type { Load } from "@sveltejs/kit";
-
   let title = "";
   let body = "";
 

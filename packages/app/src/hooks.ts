@@ -1,4 +1,4 @@
-import { sessionUserQuery } from "$lib/session.js";
+import { sessionUserQuery } from "$lib/session";
 import { query } from "$lib/zeus";
 import type { GetSession, Handle } from "@sveltejs/kit";
 import * as cookie from "cookie";
