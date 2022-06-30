@@ -1,10 +1,10 @@
 <script context="module" lang="ts">
   import { page, session } from "$app/stores";
-  import { query, Selector, type PropsType } from "$lib/zeus";
+  import { query, Query, type PropsType } from "$lib/zeus";
   import type { Load } from "@sveltejs/kit";
 
   const propsQuery = (id: string, loggedIn: boolean) =>
-    Selector("Query")({
+    Query({
       club: [
         { id },
         loggedIn

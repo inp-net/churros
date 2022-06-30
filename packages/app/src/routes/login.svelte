@@ -8,10 +8,10 @@
   let password = "";
 
   const login = async () => {
-    const { login } = await mutate(fetch, {
+    const { login } = await mutate({
       login: [
         { name, password },
-        { token: true, user: sessionUserQuery },
+        { token: true, user: sessionUserQuery() },
       ],
     });
     saveSessionToken(login.token);

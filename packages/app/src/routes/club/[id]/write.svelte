@@ -32,7 +32,6 @@
   const createArticle = async () => {
     try {
       await mutate(
-        fetch,
         {
           createArticle: [
             { title, body, clubId: $page.params.id },

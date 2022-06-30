@@ -1,20 +1,18 @@
 import * as cookie from "cookie";
-import { Selector, type InputType, type GraphQLTypes } from "./zeus.js";
+import { Query, type PropsType } from "./zeus.js";
 
 /** What's needed in a user session. */
-export const sessionUserQuery = Selector("User")({
-  id: true,
-  name: true,
-  admin: true,
-  canEditClubs: true,
-  canEditUsers: true,
-  clubs: { clubId: true, canEditArticles: true, canEditMembers: true },
-});
+export const sessionUserQuery = () =>
+  Query({
+    id: true,
+    name: true,
+    admin: true,
+    canEditClubs: true,
+    canEditUsers: true,
+    clubs: { clubId: true, canEditArticles: true, canEditMembers: true },
+  });
 
-export type SessionUser = InputType<
-  GraphQLTypes["User"],
-  typeof sessionUserQuery
->;
+export type SessionUser = PropsType<typeof sessionUserQuery, "User">;
 
 export const saveSessionToken = (token: string) => {
   document.cookie = cookie.serialize("token", token, {

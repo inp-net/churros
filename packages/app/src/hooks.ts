@@ -7,7 +7,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   const { token } = cookie.parse(event.request.headers.get("Cookie") ?? "");
   if (token) {
     try {
-      const { me } = await query(fetch, { me: sessionUserQuery }, { token });
+      const { me } = await query(fetch, { me: sessionUserQuery() }, { token });
       event.locals.token = token;
       event.locals.me = me;
     } catch {

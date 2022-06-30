@@ -9,7 +9,7 @@
 
   const register = async () => {
     try {
-      await mutate(fetch, {
+      await mutate({
         register: [{ name, firstname, lastname, password }, { id: true }],
       });
       await goto("/");

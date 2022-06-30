@@ -1,10 +1,10 @@
 <script context="module" lang="ts">
   import { page, session } from "$app/stores";
-  import { mutate, query, Selector, type PropsType } from "$lib/zeus";
+  import { mutate, query, Query, type PropsType } from "$lib/zeus";
   import type { Load } from "@sveltejs/kit";
 
   const propsQuery = (id: string) =>
-    Selector("Query")({
+    Query({
       club: [
         { id },
         {
@@ -47,7 +47,6 @@
   const addClubMember = async () => {
     try {
       const { addClubMember } = await mutate(
-        fetch,
         {
           addClubMember: [
             { clubId: $page.params.id, name, title },
@@ -72,10 +71,7 @@
   const deleteClubMember = async (memberId: string) => {
     try {
       await mutate(
-        fetch,
-        {
-          deleteClubMember: [{ clubId: $page.params.id, memberId }, true],
-        },
+        { deleteClubMember: [{ clubId: $page.params.id, memberId }, true] },
         { token: $session.token }
       );
       club.members = club.members.filter(
@@ -93,7 +89,6 @@
       );
       if (!member) throw new Error("Member not found");
       const { updateClubMember } = await mutate(
-        fetch,
         {
           updateClubMember: [
             { clubId: $page.params.id, memberId, title: member.title },

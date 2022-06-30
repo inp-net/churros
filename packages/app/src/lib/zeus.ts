@@ -1,6 +1,7 @@
 import type { LoadEvent } from "@sveltejs/kit";
 import {
   GraphQLError,
+  Selector,
   Thunder,
   ZeusScalars,
   type GraphQLResponse,
@@ -9,7 +10,10 @@ import {
   type ValueTypes,
 } from "../zeus/index.js";
 
-export * from "../zeus/index.js";
+export type PropsType<
+  T extends (...args: never[]) => unknown,
+  U extends keyof GraphQLTypes = "Query"
+> = InputType<GraphQLTypes[U], ReturnType<T>>;
 
 export interface Options {
   token?: string;
@@ -39,6 +43,8 @@ const scalars = ZeusScalars({
   },
 });
 
+export const Query = Selector("Query");
+
 export const query = <Operation extends ValueTypes["Query"]>(
   fetch: LoadEvent["fetch"],
   op: Operation,
@@ -49,15 +55,9 @@ export const query = <Operation extends ValueTypes["Query"]>(
   >;
 
 export const mutate = <Operation extends ValueTypes["Mutation"]>(
-  fetch: LoadEvent["fetch"],
   op: Operation,
   options: Options = {}
 ) =>
   chain(fetch, options)("mutation", { scalars })(op) as Promise<
     InputType<GraphQLTypes["Mutation"], Operation, typeof scalars>
   >;
-
-export type PropsType<
-  T extends (...args: never[]) => unknown,
-  U extends "Query" | "Mutation" = "Query"
-> = InputType<GraphQLTypes[U], ReturnType<T>>;
