@@ -20,3 +20,8 @@ export const saveSessionToken = (token: string) => {
     path: "/",
   });
 };
+
+export const redirectToLogin = (then: string) => ({
+  status: 307,
+  redirect: `/login?${new URLSearchParams({ then })}`,
+});

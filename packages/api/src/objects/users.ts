@@ -124,6 +124,27 @@ builder.mutationField("register", (t) =>
   })
 );
 
+/** Deletes a session */
+builder.mutationField("deleteSession", (t) =>
+  t.field({
+    type: "Boolean",
+    args: { id: t.arg.id() },
+    authScopes: async (_, { id }, { user }) => {
+      const credential = await prisma.credential.findUniqueOrThrow({
+        where: { id: Number(id) },
+      });
+      if (credential.type !== CredentialPrismaType.Token) return false;
+      return user?.id === credential.userId;
+    },
+    resolve: async (_, { id }) => {
+      await prisma.credential.delete({
+        where: { id: Number(id) },
+      });
+      return true;
+    },
+  })
+);
+
 /** Gets a user from its id. */
 builder.queryField("user", (t) =>
   t.prismaField({

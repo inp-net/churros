@@ -10,6 +10,8 @@ import {
   type ValueTypes,
 } from "../zeus/index.js";
 
+export * from "../zeus/index.js";
+
 export type PropsType<
   T extends (...args: never[]) => unknown,
   U extends keyof GraphQLTypes = "Query"
@@ -38,8 +40,10 @@ const chain = (fetch: LoadEvent["fetch"], { token }: Options) => {
 
 const scalars = ZeusScalars({
   DateTime: {
-    decode: (value: unknown): Date => new Date(value as string),
-    encode: (value: unknown): string => (value as Date).toISOString(),
+    decode: (value: unknown): Date | null =>
+      (value as null) && new Date(value as string),
+    encode: (value: unknown): string =>
+      (value as string) && (value as Date).toISOString(),
   },
 });
 

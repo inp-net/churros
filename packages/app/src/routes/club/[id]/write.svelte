@@ -1,10 +1,7 @@
 <script context="module" lang="ts">
   export const load: Load = async ({ session, url, params }) => {
     if (!session.me) {
-      return {
-        status: 307,
-        redirect: `/login?${new URLSearchParams({ then: url.pathname })}`,
-      };
+      return redirectToLogin(url.pathname);
     }
 
     if (
@@ -22,7 +19,8 @@
 
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { session, page } from "$app/stores";
+  import { page, session } from "$app/stores";
+  import { redirectToLogin } from "$lib/session.js";
   import { mutate } from "$lib/zeus";
   import type { Load } from "@sveltejs/kit";
 

@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
   import { page, session } from "$app/stores";
+  import { redirectToLogin } from "$lib/session";
   import { mutate, query, Query, type PropsType } from "$lib/zeus";
   import type { Load } from "@sveltejs/kit";
 
@@ -30,10 +31,7 @@
         }),
       };
     } catch {
-      return {
-        status: 307,
-        redirect: `/login?${new URLSearchParams({ then: url.pathname })}`,
-      };
+      return redirectToLogin(url.pathname);
     }
   };
 </script>
