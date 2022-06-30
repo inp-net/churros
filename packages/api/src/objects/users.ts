@@ -8,10 +8,7 @@ import { DateTimeScalar } from "./scalars.js";
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaObject("User", {
-  grantScopes({ id }, { user }) {
-    if (user?.id === id) return ["me"];
-    return [];
-  },
+  grantScopes: ({ id }, { user }) => (user?.id === id ? ["me"] : []),
   fields: (t) => ({
     id: t.exposeID("id"),
     name: t.exposeString("name"),
@@ -108,8 +105,8 @@ builder.mutationField("register", (t) =>
       lastname: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       password: t.arg.string({ validate: { minLength: 10, maxLength: 255 } }),
     },
-    async resolve(query, _, { name, firstname, lastname, password }) {
-      return prisma.user.create({
+    resolve: async (query, _, { name, firstname, lastname, password }) =>
+      prisma.user.create({
         ...query,
         data: {
           name,
@@ -122,7 +119,61 @@ builder.mutationField("register", (t) =>
             },
           },
         },
+      }),
+  })
+);
+
+/** Gets a user from its id. */
+builder.queryField("user", (t) =>
+  t.prismaField({
+    type: UserType,
+    args: { id: t.arg.id() },
+    authScopes: { loggedIn: true },
+    resolve: async (query, _, { id }) =>
+      prisma.user.findUniqueOrThrow({
+        ...query,
+        where: { id: Number(id) },
+      }),
+  })
+);
+
+/** Searches for user on all text fields. */
+builder.queryField("searchUsers", (t) =>
+  t.prismaField({
+    type: [UserType],
+    args: { q: t.arg.string() },
+    authScopes: { loggedIn: true },
+    async resolve(query, _, { q }) {
+      const terms = new Set(String(q).split(" ").filter(Boolean));
+      const search = [...terms].join("&");
+      return prisma.user.findMany({
+        ...query,
+        where: {
+          firstname: { search },
+          lastname: { search },
+          name: { search },
+          nickname: { search },
+        },
       });
     },
+  })
+);
+
+/** Updates a user. */
+builder.mutationField("updateUser", (t) =>
+  t.prismaField({
+    type: UserType,
+    args: {
+      id: t.arg.id(),
+      nickname: t.arg.string({ validate: { maxLength: 255 } }),
+    },
+    authScopes: (_, { id }, { user }) =>
+      Boolean(user?.canEditUsers || Number(id) === user?.id),
+    resolve: (query, _, { id, nickname }) =>
+      prisma.user.update({
+        ...query,
+        where: { id: Number(id) },
+        data: { nickname },
+      }),
   })
 );

@@ -16,15 +16,14 @@ export const ArticleType = builder.prismaObject("Article", {
     title: t.exposeString("title"),
     body: t.exposeString("body"),
     bodyHtml: t.string({
-      resolve({ body }) {
-        return unified()
+      resolve: ({ body }) =>
+        unified()
           .use(remarkParse)
           .use(remarkRehype)
           .use(rehypeSanitize)
           .use(rehypeStringify)
           .process(body)
-          .then((file) => String(file));
-      },
+          .then((file) => String(file)),
     }),
     published: t.exposeBoolean("published"),
     createdAt: t.expose("createdAt", { type: DateTimeScalar }),
@@ -36,24 +35,23 @@ export const ArticleType = builder.prismaObject("Article", {
 
 /** Inserts a new article. */
 builder.mutationField("createArticle", (t) =>
-  t.withAuth({ loggedIn: true }).prismaField({
+  t.prismaField({
     type: ArticleType,
     args: {
       clubId: t.arg.id(),
       title: t.arg.string(),
       body: t.arg.string(),
     },
-    async authScopes(_, { clubId }, { user }) {
-      return (
-        user.canEditClubs ||
-        user.clubs.some(
-          ({ clubId: id, canEditArticles }) =>
-            canEditArticles && Number(clubId) === id
-        )
-      );
-    },
-    resolve(query, _, { clubId, body, title }, { user }) {
-      return prisma.article.create({
+    authScopes: (_, { clubId }, { user }) =>
+      Boolean(
+        user?.canEditClubs ||
+          user?.clubs.some(
+            ({ clubId: id, canEditArticles }) =>
+              canEditArticles && Number(clubId) === id
+          )
+      ),
+    resolve: (query, _, { clubId, body, title }, { user }) =>
+      prisma.article.create({
         ...query,
         data: {
           clubId: Number(clubId),
@@ -61,7 +59,6 @@ builder.mutationField("createArticle", (t) =>
           title,
           body,
         },
-      });
-    },
+      }),
   })
 );
