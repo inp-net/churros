@@ -11,11 +11,11 @@
     const { login } = await mutate(fetch, {
       login: [
         { name, password },
-        { token: true, user: sessionUserQuery },
+        { value: true, user: sessionUserQuery },
       ],
     });
-    saveSessionToken(login.token);
-    $session.token = login.token;
+    saveSessionToken(login.value);
+    $session.token = login.value;
     $session.me = login.user;
     const then = $page.url.searchParams.get("then");
     if (then) {

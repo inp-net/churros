@@ -1,5 +1,5 @@
 import { GraphQLYogaError } from "@graphql-yoga/node";
-import { CredentialType } from "@prisma/client";
+import { CredentialType as CredentialPrismaType } from "@prisma/client";
 import argon2 from "argon2";
 import { nanoid } from "nanoid";
 import { builder } from "../builder.js";
@@ -30,28 +30,26 @@ export const UserType = builder.prismaObject("User", {
 
     clubs: t.relation("clubs"),
     articles: t.relation("articles"),
+    credentials: t.relation("credentials", { authScopes: { $granted: "me" } }),
   }),
 });
 
-/** Represents a Session, owned by a user. */
-export const SessionType = builder.objectType(
-  builder.objectRef<{ token: string }>("Session"),
-  {
-    fields: (t) => ({
-      token: t.exposeString("token"),
-      user: t.field({
-        type: UserType,
-        async resolve({ token }) {
-          const user = await prisma.credential
-            .findFirst({ where: { type: CredentialType.Token, value: token } })
-            .user();
-          if (!user) throw new GraphQLYogaError("Session not found");
-          return user;
-        },
-      }),
-    }),
-  }
-);
+export const CredentialEnumType = builder.enumType(CredentialPrismaType, {
+  name: "CredentialType",
+});
+
+/** All details about a credential except its value. */
+export const CredentialType = builder.prismaObject("Credential", {
+  fields: (t) => ({
+    id: t.exposeID("id"),
+    userId: t.exposeID("userId"),
+    type: t.expose("type", { type: CredentialEnumType }),
+    value: t.exposeString("value", { authScopes: { $granted: "login" } }),
+    createdAt: t.expose("createdAt", { type: DateTimeScalar }),
+    expiresAt: t.expose("expiresAt", { type: DateTimeScalar, nullable: true }),
+    user: t.relation("user", { grantScopes: ["me"] }),
+  }),
+});
 
 /** List users. */
 builder.queryField("me", (t) =>
@@ -64,23 +62,24 @@ builder.queryField("me", (t) =>
 
 /** Logs a user in and returns a session token. */
 builder.mutationField("login", (t) =>
-  t.field({
-    type: SessionType,
+  t.prismaField({
+    type: CredentialType,
+    grantScopes: ["me", "login"],
     args: {
       name: t.arg.string(),
       password: t.arg.string(),
     },
-    async resolve(_, { name, password }) {
+    async resolve(query, _, { name, password }) {
       const credentials = await prisma.credential.findMany({
-        where: { type: CredentialType.Password, user: { name } },
+        where: { type: CredentialPrismaType.Password, user: { name } },
       });
 
       for (const { value, userId } of credentials) {
         if (await argon2.verify(value, password)) {
-          const { value: token } = await prisma.credential.create({
-            data: { type: CredentialType.Token, value: nanoid(), userId },
+          return prisma.credential.create({
+            ...query,
+            data: { type: CredentialPrismaType.Token, value: nanoid(), userId },
           });
-          return { token };
         }
       }
 
@@ -114,7 +113,7 @@ builder.mutationField("register", (t) =>
           lastname,
           credentials: {
             create: {
-              type: CredentialType.Password,
+              type: CredentialPrismaType.Password,
               value: await argon2.hash(password, { type: argon2.argon2id }),
             },
           },
