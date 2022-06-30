@@ -46,7 +46,7 @@ export const CredentialType = builder.prismaObject("Credential", {
     id: t.exposeID("id"),
     userId: t.exposeID("userId"),
     type: t.expose("type", { type: CredentialEnumType }),
-    value: t.exposeString("value", { authScopes: { $granted: "login" } }),
+    token: t.exposeString("value", { authScopes: { $granted: "login" } }),
     createdAt: t.expose("createdAt", { type: DateTimeScalar }),
     expiresAt: t.expose("expiresAt", { type: DateTimeScalar, nullable: true }),
     user: t.relation("user", { grantScopes: ["me"] }),
