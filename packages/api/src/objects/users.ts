@@ -21,10 +21,12 @@ export const UserType = builder.prismaObject("User", {
     admin: t.exposeBoolean("admin", {
       authScopes: { admin: true, $granted: "me" },
     }),
-    canEditClubs: t.exposeBoolean("canEditClubs", {
+    canEditClubs: t.boolean({
+      resolve: ({ admin, canEditClubs }) => admin || canEditClubs,
       authScopes: { admin: true, $granted: "me" },
     }),
-    canEditUsers: t.exposeBoolean("canEditUsers", {
+    canEditUsers: t.boolean({
+      resolve: ({ admin, canEditUsers }) => admin || canEditUsers,
       authScopes: { admin: true, $granted: "me" },
     }),
 

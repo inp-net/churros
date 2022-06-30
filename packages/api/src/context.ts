@@ -6,19 +6,26 @@ const getUser = async ({ headers }: Request) => {
   const auth = headers.get("Authorization");
   if (!auth) return null;
   const token = auth.slice("Bearer ".length);
-  return prisma.credential
-    .findFirst({ where: { type: CredentialType.Token, value: token } })
-    .user({
-      include: {
-        clubs: {
-          select: {
-            clubId: true,
-            canEditMembers: true,
-            canEditArticles: true,
-          },
+  const user = await prisma.user.findFirstOrThrow({
+    where: {
+      credentials: { some: { type: CredentialType.Token, value: token } },
+    },
+    include: {
+      clubs: {
+        select: {
+          clubId: true,
+          canEditMembers: true,
+          canEditArticles: true,
         },
       },
-    });
+    },
+  });
+
+  // Normalize permissions
+  user.canEditClubs ||= user.admin;
+  user.canEditUsers ||= user.admin;
+
+  return user;
 };
 
 export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;

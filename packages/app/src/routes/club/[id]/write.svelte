@@ -8,6 +8,7 @@
     }
 
     if (
+      !session.me.canEditClubs &&
       !session.me.clubs.some(
         ({ clubId, canEditArticles }) => clubId === params.id && canEditArticles
       )

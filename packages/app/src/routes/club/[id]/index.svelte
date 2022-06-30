@@ -77,6 +77,6 @@
   </article>
 {/each}
 
-{#if $session.me?.clubs.some(({ clubId, canEditArticles }) => clubId === $page.params.id && canEditArticles)}
+{#if $session.me?.canEditClubs || $session.me?.clubs.some(({ clubId, canEditArticles }) => clubId === $page.params.id && canEditArticles)}
   <p><a href="/club/{$page.params.id}/write">Écrire un article</a></p>
 {/if}
