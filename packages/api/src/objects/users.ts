@@ -92,6 +92,8 @@ builder.mutationField("login", (t) =>
               type: CredentialPrismaType.Token,
               value: nanoid(),
               userAgent,
+              // Keep the token alive for a year
+              expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
             },
           });
         }

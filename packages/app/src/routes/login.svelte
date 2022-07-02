@@ -22,10 +22,10 @@
     const { login } = await mutate({
       login: [
         { name, password },
-        { token: true, user: sessionUserQuery() },
+        { token: true, expiresAt: true, user: sessionUserQuery() },
       ],
     });
-    saveSessionToken(login.token);
+    saveSessionToken(login);
     $session.token = login.token;
     $session.me = login.user;
     await redirect();

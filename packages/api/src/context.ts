@@ -1,4 +1,4 @@
-import { YogaInitialContext } from "@graphql-yoga/node";
+import { GraphQLYogaError, YogaInitialContext } from "@graphql-yoga/node";
 import { CredentialType } from "@prisma/client";
 import { prisma } from "./prisma.js";
 
@@ -9,20 +9,25 @@ const getToken = ({ headers }: Request) => {
 };
 
 const getUser = async (token: string) => {
-  const user = await prisma.user.findFirstOrThrow({
-    where: {
-      credentials: { some: { type: CredentialType.Token, value: token } },
-    },
-    include: {
-      clubs: {
-        select: {
-          clubId: true,
-          canEditMembers: true,
-          canEditArticles: true,
-        },
-      },
-    },
+  const credential = await prisma.credential.findFirstOrThrow({
+    where: { type: CredentialType.Token, value: token },
+    include: { user: { include: { clubs: true } } },
   });
+
+  // If the session expired, delete it
+  if (credential.expiresAt !== null && credential.expiresAt < new Date()) {
+    await prisma.credential.delete({ where: { id: credential.id } });
+    throw new GraphQLYogaError("Session expired");
+  }
+
+  // Delete expired sessions once in a while
+  if (Math.random() < 0.01) {
+    await prisma.credential.deleteMany({
+      where: { type: CredentialType.Token, expiresAt: { lt: new Date() } },
+    });
+  }
+
+  const { user } = credential;
 
   // Normalize permissions
   user.canEditClubs ||= user.admin;

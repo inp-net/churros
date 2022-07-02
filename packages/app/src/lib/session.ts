@@ -14,9 +14,15 @@ export const sessionUserQuery = () =>
 
 export type SessionUser = PropsType<typeof sessionUserQuery, "User">;
 
-export const saveSessionToken = (token: string) => {
+export const saveSessionToken = ({
+  token,
+  expiresAt,
+}: {
+  token: string;
+  expiresAt?: Date | null;
+}) => {
   document.cookie = cookie.serialize("token", token, {
-    expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    expires: expiresAt ?? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     path: "/",
   });
 };
