@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { formatDate } from "$lib/dates.js";
+  import { formatDate } from "$lib/dates";
   import { query, Query, type PropsType } from "$lib/zeus";
   import type { Load } from "@sveltejs/kit";
 
