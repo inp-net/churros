@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+  import { formatDate } from "$lib/dates.js";
   import { query, Query, type PropsType } from "$lib/zeus";
   import type { Load } from "@sveltejs/kit";
 
@@ -32,7 +33,9 @@
 {#each homepage as { title, bodyHtml, publishedAt, club, author }}
   <article>
     <h2>{title}</h2>
-    <p>Par <a href="/club/{club.id}">{club.name}</a> le {publishedAt}</p>
+    <p>
+      Par <a href="/club/{club.id}">{club.name}</a> le {formatDate(publishedAt)}
+    </p>
     {@html bodyHtml}
     {#if author}
       <p><em>Auteur : {author.firstname} {author.lastname}</em></p>

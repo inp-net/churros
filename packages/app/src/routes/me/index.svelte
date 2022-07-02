@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+  import { goto } from "$app/navigation";
   import { session } from "$app/stores";
   import { formatDate } from "$lib/dates";
   import { redirectToLogin } from "$lib/session";
@@ -43,11 +44,18 @@
 <script lang="ts">
   export let me: Props["me"];
 
-  const deleteSession = async (id: string) => {
-    await mutate({ deleteSession: [{ id }, true] }, { token: $session.token });
-    me.credentials = me.credentials.filter(
-      (credential) => credential.id !== id
-    );
+  const deleteSession = async (id: string, active: boolean) => {
+    if (active) {
+      await goto(`/logout?token=${$session.token}`);
+    } else {
+      await mutate(
+        { deleteSession: [{ id }, true] },
+        { token: $session.token }
+      );
+      me.credentials = me.credentials.filter(
+        (credential) => credential.id !== id
+      );
+    }
   };
 
   const humanizeUserAgent = (userAgent: string) => {
@@ -83,7 +91,7 @@
           {humanizeUserAgent(userAgent)}
         {/if}
       </td>
-      <td><button on:click={() => deleteSession(id)}>❌</button></td>
+      <td><button on:click={() => deleteSession(id, active)}>❌</button></td>
     </tr>
   {/each}
 </table>

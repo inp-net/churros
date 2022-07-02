@@ -104,6 +104,19 @@ builder.mutationField("login", (t) =>
   })
 );
 
+builder.mutationField("logout", (t) =>
+  t.authField({
+    type: "Boolean",
+    authScopes: { loggedIn: true },
+    resolve: async (_, {}, { token }) => {
+      await prisma.credential.deleteMany({
+        where: { type: CredentialPrismaType.Token, value: token },
+      });
+      return true;
+    },
+  })
+);
+
 /** Registers a new user. */
 builder.mutationField("register", (t) =>
   t.prismaField({
