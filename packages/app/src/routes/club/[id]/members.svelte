@@ -24,6 +24,15 @@
   type Props = PropsType<typeof propsQuery>;
 
   export const load: Load = async ({ fetch, params, session, url }) => {
+    if (
+      !session.me?.canEditClubs &&
+      !session.me?.clubs.some(
+        ({ clubId, canEditMembers }) => canEditMembers && clubId === params.id
+      )
+    ) {
+      return { status: 307, redirect: "." };
+    }
+
     try {
       return {
         props: await query(fetch, propsQuery(params.id), {
@@ -119,11 +128,9 @@
         />
       </td>
       <td>
-        <button
-          type="button"
-          on:click={() => deleteClubMember(memberId)}
-          disabled={president || canEditMembers}>❌</button
-        >
+        <button type="button" on:click={() => deleteClubMember(memberId)}>
+          ❌
+        </button>
       </td>
     </tr>
   {/each}

@@ -19,7 +19,7 @@
         firstname: true,
         lastname: true,
         nickname: true,
-        clubs: { club: { name: true }, title: true },
+        clubs: { club: { id: true, name: true }, title: true },
         credentials: {
           id: true,
           type: true,
@@ -71,6 +71,20 @@
   {#if me.nickname}<q>{me.nickname}</q>{/if}
   {me.lastname}
 </h1>
+
+<h2>Clubs</h2>
+
+{#if me.clubs.length > 0}
+  <ul>
+    {#each me.clubs as { club, title }}
+      <li>
+        {title} de <a href="/club/{club.id}">{club.name}</a>
+      </li>
+    {/each}
+  </ul>
+{:else}
+  <p>Aucun club</p>
+{/if}
 
 <h2>Sessions</h2>
 <table>
