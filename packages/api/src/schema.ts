@@ -1,13 +1,14 @@
+import { writeFile } from "fs/promises";
+import { printSchema } from "graphql";
 import { builder } from "./builder.js";
 
 // Imports objects
+import "./objects/articles.js";
+import "./objects/clubs.js";
+import "./objects/credentials.js";
+import "./objects/homepage.js";
 import "./objects/scalars.js";
 import "./objects/users.js";
-import "./objects/clubs.js";
-import "./objects/articles.js";
-import "./objects/homepage.js";
-import { writeFile } from "fs/promises";
-import { printSchema } from "graphql";
 
 export const schema = builder.toSchema({});
 
