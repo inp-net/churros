@@ -2,6 +2,7 @@ import { GraphQLYogaError } from "@graphql-yoga/node";
 import { CredentialType as CredentialPrismaType } from "@prisma/client";
 import argon2 from "argon2";
 import { nanoid } from "nanoid";
+import { z } from "zod";
 import { builder } from "../builder.js";
 import { prisma } from "../prisma.js";
 import { DateTimeScalar } from "./scalars.js";
@@ -47,8 +48,13 @@ export const CredentialType = builder.prismaObject("Credential", {
     userId: t.exposeID("userId"),
     type: t.expose("type", { type: CredentialEnumType }),
     token: t.exposeString("value", { authScopes: { $granted: "login" } }),
+    userAgent: t.exposeString("userAgent"),
     createdAt: t.expose("createdAt", { type: DateTimeScalar }),
     expiresAt: t.expose("expiresAt", { type: DateTimeScalar, nullable: true }),
+    active: t.boolean({
+      resolve: ({ type, value }, _, { token }) =>
+        type === CredentialPrismaType.Token && value === token,
+    }),
     user: t.relation("user", { grantScopes: ["me"] }),
   }),
 });
@@ -71,16 +77,22 @@ builder.mutationField("login", (t) =>
       name: t.arg.string(),
       password: t.arg.string(),
     },
-    async resolve(query, _, { name, password }) {
+    async resolve(query, _, { name, password }, { request }) {
       const credentials = await prisma.credential.findMany({
         where: { type: CredentialPrismaType.Password, user: { name } },
       });
+      const userAgent = request.headers.get("User-Agent")?.slice(0, 255) ?? "";
 
       for (const { value, userId } of credentials) {
         if (await argon2.verify(value, password)) {
           return prisma.credential.create({
             ...query,
-            data: { type: CredentialPrismaType.Token, value: nanoid(), userId },
+            data: {
+              userId,
+              type: CredentialPrismaType.Token,
+              value: nanoid(),
+              userAgent,
+            },
           });
         }
       }

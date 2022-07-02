@@ -15,6 +15,7 @@
     "@sveltejs/adapter-node": "^1.0.0-next.78",
     "@sveltejs/kit": "^1.0.0-next.355",
     "@types/cookie": "^0.5.1",
+    "@types/ua-parser-js": "^0.7.36",
     "@typescript-eslint/eslint-plugin": "^5.30.0",
     "@typescript-eslint/parser": "^5.30.0",
     "cookie": "^0.5.0",
@@ -30,7 +31,8 @@
     "svelte-check": "^2.8.0",
     "svelte-preprocess": "^4.10.7",
     "tslib": "^2.4.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "ua-parser-js": "^1.0.2"
   },
   "type": "module",
   "volta": {

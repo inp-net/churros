@@ -45,6 +45,7 @@ model Credential {
   userId    Int
   type      CredentialType
   value     String         @db.VarChar(255)
+  userAgent String         @default("") @db.VarChar(255)
   createdAt DateTime       @default(now())
   expiresAt DateTime?
 

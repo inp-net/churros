@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
   import { session } from "$app/stores";
+  import { formatDate } from "$lib/dates.js";
   import { redirectToLogin } from "$lib/session";
   import {
     CredentialType,
@@ -9,6 +10,7 @@
     type PropsType,
   } from "$lib/zeus";
   import type { Load } from "@sveltejs/kit";
+  import { default as parser } from "ua-parser-js";
 
   const propsQuery = () =>
     Query({
@@ -20,8 +22,10 @@
         credentials: {
           id: true,
           type: true,
+          userAgent: true,
           createdAt: true,
           expiresAt: true,
+          active: true,
         },
       },
     });
@@ -45,6 +49,14 @@
       (credential) => credential.id !== id
     );
   };
+
+  const humanizeUserAgent = (userAgent: string) => {
+    const { browser, os } = parser(userAgent);
+    console.log(parser(userAgent));
+    if (!browser.name && !os.name) return userAgent;
+    if (!os.name) return `${browser.name}`;
+    return `${browser.name} sur ${os.name}`;
+  };
 </script>
 
 <h1>
@@ -58,11 +70,20 @@
   <tr>
     <th>Session ouverte le</th>
     <th>Expire le</th>
+    <th>Support</th>
+    <th>Déconnecter</th>
   </tr>
-  {#each me.credentials.filter(({ type }) => type === CredentialType.Token) as { id, createdAt, expiresAt }}
+  {#each me.credentials.filter(({ type }) => type === CredentialType.Token) as { id, createdAt, expiresAt, userAgent, active }}
     <tr>
-      <td>{createdAt}</td>
-      <td>{expiresAt ?? "Jamais"}</td>
+      <td>{formatDate(createdAt)}</td>
+      <td>{expiresAt ? formatDate(expiresAt) : "Jamais"}</td>
+      <td>
+        {#if active}
+          <strong>Session actuelle</strong>
+        {:else}
+          {humanizeUserAgent(userAgent)}
+        {/if}
+      </td>
       <td><button on:click={() => deleteSession(id)}>❌</button></td>
     </tr>
   {/each}
