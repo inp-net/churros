@@ -52,7 +52,6 @@
 
   const humanizeUserAgent = (userAgent: string) => {
     const { browser, os } = parser(userAgent);
-    console.log(parser(userAgent));
     if (!browser.name && !os.name) return userAgent;
     if (!os.name) return `${browser.name}`;
     return `${browser.name} sur ${os.name}`;

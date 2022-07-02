@@ -22,7 +22,9 @@ export const saveSessionToken = ({
   expiresAt?: Date | null;
 }) => {
   document.cookie = cookie.serialize("token", token, {
-    expires: expiresAt ?? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    expires: expiresAt
+      ? new Date(expiresAt)
+      : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     path: "/",
   });
 };
