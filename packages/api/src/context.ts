@@ -21,7 +21,7 @@ const getUser = async (token: string) => {
   }
 
   // Delete expired sessions once in a while
-  if (Math.random() < 0.01) {
+  if (Math.random() < 0.001) {
     await prisma.credential.deleteMany({
       where: { type: CredentialType.Token, expiresAt: { lt: new Date() } },
     });
