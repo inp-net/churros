@@ -1,6 +1,12 @@
+<script context="module" lang="ts">
+  export const load: Load = ({ session }) =>
+    session.me ? { status: 307, redirect: "/" } : {};
+</script>
+
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { mutate } from "$lib/zeus";
+  import type { Load } from "@sveltejs/kit";
 
   let name = "";
   let firstname = "";

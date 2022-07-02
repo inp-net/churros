@@ -107,7 +107,7 @@
 </script>
 
 <table>
-  {#each club.members as { memberId, member, president, treasurer, title, canEditMembers }, i}
+  {#each club.members as { memberId, member, president, treasurer, canEditMembers }, i}
     <tr>
       <td>{president ? "👑" : ""}{treasurer ? "💰" : ""}</td>
       <td>{member.firstname} {member.lastname}</td>

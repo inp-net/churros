@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import { session } from "$app/stores";
-  import { formatDate } from "$lib/dates.js";
+  import { formatDate } from "$lib/dates";
   import { redirectToLogin } from "$lib/session";
   import {
     CredentialType,
