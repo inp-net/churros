@@ -25,7 +25,6 @@
           type: true,
           userAgent: true,
           createdAt: true,
-          expiresAt: true,
           active: true,
         },
       },
@@ -90,17 +89,15 @@
 <table>
   <tr>
     <th>Session ouverte le</th>
-    <th>Expire le</th>
     <th>Support</th>
     <th>Déconnecter</th>
   </tr>
-  {#each me.credentials.filter(({ type }) => type === CredentialType.Token) as { id, createdAt, expiresAt, userAgent, active }}
+  {#each me.credentials.filter(({ type }) => type === CredentialType.Token) as { id, createdAt, userAgent, active }}
     <tr>
       <td>{formatDate(createdAt)}</td>
-      <td>{expiresAt ? formatDate(expiresAt) : "Jamais"}</td>
       <td>
         {#if active}
-          <strong>Session actuelle</strong>
+          Session actuelle
         {:else}
           {humanizeUserAgent(userAgent)}
         {/if}
