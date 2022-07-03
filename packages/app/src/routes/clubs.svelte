@@ -22,7 +22,7 @@
   {#each clubs as { id, name }}
     <tr>
       <td>{id}</td>
-      <td><a href="/club/{id}">{name}</a></td>
+      <td><a href="/club/{id}" sveltekit:prefetch>{name}</a></td>
     </tr>
   {/each}
 </table>

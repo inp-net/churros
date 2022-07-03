@@ -1,3 +1,4 @@
+import { setTimeout } from "timers/promises";
 import { builder } from "../builder.js";
 import { prisma } from "../prisma.js";
 import { DateTimeScalar } from "./scalars.js";
@@ -49,10 +50,7 @@ builder.queryField("club", (t) =>
     type: ClubType,
     args: { id: t.arg.id() },
     resolve: (query, _, { id }) =>
-      prisma.club.findUniqueOrThrow({
-        ...query,
-        where: { id: Number(id) },
-      }),
+      prisma.club.findUniqueOrThrow({ ...query, where: { id: Number(id) } }),
   })
 );
 

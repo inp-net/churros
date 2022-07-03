@@ -13,7 +13,7 @@
               name: true,
               articles: { title: true, bodyHtml: true },
               members: {
-                member: { firstname: true, lastname: true },
+                member: { id: true, firstname: true, lastname: true },
                 title: true,
                 president: true,
                 treasurer: true,
@@ -54,14 +54,19 @@
     {#each club.members as { member, president, treasurer, title }}
       <tr>
         <td>{president ? "👑" : ""}{treasurer ? "💰" : ""}</td>
-        <td>{member.firstname} {member.lastname}</td>
+        <td>
+          <a href="/user/{member.id}" sveltekit:prefetch>
+            {member.firstname}
+            {member.lastname}
+          </a>
+        </td>
         <td>{title}</td>
       </tr>
     {/each}
   </table>
   {#if $session.me?.clubs.some(({ clubId, canEditMembers }) => clubId === $page.params.id && canEditMembers)}
     <p>
-      <a href="/club/{$page.params.id}/members">
+      <a href="/club/{$page.params.id}/members" sveltekit:prefetch>
         Modifier la liste des membres
       </a>
     </p>
@@ -78,5 +83,9 @@
 {/each}
 
 {#if $session.me?.canEditClubs || $session.me?.clubs.some(({ clubId, canEditArticles }) => clubId === $page.params.id && canEditArticles)}
-  <p><a href="/club/{$page.params.id}/write">Écrire un article</a></p>
+  <p>
+    <a href="/club/{$page.params.id}/write" sveltekit:prefetch>
+      Écrire un article
+    </a>
+  </p>
 {/if}

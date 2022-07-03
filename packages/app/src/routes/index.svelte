@@ -12,7 +12,7 @@
           bodyHtml: true,
           publishedAt: true,
           club: { id: true, name: true },
-          author: { firstname: true, lastname: true },
+          author: { id: true, firstname: true, lastname: true },
         },
       ],
     });
@@ -34,11 +34,20 @@
   <article>
     <h2>{title}</h2>
     <p>
-      Par <a href="/club/{club.id}">{club.name}</a> le {formatDate(publishedAt)}
+      Par <a href="/club/{club.id}" sveltekit:prefetch>{club.name}</a> le {formatDate(
+        publishedAt
+      )}
     </p>
     {@html bodyHtml}
     {#if author}
-      <p><em>Auteur : {author.firstname} {author.lastname}</em></p>
+      <p>
+        <em>
+          Auteur : <a href="/user/{author.id}" sveltekit:prefetch>
+            {author.firstname}
+            {author.lastname}
+          </a>
+        </em>
+      </p>
     {/if}
   </article>
 {/each}

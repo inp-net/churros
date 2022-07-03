@@ -77,7 +77,7 @@
   <ul>
     {#each me.clubs as { club, title }}
       <li>
-        {title} de <a href="/club/{club.id}">{club.name}</a>
+        {title} de <a href="/club/{club.id}" sveltekit:prefetch>{club.name}</a>
       </li>
     {/each}
   </ul>
