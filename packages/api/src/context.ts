@@ -9,15 +9,19 @@ const getToken = ({ headers }: Request) => {
 };
 
 const getUser = async (token: string) => {
-  const credential = await prisma.credential.findFirstOrThrow({
-    where: { type: CredentialType.Token, value: token },
-    include: { user: { include: { clubs: true } } },
-  });
+  const credential = await prisma.credential
+    .findFirstOrThrow({
+      where: { type: CredentialType.Token, value: token },
+      include: { user: { include: { clubs: true } } },
+    })
+    .catch(() => {
+      throw new GraphQLYogaError("Invalid token.");
+    });
 
   // If the session expired, delete it
   if (credential.expiresAt !== null && credential.expiresAt < new Date()) {
     await prisma.credential.delete({ where: { id: credential.id } });
-    throw new GraphQLYogaError("Session expired");
+    throw new GraphQLYogaError("Session expired.");
   }
 
   // Delete expired sessions once in a while
