@@ -19,6 +19,7 @@ __metadata:
     "@prisma/client": ^4.0.0
     "@types/node": ^18.0.1
     argon2: ^0.28.7
+    envelop-no-batched-queries: ^3.0.0
     graphql: ^16.5.0
     graphql-scalars: ^1.17.0
     nanoid: ^4.0.0
@@ -1554,6 +1555,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"envelop-no-batched-queries@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "envelop-no-batched-queries@npm:3.0.0"
+  dependencies:
+    graphql-no-batched-queries: 2.0.0
+  peerDependencies:
+    "@envelop/core": ^2.0.0
+  checksum: 7c3a4d83fb232889b4a47c05a1d207c417f343871abdefa268eb125203da3da9a95f0855ad94b48eb5e620a155b8d8094cf5d5f6ba75bf7a233ad41f04abf472
+  languageName: node
+  linkType: hard
+
 "err-code@npm:^2.0.2":
   version: 2.0.3
   resolution: "err-code@npm:2.0.3"
@@ -2307,6 +2319,15 @@ __metadata:
   dependencies:
     graphql: ^15.4.0
   checksum: 4a2f158ef81b1c86a44aab46e90c87e0219cc74c87e4ad2f0e46305f98469b60cbaa79189c7f2f6626f4f73245132ede1ff0f3bd1bb408c35cbd5e5748e90cca
+  languageName: node
+  linkType: hard
+
+"graphql-no-batched-queries@npm:2.0.0":
+  version: 2.0.0
+  resolution: "graphql-no-batched-queries@npm:2.0.0"
+  peerDependencies:
+    graphql: ^16.3.0
+  checksum: eecc2a924df66ba7ddb03aed49845f7138fa1955d9e8db96f79c6a1576632e3d2e74646dc34232a9aa945f12027356abcaf195a9f63266cbf6f6625620c8a4af
   languageName: node
   linkType: hard
 
