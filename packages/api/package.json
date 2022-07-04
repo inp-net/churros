@@ -9,7 +9,7 @@
     "clean": "git clean -Xdf ."
   },
   "dependencies": {
-    "@graphql-yoga/node": "^2.11.1",
+    "@graphql-yoga/node": "^2.11.2",
     "@pothos/core": "^3.12.1",
     "@pothos/plugin-complexity": "^3.4.0",
     "@pothos/plugin-prisma": "^3.13.1",
@@ -17,7 +17,7 @@
     "@pothos/plugin-simple-objects": "^3.3.0",
     "@pothos/plugin-validation": "^3.4.2",
     "@prisma/client": "^4.0.0",
-    "argon2": "^0.28.5",
+    "argon2": "^0.28.7",
     "graphql": "^16.5.0",
     "graphql-scalars": "^1.17.0",
     "nanoid": "^4.0.0",
@@ -29,10 +29,10 @@
     "zod": "^3.17.3"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
+    "@types/node": "^18.0.1",
     "nodemon": "^2.0.18",
     "prisma": "^4.0.0",
-    "ts-node": "^10.8.1",
+    "ts-node": "^10.8.2",
     "typescript": "^4.7.4"
   },
   "prisma": {

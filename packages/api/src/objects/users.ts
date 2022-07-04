@@ -1,5 +1,5 @@
 import { CredentialType as CredentialPrismaType } from "@prisma/client";
-import argon2 from "argon2";
+import { hash } from "argon2";
 import { builder } from "../builder.js";
 import { prisma } from "../prisma.js";
 import { DateTimeScalar } from "./scalars.js";
@@ -69,7 +69,7 @@ builder.mutationField("register", (t) =>
           credentials: {
             create: {
               type: CredentialPrismaType.Password,
-              value: await argon2.hash(password, { type: argon2.argon2id }),
+              value: await hash(password),
             },
           },
         },

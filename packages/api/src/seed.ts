@@ -1,5 +1,5 @@
 import { CredentialType, PrismaClient } from "@prisma/client";
-import argon2 from "argon2";
+import { hash } from "argon2";
 
 const prisma = new PrismaClient();
 
@@ -20,17 +20,17 @@ await prisma.credential.createMany({
     {
       type: CredentialType.Password,
       userId: alice.id,
-      value: await argon2.hash("al1ce", { type: argon2.argon2id }),
+      value: await hash("al1ce"),
     },
     {
       type: CredentialType.Password,
       userId: bob.id,
-      value: await argon2.hash("b0b", { type: argon2.argon2id }),
+      value: await hash("b0b"),
     },
     {
       type: CredentialType.Password,
       userId: charlie.id,
-      value: await argon2.hash("ch4rlie", { type: argon2.argon2id }),
+      value: await hash("ch4rlie"),
     },
   ],
 });
