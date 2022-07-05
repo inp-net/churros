@@ -1,4 +1,4 @@
-import { createServer } from "@graphql-yoga/node";
+import { createServer, GraphQLYogaError } from "@graphql-yoga/node";
 import { ForbiddenError } from "@pothos/plugin-scope-auth";
 import { useNoBatchedQueries } from "envelop-no-batched-queries";
 import { GraphQLError } from "graphql";
@@ -23,7 +23,7 @@ const server = createServer({
         });
       }
 
-      if (cause instanceof ForbiddenError)
+      if (cause instanceof ForbiddenError || cause instanceof GraphQLYogaError)
         return new GraphQLError(cause.message);
 
       return new GraphQLError(message);

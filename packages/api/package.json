@@ -9,6 +9,7 @@
     "clean": "git clean -Xdf ."
   },
   "dependencies": {
+    "@envelop/core": "^2.4.0",
     "@graphql-yoga/node": "^2.11.2",
     "@pothos/core": "^3.12.1",
     "@pothos/plugin-complexity": "^3.4.0",

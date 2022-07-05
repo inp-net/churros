@@ -1,17 +1,17 @@
-<script>
-  import { session, page, navigating } from "$app/stores";
-  import { derived, get } from "svelte/store";
+<script lang="ts">
+  import { navigating, page, session } from "$app/stores";
+  import { derived } from "svelte/store";
   import "../app.scss";
 
+  let timeout: unknown;
   const showLoader = derived(
     navigating,
     ($navigating, set) => {
       if (!$navigating) {
         set(false);
+        if (timeout !== undefined) clearTimeout(timeout as number);
       } else {
-        setTimeout(() => {
-          if (get(navigating)) set(true);
-        }, 200);
+        timeout = setTimeout(() => set(true), 200);
       }
     },
     false

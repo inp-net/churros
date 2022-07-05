@@ -52,7 +52,15 @@ builder.mutationField("register", (t) =>
         validate: {
           minLength: 3,
           maxLength: 20,
-          regex: [/[a-z][a-z_.-]*/, { message: "Letters, -, _ and . only" }],
+          regex: [
+            /[a-z][a-z_.-]*/,
+            { message: "Lettres, -, _ et . seulement" },
+          ],
+          refine: [
+            async (name) =>
+              !(await prisma.user.findUnique({ where: { name } })),
+            { message: "Nom déjà utilisé" },
+          ],
         },
       }),
       firstname: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
