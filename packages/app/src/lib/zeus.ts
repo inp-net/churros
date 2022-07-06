@@ -25,7 +25,7 @@ const chain = (fetch: LoadEvent["fetch"], { token }: Options) => {
   const headers = new Headers({ "Content-Type": "application/json" });
   if (token) headers.set("Authorization", `Bearer ${token}`);
   return Thunder((query, variables) =>
-    fetch(`http://localhost:4000/graphql`, {
+    fetch("http://localhost:4000/graphql", {
       body: JSON.stringify({ query, variables }),
       method: "POST",
       headers,
