@@ -2,12 +2,14 @@
   import { redirectToLogin } from "$lib/session";
   import { Query, query, type PropsType } from "$lib/zeus";
   import type { Load } from "@sveltejs/kit";
+  import { session } from "$app/stores";
 
   const propsQuery = (id: string) =>
     Query({
       user: [
         { id },
         {
+          id: true,
           firstname: true,
           lastname: true,
           clubs: { club: { id: true, name: true }, title: true },
@@ -19,11 +21,7 @@
 
   export const load: Load = async ({ fetch, params, session, url }) =>
     session.me
-      ? {
-          props: await query(fetch, propsQuery(params.id), {
-            token: session.token,
-          }),
-        }
+      ? { props: await query(fetch, propsQuery(params.id), session) }
       : redirectToLogin(url.pathname);
 </script>
 
@@ -32,6 +30,10 @@
 </script>
 
 <h1>{user.firstname} {user.lastname}</h1>
+
+{#if $session.me?.canEditUsers || user.id === $session.me?.id}
+  <p><a href="./edit" sveltekit:prefetch>Modifier</a></p>
+{/if}
 
 <h2>Clubs</h2>
 

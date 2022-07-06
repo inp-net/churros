@@ -8,6 +8,7 @@
   "scripts": {
     "build": "yarn workspaces foreach --topological-dev -pv run build",
     "dev": "docker-compose up -d --wait && yarn workspaces foreach -piv run dev",
+    "prisma": "yarn workspace @centraverse/api run prisma",
     "reset": "docker-compose up -dV --wait && yarn workspace @centraverse/api run prisma migrate reset --force"
   },
   "volta": {

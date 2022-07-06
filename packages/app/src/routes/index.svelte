@@ -20,7 +20,7 @@
   type Props = PropsType<typeof propsQuery>;
 
   export const load: Load = async ({ fetch, session }) => ({
-    props: await query(fetch, propsQuery(), { token: session.token }),
+    props: await query(fetch, propsQuery(), session),
   });
 </script>
 

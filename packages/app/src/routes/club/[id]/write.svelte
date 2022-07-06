@@ -36,7 +36,7 @@
             { id: true },
           ],
         },
-        { token: $session.token }
+        $session
       );
       await goto(".");
     } catch (error) {

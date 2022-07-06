@@ -67,7 +67,7 @@
             },
           ],
         },
-        { token: $session.token }
+        $session
       );
       club.members = [...club.members, addClubMember];
     } catch (error) {
@@ -79,7 +79,7 @@
     try {
       await mutate(
         { deleteClubMember: [{ clubId: $page.params.id, memberId }, true] },
-        { token: $session.token }
+        $session
       );
       club.members = club.members.filter(
         (member) => member.memberId !== memberId
@@ -102,7 +102,7 @@
             { title: true },
           ],
         },
-        { token: $session.token }
+        $session
       );
       club.members = club.members.map((member) =>
         member.memberId === memberId
@@ -116,7 +116,7 @@
 </script>
 
 <table>
-  {#each club.members as { memberId, member, president, treasurer, canEditMembers }, i}
+  {#each club.members as { memberId, member, president, treasurer }, i}
     <tr>
       <td>{president ? "👑" : ""}{treasurer ? "💰" : ""}</td>
       <td>{member.firstname} {member.lastname}</td>

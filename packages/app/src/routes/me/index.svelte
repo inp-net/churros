@@ -16,6 +16,7 @@
   const propsQuery = () =>
     Query({
       me: {
+        id: true,
         firstname: true,
         lastname: true,
         nickname: true,
@@ -34,9 +35,7 @@
 
   export const load: Load = async ({ fetch, session, url }) =>
     session.me
-      ? {
-          props: query(fetch, propsQuery(), { token: session.token }),
-        }
+      ? { props: query(fetch, propsQuery(), session) }
       : redirectToLogin(url.pathname);
 </script>
 
@@ -47,10 +46,7 @@
     if (active) {
       await goto(`/logout?token=${$session.token}`);
     } else {
-      await mutate(
-        { deleteSession: [{ id }, true] },
-        { token: $session.token }
-      );
+      await mutate({ deleteSession: [{ id }, true] }, $session);
       me.credentials = me.credentials.filter(
         (credential) => credential.id !== id
       );
@@ -70,6 +66,8 @@
   {#if me.nickname}<q>{me.nickname}</q>{/if}
   {me.lastname}
 </h1>
+
+<p><a href="/user/{me.id}/edit" sveltekit:prefetch>Modifier</a></p>
 
 <h2>Clubs</h2>
 
