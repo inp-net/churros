@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import { session } from "$app/stores";
-  import { mutate, query, Query, type PropsType } from "$lib/zeus.js";
+  import { mutate, query, Query, type PropsType } from "$lib/zeus";
   import type { Load } from "@sveltejs/kit";
 
   const propsQuery = (id: string) =>
