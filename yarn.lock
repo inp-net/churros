@@ -10,15 +10,15 @@ __metadata:
   resolution: "@centraverse/api@workspace:packages/api"
   dependencies:
     "@envelop/core": ^2.4.0
-    "@graphql-yoga/node": ^2.11.2
-    "@pothos/core": ^3.12.1
+    "@graphql-yoga/node": ^2.12.0
+    "@pothos/core": ^3.12.2
     "@pothos/plugin-complexity": ^3.4.0
     "@pothos/plugin-prisma": ^3.13.1
     "@pothos/plugin-scope-auth": ^3.10.0
     "@pothos/plugin-simple-objects": ^3.3.0
     "@pothos/plugin-validation": ^3.4.2
     "@prisma/client": ^4.0.0
-    "@types/express": ^4
+    "@types/express": ^4.17.13
     "@types/node": ^18.0.3
     argon2: ^0.28.7
     envelop-no-batched-queries: ^3.0.2
@@ -46,8 +46,8 @@ __metadata:
   resolution: "@centraverse/app@workspace:packages/app"
   dependencies:
     "@centraverse/api": "workspace:^"
-    "@sveltejs/adapter-node": ^1.0.0-next.78
-    "@sveltejs/kit": ^1.0.0-next.360
+    "@sveltejs/adapter-node": ^1.0.0-next.79
+    "@sveltejs/kit": ^1.0.0-next.366
     "@types/cookie": ^0.5.1
     "@types/ua-parser-js": ^0.7.36
     "@typescript-eslint/eslint-plugin": ^5.30.5
@@ -57,18 +57,18 @@ __metadata:
     eslint-config-prettier: ^8.5.0
     eslint-plugin-svelte3: ^4.0.0
     extract-files: ^12.0.0
-    graphql-zeus: ^5.1.6
+    graphql-zeus: ^5.1.7
     prettier: ^2.7.1
     prettier-plugin-svelte: ^2.7.0
     sanitize.css: ^13.0.0
     sass: ^1.53.0
-    svelte: ^3.48.0
+    svelte: ^3.49.0
     svelte-check: ^2.8.0
     svelte-preprocess: ^4.10.7
     tslib: ^2.4.0
     typescript: ^4.7.4
     ua-parser-js: ^1.0.2
-    vite: ^2.9.13
+    vite: ^2.9.14
     zod: ^3.17.3
   languageName: unknown
   linkType: soft
@@ -196,9 +196,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-yoga/common@npm:^2.10.0":
-  version: 2.10.0
-  resolution: "@graphql-yoga/common@npm:2.10.0"
+"@graphql-yoga/common@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "@graphql-yoga/common@npm:2.11.0"
   dependencies:
     "@envelop/core": ^2.4.0
     "@envelop/parser-cache": ^4.4.0
@@ -212,23 +212,23 @@ __metadata:
     tslib: ^2.3.1
   peerDependencies:
     graphql: ^15.2.0 || ^16.0.0
-  checksum: af7b71a81101188a1bc19e6acf9ecd2f60125e8280f646366c56b504229aef72283d36bdd9b57d566758074dea6fc6dc6e928643dee342081df8f1c3caed8d0d
+  checksum: 9f1979bbac48a42d6903fe04a058c92daaef124d96092237d46c6646179f3e46c9c0e11a463d17a36d6a092c95c26185c25b8d982b467092ede5e4aa784119cf
   languageName: node
   linkType: hard
 
-"@graphql-yoga/node@npm:^2.11.2":
-  version: 2.11.2
-  resolution: "@graphql-yoga/node@npm:2.11.2"
+"@graphql-yoga/node@npm:^2.12.0":
+  version: 2.12.0
+  resolution: "@graphql-yoga/node@npm:2.12.0"
   dependencies:
     "@envelop/core": ^2.4.0
     "@graphql-tools/utils": ^8.8.0
-    "@graphql-yoga/common": ^2.10.0
+    "@graphql-yoga/common": ^2.11.0
     "@graphql-yoga/subscription": ^2.1.0
     cross-undici-fetch: ^0.4.2
     tslib: ^2.3.1
   peerDependencies:
     graphql: ^15.2.0 || ^16.0.0
-  checksum: 9e7d675c1cae73d9fe0536bf6113b936d946a227b83ba7fe941e9ba172445a71e3b6c4ad1012755f107f0a5eb509fb3bffa1f638254364b9dcb6a41da050ddb9
+  checksum: 434de6cba4a755cc2cfd45fbae04b2fdbcee7ed83cb71b9c73baa2d32ead19b03346f4461467a2383f0ed232afd0e73ba1fa9d0ae740736d5abc82f89dcf24a8
   languageName: node
   linkType: hard
 
@@ -261,9 +261,9 @@ __metadata:
   linkType: hard
 
 "@jridgewell/resolve-uri@npm:^3.0.3":
-  version: 3.0.8
-  resolution: "@jridgewell/resolve-uri@npm:3.0.8"
-  checksum: 28d739f49b4a52a95843b15669dcb2daaab48f0eaef8f457b9aacd0bdebeb60468d0684f73244f613b786e9d871c25abdbe6f55991bba36814cdadc399dbb3a8
+  version: 3.1.0
+  resolution: "@jridgewell/resolve-uri@npm:3.1.0"
+  checksum: b5ceaaf9a110fcb2780d1d8f8d4a0bfd216702f31c988d8042e5f8fbe353c55d9b0f55a1733afdc64806f8e79c485d2464680ac48a0d9fcadb9548ee6b81d267
   languageName: node
   linkType: hard
 
@@ -367,12 +367,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/core@npm:^3.12.1":
-  version: 3.12.1
-  resolution: "@pothos/core@npm:3.12.1"
+"@pothos/core@npm:^3.12.2":
+  version: 3.12.2
+  resolution: "@pothos/core@npm:3.12.2"
   peerDependencies:
     graphql: ">=15.1.0"
-  checksum: d809d70adff38dd402d8fb395b517b5056ce26a5344f14236c2da17034932f2ff1e391d27baefd3b048f8aad1c7f8a3a72c503333fe6adc69667f51cd20e5d16
+  checksum: 0e45f78f0ba106aafcdcaf90b0a7095028647c057c9858325f60cbdcc57d385d9a2d07a6e7f1a1fb4dee8e42da0e4f7f0cc7a765bdfa7c068198f7c9bddec5aa
   languageName: node
   linkType: hard
 
@@ -501,18 +501,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/adapter-node@npm:^1.0.0-next.78":
-  version: 1.0.0-next.78
-  resolution: "@sveltejs/adapter-node@npm:1.0.0-next.78"
+"@sveltejs/adapter-node@npm:^1.0.0-next.79":
+  version: 1.0.0-next.79
+  resolution: "@sveltejs/adapter-node@npm:1.0.0-next.79"
   dependencies:
     tiny-glob: ^0.2.9
-  checksum: 326397a41547dec6325116438d4f90b3c86960392e312490115e06c24985c4f152ed52d9d53bb0cc117c6961c530d19db600b29db3f7cf6c4186a7b0f7c33ba2
+  checksum: db988a270db624030bc271383d36626f65a17fd568a25dc24035e1defcffcbf697fdb680b5d8b121c51df1d6b5cad5528c136ed1024f95eda260f6efa8ee4b1b
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^1.0.0-next.360":
-  version: 1.0.0-next.360
-  resolution: "@sveltejs/kit@npm:1.0.0-next.360"
+"@sveltejs/kit@npm:^1.0.0-next.366":
+  version: 1.0.0-next.366
+  resolution: "@sveltejs/kit@npm:1.0.0-next.366"
   dependencies:
     "@sveltejs/vite-plugin-svelte": ^1.0.0-next.48
     chokidar: ^3.5.3
@@ -522,7 +522,7 @@ __metadata:
     vite: ^2.9.10
   bin:
     svelte-kit: svelte-kit.js
-  checksum: ad09afb353c9b37da0642f269434bd10aa504bd84f14bc418fc03997df5633fb7f1c12fd67f6620c55b568fd37d7a44ea646a870065554f72d66492ff1f3ae08
+  checksum: b598d5cd4bdbb6a2f66682b1d647c0cb1f8355d3848ab5d681b929d80e5b66db4189f87cd4f3457ca07d550d4d779c693a82bd64ad5e779bd584227c2360fcd9
   languageName: node
   linkType: hard
 
@@ -637,7 +637,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:^4":
+"@types/express@npm:^4.17.13":
   version: 4.17.13
   resolution: "@types/express@npm:4.17.13"
   dependencies:
@@ -695,14 +695,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
-  version: 18.0.1
-  resolution: "@types/node@npm:18.0.1"
-  checksum: be14b251c54cc2b4ca78ac6eadf2fe5e831e487f2e17848f21d576295945b538271dcc674d0bba582b3f8d95b84f6826e99b6ba4710c76f165a8bdd4d4f0618e
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^18.0.3":
+"@types/node@npm:*, @types/node@npm:^18.0.3":
   version: 18.0.3
   resolution: "@types/node@npm:18.0.3"
   checksum: 5dec59fbbc1186c808b53df1ca717dad034dbd6a901c75f5b052c845618b531b05f27217122c6254db99529a68618e4cfc534ae3dbf4e88754e9e572df80defa
@@ -2355,11 +2348,11 @@ __metadata:
   linkType: hard
 
 "globals@npm:^13.15.0":
-  version: 13.15.0
-  resolution: "globals@npm:13.15.0"
+  version: 13.16.0
+  resolution: "globals@npm:13.16.0"
   dependencies:
     type-fest: ^0.20.2
-  checksum: 383ade0873b2ab29ce6d143466c203ed960491575bc97406395e5c8434026fb02472ab2dfff5bc16689b8460269b18fda1047975295cd0183904385c51258bae
+  checksum: e571b28462b8922a29ac78c8df89848cfd5dc9bdd5d8077440c022864f512a4aae82e7561a2f366337daa86fd4b366aec16fd3f08686de387e4089b01be6cb14
   languageName: node
   linkType: hard
 
@@ -2427,17 +2420,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-zeus@npm:^5.1.6":
-  version: 5.1.6
-  resolution: "graphql-zeus@npm:5.1.6"
+"graphql-zeus@npm:^5.1.7":
+  version: 5.1.7
+  resolution: "graphql-zeus@npm:5.1.7"
   dependencies:
     cross-fetch: ^3.0.4
     graphql: ^16.5.0
     graphql-js-tree: ^0.1.1
     yargs: ^16.1.1
+  peerDependencies:
+    graphql-ws: ">=5"
+  peerDependenciesMeta:
+    graphql-ws:
+      optional: true
   bin:
     zeus: lib/CLI/index.js
-  checksum: 0f1f0168a30b235c172aa4b03c0187de868c6a77593cf636b9d0bfe9cba6b2704f8bf7ec7dbb7babb23f07b2f9a68593729a46d055f9700802fcab8a3fb8d9e2
+  checksum: 27c36850038152c617e163a9abb7868ea490458dd02221f6d4d2817eae9b2f0defde185f5aca110934701b555467190e74378734b294f8255bd28554bb22324b
   languageName: node
   linkType: hard
 
@@ -2941,8 +2939,8 @@ __metadata:
   linkType: hard
 
 "mdast-util-to-hast@npm:^12.1.0":
-  version: 12.1.1
-  resolution: "mdast-util-to-hast@npm:12.1.1"
+  version: 12.1.2
+  resolution: "mdast-util-to-hast@npm:12.1.2"
   dependencies:
     "@types/hast": ^2.0.0
     "@types/mdast": ^3.0.0
@@ -2950,11 +2948,12 @@ __metadata:
     mdast-util-definitions: ^5.0.0
     mdurl: ^1.0.0
     micromark-util-sanitize-uri: ^1.0.0
+    trim-lines: ^3.0.0
     unist-builder: ^3.0.0
     unist-util-generated: ^2.0.0
     unist-util-position: ^4.0.0
     unist-util-visit: ^4.0.0
-  checksum: 4c5a73e0463493d5ab2c033d42f8daead24d0808969bf21c3a720786784a347cedc1d3ae26b37737dbe3ea0839bc130bf7e20f3bc02e2387e6e7b0a5f94bafe4
+  checksum: 7bb888e73ce2ffc67d57868f3f7190fc8f30dda7b1293a14dd9b8fe6e72432f63db5c1e3015f9743c9f5bb17b33f622e3cea60bd54679395c9bc1949c16e4ce7
   languageName: node
   linkType: hard
 
@@ -3978,8 +3977,8 @@ __metadata:
   linkType: hard
 
 "rollup@npm:^2.59.0":
-  version: 2.75.7
-  resolution: "rollup@npm:2.75.7"
+  version: 2.76.0
+  resolution: "rollup@npm:2.76.0"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -3987,7 +3986,7 @@ __metadata:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: a6331d46b01062b184efdcb42ce12caf2e1575f989963944534b02f5855f6f3bc239ed0c1a18893572d7695af6d83166f3aef59dbd0365084e1531cb67824674
+  checksum: 58293e1c63c11d4afcfcf619601d5c5136dd3d0c9d3bd6a0b6141fede32027edc1eb53873bbb9a9c1e95e86c67f6ad66185720031b6eadf325972174d1d8fbcb
   languageName: node
   linkType: hard
 
@@ -4434,10 +4433,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:^3.48.0":
-  version: 3.48.0
-  resolution: "svelte@npm:3.48.0"
-  checksum: d72587582b6967bf083ff7dc254f8067c22b57d4678182b48ca51010e0f3a1d98a33a00365046aee0c70ed3ffc716b73141207ec5ac6c44f1f5e34c5477e61ea
+"svelte@npm:^3.49.0":
+  version: 3.49.0
+  resolution: "svelte@npm:3.49.0"
+  checksum: 5b7cb8dbf6b6581b50fab1de63cbcb81816081a1240b03e234b299268fff2f3237bf8f92b683a848f95453353b5694dfe26fa05a55da185a4bb0cd8b80d87dd4
   languageName: node
   linkType: hard
 
@@ -4510,6 +4509,13 @@ __metadata:
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
   checksum: 726321c5eaf41b5002e17ffbd1fb7245999a073e8979085dacd47c4b4e8068ff5777142fc6726d6ca1fd2ff16921b48788b87225cbc57c72636f6efa8efbffe3
+  languageName: node
+  linkType: hard
+
+"trim-lines@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "trim-lines@npm:3.0.1"
+  checksum: e241da104682a0e0d807222cc1496b92e716af4db7a002f4aeff33ae6a0024fef93165d49eab11aa07c71e1347c42d46563f91dfaa4d3fb945aa535cdead53ed
   languageName: node
   linkType: hard
 
@@ -4846,9 +4852,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^2.9.13":
-  version: 2.9.13
-  resolution: "vite@npm:2.9.13"
+"vite@npm:^2.9.14":
+  version: 2.9.14
+  resolution: "vite@npm:2.9.14"
   dependencies:
     esbuild: ^0.14.27
     fsevents: ~2.3.2
@@ -4871,7 +4877,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: a5e501b920a448c352e9b3836019dea56c523535f8e8540160708c2e164d84da6655ae39abbba1e2888092f5c6cd03dd06279852422359b51be601914645f49f
+  checksum: f78b54f58482ea97d385e36873ae1aa4744c5e467c1d6d4e0835bd55494d2d8f6ce763f17c241c66104be687d5ee535b8e1e96c14210c9ba0c343fe78c58f694
   languageName: node
   linkType: hard
 
