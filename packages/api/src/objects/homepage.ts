@@ -16,7 +16,7 @@ builder.queryField("homepage", (t) =>
         return prisma.article.findMany({
           ...query,
           // Pagination
-          cursor: after ? { id: Number(after) } : undefined,
+          cursor: after ? { id: after } : undefined,
           skip: after ? 1 : 0,
           take: first,
           // Only public articles
@@ -28,7 +28,7 @@ builder.queryField("homepage", (t) =>
       return prisma.article.findMany({
         ...query,
         // Pagination
-        cursor: after ? { id: Number(after) } : undefined,
+        cursor: after ? { id: after } : undefined,
         skip: after ? 1 : 0,
         take: first,
         where: {

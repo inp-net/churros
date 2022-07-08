@@ -96,10 +96,7 @@ builder.queryField("user", (t) =>
     args: { id: t.arg.id() },
     authScopes: { loggedIn: true },
     resolve: async (query, _, { id }) =>
-      prisma.user.findUniqueOrThrow({
-        ...query,
-        where: { id: Number(id) },
-      }),
+      prisma.user.findUniqueOrThrow({ ...query, where: { id } }),
   })
 );
 
@@ -134,13 +131,9 @@ builder.mutationField("updateUser", (t) =>
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
     },
     authScopes: (_, { id }, { user }) =>
-      Boolean(user?.canEditUsers || Number(id) === user?.id),
+      Boolean(user?.canEditUsers || id === user?.id),
     resolve: (query, _, { id, nickname }) =>
-      prisma.user.update({
-        ...query,
-        where: { id: Number(id) },
-        data: { nickname },
-      }),
+      prisma.user.update({ ...query, where: { id }, data: { nickname } }),
   })
 );
 
@@ -152,10 +145,10 @@ builder.mutationField("updateUserPicture", (t) =>
       file: t.arg({ type: FileScalar }),
     },
     authScopes: (_, { id }, { user }) =>
-      Boolean(user?.canEditUsers || Number(id) === user?.id),
+      Boolean(user?.canEditUsers || id === user?.id),
     resolve: async (_, { id, file }) => {
       const { name } = await prisma.user.findUniqueOrThrow({
-        where: { id: Number(id) },
+        where: { id },
         select: { name: true },
       });
       const type = await file
@@ -167,10 +160,7 @@ builder.mutationField("updateUserPicture", (t) =>
         throw new GraphQLYogaError("File format not supported");
       const path = `${name}.${type.ext}`;
       await writeFile(new URL(path, process.env.STORAGE), file.stream());
-      await prisma.user.update({
-        where: { id: Number(id) },
-        data: { pictureFile: path },
-      });
+      await prisma.user.update({ where: { id }, data: { pictureFile: path } });
       return path;
     },
   })

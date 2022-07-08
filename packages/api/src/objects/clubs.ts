@@ -49,8 +49,13 @@ builder.queryField("club", (t) =>
   t.prismaField({
     type: ClubType,
     args: { id: t.arg.id() },
-    resolve: (query, _, { id }) =>
-      prisma.club.findUniqueOrThrow({ ...query, where: { id: Number(id) } }),
+    resolve: (query, _, { id }) => {
+      console.log(id, typeof id);
+      return prisma.club.findUniqueOrThrow({
+        ...query,
+        where: { id },
+      });
+    },
   })
 );
 
@@ -67,8 +72,7 @@ builder.mutationField("addClubMember", (t) =>
       Boolean(
         user?.canEditClubs ||
           user?.clubs.some(
-            ({ clubId: id, canEditMembers }) =>
-              canEditMembers && Number(clubId) === id
+            ({ clubId: id, canEditMembers }) => canEditMembers && clubId === id
           )
       ),
     resolve: (query, _, { clubId, name, title }) =>
@@ -76,7 +80,7 @@ builder.mutationField("addClubMember", (t) =>
         ...query,
         data: {
           member: { connect: { name } },
-          club: { connect: { id: Number(clubId) } },
+          club: { connect: { id: clubId } },
           title,
         },
       }),
@@ -95,18 +99,12 @@ builder.mutationField("deleteClubMember", (t) =>
       Boolean(
         user?.canEditClubs ||
           user?.clubs.some(
-            ({ clubId: id, canEditMembers }) =>
-              canEditMembers && Number(clubId) === id
+            ({ clubId: id, canEditMembers }) => canEditMembers && clubId === id
           )
       ),
     async resolve(_, { memberId, clubId }) {
       await prisma.clubMember.delete({
-        where: {
-          memberId_clubId: {
-            memberId: Number(memberId),
-            clubId: Number(clubId),
-          },
-        },
+        where: { memberId_clubId: { memberId, clubId } },
       });
       return true;
     },
@@ -126,19 +124,13 @@ builder.mutationField("updateClubMember", (t) =>
       Boolean(
         user?.canEditClubs ||
           user?.clubs.some(
-            ({ clubId: id, canEditMembers }) =>
-              canEditMembers && Number(clubId) === id
+            ({ clubId: id, canEditMembers }) => canEditMembers && clubId === id
           )
       ),
     resolve: (query, _, { memberId, clubId, title }) =>
       prisma.clubMember.update({
         ...query,
-        where: {
-          memberId_clubId: {
-            memberId: Number(memberId),
-            clubId: Number(clubId),
-          },
-        },
+        where: { memberId_clubId: { memberId, clubId } },
         data: { title },
       }),
   })

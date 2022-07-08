@@ -47,14 +47,14 @@ builder.mutationField("createArticle", (t) =>
         user?.canEditClubs ||
           user?.clubs.some(
             ({ clubId: id, canEditArticles }) =>
-              canEditArticles && Number(clubId) === id
+              canEditArticles && clubId === id
           )
       ),
     resolve: (query, _, { clubId, body, title }, { user }) =>
       prisma.article.create({
         ...query,
         data: {
-          clubId: Number(clubId),
+          clubId,
           authorId: user!.id,
           title,
           body,

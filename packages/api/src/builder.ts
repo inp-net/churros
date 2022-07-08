@@ -18,6 +18,7 @@ export const builder = new SchemaBuilder<{
   Scalars: {
     DateTime: { Input: Date; Output: Date };
     File: { Input: never; Output: File };
+    ID: { Input: number; Output: number };
   };
 }>({
   plugins: [

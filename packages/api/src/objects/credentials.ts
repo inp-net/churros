@@ -84,15 +84,13 @@ builder.mutationField("deleteSession", (t) =>
     args: { id: t.arg.id() },
     authScopes: async (_, { id }, { user }) => {
       const credential = await prisma.credential.findUniqueOrThrow({
-        where: { id: Number(id) },
+        where: { id },
       });
       if (credential.type !== CredentialPrismaType.Token) return false;
       return user?.id === credential.userId;
     },
     resolve: async (_, { id }) => {
-      await prisma.credential.delete({
-        where: { id: Number(id) },
-      });
+      await prisma.credential.delete({ where: { id } });
       return true;
     },
   })
