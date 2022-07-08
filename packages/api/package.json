@@ -1,13 +1,5 @@
 {
   "name": "@centraverse/api",
-  "private": true,
-  "type": "module",
-  "packageManager": "yarn@3.2.1",
-  "scripts": {
-    "build": "prisma generate && tsc && ts-node-esm ./src/build.ts",
-    "dev": "NODE_ENV=development nodemon --exec ts-node-esm ./src/index.ts",
-    "clean": "git clean -Xdf ."
-  },
   "dependencies": {
     "@envelop/core": "^2.4.0",
     "@graphql-yoga/node": "^2.12.0",
@@ -41,9 +33,17 @@
     "ts-node": "^10.8.2",
     "typescript": "^4.7.4"
   },
+  "packageManager": "yarn@3.2.1",
   "prisma": {
     "seed": "ts-node-esm ./src/seed.ts"
   },
+  "private": true,
+  "scripts": {
+    "build": "prisma generate && tsc && ts-node-esm ./src/build.ts",
+    "clean": "git clean -Xdf .",
+    "dev": "NODE_ENV=development nodemon --exec ts-node-esm ./src/index.ts"
+  },
+  "type": "module",
   "volta": {
     "extends": "../../package.json"
   }

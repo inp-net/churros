@@ -1,15 +1,5 @@
 {
   "name": "@centraverse/app",
-  "private": true,
-  "scripts": {
-    "build": "yarn zeus && vite build",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
-    "clean": "git clean -Xdf .",
-    "dev": "yarn zeus && vite dev",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "zeus": "zeus ../api/src/schema.graphql ./src --es"
-  },
   "devDependencies": {
     "@centraverse/api": "workspace:^",
     "@sveltejs/adapter-node": "^1.0.0-next.79",
@@ -36,6 +26,17 @@
     "ua-parser-js": "^1.0.2",
     "vite": "^2.9.14",
     "zod": "^3.17.3"
+  },
+  "private": true,
+  "scripts": {
+    "build": "yarn zeus && vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "clean": "git clean -Xdf .",
+    "dev": "yarn zeus && vite dev",
+    "lint": "eslint .",
+    "postinstall": "svelte-kit sync",
+    "preview": "vite preview",
+    "zeus": "zeus ../api/src/schema.graphql ./src --es"
   },
   "type": "module",
   "volta": {
