@@ -9,6 +9,10 @@ import {
   type InputType,
   type ValueTypes,
 } from "../zeus/index.js";
+// @ts-expect-error Not typed
+import extractFiles from "extract-files/extractFiles.mjs";
+// @ts-expect-error Not typed
+import isFile from "extract-files/isExtractableFile.mjs";
 
 export * from "../zeus/index.js";
 
@@ -22,20 +26,31 @@ export interface Options {
 }
 
 const chain = (fetch: LoadEvent["fetch"], { token }: Options) => {
-  const headers = new Headers({ "Content-Type": "application/json" });
+  const headers = new Headers();
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  return Thunder((query, variables) =>
-    fetch("http://localhost:4000/graphql", {
-      body: JSON.stringify({ query, variables }),
-      method: "POST",
-      headers,
-    })
-      .then((response) => response.json())
-      .then((response: GraphQLResponse) => {
-        if (response.errors) throw new GraphQLError(response);
-        return response.data;
-      })
-  );
+  return Thunder(async (query, variables) => {
+    let body: BodyInit;
+    const { clone, files } = extractFiles(variables, isFile, "variables");
+
+    // If the payload contains files, send as multipart/form-data
+    if (files.size > 0) {
+      body = new FormData();
+      body.append("operations", JSON.stringify({ query, variables: clone }));
+      body.append("map", JSON.stringify([...files.values()]));
+      for (const [i, [file]] of [...files].entries()) body.append(`${i}`, file);
+    } else {
+      headers.set("Content-Type", "application/json");
+      body = JSON.stringify({ query, variables });
+    }
+
+    const response: GraphQLResponse = await fetch(
+      "http://localhost:4000/graphql",
+      { body, method: "POST", headers }
+    ).then((response) => response.json());
+
+    if (response.errors) throw new GraphQLError(response);
+    return response.data;
+  });
 };
 
 const scalars = ZeusScalars({
@@ -60,8 +75,8 @@ export const query = <Operation extends ValueTypes["Query"]>(
 
 export const mutate = <Operation extends ValueTypes["Mutation"]>(
   op: Operation,
-  options: Options = {}
+  options: Options & { variables?: Record<string, unknown> } = {}
 ) =>
-  chain(fetch, options)("mutation", { scalars })(op) as Promise<
-    InputType<GraphQLTypes["Mutation"], Operation, typeof scalars>
-  >;
+  chain(fetch, options)("mutation", { scalars })(op, {
+    variables: options.variables ?? {},
+  }) as Promise<InputType<GraphQLTypes["Mutation"], Operation, typeof scalars>>;

@@ -12,6 +12,7 @@
           id: true,
           firstname: true,
           lastname: true,
+          pictureFile: true,
           clubs: { club: { id: true, name: true }, title: true },
         },
       ],
@@ -28,6 +29,14 @@
 <script lang="ts">
   export let user: Props["user"];
 </script>
+
+{#if user.pictureFile}
+  <img
+    src="http://localhost:4000/storage/{user.pictureFile}"
+    alt="{user.firstname} {user.lastname}"
+    width="100"
+  />
+{/if}
 
 <h1>{user.firstname} {user.lastname}</h1>
 

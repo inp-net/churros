@@ -35,7 +35,7 @@
 
   export const load: Load = async ({ fetch, session, url }) =>
     session.me
-      ? { props: query(fetch, propsQuery(), session) }
+      ? { props: await query(fetch, propsQuery(), session) }
       : redirectToLogin(url.pathname);
 </script>
 
@@ -67,7 +67,10 @@
   {me.lastname}
 </h1>
 
-<p><a href="/user/{me.id}/edit" sveltekit:prefetch>Modifier</a></p>
+<p>
+  <a href="/user/{me.id}/" sveltekit:prefetch>Profil public</a> -
+  <a href="/user/{me.id}/edit/" sveltekit:prefetch>Modifier</a>
+</p>
 
 <h2>Clubs</h2>
 

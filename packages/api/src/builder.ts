@@ -17,6 +17,7 @@ export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
   Scalars: {
     DateTime: { Input: Date; Output: Date };
+    File: { Input: never; Output: File };
   };
 }>({
   plugins: [

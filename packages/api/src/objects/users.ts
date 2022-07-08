@@ -1,8 +1,11 @@
 import { CredentialType as CredentialPrismaType } from "@prisma/client";
 import { hash } from "argon2";
+import { writeFile } from "fs/promises";
 import { builder } from "../builder.js";
 import { prisma } from "../prisma.js";
-import { DateTimeScalar } from "./scalars.js";
+import { DateTimeScalar, FileScalar } from "./scalars.js";
+import imageType from "image-type";
+import { GraphQLYogaError } from "@graphql-yoga/node";
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaObject("User", {
@@ -14,6 +17,7 @@ export const UserType = builder.prismaObject("User", {
     nickname: t.exposeString("nickname"),
     lastname: t.exposeString("lastname"),
     createdAt: t.expose("createdAt", { type: DateTimeScalar }),
+    pictureFile: t.exposeString("pictureFile", { nullable: true }),
 
     // Permissions are only visible to admins
     admin: t.exposeBoolean("admin", {
@@ -137,5 +141,37 @@ builder.mutationField("updateUser", (t) =>
         where: { id: Number(id) },
         data: { nickname },
       }),
+  })
+);
+
+builder.mutationField("updateUserPicture", (t) =>
+  t.field({
+    type: "String",
+    args: {
+      id: t.arg.id(),
+      file: t.arg({ type: FileScalar }),
+    },
+    authScopes: (_, { id }, { user }) =>
+      Boolean(user?.canEditUsers || Number(id) === user?.id),
+    resolve: async (_, { id, file }) => {
+      const { name } = await prisma.user.findUniqueOrThrow({
+        where: { id: Number(id) },
+        select: { name: true },
+      });
+      const type = await file
+        .slice(0, imageType.minimumBytes)
+        .arrayBuffer()
+        .then(Buffer.from)
+        .then(imageType);
+      if (!type || (type.ext !== "png" && type.ext !== "jpg"))
+        throw new GraphQLYogaError("File format not supported");
+      const path = `${name}.${type.ext}`;
+      await writeFile(new URL(path, process.env.STORAGE), file.stream());
+      await prisma.user.update({
+        where: { id: Number(id) },
+        data: { pictureFile: path },
+      });
+      return path;
+    },
   })
 );

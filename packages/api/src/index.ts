@@ -5,12 +5,14 @@ import { GraphQLError } from "graphql";
 import { ZodError } from "zod";
 import { context } from "./context.js";
 import { schema, writeSchema } from "./schema.js";
+import express from "express";
 
 process.env.DEBUG = "true";
 
-const server = createServer({
+const yoga = createServer({
   schema,
   context,
+  multipart: { files: 1, fileSize: 10 * 1024 * 1024 },
   maskedErrors: {
     formatError: (error, message, isDev) => {
       if (isDev) console.error(error);
@@ -32,6 +34,13 @@ const server = createServer({
   plugins: [useNoBatchedQueries()],
 });
 
-await server.start();
+const api = express();
+// api.use(helmet());
+api.use("/graphql", yoga);
+api.use(
+  "/storage",
+  express.static(new URL(process.env.STORAGE as string).pathname)
+);
+api.listen(4000);
 
 await writeSchema();

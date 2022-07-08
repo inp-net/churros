@@ -16,12 +16,13 @@ datasource db {
 
 /// A User
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique @db.VarChar(255)
-  firstname String   @db.VarChar(255)
-  nickname  String   @default("") @db.VarChar(255)
-  lastname  String   @db.VarChar(255)
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(255)
+  firstname   String   @db.VarChar(255)
+  nickname    String   @default("") @db.VarChar(255)
+  lastname    String   @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  pictureFile String?  @db.VarChar(255)
 
   // Permissions
   admin        Boolean @default(false)
