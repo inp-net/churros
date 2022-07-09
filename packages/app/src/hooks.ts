@@ -1,10 +1,10 @@
 import { sessionUserQuery } from '$lib/session'
 import { query } from '$lib/zeus'
 import type { ExternalFetch, GetSession, Handle } from '@sveltejs/kit'
-import Cookies from 'js-cookie'
+import * as cookie from 'cookie'
 
 export const handle: Handle = async ({ event, resolve }) => {
-  const token = Cookies.get('token')
+  const { token } = cookie.parse(event.request.headers.get('Cookie') ?? '')
   if (token) {
     try {
       const { me } = await query(fetch, { me: sessionUserQuery() }, { token })

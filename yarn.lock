@@ -39,8 +39,8 @@ __metadata:
     "@envelop/core": ^2.4.0
     "@graphql-yoga/node": ^2.12.0
     "@pothos/core": ^3.12.2
-    "@pothos/plugin-complexity": ^3.4.0
-    "@pothos/plugin-prisma": ^3.13.1
+    "@pothos/plugin-complexity": ^3.5.0
+    "@pothos/plugin-prisma": ^3.13.2
     "@pothos/plugin-scope-auth": ^3.10.0
     "@pothos/plugin-simple-objects": ^3.3.0
     "@pothos/plugin-validation": ^3.4.2
@@ -74,9 +74,11 @@ __metadata:
   dependencies:
     "@centraverse/api": "workspace:^"
     "@sveltejs/adapter-node": ^1.0.0-next.79
-    "@sveltejs/kit": ^1.0.0-next.366
+    "@sveltejs/kit": ^1.0.0-next.367
+    "@types/cookie": ^0.5.1
     "@types/js-cookie": ^3.0.2
     "@types/ua-parser-js": ^0.7.36
+    cookie: ^0.5.0
     extract-files: ^12.0.0
     graphql-zeus: ^5.1.7
     js-cookie: ^3.0.1
@@ -585,19 +587,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/plugin-complexity@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "@pothos/plugin-complexity@npm:3.4.0"
+"@pothos/plugin-complexity@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "@pothos/plugin-complexity@npm:3.5.0"
   peerDependencies:
     "@pothos/core": "*"
     graphql: ">=15.1.0"
-  checksum: d1d27328c9dfcb9b2c61a312d4deef7210e13b8046acc01a77859ad1c064b9722d43484f3df1ff9fa1139136cd1cc303a539155760c9ec76e86071974f559460
+  checksum: ca21359899fb60020104e7addb785e8d22072050163dad067a456e159d7371544081a4f0624b2257180febf0acb7832d72bf649e140ee4e4aaff443399f751f6
   languageName: node
   linkType: hard
 
-"@pothos/plugin-prisma@npm:^3.13.1":
-  version: 3.13.1
-  resolution: "@pothos/plugin-prisma@npm:3.13.1"
+"@pothos/plugin-prisma@npm:^3.13.2":
+  version: 3.13.2
+  resolution: "@pothos/plugin-prisma@npm:3.13.2"
   dependencies:
     "@prisma/generator-helper": ^4.0.0
   peerDependencies:
@@ -607,7 +609,7 @@ __metadata:
     typescript: ">=4.7.2"
   bin:
     prisma-pothos-types: bin/generator.js
-  checksum: ea0321488b01c42ce1f6c0cdab54ed4dae96165d1c8279acbab645f536651fdee09bebca798877b7460288a60d4b03e12ccfa98bd380ba170b03e623ef298908
+  checksum: 6a82fd7c655dd266baca55899e08debd90cb455c1754f5d5bf8535390ba21d5188687de277eb9a3bf7e2d9e78ec2b800c6b18c9c0a887085eb51a2035546df68
   languageName: node
   linkType: hard
 
@@ -719,9 +721,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^1.0.0-next.366":
-  version: 1.0.0-next.366
-  resolution: "@sveltejs/kit@npm:1.0.0-next.366"
+"@sveltejs/kit@npm:^1.0.0-next.367":
+  version: 1.0.0-next.367
+  resolution: "@sveltejs/kit@npm:1.0.0-next.367"
   dependencies:
     "@sveltejs/vite-plugin-svelte": ^1.0.0-next.48
     chokidar: ^3.5.3
@@ -731,7 +733,7 @@ __metadata:
     vite: ^2.9.10
   bin:
     svelte-kit: svelte-kit.js
-  checksum: b598d5cd4bdbb6a2f66682b1d647c0cb1f8355d3848ab5d681b929d80e5b66db4189f87cd4f3457ca07d550d4d779c693a82bd64ad5e779bd584227c2360fcd9
+  checksum: 6967eeb8096a43f1cc918aba8e1e2abf52491869ffa3f6b9ab5667799ff2a87845e594820ed917ddf4020ee215960759902f27cd62468f9a63c58eb6415e1702
   languageName: node
   linkType: hard
 
@@ -807,6 +809,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: fe81351470f2d3165e8b12ce33542eef89ea893e36dd62e8f7d72566dfb7e448376ae962f9f3ea888547ce8b55a40020ca0e01d637fab5d99567673084542641
+  languageName: node
+  linkType: hard
+
+"@types/cookie@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "@types/cookie@npm:0.5.1"
+  checksum: 9a8d60fc84797122bc399d6bd330fe5780dc7aab032321de705049ea925339f74658bfa418de483a625d51858770efef58df633ff2e20f1bdf7fbd74a52847e2
   languageName: node
   linkType: hard
 
@@ -1552,11 +1561,12 @@ __metadata:
     eslint-config-xo-typescript: ^0.51.1
     eslint-plugin-svelte3: ^4.0.0
     eslint-plugin-unicorn: ^43.0.1
-    husky: ^8.0.0
+    husky: ^8.0.1
     lint-staged: ^13.0.3
     prettier: ^2.7.1
     prettier-plugin-jsdoc: ^0.3.38
     prettier-plugin-svelte: ^2.7.0
+    svelte: ^3.49.0
     typescript: ^4.7.4
   languageName: unknown
   linkType: soft
@@ -1845,7 +1855,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:0.5.0":
+"cookie@npm:0.5.0, cookie@npm:^0.5.0":
   version: 0.5.0
   resolution: "cookie@npm:0.5.0"
   checksum: 1f4bd2ca5765f8c9689a7e8954183f5332139eb72b6ff783d8947032ec1fdf43109852c178e21a953a30c0dd42257828185be01b49d1eb1a67fd054ca588a180
@@ -3351,7 +3361,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^8.0.0":
+"husky@npm:^8.0.1":
   version: 8.0.1
   resolution: "husky@npm:8.0.1"
   bin:
