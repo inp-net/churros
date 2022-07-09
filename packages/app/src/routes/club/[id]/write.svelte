@@ -1,13 +1,13 @@
 <script context="module" lang="ts">
-  import { goto } from "$app/navigation";
-  import { page, session } from "$app/stores";
-  import { redirectToLogin } from "$lib/session";
-  import { mutate } from "$lib/zeus";
-  import type { Load } from "@sveltejs/kit";
+  import { goto } from '$app/navigation'
+  import { page, session } from '$app/stores'
+  import { redirectToLogin } from '$lib/session'
+  import { mutate } from '$lib/zeus'
+  import type { Load } from '@sveltejs/kit'
 
   export const load: Load = async ({ session, url, params }) => {
     if (!session.me) {
-      return redirectToLogin(url.pathname);
+      return redirectToLogin(url.pathname)
     }
 
     if (
@@ -16,33 +16,30 @@
         ({ clubId, canEditArticles }) => clubId === params.id && canEditArticles
       )
     ) {
-      return { status: 307, redirect: "." };
+      return { status: 307, redirect: '.' }
     }
 
-    return {};
-  };
+    return {}
+  }
 </script>
 
 <script lang="ts">
-  let title = "";
-  let body = "";
+  let title = ''
+  let body = ''
 
   const createArticle = async () => {
     try {
       await mutate(
         {
-          createArticle: [
-            { title, body, clubId: $page.params.id },
-            { id: true },
-          ],
+          createArticle: [{ title, body, clubId: $page.params.id }, { id: true }],
         },
         $session
-      );
-      await goto(".");
+      )
+      await goto('.')
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
 </script>
 
 <form on:submit|preventDefault={createArticle}>

@@ -1,13 +1,13 @@
-import { createServer, GraphQLYogaError } from "@graphql-yoga/node";
-import { ForbiddenError } from "@pothos/plugin-scope-auth";
-import { useNoBatchedQueries } from "envelop-no-batched-queries";
-import { GraphQLError } from "graphql";
-import { ZodError } from "zod";
-import { context } from "./context.js";
-import { schema, writeSchema } from "./schema.js";
-import express from "express";
+import { createServer, GraphQLYogaError } from '@graphql-yoga/node'
+import { ForbiddenError } from '@pothos/plugin-scope-auth'
+import { useNoBatchedQueries } from 'envelop-no-batched-queries'
+import { GraphQLError } from 'graphql'
+import { ZodError } from 'zod'
+import { context } from './context.js'
+import { schema, writeSchema } from './schema.js'
+import express from 'express'
 
-process.env.DEBUG = "true";
+process.env.DEBUG = 'true'
 
 const yoga = createServer({
   schema,
@@ -15,32 +15,29 @@ const yoga = createServer({
   multipart: { files: 1, fileSize: 10 * 1024 * 1024 },
   maskedErrors: {
     formatError: (error, message, isDev) => {
-      if (isDev) console.error(error);
+      if (isDev) console.error(error)
 
-      const cause = (error as GraphQLError).originalError;
+      const cause = (error as GraphQLError).originalError
 
       if (cause instanceof ZodError) {
-        return new GraphQLError("Validation error.", {
-          extensions: { code: "VALIDATION_ERROR", errors: cause.format() },
-        });
+        return new GraphQLError('Validation error.', {
+          extensions: { code: 'VALIDATION_ERROR', errors: cause.format() },
+        })
       }
 
       if (cause instanceof ForbiddenError || cause instanceof GraphQLYogaError)
-        return new GraphQLError(cause.message);
+        return new GraphQLError(cause.message)
 
-      return new GraphQLError(message);
+      return new GraphQLError(message)
     },
   },
   plugins: [useNoBatchedQueries()],
-});
+})
 
-const api = express();
+const api = express()
 // api.use(helmet());
-api.use("/graphql", yoga);
-api.use(
-  "/storage",
-  express.static(new URL(process.env.STORAGE as string).pathname)
-);
-api.listen(4000);
+api.use('/graphql', yoga)
+api.use('/storage', express.static(new URL(process.env.STORAGE).pathname))
+api.listen(4000)
 
-await writeSchema();
+await writeSchema()

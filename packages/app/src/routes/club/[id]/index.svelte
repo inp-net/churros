@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
-  import { page, session } from "$app/stores";
-  import { query, Query, type PropsType } from "$lib/zeus";
-  import type { Load } from "@sveltejs/kit";
+  import { page, session } from '$app/stores'
+  import { query, Query, type PropsType } from '$lib/zeus'
+  import type { Load } from '@sveltejs/kit'
 
   const propsQuery = (id: string, loggedIn: boolean) =>
     Query({
@@ -25,9 +25,9 @@
               articles: { title: true, bodyHtml: true },
             },
       ],
-    });
+    })
 
-  type Props = PropsType<typeof propsQuery>;
+  type Props = PropsType<typeof propsQuery>
 
   export const load: Load = async ({ fetch, params, session }) => {
     try {
@@ -35,15 +35,15 @@
         props: await query(fetch, propsQuery(params.id, Boolean(session.me)), {
           token: session.token,
         }),
-      };
+      }
     } catch {
-      return { status: 404 };
+      return { status: 404 }
     }
-  };
+  }
 </script>
 
 <script lang="ts">
-  export let club: Props["club"];
+  export let club: Props['club']
 </script>
 
 <h1>{club.name}</h1>
@@ -53,7 +53,7 @@
   <table>
     {#each club.members as { member, president, treasurer, title }}
       <tr>
-        <td>{president ? "👑" : ""}{treasurer ? "💰" : ""}</td>
+        <td>{president ? '👑' : ''}{treasurer ? '💰' : ''}</td>
         <td>
           <a href="/user/{member.id}" sveltekit:prefetch>
             {member.firstname}
@@ -84,8 +84,6 @@
 
 {#if $session.me?.canEditClubs || $session.me?.clubs.some(({ clubId, canEditArticles }) => clubId === $page.params.id && canEditArticles)}
   <p>
-    <a href="/club/{$page.params.id}/write" sveltekit:prefetch>
-      Écrire un article
-    </a>
+    <a href="/club/{$page.params.id}/write" sveltekit:prefetch> Écrire un article </a>
   </p>
 {/if}

@@ -1,9 +1,9 @@
-import { builder } from "../builder.js";
-import { prisma } from "../prisma.js";
-import { ArticleType } from "./articles.js";
+import { builder } from '../builder.js'
+import { prisma } from '../prisma.js'
+import { ArticleType } from './articles.js'
 
 /** Returns a list of articles from the clubs the user is in. */
-builder.queryField("homepage", (t) =>
+builder.queryField('homepage', (t) =>
   t.prismaField({
     type: [ArticleType],
     args: {
@@ -11,7 +11,7 @@ builder.queryField("homepage", (t) =>
       after: t.arg.id({ required: false }),
     },
     async resolve(query, _, { first, after }, { user }) {
-      first ??= 20;
+      first ??= 20
       if (!user) {
         return prisma.article.findMany({
           ...query,
@@ -21,8 +21,8 @@ builder.queryField("homepage", (t) =>
           take: first,
           // Only public articles
           where: { published: true, homepage: true },
-          orderBy: { publishedAt: "desc" },
-        });
+          orderBy: { publishedAt: 'desc' },
+        })
       }
 
       return prisma.article.findMany({
@@ -39,8 +39,8 @@ builder.queryField("homepage", (t) =>
             { club: { members: { some: { memberId: user.id } } } },
           ],
         },
-        orderBy: { publishedAt: "desc" },
-      });
+        orderBy: { publishedAt: 'desc' },
+      })
     },
   })
-);
+)

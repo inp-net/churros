@@ -8,5 +8,8 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ESNext"
+  },
+  "ts-node": {
+    "files": true
   }
 }

@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "phoenisx.cssvar",
+    "prisma.prisma",
+    "stylelint.vscode-stylelint",
+    "svelte.svelte-vscode"
+  ]
+}

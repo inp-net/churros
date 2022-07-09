@@ -1,5 +1,5 @@
-import * as cookie from "cookie";
-import { Query, type PropsType } from "./zeus.js";
+import Cookies from 'js-cookie'
+import { Query, type PropsType } from './zeus.js'
 
 /** What's needed in a user session. */
 export const sessionUserQuery = () =>
@@ -10,26 +10,24 @@ export const sessionUserQuery = () =>
     canEditClubs: true,
     canEditUsers: true,
     clubs: { clubId: true, canEditArticles: true, canEditMembers: true },
-  });
+  })
 
-export type SessionUser = PropsType<typeof sessionUserQuery, "User">;
+export type SessionUser = PropsType<typeof sessionUserQuery, 'User'>
 
 export const saveSessionToken = ({
   token,
   expiresAt,
 }: {
-  token: string;
-  expiresAt?: Date | null;
+  token: string
+  expiresAt?: Date | null
 }) => {
-  document.cookie = cookie.serialize("token", token, {
-    expires: expiresAt
-      ? new Date(expiresAt)
-      : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-    path: "/",
-  });
-};
+  Cookies.set('token', token, {
+    expires: expiresAt ? new Date(expiresAt) : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+    path: '/',
+  })
+}
 
-export const redirectToLogin = (then: string) => ({
+export const redirectToLogin = (to: string) => ({
   status: 307,
-  redirect: `/login?${new URLSearchParams({ then })}`,
-});
+  redirect: `/login?${new URLSearchParams({ to }).toString()}`,
+})

@@ -1,40 +1,40 @@
-import rehypeSanitize from "rehype-sanitize";
-import rehypeStringify from "rehype-stringify";
-import remarkParse from "remark-parse";
-import remarkRehype from "remark-rehype";
-import { unified } from "unified";
-import { builder } from "../builder.js";
-import { prisma } from "../prisma.js";
-import { DateTimeScalar } from "./scalars.js";
+import rehypeSanitize from 'rehype-sanitize'
+import rehypeStringify from 'rehype-stringify'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import { unified } from 'unified'
+import { builder } from '../builder.js'
+import { prisma } from '../prisma.js'
+import { DateTimeScalar } from './scalars.js'
 
 /** Represents an article, published by a member of a club. */
-export const ArticleType = builder.prismaObject("Article", {
+export const ArticleType = builder.prismaObject('Article', {
   fields: (t) => ({
-    id: t.exposeID("id"),
-    authorId: t.exposeID("authorId", { nullable: true }),
-    clubId: t.exposeID("clubId"),
-    title: t.exposeString("title"),
-    body: t.exposeString("body"),
+    id: t.exposeID('id'),
+    authorId: t.exposeID('authorId', { nullable: true }),
+    clubId: t.exposeID('clubId'),
+    title: t.exposeString('title'),
+    body: t.exposeString('body'),
     bodyHtml: t.string({
-      resolve: ({ body }) =>
+      resolve: async ({ body }) =>
         unified()
           .use(remarkParse)
           .use(remarkRehype)
           .use(rehypeSanitize)
           .use(rehypeStringify)
           .process(body)
-          .then((file) => String(file)),
+          .then(String),
     }),
-    published: t.exposeBoolean("published"),
-    createdAt: t.expose("createdAt", { type: DateTimeScalar }),
-    publishedAt: t.expose("publishedAt", { type: DateTimeScalar }),
-    author: t.relation("author", { nullable: true }),
-    club: t.relation("club"),
+    published: t.exposeBoolean('published'),
+    createdAt: t.expose('createdAt', { type: DateTimeScalar }),
+    publishedAt: t.expose('publishedAt', { type: DateTimeScalar }),
+    author: t.relation('author', { nullable: true }),
+    club: t.relation('club'),
   }),
-});
+})
 
 /** Inserts a new article. */
-builder.mutationField("createArticle", (t) =>
+builder.mutationField('createArticle', (t) =>
   t.prismaField({
     type: ArticleType,
     args: {
@@ -45,10 +45,7 @@ builder.mutationField("createArticle", (t) =>
     authScopes: (_, { clubId }, { user }) =>
       Boolean(
         user?.canEditClubs ||
-          user?.clubs.some(
-            ({ clubId: id, canEditArticles }) =>
-              canEditArticles && clubId === id
-          )
+          user?.clubs.some(({ clubId: id, canEditArticles }) => canEditArticles && clubId === id)
       ),
     resolve: (query, _, { clubId, body, title }, { user }) =>
       prisma.article.create({
@@ -61,4 +58,4 @@ builder.mutationField("createArticle", (t) =>
         },
       }),
   })
-);
+)

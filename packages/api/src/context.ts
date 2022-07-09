@@ -1,12 +1,12 @@
-import { GraphQLYogaError, YogaInitialContext } from "@graphql-yoga/node";
-import { CredentialType } from "@prisma/client";
-import { prisma } from "./prisma.js";
+import { GraphQLYogaError, YogaInitialContext } from '@graphql-yoga/node'
+import { CredentialType } from '@prisma/client'
+import { prisma } from './prisma.js'
 
 const getToken = ({ headers }: Request) => {
-  const auth = headers.get("Authorization");
-  if (!auth) return null;
-  return auth.slice("Bearer ".length);
-};
+  const auth = headers.get('Authorization')
+  if (!auth) return
+  return auth.slice('Bearer '.length)
+}
 
 const getUser = async (token: string) => {
   const credential = await prisma.credential
@@ -15,35 +15,35 @@ const getUser = async (token: string) => {
       include: { user: { include: { clubs: true } } },
     })
     .catch(() => {
-      throw new GraphQLYogaError("Invalid token.");
-    });
+      throw new GraphQLYogaError('Invalid token.')
+    })
 
   // If the session expired, delete it
   if (credential.expiresAt !== null && credential.expiresAt < new Date()) {
-    await prisma.credential.delete({ where: { id: credential.id } });
-    throw new GraphQLYogaError("Session expired.");
+    await prisma.credential.delete({ where: { id: credential.id } })
+    throw new GraphQLYogaError('Session expired.')
   }
 
   // Delete expired sessions once in a while
   if (Math.random() < 0.001) {
     await prisma.credential.deleteMany({
       where: { type: CredentialType.Token, expiresAt: { lt: new Date() } },
-    });
+    })
   }
 
-  const { user } = credential;
+  const { user } = credential
 
   // Normalize permissions
-  user.canEditClubs ||= user.admin;
-  user.canEditUsers ||= user.admin;
+  user.canEditClubs ||= user.admin
+  user.canEditUsers ||= user.admin
 
-  return user;
-};
+  return user
+}
 
-export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;
+export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>
 
 export const context = async ({ request }: YogaInitialContext) => {
-  const token = getToken(request);
-  if (!token) return {};
-  return { token, user: await getUser(token) };
-};
+  const token = getToken(request)
+  if (!token) return {}
+  return { token, user: await getUser(token) }
+}

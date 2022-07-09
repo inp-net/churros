@@ -1,21 +1,21 @@
 <script context="module" lang="ts">
-  import { query, Query, type PropsType } from "$lib/zeus";
-  import type { Load } from "@sveltejs/kit";
+  import { query, Query, type PropsType } from '$lib/zeus'
+  import type { Load } from '@sveltejs/kit'
 
   const propsQuery = () =>
     Query({
       clubs: { id: true, name: true },
-    });
+    })
 
-  type Props = PropsType<typeof propsQuery>;
+  type Props = PropsType<typeof propsQuery>
 
   export const load: Load = async ({ fetch, session }) => ({
     props: await query(fetch, propsQuery(), session),
-  });
+  })
 </script>
 
 <script lang="ts">
-  export let clubs: Props["clubs"];
+  export let clubs: Props['clubs']
 </script>
 
 <table>

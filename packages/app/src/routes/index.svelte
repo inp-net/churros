@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
-  import { formatDate } from "$lib/dates";
-  import { query, Query, type PropsType } from "$lib/zeus";
-  import type { Load } from "@sveltejs/kit";
+  import { formatDate } from '$lib/dates'
+  import { query, Query, type PropsType } from '$lib/zeus'
+  import type { Load } from '@sveltejs/kit'
 
   const propsQuery = () =>
     Query({
@@ -15,17 +15,17 @@
           author: { id: true, firstname: true, lastname: true },
         },
       ],
-    });
+    })
 
-  type Props = PropsType<typeof propsQuery>;
+  type Props = PropsType<typeof propsQuery>
 
   export const load: Load = async ({ fetch, session }) => ({
     props: await query(fetch, propsQuery(), session),
-  });
+  })
 </script>
 
 <script lang="ts">
-  export let homepage: Props["homepage"];
+  export let homepage: Props['homepage']
 </script>
 
 <h1>Welcome to Centraverse</h1>
@@ -34,9 +34,7 @@
   <article>
     <h2>{title}</h2>
     <p>
-      Par <a href="/club/{club.id}" sveltekit:prefetch>{club.name}</a> le {formatDate(
-        publishedAt
-      )}
+      Par <a href="/club/{club.id}" sveltekit:prefetch>{club.name}</a> le {formatDate(publishedAt)}
     </p>
     {@html bodyHtml}
     {#if author}

@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { page, session } from "$app/stores";
-  import { saveSessionToken, sessionUserQuery } from "$lib/session";
-  import { mutate } from "$lib/zeus";
-  import { onMount } from "svelte";
+  import { goto } from '$app/navigation'
+  import { page, session } from '$app/stores'
+  import { saveSessionToken, sessionUserQuery } from '$lib/session'
+  import { mutate } from '$lib/zeus'
+  import { onMount } from 'svelte'
 
-  let name = "";
-  let password = "";
+  let name = ''
+  let password = ''
 
-  /** Redirects the user if a `then` parameter exists, or to "/" otherwise. */
+  /** Redirects the user if a `to` parameter exists, or to "/" otherwise. */
   const redirect = async () => {
-    const then = $page.url.searchParams.get("then") ?? "/";
-    if (then) {
-      let url = new URL(then, $page.url);
-      if (url.origin !== $page.url.origin) url = new URL("/", $page.url);
-      await goto(url);
+    const to = $page.url.searchParams.get('to') ?? '/'
+    if (to) {
+      let url = new URL(to, $page.url)
+      if (url.origin !== $page.url.origin) url = new URL('/', $page.url)
+      await goto(url)
     }
-  };
+  }
 
   const login = async () => {
     const { login } = await mutate({
@@ -24,17 +24,17 @@
         { name, password },
         { token: true, expiresAt: true, user: sessionUserQuery() },
       ],
-    });
-    saveSessionToken(login);
-    $session.token = login.token;
-    $session.me = login.user;
-    await redirect();
-  };
+    })
+    saveSessionToken(login)
+    $session.token = login.token
+    $session.me = login.user
+    await redirect()
+  }
 
   onMount(async () => {
     // Client-side redirect to avoid login detection
-    if ($session.me) await redirect();
-  });
+    if ($session.me) await redirect()
+  })
 </script>
 
 <form on:submit|preventDefault={login}>
