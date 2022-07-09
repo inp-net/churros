@@ -8,8 +8,6 @@ export interface AuthScopes {
   canEditClubs: boolean
 }
 
-const x = 23
-
 export interface AuthContexts {
   loggedIn: Context & { user: User }
 }
