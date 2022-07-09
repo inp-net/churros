@@ -41,7 +41,7 @@
   "scripts": {
     "build": "prisma generate && tsc && ts-node-esm ./src/build.ts",
     "clean": "git clean -Xdf .",
-    "dev": "NODE_ENV=development nodemon --exec ts-node-esm ./src/index.ts"
+    "dev": "NODE_ENV=development nodemon --exec ts-node-esm --transpileOnly ./src/index.ts"
   },
   "type": "module",
   "volta": {
