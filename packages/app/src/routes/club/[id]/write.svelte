@@ -3,9 +3,9 @@
   import { page, session } from '$app/stores'
   import { redirectToLogin } from '$lib/session'
   import { mutate } from '$lib/zeus'
-  import type { Load } from '@sveltejs/kit'
+  import type { Load } from './__types/write'
 
-  export const load: Load = async ({ session, url, params }) => {
+  export const load: Load = ({ session, url, params }) => {
     if (!session.me) {
       return redirectToLogin(url.pathname)
     }
@@ -36,7 +36,7 @@
         $session
       )
       await goto('.')
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error)
     }
   }

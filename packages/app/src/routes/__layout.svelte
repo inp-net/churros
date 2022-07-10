@@ -8,8 +8,13 @@
     navigating,
     ($navigating, set) => {
       if (timeout !== undefined) clearTimeout(timeout as number)
-      if ($navigating) timeout = setTimeout(() => set(true), 200)
-      else set(false)
+      if ($navigating) {
+        timeout = setTimeout(() => {
+          set(true)
+        }, 200)
+      } else {
+        set(false)
+      }
     },
     false
   )

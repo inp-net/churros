@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { page, session } from '$app/stores'
   import { query, Query, type PropsType } from '$lib/zeus'
-  import type { Load } from '@sveltejs/kit'
+  import type { Load } from './__types'
 
   const propsQuery = (id: string, loggedIn: boolean) =>
     Query({
@@ -29,17 +29,9 @@
 
   type Props = PropsType<typeof propsQuery>
 
-  export const load: Load = async ({ fetch, params, session }) => {
-    try {
-      return {
-        props: await query(fetch, propsQuery(params.id, Boolean(session.me)), {
-          token: session.token,
-        }),
-      }
-    } catch {
-      return { status: 404 }
-    }
-  }
+  export const load: Load = async ({ fetch, params, session }) => ({
+    props: await query(fetch, propsQuery(params.id, Boolean(session.me)), session),
+  })
 </script>
 
 <script lang="ts">

@@ -4,7 +4,7 @@
   import { formatDate } from '$lib/dates'
   import { redirectToLogin } from '$lib/session'
   import { CredentialType, mutate, Query, query, type PropsType } from '$lib/zeus'
-  import type { Load } from '@sveltejs/kit'
+  import type { Load } from './__types'
   import { default as parser } from 'ua-parser-js'
 
   const propsQuery = () =>
@@ -38,7 +38,7 @@
 
   const deleteSession = async (id: string, active: boolean) => {
     if (active) {
-      await goto(`/logout?token=${$session.token}`)
+      await goto(`/logout?token=${$session.token!}`)
     } else {
       await mutate({ deleteSession: [{ id }, true] }, $session)
       me.credentials = me.credentials.filter((credential) => credential.id !== id)
@@ -47,7 +47,7 @@
 
   const humanizeUserAgent = (userAgent: string) => {
     const { browser, os } = parser(userAgent)
-    if (!browser.name && !os.name) return userAgent
+    if (!browser.name) return userAgent
     if (!os.name) return `${browser.name}`
     return `${browser.name} sur ${os.name}`
   }
@@ -95,7 +95,7 @@
           {humanizeUserAgent(userAgent)}
         {/if}
       </td>
-      <td><button on:click={() => deleteSession(id, active)}>❌</button></td>
+      <td><button on:click={async () => deleteSession(id, active)}>❌</button></td>
     </tr>
   {/each}
 </table>

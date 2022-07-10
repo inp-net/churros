@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { session } from '$app/stores'
   import { $ as Zvar, mutate, query, Query, type PropsType } from '$lib/zeus'
-  import type { Load } from '@sveltejs/kit'
+  import type { Load } from './__types/edit'
 
   const propsQuery = (id: string) =>
     Query({
@@ -19,7 +19,7 @@
 <script lang="ts">
   export let user: Props['user']
 
-  let nickname = user.nickname
+  $: ({ id, firstname, lastname, nickname } = user)
   let files: FileList
   let userPicture: string | undefined
 
@@ -27,7 +27,7 @@
     const { updateUser } = await mutate(
       {
         updateUser: [
-          { id: user.id, nickname },
+          { id, nickname },
           { id: true, firstname: true, lastname: true, nickname: true },
         ],
       },
@@ -39,7 +39,7 @@
   const updateUserPicture = async () => {
     const { updateUserPicture } = await mutate(
       {
-        updateUserPicture: [{ id: user.id, file: Zvar('file', 'File!') }, true],
+        updateUserPicture: [{ id, file: Zvar('file', 'File!') }, true],
       },
       { token: $session.token, variables: { file: files[0] } }
     )
@@ -47,10 +47,10 @@
   }
 </script>
 
-<h1>Éditer {user.firstname} {user.nickname} {user.lastname}</h1>
+<h1>Éditer {firstname} {nickname} {lastname}</h1>
 
 {#if userPicture}
-  <img src="http://localhost:4000/storage/{userPicture}" alt="{user.firstname} {user.lastname}" />
+  <img src="http://localhost:4000/storage/{userPicture}" alt="{firstname} {lastname}" />
 {/if}
 
 <form on:submit|preventDefault={updateUser}>

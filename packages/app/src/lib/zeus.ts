@@ -50,6 +50,8 @@ const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
       headers,
     })
 
+    if (!response.ok) throw new Error('The server returned an error')
+
     const graphqlResponse = (await response.json()) as GraphQLResponse
     if (graphqlResponse.errors) throw new GraphQLError(graphqlResponse)
     return graphqlResponse.data

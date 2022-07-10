@@ -139,7 +139,7 @@ builder.mutationField('updateUserPicture', (t) =>
       file: t.arg({ type: FileScalar }),
     },
     authScopes: (_, { id }, { user }) => Boolean(user?.canEditUsers || id === user?.id),
-    resolve: async (_, { id, file }) => {
+    async resolve(_, { id, file }) {
       const { name } = await prisma.user.findUniqueOrThrow({
         where: { id },
         select: { name: true },

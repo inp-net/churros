@@ -2,7 +2,7 @@
   import { page, session } from '$app/stores'
   import { redirectToLogin } from '$lib/session'
   import { mutate, query, Query, type PropsType } from '$lib/zeus'
-  import type { Load } from '@sveltejs/kit'
+  import type { Load } from './__types/members'
 
   const propsQuery = (id: string) =>
     Query({
@@ -70,7 +70,7 @@
         $session
       )
       club.members = [...club.members, addClubMember]
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error)
     }
   }
@@ -79,7 +79,7 @@
     try {
       await mutate({ deleteClubMember: [{ clubId: $page.params.id, memberId }, true] }, $session)
       club.members = club.members.filter((member) => member.memberId !== memberId)
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error)
     }
   }
@@ -100,7 +100,7 @@
       club.members = club.members.map((member) =>
         member.memberId === memberId ? { ...member, ...updateClubMember } : member
       )
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error)
     }
   }
@@ -115,11 +115,11 @@
         <input
           type="text"
           bind:value={club.members[i].title}
-          on:change={() => updateClubMember(memberId)}
+          on:change={async () => updateClubMember(memberId)}
         />
       </td>
       <td>
-        <button type="button" on:click={() => deleteClubMember(memberId)}> ❌ </button>
+        <button type="button" on:click={async () => deleteClubMember(memberId)}> ❌ </button>
       </td>
     </tr>
   {/each}

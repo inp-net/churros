@@ -1558,6 +1558,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.30.5
     eslint: ^8.19.0
     eslint-config-prettier: ^8.5.0
+    eslint-config-xo: ^0.41.0
     eslint-config-xo-typescript: ^0.51.1
     eslint-plugin-svelte3: ^4.0.0
     eslint-plugin-unicorn: ^43.0.1
@@ -1785,6 +1786,13 @@ __metadata:
   version: 0.0.1
   resolution: "concat-map@npm:0.0.1"
   checksum: 902a9f5d8967a3e2faf138d5cb784b9979bad2e6db5357c5b21c568df4ebe62bcb15108af1b2253744844eb964fc023fbd9afbbbb6ddd0bcc204c6fb5b7bf3af
+  languageName: node
+  linkType: hard
+
+"confusing-browser-globals@npm:1.0.11":
+  version: 1.0.11
+  resolution: "confusing-browser-globals@npm:1.0.11"
+  checksum: 3afc635abd37e566477f610e7978b15753f0e84025c25d49236f1f14d480117185516bdd40d2a2167e6bed8048641a9854964b9c067e3dcdfa6b5d0ad3c3a5ef
   languageName: node
   linkType: hard
 
@@ -2448,6 +2456,17 @@ __metadata:
     eslint: ">=8.0.0"
     typescript: ">=4.4"
   checksum: d9bd448ad9e957e1b988ddfdddfcd4ab0dd9105f904223be0efdaccb4e5248d7174a3d2e6222020bcb5ed8c8c57addcf522948a159dd191ddc408bb37fefe7d7
+  languageName: node
+  linkType: hard
+
+"eslint-config-xo@npm:^0.41.0":
+  version: 0.41.0
+  resolution: "eslint-config-xo@npm:0.41.0"
+  dependencies:
+    confusing-browser-globals: 1.0.11
+  peerDependencies:
+    eslint: ">=8.14.0"
+  checksum: 9c709ad670b62e4cecb75f5ddceb8c4c85ad4c0e5ed7ebc803c7f21ea2e8738c1849e269eb89764cc57f38a66bc6764bfec66fc69fa252150e678bafca0409da
   languageName: node
   linkType: hard
 

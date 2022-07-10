@@ -48,13 +48,11 @@ builder.queryField('club', (t) =>
   t.prismaField({
     type: ClubType,
     args: { id: t.arg.id() },
-    resolve: (query, _, { id }) => {
-      console.log(id, typeof id)
-      return prisma.club.findUniqueOrThrow({
+    resolve: (query, _, { id }) =>
+      prisma.club.findUniqueOrThrow({
         ...query,
         where: { id },
-      })
-    },
+      }),
   })
 )
 

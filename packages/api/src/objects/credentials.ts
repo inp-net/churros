@@ -68,7 +68,7 @@ builder.mutationField('logout', (t) =>
   t.authField({
     type: 'Boolean',
     authScopes: { loggedIn: true },
-    resolve: async (_, {}, { token }) => {
+    async resolve(_, {}, { token }) {
       await prisma.credential.deleteMany({
         where: { type: CredentialPrismaType.Token, value: token },
       })
@@ -82,14 +82,14 @@ builder.mutationField('deleteSession', (t) =>
   t.field({
     type: 'Boolean',
     args: { id: t.arg.id() },
-    authScopes: async (_, { id }, { user }) => {
+    async authScopes(_, { id }, { user }) {
       const credential = await prisma.credential.findUniqueOrThrow({
         where: { id },
       })
       if (credential.type !== CredentialPrismaType.Token) return false
       return user?.id === credential.userId
     },
-    resolve: async (_, { id }) => {
+    async resolve(_, { id }) {
       await prisma.credential.delete({ where: { id } })
       return true
     },

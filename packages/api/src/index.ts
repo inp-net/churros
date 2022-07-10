@@ -14,7 +14,7 @@ const yoga = createServer({
   context,
   multipart: { files: 1, fileSize: 10 * 1024 * 1024 },
   maskedErrors: {
-    formatError: (error, message, isDev) => {
+    formatError(error, message, isDev) {
       if (isDev) console.error(error)
 
       const cause = (error as GraphQLError).originalError

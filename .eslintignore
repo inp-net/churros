@@ -2,6 +2,7 @@
 .yarn/
 build/
 node_modules/
+zeus/
 
 *.cjs
 *.config.js

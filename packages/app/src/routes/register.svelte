@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { goto } from '$app/navigation'
   import { GraphQLError, mutate } from '$lib/zeus'
-  import type { Load } from '@sveltejs/kit'
+  import type { Load } from './__types/register'
   import type { ZodFormattedError } from 'zod'
 
   export const load: Load = ({ session }) => (session.me ? { status: 307, redirect: '/' } : {})
@@ -12,7 +12,7 @@
   let firstname = ''
   let lastname = ''
   let password = ''
-  let formErrors: ZodFormattedError<typeof args>
+  let formErrors: ZodFormattedError<typeof args> | undefined
 
   $: args = { name, firstname, lastname, password }
 
@@ -20,14 +20,14 @@
     try {
       await mutate({ register: [args, { id: true }] })
       await goto('/')
-    } catch (error) {
+    } catch (error: unknown) {
       if (!(error instanceof GraphQLError)) throw error
 
       const errors = error.response.errors as Array<{
         message: string
         extensions: {
           code: 'VALIDATION_ERROR'
-          errors: ZodFormattedError<typeof formErrors, string>
+          errors: ZodFormattedError<typeof formErrors>
         }
       }>
 
