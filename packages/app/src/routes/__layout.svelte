@@ -7,12 +7,9 @@
   const showLoader = derived(
     navigating,
     ($navigating, set) => {
-      if (!$navigating) {
-        set(false)
-        if (timeout !== undefined) clearTimeout(timeout as number)
-      } else {
-        timeout = setTimeout(() => set(true), 200)
-      }
+      if (timeout !== undefined) clearTimeout(timeout as number)
+      if ($navigating) timeout = setTimeout(() => set(true), 200)
+      else set(false)
     },
     false
   )
@@ -28,7 +25,7 @@
     <a href="/me" sveltekit:prefetch>{$session.me.name}</a>
     <a href="/logout?{new URLSearchParams({ token: $session.token })}"> Se déconnecter </a>
   {:else}
-    <a href="/login?{new URLSearchParams({ then: $page.url.pathname })}" sveltekit:prefetch>
+    <a href="/login?{new URLSearchParams({ to: $page.url.pathname })}" sveltekit:prefetch>
       Se connecter
     </a>
     <a href="/register" sveltekit:prefetch>S'inscrire</a>

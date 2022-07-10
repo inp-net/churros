@@ -1,95 +1,145 @@
-import { CredentialType, PrismaClient } from '@prisma/client'
+import { CredentialType, Prisma } from '@prisma/client'
 import { hash } from 'argon2'
+import { prisma } from './prisma.js'
 
-const prisma = new PrismaClient()
+const userData: Prisma.UserCreateInput[] = [
+  { name: 'annie', firstname: 'Annie', lastname: 'Versaire' },
+  { name: 'bernard', firstname: 'Bernard', lastname: 'Tichaut' },
+  { name: 'camille', firstname: 'Camille', lastname: 'Honnête' },
+  { name: 'denis', firstname: 'Denis', lastname: 'Chon' },
+  { name: 'elie', firstname: 'Élie', lastname: 'Coptère' },
+  { name: 'fred', firstname: 'Fred', lastname: 'Voyage' },
+  { name: 'gerard', firstname: 'Gérard', lastname: 'Menvu' },
+  { name: 'henri', firstname: 'Henri', lastname: 'Cochet' },
+  { name: 'ines', firstname: 'Inès', lastname: 'Alamaternité' },
+  { name: 'jennifer', firstname: 'Jennifer', lastname: 'Arepassé' },
+  { name: 'kelly', firstname: 'Kelly', lastname: 'Diote' },
+  { name: 'lara', firstname: 'Lara', lastname: 'Clette' },
+  { name: 'marc', firstname: 'Marc', lastname: 'Des Points' },
+  { name: 'nordine', firstname: 'Nordine', lastname: 'Ateur' },
+  { name: 'otto', firstname: 'Otto', lastname: 'Graf' },
+  { name: 'paul', firstname: 'Paul', lastname: 'Ochon' },
+  { name: 'quentin', firstname: 'Quentin', lastname: 'Deux Trois' },
+  { name: 'rick', firstname: 'Rick', lastname: 'Astley' },
+  { name: 'sacha', firstname: 'Sacha', lastname: 'Touille' },
+  { name: 'therese', firstname: 'Thérèse', lastname: 'Ponsable' },
+  { name: 'urbain', firstname: 'Urbain', lastname: 'De Bouche' },
+  { name: 'vivien', firstname: 'Vivien', lastname: 'Chezmoi' },
+  { name: 'wendy', firstname: 'Wendy', lastname: 'Gestion' },
+  { name: 'xavier', firstname: 'Xavier', lastname: 'K. Paétrela' },
+  { name: 'yvon', firstname: 'Yvon', lastname: 'Enbavé' },
+  { name: 'zinedine', firstname: 'Zinédine', lastname: 'Pacesoir' },
+]
 
-// Users
-const alice = await prisma.user.create({
-  data: { name: 'alice', firstname: 'Alice', lastname: 'Wonderland' },
-})
-const bob = await prisma.user.create({
-  data: { name: 'bob', firstname: 'Bob', lastname: 'Sponge' },
-})
-const charlie = await prisma.user.create({
-  data: { name: 'charlie', firstname: 'Charlie', lastname: 'Ouest' },
-})
-
-// Credentials
-await prisma.credential.createMany({
-  data: [
-    {
-      type: CredentialType.Password,
-      userId: alice.id,
-      value: await hash('al1ce'),
+for (const data of userData) {
+  await prisma.user.create({
+    data: {
+      ...data,
+      credentials: { create: { type: CredentialType.Password, value: await hash(data.name) } },
     },
-    {
-      type: CredentialType.Password,
-      userId: bob.id,
-      value: await hash('b0b'),
-    },
-    {
-      type: CredentialType.Password,
-      userId: charlie.id,
-      value: await hash('ch4rlie'),
-    },
-  ],
-})
+  })
+}
 
-// Clubs
-const football = await prisma.club.create({ data: { name: 'Football' } })
-const rugby = await prisma.club.create({ data: { name: 'Rugby' } })
+const clubData: Prisma.ClubCreateInput[] = [
+  { name: 'Art' },
+  { name: 'Basket' },
+  { name: 'Cinéma' },
+  { name: 'Danse' },
+  { name: 'Escalade' },
+  { name: 'Football' },
+  { name: 'Golf' },
+  { name: 'Handball' },
+  { name: 'Igloo' },
+  { name: 'Jardinage' },
+  { name: 'Karaté' },
+  { name: 'Lecture' },
+  { name: 'Musique' },
+  { name: 'Natation' },
+  { name: 'Origami' },
+  { name: 'Pétanque' },
+  { name: 'Quidditch' },
+  { name: 'Randonnée' },
+  { name: 'Ski' },
+  { name: 'Tennis' },
+  { name: 'Ukulélé' },
+  { name: 'Vélo' },
+  { name: 'Water-polo' },
+  { name: 'Xylophone' },
+  { name: 'Yoga' },
+  { name: 'Zumba' },
+]
 
-// Club members
-await prisma.clubMember.createMany({
-  data: [
+await prisma.club.createMany({ data: clubData })
+
+const clubMembers: Prisma.ClubMemberCreateManyInput[] = []
+
+for (let clubId = 1; clubId <= 26; clubId++) {
+  clubMembers.push(
     {
-      memberId: alice.id,
-      clubId: football.id,
-      title: 'Présidente',
+      clubId,
+      memberId: clubId,
+      title: 'Prez',
       president: true,
       canEditArticles: true,
-    },
-    {
-      memberId: bob.id,
-      clubId: football.id,
-      title: 'Trésorier',
-      treasurer: true,
       canEditMembers: true,
     },
     {
-      memberId: charlie.id,
-      clubId: rugby.id,
-      title: 'Président',
-      president: true,
+      clubId,
+      memberId: (clubId % 26) + 1,
+      title: 'Trez',
+      treasurer: true,
       canEditArticles: true,
       canEditMembers: true,
     },
     {
-      memberId: alice.id,
-      clubId: rugby.id,
-      title: 'Trésorière',
-      treasurer: true,
+      clubId,
+      memberId: ((clubId + 1) % 26) + 1,
+      title: 'Secrétaire',
+      canEditArticles: true,
+      canEditMembers: true,
     },
-  ],
-})
+    {
+      clubId,
+      memberId: ((clubId + 2) % 26) + 1,
+      title: 'Respo Com',
+      canEditArticles: true,
+    },
+    {
+      clubId,
+      memberId: ((clubId + 3) % 26) + 1,
+    },
+    {
+      clubId,
+      memberId: ((clubId + 4) % 26) + 1,
+    },
+    {
+      clubId,
+      memberId: ((clubId + 5) % 26) + 1,
+    }
+  )
+}
 
-// Club articles
-await prisma.article.createMany({
-  data: [
-    {
-      authorId: alice.id,
-      clubId: football.id,
-      title: 'Reprise des entraînements en octobre',
-      body: 'Hello **World**!',
-      published: true,
-    },
-    {
-      authorId: charlie.id,
-      clubId: rugby.id,
-      title: 'Toulouse a gagné',
-      body: '_youpi_',
-      published: true,
-      homepage: true,
-    },
-  ],
-})
+await prisma.clubMember.createMany({ data: clubMembers })
+
+const articleData: Prisma.ArticleCreateManyInput[] = []
+
+const end = 26 * 5
+const startDate = new Date('2021-01-01T13:00:00.000Z').getTime()
+const endDate = new Date('2022-09-01T13:00:00.000Z').getTime()
+
+for (let i = 0; i < end; i++) {
+  articleData.push({
+    title: `Article ${i}`,
+    clubId: ((i * 7) % 26) + 1,
+    authorId: i % 11 === 0 ? undefined : ((i * 9) % 26) + 1,
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac mauris et justo aliquam lobortis. Proin fringilla diam purus, vel.',
+    homepage: i % 3 === 0,
+    published: i % 7 > 1,
+    createdAt: new Date(startDate * (1 - i / end) + endDate * (i / end)),
+    publishedAt: new Date(
+      startDate * (1 - i / end) + endDate * (i / end) + (i % 7) * 24 * 60 * 60 * 1000
+    ),
+  })
+}
+
+await prisma.article.createMany({ data: articleData })

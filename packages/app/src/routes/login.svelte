@@ -10,12 +10,9 @@
 
   /** Redirects the user if a `to` parameter exists, or to "/" otherwise. */
   const redirect = async () => {
-    const to = $page.url.searchParams.get('to') ?? '/'
-    if (to) {
-      let url = new URL(to, $page.url)
-      if (url.origin !== $page.url.origin) url = new URL('/', $page.url)
-      await goto(url)
-    }
+    let url = new URL($page.url.searchParams.get('to') ?? '/', $page.url)
+    if (url.origin !== $page.url.origin) url = new URL('/', $page.url)
+    await goto(url)
   }
 
   const login = async () => {
