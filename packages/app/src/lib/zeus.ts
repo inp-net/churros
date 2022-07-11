@@ -1,7 +1,6 @@
 /* eslint-disable */
 import type { LoadEvent } from '@sveltejs/kit'
 import {
-  GraphQLError,
   Selector,
   Thunder,
   ZeusScalars,
@@ -14,6 +13,7 @@ import {
 import extractFiles from 'extract-files/extractFiles.mjs'
 // @ts-expect-error Not typed
 import isFile from 'extract-files/isExtractableFile.mjs'
+import { GraphQLError } from 'graphql'
 
 export * from '../zeus/index.js'
 
@@ -24,6 +24,21 @@ export type PropsType<
 
 export interface Options {
   token?: string
+}
+
+export class ZeusError extends Error {
+  name = 'ZeusError'
+  public readonly errors: GraphQLError[] = []
+  constructor(public readonly response: GraphQLResponse) {
+    if (!response.errors || response.errors.length === 0) {
+      super('The response does not contain any errors.')
+    } else {
+      super(`${response.errors.length} GraphQL error${response.errors.length !== 1 ? 's' : ''}`)
+      this.errors = response.errors.map(
+        ({ message, ...options }) => new GraphQLError(message, options)
+      )
+    }
+  }
 }
 
 const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
@@ -44,17 +59,17 @@ const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
       body = JSON.stringify({ query, variables })
     }
 
-    const response = await fetch('http://localhost:4000/graphql', {
-      body,
-      method: 'POST',
-      headers,
-    })
+    const response = await fetch('http://localhost:4000/graphql', { body, method: 'POST', headers })
 
-    if (!response.ok) throw new Error('The server returned an error')
-
-    const graphqlResponse = (await response.json()) as GraphQLResponse
-    if (graphqlResponse.errors) throw new GraphQLError(graphqlResponse)
-    return graphqlResponse.data
+    return response
+      .json()
+      .catch(() => {
+        throw new Error('The server returned an error.')
+      })
+      .then((graphqlResponse: GraphQLResponse) => {
+        if (graphqlResponse.errors || !response.ok) throw new ZeusError(graphqlResponse)
+        return graphqlResponse.data
+      })
   })
 }
 

@@ -1,6 +1,6 @@
 import { sessionUserQuery } from '$lib/session'
 import { query } from '$lib/zeus'
-import type { GetSession, Handle } from '@sveltejs/kit'
+import type { ExternalFetch, GetSession, Handle } from '@sveltejs/kit'
 import * as cookie from 'cookie'
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -26,3 +26,8 @@ export const getSession: GetSession = ({ locals }) => {
   if (!locals.token) return {}
   return { token: locals.token, me: locals.me }
 }
+
+export const externalFetch: ExternalFetch = async (request) =>
+  fetch(request).catch(() => {
+    throw new TypeError('Impossible de joindre le serveur.')
+  })
