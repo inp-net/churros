@@ -1,20 +1,28 @@
 <script context="module" lang="ts">
   import { goto } from '$app/navigation'
-  import { GraphQLError, mutate } from '$lib/zeus'
+  import { GraphQLError, mutate, Query, query, type PropsType } from '$lib/zeus'
   import type { Load } from './__types/register'
   import type { ZodFormattedError } from 'zod'
 
-  export const load: Load = ({ session }) => (session.me ? { status: 307, redirect: '/' } : {})
+  const propsQuery = () => Query({ majors: { id: true, name: true, schools: { name: true } } })
+
+  type Props = PropsType<typeof propsQuery>
+
+  export const load: Load = async ({ fetch, session }) =>
+    session.me ? { status: 307, redirect: '/' } : { props: await query(fetch, propsQuery()) }
 </script>
 
 <script lang="ts">
+  export let majors: Props['majors']
+
+  let majorId = majors[0].id
   let name = ''
   let firstname = ''
   let lastname = ''
   let password = ''
   let formErrors: ZodFormattedError<typeof args> | undefined
 
-  $: args = { name, firstname, lastname, password }
+  $: args = { majorId, name, firstname, lastname, password }
 
   const register = async () => {
     try {
@@ -39,6 +47,16 @@
 </script>
 
 <form on:submit|preventDefault={register}>
+  <p>
+    <label>
+      Filière :
+      <select bind:value={majorId}>
+        {#each majors as { id, name, schools }}
+          <option value={id}>{name} ({schools.map(({ name }) => name).join(', ')})</option>
+        {/each}
+      </select>
+    </label>
+  </p>
   <p>
     <label>
       Nom d'utilisateur :

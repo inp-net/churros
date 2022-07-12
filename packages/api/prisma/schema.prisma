@@ -17,6 +17,7 @@ datasource db {
 /// A User
 model User {
   id          Int      @id @default(autoincrement())
+  majorId     Int
   name        String   @unique @db.VarChar(255)
   firstname   String   @db.VarChar(255)
   nickname    String   @default("") @db.VarChar(255)
@@ -29,9 +30,25 @@ model User {
   canEditUsers Boolean @default(false)
   canEditClubs Boolean @default(false)
 
-  credentials Credential[]
-  clubs       ClubMember[]
   articles    Article[]
+  clubs       ClubMember[]
+  credentials Credential[]
+  major       Major        @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+}
+
+model Major {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  students User[]
+  schools  School[]
+}
+
+model School {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  majors Major[]
 }
 
 /// The different kinds of credentials

@@ -2,7 +2,27 @@ import { CredentialType, Prisma } from '@prisma/client'
 import { hash } from 'argon2'
 import { prisma } from './prisma.js'
 
-const userData: Prisma.UserCreateInput[] = [
+await prisma.school.createMany({
+  data: [{ name: 'EAU' }, { name: 'FEU' }, { name: 'TERRE' }, { name: 'AIR' }],
+})
+
+await prisma.major.create({
+  data: { name: 'Mécanique des fluides', schools: { connect: { id: 1 } } },
+})
+await prisma.major.create({
+  data: { name: 'Vapeur', schools: { connect: [{ id: 1 }, { id: 2 }] } },
+})
+await prisma.major.create({
+  data: { name: 'Boue', schools: { connect: [{ id: 1 }, { id: 3 }] } },
+})
+await prisma.major.create({
+  data: { name: 'Roche', schools: { connect: [{ id: 3 }] } },
+})
+await prisma.major.create({
+  data: { name: 'Vent', schools: { connect: [{ id: 4 }] } },
+})
+
+const userData = [
   { name: 'annie', firstname: 'Annie', lastname: 'Versaire' },
   { name: 'bernard', firstname: 'Bernard', lastname: 'Tichaut' },
   { name: 'camille', firstname: 'Camille', lastname: 'Honnête' },
@@ -31,45 +51,46 @@ const userData: Prisma.UserCreateInput[] = [
   { name: 'zinedine', firstname: 'Zinédine', lastname: 'Pacesoir' },
 ]
 
-for (const data of userData) {
+for (const [i, data] of userData.entries()) {
   await prisma.user.create({
     data: {
       ...data,
+      majorId: (i % 5) + 1,
       credentials: { create: { type: CredentialType.Password, value: await hash(data.name) } },
     },
   })
 }
 
-const clubData: Prisma.ClubCreateInput[] = [
-  { name: 'Art' },
-  { name: 'Basket' },
-  { name: 'Cinéma' },
-  { name: 'Danse' },
-  { name: 'Escalade' },
-  { name: 'Football' },
-  { name: 'Golf' },
-  { name: 'Handball' },
-  { name: 'Igloo' },
-  { name: 'Jardinage' },
-  { name: 'Karaté' },
-  { name: 'Lecture' },
-  { name: 'Musique' },
-  { name: 'Natation' },
-  { name: 'Origami' },
-  { name: 'Pétanque' },
-  { name: 'Quidditch' },
-  { name: 'Randonnée' },
-  { name: 'Ski' },
-  { name: 'Tennis' },
-  { name: 'Ukulélé' },
-  { name: 'Vélo' },
-  { name: 'Water-polo' },
-  { name: 'Xylophone' },
-  { name: 'Yoga' },
-  { name: 'Zumba' },
-]
-
-await prisma.club.createMany({ data: clubData })
+await prisma.club.createMany({
+  data: [
+    { name: 'Art' },
+    { name: 'Basket' },
+    { name: 'Cinéma' },
+    { name: 'Danse' },
+    { name: 'Escalade' },
+    { name: 'Football' },
+    { name: 'Golf' },
+    { name: 'Handball' },
+    { name: 'Igloo' },
+    { name: 'Jardinage' },
+    { name: 'Karaté' },
+    { name: 'Lecture' },
+    { name: 'Musique' },
+    { name: 'Natation' },
+    { name: 'Origami' },
+    { name: 'Pétanque' },
+    { name: 'Quidditch' },
+    { name: 'Randonnée' },
+    { name: 'Ski' },
+    { name: 'Tennis' },
+    { name: 'Ukulélé' },
+    { name: 'Vélo' },
+    { name: 'Water-polo' },
+    { name: 'Xylophone' },
+    { name: 'Yoga' },
+    { name: 'Zumba' },
+  ],
+})
 
 const clubMembers: Prisma.ClubMemberCreateManyInput[] = []
 

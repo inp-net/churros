@@ -32,9 +32,10 @@ export const UserType = builder.prismaObject('User', {
       authScopes: { admin: true, $granted: 'me' },
     }),
 
-    clubs: t.relation('clubs'),
     articles: t.relation('articles'),
+    clubs: t.relation('clubs'),
     credentials: t.relation('credentials', { authScopes: { $granted: 'me' } }),
+    major: t.relation('major'),
   }),
 })
 
@@ -52,6 +53,7 @@ builder.mutationField('register', (t) =>
   t.prismaField({
     type: UserType,
     args: {
+      majorId: t.arg.id(),
       name: t.arg.string({
         validate: {
           minLength: 3,
@@ -67,10 +69,11 @@ builder.mutationField('register', (t) =>
       lastname: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       password: t.arg.string({ validate: { minLength: 10, maxLength: 255 } }),
     },
-    resolve: async (query, _, { name, firstname, lastname, password }) =>
+    resolve: async (query, _, { majorId, name, firstname, lastname, password }) =>
       prisma.user.create({
         ...query,
         data: {
+          majorId,
           name,
           firstname,
           lastname,

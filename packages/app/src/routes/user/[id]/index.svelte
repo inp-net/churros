@@ -14,6 +14,7 @@
           lastname: true,
           pictureFile: true,
           clubs: { club: { id: true, name: true }, title: true },
+          major: { name: true, schools: { name: true } },
         },
       ],
     })
@@ -39,6 +40,8 @@
 {/if}
 
 <h1>{user.firstname} {user.lastname}</h1>
+
+<p>{user.major.name} ({user.major.schools.map(({ name }) => name).join(', ')})</p>
 
 {#if $session.me?.canEditUsers || user.id === $session.me?.id}
   <p><a href="./edit" sveltekit:prefetch>Modifier</a></p>

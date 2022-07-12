@@ -14,7 +14,6 @@
         firstname: true,
         lastname: true,
         nickname: true,
-        clubs: { club: { id: true, name: true }, title: true },
         credentials: {
           id: true,
           type: true,
@@ -63,20 +62,6 @@
   <a href="/user/{me.id}/" sveltekit:prefetch>Profil public</a> -
   <a href="/user/{me.id}/edit/" sveltekit:prefetch>Modifier</a>
 </p>
-
-<h2>Clubs</h2>
-
-{#if me.clubs.length > 0}
-  <ul>
-    {#each me.clubs as { club, title }}
-      <li>
-        {title} de <a href="/club/{club.id}" sveltekit:prefetch>{club.name}</a>
-      </li>
-    {/each}
-  </ul>
-{:else}
-  <p>Aucun club</p>
-{/if}
 
 <h2>Sessions</h2>
 <table>
