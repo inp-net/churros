@@ -31,7 +31,7 @@ export class ZeusError extends Error {
   public readonly errors: GraphQLError[] = []
   constructor(public readonly response: GraphQLResponse) {
     if (!response.errors || response.errors.length === 0) {
-      super('The response does not contain any errors.')
+      super('the response does not contain any errors')
     } else {
       super(`${response.errors.length} GraphQL error${response.errors.length !== 1 ? 's' : ''}`)
       this.errors = response.errors.map(
