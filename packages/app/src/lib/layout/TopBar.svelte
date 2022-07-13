@@ -1,5 +1,6 @@
 <script lang="ts">
   import { navigating, page, session } from '$app/stores'
+  import { theme } from '$lib/theme'
   import { derived } from 'svelte/store'
 
   let timeout: unknown
@@ -35,6 +36,11 @@
       </a>
       <a href="/register" sveltekit:prefetch>S'inscrire</a>
     {/if}
+    <button
+      on:click={() => {
+        $theme = $theme === 'dark' ? 'light' : 'dark'
+      }}>{$theme === 'dark' ? '☀️' : '🌙'}</button
+    >
   </div>
 </div>
 
@@ -45,13 +51,11 @@
     display: flex;
     justify-content: space-between;
     padding: 1em;
-    color: white;
-    background-color: rgb(233 229 239);
-    border-block-end: 1px solid rgb(128 128 128);
-    box-shadow: 0 0 1em rgb(154 133 179 / 32.6%);
+    background-color: var(--bg);
+    box-shadow: var(--shadow);
 
     a {
-      color: black;
+      color: inherit;
     }
   }
 </style>

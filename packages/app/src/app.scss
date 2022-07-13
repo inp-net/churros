@@ -2,17 +2,25 @@
 @import 'sanitize.css/forms';
 @import 'sanitize.css/assets';
 @import 'sanitize.css/typography';
+@import './themes';
 
 :root {
   line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+a {
+  color: var(--link);
 }
 
 article {
   padding: 0 1em;
   margin: 1em 0;
   overflow: hidden;
+  color: var(--warning-text);
+  background: var(--warning-bg);
   border-radius: 0.25rem;
-  box-shadow: 0 0.5rem 1rem #ccc;
 }
 
 table {

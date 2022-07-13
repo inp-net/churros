@@ -1,0 +1,14 @@
+:root.dark {
+  --bg: var(--dark);
+  --text: var(--light);
+  --link: var(--blue-light);
+  --success-bg: var(--green-dark);
+  --success-text: var(--green-light);
+  --danger-bg: var(--red-dark);
+  --danger-text: var(--red-light);
+  --warning-bg: var(--yellow-dark);
+  --warning-text: var(--yellow-light);
+  --info-bg: var(--blue-dark);
+  --info-text: var(--blue-light);
+  --shadow: 0 0.25rem 0.5rem var(--darker);
+}

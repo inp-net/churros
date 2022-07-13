@@ -7,6 +7,10 @@
     %sveltekit.head%
   </head>
   <body>
+    <script>
+      // Prevent a flash on page load
+      document.documentElement.classList.add(localStorage.getItem('theme') ?? 'light')
+    </script>
     <div>%sveltekit.body%</div>
   </body>
 </html>
