@@ -46,9 +46,9 @@
     justify-content: space-between;
     padding: 1em;
     color: white;
-    background-color: rgb(224 223 223);
+    background-color: rgb(233 229 239);
     border-block-end: 1px solid rgb(128 128 128);
-    box-shadow: 0 0 0.5em rgb(0 0 0 / 10%);
+    box-shadow: 0 0 1em rgb(154 133 179 / 32.6%);
 
     a {
       color: black;

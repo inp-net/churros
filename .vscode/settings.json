@@ -1,3 +1,6 @@
 {
+  "cssvar.extensions": ["css", "scss", "svelte"],
+  "cssvar.files": ["packages/app/src/variables.scss"],
+  "cssvar.postcssSyntax": ["postcss-scss"],
   "typescript.tsdk": "node_modules/typescript/lib"
 }
