@@ -1,9 +1,9 @@
-import Cookies from 'js-cookie'
-import { Query, type PropsType } from './zeus.js'
+import * as cookie from 'cookie'
+import { Selector, type PropsType } from './zeus.js'
 
 /** What's needed in a user session. */
 export const sessionUserQuery = () =>
-  Query({
+  Selector('User')({
     id: true,
     name: true,
     admin: true,
@@ -21,7 +21,7 @@ export const saveSessionToken = ({
   token: string
   expiresAt?: Date | null
 }) => {
-  Cookies.set('token', token, {
+  document.cookie = cookie.serialize('token', token, {
     expires: expiresAt ? new Date(expiresAt) : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     path: '/',
   })

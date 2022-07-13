@@ -33,10 +33,15 @@ export class ZeusError extends Error {
     if (!response.errors || response.errors.length === 0) {
       super('the response does not contain any errors')
     } else {
-      super(`${response.errors.length} GraphQL error${response.errors.length !== 1 ? 's' : ''}`)
-      this.errors = response.errors.map(
+      const errors = response.errors.map(
         ({ message, ...options }) => new GraphQLError(message, options)
       )
+      super(
+        `${response.errors.length} GraphQL error${response.errors.length !== 1 ? 's' : ''}\n${errors
+          .map((error) => `\t${error.message}`)
+          .join('\n')}`
+      )
+      this.errors = errors
     }
   }
 }

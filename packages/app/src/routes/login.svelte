@@ -12,7 +12,7 @@
   const redirect = async () => {
     let url = new URL($page.url.searchParams.get('to') ?? '/', $page.url)
     if (url.origin !== $page.url.origin) url = new URL('/', $page.url)
-    await goto(url)
+    return goto(url)
   }
 
   const login = async () => {
