@@ -7,16 +7,12 @@
   line-height: 1.5;
 }
 
-body {
-  padding: 0 1em;
-}
-
 article {
-  overflow: hidden;
-  box-shadow: 0 0.5rem 1rem #ccc;
-  border-radius: 0.25rem;
   padding: 0 1em;
   margin: 1em 0;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  box-shadow: 0 0.5rem 1rem #ccc;
 }
 
 table {

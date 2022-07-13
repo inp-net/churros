@@ -1,40 +1,9 @@
 <script lang="ts">
-  import { navigating, page, session } from '$app/stores'
-  import { derived } from 'svelte/store'
+  import TopBar from '$lib/layout/TopBar.svelte'
   import '../app.scss'
-
-  let timeout: unknown
-  const showLoader = derived(
-    navigating,
-    ($navigating, set) => {
-      if (timeout !== undefined) clearTimeout(timeout as number)
-      if ($navigating) {
-        timeout = setTimeout(() => {
-          set(true)
-        }, 200)
-      } else {
-        set(false)
-      }
-    },
-    false
-  )
+  import 'virtual:windi.css'
 </script>
 
-{#if $showLoader}Loading...{/if}
-
-<p>
-  {#if $page.url.pathname !== '/'}
-    <a href="/" sveltekit:prefetch>Accueil</a>
-  {/if}
-  {#if $session.me && $session.token}
-    <a href="/me" sveltekit:prefetch>{$session.me.name}</a>
-    <a href="/logout?{new URLSearchParams({ token: $session.token })}"> Se déconnecter </a>
-  {:else}
-    <a href="/login?{new URLSearchParams({ to: $page.url.pathname })}" sveltekit:prefetch>
-      Se connecter
-    </a>
-    <a href="/register" sveltekit:prefetch>S'inscrire</a>
-  {/if}
-</p>
+<TopBar />
 
 <slot />

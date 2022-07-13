@@ -5,6 +5,7 @@
     "phoenisx.cssvar",
     "prisma.prisma",
     "stylelint.vscode-stylelint",
-    "svelte.svelte-vscode"
+    "svelte.svelte-vscode",
+    "voorjaar.windicss-intellisense"
   ]
 }

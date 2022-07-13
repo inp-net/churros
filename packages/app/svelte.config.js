@@ -5,7 +5,9 @@ import preprocess from 'svelte-preprocess'
 const config = {
   preprocess: [
     preprocess({
-      scss: { prependData: '@use "src/variables.scss" as *;' },
+      scss: {
+        prependData: `@use "${new URL('src/variables.scss', import.meta.url).pathname}" as *;`,
+      },
     }),
   ],
 

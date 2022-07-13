@@ -8,6 +8,6 @@ declare namespace App {
 
   interface Locals extends Session {}
 
-  interface Platform {}
-  interface Stuff {}
+  // interface Platform {}
+  // interface Stuff {}
 }
