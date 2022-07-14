@@ -19,7 +19,7 @@
 <script lang="ts">
   export let user: Props['user']
 
-  $: ({ id, firstname, lastname, nickname } = user)
+  let { id, nickname } = user
   let files: FileList
   let userPicture: string | undefined
 
@@ -47,10 +47,10 @@
   }
 </script>
 
-<h1>Éditer {firstname} {nickname} {lastname}</h1>
+<h1>Éditer {user.firstname} {user.nickname} {user.lastname}</h1>
 
 {#if userPicture}
-  <img src="http://localhost:4000/storage/{userPicture}" alt="{firstname} {lastname}" />
+  <img src="http://localhost:4000/storage/{userPicture}" alt="{user.firstname} {user.lastname}" />
 {/if}
 
 <form on:submit|preventDefault={updateUser}>
