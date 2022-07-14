@@ -64,7 +64,7 @@ const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
       body = JSON.stringify({ query, variables })
     }
 
-    const response = await fetch('http://localhost:4000/graphql', { body, method: 'POST', headers })
+    const response = await fetch(import.meta.env.VITE_API_URL, { body, method: 'POST', headers })
 
     return response
       .json()
