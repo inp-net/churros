@@ -14,8 +14,8 @@ export const UserType = builder.prismaObject('User', {
     id: t.exposeID('id'),
     name: t.exposeString('name'),
     firstname: t.exposeString('firstname'),
-    nickname: t.exposeString('nickname'),
     lastname: t.exposeString('lastname'),
+    nickname: t.exposeString('nickname', { authScopes: { loggedIn: true } }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     pictureFile: t.exposeString('pictureFile', { nullable: true }),
 
@@ -32,10 +32,10 @@ export const UserType = builder.prismaObject('User', {
       authScopes: { admin: true, $granted: 'me' },
     }),
 
-    articles: t.relation('articles'),
-    clubs: t.relation('clubs'),
+    articles: t.relation('articles', { authScopes: { loggedIn: true } }),
+    clubs: t.relation('clubs', { authScopes: { loggedIn: true } }),
     credentials: t.relation('credentials', { authScopes: { $granted: 'me' } }),
-    major: t.relation('major'),
+    major: t.relation('major', { authScopes: { loggedIn: true } }),
   }),
 })
 
