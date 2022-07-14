@@ -1,9 +1,10 @@
-import SchemaBuilder from '@pothos/core'
+import SchemaBuilder, { BuiltinScalarRef } from '@pothos/core'
 import ComplexityPlugin from '@pothos/plugin-complexity'
 import PrismaPlugin from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects'
 import ValidationPlugin from '@pothos/plugin-validation'
+import { GraphQLError, Kind } from 'graphql'
 import { AuthContexts, AuthScopes, authScopes } from './auth.js'
 import type { Context } from './context.js'
 import type PrismaTypes from './prisma-types.js'
@@ -30,3 +31,19 @@ export const builder = new SchemaBuilder<{
 
 builder.queryType({})
 builder.mutationType({})
+
+// Parse GraphQL IDs as numbers
+const id = (builder.configStore.getInputTypeRef('ID') as BuiltinScalarRef<number, string>).type
+
+id.parseValue = (value: unknown) => {
+  const coerced = Number(value)
+  if (Number.isNaN(coerced) || !Number.isFinite(coerced))
+    throw new GraphQLError('Expected ID to be a numeric.')
+  return coerced
+}
+
+id.parseLiteral = (node) => {
+  if (node.kind !== Kind.INT && node.kind !== Kind.STRING)
+    throw new GraphQLError('Expected ID to be a numeric.')
+  return id.parseValue(node.value)
+}

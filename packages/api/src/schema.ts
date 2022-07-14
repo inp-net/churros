@@ -4,9 +4,9 @@ import { builder } from './builder.js'
 
 // Imports objects
 import './objects/articles.js'
+import './objects/club-members.js'
 import './objects/clubs.js'
 import './objects/credentials.js'
-import './objects/homepage.js'
 import './objects/majors.js'
 import './objects/scalars.js'
 import './objects/schools.js'

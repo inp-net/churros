@@ -48,6 +48,38 @@ builder.queryField('me', (t) =>
   })
 )
 
+/** Gets a user from its id. */
+builder.queryField('user', (t) =>
+  t.prismaField({
+    type: UserType,
+    args: { id: t.arg.id() },
+    authScopes: { loggedIn: true },
+    resolve: async (query, _, { id }) => prisma.user.findUniqueOrThrow({ ...query, where: { id } }),
+  })
+)
+
+/** Searches for user on all text fields. */
+builder.queryField('searchUsers', (t) =>
+  t.prismaField({
+    type: [UserType],
+    args: { q: t.arg.string() },
+    authScopes: { loggedIn: true },
+    async resolve(query, _, { q }) {
+      const terms = new Set(String(q).split(' ').filter(Boolean))
+      const search = [...terms].join('&')
+      return prisma.user.findMany({
+        ...query,
+        where: {
+          firstname: { search },
+          lastname: { search },
+          name: { search },
+          nickname: { search },
+        },
+      })
+    },
+  })
+)
+
 /** Registers a new user. */
 builder.mutationField('register', (t) =>
   t.prismaField({
@@ -85,38 +117,6 @@ builder.mutationField('register', (t) =>
           },
         },
       }),
-  })
-)
-
-/** Gets a user from its id. */
-builder.queryField('user', (t) =>
-  t.prismaField({
-    type: UserType,
-    args: { id: t.arg.id() },
-    authScopes: { loggedIn: true },
-    resolve: async (query, _, { id }) => prisma.user.findUniqueOrThrow({ ...query, where: { id } }),
-  })
-)
-
-/** Searches for user on all text fields. */
-builder.queryField('searchUsers', (t) =>
-  t.prismaField({
-    type: [UserType],
-    args: { q: t.arg.string() },
-    authScopes: { loggedIn: true },
-    async resolve(query, _, { q }) {
-      const terms = new Set(String(q).split(' ').filter(Boolean))
-      const search = [...terms].join('&')
-      return prisma.user.findMany({
-        ...query,
-        where: {
-          firstname: { search },
-          lastname: { search },
-          name: { search },
-          nickname: { search },
-        },
-      })
-    },
   })
 )
 
