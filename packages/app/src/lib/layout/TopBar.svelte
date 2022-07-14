@@ -1,7 +1,9 @@
 <script lang="ts">
   import { navigating, page, session } from '$app/stores'
   import { theme } from '$lib/theme'
+  import { expoOut } from 'svelte/easing'
   import { derived } from 'svelte/store'
+  import { fly } from 'svelte/transition'
 
   let timeout: unknown
   const showLoader = derived(
@@ -19,8 +21,6 @@
     false
   )
 </script>
-
-{#if $showLoader}Loading...{/if}
 
 <div class="top-bar">
   <div>
@@ -46,6 +46,13 @@
       }}>{$theme === 'pride' ? '🌈' : $theme === 'dark' ? '☀️' : '🌙'}</button
     >
   </div>
+  {#if $showLoader}
+    <div
+      class="loader"
+      in:fly={{ x: -window.innerWidth, duration: 3000, easing: expoOut, opacity: 1 }}
+      out:fly={{ x: 0.1 * window.innerWidth, duration: 300 }}
+    />
+  {/if}
 </div>
 
 <style lang="scss">
@@ -54,7 +61,9 @@
     top: 0;
     display: flex;
     justify-content: space-between;
+    max-width: 100%;
     padding: 1em;
+    overflow: hidden;
     color: var(--primary-text);
     background: var(--primary-bg);
     box-shadow: var(--primary-shadow);
@@ -62,5 +71,14 @@
     a {
       color: inherit;
     }
+  }
+
+  .loader {
+    position: absolute;
+    bottom: 0;
+    left: -10vw;
+    width: 100%;
+    height: 0.25rem;
+    background: var(--loading-bg);
   }
 </style>

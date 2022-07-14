@@ -6,6 +6,7 @@
   --primary-bg: #{$blue-900};
   --primary-text: #{$slate-100};
   --primary-shadow: 0 0.25rem 0.5rem #{$black};
+  --loading-bg: linear-gradient(to right, #{$pink-800}, #{$pink-600});
 }
 
 :root.pride {
@@ -20,4 +21,13 @@
   );
   --primary-text: #{$slate-900};
   --primary-shadow: 0 0.25rem 0.5rem #{rgba($slate-400, 50%)};
+  --loading-bg: linear-gradient(
+    to right,
+    #{$red-400},
+    #{$orange-400},
+    #{$yellow-400},
+    #{$green-400},
+    #{$blue-400},
+    #{$purple-400}
+  );
 }
