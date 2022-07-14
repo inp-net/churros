@@ -44,7 +44,7 @@ __metadata:
   resolution: "@centraverse/api@workspace:packages/api"
   dependencies:
     "@envelop/core": ^2.4.0
-    "@graphql-yoga/node": ^2.13.1
+    "@graphql-yoga/node": ^2.13.2
     "@pothos/core": ^3.12.2
     "@pothos/plugin-complexity": ^3.5.0
     "@pothos/plugin-prisma": ^3.13.2
@@ -53,7 +53,7 @@ __metadata:
     "@pothos/plugin-validation": ^3.4.2
     "@prisma/client": ^4.0.0
     "@types/express": ^4.17.13
-    "@types/node": ^18.0.3
+    "@types/node": ^18.0.4
     argon2: ^0.28.7
     envelop-no-batched-queries: ^3.0.2
     express: ^4.18.1
@@ -68,7 +68,7 @@ __metadata:
     rehype-stringify: ^9.0.3
     remark-parse: ^10.0.1
     remark-rehype: ^10.1.0
-    ts-node: ^10.8.2
+    ts-node: ^10.9.1
     typescript: ^4.7.4
     unified: ^10.1.2
     zod: ^3.17.3
@@ -81,7 +81,7 @@ __metadata:
   dependencies:
     "@centraverse/api": "workspace:^"
     "@sveltejs/adapter-node": ^1.0.0-next.79
-    "@sveltejs/kit": ^1.0.0-next.370
+    "@sveltejs/kit": ^1.0.0-next.372
     "@types/cookie": ^0.5.1
     "@types/js-cookie": ^3.0.2
     "@types/ua-parser-js": ^0.7.36
@@ -98,7 +98,7 @@ __metadata:
     typescript: ^4.7.4
     ua-parser-js: ^1.0.2
     vite: ^2.9.14
-    vite-plugin-windicss: ^1.8.6
+    vite-plugin-windicss: ^1.8.7
     zod: ^3.17.3
   languageName: unknown
   linkType: soft
@@ -425,9 +425,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-yoga/common@npm:^2.12.1":
-  version: 2.12.1
-  resolution: "@graphql-yoga/common@npm:2.12.1"
+"@graphql-yoga/common@npm:^2.12.2":
+  version: 2.12.2
+  resolution: "@graphql-yoga/common@npm:2.12.2"
   dependencies:
     "@envelop/core": ^2.4.0
     "@envelop/parser-cache": ^4.4.0
@@ -435,40 +435,40 @@ __metadata:
     "@graphql-tools/schema": ^8.5.0
     "@graphql-tools/utils": ^8.8.0
     "@graphql-typed-document-node/core": ^3.1.1
-    "@graphql-yoga/subscription": ^2.2.1
+    "@graphql-yoga/subscription": ^2.2.2
     cross-undici-fetch: ^0.4.2
     dset: ^3.1.1
     tslib: ^2.3.1
   peerDependencies:
     graphql: ^15.2.0 || ^16.0.0
-  checksum: b0c1c1f13ade103306347a8ae75a40292e89239467c2e66f37713b64725a1a662bceb7e24a6a1062fba7278744bea21b40b8270b16eb0a211b0565f4bbc49b6a
+  checksum: 72c926c2adcb068cced1359b020eab8d8afee6d08117bb7bbdfc0f25f1be2a288e27af8ed2519f193057c2c032c23eb0bb321d9c1f7bbca3f81fc0b762136d8b
   languageName: node
   linkType: hard
 
-"@graphql-yoga/node@npm:^2.13.1":
-  version: 2.13.1
-  resolution: "@graphql-yoga/node@npm:2.13.1"
+"@graphql-yoga/node@npm:^2.13.2":
+  version: 2.13.2
+  resolution: "@graphql-yoga/node@npm:2.13.2"
   dependencies:
     "@envelop/core": ^2.4.0
     "@graphql-tools/utils": ^8.8.0
-    "@graphql-yoga/common": ^2.12.1
-    "@graphql-yoga/subscription": ^2.2.1
+    "@graphql-yoga/common": ^2.12.2
+    "@graphql-yoga/subscription": ^2.2.2
     cross-undici-fetch: ^0.4.2
     tslib: ^2.3.1
   peerDependencies:
     graphql: ^15.2.0 || ^16.0.0
-  checksum: ba4048c5ada078e86b39e0eb2ebe4c20676140ac49321d686fba8a2f7e89fa78c6de81bf2dcad1d037fd341f45669030356da38fba1093adf6b29a1268191dad
+  checksum: aa0c96d991409b821e970a5ee691d4bc2b90c2e25fba849e7b02e2315457d733094d1b4d7ff6c098215f450c2285b5b7361d5e010d0f870054a2094717c96dca
   languageName: node
   linkType: hard
 
-"@graphql-yoga/subscription@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "@graphql-yoga/subscription@npm:2.2.1"
+"@graphql-yoga/subscription@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@graphql-yoga/subscription@npm:2.2.2"
   dependencies:
     "@graphql-yoga/typed-event-target": ^0.1.0
     "@repeaterjs/repeater": ^3.0.4
     tslib: ^2.3.1
-  checksum: f475a21541775c5a8d20c470ce98e838bfe137b0b7345e03771ee0ae7483daf2244d3e179ed688994dfa2ebf992ab89f8436be8652bf3165481671d8dd4d0a77
+  checksum: 89fcde14317a65f2fa54045b2909d2523a5109daa91b6c42295d140befb16d2c2466d2e5af86e3502b5384184548a27192d1d43818f204f767055656bf8b75f2
   languageName: node
   linkType: hard
 
@@ -750,11 +750,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^1.0.0-next.370":
-  version: 1.0.0-next.370
-  resolution: "@sveltejs/kit@npm:1.0.0-next.370"
+"@sveltejs/kit@npm:^1.0.0-next.372":
+  version: 1.0.0-next.372
+  resolution: "@sveltejs/kit@npm:1.0.0-next.372"
   dependencies:
-    "@sveltejs/vite-plugin-svelte": ^1.0.0-next.48
+    "@sveltejs/vite-plugin-svelte": 1.0.0-next.49
     chokidar: ^3.5.3
     sade: ^1.8.1
   peerDependencies:
@@ -762,11 +762,11 @@ __metadata:
     vite: ^2.9.10
   bin:
     svelte-kit: svelte-kit.js
-  checksum: f713ddbe1c9831929242eaeaef53b6b6fb00b984f3f9645613432a95b261c56da0517679f17e3238542829aec2db0c0f007382a07f7f899b7ede2420c27f799e
+  checksum: 5f0eb2790ef37ec074c2c6ce4b46eda3d89f19a0546da6e873bb1aad09d7e23f48525563cb11fa87a44c68f180ba4aa36c68584c161967f2baaef6fa2e231305
   languageName: node
   linkType: hard
 
-"@sveltejs/vite-plugin-svelte@npm:^1.0.0-next.48":
+"@sveltejs/vite-plugin-svelte@npm:1.0.0-next.49":
   version: 1.0.0-next.49
   resolution: "@sveltejs/vite-plugin-svelte@npm:1.0.0-next.49"
   dependencies:
@@ -949,10 +949,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=12, @types/node@npm:^18.0.3":
+"@types/node@npm:*, @types/node@npm:>=12":
   version: 18.0.3
   resolution: "@types/node@npm:18.0.3"
   checksum: 5dec59fbbc1186c808b53df1ca717dad034dbd6a901c75f5b052c845618b531b05f27217122c6254db99529a68618e4cfc534ae3dbf4e88754e9e572df80defa
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^18.0.4":
+  version: 18.0.4
+  resolution: "@types/node@npm:18.0.4"
+  checksum: 981284fd57941f233f0e77038087c122f56e3c2b4fc4e090dfc7f0a93abfc526d5ccdd59eb3ef551d713245cf3943e37c7b957f12ba699209341a447c39fab59
   languageName: node
   linkType: hard
 
@@ -1141,29 +1148,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@windicss/config@npm:1.8.6":
-  version: 1.8.6
-  resolution: "@windicss/config@npm:1.8.6"
+"@windicss/config@npm:1.8.7":
+  version: 1.8.7
+  resolution: "@windicss/config@npm:1.8.7"
   dependencies:
     debug: ^4.3.4
     jiti: ^1.14.0
     windicss: ^3.5.6
-  checksum: c8691f1899bf5c754927127d4766641cdf27d646f3994f859109717e3e5f3fb3afdb98ab4453e7bd3112b9c349f4c0ace9a7cea8ced38f94a724df6fbebc62a3
+  checksum: 39cf492561c68ffe5e5866841d0e2ee2d59e3ca95a6487eee0b217b46583f58b8a66c649124c9727bed9de642fe0894038b9abff548638f60b7f2259cf3825e3
   languageName: node
   linkType: hard
 
-"@windicss/plugin-utils@npm:1.8.6":
-  version: 1.8.6
-  resolution: "@windicss/plugin-utils@npm:1.8.6"
+"@windicss/plugin-utils@npm:1.8.7":
+  version: 1.8.7
+  resolution: "@windicss/plugin-utils@npm:1.8.7"
   dependencies:
     "@antfu/utils": ^0.5.2
-    "@windicss/config": 1.8.6
+    "@windicss/config": 1.8.7
     debug: ^4.3.4
     fast-glob: ^3.2.11
     magic-string: ^0.26.2
     micromatch: ^4.0.5
     windicss: ^3.5.6
-  checksum: 1cd725f6412f5615d8a2f50aee84bf84ec66fccc011d234e188bfe21a18b27089c91d70b922ee720d1ff31ed772a73cfea2ad9e460461cf8e543fefb239d4d70
+  checksum: 413c3fa38f1b549450416db7b58179c82dcae50179595d06a51a285a7f77795acda732af74cd86400bf8adf8c2a9d41f0f40d819a6ac604e8b9b2bdf57c6c35b
   languageName: node
   linkType: hard
 
@@ -6585,7 +6592,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.8.1, ts-node@npm:^10.8.2":
+"ts-node@npm:^10.8.1":
   version: 10.8.2
   resolution: "ts-node@npm:10.8.2"
   dependencies:
@@ -6620,6 +6627,44 @@ __metadata:
     ts-node-transpile-only: dist/bin-transpile.js
     ts-script: dist/bin-script-deprecated.js
   checksum: 1eede939beed9f4db35bcc88d78ef803815b99dcdbed1ecac728d861d74dc694918a7f0f437aa08d026193743a31e7e00e2ee34f875f909b5879981c1808e2a7
+  languageName: node
+  linkType: hard
+
+"ts-node@npm:^10.9.1":
+  version: 10.9.1
+  resolution: "ts-node@npm:10.9.1"
+  dependencies:
+    "@cspotcode/source-map-support": ^0.8.0
+    "@tsconfig/node10": ^1.0.7
+    "@tsconfig/node12": ^1.0.7
+    "@tsconfig/node14": ^1.0.0
+    "@tsconfig/node16": ^1.0.2
+    acorn: ^8.4.1
+    acorn-walk: ^8.1.1
+    arg: ^4.1.0
+    create-require: ^1.1.0
+    diff: ^4.0.1
+    make-error: ^1.1.1
+    v8-compile-cache-lib: ^3.0.1
+    yn: 3.1.1
+  peerDependencies:
+    "@swc/core": ">=1.2.50"
+    "@swc/wasm": ">=1.2.50"
+    "@types/node": "*"
+    typescript: ">=2.7"
+  peerDependenciesMeta:
+    "@swc/core":
+      optional: true
+    "@swc/wasm":
+      optional: true
+  bin:
+    ts-node: dist/bin.js
+    ts-node-cwd: dist/bin-cwd.js
+    ts-node-esm: dist/bin-esm.js
+    ts-node-script: dist/bin-script.js
+    ts-node-transpile-only: dist/bin-transpile.js
+    ts-script: dist/bin-script-deprecated.js
+  checksum: 090adff1302ab20bd3486e6b4799e90f97726ed39e02b39e566f8ab674fd5bd5f727f43615debbfc580d33c6d9d1c6b1b3ce7d8e3cca3e20530a145ffa232c35
   languageName: node
   linkType: hard
 
@@ -6956,17 +7001,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-windicss@npm:^1.8.6":
-  version: 1.8.6
-  resolution: "vite-plugin-windicss@npm:1.8.6"
+"vite-plugin-windicss@npm:^1.8.7":
+  version: 1.8.7
+  resolution: "vite-plugin-windicss@npm:1.8.7"
   dependencies:
-    "@windicss/plugin-utils": 1.8.6
+    "@windicss/plugin-utils": 1.8.7
     debug: ^4.3.4
     kolorist: ^1.5.1
     windicss: ^3.5.6
   peerDependencies:
-    vite: ^2.0.1
-  checksum: 1a28f1f85ddf5504fd8c3d1af6f32887e992603e5fa91b08f817d1d117ce42f26f958c77b567bd58ba3a8b53780e29d8f0fd7ec4200446eb01242c71c370b241
+    vite: ^2.0.1 || ^3.0.0
+  checksum: 5b6e7381f96642e83e04596ee0dbd79ef83e1cb3d2b772acbf7836346f3ac1209d4fbfe93814d7ac7d6aad1806b2c6e8ae5f70e668234ff97610e7914a7a98cf
   languageName: node
   linkType: hard
 
