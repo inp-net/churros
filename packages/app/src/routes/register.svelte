@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import { goto } from '$app/navigation'
-  import { GraphQLError, mutate, Query, query, type PropsType } from '$lib/zeus'
+  import { ZeusError, mutate, Query, query, type PropsType } from '$lib/zeus'
   import type { Load } from './__types/register'
   import type { ZodFormattedError } from 'zod'
 
@@ -29,18 +29,11 @@
       await mutate({ register: [args, { id: true }] })
       await goto('/')
     } catch (error: unknown) {
-      if (!(error instanceof GraphQLError)) throw error
+      if (!(error instanceof ZeusError)) throw error
 
-      const errors = error.response.errors as Array<{
-        message: string
-        extensions: {
-          code: 'VALIDATION_ERROR'
-          errors: ZodFormattedError<typeof formErrors>
-        }
-      }>
-
-      for (const error of errors) {
-        if (error.extensions.code === 'VALIDATION_ERROR') formErrors = error.extensions.errors
+      for (const { extensions } of error.errors) {
+        if (extensions.code === 'ZOD_ERROR')
+          formErrors = extensions.errors as ZodFormattedError<typeof args>
       }
     }
   }

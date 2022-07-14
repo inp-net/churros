@@ -21,7 +21,7 @@ const yoga = createServer({
 
       if (cause instanceof ZodError) {
         return new GraphQLError('Validation error.', {
-          extensions: { code: 'VALIDATION_ERROR', errors: cause.format() },
+          extensions: { code: 'ZOD_ERROR', errors: cause.format() },
         })
       }
 

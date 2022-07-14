@@ -1,6 +1,5 @@
 import { GraphQLYogaError, YogaInitialContext } from '@graphql-yoga/node'
 import { CredentialType } from '@prisma/client'
-import { setTimeout } from 'node:timers/promises'
 import { prisma } from './prisma.js'
 
 const getToken = ({ headers }: Request) => {
