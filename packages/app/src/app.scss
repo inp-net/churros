@@ -16,11 +16,10 @@ a {
 
 article {
   padding: 0 1em;
-  margin: 1em 0;
+  margin: 1em;
   overflow: hidden;
-  color: var(--warning-text);
-  background: var(--warning-bg);
   border-radius: 0.25rem;
+  box-shadow: var(--shadow);
 }
 
 table {

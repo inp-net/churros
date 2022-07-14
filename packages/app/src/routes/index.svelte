@@ -49,3 +49,9 @@
     {/if}
   </article>
 {/each}
+
+<style>
+  h1 {
+    text-align: center;
+  }
+</style>

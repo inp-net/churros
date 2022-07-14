@@ -39,7 +39,10 @@
     <button
       on:click={() => {
         $theme = $theme === 'dark' ? 'light' : 'dark'
-      }}>{$theme === 'dark' ? '☀️' : '🌙'}</button
+      }}
+      on:dblclick={() => {
+        $theme = 'pride'
+      }}>{$theme === 'pride' ? '🌈' : $theme === 'dark' ? '☀️' : '🌙'}</button
     >
   </div>
 </div>
@@ -51,8 +54,9 @@
     display: flex;
     justify-content: space-between;
     padding: 1em;
-    background-color: var(--bg);
-    box-shadow: var(--shadow);
+    color: var(--primary-text);
+    background: var(--primary-bg);
+    box-shadow: var(--primary-shadow);
 
     a {
       color: inherit;
