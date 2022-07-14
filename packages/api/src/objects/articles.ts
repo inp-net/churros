@@ -19,6 +19,13 @@ export const ArticleType = builder.prismaObject('Article', {
       resolve: async ({ body }) =>
         unified()
           .use(remarkParse)
+          // Downlevel titles (h1 -> h3)
+          .use(() => ({ children }) => {
+            for (const child of children) {
+              if (child.type === 'heading')
+                child.depth = Math.min(child.depth + 2, 6) as 3 | 4 | 5 | 6
+            }
+          })
           .use(remarkRehype)
           .use(rehypeSanitize)
           .use(rehypeStringify)

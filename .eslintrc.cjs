@@ -32,6 +32,7 @@ module.exports = {
     'new-cap': 'off',
     'no-await-in-loop': 'off',
     'no-empty-pattern': 'off',
+    'unicorn/consistent-function-scoping': ['error', { checkArrowFunctions: false }],
     'unicorn/no-abusive-eslint-disable': 'off',
     'unicorn/no-document-cookie': 'off',
     'unicorn/prevent-abbreviations': 'off',

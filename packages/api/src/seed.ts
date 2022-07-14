@@ -153,7 +153,22 @@ for (let i = 0; i < end; i++) {
     title: `Article ${i}`,
     clubId: ((i * 7) % 26) + 1,
     authorId: i % 11 === 0 ? undefined : ((i * 9) % 26) + 1,
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac mauris et justo aliquam lobortis. Proin fringilla diam purus, vel.',
+    body: `**Lorem ipsum dolor sit amet**, consectetur adipiscing elit. Ut feugiat velit sit amet tincidunt gravida. Duis eget laoreet sapien, id.
+
+[Lorem ipsum dolor.](/)
+
+# Partie 1
+
+1. Un
+2. Deux
+3. Trois
+
+# Partie 2
+
+- Un
+- Deux
+- Trois
+`,
     homepage: i % 3 === 0,
     published: i % 7 > 1,
     createdAt: new Date(startDate * (1 - i / end) + endDate * (i / end)),
