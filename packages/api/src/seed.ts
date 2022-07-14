@@ -89,7 +89,7 @@ await prisma.club.createMany({
     { name: 'Xylophone' },
     { name: 'Yoga' },
     { name: 'Zumba' },
-  ],
+  ].map((club, i) => ({ ...club, schoolId: (i % 4) + 1 })),
 })
 
 const clubMembers: Prisma.ClubMemberCreateManyInput[] = []

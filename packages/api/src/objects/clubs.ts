@@ -7,11 +7,12 @@ export const ClubType = builder.prismaObject('Club', {
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
+    articles: t.relation('articles'),
     members: t.relation('members', {
       // Seeing group members requires being logged in
       authScopes: { loggedIn: true },
     }),
-    articles: t.relation('articles'),
+    school: t.relation('school'),
   }),
 })
 
@@ -97,7 +98,7 @@ builder.mutationField('deleteClubMember', (t) =>
       ),
     async resolve(_, { memberId, clubId }) {
       await prisma.clubMember.delete({
-        where: { memberId_clubId: { memberId, clubId } },
+        where: { clubId_memberId: { clubId, memberId } },
       })
       return true
     },
@@ -121,7 +122,7 @@ builder.mutationField('updateClubMember', (t) =>
     resolve: (query, _, { memberId, clubId, title }) =>
       prisma.clubMember.update({
         ...query,
-        where: { memberId_clubId: { memberId, clubId } },
+        where: { clubId_memberId: { clubId, memberId } },
         data: { title },
       }),
   })

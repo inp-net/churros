@@ -18,11 +18,13 @@
                 president: true,
                 treasurer: true,
               },
+              school: { name: true },
             }
           : {
               id: true,
               name: true,
               articles: { title: true, bodyHtml: true },
+              school: { name: true },
             },
       ],
     })
@@ -38,7 +40,7 @@
   export let club: Props['club']
 </script>
 
-<h1>{club.name}</h1>
+<h1>{club.name} ({club.school.name})</h1>
 
 {#if club.members}
   <h2>Membres</h2>

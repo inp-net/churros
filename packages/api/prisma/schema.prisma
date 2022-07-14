@@ -14,7 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// A User
 model User {
   id          Int      @id @default(autoincrement())
   majorId     Int
@@ -40,24 +39,23 @@ model Major {
   id   Int    @id @default(autoincrement())
   name String
 
-  students User[]
   schools  School[]
+  students User[]
 }
 
 model School {
   id   Int    @id @default(autoincrement())
   name String
 
+  clubs  Club[]
   majors Major[]
 }
 
-/// The different kinds of credentials
 enum CredentialType {
   Password
   Token
 }
 
-/// A way for a user to access their account
 model Credential {
   id        Int            @id @default(autoincrement())
   userId    Int
@@ -70,19 +68,19 @@ model Credential {
   user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
-/// A Club
 model Club {
-  id   Int    @id @default(autoincrement())
-  name String
+  id       Int    @id @default(autoincrement())
+  schoolId Int
+  name     String
 
-  members  ClubMember[]
   articles Article[]
+  members  ClubMember[]
+  school   School       @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
 }
 
-/// The intermediate table between User and Club
 model ClubMember {
-  memberId        Int
   clubId          Int
+  memberId        Int
   title           String   @default("") @db.VarChar(255)
   president       Boolean  @default(false)
   treasurer       Boolean  @default(false)
@@ -90,13 +88,12 @@ model ClubMember {
   canEditArticles Boolean  @default(false)
   createdAt       DateTime @default(now())
 
-  member User @relation(fields: [memberId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   club   Club @relation(fields: [clubId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  member User @relation(fields: [memberId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 
-  @@id([memberId, clubId])
+  @@id([clubId, memberId])
 }
 
-/// An article published by a member of a club
 model Article {
   id          Int      @id @default(autoincrement())
   authorId    Int?
