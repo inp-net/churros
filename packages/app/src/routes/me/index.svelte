@@ -35,11 +35,11 @@
 <script lang="ts">
   export let me: Props['me']
 
-  const deleteSession = async (id: string, active: boolean) => {
+  const deleteToken = async (id: string, active: boolean) => {
     if (active) {
       await goto(`/logout?token=${$session.token!}`)
     } else {
-      await mutate({ deleteSession: [{ id }, true] }, $session)
+      await mutate({ deleteToken: [{ id }, true] }, $session)
       me.credentials = me.credentials.filter((credential) => credential.id !== id)
     }
   }
@@ -80,7 +80,7 @@
           {humanizeUserAgent(userAgent)}
         {/if}
       </td>
-      <td><button on:click={async () => deleteSession(id, active)}>❌</button></td>
+      <td><button on:click={async () => deleteToken(id, active)}>❌</button></td>
     </tr>
   {/each}
 </table>

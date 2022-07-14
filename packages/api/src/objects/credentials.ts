@@ -9,8 +9,8 @@ import { DateTimeScalar } from './scalars.js'
 export const CredentialEnumType = builder.enumType(CredentialPrismaType, {
   name: 'CredentialType',
 })
-/** All details about a credential except its value. */
 
+/** All details about a credential except its value. */
 export const CredentialType = builder.prismaObject('Credential', {
   fields: (t) => ({
     id: t.exposeID('id'),
@@ -78,7 +78,7 @@ builder.mutationField('logout', (t) =>
 )
 
 /** Deletes a session. */
-builder.mutationField('deleteSession', (t) =>
+builder.mutationField('deleteToken', (t) =>
   t.field({
     type: 'Boolean',
     args: { id: t.arg.id() },

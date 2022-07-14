@@ -25,6 +25,7 @@
 <div class="top-bar">
   <div>
     <a href="/" sveltekit:prefetch>Accueil</a>
+    <a href="/search/">🔍</a>
   </div>
   <div>
     {#if $session.me && $session.token}

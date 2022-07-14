@@ -32,10 +32,10 @@ export const UserType = builder.prismaObject('User', {
       authScopes: { admin: true, $granted: 'me' },
     }),
 
-    articles: t.relation('articles', { authScopes: { loggedIn: true } }),
-    clubs: t.relation('clubs', { authScopes: { loggedIn: true } }),
+    articles: t.relation('articles', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    clubs: t.relation('clubs', { authScopes: { loggedIn: true, $granted: 'me' } }),
     credentials: t.relation('credentials', { authScopes: { $granted: 'me' } }),
-    major: t.relation('major', { authScopes: { loggedIn: true } }),
+    major: t.relation('major', { authScopes: { loggedIn: true, $granted: 'me' } }),
   }),
 })
 
