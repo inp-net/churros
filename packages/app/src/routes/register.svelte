@@ -4,7 +4,14 @@
   import type { Load } from './__types/register'
   import type { ZodFormattedError } from 'zod'
 
-  const propsQuery = () => Query({ majors: { id: true, name: true, schools: { name: true } } })
+  const propsQuery = () =>
+    Query({
+      majors: {
+        id: true,
+        name: true,
+        schools: { id: true, name: true },
+      },
+    })
 
   type Props = PropsType<typeof propsQuery>
 
@@ -21,6 +28,26 @@
   let lastname = ''
   let password = ''
   let formErrors: ZodFormattedError<typeof args> | undefined
+
+  /** Groups majors by school or tuple of schools. */
+  const majorGroups = new Map<
+    string,
+    { schoolsNames: string[]; majors: Array<{ id: string; name: string }> }
+  >()
+
+  for (const { id, name, schools } of majors) {
+    const key = schools
+      .map(({ id }) => id)
+      .sort()
+      .join(',')
+
+    if (!majorGroups.has(key)) {
+      const schoolsNames = schools.map(({ name }) => name).sort()
+      majorGroups.set(key, { schoolsNames, majors: [] })
+    }
+
+    majorGroups.get(key)!.majors.push({ id, name })
+  }
 
   $: args = { majorId, name, firstname, lastname, password }
 
@@ -44,8 +71,12 @@
     <label>
       Filière :
       <select bind:value={majorId}>
-        {#each majors as { id, name, schools }}
-          <option value={id}>{name} ({schools.map(({ name }) => name).join(', ')})</option>
+        {#each [...majorGroups.values()] as { majors, schoolsNames }}
+          <optgroup label={schoolsNames.join(', ')}>
+            {#each majors as { id, name }}
+              <option value={id}>{name}</option>
+            {/each}
+          </optgroup>
         {/each}
       </select>
     </label>
