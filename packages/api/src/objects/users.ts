@@ -4,6 +4,7 @@ import { hash } from 'argon2'
 import imageType from 'image-type'
 import { writeFile } from 'node:fs/promises'
 import { builder } from '../builder.js'
+import { purgeUserSessions } from '../context.js'
 import { prisma } from '../prisma.js'
 import { DateTimeScalar, FileScalar } from './scalars.js'
 
@@ -39,12 +40,14 @@ export const UserType = builder.prismaObject('User', {
   }),
 })
 
-/** List users. */
+/** Returns the current user. */
 builder.queryField('me', (t) =>
-  t.authField({
+  // We use `prismaField` instead of `field` to leverage the nesting
+  // mechanism of the resolver
+  t.prismaField({
     type: UserType,
     authScopes: { loggedIn: true },
-    resolve: (_, {}, { user }) => user,
+    resolve: (query, _, {}, { user }) => user!,
   })
 )
 
@@ -129,8 +132,10 @@ builder.mutationField('updateUser', (t) =>
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
     },
     authScopes: (_, { id }, { user }) => Boolean(user?.canEditUsers || id === user?.id),
-    resolve: (query, _, { id, nickname }) =>
-      prisma.user.update({ ...query, where: { id }, data: { nickname } }),
+    async resolve(query, _, { id, nickname }) {
+      purgeUserSessions(id)
+      return prisma.user.update({ ...query, where: { id }, data: { nickname } })
+    },
   })
 )
 
@@ -154,7 +159,9 @@ builder.mutationField('updateUserPicture', (t) =>
         .then((buffer) => imageType(buffer))
       if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
         throw new GraphQLYogaError('File format not supported')
+
       const path = `${name}.${type.ext}`
+      purgeUserSessions(id)
       await writeFile(new URL(path, process.env.STORAGE), file.stream())
       await prisma.user.update({ where: { id }, data: { pictureFile: path } })
       return path

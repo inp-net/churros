@@ -40,6 +40,16 @@ export const ArticleType = builder.prismaObject('Article', {
   }),
 })
 
+/** Returns a specific article. */
+builder.queryField('article', (t) =>
+  t.prismaField({
+    type: ArticleType,
+    args: { id: t.arg.id() },
+    resolve: async (query, _, { id }) =>
+      prisma.article.findUniqueOrThrow({ ...query, where: { id } }),
+  })
+)
+
 /** Returns a list of articles from the clubs the user is in. */
 builder.queryField('homepage', (t) =>
   t.prismaField({
@@ -72,7 +82,11 @@ builder.queryField('homepage', (t) =>
         where: {
           published: true,
           OR: [
-            { homepage: true },
+            // Show articles from the same school as the user
+            {
+              homepage: true,
+              club: { school: { id: { in: user.major.schools.map(({ id }) => id) } } },
+            },
             // Show articles from clubs whose user is a member
             { club: { members: { some: { memberId: user.id } } } },
           ],

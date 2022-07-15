@@ -1,5 +1,5 @@
 import { GraphQLYogaError, YogaInitialContext } from '@graphql-yoga/node'
-import { CredentialType } from '@prisma/client'
+import { ClubMember, CredentialType, Major, School, User } from '@prisma/client'
 import { prisma } from './prisma.js'
 
 const getToken = ({ headers }: Request) => {
@@ -8,11 +8,34 @@ const getToken = ({ headers }: Request) => {
   return auth.slice('Bearer '.length)
 }
 
+/** In memory store for sessions. */
+const sessions = new Map<
+  string,
+  User & { clubs: ClubMember[]; major: Major & { schools: School[] } }
+>()
+
+/** Deletes the session cache for a given user id. */
+export const purgeUserSessions = (id: User['id']) => {
+  for (const [token, user] of sessions) if (user.id === id) sessions.delete(token)
+}
+
+/** Returns the user associated with `token` or throws. */
 const getUser = async (token: string) => {
+  if (sessions.has(token)) return sessions.get(token)!
+
   const credential = await prisma.credential
     .findFirstOrThrow({
       where: { type: CredentialType.Token, value: token },
-      include: { user: { include: { clubs: true } } },
+      include: {
+        // `user` must be at least as populated as what `sessionUserQuery`
+        // queries for the cache to work
+        user: {
+          include: {
+            clubs: true,
+            major: { include: { schools: true } },
+          },
+        },
+      },
     })
     .catch(() => {
       throw new GraphQLYogaError('Invalid token.')
@@ -37,11 +60,19 @@ const getUser = async (token: string) => {
   user.canEditClubs ||= user.admin
   user.canEditUsers ||= user.admin
 
+  // When the in memory store grows too big, delete some sessions
+  if (sessions.size > 10_000) {
+    for (const [i, token] of [...sessions.keys()].entries()) if (i % 2) sessions.delete(token)
+  }
+
+  sessions.set(token, user)
+
   return user
 }
 
 export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>
 
+/** The request context, made available in all resolvers. */
 export const context = async ({ request }: YogaInitialContext) => {
   const token = getToken(request)
   if (!token) return {}
