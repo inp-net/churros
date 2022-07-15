@@ -80,8 +80,8 @@ __metadata:
   resolution: "@centraverse/app@workspace:packages/app"
   dependencies:
     "@centraverse/api": "workspace:^"
-    "@sveltejs/adapter-node": ^1.0.0-next.79
-    "@sveltejs/kit": ^1.0.0-next.372
+    "@sveltejs/adapter-node": ^1.0.0-next.81
+    "@sveltejs/kit": ^1.0.0-next.375
     "@types/cookie": ^0.5.1
     "@types/js-cookie": ^3.0.2
     "@types/ua-parser-js": ^0.7.36
@@ -741,49 +741,49 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/adapter-node@npm:^1.0.0-next.79":
-  version: 1.0.0-next.79
-  resolution: "@sveltejs/adapter-node@npm:1.0.0-next.79"
+"@sveltejs/adapter-node@npm:^1.0.0-next.81":
+  version: 1.0.0-next.81
+  resolution: "@sveltejs/adapter-node@npm:1.0.0-next.81"
   dependencies:
     tiny-glob: ^0.2.9
-  checksum: db988a270db624030bc271383d36626f65a17fd568a25dc24035e1defcffcbf697fdb680b5d8b121c51df1d6b5cad5528c136ed1024f95eda260f6efa8ee4b1b
+  checksum: 562f6e817b527eda02b9d5757078b82ead75f2a4b48282a2d498fdea6fe29e1d49725c001927f4b3d8bebe012db840695fdb890f72e0fe3f5d40a777866897ba
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^1.0.0-next.372":
-  version: 1.0.0-next.372
-  resolution: "@sveltejs/kit@npm:1.0.0-next.372"
+"@sveltejs/kit@npm:^1.0.0-next.375":
+  version: 1.0.0-next.375
+  resolution: "@sveltejs/kit@npm:1.0.0-next.375"
   dependencies:
-    "@sveltejs/vite-plugin-svelte": 1.0.0-next.49
+    "@sveltejs/vite-plugin-svelte": ^1.0.1
     chokidar: ^3.5.3
     sade: ^1.8.1
   peerDependencies:
     svelte: ^3.44.0
-    vite: ^2.9.10
+    vite: ^3.0.0
   bin:
     svelte-kit: svelte-kit.js
-  checksum: 5f0eb2790ef37ec074c2c6ce4b46eda3d89f19a0546da6e873bb1aad09d7e23f48525563cb11fa87a44c68f180ba4aa36c68584c161967f2baaef6fa2e231305
+  checksum: a00e3c548e2ed340188be248f6cbfab4c14a36114cec143bc5dcc6f8384cf1b05d1f7004b31535c25b4a41522106f941f19ef9c9d27bcd960fdda91d00d70cb4
   languageName: node
   linkType: hard
 
-"@sveltejs/vite-plugin-svelte@npm:1.0.0-next.49":
-  version: 1.0.0-next.49
-  resolution: "@sveltejs/vite-plugin-svelte@npm:1.0.0-next.49"
+"@sveltejs/vite-plugin-svelte@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@sveltejs/vite-plugin-svelte@npm:1.0.1"
   dependencies:
     "@rollup/pluginutils": ^4.2.1
     debug: ^4.3.4
     deepmerge: ^4.2.2
-    kleur: ^4.1.4
+    kleur: ^4.1.5
     magic-string: ^0.26.2
     svelte-hmr: ^0.14.12
   peerDependencies:
     diff-match-patch: ^1.0.5
     svelte: ^3.44.0
-    vite: ^2.9.0
+    vite: ^3.0.0
   peerDependenciesMeta:
     diff-match-patch:
       optional: true
-  checksum: d87d5a3762eb6bd3970b17d9405537b080a46a2301c487faf6efb776f6102fd1a030fd67d06e88a2cbabadc9162410467cc2dc52624a6edc9ed8cdefe60e635d
+  checksum: e74559268fb2e425cc7d4cfc8514da6a75b5e032a81a1e9592cda03adde9ab2ec1e0e3cb72bf5e95f71c7967d7c8a4ff9f6cdb784b2db27ce0aba9be4ffb225e
   languageName: node
   linkType: hard
 
@@ -3974,7 +3974,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kleur@npm:^4.0.3, kleur@npm:^4.1.4":
+"kleur@npm:^4.0.3, kleur@npm:^4.1.5":
   version: 4.1.5
   resolution: "kleur@npm:4.1.5"
   checksum: 1dc476e32741acf0b1b5b0627ffd0d722e342c1b0da14de3e8ae97821327ca08f9fb944542fb3c126d90ac5f27f9d804edbe7c585bf7d12ef495d115e0f22c12

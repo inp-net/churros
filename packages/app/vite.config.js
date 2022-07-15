@@ -1,4 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite'
+import { fileURLToPath } from 'node:url'
 import windi from 'vite-plugin-windicss'
 
 /** @type {import('vite').UserConfig} */
@@ -7,7 +8,9 @@ const config = {
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@use "${new URL('src/variables.scss', import.meta.url).pathname}" as *;`,
+        additionalData: `@use "${fileURLToPath(
+          new URL('src/variables.scss', import.meta.url)
+        )}" as *;`,
       },
     },
   },

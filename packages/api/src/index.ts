@@ -1,11 +1,12 @@
 import { createServer, GraphQLYogaError } from '@graphql-yoga/node'
 import { ForbiddenError } from '@pothos/plugin-scope-auth'
 import { useNoBatchedQueries } from 'envelop-no-batched-queries'
+import express from 'express'
 import { GraphQLError } from 'graphql'
+import { fileURLToPath } from 'node:url'
 import { ZodError } from 'zod'
 import { context } from './context.js'
 import { schema, writeSchema } from './schema.js'
-import express from 'express'
 
 process.env.DEBUG = 'true'
 
@@ -37,7 +38,7 @@ const yoga = createServer({
 const api = express()
 // api.use(helmet());
 api.use('/graphql', yoga)
-api.use('/storage', express.static(new URL(process.env.STORAGE).pathname))
+api.use('/storage', express.static(fileURLToPath(new URL(process.env.STORAGE))))
 api.listen(4000)
 
 await writeSchema()
