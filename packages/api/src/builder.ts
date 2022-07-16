@@ -24,7 +24,7 @@ export const builder = new SchemaBuilder<{
 }>({
   plugins: [ComplexityPlugin, PrismaPlugin, ScopeAuthPlugin, SimpleObjectsPlugin, ValidationPlugin],
   authScopes,
-  complexity: { limit: { complexity: 500, depth: 4, breadth: 30 } },
+  complexity: { limit: { complexity: 500, depth: 5, breadth: 30 } },
   defaultInputFieldRequiredness: true,
   prisma: { client: prisma },
 })

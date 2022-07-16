@@ -32,7 +32,22 @@ const yoga = createServer({
       return new GraphQLError(message)
     },
   },
-  plugins: [useNoBatchedQueries()],
+  plugins: [
+    useNoBatchedQueries(),
+    {
+      onExecute() {
+        const start = performance.now()
+        return {
+          onExecuteDone() {
+            console.log(
+              '⏱️  Execution took \u001B[36;1m%s ms\u001B[0m',
+              Number((performance.now() - start).toPrecision(3))
+            )
+          },
+        }
+      },
+    },
+  ],
 })
 
 const api = express()
