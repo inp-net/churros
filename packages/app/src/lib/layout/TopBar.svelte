@@ -1,9 +1,14 @@
 <script lang="ts">
   import { navigating, page, session } from '$app/stores'
   import { theme } from '$lib/theme'
+  import { createEventDispatcher } from 'svelte'
   import { expoOut } from 'svelte/easing'
   import { derived } from 'svelte/store'
   import { fly } from 'svelte/transition'
+
+  export let mobile = false
+
+  const dispatch = createEventDispatcher<{ openMenu: undefined }>()
 
   let timeout: unknown
   const showLoader = derived(
@@ -24,6 +29,9 @@
 
 <div class="top-bar">
   <div>
+    {#if mobile}
+      <button on:click={() => dispatch('openMenu')}>≡</button>
+    {/if}
     <a href="/" sveltekit:prefetch>Accueil</a>
     <a href="/search/">🔍</a>
   </div>

@@ -44,6 +44,7 @@ module.exports = {
       rules: {
         // This is not yet possible to enable some typed rules, see
         // https://github.com/sveltejs/eslint-plugin-svelte3/issues/89
+        '@typescript-eslint/no-unnecessary-condition': 'off',
         '@typescript-eslint/no-unsafe-assignment': 'off',
         '@typescript-eslint/no-unsafe-call': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'off',

@@ -1,7 +1,7 @@
 import { mutate } from '$lib/zeus.js'
 import type { RequestHandler } from '@sveltejs/kit'
 
-export const get: RequestHandler = async ({ url, locals }) => {
+export const GET: RequestHandler = async ({ url, locals }) => {
   const token = url.searchParams.get('token')
   if (token !== locals.token) return { status: 401, body: 'Incorrect token' }
 
