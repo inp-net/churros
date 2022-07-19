@@ -1,16 +1,26 @@
 <script lang="ts">
   import Nav from '$lib/layout/Nav.svelte'
   import TopBar from '$lib/layout/TopBar.svelte'
+  import { onMount } from 'svelte'
   import { fade, fly } from 'svelte/transition'
   import 'virtual:windi.css'
   import '../app.scss'
+  import { navigating } from '$app/stores'
 
   let mobile = true
   let menuOpen = false
 
   const onResize = () => {
-    mobile = window.matchMedia('(max-width: 50rem)').matches
+    if (window.matchMedia('(max-width: 50rem)').matches) {
+      mobile = true
+    } else {
+      if (mobile) menuOpen = false
+      mobile = false
+    }
   }
+
+  onMount(onResize)
+  $: if ($navigating) menuOpen = false
 </script>
 
 <svelte:window on:resize={onResize} />
