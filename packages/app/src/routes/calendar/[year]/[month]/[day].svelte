@@ -31,12 +31,8 @@
   const monthFormatter = new Intl.DateTimeFormat('fr', { month: 'long', year: 'numeric' })
   const formatMonth = (date: Date) => monthFormatter.format(date)
 
-  const dayFormatter = new Intl.DateTimeFormat('fr', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
-  const formatDay = (date: Date) => dayFormatter.format(date)
+  const dayFormatter = new Intl.DateTimeFormat('fr', { dateStyle: 'long' })
+  const formatDay = (date: Date) => dayFormatter.format(date).replace(/^1 /, '1er ')
 </script>
 
 <h1>{formatDay(day)}</h1>
