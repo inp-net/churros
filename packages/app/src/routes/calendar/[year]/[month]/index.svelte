@@ -1,12 +1,12 @@
 <script context="module" lang="ts">
   import type { Load } from './__types'
 
-  export const dateToPath = (date: Date) =>
+  export const monthToPath = (date: Date) =>
     `${date.getFullYear()}/${`${date.getMonth() + 1}`.padStart(2, '0')}/`
 
   export const load: Load = ({ params, url }) => {
     const firstDay = new Date(Number(params.year), Number(params.month) - 1, 1, 0, 0, 0, 0)
-    const path = dateToPath(firstDay)
+    const path = monthToPath(firstDay)
     if (!url.pathname.endsWith(path)) return { status: 307, redirect: `../../${path}` }
     return { props: { firstDay } }
   }
@@ -17,6 +17,9 @@
 
   $: previousMonth = new Date(firstDay.getFullYear(), firstDay.getMonth() - 1, 1, 0, 0, 0, 0)
   $: nextMonth = new Date(firstDay.getFullYear(), firstDay.getMonth() + 1, 1, 0, 0, 0, 0)
+
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
 
   const formatter = new Intl.DateTimeFormat('fr', { month: 'long', year: 'numeric' })
   const format = (date: Date) => formatter.format(date)
@@ -53,8 +56,8 @@
 <h1>{format(firstDay)}</h1>
 
 <p class="flex justify-between">
-  <a href="../../{dateToPath(previousMonth)}">⬅️ {format(previousMonth)}</a>
-  <a href="../../{dateToPath(nextMonth)}">{format(nextMonth)} ➡️</a>
+  <a href="../../{monthToPath(previousMonth)}">⬅️ {format(previousMonth)}</a>
+  <a href="../../{monthToPath(nextMonth)}">{format(nextMonth)} ➡️</a>
 </p>
 
 <table>
@@ -62,13 +65,15 @@
   {#each grid as row}
     <tr>
       {#each row as day}
-        <td>{day ? day.getDate() : ' '}</td>
+        <td aria-selected={day?.getTime() === today.getTime()}>
+          {#if day}<a href="{day.getDate()}/">{day.getDate()}</a>{/if}
+        </td>
       {/each}
     </tr>
   {/each}
 </table>
 
-<style>
+<style lang="scss">
   table {
     width: 100%;
     font-variant-numeric: tabular-nums;
@@ -81,9 +86,20 @@
   }
 
   td {
+    position: relative;
     padding: 1em;
     text-align: center;
     border: 1px solid silver;
+
+    a::before {
+      position: absolute;
+      inset: 0;
+      content: '';
+    }
+  }
+
+  td[aria-selected='true'] {
+    background-color: #fcd34d;
   }
 
   td:hover {
