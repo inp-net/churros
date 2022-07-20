@@ -123,3 +123,83 @@ builder.mutationField('createArticle', (t) =>
       }),
   })
 )
+
+/** Updates an article. */
+builder.mutationField('updateArticle', (t) =>
+  t.prismaField({
+    type: ArticleType,
+    args: {
+      id: t.arg.id(),
+      authorId: t.arg.id({ required: false }),
+      title: t.arg.string(),
+      body: t.arg.string(),
+      published: t.arg.boolean(),
+    },
+    async authScopes(_, { id, authorId }, { user }) {
+      if (!user) return false
+      if (user.canEditClubs) return true
+
+      const article = await prisma.article.findUniqueOrThrow({ where: { id } })
+
+      // Who can change the author?
+      if (authorId !== undefined) {
+        // To set their-self or remove the author, the user must be allowed to write articles
+        if (authorId === user.id || authorId === null) {
+          return (
+            authorId === article.authorId ||
+            user.clubs.some(
+              ({ clubId, canEditArticles }) => canEditArticles && clubId === article.clubId
+            )
+          )
+        }
+
+        // Spoofing is forbidden
+        return false
+      }
+
+      // Who can edit this article?
+      return (
+        // The author
+        user.id === article.authorId ||
+        // Other authors of the club
+        user.clubs.some(
+          ({ clubId, canEditArticles }) => canEditArticles && clubId === article.clubId
+        )
+      )
+    },
+    resolve: async (query, _, { id, authorId, title, body, published }) =>
+      prisma.article.update({
+        ...query,
+        where: { id },
+        data: { authorId, title, body, published },
+      }),
+  })
+)
+
+/** Deletes an article. */
+builder.mutationField('deleteArticle', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: { id: t.arg.id() },
+    async authScopes(_, { id }, { user }) {
+      if (!user) return false
+      if (user.canEditClubs) return true
+
+      const article = await prisma.article.findUniqueOrThrow({ where: { id } })
+
+      // Who can delete this article?
+      return (
+        // The author
+        user.id === article.authorId ||
+        // Other authors of the club
+        user.clubs.some(
+          ({ clubId, canEditArticles }) => canEditArticles && clubId === article.clubId
+        )
+      )
+    },
+    async resolve(_, { id }) {
+      await prisma.article.delete({ where: { id } })
+      return true
+    },
+  })
+)

@@ -6,18 +6,15 @@
   import type { Load } from './__types/write'
 
   export const load: Load = ({ session, url, params }) => {
-    if (!session.me) {
-      return redirectToLogin(url.pathname)
-    }
+    if (!session.me) return redirectToLogin(url.pathname)
 
     if (
       !session.me.canEditClubs &&
       !session.me.clubs.some(
         ({ clubId, canEditArticles }) => clubId === params.id && canEditArticles
       )
-    ) {
+    )
       return { status: 307, redirect: '.' }
-    }
 
     return {}
   }

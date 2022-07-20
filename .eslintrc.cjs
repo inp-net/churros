@@ -37,6 +37,7 @@ module.exports = {
     'unicorn/no-abusive-eslint-disable': 'off',
     'unicorn/no-document-cookie': 'off',
     'unicorn/prevent-abbreviations': 'off',
+    curly: ['error', 'multi-or-nest', 'consistent'],
   },
   overrides: [
     {

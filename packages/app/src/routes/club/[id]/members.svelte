@@ -29,9 +29,8 @@
       !session.me?.clubs.some(
         ({ clubId, canEditMembers }) => canEditMembers && clubId === params.id
       )
-    ) {
+    )
       return { status: 307, redirect: '.' }
-    }
 
     try {
       return {
