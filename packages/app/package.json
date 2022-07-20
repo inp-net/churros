@@ -1,15 +1,17 @@
 {
   "name": "@centraverse/app",
+  "dependencies": {
+    "cookie": "^0.5.0",
+    "extract-files": "^12.0.0",
+    "graphql": "^16.5.0"
+  },
   "devDependencies": {
     "@centraverse/api": "workspace:^",
-    "@sveltejs/adapter-node": "^1.0.0-next.81",
-    "@sveltejs/kit": "^1.0.0-next.378",
+    "@sveltejs/adapter-node": "^1.0.0-next.82",
+    "@sveltejs/kit": "^1.0.0-next.386",
     "@types/cookie": "^0.5.1",
     "@types/js-cookie": "^3.0.2",
     "@types/ua-parser-js": "^0.7.36",
-    "cookie": "^0.5.0",
-    "extract-files": "^12.0.0",
-    "graphql": "^16.5.0",
     "graphql-zeus": "^5.1.7",
     "sanitize.css": "^13.0.0",
     "sass": "^1.53.0",
