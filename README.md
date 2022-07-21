@@ -18,6 +18,9 @@ git clone https://git.inpt.fr/inp-net/centraverse.git # or git@git.inpt.fr:inp-n
 # Install dependencies
 yarn install
 
+# Build the project
+yarn build
+
 # Create a database container
 yarn reset
 
