@@ -3,5 +3,6 @@
   "cssvar.files": ["packages/app/src/variables.scss"],
   "cssvar.postcssSyntax": ["postcss-scss"],
   "scss.lint.unknownAtRules": "ignore",
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "windicss.sortOnSave": true
 }

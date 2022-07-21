@@ -28,31 +28,33 @@
 </script>
 
 <div class="top-bar">
-  <div>
-    {#if mobile}
-      <button on:click={() => dispatch('openMenu')}>≡</button>
-    {/if}
-    <a href="/" sveltekit:prefetch>Accueil</a>
-    <a href="/search/">🔍</a>
-  </div>
-  <div>
-    {#if $session.me && $session.token}
-      <a href="/me" sveltekit:prefetch>{$session.me.name}</a>
-      <a href="/logout?{new URLSearchParams({ token: $session.token })}"> Se déconnecter </a>
-    {:else}
-      <a href="/login?{new URLSearchParams({ to: $page.url.pathname })}" sveltekit:prefetch>
-        Se connecter
-      </a>
-      <a href="/register" sveltekit:prefetch>S'inscrire</a>
-    {/if}
-    <button
-      on:click={() => {
-        $theme = $theme === 'dark' ? 'light' : 'dark'
-      }}
-      on:dblclick={() => {
-        $theme = 'pride'
-      }}>{$theme === 'pride' ? '🌈' : $theme === 'dark' ? '☀️' : '🌙'}</button
-    >
+  <div class="flex mx-auto max-w-[100rem] justify-between">
+    <div>
+      {#if mobile}
+        <button on:click={() => dispatch('openMenu')}>≡</button>
+      {/if}
+      <a href="/" sveltekit:prefetch>Accueil</a>
+      <a href="/search/">🔍</a>
+    </div>
+    <div>
+      {#if $session.me && $session.token}
+        <a href="/me" sveltekit:prefetch>{$session.me.name}</a>
+        <a href="/logout?{new URLSearchParams({ token: $session.token })}"> Se déconnecter </a>
+      {:else}
+        <a href="/login?{new URLSearchParams({ to: $page.url.pathname })}" sveltekit:prefetch>
+          Se connecter
+        </a>
+        <a href="/register" sveltekit:prefetch>S'inscrire</a>
+      {/if}
+      <button
+        on:click={() => {
+          $theme = $theme === 'dark' ? 'light' : 'dark'
+        }}
+        on:dblclick={() => {
+          $theme = 'pride'
+        }}>{$theme === 'pride' ? '🌈' : $theme === 'dark' ? '☀️' : '🌙'}</button
+      >
+    </div>
   </div>
   {#if $showLoader}
     <div
@@ -67,8 +69,6 @@
   .top-bar {
     position: sticky;
     top: 0;
-    display: flex;
-    justify-content: space-between;
     max-width: 100%;
     padding: 1em;
     overflow: hidden;

@@ -35,3 +35,39 @@ builder.queryField('club', (t) =>
       }),
   })
 )
+
+/** Updates a club. */
+builder.mutationField('updateClub', (t) =>
+  t.prismaField({
+    type: ClubType,
+    args: { id: t.arg.id(), name: t.arg.string() },
+    authScopes: (_, { id }, { user }) =>
+      Boolean(
+        user?.canEditClubs ||
+          user?.clubs.some(({ clubId, president }) => president && clubId === id)
+      ),
+    resolve: async (query, _, { id, name }) =>
+      prisma.club.update({
+        ...query,
+        where: { id },
+        data: { name },
+      }),
+  })
+)
+
+/** Deletes a club. */
+builder.mutationField('deleteClub', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: { id: t.arg.id() },
+    authScopes: (_, { id }, { user }) =>
+      Boolean(
+        user?.canEditClubs ||
+          user?.clubs.some(({ clubId, president }) => president && clubId === id)
+      ),
+    async resolve(_, { id }) {
+      await prisma.club.delete({ where: { id } })
+      return true
+    },
+  })
+)

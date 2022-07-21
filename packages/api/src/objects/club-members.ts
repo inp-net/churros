@@ -48,28 +48,6 @@ builder.mutationField('addClubMember', (t) =>
   })
 )
 
-/** Removes a member from a club. */
-builder.mutationField('deleteClubMember', (t) =>
-  t.field({
-    type: 'Boolean',
-    args: {
-      memberId: t.arg.id(),
-      clubId: t.arg.id(),
-    },
-    authScopes: (_, { clubId }, { user }) =>
-      Boolean(
-        user?.canEditClubs ||
-          user?.clubs.some(({ clubId: id, canEditMembers }) => canEditMembers && clubId === id)
-      ),
-    async resolve(_, { memberId, clubId }) {
-      await prisma.clubMember.delete({
-        where: { clubId_memberId: { clubId, memberId } },
-      })
-      return true
-    },
-  })
-)
-
 /** Updates a club member. */
 builder.mutationField('updateClubMember', (t) =>
   t.prismaField({
@@ -90,5 +68,25 @@ builder.mutationField('updateClubMember', (t) =>
         where: { clubId_memberId: { clubId, memberId } },
         data: { title },
       }),
+  })
+)
+
+/** Removes a member from a club. */
+builder.mutationField('deleteClubMember', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: {
+      memberId: t.arg.id(),
+      clubId: t.arg.id(),
+    },
+    authScopes: (_, { clubId }, { user }) =>
+      Boolean(
+        user?.canEditClubs ||
+          user?.clubs.some(({ clubId: id, canEditMembers }) => canEditMembers && clubId === id)
+      ),
+    async resolve(_, { memberId, clubId }) {
+      await prisma.clubMember.delete({ where: { clubId_memberId: { clubId, memberId } } })
+      return true
+    },
   })
 )
