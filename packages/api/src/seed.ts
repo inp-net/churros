@@ -23,9 +23,9 @@ await prisma.major.create({
 });
 
 const userData = [
-  { name: 'annie', firstname: 'Annie', lastname: 'Versaire' },
-  { name: 'bernard', firstname: 'Bernard', lastname: 'Tichaut' },
-  { name: 'camille', firstname: 'Camille', lastname: 'Honnête' },
+  { name: 'annie', firstname: 'Annie', lastname: 'Versaire', admin: true },
+  { name: 'bernard', firstname: 'Bernard', lastname: 'Tichaut', canEditClubs: true },
+  { name: 'camille', firstname: 'Camille', lastname: 'Honnête', canEditUsers: true },
   { name: 'denis', firstname: 'Denis', lastname: 'Chon' },
   { name: 'elie', firstname: 'Élie', lastname: 'Coptère' },
   { name: 'fred', firstname: 'Fred', lastname: 'Voyage' },

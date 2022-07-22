@@ -58,7 +58,7 @@
       </tr>
     {/each}
   </table>
-  {#if $session.me?.clubs.some(({ clubId, canEditMembers }) => clubId === $page.params.id && canEditMembers)}
+  {#if $session.me?.canEditClubs || $session.me?.clubs.some(({ clubId, canEditMembers }) => canEditMembers && clubId === $page.params.id)}
     <p>
       <a href="/club/{$page.params.id}/members" sveltekit:prefetch>
         Modifier la liste des membres
