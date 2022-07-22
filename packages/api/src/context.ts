@@ -1,27 +1,27 @@
-import { GraphQLYogaError, YogaInitialContext } from '@graphql-yoga/node'
-import { ClubMember, CredentialType, Major, School, User } from '@prisma/client'
-import { prisma } from './prisma.js'
+import { GraphQLYogaError, YogaInitialContext } from '@graphql-yoga/node';
+import { ClubMember, CredentialType, Major, School, User } from '@prisma/client';
+import { prisma } from './prisma.js';
 
 const getToken = ({ headers }: Request) => {
-  const auth = headers.get('Authorization')
-  if (!auth) return
-  return auth.slice('Bearer '.length)
-}
+  const auth = headers.get('Authorization');
+  if (!auth) return;
+  return auth.slice('Bearer '.length);
+};
 
 /** In memory store for sessions. */
 const sessions = new Map<
   string,
   User & { clubs: ClubMember[]; major: Major & { schools: School[] } }
->()
+>();
 
 /** Deletes the session cache for a given user id. */
 export const purgeUserSessions = (id: User['id']) => {
-  for (const [token, user] of sessions) if (user.id === id) sessions.delete(token)
-}
+  for (const [token, user] of sessions) if (user.id === id) sessions.delete(token);
+};
 
 /** Returns the user associated with `token` or throws. */
 const getUser = async (token: string) => {
-  if (sessions.has(token)) return sessions.get(token)!
+  if (sessions.has(token)) return sessions.get(token)!;
 
   const credential = await prisma.credential
     .findFirstOrThrow({
@@ -38,42 +38,42 @@ const getUser = async (token: string) => {
       },
     })
     .catch(() => {
-      throw new GraphQLYogaError('Invalid token.')
-    })
+      throw new GraphQLYogaError('Invalid token.');
+    });
 
   // If the session expired, delete it
   if (credential.expiresAt !== null && credential.expiresAt < new Date()) {
-    await prisma.credential.delete({ where: { id: credential.id } })
-    throw new GraphQLYogaError('Session expired.')
+    await prisma.credential.delete({ where: { id: credential.id } });
+    throw new GraphQLYogaError('Session expired.');
   }
 
   // Delete expired sessions once in a while
   if (Math.random() < 0.001) {
     await prisma.credential.deleteMany({
       where: { type: CredentialType.Token, expiresAt: { lt: new Date() } },
-    })
+    });
   }
 
-  const { user } = credential
+  const { user } = credential;
 
   // Normalize permissions
-  user.canEditClubs ||= user.admin
-  user.canEditUsers ||= user.admin
+  user.canEditClubs ||= user.admin;
+  user.canEditUsers ||= user.admin;
 
   // When the in memory store grows too big, delete some sessions
   if (sessions.size > 10_000)
-    for (const [i, token] of [...sessions.keys()].entries()) if (i % 2) sessions.delete(token)
+    for (const [i, token] of [...sessions.keys()].entries()) if (i % 2) sessions.delete(token);
 
-  sessions.set(token, user)
+  sessions.set(token, user);
 
-  return user
-}
+  return user;
+};
 
-export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>
+export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;
 
 /** The request context, made available in all resolvers. */
 export const context = async ({ request }: YogaInitialContext) => {
-  const token = getToken(request)
-  if (!token) return {}
-  return { token, user: await getUser(token) }
-}
+  const token = getToken(request);
+  if (!token) return {};
+  return { token, user: await getUser(token) };
+};

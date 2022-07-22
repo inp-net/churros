@@ -1,16 +1,16 @@
 <script context="module" lang="ts">
-  import { page } from '$app/stores'
-  import { ZeusError } from '$lib/zeus'
+  import { page } from '$app/stores';
+  import { ZeusError } from '$lib/zeus';
 </script>
 
 <script lang="ts">
-  let error: Error | null
-  let status: number
+  let error: Error | null;
+  let status: number;
 
-  $: ({ error, status } = $page)
+  $: ({ error, status } = $page);
 
   // Revive stringified `ZeusError`s
-  $: if (error?.name === 'ZeusError') error = new ZeusError($page.error as ZeusError)
+  $: if (error?.name === 'ZeusError') error = new ZeusError($page.error as ZeusError);
 </script>
 
 {#if status === 401}

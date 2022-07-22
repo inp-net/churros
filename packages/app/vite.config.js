@@ -1,6 +1,6 @@
-import { sveltekit } from '@sveltejs/kit/vite'
-import { fileURLToPath } from 'node:url'
-import windi from 'vite-plugin-windicss'
+import { sveltekit } from '@sveltejs/kit/vite';
+import { fileURLToPath } from 'node:url';
+import windi from 'vite-plugin-windicss';
 
 /** @type {import('vite').UserConfig} */
 const config = {
@@ -14,6 +14,6 @@ const config = {
       },
     },
   },
-}
+};
 
-export default config
+export default config;

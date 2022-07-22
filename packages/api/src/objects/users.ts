@@ -1,12 +1,12 @@
-import { GraphQLYogaError } from '@graphql-yoga/node'
-import { CredentialType as CredentialPrismaType } from '@prisma/client'
-import { hash } from 'argon2'
-import imageType from 'image-type'
-import { writeFile } from 'node:fs/promises'
-import { builder } from '../builder.js'
-import { purgeUserSessions } from '../context.js'
-import { prisma } from '../prisma.js'
-import { DateTimeScalar, FileScalar } from './scalars.js'
+import { GraphQLYogaError } from '@graphql-yoga/node';
+import { CredentialType as CredentialPrismaType } from '@prisma/client';
+import { hash } from 'argon2';
+import imageType from 'image-type';
+import { writeFile } from 'node:fs/promises';
+import { builder } from '../builder.js';
+import { purgeUserSessions } from '../context.js';
+import { prisma } from '../prisma.js';
+import { DateTimeScalar, FileScalar } from './scalars.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaObject('User', {
@@ -47,7 +47,7 @@ export const UserType = builder.prismaObject('User', {
     }),
     major: t.relation('major', { authScopes: { loggedIn: true, $granted: 'me' } }),
   }),
-})
+});
 
 /** Returns the current user. */
 builder.queryField('me', (t) =>
@@ -58,7 +58,7 @@ builder.queryField('me', (t) =>
     authScopes: { loggedIn: true },
     resolve: (query, _, {}, { user }) => user!,
   })
-)
+);
 
 /** Gets a user from its id. */
 builder.queryField('user', (t) =>
@@ -68,7 +68,7 @@ builder.queryField('user', (t) =>
     authScopes: { loggedIn: true },
     resolve: async (query, _, { id }) => prisma.user.findUniqueOrThrow({ ...query, where: { id } }),
   })
-)
+);
 
 /** Searches for user on all text fields. */
 builder.queryField('searchUsers', (t) =>
@@ -77,8 +77,8 @@ builder.queryField('searchUsers', (t) =>
     args: { q: t.arg.string() },
     authScopes: { loggedIn: true },
     async resolve(query, _, { q }) {
-      const terms = new Set(String(q).split(' ').filter(Boolean))
-      const search = [...terms].join('&')
+      const terms = new Set(String(q).split(' ').filter(Boolean));
+      const search = [...terms].join('&');
       return prisma.user.findMany({
         ...query,
         where: {
@@ -87,10 +87,10 @@ builder.queryField('searchUsers', (t) =>
           name: { search },
           nickname: { search },
         },
-      })
+      });
     },
   })
-)
+);
 
 /** Registers a new user. */
 builder.mutationField('register', (t) =>
@@ -130,7 +130,7 @@ builder.mutationField('register', (t) =>
         },
       }),
   })
-)
+);
 
 /** Updates a user. */
 builder.mutationField('updateUser', (t) =>
@@ -142,11 +142,11 @@ builder.mutationField('updateUser', (t) =>
     },
     authScopes: (_, { id }, { user }) => Boolean(user?.canEditUsers || id === user?.id),
     async resolve(query, _, { id, nickname }) {
-      purgeUserSessions(id)
-      return prisma.user.update({ ...query, where: { id }, data: { nickname } })
+      purgeUserSessions(id);
+      return prisma.user.update({ ...query, where: { id }, data: { nickname } });
     },
   })
-)
+);
 
 builder.mutationField('updateUserPicture', (t) =>
   t.field({
@@ -160,20 +160,20 @@ builder.mutationField('updateUserPicture', (t) =>
       const { name } = await prisma.user.findUniqueOrThrow({
         where: { id },
         select: { name: true },
-      })
+      });
       const type = await file
         .slice(0, imageType.minimumBytes)
         .arrayBuffer()
         .then((array) => Buffer.from(array))
-        .then((buffer) => imageType(buffer))
+        .then((buffer) => imageType(buffer));
       if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
-        throw new GraphQLYogaError('File format not supported')
+        throw new GraphQLYogaError('File format not supported');
 
-      const path = `${name}.${type.ext}`
-      purgeUserSessions(id)
-      await writeFile(new URL(path, process.env.STORAGE), file.stream())
-      await prisma.user.update({ where: { id }, data: { pictureFile: path } })
-      return path
+      const path = `${name}.${type.ext}`;
+      purgeUserSessions(id);
+      await writeFile(new URL(path, process.env.STORAGE), file.stream());
+      await prisma.user.update({ where: { id }, data: { pictureFile: path } });
+      return path;
     },
   })
-)
+);

@@ -1,27 +1,27 @@
 <script context="module" lang="ts">
-  import { session } from '$app/stores'
-  import { $ as Zvar, mutate, query, Query, type PropsType } from '$lib/zeus'
-  import type { Load } from './__types/edit'
+  import { session } from '$app/stores';
+  import { $ as Zvar, mutate, query, Query, type PropsType } from '$lib/zeus';
+  import type { Load } from './__types/edit';
 
   const propsQuery = (id: string) =>
     Query({
       user: [{ id }, { id: true, firstname: true, lastname: true, nickname: true }],
-    })
+    });
 
-  type Props = PropsType<typeof propsQuery>
+  type Props = PropsType<typeof propsQuery>;
 
   export const load: Load = async ({ fetch, params, session }) =>
     params.id === session.me?.id || session.me?.canEditUsers
       ? { props: await query(fetch, propsQuery(params.id), session) }
-      : { status: 307, redirect: '..' }
+      : { status: 307, redirect: '..' };
 </script>
 
 <script lang="ts">
-  export let user: Props['user']
+  export let user: Props['user'];
 
-  let { id, nickname } = user
-  let files: FileList
-  let userPicture: string | undefined
+  let { id, nickname } = user;
+  let files: FileList;
+  let userPicture: string | undefined;
 
   const updateUser = async () => {
     const { updateUser } = await mutate(
@@ -32,9 +32,9 @@
         ],
       },
       $session
-    )
-    user = updateUser
-  }
+    );
+    user = updateUser;
+  };
 
   const updateUserPicture = async () => {
     const { updateUserPicture } = await mutate(
@@ -42,9 +42,9 @@
         updateUserPicture: [{ id, file: Zvar('file', 'File!') }, true],
       },
       { token: $session.token, variables: { file: files[0] } }
-    )
-    userPicture = updateUserPicture
-  }
+    );
+    userPicture = updateUserPicture;
+  };
 </script>
 
 <h1>Éditer {user.firstname} {user.nickname} {user.lastname}</h1>

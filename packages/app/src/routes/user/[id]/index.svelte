@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
-  import { redirectToLogin } from '$lib/session'
-  import { Query, query, type PropsType } from '$lib/zeus'
-  import type { Load } from '@sveltejs/kit'
-  import { session } from '$app/stores'
+  import { redirectToLogin } from '$lib/session';
+  import { Query, query, type PropsType } from '$lib/zeus';
+  import type { Load } from '@sveltejs/kit';
+  import { session } from '$app/stores';
 
   const propsQuery = (id: string) =>
     Query({
@@ -17,18 +17,18 @@
           major: { name: true, schools: { name: true } },
         },
       ],
-    })
+    });
 
-  type Props = PropsType<typeof propsQuery>
+  type Props = PropsType<typeof propsQuery>;
 
   export const load: Load = async ({ fetch, params, session, url }) =>
     session.me
       ? { props: await query(fetch, propsQuery(params.id), session) }
-      : redirectToLogin(url.pathname)
+      : redirectToLogin(url.pathname);
 </script>
 
 <script lang="ts">
-  export let user: Props['user']
+  export let user: Props['user'];
 </script>
 
 {#if user.pictureFile}

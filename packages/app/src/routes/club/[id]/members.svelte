@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
-  import { page, session } from '$app/stores'
-  import { redirectToLogin } from '$lib/session'
-  import { mutate, query, Query, type PropsType } from '$lib/zeus'
-  import type { Load } from './__types/members'
+  import { page, session } from '$app/stores';
+  import { redirectToLogin } from '$lib/session';
+  import { mutate, query, Query, type PropsType } from '$lib/zeus';
+  import type { Load } from './__types/members';
 
   const propsQuery = (id: string) =>
     Query({
@@ -19,9 +19,9 @@
           },
         },
       ],
-    })
+    });
 
-  type Props = PropsType<typeof propsQuery>
+  type Props = PropsType<typeof propsQuery>;
 
   export const load: Load = async ({ fetch, params, session, url }) => {
     if (
@@ -30,25 +30,25 @@
         ({ clubId, canEditMembers }) => canEditMembers && clubId === params.id
       )
     )
-      return { status: 307, redirect: '.' }
+      return { status: 307, redirect: '.' };
 
     try {
       return {
         props: await query(fetch, propsQuery(params.id), {
           token: session.token,
         }),
-      }
+      };
     } catch {
-      return redirectToLogin(url.pathname)
+      return redirectToLogin(url.pathname);
     }
-  }
+  };
 </script>
 
 <script lang="ts">
-  export let club: Props['club']
+  export let club: Props['club'];
 
-  let name = ''
-  let title = ''
+  let name = '';
+  let title = '';
 
   const addClubMember = async () => {
     try {
@@ -67,26 +67,26 @@
           ],
         },
         $session
-      )
-      club.members = [...club.members, addClubMember]
+      );
+      club.members = [...club.members, addClubMember];
     } catch (error: unknown) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const deleteClubMember = async (memberId: string) => {
     try {
-      await mutate({ deleteClubMember: [{ clubId: $page.params.id, memberId }, true] }, $session)
-      club.members = club.members.filter((member) => member.memberId !== memberId)
+      await mutate({ deleteClubMember: [{ clubId: $page.params.id, memberId }, true] }, $session);
+      club.members = club.members.filter((member) => member.memberId !== memberId);
     } catch (error: unknown) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const updateClubMember = async (memberId: string) => {
     try {
-      const member = club.members.find((member) => member.memberId === memberId)
-      if (!member) throw new Error('Member not found')
+      const member = club.members.find((member) => member.memberId === memberId);
+      if (!member) throw new Error('Member not found');
       const { updateClubMember } = await mutate(
         {
           updateClubMember: [
@@ -95,14 +95,14 @@
           ],
         },
         $session
-      )
+      );
       club.members = club.members.map((member) =>
         member.memberId === memberId ? { ...member, ...updateClubMember } : member
-      )
+      );
     } catch (error: unknown) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 </script>
 
 <table>

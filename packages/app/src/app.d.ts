@@ -1,9 +1,9 @@
 declare namespace App {
-  type SessionUserType = import('$lib/session.js').SessionUser
+  type SessionUserType = import('$lib/session.js').SessionUser;
 
   interface Session {
-    token?: string
-    me?: SessionUserType
+    token?: string;
+    me?: SessionUserType;
   }
 
   interface Locals extends Session {}
@@ -13,9 +13,9 @@ declare namespace App {
 }
 
 interface ImportMetaEnv {
-  readonly VITE_API_URL: string
+  readonly VITE_API_URL: string;
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv
+  readonly env: ImportMetaEnv;
 }

@@ -11,8 +11,8 @@
       // Prevent a flash on page load
       let theme =
         sessionStorage.getItem('theme') ??
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-      document.documentElement.classList.add(theme)
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.classList.add(theme);
     </script>
     <div>%sveltekit.body%</div>
   </body>

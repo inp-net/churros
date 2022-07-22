@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
-  import { page, session } from '$app/stores'
-  import { query, Query, type PropsType } from '$lib/zeus'
-  import type { Load } from './__types'
+  import { page, session } from '$app/stores';
+  import { query, Query, type PropsType } from '$lib/zeus';
+  import type { Load } from './__types';
 
   const propsQuery = (id: string, loggedIn: boolean) =>
     Query({
@@ -27,17 +27,17 @@
               school: { name: true },
             },
       ],
-    })
+    });
 
-  type Props = PropsType<typeof propsQuery>
+  type Props = PropsType<typeof propsQuery>;
 
   export const load: Load = async ({ fetch, params, session }) => ({
     props: await query(fetch, propsQuery(params.id, Boolean(session.me)), session),
-  })
+  });
 </script>
 
 <script lang="ts">
-  export let club: Props['club']
+  export let club: Props['club'];
 </script>
 
 <h1>{club.name} ({club.school.name})</h1>

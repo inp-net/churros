@@ -1,11 +1,11 @@
-import rehypeSanitize from 'rehype-sanitize'
-import rehypeStringify from 'rehype-stringify'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import { unified } from 'unified'
-import { builder } from '../builder.js'
-import { prisma } from '../prisma.js'
-import { DateTimeScalar } from './scalars.js'
+import rehypeSanitize from 'rehype-sanitize';
+import rehypeStringify from 'rehype-stringify';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import { unified } from 'unified';
+import { builder } from '../builder.js';
+import { prisma } from '../prisma.js';
+import { DateTimeScalar } from './scalars.js';
 
 /** Represents an article, published by a member of a club. */
 export const ArticleType = builder.prismaObject('Article', {
@@ -23,7 +23,7 @@ export const ArticleType = builder.prismaObject('Article', {
           .use(() => ({ children }) => {
             for (const child of children) {
               if (child.type === 'heading')
-                child.depth = Math.min(child.depth + 2, 6) as 3 | 4 | 5 | 6
+                child.depth = Math.min(child.depth + 2, 6) as 3 | 4 | 5 | 6;
             }
           })
           .use(remarkRehype)
@@ -38,7 +38,7 @@ export const ArticleType = builder.prismaObject('Article', {
     author: t.relation('author', { nullable: true }),
     club: t.relation('club'),
   }),
-})
+});
 
 /** Returns a specific article. */
 builder.queryField('article', (t) =>
@@ -48,7 +48,7 @@ builder.queryField('article', (t) =>
     resolve: async (query, _, { id }) =>
       prisma.article.findUniqueOrThrow({ ...query, where: { id } }),
   })
-)
+);
 
 /** Returns a list of articles from the clubs the user is in. */
 builder.queryField('homepage', (t) =>
@@ -59,7 +59,7 @@ builder.queryField('homepage', (t) =>
       after: t.arg.id({ required: false }),
     },
     async resolve(query, _, { first, after }, { user }) {
-      first ??= 20
+      first ??= 20;
       if (!user) {
         return prisma.article.findMany({
           ...query,
@@ -70,7 +70,7 @@ builder.queryField('homepage', (t) =>
           // Only public articles
           where: { published: true, homepage: true },
           orderBy: { publishedAt: 'desc' },
-        })
+        });
       }
 
       return prisma.article.findMany({
@@ -92,10 +92,10 @@ builder.queryField('homepage', (t) =>
           ],
         },
         orderBy: { publishedAt: 'desc' },
-      })
+      });
     },
   })
-)
+);
 
 /** Inserts a new article. */
 builder.mutationField('createArticle', (t) =>
@@ -122,7 +122,7 @@ builder.mutationField('createArticle', (t) =>
         },
       }),
   })
-)
+);
 
 /** Updates an article. */
 builder.mutationField('updateArticle', (t) =>
@@ -136,10 +136,10 @@ builder.mutationField('updateArticle', (t) =>
       published: t.arg.boolean(),
     },
     async authScopes(_, { id, authorId }, { user }) {
-      if (!user) return false
-      if (user.canEditClubs) return true
+      if (!user) return false;
+      if (user.canEditClubs) return true;
 
-      const article = await prisma.article.findUniqueOrThrow({ where: { id } })
+      const article = await prisma.article.findUniqueOrThrow({ where: { id } });
 
       // Who can change the author?
       if (authorId !== undefined) {
@@ -150,11 +150,11 @@ builder.mutationField('updateArticle', (t) =>
             user.clubs.some(
               ({ clubId, canEditArticles }) => canEditArticles && clubId === article.clubId
             )
-          )
+          );
         }
 
         // Spoofing is forbidden
-        return false
+        return false;
       }
 
       // Who can edit this article?
@@ -165,7 +165,7 @@ builder.mutationField('updateArticle', (t) =>
         user.clubs.some(
           ({ clubId, canEditArticles }) => canEditArticles && clubId === article.clubId
         )
-      )
+      );
     },
     resolve: async (query, _, { id, authorId, title, body, published }) =>
       prisma.article.update({
@@ -174,7 +174,7 @@ builder.mutationField('updateArticle', (t) =>
         data: { authorId, title, body, published, publishedAt: published ? new Date() : undefined },
       }),
   })
-)
+);
 
 /** Deletes an article. */
 builder.mutationField('deleteArticle', (t) =>
@@ -182,10 +182,10 @@ builder.mutationField('deleteArticle', (t) =>
     type: 'Boolean',
     args: { id: t.arg.id() },
     async authScopes(_, { id }, { user }) {
-      if (!user) return false
-      if (user.canEditClubs) return true
+      if (!user) return false;
+      if (user.canEditClubs) return true;
 
-      const article = await prisma.article.findUniqueOrThrow({ where: { id } })
+      const article = await prisma.article.findUniqueOrThrow({ where: { id } });
 
       // Who can delete this article?
       return (
@@ -195,11 +195,11 @@ builder.mutationField('deleteArticle', (t) =>
         user.clubs.some(
           ({ clubId, canEditArticles }) => canEditArticles && clubId === article.clubId
         )
-      )
+      );
     },
     async resolve(_, { id }) {
-      await prisma.article.delete({ where: { id } })
-      return true
+      await prisma.article.delete({ where: { id } });
+      return true;
     },
   })
-)
+);

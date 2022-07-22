@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
-  import { goto } from '$app/navigation'
-  import { ZeusError, mutate, Query, query, type PropsType } from '$lib/zeus'
-  import type { Load } from './__types/register'
-  import type { ZodFormattedError } from 'zod'
+  import { goto } from '$app/navigation';
+  import { ZeusError, mutate, Query, query, type PropsType } from '$lib/zeus';
+  import type { Load } from './__types/register';
+  import type { ZodFormattedError } from 'zod';
 
   const propsQuery = () =>
     Query({
@@ -11,59 +11,59 @@
         name: true,
         schools: { id: true, name: true },
       },
-    })
+    });
 
-  type Props = PropsType<typeof propsQuery>
+  type Props = PropsType<typeof propsQuery>;
 
   export const load: Load = async ({ fetch, session }) =>
-    session.me ? { status: 307, redirect: '/' } : { props: await query(fetch, propsQuery()) }
+    session.me ? { status: 307, redirect: '/' } : { props: await query(fetch, propsQuery()) };
 </script>
 
 <script lang="ts">
-  export let majors: Props['majors']
+  export let majors: Props['majors'];
 
-  let majorId = majors[0].id
-  let name = ''
-  let firstname = ''
-  let lastname = ''
-  let password = ''
-  let formErrors: ZodFormattedError<typeof args> | undefined
+  let majorId = majors[0].id;
+  let name = '';
+  let firstname = '';
+  let lastname = '';
+  let password = '';
+  let formErrors: ZodFormattedError<typeof args> | undefined;
 
   /** Groups majors by school or tuple of schools. */
   const majorGroups = new Map<
     string,
     { schoolsNames: string[]; majors: Array<{ id: string; name: string }> }
-  >()
+  >();
 
   for (const { id, name, schools } of majors) {
     const key = schools
       .map(({ id }) => id)
       .sort()
-      .join(',')
+      .join(',');
 
     if (!majorGroups.has(key)) {
-      const schoolsNames = schools.map(({ name }) => name).sort()
-      majorGroups.set(key, { schoolsNames, majors: [] })
+      const schoolsNames = schools.map(({ name }) => name).sort();
+      majorGroups.set(key, { schoolsNames, majors: [] });
     }
 
-    majorGroups.get(key)!.majors.push({ id, name })
+    majorGroups.get(key)!.majors.push({ id, name });
   }
 
-  $: args = { majorId, name, firstname, lastname, password }
+  $: args = { majorId, name, firstname, lastname, password };
 
   const register = async () => {
     try {
-      await mutate({ register: [args, { id: true }] })
-      await goto('/')
+      await mutate({ register: [args, { id: true }] });
+      await goto('/');
     } catch (error: unknown) {
-      if (!(error instanceof ZeusError)) throw error
+      if (!(error instanceof ZeusError)) throw error;
 
       for (const { extensions } of error.errors) {
         if (extensions.code === 'ZOD_ERROR')
-          formErrors = extensions.errors as ZodFormattedError<typeof args>
+          formErrors = extensions.errors as ZodFormattedError<typeof args>;
       }
     }
-  }
+  };
 </script>
 
 <form on:submit|preventDefault={register}>

@@ -1,12 +1,12 @@
 <script context="module" lang="ts">
-  import { redirectToLogin } from '$lib/session'
-  import { Query, query, type PropsType } from '$lib/zeus'
-  import type { Load } from './__types'
+  import { redirectToLogin } from '$lib/session';
+  import { Query, query, type PropsType } from '$lib/zeus';
+  import type { Load } from './__types';
 
   const propsQuery = (q: string) =>
-    Query({ searchUsers: [{ q }, { id: true, firstname: true, lastname: true }] })
+    Query({ searchUsers: [{ q }, { id: true, firstname: true, lastname: true }] });
 
-  type Props = PropsType<typeof propsQuery>
+  type Props = PropsType<typeof propsQuery>;
 
   export const load: Load = async ({ fetch, session, url }) =>
     session.me
@@ -15,15 +15,15 @@
             ? await query(fetch, propsQuery(url.searchParams.get('q')!), session)
             : {},
         }
-      : redirectToLogin(url.pathname + url.search)
+      : redirectToLogin(url.pathname + url.search);
 </script>
 
 <script lang="ts">
-  import { goto } from '$app/navigation'
+  import { goto } from '$app/navigation';
 
-  export let searchUsers: Props['searchUsers'] | undefined
+  export let searchUsers: Props['searchUsers'] | undefined;
 
-  let q = ''
+  let q = '';
 </script>
 
 <form

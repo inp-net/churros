@@ -1,30 +1,30 @@
 <script lang="ts">
-  import { navigating, page, session } from '$app/stores'
-  import { theme } from '$lib/theme'
-  import { createEventDispatcher } from 'svelte'
-  import { expoOut } from 'svelte/easing'
-  import { derived } from 'svelte/store'
-  import { fly } from 'svelte/transition'
+  import { navigating, page, session } from '$app/stores';
+  import { theme } from '$lib/theme';
+  import { createEventDispatcher } from 'svelte';
+  import { expoOut } from 'svelte/easing';
+  import { derived } from 'svelte/store';
+  import { fly } from 'svelte/transition';
 
-  export let mobile = false
+  export let mobile = false;
 
-  const dispatch = createEventDispatcher<{ openMenu: undefined }>()
+  const dispatch = createEventDispatcher<{ openMenu: undefined }>();
 
-  let timeout: unknown
+  let timeout: unknown;
   const showLoader = derived(
     navigating,
     ($navigating, set) => {
-      if (timeout !== undefined) clearTimeout(timeout as number)
+      if (timeout !== undefined) clearTimeout(timeout as number);
       if ($navigating) {
         timeout = setTimeout(() => {
-          set(true)
-        }, 200)
+          set(true);
+        }, 200);
       } else {
-        set(false)
+        set(false);
       }
     },
     false
-  )
+  );
 </script>
 
 <div class="top-bar">
@@ -48,10 +48,10 @@
       {/if}
       <button
         on:click={() => {
-          $theme = $theme === 'dark' ? 'light' : 'dark'
+          $theme = $theme === 'dark' ? 'light' : 'dark';
         }}
         on:dblclick={() => {
-          $theme = 'pride'
+          $theme = 'pride';
         }}>{$theme === 'pride' ? '🌈' : $theme === 'dark' ? '☀️' : '🌙'}</button
       >
     </div>

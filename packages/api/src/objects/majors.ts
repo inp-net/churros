@@ -1,5 +1,5 @@
-import { builder } from '../builder.js'
-import { prisma } from '../prisma.js'
+import { builder } from '../builder.js';
+import { prisma } from '../prisma.js';
 
 export const MajorType = builder.prismaObject('Major', {
   fields: (t) => ({
@@ -7,11 +7,11 @@ export const MajorType = builder.prismaObject('Major', {
     name: t.exposeString('name'),
     schools: t.relation('schools', { query: { orderBy: { name: 'asc' } } }),
   }),
-})
+});
 
 builder.queryField('majors', (t) =>
   t.prismaField({
     type: [MajorType],
     resolve: async (query) => prisma.major.findMany({ ...query, orderBy: { name: 'asc' } }),
   })
-)
+);

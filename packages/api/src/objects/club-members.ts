@@ -1,6 +1,6 @@
-import { builder } from '../builder.js'
-import { prisma } from '../prisma.js'
-import { DateTimeScalar } from './scalars.js'
+import { builder } from '../builder.js';
+import { prisma } from '../prisma.js';
+import { DateTimeScalar } from './scalars.js';
 
 /**
  * Represents a club member, mapped on the underlying database object.
@@ -20,7 +20,7 @@ export const ClubMemberType = builder.prismaObject('ClubMember', {
     member: t.relation('member'),
     club: t.relation('club'),
   }),
-})
+});
 
 /** Adds a member to a club. The member is found by their name. */
 builder.mutationField('addClubMember', (t) =>
@@ -46,7 +46,7 @@ builder.mutationField('addClubMember', (t) =>
         },
       }),
   })
-)
+);
 
 /** Updates a club member. */
 builder.mutationField('updateClubMember', (t) =>
@@ -69,7 +69,7 @@ builder.mutationField('updateClubMember', (t) =>
         data: { title },
       }),
   })
-)
+);
 
 /** Removes a member from a club. */
 builder.mutationField('deleteClubMember', (t) =>
@@ -85,8 +85,8 @@ builder.mutationField('deleteClubMember', (t) =>
           user?.clubs.some(({ clubId: id, canEditMembers }) => canEditMembers && clubId === id)
       ),
     async resolve(_, { memberId, clubId }) {
-      await prisma.clubMember.delete({ where: { clubId_memberId: { clubId, memberId } } })
-      return true
+      await prisma.clubMember.delete({ where: { clubId_memberId: { clubId, memberId } } });
+      return true;
     },
   })
-)
+);

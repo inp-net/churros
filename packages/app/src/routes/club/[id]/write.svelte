@@ -1,12 +1,12 @@
 <script context="module" lang="ts">
-  import { goto } from '$app/navigation'
-  import { page, session } from '$app/stores'
-  import { redirectToLogin } from '$lib/session'
-  import { mutate } from '$lib/zeus'
-  import type { Load } from './__types/write'
+  import { goto } from '$app/navigation';
+  import { page, session } from '$app/stores';
+  import { redirectToLogin } from '$lib/session';
+  import { mutate } from '$lib/zeus';
+  import type { Load } from './__types/write';
 
   export const load: Load = ({ session, url, params }) => {
-    if (!session.me) return redirectToLogin(url.pathname)
+    if (!session.me) return redirectToLogin(url.pathname);
 
     if (
       !session.me.canEditClubs &&
@@ -14,15 +14,15 @@
         ({ clubId, canEditArticles }) => clubId === params.id && canEditArticles
       )
     )
-      return { status: 307, redirect: '.' }
+      return { status: 307, redirect: '.' };
 
-    return {}
-  }
+    return {};
+  };
 </script>
 
 <script lang="ts">
-  let title = ''
-  let body = ''
+  let title = '';
+  let body = '';
 
   const createArticle = async () => {
     try {
@@ -31,12 +31,12 @@
           createArticle: [{ title, body, clubId: $page.params.id }, { id: true }],
         },
         $session
-      )
-      await goto('.')
+      );
+      await goto('.');
     } catch (error: unknown) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 </script>
 
 <form on:submit|preventDefault={createArticle}>

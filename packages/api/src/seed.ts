@@ -1,26 +1,26 @@
-import { CredentialType, Prisma } from '@prisma/client'
-import { hash } from 'argon2'
-import { prisma } from './prisma.js'
+import { CredentialType, Prisma } from '@prisma/client';
+import { hash } from 'argon2';
+import { prisma } from './prisma.js';
 
 await prisma.school.createMany({
   data: [{ name: 'EAU' }, { name: 'FEU' }, { name: 'TERRE' }, { name: 'AIR' }],
-})
+});
 
 await prisma.major.create({
   data: { name: 'Mécanique des fluides', schools: { connect: { id: 1 } } },
-})
+});
 await prisma.major.create({
   data: { name: 'Vapeur', schools: { connect: [{ id: 1 }, { id: 2 }] } },
-})
+});
 await prisma.major.create({
   data: { name: 'Boue', schools: { connect: [{ id: 1 }, { id: 3 }] } },
-})
+});
 await prisma.major.create({
   data: { name: 'Roche', schools: { connect: [{ id: 3 }] } },
-})
+});
 await prisma.major.create({
   data: { name: 'Vent', schools: { connect: [{ id: 4 }] } },
-})
+});
 
 const userData = [
   { name: 'annie', firstname: 'Annie', lastname: 'Versaire' },
@@ -49,7 +49,7 @@ const userData = [
   { name: 'xavier', firstname: 'Xavier', lastname: 'K. Paétrela' },
   { name: 'yvon', firstname: 'Yvon', lastname: 'Enbavé' },
   { name: 'zinedine', firstname: 'Zinédine', lastname: 'Pacesoir' },
-]
+];
 
 for (const [i, data] of userData.entries()) {
   await prisma.user.create({
@@ -58,7 +58,7 @@ for (const [i, data] of userData.entries()) {
       majorId: (i % 5) + 1,
       credentials: { create: { type: CredentialType.Password, value: await hash(data.name) } },
     },
-  })
+  });
 }
 
 await prisma.club.createMany({
@@ -90,9 +90,9 @@ await prisma.club.createMany({
     { name: 'Yoga' },
     { name: 'Zumba' },
   ].map((club, i) => ({ ...club, schoolId: (i % 4) + 1 })),
-})
+});
 
-const clubMembers: Prisma.ClubMemberCreateManyInput[] = []
+const clubMembers: Prisma.ClubMemberCreateManyInput[] = [];
 
 for (let clubId = 1; clubId <= 26; clubId++) {
   clubMembers.push(
@@ -137,16 +137,16 @@ for (let clubId = 1; clubId <= 26; clubId++) {
       clubId,
       memberId: ((clubId + 5) % 26) + 1,
     }
-  )
+  );
 }
 
-await prisma.clubMember.createMany({ data: clubMembers })
+await prisma.clubMember.createMany({ data: clubMembers });
 
-const articleData: Prisma.ArticleCreateManyInput[] = []
+const articleData: Prisma.ArticleCreateManyInput[] = [];
 
-const end = 26 * 5
-const startDate = new Date('2021-01-01T13:00:00.000Z').getTime()
-const endDate = new Date('2022-09-01T13:00:00.000Z').getTime()
+const end = 26 * 5;
+const startDate = new Date('2021-01-01T13:00:00.000Z').getTime();
+const endDate = new Date('2022-09-01T13:00:00.000Z').getTime();
 
 for (let i = 0; i < end; i++) {
   articleData.push({
@@ -175,7 +175,7 @@ for (let i = 0; i < end; i++) {
     publishedAt: new Date(
       startDate * (1 - i / end) + endDate * (i / end) + (i % 7) * 24 * 60 * 60 * 1000
     ),
-  })
+  });
 }
 
-await prisma.article.createMany({ data: articleData })
+await prisma.article.createMany({ data: articleData });

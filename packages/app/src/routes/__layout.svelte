@@ -1,26 +1,26 @@
 <script lang="ts">
-  import Nav from '$lib/layout/Nav.svelte'
-  import TopBar from '$lib/layout/TopBar.svelte'
-  import { onMount } from 'svelte'
-  import { fade, fly } from 'svelte/transition'
-  import 'virtual:windi.css'
-  import '../app.scss'
-  import { navigating } from '$app/stores'
+  import Nav from '$lib/layout/Nav.svelte';
+  import TopBar from '$lib/layout/TopBar.svelte';
+  import { onMount } from 'svelte';
+  import { fade, fly } from 'svelte/transition';
+  import 'virtual:windi.css';
+  import '../app.scss';
+  import { navigating } from '$app/stores';
 
-  let mobile = true
-  let menuOpen = false
+  let mobile = true;
+  let menuOpen = false;
 
   const onResize = () => {
     if (window.matchMedia('(max-width: 50rem)').matches) {
-      mobile = true
+      mobile = true;
     } else {
-      if (mobile) menuOpen = false
-      mobile = false
+      if (mobile) menuOpen = false;
+      mobile = false;
     }
-  }
+  };
 
-  onMount(onResize)
-  $: if ($navigating) menuOpen = false
+  onMount(onResize);
+  $: if ($navigating) menuOpen = false;
 </script>
 
 <svelte:window on:resize={onResize} />
@@ -28,7 +28,7 @@
 <TopBar
   {mobile}
   on:openMenu={() => {
-    menuOpen = true
+    menuOpen = true;
   }}
 />
 
@@ -37,13 +37,13 @@
     class="mobile-background"
     transition:fade
     on:click={() => {
-      menuOpen = false
+      menuOpen = false;
     }}
   />
   <div class="mobile-menu" transition:fly={{ x: -window.innerWidth }}>
     <button
       on:click={() => {
-        menuOpen = false
+        menuOpen = false;
       }}>≡</button
     >
     <Nav />
