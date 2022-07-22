@@ -6,10 +6,20 @@ export const ClubType = builder.prismaObject('Club', {
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
-    articles: t.relation('articles'),
+    articles: t.relation('articles', {
+      query: { orderBy: { publishedAt: 'desc' } },
+    }),
     members: t.relation('members', {
       // Seeing group members requires being logged in
       authScopes: { loggedIn: true },
+      query: {
+        orderBy: [
+          { president: 'desc' },
+          { treasurer: 'desc' },
+          { member: { firstname: 'asc' } },
+          { member: { lastname: 'asc' } },
+        ],
+      },
     }),
     school: t.relation('school'),
   }),
@@ -19,7 +29,7 @@ export const ClubType = builder.prismaObject('Club', {
 builder.queryField('clubs', (t) =>
   t.prismaField({
     type: [ClubType],
-    resolve: (query) => prisma.club.findMany(query),
+    resolve: (query) => prisma.club.findMany({ ...query, orderBy: { name: 'asc' } }),
   })
 )
 

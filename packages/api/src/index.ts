@@ -1,5 +1,6 @@
 import { createServer, GraphQLYogaError } from '@graphql-yoga/node'
 import { ForbiddenError } from '@pothos/plugin-scope-auth'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js'
 import { useNoBatchedQueries } from 'envelop-no-batched-queries'
 import express from 'express'
 import { GraphQLError } from 'graphql'
@@ -28,6 +29,17 @@ const yoga = createServer({
 
       if (cause instanceof ForbiddenError || cause instanceof GraphQLYogaError)
         return new GraphQLError(cause.message)
+
+      if (cause instanceof PrismaClientKnownRequestError) {
+        return new GraphQLError('Database error.', {
+          extensions: {
+            code: 'PRISMA_ERROR',
+            message: cause.message,
+            prismaCode: cause.code,
+            meta: cause.meta,
+          },
+        })
+      }
 
       return new GraphQLError(message)
     },

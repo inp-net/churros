@@ -171,7 +171,7 @@ builder.mutationField('updateArticle', (t) =>
       prisma.article.update({
         ...query,
         where: { id },
-        data: { authorId, title, body, published },
+        data: { authorId, title, body, published, publishedAt: published ? new Date() : undefined },
       }),
   })
 )
