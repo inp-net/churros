@@ -1,13 +1,13 @@
 <script lang="ts">
+  import { navigating, session } from '$app/stores';
   import Nav from '$lib/layout/Nav.svelte';
   import TopBar from '$lib/layout/TopBar.svelte';
   import { onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
   import 'virtual:windi.css';
   import '../app.scss';
-  import { navigating } from '$app/stores';
 
-  let mobile = true;
+  $: ({ mobile } = $session);
   let menuOpen = false;
 
   const onResize = () => {

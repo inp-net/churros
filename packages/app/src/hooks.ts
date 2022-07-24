@@ -13,6 +13,10 @@ export const handle: Handle = async ({ event, resolve }) => {
     } catch {}
   }
 
+  event.locals.mobile = Boolean(
+    event.request.headers.get('User-Agent')?.toLowerCase().includes('mobile')
+  );
+
   const response = await resolve(event);
 
   // Delete invalid token
@@ -23,8 +27,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 };
 
 export const getSession: GetSession = ({ locals }) => {
-  if (!locals.token) return {};
-  return { token: locals.token, me: locals.me };
+  if (!locals.token) return { mobile: locals.mobile };
+  return { token: locals.token, me: locals.me, mobile: locals.mobile };
 };
 
 export const externalFetch: ExternalFetch = async (request) =>

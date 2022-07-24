@@ -4,6 +4,7 @@ declare namespace App {
   interface Session {
     token?: string;
     me?: SessionUserType;
+    mobile: boolean;
   }
 
   interface Locals extends Session {}
