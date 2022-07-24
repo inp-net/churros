@@ -9,7 +9,7 @@ export const commonConfig = defineConfig({
     preprocessorOptions: {
       scss: {
         additionalData: `@use "${fileURLToPath(
-          new URL('src/variables.scss', import.meta.url)
+          new URL('src/design/variables.scss', import.meta.url)
         )}" as *;`,
       },
     },

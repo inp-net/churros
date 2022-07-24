@@ -1,6 +1,6 @@
 {
   "cssvar.extensions": ["css", "scss", "svelte"],
-  "cssvar.files": ["packages/app/src/variables.scss"],
+  "cssvar.files": ["packages/app/src/design/variables.scss"],
   "cssvar.postcssSyntax": ["postcss-scss"],
   "scss.lint.unknownAtRules": "ignore",
   "typescript.tsdk": "node_modules/typescript/lib",

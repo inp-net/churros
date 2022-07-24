@@ -1,0 +1,63 @@
+@import 'sanitize.css/sanitize';
+@import 'sanitize.css/forms';
+@import 'sanitize.css/assets';
+@import 'sanitize.css/typography';
+@import './themes';
+
+:root {
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 1rem 0;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h2 {
+  font-size: 1.5em;
+}
+
+h3 {
+  font-size: 1.25em;
+}
+
+h4 {
+  font-size: 1.125em;
+}
+
+h5 {
+  font-size: 1.063em;
+}
+
+h6 {
+  font-size: 1em;
+}
+
+a {
+  color: var(--link);
+}
+
+input,
+button {
+  padding: 0.25em 0.5em;
+  color: var(--text);
+  background: var(--bg);
+  border: var(--border-inline) solid var(--border);
+  border-radius: var(--radius-inline);
+
+  &:disabled {
+    --text: var(--disabled-text);
+    --bg: var(--disabled-bg);
+    --border: var(--disabled-border);
+  }
+}

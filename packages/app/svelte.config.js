@@ -6,7 +6,9 @@ const config = {
   preprocess: [
     preprocess({
       scss: {
-        prependData: `@use "${new URL('src/variables.scss', import.meta.url).pathname}" as *;`,
+        prependData: `@use "${
+          new URL('src/design/variables.scss', import.meta.url).pathname
+        }" as *;`,
       },
     }),
   ],

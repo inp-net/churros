@@ -5,7 +5,7 @@
   import { onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
   import 'virtual:windi.css';
-  import '../app.scss';
+  import '../design/app.scss';
 
   $: ({ mobile } = $session);
   let menuOpen = false;

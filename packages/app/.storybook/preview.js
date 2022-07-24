@@ -1,5 +1,5 @@
 import 'virtual:windi.css';
-import '../src/app.scss';
+import '../src/design/app.scss';
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
