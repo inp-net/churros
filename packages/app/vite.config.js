@@ -1,10 +1,10 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { fileURLToPath } from 'node:url';
+import { defineConfig, mergeConfig } from 'vite';
 import windi from 'vite-plugin-windicss';
 
-/** @type {import('vite').UserConfig} */
-const config = {
-  plugins: [windi(), sveltekit()],
+export const commonConfig = defineConfig({
+  plugins: [windi()],
   css: {
     preprocessorOptions: {
       scss: {
@@ -14,6 +14,12 @@ const config = {
       },
     },
   },
-};
+});
 
-export default config;
+// Add svelte-kit to vite config
+export default mergeConfig(
+  commonConfig,
+  defineConfig({
+    plugins: [sveltekit()],
+  })
+);
