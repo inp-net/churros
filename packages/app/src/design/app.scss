@@ -1,7 +1,7 @@
 @import 'sanitize.css/sanitize';
-@import 'sanitize.css/forms';
 @import 'sanitize.css/assets';
 @import 'sanitize.css/typography';
+@import './default-theme';
 @import './themes';
 
 :root {
@@ -45,19 +45,113 @@ h6 {
 
 a {
   color: var(--link);
+  border-radius: 0.25em;
+  outline: 0 solid var(--ring);
+  transition: all 80ms ease-in;
+
+  &:focus-visible {
+    outline-width: 0.25rem;
+  }
 }
 
+button,
 input,
-button {
+select,
+textarea {
   padding: 0.25em 0.5em;
+  font: inherit;
   color: var(--text);
   background: var(--bg);
   border: var(--border-inline) solid var(--border);
   border-radius: var(--radius-inline);
+  outline: 0 solid var(--ring);
+  transition: all 80ms ease-in;
+}
 
-  &:disabled {
-    --text: var(--disabled-text);
-    --bg: var(--disabled-bg);
-    --border: var(--disabled-border);
+button {
+  user-select: none;
+  box-shadow: 0 -0.125em 0.125em #0002 inset;
+}
+
+input:enabled,
+select:enabled,
+textarea:enabled {
+  box-shadow: 0 0.125em 0.125em #0001 inset;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  --text: var(--disabled-text);
+  --bg: var(--disabled-bg);
+  --border: var(--disabled-border);
+}
+
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline-width: 0.25rem;
+}
+
+button:enabled {
+  &:hover,
+  &:focus {
+    --text: var(--hover-text);
+    --bg: var(--hover-bg);
+    --border: var(--hover-border);
   }
+
+  &:active {
+    box-shadow: 0 0.125em 0.125em #0002 inset;
+  }
+}
+
+.primary {
+  --bg: var(--primary-bg);
+  --text: var(--primary-text);
+  --link: var(--primary-link);
+  --border: var(--primary-border);
+  --shadow: var(--primary-shadow);
+  --ring: var(--primary-ring);
+  --hover-bg: var(--primary-hover-bg);
+  --hover-text: var(--primary-hover-text);
+  --hover-border: var(--primary-hover-border);
+  --disabled-bg: var(--primary-disabled-bg);
+  --disabled-text: var(--primary-disabled-text);
+  --disabled-border: var(--primary-disabled-border);
+}
+
+.success {
+  --bg: var(--success-bg);
+  --text: var(--success-text);
+  --link: var(--success-link);
+  --border: var(--success-border);
+  --shadow: var(--success-shadow);
+  --disabled-bg: var(--success-disabled-bg);
+  --disabled-text: var(--success-disabled-text);
+  --disabled-border: var(--success-disabled-border);
+}
+
+.danger {
+  --bg: var(--danger-bg);
+  --text: var(--danger-text);
+  --link: var(--danger-link);
+  --border: var(--danger-border);
+  --shadow: var(--danger-shadow);
+  --disabled-bg: var(--danger-disabled-bg);
+  --disabled-text: var(--danger-disabled-text);
+  --disabled-border: var(--danger-disabled-border);
+}
+
+.warning {
+  --bg: var(--warning-bg);
+  --text: var(--warning-text);
+  --link: var(--warning-link);
+  --border: var(--warning-border);
+  --shadow: var(--warning-shadow);
+  --disabled-bg: var(--warning-disabled-bg);
+  --disabled-text: var(--warning-disabled-text);
+  --disabled-border: var(--warning-disabled-border);
 }

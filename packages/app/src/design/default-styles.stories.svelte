@@ -35,4 +35,10 @@
     <label>Disabled: <input type="text" value="value" disabled /></label>
     <button type="button" disabled>Button</button>
   </p>
+  <p>
+    <label>
+      Textarea:
+      <textarea cols="50" rows="8" class="block" />
+    </label>
+  </p>
 </Story>

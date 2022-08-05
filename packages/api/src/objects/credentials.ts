@@ -59,7 +59,7 @@ builder.mutationField('login', (t) =>
         }
       }
 
-      throw new GraphQLYogaError('Invalid credentials.');
+      throw new GraphQLYogaError('Identifiants invalides.');
     },
   })
 );
