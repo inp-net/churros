@@ -1,7 +1,7 @@
 import { GraphQLYogaError } from '@graphql-yoga/node';
 import { CredentialType as CredentialPrismaType } from '@prisma/client';
 import { hash } from 'argon2';
-import imageType from 'image-type';
+import imageType, { minimumBytes } from 'image-type';
 import { writeFile } from 'node:fs/promises';
 import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
@@ -162,10 +162,10 @@ builder.mutationField('updateUserPicture', (t) =>
         select: { name: true },
       });
       const type = await file
-        .slice(0, imageType.minimumBytes)
+        .slice(0, minimumBytes)
         .arrayBuffer()
         .then((array) => Buffer.from(array))
-        .then((buffer) => imageType(buffer));
+        .then(async (buffer) => imageType(buffer));
       if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
         throw new GraphQLYogaError('File format not supported');
 
