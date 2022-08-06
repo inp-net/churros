@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import type { Load } from './__types/[day]';
+  import type { Load } from './__types';
 
   export const dayToPath = (date: Date) =>
     `${date.getFullYear()}/` +

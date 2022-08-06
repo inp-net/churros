@@ -3,7 +3,7 @@
   import { page, session } from '$app/stores';
   import { redirectToLogin } from '$lib/session';
   import { mutate } from '$lib/zeus';
-  import type { Load } from './__types/write';
+  import type { Load } from './__types';
 
   export const load: Load = ({ session, url, params }) => {
     if (!session.me) return redirectToLogin(url.pathname);

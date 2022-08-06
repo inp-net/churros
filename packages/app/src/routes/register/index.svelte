@@ -5,7 +5,7 @@
   import FormCard from '$lib/components/cards/FormCard.svelte';
   import { mutate, Query, query, ZeusError, type PropsType } from '$lib/zeus';
   import type { ZodFormattedError } from 'zod';
-  import type { Load } from './__types/register';
+  import type { Load } from './__types';
 
   const propsQuery = () =>
     Query({
@@ -151,20 +151,6 @@
 </div>
 
 <style lang="scss">
-  form {
-    width: 24rem;
-    max-width: 100%;
-    padding: 0 1rem;
-  }
-
-  h1 {
-    padding: 1rem;
-    margin-top: 0;
-    overflow: hidden;
-    background-color: #eee;
-    box-shadow: 0 0 0.25rem #0006;
-  }
-
   input,
   select {
     display: block;

@@ -3,7 +3,6 @@
   import { page, session } from '$app/stores';
   import Alert from '$lib/components/alerts/Alert.svelte';
   import Button from '$lib/components/buttons/Button.svelte';
-  import Card from '$lib/components/cards/Card.svelte';
   import FormCard from '$lib/components/cards/FormCard.svelte';
   import { saveSessionToken, sessionUserQuery } from '$lib/session';
   import { mutate, ZeusError } from '$lib/zeus';

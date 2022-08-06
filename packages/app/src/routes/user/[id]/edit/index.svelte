@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { session } from '$app/stores';
   import { $ as Zvar, mutate, query, Query, type PropsType } from '$lib/zeus';
-  import type { Load } from './__types/edit';
+  import type { Load } from './__types';
 
   const propsQuery = (id: string) =>
     Query({

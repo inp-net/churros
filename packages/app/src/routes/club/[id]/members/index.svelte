@@ -2,7 +2,7 @@
   import { page, session } from '$app/stores';
   import { redirectToLogin } from '$lib/session';
   import { mutate, query, Query, type PropsType } from '$lib/zeus';
-  import type { Load } from './__types/members';
+  import type { Load } from './__types';
 
   const propsQuery = (id: string) =>
     Query({
