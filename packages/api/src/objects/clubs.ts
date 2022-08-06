@@ -46,6 +46,23 @@ builder.queryField('club', (t) =>
   })
 );
 
+/** Creates a new club. */
+builder.mutationField('createClub', (t) =>
+  t.prismaField({
+    type: ClubType,
+    args: {
+      name: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
+      schoolId: t.arg.id(),
+    },
+    authScopes: (_, {}, { user }) => Boolean(user?.canEditClubs),
+    resolve: async (query, _, { name, schoolId }) =>
+      prisma.club.create({
+        ...query,
+        data: { name, schoolId },
+      }),
+  })
+);
+
 /** Updates a club. */
 builder.mutationField('updateClub', (t) =>
   t.prismaField({

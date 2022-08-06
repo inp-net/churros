@@ -37,6 +37,8 @@
 </script>
 
 <script lang="ts">
+  import Alert from '$lib/components/alerts/Alert.svelte';
+
   export let club: Props['club'];
 </script>
 
@@ -44,20 +46,26 @@
 
 {#if club.members}
   <h2>Membres</h2>
-  <table>
-    {#each club.members as { member, president, treasurer, title }}
-      <tr>
-        <td>{president ? '👑' : ''}{treasurer ? '💰' : ''}</td>
-        <td>
-          <a href="/user/{member.id}" sveltekit:prefetch>
-            {member.firstname}
-            {member.lastname}
-          </a>
-        </td>
-        <td>{title}</td>
-      </tr>
-    {/each}
-  </table>
+  {#if club.members.length > 0}
+    <table>
+      {#each club.members as { member, president, treasurer, title }}
+        <tr>
+          <td>{president ? '👑' : ''}{treasurer ? '💰' : ''}</td>
+          <td>
+            <a href="/user/{member.id}" sveltekit:prefetch>
+              {member.firstname}
+              {member.lastname}
+            </a>
+          </td>
+          <td>{title}</td>
+        </tr>
+      {/each}
+    </table>
+  {:else}
+    <Alert theme="warning">
+      <p>Le club ne contient aucun membre, il vient peut-être d'être créé.</p>
+    </Alert>
+  {/if}
   {#if $session.me?.canEditClubs || $session.me?.clubs.some(({ clubId, canEditMembers }) => canEditMembers && clubId === $page.params.id)}
     <p>
       <a href="/club/{$page.params.id}/members" sveltekit:prefetch>

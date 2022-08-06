@@ -45,3 +45,7 @@
     </tr>
   {/each}
 </table>
+
+{#if $session.me?.canEditClubs}
+  <p><a href="create/">Créer un nouveau club</a></p>
+{/if}
