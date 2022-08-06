@@ -1,12 +1,12 @@
 <script lang="ts">
   import { Meta, Story, Template } from '@storybook/addon-svelte-csf';
-  import Alert from './Alert.svelte';
+  import Card from './Card.svelte';
 </script>
 
-<Meta title="Components/Alert" component={Alert} args={{ theme: 'default' }} />
+<Meta title="Components/Cards/Card" component={Card} args={{}} />
 
 <Template let:args>
-  <Alert {...args}>
+  <Card {...args}>
     <h3>Title</h3>
     <p>
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti unde fugiat pariatur vel
@@ -17,11 +17,7 @@
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate ab nisi quaerat non.
       Quisquam a sed optio, id autem at.
     </p>
-  </Alert>
+  </Card>
 </Template>
 
 <Story name="Default" />
-<Story name="Primary" args={{ theme: 'primary' }} />
-<Story name="Success" args={{ theme: 'success' }} />
-<Story name="Danger" args={{ theme: 'danger' }} />
-<Story name="Warning" args={{ theme: 'warning' }} />

@@ -8,7 +8,7 @@
   .card {
     margin: 1rem 0;
     overflow: hidden;
-    border-radius: 0.5em;
+    border-radius: var(--radius-block);
     box-shadow: var(--shadow);
   }
 

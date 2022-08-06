@@ -3,11 +3,17 @@
   import Button from './Button.svelte';
 </script>
 
-<Meta title="Components/Button" component={Button} args={{ type: 'button', theme: 'default' }} />
+<Meta
+  title="Components/Buttons/Button"
+  component={Button}
+  args={{ type: 'button', theme: 'default', disabled: false, loading: false }}
+  argTypes={{ onClick: { action: 'click' } }}
+/>
 
 <Template let:args>
-  <Button {...args}>Button</Button>
-  <Button {...args} disabled>Disabled</Button>
+  <Button {...args} on:click={args.onClick}>Button</Button>
+  <Button {...args} disabled on:click={args.onClick}>Disabled</Button>
+  <Button {...args} loading on:click={args.onClick}>Loading</Button>
 </Template>
 
 <Story name="Default" />

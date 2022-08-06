@@ -1,8 +1,11 @@
 <script context="module" lang="ts">
   import { goto } from '$app/navigation';
-  import { ZeusError, mutate, Query, query, type PropsType } from '$lib/zeus';
-  import type { Load } from './__types/register';
+  import Alert from '$lib/components/alerts/Alert.svelte';
+  import Button from '$lib/components/buttons/Button.svelte';
+  import FormCard from '$lib/components/cards/FormCard.svelte';
+  import { mutate, Query, query, ZeusError, type PropsType } from '$lib/zeus';
   import type { ZodFormattedError } from 'zod';
+  import type { Load } from './__types/register';
 
   const propsQuery = () =>
     Query({
@@ -20,10 +23,6 @@
 </script>
 
 <script lang="ts">
-  import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import Card from '$lib/components/Card.svelte';
-
   export let majors: Props['majors'];
 
   let majorId = majors[0].id;
@@ -55,8 +54,12 @@
 
   $: args = { majorId, name, firstname, lastname, password };
 
+  let loading = false;
   const register = async () => {
+    if (loading) return;
+
     try {
+      loading = true;
       await mutate({ register: [args, { id: true }] });
       await goto('/');
     } catch (error: unknown) {
@@ -66,93 +69,85 @@
         if (extensions.code === 'ZOD_ERROR')
           formErrors = extensions.errors as ZodFormattedError<typeof args>;
       }
+    } finally {
+      loading = false;
     }
   };
 </script>
 
 <div class="flex justify-center">
-  <form class="max-w-[24rem]" on:submit|preventDefault={register}>
-    <Card>
-      <h1 slot="header" class="text-center">S'inscrire</h1>
-      <p>
-        <label>
-          Filière&nbsp;:
-          <select bind:value={majorId}>
-            {#each [...majorGroups.values()] as { majors, schoolsNames }}
-              <optgroup label={schoolsNames.join(', ')}>
-                {#each majors as { id, name }}
-                  <option value={id}>{name}</option>
-                {/each}
-              </optgroup>
-            {/each}
-          </select>
-        </label>
-      </p>
-      <p>
-        <label>
-          Adresse e-mail&nbsp;:
-          <input
-            type="text"
-            bind:value={name}
-            minlength="3"
-            maxlength="20"
-            pattern="[a-z][a-z_.-]*"
-            required
-          />
-          (Lettres, -, . et _, e-mail bientôt)
-        </label>
-      </p>
-      <Alert theme="danger" closed={(formErrors?.name?._errors ?? []).length === 0}>
-        <p>
-          {#each formErrors?.name?._errors ?? [] as error}
-            <strong>{error}. </strong>
+  <FormCard on:submit={register}>
+    <svelte:fragment slot="header">S'inscrire</svelte:fragment>
+    <p>
+      <label>
+        Filière&nbsp;:
+        <select bind:value={majorId}>
+          {#each [...majorGroups.values()] as { majors, schoolsNames }}
+            <optgroup label={schoolsNames.join(', ')}>
+              {#each majors as { id, name }}
+                <option value={id}>{name}</option>
+              {/each}
+            </optgroup>
           {/each}
-        </p>
-      </Alert>
-      <p>
-        <label>
-          Prénom&nbsp;:
-          <input type="text" bind:value={firstname} minlength="1" maxlength="255" required />
-        </label>
-      </p>
-      <Alert theme="danger" closed={(formErrors?.firstname?._errors ?? []).length === 0}>
-        <p>
-          {#each formErrors?.firstname?._errors ?? [] as error}
-            <strong>{error}. </strong>
-          {/each}
-        </p>
-      </Alert>
-      <p>
-        <label>
-          Nom de famille&nbsp;:
-          <input type="text" bind:value={lastname} minlength="1" maxlength="255" required />
-        </label>
-      </p>
-      <Alert theme="danger" closed={(formErrors?.lastname?._errors ?? []).length === 0}>
-        <p>
-          {#each formErrors?.lastname?._errors ?? [] as error}
-            <strong>{error}. </strong>
-          {/each}
-        </p>
-      </Alert>
-      <p>
-        <label>
-          Mot de passe&nbsp;:
-          <input type="password" bind:value={password} minlength="10" maxlength="255" required />
-        </label>
-      </p>
-      <Alert theme="danger" closed={(formErrors?.password?._errors ?? []).length === 0}>
-        <p>
-          {#each formErrors?.password?._errors ?? [] as error}
-            <strong>{error}. </strong>
-          {/each}
-        </p>
-      </Alert>
-      <p class="text-center">
-        <Button type="submit" theme="primary">S'inscrire</Button>
-      </p>
-    </Card>
-  </form>
+        </select>
+      </label>
+    </p>
+    <p>
+      <label>
+        Adresse e-mail&nbsp;:
+        <input
+          type="text"
+          bind:value={name}
+          minlength="3"
+          maxlength="20"
+          pattern="[a-z][a-z_.-]*"
+          required
+        />
+        (Lettres, -, . et _)
+      </label>
+    </p>
+    <Alert theme="danger" closed={(formErrors?.name?._errors ?? []).length === 0} inline>
+      {#each formErrors?.name?._errors ?? [] as error}
+        <strong>{error}. </strong>
+      {/each}
+    </Alert>
+    <p>
+      <label>
+        Prénom&nbsp;:
+        <input type="text" bind:value={firstname} minlength="1" maxlength="255" required />
+      </label>
+    </p>
+    <Alert theme="danger" closed={(formErrors?.firstname?._errors ?? []).length === 0} inline>
+      {#each formErrors?.firstname?._errors ?? [] as error}
+        <strong>{error}. </strong>
+      {/each}
+    </Alert>
+    <p>
+      <label>
+        Nom de famille&nbsp;:
+        <input type="text" bind:value={lastname} minlength="1" maxlength="255" required />
+      </label>
+    </p>
+    <Alert theme="danger" closed={(formErrors?.lastname?._errors ?? []).length === 0} inline>
+      {#each formErrors?.lastname?._errors ?? [] as error}
+        <strong>{error}. </strong>
+      {/each}
+    </Alert>
+    <p>
+      <label>
+        Mot de passe&nbsp;:
+        <input type="password" bind:value={password} minlength="10" maxlength="255" required />
+      </label>
+    </p>
+    <Alert theme="danger" closed={(formErrors?.password?._errors ?? []).length === 0} inline>
+      {#each formErrors?.password?._errors ?? [] as error}
+        <strong>{error}. </strong>
+      {/each}
+    </Alert>
+    <svelte:fragment slot="footer">
+      <Button type="submit" theme="primary" {loading}>S'inscrire</Button>
+    </svelte:fragment>
+  </FormCard>
 </div>
 
 <style lang="scss">
@@ -173,6 +168,6 @@
   input,
   select {
     display: block;
-    width: 20rem;
+    width: 100%;
   }
 </style>

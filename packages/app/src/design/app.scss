@@ -45,7 +45,7 @@ h6 {
 
 a {
   color: var(--link);
-  border-radius: 0.25em;
+  border-radius: var(--radius-inline);
   outline: 0 solid var(--ring);
   transition: all 80ms ease-in;
 
@@ -65,12 +65,23 @@ textarea {
   border: var(--border-inline) solid var(--border);
   border-radius: var(--radius-inline);
   outline: 0 solid var(--ring);
-  transition: all 80ms ease-in;
+  transition: all 80ms ease-in, width 0, height 0;
 }
 
 button {
   user-select: none;
   box-shadow: 0 -0.125em 0.125em #0002 inset;
+
+  &:hover,
+  &:focus {
+    --text: var(--hover-text);
+    --bg: var(--hover-bg);
+    --border: var(--hover-border);
+  }
+
+  &:active {
+    box-shadow: 0 0.125em 0.125em #0002 inset;
+  }
 }
 
 input:enabled,
@@ -86,6 +97,8 @@ textarea:disabled {
   --text: var(--disabled-text);
   --bg: var(--disabled-bg);
   --border: var(--disabled-border);
+
+  pointer-events: none;
 }
 
 button:focus,
@@ -93,19 +106,6 @@ input:focus,
 select:focus,
 textarea:focus {
   outline-width: 0.25rem;
-}
-
-button:enabled {
-  &:hover,
-  &:focus {
-    --text: var(--hover-text);
-    --bg: var(--hover-bg);
-    --border: var(--hover-border);
-  }
-
-  &:active {
-    box-shadow: 0 0.125em 0.125em #0002 inset;
-  }
 }
 
 .primary {

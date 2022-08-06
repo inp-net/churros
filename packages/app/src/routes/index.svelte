@@ -25,29 +25,35 @@
 </script>
 
 <script lang="ts">
+  import Card from '$lib/components/cards/Card.svelte';
+
   export let homepage: Props['homepage'];
 </script>
 
 <h1>Welcome to Centraverse</h1>
 
 {#each homepage as { title, bodyHtml, publishedAt, club, author }}
-  <article>
-    <h2>{title}</h2>
-    <p>
-      Par <a href="/club/{club.id}" sveltekit:prefetch>{club.name}</a> le {formatDate(publishedAt)}
-    </p>
-    {@html bodyHtml}
-    {#if author}
+  <Card>
+    <article>
+      <h2>{title}</h2>
       <p>
-        <em>
-          Auteur : <a href="/user/{author.id}" sveltekit:prefetch>
-            {author.firstname}
-            {author.lastname}
-          </a>
-        </em>
+        Par <a href="/club/{club.id}" sveltekit:prefetch>{club.name}</a> le {formatDate(
+          publishedAt
+        )}
       </p>
-    {/if}
-  </article>
+      {@html bodyHtml}
+      {#if author}
+        <p>
+          <em>
+            Auteur : <a href="/user/{author.id}" sveltekit:prefetch>
+              {author.firstname}
+              {author.lastname}
+            </a>
+          </em>
+        </p>
+      {/if}
+    </article>
+  </Card>
 {/each}
 
 <style>

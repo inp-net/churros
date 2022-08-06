@@ -59,7 +59,7 @@
   </main>
 </div>
 
-<style>
+<style lang="scss">
   main {
     grid-column: 2;
   }
@@ -67,6 +67,7 @@
   .mobile-background {
     position: fixed;
     inset: 0;
+    z-index: 1;
     background: rgb(0 0 0 / 50%);
   }
 
@@ -74,6 +75,7 @@
     position: fixed;
     inset: 0;
     right: 8rem;
+    z-index: 1;
     background: var(--bg);
     box-shadow: var(--shadow);
   }
@@ -82,6 +84,6 @@
     display: grid;
     grid-template-columns: 1fr minmax(0, 60rem) 1fr;
     max-width: 100rem;
-    margin: 0 auto;
+    margin: 1rem auto;
   }
 </style>
