@@ -1,8 +1,12 @@
-<div class="card">
+<script>
+  export let element = 'div';
+</script>
+
+<svelte:element this={element} class="card">
   <slot name="header" />
   <div class="card-content"><slot /></div>
   <slot name="footer" />
-</div>
+</svelte:element>
 
 <style lang="scss">
   .card {

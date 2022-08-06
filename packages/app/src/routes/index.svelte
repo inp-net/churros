@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+  import ArticleCard from '$lib/components/cards/ArticleCard.svelte';
   import { formatDate } from '$lib/dates';
   import { query, Query, type PropsType } from '$lib/zeus';
   import type { Load } from './__types';
@@ -8,6 +9,7 @@
       homepage: [
         {},
         {
+          id: true,
           title: true,
           bodyHtml: true,
           publishedAt: true,
@@ -25,35 +27,34 @@
 </script>
 
 <script lang="ts">
-  import Card from '$lib/components/cards/Card.svelte';
-
   export let homepage: Props['homepage'];
 </script>
 
 <h1>Welcome to Centraverse</h1>
 
-{#each homepage as { title, bodyHtml, publishedAt, club, author }}
-  <Card>
-    <article>
-      <h2>{title}</h2>
+{#each homepage as { id, title, bodyHtml, publishedAt, club, author }}
+  <ArticleCard
+    {title}
+    href="#"
+    img={Number(id) % 5
+      ? { src: `https://picsum.photos/seed/${id}/960/400`, alt: '', width: 960, height: 400 }
+      : undefined}
+  >
+    <p>
+      Par <a href="/club/{club.id}" sveltekit:prefetch>{club.name}</a> le {formatDate(publishedAt)}
+    </p>
+    {@html bodyHtml}
+    {#if author}
       <p>
-        Par <a href="/club/{club.id}" sveltekit:prefetch>{club.name}</a> le {formatDate(
-          publishedAt
-        )}
+        <em>
+          Auteur : <a href="/user/{author.id}" sveltekit:prefetch>
+            {author.firstname}
+            {author.lastname}
+          </a>
+        </em>
       </p>
-      {@html bodyHtml}
-      {#if author}
-        <p>
-          <em>
-            Auteur : <a href="/user/{author.id}" sveltekit:prefetch>
-              {author.firstname}
-              {author.lastname}
-            </a>
-          </em>
-        </p>
-      {/if}
-    </article>
-  </Card>
+    {/if}
+  </ArticleCard>
 {/each}
 
 <style>
