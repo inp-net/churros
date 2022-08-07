@@ -5,6 +5,7 @@
   import { onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
   import 'virtual:windi.css';
+  import MajesticonsMenu from '~icons/majesticons/menu';
   import '../design/app.scss';
 
   $: ({ mobile } = $session);
@@ -44,7 +45,7 @@
     <button
       on:click={() => {
         menuOpen = false;
-      }}>≡</button
+      }}><MajesticonsMenu /></button
     >
     <Nav />
   </div>
@@ -62,6 +63,7 @@
 <style lang="scss">
   main {
     grid-column: 2;
+    padding: 0 0.5rem;
   }
 
   .mobile-background {
@@ -84,6 +86,6 @@
     display: grid;
     grid-template-columns: 1fr minmax(0, 60rem) 1fr;
     max-width: 100rem;
-    margin: 1rem auto;
+    margin: auto;
   }
 </style>

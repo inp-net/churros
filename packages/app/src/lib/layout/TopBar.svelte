@@ -1,10 +1,11 @@
 <script lang="ts">
   import { navigating, page, session } from '$app/stores';
-  import { theme } from '$lib/theme';
   import { createEventDispatcher } from 'svelte';
   import { expoOut } from 'svelte/easing';
   import { derived } from 'svelte/store';
   import { fly } from 'svelte/transition';
+  import MajesticonsMenu from '~icons/majesticons/menu';
+  import MajesticonsHomeLine from '~icons/majesticons/home-line';
 
   export let mobile = false;
 
@@ -28,13 +29,12 @@
 </script>
 
 <div class="top-bar">
-  <div class="flex mx-auto max-w-[100rem] justify-between">
-    <div>
+  <div class="flex mx-auto max-w-[100rem] p-4 justify-between">
+    <div class="flex items-center gap-4">
       {#if mobile}
-        <button on:click={() => dispatch('openMenu')}>≡</button>
+        <button on:click={() => dispatch('openMenu')}><MajesticonsMenu /></button>
       {/if}
-      <a href="/" sveltekit:prefetch>Accueil</a>
-      <a href="/search/">🔍</a>
+      <a href="/" sveltekit:prefetch>(logo)</a>
     </div>
     <div>
       {#if $session.me && $session.token}
@@ -46,14 +46,6 @@
         </a>
         <a href="/register" sveltekit:prefetch>S'inscrire</a>
       {/if}
-      <button
-        on:click={() => {
-          $theme = $theme === 'dark' ? 'light' : 'dark';
-        }}
-        on:dblclick={() => {
-          $theme = 'pride';
-        }}>{$theme === 'pride' ? '🌈' : $theme === 'dark' ? '☀️' : '🌙'}</button
-      >
     </div>
   </div>
   {#if $showLoader}
@@ -70,7 +62,6 @@
     position: sticky;
     top: 0;
     max-width: 100%;
-    padding: 1em;
     overflow: hidden;
     color: var(--primary-text);
     background: var(--primary-bg);

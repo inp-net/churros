@@ -15,7 +15,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@antfu/utils@npm:^0.5.2":
+"@antfu/install-pkg@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@antfu/install-pkg@npm:0.1.0"
+  dependencies:
+    execa: ^5.1.1
+    find-up: ^5.0.0
+  checksum: 5ab86edcc90a85ceab7e56ecd3499b05ca93ee9eaa176da582a79d451939c701ad25e847e774b7d3f19e99eac845d06bf27685ffe969f13a475df9a9124806b3
+  languageName: node
+  linkType: hard
+
+"@antfu/utils@npm:^0.5.0, @antfu/utils@npm:^0.5.2":
   version: 0.5.2
   resolution: "@antfu/utils@npm:0.5.2"
   checksum: 9b91446b2dbb823abeeba1cc33d6ebf701a462923408ad4751fbe162da46ae0669c774c2b5435fc77691dc207ce5de5945e693d5163e07d6ef42e376b04c7af4
@@ -1599,6 +1609,7 @@ __metadata:
   dependencies:
     "@babel/core": ^7.18.10
     "@centraverse/api": "workspace:^"
+    "@iconify-json/majesticons": ^1.1.3
     "@storybook/addon-actions": ^6.5.10
     "@storybook/addon-docs": ^6.5.10
     "@storybook/addon-essentials": ^6.5.10
@@ -1608,8 +1619,8 @@ __metadata:
     "@storybook/builder-vite": ^0.2.2
     "@storybook/node-logger": ^6.5.10
     "@storybook/svelte": ^6.5.10
-    "@sveltejs/adapter-node": ^1.0.0-next.85
-    "@sveltejs/kit": ^1.0.0-next.403
+    "@sveltejs/adapter-node": ^1.0.0-next.86
+    "@sveltejs/kit": ^1.0.0-next.405
     "@types/cookie": ^0.5.1
     "@types/js-cookie": ^3.0.2
     "@types/ua-parser-js": ^0.7.36
@@ -1626,6 +1637,7 @@ __metadata:
     tslib: ^2.4.0
     typescript: ^4.7.4
     ua-parser-js: ^1.0.2
+    unplugin-icons: ^0.14.8
     vite: ^3.0.4
     vite-plugin-windicss: ^1.8.7
     zod: ^3.17.10
@@ -2143,6 +2155,36 @@ __metadata:
   version: 1.2.1
   resolution: "@humanwhocodes/object-schema@npm:1.2.1"
   checksum: a824a1ec31591231e4bad5787641f59e9633827d0a2eaae131a288d33c9ef0290bd16fda8da6f7c0fcb014147865d12118df10db57f27f41e20da92369fcb3f1
+  languageName: node
+  linkType: hard
+
+"@iconify-json/majesticons@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "@iconify-json/majesticons@npm:1.1.3"
+  dependencies:
+    "@iconify/types": "*"
+  checksum: fe96cc0722dfacc3fd8fa1b1d94684771c831f9c64b075efe0c64f0d46272052c1922f2454077cd79213825fd5cc88ad7def6f56533ff9c30bf3ec627d542840
+  languageName: node
+  linkType: hard
+
+"@iconify/types@npm:*, @iconify/types@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@iconify/types@npm:1.1.0"
+  checksum: beffcdbf14e879ff74e79ac29ea0f4f4874f9df632f1994d97395b3f05cbeebaf10f1abc73cf850dc7444924cd57ed92e0e2ca55bacfe3374eff7542d489fbd0
+  languageName: node
+  linkType: hard
+
+"@iconify/utils@npm:^1.0.33":
+  version: 1.0.33
+  resolution: "@iconify/utils@npm:1.0.33"
+  dependencies:
+    "@antfu/install-pkg": ^0.1.0
+    "@antfu/utils": ^0.5.0
+    "@iconify/types": ^1.1.0
+    debug: ^4.3.4
+    kolorist: ^1.5.1
+    local-pkg: ^0.4.1
+  checksum: aebe9cc519994518a2a24ea05a5ec6afa9bfd82f95028fac1160bce9f5882e098effd201fd606db9d5c48d31e39d96f60c722250cc862178a11f7f0604bab2e1
   languageName: node
   linkType: hard
 
@@ -3801,28 +3843,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/adapter-node@npm:^1.0.0-next.85":
-  version: 1.0.0-next.85
-  resolution: "@sveltejs/adapter-node@npm:1.0.0-next.85"
-  dependencies:
-    tiny-glob: ^0.2.9
-  checksum: 5a4ba9bbbe39234910ee522155b39debe23f0547846fcd9ee9a69f26146531f1a289ecf4c7458dc121089cee4cb896d83a248baad9d73fe20a6094fa424e5161
+"@sveltejs/adapter-node@npm:^1.0.0-next.86":
+  version: 1.0.0-next.86
+  resolution: "@sveltejs/adapter-node@npm:1.0.0-next.86"
+  checksum: 6e62c50b17665101b27520c08bad062a356e85163cb8d631da07289f09a58c91667dfb0d1dbfabbcd7797b656eb18cc6f053b963e76e4c4fb116931155ad0f48
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^1.0.0-next.403":
-  version: 1.0.0-next.403
-  resolution: "@sveltejs/kit@npm:1.0.0-next.403"
+"@sveltejs/kit@npm:^1.0.0-next.405":
+  version: 1.0.0-next.405
+  resolution: "@sveltejs/kit@npm:1.0.0-next.405"
   dependencies:
     "@sveltejs/vite-plugin-svelte": ^1.0.1
     chokidar: ^3.5.3
     sade: ^1.8.1
+    tiny-glob: ^0.2.9
   peerDependencies:
     svelte: ^3.44.0
     vite: ^3.0.0
   bin:
     svelte-kit: svelte-kit.js
-  checksum: e8b291441dd84d2e32d846b9f974430615c1a1331f198f7e18a2ea214065a81be64aae91fcb4bd479c8c70d4359803c1c3078ddba3fbe1e33163aa57b6078ed9
+  checksum: 3b16b441b46c9b96cedd57f88644fe1c8d060acf9f3abeeba430fa295f14ed41a2ecea563e28caddd7103af6cb8edfdceffe2aee0f816ddb4f5877d9030df51c
   languageName: node
   linkType: hard
 
@@ -11489,6 +11530,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"local-pkg@npm:^0.4.1, local-pkg@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "local-pkg@npm:0.4.2"
+  checksum: 22be451353c25c4411b552bf01880ebc9e995b93574b2facc7757968d888356df59199cacada14162ab53bbc9da055bb692c907b4171f008dbce45a2afc777c1
+  languageName: node
+  linkType: hard
+
 "locate-path@npm:^3.0.0":
   version: 3.0.0
   resolution: "locate-path@npm:3.0.0"
@@ -17095,6 +17143,61 @@ __metadata:
   languageName: node
   linkType: hard
 
+"unplugin-icons@npm:^0.14.8":
+  version: 0.14.8
+  resolution: "unplugin-icons@npm:0.14.8"
+  dependencies:
+    "@antfu/install-pkg": ^0.1.0
+    "@antfu/utils": ^0.5.2
+    "@iconify/utils": ^1.0.33
+    debug: ^4.3.4
+    kolorist: ^1.5.1
+    local-pkg: ^0.4.2
+    unplugin: ^0.8.0
+  peerDependencies:
+    "@svgr/core": ">=5.5.0"
+    "@vue/compiler-sfc": ^3.0.2
+    vue-template-compiler: ^2.6.12
+    vue-template-es2015-compiler: ^1.9.0
+  peerDependenciesMeta:
+    "@svgr/core":
+      optional: true
+    "@vue/compiler-sfc":
+      optional: true
+    vue-template-compiler:
+      optional: true
+    vue-template-es2015-compiler:
+      optional: true
+  checksum: c6f822cdf1f2a5b4887c03592a78d3f1dddd538d331959f322a388cb886fa41bd0149412b492e0762308acb2f09dae28049b965cdba54f3988e0a16d7bda63b2
+  languageName: node
+  linkType: hard
+
+"unplugin@npm:^0.8.0":
+  version: 0.8.1
+  resolution: "unplugin@npm:0.8.1"
+  dependencies:
+    acorn: ^8.8.0
+    chokidar: ^3.5.3
+    webpack-sources: ^3.2.3
+    webpack-virtual-modules: ^0.4.4
+  peerDependencies:
+    esbuild: ">=0.13"
+    rollup: ^2.50.0
+    vite: ^2.3.0 || ^3.0.0-0
+    webpack: 4 || 5
+  peerDependenciesMeta:
+    esbuild:
+      optional: true
+    rollup:
+      optional: true
+    vite:
+      optional: true
+    webpack:
+      optional: true
+  checksum: 95bbed0425c42add3718f203d2cd2d8e97ae33bc0403b88cd800a12fb3f4cc5f681d108f4e64cd6cdf00b6715e538c913fd408b86c22a226b7e179c8d560e314
+  languageName: node
+  linkType: hard
+
 "unset-value@npm:^1.0.0":
   version: 1.0.0
   resolution: "unset-value@npm:1.0.0"
@@ -17572,6 +17675,13 @@ __metadata:
   dependencies:
     debug: ^3.0.0
   checksum: 38706eb5ffd7a5120a731c2d35d4de5714cb16dcc87076276d7b130e3221d2665f5c30696bfde5edfddc6b7ae40d772096a0019202260a9d4e19df43b7cf9c95
+  languageName: node
+  linkType: hard
+
+"webpack-virtual-modules@npm:^0.4.4":
+  version: 0.4.4
+  resolution: "webpack-virtual-modules@npm:0.4.4"
+  checksum: 6720b4c47d76dc9cbaff557562506c192da7560a90395e9918a418e257a0c0cda9f5e3ac92107ec0789f8f23ad942313bd8cdebc95031d0adef1032bf6142bc7
   languageName: node
   linkType: hard
 

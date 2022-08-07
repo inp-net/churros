@@ -51,21 +51,19 @@
 </script>
 
 <div class="flex justify-center">
-  <form on:submit|preventDefault={login}>
-    <FormCard on:submit={login}>
-      <svelte:fragment slot="header">Se connecter</svelte:fragment>
-      <Alert theme="danger" closed={errorMessages === undefined} inline>
-        {errorMessages?.join(' ')}
-      </Alert>
-      <p><label>Adresse e-mail&nbsp;: <input type="text" bind:value={name} /></label></p>
-      <p>
-        <label>Mot de passe&nbsp;: <input type="password" bind:value={password} /></label>
-      </p>
-      <svelte:fragment slot="footer">
-        <Button type="submit" theme="primary" {loading}>Se connecter</Button>
-      </svelte:fragment>
-    </FormCard>
-  </form>
+  <FormCard on:submit={login}>
+    <svelte:fragment slot="header">Se connecter</svelte:fragment>
+    <Alert theme="danger" closed={errorMessages === undefined} inline>
+      {errorMessages?.join(' ')}
+    </Alert>
+    <p><label>Adresse e-mail&nbsp;: <input type="text" bind:value={name} /></label></p>
+    <p>
+      <label>Mot de passe&nbsp;: <input type="password" bind:value={password} /></label>
+    </p>
+    <svelte:fragment slot="footer">
+      <Button type="submit" theme="primary" {loading}>Se connecter</Button>
+    </svelte:fragment>
+  </FormCard>
 </div>
 
 <style lang="scss">

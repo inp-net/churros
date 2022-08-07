@@ -68,7 +68,7 @@ textarea {
   border: var(--border-inline) solid var(--border);
   border-radius: var(--radius-inline);
   outline: 0 solid var(--ring);
-  transition: all 80ms ease-in, width 0, height 0;
+  transition: all 80ms ease-in, width 0s, height 0s;
 }
 
 button {
@@ -157,4 +157,8 @@ textarea:focus {
   --disabled-bg: var(--warning-disabled-bg);
   --disabled-text: var(--warning-disabled-text);
   --disabled-border: var(--warning-disabled-border);
+}
+
+.icon {
+  vertical-align: bottom;
 }

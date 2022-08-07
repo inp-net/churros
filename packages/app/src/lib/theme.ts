@@ -8,7 +8,7 @@ export const theme = writable('light', (set) => {
   if (!browser) return;
 
   // Try to load the theme from sessionStorage or fallback to a media query
-  let currentTheme: string | undefined =
+  let currentTheme =
     sessionStorage.getItem('theme') ??
     (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   set(currentTheme);

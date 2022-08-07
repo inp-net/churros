@@ -30,7 +30,7 @@
   export let homepage: Props['homepage'];
 </script>
 
-<h1>Welcome to Centraverse</h1>
+<h1>Bienvenue sur Centraverse</h1>
 
 {#each homepage as { id, title, bodyHtml, publishedAt, club, author }}
   <ArticleCard
