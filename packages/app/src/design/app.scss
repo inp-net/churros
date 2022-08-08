@@ -104,7 +104,7 @@ textarea:disabled {
   pointer-events: none;
 }
 
-button:focus,
+button:focus-visible,
 input:focus,
 select:focus,
 textarea:focus {

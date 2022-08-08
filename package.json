@@ -39,7 +39,7 @@
     "reset": "docker-compose up -dV --wait && yarn workspace @centraverse/api run prisma migrate reset --force"
   },
   "volta": {
-    "node": "18.4.0",
+    "node": "18.7.0",
     "yarn": "1.22.19"
   },
   "workspaces": [

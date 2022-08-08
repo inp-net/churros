@@ -1,15 +1,10 @@
 <script lang="ts">
   import { navigating, page, session } from '$app/stores';
-  import { createEventDispatcher } from 'svelte';
   import { expoOut } from 'svelte/easing';
   import { derived } from 'svelte/store';
   import { fly } from 'svelte/transition';
-  import MajesticonsMenu from '~icons/majesticons/menu';
-  import MajesticonsHomeLine from '~icons/majesticons/home-line';
 
   export let mobile = false;
-
-  const dispatch = createEventDispatcher<{ openMenu: undefined }>();
 
   let timeout: unknown;
   const showLoader = derived(
@@ -30,16 +25,16 @@
 
 <div class="top-bar">
   <div class="flex mx-auto max-w-[100rem] p-4 justify-between">
-    <div class="flex items-center gap-4">
+    <div class="flex gap-4 items-center">
       {#if mobile}
-        <button on:click={() => dispatch('openMenu')}><MajesticonsMenu /></button>
+        <div class="w-6" />
       {/if}
       <a href="/" sveltekit:prefetch>(logo)</a>
     </div>
     <div>
       {#if $session.me && $session.token}
         <a href="/me" sveltekit:prefetch>{$session.me.name}</a>
-        <a href="/logout?{new URLSearchParams({ token: $session.token })}"> Se déconnecter </a>
+        <a href="/logout?{new URLSearchParams({ token: $session.token })}">Se déconnecter</a>
       {:else}
         <a href="/login?{new URLSearchParams({ to: $page.url.pathname })}" sveltekit:prefetch>
           Se connecter
