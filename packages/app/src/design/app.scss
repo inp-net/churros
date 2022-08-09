@@ -105,9 +105,9 @@ textarea:disabled {
 }
 
 button:focus-visible,
-input:focus,
-select:focus,
-textarea:focus {
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
   outline-width: 0.25rem;
 }
 

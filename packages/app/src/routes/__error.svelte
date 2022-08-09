@@ -1,9 +1,7 @@
-<script context="module" lang="ts">
+<script lang="ts">
   import { page } from '$app/stores';
   import { ZeusError } from '$lib/zeus';
-</script>
 
-<script lang="ts">
   let error: Error | null;
   let status: number;
 
