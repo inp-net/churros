@@ -10,6 +10,7 @@ import './objects/credentials.js';
 import './objects/majors.js';
 import './objects/scalars.js';
 import './objects/schools.js';
+import './objects/user-links.js';
 import './objects/users.js';
 
 export const schema = builder.toSchema({});

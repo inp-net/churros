@@ -15,14 +15,22 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  majorId     Int
-  name        String   @unique @db.VarChar(255)
-  firstname   String   @db.VarChar(255)
-  nickname    String   @default("") @db.VarChar(255)
-  lastname    String   @db.VarChar(255)
-  createdAt   DateTime @default(now())
-  pictureFile String?  @db.VarChar(255)
+  id             Int      @id @default(autoincrement())
+  majorId        Int
+  name           String   @unique @db.VarChar(255)
+  email          String   @unique @db.VarChar(255)
+  firstname      String   @db.VarChar(255)
+  lastname       String   @db.VarChar(255)
+  createdAt      DateTime @default(now())
+  graduationYear Int      @db.Integer
+
+  // Optional profile details
+  address     String    @default("") @db.VarChar(255)
+  biography   String    @default("") @db.VarChar(255)
+  birthday    DateTime?
+  nickname    String    @default("") @db.VarChar(255)
+  phone       String    @default("") @db.VarChar(255)
+  pictureFile String    @default("") @db.VarChar(255)
 
   // Permissions
   admin        Boolean @default(false)
@@ -32,7 +40,24 @@ model User {
   articles    Article[]
   clubs       ClubMember[]
   credentials Credential[]
+  links       UserLink[]
   major       Major        @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+}
+
+enum LinkType {
+  Facebook
+  Instagram
+  Telegram
+  Twitter
+}
+
+model UserLink {
+  id     Int      @id @default(autoincrement())
+  userId Int
+  type   LinkType
+  value  String   @db.VarChar(255)
+
+  user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Major {

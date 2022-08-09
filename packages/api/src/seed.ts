@@ -1,4 +1,4 @@
-import { CredentialType, Prisma } from '@prisma/client';
+import { CredentialType, LinkType, Prisma } from '@prisma/client';
 import { hash } from 'argon2';
 import { prisma } from './prisma.js';
 
@@ -55,6 +55,20 @@ for (const [i, data] of userData.entries()) {
   await prisma.user.create({
     data: {
       ...data,
+      email: `${data.name}@example.com`,
+      biography: i % 2 ? "Salut c'est moi" : '',
+      links: {
+        create: [
+          { type: LinkType.Facebook, value: '#' },
+          { type: LinkType.Instagram, value: '#' },
+          { type: LinkType.Telegram, value: '#' },
+          { type: LinkType.Twitter, value: '#' },
+        ],
+      },
+      phone: '0612345678',
+      address: '1 rue de la paix, Toulouse',
+      birthday: new Date(2000, (i * 37) % 12, (i * 55) % 28),
+      graduationYear: 2020 + (i % 6),
       majorId: (i % 5) + 1,
       credentials: { create: { type: CredentialType.Password, value: await hash(data.name) } },
     },

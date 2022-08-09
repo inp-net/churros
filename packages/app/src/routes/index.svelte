@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import ArticleCard from '$lib/components/cards/ArticleCard.svelte';
-  import { formatDate } from '$lib/dates';
+  import { formatDateTime } from '$lib/dates';
   import { query, Query, type PropsType } from '$lib/zeus';
   import type { Load } from './__types';
 
@@ -41,7 +41,9 @@
       : undefined}
   >
     <p>
-      Par <a href="/club/{club.id}" sveltekit:prefetch>{club.name}</a> le {formatDate(publishedAt)}
+      Par <a href="/club/{club.id}" sveltekit:prefetch>{club.name}</a> le {formatDateTime(
+        publishedAt
+      )}
     </p>
     {@html bodyHtml}
     {#if author}

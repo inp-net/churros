@@ -1591,6 +1591,7 @@ __metadata:
     image-type: ^5.0.0
     nanoid: ^4.0.0
     nodemon: ^2.0.19
+    phone: ^3.1.24
     prisma: ^4.2.0
     rehype-sanitize: ^5.0.1
     rehype-stringify: ^9.0.3
@@ -13535,6 +13536,13 @@ __metadata:
   version: 5.0.0
   resolution: "peek-readable@npm:5.0.0"
   checksum: bef5ceb50586eb42e14efba274ac57ffe97f0ed272df9239ce029f688f495d9bf74b2886fa27847c706a9db33acda4b7d23bbd09a2d21eb4c2a54da915117414
+  languageName: node
+  linkType: hard
+
+"phone@npm:^3.1.24":
+  version: 3.1.24
+  resolution: "phone@npm:3.1.24"
+  checksum: 04052b0a79e9abeeaaa4ba033f5370a12239c2419b10e555058b2139f849f5c879ea971019eaa6dbec466a990abdd7e3d91e630c39ef26ec606e7df7e2d5959f
   languageName: node
   linkType: hard
 

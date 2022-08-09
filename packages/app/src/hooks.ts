@@ -20,8 +20,12 @@ export const handle: Handle = async ({ event, resolve }) => {
   const response = await resolve(event);
 
   // Delete invalid token
-  if (token && !event.locals.me)
-    response.headers.append('Set-Cookie', 'token=; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
+  if (token && !event.locals.me) {
+    response.headers.append(
+      'Set-Cookie',
+      'token=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict'
+    );
+  }
 
   return response;
 };

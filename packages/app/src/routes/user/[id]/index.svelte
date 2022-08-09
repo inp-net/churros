@@ -1,7 +1,14 @@
 <script context="module" lang="ts">
+  import Card from '$lib/components/cards/Card.svelte';
+  import SocialLink from '$lib/components/links/SocialLink.svelte';
+  import { formatDate } from '$lib/dates.js';
   import { redirectToLogin } from '$lib/session';
   import { Query, query, type PropsType } from '$lib/zeus';
   import type { Load } from '@sveltejs/kit';
+  import MajesticonsAcademicCapLine from '~icons/majesticons/academic-cap-line';
+  import MajesticonsCakeLine from '~icons/majesticons/cake-line';
+  import MajesticonsLocationMarkerLine from '~icons/majesticons/location-marker-line';
+  import MajesticonsPhoneLine from '~icons/majesticons/phone-line';
 
   const propsQuery = (id: string) =>
     Query({
@@ -9,10 +16,16 @@
         { id },
         {
           id: true,
+          address: true,
+          biography: true,
           firstname: true,
+          graduationYear: true,
           lastname: true,
           pictureFile: true,
+          birthday: true,
+          phone: true,
           clubs: { club: { id: true, name: true }, title: true },
+          links: { type: true, value: true },
           major: { name: true, schools: { name: true } },
         },
       ],
@@ -28,18 +41,11 @@
 
 <script lang="ts">
   export let user: Props['user'];
-  import Card from '$lib/components/cards/Card.svelte';
-  import MajesticonsAcademicCapLine from '~icons/majesticons/academic-cap-line';
-  import MajesticonsCakeLine from '~icons/majesticons/cake-line';
-  import MajesticonsLocationMarkerLine from '~icons/majesticons/location-marker-line';
-  import SimpleIconsFacebook from '~icons/simple-icons/facebook';
-  import SimpleIconsInstagram from '~icons/simple-icons/instagram';
-  import SimpleIconsTelegram from '~icons/simple-icons/telegram';
 </script>
 
 <div class=" mt-2 text-center -mb-18">
   <img
-    src="http://picsum.photos/120"
+    src="https://picsum.photos/120"
     alt="{user.firstname} {user.lastname}"
     class="rounded-1 shadow  shadow-gray-300"
     width="120"
@@ -49,31 +55,51 @@
 <Card>
   <h1 class="flex my-0 mt-14 gap-2 items-center">{user.firstname} {user.lastname}</h1>
   <p class="my-0 text-gray-500">
-    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officia ipsum accusamus enim.
+    {#if user.biography}
+      {user.biography}
+    {:else}
+      {['👻', '🌵', '🕸️', '💤'][Number(user.id) % 4]}
+    {/if}
   </p>
-  <p class="flex mt-2 text-gray-500 gap-3">
-    <SimpleIconsFacebook width="2em" height="2em" />
-    <SimpleIconsInstagram width="2em" height="2em" />
-    <SimpleIconsTelegram width="2em" height="2em" />
-  </p>
+  {#if user.links.length > 0}
+    <p class="flex mt-2 text-gray-500 gap-3">
+      {#each user.links as link}
+        <SocialLink {...link} />
+      {/each}
+    </p>
+  {/if}
 
   <ul class="text-gray-700 cool">
     <li>
       <MajesticonsAcademicCapLine />
       {user.major.name}
+      {user.graduationYear}
       {#each user.major.schools as { name }}
         <span class="rounded bg-blue-400 text-xs p-1 text-slate-50">{name}</span>
       {/each}
     </li>
-    <li>
-      <MajesticonsCakeLine /> 1er avril 2000
-    </li>
-    <li>
-      <a href={'#'} class="text-inherit">
-        <MajesticonsLocationMarkerLine />
-        123 Avenue des Champs-Élysées
-      </a>
-    </li>
+    {#if user.birthday}
+      <li>
+        <MajesticonsCakeLine />
+        {formatDate(user.birthday)}
+      </li>
+    {/if}
+    {#if user.address}
+      <li>
+        <a href={'#'} class="text-inherit">
+          <MajesticonsLocationMarkerLine />
+          {user.address}
+        </a>
+      </li>
+    {/if}
+    {#if user.phone}
+      <li>
+        <a href="tel:{user.phone}" class="text-inherit">
+          <MajesticonsPhoneLine />
+          {user.phone}
+        </a>
+      </li>
+    {/if}
   </ul>
 
   <div class="grid grid-cols-2">

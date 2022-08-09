@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { goto } from '$app/navigation';
   import { session } from '$app/stores';
-  import { formatDate } from '$lib/dates';
+  import { formatDateTime } from '$lib/dates';
   import { redirectToLogin } from '$lib/session';
   import { CredentialType, mutate, Query, query, type PropsType } from '$lib/zeus';
   import type { Load } from './__types';
@@ -72,7 +72,7 @@
   </tr>
   {#each me.credentials.filter(({ type }) => type === CredentialType.Token) as { id, createdAt, userAgent, active }}
     <tr>
-      <td>{formatDate(createdAt)}</td>
+      <td>{formatDateTime(createdAt)}</td>
       <td>
         {#if active}
           Session actuelle

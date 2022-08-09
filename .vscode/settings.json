@@ -1,7 +1,7 @@
 {
   "cssvar.extensions": ["css", "scss", "svelte"],
   "cssvar.files": ["packages/app/src/design/default-theme.scss"],
-  "cssvar.postcssSyntax": ["postcss-scss"],
+  "cssvar.postcssSyntax": { "postcss-scss": ["scss", "svelte"] },
   "scss.lint.unknownAtRules": "ignore",
   "typescript.tsdk": "node_modules/typescript/lib",
   "windicss.sortOnSave": true

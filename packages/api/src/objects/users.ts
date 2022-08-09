@@ -14,11 +14,27 @@ export const UserType = builder.prismaObject('User', {
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
+    email: t.exposeString('email'),
     firstname: t.exposeString('firstname'),
     lastname: t.exposeString('lastname'),
-    nickname: t.exposeString('nickname', { authScopes: { loggedIn: true } }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
-    pictureFile: t.exposeString('pictureFile', { nullable: true }),
+    graduationYear: t.exposeInt('graduationYear'),
+
+    // Profile details
+    address: t.exposeString('address', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    biography: t.exposeString('biography', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    birthday: t.expose('birthday', {
+      type: DateTimeScalar,
+      nullable: true,
+      authScopes: { loggedIn: true, $granted: 'me' },
+    }),
+    links: t.relation('links', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    nickname: t.exposeString('nickname', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    phone: t.exposeString('phone', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    pictureFile: t.exposeString('pictureFile', {
+      authScopes: { loggedIn: true, $granted: 'me' },
+      nullable: true,
+    }),
 
     // Permissions are only visible to admins
     admin: t.exposeBoolean('admin', {
@@ -119,8 +135,10 @@ builder.mutationField('register', (t) =>
         data: {
           majorId,
           name,
+          email: name,
           firstname,
           lastname,
+          graduationYear: new Date().getFullYear() + 4,
           credentials: {
             create: {
               type: CredentialPrismaType.Password,
