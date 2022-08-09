@@ -3,6 +3,7 @@ import { CredentialType as CredentialPrismaType } from '@prisma/client';
 import argon2 from 'argon2';
 import { nanoid } from 'nanoid';
 import { builder } from '../builder.js';
+import { purgeUserSessions } from '../context.js';
 import { prisma } from '../prisma.js';
 import { DateTimeScalar } from './scalars.js';
 
@@ -68,10 +69,11 @@ builder.mutationField('logout', (t) =>
   t.authField({
     type: 'Boolean',
     authScopes: { loggedIn: true },
-    async resolve(_, {}, { token }) {
+    async resolve(_, {}, { user, token }) {
       await prisma.credential.deleteMany({
         where: { type: CredentialPrismaType.Token, value: token },
       });
+      purgeUserSessions(user.id);
       return true;
     },
   })
@@ -89,8 +91,9 @@ builder.mutationField('deleteToken', (t) =>
       if (credential.type !== CredentialPrismaType.Token) return false;
       return user?.id === credential.userId;
     },
-    async resolve(_, { id }) {
+    async resolve(_, { id }, { user }) {
       await prisma.credential.delete({ where: { id } });
+      purgeUserSessions(user!.id);
       return true;
     },
   })

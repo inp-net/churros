@@ -51,10 +51,10 @@
   <p class="my-0 text-gray-500">
     Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officia ipsum accusamus enim.
   </p>
-  <p class="flex mt-2 text-xs text-lg text-gray-500 gap-2">
-    <SimpleIconsFacebook />
-    <SimpleIconsInstagram />
-    <SimpleIconsTelegram />
+  <p class="flex mt-2 text-gray-500 gap-3">
+    <SimpleIconsFacebook width="2em" height="2em" />
+    <SimpleIconsInstagram width="2em" height="2em" />
+    <SimpleIconsTelegram width="2em" height="2em" />
   </p>
 
   <ul class="text-gray-700 cool">

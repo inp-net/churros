@@ -21,14 +21,17 @@ const yoga = createServer({
 
       const cause = (error as GraphQLError).originalError;
 
+      // If the error has no cause, return it as is
+      if (cause === undefined) return error as GraphQLError;
+
+      if (cause instanceof ForbiddenError || cause instanceof GraphQLYogaError)
+        return new GraphQLError(cause.message);
+
       if (cause instanceof ZodError) {
         return new GraphQLError('Validation error.', {
           extensions: { code: 'ZOD_ERROR', errors: cause.format() },
         });
       }
-
-      if (cause instanceof ForbiddenError || cause instanceof GraphQLYogaError)
-        return new GraphQLError(cause.message);
 
       if (cause instanceof PrismaClientKnownRequestError) {
         return new GraphQLError('Database error.', {
