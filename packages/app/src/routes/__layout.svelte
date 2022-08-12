@@ -3,20 +3,15 @@
   import BurgerButton from '$lib/components/buttons/BurgerButton.svelte';
   import Nav from '$lib/layout/Nav.svelte';
   import TopBar from '$lib/layout/TopBar.svelte';
+  import { theme } from '$lib/theme.js';
   import { onMount } from 'svelte';
   import { tweened } from 'svelte/motion';
   import 'virtual:windi.css';
   import '../design/app.scss';
 
-  $: ({ mobile } = $session);
-
+  let { mobile } = $session;
   const onResize = () => {
-    if (window.matchMedia('(max-width: 50rem)').matches) {
-      mobile = true;
-    } else {
-      if (mobile) menuOpen = false;
-      mobile = false;
-    }
+    mobile = !window.matchMedia('(min-width: 50rem)').matches;
   };
 
   onMount(onResize);
@@ -28,8 +23,17 @@
   let startedAt = 0;
   let diff: { x: number; y: number } | undefined;
 
-  $: if ($navigating) menuOpen = false;
+  $: if ($navigating || !mobile) menuOpen = false;
   $: $menuOpenness = menuOpen ? 1 : 0;
+
+  onMount(() => {
+    let currentTheme = $theme;
+    theme.subscribe(($theme) => {
+      if (currentTheme) document.documentElement.classList.remove(currentTheme);
+      document.documentElement.classList.add($theme);
+      currentTheme = $theme;
+    });
+  });
 </script>
 
 <svelte:window
@@ -94,10 +98,11 @@
   <div
     class="mobile-menu"
     style:transform="translateX(-{(1 - $menuOpenness) * 100}%)"
+    hidden={$menuOpenness === 0}
     bind:clientWidth={menuWidth}
   >
-    <div class="flex-shrink-0 h-12" />
-    <div class="flex-shrink flex-1 overflow-auto overscroll-contain">
+    <div class="flex-shrink-0 h-10" />
+    <div class="flex-shrink flex-1 overflow-auto overscroll-contain px-2">
       <Nav />
     </div>
   </div>
@@ -105,7 +110,7 @@
 
 <div class="layout">
   {#if !mobile}
-    <div class="min-w-50">
+    <div class="min-w-48 px-2">
       <Nav />
     </div>
   {/if}
@@ -117,6 +122,7 @@
 <style lang="scss">
   main {
     grid-column: 2;
+    padding: 0 0.5rem;
   }
 
   .mobile-background {
@@ -129,12 +135,12 @@
   .mobile-menu {
     position: fixed;
     inset: 0;
-    right: 10rem;
+    right: 8rem;
     z-index: 1;
     display: flex;
     flex-direction: column;
-    min-width: 15rem;
-    max-width: 30rem;
+    min-width: 12rem;
+    max-width: 20rem;
     background: var(--bg);
     box-shadow: var(--shadow);
   }
@@ -142,9 +148,8 @@
   .layout {
     display: grid;
     grid-template-columns: 1fr minmax(0, 60rem) 1fr;
-    gap: 0.5rem;
     max-width: 100rem;
-    padding: 0.5rem;
+    padding: 0 0.5rem;
     margin: auto;
   }
 </style>

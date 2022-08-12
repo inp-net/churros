@@ -1,12 +1,14 @@
 <script context="module" lang="ts">
   import Card from '$lib/components/cards/Card.svelte';
   import SocialLink from '$lib/components/links/SocialLink.svelte';
+  import FlexList from '$lib/components/lists/FlexList.svelte';
   import { formatDate } from '$lib/dates.js';
   import { redirectToLogin } from '$lib/session';
   import { Query, query, type PropsType } from '$lib/zeus';
   import type { Load } from '@sveltejs/kit';
   import MajesticonsAcademicCapLine from '~icons/majesticons/academic-cap-line';
   import MajesticonsCakeLine from '~icons/majesticons/cake-line';
+  import MajesticonsEditPen from '~icons/majesticons/edit-pen-2';
   import MajesticonsLocationMarkerLine from '~icons/majesticons/location-marker-line';
   import MajesticonsPhoneLine from '~icons/majesticons/phone-line';
 
@@ -18,12 +20,13 @@
           id: true,
           address: true,
           biography: true,
+          birthday: true,
           firstname: true,
           graduationYear: true,
           lastname: true,
-          pictureFile: true,
-          birthday: true,
+          nickname: true,
           phone: true,
+          pictureFile: true,
           clubs: { club: { id: true, name: true }, title: true },
           links: { type: true, value: true },
           major: { name: true, schools: { name: true } },
@@ -43,35 +46,46 @@
   export let user: Props['user'];
 </script>
 
-<div class=" mt-2 text-center -mb-18">
-  <img
-    src="https://picsum.photos/120"
-    alt="{user.firstname} {user.lastname}"
-    class="rounded-1 shadow  shadow-gray-300"
-    width="120"
-    height="120"
-  />
-</div>
-<Card>
-  <h1 class="flex my-0 mt-14 gap-2 items-center">{user.firstname} {user.lastname}</h1>
-  <p class="my-0 text-gray-500">
-    {#if user.biography}
-      {user.biography}
-    {:else}
-      {['👻', '🌵', '🕸️', '💤'][Number(user.id) % 4]}
-    {/if}
-  </p>
-  {#if user.links.length > 0}
-    <p class="flex mt-2 text-gray-500 gap-3">
-      {#each user.links as link}
-        <SocialLink {...link} />
-      {/each}
-    </p>
-  {/if}
+<div class="placeholder" />
 
-  <ul class="text-gray-700 cool">
+<Card>
+  <div class="user-header">
+    <img
+      src="https://picsum.photos/160"
+      alt="{user.firstname} {user.lastname}"
+      class="user-picture"
+      width="160"
+      height="160"
+    />
+    <div class="user-title">
+      <h1 class="my-0">
+        {user.firstname}
+        {user.nickname}
+        {user.lastname}
+        <a href="edit/" title="Éditer" sveltekit:prefetch>
+          <MajesticonsEditPen aria-label="Éditer" />
+        </a>
+      </h1>
+      <div class="biography">
+        {#if user.biography}
+          {user.biography}
+        {:else}
+          {['👻', '🌵', '🕸️', '💤'][Number(user.id) % 4]}
+        {/if}
+      </div>
+      {#if user.links.length > 0}
+        <div class="flex mt-2 gap-3">
+          {#each user.links as link}
+            <SocialLink {...link} />
+          {/each}
+        </div>
+      {/if}
+    </div>
+  </div>
+
+  <FlexList>
     <li>
-      <MajesticonsAcademicCapLine />
+      <MajesticonsAcademicCapLine aria-label="Filière" />
       {user.major.name}
       {user.graduationYear}
       {#each user.major.schools as { name }}
@@ -80,27 +94,32 @@
     </li>
     {#if user.birthday}
       <li>
-        <MajesticonsCakeLine />
+        <MajesticonsCakeLine aria-label="Anniversaire" />
         {formatDate(user.birthday)}
       </li>
     {/if}
     {#if user.address}
       <li>
-        <a href={'#'} class="text-inherit">
-          <MajesticonsLocationMarkerLine />
+        <a
+          href="https://www.google.com/maps/search/?api=1&{new URLSearchParams({
+            query: user.address,
+          })}"
+          target="maps"
+        >
+          <MajesticonsLocationMarkerLine aria-label="Adresse" />
           {user.address}
         </a>
       </li>
     {/if}
     {#if user.phone}
       <li>
-        <a href="tel:{user.phone}" class="text-inherit">
-          <MajesticonsPhoneLine />
+        <a href="tel:{user.phone}">
+          <MajesticonsPhoneLine aria-label="Téléphone" />
           {user.phone}
         </a>
       </li>
     {/if}
-  </ul>
+  </FlexList>
 
   <div class="grid grid-cols-2">
     <div>
@@ -116,7 +135,6 @@
     </div>
     <div>
       <h2 class="mb-1">Clubs</h2>
-
       <ul class="mt-1 cool">
         {#each user.clubs as { club, title }}
           <li>
@@ -137,23 +155,56 @@
 </Card>
 
 <style lang="scss">
-  ul.cool {
-    padding: 0;
-    list-style: none;
+  .placeholder {
+    height: 5rem;
+  }
 
-    li {
-      padding: 0.25rem 0;
+  .user-header {
+    margin-top: 5rem;
+    margin-bottom: 1rem;
+  }
+
+  .user-picture {
+    position: absolute;
+    border-radius: var(--radius-block);
+    border-radius: var(--radius-inline);
+    box-shadow: var(--shadow);
+    transform: translateY(-100%);
+  }
+
+  .user-title {
+    flex: 1;
+    padding-block: 0.5rem;
+  }
+
+  .biography {
+    color: var(--muted);
+  }
+
+  @media (min-width: $breakpoint-mobile) {
+    .placeholder {
+      height: 0;
     }
 
-    li,
-    li a {
+    .user-header {
       display: flex;
-      gap: 0.5rem;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .user-picture {
+      position: static;
+      transform: none;
+    }
+
+    .user-title {
+      padding-block: 0;
     }
   }
 
   .club {
-    display: flex;
+    display: inline-flex;
     overflow: hidden;
     background: var(--bg);
     border-radius: var(--radius-inline);

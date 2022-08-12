@@ -1,4 +1,3 @@
-import { onMount } from 'svelte';
 import { writable } from 'svelte/store';
 import { browser } from '$app/env';
 
@@ -8,18 +7,14 @@ export const theme = writable('light', (set) => {
   if (!browser) return;
 
   // Try to load the theme from sessionStorage or fallback to a media query
-  let currentTheme =
+  set(
     sessionStorage.getItem('theme') ??
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  set(currentTheme);
-
-  // Update the page when the theme changes
-  onMount(() =>
-    theme.subscribe(($theme) => {
-      if (currentTheme) document.documentElement.classList.remove(currentTheme);
-      sessionStorage.setItem('theme', $theme);
-      document.documentElement.classList.add($theme);
-      currentTheme = $theme;
-    })
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
   );
 });
+
+if (browser) {
+  theme.subscribe(($theme) => {
+    sessionStorage.setItem('theme', $theme);
+  });
+}

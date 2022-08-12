@@ -7,6 +7,7 @@ import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
 import { prisma } from '../prisma.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
+import { UserLinkInput } from './user-links.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaObject('User', {
@@ -157,11 +158,24 @@ builder.mutationField('updateUser', (t) =>
     args: {
       id: t.arg.id(),
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
+      biography: t.arg.string({ validate: { maxLength: 255 } }),
+      links: t.arg({ type: [UserLinkInput] }),
     },
     authScopes: (_, { id }, { user }) => Boolean(user?.canEditUsers || id === user?.id),
-    async resolve(query, _, { id, nickname }) {
+    async resolve(query, _, { id, nickname, biography, links }) {
       purgeUserSessions(id);
-      return prisma.user.update({ ...query, where: { id }, data: { nickname } });
+      return prisma.user.update({
+        ...query,
+        where: { id },
+        data: {
+          nickname,
+          biography,
+          links: {
+            deleteMany: {},
+            createMany: { data: links },
+          },
+        },
+      });
     },
   })
 );

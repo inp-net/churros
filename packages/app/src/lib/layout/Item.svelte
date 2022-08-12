@@ -8,7 +8,7 @@
 </script>
 
 <a {href} sveltekit:prefetch aria-selected={selected}>
-  <svelte:component this={selected ? selectedIcon : icon} />
+  <svelte:component this={selected ? selectedIcon : icon} aria-hidden="true" />
   <slot />
 </a>
 

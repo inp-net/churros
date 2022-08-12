@@ -56,6 +56,7 @@
   .top-bar {
     position: sticky;
     top: 0;
+    z-index: 1;
     max-width: 100%;
     overflow: hidden;
     color: var(--primary-text);

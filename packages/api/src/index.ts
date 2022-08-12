@@ -48,7 +48,7 @@ const yoga = createServer({
     },
   },
   plugins: [
-    useNoBatchedQueries(),
+    useNoBatchedQueries({ allow: 2 }),
     {
       onExecute() {
         const start = performance.now();
