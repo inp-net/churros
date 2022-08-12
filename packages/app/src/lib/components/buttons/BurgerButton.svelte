@@ -1,15 +1,18 @@
 <script lang="ts">
   import MajesticonsClose from '~icons/majesticons/close';
   import MajesticonsMenu from '~icons/majesticons/menu';
-  export let open = false;
+
+  export let openness = 0;
 </script>
 
-<button on:click class:open>
-  {#if open}
-    <MajesticonsClose width="3rem" height="3rem" />
-  {:else}
-    <MajesticonsMenu width="3rem" height="3rem" />
-  {/if}
+<button on:click>
+  <MajesticonsClose
+    width="3rem"
+    height="3rem"
+    style="color: var(--text); opacity: {openness}"
+    class="absolute"
+  />
+  <MajesticonsMenu width="3rem" height="3rem" />
 </button>
 
 <style lang="scss">
@@ -19,10 +22,9 @@
     color: var(--primary-text);
     border-radius: var(--radius-inline);
     outline: 0 solid var(--ring);
-    transition: color 300ms;
 
-    &.open {
-      color: var(--text);
+    &:active {
+      box-shadow: none;
     }
 
     &:focus-visible {

@@ -44,7 +44,7 @@
     "build": "yarn zeus && vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "clean": "git clean -Xdf .",
-    "dev": "yarn zeus && vite dev",
+    "dev": "yarn zeus && vite dev --host",
     "postinstall": "svelte-kit sync",
     "preview": "vite preview",
     "storybook": "NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 6006",
