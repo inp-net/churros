@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
   import { session } from '$app/stores';
-  import { query, Query, type PropsType } from '$lib/zeus';
+  import { GroupType, query, Query, type PropsType } from '$lib/zeus';
   import type { Load } from './__types';
 
   const propsQuery = () =>
     Query({
-      clubs: { id: true, name: true },
+      groups: [{ types: [GroupType.Association, GroupType.Club] }, { id: true, name: true }],
     });
 
   type Props = PropsType<typeof propsQuery>;
@@ -16,9 +16,9 @@
 </script>
 
 <script lang="ts">
-  export let clubs: Props['clubs'];
+  export let groups: Props['groups'];
 
-  $: myClubs = new Map($session.me?.clubs.map((club) => [club.clubId, club]) ?? []);
+  $: myGroups = new Map($session.me?.groups.map((group) => [group.groupId, group]) ?? []);
 </script>
 
 <table>
@@ -30,14 +30,14 @@
       <td />
     {/if}
   </tr>
-  {#each clubs as { id, name }}
+  {#each groups as { id, name }}
     <tr>
       <td>{id}</td>
       <td><a href="/club/{id}" sveltekit:prefetch>{name}</a></td>
       {#if $session.me}
-        <td>{myClubs.has(id) ? 'Oui' : 'Non'}</td>
+        <td>{myGroups.has(id) ? 'Oui' : 'Non'}</td>
         <td>
-          {#if $session.me.canEditClubs || myClubs.get(id)?.canEditMembers}
+          {#if $session.me.canEditGroups || myGroups.get(id)?.canEditMembers}
             <a href="/club/{id}/members/" sveltekit:prefetch>Edit</a>
           {/if}
         </td>
@@ -46,6 +46,6 @@
   {/each}
 </table>
 
-{#if $session.me?.canEditClubs}
-  <p><a href="create/">Créer un nouveau club</a></p>
+{#if $session.me?.canEditGroups}
+  <p><a href="create/">Créer un nouveau group</a></p>
 {/if}

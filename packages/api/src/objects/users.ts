@@ -41,8 +41,8 @@ export const UserType = builder.prismaObject('User', {
     admin: t.exposeBoolean('admin', {
       authScopes: { admin: true, $granted: 'me' },
     }),
-    canEditClubs: t.boolean({
-      resolve: ({ admin, canEditClubs }) => admin || canEditClubs,
+    canEditGroups: t.boolean({
+      resolve: ({ admin, canEditGroups }) => admin || canEditGroups,
       authScopes: { admin: true, $granted: 'me' },
     }),
     canEditUsers: t.boolean({
@@ -54,9 +54,9 @@ export const UserType = builder.prismaObject('User', {
       authScopes: { loggedIn: true, $granted: 'me' },
       query: { orderBy: { publishedAt: 'desc' } },
     }),
-    clubs: t.relation('clubs', {
+    groups: t.relation('groups', {
       authScopes: { loggedIn: true, $granted: 'me' },
-      query: { orderBy: { club: { name: 'asc' } } },
+      query: { orderBy: { group: { name: 'asc' } } },
     }),
     credentials: t.relation('credentials', {
       authScopes: { $granted: 'me' },

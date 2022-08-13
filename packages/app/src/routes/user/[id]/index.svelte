@@ -27,7 +27,7 @@
           nickname: true,
           phone: true,
           pictureFile: true,
-          clubs: { club: { id: true, name: true }, title: true },
+          groups: { group: { id: true, name: true }, title: true },
           links: { type: true, value: true },
           major: { name: true, schools: { name: true } },
         },
@@ -134,17 +134,17 @@
       </ul>
     </div>
     <div>
-      <h2 class="mb-1">Clubs</h2>
+      <h2 class="mb-1">Groups</h2>
       <ul class="mt-1 cool">
-        {#each user.clubs as { club, title }}
+        {#each user.groups as { group, title }}
           <li>
             <a
-              href="/club/{club.id}/"
-              class="text-inherit club no-underline !gap-0"
+              href="/club/{group.id}/"
+              class="text-inherit group no-underline !gap-0"
               style:--bg="#38bdf880"
               sveltekit:prefetch
             >
-              <span>{club.name}</span>
+              <span>{group.name}</span>
               <span>{title}</span>
             </a>
           </li>
@@ -203,7 +203,7 @@
     }
   }
 
-  .club {
+  .group {
     display: inline-flex;
     overflow: hidden;
     background: var(--bg);

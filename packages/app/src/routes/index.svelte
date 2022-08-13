@@ -13,7 +13,7 @@
           title: true,
           bodyHtml: true,
           publishedAt: true,
-          club: { id: true, name: true },
+          group: { id: true, name: true },
           author: { id: true, firstname: true, lastname: true },
         },
       ],
@@ -32,7 +32,7 @@
 
 <h1>Bienvenue sur Centraverse</h1>
 
-{#each homepage as { id, title, bodyHtml, publishedAt, club, author }}
+{#each homepage as { id, title, bodyHtml, publishedAt, group, author }}
   <ArticleCard
     {title}
     href="#"
@@ -41,7 +41,7 @@
       : undefined}
   >
     <p>
-      Par <a href="/club/{club.id}" sveltekit:prefetch>{club.name}</a> le {formatDateTime(
+      Par <a href="/club/{group.id}" sveltekit:prefetch>{group.name}</a> le {formatDateTime(
         publishedAt
       )}
     </p>

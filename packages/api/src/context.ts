@@ -1,5 +1,5 @@
 import { GraphQLYogaError, YogaInitialContext } from '@graphql-yoga/node';
-import { ClubMember, CredentialType, Major, School, User } from '@prisma/client';
+import { GroupMember, CredentialType, Major, School, User } from '@prisma/client';
 import { prisma } from './prisma.js';
 
 const getToken = ({ headers }: Request) => {
@@ -11,7 +11,7 @@ const getToken = ({ headers }: Request) => {
 /** In memory store for sessions. */
 const sessions = new Map<
   string,
-  User & { clubs: ClubMember[]; major: Major & { schools: School[] } }
+  User & { groups: GroupMember[]; major: Major & { schools: School[] } }
 >();
 
 /** Deletes the session cache for a given user id. */
@@ -31,7 +31,7 @@ const getUser = async (token: string) => {
         // queries for the cache to work
         user: {
           include: {
-            clubs: true,
+            groups: true,
             major: { include: { schools: true } },
           },
         },
@@ -57,7 +57,7 @@ const getUser = async (token: string) => {
   const { user } = credential;
 
   // Normalize permissions
-  user.canEditClubs ||= user.admin;
+  user.canEditGroups ||= user.admin;
   user.canEditUsers ||= user.admin;
 
   // When the in memory store grows too big, delete some sessions

@@ -8,9 +8,9 @@ export const sessionUserQuery = () =>
     id: true,
     name: true,
     admin: true,
-    canEditClubs: true,
+    canEditGroups: true,
     canEditUsers: true,
-    clubs: { clubId: true, canEditArticles: true, canEditMembers: true },
+    groups: { groupId: true, canEditArticles: true, canEditMembers: true },
     major: { id: true, name: true, schools: { id: true, name: true } },
   });
 

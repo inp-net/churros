@@ -9,9 +9,9 @@
     if (!session.me) return redirectToLogin(url.pathname);
 
     if (
-      !session.me.canEditClubs &&
-      !session.me.clubs.some(
-        ({ clubId, canEditArticles }) => clubId === params.id && canEditArticles
+      !session.me.canEditGroups &&
+      !session.me.groups.some(
+        ({ groupId, canEditArticles }) => groupId === params.id && canEditArticles
       )
     )
       return { status: 307, redirect: '.' };
@@ -28,7 +28,7 @@
     try {
       await mutate(
         {
-          createArticle: [{ title, body, clubId: $page.params.id }, { id: true }],
+          createArticle: [{ title, body, groupId: $page.params.id }, { id: true }],
         },
         $session
       );

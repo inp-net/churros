@@ -1,4 +1,4 @@
-import { CredentialType, LinkType, Prisma } from '@prisma/client';
+import { CredentialType, GroupType, LinkType, Prisma } from '@prisma/client';
 import { hash } from 'argon2';
 import { prisma } from './prisma.js';
 
@@ -22,9 +22,18 @@ await prisma.major.create({
   data: { name: 'Vent', schools: { connect: [{ id: 4 }] } },
 });
 
+await prisma.studentOrganization.createMany({
+  data: [
+    { name: 'AE EAU 2022', schoolId: 1, year: 2022 },
+    { name: 'AE FEU 2022', schoolId: 2, year: 2022 },
+    { name: 'AE TERRE 2022', schoolId: 3, year: 2022 },
+    { name: 'AE AIR 2022', schoolId: 4, year: 2022 },
+  ],
+});
+
 const userData = [
   { name: 'annie', firstname: 'Annie', lastname: 'Versaire', admin: true },
-  { name: 'bernard', firstname: 'Bernard', lastname: 'Tichaut', canEditClubs: true },
+  { name: 'bernard', firstname: 'Bernard', lastname: 'Tichaut', canEditGroups: true },
   { name: 'camille', firstname: 'Camille', lastname: 'Honnête', canEditUsers: true },
   { name: 'denis', firstname: 'Denis', lastname: 'Chon' },
   { name: 'elie', firstname: 'Élie', lastname: 'Coptère' },
@@ -75,86 +84,93 @@ for (const [i, data] of userData.entries()) {
   });
 }
 
-await prisma.club.createMany({
-  data: [
-    { name: 'Art' },
-    { name: 'Basket' },
-    { name: 'Cinéma' },
-    { name: 'Danse' },
-    { name: 'Escalade' },
-    { name: 'Football' },
-    { name: 'Golf' },
-    { name: 'Handball' },
-    { name: 'Igloo' },
-    { name: 'Jardinage' },
-    { name: 'Karaté' },
-    { name: 'Lecture' },
-    { name: 'Musique' },
-    { name: 'Natation' },
-    { name: 'Origami' },
-    { name: 'Pétanque' },
-    { name: 'Quidditch' },
-    { name: 'Randonnée' },
-    { name: 'Ski' },
-    { name: 'Tennis' },
-    { name: 'Ukulélé' },
-    { name: 'Vélo' },
-    { name: 'Water-polo' },
-    { name: 'Xylophone' },
-    { name: 'Yoga' },
-    { name: 'Zumba' },
-  ].map((club, i) => ({ ...club, schoolId: (i % 4) + 1 })),
+const groups = [
+  { name: 'Art' },
+  { name: 'Basket' },
+  { name: 'Cinéma' },
+  { name: 'Danse' },
+  { name: 'Escalade' },
+  { name: 'Football' },
+  { name: 'Golf' },
+  { name: 'Handball' },
+  { name: 'Igloo' },
+  { name: 'Jardinage' },
+  { name: 'Karaté' },
+  { name: 'Lecture' },
+  { name: 'Musique' },
+  { name: 'Natation' },
+  { name: 'Origami' },
+  { name: 'Pétanque' },
+  { name: 'Quidditch' },
+  { name: 'Randonnée' },
+  { name: 'Ski' },
+  { name: 'Tennis' },
+  { name: 'Ukulélé' },
+  { name: 'Vélo' },
+  { name: 'Water-polo' },
+  { name: 'Xylophone' },
+  { name: 'Yoga' },
+  { name: 'Zumba' },
+];
+
+await prisma.group.createMany({
+  data: groups.map((group, i) => ({
+    ...group,
+    type: GroupType.Group,
+    schoolId: (i % 4) + 1,
+    studentOrganizationId: (i % 4) + 1,
+  })),
 });
 
-const clubMembers: Prisma.ClubMemberCreateManyInput[] = [];
+const groupMembers: Prisma.GroupMemberCreateManyInput[] = [];
 
-for (let clubId = 1; clubId <= 26; clubId++) {
-  clubMembers.push(
+for (let groupId = 1; groupId <= 26; groupId++) {
+  groupMembers.push(
     {
-      clubId,
-      memberId: clubId,
+      groupId,
+      memberId: groupId,
       title: 'Prez',
       president: true,
       canEditArticles: true,
       canEditMembers: true,
     },
     {
-      clubId,
-      memberId: (clubId % 26) + 1,
+      groupId,
+      memberId: (groupId % 26) + 1,
       title: 'Trez',
       treasurer: true,
       canEditArticles: true,
       canEditMembers: true,
     },
     {
-      clubId,
-      memberId: ((clubId + 1) % 26) + 1,
+      groupId,
+      memberId: ((groupId + 1) % 26) + 1,
       title: 'Secrétaire',
       canEditArticles: true,
       canEditMembers: true,
     },
     {
-      clubId,
-      memberId: ((clubId + 2) % 26) + 1,
+      groupId,
+      memberId: ((groupId + 2) % 26) + 1,
       title: 'Respo Com',
       canEditArticles: true,
     },
     {
-      clubId,
-      memberId: ((clubId + 3) % 26) + 1,
+      groupId,
+      memberId: ((groupId + 3) % 26) + 1,
     },
     {
-      clubId,
-      memberId: ((clubId + 4) % 26) + 1,
+      groupId,
+      memberId: ((groupId + 4) % 26) + 1,
     },
     {
-      clubId,
-      memberId: ((clubId + 5) % 26) + 1,
+      groupId,
+      memberId: ((groupId + 5) % 26) + 1,
     }
   );
 }
 
-await prisma.clubMember.createMany({ data: clubMembers });
+await prisma.groupMember.createMany({ data: groupMembers });
 
 const articleData: Prisma.ArticleCreateManyInput[] = [];
 
@@ -165,7 +181,7 @@ const endDate = new Date('2022-09-01T13:00:00.000Z').getTime();
 for (let i = 0; i < end; i++) {
   articleData.push({
     title: `Article ${i}`,
-    clubId: ((i * 7) % 26) + 1,
+    groupId: ((i * 7) % 26) + 1,
     authorId: i % 11 === 0 ? undefined : ((i * 9) % 26) + 1,
     body: `**Lorem ipsum dolor sit amet**, consectetur adipiscing elit. Ut feugiat velit sit amet tincidunt gravida. Duis eget laoreet sapien, id.
 

@@ -6,7 +6,7 @@
 
   const propsQuery = (id: string) =>
     Query({
-      club: [
+      group: [
         { id },
         {
           members: {
@@ -25,9 +25,9 @@
 
   export const load: Load = async ({ fetch, params, session, url }) => {
     if (
-      !session.me?.canEditClubs &&
-      !session.me?.clubs.some(
-        ({ clubId, canEditMembers }) => canEditMembers && clubId === params.id
+      !session.me?.canEditGroups &&
+      !session.me?.groups.some(
+        ({ groupId, canEditMembers }) => canEditMembers && groupId === params.id
       )
     )
       return { status: 307, redirect: '.' };
@@ -45,17 +45,17 @@
 </script>
 
 <script lang="ts">
-  export let club: Props['club'];
+  export let group: Props['group'];
 
   let name = '';
   let title = '';
 
-  const addClubMember = async () => {
+  const addGroupMember = async () => {
     try {
-      const { addClubMember } = await mutate(
+      const { addGroupMember } = await mutate(
         {
-          addClubMember: [
-            { clubId: $page.params.id, name, title },
+          addGroupMember: [
+            { groupId: $page.params.id, name, title },
             {
               memberId: true,
               title: true,
@@ -68,36 +68,36 @@
         },
         $session
       );
-      club.members = [...club.members, addClubMember];
+      group.members = [...group.members, addGroupMember];
     } catch (error: unknown) {
       console.error(error);
     }
   };
 
-  const deleteClubMember = async (memberId: string) => {
+  const deleteGroupMember = async (memberId: string) => {
     try {
-      await mutate({ deleteClubMember: [{ clubId: $page.params.id, memberId }, true] }, $session);
-      club.members = club.members.filter((member) => member.memberId !== memberId);
+      await mutate({ deleteGroupMember: [{ groupId: $page.params.id, memberId }, true] }, $session);
+      group.members = group.members.filter((member) => member.memberId !== memberId);
     } catch (error: unknown) {
       console.error(error);
     }
   };
 
-  const updateClubMember = async (memberId: string) => {
+  const updateGroupMember = async (memberId: string) => {
     try {
-      const member = club.members.find((member) => member.memberId === memberId);
+      const member = group.members.find((member) => member.memberId === memberId);
       if (!member) throw new Error('Member not found');
-      const { updateClubMember } = await mutate(
+      const { updateGroupMember } = await mutate(
         {
-          updateClubMember: [
-            { clubId: $page.params.id, memberId, title: member.title },
+          updateGroupMember: [
+            { groupId: $page.params.id, memberId, title: member.title },
             { title: true },
           ],
         },
         $session
       );
-      club.members = club.members.map((member) =>
-        member.memberId === memberId ? { ...member, ...updateClubMember } : member
+      group.members = group.members.map((member) =>
+        member.memberId === memberId ? { ...member, ...updateGroupMember } : member
       );
     } catch (error: unknown) {
       console.error(error);
@@ -106,25 +106,25 @@
 </script>
 
 <table>
-  {#each club.members as { memberId, member, president, treasurer }, i}
+  {#each group.members as { memberId, member, president, treasurer }, i}
     <tr>
       <td>{president ? '👑' : ''}{treasurer ? '💰' : ''}</td>
       <td>{member.firstname} {member.lastname}</td>
       <td>
         <input
           type="text"
-          bind:value={club.members[i].title}
-          on:change={async () => updateClubMember(memberId)}
+          bind:value={group.members[i].title}
+          on:change={async () => updateGroupMember(memberId)}
         />
       </td>
       <td>
-        <button type="button" on:click={async () => deleteClubMember(memberId)}> ❌ </button>
+        <button type="button" on:click={async () => deleteGroupMember(memberId)}> ❌ </button>
       </td>
     </tr>
   {/each}
 </table>
 
-<form on:submit|preventDefault={addClubMember}>
+<form on:submit|preventDefault={addGroupMember}>
   <h2>Ajouter un membre</h2>
   <p>
     <label>

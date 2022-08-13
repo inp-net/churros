@@ -5,7 +5,7 @@
 
   const propsQuery = (id: string, loggedIn: boolean) =>
     Query({
-      club: [
+      group: [
         { id },
         loggedIn
           ? {
@@ -39,16 +39,16 @@
 <script lang="ts">
   import Alert from '$lib/components/alerts/Alert.svelte';
 
-  export let club: Props['club'];
+  export let group: Props['group'];
 </script>
 
-<h1>{club.name} ({club.school.name})</h1>
+<h1>{group.name} ({group.school.name})</h1>
 
-{#if club.members}
+{#if group.members}
   <h2>Membres</h2>
-  {#if club.members.length > 0}
+  {#if group.members.length > 0}
     <table>
-      {#each club.members as { member, president, treasurer, title }}
+      {#each group.members as { member, president, treasurer, title }}
         <tr>
           <td>{president ? '👑' : ''}{treasurer ? '💰' : ''}</td>
           <td>
@@ -63,10 +63,10 @@
     </table>
   {:else}
     <Alert theme="warning">
-      <p>Le club ne contient aucun membre, il vient peut-être d'être créé.</p>
+      <p>Le group ne contient aucun membre, il vient peut-être d'être créé.</p>
     </Alert>
   {/if}
-  {#if $session.me?.canEditClubs || $session.me?.clubs.some(({ clubId, canEditMembers }) => canEditMembers && clubId === $page.params.id)}
+  {#if $session.me?.canEditGroups || $session.me?.groups.some(({ groupId, canEditMembers }) => canEditMembers && groupId === $page.params.id)}
     <p>
       <a href="/club/{$page.params.id}/members" sveltekit:prefetch>
         Modifier la liste des membres
@@ -77,14 +77,14 @@
 
 <h2>Articles</h2>
 
-{#each club.articles as { title, bodyHtml }}
+{#each group.articles as { title, bodyHtml }}
   <article>
     <h3>{title}</h3>
     {@html bodyHtml}
   </article>
 {/each}
 
-{#if $session.me?.canEditClubs || $session.me?.clubs.some(({ clubId, canEditArticles }) => clubId === $page.params.id && canEditArticles)}
+{#if $session.me?.canEditGroups || $session.me?.groups.some(({ groupId, canEditArticles }) => groupId === $page.params.id && canEditArticles)}
   <p>
     <a href="/club/{$page.params.id}/write" sveltekit:prefetch> Écrire un article </a>
   </p>

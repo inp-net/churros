@@ -102,7 +102,7 @@
     bind:clientWidth={menuWidth}
   >
     <div class="flex-shrink-0 h-10" />
-    <div class="flex-shrink flex-1 overflow-auto overscroll-contain px-2">
+    <div class="flex-shrink flex-1 px-2 overflow-auto overscroll-contain">
       <Nav />
     </div>
   </div>
@@ -110,7 +110,7 @@
 
 <div class="layout">
   {#if !mobile}
-    <div class="min-w-48 px-2">
+    <div class="min-w-48">
       <Nav />
     </div>
   {/if}
@@ -122,7 +122,6 @@
 <style lang="scss">
   main {
     grid-column: 2;
-    padding: 0 0.5rem;
   }
 
   .mobile-background {
@@ -151,5 +150,9 @@
     max-width: 100rem;
     padding: 0 0.5rem;
     margin: auto;
+
+    > * {
+      padding: 0 0.5rem;
+    }
   }
 </style>

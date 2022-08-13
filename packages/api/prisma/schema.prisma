@@ -33,15 +33,15 @@ model User {
   pictureFile String    @default("") @db.VarChar(255)
 
   // Permissions
-  admin        Boolean @default(false)
-  canEditUsers Boolean @default(false)
-  canEditClubs Boolean @default(false)
+  admin         Boolean @default(false)
+  canEditUsers  Boolean @default(false)
+  canEditGroups Boolean @default(false)
 
   articles    Article[]
-  clubs       ClubMember[]
+  groups      GroupMember[]
   credentials Credential[]
   links       UserLink[]
-  major       Major        @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  major       Major         @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
 }
 
 enum LinkType {
@@ -72,8 +72,9 @@ model School {
   id   Int    @id @default(autoincrement())
   name String
 
-  clubs  Club[]
-  majors Major[]
+  groups               Group[]
+  majors               Major[]
+  studentOrganizations StudentOrganization[]
 }
 
 enum CredentialType {
@@ -93,18 +94,39 @@ model Credential {
   user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
-model Club {
+model StudentOrganization {
   id       Int    @id @default(autoincrement())
   schoolId Int
-  name     String
+  name     String @unique @db.VarChar(255)
+  year     Int    @db.Integer
 
-  articles Article[]
-  members  ClubMember[]
-  school   School       @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  school School  @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  Group  Group[]
 }
 
-model ClubMember {
-  clubId          Int
+enum GroupType {
+  Association
+  Club
+  Group
+  Integration
+  StudentOrganizationSection
+}
+
+model Group {
+  id                    Int       @id @default(autoincrement())
+  schoolId              Int?
+  studentOrganizationId Int?
+  name                  String
+  type                  GroupType
+
+  articles            Article[]
+  members             GroupMember[]
+  school              School?              @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  studentOrganization StudentOrganization? @relation(fields: [studentOrganizationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+}
+
+model GroupMember {
+  groupId         Int
   memberId        Int
   title           String   @default("") @db.VarChar(255)
   president       Boolean  @default(false)
@@ -113,16 +135,16 @@ model ClubMember {
   canEditArticles Boolean  @default(false)
   createdAt       DateTime @default(now())
 
-  club   Club @relation(fields: [clubId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  member User @relation(fields: [memberId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  group  Group @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  member User  @relation(fields: [memberId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 
-  @@id([clubId, memberId])
+  @@id([groupId, memberId])
 }
 
 model Article {
   id          Int      @id @default(autoincrement())
   authorId    Int?
-  clubId      Int
+  groupId     Int
   title       String   @db.VarChar(255)
   body        String   @db.Text
   published   Boolean  @default(false)
@@ -131,5 +153,5 @@ model Article {
   publishedAt DateTime @default(now())
 
   author User? @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  club   Club  @relation(fields: [clubId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  group  Group @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

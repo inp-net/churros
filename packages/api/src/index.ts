@@ -14,6 +14,10 @@ process.env.DEBUG = 'true';
 const yoga = createServer({
   schema,
   context,
+  graphiql: {
+    defaultQuery:
+      'query {\n\thomepage {\n\t\ttitle\n\t\tbody\n\t\tauthor {firstname lastname}\n\t\tgroup {name}\t\n\t}\n}',
+  },
   multipart: { files: 1, fileSize: 10 * 1024 * 1024 },
   maskedErrors: {
     formatError(error, message, isDev) {

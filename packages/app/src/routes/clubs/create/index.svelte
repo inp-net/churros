@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import type { Load } from './__types/';
-  import { mutate, Query, query, ZeusError, type PropsType } from '$lib/zeus';
+  import { GroupType, mutate, Query, query, ZeusError, type PropsType } from '$lib/zeus';
   import { session } from '$app/stores';
   import { goto } from '$app/navigation';
   import Button from '$lib/components/buttons/Button.svelte';
@@ -10,7 +10,7 @@
   type Props = PropsType<typeof propsQuery>;
 
   export const load: Load = async ({ fetch, session }) =>
-    session.me?.canEditClubs
+    session.me?.canEditGroups
       ? { props: await query(fetch, propsQuery(), session) }
       : { status: 307, redirect: '..' };
 </script>
@@ -22,16 +22,16 @@
   let schoolId = schools[0].id;
 
   let loading = false;
-  const createClub = async () => {
+  const createGroup = async () => {
     if (loading) return;
 
     try {
       loading = true;
-      const { createClub: club } = await mutate(
-        { createClub: [{ name, schoolId }, { id: true }] },
+      const { createGroup: group } = await mutate(
+        { createGroup: [{ type: GroupType.Club, name, schoolId }, { id: true }] },
         $session
       );
-      await goto(`/club/${club.id}`);
+      await goto(`/club/${group.id}`);
     } catch (error: unknown) {
       if (!(error instanceof ZeusError)) throw error;
     } finally {
@@ -40,9 +40,9 @@
   };
 </script>
 
-<form on:submit|preventDefault={createClub}>
+<form on:submit|preventDefault={createGroup}>
   <p>
-    <label>Nom du club&nbsp;: <input type="text" bind:value={name} required /></label>
+    <label>Nom du group&nbsp;: <input type="text" bind:value={name} required /></label>
   </p>
   <p>
     <label>
@@ -54,7 +54,7 @@
       </select>
     </label>
   </p>
-  <Button type="submit" theme="primary" {loading}>Créer le club</Button>
+  <Button type="submit" theme="primary" {loading}>Créer le group</Button>
 </form>
 
 <style lang="scss">
