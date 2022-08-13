@@ -1573,16 +1573,16 @@ __metadata:
   dependencies:
     "@envelop/core": ^2.4.2
     "@graphql-yoga/node": ^2.13.6
-    "@pothos/core": ^3.13.0
-    "@pothos/plugin-complexity": ^3.6.0
-    "@pothos/plugin-prisma": ^3.21.2
+    "@pothos/core": ^3.14.0
+    "@pothos/plugin-complexity": ^3.6.1
+    "@pothos/plugin-prisma": ^3.22.0
     "@pothos/plugin-scope-auth": ^3.11.2
     "@pothos/plugin-simple-objects": ^3.4.0
-    "@pothos/plugin-validation": ^3.5.1
+    "@pothos/plugin-validation": ^3.6.0
     "@prisma/client": ^4.2.1
     "@types/cookie": ^0.5.1
     "@types/express": ^4.17.13
-    "@types/node": ^18.7.1
+    "@types/node": ^18.7.2
     argon2: ^0.28.7
     envelop-no-batched-queries: ^3.0.2
     express: ^4.18.1
@@ -1618,7 +1618,7 @@ __metadata:
     "@storybook/addon-essentials": ^6.5.10
     "@storybook/addon-interactions": ^6.5.10
     "@storybook/addon-links": ^6.5.10
-    "@storybook/addon-svelte-csf": ^2.0.6
+    "@storybook/addon-svelte-csf": ^2.0.7
     "@storybook/builder-vite": ^0.2.2
     "@storybook/node-logger": ^6.5.10
     "@storybook/svelte": ^6.5.10
@@ -1641,7 +1641,7 @@ __metadata:
     typescript: ^4.7.4
     ua-parser-js: ^1.0.2
     unplugin-icons: ^0.14.8
-    vite: ^3.0.5
+    vite: ^3.0.7
     vite-plugin-windicss: ^1.8.7
     zod: ^3.18.0
   languageName: unknown
@@ -2543,28 +2543,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/core@npm:^3.13.0":
-  version: 3.13.0
-  resolution: "@pothos/core@npm:3.13.0"
+"@pothos/core@npm:^3.14.0":
+  version: 3.14.0
+  resolution: "@pothos/core@npm:3.14.0"
   peerDependencies:
     graphql: ">=15.1.0"
-  checksum: 2b597a17e80473566946f8012972872d333f5bbfbae693c847e0c57f3c6f256514c0762e1be9607d00a7c795f11c3d04884ef4e58fdf93e0d64179d4092a900f
+  checksum: 8aed4990e53d6ac3c588302972111a1f25b53528f3c2035aad67f417671d649d2bf17142efce4f8cb94b93266b47f0f7aceb41fbb53676d3bf705f00f199b291
   languageName: node
   linkType: hard
 
-"@pothos/plugin-complexity@npm:^3.6.0":
-  version: 3.6.0
-  resolution: "@pothos/plugin-complexity@npm:3.6.0"
+"@pothos/plugin-complexity@npm:^3.6.1":
+  version: 3.6.1
+  resolution: "@pothos/plugin-complexity@npm:3.6.1"
   peerDependencies:
     "@pothos/core": "*"
     graphql: ">=15.1.0"
-  checksum: c15418cb2a3b5639baf472f82f0518dd68f2f6f4ace0a351a8e27e4dabcdcb7f522dc790adcb979d2b0d0a4d760a5c316bafec1f738a5b8bcff76ec1ab548dca
+  checksum: 381598700368751cb329aa774fab19b22c4f88e3730fa670d44358c3a717671876db3c995d435ff53886f95ae6793cf523f7d424368999aaef9d48fc833e1d53
   languageName: node
   linkType: hard
 
-"@pothos/plugin-prisma@npm:^3.21.2":
-  version: 3.21.2
-  resolution: "@pothos/plugin-prisma@npm:3.21.2"
+"@pothos/plugin-prisma@npm:^3.22.0":
+  version: 3.22.0
+  resolution: "@pothos/plugin-prisma@npm:3.22.0"
   dependencies:
     "@prisma/generator-helper": ^4.1.1
   peerDependencies:
@@ -2574,7 +2574,7 @@ __metadata:
     typescript: ">=4.7.2"
   bin:
     prisma-pothos-types: bin/generator.js
-  checksum: 28e0a9d3ded5cea0b355810b583de38b3ae21d413d1897b5afcb744f3e3a0a6c9b0e18e3e0f2769ffa1de74555dd599c156ad98328eebb77d8d7b99420c03c97
+  checksum: 67bbfbe2b4c3c6ab72d0245d8750a73eb33279d190450a310bfe7fd18267fea01c997c643422d6231d20b3511e9a2f855f4373e0343f91354dbfb97628f5edac
   languageName: node
   linkType: hard
 
@@ -2598,14 +2598,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/plugin-validation@npm:^3.5.1":
-  version: 3.5.1
-  resolution: "@pothos/plugin-validation@npm:3.5.1"
+"@pothos/plugin-validation@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "@pothos/plugin-validation@npm:3.6.0"
   peerDependencies:
     "@pothos/core": "*"
     graphql: ">=15.1.0"
     zod: "*"
-  checksum: 89900dd387905718b6167d46251afbfa9ec4a4f941f293bb8aecdcfbf2be38950309c8b9aa91c2339b4bcda21502e4b6e2358eacf4d52084ca28cf10cac9943a
+  checksum: 4b48254fafa991f925a1f1d699e86cb5aa9d0f76d894471e377019b0662834f93606add7fda1229aa2a77881d79d7dfd6ef63191193bf92fe157f2ebe4e63bbe
   languageName: node
   linkType: hard
 
@@ -2985,9 +2985,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-svelte-csf@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "@storybook/addon-svelte-csf@npm:2.0.6"
+"@storybook/addon-svelte-csf@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "@storybook/addon-svelte-csf@npm:2.0.7"
   dependencies:
     ts-dedent: ^2.0.0
   peerDependencies:
@@ -2997,7 +2997,7 @@ __metadata:
   peerDependenciesMeta:
     svelte-loader:
       optional: true
-  checksum: 315c9fd8f62525dd52e24004aa44c8b24c57103fbe14f696ebb1fa8281853f40d3fc4b175aebabe4edfbc4a8be4ee8f0e6b7c9415ebb44c690fd48e2d549e66e
+  checksum: 207a2efd70ae340affd1b18c26c37c1a5c43fbce207d2dc5f5b2899cdc4160acd209d5ba2573de192f7dbdabfaa4b40839bba2746f6866871c998b838c6c7ed0
   languageName: node
   linkType: hard
 
@@ -4199,10 +4199,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.7.1":
-  version: 18.7.1
-  resolution: "@types/node@npm:18.7.1"
-  checksum: f1e2b701b107f97be01da4c46845cd23bcdcb2865f9abbb2847546d09587e726ea207daca6f0d1e72196875ef8c62feeeff5f1c1f2070445acd6d1a61d815c7c
+"@types/node@npm:^18.7.2":
+  version: 18.7.2
+  resolution: "@types/node@npm:18.7.2"
+  checksum: 422cf95dea09959d0e809d24280b76948f60ea805e20d38f07bf9eeafeb413513b9cc365404766f7752bef9cafb8301a882d9d097f780e13f2bedf507459ebc5
   languageName: node
   linkType: hard
 
@@ -14850,9 +14850,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:^2.75.6":
-  version: 2.77.2
-  resolution: "rollup@npm:2.77.2"
+"rollup@npm:>=2.75.6 <2.77.0 || ~2.77.0":
+  version: 2.77.3
+  resolution: "rollup@npm:2.77.3"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -14860,7 +14860,7 @@ __metadata:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: 5a84fb98a6f858906bceba091430442f6c1f362b07c5fa9123b708f87e39f52640e34a189cd9a1776ceae61300055c78ba648205fa03188451539ebeb19797df
+  checksum: b179c68249584565ddb5664a241e8e48c293b2207718d885b08ee25797d98857a383f06b544bb89819407da5a71557f4713309a278f61c4778bb32b1d3321a1c
   languageName: node
   linkType: hard
 
@@ -17497,15 +17497,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "vite@npm:3.0.5"
+"vite@npm:^3.0.7":
+  version: 3.0.7
+  resolution: "vite@npm:3.0.7"
   dependencies:
     esbuild: ^0.14.47
     fsevents: ~2.3.2
     postcss: ^8.4.16
     resolve: ^1.22.1
-    rollup: ^2.75.6
+    rollup: ">=2.75.6 <2.77.0 || ~2.77.0"
   peerDependencies:
     less: "*"
     sass: "*"
@@ -17525,7 +17525,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: c00ec43356469032fa261872b028740526d5a5726132cb306741e2d9dca241dcb7b0b5d39181d5ebc39c5e82396511080640fa302c66e713a622e8bfa1f14a8d
+  checksum: 3cdcb68e16433b9addee61c117c379692e4d12d44ee7011da99ed9516b8c37ce76f1bb1728eab0e3a28957c9d2dc839024e1607c2ad03f38089e3be55d7dd456
   languageName: node
   linkType: hard
 

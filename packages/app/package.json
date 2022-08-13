@@ -16,7 +16,7 @@
     "@storybook/addon-essentials": "^6.5.10",
     "@storybook/addon-interactions": "^6.5.10",
     "@storybook/addon-links": "^6.5.10",
-    "@storybook/addon-svelte-csf": "^2.0.6",
+    "@storybook/addon-svelte-csf": "^2.0.7",
     "@storybook/builder-vite": "^0.2.2",
     "@storybook/node-logger": "^6.5.10",
     "@storybook/svelte": "^6.5.10",
@@ -35,7 +35,7 @@
     "tslib": "^2.4.0",
     "typescript": "^4.7.4",
     "unplugin-icons": "^0.14.8",
-    "vite": "^3.0.5",
+    "vite": "^3.0.7",
     "vite-plugin-windicss": "^1.8.7",
     "zod": "^3.18.0"
   },
