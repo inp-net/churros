@@ -1,5 +1,6 @@
 import SchemaBuilder, { BuiltinScalarRef } from '@pothos/core';
 import ComplexityPlugin from '@pothos/plugin-complexity';
+import ErrorsPlugin from '@pothos/plugin-errors';
 import PrismaPlugin from '@pothos/plugin-prisma';
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
@@ -22,10 +23,18 @@ export const builder = new SchemaBuilder<{
     ID: { Input: number; Output: number };
   };
 }>({
-  plugins: [ComplexityPlugin, PrismaPlugin, ScopeAuthPlugin, SimpleObjectsPlugin, ValidationPlugin],
+  plugins: [
+    ComplexityPlugin,
+    ErrorsPlugin,
+    PrismaPlugin,
+    ScopeAuthPlugin,
+    SimpleObjectsPlugin,
+    ValidationPlugin,
+  ],
   authScopes,
   complexity: { limit: { complexity: 500, depth: 5, breadth: 30 } },
   defaultInputFieldRequiredness: true,
+  errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma },
 });
 

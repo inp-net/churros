@@ -4,9 +4,10 @@ import { builder } from './builder.js';
 
 // Imports objects
 import './objects/articles.js';
+import './objects/credentials.js';
+import './objects/errors.js';
 import './objects/group-members.js';
 import './objects/groups.js';
-import './objects/credentials.js';
 import './objects/majors.js';
 import './objects/scalars.js';
 import './objects/schools.js';

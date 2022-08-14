@@ -47,5 +47,5 @@
 </table>
 
 {#if $session.me?.canEditGroups}
-  <p><a href="create/">Créer un nouveau group</a></p>
+  <p><a href="create/">Créer un nouveau club</a></p>
 {/if}

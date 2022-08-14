@@ -116,7 +116,7 @@ const groups = [
 await prisma.group.createMany({
   data: groups.map((group, i) => ({
     ...group,
-    type: GroupType.Group,
+    type: GroupType.Club,
     schoolId: (i % 4) + 1,
     studentOrganizationId: (i % 4) + 1,
   })),
