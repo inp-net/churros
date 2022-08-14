@@ -3,7 +3,12 @@ import { hash } from 'argon2';
 import { prisma } from './prisma.js';
 
 await prisma.school.createMany({
-  data: [{ name: 'EAU' }, { name: 'FEU' }, { name: 'TERRE' }, { name: 'AIR' }],
+  data: [
+    { name: 'EAU', color: '#00ffff' },
+    { name: 'FEU', color: '#b22222' },
+    { name: 'TERRE', color: '#5e3f13' },
+    { name: 'AIR', color: '#d9eaff' },
+  ],
 });
 
 await prisma.major.create({

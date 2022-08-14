@@ -62,15 +62,16 @@ model UserLink {
 
 model Major {
   id   Int    @id @default(autoincrement())
-  name String
+  name String @db.VarChar(255)
 
   schools  School[]
   students User[]
 }
 
 model School {
-  id   Int    @id @default(autoincrement())
-  name String
+  id    Int    @id @default(autoincrement())
+  name  String @db.VarChar(255)
+  color String @db.VarChar(7)
 
   groups               Group[]
   majors               Major[]
@@ -116,7 +117,7 @@ model Group {
   id                    Int       @id @default(autoincrement())
   schoolId              Int?
   studentOrganizationId Int?
-  name                  String
+  name                  String    @db.VarChar(255)
   type                  GroupType
 
   articles            Article[]

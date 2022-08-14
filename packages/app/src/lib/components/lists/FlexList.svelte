@@ -15,6 +15,7 @@
     > :global(li > a) {
       display: flex;
       gap: 0.5rem;
+      align-items: center;
       color: inherit;
     }
   }

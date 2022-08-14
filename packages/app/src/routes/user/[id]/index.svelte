@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+  import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
   import Card from '$lib/components/cards/Card.svelte';
   import SocialLink from '$lib/components/links/SocialLink.svelte';
   import FlexList from '$lib/components/lists/FlexList.svelte';
@@ -29,7 +30,7 @@
           pictureFile: true,
           groups: { group: { id: true, name: true }, title: true },
           links: { type: true, value: true },
-          major: { name: true, schools: { name: true } },
+          major: { name: true, schools: { name: true, color: true } },
         },
       ],
     });
@@ -88,9 +89,7 @@
       <MajesticonsAcademicCapLine aria-label="Filière" />
       {user.major.name}
       {user.graduationYear}
-      {#each user.major.schools as { name }}
-        <span class="rounded bg-blue-400 text-xs p-1 text-slate-50">{name}</span>
-      {/each}
+      <SchoolBadge schools={user.major.schools} />
     </li>
     {#if user.birthday}
       <li>

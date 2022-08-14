@@ -5,6 +5,7 @@ export const SchoolType = builder.prismaObject('School', {
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
+    color: t.exposeString('color'),
   }),
 });
 
