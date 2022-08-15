@@ -84,7 +84,7 @@ const scalars = ZeusScalars({
   DateTime: {
     decode: (value: unknown): Date | undefined =>
       (value as Date | undefined) && new Date(value as string),
-    encode: (value: unknown): string => (value as string) && (value as Date).toISOString(),
+    encode: (value: unknown): string => JSON.stringify(value),
   },
 });
 

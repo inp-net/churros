@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import GroupMemberBadge from '$lib/components/badges/GroupMemberBadge.svelte';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
   import Card from '$lib/components/cards/Card.svelte';
   import SocialLink from '$lib/components/links/SocialLink.svelte';
@@ -30,7 +31,7 @@
           nickname: true,
           phone: true,
           pictureFile: true,
-          groups: { group: { id: true, name: true }, title: true },
+          groups: { group: { id: true, name: true, color: true }, title: true },
           links: { type: true, value: true },
           major: { name: true, schools: { name: true, color: true } },
         },
@@ -47,6 +48,11 @@
 
 <script lang="ts">
   export let user: Props['user'];
+
+  const formatPhoneNumber = (phone: string) => {
+    if (!phone.startsWith('+33') || phone.length !== 12) return phone;
+    return phone.replace(/^\+33(\d)(\d\d)(\d\d)(\d\d)(\d\d)$/, '0$1 $2 $3 $4 $5');
+  };
 </script>
 
 <div class="placeholder" />
@@ -117,43 +123,22 @@
       <li>
         <a href="tel:{user.phone}">
           <MajesticonsPhone aria-label="Téléphone" />
-          {user.phone}
+          {formatPhoneNumber(user.phone)}
         </a>
       </li>
     {/if}
   </FlexList>
 
-  <div class="grid grid-cols-2">
-    <div>
-      <h2 class="mb-1">Association Étudiante</h2>
-
-      <ul class="pl-8">
-        <li>
-          <strong><a href={'#'}>AEn7</a></strong>
-          <span class="rounded bg-emerald-500 text-xs p-1 text-zinc-50">BDA</span>
-          Trésorière
-        </li>
-      </ul>
-    </div>
-    <div>
-      <h2 class="mb-1">Groups</h2>
-      <ul class="mt-1 cool">
-        {#each user.groups as { group, title }}
-          <li>
-            <a
-              href="/club/{group.id}/"
-              class="text-inherit group no-underline !gap-0"
-              style:--bg="#38bdf880"
-              sveltekit:prefetch
-            >
-              <span>{group.name}</span>
-              <span>{title}</span>
-            </a>
-          </li>
-        {/each}
-      </ul>
-    </div>
-  </div>
+  <h2 class="mb-1">Groupes</h2>
+  <FlexList>
+    {#each user.groups as groupMember}
+      <li>
+        <a href="/club/{groupMember.group.id}/" class="no-underline" sveltekit:prefetch>
+          <GroupMemberBadge {groupMember} />
+        </a>
+      </li>
+    {/each}
+  </FlexList>
 </Card>
 
 <style lang="scss">
@@ -199,22 +184,6 @@
 
     .user-title {
       padding-block: 0;
-    }
-  }
-
-  .group {
-    display: inline-flex;
-    overflow: hidden;
-    background: var(--bg);
-    border-radius: var(--radius-inline);
-
-    :first-child {
-      padding: 0.25rem 0.25rem 0.25rem 0.5rem;
-      background: var(--bg);
-    }
-
-    :last-child {
-      padding: 0.25rem 0.5rem 0.25rem 0.25rem;
     }
   }
 </style>

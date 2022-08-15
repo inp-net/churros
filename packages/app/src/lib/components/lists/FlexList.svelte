@@ -4,12 +4,12 @@
 
 <style lang="scss">
   ul {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 0.5rem;
+    align-items: flex-start;
     padding: 0;
     list-style: none;
-
-    > :global(li) {
-      padding: 0.25rem 0;
-    }
 
     > :global(li),
     > :global(li > a) {

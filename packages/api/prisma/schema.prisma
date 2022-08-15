@@ -119,6 +119,7 @@ model Group {
   studentOrganizationId Int?
   name                  String    @db.VarChar(255)
   type                  GroupType
+  color                 String    @db.VarChar(7)
 
   articles            Article[]
   members             GroupMember[]

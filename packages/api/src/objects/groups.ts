@@ -11,6 +11,7 @@ export const GroupType = builder.prismaObject('Group', {
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
+    color: t.exposeString('color'),
     articles: t.relation('articles', {
       query: { orderBy: { publishedAt: 'desc' } },
     }),
@@ -72,7 +73,7 @@ builder.mutationField('createGroup', (t) =>
     resolve: async (query, _, { type, name, schoolId }) =>
       prisma.group.create({
         ...query,
-        data: { type, name, schoolId },
+        data: { type, name, schoolId, color: '#bbdfff' },
       }),
   })
 );

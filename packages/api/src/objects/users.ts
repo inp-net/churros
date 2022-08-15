@@ -3,6 +3,7 @@ import { CredentialType as CredentialPrismaType } from '@prisma/client';
 import { hash } from 'argon2';
 import imageType, { minimumBytes } from 'image-type';
 import { unlink, writeFile } from 'node:fs/promises';
+import { phone as parsePhoneNumber } from 'phone';
 import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
 import { prisma } from '../prisma.js';
@@ -14,6 +15,7 @@ export const UserType = builder.prismaObject('User', {
   grantScopes: ({ id }, { user }) => (user?.id === id ? ['me'] : []),
   fields: (t) => ({
     id: t.exposeID('id'),
+    majorId: t.exposeID('majorId'),
     name: t.exposeString('name'),
     email: t.exposeString('email'),
     firstname: t.exposeString('firstname'),
@@ -152,25 +154,46 @@ builder.mutationField('register', (t) =>
 builder.mutationField('updateUser', (t) =>
   t.prismaField({
     type: UserType,
+    errors: {},
     args: {
       id: t.arg.id(),
+      majorId: t.arg.id({}),
+      graduationYear: t.arg.int({}),
+      birthday: t.arg({ type: DateTimeScalar, required: false }),
+      address: t.arg.string({ validate: { maxLength: 255 } }),
+      phone: t.arg.string({ validate: { maxLength: 255 } }),
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
       biography: t.arg.string({ validate: { maxLength: 255 } }),
       links: t.arg({ type: [UserLinkInput] }),
     },
     authScopes: (_, { id }, { user }) => Boolean(user?.canEditUsers || id === user?.id),
-    async resolve(query, _, { id, nickname, biography, links }) {
+    async resolve(
+      query,
+      _,
+      { id, majorId, graduationYear, nickname, biography, links, address, phone, birthday }
+    ) {
+      const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
+      if (isValid) {
+        phone = phoneNumber;
+      } else {
+        const { isValid, phoneNumber } = parsePhoneNumber(phone);
+        if (!isValid) throw new Error('Numéro de téléphone invalide');
+        phone = phoneNumber;
+      }
+
       purgeUserSessions(id);
       return prisma.user.update({
         ...query,
         where: { id },
         data: {
+          majorId,
+          graduationYear,
           nickname,
           biography,
-          links: {
-            deleteMany: {},
-            createMany: { data: links },
-          },
+          address,
+          phone,
+          birthday,
+          links: { deleteMany: {}, createMany: { data: links } },
         },
       });
     },

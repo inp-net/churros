@@ -1,4 +1,4 @@
-<span><slot /></span>
+<span {...$$restProps}><slot /></span>
 
 <style lang="scss">
   span {

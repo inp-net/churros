@@ -7,7 +7,7 @@
 
 <span class="badge">
   {#each schools as { name, color }}
-    <span style:background-color={color} style:color={isDarkColor(color) ? 'white' : 'black'}>
+    <span style:--bg={color} style:--text={isDarkColor(color) ? 'white' : 'black'}>
       {name}
     </span>
   {/each}
@@ -24,7 +24,9 @@
     > * {
       flex: 1;
       padding: 0 0.25em;
+      color: var(--text);
       text-align: center;
+      background: var(--bg);
     }
 
     > :first-child {

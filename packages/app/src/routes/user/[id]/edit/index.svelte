@@ -21,9 +21,19 @@
     nickname: true,
     biography: true,
     pictureFile: true,
+    address: true,
+    graduationYear: true,
+    majorId: true,
+    phone: true,
+    birthday: true,
     links: { type: true, value: true },
   });
-  const propsQuery = (id: string) => Query({ user: [{ id }, userQuery], linkTypes: true });
+  const propsQuery = (id: string) =>
+    Query({
+      user: [{ id }, userQuery],
+      linkTypes: true,
+      majors: { id: true, name: true, schools: { id: true, name: true } },
+    });
 
   type Props = PropsType<typeof propsQuery>;
 
@@ -36,9 +46,44 @@
 <script lang="ts">
   export let user: Props['user'];
   export let linkTypes: Props['linkTypes'];
+  export let majors: Props['majors'];
 
-  let { id, nickname, biography, links, pictureFile } = user;
+  let {
+    id,
+    nickname,
+    biography,
+    links,
+    pictureFile,
+    address,
+    graduationYear,
+    majorId,
+    phone,
+    birthday,
+  } = user;
   let files: FileList;
+
+  const asDate = (x: unknown) => x as Date;
+  const asInput = (x: unknown) => x as HTMLInputElement;
+
+  /** Groups majors by school or tuple of schools. */
+  const majorGroups = new Map<
+    string,
+    { schoolsNames: string[]; majors: Array<{ id: string; name: string }> }
+  >();
+
+  for (const { id, name, schools } of majors) {
+    const key = schools
+      .map(({ id }) => id)
+      .sort()
+      .join(',');
+
+    if (!majorGroups.has(key)) {
+      const schoolsNames = schools.map(({ name }) => name).sort();
+      majorGroups.set(key, { schoolsNames, majors: [] });
+    }
+
+    majorGroups.get(key)!.majors.push({ id, name });
+  }
 
   let loading = false;
   const updateUser = async () => {
@@ -46,10 +91,29 @@
     try {
       loading = true;
       const { updateUser } = await mutate(
-        { updateUser: [{ id, nickname, biography, links }, userQuery] },
+        {
+          updateUser: [
+            { id, nickname, biography, links, address, graduationYear, majorId, phone, birthday },
+            {
+              __typename: true,
+              '...on Error': {
+                message: true,
+              },
+              '...on MutationUpdateUserSuccess': {
+                data: userQuery,
+              },
+            },
+          ],
+        },
         $session
       );
-      user = updateUser;
+
+      if (updateUser.__typename === 'Error') {
+        console.error(updateUser.message);
+        return;
+      }
+
+      user = updateUser.data;
     } finally {
       loading = false;
     }
@@ -66,7 +130,7 @@
       );
       pictureFile = updateUserPicture;
     } finally {
-      updating = false;
+      // `updating` is set to false when the image loads
     }
   };
 
@@ -102,6 +166,9 @@
             ? `${PUBLIC_STORAGE_URL}${pictureFile}`
             : 'https://via.placeholder.com/160'}
           alt="{user.firstname} {user.lastname}"
+          on:load={() => {
+            updating = false;
+          }}
         />
       </div>
     </FileInput>
@@ -116,58 +183,115 @@
 </form>
 
 <form on:submit|preventDefault={updateUser}>
-  <p>
-    <label>Surnom : <input type="text" bind:value={nickname} /></label>
-  </p>
-  <p>
-    <label>Description : <input type="text" bind:value={biography} /></label>
-  </p>
-  <p>Réseaux sociaux :</p>
-  <ul>
-    {#each links as link, i}
-      <li>
-        <InputGroup>
-          <select bind:value={link.type}>
-            {#each linkTypes as type}
-              <option>{type}</option>
-            {/each}
-          </select>
-          <input bind:value={link.value} />
-        </InputGroup>
-        <InputGroup>
-          <GhostButton
-            title="Supprimer"
-            on:click={() => {
-              links = links.filter((_, j) => i !== j);
-            }}
-          >
-            <MajesticonsClose aria-label="Supprimer" />
-          </GhostButton>
-          {#if i > 0}
+  <fieldset>
+    <legend>Informations personnelles</legend>
+    <p>
+      <label>Surnom : <input type="text" bind:value={nickname} /></label>
+    </p>
+    <p>
+      <label>Description : <input type="text" bind:value={biography} /></label>
+    </p>
+    <p>Réseaux sociaux :</p>
+    <ul>
+      {#each links as link, i}
+        <li>
+          <InputGroup>
+            <select bind:value={link.type}>
+              {#each linkTypes as type}
+                <option>{type}</option>
+              {/each}
+            </select>
+            <input bind:value={link.value} />
+          </InputGroup>
+          <InputGroup>
             <GhostButton
               title="Supprimer"
               on:click={() => {
-                links = [...links.slice(0, i - 1), links[i], links[i - 1], ...links.slice(i + 1)];
+                links = links.filter((_, j) => i !== j);
               }}
             >
-              <MajesticonsChevronUp aria-label="Remonter" />
+              <MajesticonsClose aria-label="Supprimer" />
             </GhostButton>
-          {/if}
-        </InputGroup>
+            {#if i > 0}
+              <GhostButton
+                title="Supprimer"
+                on:click={() => {
+                  links = [...links.slice(0, i - 1), links[i], links[i - 1], ...links.slice(i + 1)];
+                }}
+              >
+                <MajesticonsChevronUp aria-label="Remonter" />
+              </GhostButton>
+            {/if}
+          </InputGroup>
+        </li>
+      {/each}
+      <li>
+        <button
+          type="button"
+          on:click={() => {
+            links = [...links, { type: linkTypes[0], value: '' }];
+          }}><MajesticonsPlus aria-hidden="true" />Ajouter</button
+        >
       </li>
-    {/each}
-    <li>
-      <button
-        type="button"
-        on:click={() => {
-          links = [...links, { type: linkTypes[0], value: '' }];
-        }}><MajesticonsPlus aria-hidden="true" />Ajouter</button
-      >
-    </li>
-  </ul>
-  <p>
-    <Button type="submit" theme="primary" {loading}>Sauvegarder</Button>
-  </p>
+    </ul>
+    <p>
+      Filière et promotion :
+      <InputGroup>
+        <select bind:value={majorId}>
+          {#each [...majorGroups.values()] as { majors, schoolsNames }}
+            <optgroup label={schoolsNames.join(', ')}>
+              {#each majors as { id, name }}
+                <option value={id}>{name}</option>
+              {/each}
+            </optgroup>
+          {/each}
+        </select>
+        <input type="number" bind:value={graduationYear} size="4" />
+      </InputGroup>
+    </p>
+    <p>
+      Anniversaire :
+      {#if birthday === null}
+        <GhostButton
+          on:click={() => {
+            birthday = new Date();
+          }}
+        >
+          <MajesticonsPlus aria-label="Ajouter" />
+        </GhostButton>
+      {:else}
+        <input
+          type="date"
+          value={asDate(birthday).toISOString().slice(0, 10)}
+          on:change={({ target }) => {
+            birthday = new Date(asInput(target).valueAsNumber);
+          }}
+        />
+        <GhostButton
+          on:click={() => {
+            // We use null rather than undefined because only null exists in JSON
+            // eslint-disable-next-line unicorn/no-null
+            birthday = null;
+          }}
+        >
+          <MajesticonsClose aria-label="Supprimer" />
+        </GhostButton>
+      {/if}
+    </p>
+    <p>
+      <label>
+        Adresse : <input type="text" bind:value={address} />
+      </label>
+    </p>
+    <p>
+      <label>
+        Phone : <input type="tel" bind:value={phone} />
+      </label>
+    </p>
+    <p>
+      <Button type="submit" theme="primary" {loading}>Sauvegarder</Button>
+    </p>
+  </fieldset>
 </form>
 
 <style lang="scss">
