@@ -14,11 +14,14 @@
     [LinkType.Telegram, SimpleIconsTelegram],
     [LinkType.Twitter, SimpleIconsTwitter],
   ]);
+
+  /** Marks a variable as non null. */
+  const bang = <T extends {}>(x?: T) => x!;
 </script>
 
 <a href={value} title={type} target="social">
   {#if map.has(type)}
-    <svelte:component this={map.get(type)} aria-label={type} />
+    <svelte:component this={bang(map.get(type))} aria-label={type} />
   {:else}
     {type}
   {/if}

@@ -7,7 +7,9 @@
   export let theme: 'default' | 'primary' | 'success' | 'danger' | 'warning' = 'default';
 </script>
 
-<button {type} disabled={disabled || loading} class={theme} class:loading on:click><slot /></button>
+<button {type} disabled={disabled || loading} class={theme} class:loading {...$$restProps} on:click>
+  <slot />
+</button>
 
 <style lang="scss">
   button {

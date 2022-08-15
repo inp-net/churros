@@ -14,7 +14,8 @@
   /** Redirects the user if a `to` parameter exists, or to "/" otherwise. */
   const redirect = async () => {
     let url = new URL($page.url.searchParams.get('to') ?? '/', $page.url);
-    if (url.origin !== $page.url.origin) url = new URL('/', $page.url);
+    if (url.origin !== $page.url.origin || url.pathname.startsWith('/login/'))
+      url = new URL('/', $page.url);
     return goto(url);
   };
 

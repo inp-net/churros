@@ -4,6 +4,10 @@
 @import './default-theme';
 @import './themes';
 
+* {
+  max-width: 100%;
+}
+
 :root {
   line-height: 1.5;
   color: var(--text);

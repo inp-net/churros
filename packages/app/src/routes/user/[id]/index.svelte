@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
   import Card from '$lib/components/cards/Card.svelte';
   import SocialLink from '$lib/components/links/SocialLink.svelte';
@@ -52,7 +53,9 @@
 <Card>
   <div class="user-header">
     <img
-      src="https://picsum.photos/160"
+      src={user.pictureFile
+        ? `${PUBLIC_STORAGE_URL}${user.pictureFile}`
+        : 'https://via.placeholder.com/160'}
       alt="{user.firstname} {user.lastname}"
       class="user-picture"
       width="160"

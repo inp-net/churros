@@ -43,7 +43,7 @@
   "private": true,
   "scripts": {
     "build": "yarn zeus && vite build",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "check": "svelte-check --tsconfig ./tsconfig.json --use-new-transformation",
     "clean": "git clean -Xdf .",
     "dev": "yarn zeus && vite dev --host",
     "postinstall": "svelte-kit sync",

@@ -12,11 +12,3 @@ declare namespace App {
   // interface Platform {}
   // interface Stuff {}
 }
-
-interface ImportMetaEnv {
-  readonly VITE_API_URL: string;
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}

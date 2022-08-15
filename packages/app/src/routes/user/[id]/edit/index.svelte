@@ -1,11 +1,14 @@
 <script context="module" lang="ts">
   import { session } from '$app/stores';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import Button from '$lib/components/buttons/Button.svelte';
+  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
+  import InputGroup from '$lib/components/groups/InputGroup.svelte';
   import { $ as Zvar, mutate, query, Query, Selector, type PropsType } from '$lib/zeus';
-  import type { Load } from './__types';
+  import MajesticonsChevronUp from '~icons/majesticons/chevron-up';
   import MajesticonsClose from '~icons/majesticons/close';
   import MajesticonsPlus from '~icons/majesticons/plus';
-  import MajesticonsChevronUp from '~icons/majesticons/chevron-up';
+  import type { Load } from './__types';
 
   const userQuery = Selector('User')({
     id: true,
@@ -61,9 +64,15 @@
 
 <h1>Éditer <a href="..">{user.firstname} {user.nickname} {user.lastname}</a></h1>
 
-{#if userPicture}
-  <img src="http://localhost:4000/storage/{userPicture}" alt="{user.firstname} {user.lastname}" />
-{/if}
+<form on:submit|preventDefault>
+  {#if userPicture}
+    <img src="{PUBLIC_STORAGE_URL}{userPicture}" alt="{user.firstname} {user.lastname}" />
+  {/if}
+  <fieldset>
+    <legend>Photo de profil</legend>
+    <input type="file" bind:files on:change={updateUserPicture} />
+  </fieldset>
+</form>
 
 <form on:submit|preventDefault={updateUser}>
   <p>
@@ -76,32 +85,34 @@
   <ul>
     {#each links as link, i}
       <li>
-        <select bind:value={link.type}>
-          {#each linkTypes as type}
-            <option>{type}</option>
-          {/each}
-        </select>
-        <input bind:value={link.value} />
-        <button
-          type="button"
-          title="Supprimer"
-          on:click={() => {
-            links = links.filter((_, j) => i !== j);
-          }}
-        >
-          <MajesticonsClose aria-label="Supprimer" />
-        </button>
-        {#if i > 0}
-          <button
-            type="button"
+        <InputGroup>
+          <select bind:value={link.type}>
+            {#each linkTypes as type}
+              <option>{type}</option>
+            {/each}
+          </select>
+          <input bind:value={link.value} />
+        </InputGroup>
+        <InputGroup>
+          <GhostButton
             title="Supprimer"
             on:click={() => {
-              links = [...links.slice(0, i - 1), links[i], links[i - 1], ...links.slice(i + 1)];
+              links = links.filter((_, j) => i !== j);
             }}
           >
-            <MajesticonsChevronUp aria-label="Remonter" />
-          </button>
-        {/if}
+            <MajesticonsClose aria-label="Supprimer" />
+          </GhostButton>
+          {#if i > 0}
+            <GhostButton
+              title="Supprimer"
+              on:click={() => {
+                links = [...links.slice(0, i - 1), links[i], links[i - 1], ...links.slice(i + 1)];
+              }}
+            >
+              <MajesticonsChevronUp aria-label="Remonter" />
+            </GhostButton>
+          {/if}
+        </InputGroup>
       </li>
     {/each}
     <li>
@@ -117,7 +128,3 @@
     <Button type="submit" theme="primary" {loading}>Sauvegarder</Button>
   </p>
 </form>
-
-<h2>Photo de profil</h2>
-
-<input type="file" bind:files on:change={updateUserPicture} />

@@ -1,4 +1,4 @@
-/* eslint-disable */
+import { PUBLIC_API_URL } from '$env/static/public';
 import type { LoadEvent } from '@sveltejs/kit';
 import {
   Selector,
@@ -37,7 +37,7 @@ export class ZeusError extends Error {
         ({ message, ...options }) => new GraphQLError(message, options)
       );
       super(
-        `${response.errors.length} GraphQL error${response.errors.length !== 1 ? 's' : ''}\n${errors
+        `${response.errors.length} GraphQL error${response.errors.length === 1 ? '' : 's'}\n${errors
           .map((error) => `\t${error.message}`)
           .join('\n')}`
       );
@@ -50,6 +50,7 @@ const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
   const headers = new Headers();
   if (token) headers.set('Authorization', `Bearer ${token}`);
   return Thunder(async (query, variables) => {
+    /* eslint-disable */
     let body: BodyInit;
     const { clone, files } = extractFiles(variables, isFile, 'variables');
 
@@ -63,8 +64,9 @@ const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
       headers.set('Content-Type', 'application/json');
       body = JSON.stringify({ query, variables });
     }
+    /* eslint-enable */
 
-    const response = await fetch(import.meta.env.VITE_API_URL, { body, method: 'POST', headers });
+    const response = await fetch(PUBLIC_API_URL, { body, method: 'POST', headers });
 
     return response
       .json()
@@ -80,7 +82,8 @@ const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
 
 const scalars = ZeusScalars({
   DateTime: {
-    decode: (value: unknown): Date | undefined => (value as undefined) && new Date(value as string),
+    decode: (value: unknown): Date | undefined =>
+      (value as Date | undefined) && new Date(value as string),
     encode: (value: unknown): string => (value as string) && (value as Date).toISOString(),
   },
 });
