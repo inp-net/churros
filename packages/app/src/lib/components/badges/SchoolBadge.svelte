@@ -7,19 +7,24 @@
 
 <span class="badge">
   {#each schools as { name, color }}
-    <span style:background-color={color} style:color={isDarkColor(color) ? 'white' : 'black'}
-      >{name}</span
-    >
+    <span style:background-color={color} style:color={isDarkColor(color) ? 'white' : 'black'}>
+      {name}
+    </span>
   {/each}
 </span>
 
 <style lang="scss">
   .badge {
+    display: inline-flex;
+    flex-wrap: wrap;
     overflow: hidden;
+    vertical-align: bottom;
     border-radius: var(--radius-inline);
 
     > * {
+      flex: 1;
       padding: 0 0.25em;
+      text-align: center;
     }
 
     > :first-child {

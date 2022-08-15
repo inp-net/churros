@@ -1613,7 +1613,7 @@ __metadata:
     "@babel/core": ^7.18.10
     "@centraverse/api": "workspace:^"
     "@iconify-json/majesticons": ^1.1.3
-    "@iconify-json/simple-icons": ^1.1.21
+    "@iconify-json/simple-icons": ^1.1.22
     "@storybook/addon-actions": ^6.5.10
     "@storybook/addon-docs": ^6.5.10
     "@storybook/addon-essentials": ^6.5.10
@@ -1643,7 +1643,7 @@ __metadata:
     typescript: ^4.7.4
     ua-parser-js: ^1.0.2
     unplugin-icons: ^0.14.8
-    vite: ^3.0.7
+    vite: 3.0.5
     vite-plugin-windicss: ^1.8.7
     zod: ^3.18.0
   languageName: unknown
@@ -2172,12 +2172,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify-json/simple-icons@npm:^1.1.21":
-  version: 1.1.21
-  resolution: "@iconify-json/simple-icons@npm:1.1.21"
+"@iconify-json/simple-icons@npm:^1.1.22":
+  version: 1.1.22
+  resolution: "@iconify-json/simple-icons@npm:1.1.22"
   dependencies:
     "@iconify/types": "*"
-  checksum: 71d2057dfa9551cb366fe5b7d2fa881ebad4dfbf1456a96a7952c5294cc3cd683a315e626ec74177b4a1c980b827548b823db70c7336f6eea2986f2217995a1a
+  checksum: 662b4d2ed2f24ee8894fdcb170f771293f6c33a253de28a5e2cd36ec486e55e6b8a7f961d15ee378f6a7ef716db23eb31d90eeba2dff8a3974ed4656e0cd1f94
   languageName: node
   linkType: hard
 
@@ -14869,9 +14869,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:>=2.75.6 <2.77.0 || ~2.77.0":
-  version: 2.77.3
-  resolution: "rollup@npm:2.77.3"
+"rollup@npm:^2.75.6":
+  version: 2.78.0
+  resolution: "rollup@npm:2.78.0"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -14879,7 +14879,7 @@ __metadata:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: b179c68249584565ddb5664a241e8e48c293b2207718d885b08ee25797d98857a383f06b544bb89819407da5a71557f4713309a278f61c4778bb32b1d3321a1c
+  checksum: 01b5a7ae082d2a14201c973ee973099f0899cc87b65063d5ca5a77c05eeefb3b51e14b1346cf1a0fc879ac2cbb87239d4f960917bfc30b7c52f5dce50a7f56e7
   languageName: node
   linkType: hard
 
@@ -17516,15 +17516,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^3.0.7":
-  version: 3.0.7
-  resolution: "vite@npm:3.0.7"
+"vite@npm:3.0.5":
+  version: 3.0.5
+  resolution: "vite@npm:3.0.5"
   dependencies:
     esbuild: ^0.14.47
     fsevents: ~2.3.2
     postcss: ^8.4.16
     resolve: ^1.22.1
-    rollup: ">=2.75.6 <2.77.0 || ~2.77.0"
+    rollup: ^2.75.6
   peerDependencies:
     less: "*"
     sass: "*"
@@ -17544,7 +17544,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 3cdcb68e16433b9addee61c117c379692e4d12d44ee7011da99ed9516b8c37ce76f1bb1728eab0e3a28957c9d2dc839024e1607c2ad03f38089e3be55d7dd456
+  checksum: c00ec43356469032fa261872b028740526d5a5726132cb306741e2d9dca241dcb7b0b5d39181d5ebc39c5e82396511080640fa302c66e713a622e8bfa1f14a8d
   languageName: node
   linkType: hard
 

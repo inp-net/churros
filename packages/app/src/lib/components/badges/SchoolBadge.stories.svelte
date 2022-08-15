@@ -9,14 +9,25 @@
   <SchoolBadge {...args} />
 </Template>
 
-<Story name="One" args={{ schools: [{ name: 'Lorem', color: '#ffa6fb' }] }} />
+<Story name="One" args={{ schools: [{ name: 'Lorem', color: '#f090b0' }] }} />
 
 <Story
   name="Two"
   args={{
     schools: [
-      { name: 'Lorem', color: '#ffa6fb' },
-      { name: 'Ipsum', color: '#3c571d' },
+      { name: 'Lorem', color: '#f090b0' },
+      { name: 'Ipsum', color: '#70f030' },
+    ],
+  }}
+/>
+
+<Story
+  name="Three"
+  args={{
+    schools: [
+      { name: 'Lorem', color: '#f090b0' },
+      { name: 'Ipsum', color: '#70f030' },
+      { name: 'Dolor', color: '#4060f0' },
     ],
   }}
 />
