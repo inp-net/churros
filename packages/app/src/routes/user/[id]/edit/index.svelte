@@ -4,10 +4,14 @@
   import Button from '$lib/components/buttons/Button.svelte';
   import GhostButton from '$lib/components/buttons/GhostButton.svelte';
   import InputGroup from '$lib/components/groups/InputGroup.svelte';
+  import FileInput from '$lib/components/inputs/FileInput.svelte';
+  import Loader from '$lib/components/loaders/Loader.svelte';
+  import UserPicture from '$lib/components/pictures/UserPicture.svelte';
   import { $ as Zvar, mutate, query, Query, Selector, type PropsType } from '$lib/zeus';
   import MajesticonsChevronUp from '~icons/majesticons/chevron-up';
   import MajesticonsClose from '~icons/majesticons/close';
   import MajesticonsPlus from '~icons/majesticons/plus';
+  import MajesticonsEdit from '~icons/majesticons/edit-pen-2-line';
   import type { Load } from './__types';
 
   const userQuery = Selector('User')({
@@ -16,6 +20,7 @@
     lastname: true,
     nickname: true,
     biography: true,
+    pictureFile: true,
     links: { type: true, value: true },
   });
   const propsQuery = (id: string) => Query({ user: [{ id }, userQuery], linkTypes: true });
@@ -32,9 +37,8 @@
   export let user: Props['user'];
   export let linkTypes: Props['linkTypes'];
 
-  let { id, nickname, biography, links } = user;
+  let { id, nickname, biography, links, pictureFile } = user;
   let files: FileList;
-  let userPicture: string | undefined;
 
   let loading = false;
   const updateUser = async () => {
@@ -51,26 +55,63 @@
     }
   };
 
+  let updating = false;
   const updateUserPicture = async () => {
-    const { updateUserPicture } = await mutate(
-      {
-        updateUserPicture: [{ id, file: Zvar('file', 'File!') }, true],
-      },
-      { token: $session.token, variables: { file: files[0] } }
-    );
-    userPicture = updateUserPicture;
+    if (updating) return;
+    try {
+      updating = true;
+      const { updateUserPicture } = await mutate(
+        { updateUserPicture: [{ id, file: Zvar('file', 'File!') }, true] },
+        { token: $session.token, variables: { file: files[0] } }
+      );
+      pictureFile = updateUserPicture;
+    } finally {
+      updating = false;
+    }
+  };
+
+  let deleting = false;
+  const deleteUserPicture = async () => {
+    if (deleting) return;
+    try {
+      deleting = true;
+      await mutate({ deleteUserPicture: [{ id }, true] }, { token: $session.token });
+      pictureFile = '';
+    } finally {
+      deleting = false;
+    }
   };
 </script>
 
 <h1>Éditer <a href="..">{user.firstname} {user.nickname} {user.lastname}</a></h1>
 
 <form on:submit|preventDefault>
-  {#if userPicture}
-    <img src="{PUBLIC_STORAGE_URL}{userPicture}" alt="{user.firstname} {user.lastname}" />
-  {/if}
   <fieldset>
     <legend>Photo de profil</legend>
-    <input type="file" bind:files on:change={updateUserPicture} />
+    <FileInput bind:files on:change={updateUserPicture} accept="image/jpeg,image/png">
+      <div class="relative">
+        <div class="picture-edit">
+          {#if updating}
+            <Loader />
+          {:else}
+            <MajesticonsEdit />
+          {/if}
+        </div>
+        <UserPicture
+          src={pictureFile
+            ? `${PUBLIC_STORAGE_URL}${pictureFile}`
+            : 'https://via.placeholder.com/160'}
+          alt="{user.firstname} {user.lastname}"
+        />
+      </div>
+    </FileInput>
+    {#if pictureFile}
+      <p>
+        <Button type="button" theme="danger" loading={deleting} on:click={deleteUserPicture}>
+          Delete
+        </Button>
+      </p>
+    {/if}
   </fieldset>
 </form>
 
@@ -128,3 +169,21 @@
     <Button type="submit" theme="primary" {loading}>Sauvegarder</Button>
   </p>
 </form>
+
+<style lang="scss">
+  .picture-edit {
+    --text: var(--bg);
+
+    position: absolute;
+    inset: 0;
+    padding: 25%;
+    color: var(--text);
+    background: #0008;
+    border-radius: var(--radius-inline);
+
+    > :global(.icon) {
+      width: 100%;
+      height: 100%;
+    }
+  }
+</style>

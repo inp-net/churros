@@ -39,13 +39,13 @@
 <svelte:window
   on:resize={onResize}
   on:touchstart={({ touches }) => {
-    if (touches.length !== 1) return;
+    if (!mobile || touches.length !== 1) return;
     start = touches[0];
     startedAt = window.performance.now();
     diff = { x: 0, y: 0 };
   }}
   on:touchmove={({ changedTouches }) => {
-    if (!start || !diff) return;
+    if (!mobile || !start || !diff) return;
     const touch = [...changedTouches].find(({ identifier }) => identifier === start?.identifier);
     if (!touch) return;
 
@@ -58,7 +58,7 @@
     }
   }}
   on:touchend={({ touches }) => {
-    if (!diff) return;
+    if (!mobile || !diff) return;
     if ([...touches].some(({ identifier }) => identifier === start?.identifier)) return;
 
     menuOpen =

@@ -2,7 +2,7 @@ import { GraphQLYogaError } from '@graphql-yoga/node';
 import { CredentialType as CredentialPrismaType } from '@prisma/client';
 import { hash } from 'argon2';
 import imageType, { minimumBytes } from 'image-type';
-import { writeFile } from 'node:fs/promises';
+import { unlink, writeFile } from 'node:fs/promises';
 import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
 import { prisma } from '../prisma.js';
@@ -32,10 +32,7 @@ export const UserType = builder.prismaObject('User', {
     links: t.relation('links', { authScopes: { loggedIn: true, $granted: 'me' } }),
     nickname: t.exposeString('nickname', { authScopes: { loggedIn: true, $granted: 'me' } }),
     phone: t.exposeString('phone', { authScopes: { loggedIn: true, $granted: 'me' } }),
-    pictureFile: t.exposeString('pictureFile', {
-      authScopes: { loggedIn: true, $granted: 'me' },
-      nullable: true,
-    }),
+    pictureFile: t.exposeString('pictureFile', { authScopes: { loggedIn: true, $granted: 'me' } }),
 
     // Permissions are only visible to admins
     admin: t.exposeBoolean('admin', {
@@ -206,6 +203,28 @@ builder.mutationField('updateUserPicture', (t) =>
       await writeFile(new URL(path, process.env.STORAGE), file.stream());
       await prisma.user.update({ where: { id }, data: { pictureFile: path } });
       return path;
+    },
+  })
+);
+
+builder.mutationField('deleteUserPicture', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: { id: t.arg.id() },
+    authScopes: (_, { id }, { user }) => Boolean(user?.canEditUsers || id === user?.id),
+    async resolve(_, { id }) {
+      const { pictureFile } = await prisma.user.findUniqueOrThrow({
+        where: { id },
+        select: { pictureFile: true },
+      });
+
+      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
+
+      await prisma.user.update({
+        where: { id },
+        data: { pictureFile: '' },
+      });
+      return true;
     },
   })
 );

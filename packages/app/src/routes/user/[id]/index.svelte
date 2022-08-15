@@ -4,15 +4,16 @@
   import Card from '$lib/components/cards/Card.svelte';
   import SocialLink from '$lib/components/links/SocialLink.svelte';
   import FlexList from '$lib/components/lists/FlexList.svelte';
+  import UserPicture from '$lib/components/pictures/UserPicture.svelte';
   import { formatDate } from '$lib/dates.js';
   import { redirectToLogin } from '$lib/session';
   import { Query, query, type PropsType } from '$lib/zeus';
   import type { Load } from '@sveltejs/kit';
-  import MajesticonsAcademicCapLine from '~icons/majesticons/academic-cap-line';
-  import MajesticonsCakeLine from '~icons/majesticons/cake-line';
-  import MajesticonsEditPen from '~icons/majesticons/edit-pen-2';
-  import MajesticonsLocationMarkerLine from '~icons/majesticons/location-marker-line';
-  import MajesticonsPhoneLine from '~icons/majesticons/phone-line';
+  import MajesticonsAcademicCap from '~icons/majesticons/academic-cap-line';
+  import MajesticonsCake from '~icons/majesticons/cake-line';
+  import MajesticonsEdit from '~icons/majesticons/edit-pen-2-line';
+  import MajesticonsLocationMarker from '~icons/majesticons/location-marker-line';
+  import MajesticonsPhone from '~icons/majesticons/phone-line';
 
   const propsQuery = (id: string) =>
     Query({
@@ -52,22 +53,21 @@
 
 <Card>
   <div class="user-header">
-    <img
-      src={user.pictureFile
-        ? `${PUBLIC_STORAGE_URL}${user.pictureFile}`
-        : 'https://via.placeholder.com/160'}
-      alt="{user.firstname} {user.lastname}"
-      class="user-picture"
-      width="160"
-      height="160"
-    />
+    <div class="user-picture">
+      <UserPicture
+        src={user.pictureFile
+          ? `${PUBLIC_STORAGE_URL}${user.pictureFile}`
+          : 'https://via.placeholder.com/160'}
+        alt="{user.firstname} {user.lastname}"
+      />
+    </div>
     <div class="user-title">
       <h1 class="my-0">
         {user.firstname}
         {user.nickname}
         {user.lastname}
         <a href="edit/" title="Éditer" sveltekit:prefetch>
-          <MajesticonsEditPen aria-label="Éditer" />
+          <MajesticonsEdit aria-label="Éditer" />
         </a>
       </h1>
       <div class="biography">
@@ -89,14 +89,14 @@
 
   <FlexList>
     <li>
-      <MajesticonsAcademicCapLine aria-label="Filière" />
+      <MajesticonsAcademicCap aria-label="Filière" />
       {user.major.name}
       {user.graduationYear}
       <SchoolBadge schools={user.major.schools} />
     </li>
     {#if user.birthday}
       <li>
-        <MajesticonsCakeLine aria-label="Anniversaire" />
+        <MajesticonsCake aria-label="Anniversaire" />
         {formatDate(user.birthday)}
       </li>
     {/if}
@@ -108,7 +108,7 @@
           })}"
           target="maps"
         >
-          <MajesticonsLocationMarkerLine aria-label="Adresse" />
+          <MajesticonsLocationMarker aria-label="Adresse" />
           {user.address}
         </a>
       </li>
@@ -116,7 +116,7 @@
     {#if user.phone}
       <li>
         <a href="tel:{user.phone}">
-          <MajesticonsPhoneLine aria-label="Téléphone" />
+          <MajesticonsPhone aria-label="Téléphone" />
           {user.phone}
         </a>
       </li>
@@ -168,9 +168,6 @@
 
   .user-picture {
     position: absolute;
-    border-radius: var(--radius-block);
-    border-radius: var(--radius-inline);
-    box-shadow: var(--shadow);
     transform: translateY(-100%);
   }
 
