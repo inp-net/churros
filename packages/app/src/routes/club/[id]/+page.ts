@@ -1,13 +1,13 @@
-import { query } from '$lib/zeus';
+import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, params, session }) =>
-  query(
-    fetch,
+export const load: PageLoad = async ({ fetch, params, parent }) => {
+  const { me } = await parent();
+  return loadQuery(
     {
       group: [
         { id: params.id },
-        session.me
+        me
           ? {
               id: true,
               name: true,
@@ -28,5 +28,6 @@ export const load: PageLoad = async ({ fetch, params, session }) =>
             },
       ],
     },
-    session
+    { fetch, parent }
   );
+};

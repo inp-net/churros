@@ -1,13 +1,11 @@
 declare namespace App {
   type SessionUserType = import('$lib/session.js').SessionUser;
 
-  interface Session {
+  interface Locals {
     token?: string;
     me?: SessionUserType;
     mobile: boolean;
   }
-
-  interface Locals extends Session {}
 
   // interface Platform {}
   // interface Stuff {}

@@ -1,8 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { session } from '$app/stores';
   import Button from '$lib/components/buttons/Button.svelte';
-  import { GroupType, mutate, ZeusError } from '$lib/zeus';
+  import { GroupType, zeus, ZeusError } from '$lib/zeus';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -16,10 +15,9 @@
 
     try {
       loading = true;
-      const { createGroup: group } = await mutate(
-        { createGroup: [{ type: GroupType.Club, name, schoolId }, { id: true }] },
-        $session
-      );
+      const { createGroup: group } = await $zeus.mutate({
+        createGroup: [{ type: GroupType.Club, name, schoolId }, { id: true }],
+      });
       await goto(`/club/${group.id}`);
     } catch (error: unknown) {
       if (!(error instanceof ZeusError)) throw error;

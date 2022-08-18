@@ -1,6 +1,9 @@
+import { page } from '$app/stores';
+import type { LayoutData } from '.svelte-kit/types/src/routes/$types';
 import { redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
-import { Selector, type PropsType } from './zeus.js';
+import { derived } from 'svelte/store';
+import { Selector, type PropsType } from './zeus';
 
 /** What's needed in a user session. */
 export const sessionUserQuery = () =>
@@ -32,6 +35,8 @@ export const saveSessionToken = ({
 };
 
 /** Returns a temporary redirect object. */
-export const redirectToLogin = (to: string) => {
-  throw redirect(307, `/login?${new URLSearchParams({ to }).toString()}`);
-};
+export const redirectToLogin = (to: string) =>
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  redirect(307, `/login?${new URLSearchParams({ to }).toString()}`);
+
+export const me = derived(page, ($page) => ($page.data as LayoutData).me);

@@ -1,4 +1,4 @@
-import { query, Selector } from '$lib/zeus';
+import { loadQuery, Selector } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
@@ -17,16 +17,16 @@ export const userQuery = Selector('User')({
   links: { type: true, value: true },
 });
 
-export const load: PageLoad = async ({ fetch, params, session }) => {
-  if (params.id !== session.me?.id && !session.me?.canEditUsers) throw redirect(307, '..');
+export const load: PageLoad = async ({ fetch, params, parent }) => {
+  const { me } = await parent();
+  if (params.id !== me?.id && !me?.canEditUsers) throw redirect(307, '..');
 
-  return query(
-    fetch,
+  return loadQuery(
     {
       user: [{ id: params.id }, userQuery],
       linkTypes: true,
       majors: { id: true, name: true, schools: { id: true, name: true } },
     },
-    session
+    { fetch, parent }
   );
 };

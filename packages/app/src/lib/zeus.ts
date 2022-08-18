@@ -1,19 +1,21 @@
+import { page } from '$app/stores';
 import { PUBLIC_API_URL } from '$env/static/public';
+import type { LayoutServerData } from '.svelte-kit/types/src/routes/$types';
 import type { LoadEvent } from '@sveltejs/kit';
 import {
-  Selector,
   Thunder,
   ZeusScalars,
   type GraphQLResponse,
   type GraphQLTypes,
   type InputType,
   type ValueTypes,
-} from '../zeus/index.js';
+} from '../zeus/index';
 // @ts-expect-error Not typed
 import extractFiles from 'extract-files/extractFiles.mjs';
 // @ts-expect-error Not typed
 import isFile from 'extract-files/isExtractableFile.mjs';
 import { GraphQLError } from 'graphql';
+import { derived } from 'svelte/store';
 
 export * from '../zeus/index.js';
 
@@ -46,7 +48,7 @@ export class ZeusError extends Error {
   }
 }
 
-const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
+export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
   const headers = new Headers();
   if (token) headers.set('Authorization', `Bearer ${token}`);
   return Thunder(async (query, variables) => {
@@ -87,18 +89,18 @@ const scalars = ZeusScalars({
   },
 });
 
-export const Query = Selector('Query');
+export const zeus = derived(page, ({ data }) => {
+  const chained = chain(fetch, { token: (data as LayoutServerData).token });
+  return {
+    query: chained('query', { scalars }),
+    mutate: chained('mutation', { scalars }),
+  };
+});
 
-export const query = async <Operation extends ValueTypes['Query']>(
-  fetch: LoadEvent['fetch'],
-  op: Operation,
-  options: Options = {}
-) => chain(fetch, options)('query', { scalars })(op);
-
-export const mutate = async <Operation extends ValueTypes['Mutation']>(
-  op: Operation,
-  options: Options & { variables?: Record<string, unknown> } = {}
-) =>
-  chain(fetch, options)('mutation', { scalars })(op, {
-    variables: options.variables ?? {},
-  });
+export const loadQuery = async <Query extends ValueTypes['Query']>(
+  query: Query,
+  { fetch, parent }: { fetch: LoadEvent['fetch']; parent?: () => Promise<LayoutServerData> }
+) => {
+  const { token } = parent ? await parent() : { token: undefined };
+  return chain(fetch, { token })('query', { scalars })(query);
+};

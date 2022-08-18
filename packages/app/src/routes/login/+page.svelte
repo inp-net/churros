@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { page, session } from '$app/stores';
+  import { goto, invalidate } from '$app/navigation';
+  import { page } from '$app/stores';
   import Alert from '$lib/components/alerts/Alert.svelte';
   import Button from '$lib/components/buttons/Button.svelte';
   import FormCard from '$lib/components/cards/FormCard.svelte';
-  import { saveSessionToken, sessionUserQuery } from '$lib/session';
-  import { mutate, ZeusError } from '$lib/zeus';
+  import { me, saveSessionToken, sessionUserQuery } from '$lib/session';
+  import { zeus, ZeusError } from '$lib/zeus';
   import { onMount } from 'svelte';
 
   let name = '';
@@ -27,15 +27,14 @@
     try {
       loading = true;
       errorMessages = undefined;
-      const { login } = await mutate({
+      const { login } = await $zeus.mutate({
         login: [
           { name, password },
           { token: true, expiresAt: true, user: sessionUserQuery() },
         ],
       });
       saveSessionToken(login);
-      $session.token = login.token;
-      $session.me = login.user;
+      await invalidate();
       await redirect();
     } catch (error: unknown) {
       if (!(error instanceof ZeusError)) throw error;
@@ -47,7 +46,7 @@
 
   onMount(async () => {
     // Client-side redirect to avoid login detection
-    if ($session.me) await redirect();
+    if ($me) await redirect();
   });
 </script>
 

@@ -1,4 +1,4 @@
-import { mutate } from '$lib/zeus.js';
+import { chain } from '$lib/zeus';
 import type { RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
@@ -6,7 +6,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
   if (token !== locals.token) return new Response('Incorrect token', { status: 401 });
 
   try {
-    await mutate({ logout: true }, { token });
+    await chain(fetch, { token })('mutation')({ logout: true });
   } catch {
     // Ignore errors
   }

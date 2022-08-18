@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { navigating, session } from '$app/stores';
+  import { navigating, page } from '$app/stores';
   import BurgerButton from '$lib/components/buttons/BurgerButton.svelte';
   import Nav from '$lib/layout/Nav.svelte';
   import TopBar from '$lib/layout/TopBar.svelte';
@@ -8,8 +8,9 @@
   import { tweened } from 'svelte/motion';
   import 'virtual:windi.css';
   import '../design/app.scss';
+  import type { LayoutData } from './$types';
 
-  let { mobile } = $session;
+  let { mobile } = $page.data as LayoutData;
   const onResize = () => {
     mobile = !window.matchMedia('(min-width: 50rem)').matches;
   };

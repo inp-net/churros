@@ -79,7 +79,7 @@ for (const [i, data] of userData.entries()) {
           { type: LinkType.Twitter, value: '#' },
         ],
       },
-      phone: '0612345678',
+      phone: '+33612345678',
       address: '2 rue Charles Camichel, 31000 Toulouse',
       birthday: new Date(2000, (i * 37) % 12, (i * 55) % 28),
       graduationYear: 2020 + (i % 6),

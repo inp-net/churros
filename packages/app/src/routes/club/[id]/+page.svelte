@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { page, session } from '$app/stores';
+  import { page } from '$app/stores';
   import Alert from '$lib/components/alerts/Alert.svelte';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
+  import { me } from '$lib/session.js';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -31,7 +32,7 @@
       <p>Le group ne contient aucun membre, il vient peut-être d'être créé.</p>
     </Alert>
   {/if}
-  {#if $session.me?.canEditGroups || $session.me?.groups.some(({ groupId, canEditMembers }) => canEditMembers && groupId === $page.params.id)}
+  {#if $me?.canEditGroups || $me?.groups.some(({ groupId, canEditMembers }) => canEditMembers && groupId === $page.params.id)}
     <p>
       <a href="/club/{$page.params.id}/members" sveltekit:prefetch>
         Modifier la liste des membres
@@ -49,7 +50,7 @@
   </article>
 {/each}
 
-{#if $session.me?.canEditGroups || $session.me?.groups.some(({ groupId, canEditArticles }) => groupId === $page.params.id && canEditArticles)}
+{#if $me?.canEditGroups || $me?.groups.some(({ groupId, canEditArticles }) => groupId === $page.params.id && canEditArticles)}
   <p>
     <a href="/club/{$page.params.id}/write" sveltekit:prefetch> Écrire un article </a>
   </p>

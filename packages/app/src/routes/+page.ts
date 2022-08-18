@@ -1,9 +1,8 @@
-import { query } from '$lib/zeus';
+import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, session }) =>
-  query(
-    fetch,
+export const load: PageLoad = async ({ fetch, parent }) =>
+  loadQuery(
     {
       homepage: [
         {},
@@ -17,5 +16,5 @@ export const load: PageLoad = async ({ fetch, session }) =>
         },
       ],
     },
-    session
+    { fetch, parent }
   );

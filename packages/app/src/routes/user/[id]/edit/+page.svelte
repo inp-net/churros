@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { session } from '$app/stores';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import Button from '$lib/components/buttons/Button.svelte';
   import GhostButton from '$lib/components/buttons/GhostButton.svelte';
@@ -7,7 +6,7 @@
   import FileInput from '$lib/components/inputs/FileInput.svelte';
   import Loader from '$lib/components/loaders/Loader.svelte';
   import UserPicture from '$lib/components/pictures/UserPicture.svelte';
-  import { $ as Zvar, mutate } from '$lib/zeus';
+  import { $ as Zvar, zeus } from '$lib/zeus';
   import MajesticonsChevronUp from '~icons/majesticons/chevron-up';
   import MajesticonsClose from '~icons/majesticons/close';
   import MajesticonsEdit from '~icons/majesticons/edit-pen-2-line';
@@ -32,7 +31,7 @@
 
   let files: FileList;
 
-  const asDate = (x: unknown) => x as Date;
+  const asDate = (x: unknown) => new Date(x as Date);
   const asInput = (x: unknown) => x as HTMLInputElement;
 
   /** Groups majors by school or tuple of schools. */
@@ -63,23 +62,16 @@
     if (loading) return;
     try {
       loading = true;
-      const { updateUser } = await mutate(
-        {
-          updateUser: [
-            { id, nickname, biography, links, address, graduationYear, majorId, phone, birthday },
-            {
-              __typename: true,
-              '...on Error': {
-                message: true,
-              },
-              '...on MutationUpdateUserSuccess': {
-                data: userQuery,
-              },
-            },
-          ],
-        },
-        $session
-      );
+      const { updateUser } = await $zeus.mutate({
+        updateUser: [
+          { id, nickname, biography, links, address, graduationYear, majorId, phone, birthday },
+          {
+            __typename: true,
+            '...on Error': { message: true },
+            '...on MutationUpdateUserSuccess': { data: userQuery },
+          },
+        ],
+      });
 
       if (updateUser.__typename === 'Error') {
         console.error(updateUser.message);
@@ -97,9 +89,9 @@
     if (updating) return;
     try {
       updating = true;
-      const { updateUserPicture } = await mutate(
+      const { updateUserPicture } = await $zeus.mutate(
         { updateUserPicture: [{ id, file: Zvar('file', 'File!') }, true] },
-        { token: $session.token, variables: { file: files[0] } }
+        { variables: { file: files[0] } }
       );
       pictureFile = updateUserPicture;
     } finally {
@@ -112,7 +104,7 @@
     if (deleting) return;
     try {
       deleting = true;
-      await mutate({ deleteUserPicture: [{ id }, true] }, { token: $session.token });
+      await $zeus.mutate({ deleteUserPicture: [{ id }, true] });
       pictureFile = '';
     } finally {
       deleting = false;

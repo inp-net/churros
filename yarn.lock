@@ -1573,7 +1573,7 @@ __metadata:
   dependencies:
     "@envelop/core": ^2.5.0
     "@graphql-yoga/node": ^2.13.7
-    "@pothos/core": ^3.15.0
+    "@pothos/core": ^3.16.0
     "@pothos/plugin-complexity": ^3.6.1
     "@pothos/plugin-errors": ^3.6.0
     "@pothos/plugin-prisma": ^3.23.0
@@ -1624,7 +1624,7 @@ __metadata:
     "@storybook/node-logger": ^6.5.10
     "@storybook/svelte": ^6.5.10
     "@sveltejs/adapter-node": ^1.0.0-next.86
-    "@sveltejs/kit": ^1.0.0-next.413
+    "@sveltejs/kit": ^1.0.0-next.422
     "@types/cookie": ^0.5.1
     "@types/js-cookie": ^3.0.2
     "@types/ua-parser-js": ^0.7.36
@@ -1636,7 +1636,7 @@ __metadata:
     sanitize.css: ^13.0.0
     sass: ^1.54.4
     svelte: ^3.49.0
-    svelte-check: ^2.8.0
+    svelte-check: ^2.8.1
     svelte-loader: ^3.1.3
     svelte-preprocess: ^4.10.7
     tslib: ^2.4.0
@@ -2563,12 +2563,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/core@npm:^3.15.0":
-  version: 3.15.0
-  resolution: "@pothos/core@npm:3.15.0"
+"@pothos/core@npm:^3.16.0":
+  version: 3.16.0
+  resolution: "@pothos/core@npm:3.16.0"
   peerDependencies:
     graphql: ">=15.1.0"
-  checksum: e33dbbbeda4387380a298e159b652c511199e0965e89dc0771fd1e264a6de90c8325ffc8ff7b98e78d1b0e5081533493714deccaa56001d6356a4d34dd5c2765
+  checksum: 4bd61a2703fdc1f74aa9d1db112492fd1732b046c554c57c113211c343e43fac4948f7eeacca20240ab4c01a2122225b2c91fa2e9bef8b996949ee75b78c40cb
   languageName: node
   linkType: hard
 
@@ -3892,12 +3892,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^1.0.0-next.413":
-  version: 1.0.0-next.413
-  resolution: "@sveltejs/kit@npm:1.0.0-next.413"
+"@sveltejs/kit@npm:^1.0.0-next.422":
+  version: 1.0.0-next.422
+  resolution: "@sveltejs/kit@npm:1.0.0-next.422"
   dependencies:
     "@sveltejs/vite-plugin-svelte": ^1.0.1
-    chokidar: ^3.5.3
     cookie: ^0.5.0
     devalue: ^2.0.1
     kleur: ^4.1.4
@@ -3914,7 +3913,7 @@ __metadata:
     vite: ^3.0.0
   bin:
     svelte-kit: svelte-kit.js
-  checksum: c236f596e6a32d55a128772e28fd27914790282319da7799d2ebe642e8f1477fd54ac9a4986ef77a36c1b2a2272d4de2f9d5440b400de61652dc9f56faba15ce
+  checksum: a2d3f841ddee09cd68afa1cc1963ce2ad7d40d5702a03089c79d305f22ed4525cec7dd8980ea71ba58182716d1603ef7546e5c53419ff6dae26f33358917fc6d
   languageName: node
   linkType: hard
 
@@ -16288,9 +16287,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte-check@npm:^2.8.0":
-  version: 2.8.0
-  resolution: "svelte-check@npm:2.8.0"
+"svelte-check@npm:^2.8.1":
+  version: 2.8.1
+  resolution: "svelte-check@npm:2.8.1"
   dependencies:
     "@jridgewell/trace-mapping": ^0.3.9
     chokidar: ^3.4.1
@@ -16304,7 +16303,7 @@ __metadata:
     svelte: ^3.24.0
   bin:
     svelte-check: bin/svelte-check
-  checksum: af574f088182ea0db489cb5e0a1b4be7266d4c4c2fd80bfb0e1bbe89456bc4773e3e912d1963b6ce79c7941a4e2f460c3f8baa0b659a1977b95200fa0d70daf7
+  checksum: 52499866e4145084be8998be3fcddcd95963e1860e508358b1cede8031be54a99dc79cb338f8ab4a260af753112fe16169b10880ddb5177c2741c4ab6046f539
   languageName: node
   linkType: hard
 

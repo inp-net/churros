@@ -3,7 +3,7 @@
   import Alert from '$lib/components/alerts/Alert.svelte';
   import Button from '$lib/components/buttons/Button.svelte';
   import FormCard from '$lib/components/cards/FormCard.svelte';
-  import { mutate, ZeusError } from '$lib/zeus';
+  import { zeus, ZeusError } from '$lib/zeus';
   import type { ZodFormattedError } from 'zod';
   import type { PageData } from './$types';
 
@@ -44,7 +44,7 @@
 
     try {
       loading = true;
-      await mutate({ register: [args, { id: true }] });
+      await $zeus.mutate({ register: [args, { id: true }] });
       await goto('/');
     } catch (error: unknown) {
       if (!(error instanceof ZeusError)) throw error;

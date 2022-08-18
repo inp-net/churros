@@ -1,10 +1,13 @@
 <script lang="ts">
-  import { navigating, page, session } from '$app/stores';
+  import { navigating, page } from '$app/stores';
+  import type { LayoutData } from '.svelte-kit/types/src/routes/$types';
   import { expoOut } from 'svelte/easing';
   import { derived } from 'svelte/store';
   import { fly } from 'svelte/transition';
 
   export let mobile = false;
+
+  $: ({ me, token } = $page.data as LayoutData);
 
   let timeout: unknown;
   const showLoader = derived(
@@ -32,9 +35,9 @@
       <a href="/" sveltekit:prefetch>(logo)</a>
     </div>
     <div>
-      {#if $session.me && $session.token}
-        <a href="/me" sveltekit:prefetch>{$session.me.name}</a>
-        <a href="/logout?{new URLSearchParams({ token: $session.token })}">Se déconnecter</a>
+      {#if me && token}
+        <a href="/me" sveltekit:prefetch>{me.name}</a>
+        <a href="/logout?{new URLSearchParams({ token })}">Se déconnecter</a>
       {:else}
         <a href="/login?{new URLSearchParams({ to: $page.url.pathname })}" sveltekit:prefetch>
           Se connecter

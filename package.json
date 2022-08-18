@@ -33,7 +33,7 @@
     "start": "docker-compose up -d --wait && yarn workspaces foreach -piv --exclude centraverse node build/index.js",
     "dev": "docker-compose up -d --wait && yarn workspaces foreach -piv run dev",
     "format": "prettier . --write --ignore-unknown",
-    "lint": "eslint .",
+    "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
     "postinstall": "husky install",
     "prisma": "yarn workspace @centraverse/api run prisma",
     "reset": "docker-compose up -dV --wait && yarn workspace @centraverse/api run prisma migrate reset --force"

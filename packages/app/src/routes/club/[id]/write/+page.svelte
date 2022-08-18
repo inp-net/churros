@@ -1,20 +1,17 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page, session } from '$app/stores';
-  import { mutate } from '$lib/zeus';
+  import { page } from '$app/stores';
+  import { zeus } from '$lib/zeus';
 
   let title = '';
   let body = '';
 
   const createArticle = async () => {
     try {
-      await mutate(
-        {
-          createArticle: [{ title, body, groupId: $page.params.id }, { id: true }],
-        },
-        $session
-      );
-      await goto('.');
+      await $zeus.mutate({
+        createArticle: [{ title, body, groupId: $page.params.id }, { id: true }],
+      });
+      await goto('..');
     } catch (error: unknown) {
       console.error(error);
     }

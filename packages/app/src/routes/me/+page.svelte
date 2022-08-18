@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { session } from '$app/stores';
+  import { page } from '$app/stores';
   import { formatDateTime } from '$lib/dates';
-  import { CredentialType, mutate } from '$lib/zeus';
+  import { CredentialType, zeus } from '$lib/zeus';
   import { default as parser } from 'ua-parser-js';
   import type { PageData } from './$types';
 
@@ -10,9 +10,9 @@
 
   const deleteToken = async (id: string, active: boolean) => {
     if (active) {
-      await goto(`/logout?token=${$session.token!}`);
+      await goto(`/logout?token=${$page.data.token as string}`);
     } else {
-      await mutate({ deleteToken: [{ id }, true] }, $session);
+      await $zeus.mutate({ deleteToken: [{ id }, true] });
       data.me.credentials = data.me.credentials.filter((credential) => credential.id !== id);
     }
   };

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { page, session } from '$app/stores';
-  import { mutate } from '$lib/zeus';
+  import { page } from '$app/stores';
+  import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -10,22 +10,19 @@
 
   const addGroupMember = async () => {
     try {
-      const { addGroupMember } = await mutate(
-        {
-          addGroupMember: [
-            { groupId: $page.params.id, name, title },
-            {
-              memberId: true,
-              title: true,
-              president: true,
-              treasurer: true,
-              canEditMembers: true,
-              member: { firstname: true, lastname: true },
-            },
-          ],
-        },
-        $session
-      );
+      const { addGroupMember } = await $zeus.mutate({
+        addGroupMember: [
+          { groupId: $page.params.id, name, title },
+          {
+            memberId: true,
+            title: true,
+            president: true,
+            treasurer: true,
+            canEditMembers: true,
+            member: { firstname: true, lastname: true },
+          },
+        ],
+      });
       data.group.members = [...data.group.members, addGroupMember];
     } catch (error: unknown) {
       console.error(error);
@@ -34,7 +31,7 @@
 
   const deleteGroupMember = async (memberId: string) => {
     try {
-      await mutate({ deleteGroupMember: [{ groupId: $page.params.id, memberId }, true] }, $session);
+      await $zeus.mutate({ deleteGroupMember: [{ groupId: $page.params.id, memberId }, true] });
       data.group.members = data.group.members.filter((member) => member.memberId !== memberId);
     } catch (error: unknown) {
       console.error(error);
@@ -45,15 +42,12 @@
     try {
       const member = data.group.members.find((member) => member.memberId === memberId);
       if (!member) throw new Error('Member not found');
-      const { updateGroupMember } = await mutate(
-        {
-          updateGroupMember: [
-            { groupId: $page.params.id, memberId, title: member.title },
-            { title: true },
-          ],
-        },
-        $session
-      );
+      const { updateGroupMember } = await $zeus.mutate({
+        updateGroupMember: [
+          { groupId: $page.params.id, memberId, title: member.title },
+          { title: true },
+        ],
+      });
       data.group.members = data.group.members.map((member) =>
         member.memberId === memberId ? { ...member, ...updateGroupMember } : member
       );

@@ -3,7 +3,7 @@
   "dependencies": {
     "@envelop/core": "^2.5.0",
     "@graphql-yoga/node": "^2.13.7",
-    "@pothos/core": "^3.15.0",
+    "@pothos/core": "^3.16.0",
     "@pothos/plugin-complexity": "^3.6.1",
     "@pothos/plugin-errors": "^3.6.0",
     "@pothos/plugin-prisma": "^3.23.0",

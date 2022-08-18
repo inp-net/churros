@@ -1,19 +1,19 @@
 import { redirectToLogin } from '$lib/session';
-import { query } from '$lib/zeus';
+import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, session, url }) => {
-  if (!session.me) redirectToLogin(url.pathname + url.search);
+export const load: PageLoad = async ({ fetch, parent, url }) => {
+  const { me } = await parent();
+  if (!me) throw redirectToLogin(url.pathname + url.search);
   return url.searchParams.has('q')
-    ? query(
-        fetch,
+    ? loadQuery(
         {
           searchUsers: [
             { q: url.searchParams.get('q')! },
             { id: true, firstname: true, lastname: true },
           ],
         },
-        session
+        { fetch, parent }
       )
     : { searchUsers: [] };
 };
