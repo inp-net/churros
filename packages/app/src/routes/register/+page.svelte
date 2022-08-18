@@ -10,9 +10,9 @@
   export let data: PageData;
 
   $: majorId = data.majors[0].id;
-  let name = '';
-  let firstname = '';
-  let lastname = '';
+  let email = '';
+  let firstName = '';
+  let lastName = '';
   let password = '';
   let formErrors: ZodFormattedError<typeof args> | undefined;
 
@@ -36,7 +36,7 @@
     majorGroups.get(key)!.majors.push({ id, name });
   }
 
-  $: args = { majorId, name, firstname, lastname, password };
+  $: args = { majorId, email, firstName, lastName, password };
 
   let loading = false;
   const register = async () => {
@@ -45,7 +45,7 @@
     try {
       loading = true;
       await $zeus.mutate({ register: [args, { id: true }] });
-      await goto('/');
+      await goto('/login/');
     } catch (error: unknown) {
       if (!(error instanceof ZeusError)) throw error;
 
@@ -79,41 +79,33 @@
     <p>
       <label>
         Adresse e-mail&nbsp;:
-        <input
-          type="text"
-          bind:value={name}
-          minlength="3"
-          maxlength="20"
-          pattern="[a-z][a-z_.-]*"
-          required
-        />
-        (Lettres, -, . et _)
+        <input type="email" bind:value={email} minlength="1" maxlength="255" required />
       </label>
     </p>
-    <Alert theme="danger" closed={(formErrors?.name?._errors ?? []).length === 0} inline>
-      {#each formErrors?.name?._errors ?? [] as error}
+    <Alert theme="danger" closed={(formErrors?.email?._errors ?? []).length === 0} inline>
+      {#each formErrors?.email?._errors ?? [] as error}
         <strong>{error}. </strong>
       {/each}
     </Alert>
     <p>
       <label>
         Prénom&nbsp;:
-        <input type="text" bind:value={firstname} minlength="1" maxlength="255" required />
+        <input type="text" bind:value={firstName} minlength="1" maxlength="255" required />
       </label>
     </p>
-    <Alert theme="danger" closed={(formErrors?.firstname?._errors ?? []).length === 0} inline>
-      {#each formErrors?.firstname?._errors ?? [] as error}
+    <Alert theme="danger" closed={(formErrors?.firstName?._errors ?? []).length === 0} inline>
+      {#each formErrors?.firstName?._errors ?? [] as error}
         <strong>{error}. </strong>
       {/each}
     </Alert>
     <p>
       <label>
         Nom de famille&nbsp;:
-        <input type="text" bind:value={lastname} minlength="1" maxlength="255" required />
+        <input type="text" bind:value={lastName} minlength="1" maxlength="255" required />
       </label>
     </p>
-    <Alert theme="danger" closed={(formErrors?.lastname?._errors ?? []).length === 0} inline>
-      {#each formErrors?.lastname?._errors ?? [] as error}
+    <Alert theme="danger" closed={(formErrors?.lastName?._errors ?? []).length === 0} inline>
+      {#each formErrors?.lastName?._errors ?? [] as error}
         <strong>{error}. </strong>
       {/each}
     </Alert>

@@ -20,7 +20,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
         {
           members: {
             memberId: true,
-            member: { firstname: true, lastname: true },
+            member: { firstName: true, lastName: true },
             title: true,
             president: true,
             treasurer: true,

@@ -29,14 +29,14 @@
         src={data.user.pictureFile
           ? `${PUBLIC_STORAGE_URL}${data.user.pictureFile}`
           : 'https://via.placeholder.com/160'}
-        alt="{data.user.firstname} {data.user.lastname}"
+        alt="{data.user.firstName} {data.user.lastName}"
       />
     </div>
     <div class="user-title">
       <h1 class="my-0">
-        {data.user.firstname}
+        {data.user.firstName}
         {data.user.nickname}
-        {data.user.lastname}
+        {data.user.lastName}
         <a href="edit/" title="Éditer" sveltekit:prefetch>
           <MajesticonsEdit aria-label="Éditer" />
         </a>

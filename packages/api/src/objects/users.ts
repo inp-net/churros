@@ -1,6 +1,7 @@
 import { GraphQLYogaError } from '@graphql-yoga/node';
 import { CredentialType as CredentialPrismaType } from '@prisma/client';
 import { hash } from 'argon2';
+import dichotomid from 'dichotomid';
 import imageType, { minimumBytes } from 'image-type';
 import { unlink, writeFile } from 'node:fs/promises';
 import { phone as parsePhoneNumber } from 'phone';
@@ -16,10 +17,10 @@ export const UserType = builder.prismaObject('User', {
   fields: (t) => ({
     id: t.exposeID('id'),
     majorId: t.exposeID('majorId'),
-    name: t.exposeString('name'),
+    uid: t.exposeString('uid', { authScopes: { loggedIn: true, $granted: 'me' } }),
     email: t.exposeString('email'),
-    firstname: t.exposeString('firstname'),
-    lastname: t.exposeString('lastname'),
+    firstName: t.exposeString('firstName'),
+    lastName: t.exposeString('lastName'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     graduationYear: t.exposeInt('graduationYear'),
 
@@ -98,9 +99,9 @@ builder.queryField('searchUsers', (t) =>
       return prisma.user.findMany({
         ...query,
         where: {
-          firstname: { search },
-          lastname: { search },
-          name: { search },
+          firstName: { search },
+          lastName: { search },
+          uid: { search },
           nickname: { search },
         },
       });
@@ -108,36 +109,44 @@ builder.queryField('searchUsers', (t) =>
   })
 );
 
+const createUid = async (email: string) => {
+  const base = email.split('@')[0].replace(/\W/g, '');
+  const n = await dichotomid(
+    async (n) => !(await prisma.user.findFirst({ where: { uid: `${base}${n > 1 ? n : ''}` } }))
+  );
+  return `${base}${n > 1 ? n : ''}`;
+};
+
 /** Registers a new user. */
 builder.mutationField('register', (t) =>
   t.prismaField({
     type: UserType,
     args: {
       majorId: t.arg.id(),
-      name: t.arg.string({
+      email: t.arg.string({
         validate: {
-          minLength: 3,
-          maxLength: 20,
-          regex: [/[a-z][._a-z-]*/, { message: 'Lettres, -, _ et . seulement' }],
+          minLength: 1,
+          maxLength: 255,
+          email: true,
           refine: [
-            async (name) => !(await prisma.user.findUnique({ where: { name } })),
-            { message: 'Nom déjà utilisé' },
+            async (email) => !(await prisma.user.findUnique({ where: { email } })),
+            { message: 'Adresse e-mail déjà utilisée' },
           ],
         },
       }),
-      firstname: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      lastname: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
+      firstName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
+      lastName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       password: t.arg.string({ validate: { minLength: 10, maxLength: 255 } }),
     },
-    resolve: async (query, _, { majorId, name, firstname, lastname, password }) =>
+    resolve: async (query, _, { majorId, email, firstName, lastName, password }) =>
       prisma.user.create({
         ...query,
         data: {
           majorId,
-          name,
-          email: name,
-          firstname,
-          lastname,
+          uid: await createUid(email),
+          email,
+          firstName,
+          lastName,
           graduationYear: new Date().getFullYear() + 4,
           credentials: {
             create: {
@@ -172,13 +181,15 @@ builder.mutationField('updateUser', (t) =>
       _,
       { id, majorId, graduationYear, nickname, biography, links, address, phone, birthday }
     ) {
-      const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
-      if (isValid) {
-        phone = phoneNumber;
-      } else {
-        const { isValid, phoneNumber } = parsePhoneNumber(phone);
-        if (!isValid) throw new Error('Numéro de téléphone invalide');
-        phone = phoneNumber;
+      if (phone) {
+        const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
+        if (isValid) {
+          phone = phoneNumber;
+        } else {
+          const { isValid, phoneNumber } = parsePhoneNumber(phone);
+          if (!isValid) throw new Error('Numéro de téléphone invalide');
+          phone = phoneNumber;
+        }
       }
 
       purgeUserSessions(id);
@@ -209,9 +220,9 @@ builder.mutationField('updateUserPicture', (t) =>
     },
     authScopes: (_, { id }, { user }) => Boolean(user?.canEditUsers || id === user?.id),
     async resolve(_, { id, file }) {
-      const { name } = await prisma.user.findUniqueOrThrow({
+      const { uid } = await prisma.user.findUniqueOrThrow({
         where: { id },
-        select: { name: true },
+        select: { uid: true },
       });
       const type = await file
         .slice(0, minimumBytes)
@@ -221,7 +232,7 @@ builder.mutationField('updateUserPicture', (t) =>
       if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
         throw new GraphQLYogaError('File format not supported');
 
-      const path = `${name}.${type.ext}`;
+      const path = `${uid}.${type.ext}`;
       purgeUserSessions(id);
       await writeFile(new URL(path, process.env.STORAGE), file.stream());
       await prisma.user.update({ where: { id }, data: { pictureFile: path } });

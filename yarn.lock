@@ -1585,6 +1585,7 @@ __metadata:
     "@types/express": ^4.17.13
     "@types/node": ^18.7.6
     argon2: ^0.28.7
+    dichotomid: ^0.0.3
     envelop-no-batched-queries: ^3.0.2
     express: ^4.18.1
     graphql: ^16.6.0
@@ -7473,6 +7474,13 @@ __metadata:
   version: 2.0.1
   resolution: "devalue@npm:2.0.1"
   checksum: 94bedfba0311b3404ca3281180c56baf0259481b8411eae1cae8ffd5741e1add47092d560c2ea9091086c9eef940a887a3ce86c63128d9c310b7486002762a08
+  languageName: node
+  linkType: hard
+
+"dichotomid@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "dichotomid@npm:0.0.3"
+  checksum: 06d3881dadc79f0c81c4979038fff26a357bb50c6d0b3a7f61ce2ab9a4a2a46ee7a1a6c52d2c3aacdedf0c06139e7bf43d3ffd66df83e88a9b3c8f44d431b3cb
   languageName: node
   linkType: hard
 

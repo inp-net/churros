@@ -26,9 +26,9 @@
 </script>
 
 <h1>
-  {data.me.firstname}
+  {data.me.firstName}
   {#if data.me.nickname}<q>{data.me.nickname}</q>{/if}
-  {data.me.lastname}
+  {data.me.lastName}
 </h1>
 
 <p>

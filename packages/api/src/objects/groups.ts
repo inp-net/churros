@@ -22,8 +22,8 @@ export const GroupType = builder.prismaObject('Group', {
         orderBy: [
           { president: 'desc' },
           { treasurer: 'desc' },
-          { member: { firstname: 'asc' } },
-          { member: { lastname: 'asc' } },
+          { member: { firstName: 'asc' } },
+          { member: { lastName: 'asc' } },
         ],
       },
     }),

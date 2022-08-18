@@ -35,12 +35,12 @@ builder.mutationField('login', (t) =>
     type: CredentialType,
     grantScopes: ['me', 'login'],
     args: {
-      name: t.arg.string(),
+      email: t.arg.string(),
       password: t.arg.string(),
     },
-    async resolve(query, _, { name, password }, { request }) {
+    async resolve(query, _, { email, password }, { request }) {
       const credentials = await prisma.credential.findMany({
-        where: { type: CredentialPrismaType.Password, user: { name } },
+        where: { type: CredentialPrismaType.Password, user: { OR: [{ email }, { uid: email }] } },
       });
       const userAgent = request.headers.get('User-Agent')?.slice(0, 255) ?? '';
 

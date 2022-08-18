@@ -36,7 +36,7 @@
     </div>
     <div>
       {#if me && token}
-        <a href="/me" sveltekit:prefetch>{me.name}</a>
+        <a href="/me" sveltekit:prefetch>{me.firstName}</a>
         <a href="/logout?{new URLSearchParams({ token })}">Se déconnecter</a>
       {:else}
         <a href="/login?{new URLSearchParams({ to: $page.url.pathname })}" sveltekit:prefetch>

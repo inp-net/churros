@@ -4,8 +4,8 @@ import type { PageLoad } from './$types';
 
 export const userQuery = Selector('User')({
   id: true,
-  firstname: true,
-  lastname: true,
+  firstName: true,
+  lastName: true,
   nickname: true,
   biography: true,
   pictureFile: true,

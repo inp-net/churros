@@ -26,8 +26,8 @@
       <p>
         <em>
           Auteur : <a href="/user/{author.id}" sveltekit:prefetch>
-            {author.firstname}
-            {author.lastname}
+            {author.firstName}
+            {author.lastName}
           </a>
         </em>
       </p>

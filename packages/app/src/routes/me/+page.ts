@@ -9,8 +9,8 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
     {
       me: {
         id: true,
-        firstname: true,
-        lastname: true,
+        firstName: true,
+        lastName: true,
         nickname: true,
         credentials: { id: true, type: true, userAgent: true, createdAt: true, active: true },
       },

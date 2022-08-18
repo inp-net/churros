@@ -12,7 +12,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
           bodyHtml: true,
           publishedAt: true,
           group: { id: true, name: true },
-          author: { id: true, firstname: true, lastname: true },
+          author: { id: true, firstName: true, lastName: true },
         },
       ],
     },

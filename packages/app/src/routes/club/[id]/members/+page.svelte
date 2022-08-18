@@ -5,21 +5,21 @@
 
   export let data: PageData;
 
-  let name = '';
+  let uid = '';
   let title = '';
 
   const addGroupMember = async () => {
     try {
       const { addGroupMember } = await $zeus.mutate({
         addGroupMember: [
-          { groupId: $page.params.id, name, title },
+          { groupId: $page.params.id, uid, title },
           {
             memberId: true,
             title: true,
             president: true,
             treasurer: true,
             canEditMembers: true,
-            member: { firstname: true, lastname: true },
+            member: { firstName: true, lastName: true },
           },
         ],
       });
@@ -61,7 +61,7 @@
   {#each data.group.members as { memberId, member, president, treasurer }, i}
     <tr>
       <td>{president ? '👑' : ''}{treasurer ? '💰' : ''}</td>
-      <td>{member.firstname} {member.lastname}</td>
+      <td>{member.firstName} {member.lastName}</td>
       <td>
         <input
           type="text"
@@ -80,7 +80,7 @@
   <h2>Ajouter un membre</h2>
   <p>
     <label>
-      Nom d'utilisateur : <input type="text" bind:value={name} required />
+      Nom d'utilisateur : <input type="text" bind:value={uid} required />
     </label>
   </p>
   <p>

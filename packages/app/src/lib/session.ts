@@ -9,7 +9,9 @@ import { Selector, type PropsType } from './zeus';
 export const sessionUserQuery = () =>
   Selector('User')({
     id: true,
-    name: true,
+    uid: true,
+    firstName: true,
+    lastName: true,
     admin: true,
     canEditGroups: true,
     canEditUsers: true,

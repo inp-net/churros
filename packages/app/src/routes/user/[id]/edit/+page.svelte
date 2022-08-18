@@ -16,8 +16,8 @@
 
   export let data: PageData;
 
-  $: ({
-    id,
+  // We don't want form bindings to be reactive to let them evolve separately from the data
+  let {
     address,
     biography,
     graduationYear,
@@ -27,7 +27,7 @@
     phone,
     pictureFile,
     birthday,
-  } = data.user);
+  } = data.user;
 
   let files: FileList;
 
@@ -64,7 +64,17 @@
       loading = true;
       const { updateUser } = await $zeus.mutate({
         updateUser: [
-          { id, nickname, biography, links, address, graduationYear, majorId, phone, birthday },
+          {
+            id: data.user.id,
+            nickname,
+            biography,
+            links,
+            address,
+            graduationYear,
+            majorId,
+            phone,
+            birthday,
+          },
           {
             __typename: true,
             '...on Error': { message: true },
@@ -90,7 +100,7 @@
     try {
       updating = true;
       const { updateUserPicture } = await $zeus.mutate(
-        { updateUserPicture: [{ id, file: Zvar('file', 'File!') }, true] },
+        { updateUserPicture: [{ id: data.user.id, file: Zvar('file', 'File!') }, true] },
         { variables: { file: files[0] } }
       );
       pictureFile = updateUserPicture;
@@ -104,7 +114,7 @@
     if (deleting) return;
     try {
       deleting = true;
-      await $zeus.mutate({ deleteUserPicture: [{ id }, true] });
+      await $zeus.mutate({ deleteUserPicture: [{ id: data.user.id }, true] });
       pictureFile = '';
     } finally {
       deleting = false;
@@ -112,7 +122,7 @@
   };
 </script>
 
-<h1>Éditer <a href="..">{data.user.firstname} {data.user.nickname} {data.user.lastname}</a></h1>
+<h1>Éditer <a href="..">{data.user.firstName} {data.user.nickname} {data.user.lastName}</a></h1>
 
 <form on:submit|preventDefault>
   <fieldset>
@@ -130,7 +140,7 @@
           src={pictureFile
             ? `${PUBLIC_STORAGE_URL}${pictureFile}`
             : 'https://via.placeholder.com/160'}
-          alt="{data.user.firstname} {data.user.lastname}"
+          alt="{data.user.firstName} {data.user.lastName}"
           on:load={() => {
             updating = false;
           }}

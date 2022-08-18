@@ -15,14 +15,17 @@ datasource db {
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
+  uid       String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now())
+
+  // Mandatory profile details
+  email          String @unique @db.VarChar(255)
+  firstName      String @db.VarChar(255)
+  lastName       String @db.VarChar(255)
   majorId        Int
-  name           String   @unique @db.VarChar(255)
-  email          String   @unique @db.VarChar(255)
-  firstname      String   @db.VarChar(255)
-  lastname       String   @db.VarChar(255)
-  createdAt      DateTime @default(now())
-  graduationYear Int      @db.Integer
+  major          Major  @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  graduationYear Int
 
   // Optional profile details
   address     String    @default("") @db.VarChar(255)
@@ -41,7 +44,6 @@ model User {
   groups      GroupMember[]
   credentials Credential[]
   links       UserLink[]
-  major       Major         @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
 }
 
 enum LinkType {

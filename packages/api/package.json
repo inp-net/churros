@@ -12,6 +12,7 @@
     "@pothos/plugin-validation": "^3.6.0",
     "@prisma/client": "^4.2.1",
     "argon2": "^0.28.7",
+    "dichotomid": "^0.0.3",
     "envelop-no-batched-queries": "^3.0.2",
     "express": "^4.18.1",
     "graphql": "^16.6.0",

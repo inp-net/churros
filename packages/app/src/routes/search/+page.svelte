@@ -23,8 +23,8 @@
   <p>Aucun résultat</p>
 {:else}
   <ul>
-    {#each data.searchUsers as { id, firstname, lastname }}
-      <li><a href="/user/{id}/" sveltekit:prefetch>{firstname} {lastname}</a></li>
+    {#each data.searchUsers as { id, firstName, lastName }}
+      <li><a href="/user/{id}/" sveltekit:prefetch>{firstName} {lastName}</a></li>
     {/each}
   </ul>
 {/if}

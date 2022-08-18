@@ -8,7 +8,7 @@
   import { zeus, ZeusError } from '$lib/zeus';
   import { onMount } from 'svelte';
 
-  let name = '';
+  let email = '';
   let password = '';
 
   /** Redirects the user if a `to` parameter exists, or to "/" otherwise. */
@@ -29,7 +29,7 @@
       errorMessages = undefined;
       const { login } = await $zeus.mutate({
         login: [
-          { name, password },
+          { email, password },
           { token: true, expiresAt: true, user: sessionUserQuery() },
         ],
       });
@@ -56,7 +56,7 @@
     <Alert theme="danger" closed={errorMessages === undefined} inline>
       {errorMessages?.join(' ')}
     </Alert>
-    <p><label>Adresse e-mail&nbsp;: <input type="text" bind:value={name} /></label></p>
+    <p><label>Adresse e-mail&nbsp;: <input type="text" bind:value={email} /></label></p>
     <p>
       <label>Mot de passe&nbsp;: <input type="password" bind:value={password} /></label>
     </p>

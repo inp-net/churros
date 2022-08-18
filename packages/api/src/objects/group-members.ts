@@ -28,7 +28,7 @@ builder.mutationField('addGroupMember', (t) =>
     type: GroupMemberType,
     args: {
       groupId: t.arg.id(),
-      name: t.arg.string(),
+      uid: t.arg.string(),
       title: t.arg.string(),
     },
     authScopes: (_, { groupId }, { user }) =>
@@ -36,11 +36,11 @@ builder.mutationField('addGroupMember', (t) =>
         user?.canEditGroups ||
           user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id)
       ),
-    resolve: (query, _, { groupId, name, title }) =>
+    resolve: (query, _, { groupId, uid, title }) =>
       prisma.groupMember.create({
         ...query,
         data: {
-          member: { connect: { name } },
+          member: { connect: { uid } },
           group: { connect: { id: groupId } },
           title,
         },

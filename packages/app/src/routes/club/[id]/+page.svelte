@@ -19,8 +19,8 @@
           <td>{president ? '👑' : ''}{treasurer ? '💰' : ''}</td>
           <td>
             <a href="/user/{member.id}" sveltekit:prefetch>
-              {member.firstname}
-              {member.lastname}
+              {member.firstName}
+              {member.lastName}
             </a>
           </td>
           <td>{title}</td>
