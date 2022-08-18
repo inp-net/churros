@@ -1,26 +1,8 @@
-<script context="module" lang="ts">
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { page, session } from '$app/stores';
-  import { redirectToLogin } from '$lib/session';
   import { mutate } from '$lib/zeus';
-  import type { Load } from './__types';
 
-  export const load: Load = ({ session, url, params }) => {
-    if (!session.me) return redirectToLogin(url.pathname);
-
-    if (
-      !session.me.canEditGroups &&
-      !session.me.groups.some(
-        ({ groupId, canEditArticles }) => groupId === params.id && canEditArticles
-      )
-    )
-      return { status: 307, redirect: '.' };
-
-    return {};
-  };
-</script>
-
-<script lang="ts">
   let title = '';
   let body = '';
 

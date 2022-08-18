@@ -1,31 +1,15 @@
-<script context="module" lang="ts">
+<script lang="ts">
   import { goto } from '$app/navigation';
   import Alert from '$lib/components/alerts/Alert.svelte';
   import Button from '$lib/components/buttons/Button.svelte';
   import FormCard from '$lib/components/cards/FormCard.svelte';
-  import { mutate, Query, query, ZeusError, type PropsType } from '$lib/zeus';
+  import { mutate, ZeusError } from '$lib/zeus';
   import type { ZodFormattedError } from 'zod';
-  import type { Load } from './__types';
+  import type { PageData } from './$types';
 
-  const propsQuery = () =>
-    Query({
-      majors: {
-        id: true,
-        name: true,
-        schools: { id: true, name: true },
-      },
-    });
+  export let data: PageData;
 
-  type Props = PropsType<typeof propsQuery>;
-
-  export const load: Load = async ({ fetch, session }) =>
-    session.me ? { status: 307, redirect: '/' } : { props: await query(fetch, propsQuery()) };
-</script>
-
-<script lang="ts">
-  export let majors: Props['majors'];
-
-  let majorId = majors[0].id;
+  $: majorId = data.majors[0].id;
   let name = '';
   let firstname = '';
   let lastname = '';
@@ -38,7 +22,7 @@
     { schoolsNames: string[]; majors: Array<{ id: string; name: string }> }
   >();
 
-  for (const { id, name, schools } of majors) {
+  for (const { id, name, schools } of data.majors) {
     const key = schools
       .map(({ id }) => id)
       .sort()

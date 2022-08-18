@@ -1,4 +1,4 @@
-import type { LoadOutput } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 import { Selector, type PropsType } from './zeus.js';
 
@@ -32,7 +32,6 @@ export const saveSessionToken = ({
 };
 
 /** Returns a temporary redirect object. */
-export const redirectToLogin = (to: string): LoadOutput => ({
-  status: 307,
-  redirect: `/login?${new URLSearchParams({ to }).toString()}`,
-});
+export const redirectToLogin = (to: string) => {
+  throw redirect(307, `/login?${new URLSearchParams({ to }).toString()}`);
+};

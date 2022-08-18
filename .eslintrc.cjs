@@ -28,6 +28,7 @@ module.exports = {
     '@typescript-eslint/consistent-type-definitions': 'off',
     '@typescript-eslint/naming-convention': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-throw-literal': 'off',
     '@typescript-eslint/prefer-nullish-coalescing': 'off',
     'capitalized-comments': 'off',
     'new-cap': 'off',

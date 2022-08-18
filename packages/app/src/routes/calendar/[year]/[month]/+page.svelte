@@ -1,25 +1,14 @@
-<script context="module" lang="ts">
-  import type { Load } from './__types';
-
-  export const monthToPath = (date: Date) =>
-    `${date.getFullYear()}/${`${date.getMonth() + 1}`.padStart(2, '0')}/`;
-
-  export const load: Load = ({ params, url }) => {
-    const firstDay = new Date(Number(params.year), Number(params.month) - 1, 1, 0, 0, 0, 0);
-    const path = monthToPath(firstDay);
-    if (!url.pathname.endsWith(path)) return { status: 307, redirect: `../../${path}` };
-    return { props: { firstDay } };
-  };
-</script>
-
 <script lang="ts">
-  export let firstDay: Date;
+  import type { PageData } from './$types';
+  import { monthToPath } from './+page';
 
-  $: previousMonth = new Date(firstDay.getFullYear(), firstDay.getMonth() - 1, 1, 0, 0, 0, 0);
-  $: nextMonth = new Date(firstDay.getFullYear(), firstDay.getMonth() + 1, 1, 0, 0, 0, 0);
+  export let data: PageData;
+
+  $: previousMonth = new Date(data.firstDay.getFullYear(), data.firstDay.getMonth() - 1, 1);
+  $: nextMonth = new Date(data.firstDay.getFullYear(), data.firstDay.getMonth() + 1, 1);
 
   const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   const formatter = new Intl.DateTimeFormat('fr', { month: 'long', year: 'numeric' });
   const format = (date: Date) => formatter.format(date);
@@ -31,12 +20,12 @@
 
   $: {
     // Add empty cells to pad
-    let lastRow: Array<Date | undefined> = Array.from({ length: wrapWeek(firstDay.getDay()) });
+    let lastRow: Array<Date | undefined> = Array.from({ length: wrapWeek(data.firstDay.getDay()) });
     grid = [lastRow];
 
     let i = 1;
-    let day = new Date(firstDay.getFullYear(), firstDay.getMonth(), i, 0, 0, 0, 0);
-    while (day.getMonth() === firstDay.getMonth()) {
+    let day = new Date(data.firstDay.getFullYear(), data.firstDay.getMonth(), i);
+    while (day.getMonth() === data.firstDay.getMonth()) {
       if (wrapWeek(day.getDay()) === 0) {
         lastRow = [day];
         grid = [...grid, lastRow];
@@ -45,7 +34,7 @@
       }
 
       i++;
-      day = new Date(firstDay.getFullYear(), firstDay.getMonth(), i, 0, 0, 0, 0);
+      day = new Date(data.firstDay.getFullYear(), data.firstDay.getMonth(), i);
     }
 
     // Add empty cells to pad
@@ -53,7 +42,7 @@
   }
 </script>
 
-<h1>{format(firstDay)}</h1>
+<h1>{format(data.firstDay)}</h1>
 
 <p class="flex justify-between">
   <a href="../../{monthToPath(previousMonth)}">⬅️ {format(previousMonth)}</a>

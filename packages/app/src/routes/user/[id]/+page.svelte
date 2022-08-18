@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import GroupMemberBadge from '$lib/components/badges/GroupMemberBadge.svelte';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
@@ -7,52 +7,17 @@
   import FlexList from '$lib/components/lists/FlexList.svelte';
   import UserPicture from '$lib/components/pictures/UserPicture.svelte';
   import { formatDate } from '$lib/dates.js';
-  import { redirectToLogin } from '$lib/session';
-  import { Query, query, type PropsType } from '$lib/zeus';
-  import type { Load } from '@sveltejs/kit';
   import MajesticonsAcademicCap from '~icons/majesticons/academic-cap-line';
   import MajesticonsCake from '~icons/majesticons/cake-line';
   import MajesticonsEdit from '~icons/majesticons/edit-pen-2-line';
   import MajesticonsLocationMarker from '~icons/majesticons/location-marker-line';
   import MajesticonsPhone from '~icons/majesticons/phone-line';
+  import type { PageData } from './$types';
 
-  const propsQuery = (id: string) =>
-    Query({
-      user: [
-        { id },
-        {
-          id: true,
-          address: true,
-          biography: true,
-          birthday: true,
-          firstname: true,
-          graduationYear: true,
-          lastname: true,
-          nickname: true,
-          phone: true,
-          pictureFile: true,
-          groups: { group: { id: true, name: true, color: true }, title: true },
-          links: { type: true, value: true },
-          major: { name: true, schools: { name: true, color: true } },
-        },
-      ],
-    });
+  export let data: PageData;
 
-  type Props = PropsType<typeof propsQuery>;
-
-  export const load: Load = async ({ fetch, params, session, url }) =>
-    session.me
-      ? { props: await query(fetch, propsQuery(params.id), session) }
-      : redirectToLogin(url.pathname);
-</script>
-
-<script lang="ts">
-  export let user: Props['user'];
-
-  const formatPhoneNumber = (phone: string) => {
-    if (!phone.startsWith('+33') || phone.length !== 12) return phone;
-    return phone.replace(/^\+33(\d)(\d\d)(\d\d)(\d\d)(\d\d)$/, '0$1 $2 $3 $4 $5');
-  };
+  const formatPhoneNumber = (phone: string) =>
+    phone.replace(/^\+33(\d)(\d\d)(\d\d)(\d\d)(\d\d)$/, '0$1 $2 $3 $4 $5');
 </script>
 
 <div class="placeholder" />
@@ -61,31 +26,31 @@
   <div class="user-header">
     <div class="user-picture">
       <UserPicture
-        src={user.pictureFile
-          ? `${PUBLIC_STORAGE_URL}${user.pictureFile}`
+        src={data.user.pictureFile
+          ? `${PUBLIC_STORAGE_URL}${data.user.pictureFile}`
           : 'https://via.placeholder.com/160'}
-        alt="{user.firstname} {user.lastname}"
+        alt="{data.user.firstname} {data.user.lastname}"
       />
     </div>
     <div class="user-title">
       <h1 class="my-0">
-        {user.firstname}
-        {user.nickname}
-        {user.lastname}
+        {data.user.firstname}
+        {data.user.nickname}
+        {data.user.lastname}
         <a href="edit/" title="Éditer" sveltekit:prefetch>
           <MajesticonsEdit aria-label="Éditer" />
         </a>
       </h1>
       <div class="biography">
-        {#if user.biography}
-          {user.biography}
+        {#if data.user.biography}
+          {data.user.biography}
         {:else}
-          {['👻', '🌵', '🕸️', '💤'][Number(user.id) % 4]}
+          {['👻', '🌵', '🕸️', '💤'][Number(data.user.id) % 4]}
         {/if}
       </div>
-      {#if user.links.length > 0}
+      {#if data.user.links.length > 0}
         <div class="flex flex-wrap mt-2 gap-3">
-          {#each user.links as link}
+          {#each data.user.links as link}
             <SocialLink {...link} />
           {/each}
         </div>
@@ -96,34 +61,34 @@
   <FlexList>
     <li>
       <MajesticonsAcademicCap aria-label="Filière" />
-      {user.major.name}
-      {user.graduationYear}
-      <SchoolBadge schools={user.major.schools} />
+      {data.user.major.name}
+      {data.user.graduationYear}
+      <SchoolBadge schools={data.user.major.schools} />
     </li>
-    {#if user.birthday}
+    {#if data.user.birthday}
       <li>
         <MajesticonsCake aria-label="Anniversaire" />
-        {formatDate(user.birthday)}
+        {formatDate(data.user.birthday)}
       </li>
     {/if}
-    {#if user.address}
+    {#if data.user.address}
       <li>
         <a
           href="https://www.google.com/maps/search/?api=1&{new URLSearchParams({
-            query: user.address,
+            query: data.user.address,
           })}"
           target="maps"
         >
           <MajesticonsLocationMarker aria-label="Adresse" />
-          {user.address}
+          {data.user.address}
         </a>
       </li>
     {/if}
-    {#if user.phone}
+    {#if data.user.phone}
       <li>
-        <a href="tel:{user.phone}">
+        <a href="tel:{data.user.phone}">
           <MajesticonsPhone aria-label="Téléphone" />
-          {formatPhoneNumber(user.phone)}
+          {formatPhoneNumber(data.user.phone)}
         </a>
       </li>
     {/if}
@@ -131,7 +96,7 @@
 
   <h2 class="mb-1">Groupes</h2>
   <FlexList>
-    {#each user.groups as groupMember}
+    {#each data.user.groups as groupMember}
       <li>
         <a href="/club/{groupMember.group.id}/" class="no-underline" sveltekit:prefetch>
           <GroupMemberBadge {groupMember} />

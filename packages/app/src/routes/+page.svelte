@@ -1,38 +1,14 @@
-<script context="module" lang="ts">
+<script lang="ts">
   import ArticleCard from '$lib/components/cards/ArticleCard.svelte';
   import { formatDateTime } from '$lib/dates';
-  import { query, Query, type PropsType } from '$lib/zeus';
-  import type { Load } from './__types';
+  import type { PageData } from './$types';
 
-  const propsQuery = () =>
-    Query({
-      homepage: [
-        {},
-        {
-          id: true,
-          title: true,
-          bodyHtml: true,
-          publishedAt: true,
-          group: { id: true, name: true },
-          author: { id: true, firstname: true, lastname: true },
-        },
-      ],
-    });
-
-  type Props = PropsType<typeof propsQuery>;
-
-  export const load: Load = async ({ fetch, session }) => ({
-    props: await query(fetch, propsQuery(), session),
-  });
-</script>
-
-<script lang="ts">
-  export let homepage: Props['homepage'];
+  export let data: PageData;
 </script>
 
 <h1>Bienvenue sur Centraverse</h1>
 
-{#each homepage as { id, title, bodyHtml, publishedAt, group, author }}
+{#each data.homepage as { id, title, bodyHtml, publishedAt, group, author }}
   <ArticleCard
     {title}
     href="#"

@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script lang="ts">
   import { session } from '$app/stores';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import Button from '$lib/components/buttons/Button.svelte';
@@ -7,59 +7,29 @@
   import FileInput from '$lib/components/inputs/FileInput.svelte';
   import Loader from '$lib/components/loaders/Loader.svelte';
   import UserPicture from '$lib/components/pictures/UserPicture.svelte';
-  import { $ as Zvar, mutate, query, Query, Selector, type PropsType } from '$lib/zeus';
+  import { $ as Zvar, mutate } from '$lib/zeus';
   import MajesticonsChevronUp from '~icons/majesticons/chevron-up';
   import MajesticonsClose from '~icons/majesticons/close';
-  import MajesticonsPlus from '~icons/majesticons/plus';
   import MajesticonsEdit from '~icons/majesticons/edit-pen-2-line';
-  import type { Load } from './__types';
+  import MajesticonsPlus from '~icons/majesticons/plus';
+  import type { PageData } from './$types';
+  import { userQuery } from './+page';
 
-  const userQuery = Selector('User')({
-    id: true,
-    firstname: true,
-    lastname: true,
-    nickname: true,
-    biography: true,
-    pictureFile: true,
-    address: true,
-    graduationYear: true,
-    majorId: true,
-    phone: true,
-    birthday: true,
-    links: { type: true, value: true },
-  });
-  const propsQuery = (id: string) =>
-    Query({
-      user: [{ id }, userQuery],
-      linkTypes: true,
-      majors: { id: true, name: true, schools: { id: true, name: true } },
-    });
+  export let data: PageData;
 
-  type Props = PropsType<typeof propsQuery>;
-
-  export const load: Load = async ({ fetch, params, session }) =>
-    params.id === session.me?.id || session.me?.canEditUsers
-      ? { props: await query(fetch, propsQuery(params.id), session) }
-      : { status: 307, redirect: '..' };
-</script>
-
-<script lang="ts">
-  export let user: Props['user'];
-  export let linkTypes: Props['linkTypes'];
-  export let majors: Props['majors'];
-
-  let {
+  $: ({
     id,
-    nickname,
-    biography,
-    links,
-    pictureFile,
     address,
+    biography,
     graduationYear,
+    links,
     majorId,
+    nickname,
     phone,
+    pictureFile,
     birthday,
-  } = user;
+  } = data.user);
+
   let files: FileList;
 
   const asDate = (x: unknown) => x as Date;
@@ -71,18 +41,21 @@
     { schoolsNames: string[]; majors: Array<{ id: string; name: string }> }
   >();
 
-  for (const { id, name, schools } of majors) {
-    const key = schools
-      .map(({ id }) => id)
-      .sort()
-      .join(',');
+  // eslint-disable-next-line no-lone-blocks
+  {
+    for (const { id, name, schools } of data.majors) {
+      const key = schools
+        .map(({ id }) => id)
+        .sort()
+        .join(',');
 
-    if (!majorGroups.has(key)) {
-      const schoolsNames = schools.map(({ name }) => name).sort();
-      majorGroups.set(key, { schoolsNames, majors: [] });
+      if (!majorGroups.has(key)) {
+        const schoolsNames = schools.map(({ name }) => name).sort();
+        majorGroups.set(key, { schoolsNames, majors: [] });
+      }
+
+      majorGroups.get(key)!.majors.push({ id, name });
     }
-
-    majorGroups.get(key)!.majors.push({ id, name });
   }
 
   let loading = false;
@@ -113,7 +86,7 @@
         return;
       }
 
-      user = updateUser.data;
+      data.user = updateUser.data;
     } finally {
       loading = false;
     }
@@ -147,7 +120,7 @@
   };
 </script>
 
-<h1>Éditer <a href="..">{user.firstname} {user.nickname} {user.lastname}</a></h1>
+<h1>Éditer <a href="..">{data.user.firstname} {data.user.nickname} {data.user.lastname}</a></h1>
 
 <form on:submit|preventDefault>
   <fieldset>
@@ -165,7 +138,7 @@
           src={pictureFile
             ? `${PUBLIC_STORAGE_URL}${pictureFile}`
             : 'https://via.placeholder.com/160'}
-          alt="{user.firstname} {user.lastname}"
+          alt="{data.user.firstname} {data.user.lastname}"
           on:load={() => {
             updating = false;
           }}
@@ -197,7 +170,7 @@
         <li>
           <InputGroup>
             <select bind:value={link.type}>
-              {#each linkTypes as type}
+              {#each data.linkTypes as type}
                 <option>{type}</option>
               {/each}
             </select>
@@ -229,7 +202,7 @@
         <button
           type="button"
           on:click={() => {
-            links = [...links, { type: linkTypes[0], value: '' }];
+            links = [...links, { type: data.linkTypes[0], value: '' }];
           }}><MajesticonsPlus aria-hidden="true" />Ajouter</button
         >
       </li>

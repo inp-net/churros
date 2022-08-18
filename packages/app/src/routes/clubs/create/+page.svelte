@@ -1,25 +1,14 @@
-<script context="module" lang="ts">
-  import type { Load } from './__types/';
-  import { GroupType, mutate, Query, query, ZeusError, type PropsType } from '$lib/zeus';
-  import { session } from '$app/stores';
-  import { goto } from '$app/navigation';
-  import Button from '$lib/components/buttons/Button.svelte';
-
-  const propsQuery = () => Query({ schools: { id: true, name: true } });
-
-  type Props = PropsType<typeof propsQuery>;
-
-  export const load: Load = async ({ fetch, session }) =>
-    session.me?.canEditGroups
-      ? { props: await query(fetch, propsQuery(), session) }
-      : { status: 307, redirect: '..' };
-</script>
-
 <script lang="ts">
-  export let schools: Props['schools'];
+  import { goto } from '$app/navigation';
+  import { session } from '$app/stores';
+  import Button from '$lib/components/buttons/Button.svelte';
+  import { GroupType, mutate, ZeusError } from '$lib/zeus';
+  import type { PageData } from './$types';
+
+  export let data: PageData;
 
   let name = '';
-  let schoolId = schools[0].id;
+  $: schoolId = data.schools[0].id;
 
   let loading = false;
   const createGroup = async () => {
@@ -48,7 +37,7 @@
     <label>
       École&nbsp;:
       <select id="school" bind:value={schoolId}>
-        {#each schools as { id, name }}
+        {#each data.schools as { id, name }}
           <option value={id}>{name}</option>
         {/each}
       </select>

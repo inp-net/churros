@@ -1,22 +1,8 @@
-<script context="module" lang="ts">
-  import { session } from '$app/stores';
-  import { GroupType, query, Query, type PropsType } from '$lib/zeus';
-  import type { Load } from './__types';
-
-  const propsQuery = () =>
-    Query({
-      groups: [{ types: [GroupType.Association, GroupType.Club] }, { id: true, name: true }],
-    });
-
-  type Props = PropsType<typeof propsQuery>;
-
-  export const load: Load = async ({ fetch, session }) => ({
-    props: await query(fetch, propsQuery(), session),
-  });
-</script>
-
 <script lang="ts">
-  export let groups: Props['groups'];
+  import { session } from '$app/stores';
+  import type { PageData } from './$types';
+
+  export let data: PageData;
 
   $: myGroups = new Map($session.me?.groups.map((group) => [group.groupId, group]) ?? []);
 </script>
@@ -30,7 +16,7 @@
       <td />
     {/if}
   </tr>
-  {#each groups as { id, name }}
+  {#each data.groups as { id, name }}
     <tr>
       <td>{id}</td>
       <td><a href="/club/{id}" sveltekit:prefetch>{name}</a></td>
