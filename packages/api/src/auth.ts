@@ -1,5 +1,5 @@
-import { User } from '@prisma/client';
-import { Context } from './context.js';
+import type { User } from '@prisma/client';
+import type { Context } from './context.js';
 
 export interface AuthScopes {
   loggedIn: boolean;

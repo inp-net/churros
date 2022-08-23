@@ -1,15 +1,8 @@
 {
+  "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
   "compilerOptions": {
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "outDir": "./build",
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "ESNext"
-  },
-  "ts-node": {
-    "files": true
+    // Waiting for https://github.com/prisma/prisma/issues/10894 to be fixed
+    "exactOptionalPropertyTypes": false,
+    "outDir": "./build"
   }
 }

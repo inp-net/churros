@@ -73,7 +73,7 @@ builder.queryField('me', (t) =>
   t.prismaField({
     type: UserType,
     authScopes: { loggedIn: true },
-    resolve: (query, _, {}, { user }) => user!,
+    resolve: (_query, _, {}, { user }) => user!,
   })
 );
 
@@ -110,7 +110,7 @@ builder.queryField('searchUsers', (t) =>
 );
 
 const createUid = async (email: string) => {
-  const base = email.split('@')[0].replace(/\W/g, '');
+  const base = email.split('@')[0]?.replace(/\W/g, '') ?? 'user';
   const n = await dichotomid(
     async (n) => !(await prisma.user.findFirst({ where: { uid: `${base}${n > 1 ? n : ''}` } }))
   );

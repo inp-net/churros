@@ -9,7 +9,7 @@ import { ZodError } from 'zod';
 import { context } from './context.js';
 import { schema, writeSchema } from './schema.js';
 
-process.env.DEBUG = 'true';
+process.env['DEBUG'] = 'true';
 
 const yoga = createServer({
   schema,
