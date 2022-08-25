@@ -7,11 +7,11 @@
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.0",
     "@types/ldapjs": "^2.2.3",
-    "nodemon": "^2.0.19"
+    "tsx": "^3.8.2"
   },
   "scripts": {
     "build": "tsc",
-    "dev": "NODE_ENV=development nodemon ./src/index.js"
+    "dev": "NODE_ENV=development tsx watch --clear-screen=false ./src/index.js"
   },
   "type": "module"
 }
