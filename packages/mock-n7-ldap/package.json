@@ -5,8 +5,8 @@
     "ldapjs": "^2.3.3"
   },
   "devDependencies": {
-    "@tsconfig/node18-strictest-esm": "^1.0.0",
-    "@types/ldapjs": "^2.2.3",
+    "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@types/ldapjs": "^2.2.4",
     "tsx": "^3.8.2"
   },
   "scripts": {

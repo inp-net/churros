@@ -3,19 +3,19 @@
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
-    "@typescript-eslint/eslint-plugin": "^5.34.0",
-    "@typescript-eslint/parser": "^5.34.0",
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/parser": "^5.35.1",
     "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-config-xo": "^0.41.0",
-    "eslint-config-xo-typescript": "^0.52.0",
+    "eslint-config-xo": "^0.42.0",
+    "eslint-config-xo-typescript": "^0.53.0",
     "eslint-plugin-svelte3": "^4.0.0",
     "eslint-plugin-unicorn": "^43.0.2",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "postcss-html": "^1.5.0",
     "prettier": "^2.7.1",
-    "prettier-plugin-jsdoc": "^0.3.38",
+    "prettier-plugin-jsdoc": "^0.4.2",
     "prettier-plugin-svelte": "^2.7.0",
     "stylelint": "^14.11.0",
     "stylelint-config-html": "^1.1.0",
@@ -24,19 +24,19 @@
     "stylelint-config-standard": "^28.0.0",
     "stylelint-config-standard-scss": "^5.0.0",
     "svelte": "^3.49.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.8.2"
   },
   "packageManager": "yarn@3.2.2",
   "private": true,
   "scripts": {
     "build": "yarn workspaces foreach --topological-dev -pv run build",
-    "start": "docker-compose up -d --wait && yarn workspaces foreach -piv --exclude centraverse node build/index.js",
-    "dev": "docker-compose up -d --wait && yarn workspaces foreach -piv run dev",
+    "start": "docker compose up -d --wait && yarn workspaces foreach -piv --exclude centraverse node build/index.js",
+    "dev": "docker compose up -d --wait && yarn workspaces foreach -piv run dev",
     "format": "prettier . --write --ignore-unknown",
     "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
     "postinstall": "husky install",
     "prisma": "yarn workspace @centraverse/api run prisma",
-    "reset": "docker-compose up -dV --wait && yarn workspace @centraverse/api run prisma migrate reset --force"
+    "reset": "docker compose up -dV --wait && yarn workspace @centraverse/api run prisma migrate reset --force"
   },
   "volta": {
     "node": "18.7.0",

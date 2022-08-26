@@ -1,5 +1,11 @@
-import { GraphQLYogaError, YogaInitialContext } from '@graphql-yoga/node';
-import { GroupMember, CredentialType, Major, School, User } from '@prisma/client';
+import { GraphQLYogaError, type YogaInitialContext } from '@graphql-yoga/node';
+import {
+  CredentialType,
+  type GroupMember,
+  type Major,
+  type School,
+  type User,
+} from '@prisma/client';
 import { prisma } from './prisma.js';
 
 const getToken = ({ headers }: Request) => {
