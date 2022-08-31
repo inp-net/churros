@@ -1,7 +1,7 @@
 import { ZodError } from 'zod';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
-import { register } from '../services/register.js';
+import { register } from '../services/registration.js';
 import { DateTimeScalar } from './scalars.js';
 
 /** Represents a user, mapped on the underlying database object. */
@@ -14,6 +14,11 @@ export const UserCandidateType = builder.prismaObject('UserCandidate', {
     lastName: t.exposeString('lastName'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar, nullable: true }),
     graduationYear: t.exposeInt('graduationYear', { nullable: true }),
+
+    // School details
+    schoolServer: t.exposeString('schoolServer', { nullable: true }),
+    schoolUid: t.exposeString('schoolUid', { nullable: true }),
+    schoolEmail: t.exposeString('schoolEmail', { nullable: true }),
 
     // Profile details
     address: t.exposeString('address'),

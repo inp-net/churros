@@ -54,6 +54,10 @@ model UserCandidate {
   token          String  @unique
   emailValidated Boolean @default(false)
 
+  schoolServer String? @db.VarChar(255)
+  schoolUid    String? @db.VarChar(255)
+  schoolEmail  String? @unique @db.VarChar(255)
+
   firstName      String @default("") @db.VarChar(255)
   lastName       String @default("") @db.VarChar(255)
   majorId        Int?
@@ -66,6 +70,8 @@ model UserCandidate {
   nickname    String    @default("") @db.VarChar(255)
   phone       String    @default("") @db.VarChar(255)
   pictureFile String    @default("") @db.VarChar(255)
+
+  @@unique([schoolServer, schoolUid])
 }
 
 enum LinkType {

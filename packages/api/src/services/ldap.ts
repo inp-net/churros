@@ -1,35 +1,36 @@
-import '../context.js';
 import ldap from 'ldapjs';
+import '../context.js';
+
+export interface LdapUser {
+  schoolUid: string;
+  schoolEmail: string;
+  firstName?: string;
+  lastName?: string;
+}
 
 const settings = JSON.parse(process.env.LDAP) as {
   servers: Record<
     string,
-    {
-      url: string;
-      filterAttribute: string;
-      wholeEmail: boolean;
-      attributesMap: {
-        firstName?: string;
-        lastName?: string;
-        email?: string;
-      };
-    }
+    { url: string; filterAttribute: string; wholeEmail: boolean; attributesMap: LdapUser }
   >;
   emailDomains: Record<string, string>;
 };
 
-const findLdapUser = async (email: string) => {
+/** Finds a user in a school database or returns `undefined`. */
+export const findSchoolUser = async (
+  email: string
+): Promise<(LdapUser & { schoolServer: string }) | undefined> => {
   const [emailLogin, emailDomain] = email.split('@') as [string, string];
 
   if (!emailDomain) throw new Error('Invalid email address');
-  const server = settings.emailDomains[emailDomain];
-  if (!server || !settings.servers[server]) throw new Error('Invalid email address');
+  const schoolServer = settings.emailDomains[emailDomain];
+  if (!schoolServer || !settings.servers[schoolServer]) return;
 
-  const { url, filterAttribute, wholeEmail, attributesMap } = settings.servers[server]!;
+  const { url, filterAttribute, wholeEmail, attributesMap } = settings.servers[schoolServer]!;
 
   const client = ldap.createClient({ url });
 
-  const ldapObject = await new Promise<ldap.SearchEntryObject>((resolve, reject) => {
+  const ldapObject = await new Promise<ldap.SearchEntryObject | undefined>((resolve, reject) => {
     client.search(
       'ou=people,dc=n7,dc=fr',
       { filter: `${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}` },
@@ -44,7 +45,8 @@ const findLdapUser = async (email: string) => {
         });
 
         results.on('end', () => {
-          reject(new Error('User not found'));
+          // eslint-disable-next-line unicorn/no-useless-undefined
+          resolve(undefined);
         });
 
         results.on('error', (error) => {
@@ -63,6 +65,8 @@ const findLdapUser = async (email: string) => {
     });
   });
 
+  if (!ldapObject) throw new Error(`Utilisateur introuvable dans le domaine ${emailDomain}.`);
+
   const user = Object.fromEntries(
     Object.keys(attributesMap).map((key) => {
       const attributeKey = attributesMap[key as keyof typeof attributesMap];
@@ -70,11 +74,7 @@ const findLdapUser = async (email: string) => {
       const value = ldapObject[attributeKey];
       return [key, value ? value.toString() : undefined];
     })
-  ) as { [key in keyof typeof attributesMap]: string | undefined };
+  ) as unknown as LdapUser;
 
-  return user;
+  return { ...user, schoolServer };
 };
-
-if (!process.argv[2]) throw new Error('Missing email address');
-
-console.log(await findLdapUser(process.argv[2]));

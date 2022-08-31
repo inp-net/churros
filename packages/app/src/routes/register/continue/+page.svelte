@@ -21,6 +21,9 @@
     majorId,
   } = data.userCandidate;
 
+  // Waiting for https://github.com/graphql-editor/graphql-zeus/issues/262 to be fixed
+  graduationYear ??= new Date().getFullYear() + 3;
+
   const asDate = (x: unknown) => (x as null | Date) && new Date(x as Date);
   const asInput = (x: unknown) => x as HTMLInputElement;
 
@@ -73,6 +76,13 @@
 </script>
 
 <FormCard large title="Finaliser mon inscription" on:submit={register}>
+  {#if data.userCandidate.schoolUid === null}
+    <Alert theme="warning" inline>
+      Votre compte n'est pas encore lié à une école, votre inscription sera validée manuellement. Si
+      vous possédez une adresse universitaire, vous pouvez
+      <a href="..">recommencer l'inscription</a> avec celle-ci.
+    </Alert>
+  {/if}
   <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
     <strong>{(formErrors?._errors ?? []).join(' ')}</strong>
   </Alert>

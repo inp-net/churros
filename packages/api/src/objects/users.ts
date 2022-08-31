@@ -15,7 +15,7 @@ export const UserType = builder.prismaObject('User', {
     id: t.exposeID('id'),
     majorId: t.exposeID('majorId'),
     uid: t.exposeString('uid', { authScopes: { loggedIn: true, $granted: 'me' } }),
-    email: t.exposeString('email'),
+    email: t.exposeString('email', { authScopes: { loggedIn: true, $granted: 'me' } }),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),

@@ -1571,7 +1571,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@centraverse/api@workspace:packages/api"
   dependencies:
-    "@envelop/core": ^2.5.0
+    "@envelop/core": ^2.6.0
     "@graphql-yoga/node": ^2.13.11
     "@pothos/core": ^3.19.0
     "@pothos/plugin-complexity": ^3.9.1
@@ -1629,7 +1629,7 @@ __metadata:
     "@storybook/node-logger": ^6.5.10
     "@storybook/svelte": ^6.5.10
     "@sveltejs/adapter-node": ^1.0.0-next.88
-    "@sveltejs/kit": ^1.0.0-next.456
+    "@sveltejs/kit": ^1.0.0-next.459
     "@types/cookie": ^0.5.1
     "@types/js-cookie": ^3.0.2
     "@types/ua-parser-js": ^0.7.36
@@ -1968,47 +1968,52 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@envelop/core@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "@envelop/core@npm:2.5.0"
+"@envelop/core@npm:^2.5.0, @envelop/core@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "@envelop/core@npm:2.6.0"
   dependencies:
-    "@envelop/types": 2.3.1
+    "@envelop/types": 2.4.0
+    tslib: 2.4.0
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 69bf82ce49b1d31d931a27a952e844a51dca86013acde33eb19709f2670f3389bb31a61fd7843b1b1a3836eb69400bfffb6152558d3892b69484184532bacde3
+  checksum: 33e070de7f58bec5bd37c5c548bc7c4408b0f5f2b20b290bd5d9bb6b492cd1523458717cbb7a65fdf6963efaa449cf6fc238c8f7a48303ef135ea6750089d7e9
   languageName: node
   linkType: hard
 
 "@envelop/parser-cache@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "@envelop/parser-cache@npm:4.6.0"
+  version: 4.7.0
+  resolution: "@envelop/parser-cache@npm:4.7.0"
   dependencies:
     lru-cache: ^6.0.0
+    tslib: ^2.4.0
   peerDependencies:
-    "@envelop/core": ^2.5.0
+    "@envelop/core": ^2.6.0
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 7c87474c1a9ebb0d45b579c61fb6780d117d98f9070944901778a2f82ec63251421faaa7aee9c705efddc137d6632bf6be151416bb667c0fbb1f864aaf37478a
+  checksum: dbfec7047f789d886d4adfdefe5b30630aabec89521254a5d4c2ccbb1863103b427a0b77829a1879bab82d52aa6fef8977e96ebe0b00c159d3c52c6750d95c6f
   languageName: node
   linkType: hard
 
-"@envelop/types@npm:2.3.1":
-  version: 2.3.1
-  resolution: "@envelop/types@npm:2.3.1"
+"@envelop/types@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@envelop/types@npm:2.4.0"
+  dependencies:
+    tslib: ^2.4.0
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 945a5e5a37d7ddce78b3f5ee9b5a51009ef3ecbda12341245c0558e46fc13aff548ad7d54deb0cad91487a874f1456ffd4786c928b45425ec153159ac6045d54
+  checksum: 16f4ca10325483c6f027664cecb2c672cf6edc3c5f6dae11098955b6e9b0004bd29db2b90b8f4323b75a6654e325c3294ee90857420f542df554ec0cfb97c0d2
   languageName: node
   linkType: hard
 
 "@envelop/validation-cache@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "@envelop/validation-cache@npm:4.6.0"
+  version: 4.7.0
+  resolution: "@envelop/validation-cache@npm:4.7.0"
   dependencies:
     lru-cache: ^6.0.0
+    tslib: ^2.4.0
   peerDependencies:
-    "@envelop/core": ^2.5.0
+    "@envelop/core": ^2.6.0
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 533fed272ab4d72f3d201a889f4726bbd183e48f38d2aa9ee80db330ccb926a164cd80645eb8a06cf0825bd7abf8a6876f17993adb0d94708398f9148a50f04d
+  checksum: 90d06d5e93777f222f5e372df345d1877fe725910cf4f79afff6ab7a0984dd5459dce7a6d93decb9f64c21d4d3149b860bd83ee4a713e6bbb83f0ab7b0ef095d
   languageName: node
   linkType: hard
 
@@ -3953,9 +3958,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^1.0.0-next.456":
-  version: 1.0.0-next.456
-  resolution: "@sveltejs/kit@npm:1.0.0-next.456"
+"@sveltejs/kit@npm:^1.0.0-next.459":
+  version: 1.0.0-next.459
+  resolution: "@sveltejs/kit@npm:1.0.0-next.459"
   dependencies:
     "@sveltejs/vite-plugin-svelte": ^1.0.3
     cookie: ^0.5.0
@@ -3974,7 +3979,7 @@ __metadata:
     vite: ^3.1.0-beta.1
   bin:
     svelte-kit: svelte-kit.js
-  checksum: 9ac7c4efaba0a4ae40d7d9f5412d0cf2941b5dfe76889be26f1769aad9d7ac8b5ff0ab3ed920281d7960c333368ba04218a5433005203761deee4816834d670f
+  checksum: e5907a386f18f7ae360fe35dc2ccb38ac69288bc43553048e3ef7cb75995db704f8988b1d968b3b81f17e1116b7bf3a079fd0803a8fdc175978f3e0d738955b9
   languageName: node
   linkType: hard
 
@@ -4280,9 +4285,9 @@ __metadata:
   linkType: hard
 
 "@types/minimatch@npm:*":
-  version: 5.1.1
-  resolution: "@types/minimatch@npm:5.1.1"
-  checksum: 75d7cc5b0964dab6993dbdc7a4d0f082459260fec3210baa907856fb2cf6bca7112717422b488b81953e07f8fc36466cdaa9e9684942b9210d240ddaa2fdf42a
+  version: 5.1.2
+  resolution: "@types/minimatch@npm:5.1.2"
+  checksum: 0391a282860c7cb6fe262c12b99564732401bdaa5e395bee9ca323c312c1a0f45efbf34dce974682036e857db59a5c9b1da522f3d6055aeead7097264c8705a8
   languageName: node
   linkType: hard
 
@@ -17191,17 +17196,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tslib@npm:2.4.0, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:~2.4.0":
+  version: 2.4.0
+  resolution: "tslib@npm:2.4.0"
+  checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
+  languageName: node
+  linkType: hard
+
 "tslib@npm:^1.8.1, tslib@npm:^1.9.3":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
-  languageName: node
-  linkType: hard
-
-"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:~2.4.0":
-  version: 2.4.0
-  resolution: "tslib@npm:2.4.0"
-  checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
   languageName: node
   linkType: hard
 
