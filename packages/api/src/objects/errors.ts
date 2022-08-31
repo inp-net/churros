@@ -1,4 +1,5 @@
-import { ZodError, ZodFormattedError } from 'zod';
+import { NotFoundError } from '@prisma/client/runtime/index.js';
+import { ZodError, type ZodFormattedError } from 'zod';
 import { builder } from '../builder.js';
 
 const ErrorInterface = builder.interfaceRef<Error>('ErrorInterface').implement({
@@ -15,10 +16,10 @@ builder.objectType(Error, {
 });
 
 /** Flattens nested-object ZodFormattedError into a list of path and message pairs. */
-function flattenErrors(
+const flattenErrors = (
   error: ZodFormattedError<unknown>,
   path: string[]
-): Array<{ path: string[]; message: string }> {
+): Array<{ path: string[]; message: string }> => {
   // Take errors from the root of the object and add them to the list
   let errors = error._errors.map((message) => ({
     path,
@@ -38,7 +39,7 @@ function flattenErrors(
   }
 
   return errors;
-}
+};
 
 const ZodFieldErrorType = builder
   .objectRef<{ message: string; path: string[] }>('ZodFieldError')
@@ -59,5 +60,14 @@ export const ZodErrorType = builder.objectType(ZodError, {
       type: [ZodFieldErrorType],
       resolve: (error) => flattenErrors(error.format(), []),
     }),
+  }),
+});
+
+export const NotFoundErrorType = builder.objectType(NotFoundError, {
+  name: 'NotFoundError',
+  description: 'An error raised when a resource does not exist.',
+  interfaces: [ErrorInterface],
+  fields: (t) => ({
+    message: t.exposeString('message'),
   }),
 });

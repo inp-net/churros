@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     %sveltekit.head%
   </head>
-  <body>
+  <body data-sveltekit-prefetch>
     <script>
       // Prevent a flash on page load
       let theme =
@@ -14,6 +14,6 @@
         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       document.documentElement.classList.add(theme);
     </script>
-    <div>%sveltekit.body%</div>
+    %sveltekit.body%
   </body>
 </html>

@@ -37,7 +37,7 @@
         {data.user.firstName}
         {data.user.nickname}
         {data.user.lastName}
-        <a href="edit/" title="Éditer" sveltekit:prefetch>
+        <a href="edit/" title="Éditer">
           <MajesticonsEdit aria-label="Éditer" />
         </a>
       </h1>
@@ -98,7 +98,7 @@
   <FlexList>
     {#each data.user.groups as groupMember}
       <li>
-        <a href="/club/{groupMember.group.id}/" class="no-underline" sveltekit:prefetch>
+        <a href="/club/{groupMember.group.id}/">
           <GroupMemberBadge {groupMember} />
         </a>
       </li>

@@ -1,6 +1,6 @@
 import { createServer, GraphQLYogaError } from '@graphql-yoga/node';
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
+import { NotFoundError, PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
 import { useNoBatchedQueries } from 'envelop-no-batched-queries';
 import express from 'express';
 import { GraphQLError } from 'graphql';
@@ -28,7 +28,11 @@ const yoga = createServer({
       // If the error has no cause, return it as is
       if (cause === undefined) return error as GraphQLError;
 
-      if (cause instanceof ForbiddenError || cause instanceof GraphQLYogaError)
+      if (
+        cause instanceof ForbiddenError ||
+        cause instanceof NotFoundError ||
+        cause instanceof GraphQLYogaError
+      )
         return new GraphQLError(cause.message);
 
       if (cause instanceof ZodError) {

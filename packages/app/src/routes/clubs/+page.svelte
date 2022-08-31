@@ -19,12 +19,12 @@
   {#each data.groups as { id, name }}
     <tr>
       <td>{id}</td>
-      <td><a href="/club/{id}" sveltekit:prefetch>{name}</a></td>
+      <td><a href="/club/{id}">{name}</a></td>
       {#if $me}
         <td>{myGroups.has(id) ? 'Oui' : 'Non'}</td>
         <td>
           {#if $me.canEditGroups || myGroups.get(id)?.canEditMembers}
-            <a href="/club/{id}/members/" sveltekit:prefetch>Edit</a>
+            <a href="/club/{id}/members/">Edit</a>
           {/if}
         </td>
       {/if}

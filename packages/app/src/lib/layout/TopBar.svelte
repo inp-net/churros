@@ -32,17 +32,15 @@
       {#if mobile}
         <div class="w-6" />
       {/if}
-      <a href="/" sveltekit:prefetch>(logo)</a>
+      <a href="/">(logo)</a>
     </div>
     <div>
       {#if me && token}
-        <a href="/me" sveltekit:prefetch>{me.firstName}</a>
+        <a href="/me">{me.firstName}</a>
         <a href="/logout?{new URLSearchParams({ token })}">Se déconnecter</a>
       {:else}
-        <a href="/login?{new URLSearchParams({ to: $page.url.pathname })}" sveltekit:prefetch>
-          Se connecter
-        </a>
-        <a href="/register" sveltekit:prefetch>S'inscrire</a>
+        <a href="/login?{new URLSearchParams({ to: $page.url.pathname })}"> Se connecter </a>
+        <a href="/register">S'inscrire</a>
       {/if}
     </div>
   </div>

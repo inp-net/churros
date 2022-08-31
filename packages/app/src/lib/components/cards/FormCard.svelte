@@ -1,8 +1,10 @@
 <script>
   import Card from './Card.svelte';
+
+  export let large = false;
 </script>
 
-<form on:submit|preventDefault>
+<form on:submit|preventDefault class:large>
   <Card>
     <svelte:fragment slot="header">
       {#if $$slots.header}
@@ -22,6 +24,10 @@
   form {
     width: 24rem;
     max-width: 100%;
+
+    &.large {
+      width: 100%;
+    }
   }
 
   .header {

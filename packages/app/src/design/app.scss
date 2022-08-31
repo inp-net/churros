@@ -116,6 +116,12 @@ textarea:focus-visible {
   outline-width: 0.25rem;
 }
 
+hr {
+  height: var(--border-block);
+  background: var(--border);
+  border: 0;
+}
+
 .primary {
   --bg: var(--primary-bg);
   --text: var(--primary-text);

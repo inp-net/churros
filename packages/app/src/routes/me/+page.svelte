@@ -32,8 +32,8 @@
 </h1>
 
 <p>
-  <a href="/user/{data.me.id}/" sveltekit:prefetch>Profil public</a> -
-  <a href="/user/{data.me.id}/edit/" sveltekit:prefetch>Modifier</a>
+  <a href="/user/{data.me.id}/">Profil public</a> -
+  <a href="/user/{data.me.id}/edit/">Modifier</a>
 </p>
 
 <h2>Sessions</h2>

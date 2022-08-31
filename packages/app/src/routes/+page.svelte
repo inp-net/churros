@@ -17,15 +17,14 @@
       : undefined}
   >
     <p>
-      Par <a href="/club/{group.id}" sveltekit:prefetch>{group.name}</a> le {formatDateTime(
-        publishedAt
-      )}
+      Par <a href="/club/{group.id}">{group.name}</a>
+      le {formatDateTime(publishedAt)}
     </p>
     {@html bodyHtml}
     {#if author}
       <p>
         <em>
-          Auteur : <a href="/user/{author.id}" sveltekit:prefetch>
+          Auteur : <a href="/user/{author.id}">
             {author.firstName}
             {author.lastName}
           </a>

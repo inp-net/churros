@@ -7,7 +7,7 @@
   export let selectedIcon: typeof SvelteComponent;
 </script>
 
-<a {href} sveltekit:prefetch aria-selected={selected}>
+<a {href} aria-selected={selected}>
   <svelte:component this={selected ? selectedIcon : icon} aria-hidden="true" />
   <slot />
 </a>

@@ -18,7 +18,7 @@
         <tr>
           <td>{president ? '👑' : ''}{treasurer ? '💰' : ''}</td>
           <td>
-            <a href="/user/{member.id}" sveltekit:prefetch>
+            <a href="/user/{member.id}">
               {member.firstName}
               {member.lastName}
             </a>
@@ -34,9 +34,7 @@
   {/if}
   {#if $me?.canEditGroups || $me?.groups.some(({ groupId, canEditMembers }) => canEditMembers && groupId === $page.params.id)}
     <p>
-      <a href="/club/{$page.params.id}/members" sveltekit:prefetch>
-        Modifier la liste des membres
-      </a>
+      <a href="/club/{$page.params.id}/members"> Modifier la liste des membres </a>
     </p>
   {/if}
 {/if}
@@ -52,6 +50,6 @@
 
 {#if $me?.canEditGroups || $me?.groups.some(({ groupId, canEditArticles }) => groupId === $page.params.id && canEditArticles)}
   <p>
-    <a href="/club/{$page.params.id}/write" sveltekit:prefetch> Écrire un article </a>
+    <a href="/club/{$page.params.id}/write"> Écrire un article </a>
   </p>
 {/if}

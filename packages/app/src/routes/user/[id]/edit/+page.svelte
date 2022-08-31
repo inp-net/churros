@@ -34,29 +34,6 @@
   const asDate = (x: unknown) => new Date(x as Date);
   const asInput = (x: unknown) => x as HTMLInputElement;
 
-  /** Groups majors by school or tuple of schools. */
-  const majorGroups = new Map<
-    string,
-    { schoolsNames: string[]; majors: Array<{ id: string; name: string }> }
-  >();
-
-  // eslint-disable-next-line no-lone-blocks
-  {
-    for (const { id, name, schools } of data.majors) {
-      const key = schools
-        .map(({ id }) => id)
-        .sort()
-        .join(',');
-
-      if (!majorGroups.has(key)) {
-        const schoolsNames = schools.map(({ name }) => name).sort();
-        majorGroups.set(key, { schoolsNames, majors: [] });
-      }
-
-      majorGroups.get(key)!.majors.push({ id, name });
-    }
-  }
-
   let loading = false;
   const updateUser = async () => {
     if (loading) return;
@@ -213,8 +190,8 @@
       Filière et promotion :
       <InputGroup>
         <select bind:value={majorId}>
-          {#each [...majorGroups.values()] as { majors, schoolsNames }}
-            <optgroup label={schoolsNames.join(', ')}>
+          {#each data.schoolGroups as { majors, names }}
+            <optgroup label={names.join(', ')}>
               {#each majors as { id, name }}
                 <option value={id}>{name}</option>
               {/each}

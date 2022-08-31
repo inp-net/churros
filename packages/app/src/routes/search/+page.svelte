@@ -24,7 +24,7 @@
 {:else}
   <ul>
     {#each data.searchUsers as { id, firstName, lastName }}
-      <li><a href="/user/{id}/" sveltekit:prefetch>{firstName} {lastName}</a></li>
+      <li><a href="/user/{id}/">{firstName} {lastName}</a></li>
     {/each}
   </ul>
 {/if}

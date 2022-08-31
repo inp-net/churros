@@ -46,6 +46,28 @@ model User {
   links       UserLink[]
 }
 
+model UserCandidate {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  email          String  @unique @db.VarChar(255)
+  token          String  @unique
+  emailValidated Boolean @default(false)
+
+  firstName      String @default("") @db.VarChar(255)
+  lastName       String @default("") @db.VarChar(255)
+  majorId        Int?
+  major          Major? @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  graduationYear Int?
+
+  address     String    @default("") @db.VarChar(255)
+  biography   String    @default("") @db.VarChar(255)
+  birthday    DateTime?
+  nickname    String    @default("") @db.VarChar(255)
+  phone       String    @default("") @db.VarChar(255)
+  pictureFile String    @default("") @db.VarChar(255)
+}
+
 enum LinkType {
   Facebook
   Instagram
@@ -66,8 +88,9 @@ model Major {
   id   Int    @id @default(autoincrement())
   name String @db.VarChar(255)
 
-  schools  School[]
-  students User[]
+  schools        School[]
+  students       User[]
+  userCandidates UserCandidate[]
 }
 
 model School {

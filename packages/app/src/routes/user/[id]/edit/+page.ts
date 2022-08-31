@@ -25,7 +25,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     {
       user: [{ id: params.id }, userQuery],
       linkTypes: true,
-      majors: { id: true, name: true, schools: { id: true, name: true } },
+      schoolGroups: { names: true, majors: { id: true, name: true } },
     },
     { fetch, parent }
   );

@@ -11,7 +11,7 @@
 <Meta
   title="Components/Cards/FormCard"
   component={FormCard}
-  args={{}}
+  args={{ large: false }}
   argTypes={{ onSubmit: { action: 'submit' } }}
 />
 
@@ -41,6 +41,7 @@
 </Template>
 
 <Story name="Default" />
+<Story name="Large" args={{ large: true }} />
 
 <style lang="scss">
   input {

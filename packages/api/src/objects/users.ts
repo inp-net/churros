@@ -1,7 +1,4 @@
 import { GraphQLYogaError } from '@graphql-yoga/node';
-import { CredentialType as CredentialPrismaType } from '@prisma/client';
-import { hash } from 'argon2';
-import dichotomid from 'dichotomid';
 import imageType, { minimumBytes } from 'image-type';
 import { unlink, writeFile } from 'node:fs/promises';
 import { phone as parsePhoneNumber } from 'phone';
@@ -106,56 +103,6 @@ builder.queryField('searchUsers', (t) =>
         },
       });
     },
-  })
-);
-
-const createUid = async (email: string) => {
-  const base = email.split('@')[0]?.replace(/\W/g, '') ?? 'user';
-  const n = await dichotomid(
-    async (n) => !(await prisma.user.findFirst({ where: { uid: `${base}${n > 1 ? n : ''}` } }))
-  );
-  return `${base}${n > 1 ? n : ''}`;
-};
-
-/** Registers a new user. */
-builder.mutationField('register', (t) =>
-  t.prismaField({
-    type: UserType,
-    args: {
-      majorId: t.arg.id(),
-      email: t.arg.string({
-        validate: {
-          minLength: 1,
-          maxLength: 255,
-          email: true,
-          refine: [
-            async (email) => !(await prisma.user.findUnique({ where: { email } })),
-            { message: 'Adresse e-mail déjà utilisée' },
-          ],
-        },
-      }),
-      firstName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      lastName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      password: t.arg.string({ validate: { minLength: 10, maxLength: 255 } }),
-    },
-    resolve: async (query, _, { majorId, email, firstName, lastName, password }) =>
-      prisma.user.create({
-        ...query,
-        data: {
-          majorId,
-          uid: await createUid(email),
-          email,
-          firstName,
-          lastName,
-          graduationYear: new Date().getFullYear() + 4,
-          credentials: {
-            create: {
-              type: CredentialPrismaType.Password,
-              value: await hash(password),
-            },
-          },
-        },
-      }),
   })
 );
 

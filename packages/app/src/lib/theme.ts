@@ -1,5 +1,5 @@
+import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
-import { browser } from '$app/env';
 
 /** Current theme, as a writable store. */
 export const theme = writable('light', (set) => {
