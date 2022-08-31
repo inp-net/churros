@@ -3,7 +3,7 @@
   import Alert from '$lib/components/alerts/Alert.svelte';
   import Button from '$lib/components/buttons/Button.svelte';
   import FormCard from '$lib/components/cards/FormCard.svelte';
-  import InputGroup from '$lib/components/groups/InputGroup.svelte';
+  import FormInput from '$lib/components/inputs/FormInput.svelte';
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { zeus } from '$lib/zeus.js';
   import type { ZodFormattedError } from 'zod';
@@ -72,48 +72,20 @@
   };
 </script>
 
-<FormCard large on:submit={register}>
-  <svelte:fragment slot="header">Finaliser mon inscription</svelte:fragment>
+<FormCard large title="Finaliser mon inscription" on:submit={register}>
   <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
-    {#each formErrors?._errors ?? [] as error}
-      <strong>{error}. </strong>
-    {/each}
+    <strong>{(formErrors?._errors ?? []).join(' ')}</strong>
   </Alert>
-  <div class="grid gap-4 grid-cols-2">
-    <Alert theme="danger" closed={(formErrors?.firstName?._errors ?? []).length === 0} inline>
-      {#each formErrors?.firstName?._errors ?? [] as error}
-        <strong>{error}. </strong>
-      {/each}
-    </Alert>
-    <Alert theme="danger" closed={(formErrors?.lastName?._errors ?? []).length === 0} inline>
-      {#each formErrors?.lastName?._errors ?? [] as error}
-        <strong>{error}. </strong>
-      {/each}
-    </Alert>
-  </div>
-  <p class="grid gap-4 grid-cols-2">
-    <label>
-      Prénom&nbsp;:
+  <p class="grid gap-4 desktop:grid-cols-2">
+    <FormInput label="Prénom :" errors={formErrors?.firstName?._errors}>
       <input type="text" bind:value={firstName} required />
-    </label>
-    <label>
-      Nom de famille&nbsp;:
+    </FormInput>
+    <FormInput label="Nom de famille :" errors={formErrors?.lastName?._errors}>
       <input type="text" bind:value={lastName} required />
-    </label>
+    </FormInput>
   </p>
-  <Alert theme="danger" closed={(formErrors?.majorId?._errors ?? []).length === 0} inline>
-    {#each formErrors?.majorId?._errors ?? [] as error}
-      <strong>{error}. </strong>
-    {/each}
-  </Alert>
-  <Alert theme="danger" closed={(formErrors?.graduationYear?._errors ?? []).length === 0} inline>
-    {#each formErrors?.graduationYear?._errors ?? [] as error}
-      <strong>{error}. </strong>
-    {/each}
-  </Alert>
-  <p>
-    Filière et promotion&nbsp;:
-    <InputGroup>
+  <p class="grid gap-4 desktop:grid-cols-2">
+    <FormInput label="Filière :" errors={formErrors?.majorId?._errors}>
       <select bind:value={majorId} required>
         {#each data.schoolGroups as { majors, names }}
           <optgroup label={names.join(', ')}>
@@ -123,28 +95,20 @@
           </optgroup>
         {/each}
       </select>
+    </FormInput>
+    <FormInput
+      label="Promotion :"
+      hint="Si c'est votre première année, vous êtes de la promotion {new Date().getFullYear() +
+        3}."
+      errors={formErrors?.graduationYear?._errors}
+    >
       <input type="number" bind:value={graduationYear} size="4" required />
-    </InputGroup><br />
-    Si c'est votre première année, vous êtes de la promotion
-    {new Date().getFullYear() + 3}.
+    </FormInput>
   </p>
   <hr />
   <p>Les champs suivant sont facultatifs.</p>
-  <div class="grid gap-4 grid-cols-2">
-    <Alert theme="danger" closed={(formErrors?.birthday?._errors ?? []).length === 0} inline>
-      {#each formErrors?.birthday?._errors ?? [] as error}
-        <strong>{error}. </strong>
-      {/each}
-    </Alert>
-    <Alert theme="danger" closed={(formErrors?.phone?._errors ?? []).length === 0} inline>
-      {#each formErrors?.phone?._errors ?? [] as error}
-        <strong>{error}. </strong>
-      {/each}
-    </Alert>
-  </div>
   <p class="grid gap-4 grid-cols-2">
-    <label>
-      Date de naissance&nbsp;:
+    <FormInput label="Date de naissance :" errors={formErrors?.birthday?._errors}>
       <input
         type="date"
         value={asDate(birthday)?.toISOString().slice(0, 10)}
@@ -152,36 +116,17 @@
           birthday = new Date(asInput(target).valueAsNumber);
         }}
       />
-    </label>
-    <label>
-      Numéro de téléphone&nbsp;:
+    </FormInput>
+    <FormInput label="Numéro de téléphone :" errors={formErrors?.phone?._errors}>
       <input type="tel" bind:value={phone} />
-    </label>
+    </FormInput>
   </p>
-  <Alert theme="danger" closed={(formErrors?.address?._errors ?? []).length === 0} inline>
-    {#each formErrors?.address?._errors ?? [] as error}
-      <strong>{error}. </strong>
-    {/each}
-  </Alert>
   <p>
-    <label>
-      Adresse&nbsp;:
+    <FormInput label="Adresse :" errors={formErrors?.address?._errors}>
       <input type="text" bind:value={address} />
-    </label>
+    </FormInput>
   </p>
   <svelte:fragment slot="footer">
     <Button type="submit" theme="primary" {loading}>S'inscrire</Button>
   </svelte:fragment>
 </FormCard>
-
-<style lang="scss">
-  label {
-    display: inline-block;
-    width: 100%;
-
-    input {
-      display: block;
-      width: 100%;
-    }
-  }
-</style>

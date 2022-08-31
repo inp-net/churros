@@ -2712,14 +2712,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/debug@npm:4.2.1":
-  version: 4.2.1
-  resolution: "@prisma/debug@npm:4.2.1"
+"@prisma/debug@npm:4.3.0":
+  version: 4.3.0
+  resolution: "@prisma/debug@npm:4.3.0"
   dependencies:
     "@types/debug": 4.1.7
     debug: 4.3.4
     strip-ansi: 6.0.1
-  checksum: 384bf16db9ec35fa055c87056da9d8356bf5cd43cdb7fad42f73134eec774907c094ecb796e753efdc35189e43ccd81d04d6af7003834c0a3e12b215ce6bb260
+  checksum: aca1c7a087a5afd4f40fc83a9cb803a9455c9be378629581a2512f24bdf840f0ea9186da072edbd265109596a6cf9d2997d55a1019b20e961735582113528678
   languageName: node
   linkType: hard
 
@@ -2738,14 +2738,14 @@ __metadata:
   linkType: hard
 
 "@prisma/generator-helper@npm:^4.2.1":
-  version: 4.2.1
-  resolution: "@prisma/generator-helper@npm:4.2.1"
+  version: 4.3.0
+  resolution: "@prisma/generator-helper@npm:4.3.0"
   dependencies:
-    "@prisma/debug": 4.2.1
+    "@prisma/debug": 4.3.0
     "@types/cross-spawn": 6.0.2
     chalk: 4.1.2
     cross-spawn: 7.0.3
-  checksum: bf5e3bf47b82f3cd389a44b842b529b1352f2be25d7f767bf7e905ed984b6ca6d36e7d1a209d35300d41792c71b0e0ffb5ae84e4aab4e6db65a03a476bd55751
+  checksum: 09423d9e51720aa004a7dd4a71cb19daeaa45130d02439f6fca96b62093189ba53d8f4d15a1d12fbf1a6fdb41b87bf60a4679176dfd6a12377c5d88892939bb9
   languageName: node
   linkType: hard
 
@@ -4149,7 +4149,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/glob@npm:*, @types/glob@npm:^7.1.1, @types/glob@npm:^7.1.3":
+"@types/glob@npm:*":
+  version: 8.0.0
+  resolution: "@types/glob@npm:8.0.0"
+  dependencies:
+    "@types/minimatch": "*"
+    "@types/node": "*"
+  checksum: 1817b05f5a8aed851d102a65b5e926d5c777bef927ea62b36d635860eef5364f2046bb5a692d135b6f2b28f34e4a9d44ade9396122c0845bcc7636d35f624747
+  languageName: node
+  linkType: hard
+
+"@types/glob@npm:^7.1.1, @types/glob@npm:^7.1.3":
   version: 7.2.0
   resolution: "@types/glob@npm:7.2.0"
   dependencies:
@@ -6417,9 +6427,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001370":
-  version: 1.0.30001385
-  resolution: "caniuse-lite@npm:1.0.30001385"
-  checksum: fc526aa2a8070f7b77e7128567cb7e599ae7b1a172bef965f60345b7a327daa5029e984b42819e5c0a6de4282c9e932f58978cf36f58cc381d5128a940485d96
+  version: 1.0.30001387
+  resolution: "caniuse-lite@npm:1.0.30001387"
+  checksum: 57b894aa54da582f867018cdbc3c8956f894962988233cd4ace8710ab0e3405dd928926e35f46e5a9b4068e5cea7e36c6e14f930c9c40972885f329df7e8119e
   languageName: node
   linkType: hard
 
@@ -7827,9 +7837,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.202":
-  version: 1.4.234
-  resolution: "electron-to-chromium@npm:1.4.234"
-  checksum: bca68aa398090e1f7e071bf9ce6b3695e96fde576f687498b4262df6dcaed6e36af1ffb704ad07ccae5885c554dedbd116755ead939c2d3157bff1a13fdfe62c
+  version: 1.4.237
+  resolution: "electron-to-chromium@npm:1.4.237"
+  checksum: 5f95ada8864dfa423e5fdc3ba69ee81d8229a6934079849b33125081d58f4d6243cc627bbfba8faea08fad2ed3e625cd6bcfcdfcbe6e984796e2bf9ca3ca2227
   languageName: node
   linkType: hard
 

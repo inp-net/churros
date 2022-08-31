@@ -5,4 +5,9 @@ export default defineConfig({
   extract: {
     include: ['src/**/*.svelte'],
   },
+  theme: {
+    screens: {
+      desktop: '50rem',
+    },
+  },
 });

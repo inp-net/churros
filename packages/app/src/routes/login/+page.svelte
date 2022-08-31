@@ -14,7 +14,7 @@
   /** Redirects the user if a `to` parameter exists, or to "/" otherwise. */
   const redirect = async () => {
     let url = new URL($page.url.searchParams.get('to') ?? '/', $page.url);
-    if (url.origin !== $page.url.origin || url.pathname.startsWith('/login/'))
+    if (url.origin !== $page.url.origin || url.pathname.startsWith('/login'))
       url = new URL('/', $page.url);
     return goto(url);
   };
@@ -51,8 +51,7 @@
 </script>
 
 <div class="flex justify-center">
-  <FormCard on:submit={login}>
-    <svelte:fragment slot="header">Se connecter</svelte:fragment>
+  <FormCard title="Se connecter" on:submit={login}>
     <Alert theme="danger" closed={errorMessages === undefined} inline>
       {errorMessages?.join(' ')}
     </Alert>

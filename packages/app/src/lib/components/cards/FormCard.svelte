@@ -1,14 +1,15 @@
 <script>
   import Card from './Card.svelte';
 
+  export let title = '';
   export let large = false;
 </script>
 
 <form on:submit|preventDefault class:large>
   <Card>
     <svelte:fragment slot="header">
-      {#if $$slots.header}
-        <h1 class="header"><slot name="header" /></h1>
+      {#if title}
+        <h1 class="header">{title}</h1>
       {/if}
     </svelte:fragment>
     <slot />

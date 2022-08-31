@@ -1,4 +1,4 @@
-import { CredentialType, GroupType, LinkType, Prisma } from '@prisma/client';
+import { CredentialType, GroupType, LinkType, type Prisma } from '@prisma/client';
 import { hash } from 'argon2';
 import { prisma } from './prisma.js';
 

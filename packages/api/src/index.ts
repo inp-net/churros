@@ -5,11 +5,14 @@ import { useNoBatchedQueries } from 'envelop-no-batched-queries';
 import express from 'express';
 import { GraphQLError } from 'graphql';
 import { fileURLToPath } from 'node:url';
-import { ZodError } from 'zod';
+import { z, ZodError } from 'zod';
 import { context } from './context.js';
+import { customErrorMap } from './errors.js';
 import { schema, writeSchema } from './schema.js';
 
 process.env['DEBUG'] = 'true';
+
+z.setErrorMap(customErrorMap);
 
 const yoga = createServer({
   schema,

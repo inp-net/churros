@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let type: HTMLButtonElement['type'] = 'button';
+  export let type: 'button' | 'reset' | 'submit' = 'button';
 </script>
 
 <button {type} {...$$restProps} on:click><slot /></button>

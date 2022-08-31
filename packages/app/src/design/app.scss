@@ -76,6 +76,11 @@ textarea {
   transition: all 80ms ease-in, width 0s, height 0s;
 }
 
+select {
+  // For some reasons, `select` ignores `line-height`
+  height: calc(2em + 2 * var(--border-inline));
+}
+
 button {
   user-select: none;
   box-shadow: 0 -0.125em 0.125em #0002 inset;

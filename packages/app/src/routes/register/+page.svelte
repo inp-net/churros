@@ -2,6 +2,7 @@
   import Alert from '$lib/components/alerts/Alert.svelte';
   import Button from '$lib/components/buttons/Button.svelte';
   import FormCard from '$lib/components/cards/FormCard.svelte';
+  import FormInput from '$lib/components/inputs/FormInput.svelte';
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { zeus } from '$lib/zeus';
   import type { ZodFormattedError } from 'zod';
@@ -9,14 +10,14 @@
   let email = '';
   $: args = { email };
 
-  let success = false;
+  let result: boolean | undefined;
   let loading = false;
   let formErrors: ZodFormattedError<typeof args> | undefined;
   const register = async () => {
     if (loading) return;
 
     try {
-      success = false;
+      result = undefined;
       loading = true;
       formErrors = undefined;
       const { startRegistration } = await $zeus.mutate({
@@ -41,7 +42,7 @@
         return;
       }
 
-      success = true;
+      result = startRegistration.data;
     } catch (error: unknown) {
       formErrors = { _errors: [(error as Error).message ?? 'Une erreur est survenue'] };
     } finally {
@@ -51,39 +52,35 @@
 </script>
 
 <div class="flex justify-center">
-  {#if success}
-    <Alert theme="success">
-      <p>Compte créé, check tes mails bb</p>
-    </Alert>
-  {:else}
-    <FormCard on:submit={register}>
-      <svelte:fragment slot="header">S'inscrire</svelte:fragment>
+  {#if result === undefined}
+    <FormCard title="S'inscrire" on:submit={register}>
       <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
-        {#each formErrors?._errors ?? [] as error}
-          <strong>{error}. </strong>
-        {/each}
-      </Alert>
-      <Alert theme="danger" closed={(formErrors?.email?._errors ?? []).length === 0} inline>
-        {#each formErrors?.email?._errors ?? [] as error}
-          <strong>{error}. </strong>
-        {/each}
+        <strong>{(formErrors?._errors ?? []).join(' ')} </strong>
       </Alert>
       <p>
-        <label>
-          Adresse e-mail&nbsp;:
+        <FormInput
+          label="Adresse e-mail universitaire :"
+          hint="Elle finit souvent par @etu.ecole.fr."
+          errors={formErrors?.email?._errors}
+        >
           <input type="email" bind:value={email} minlength="1" maxlength="255" required />
-        </label>
+        </FormInput>
       </p>
       <svelte:fragment slot="footer">
         <Button type="submit" theme="primary" {loading}>S'inscrire</Button>
       </svelte:fragment>
     </FormCard>
+  {:else if result}
+    <Alert theme="success">
+      <h3>Demande enregistrée&nbsp;!</h3>
+      <p>Cliquez sur le lien que vous avez reçu par email pour continuer votre inscription.</p>
+      <p><a href="/">Retourner à l'accueil.</a></p>
+    </Alert>
+  {:else}
+    <Alert theme="danger">
+      <h3>Une erreur est survenue…</h3>
+      <p>Veuillez recommencer plus tard.</p>
+      <p><a href="/">Retourner à l'accueil.</a></p>
+    </Alert>
   {/if}
 </div>
-
-<style lang="scss">
-  input {
-    display: block;
-    width: 100%;
-  }
-</style>

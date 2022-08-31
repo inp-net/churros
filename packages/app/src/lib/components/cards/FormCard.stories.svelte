@@ -11,7 +11,7 @@
 <Meta
   title="Components/Cards/FormCard"
   component={FormCard}
-  args={{ large: false }}
+  args={{ title: 'Title', large: false }}
   argTypes={{ onSubmit: { action: 'submit' } }}
 />
 
@@ -28,7 +28,6 @@
       }, 2000);
     }}
   >
-    <svelte:fragment slot="header">Title</svelte:fragment>
     <Alert theme="danger" closed={!error} inline>Incorrect credentials.</Alert>
     <p><label>Email address: <input type="email" /></label></p>
     <p>
