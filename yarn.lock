@@ -1648,7 +1648,7 @@ __metadata:
     typescript: ^4.8.2
     ua-parser-js: ^1.0.2
     unplugin-icons: ^0.14.8
-    vite: ^3.0.9
+    vite: beta
     vite-plugin-windicss: ^1.8.7
     zod: ^3.18.0
   languageName: unknown
@@ -15305,9 +15305,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:>=2.75.6 <2.77.0 || ~2.77.0":
-  version: 2.77.3
-  resolution: "rollup@npm:2.77.3"
+"rollup@npm:~2.78.0":
+  version: 2.78.1
+  resolution: "rollup@npm:2.78.1"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -15315,7 +15315,7 @@ __metadata:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: b179c68249584565ddb5664a241e8e48c293b2207718d885b08ee25797d98857a383f06b544bb89819407da5a71557f4713309a278f61c4778bb32b1d3321a1c
+  checksum: 9034814383ca5bdb4bea6d499270aeb31cdb0bb884f81b0c6a1d19c63cc973f040e6ee09b7af8a7169dd231c090f4b44ef8b99c4bfdf884aceeb3dcefb8cfa14
   languageName: node
   linkType: hard
 
@@ -18016,15 +18016,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^3.0.9":
-  version: 3.0.9
-  resolution: "vite@npm:3.0.9"
+"vite@npm:beta":
+  version: 3.1.0-beta.1
+  resolution: "vite@npm:3.1.0-beta.1"
   dependencies:
     esbuild: ^0.14.47
     fsevents: ~2.3.2
     postcss: ^8.4.16
     resolve: ^1.22.1
-    rollup: ">=2.75.6 <2.77.0 || ~2.77.0"
+    rollup: ~2.78.0
   peerDependencies:
     less: "*"
     sass: "*"
@@ -18044,7 +18044,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 6341aa43579ae45f8a383bdc0c5041dea3dff98f14e0a546d6d884a864134b00082246a28d1de8adff0ce0dd92b468c7ade8f972ffe1ed97258671d63e0f16f7
+  checksum: aa869e7bf2bcba96ca5509baa62c9e142cf5e31372c1529ab19807ef2b5c16a67af97cc1e64dced5f62379f357222a5b06dca6d3b2a619c4bc7bb777947e19b5
   languageName: node
   linkType: hard
 
