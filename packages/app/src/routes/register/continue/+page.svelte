@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { goto, invalidate } from '$app/navigation';
-
+  import { goto, invalidateAll } from '$app/navigation';
   import { page } from '$app/stores';
   import Alert from '$lib/components/alerts/Alert.svelte';
   import Button from '$lib/components/buttons/Button.svelte';
@@ -84,7 +83,7 @@
           ],
         });
         saveSessionToken(login);
-        await invalidate();
+        await invalidateAll();
         await goto('/welcome/');
       }
 
@@ -99,9 +98,18 @@
 
 {#if result === undefined}
   <FormCard large title="Finaliser mon inscription" on:submit={register}>
-    {#if data.userCandidate.schoolUid === null}
+    {#if data.userCandidate.emailValidated}
+      <Alert theme="success" inline>
+        <strong>Votre inscription est en attente de validation manuelle.</strong><br />
+        Cependant, vous pouvez toujours compléter ou corriger les informations ci-dessous.
+      </Alert>
+    {:else if data.userCandidate.schoolUid === null}
       <Alert theme="warning" inline>
-        Votre compte n'est pas encore lié à une école, votre inscription sera validée manuellement.
+        <strong>
+          Votre compte n'est pas encore lié à une école, votre inscription sera validée
+          manuellement.
+        </strong>
+        <br />
         Si vous possédez une adresse universitaire, vous pouvez
         <a href="..">recommencer l'inscription</a> avec celle-ci.
       </Alert>

@@ -10,7 +10,7 @@
 
   const deleteToken = async (id: string, active: boolean) => {
     if (active) {
-      await goto(`/logout?token=${$page.data.token as string}`);
+      await goto(`/logout?token=${$page.data.token!}`);
     } else {
       await $zeus.mutate({ deleteToken: [{ id }, true] });
       data.me.credentials = data.me.credentials.filter((credential) => credential.id !== id);

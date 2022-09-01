@@ -11,6 +11,7 @@ export const UserCandidateType = builder.prismaObject('UserCandidate', {
     id: t.exposeID('id'),
     majorId: t.exposeID('majorId', { nullable: true }),
     email: t.exposeString('email'),
+    emailValidated: t.exposeBoolean('emailValidated'),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar, nullable: true }),

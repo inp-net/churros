@@ -12,6 +12,7 @@ export const load: PageLoad = async ({ fetch, url }) => {
       userCandidate: [
         { token },
         {
+          emailValidated: true,
           email: true,
           address: true,
           birthday: true,
