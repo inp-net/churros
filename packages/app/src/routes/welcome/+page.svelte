@@ -1,11 +1,22 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import party from 'party-js';
+  import { onMount } from 'svelte';
   import { Gif } from 'svelte-tenor';
 
   $: me = $page.data.me!;
+
+  onMount(() => {
+    party.confetti(document.body, { count: 100 });
+  });
 </script>
 
-<h1>Bienvenue sur Centraverse</h1>
+<h1>Bienvenue sur Centraverse !</h1>
+
+<svelte:body
+  on:click={(event) => {
+    party.confetti(event);
+  }} />
 
 <p>
   Votre compte a été créé avec succès ! Vous pouvez désormais utiliser toutes les fonctionnalités de
