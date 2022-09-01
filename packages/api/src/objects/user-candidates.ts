@@ -1,7 +1,8 @@
+import { hash } from 'argon2';
 import { ZodError } from 'zod';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
-import { register } from '../services/registration.js';
+import { completeRegistration, register } from '../services/registration.js';
 import { DateTimeScalar } from './scalars.js';
 
 /** Represents a user, mapped on the underlying database object. */
@@ -70,25 +71,32 @@ builder.mutationField('completeRegistration', (t) =>
       birthday: t.arg({ type: DateTimeScalar, required: false }),
       phone: t.arg.string({ validate: { maxLength: 255 } }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
+      password: t.arg.string({ validate: { minLength: 8, maxLength: 255 } }),
+      passwordConfirmation: t.arg.string({ validate: {} }),
     },
-    async resolve(
+    validate: [
+      ({ password, passwordConfirmation }) => password === passwordConfirmation,
+      { path: ['passwordConfirmation'], message: 'Les mots de passe ne correspondent pas.' },
+    ],
+    resolve: async (
       _,
-      { token, firstName, lastName, majorId, graduationYear, address, birthday, phone }
-    ) {
-      await prisma.userCandidate.update({
-        where: { token },
-        data: {
-          emailValidated: true,
-          address,
-          birthday,
-          firstName,
-          majorId,
-          graduationYear,
-          lastName,
-          phone,
-        },
-      });
-      return true;
-    },
+      { token, firstName, lastName, majorId, graduationYear, address, birthday, phone, password }
+    ) =>
+      completeRegistration(
+        await prisma.userCandidate.update({
+          where: { token },
+          data: {
+            emailValidated: true,
+            address,
+            birthday,
+            firstName,
+            majorId,
+            graduationYear,
+            lastName,
+            phone,
+            password: await hash(password),
+          },
+        })
+      ),
   })
 );

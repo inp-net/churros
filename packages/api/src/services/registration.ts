@@ -1,3 +1,5 @@
+import { CredentialType, type UserCandidate } from '@prisma/client';
+import dichotomid from 'dichotomid';
 import { nanoid } from 'nanoid';
 import { createTransport } from 'nodemailer';
 import { prisma } from '../prisma.js';
@@ -33,6 +35,57 @@ export const register = async (email: string): Promise<boolean> => {
 `,
     text: `Finaliser mon inscription sur ${url.toString()}`,
   });
+
+  return true;
+};
+
+const createUid = async (email: string) => {
+  const base = email.split('@')[0]?.replace(/\W/g, '') ?? 'user';
+  const n = await dichotomid(
+    async (n) => !(await prisma.user.findFirst({ where: { uid: `${base}${n > 1 ? n : ''}` } }))
+  );
+  return `${base}${n > 1 ? n : ''}`;
+};
+
+export const completeRegistration = async ({
+  id,
+  email,
+  schoolEmail,
+  firstName,
+  lastName,
+  majorId,
+  graduationYear,
+  password,
+  address,
+  biography,
+  birthday,
+  nickname,
+  phone,
+  pictureFile,
+}: UserCandidate): Promise<boolean> => {
+  // If the user has no school email, it must be manually accepted.
+  if (!schoolEmail) return false;
+
+  // Create a user profile
+  await prisma.user.create({
+    data: {
+      uid: await createUid(email),
+      email,
+      graduationYear: graduationYear!,
+      firstName,
+      lastName,
+      majorId: majorId!,
+      address,
+      biography,
+      birthday,
+      nickname,
+      phone,
+      pictureFile,
+      credentials: { create: { type: CredentialType.Password, value: password } },
+    },
+  });
+
+  await prisma.userCandidate.delete({ where: { id } });
 
   return true;
 };

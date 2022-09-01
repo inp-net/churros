@@ -60,7 +60,7 @@
       <p>
         <FormInput
           label="Adresse e-mail universitaire :"
-          hint="Elle finit par @etu.ecole.fr."
+          hint="Elle finit par @etu.[ecole].fr."
           errors={formErrors?.email?._errors}
         >
           <input type="email" bind:value={email} minlength="1" maxlength="255" required />

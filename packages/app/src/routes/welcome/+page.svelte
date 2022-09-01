@@ -1,0 +1,39 @@
+<script lang="ts">
+  import { page } from '$app/stores';
+  import { Gif } from 'svelte-tenor';
+
+  $: me = $page.data.me!;
+</script>
+
+<h1>Bienvenue sur Centraverse</h1>
+
+<p>
+  Votre compte a été créé avec succès ! Vous pouvez désormais utiliser toutes les fonctionnalités de
+  l'application.
+</p>
+
+<h2>Quelques trucs à faire pour commencer</h2>
+
+<ul>
+  <li><a href="/user/{me.id}/">Personnaliser votre profil</a></li>
+  <li><a href="/calendar/">Consulter les évènements à venir</a></li>
+  <li><a href="/clubs/">Découvrir la liste des clubs</a></li>
+</ul>
+
+<p class="text-center">
+  <Gif
+    gif={{
+      id: '16043627',
+      description: 'Hello There Private From Penguins Of Madagascar GIF',
+      width: 220,
+      height: 220,
+      gif: 'https://media.tenor.com/pvFJwncehzIAAAAM/hello-there-private-from-penguins-of-madagascar.gif',
+    }}
+  />
+</p>
+
+<style lang="scss">
+  p :global(.gif) {
+    border-radius: var(--radius-block);
+  }
+</style>

@@ -63,6 +63,7 @@ model UserCandidate {
   majorId        Int?
   major          Major? @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   graduationYear Int?
+  password       String @default("") @db.VarChar(255)
 
   address     String    @default("") @db.VarChar(255)
   biography   String    @default("") @db.VarChar(255)
