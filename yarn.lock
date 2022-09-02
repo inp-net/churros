@@ -1572,16 +1572,16 @@ __metadata:
   resolution: "@centraverse/api@workspace:packages/api"
   dependencies:
     "@envelop/core": ^2.6.0
-    "@graphql-yoga/node": ^2.13.11
-    "@pothos/core": ^3.19.0
+    "@graphql-yoga/node": ^2.13.12
+    "@pothos/core": ^3.19.1
     "@pothos/plugin-complexity": ^3.9.1
     "@pothos/plugin-errors": ^3.6.0
-    "@pothos/plugin-prisma": ^3.29.0
+    "@pothos/plugin-prisma": ^3.31.1
     "@pothos/plugin-relay": ^3.24.0
-    "@pothos/plugin-scope-auth": ^3.11.2
+    "@pothos/plugin-scope-auth": ^3.12.0
     "@pothos/plugin-simple-objects": ^3.4.0
     "@pothos/plugin-validation": ^3.6.0
-    "@prisma/client": ^4.3.0
+    "@prisma/client": ^4.3.1
     "@tsconfig/node18-strictest-esm": ^1.0.1
     "@types/cookie": ^0.5.1
     "@types/express": ^4.17.13
@@ -1600,7 +1600,7 @@ __metadata:
     nanoid: ^4.0.0
     nodemailer: ^6.7.8
     phone: ^3.1.27
-    prisma: ^4.3.0
+    prisma: ^4.3.1
     rehype-sanitize: ^5.0.1
     rehype-stringify: ^9.0.3
     remark-parse: ^10.0.1
@@ -1630,7 +1630,7 @@ __metadata:
     "@storybook/node-logger": ^6.5.10
     "@storybook/svelte": ^6.5.10
     "@sveltejs/adapter-node": ^1.0.0-next.88
-    "@sveltejs/kit": ^1.0.0-next.461
+    "@sveltejs/kit": ^1.0.0-next.463
     "@types/cookie": ^0.5.1
     "@types/js-cookie": ^3.0.2
     "@types/ua-parser-js": ^0.7.36
@@ -1642,7 +1642,7 @@ __metadata:
     party-js: ^2.2.0
     sanitize.css: ^13.0.0
     sass: ^1.54.8
-    svelte: ^3.49.0
+    svelte: ^3.50.0
     svelte-check: ^2.9.0
     svelte-loader: ^3.1.3
     svelte-preprocess: ^4.10.7
@@ -1650,7 +1650,7 @@ __metadata:
     tslib: ^2.4.0
     typescript: ^4.8.2
     ua-parser-js: ^1.0.2
-    unplugin-icons: ^0.14.8
+    unplugin-icons: ^0.14.9
     vite: beta
     vite-plugin-windicss: ^1.8.7
     zod: ^3.18.0
@@ -2141,9 +2141,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-yoga/common@npm:^2.12.10":
-  version: 2.12.10
-  resolution: "@graphql-yoga/common@npm:2.12.10"
+"@graphql-yoga/common@npm:^2.12.11":
+  version: 2.12.11
+  resolution: "@graphql-yoga/common@npm:2.12.11"
   dependencies:
     "@envelop/core": ^2.5.0
     "@envelop/parser-cache": ^4.6.0
@@ -2157,23 +2157,23 @@ __metadata:
     tslib: ^2.3.1
   peerDependencies:
     graphql: ^15.2.0 || ^16.0.0
-  checksum: 27abbf02b3293bfdf4d970db41c3552e53c562aa8c158a6c59583a67e223d8d461076c8492295b68a1cf8c873a48276982e2cfe2ae5a76d42159872ca985ee9d
+  checksum: 81c2ec7bae5067f64d65d34cd6ec617600ddff6259534862f95f7fb7ba7c48ef368350c6d8cec15f300465ce537cf8f2b5dad31ab62fc37a40aeabfe8b591681
   languageName: node
   linkType: hard
 
-"@graphql-yoga/node@npm:^2.13.11":
-  version: 2.13.11
-  resolution: "@graphql-yoga/node@npm:2.13.11"
+"@graphql-yoga/node@npm:^2.13.12":
+  version: 2.13.12
+  resolution: "@graphql-yoga/node@npm:2.13.12"
   dependencies:
     "@envelop/core": ^2.5.0
     "@graphql-tools/utils": ^8.8.0
-    "@graphql-yoga/common": ^2.12.10
+    "@graphql-yoga/common": ^2.12.11
     "@graphql-yoga/subscription": ^2.2.3
     "@whatwg-node/fetch": ^0.3.0
     tslib: ^2.3.1
   peerDependencies:
     graphql: ^15.2.0 || ^16.0.0
-  checksum: 448ff28bdd549654fc9a19a7bcfdc6b9d525e3c40a4807115975579890623c587379f548134bd0d6de5fcca901796e94239fc5ea0e00efc4b2d73183977277e1
+  checksum: 55391d588642f3f2a370077e2013dcd6d749efec5ed5bd9330f8bca548ca11bac9e4fcd51556067a59b135a6bec0cd4e314530c5752d0c4d6cf952ba162cf12e
   languageName: node
   linkType: hard
 
@@ -2630,12 +2630,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/core@npm:^3.19.0":
-  version: 3.19.0
-  resolution: "@pothos/core@npm:3.19.0"
+"@pothos/core@npm:^3.19.1":
+  version: 3.19.1
+  resolution: "@pothos/core@npm:3.19.1"
   peerDependencies:
     graphql: ">=15.1.0"
-  checksum: 387d41defed55049cbb0c42458e081dfe7d1e40dff9ac9267b81747903b6f0525cae24baf92b4d110257703e9f3bf61e31c0dded0cab82fe6994cee7a541139d
+  checksum: da801d157c11024a62b8af0ccc95257ae4ada3a0a715ae52ffe553442babaf8df57dfe0aff1b485ef51e688119b804aa5a0bcdeaddf63e881bef9b22c338ef16
   languageName: node
   linkType: hard
 
@@ -2659,11 +2659,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/plugin-prisma@npm:^3.29.0":
-  version: 3.29.0
-  resolution: "@pothos/plugin-prisma@npm:3.29.0"
+"@pothos/plugin-prisma@npm:^3.31.1":
+  version: 3.31.1
+  resolution: "@pothos/plugin-prisma@npm:3.31.1"
   dependencies:
-    "@prisma/generator-helper": ^4.2.1
+    "@prisma/generator-helper": ^4.3.1
   peerDependencies:
     "@pothos/core": "*"
     "@prisma/client": "*"
@@ -2671,7 +2671,7 @@ __metadata:
     typescript: ">=4.7.2"
   bin:
     prisma-pothos-types: bin/generator.js
-  checksum: 39a2dbd9b2a0117ccacf37c1e0c7134315ba39bcab20deabb96aa4e260cdeaec40402f57f2172d0d0ef7a31b09e1b41e25f7c79a9a732e9218e406663a3fc625
+  checksum: c35f069d104451c3a72122da45802c170dd6014cf0d3a09a6675a96aa14b7fe22ab6d21d4a0f6f7feac023d522ec9085a287bd1ad70e6a8e45eff70ca8cce202
   languageName: node
   linkType: hard
 
@@ -2685,13 +2685,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/plugin-scope-auth@npm:^3.11.2":
-  version: 3.11.2
-  resolution: "@pothos/plugin-scope-auth@npm:3.11.2"
+"@pothos/plugin-scope-auth@npm:^3.12.0":
+  version: 3.12.0
+  resolution: "@pothos/plugin-scope-auth@npm:3.12.0"
   peerDependencies:
     "@pothos/core": "*"
     graphql: ">=15.1.0"
-  checksum: 747bb68e5e933ad71fd3033fa4ab7cb259d2b877b4fc5667b9acac75341ae5aad7408bdeae9b5a58bb0090daf67604d6850e8cd7e04916bbff07b0d9ee9518fc
+  checksum: b61c2dc6f728e11e6ba5cb51c113aa8aa92b500524b7d81f8762f85384dc0e693ecf28b5bc42a27f31c5396637db7205ec0400ee0f4ffab04c2fd3cbffb45ed9
   languageName: node
   linkType: hard
 
@@ -2716,9 +2716,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "@prisma/client@npm:4.3.0"
+"@prisma/client@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "@prisma/client@npm:4.3.1"
   dependencies:
     "@prisma/engines-version": 4.3.0-32.c875e43600dfe042452e0b868f7a48b817b9640b
   peerDependencies:
@@ -2726,18 +2726,18 @@ __metadata:
   peerDependenciesMeta:
     prisma:
       optional: true
-  checksum: bf468a8673788a28523228aa5fc34e9f4607b47d75f8adadd6bae812ba299c3c0848d60a9a8751f79389bb32f5248087829bca1d4aca75b7cb8fdca4b35bf92b
+  checksum: 2e3e6319bb0974f9ab67ab4620b775f82c54e00c4690db59bbd4736967c1afae7b4487ac54a78d221b7f898287b387422c7e8de026dfd66e97c1ca1e79eb06f7
   languageName: node
   linkType: hard
 
-"@prisma/debug@npm:4.3.0":
-  version: 4.3.0
-  resolution: "@prisma/debug@npm:4.3.0"
+"@prisma/debug@npm:4.3.1":
+  version: 4.3.1
+  resolution: "@prisma/debug@npm:4.3.1"
   dependencies:
     "@types/debug": 4.1.7
     debug: 4.3.4
     strip-ansi: 6.0.1
-  checksum: aca1c7a087a5afd4f40fc83a9cb803a9455c9be378629581a2512f24bdf840f0ea9186da072edbd265109596a6cf9d2997d55a1019b20e961735582113528678
+  checksum: 8900a37628a0a23e67cb92a71a0fbad39370c45d60719c6f4cd670ce167c88a919c53ebdb5890df710c6bfbc6a7142d4349dd41ab7e5a0a964d5b2ba1a43a18d
   languageName: node
   linkType: hard
 
@@ -2748,22 +2748,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/engines@npm:4.3.0":
-  version: 4.3.0
-  resolution: "@prisma/engines@npm:4.3.0"
-  checksum: 2ec623073aa6d1532d5cbe475d8e2238b5084dad15159b97f789cac5ae0d0fe017a683a61863bd2b5d02f64fee400c3c43e08f78035bb09d6882d739c881d5b1
+"@prisma/engines@npm:4.3.1":
+  version: 4.3.1
+  resolution: "@prisma/engines@npm:4.3.1"
+  checksum: a407ecb8e15373890d82fc01682ddb1c473c7a5e81e07b603bdf3064bad936ee7cfa9d3ac68d5c4b845f476df53b92b705e7ec6a24a7364354ac78eb9084cbcc
   languageName: node
   linkType: hard
 
-"@prisma/generator-helper@npm:^4.2.1":
-  version: 4.3.0
-  resolution: "@prisma/generator-helper@npm:4.3.0"
+"@prisma/generator-helper@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "@prisma/generator-helper@npm:4.3.1"
   dependencies:
-    "@prisma/debug": 4.3.0
+    "@prisma/debug": 4.3.1
     "@types/cross-spawn": 6.0.2
     chalk: 4.1.2
     cross-spawn: 7.0.3
-  checksum: 09423d9e51720aa004a7dd4a71cb19daeaa45130d02439f6fca96b62093189ba53d8f4d15a1d12fbf1a6fdb41b87bf60a4679176dfd6a12377c5d88892939bb9
+  checksum: f1da0e76b847a8bfa526952cd0c5e981f2a0598e48e4a81a346c405d5c0f4ac8516f4872d14351e97437437f1baf37e86f09d77fde1eb2d2f81030d8523bab3c
   languageName: node
   linkType: hard
 
@@ -3971,11 +3971,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^1.0.0-next.461":
-  version: 1.0.0-next.461
-  resolution: "@sveltejs/kit@npm:1.0.0-next.461"
+"@sveltejs/kit@npm:^1.0.0-next.463":
+  version: 1.0.0-next.463
+  resolution: "@sveltejs/kit@npm:1.0.0-next.463"
   dependencies:
-    "@sveltejs/vite-plugin-svelte": ^1.0.3
+    "@sveltejs/vite-plugin-svelte": ^1.0.4
     cookie: ^0.5.0
     devalue: ^3.1.2
     kleur: ^4.1.4
@@ -3992,13 +3992,13 @@ __metadata:
     vite: ^3.1.0-beta.1
   bin:
     svelte-kit: svelte-kit.js
-  checksum: a440b3387ef860c01515e50436eab39f794e00c8f7c9c0802c9c47dd945eacbc79dc03b082e1ce6e4260a694f8aecc384f89521efe518b02c6bb56a97725a88b
+  checksum: 2b2df88fb33536b85b3295a9bc32b951202835493dc3527ce1a9fd550857946fb0a8a99631db1c2d7c7dd69a3560040d3a4c24011de29689e4c019d16f0f8e2f
   languageName: node
   linkType: hard
 
-"@sveltejs/vite-plugin-svelte@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@sveltejs/vite-plugin-svelte@npm:1.0.3"
+"@sveltejs/vite-plugin-svelte@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "@sveltejs/vite-plugin-svelte@npm:1.0.4"
   dependencies:
     "@rollup/pluginutils": ^4.2.1
     debug: ^4.3.4
@@ -4009,11 +4009,11 @@ __metadata:
   peerDependencies:
     diff-match-patch: ^1.0.5
     svelte: ^3.44.0
-    vite: ^3.0.0
+    vite: ^3.0.0 || ^3.1.0-beta.1
   peerDependenciesMeta:
     diff-match-patch:
       optional: true
-  checksum: a2aa251d2321ddc641ba953f081b28d5368573843b008f218b01bbb35824bff33f93a274e4278881cb1410fec7dc29d83d838dc5efadcbe5bb4e660bdc358bb0
+  checksum: 4d11bfe19ab9be8e0e31ec2d032b381ae964610e82decc7cef9513d836b7f6b7848297656e3b1d90c659ffed27cf34d634ef4930516d11ea4dccf93d51c006fa
   languageName: node
   linkType: hard
 
@@ -6445,9 +6445,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001370":
-  version: 1.0.30001387
-  resolution: "caniuse-lite@npm:1.0.30001387"
-  checksum: 57b894aa54da582f867018cdbc3c8956f894962988233cd4ace8710ab0e3405dd928926e35f46e5a9b4068e5cea7e36c6e14f930c9c40972885f329df7e8119e
+  version: 1.0.30001388
+  resolution: "caniuse-lite@npm:1.0.30001388"
+  checksum: 4934f99bf99521484d4048023f57046812fbc9218924dbe30bb8379cd7b0315d9489b7de4d226a9921b0a9fd5d05b12023930ad6b4104854fb03dcbf999784db
   languageName: node
   linkType: hard
 
@@ -6507,7 +6507,7 @@ __metadata:
     stylelint-config-recess-order: ^3.0.0
     stylelint-config-standard: ^28.0.0
     stylelint-config-standard-scss: ^5.0.0
-    svelte: ^3.49.0
+    svelte: ^3.50.0
     typescript: ^4.8.2
   languageName: unknown
   linkType: soft
@@ -7622,9 +7622,9 @@ __metadata:
   linkType: hard
 
 "devalue@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "devalue@npm:3.1.2"
-  checksum: 20cc524c379af4a7b1845c67869e74e8c1c3df5fc3d6b5c163e01a508953c49a96545ba382b122561f93913620d12ab280720d53818db31ad04fd6625595611b
+  version: 3.1.3
+  resolution: "devalue@npm:3.1.3"
+  checksum: dda86c4a3274a29349319fbc5e739eeafc7680610d5d3ae2addc3cc3814155a75c85f8c590a9bd90c699ca61f6a42a85630f4cf4de5bbc83dfd4782dedfe4fd7
   languageName: node
   linkType: hard
 
@@ -7855,9 +7855,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.202":
-  version: 1.4.239
-  resolution: "electron-to-chromium@npm:1.4.239"
-  checksum: 4e16eadc647d69353520a200953a76beb6557284172259703c483d4ec8302a331ff243d85b49da13d58c6c7e99f8917d26b529e6159cf69489fa62021ba25cac
+  version: 1.4.240
+  resolution: "electron-to-chromium@npm:1.4.240"
+  checksum: 6590e2cddd2e6a564cc491fb1ece5719c35dcbbeed34fc66e878b1659753653d0e344908b36b11741968dfc47a0141759e3780546384bb5308d38bc5232e0cb5
   languageName: node
   linkType: hard
 
@@ -8019,14 +8019,14 @@ __metadata:
   linkType: hard
 
 "es-abstract@npm:^1.19.0, es-abstract@npm:^1.19.1, es-abstract@npm:^1.19.2, es-abstract@npm:^1.19.5, es-abstract@npm:^1.20.1":
-  version: 1.20.1
-  resolution: "es-abstract@npm:1.20.1"
+  version: 1.20.2
+  resolution: "es-abstract@npm:1.20.2"
   dependencies:
     call-bind: ^1.0.2
     es-to-primitive: ^1.2.1
     function-bind: ^1.1.1
     function.prototype.name: ^1.1.5
-    get-intrinsic: ^1.1.1
+    get-intrinsic: ^1.1.2
     get-symbol-description: ^1.0.0
     has: ^1.0.3
     has-property-descriptors: ^1.0.0
@@ -8038,14 +8038,14 @@ __metadata:
     is-shared-array-buffer: ^1.0.2
     is-string: ^1.0.7
     is-weakref: ^1.0.2
-    object-inspect: ^1.12.0
+    object-inspect: ^1.12.2
     object-keys: ^1.1.1
-    object.assign: ^4.1.2
+    object.assign: ^4.1.4
     regexp.prototype.flags: ^1.4.3
     string.prototype.trimend: ^1.0.5
     string.prototype.trimstart: ^1.0.5
     unbox-primitive: ^1.0.2
-  checksum: 28da27ae0ed9c76df7ee8ef5c278df79dcfdb554415faf7068bb7c58f8ba8e2a16bfb59e586844be6429ab4c302ca7748979d48442224cb1140b051866d74b7f
+  checksum: ab893dd1f849250f5a2da82656b4e21b511f76429b25a4aea5c8b2a3007ff01cb8e112987d0dd7693b9ad9e6399f8f7be133285d6196a5ebd1b13a4ee2258f70
   languageName: node
   linkType: hard
 
@@ -8400,7 +8400,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.14.47, esbuild@npm:^0.14.48":
+"esbuild@npm:^0.14.48":
   version: 0.14.54
   resolution: "esbuild@npm:0.14.54"
   dependencies:
@@ -8474,7 +8474,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:~0.15.4":
+"esbuild@npm:^0.15.6, esbuild@npm:~0.15.4":
   version: 0.15.6
   resolution: "esbuild@npm:0.15.6"
   dependencies:
@@ -9793,7 +9793,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-intrinsic@npm:^1.0.2, get-intrinsic@npm:^1.1.0, get-intrinsic@npm:^1.1.1":
+"get-intrinsic@npm:^1.0.2, get-intrinsic@npm:^1.1.0, get-intrinsic@npm:^1.1.1, get-intrinsic@npm:^1.1.2":
   version: 1.1.2
   resolution: "get-intrinsic@npm:1.1.2"
   dependencies:
@@ -13451,7 +13451,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object-inspect@npm:^1.12.0, object-inspect@npm:^1.12.2, object-inspect@npm:^1.9.0":
+"object-inspect@npm:^1.12.2, object-inspect@npm:^1.9.0":
   version: 1.12.2
   resolution: "object-inspect@npm:1.12.2"
   checksum: a534fc1b8534284ed71f25ce3a496013b7ea030f3d1b77118f6b7b1713829262be9e6243acbcb3ef8c626e2b64186112cb7f6db74e37b2789b9c789ca23048b2
@@ -13474,7 +13474,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object.assign@npm:^4.1.0, object.assign@npm:^4.1.2":
+"object.assign@npm:^4.1.0, object.assign@npm:^4.1.4":
   version: 4.1.4
   resolution: "object.assign@npm:4.1.4"
   dependencies:
@@ -14370,15 +14370,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prisma@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "prisma@npm:4.3.0"
+"prisma@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "prisma@npm:4.3.1"
   dependencies:
-    "@prisma/engines": 4.3.0
+    "@prisma/engines": 4.3.1
   bin:
     prisma: build/index.js
     prisma2: build/index.js
-  checksum: 36295fc3d13ca6260e4da81c7c2fd1d800efb01119f89c6308becf86d132a048dbd8ff0047efc7b4899a3035d9763cd9da3d364d87e5d0f48c81a46544c23ef3
+  checksum: f97133c11ecbb09a40c0ec006af50e8789f3b76376e29d5eb041b1592d2c289af22bcb9b5c49789ffb8bbe0b24f470c1ec668a94194c5859e18b601398cf80c8
   languageName: node
   linkType: hard
 
@@ -16746,10 +16746,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:^3.49.0":
-  version: 3.49.0
-  resolution: "svelte@npm:3.49.0"
-  checksum: 5b7cb8dbf6b6581b50fab1de63cbcb81816081a1240b03e234b299268fff2f3237bf8f92b683a848f95453353b5694dfe26fa05a55da185a4bb0cd8b80d87dd4
+"svelte@npm:^3.50.0":
+  version: 3.50.0
+  resolution: "svelte@npm:3.50.0"
+  checksum: cc8e8fd14bac3add208b00b9c2ffd64d343f29f84a626899762b3c9d00010cab5f49dce44d376acb270f996c860ad49b727d2bf140f434f2b959061b22249548
   languageName: node
   linkType: hard
 
@@ -17674,9 +17674,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unplugin-icons@npm:^0.14.8":
-  version: 0.14.8
-  resolution: "unplugin-icons@npm:0.14.8"
+"unplugin-icons@npm:^0.14.9":
+  version: 0.14.9
+  resolution: "unplugin-icons@npm:0.14.9"
   dependencies:
     "@antfu/install-pkg": ^0.1.0
     "@antfu/utils": ^0.5.2
@@ -17684,7 +17684,7 @@ __metadata:
     debug: ^4.3.4
     kolorist: ^1.5.1
     local-pkg: ^0.4.2
-    unplugin: ^0.8.0
+    unplugin: ^0.9.5
   peerDependencies:
     "@svgr/core": ">=5.5.0"
     "@vue/compiler-sfc": ^3.0.2
@@ -17699,13 +17699,13 @@ __metadata:
       optional: true
     vue-template-es2015-compiler:
       optional: true
-  checksum: c6f822cdf1f2a5b4887c03592a78d3f1dddd538d331959f322a388cb886fa41bd0149412b492e0762308acb2f09dae28049b965cdba54f3988e0a16d7bda63b2
+  checksum: 69297fa3dbe3104f2f639691899cd7a1ec616332444510d5569cc923167c9ba23ae5a96e20b32406ad3d657f78afd2786d41aaf8392f937a6a0a862b6a094496
   languageName: node
   linkType: hard
 
-"unplugin@npm:^0.8.0":
-  version: 0.8.1
-  resolution: "unplugin@npm:0.8.1"
+"unplugin@npm:^0.9.5":
+  version: 0.9.5
+  resolution: "unplugin@npm:0.9.5"
   dependencies:
     acorn: ^8.8.0
     chokidar: ^3.5.3
@@ -17725,7 +17725,7 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: 95bbed0425c42add3718f203d2cd2d8e97ae33bc0403b88cd800a12fb3f4cc5f681d108f4e64cd6cdf00b6715e538c913fd408b86c22a226b7e179c8d560e314
+  checksum: 4020ab5b3aad9c378abbcccd245d5320e7db9929012cea15961d1426a26e7c94abf8cee647fde4aba4fe5f8f2bd22aa349473902930aa2b1144d9ebb17405163
   languageName: node
   linkType: hard
 
@@ -17756,8 +17756,8 @@ __metadata:
   linkType: hard
 
 "update-browserslist-db@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "update-browserslist-db@npm:1.0.5"
+  version: 1.0.7
+  resolution: "update-browserslist-db@npm:1.0.7"
   dependencies:
     escalade: ^3.1.1
     picocolors: ^1.0.0
@@ -17765,7 +17765,7 @@ __metadata:
     browserslist: ">= 4.21.0"
   bin:
     browserslist-lint: cli.js
-  checksum: 7e425fe5dbbebdccf72a84ce70ec47fc74dce561d28f47bc2b84a1c2b84179a862c2261b18ab66a5e73e261c7e2ef9e11c6129112989d4d52e8f75a56bb923f8
+  checksum: 443ed6e77d4607b8bdf12710fe1c0b570fcbb992ebcafaa0c647811e5646fa51e0b5a17641637e10044e4b770bfc3a9ce2a9350a646477545aed882a1fcff8ce
   languageName: node
   linkType: hard
 
@@ -18044,10 +18044,10 @@ __metadata:
   linkType: hard
 
 "vite@npm:beta":
-  version: 3.1.0-beta.1
-  resolution: "vite@npm:3.1.0-beta.1"
+  version: 3.1.0-beta.2
+  resolution: "vite@npm:3.1.0-beta.2"
   dependencies:
-    esbuild: ^0.14.47
+    esbuild: ^0.15.6
     fsevents: ~2.3.2
     postcss: ^8.4.16
     resolve: ^1.22.1
@@ -18071,7 +18071,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: aa869e7bf2bcba96ca5509baa62c9e142cf5e31372c1529ab19807ef2b5c16a67af97cc1e64dced5f62379f357222a5b06dca6d3b2a619c4bc7bb777947e19b5
+  checksum: f5bc85508622719d68171394195ce420776e0c6a111c047a3fb69d8611f7d91e3317fd24cdf3ff356b65e002bfec2f462f5def0aa68beabd19e4c3acd85c0a36
   languageName: node
   linkType: hard
 
