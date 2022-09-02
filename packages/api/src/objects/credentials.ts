@@ -73,7 +73,7 @@ builder.mutationField('logout', (t) =>
       await prisma.credential.deleteMany({
         where: { type: CredentialPrismaType.Token, value: token },
       });
-      purgeUserSessions(user.id);
+      purgeUserSessions(user.uid);
       return true;
     },
   })
@@ -93,7 +93,7 @@ builder.mutationField('deleteToken', (t) =>
     },
     async resolve(_, { id }, { user }) {
       await prisma.credential.delete({ where: { id } });
-      purgeUserSessions(user!.id);
+      purgeUserSessions(user!.uid);
       return true;
     },
   })
