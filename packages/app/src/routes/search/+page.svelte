@@ -23,8 +23,8 @@
   <p>Aucun résultat</p>
 {:else}
   <ul>
-    {#each data.searchUsers as { id, firstName, lastName }}
-      <li><a href="/user/{id}/">{firstName} {lastName}</a></li>
+    {#each data.searchUsers as { uid, firstName, lastName }}
+      <li><a href="/user/{uid}/">{firstName} {lastName}</a></li>
     {/each}
   </ul>
 {/if}

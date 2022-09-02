@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
   return loadQuery(
     {
       me: {
-        id: true,
+        uid: true,
         firstName: true,
         lastName: true,
         nickname: true,

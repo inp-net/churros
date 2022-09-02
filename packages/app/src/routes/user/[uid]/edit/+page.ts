@@ -3,7 +3,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const userQuery = Selector('User')({
-  id: true,
+  uid: true,
   firstName: true,
   lastName: true,
   nickname: true,
@@ -19,11 +19,11 @@ export const userQuery = Selector('User')({
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
   const { me } = await parent();
-  if (params.id !== me?.id && !me?.canEditUsers) throw redirect(307, '..');
+  if (params.uid !== me?.id && !me?.canEditUsers) throw redirect(307, '..');
 
   return loadQuery(
     {
-      user: [{ id: params.id }, userQuery],
+      user: [params, userQuery],
       linkTypes: true,
       schoolGroups: { names: true, majors: { id: true, name: true } },
     },

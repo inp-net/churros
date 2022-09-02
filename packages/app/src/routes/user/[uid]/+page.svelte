@@ -16,6 +16,8 @@
 
   export let data: PageData;
 
+  $: ({ user } = data);
+
   const formatPhoneNumber = (phone: string) =>
     phone.replace(/^\+33(\d)(\d\d)(\d\d)(\d\d)(\d\d)$/, '0$1 $2 $3 $4 $5');
 </script>
@@ -26,31 +28,31 @@
   <div class="user-header">
     <div class="user-picture">
       <UserPicture
-        src={data.user.pictureFile
-          ? `${PUBLIC_STORAGE_URL}${data.user.pictureFile}`
+        src={user.pictureFile
+          ? `${PUBLIC_STORAGE_URL}${user.pictureFile}`
           : 'https://via.placeholder.com/160'}
-        alt="{data.user.firstName} {data.user.lastName}"
+        alt="{user.firstName} {user.lastName}"
       />
     </div>
     <div class="user-title">
       <h1 class="my-0">
-        {data.user.firstName}
-        {data.user.nickname}
-        {data.user.lastName}
+        {user.firstName}
+        {user.nickname}
+        {user.lastName}
         <a href="edit/" title="Éditer">
           <MajesticonsEdit aria-label="Éditer" />
         </a>
       </h1>
       <div class="biography">
-        {#if data.user.biography}
-          {data.user.biography}
+        {#if user.biography}
+          {user.biography}
         {:else}
-          {['👻', '🌵', '🕸️', '💤'][Number(data.user.id) % 4]}
+          {['👻', '🌵', '🕸️', '💤'][user.createdAt.getTime() % 4]}
         {/if}
       </div>
-      {#if data.user.links.length > 0}
+      {#if user.links.length > 0}
         <div class="flex flex-wrap mt-2 gap-3">
-          {#each data.user.links as link}
+          {#each user.links as link}
             <SocialLink {...link} />
           {/each}
         </div>
@@ -61,34 +63,34 @@
   <FlexList>
     <li>
       <MajesticonsAcademicCap aria-label="Filière" />
-      {data.user.major.name}
-      {data.user.graduationYear}
-      <SchoolBadge schools={data.user.major.schools} />
+      {user.major.name}
+      {user.graduationYear}
+      <SchoolBadge schools={user.major.schools} />
     </li>
-    {#if data.user.birthday}
+    {#if user.birthday}
       <li>
         <MajesticonsCake aria-label="Anniversaire" />
-        {formatDate(data.user.birthday)}
+        {formatDate(user.birthday)}
       </li>
     {/if}
-    {#if data.user.address}
+    {#if user.address}
       <li>
         <a
           href="https://www.google.com/maps/search/?api=1&{new URLSearchParams({
-            query: data.user.address,
+            query: user.address,
           })}"
           target="maps"
         >
           <MajesticonsLocationMarker aria-label="Adresse" />
-          {data.user.address}
+          {user.address}
         </a>
       </li>
     {/if}
-    {#if data.user.phone}
+    {#if user.phone}
       <li>
-        <a href="tel:{data.user.phone}">
+        <a href="tel:{user.phone}">
           <MajesticonsPhone aria-label="Téléphone" />
-          {formatPhoneNumber(data.user.phone)}
+          {formatPhoneNumber(user.phone)}
         </a>
       </li>
     {/if}
@@ -96,7 +98,7 @@
 
   <h2 class="mb-1">Groupes</h2>
   <FlexList>
-    {#each data.user.groups as groupMember}
+    {#each user.groups as groupMember}
       <li>
         <a href="/club/{groupMember.group.id}/" class="no-underline">
           <GroupMemberBadge {groupMember} />

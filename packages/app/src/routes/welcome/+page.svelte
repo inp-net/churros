@@ -7,16 +7,17 @@
   $: me = $page.data.me!;
 
   onMount(() => {
-    party.confetti(document.body, { count: 100 });
+    party.confetti(party.Rect.fromScreen(), { count: 100 });
   });
 </script>
 
 <h1>Bienvenue sur Centraverse !</h1>
 
-<svelte:body
+<svelte:window
   on:click={(event) => {
     party.confetti(event);
-  }} />
+  }}
+/>
 
 <p>
   Votre compte a été créé avec succès ! Vous pouvez désormais utiliser toutes les fonctionnalités de
@@ -26,7 +27,7 @@
 <h2>Quelques trucs à faire pour commencer</h2>
 
 <ul>
-  <li><a href="/user/{me.id}/">Personnaliser votre profil</a></li>
+  <li><a href="/user/{me.uid}/">Personnaliser votre profil</a></li>
   <li><a href="/calendar/">Consulter les évènements à venir</a></li>
   <li><a href="/clubs/">Découvrir la liste des clubs</a></li>
 </ul>

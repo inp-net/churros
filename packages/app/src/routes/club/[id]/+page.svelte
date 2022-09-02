@@ -18,7 +18,7 @@
         <tr>
           <td>{president ? '👑' : ''}{treasurer ? '💰' : ''}</td>
           <td>
-            <a href="/user/{member.id}">
+            <a href="/user/{member.uid}/">
               {member.firstName}
               {member.lastName}
             </a>

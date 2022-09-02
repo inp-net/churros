@@ -2,6 +2,7 @@ import SchemaBuilder, { type BuiltinScalarRef } from '@pothos/core';
 import ComplexityPlugin from '@pothos/plugin-complexity';
 import ErrorsPlugin from '@pothos/plugin-errors';
 import PrismaPlugin from '@pothos/plugin-prisma';
+import RelayPlugin from '@pothos/plugin-relay';
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
 import ValidationPlugin from '@pothos/plugin-validation';
@@ -27,6 +28,7 @@ export const builder = new SchemaBuilder<{
     ComplexityPlugin,
     ErrorsPlugin,
     PrismaPlugin,
+    RelayPlugin,
     ScopeAuthPlugin,
     SimpleObjectsPlugin,
     ValidationPlugin,
@@ -36,6 +38,7 @@ export const builder = new SchemaBuilder<{
   defaultInputFieldRequiredness: true,
   errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma },
+  relayOptions: { clientMutationId: 'omit', cursorType: 'String' },
 });
 
 builder.queryType({});
@@ -46,8 +49,8 @@ const id = (builder.configStore.getInputTypeRef('ID') as BuiltinScalarRef<number
 
 id.parseValue = (value: unknown) => {
   const coerced = Number(value);
-  if (Number.isNaN(coerced) || !Number.isFinite(coerced))
-    throw new GraphQLError('Expected ID to be a numeric.');
+  if (Number.isNaN(coerced) || !Number.isFinite(coerced)) return value;
+  // throw new GraphQLError('Expected ID to be a numeric.');
   return coerced;
 };
 

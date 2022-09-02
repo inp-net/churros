@@ -24,7 +24,7 @@
     {#if author}
       <p>
         <em>
-          Auteur : <a href="/user/{author.id}">
+          Auteur : <a href="/user/{author.uid}/">
             {author.firstName}
             {author.lastName}
           </a>

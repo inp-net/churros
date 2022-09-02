@@ -9,12 +9,12 @@ import { DateTimeScalar, FileScalar } from './scalars.js';
 import { UserLinkInput } from './user-links.js';
 
 /** Represents a user, mapped on the underlying database object. */
-export const UserType = builder.prismaObject('User', {
+export const UserType = builder.prismaNode('User', {
+  id: { field: 'id' },
   grantScopes: ({ id }, { user }) => (user?.id === id ? ['me'] : []),
   fields: (t) => ({
-    id: t.exposeID('id'),
     majorId: t.exposeID('majorId'),
-    uid: t.exposeString('uid', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    uid: t.exposeString('uid'),
     email: t.exposeString('email', { authScopes: { loggedIn: true, $granted: 'me' } }),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
@@ -78,9 +78,10 @@ builder.queryField('me', (t) =>
 builder.queryField('user', (t) =>
   t.prismaField({
     type: UserType,
-    args: { id: t.arg.id() },
+    args: { uid: t.arg.string() },
     authScopes: { loggedIn: true },
-    resolve: async (query, _, { id }) => prisma.user.findUniqueOrThrow({ ...query, where: { id } }),
+    resolve: async (query, _, { uid }) =>
+      prisma.user.findUniqueOrThrow({ ...query, where: { uid } }),
   })
 );
 
@@ -112,7 +113,7 @@ builder.mutationField('updateUser', (t) =>
     type: UserType,
     errors: {},
     args: {
-      id: t.arg.id(),
+      uid: t.arg.string(),
       majorId: t.arg.id({}),
       graduationYear: t.arg.int({}),
       birthday: t.arg({ type: DateTimeScalar, required: false }),
@@ -122,11 +123,11 @@ builder.mutationField('updateUser', (t) =>
       biography: t.arg.string({ validate: { maxLength: 255 } }),
       links: t.arg({ type: [UserLinkInput] }),
     },
-    authScopes: (_, { id }, { user }) => Boolean(user?.canEditUsers || id === user?.id),
+    authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
     async resolve(
       query,
       _,
-      { id, majorId, graduationYear, nickname, biography, links, address, phone, birthday }
+      { uid, majorId, graduationYear, nickname, biography, links, address, phone, birthday }
     ) {
       if (phone) {
         const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
@@ -139,10 +140,10 @@ builder.mutationField('updateUser', (t) =>
         }
       }
 
-      purgeUserSessions(id);
+      purgeUserSessions(uid);
       return prisma.user.update({
         ...query,
-        where: { id },
+        where: { uid },
         data: {
           majorId,
           graduationYear,
@@ -162,15 +163,11 @@ builder.mutationField('updateUserPicture', (t) =>
   t.field({
     type: 'String',
     args: {
-      id: t.arg.id(),
+      uid: t.arg.string(),
       file: t.arg({ type: FileScalar }),
     },
-    authScopes: (_, { id }, { user }) => Boolean(user?.canEditUsers || id === user?.id),
-    async resolve(_, { id, file }) {
-      const { uid } = await prisma.user.findUniqueOrThrow({
-        where: { id },
-        select: { uid: true },
-      });
+    authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
+    async resolve(_, { uid, file }) {
       const type = await file
         .slice(0, minimumBytes)
         .arrayBuffer()
@@ -180,9 +177,9 @@ builder.mutationField('updateUserPicture', (t) =>
         throw new GraphQLYogaError('File format not supported');
 
       const path = `${uid}.${type.ext}`;
-      purgeUserSessions(id);
+      purgeUserSessions(uid);
       await writeFile(new URL(path, process.env.STORAGE), file.stream());
-      await prisma.user.update({ where: { id }, data: { pictureFile: path } });
+      await prisma.user.update({ where: { uid }, data: { pictureFile: path } });
       return path;
     },
   })
@@ -191,18 +188,18 @@ builder.mutationField('updateUserPicture', (t) =>
 builder.mutationField('deleteUserPicture', (t) =>
   t.field({
     type: 'Boolean',
-    args: { id: t.arg.id() },
-    authScopes: (_, { id }, { user }) => Boolean(user?.canEditUsers || id === user?.id),
-    async resolve(_, { id }) {
+    args: { uid: t.arg.string() },
+    authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
+    async resolve(_, { uid }) {
       const { pictureFile } = await prisma.user.findUniqueOrThrow({
-        where: { id },
+        where: { uid },
         select: { pictureFile: true },
       });
 
       if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
 
       await prisma.user.update({
-        where: { id },
+        where: { uid },
         data: { pictureFile: '' },
       });
       return true;

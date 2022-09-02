@@ -26,7 +26,9 @@
     nickname,
     phone,
     pictureFile,
-    birthday,
+    // See https://github.com/graphql-editor/graphql-zeus/issues/262
+    // eslint-disable-next-line unicorn/no-null
+    birthday = null,
   } = data.user;
 
   let files: FileList;
@@ -42,7 +44,7 @@
       const { updateUser } = await $zeus.mutate({
         updateUser: [
           {
-            id: data.user.id,
+            uid: data.user.uid,
             nickname,
             biography,
             links,
@@ -77,7 +79,7 @@
     try {
       updating = true;
       const { updateUserPicture } = await $zeus.mutate(
-        { updateUserPicture: [{ id: data.user.id, file: Zvar('file', 'File!') }, true] },
+        { updateUserPicture: [{ uid: data.user.uid, file: Zvar('file', 'File!') }, true] },
         { variables: { file: files[0] } }
       );
       pictureFile = updateUserPicture;
@@ -91,7 +93,7 @@
     if (deleting) return;
     try {
       deleting = true;
-      await $zeus.mutate({ deleteUserPicture: [{ id: data.user.id }, true] });
+      await $zeus.mutate({ deleteUserPicture: [{ uid: data.user.uid }, true] });
       pictureFile = '';
     } finally {
       deleting = false;

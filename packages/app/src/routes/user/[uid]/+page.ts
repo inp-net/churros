@@ -8,12 +8,12 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   return loadQuery(
     {
       user: [
-        { id: params.id },
+        params,
         {
-          id: true,
           address: true,
           biography: true,
           birthday: true,
+          createdAt: true,
           firstName: true,
           graduationYear: true,
           lastName: true,

@@ -21,8 +21,8 @@ const sessions = new Map<
 >();
 
 /** Deletes the session cache for a given user id. */
-export const purgeUserSessions = (id: User['id']) => {
-  for (const [token, user] of sessions) if (user.id === id) sessions.delete(token);
+export const purgeUserSessions = (uid: User['uid']) => {
+  for (const [token, user] of sessions) if (user.uid === uid) sessions.delete(token);
 };
 
 /** Returns the user associated with `token` or throws. */

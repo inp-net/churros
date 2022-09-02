@@ -84,7 +84,7 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
 
 const scalars = ZeusScalars({
   DateTime: {
-    decode: (value: unknown): Date | null => (value === null ? value : new Date(value as string)),
+    decode: (value: unknown): Date => new Date(value as string),
     encode: (value: unknown): string => JSON.stringify(value),
   },
 });

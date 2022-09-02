@@ -80,6 +80,23 @@ const api = express();
 // api.use(helmet());
 api.use('/graphql', yoga);
 api.use('/storage', express.static(fileURLToPath(new URL(process.env.STORAGE))));
+api.get('/', (_req, res) => {
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Centraverse API</title>
+  <style>body { font-family: system-ui, sans serif; } a { color: #1d4ed8; }</style>
+</head>
+<body>
+  <h1>Centraverse API</h1>
+  <p><strong><a href="${new URL(process.env.FRONTEND_URL).toString()}">
+    Retourner à l'accueil</a></strong></p>
+  <p><a href="/graphql">GraphiQL (pour les développeurs)</a></p>
+</body>
+</html>`);
+});
 api.listen(4000);
 
 await writeSchema();

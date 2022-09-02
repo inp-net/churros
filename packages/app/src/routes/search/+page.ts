@@ -10,7 +10,7 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
         {
           searchUsers: [
             { q: url.searchParams.get('q')! },
-            { id: true, firstName: true, lastName: true },
+            { uid: true, firstName: true, lastName: true },
           ],
         },
         { fetch, parent }
