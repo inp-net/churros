@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import Alert from '$lib/components/alerts/Alert.svelte';
   import Button from '$lib/components/buttons/Button.svelte';
   import FormCard from '$lib/components/cards/FormCard.svelte';
@@ -7,7 +8,7 @@
   import { zeus } from '$lib/zeus';
   import type { ZodFormattedError } from 'zod';
 
-  let email = '';
+  let email = $page.url.searchParams.get('email') ?? '';
   $: args = { email };
 
   let result: boolean | undefined;
@@ -66,9 +67,9 @@
           <input type="email" bind:value={email} minlength="1" maxlength="255" required />
         </FormInput>
       </p>
-      <svelte:fragment slot="footer">
+      <p class="text-center">
         <Button type="submit" theme="primary" {loading}>S'inscrire</Button>
-      </svelte:fragment>
+      </p>
     </FormCard>
   {:else if result}
     <Alert theme="success">

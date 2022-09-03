@@ -196,9 +196,9 @@
         <input type="text" bind:value={address} />
       </FormInput>
     </p>
-    <svelte:fragment slot="footer">
+    <p class="text-center">
       <Button type="submit" theme="primary" {loading}>S'inscrire</Button>
-    </svelte:fragment>
+    </p>
   </FormCard>
 {:else if result === false}
   <Alert theme="success">

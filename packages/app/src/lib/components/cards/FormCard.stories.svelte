@@ -33,8 +33,12 @@
     <p>
       <label>Password: <input type="password" /></label>
     </p>
-    <svelte:fragment slot="footer">
+    <p class="text-center">
       <Button type="submit" theme="primary" {loading}>Login</Button>
+    </p>
+    <svelte:fragment slot="footer">
+      <a href={'#'}>Password forgotten</a> •
+      <a href={'#'}>Register</a>
     </svelte:fragment>
   </FormCard>
 </Template>

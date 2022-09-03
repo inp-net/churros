@@ -40,7 +40,15 @@
   }
 
   .footer {
-    padding: 0 1rem;
+    --text: var(--muted);
+    --link: var(--muted);
+
+    padding: 0.5rem 0;
+    margin: 0 1rem;
+    overflow: hidden;
+    font-size: 0.875em;
+    color: var(--text);
     text-align: center;
+    box-shadow: 0 -0.25rem 0.125rem -0.25rem #0006;
   }
 </style>

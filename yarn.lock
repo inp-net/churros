@@ -1630,7 +1630,7 @@ __metadata:
     "@storybook/node-logger": ^6.5.10
     "@storybook/svelte": ^6.5.10
     "@sveltejs/adapter-node": ^1.0.0-next.88
-    "@sveltejs/kit": ^1.0.0-next.463
+    "@sveltejs/kit": ^1.0.0-next.465
     "@types/cookie": ^0.5.1
     "@types/js-cookie": ^3.0.2
     "@types/ua-parser-js": ^0.7.36
@@ -3971,9 +3971,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^1.0.0-next.463":
-  version: 1.0.0-next.463
-  resolution: "@sveltejs/kit@npm:1.0.0-next.463"
+"@sveltejs/kit@npm:^1.0.0-next.465":
+  version: 1.0.0-next.465
+  resolution: "@sveltejs/kit@npm:1.0.0-next.465"
   dependencies:
     "@sveltejs/vite-plugin-svelte": ^1.0.4
     cookie: ^0.5.0
@@ -3992,7 +3992,7 @@ __metadata:
     vite: ^3.1.0-beta.1
   bin:
     svelte-kit: svelte-kit.js
-  checksum: 2b2df88fb33536b85b3295a9bc32b951202835493dc3527ce1a9fd550857946fb0a8a99631db1c2d7c7dd69a3560040d3a4c24011de29689e4c019d16f0f8e2f
+  checksum: e6ed63829a5901f75cdd1f680a91bb32ca871909713fc290230944cafe293bf4512893c01ad15b3f7707e115ce527833254f7de0556f7cf85f734ec581b46df9
   languageName: node
   linkType: hard
 

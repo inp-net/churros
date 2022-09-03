@@ -48,6 +48,8 @@
     // Client-side redirect to avoid login detection
     if ($me) await redirect();
   });
+
+  $: linkParams = email ? `?${new URLSearchParams({ email }).toString()}` : '';
 </script>
 
 <div class="flex justify-center">
@@ -59,8 +61,12 @@
     <p>
       <label>Mot de passe&nbsp;: <input type="password" bind:value={password} /></label>
     </p>
-    <svelte:fragment slot="footer">
+    <p class="text-center">
       <Button type="submit" theme="primary" {loading}>Se connecter</Button>
+    </p>
+    <svelte:fragment slot="footer">
+      <a href="./forgotten/{linkParams}">Mot de passe oublié</a>
+      • <a href="/register/{linkParams}">S'inscrire</a>
     </svelte:fragment>
   </FormCard>
 </div>
