@@ -2,7 +2,7 @@ import { PRIVATE_API_URL } from '$env/static/private';
 import { PUBLIC_API_URL } from '$env/static/public';
 import { sessionUserQuery } from '$lib/session';
 import { chain } from '$lib/zeus';
-import type { ExternalFetch, Handle } from '@sveltejs/kit';
+import type { Handle, HandleFetch } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -27,14 +27,14 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (token && !event.locals.me) {
     response.headers.append(
       'Set-Cookie',
-      'token=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict'
+      cookie.serialize('token', '', { expires: new Date(0), sameSite: 'strict' })
     );
   }
 
   return response;
 };
 
-export const externalFetch: ExternalFetch = async (request) => {
+export const handleFetch: HandleFetch = async ({ request, fetch }) => {
   if (request.url.startsWith(PUBLIC_API_URL))
     request = new Request(request.url.replace(PUBLIC_API_URL, PRIVATE_API_URL), request);
 
