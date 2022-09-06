@@ -6,9 +6,9 @@ import { completeRegistration, register } from '../services/registration.js';
 import { DateTimeScalar } from './scalars.js';
 
 /** Represents a user, mapped on the underlying database object. */
-export const UserCandidateType = builder.prismaObject('UserCandidate', {
+export const UserCandidateType = builder.prismaNode('UserCandidate', {
+  id: { field: 'id' },
   fields: (t) => ({
-    id: t.exposeID('id'),
     majorId: t.exposeID('majorId', { nullable: true }),
     email: t.exposeString('email'),
     emailValidated: t.exposeBoolean('emailValidated'),
@@ -41,6 +41,14 @@ builder.queryField('userCandidate', (t) =>
     args: { token: t.arg.string() },
     resolve: (query, _, { token }) =>
       prisma.userCandidate.findUniqueOrThrow({ ...query, where: { token } }),
+  })
+);
+
+builder.queryField('userCandidates', (t) =>
+  t.prismaConnection({
+    type: UserCandidateType,
+    cursor: 'id',
+    resolve: async (query) => prisma.userCandidate.findMany({ ...query }),
   })
 );
 

@@ -9,6 +9,8 @@
   import MajesticonsSearch from '~icons/majesticons/search-circle';
   import MajesticonsSearchLine from '~icons/majesticons/search-circle-line';
   import MajesticonsSun from '~icons/majesticons/sun';
+  import MajesticonsUserAdd from '~icons/majesticons/user-add';
+  import MajesticonsUserAddLine from '~icons/majesticons/user-add-line';
   import MajesticonsUserGroup from '~icons/majesticons/user-group';
   import MajesticonsUserGroupLine from '~icons/majesticons/user-group-line';
   import Item from './Item.svelte';
@@ -57,6 +59,18 @@
         Recherche
       </Item>
     </li>
+    {#if $page.data.me?.canEditUsers}
+      <li>
+        <Item
+          href="/users/"
+          selected={$page.url.pathname.startsWith('/users/')}
+          icon={MajesticonsUserAddLine}
+          selectedIcon={MajesticonsUserAdd}
+        >
+          Utilisateurs
+        </Item>
+      </li>
+    {/if}
     <li>
       <button
         on:click={() => {
