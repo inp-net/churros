@@ -11,13 +11,16 @@
   let loading = false;
   const loadMore = async () => {
     if (loading) return;
-    loading = true;
-    const { homepage } = await $zeus.query({
-      homepage: [{ after: data.homepage.pageInfo.endCursor }, pageQuery],
-    });
-    data.homepage.pageInfo = homepage.pageInfo;
-    data.homepage.edges = [...data.homepage.edges, ...homepage.edges];
-    loading = false;
+    try {
+      loading = true;
+      const { homepage } = await $zeus.query({
+        homepage: [{ after: data.homepage.pageInfo.endCursor }, pageQuery],
+      });
+      data.homepage.pageInfo = homepage.pageInfo;
+      data.homepage.edges = [...data.homepage.edges, ...homepage.edges];
+    } finally {
+      loading = false;
+    }
   };
 </script>
 
