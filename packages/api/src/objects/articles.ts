@@ -8,9 +8,9 @@ import { prisma } from '../prisma.js';
 import { DateTimeScalar } from './scalars.js';
 
 /** Represents an article, published by a member of a group. */
-export const ArticleType = builder.prismaObject('Article', {
+export const ArticleType = builder.prismaNode('Article', {
+  id: { field: 'id' },
   fields: (t) => ({
-    id: t.exposeID('id'),
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
     title: t.exposeString('title'),
@@ -52,22 +52,13 @@ builder.queryField('article', (t) =>
 
 /** Returns a list of articles from the groups the user is in. */
 builder.queryField('homepage', (t) =>
-  t.prismaField({
-    type: [ArticleType],
-    args: {
-      first: t.arg.int({ required: false }),
-      after: t.arg.id({ required: false }),
-    },
-    async resolve(query, _, { first, after }, { user }) {
-      first ??= 20;
+  t.prismaConnection({
+    type: ArticleType,
+    cursor: 'id',
+    async resolve(query, _, {}, { user }) {
       if (!user) {
         return prisma.article.findMany({
           ...query,
-          // Pagination
-          cursor: after ? { id: after } : undefined,
-          skip: after ? 1 : 0,
-          take: first,
-          // Only public articles
           where: { published: true, homepage: true },
           orderBy: { publishedAt: 'desc' },
         });
@@ -75,10 +66,6 @@ builder.queryField('homepage', (t) =>
 
       return prisma.article.findMany({
         ...query,
-        // Pagination
-        cursor: after ? { id: after } : undefined,
-        skip: after ? 1 : 0,
-        take: first,
         where: {
           published: true,
           OR: [

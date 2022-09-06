@@ -1,19 +1,34 @@
 <script lang="ts">
+  import Button from '$lib/components/buttons/Button.svelte';
   import ArticleCard from '$lib/components/cards/ArticleCard.svelte';
   import { formatDateTime } from '$lib/dates';
+  import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
+  import { pageQuery } from './+page';
 
   export let data: PageData;
+
+  let loading = false;
+  const loadMore = async () => {
+    if (loading) return;
+    loading = true;
+    const { homepage } = await $zeus.query({
+      homepage: [{ after: data.homepage.pageInfo.endCursor }, pageQuery],
+    });
+    data.homepage.pageInfo = homepage.pageInfo;
+    data.homepage.edges = [...data.homepage.edges, ...homepage.edges];
+    loading = false;
+  };
 </script>
 
 <h1>Bienvenue sur Centraverse</h1>
 
-{#each data.homepage as { id, title, bodyHtml, publishedAt, group, author }}
+{#each data.homepage.edges as { cursor, node: { title, bodyHtml, publishedAt, group, author } }}
   <ArticleCard
     {title}
     href="#"
-    img={Number(id) % 5
-      ? { src: `https://picsum.photos/seed/${id}/960/400`, alt: '', width: 960, height: 400 }
+    img={publishedAt.getTime() % 2
+      ? { src: `https://picsum.photos/seed/${cursor}/960/400`, alt: '', width: 960, height: 400 }
       : undefined}
   >
     <p>
@@ -33,6 +48,10 @@
     {/if}
   </ArticleCard>
 {/each}
+
+{#if data.homepage.pageInfo.hasNextPage}
+  <p class="text-center"><Button on:click={loadMore} {loading}>Voir plus</Button></p>
+{/if}
 
 <style>
   h1 {
