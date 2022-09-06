@@ -30,6 +30,7 @@
   <li><a href="/user/{me.uid}/">Personnaliser votre profil</a></li>
   <li><a href="/calendar/">Consulter les évènements à venir</a></li>
   <li><a href="/clubs/">Découvrir la liste des clubs</a></li>
+  <li>Rejoindre les groupes d'actualités de votre école</li>
 </ul>
 
 <p class="text-center">

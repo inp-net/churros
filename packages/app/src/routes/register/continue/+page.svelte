@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto, invalidateAll } from '$app/navigation';
   import { page } from '$app/stores';
   import Alert from '$lib/components/alerts/Alert.svelte';
   import Button from '$lib/components/buttons/Button.svelte';
@@ -75,7 +74,9 @@
         return;
       }
 
-      if (completeRegistration.data) {
+      result = completeRegistration.data;
+
+      if (result) {
         const { login } = await $zeus.mutate({
           login: [
             { email: data.userCandidate.email, password },
@@ -83,11 +84,10 @@
           ],
         });
         saveSessionToken(login);
-        await invalidateAll();
-        await goto('/welcome/');
+        // Hard refresh (invalidating is not possible because UserCandidate
+        // is deleted after registration, throwing a ZeusError)
+        location.href = '/welcome/';
       }
-
-      result = completeRegistration.data;
     } catch (error: unknown) {
       formErrors = { _errors: [(error as Error).message ?? 'Une erreur est survenue'] };
     } finally {
@@ -96,7 +96,7 @@
   };
 </script>
 
-{#if result === undefined}
+{#if result === undefined || result}
   <FormCard large title="Finaliser mon inscription" on:submit={register}>
     {#if data.userCandidate.emailValidated}
       <Alert theme="success" inline>
@@ -200,7 +200,7 @@
       <Button type="submit" theme="primary" {loading}>S'inscrire</Button>
     </p>
   </FormCard>
-{:else if result === false}
+{:else}
   <Alert theme="success">
     <h3>Demande enregistrée&nbsp;!</h3>
     <p>
