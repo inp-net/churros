@@ -27,7 +27,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (token && !event.locals.me) {
     response.headers.append(
       'Set-Cookie',
-      cookie.serialize('token', '', { expires: new Date(0), sameSite: 'strict' })
+      cookie.serialize('token', '', { expires: new Date(0), path: '/', sameSite: 'strict' })
     );
   }
 
