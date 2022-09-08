@@ -47,10 +47,16 @@ const createUid = async (email: string) => {
   return `${base}${n > 1 ? n : ''}`;
 };
 
-export const completeRegistration = async ({
+export const completeRegistration = async (candidate: UserCandidate): Promise<boolean> => {
+  // If the user has no school email, it must be manually accepted.
+  if (!candidate.schoolEmail) return false;
+
+  return saveUser(candidate);
+};
+
+export const saveUser = async ({
   id,
   email,
-  schoolEmail,
   firstName,
   lastName,
   majorId,
@@ -63,9 +69,6 @@ export const completeRegistration = async ({
   phone,
   pictureFile,
 }: UserCandidate): Promise<boolean> => {
-  // If the user has no school email, it must be manually accepted.
-  if (!schoolEmail) return false;
-
   // Create a user profile
   await prisma.user.create({
     data: {

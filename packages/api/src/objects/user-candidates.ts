@@ -2,7 +2,7 @@ import { hash } from 'argon2';
 import { ZodError } from 'zod';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
-import { completeRegistration, register } from '../services/registration.js';
+import { completeRegistration, register, saveUser } from '../services/registration.js';
 import { DateTimeScalar } from './scalars.js';
 
 /** Represents a user, mapped on the underlying database object. */
@@ -24,14 +24,13 @@ export const UserCandidateType = builder.prismaNode('UserCandidate', {
 
     // Profile details
     address: t.exposeString('address'),
-    biography: t.exposeString('biography'),
     birthday: t.expose('birthday', {
       type: DateTimeScalar,
       nullable: true,
     }),
-    nickname: t.exposeString('nickname'),
     phone: t.exposeString('phone'),
-    pictureFile: t.exposeString('pictureFile'),
+
+    major: t.relation('major'),
   }),
 });
 
@@ -47,8 +46,10 @@ builder.queryField('userCandidate', (t) =>
 builder.queryField('userCandidates', (t) =>
   t.prismaConnection({
     type: UserCandidateType,
+    authScopes: { canEditUsers: true },
     cursor: 'id',
-    resolve: async (query) => prisma.userCandidate.findMany({ ...query }),
+    resolve: async (query) =>
+      prisma.userCandidate.findMany({ ...query, where: { emailValidated: true } }),
   })
 );
 
@@ -107,5 +108,27 @@ builder.mutationField('completeRegistration', (t) =>
           },
         })
       ),
+  })
+);
+
+builder.mutationField('acceptRegistration', (t) =>
+  t.field({
+    authScopes: { canEditUsers: true },
+    type: 'Boolean',
+    args: { email: t.arg.string() },
+    resolve: async (_, { email }) =>
+      saveUser(await prisma.userCandidate.findUniqueOrThrow({ where: { email } })),
+  })
+);
+
+builder.mutationField('refuseRegistration', (t) =>
+  t.field({
+    authScopes: { canEditUsers: true },
+    type: 'Boolean',
+    args: { email: t.arg.string() },
+    async resolve(_, { email }) {
+      await prisma.userCandidate.delete({ where: { email } });
+      return true;
+    },
   })
 );
