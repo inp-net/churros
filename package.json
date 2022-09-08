@@ -26,17 +26,18 @@
     "svelte": "^3.50.0",
     "typescript": "^4.8.2"
   },
+  "license": "AGPL-3.0-only",
   "packageManager": "yarn@3.2.2",
   "private": true,
   "scripts": {
     "build": "yarn workspaces foreach --topological-dev -pv run build",
-    "start": "docker compose up -d --wait && yarn workspaces foreach -piv --exclude centraverse node build/index.js",
     "dev": "docker compose up -d --wait && yarn workspaces foreach -piv run dev",
     "format": "prettier . --write --ignore-unknown",
     "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
     "postinstall": "husky install",
     "prisma": "yarn workspace @centraverse/api run prisma",
     "reset": "docker compose up -dV --wait && yarn workspace @centraverse/api run prisma migrate reset --force",
+    "start": "docker compose up -d --wait && yarn workspaces foreach -piv --exclude centraverse node build/index.js",
     "storybook": "yarn workspace @centraverse/app run storybook"
   },
   "volta": {
