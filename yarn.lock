@@ -2706,6 +2706,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@pothos/plugin-tracing@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@pothos/plugin-tracing@npm:0.4.0"
+  peerDependencies:
+    "@pothos/core": "*"
+    graphql: ">=15.1.0"
+  checksum: d5294d0c97da16380cc84da06797b36721ffe442430517f6c9b8fbdeeb509f25a5ed5d3d2592d801f2ed2ac042ec6b1fc45d98c88a890b311ab01553128b0b14
+  languageName: node
+  linkType: hard
+
 "@pothos/plugin-validation@npm:^3.7.0":
   version: 3.7.0
   resolution: "@pothos/plugin-validation@npm:3.7.0"
@@ -6495,6 +6505,7 @@ __metadata:
   dependencies:
     "@commitlint/cli": ^17.1.2
     "@commitlint/config-conventional": ^17.1.0
+    "@pothos/plugin-tracing": ^0.4.0
     "@typescript-eslint/eslint-plugin": ^5.36.2
     "@typescript-eslint/parser": ^5.36.2
     eslint: ^8.23.0

@@ -46,5 +46,8 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@pothos/plugin-tracing": "^0.4.0"
+  }
 }

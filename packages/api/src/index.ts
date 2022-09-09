@@ -10,8 +10,6 @@ import { context } from './context.js';
 import { customErrorMap } from './errors.js';
 import { schema, writeSchema } from './schema.js';
 
-process.env['DEBUG'] = 'true';
-
 z.setErrorMap(customErrorMap);
 
 const yoga = createServer({
@@ -19,7 +17,7 @@ const yoga = createServer({
   context,
   graphiql: {
     defaultQuery:
-      'query {\n\thomepage {\n\t\ttitle\n\t\tbody\n\t\tauthor {firstName lastName}\n\t\tgroup {name}\n\t}\n}\n',
+      'query {\n\thomepage {\n\t\ttitle\n\t\tbody\n\t\tauthor { firstName lastName }\n\t\tgroup { name }\n\t}\n}\n',
   },
   multipart: { files: 1, fileSize: 10 * 1024 * 1024 },
   maskedErrors: {
@@ -58,22 +56,7 @@ const yoga = createServer({
       return new GraphQLError(message);
     },
   },
-  plugins: [
-    useNoBatchedQueries({ allow: 3 }),
-    {
-      onExecute() {
-        const start = performance.now();
-        return {
-          onExecuteDone() {
-            console.log(
-              '⏱️  Execution took \u001B[36;1m%s ms\u001B[0m',
-              Number((performance.now() - start).toPrecision(3))
-            );
-          },
-        };
-      },
-    },
-  ],
+  plugins: [useNoBatchedQueries({ allow: 3 })],
 });
 
 const api = express();

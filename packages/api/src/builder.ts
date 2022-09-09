@@ -5,6 +5,7 @@ import PrismaPlugin from '@pothos/plugin-prisma';
 import RelayPlugin from '@pothos/plugin-relay';
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
+import TracingPlugin, { isRootField, wrapResolver } from '@pothos/plugin-tracing';
 import ValidationPlugin from '@pothos/plugin-validation';
 import { GraphQLError, Kind } from 'graphql';
 import { authScopes, type AuthContexts, type AuthScopes } from './auth.js';
@@ -31,6 +32,7 @@ export const builder = new SchemaBuilder<{
     RelayPlugin,
     ScopeAuthPlugin,
     SimpleObjectsPlugin,
+    TracingPlugin,
     ValidationPlugin,
   ],
   authScopes,
@@ -39,6 +41,17 @@ export const builder = new SchemaBuilder<{
   errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma },
   relayOptions: { clientMutationId: 'omit', cursorType: 'String' },
+  tracing: {
+    default: (config) => isRootField(config),
+    wrap: (resolver, _options, config) =>
+      wrapResolver(resolver, (_error, duration) => {
+        console.log(
+          `Executed \u001B[36;1m${config.parentType}.${
+            config.name
+          }\u001B[0m in \u001B[36;1m${Number(duration.toPrecision(3))} ms\u001B[0m`
+        );
+      }),
+  },
 });
 
 builder.queryType({});
