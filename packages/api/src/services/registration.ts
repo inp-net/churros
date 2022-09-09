@@ -68,6 +68,9 @@ export const saveUser = async ({
   nickname,
   phone,
   pictureFile,
+  schoolEmail,
+  schoolServer,
+  schoolUid,
 }: UserCandidate): Promise<boolean> => {
   // Create a user profile
   await prisma.user.create({
@@ -84,6 +87,9 @@ export const saveUser = async ({
       nickname,
       phone,
       pictureFile,
+      schoolEmail,
+      schoolServer,
+      schoolUid,
       credentials: { create: { type: CredentialType.Password, value: password } },
     },
   });

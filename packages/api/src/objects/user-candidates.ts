@@ -118,6 +118,16 @@ builder.mutationField('completeRegistration', (t) =>
   })
 );
 
+builder.queryField('userCandidateByEmail', (t) =>
+  t.prismaField({
+    type: UserCandidateType,
+    authScopes: { canEditUsers: true },
+    args: { email: t.arg.string() },
+    resolve: (query, _, { email }) =>
+      prisma.userCandidate.findUniqueOrThrow({ ...query, where: { email } }),
+  })
+);
+
 builder.mutationField('acceptRegistration', (t) =>
   t.field({
     authScopes: { canEditUsers: true },
