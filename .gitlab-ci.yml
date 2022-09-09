@@ -1,0 +1,18 @@
+image: debian:11
+
+cache:
+  paths:
+    - .yarn
+    - node_modules/
+  key:
+    files:
+      - yarn.lock
+
+build:
+  variables:
+    VOLTA_HOME: '/root/.volta'
+    PATH: '$VOLTA_HOME/bin:$PATH'
+  script:
+    - curl https://get.volta.sh | bash -s -- --skip-setup
+    - yarn install
+    - yarn build
