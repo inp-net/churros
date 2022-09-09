@@ -59,12 +59,19 @@ builder.mutationField('startRegistration', (t) =>
     type: 'Boolean',
     errors: { types: [ZodError] },
     args: {
-      email: t.arg.string({ validate: { minLength: 1, maxLength: 255, email: true } }),
+      email: t.arg.string({
+        validate: {
+          minLength: 1,
+          maxLength: 255,
+          email: true,
+          refine: [
+            async (email) => !(await prisma.user.findUnique({ where: { email } })),
+            { message: 'Ce compte existe déjà.' },
+          ],
+        },
+      }),
     },
-    async resolve(_, { email }) {
-      await register(email);
-      return true;
-    },
+    resolve: async (_, { email }) => register(email),
   })
 );
 
