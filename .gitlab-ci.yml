@@ -1,13 +1,5 @@
 image: debian:11
 
-cache:
-  paths:
-    - .yarn
-    - node_modules/
-  key:
-    files:
-      - yarn.lock
-
 build:
   variables:
     VOLTA_HOME: '/root/.volta'
