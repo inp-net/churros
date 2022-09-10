@@ -2,6 +2,7 @@ image: debian:11
 
 build:
   script:
+    - apt-get update && apt-get install -y curl
     - curl https://get.volta.sh | bash
     - yarn install
     - yarn build
