@@ -1,6 +1,9 @@
 image: debian:11
 
 build:
+  variables:
+    VOLTA_HOME: '/root/.volta'
+    PATH: '$VOLTA_HOME/bin:$PATH'
   script:
     - apt-get update && apt-get install -y curl
     - curl https://get.volta.sh | bash
