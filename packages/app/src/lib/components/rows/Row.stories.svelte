@@ -6,7 +6,7 @@
 
 <Meta title="Components/Rows/Row" component={Row} />
 
-<Story name="default">
+<Story name="Default">
   <Row>
     <strong>John Doe</strong>
     <span>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Dolores, distinctio?</span>

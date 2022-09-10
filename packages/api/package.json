@@ -3,11 +3,11 @@
   "dependencies": {
     "@envelop/core": "^2.6.0",
     "@graphql-yoga/node": "^2.13.13",
-    "@pothos/core": "^3.20.0",
+    "@pothos/core": "^3.21.0",
     "@pothos/plugin-complexity": "^3.10.0",
     "@pothos/plugin-errors": "^3.7.0",
-    "@pothos/plugin-prisma": "^3.32.0",
-    "@pothos/plugin-relay": "^3.26.0",
+    "@pothos/plugin-prisma": "^3.33.0",
+    "@pothos/plugin-relay": "^3.27.0",
     "@pothos/plugin-scope-auth": "^3.13.0",
     "@pothos/plugin-simple-objects": "^3.5.0",
     "@pothos/plugin-validation": "^3.7.0",
@@ -40,7 +40,7 @@
     "@types/nodemailer": "^6.4.5",
     "prisma": "^4.3.1",
     "tsx": "^3.9.0",
-    "typescript": "^4.8.2"
+    "typescript": "^4.8.3"
   },
   "packageManager": "yarn@3.2.1",
   "prisma": {

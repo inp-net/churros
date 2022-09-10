@@ -1574,11 +1574,11 @@ __metadata:
   dependencies:
     "@envelop/core": ^2.6.0
     "@graphql-yoga/node": ^2.13.13
-    "@pothos/core": ^3.20.0
+    "@pothos/core": ^3.21.0
     "@pothos/plugin-complexity": ^3.10.0
     "@pothos/plugin-errors": ^3.7.0
-    "@pothos/plugin-prisma": ^3.32.0
-    "@pothos/plugin-relay": ^3.26.0
+    "@pothos/plugin-prisma": ^3.33.0
+    "@pothos/plugin-relay": ^3.27.0
     "@pothos/plugin-scope-auth": ^3.13.0
     "@pothos/plugin-simple-objects": ^3.5.0
     "@pothos/plugin-validation": ^3.7.0
@@ -1607,7 +1607,7 @@ __metadata:
     remark-parse: ^10.0.1
     remark-rehype: ^10.1.0
     tsx: ^3.9.0
-    typescript: ^4.8.2
+    typescript: ^4.8.3
     unified: ^10.1.2
     zod: ^3.19.0
   languageName: unknown
@@ -1630,30 +1630,30 @@ __metadata:
     "@storybook/builder-vite": ^0.2.2
     "@storybook/node-logger": ^6.5.10
     "@storybook/svelte": ^6.5.10
-    "@sveltejs/adapter-node": ^1.0.0-next.88
-    "@sveltejs/kit": ^1.0.0-next.477
+    "@sveltejs/adapter-node": ^1.0.0-next.89
+    "@sveltejs/kit": ^1.0.0-next.480
     "@types/cookie": ^0.5.1
     "@types/js-cookie": ^3.0.2
     "@types/ua-parser-js": ^0.7.36
     cookie: ^0.5.0
     extract-files: ^13.0.0
     graphql: ^16.6.0
-    graphql-zeus: ^5.1.8
+    graphql-zeus: ^5.1.9
     is-dark-color: ^1.2.0
     party-js: ^2.2.0
     sanitize.css: ^13.0.0
     sass: ^1.54.9
-    svelte: ^3.50.0
+    svelte: ^3.50.1
     svelte-check: ^2.9.0
     svelte-loader: ^3.1.3
     svelte-preprocess: ^4.10.7
     svelte-tenor: ^0.2.0
     tslib: ^2.4.0
-    typescript: ^4.8.2
+    typescript: ^4.8.3
     ua-parser-js: ^1.0.2
     unplugin-icons: ^0.14.9
     vite: ^3.1.0
-    vite-plugin-windicss: ^1.8.7
+    vite-plugin-windicss: ^1.8.8
     zod: ^3.19.0
   languageName: unknown
   linkType: soft
@@ -2631,12 +2631,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/core@npm:^3.20.0":
-  version: 3.20.0
-  resolution: "@pothos/core@npm:3.20.0"
+"@pothos/core@npm:^3.21.0":
+  version: 3.21.0
+  resolution: "@pothos/core@npm:3.21.0"
   peerDependencies:
     graphql: ">=15.1.0"
-  checksum: 84bd721deafec602db467da3737f2c35abf77f3ff0ce02e2a94e9b7ec7201476f85c7a302ca278bea4564ea076e7b0a7fe58023c20bec90c96f25ae1c133e9bb
+  checksum: 4d7a36645326289fa593a447a4201b6300e19d4681910653a43c97b9f1e1fbf4cb1929a403927d757da4848b5eaee0924e6c0e161df8881a967613cea855d454
   languageName: node
   linkType: hard
 
@@ -2660,9 +2660,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/plugin-prisma@npm:^3.32.0":
-  version: 3.32.0
-  resolution: "@pothos/plugin-prisma@npm:3.32.0"
+"@pothos/plugin-prisma@npm:^3.33.0":
+  version: 3.33.0
+  resolution: "@pothos/plugin-prisma@npm:3.33.0"
   dependencies:
     "@prisma/generator-helper": ^4.3.1
   peerDependencies:
@@ -2672,17 +2672,17 @@ __metadata:
     typescript: ">=4.7.2"
   bin:
     prisma-pothos-types: bin/generator.js
-  checksum: 468ddf6c83cd1f9a6ab1d1a450132ef1c617baaffa9dc889685c8f414cdad379752900dc43460388d6ff1254c0ed35849fd72f91f408769729cb1ccc69e5ff9c
+  checksum: 41dd3f721cf606b710341673d3855d071bb851aab51d654b1f3a54a8af945d193714f2972da2f4c3015f584dfaeb39480d46a91abac6c8cc139b8330f37a397e
   languageName: node
   linkType: hard
 
-"@pothos/plugin-relay@npm:^3.26.0":
-  version: 3.26.0
-  resolution: "@pothos/plugin-relay@npm:3.26.0"
+"@pothos/plugin-relay@npm:^3.27.0":
+  version: 3.27.0
+  resolution: "@pothos/plugin-relay@npm:3.27.0"
   peerDependencies:
     "@pothos/core": "*"
     graphql: ">=15.1.0"
-  checksum: 6aaf964913a267df49e0d9c5ca4e46721bd9853d38814374d709c04eb29c88ef3d7b3461c81050caed65d691bd869c5df68ee7d9cca3e1ea63b1892a10d1c98a
+  checksum: 374e2318bdaaeb72a879521fe324f45add8c32c06a6f67adaac59b44d603287dab41e1d2a4213dc7fb4e68ea5fb9cc08643abc2ee2b8a5e8e337f70220e4c05b
   languageName: node
   linkType: hard
 
@@ -3973,18 +3973,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/adapter-node@npm:^1.0.0-next.88":
-  version: 1.0.0-next.88
-  resolution: "@sveltejs/adapter-node@npm:1.0.0-next.88"
+"@sveltejs/adapter-node@npm:^1.0.0-next.89":
+  version: 1.0.0-next.89
+  resolution: "@sveltejs/adapter-node@npm:1.0.0-next.89"
   dependencies:
     esbuild: ^0.14.48
-  checksum: 07c6194c7d41ebf941c1a755459bc96aa6b1a00a069195fa84e2f89930badf87cafcea9aea63551fe852c0f8c479940a43eddbb8c654cad867890eb66be7d379
+  checksum: 35092ac9c0e2794b5386605fd510c1bd52ffee07283f7dfdfe4fcec571733fe934482dbd3553c158798bc306a80c8bb80115bcb170c6e4a96471dc30b1d2f868
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^1.0.0-next.477":
-  version: 1.0.0-next.477
-  resolution: "@sveltejs/kit@npm:1.0.0-next.477"
+"@sveltejs/kit@npm:^1.0.0-next.480":
+  version: 1.0.0-next.480
+  resolution: "@sveltejs/kit@npm:1.0.0-next.480"
   dependencies:
     "@sveltejs/vite-plugin-svelte": ^1.0.5
     cookie: ^0.5.0
@@ -4003,7 +4003,7 @@ __metadata:
     vite: ^3.1.0
   bin:
     svelte-kit: svelte-kit.js
-  checksum: c757c7691844e17c7393183bf974764cbc83aeaa44348d371b8bd58e3d3932eae15b7165fdfac702ceccb664fcbed2d410f4e3e7aa531a0430f3f134ef45efaf
+  checksum: c6d9b5632cc1a7b0a684fe0b3da83bd950d975a4a2256e560e67bec3607d377dfccb6c33adcb98d14eb8497c008d3abccce71a0dcecc7e70638df5000f4863e2
   languageName: node
   linkType: hard
 
@@ -5029,29 +5029,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@windicss/config@npm:1.8.7":
-  version: 1.8.7
-  resolution: "@windicss/config@npm:1.8.7"
+"@windicss/config@npm:1.8.8":
+  version: 1.8.8
+  resolution: "@windicss/config@npm:1.8.8"
   dependencies:
     debug: ^4.3.4
     jiti: ^1.14.0
     windicss: ^3.5.6
-  checksum: 39cf492561c68ffe5e5866841d0e2ee2d59e3ca95a6487eee0b217b46583f58b8a66c649124c9727bed9de642fe0894038b9abff548638f60b7f2259cf3825e3
+  checksum: 152b53fe5e9f3b8bd9709de3221b98c6d1c40688e12bd041c40ef8dcbfc3d930ceb27f338035e268c1f7b6d1e2d4e25bf6cf10e7f7ee762cb9e7cd40891e321e
   languageName: node
   linkType: hard
 
-"@windicss/plugin-utils@npm:1.8.7":
-  version: 1.8.7
-  resolution: "@windicss/plugin-utils@npm:1.8.7"
+"@windicss/plugin-utils@npm:1.8.8":
+  version: 1.8.8
+  resolution: "@windicss/plugin-utils@npm:1.8.8"
   dependencies:
     "@antfu/utils": ^0.5.2
-    "@windicss/config": 1.8.7
+    "@windicss/config": 1.8.8
     debug: ^4.3.4
     fast-glob: ^3.2.11
     magic-string: ^0.26.2
     micromatch: ^4.0.5
     windicss: ^3.5.6
-  checksum: 413c3fa38f1b549450416db7b58179c82dcae50179595d06a51a285a7f77795acda732af74cd86400bf8adf8c2a9d41f0f40d819a6ac604e8b9b2bdf57c6c35b
+  checksum: 99b220ce7de2267fa7fbbe6ba91f594bc1c67e63420a6d9c90e827422e17c294c2a13d6e286de28b2785307bca041aeb1c9d2688f4b71f534f7b44fa576ccecd
   languageName: node
   linkType: hard
 
@@ -6526,8 +6526,8 @@ __metadata:
     stylelint-config-recess-order: ^3.0.0
     stylelint-config-standard: ^28.0.0
     stylelint-config-standard-scss: ^5.0.0
-    svelte: ^3.50.0
-    typescript: ^4.8.2
+    svelte: ^3.50.1
+    typescript: ^4.8.3
   languageName: unknown
   linkType: soft
 
@@ -10157,9 +10157,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-zeus@npm:^5.1.8":
-  version: 5.1.8
-  resolution: "graphql-zeus@npm:5.1.8"
+"graphql-zeus@npm:^5.1.9":
+  version: 5.1.9
+  resolution: "graphql-zeus@npm:5.1.9"
   dependencies:
     cross-fetch: ^3.0.4
     graphql: ^16.5.0
@@ -10172,7 +10172,7 @@ __metadata:
       optional: true
   bin:
     zeus: lib/CLI/index.js
-  checksum: 1b21ec90a46907a2dddfc5e34ef134f96cea5421002e4da493e468446366fbf34514e5a92492fef6951da1d9ce859ae11b2c362d5727e155e4988769f215ded6
+  checksum: 89f2bbcfdea2664c7bd9f79302ec6ab969aae7e4a1c42deab3e4ccb27d3d2a39e004861105840db6ba88124aefa5c189534a1188561e8537db51cc72fb9d8462
   languageName: node
   linkType: hard
 
@@ -16765,10 +16765,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:^3.50.0":
-  version: 3.50.0
-  resolution: "svelte@npm:3.50.0"
-  checksum: cc8e8fd14bac3add208b00b9c2ffd64d343f29f84a626899762b3c9d00010cab5f49dce44d376acb270f996c860ad49b727d2bf140f434f2b959061b22249548
+"svelte@npm:^3.50.1":
+  version: 3.50.1
+  resolution: "svelte@npm:3.50.1"
+  checksum: 58d2d8f2c2cdb1695ca41290d241780ad662aeb4d8af8def372820a5fac3185245d6abf5ac7bbae17b9033d907ccab0aa071d0650bc3f0379c5c3818001e41c5
   languageName: node
   linkType: hard
 
@@ -17361,7 +17361,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:*, typescript@npm:^4.6.4, typescript@npm:^4.8.2":
+"typescript@npm:*, typescript@npm:^4.6.4":
   version: 4.8.2
   resolution: "typescript@npm:4.8.2"
   bin:
@@ -17371,13 +17371,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@*#~builtin<compat/typescript>, typescript@patch:typescript@^4.6.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.8.2#~builtin<compat/typescript>":
+"typescript@npm:^4.8.3":
+  version: 4.8.3
+  resolution: "typescript@npm:4.8.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 8286a5edcaf3d68e65c451aa1e7150ad1cf53ee0813c07ec35b7abdfdb10f355ecaa13c6a226a694ae7a67785fd7eeebf89f845da0b4f7e4a35561ddc459aba0
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@*#~builtin<compat/typescript>, typescript@patch:typescript@^4.6.4#~builtin<compat/typescript>":
   version: 4.8.2
   resolution: "typescript@patch:typescript@npm%3A4.8.2#~builtin<compat/typescript>::version=4.8.2&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 6f49363af8af2fe480da1d5fa68712644438785208b06690a3cbe5e7365fd652c3a0f1e587bc8684d78fb69de3dde4de185c0bad7bb4f3664ddfc813ce8caad6
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^4.8.3#~builtin<compat/typescript>":
+  version: 4.8.3
+  resolution: "typescript@patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=f456af"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 0404a09c625df01934ef774b45ce1ca57ccae41cd625fcdbb82056715320d9329e70d9d75c2c732ec6ef947444ca978c189a332b71fa21f5c1437d5a83e24906
   languageName: node
   linkType: hard
 
@@ -18048,17 +18068,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-windicss@npm:^1.8.7":
-  version: 1.8.7
-  resolution: "vite-plugin-windicss@npm:1.8.7"
+"vite-plugin-windicss@npm:^1.8.8":
+  version: 1.8.8
+  resolution: "vite-plugin-windicss@npm:1.8.8"
   dependencies:
-    "@windicss/plugin-utils": 1.8.7
+    "@windicss/plugin-utils": 1.8.8
     debug: ^4.3.4
     kolorist: ^1.5.1
     windicss: ^3.5.6
   peerDependencies:
     vite: ^2.0.1 || ^3.0.0
-  checksum: 5b6e7381f96642e83e04596ee0dbd79ef83e1cb3d2b772acbf7836346f3ac1209d4fbfe93814d7ac7d6aad1806b2c6e8ae5f70e668234ff97610e7914a7a98cf
+  checksum: e07c0d43f2359df5944feaa8f46e2f059a30def50698c5c256aecc8a88a2586da1d9d210057fc52a3ede6bf29e1623a2785e766d43ebd8013c2805c5e111fe25
   languageName: node
   linkType: hard
 
