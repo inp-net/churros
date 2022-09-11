@@ -7,6 +7,7 @@
   import FlexList from '$lib/components/lists/FlexList.svelte';
   import UserPicture from '$lib/components/pictures/UserPicture.svelte';
   import { formatDate } from '$lib/dates.js';
+  import { me } from '$lib/session.js';
   import MajesticonsAcademicCap from '~icons/majesticons/academic-cap-line';
   import MajesticonsCake from '~icons/majesticons/cake-line';
   import MajesticonsEdit from '~icons/majesticons/edit-pen-2-line';
@@ -39,9 +40,11 @@
         {user.firstName}
         {user.nickname}
         {user.lastName}
-        <a href="edit/" title="Éditer">
-          <MajesticonsEdit aria-label="Éditer" />
-        </a>
+        {#if $me?.canEditUsers}
+          <a href="edit/" title="Éditer">
+            <MajesticonsEdit aria-label="Éditer" />
+          </a>
+        {/if}
       </h1>
       <div class="biography">
         {#if user.biography}
