@@ -63,11 +63,8 @@ export const saveUser = async ({
   graduationYear,
   password,
   address,
-  biography,
   birthday,
-  nickname,
   phone,
-  pictureFile,
   schoolEmail,
   schoolServer,
   schoolUid,
@@ -82,11 +79,8 @@ export const saveUser = async ({
       lastName,
       majorId: majorId!,
       address,
-      biography,
       birthday,
-      nickname,
       phone,
-      pictureFile,
       schoolEmail,
       schoolServer,
       schoolUid,
@@ -95,6 +89,18 @@ export const saveUser = async ({
   });
 
   await prisma.userCandidate.delete({ where: { id } });
+
+  const url = new URL('/welcome/', process.env.FRONTEND_URL);
+  await transporter.sendMail({
+    to: email,
+    from: process.env.SUPPORT_EMAIL,
+    html: `
+<p>
+  <a href="${url.toString()}">Bienvenue sur Centraverse !</a>
+</p>
+`,
+    text: `Bienvenue sur Centraverse ! Ça se passe ici : ${url.toString()}`,
+  });
 
   return true;
 };

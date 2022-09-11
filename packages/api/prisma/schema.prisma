@@ -72,12 +72,9 @@ model UserCandidate {
   graduationYear Int?
   password       String @default("") @db.VarChar(255)
 
-  address     String    @default("") @db.VarChar(255)
-  biography   String    @default("") @db.VarChar(255)
-  birthday    DateTime?
-  nickname    String    @default("") @db.VarChar(255)
-  phone       String    @default("") @db.VarChar(255)
-  pictureFile String    @default("") @db.VarChar(255)
+  address  String    @default("") @db.VarChar(255)
+  birthday DateTime?
+  phone    String    @default("") @db.VarChar(255)
 
   @@unique([schoolServer, schoolUid])
 }

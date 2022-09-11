@@ -1,14 +1,10 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { ZeusError } from '$lib/zeus';
 
-  let error: Error | null;
+  let error: App.PageError | null;
   let status: number;
 
   $: ({ error, status } = $page);
-
-  // Revive stringified `ZeusError`s
-  $: if (error?.name === 'ZeusError') error = new ZeusError($page.error as ZeusError);
 </script>
 
 {#if status === 401}
@@ -20,11 +16,6 @@
 {:else if status === 404}
   <h1>Erreur 404</h1>
   <p>Cette page n'existe pas.</p>
-{:else if error instanceof ZeusError}
-  <h1>Erreur {status}</h1>
-  {#each error.errors as { message }}
-    <p>{message}</p>
-  {/each}
 {:else if error}
   <h1>Erreur {status}</h1>
   <p>{error.message}</p>

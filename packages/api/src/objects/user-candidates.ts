@@ -138,6 +138,44 @@ builder.mutationField('acceptRegistration', (t) =>
   })
 );
 
+builder.mutationField('updateUserCandidate', (t) =>
+  t.field({
+    type: 'Boolean',
+    authScopes: { canEditUsers: true },
+    errors: { types: [ZodError] },
+    args: {
+      register: t.arg.boolean(),
+      email: t.arg.string(),
+      firstName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
+      lastName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
+      majorId: t.arg.id(),
+      graduationYear: t.arg.int({ validate: { min: 1900, max: 2100 } }),
+      birthday: t.arg({ type: DateTimeScalar, required: false }),
+      phone: t.arg.string({ validate: { maxLength: 255 } }),
+      address: t.arg.string({ validate: { maxLength: 255 } }),
+    },
+    async resolve(
+      _,
+      { register, email, firstName, lastName, majorId, graduationYear, address, birthday, phone }
+    ) {
+      const candidate = await prisma.userCandidate.update({
+        where: { email },
+        data: {
+          address,
+          birthday,
+          firstName,
+          majorId,
+          graduationYear,
+          lastName,
+          phone,
+        },
+      });
+      if (register) await saveUser(candidate);
+      return true;
+    },
+  })
+);
+
 builder.mutationField('refuseRegistration', (t) =>
   t.field({
     authScopes: { canEditUsers: true },
