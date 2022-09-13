@@ -1,37 +1,17 @@
-import rehypeSanitize from 'rehype-sanitize';
-import rehypeStringify from 'rehype-stringify';
-import remarkParse from 'remark-parse';
-import remarkRehype from 'remark-rehype';
-import { unified } from 'unified';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
+import { toHtml } from '../services/markdown.js';
 import { DateTimeScalar } from './scalars.js';
 
-/** Represents an article, published by a member of a group. */
 export const ArticleType = builder.prismaNode('Article', {
+  description: 'An article is a post in a group.',
   id: { field: 'id' },
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
     title: t.exposeString('title'),
     body: t.exposeString('body'),
-    bodyHtml: t.string({
-      resolve: async ({ body }) =>
-        unified()
-          .use(remarkParse)
-          // Downlevel titles (h1 -> h3)
-          .use(() => ({ children }) => {
-            for (const child of children) {
-              if (child.type === 'heading')
-                child.depth = Math.min(child.depth + 2, 6) as 3 | 4 | 5 | 6;
-            }
-          })
-          .use(remarkRehype)
-          .use(rehypeSanitize)
-          .use(rehypeStringify)
-          .process(body)
-          .then(String),
-    }),
+    bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),
     published: t.exposeBoolean('published'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     publishedAt: t.expose('publishedAt', { type: DateTimeScalar }),
@@ -40,9 +20,9 @@ export const ArticleType = builder.prismaNode('Article', {
   }),
 });
 
-/** Returns a specific article. */
 builder.queryField('article', (t) =>
   t.prismaField({
+    description: 'Gets an article by id.',
     type: ArticleType,
     args: { id: t.arg.id() },
     resolve: async (query, _, { id }) =>
@@ -50,9 +30,9 @@ builder.queryField('article', (t) =>
   })
 );
 
-/** Returns a list of articles from the groups the user is in. */
 builder.queryField('homepage', (t) =>
   t.prismaConnection({
+    description: 'Gets the homepage articles, customized if the user is logged in.',
     type: ArticleType,
     cursor: 'id',
     async resolve(query, _, {}, { user }) {
@@ -84,7 +64,6 @@ builder.queryField('homepage', (t) =>
   })
 );
 
-/** Inserts a new article. */
 builder.mutationField('createArticle', (t) =>
   t.prismaField({
     type: ArticleType,
@@ -111,7 +90,6 @@ builder.mutationField('createArticle', (t) =>
   })
 );
 
-/** Updates an article. */
 builder.mutationField('updateArticle', (t) =>
   t.prismaField({
     type: ArticleType,
@@ -163,7 +141,6 @@ builder.mutationField('updateArticle', (t) =>
   })
 );
 
-/** Deletes an article. */
 builder.mutationField('deleteArticle', (t) =>
   t.field({
     type: 'Boolean',

@@ -1,4 +1,3 @@
-import { GraphQLYogaError } from '@graphql-yoga/node';
 import { CredentialType as CredentialPrismaType } from '@prisma/client';
 import argon2 from 'argon2';
 import { nanoid } from 'nanoid';
@@ -11,8 +10,8 @@ export const CredentialEnumType = builder.enumType(CredentialPrismaType, {
   name: 'CredentialType',
 });
 
-/** All details about a credential except its value. */
 export const CredentialType = builder.prismaObject('Credential', {
+  description: 'A credential is a way to authenticate a user.',
   fields: (t) => ({
     id: t.exposeID('id'),
     userId: t.exposeID('userId'),
@@ -29,10 +28,11 @@ export const CredentialType = builder.prismaObject('Credential', {
   }),
 });
 
-/** Logs a user in and returns a session token. */
 builder.mutationField('login', (t) =>
   t.prismaField({
+    description: 'Logs a user in and returns a session token.',
     type: CredentialType,
+    errors: { types: [Error] },
     grantScopes: ['me', 'login'],
     args: {
       email: t.arg.string(),
@@ -60,13 +60,14 @@ builder.mutationField('login', (t) =>
         }
       }
 
-      throw new GraphQLYogaError('Identifiants invalides.');
+      throw new Error('Identifiants invalides.');
     },
   })
 );
 
 builder.mutationField('logout', (t) =>
   t.authField({
+    description: 'Logs a user out and invalidates the session token.',
     type: 'Boolean',
     authScopes: { loggedIn: true },
     async resolve(_, {}, { user, token }) {
@@ -79,7 +80,6 @@ builder.mutationField('logout', (t) =>
   })
 );
 
-/** Deletes a session. */
 builder.mutationField('deleteToken', (t) =>
   t.field({
     type: 'Boolean',

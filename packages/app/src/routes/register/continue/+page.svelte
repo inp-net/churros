@@ -80,13 +80,22 @@
         const { login } = await $zeus.mutate({
           login: [
             { email: data.userCandidate.email, password },
-            { token: true, expiresAt: true, user: sessionUserQuery() },
+            {
+              __typename: true,
+              '...on Error': { message: true },
+              '...on MutationLoginSuccess': {
+                data: { token: true, expiresAt: true, user: sessionUserQuery() },
+              },
+            },
           ],
         });
-        saveSessionToken(login);
-        // Hard refresh (invalidating is not possible because UserCandidate
-        // is deleted after registration, throwing a ZeusError)
-        location.href = '/welcome/';
+
+        if (login.__typename === 'MutationLoginSuccess') {
+          saveSessionToken(login.data);
+          // Hard refresh (invalidating is not possible because UserCandidate
+          // is deleted after registration, throwing a ZeusError)
+          location.href = '/welcome/';
+        }
       }
     } catch (error: unknown) {
       formErrors = { _errors: [(error as Error).message ?? 'Une erreur est survenue'] };

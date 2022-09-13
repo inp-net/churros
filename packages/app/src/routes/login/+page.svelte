@@ -5,7 +5,7 @@
   import Button from '$lib/components/buttons/Button.svelte';
   import FormCard from '$lib/components/cards/FormCard.svelte';
   import { me, saveSessionToken, sessionUserQuery } from '$lib/session';
-  import { zeus, ZeusError } from '$lib/zeus';
+  import { zeus } from '$lib/zeus';
   import { onMount } from 'svelte';
 
   let email = '';
@@ -30,15 +30,24 @@
       const { login } = await $zeus.mutate({
         login: [
           { email, password },
-          { token: true, expiresAt: true, user: sessionUserQuery() },
+          {
+            __typename: true,
+            '...on Error': { message: true },
+            '...on MutationLoginSuccess': {
+              data: { token: true, expiresAt: true, user: sessionUserQuery() },
+            },
+          },
         ],
       });
-      saveSessionToken(login);
+
+      if (login.__typename === 'Error') {
+        errorMessages = [login.message];
+        return;
+      }
+
+      saveSessionToken(login.data);
       await invalidateAll();
       await redirect();
-    } catch (error: unknown) {
-      if (!(error instanceof ZeusError)) throw error;
-      errorMessages = error.errors.map(({ message }) => message);
     } finally {
       loading = false;
     }
