@@ -18,4 +18,4 @@ import './objects/users.js';
 export const schema = builder.toSchema({});
 
 export const writeSchema = async () =>
-  writeFile(new URL('src/schema.graphql', `file:///${process.cwd()}/`), printSchema(schema));
+  writeFile(new URL('build/schema.graphql', `file:///${process.cwd()}/`), printSchema(schema));

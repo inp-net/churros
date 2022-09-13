@@ -2,6 +2,7 @@ import SchemaBuilder, { type BuiltinScalarRef } from '@pothos/core';
 import ComplexityPlugin from '@pothos/plugin-complexity';
 import ErrorsPlugin from '@pothos/plugin-errors';
 import PrismaPlugin from '@pothos/plugin-prisma';
+import type PrismaTypes from '@pothos/plugin-prisma/generated';
 import RelayPlugin from '@pothos/plugin-relay';
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
@@ -10,7 +11,6 @@ import ValidationPlugin from '@pothos/plugin-validation';
 import { GraphQLError, Kind } from 'graphql';
 import { authScopes, type AuthContexts, type AuthScopes } from './auth.js';
 import type { Context } from './context.js';
-import type PrismaTypes from './prisma-types.js';
 import { prisma } from './prisma.js';
 
 export const builder = new SchemaBuilder<{

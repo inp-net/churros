@@ -3,10 +3,9 @@ generator client {
   previewFeatures = ["fullTextSearch"]
 }
 
+// See https://pothos-graphql.dev/docs/plugins/prisma#setup
 generator pothos {
-  provider     = "prisma-pothos-types"
-  clientOutput = "@prisma/client"
-  output       = "../src/prisma-types.ts"
+  provider = "prisma-pothos-types"
 }
 
 datasource db {
@@ -14,6 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// Users are the people who use the app
 model User {
   id        Int      @id @default(autoincrement())
   uid       String   @unique @db.VarChar(255)
@@ -45,6 +45,7 @@ model User {
   canEditUsers  Boolean @default(false)
   canEditGroups Boolean @default(false)
 
+  // Relationships
   articles    Article[]
   groups      GroupMember[]
   credentials Credential[]
@@ -53,6 +54,7 @@ model User {
   @@unique([schoolServer, schoolUid])
 }
 
+/// UserCandidates are users in the registration process
 model UserCandidate {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -79,6 +81,7 @@ model UserCandidate {
   @@unique([schoolServer, schoolUid])
 }
 
+/// Social link types
 enum LinkType {
   Facebook
   Instagram
@@ -86,6 +89,7 @@ enum LinkType {
   Twitter
 }
 
+/// Ways to contact a user outside of the app
 model UserLink {
   id     Int      @id @default(autoincrement())
   userId Int
@@ -95,6 +99,7 @@ model UserLink {
   user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
+/// A school syllabus
 model Major {
   id   Int    @id @default(autoincrement())
   name String @db.VarChar(255)
@@ -119,6 +124,7 @@ enum CredentialType {
   Token
 }
 
+/// A credential is a way to authenticate a user
 model Credential {
   id        Int            @id @default(autoincrement())
   userId    Int
@@ -131,6 +137,7 @@ model Credential {
   user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
+/// There is one student association per school and per year
 model StudentOrganization {
   id       Int    @id @default(autoincrement())
   schoolId Int
@@ -141,6 +148,7 @@ model StudentOrganization {
   Group  Group[]
 }
 
+/// The different kinds of groups
 enum GroupType {
   Association
   Club
@@ -149,6 +157,7 @@ enum GroupType {
   StudentOrganizationSection
 }
 
+/// A group is a collection of users
 model Group {
   id                    Int       @id @default(autoincrement())
   schoolId              Int?
@@ -163,6 +172,7 @@ model Group {
   studentOrganization StudentOrganization? @relation(fields: [studentOrganizationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
 }
 
+/// The intermediate model between users and groups
 model GroupMember {
   groupId         Int
   memberId        Int
@@ -179,6 +189,7 @@ model GroupMember {
   @@id([groupId, memberId])
 }
 
+/// An article is a post in a group
 model Article {
   id          Int      @id @default(autoincrement())
   authorId    Int?

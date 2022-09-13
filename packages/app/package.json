@@ -50,7 +50,7 @@
     "dev": "yarn zeus && vite dev --host",
     "preview": "vite preview",
     "storybook": "NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 6006",
-    "zeus": "zeus ../api/src/schema.graphql ./src --es"
+    "zeus": "zeus ../api/build/schema.graphql ./src --es"
   },
   "type": "module",
   "volta": {
