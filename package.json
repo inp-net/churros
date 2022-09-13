@@ -3,8 +3,8 @@
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
-    "@typescript-eslint/eslint-plugin": "^5.36.2",
-    "@typescript-eslint/parser": "^5.36.2",
+    "@typescript-eslint/eslint-plugin": "^5.37.0",
+    "@typescript-eslint/parser": "^5.37.0",
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-xo": "^0.42.0",
@@ -27,7 +27,7 @@
     "typescript": "^4.8.3"
   },
   "license": "AGPL-3.0-only",
-  "packageManager": "yarn@3.2.2",
+  "packageManager": "yarn@4.0.0-rc.18",
   "private": true,
   "scripts": {
     "build": "yarn workspaces foreach --topological-dev -pv run build",
@@ -41,13 +41,10 @@
     "storybook": "yarn workspace @centraverse/app run storybook"
   },
   "volta": {
-    "node": "18.8.0",
+    "node": "18.9.0",
     "yarn": "1.22.19"
   },
   "workspaces": [
     "packages/*"
-  ],
-  "dependencies": {
-    "@pothos/plugin-tracing": "^0.4.0"
-  }
+  ]
 }
