@@ -114,9 +114,9 @@ model School {
   name  String @db.VarChar(255)
   color String @db.VarChar(7)
 
-  groups               Group[]
-  majors               Major[]
-  studentOrganizations StudentOrganization[]
+  groups              Group[]
+  majors              Major[]
+  studentAssociations StudentAssociation[]
 }
 
 enum CredentialType {
@@ -138,7 +138,7 @@ model Credential {
 }
 
 /// There is one student association per school and per year
-model StudentOrganization {
+model StudentAssociation {
   id       Int    @id @default(autoincrement())
   schoolId Int
   name     String @unique @db.VarChar(255)
@@ -154,22 +154,27 @@ enum GroupType {
   Club
   Group
   Integration
-  StudentOrganizationSection
+  StudentAssociationSection
 }
 
 /// A group is a collection of users
 model Group {
-  id                    Int       @id @default(autoincrement())
-  schoolId              Int?
-  studentOrganizationId Int?
-  name                  String    @db.VarChar(255)
-  type                  GroupType
-  color                 String    @db.VarChar(7)
+  id                   Int       @id @default(autoincrement())
+  parentId             Int?
+  /// Helper field to get a whole tree without processing all groups
+  familyId             Int?
+  schoolId             Int?
+  studentAssociationId Int?
+  name                 String    @db.VarChar(255)
+  type                 GroupType
+  color                String    @db.VarChar(7)
 
-  articles            Article[]
-  members             GroupMember[]
-  school              School?              @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  studentOrganization StudentOrganization? @relation(fields: [studentOrganizationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  articles           Article[]
+  children           Group[]             @relation("parent")
+  members            GroupMember[]
+  parent             Group?              @relation("parent", fields: [parentId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  school             School?             @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  studentAssociation StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
 }
 
 /// The intermediate model between users and groups

@@ -27,7 +27,7 @@ await prisma.major.create({
   data: { name: 'Vent', schools: { connect: [{ id: 4 }] } },
 });
 
-await prisma.studentOrganization.createMany({
+await prisma.studentAssociation.createMany({
   data: [
     { name: 'AE EAU 2022', schoolId: 1, year: 2022 },
     { name: 'AE FEU 2022', schoolId: 2, year: 2022 },
@@ -140,7 +140,7 @@ await prisma.group.createMany({
     type: GroupType.Club,
     color: color(group.name),
     schoolId: (i % 4) + 1,
-    studentOrganizationId: (i % 4) + 1,
+    studentAssociationId: (i % 4) + 1,
   })),
 });
 
