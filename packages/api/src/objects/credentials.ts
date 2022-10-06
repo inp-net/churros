@@ -32,8 +32,7 @@ builder.mutationField('login', (t) =>
   t.prismaField({
     description: 'Logs a user in and returns a session token.',
     type: CredentialType,
-    errors: { types: [Error] },
-    grantScopes: ['me', 'login'],
+    errors: { types: [Error], dataField: { grantScopes: ['me', 'login'] } },
     args: {
       email: t.arg.string(),
       password: t.arg.string(),
