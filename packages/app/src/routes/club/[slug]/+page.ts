@@ -6,7 +6,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
   return loadQuery(
     {
       group: [
-        { id: params.id },
+        params,
         me
           ? {
               id: true,

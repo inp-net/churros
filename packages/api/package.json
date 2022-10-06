@@ -29,6 +29,7 @@
     "rehype-stringify": "^9.0.3",
     "remark-parse": "^10.0.1",
     "remark-rehype": "^10.1.0",
+    "slug": "^8.2.2",
     "unified": "^10.1.2",
     "zod": "^3.19.1"
   },
@@ -39,6 +40,7 @@
     "@types/ldapjs": "^2.2.4",
     "@types/node": "^18.8.3",
     "@types/nodemailer": "^6.4.6",
+    "@types/slug": "^5.0.3",
     "prisma": "^4.4.0",
     "tsx": "^3.9.0",
     "typescript": "^4.8.4"

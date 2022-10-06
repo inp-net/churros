@@ -35,7 +35,7 @@
       : undefined}
   >
     <p>
-      Par <a href="/club/{group.id}">{group.name}</a>
+      Par <a href="/club/{group.slug}/">{group.name}</a>
       le {formatDateTime(publishedAt)}
     </p>
     {@html bodyHtml}

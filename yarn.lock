@@ -1693,6 +1693,7 @@ __metadata:
     "@types/ldapjs": "npm:^2.2.4"
     "@types/node": "npm:^18.8.3"
     "@types/nodemailer": "npm:^6.4.6"
+    "@types/slug": "npm:^5.0.3"
     argon2: "npm:^0.29.1"
     dichotomid: "npm:^0.0.3"
     envelop-no-batched-queries: "npm:^3.0.2"
@@ -1710,6 +1711,7 @@ __metadata:
     rehype-stringify: "npm:^9.0.3"
     remark-parse: "npm:^10.0.1"
     remark-rehype: "npm:^10.1.0"
+    slug: "npm:^8.2.2"
     tsx: "npm:^3.9.0"
     typescript: "npm:^4.8.4"
     unified: "npm:^10.1.2"
@@ -4644,6 +4646,13 @@ __metadata:
     "@types/mime": "npm:*"
     "@types/node": "npm:*"
   checksum: 7db8fd127cfdfdb161922fb9a6fcb2022418755c375ae8550b8d53a4fcd686af1b71fb35c81c4e223a16b74bbfadfc810de06172eef7ee3394d94294fc3536f1
+  languageName: node
+  linkType: hard
+
+"@types/slug@npm:^5.0.3":
+  version: 5.0.3
+  resolution: "@types/slug@npm:5.0.3"
+  checksum: 75ac1055b348b7fa848d36cfcf809e7c93534ebf99f9c8bf4020026f498892169582cda103886313d5bd92e0328340724e724cba43babc980f79f244a8ea94df
   languageName: node
   linkType: hard
 
@@ -16040,6 +16049,15 @@ __metadata:
     ansi-styles: "npm:^6.0.0"
     is-fullwidth-code-point: "npm:^4.0.0"
   checksum: 6d94805ff2cc473bd610de967b60d915e6df967fad8d47b8ebcd8a02d915400f808e49c1982bcfbdc47fde230c0274f36e016ed2284ec9254e737c728ab3b59d
+  languageName: node
+  linkType: hard
+
+"slug@npm:^8.2.2":
+  version: 8.2.2
+  resolution: "slug@npm:8.2.2"
+  bin:
+    slug: cli.js
+  checksum: 2768c297bc0ad84c2eb24bbdb9e1d984e5d6967cccc89abc42a34559c4c00035ce8a1445db5f8f0f45380c932e75e85be39549bcf0fe5cf21ec31bc124a537d0
   languageName: node
   linkType: hard
 

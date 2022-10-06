@@ -160,6 +160,7 @@ enum GroupType {
 /// A group is a collection of users
 model Group {
   id                   Int       @id @default(autoincrement())
+  slug                 String    @unique @db.VarChar(255)
   parentId             Int?
   /// Helper field to get a whole tree without processing all groups
   familyId             Int?

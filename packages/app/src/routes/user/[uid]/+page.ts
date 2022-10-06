@@ -20,7 +20,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           nickname: true,
           phone: true,
           pictureFile: true,
-          groups: { group: { id: true, name: true, color: true }, title: true },
+          groups: { group: { slug: true, name: true, color: true }, title: true },
           links: { type: true, value: true },
           major: { name: true, schools: { name: true, color: true } },
         },

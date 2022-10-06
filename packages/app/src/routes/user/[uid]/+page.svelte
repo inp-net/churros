@@ -103,7 +103,7 @@
   <FlexList>
     {#each user.groups as groupMember}
       <li>
-        <a href="/club/{groupMember.group.id}/" class="no-underline">
+        <a href="/club/{groupMember.group.slug}/" class="no-underline">
           <GroupMemberBadge {groupMember} />
         </a>
       </li>

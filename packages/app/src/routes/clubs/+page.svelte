@@ -4,7 +4,9 @@
 
   export let data: PageData;
 
-  $: myGroups = new Map($me?.groups.map((group) => [group.groupId, group]) ?? []);
+  $: myGroups = new Map(
+    $me?.groups.map((groupMember) => [groupMember.group.slug, groupMember]) ?? []
+  );
 </script>
 
 <table>
@@ -16,15 +18,15 @@
       <td />
     {/if}
   </tr>
-  {#each data.groups as { id, name }}
+  {#each data.groups as { slug, name }}
     <tr>
-      <td>{id}</td>
-      <td><a href="/club/{id}">{name}</a></td>
+      <td>{slug}</td>
+      <td><a href="/club/{slug}/">{name}</a></td>
       {#if $me}
-        <td>{myGroups.has(id) ? 'Oui' : 'Non'}</td>
+        <td>{myGroups.has(slug) ? 'Oui' : 'Non'}</td>
         <td>
-          {#if $me.canEditGroups || myGroups.get(id)?.canEditMembers}
-            <a href="/club/{id}/members/">Edit</a>
+          {#if $me.canEditGroups || myGroups.get(slug)?.canEditMembers}
+            <a href="/club/{slug}/members/">Edit</a>
           {/if}
         </td>
       {/if}

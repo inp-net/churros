@@ -1,6 +1,7 @@
 import { CredentialType, GroupType, LinkType, type Prisma } from '@prisma/client';
 import { hash } from 'argon2';
 import { prisma } from './prisma.js';
+import slug from 'slug';
 
 await prisma.school.createMany({
   data: [
@@ -137,6 +138,7 @@ const color = (str: string) => {
 await prisma.group.createMany({
   data: groups.map((group, i) => ({
     ...group,
+    slug: slug(group.name),
     type: GroupType.Club,
     color: color(group.name),
     schoolId: (i % 4) + 1,

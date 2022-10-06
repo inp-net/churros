@@ -1,4 +1,5 @@
 import { GroupType as GroupPrismaType } from '@prisma/client';
+import slug from 'slug';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 
@@ -7,9 +8,14 @@ export const GroupEnumType = builder.enumType(GroupPrismaType, {
 });
 
 /** Represents a group, mapped on the underlying database object. */
-export const GroupType = builder.prismaObject('Group', {
+export const GroupType = builder.prismaNode('Group', {
+  id: { field: 'id' },
   fields: (t) => ({
-    id: t.exposeID('id'),
+    // Because `id` is a Relay id, expose `groupId` as the real db id
+    groupId: t.exposeID('id'),
+    slug: t.exposeString('slug'),
+    parentId: t.exposeID('parentId', { nullable: true }),
+    familyId: t.exposeID('familyId', { nullable: true }),
     name: t.exposeString('name'),
     color: t.exposeString('color'),
     articles: t.relation('articles', {
@@ -51,11 +57,11 @@ builder.queryField('groups', (t) =>
 builder.queryField('group', (t) =>
   t.prismaField({
     type: GroupType,
-    args: { id: t.arg.id() },
-    resolve: (query, _, { id }) =>
+    args: { slug: t.arg.string() },
+    resolve: (query, _, { slug }) =>
       prisma.group.findUniqueOrThrow({
         ...query,
-        where: { id },
+        where: { slug },
       }),
   })
 );
@@ -73,7 +79,7 @@ builder.mutationField('createGroup', (t) =>
     resolve: async (query, _, { type, name, schoolId }) =>
       prisma.group.create({
         ...query,
-        data: { type, name, schoolId, color: '#bbdfff' },
+        data: { type, name, schoolId, color: '#bbdfff', slug: slug(name) },
       }),
   })
 );

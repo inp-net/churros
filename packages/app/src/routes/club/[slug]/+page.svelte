@@ -32,7 +32,7 @@
       <p>Le group ne contient aucun membre, il vient peut-être d'être créé.</p>
     </Alert>
   {/if}
-  {#if $me?.canEditGroups || $me?.groups.some(({ groupId, canEditMembers }) => canEditMembers && groupId === $page.params.id)}
+  {#if $me?.canEditGroups || $me?.groups.some(({ group, canEditMembers }) => canEditMembers && group.slug === $page.params.slug)}
     <p>
       <a href="/club/{$page.params.id}/members"> Modifier la liste des membres </a>
     </p>
@@ -48,7 +48,7 @@
   </article>
 {/each}
 
-{#if $me?.canEditGroups || $me?.groups.some(({ groupId, canEditArticles }) => groupId === $page.params.id && canEditArticles)}
+{#if $me?.canEditGroups || $me?.groups.some(({ group, canEditArticles }) => group.slug === $page.params.slug && canEditArticles)}
   <p>
     <a href="/club/{$page.params.id}/write"> Écrire un article </a>
   </p>
