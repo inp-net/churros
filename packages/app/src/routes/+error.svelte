@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
 
-  let error: App.PageError | null;
+  let error: App.Error | null;
   let status: number;
 
   $: ({ error, status } = $page);

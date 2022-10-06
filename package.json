@@ -3,31 +3,31 @@
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
-    "@typescript-eslint/eslint-plugin": "^5.37.0",
-    "@typescript-eslint/parser": "^5.37.0",
-    "eslint": "^8.23.1",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
+    "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-xo": "^0.42.0",
     "eslint-config-xo-typescript": "^0.53.0",
     "eslint-plugin-svelte3": "^4.0.0",
-    "eslint-plugin-unicorn": "^43.0.2",
+    "eslint-plugin-unicorn": "^44.0.1",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "postcss-html": "^1.5.0",
     "prettier": "^2.7.1",
     "prettier-plugin-jsdoc": "^0.4.2",
-    "prettier-plugin-svelte": "^2.7.0",
-    "stylelint": "^14.11.0",
+    "prettier-plugin-svelte": "^2.7.1",
+    "stylelint": "^14.13.0",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-prettier": "^9.0.3",
     "stylelint-config-recess-order": "^3.0.0",
     "stylelint-config-standard": "^28.0.0",
     "stylelint-config-standard-scss": "^5.0.0",
     "svelte": "^3.50.1",
-    "typescript": "^4.8.3"
+    "typescript": "^4.8.4"
   },
   "license": "AGPL-3.0-only",
-  "packageManager": "yarn@4.0.0-rc.18",
+  "packageManager": "yarn@4.0.0-rc.22",
   "private": true,
   "scripts": {
     "build": "yarn workspaces foreach --topological-dev -pv run build",
@@ -41,7 +41,7 @@
     "storybook": "yarn workspace @centraverse/app run storybook"
   },
   "volta": {
-    "node": "18.9.0",
+    "node": "18.10.0",
     "yarn": "1.22.19"
   },
   "workspaces": [
