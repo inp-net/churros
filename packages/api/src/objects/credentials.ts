@@ -11,7 +11,6 @@ export const CredentialEnumType = builder.enumType(CredentialPrismaType, {
 });
 
 export const CredentialType = builder.prismaObject('Credential', {
-  description: 'A credential is a way to authenticate a user.',
   fields: (t) => ({
     id: t.exposeID('id'),
     userId: t.exposeID('userId'),

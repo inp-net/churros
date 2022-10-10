@@ -4,7 +4,6 @@ import { toHtml } from '../services/markdown.js';
 import { DateTimeScalar } from './scalars.js';
 
 export const ArticleType = builder.prismaNode('Article', {
-  description: 'An article is a post in a group.',
   id: { field: 'id' },
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),

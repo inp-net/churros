@@ -39,7 +39,7 @@ export const builder = new SchemaBuilder<{
   complexity: { limit: { complexity: 500, depth: 6, breadth: 30 } },
   defaultInputFieldRequiredness: true,
   errorOptions: { defaultTypes: [Error] },
-  prisma: { client: prisma },
+  prisma: { client: prisma, exposeDescriptions: true },
   relayOptions: { clientMutationId: 'omit', cursorType: 'String' },
   tracing: {
     default: (config) => isRootField(config),
