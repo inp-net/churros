@@ -1,4 +1,4 @@
-import { GraphQLYogaError } from '@graphql-yoga/node';
+import { GraphQLError } from 'graphql';
 import imageType, { minimumBytes } from 'image-type';
 import { unlink, writeFile } from 'node:fs/promises';
 import { phone as parsePhoneNumber } from 'phone';
@@ -174,7 +174,7 @@ builder.mutationField('updateUserPicture', (t) =>
         .then((array) => Buffer.from(array))
         .then(async (buffer) => imageType(buffer));
       if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
-        throw new GraphQLYogaError('File format not supported');
+        throw new GraphQLError('File format not supported');
 
       const path = `${uid}.${type.ext}`;
       purgeUserSessions(uid);

@@ -1,9 +1,12 @@
-import { createServer, GraphQLYogaError } from '@graphql-yoga/node';
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
 import { NotFoundError, PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
+import { createFetch } from '@whatwg-node/fetch';
+import cors from 'cors';
 import { useNoBatchedQueries } from 'envelop-no-batched-queries';
 import express from 'express';
 import { GraphQLError } from 'graphql';
+import { createYoga } from 'graphql-yoga';
+import helmet from 'helmet';
 import { fileURLToPath } from 'node:url';
 import { z, ZodError } from 'zod';
 import { context } from './context.js';
@@ -12,14 +15,17 @@ import { schema, writeSchema } from './schema.js';
 
 z.setErrorMap(customErrorMap);
 
-const yoga = createServer({
+const yoga = createYoga({
   schema,
   context,
   graphiql: {
     defaultQuery:
-      'query {\n\thomepage {\n\t\ttitle\n\t\tbody\n\t\tauthor { firstName lastName }\n\t\tgroup { name }\n\t}\n}\n',
+      'query {\n  homepage {\n    edges {\n      node {\n        title\n        body\n        author {\n          firstName\n          lastName\n        }\n        group {\n          name\n        }\n      }\n    }\n  }\n}',
   },
-  multipart: { files: 1, fileSize: 10 * 1024 * 1024 },
+  fetchAPI: createFetch({
+    useNodeFetch: true,
+    formDataLimits: { files: 1, fileSize: 10 * 1024 * 1024 },
+  }),
   maskedErrors: {
     formatError(error, message, isDev) {
       if (isDev) console.error(error);
@@ -32,7 +38,7 @@ const yoga = createServer({
       if (
         cause instanceof ForbiddenError ||
         cause instanceof NotFoundError ||
-        cause instanceof GraphQLYogaError
+        cause instanceof GraphQLError
       )
         return new GraphQLError(cause.message);
 
@@ -60,8 +66,17 @@ const yoga = createServer({
 });
 
 const api = express();
-// api.use(helmet());
-api.use('/graphql', yoga);
+api.use(
+  // Allow queries from the frontend only
+  cors({ origin: process.env.FRONTEND_URL }),
+  // Set basic security headers
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
+api.use('/graphql', async (req, res) => yoga(req, res));
 api.use('/storage', express.static(fileURLToPath(new URL(process.env.STORAGE))));
 api.get('/', (_req, res) => {
   res.send(`<!DOCTYPE html>

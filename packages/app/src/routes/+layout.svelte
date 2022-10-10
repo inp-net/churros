@@ -91,7 +91,7 @@
     class="mobile-background"
     hidden={$menuOpenness === 0}
     style:opacity={$menuOpenness}
-    on:click={() => {
+    on:touchend={() => {
       menuOpen = false;
       $menuOpenness = 0;
     }}

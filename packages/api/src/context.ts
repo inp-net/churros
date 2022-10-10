@@ -1,4 +1,4 @@
-import { GraphQLYogaError, type YogaInitialContext } from '@graphql-yoga/node';
+import type { YogaInitialContext } from '@graphql-yoga/node';
 import {
   CredentialType,
   type GroupMember,
@@ -6,6 +6,7 @@ import {
   type School,
   type User,
 } from '@prisma/client';
+import { GraphQLError } from 'graphql';
 import { prisma } from './prisma.js';
 
 const getToken = ({ headers }: Request) => {
@@ -44,13 +45,13 @@ const getUser = async (token: string) => {
       },
     })
     .catch(() => {
-      throw new GraphQLYogaError('Invalid token.');
+      throw new GraphQLError('Invalid token.');
     });
 
   // If the session expired, delete it
   if (credential.expiresAt !== null && credential.expiresAt < new Date()) {
     await prisma.credential.delete({ where: { id: credential.id } });
-    throw new GraphQLYogaError('Session expired.');
+    throw new GraphQLError('Session expired.');
   }
 
   // Delete expired sessions once in a while
