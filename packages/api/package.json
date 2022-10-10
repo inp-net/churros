@@ -54,7 +54,7 @@
   },
   "private": true,
   "scripts": {
-    "build": "prisma generate && tsc && node ./build/build.js",
+    "build": "prisma generate && tsc && node ./build/post-build.js",
     "clean": "git clean -Xdf .",
     "dev": "NODE_ENV=development tsx watch --clear-screen=false ./src/index.ts"
   },
