@@ -34,8 +34,8 @@ model User {
 
   // Optional profile details
   address     String    @default("") @db.VarChar(255)
-  biography   String    @default("") @db.VarChar(255)
   birthday    DateTime?
+  description String    @default("") @db.VarChar(255)
   nickname    String    @default("") @db.VarChar(255)
   phone       String    @default("") @db.VarChar(255)
   pictureFile String    @default("") @db.VarChar(255)
@@ -169,6 +169,11 @@ model Group {
   name                 String    @db.VarChar(255)
   type                 GroupType
   color                String    @db.VarChar(7)
+
+  address         String @default("") @db.VarChar(255)
+  description     String @default("") @db.VarChar(255)
+  email           String @default("") @db.VarChar(255)
+  longDescription String @default("")
 
   articles           Article[]
   children           Group[]             @relation("parent")

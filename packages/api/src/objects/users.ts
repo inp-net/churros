@@ -23,7 +23,7 @@ export const UserType = builder.prismaNode('User', {
 
     // Profile details
     address: t.exposeString('address', { authScopes: { loggedIn: true, $granted: 'me' } }),
-    biography: t.exposeString('biography', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    description: t.exposeString('description', { authScopes: { loggedIn: true, $granted: 'me' } }),
     birthday: t.expose('birthday', {
       type: DateTimeScalar,
       nullable: true,
@@ -120,14 +120,14 @@ builder.mutationField('updateUser', (t) =>
       address: t.arg.string({ validate: { maxLength: 255 } }),
       phone: t.arg.string({ validate: { maxLength: 255 } }),
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
-      biography: t.arg.string({ validate: { maxLength: 255 } }),
+      description: t.arg.string({ validate: { maxLength: 255 } }),
       links: t.arg({ type: [UserLinkInput] }),
     },
     authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
     async resolve(
       query,
       _,
-      { uid, majorId, graduationYear, nickname, biography, links, address, phone, birthday }
+      { uid, majorId, graduationYear, nickname, description, links, address, phone, birthday }
     ) {
       if (phone) {
         const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
@@ -148,7 +148,7 @@ builder.mutationField('updateUser', (t) =>
           majorId,
           graduationYear,
           nickname,
-          biography,
+          description,
           address,
           phone,
           birthday,

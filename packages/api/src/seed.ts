@@ -71,7 +71,7 @@ for (const [i, data] of userData.entries()) {
     data: {
       ...data,
       email: `${data.uid}@example.com`,
-      biography: i % 2 ? "Salut c'est moi" : '',
+      description: i % 2 ? "Salut c'est moi" : '',
       links: {
         create: [
           { type: LinkType.Facebook, value: '#' },

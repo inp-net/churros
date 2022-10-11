@@ -7,7 +7,7 @@ export const userQuery = Selector('User')({
   firstName: true,
   lastName: true,
   nickname: true,
-  biography: true,
+  description: true,
   pictureFile: true,
   address: true,
   graduationYear: true,

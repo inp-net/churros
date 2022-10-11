@@ -19,7 +19,7 @@
   // We don't want form bindings to be reactive to let them evolve separately from the data
   let {
     address,
-    biography,
+    description,
     graduationYear,
     links,
     majorId,
@@ -46,7 +46,7 @@
           {
             uid: data.user.uid,
             nickname,
-            biography,
+            description,
             links,
             address,
             graduationYear,
@@ -143,7 +143,7 @@
       <label>Surnom : <input type="text" bind:value={nickname} /></label>
     </p>
     <p>
-      <label>Description : <input type="text" bind:value={biography} /></label>
+      <label>Description : <input type="text" bind:value={description} /></label>
     </p>
     <p>Réseaux sociaux :</p>
     <ul>

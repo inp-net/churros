@@ -11,9 +11,9 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
         params,
         {
           address: true,
-          biography: true,
           birthday: true,
           createdAt: true,
+          description: true,
           firstName: true,
           graduationYear: true,
           lastName: true,

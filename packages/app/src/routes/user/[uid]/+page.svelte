@@ -46,9 +46,9 @@
           </a>
         {/if}
       </h1>
-      <div class="biography">
-        {#if user.biography}
-          {user.biography}
+      <div class="description">
+        {#if user.description}
+          {user.description}
         {:else}
           {['👻', '🌵', '🕸️', '💤'][user.createdAt.getTime() % 4]}
         {/if}
@@ -131,7 +131,7 @@
     padding-block: 0.5rem;
   }
 
-  .biography {
+  .description {
     color: var(--muted);
   }
 

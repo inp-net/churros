@@ -18,6 +18,10 @@ export const GroupType = builder.prismaNode('Group', {
     familyId: t.exposeID('familyId', { nullable: true }),
     name: t.exposeString('name'),
     color: t.exposeString('color'),
+    address: t.exposeString('address'),
+    description: t.exposeString('description'),
+    email: t.exposeString('email'),
+    longDescription: t.exposeString('longDescription'),
     articles: t.relation('articles', {
       query: { orderBy: { publishedAt: 'desc' } },
     }),
