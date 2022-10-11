@@ -21,7 +21,7 @@
     address,
     description,
     graduationYear,
-    links,
+    linkCollection,
     majorId,
     nickname,
     phone,
@@ -47,7 +47,7 @@
             uid: data.user.uid,
             nickname,
             description,
-            links,
+            links: linkCollection.links,
             address,
             graduationYear,
             majorId,
@@ -147,7 +147,7 @@
     </p>
     <p>Réseaux sociaux :</p>
     <ul>
-      {#each links as link, i}
+      {#each linkCollection.links as link, i}
         <li>
           <InputGroup>
             <select bind:value={link.type}>
@@ -161,16 +161,21 @@
             <GhostButton
               title="Supprimer"
               on:click={() => {
-                links = links.filter((_, j) => i !== j);
+                linkCollection.links = linkCollection.links.filter((_, j) => i !== j);
               }}
             >
               <MajesticonsClose aria-label="Supprimer" />
             </GhostButton>
             {#if i > 0}
               <GhostButton
-                title="Supprimer"
+                title="Remonter"
                 on:click={() => {
-                  links = [...links.slice(0, i - 1), links[i], links[i - 1], ...links.slice(i + 1)];
+                  linkCollection.links = [
+                    ...linkCollection.links.slice(0, i - 1),
+                    linkCollection.links[i],
+                    linkCollection.links[i - 1],
+                    ...linkCollection.links.slice(i + 1),
+                  ];
                 }}
               >
                 <MajesticonsChevronUp aria-label="Remonter" />
@@ -183,7 +188,10 @@
         <button
           type="button"
           on:click={() => {
-            links = [...links, { type: data.linkTypes[0], value: '' }];
+            linkCollection.links = [
+              ...linkCollection.links,
+              { type: data.linkTypes[0], value: '' },
+            ];
           }}><MajesticonsPlus aria-hidden="true" />Ajouter</button
         >
       </li>

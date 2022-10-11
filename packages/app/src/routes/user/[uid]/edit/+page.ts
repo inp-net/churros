@@ -14,7 +14,7 @@ export const userQuery = Selector('User')({
   majorId: true,
   phone: true,
   birthday: true,
-  links: { type: true, value: true },
+  linkCollection: { links: { type: true, value: true } },
 });
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {

@@ -19,12 +19,14 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 treasurer: true,
               },
               school: { name: true, color: true },
+              linkCollection: { links: { type: true, value: true } },
             }
           : {
               id: true,
               name: true,
               articles: { title: true, bodyHtml: true },
               school: { name: true, color: true },
+              linkCollection: { links: { type: true, value: true } },
             },
       ],
     },

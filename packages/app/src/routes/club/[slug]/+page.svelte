@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import Alert from '$lib/components/alerts/Alert.svelte';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
+  import SocialLink from '$lib/components/links/SocialLink.svelte';
   import { me } from '$lib/session.js';
   import type { PageData } from './$types';
 
@@ -9,6 +10,13 @@
 </script>
 
 <h1>{data.group.name} <SchoolBadge schools={[data.group.school]} /></h1>
+{#if data.group.linkCollection.links.length > 0}
+  <div class="flex flex-wrap mt-2 gap-3">
+    {#each data.group.linkCollection.links as link}
+      <SocialLink {...link} />
+    {/each}
+  </div>
+{/if}
 
 {#if data.group.members}
   <h2>Membres</h2>

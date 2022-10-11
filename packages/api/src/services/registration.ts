@@ -77,7 +77,7 @@ export const saveUser = async ({
       graduationYear: graduationYear!,
       firstName,
       lastName,
-      majorId: majorId!,
+      major: { connect: { id: majorId! } },
       address,
       birthday,
       phone,
@@ -85,6 +85,7 @@ export const saveUser = async ({
       schoolServer,
       schoolUid,
       credentials: { create: { type: CredentialType.Password, value: password } },
+      linkCollection: { create: {} },
     },
   });
 

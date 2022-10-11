@@ -25,6 +25,7 @@ export const GroupType = builder.prismaNode('Group', {
     articles: t.relation('articles', {
       query: { orderBy: { publishedAt: 'desc' } },
     }),
+    linkCollection: t.relation('linkCollection'),
     members: t.relation('members', {
       // Seeing group members requires being logged in
       authScopes: { loggedIn: true },
@@ -83,7 +84,14 @@ builder.mutationField('createGroup', (t) =>
     resolve: async (query, _, { type, name, schoolId }) =>
       prisma.group.create({
         ...query,
-        data: { type, name, schoolId, color: '#bbdfff', slug: slug(name) },
+        data: {
+          type,
+          name,
+          school: { connect: { id: schoolId } },
+          color: '#bbdfff',
+          slug: slug(name),
+          linkCollection: { create: {} },
+        },
       }),
   })
 );

@@ -28,14 +28,16 @@ await prisma.major.create({
   data: { name: 'Vent', schools: { connect: [{ id: 4 }] } },
 });
 
-await prisma.studentAssociation.createMany({
-  data: [
-    { name: 'AE EAU 2022', schoolId: 1, year: 2022 },
-    { name: 'AE FEU 2022', schoolId: 2, year: 2022 },
-    { name: 'AE TERRE 2022', schoolId: 3, year: 2022 },
-    { name: 'AE AIR 2022', schoolId: 4, year: 2022 },
-  ],
-});
+for (const [i, name] of ['AE EAU 2022', 'AE FEU 2022', 'AE TERRE 2022', 'AE AIR 2022'].entries()) {
+  await prisma.studentAssociation.create({
+    data: {
+      name,
+      school: { connect: { id: i + 1 } },
+      year: 2022,
+      linkCollection: { create: {} },
+    },
+  });
+}
 
 const userData = [
   { uid: 'annie', firstName: 'Annie', lastName: 'Versaire', admin: true },
@@ -72,19 +74,23 @@ for (const [i, data] of userData.entries()) {
       ...data,
       email: `${data.uid}@example.com`,
       description: i % 2 ? "Salut c'est moi" : '',
-      links: {
-        create: [
-          { type: LinkType.Facebook, value: '#' },
-          { type: LinkType.Instagram, value: '#' },
-          { type: LinkType.Telegram, value: '#' },
-          { type: LinkType.Twitter, value: '#' },
-        ],
+      linkCollection: {
+        create: {
+          links: {
+            create: [
+              { type: LinkType.Facebook, value: '#' },
+              { type: LinkType.Instagram, value: '#' },
+              { type: LinkType.Telegram, value: '#' },
+              { type: LinkType.Twitter, value: '#' },
+            ],
+          },
+        },
       },
       phone: '+33612345678',
       address: '2 rue Charles Camichel, 31000 Toulouse',
       birthday: new Date(2000, (i * 37) % 12, (i * 55) % 28),
       graduationYear: 2020 + (i % 6),
-      majorId: (i % 5) + 1,
+      major: { connect: { id: (i % 5) + 1 } },
       credentials: { create: { type: CredentialType.Password, value: await hash(data.uid) } },
     },
   });
@@ -135,16 +141,19 @@ const color = (str: string) => {
   return `#${h(red)}${h(green)}${h(blue)}`;
 };
 
-await prisma.group.createMany({
-  data: groups.map((group, i) => ({
-    ...group,
-    slug: slug(group.name),
-    type: GroupType.Club,
-    color: color(group.name),
-    schoolId: (i % 4) + 1,
-    studentAssociationId: (i % 4) + 1,
-  })),
-});
+for (const [i, group] of groups.entries()) {
+  await prisma.group.create({
+    data: {
+      ...group,
+      slug: slug(group.name),
+      type: GroupType.Club,
+      color: color(group.name),
+      school: { connect: { id: (i % 4) + 1 } },
+      studentAssociation: { connect: { id: (i % 4) + 1 } },
+      linkCollection: { create: {} },
+    },
+  });
+}
 
 const groupMembers: Prisma.GroupMemberCreateManyInput[] = [];
 

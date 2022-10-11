@@ -6,7 +6,7 @@ import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
 import { prisma } from '../prisma.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
-import { UserLinkInput } from './user-links.js';
+import { LinkInput } from './links.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -29,7 +29,9 @@ export const UserType = builder.prismaNode('User', {
       nullable: true,
       authScopes: { loggedIn: true, $granted: 'me' },
     }),
-    links: t.relation('links', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    linkCollection: t.relation('linkCollection', {
+      authScopes: { loggedIn: true, $granted: 'me' },
+    }),
     nickname: t.exposeString('nickname', { authScopes: { loggedIn: true, $granted: 'me' } }),
     phone: t.exposeString('phone', { authScopes: { loggedIn: true, $granted: 'me' } }),
     pictureFile: t.exposeString('pictureFile', { authScopes: { loggedIn: true, $granted: 'me' } }),
@@ -121,7 +123,7 @@ builder.mutationField('updateUser', (t) =>
       phone: t.arg.string({ validate: { maxLength: 255 } }),
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
       description: t.arg.string({ validate: { maxLength: 255 } }),
-      links: t.arg({ type: [UserLinkInput] }),
+      links: t.arg({ type: [LinkInput] }),
     },
     authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
     async resolve(
@@ -145,14 +147,14 @@ builder.mutationField('updateUser', (t) =>
         ...query,
         where: { uid },
         data: {
-          majorId,
+          major: { connect: { id: majorId } },
           graduationYear,
           nickname,
           description,
           address,
           phone,
           birthday,
-          links: { deleteMany: {}, createMany: { data: links } },
+          linkCollection: { update: { links: { deleteMany: {}, createMany: { data: links } } } },
         },
       });
     },

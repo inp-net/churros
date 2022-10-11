@@ -53,9 +53,9 @@
           {['👻', '🌵', '🕸️', '💤'][user.createdAt.getTime() % 4]}
         {/if}
       </div>
-      {#if user.links.length > 0}
+      {#if user.linkCollection.links.length > 0}
         <div class="flex flex-wrap mt-2 gap-3">
-          {#each user.links as link}
+          {#each user.linkCollection.links as link}
             <SocialLink {...link} />
           {/each}
         </div>
