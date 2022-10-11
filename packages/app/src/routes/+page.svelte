@@ -5,6 +5,8 @@
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
   import { pageQuery } from './+page';
+  import MajesticonsShare from '~icons/majesticons/share';
+  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
 
   export let data: PageData;
 
@@ -37,6 +39,13 @@
     <p>
       Par <a href="/club/{group.slug}/">{group.name}</a>
       le {formatDateTime(publishedAt)}
+      <GhostButton
+        on:click={async () => {
+          await navigator.share({ url: window.location.href, title });
+        }}
+      >
+        <MajesticonsShare />
+      </GhostButton>
     </p>
     {@html bodyHtml}
     {#if author}
