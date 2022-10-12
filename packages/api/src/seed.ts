@@ -148,9 +148,40 @@ for (const [i, group] of groups.entries()) {
       slug: slug(group.name),
       type: GroupType.Club,
       color: color(group.name),
+      address: 'D202',
+      email: `${slug(group.name)}@list.example.com`,
+      description: `Club ${group.name} de l'école`,
+      longDescription: `# Caeco ambrosia defendite simplicitas aequore caelestibus auro
+
+Lorem markdownum accessit desperat lumina; hi sed radice Scylla agger. Et ipsa
+cum **Tereus**, aequore sedet. [Quem qua](/) qui carmine,
+ore suus, fixa natus lacrimas.
+
+Perque dederat bracchia tenui Leucothoe in in sequitur fames non hic. Venitque
+sua anguem [sed](/) supponere sit, fluctus pedibusque ne apros
+rotis exauditi mater voluistis carinam habet generosam miserrima. Quoquam
+ulterius quam; pressit mihi germanae faciemque: in certa cruor solacia est caeli
+suos auras atra!
+
+> Explorant est illi inhaesuro doloris sed *inmanis* has recessu, quam interdum
+> hospes. Et huc postquam subdit incertas: echidnae, o cibique spectat sed
+> diversa. Placuit omnia; flammas Hoc ventis nobis primordia flammis Mavors
+> dabat horrida conplecti cremantur. A mundus, metu Anius gestare caelatus,
+> Alpheos est, lecti et?`,
       school: { connect: { id: (i % 4) + 1 } },
       studentAssociation: { connect: { id: (i % 4) + 1 } },
-      linkCollection: { create: {} },
+      linkCollection: {
+        create: {
+          links: {
+            createMany: {
+              data: [
+                { type: LinkType.Facebook, value: '#' },
+                { type: LinkType.Instagram, value: '#' },
+              ],
+            },
+          },
+        },
+      },
     },
   });
 }

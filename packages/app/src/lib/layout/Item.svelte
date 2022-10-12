@@ -7,7 +7,7 @@
   export let selectedIcon: typeof SvelteComponent;
 </script>
 
-<a {href} aria-selected={selected}>
+<a {href} aria-current={selected ? 'page' : undefined}>
   <svelte:component this={selected ? selectedIcon : icon} aria-hidden="true" />
   <slot />
 </a>
@@ -25,7 +25,7 @@
     }
   }
 
-  [aria-selected='true'] {
+  [aria-current='page'] {
     background: var(--ring);
   }
 </style>

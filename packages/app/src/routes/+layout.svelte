@@ -73,6 +73,10 @@
   }}
 />
 
+<svelte:head>
+  <title>Centraverse</title>
+</svelte:head>
+
 {#if mobile}
   <div class="top-0 left-0 z-10 fixed">
     <BurgerButton

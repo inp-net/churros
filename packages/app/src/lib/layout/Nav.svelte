@@ -73,11 +73,16 @@
     {/if}
     <li>
       <button
+        title="Activer le thème sombre"
         on:click={() => {
           $theme = $theme === 'dark' ? 'light' : 'dark';
         }}
       >
-        {#if $theme === 'dark'}<MajesticonsSun />{:else}<MajesticonsMoon />{/if}
+        {#if $theme === 'dark'}
+          <MajesticonsSun aria-label="Désactiver" />
+        {:else}
+          <MajesticonsMoon aria-label="Activer" />
+        {/if}
       </button>
     </li>
   </ul>

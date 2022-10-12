@@ -2,6 +2,7 @@ import { GroupType as GroupPrismaType } from '@prisma/client';
 import slug from 'slug';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
+import { toHtml } from '../services/markdown.js';
 
 export const GroupEnumType = builder.enumType(GroupPrismaType, {
   name: 'GroupType',
@@ -13,6 +14,7 @@ export const GroupType = builder.prismaNode('Group', {
   fields: (t) => ({
     // Because `id` is a Relay id, expose `groupId` as the real db id
     groupId: t.exposeID('id'),
+    type: t.expose('type', { type: GroupEnumType }),
     slug: t.exposeString('slug'),
     parentId: t.exposeID('parentId', { nullable: true }),
     familyId: t.exposeID('familyId', { nullable: true }),
@@ -22,6 +24,9 @@ export const GroupType = builder.prismaNode('Group', {
     description: t.exposeString('description'),
     email: t.exposeString('email'),
     longDescription: t.exposeString('longDescription'),
+    longDescriptionHtml: t.string({
+      resolve: async ({ longDescription }) => toHtml(longDescription),
+    }),
     articles: t.relation('articles', {
       query: { orderBy: { publishedAt: 'desc' } },
     }),
