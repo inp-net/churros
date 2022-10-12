@@ -1,7 +1,7 @@
 {
   "name": "@centraverse/api",
   "dependencies": {
-    "@envelop/core": "^2.6.0",
+    "@envelop/core": "^3.0.0",
     "@graphql-yoga/node": "^2.13.13",
     "@pothos/core": "^3.22.5",
     "@pothos/plugin-complexity": "^3.11.4",
@@ -41,7 +41,7 @@
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.14",
     "@types/ldapjs": "^2.2.4",
-    "@types/node": "^18.8.3",
+    "@types/node": "^18.8.5",
     "@types/nodemailer": "^6.4.6",
     "@types/slug": "^5.0.3",
     "prisma": "^4.4.0",

@@ -1,7 +1,7 @@
 {
   "name": "@centraverse/mock-n7-ldap",
   "dependencies": {
-    "@faker-js/faker": "^7.5.0",
+    "@faker-js/faker": "^7.6.0",
     "ldapjs": "^2.3.3"
   },
   "devDependencies": {
