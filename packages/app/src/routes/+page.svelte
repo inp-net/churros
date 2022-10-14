@@ -37,7 +37,7 @@
       : undefined}
   >
     <p>
-      Par <a href="/club/{group.slug}/">{group.name}</a>
+      Par <a href="/club/{group.uid}/">{group.name}</a>
       le {formatDateTime(publishedAt)}
       <GhostButton
         on:click={async () => {

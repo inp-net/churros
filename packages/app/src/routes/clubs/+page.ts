@@ -6,7 +6,7 @@ export const load: PageLoad = async ({ fetch }) =>
     {
       groups: [
         { types: [GroupType.Association, GroupType.Club] },
-        { groupId: true, name: true, slug: true },
+        { groupId: true, name: true, uid: true },
       ],
     },
     { fetch }

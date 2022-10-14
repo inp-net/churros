@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ params, parent, url }) => {
 
   if (
     !me.canEditGroups &&
-    !me.groups.some(({ group, canEditArticles }) => group.slug === params.slug && canEditArticles)
+    !me.groups.some(({ group, canEditArticles }) => group.uid === params.uid && canEditArticles)
   )
     throw redirect(307, '.');
 };

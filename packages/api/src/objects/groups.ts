@@ -15,7 +15,7 @@ export const GroupType = builder.prismaNode('Group', {
     // Because `id` is a Relay id, expose `groupId` as the real db id
     groupId: t.exposeID('id'),
     type: t.expose('type', { type: GroupEnumType }),
-    slug: t.exposeString('slug'),
+    uid: t.exposeString('uid'),
     parentId: t.exposeID('parentId', { nullable: true }),
     familyId: t.exposeID('familyId', { nullable: true }),
     name: t.exposeString('name'),
@@ -67,11 +67,11 @@ builder.queryField('groups', (t) =>
 builder.queryField('group', (t) =>
   t.prismaField({
     type: GroupType,
-    args: { slug: t.arg.string() },
-    resolve: (query, _, { slug }) =>
+    args: { uid: t.arg.string() },
+    resolve: (query, _, { uid }) =>
       prisma.group.findUniqueOrThrow({
         ...query,
-        where: { slug },
+        where: { uid },
       }),
   })
 );
@@ -92,9 +92,9 @@ builder.mutationField('createGroup', (t) =>
         data: {
           type,
           name,
+          uid: slug(name),
           school: { connect: { id: schoolId } },
           color: '#bbdfff',
-          slug: slug(name),
           linkCollection: { create: {} },
         },
       }),

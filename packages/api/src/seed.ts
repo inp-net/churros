@@ -145,7 +145,7 @@ for (const [i, group] of groups.entries()) {
   await prisma.group.create({
     data: {
       ...group,
-      slug: slug(group.name),
+      uid: slug(group.name),
       type: GroupType.Club,
       color: color(group.name),
       address: 'D202',

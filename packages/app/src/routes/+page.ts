@@ -9,7 +9,7 @@ export const pageQuery = Selector('QueryHomepageConnection')({
       title: true,
       bodyHtml: true,
       publishedAt: true,
-      group: { slug: true, name: true },
+      group: { uid: true, name: true },
       author: { uid: true, firstName: true, lastName: true },
     },
   },

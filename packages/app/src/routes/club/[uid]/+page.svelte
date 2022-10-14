@@ -55,7 +55,7 @@
       <p>Le groupe ne contient aucun membre, il vient peut-être d'être créé.</p>
     </Alert>
   {/if}
-  {#if $me?.canEditGroups || $me?.groups.some(({ group, canEditMembers }) => canEditMembers && group.slug === $page.params.slug)}
+  {#if $me?.canEditGroups || $me?.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === $page.params.uid)}
     <p>
       <a href="./members/">Modifier la liste des membres</a>
     </p>
@@ -64,7 +64,7 @@
 
 <h2>
   Articles
-  {#if $me?.canEditGroups || $me?.groups.some(({ group, canEditArticles }) => group.slug === $page.params.slug && canEditArticles)}
+  {#if $me?.canEditGroups || $me?.groups.some(({ group, canEditArticles }) => group.uid === $page.params.uid && canEditArticles)}
     <a href="./write/" title="Écrire un article">
       <MajesticonsPlus aria-label="Écrire un article" />
     </a>

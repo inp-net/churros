@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
 
   if (
     !me.canEditGroups &&
-    !me.groups.some(({ group, canEditMembers }) => canEditMembers && group.slug === params.slug)
+    !me.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === params.uid)
   )
     throw redirect(307, '.');
 
