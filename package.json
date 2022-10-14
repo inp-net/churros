@@ -36,7 +36,7 @@
     "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
     "postinstall": "husky install",
     "prisma": "yarn workspace @centraverse/api run prisma",
-    "reset": "docker compose up -dV --wait && yarn workspace @centraverse/api run prisma migrate reset --force",
+    "reset": "docker compose up -dV --wait && yarn prisma migrate reset --force",
     "start": "docker compose up -d --wait && yarn workspaces foreach -piv --exclude centraverse node build/index.js",
     "storybook": "yarn workspace @centraverse/app run storybook"
   },
