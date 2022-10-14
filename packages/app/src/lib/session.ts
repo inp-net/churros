@@ -1,5 +1,4 @@
 import { page } from '$app/stores';
-import type { LayoutData } from '.svelte-kit/types/src/routes/$types';
 import { redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 import { derived } from 'svelte/store';
@@ -41,4 +40,4 @@ export const redirectToLogin = (to: string) =>
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   redirect(307, `/login?${new URLSearchParams({ to }).toString()}`);
 
-export const me = derived(page, ($page) => ($page.data as LayoutData).me);
+export const me = derived(page, ($page) => $page.data.me);
