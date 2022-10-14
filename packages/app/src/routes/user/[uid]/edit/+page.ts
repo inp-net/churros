@@ -24,6 +24,12 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
   return loadQuery(
     {
       user: [params, userQuery],
+      // If the user is an admin, we also load the permissions
+      __alias: {
+        userPermissions: me.admin
+          ? { user: [params, { admin: true, canEditUsers: true, canEditGroups: true }] }
+          : {},
+      },
       linkTypes: true,
       schoolGroups: { names: true, majors: { id: true, name: true } },
     },

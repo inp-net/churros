@@ -37,7 +37,9 @@
     <div>
       {#if me && token}
         <a href="/me">{me.firstName}</a>
-        <a href="/logout?{new URLSearchParams({ token })}">Se déconnecter</a>
+        <a href="/logout/?{new URLSearchParams({ token })}" data-sveltekit-prefetch="off">
+          Se déconnecter
+        </a>
       {:else}
         <a href="/login?{new URLSearchParams({ to: $page.url.pathname })}"> Se connecter </a>
         <a href="/register">S'inscrire</a>

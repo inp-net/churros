@@ -64,7 +64,7 @@ const yoga = createYoga({
       return new GraphQLError(message);
     },
   },
-  plugins: [useNoBatchedQueries({ allow: 3 })],
+  plugins: [useNoBatchedQueries({ allow: 4 })],
 });
 
 const api = express();

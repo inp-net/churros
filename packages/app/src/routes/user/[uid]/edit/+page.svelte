@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
+  import Permissions from './Permissions.svelte';
   import ProfileDetails from './ProfileDetails.svelte';
   import ProfilePicture from './ProfilePicture.svelte';
 
@@ -10,3 +11,7 @@
 
 <ProfilePicture bind:data />
 <ProfileDetails bind:data />
+
+{#if data.userPermissions}
+  <Permissions bind:data />
+{/if}

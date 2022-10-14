@@ -5,8 +5,8 @@ import { phone as parsePhoneNumber } from 'phone';
 import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
 import { prisma } from '../prisma.js';
-import { DateTimeScalar, FileScalar } from './scalars.js';
 import { LinkInput } from './links.js';
+import { DateTimeScalar, FileScalar } from './scalars.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -116,8 +116,8 @@ builder.mutationField('updateUser', (t) =>
     errors: {},
     args: {
       uid: t.arg.string(),
-      majorId: t.arg.id({}),
-      graduationYear: t.arg.int({}),
+      majorId: t.arg.id(),
+      graduationYear: t.arg.int(),
       birthday: t.arg({ type: DateTimeScalar, required: false }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
       phone: t.arg.string({ validate: { maxLength: 255 } }),
@@ -156,6 +156,27 @@ builder.mutationField('updateUser', (t) =>
           birthday,
           linkCollection: { update: { links: { deleteMany: {}, createMany: { data: links } } } },
         },
+      });
+    },
+  })
+);
+
+builder.mutationField('updateUserPermissions', (t) =>
+  t.prismaField({
+    type: UserType,
+    args: {
+      uid: t.arg.string(),
+      admin: t.arg.boolean(),
+      canEditGroups: t.arg.boolean(),
+      canEditUsers: t.arg.boolean(),
+    },
+    authScopes: (_, {}, { user }) => Boolean(user?.admin),
+    async resolve(query, _, { uid, admin, canEditGroups, canEditUsers }) {
+      purgeUserSessions(uid);
+      return prisma.user.update({
+        ...query,
+        where: { uid },
+        data: { admin, canEditGroups, canEditUsers },
       });
     },
   })
