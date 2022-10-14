@@ -18,6 +18,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
       group: [
         params,
         {
+          uid: true,
           members: {
             memberId: true,
             member: { firstName: true, lastName: true },

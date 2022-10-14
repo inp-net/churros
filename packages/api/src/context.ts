@@ -1,6 +1,7 @@
 import type { YogaInitialContext } from '@graphql-yoga/node';
 import {
   CredentialType,
+  type Group,
   type GroupMember,
   type Major,
   type School,
@@ -18,7 +19,7 @@ const getToken = ({ headers }: Request) => {
 /** In memory store for sessions. */
 const sessions = new Map<
   string,
-  User & { groups: GroupMember[]; major: Major & { schools: School[] } }
+  User & { groups: Array<GroupMember & { group: Group }>; major: Major & { schools: School[] } }
 >();
 
 /** Deletes the session cache for a given user id. */
@@ -38,7 +39,7 @@ const getUser = async (token: string) => {
         // queries for the cache to work
         user: {
           include: {
-            groups: true,
+            groups: { include: { group: true } },
             major: { include: { schools: true } },
           },
         },

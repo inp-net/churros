@@ -115,7 +115,8 @@ api.get('/', (_req, res) => {
   <h1>Centraverse API</h1>
   <p><strong><a href="${new URL(process.env.FRONTEND_URL).toString()}">
     Retourner à l'accueil</a></strong></p>
-  <p><a href="/graphql">GraphiQL (pour les développeurs ou les curieux)</a></p>
+  <p><a href="/graphql">GraphiQL (pour les développeurs et les curieux)</a></p>
+  <p><a href="https://git.inpt.fr/inp-net/centraverse">Code source</a></p>
 </body>
 </html>`);
 });

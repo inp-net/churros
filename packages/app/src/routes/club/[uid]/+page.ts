@@ -11,6 +11,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
           ? // Authenticated query
             {
               id: true,
+              uid: true,
               type: true,
               name: true,
               address: true,
@@ -31,6 +32,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
           : // Unauthenticated query
             {
               id: true,
+              uid: true,
               type: true,
               name: true,
               address: true,

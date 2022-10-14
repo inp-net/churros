@@ -178,6 +178,14 @@ builder.mutationField('updateUserPicture', (t) =>
       if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
         throw new GraphQLError('File format not supported');
 
+      // Delete the existing picture
+      const { pictureFile } = await prisma.user.findUniqueOrThrow({
+        where: { uid },
+        select: { pictureFile: true },
+      });
+
+      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
+
       const path = `${uid}.${type.ext}`;
       purgeUserSessions(uid);
       await writeFile(new URL(path, process.env.STORAGE), file.stream());

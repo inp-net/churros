@@ -2,11 +2,6 @@ import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { DateTimeScalar } from './scalars.js';
 
-/**
- * Represents a group member, mapped on the underlying database object.
- *
- * This is the intermediate object in the many to many relationship.
- */
 export const GroupMemberType = builder.prismaObject('GroupMember', {
   fields: (t) => ({
     memberId: t.exposeID('memberId'),
@@ -27,21 +22,21 @@ builder.mutationField('addGroupMember', (t) =>
   t.prismaField({
     type: GroupMemberType,
     args: {
-      groupId: t.arg.id(),
+      groupUid: t.arg.string(),
       uid: t.arg.string(),
       title: t.arg.string(),
     },
-    authScopes: (_, { groupId }, { user }) =>
+    authScopes: (_, { groupUid }, { user }) =>
       Boolean(
         user?.canEditGroups ||
-          user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id)
+          user?.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === groupUid)
       ),
-    resolve: (query, _, { groupId, uid, title }) =>
+    resolve: (query, _, { groupUid, uid, title }) =>
       prisma.groupMember.create({
         ...query,
         data: {
           member: { connect: { uid } },
-          group: { connect: { id: groupId } },
+          group: { connect: { uid: groupUid } },
           title,
         },
       }),

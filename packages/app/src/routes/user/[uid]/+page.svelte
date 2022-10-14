@@ -40,7 +40,7 @@
         {user.firstName}
         {user.nickname}
         {user.lastName}
-        {#if $me?.canEditUsers}
+        {#if user.uid === $me?.uid || $me?.canEditUsers}
           <a href="edit/" title="Éditer">
             <MajesticonsEdit aria-label="Éditer" />
           </a>

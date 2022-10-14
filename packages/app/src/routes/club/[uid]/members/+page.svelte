@@ -12,7 +12,7 @@
     try {
       const { addGroupMember } = await $zeus.mutate({
         addGroupMember: [
-          { groupId: $page.params.id, uid, title },
+          { groupUid: data.group.uid, uid, title },
           {
             memberId: true,
             title: true,

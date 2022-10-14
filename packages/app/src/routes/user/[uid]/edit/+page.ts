@@ -19,7 +19,7 @@ export const userQuery = Selector('User')({
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
   const { me } = await parent();
-  if (params.uid !== me?.id && !me?.canEditUsers) throw redirect(307, '..');
+  if (params.uid !== me?.uid && !me?.canEditUsers) throw redirect(307, '..');
 
   return loadQuery(
     {

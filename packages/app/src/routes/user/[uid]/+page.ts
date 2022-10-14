@@ -10,6 +10,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
       user: [
         params,
         {
+          uid: true,
           address: true,
           birthday: true,
           createdAt: true,

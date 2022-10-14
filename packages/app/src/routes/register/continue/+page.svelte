@@ -185,7 +185,9 @@
       </FormInput>
     </p>
     <hr />
-    <p>Les champs suivant sont facultatifs.</p>
+    <p>
+      Les champs suivant sont facultatifs, ces données seront visibles par les autres utilisateurs.
+    </p>
     <p class="grid gap-4 grid-cols-2">
       <FormInput label="Date de naissance :" errors={formErrors?.birthday?._errors}>
         <input
