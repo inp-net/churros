@@ -1,4 +1,5 @@
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
+import { CredentialType } from '@prisma/client';
 import { NotFoundError, PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
 import { createFetch } from '@whatwg-node/fetch';
 import cors from 'cors';
@@ -11,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { z, ZodError } from 'zod';
 import { context } from './context.js';
 import { customErrorMap } from './errors.js';
+import { prisma } from './prisma.js';
 import { schema, writeSchema } from './schema.js';
 
 z.setErrorMap(customErrorMap);
@@ -77,10 +79,32 @@ api.use(
   })
 );
 api.use('/graphql', async (req, res) => yoga(req, res));
-api.use('/storage', express.static(fileURLToPath(new URL(process.env.STORAGE))));
+api.use(
+  '/storage',
+  // Another layer of protection against malicious uploads
+  helmet.contentSecurityPolicy({ directives: { 'script-src': "'none'" } }),
+  express.static(fileURLToPath(new URL(process.env.STORAGE)))
+);
+
+// Poor man's GDPR data download
+api.use('/dump', async (req, res) => {
+  const token = String(req.query['token']);
+  try {
+    const credential = await prisma.credential.findFirstOrThrow({
+      where: { type: CredentialType.Token, value: token },
+      include: { user: { include: { groups: true, articles: true, linkCollection: true } } },
+    });
+    res.json({ _: `Downloaded on ${new Date().toISOString()}`, ...credential.user });
+  } catch {
+    res
+      .status(401)
+      .send('<h1>401 Unauthorized</h1><p>Usage: <code>/dump?token=[session token]</code></p>');
+  }
+});
+
 api.get('/', (_req, res) => {
   res.send(`<!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -91,7 +115,7 @@ api.get('/', (_req, res) => {
   <h1>Centraverse API</h1>
   <p><strong><a href="${new URL(process.env.FRONTEND_URL).toString()}">
     Retourner à l'accueil</a></strong></p>
-  <p><a href="/graphql">GraphiQL (pour les développeurs)</a></p>
+  <p><a href="/graphql">GraphiQL (pour les développeurs ou les curieux)</a></p>
 </body>
 </html>`);
 });

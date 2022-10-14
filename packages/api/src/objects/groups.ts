@@ -8,7 +8,6 @@ export const GroupEnumType = builder.enumType(GroupPrismaType, {
   name: 'GroupType',
 });
 
-/** Represents a group, mapped on the underlying database object. */
 export const GroupType = builder.prismaNode('Group', {
   id: { field: 'id' },
   fields: (t) => ({

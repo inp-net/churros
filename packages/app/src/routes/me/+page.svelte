@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { PUBLIC_SUPPORT_EMAIL, PUBLIC_USER_DUMP_URL } from '$env/static/public';
   import { formatDateTime } from '$lib/dates';
   import { CredentialType, zeus } from '$lib/zeus';
   import { default as parser } from 'ua-parser-js';
@@ -57,3 +58,14 @@
     </tr>
   {/each}
 </table>
+
+<h2>Données personnelles</h2>
+<p>
+  <a href="{PUBLIC_USER_DUMP_URL}?token={data.token}" download="{data.me.uid}.json">
+    Télécharger mes données.
+  </a>
+</p>
+<p>
+  Si vous souhaitez supprimer votre compte, merci de nous contacter via
+  <a href="mailto:{PUBLIC_SUPPORT_EMAIL}">{PUBLIC_SUPPORT_EMAIL}</a>.
+</p>
