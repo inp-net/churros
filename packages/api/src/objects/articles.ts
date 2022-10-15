@@ -19,16 +19,6 @@ export const ArticleType = builder.prismaNode('Article', {
   }),
 });
 
-builder.queryField('article', (t) =>
-  t.prismaField({
-    description: 'Gets an article by id.',
-    type: ArticleType,
-    args: { id: t.arg.id() },
-    resolve: async (query, _, { id }) =>
-      prisma.article.findUniqueOrThrow({ ...query, where: { id } }),
-  })
-);
-
 builder.queryField('homepage', (t) =>
   t.prismaConnection({
     description: 'Gets the homepage articles, customized if the user is logged in.',
@@ -67,21 +57,23 @@ builder.mutationField('createArticle', (t) =>
   t.prismaField({
     type: ArticleType,
     args: {
-      groupId: t.arg.id(),
+      groupUid: t.arg.string(),
       title: t.arg.string(),
       body: t.arg.string(),
     },
-    authScopes: (_, { groupId }, { user }) =>
+    authScopes: (_, { groupUid }, { user }) =>
       Boolean(
         user?.canEditGroups ||
-          user?.groups.some(({ groupId: id, canEditArticles }) => canEditArticles && groupId === id)
+          user?.groups.some(
+            ({ group: { uid }, canEditArticles }) => canEditArticles && groupUid === uid
+          )
       ),
-    resolve: (query, _, { groupId, body, title }, { user }) =>
+    resolve: (query, _, { groupUid, body, title }, { user }) =>
       prisma.article.create({
         ...query,
         data: {
-          groupId,
-          authorId: user!.id,
+          group: { connect: { uid: groupUid } },
+          author: { connect: { id: user!.id } },
           title,
           body,
         },

@@ -1,7 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
   import { zeus } from '$lib/zeus';
+  import type { PageData } from './$types';
+
+  export let data: PageData;
 
   let title = '';
   let body = '';
@@ -9,7 +11,7 @@
   const createArticle = async () => {
     try {
       await $zeus.mutate({
-        createArticle: [{ title, body, groupId: $page.params.id }, { id: true }],
+        createArticle: [{ title, body, groupUid: data.group.uid }, { id: true }],
       });
       await goto('..');
     } catch (error: unknown) {

@@ -37,16 +37,15 @@ const yoga = createYoga({
       // If the error has no cause, return it as is
       if (cause === undefined) return error as GraphQLError;
 
-      if (
-        cause instanceof ForbiddenError ||
-        cause instanceof NotFoundError ||
-        cause instanceof GraphQLError
-      )
-        return new GraphQLError(cause.message);
+      if (cause instanceof NotFoundError)
+        return new GraphQLError(cause.message, { extensions: { http: { status: 404 } } });
+
+      if (cause instanceof ForbiddenError)
+        return new GraphQLError(cause.message, { extensions: { http: { status: 401 } } });
 
       if (cause instanceof ZodError) {
         return new GraphQLError('Validation error.', {
-          extensions: { code: 'ZOD_ERROR', errors: cause.format() },
+          extensions: { code: 'ZOD_ERROR', errors: cause.format(), http: { status: 400 } },
         });
       }
 
@@ -54,14 +53,14 @@ const yoga = createYoga({
         return new GraphQLError('Database error.', {
           extensions: {
             code: 'PRISMA_ERROR',
-            message: cause.message,
             prismaCode: cause.code,
-            meta: cause.meta,
+            http: { status: 500 },
           },
         });
       }
 
-      return new GraphQLError(message);
+      if (cause instanceof GraphQLError) return cause;
+      return new GraphQLError(message, { extensions: { http: { status: 500 } } });
     },
   },
   plugins: [useNoBatchedQueries({ allow: 4 })],

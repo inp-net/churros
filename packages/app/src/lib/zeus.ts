@@ -1,7 +1,7 @@
 import { page } from '$app/stores';
 import { PUBLIC_API_URL } from '$env/static/public';
 import type { LayoutServerData } from '.svelte-kit/types/src/routes/$types';
-import type { LoadEvent } from '@sveltejs/kit';
+import { error, type LoadEvent } from '@sveltejs/kit';
 import {
   Thunder,
   ZeusScalars,
@@ -40,7 +40,7 @@ export class ZeusError extends Error {
       );
       super(
         `${response.errors.length} GraphQL error${response.errors.length === 1 ? '' : 's'}\n${errors
-          .map((error) => `\t${error.message}`)
+          .map((error) => `\t${error.message} ${JSON.stringify(error.extensions)}`)
           .join('\n')}`
       );
       this.errors = errors;
@@ -69,6 +69,9 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
     /* eslint-enable */
 
     const response = await fetch(PUBLIC_API_URL, { body, method: 'POST', headers });
+
+    // If we received an HTTP error, propagate it
+    if (!response.ok) throw error(response.status);
 
     return response
       .json()

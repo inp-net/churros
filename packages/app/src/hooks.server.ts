@@ -2,7 +2,7 @@ import { PRIVATE_API_URL } from '$env/static/private';
 import { PUBLIC_API_URL } from '$env/static/public';
 import { sessionUserQuery } from '$lib/session';
 import { chain } from '$lib/zeus';
-import type { Handle, HandleFetch } from '@sveltejs/kit';
+import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -41,4 +41,8 @@ export const handleFetch: HandleFetch = async ({ request, fetch }) => {
   return fetch(request).catch(() => {
     throw new TypeError('Impossible de joindre le serveur.');
   });
+};
+
+export const handleError: HandleServerError = ({ error }) => {
+  console.error(error);
 };
