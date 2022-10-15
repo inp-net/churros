@@ -7,6 +7,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
       groups: [
         {},
         {
+          uid: true,
           name: true,
           groupId: true,
           parentId: true,
