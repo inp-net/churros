@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/stores';
   import Alert from '$lib/components/alerts/Alert.svelte';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
   import Card from '$lib/components/cards/Card.svelte';
@@ -16,7 +15,10 @@
 <div class="top">
   <img src="https://picsum.photos/1000/1000" alt="" />
   <Card>
-    <h1>{group.name} <SchoolBadge schools={[group.school]} /></h1>
+    <h1>
+      {group.name}
+      {#if group.school}<SchoolBadge schools={[group.school]} />{/if}
+    </h1>
     <div>{group.description}</div>
     {#if group.linkCollection.links.length > 0}
       <div class="flex flex-wrap my-4 gap-3">

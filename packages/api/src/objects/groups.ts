@@ -42,7 +42,7 @@ export const GroupType = builder.prismaNode('Group', {
         ],
       },
     }),
-    school: t.relation('school'),
+    school: t.relation('school', { nullable: true }),
   }),
 });
 

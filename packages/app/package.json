@@ -44,7 +44,7 @@
   },
   "private": true,
   "scripts": {
-    "build": "svelte-kit sync & yarn zeus && yarn check --threshold error && vite build",
+    "build": "svelte-kit sync & yarn zeus && yarn check --threshold warning && vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json --use-new-transformation",
     "clean": "git clean -Xdf .",
     "dev": "yarn zeus && vite dev --host",

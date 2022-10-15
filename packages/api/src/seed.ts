@@ -1,7 +1,15 @@
+/**
+ * This file is used to seed the database with some initial data.
+ *
+ * You can reset your database by running `yarn reset`.
+ *
+ * @module
+ */
+
 import { CredentialType, GroupType, LinkType, type Prisma } from '@prisma/client';
 import { hash } from 'argon2';
-import { prisma } from './prisma.js';
 import slug from 'slug';
+import { prisma } from './prisma.js';
 
 await prisma.school.createMany({
   data: [
@@ -39,7 +47,7 @@ for (const [i, name] of ['AE EAU 2022', 'AE FEU 2022', 'AE TERRE 2022', 'AE AIR 
   });
 }
 
-const userData = [
+const users = [
   { uid: 'annie', firstName: 'Annie', lastName: 'Versaire', admin: true },
   { uid: 'bernard', firstName: 'Bernard', lastName: 'Tichaut', canEditGroups: true },
   { uid: 'camille', firstName: 'Camille', lastName: 'Honnête', canEditUsers: true },
@@ -66,9 +74,9 @@ const userData = [
   { uid: 'xavier', firstName: 'Xavier', lastName: 'K. Paétrela' },
   { uid: 'yvon', firstName: 'Yvon', lastName: 'Enbavé' },
   { uid: 'zinedine', firstName: 'Zinédine', lastName: 'Pacesoir' },
-];
+]; // satisfies Array<Partial<Prisma.UserCreateInput>>;
 
-for (const [i, data] of userData.entries()) {
+for (const [i, data] of users.entries()) {
   await prisma.user.create({
     data: {
       ...data,
@@ -96,7 +104,7 @@ for (const [i, data] of userData.entries()) {
   });
 }
 
-const groups = [
+const clubs = [
   { name: 'Art' },
   { name: 'Basket' },
   { name: 'Cinéma' },
@@ -141,7 +149,7 @@ const color = (str: string) => {
   return `#${h(red)}${h(green)}${h(blue)}`;
 };
 
-for (const [i, group] of groups.entries()) {
+for (const [i, group] of clubs.entries()) {
   await prisma.group.create({
     data: {
       ...group,
@@ -274,3 +282,37 @@ for (let i = 0; i < end; i++) {
 }
 
 await prisma.article.createMany({ data: articleData });
+
+const parent = await prisma.group.create({
+  data: {
+    name: 'Intégration 2022',
+    type: GroupType.Group,
+    uid: 'integration-2022',
+    color: '#ff0000',
+    linkCollection: { create: {} },
+  },
+});
+
+await prisma.group.create({
+  data: {
+    name: 'Groupe 1',
+    type: GroupType.Integration,
+    uid: 'groupe-1',
+    color: '#00ff00',
+    parent: { connect: { id: parent.id } },
+    linkCollection: { create: {} },
+    members: { createMany: { data: [{ memberId: 2 }, { memberId: 3 }, { memberId: 4 }] } },
+  },
+});
+
+await prisma.group.create({
+  data: {
+    name: 'Groupe 2',
+    type: GroupType.Integration,
+    uid: 'groupe-2',
+    color: '#0000ff',
+    parent: { connect: { id: parent.id } },
+    linkCollection: { create: {} },
+    members: { createMany: { data: [{ memberId: 5 }, { memberId: 6 }, { memberId: 7 }] } },
+  },
+});

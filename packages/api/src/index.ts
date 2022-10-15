@@ -37,6 +37,7 @@ const yoga = createYoga({
       // If the error has no cause, return it as is
       if (cause === undefined) return error as GraphQLError;
 
+      // These are user errors, no need to take special care of them
       if (cause instanceof NotFoundError)
         return new GraphQLError(cause.message, { extensions: { http: { status: 404 } } });
 
@@ -49,13 +50,12 @@ const yoga = createYoga({
         });
       }
 
+      // These are server errors, we should log them
+      if (!isDev) console.error(cause);
+
       if (cause instanceof PrismaClientKnownRequestError) {
         return new GraphQLError('Database error.', {
-          extensions: {
-            code: 'PRISMA_ERROR',
-            prismaCode: cause.code,
-            http: { status: 500 },
-          },
+          extensions: { code: 'PRISMA_ERROR', prismaCode: cause.code, http: { status: 500 } },
         });
       }
 
