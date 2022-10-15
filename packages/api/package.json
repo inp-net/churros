@@ -13,6 +13,7 @@
     "@pothos/plugin-tracing": "^0.5.4",
     "@pothos/plugin-validation": "^3.8.4",
     "@prisma/client": "^4.4.0",
+    "arborist": "workspace:^",
     "argon2": "^0.30.1",
     "cors": "^2.8.5",
     "dichotomid": "^0.0.3",
@@ -56,7 +57,7 @@
   "scripts": {
     "build": "prisma generate && tsc && node ./build/post-build.js",
     "clean": "git clean -Xdf .",
-    "dev": "NODE_ENV=development tsx watch --clear-screen=false ./src/index.ts"
+    "dev": "NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts"
   },
   "type": "module",
   "volta": {

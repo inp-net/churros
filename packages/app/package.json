@@ -1,6 +1,7 @@
 {
   "name": "@centraverse/app",
   "dependencies": {
+    "arborist": "workspace:^",
     "cookie": "^0.5.0",
     "extract-files": "^13.0.0",
     "graphql": "^16.6.0",
