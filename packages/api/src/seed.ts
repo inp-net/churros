@@ -244,6 +244,7 @@ const endDate = new Date('2022-09-01T13:00:00.000Z').getTime();
 
 for (let i = 0; i < end; i++) {
   articleData.push({
+    slug: `article-${i}`,
     title: `Article ${i}`,
     groupId: ((i * 7) % 26) + 1,
     authorId: i % 11 === 0 ? undefined : ((i * 9) % 26) + 1,

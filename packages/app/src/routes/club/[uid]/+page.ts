@@ -19,7 +19,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               description: true,
               longDescriptionHtml: true,
               email: true,
-              articles: { title: true, bodyHtml: true },
+              articles: { slug: true, title: true, bodyHtml: true },
               school: { name: true, color: true },
               linkCollection: { links: { type: true, value: true } },
               members: {
@@ -40,7 +40,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               description: true,
               longDescriptionHtml: true,
               email: true,
-              articles: { title: true, bodyHtml: true },
+              articles: { slug: true, title: true, bodyHtml: true },
               school: { name: true, color: true },
               linkCollection: { links: { type: true, value: true } },
             },

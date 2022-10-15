@@ -222,6 +222,7 @@ model Article {
   id          Int      @id @default(autoincrement())
   authorId    Int?
   groupId     Int
+  slug        String   @db.VarChar(255)
   title       String   @db.VarChar(255)
   body        String   @db.Text
   published   Boolean  @default(false)
@@ -231,4 +232,6 @@ model Article {
 
   author User? @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   group  Group @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@unique([groupId, slug])
 }

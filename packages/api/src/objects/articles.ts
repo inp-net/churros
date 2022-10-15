@@ -1,3 +1,4 @@
+import slug from 'slug';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
@@ -8,6 +9,7 @@ export const ArticleType = builder.prismaNode('Article', {
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
+    slug: t.exposeString('slug'),
     title: t.exposeString('title'),
     body: t.exposeString('body'),
     bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),
@@ -18,6 +20,18 @@ export const ArticleType = builder.prismaNode('Article', {
     group: t.relation('group'),
   }),
 });
+
+builder.queryField('article', (t) =>
+  t.prismaField({
+    type: ArticleType,
+    args: {
+      uid: t.arg.string(),
+      slug: t.arg.string(),
+    },
+    resolve: async (query, _, { uid, slug }) =>
+      prisma.article.findFirstOrThrow({ ...query, where: { slug, group: { uid } } }),
+  })
+);
 
 builder.queryField('homepage', (t) =>
   t.prismaConnection({
@@ -74,6 +88,7 @@ builder.mutationField('createArticle', (t) =>
         data: {
           group: { connect: { uid: groupUid } },
           author: { connect: { id: user!.id } },
+          slug: slug(title),
           title,
           body,
         },
