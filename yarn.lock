@@ -1583,12 +1583,12 @@ __metadata:
   dependencies:
     "@envelop/core": "npm:^3.0.1"
     "@graphql-yoga/node": "npm:^2.13.13"
-    "@pothos/core": "npm:^3.22.5"
+    "@pothos/core": "npm:^3.22.6"
     "@pothos/plugin-complexity": "npm:^3.11.4"
     "@pothos/plugin-errors": "npm:^3.8.4"
     "@pothos/plugin-prisma": "npm:^3.35.4"
     "@pothos/plugin-relay": "npm:^3.28.4"
-    "@pothos/plugin-scope-auth": "npm:^3.14.4"
+    "@pothos/plugin-scope-auth": "npm:^3.15.0"
     "@pothos/plugin-simple-objects": "npm:^3.6.4"
     "@pothos/plugin-tracing": "npm:^0.5.4"
     "@pothos/plugin-validation": "npm:^3.8.4"
@@ -1598,7 +1598,7 @@ __metadata:
     "@types/cors": "npm:^2.8.12"
     "@types/express": "npm:^4.17.14"
     "@types/ldapjs": "npm:^2.2.4"
-    "@types/node": "npm:^18.8.5"
+    "@types/node": "npm:^18.11.0"
     "@types/nodemailer": "npm:^6.4.6"
     "@types/slug": "npm:^5.0.3"
     argon2: "npm:^0.30.1"
@@ -1658,14 +1658,14 @@ __metadata:
     party-js: "npm:^2.2.0"
     sanitize.css: "npm:^13.0.0"
     sass: "npm:^1.55.0"
-    svelte: "npm:^3.51.0"
+    svelte: "npm:^3.52.0"
     svelte-check: "npm:^2.9.2"
     svelte-loader: "npm:^3.1.3"
     svelte-preprocess: "npm:^4.10.7"
     svelte-tenor: "npm:^0.2.0"
     tslib: "npm:^2.4.0"
     typescript: "npm:^4.8.4"
-    ua-parser-js: "npm:^1.0.2"
+    ua-parser-js: "npm:^1.0.32"
     unplugin-icons: "npm:^0.14.11"
     vite: "npm:^3.1.8"
     vite-plugin-windicss: "npm:^1.8.8"
@@ -2856,12 +2856,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/core@npm:^3.22.5":
-  version: 3.22.5
-  resolution: "@pothos/core@npm:3.22.5"
+"@pothos/core@npm:^3.22.6":
+  version: 3.22.6
+  resolution: "@pothos/core@npm:3.22.6"
   peerDependencies:
     graphql: ">=15.1.0"
-  checksum: 82712725a710261271eb0d1aba81566af80c8cae0b823ee356c9c9f31e7f0aea9330b24f415c962a9c0326f6a9b579d8b6c3713b8964b927580cc1eb741cb645
+  checksum: 30474db7e375c42c4fb36088fc6809fc7ac8326fa686b66b5cf0427d4a462da2ea9ea2f238cfa5383816f62239a7462db8779a32f385d2350debe704967a2bfa
   languageName: node
   linkType: hard
 
@@ -2911,13 +2911,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/plugin-scope-auth@npm:^3.14.4":
-  version: 3.14.4
-  resolution: "@pothos/plugin-scope-auth@npm:3.14.4"
+"@pothos/plugin-scope-auth@npm:^3.15.0":
+  version: 3.15.0
+  resolution: "@pothos/plugin-scope-auth@npm:3.15.0"
   peerDependencies:
     "@pothos/core": "*"
     graphql: ">=15.1.0"
-  checksum: 3dcb1b7acc5f4bd963b913bbbea5d248f2f2a756f47c4e311f9553d4115333454fd1081b7de894fdfbdbffb84debe580ab9b51f1a315ad99b4e3c7906abf5b1b
+  checksum: eaa457e057a4222beb13d370bb038ccfd418e1ec3a6ddc7a8d4042bdb2a1f77194df8c11548dcef2c335f7c60020bf21d22274d4cfb9d11788f17067b3a4c37a
   languageName: node
   linkType: hard
 
@@ -4628,7 +4628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^18.8.5":
+"@types/node@npm:*":
   version: 18.8.5
   resolution: "@types/node@npm:18.8.5"
   checksum: 22c3658e4872f752e108c0af89038d2412b551edfb5c60fe515eace134a87ef8ab5b18aeb22f3e308aa7cd883778c3a42ecf757d387673764d43cea7e6369220
@@ -4646,6 +4646,13 @@ __metadata:
   version: 16.11.65
   resolution: "@types/node@npm:16.11.65"
   checksum: 207fb30e5d6e90043e7fccaa7e1044c0b6d6b7ef760dfabfe42014618d842743ff81b0d7a129a99d40c68176b481b684a83614c226dd5290e630ecc3921133e1
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^18.11.0":
+  version: 18.11.0
+  resolution: "@types/node@npm:18.11.0"
+  checksum: 29cddf70ce75ff9c39849a1d92111031be8614220b4bb7c0ee02ce83c14138f4b067557d8654fa32941111e02664366b007017ef35a6cb6926842270369deaae
   languageName: node
   linkType: hard
 
@@ -6859,13 +6866,13 @@ __metadata:
     prettier: "npm:^2.7.1"
     prettier-plugin-jsdoc: "npm:^0.4.2"
     prettier-plugin-svelte: "npm:^2.8.0"
-    stylelint: "npm:^14.13.0"
+    stylelint: "npm:^14.14.0"
     stylelint-config-html: "npm:^1.1.0"
     stylelint-config-prettier: "npm:^9.0.3"
     stylelint-config-recess-order: "npm:^3.0.0"
-    stylelint-config-standard: "npm:^28.0.0"
+    stylelint-config-standard: "npm:^29.0.0"
     stylelint-config-standard-scss: "npm:^5.0.0"
-    svelte: "npm:^3.51.0"
+    svelte: "npm:^3.52.0"
     typescript: "npm:^4.8.4"
   languageName: unknown
   linkType: soft
@@ -14561,7 +14568,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.3.11, postcss@npm:^8.4.0, postcss@npm:^8.4.16":
+"postcss@npm:^8.3.11, postcss@npm:^8.4.0, postcss@npm:^8.4.16, postcss@npm:^8.4.17":
   version: 8.4.18
   resolution: "postcss@npm:8.4.18"
   dependencies:
@@ -16819,14 +16826,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint-config-standard@npm:^28.0.0":
-  version: 28.0.0
-  resolution: "stylelint-config-standard@npm:28.0.0"
+"stylelint-config-standard@npm:^29.0.0":
+  version: 29.0.0
+  resolution: "stylelint-config-standard@npm:29.0.0"
   dependencies:
     stylelint-config-recommended: "npm:^9.0.0"
   peerDependencies:
-    stylelint: ^14.11.0
-  checksum: 2017edc04ce462282fd727c95bf20a35003b2835396dc7d59b46348b57fc1576e28ae7d2c63741905dc3f0edb42a491c4a12d60982da8d9ab6e6be467a77960a
+    stylelint: ^14.14.0
+  checksum: c1bb49e4aa474b1d85bff3f7adb359cbc345d3e87a103ad3607f486685c2bd37b9f2a785aa30bf3b93c9fabb4b9c22eefc7da535749ebcf5f609b4f8383d25b0
   languageName: node
   linkType: hard
 
@@ -16857,9 +16864,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint@npm:^14.13.0":
-  version: 14.13.0
-  resolution: "stylelint@npm:14.13.0"
+"stylelint@npm:^14.14.0":
+  version: 14.14.0
+  resolution: "stylelint@npm:14.14.0"
   dependencies:
     "@csstools/selector-specificity": "npm:^2.0.2"
     balanced-match: "npm:^2.0.0"
@@ -16884,7 +16891,7 @@ __metadata:
     micromatch: "npm:^4.0.5"
     normalize-path: "npm:^3.0.0"
     picocolors: "npm:^1.0.0"
-    postcss: "npm:^8.4.16"
+    postcss: "npm:^8.4.17"
     postcss-media-query-parser: "npm:^0.2.3"
     postcss-resolve-nested-selector: "npm:^0.1.1"
     postcss-safe-parser: "npm:^6.0.0"
@@ -16901,7 +16908,7 @@ __metadata:
     write-file-atomic: "npm:^4.0.2"
   bin:
     stylelint: bin/stylelint.js
-  checksum: eaaf9c416cc5c800e22c1516d4b2b32a5825e160dc9315305c860613c75cf67021a0554f91d80e4daf5d483245667ef056e9ea06bcbeff894d70211cd6b8ad2f
+  checksum: 1f000c547ce7b964f6c882f852e1850d3eac3d9b92ed6279c127b0d8db37db841f06d36c923a87009ee7dd01c12260b6ac4c838b6166a2fbd2cdce6123d730e6
   languageName: node
   linkType: hard
 
@@ -17063,10 +17070,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:^3.51.0":
-  version: 3.51.0
-  resolution: "svelte@npm:3.51.0"
-  checksum: 5a1496604414cb8269f88e90d776954f7e2b075b64b7cc40539018722e0216b428e6756649f9f0ab906605d6765f91f08c0f3a3875df695d4c0bdec51b4f215b
+"svelte@npm:^3.52.0":
+  version: 3.52.0
+  resolution: "svelte@npm:3.52.0"
+  checksum: 29ee167ecf71d6b3d179e903f46082452624ce4a533d0cea66387f7e9e7e7e416fe9f337da3857660432cbe44d6518dc4014391d2bc03732ccc469c5ad7926c3
   languageName: node
   linkType: hard
 
@@ -17679,10 +17686,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "ua-parser-js@npm:1.0.2"
-  checksum: 5ee14b105c4982bd86ca358e334187cde40aaf1dde2f1626fbd9c76de98b845191f02fc4e015e68885d047db336344f9ffba5b33cac5f6de6ad9a1adba88ea79
+"ua-parser-js@npm:^1.0.32":
+  version: 1.0.32
+  resolution: "ua-parser-js@npm:1.0.32"
+  checksum: 9d320c6742248cf25264ece5f7756df097be7a7843cd71c10a9adaea35fe304600cd487da0bdb7add7239a5801905d720835ba4293a5add9568b868cd4079428
   languageName: node
   linkType: hard
 
