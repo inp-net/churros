@@ -1,12 +1,11 @@
 import { GroupType as GroupPrismaType } from '@prisma/client';
+import dichotomid from 'dichotomid';
 import slug from 'slug';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
 
-export const GroupEnumType = builder.enumType(GroupPrismaType, {
-  name: 'GroupType',
-});
+export const GroupEnumType = builder.enumType(GroupPrismaType, { name: 'GroupType' });
 
 export const GroupType = builder.prismaNode('Group', {
   id: { field: 'id' },
@@ -43,10 +42,10 @@ export const GroupType = builder.prismaNode('Group', {
       },
     }),
     school: t.relation('school', { nullable: true }),
+    parent: t.relation('parent'),
   }),
 });
 
-/** List groups. */
 builder.queryField('groups', (t) =>
   t.prismaField({
     type: [GroupType],
@@ -62,18 +61,36 @@ builder.queryField('groups', (t) =>
   })
 );
 
-/** Get a specific group. */
 builder.queryField('group', (t) =>
   t.prismaField({
     type: GroupType,
     args: { uid: t.arg.string() },
-    resolve: (query, _, { uid }) =>
-      prisma.group.findUniqueOrThrow({
+    resolve: (query, _, { uid }) => prisma.group.findUniqueOrThrow({ ...query, where: { uid } }),
+  })
+);
+
+builder.queryField('searchGroup', (t) =>
+  t.prismaConnection({
+    type: GroupType,
+    cursor: 'id',
+    // authScopes: { loggedIn: true },
+    args: { q: t.arg.string() },
+    resolve: async (query, _, { q }) =>
+      prisma.group.findMany({
         ...query,
-        where: { uid },
+        where: { name: { startsWith: q, mode: 'insensitive' } },
       }),
   })
 );
+
+const createGroupUid = async (name: string) => {
+  const groupSlug = slug(name);
+  const createUid = (i: number) => (i === 1 ? groupSlug : `${groupSlug}-${i}`);
+  const i = await dichotomid(
+    async (i) => !(await prisma.group.findFirst({ where: { uid: createUid(i) } }))
+  );
+  return createUid(i);
+};
 
 /** Creates a new group. */
 builder.mutationField('createGroup', (t) =>
@@ -83,38 +100,21 @@ builder.mutationField('createGroup', (t) =>
       type: t.arg({ type: GroupEnumType }),
       name: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       schoolId: t.arg.id(),
+      parentUid: t.arg.string({ required: false }),
     },
     authScopes: (_, {}, { user }) => Boolean(user?.canEditGroups),
-    resolve: async (query, _, { type, name, schoolId }) =>
+    resolve: async (query, _, { type, name, schoolId, parentUid }) =>
       prisma.group.create({
         ...query,
         data: {
           type,
           name,
-          uid: slug(name),
+          uid: await createGroupUid(name),
           school: { connect: { id: schoolId } },
-          color: '#bbdfff',
+          parent: parentUid ? { connect: { uid: parentUid } } : {},
+          color: '#' + Math.random().toString(16).slice(2, 8).padEnd(6, '0'),
           linkCollection: { create: {} },
         },
-      }),
-  })
-);
-
-/** Updates a group. */
-builder.mutationField('updateGroup', (t) =>
-  t.prismaField({
-    type: GroupType,
-    args: { id: t.arg.id(), name: t.arg.string() },
-    authScopes: (_, { id }, { user }) =>
-      Boolean(
-        user?.canEditGroups ||
-          user?.groups.some(({ groupId, president }) => president && groupId === id)
-      ),
-    resolve: async (query, _, { id, name }) =>
-      prisma.group.update({
-        ...query,
-        where: { id },
-        data: { name },
       }),
   })
 );
@@ -123,14 +123,14 @@ builder.mutationField('updateGroup', (t) =>
 builder.mutationField('deleteGroup', (t) =>
   t.field({
     type: 'Boolean',
-    args: { id: t.arg.id() },
-    authScopes: (_, { id }, { user }) =>
+    args: { uid: t.arg.string() },
+    authScopes: (_, { uid }, { user }) =>
       Boolean(
         user?.canEditGroups ||
-          user?.groups.some(({ groupId, president }) => president && groupId === id)
+          user?.groups.some(({ group, president }) => president && group.uid === uid)
       ),
-    async resolve(_, { id }) {
-      await prisma.group.delete({ where: { id } });
+    async resolve(_, { uid }) {
+      await prisma.group.delete({ where: { uid } });
       return true;
     },
   })
