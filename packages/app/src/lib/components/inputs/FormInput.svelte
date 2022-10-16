@@ -50,7 +50,10 @@
   }
 
   .input > :global(*) {
-    display: block;
+    display: flex;
+    gap: 0.25em;
+    align-items: center;
+    justify-content: center;
     width: 100%;
   }
 </style>

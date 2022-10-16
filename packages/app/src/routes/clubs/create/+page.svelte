@@ -1,15 +1,16 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import Button from '$lib/components/buttons/Button.svelte';
+  import FormInput from '$lib/components/inputs/FormInput.svelte';
   import { GroupType, zeus, ZeusError } from '$lib/zeus';
   import type { PageData } from './$types';
+  import ParentSearch from './ParentSearch.svelte';
 
   export let data: PageData;
 
   let name = '';
-  let parent: { uid: string; name: string } | undefined;
-  let parents: Array<{ uid: string; name: string }> = [];
-  let parentSearch = '';
+  let parentUid: string | undefined;
+
   $: schoolId = data.schools[0].id;
 
   let loading = false;
@@ -19,10 +20,7 @@
     try {
       loading = true;
       const { createGroup: group } = await $zeus.mutate({
-        createGroup: [
-          { type: GroupType.Club, name, schoolId, parentUid: parent?.uid },
-          { uid: true },
-        ],
+        createGroup: [{ type: GroupType.Club, name, schoolId, parentUid }, { uid: true }],
       });
       await goto(`/club/${group.uid}`);
     } catch (error: unknown) {
@@ -31,49 +29,15 @@
       loading = false;
     }
   };
-
-  const asInput = (input: EventTarget | null) => input as HTMLInputElement;
 </script>
 
 <form on:submit|preventDefault={createGroup}>
-  <p>
-    <label>Nom du group&nbsp;: <input type="text" bind:value={name} required /></label>
-  </p>
+  <FormInput label="Nom du groupe :">
+    <input type="text" bind:value={name} required />
+  </FormInput>
 
   <p>
-    <label>
-      Groupe parent&nbsp;: <input
-        type="search"
-        list="parents"
-        bind:value={parentSearch}
-        on:input={async ({ target }) => {
-          parent = undefined;
-          if (!parentSearch) return;
-          try {
-            const { group } = await $zeus.query({
-              group: [{ uid: parentSearch }, { uid: true, name: true }],
-            });
-            asInput(target).setCustomValidity('');
-            parent = group;
-          } catch {
-            asInput(target).setCustomValidity('Veuillez entrer un groupe parent valide');
-            const { searchGroup } = await $zeus.query({
-              searchGroup: [
-                { q: parentSearch, first: 10 },
-                { edges: { node: { uid: true, name: true } } },
-              ],
-            });
-            parents = searchGroup.edges.map(({ node }) => node);
-          }
-        }}
-      />
-    </label>
-    {#if parent}✅{/if}
-    <datalist id="parents">
-      {#each parents as parent}
-        <option value={parent.uid}>{parent.name}</option>
-      {/each}
-    </datalist>
+    <ParentSearch bind:parentUid />
   </p>
   <p>
     <label>
