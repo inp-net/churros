@@ -177,7 +177,7 @@ model Group {
   uid                  String    @unique @db.VarChar(255)
   parentId             Int?
   /// Helper field to get a whole tree without processing all groups
-  familyId             Int?
+  familyId             Int       @default(autoincrement())
   schoolId             Int?
   studentAssociationId Int?
   name                 String    @db.VarChar(255)
@@ -196,8 +196,10 @@ model Group {
   children           Group[]             @relation("parent")
   members            GroupMember[]
   parent             Group?              @relation("parent", fields: [parentId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  familyRoot         Group               @relation("root", fields: [familyId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   school             School?             @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   studentAssociation StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  Group              Group[]             @relation("root")
 }
 
 /// The intermediate model between users and groups
