@@ -4630,10 +4630,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
-  version: 18.8.5
-  resolution: "@types/node@npm:18.8.5"
-  checksum: 22c3658e4872f752e108c0af89038d2412b551edfb5c60fe515eace134a87ef8ab5b18aeb22f3e308aa7cd883778c3a42ecf757d387673764d43cea7e6369220
+"@types/node@npm:*, @types/node@npm:^18.11.2":
+  version: 18.11.2
+  resolution: "@types/node@npm:18.11.2"
+  checksum: 15bc10c85db33a12142e9d76c464dbd45ba341d928e29ffc007c9319526483ff03e538618dbdc35456d556e92176cc07241dbd90a87c72eaeea74fe240755890
   languageName: node
   linkType: hard
 
@@ -4648,13 +4648,6 @@ __metadata:
   version: 16.11.65
   resolution: "@types/node@npm:16.11.65"
   checksum: 207fb30e5d6e90043e7fccaa7e1044c0b6d6b7ef760dfabfe42014618d842743ff81b0d7a129a99d40c68176b481b684a83614c226dd5290e630ecc3921133e1
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^18.11.2":
-  version: 18.11.2
-  resolution: "@types/node@npm:18.11.2"
-  checksum: 15bc10c85db33a12142e9d76c464dbd45ba341d928e29ffc007c9319526483ff03e538618dbdc35456d556e92176cc07241dbd90a87c72eaeea74fe240755890
   languageName: node
   linkType: hard
 

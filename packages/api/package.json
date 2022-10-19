@@ -57,7 +57,8 @@
   "scripts": {
     "build": "prisma generate && tsc && node ./build/post-build.js",
     "clean": "git clean -Xdf .",
-    "dev": "NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts"
+    "dev": "NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
+    "start": "FRONTEND_ORIGIN=http://localhost:3000 node ./build/index.js"
   },
   "type": "module",
   "volta": {

@@ -22,7 +22,7 @@ export const register = async (email: string): Promise<boolean> => {
         update: {},
       });
 
-  const url = new URL('/register/continue', process.env.FRONTEND_URL);
+  const url = new URL('/register/continue', process.env.FRONTEND_ORIGIN);
   url.searchParams.append('token', token);
 
   await transporter.sendMail({
@@ -91,7 +91,7 @@ export const saveUser = async ({
 
   await prisma.userCandidate.delete({ where: { id } });
 
-  const url = new URL('/welcome/', process.env.FRONTEND_URL);
+  const url = new URL('/welcome/', process.env.FRONTEND_ORIGIN);
   await transporter.sendMail({
     to: email,
     from: process.env.SUPPORT_EMAIL,

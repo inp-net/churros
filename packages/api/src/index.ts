@@ -19,6 +19,8 @@ z.setErrorMap(customErrorMap);
 
 const yoga = createYoga({
   schema,
+  // CORS are handled below, disable Yoga's default CORS settings
+  cors: false,
   context,
   graphiql: {
     defaultQuery:
@@ -69,7 +71,7 @@ const yoga = createYoga({
 const api = express();
 api.use(
   // Allow queries from the frontend only
-  cors({ origin: process.env.FRONTEND_URL }),
+  cors({ origin: [process.env.FRONTEND_ORIGIN, 'http://app'] }),
   // Set basic security headers
   helmet({
     contentSecurityPolicy: false,
@@ -112,13 +114,15 @@ api.get('/', (_req, res) => {
 </head>
 <body>
   <h1>Centraverse API</h1>
-  <p><strong><a href="${new URL(process.env.FRONTEND_URL).toString()}">
+  <p><strong><a href="${new URL(process.env.FRONTEND_ORIGIN).toString()}">
     Retourner à l'accueil</a></strong></p>
   <p><a href="/graphql">GraphiQL (pour les développeurs et les curieux)</a></p>
   <p><a href="https://git.inpt.fr/inp-net/centraverse">Code source</a></p>
 </body>
 </html>`);
 });
-api.listen(4000);
+api.listen(4000, () => {
+  console.log('API ready at http://localhost:4000');
+});
 
 await writeSchema();

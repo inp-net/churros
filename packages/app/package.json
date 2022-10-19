@@ -50,6 +50,7 @@
     "clean": "git clean -Xdf .",
     "dev": "yarn zeus && vite dev --host",
     "preview": "vite preview",
+    "start": "ORIGIN=http://app node ./build/index.js",
     "storybook": "NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 6006",
     "zeus": "zeus ../api/build/schema.graphql ./src --es"
   },
