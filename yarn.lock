@@ -1622,7 +1622,7 @@ __metadata:
     remark-parse: "npm:^10.0.1"
     remark-rehype: "npm:^10.1.0"
     slug: "npm:^8.2.2"
-    tsx: "npm:^3.10.3"
+    tsx: "npm:3.10.1"
     typescript: "npm:^4.8.4"
     unified: "npm:^10.1.2"
     zod: "npm:^3.19.1"
@@ -17583,6 +17583,23 @@ __metadata:
   peerDependencies:
     typescript: ">=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta"
   checksum: 723459d516fe94cd9f798436e9424357200f0cccd2804c3240dbe3d2f51fd85207110a756bb46ae0b0b6bd9420083a048e2b3d44a6534224cc34e5821d8aba7f
+  languageName: node
+  linkType: hard
+
+"tsx@npm:3.10.1":
+  version: 3.10.1
+  resolution: "tsx@npm:3.10.1"
+  dependencies:
+    "@esbuild-kit/cjs-loader": "npm:^2.4.0"
+    "@esbuild-kit/core-utils": "npm:^3.0.0"
+    "@esbuild-kit/esm-loader": "npm:^2.5.0"
+    fsevents: "npm:~2.3.2"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    tsx: dist/cli.js
+  checksum: cc94be0b7405a5ae2e3038abf175821de58ac3f34dca03140ad0bb1053b855e347bd35daa9ffeb282551abcf22e516b8cfba934f494d4e9f34144fdc826cba3a
   languageName: node
   linkType: hard
 
