@@ -191,15 +191,19 @@ model Group {
   longDescription  String @default("")
   linkCollectionId Int
 
-  linkCollection     LinkCollection      @relation(fields: [linkCollectionId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  /// Parent group, from which this group inherits its permissions
+  parent   Group?  @relation("parent", fields: [parentId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  children Group[] @relation("parent")
+
+  /// Family root, only created for performance reasons
+  familyRoot     Group   @relation("root", fields: [familyId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  familyChildren Group[] @relation("root")
+
   articles           Article[]
-  children           Group[]             @relation("parent")
+  linkCollection     LinkCollection      @relation(fields: [linkCollectionId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   members            GroupMember[]
-  parent             Group?              @relation("parent", fields: [parentId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  familyRoot         Group               @relation("root", fields: [familyId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   school             School?             @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   studentAssociation StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  Group              Group[]             @relation("root")
 }
 
 /// The intermediate model between users and groups

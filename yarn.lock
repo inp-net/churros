@@ -1585,6 +1585,7 @@ __metadata:
     "@graphql-yoga/node": "npm:^2.13.13"
     "@pothos/core": "npm:^3.22.6"
     "@pothos/plugin-complexity": "npm:^3.11.4"
+    "@pothos/plugin-dataloader": "npm:^3.12.6"
     "@pothos/plugin-errors": "npm:^3.8.4"
     "@pothos/plugin-prisma": "npm:^3.35.4"
     "@pothos/plugin-relay": "npm:^3.28.4"
@@ -1604,6 +1605,7 @@ __metadata:
     arborist: "workspace:^"
     argon2: "npm:^0.30.1"
     cors: "npm:^2.8.5"
+    dataloader: "npm:^2.1.0"
     dichotomid: "npm:^0.0.3"
     envelop-no-batched-queries: "npm:^3.0.2"
     express: "npm:^4.18.2"
@@ -2874,6 +2876,17 @@ __metadata:
     "@pothos/core": "*"
     graphql: ">=15.1.0"
   checksum: ca34f1044f9ab81edb69c43fa27ca860d4ee5ae1e1e1ea89fc8ace1073e08e1fd4ab98af98c9b992a82901580f88ab19bfc6b06d66d2924c895df62567a8b09e
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-dataloader@npm:^3.12.6":
+  version: 3.12.6
+  resolution: "@pothos/plugin-dataloader@npm:3.12.6"
+  peerDependencies:
+    "@pothos/core": "*"
+    dataloader: 2
+    graphql: ">=15.1.0"
+  checksum: 116a84348d9e7cc61a6cea8225c72bb3a528f730fbbe908400c9088f8041b803d3c08333912f544486432cc00b75f3ade46732b8d2306cd4ea6e299d7bbdc6e5
   languageName: node
   linkType: hard
 
@@ -7788,7 +7801,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dataloader@npm:2.1.0":
+"dataloader@npm:2.1.0, dataloader@npm:^2.1.0":
   version: 2.1.0
   resolution: "dataloader@npm:2.1.0"
   checksum: 3a1a04ca8ce5d670f9bb315ea17fdddcd2983c10afd54a1b56e2ee6c23349efadbc8b2168210238ae77efb08452ceb89762026027d914f66fb0efc8fbdd92aee

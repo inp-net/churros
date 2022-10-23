@@ -1,4 +1,5 @@
 import { GroupType as GroupPrismaType } from '@prisma/client';
+import { getAncestors } from 'arborist';
 import dichotomid from 'dichotomid';
 import slug from 'slug';
 import { builder } from '../builder.js';
@@ -45,6 +46,23 @@ export const GroupType = builder.prismaNode('Group', {
     parent: t.relation('parent'),
   }),
 });
+
+// Because it's too hard for Pothos to correctly type recursive data loading,
+// we declare the field after the type
+builder.objectField(GroupType, 'ancestors', (t) =>
+  // Declare `Groups.ancestors` as a batch-loadable field, to avoid the N+1 problem
+  t.loadableList({
+    type: GroupType,
+    description: 'All the ancestors of this group, from the current group to the root.',
+    resolve: ({ id, familyId }) => ({ id, familyId }),
+    load: async (ids) =>
+      prisma.group
+        // Get all groups in the same family as the current groups
+        .findMany({ where: { familyId: { in: ids.map(({ familyId }) => familyId) } } })
+        // Get the ancestors of each group
+        .then((groups) => ids.map(({ id }) => getAncestors(groups, id))),
+  })
+);
 
 builder.queryField('groups', (t) =>
   t.prismaField({

@@ -49,7 +49,8 @@ export const UserType = builder.prismaNode('User', {
       authScopes: { admin: true, $granted: 'me' },
     }),
 
-    articles: t.relation('articles', {
+    articles: t.relatedConnection('articles', {
+      cursor: 'id',
       authScopes: { loggedIn: true, $granted: 'me' },
       query: { orderBy: { publishedAt: 'desc' } },
     }),

@@ -1,5 +1,6 @@
 import SchemaBuilder, { type BuiltinScalarRef } from '@pothos/core';
 import ComplexityPlugin from '@pothos/plugin-complexity';
+import DataloaderPlugin from '@pothos/plugin-dataloader';
 import ErrorsPlugin from '@pothos/plugin-errors';
 import PrismaPlugin from '@pothos/plugin-prisma';
 import type PrismaTypes from '@pothos/plugin-prisma/generated';
@@ -27,6 +28,7 @@ export const builder = new SchemaBuilder<{
 }>({
   plugins: [
     ComplexityPlugin,
+    DataloaderPlugin,
     ErrorsPlugin,
     PrismaPlugin,
     RelayPlugin,
