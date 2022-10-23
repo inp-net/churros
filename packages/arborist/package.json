@@ -16,5 +16,8 @@
     "build": "tsc",
     "test": "c8 ts-node-esm ./test.ts"
   },
-  "type": "module"
+  "type": "module",
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

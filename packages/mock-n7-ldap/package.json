@@ -13,5 +13,8 @@
     "build": "tsc",
     "dev": "NODE_ENV=development tsx watch --clear-screen=false ./src/index.js"
   },
-  "type": "module"
+  "type": "module",
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

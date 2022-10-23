@@ -41,7 +41,7 @@
     "storybook": "yarn workspace @centraverse/app run storybook"
   },
   "volta": {
-    "node": "18.11.0",
+    "node": "19.0.0",
     "yarn": "1.22.19"
   },
   "workspaces": [
