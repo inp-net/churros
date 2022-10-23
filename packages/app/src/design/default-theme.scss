@@ -60,6 +60,12 @@
   --warning-disabled-text: #{$stone-500};
   --warning-disabled-border: #{$stone-200};
 
+  // Muted
+  --muted-bg: #{$gray-100};
+  --muted-text: #{$slate-400};
+  --muted-link: #{$slate-500};
+  --muted-border: #{$gray-200};
+
   // Other colors
   --loading-bg: linear-gradient(to right, #{$orange-600}, #{$orange-200});
 

@@ -1,3 +1,4 @@
+import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
@@ -14,6 +15,7 @@ export const ArticleType = builder.prismaNode('Article', {
     body: t.exposeString('body'),
     bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),
     published: t.exposeBoolean('published'),
+    homepage: t.exposeBoolean('homepage'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     publishedAt: t.expose('publishedAt', { type: DateTimeScalar }),
     author: t.relation('author', { nullable: true }),
@@ -47,6 +49,18 @@ builder.queryField('homepage', (t) =>
         });
       }
 
+      // Get the user's groups and their ancestors
+      const ancestors = await prisma.group
+        // Get all groups in the same family as the user's groups
+        .findMany({
+          where: { familyId: { in: user.groups.map(({ group }) => group.familyId) } },
+          select: { id: true, parentId: true },
+        })
+        // Get all ancestors of the groups
+        .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
+        // Flatten the ancestors into a single array
+        .then((groups) => groups.flat());
+
       return prisma.article.findMany({
         ...query,
         where: {
@@ -58,7 +72,7 @@ builder.queryField('homepage', (t) =>
               group: { school: { id: { in: user.major.schools.map(({ id }) => id) } } },
             },
             // Show articles from groups whose user is a member
-            { group: { members: { some: { memberId: user.id } } } },
+            { group: { id: { in: ancestors.map(({ id }) => id) } } },
           ],
         },
         orderBy: { publishedAt: 'desc' },

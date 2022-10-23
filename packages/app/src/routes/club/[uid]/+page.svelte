@@ -1,6 +1,8 @@
 <script lang="ts">
   import Alert from '$lib/components/alerts/Alert.svelte';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
+  import Breadcrumb from '$lib/components/breadcrumbs/Breadcrumb.svelte';
+  import Breadcrumbs from '$lib/components/breadcrumbs/Breadcrumbs.svelte';
   import Card from '$lib/components/cards/Card.svelte';
   import SocialLink from '$lib/components/links/SocialLink.svelte';
   import { me } from '$lib/session.js';
@@ -15,7 +17,16 @@
 <div class="top">
   <img src="https://picsum.photos/1000/1000" alt="" />
   <Card>
-    <h1>
+    <p class="muted text-sm mb-0">
+      {#if group.ancestors && group.ancestors.length > 1}
+        <Breadcrumbs>
+          {#each [...group.ancestors].reverse() as { uid, name }}
+            <Breadcrumb><a href="/club/{uid}/">{name}</a></Breadcrumb>
+          {/each}
+        </Breadcrumbs>
+      {/if}
+    </p>
+    <h1 class="mt-1">
       {group.name}
       {#if group.school}<SchoolBadge schools={[group.school]} />{/if}
     </h1>

@@ -28,7 +28,7 @@
 
 <h1>Bienvenue sur Centraverse</h1>
 
-{#each data.homepage.edges as { cursor, node: { slug, title, bodyHtml, publishedAt, group, author } }}
+{#each data.homepage.edges as { cursor, node: { slug, title, bodyHtml, publishedAt, group, author, homepage } }}
   <ArticleCard
     {title}
     href="/club/{group.uid}/post/{slug}/"
@@ -39,6 +39,7 @@
     <p>
       Par <a href="/club/{group.uid}/">{group.name}</a>
       le {formatDateTime(publishedAt)}
+      {#if homepage}en page d'accueil{/if}
       <GhostButton
         on:click={async () => {
           await navigator.share({ url: window.location.href, title });

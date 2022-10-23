@@ -175,6 +175,16 @@ hr {
   --disabled-border: var(--warning-disabled-border);
 }
 
+.muted {
+  --bg: var(--muted-bg);
+  --text: var(--muted-text);
+  --link: var(--muted-link);
+  --border: var(--muted-border);
+
+  // Not sure about the side-effect here
+  color: var(--text);
+}
+
 .icon {
   flex-shrink: 0;
   vertical-align: bottom;

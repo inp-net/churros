@@ -19,6 +19,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               description: true,
               longDescriptionHtml: true,
               email: true,
+              ancestors: { uid: true, name: true },
               articles: { slug: true, title: true, bodyHtml: true },
               school: { name: true, color: true },
               linkCollection: { links: { type: true, value: true } },

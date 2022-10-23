@@ -12,6 +12,6 @@
   </div>
 </Story>
 
-<Story name="Inline" let:args>
+<Story name="Inline">
   <InlineLoader />
 </Story>

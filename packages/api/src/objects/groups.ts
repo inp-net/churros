@@ -1,5 +1,5 @@
 import { GroupType as GroupPrismaType } from '@prisma/client';
-import { getAncestors } from 'arborist';
+import { mappedGetAncestors } from 'arborist';
 import dichotomid from 'dichotomid';
 import slug from 'slug';
 import { builder } from '../builder.js';
@@ -54,13 +54,15 @@ builder.objectField(GroupType, 'ancestors', (t) =>
   t.loadableList({
     type: GroupType,
     description: 'All the ancestors of this group, from the current group to the root.',
+    // Because this request can be expensive, only allow logged in users
+    authScopes: { loggedIn: true },
     resolve: ({ id, familyId }) => ({ id, familyId }),
     load: async (ids) =>
       prisma.group
         // Get all groups in the same family as the current groups
         .findMany({ where: { familyId: { in: ids.map(({ familyId }) => familyId) } } })
         // Get the ancestors of each group
-        .then((groups) => ids.map(({ id }) => getAncestors(groups, id))),
+        .then((groups) => mappedGetAncestors(groups, ids)),
   })
 );
 

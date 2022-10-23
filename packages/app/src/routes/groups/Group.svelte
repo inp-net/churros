@@ -8,7 +8,7 @@
   export let group: Group;
 </script>
 
-<a href="/club/{group.uid}">{group.name}</a>
+<a href="/club/{group.uid}/">{group.name}</a>
 
 {#if group.children.length > 0}
   <ul>

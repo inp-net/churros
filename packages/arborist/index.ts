@@ -94,3 +94,41 @@ export const getAncestors = <
 
   return ancestors;
 };
+
+/** Same as `getAncestors`, but makes a list of children match with their ancestors. */
+export const mappedGetAncestors = <
+  T extends { [K in V]: U } & { [K in W]?: U | null | undefined },
+  U extends PropertyKey = PropertyKey,
+  V extends PropertyKey = 'id',
+  W extends PropertyKey = 'parentId',
+  X extends PropertyKey = 'id'
+>(
+  list: T[],
+  children: Array<{ [K in X]: U }>,
+  {
+    idKey = 'id' as V,
+    parentIdKey = 'parentId' as W,
+    mappedKey = idKey as unknown as X,
+  }: { idKey?: V; parentIdKey?: W; mappedKey?: X } = {}
+) => {
+  const map = new Map<U, T>();
+
+  // Register all the items
+  for (const item of list) map.set(item[idKey], item);
+
+  return children.map((node) => {
+    const ancestors = [];
+    let current = map.get(node[mappedKey]);
+
+    // Follow `current.parentId` until we reach the root
+    while (current) {
+      ancestors.push(current);
+
+      // `current.parentId` may be undefined despite the non-null assertion
+      // In this case, `map.get` returns `undefined`, breaking the loop
+      current = map.get(current[parentIdKey]!);
+    }
+
+    return ancestors;
+  });
+};

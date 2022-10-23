@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
-import { createForest, getAncestors } from './index.js';
+import { createForest, getAncestors, mappedGetAncestors } from './index.js';
 
 describe('arborist', () => {
   it('should create a simple forest', () => {
@@ -56,6 +56,32 @@ describe('arborist', () => {
       { id: 2, parentId: 1 },
       { id: 1, parentId: undefined },
     ]);
+  });
+
+  it('should retrieve mapped ancestors', () => {
+    const nodes = [
+      { id: 2, parentId: 1 },
+      { id: 4, parentId: 3 },
+      { id: 1 },
+      { id: 3, parentId: 2 },
+    ];
+    const ancestors = mappedGetAncestors(nodes, [nodes[0], nodes[3]] as Array<{ id: number }>);
+
+    assert.deepStrictEqual(ancestors, [
+      [{ id: 2, parentId: 1 }, { id: 1 }],
+      [{ id: 3, parentId: 2 }, { id: 2, parentId: 1 }, { id: 1 }],
+    ]);
+  });
+
+  it('should remap keys correctly', () => {
+    const nodes = [{ x: 2, y: 1 }, { x: 4, y: 3 }, { x: 1 }, { x: 3, y: 2 }];
+    const ancestors = mappedGetAncestors(nodes, [{ z: 4 as number }], {
+      idKey: 'x',
+      parentIdKey: 'y',
+      mappedKey: 'z',
+    });
+
+    assert.deepStrictEqual(ancestors, [[{ x: 4, y: 3 }, { x: 3, y: 2 }, { x: 2, y: 1 }, { x: 1 }]]);
   });
 
   it('should work with custom key', () => {

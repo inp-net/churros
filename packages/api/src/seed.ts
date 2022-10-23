@@ -318,3 +318,13 @@ await prisma.group.create({
     members: { createMany: { data: [{ memberId: 5 }, { memberId: 6 }, { memberId: 7 }] } },
   },
 });
+
+await prisma.article.create({
+  data: {
+    title: "C'est le début de l'inté",
+    body: '_youpi_',
+    slug: 'cest-le-debut-de-l-inte',
+    groupId: parent.id,
+    published: true,
+  },
+});
