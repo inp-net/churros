@@ -96,7 +96,7 @@ for (const [i, data] of users.entries()) {
       },
       phone: '+33612345678',
       address: '2 rue Charles Camichel, 31000 Toulouse',
-      birthday: new Date(2000, (i * 37) % 12, (i * 55) % 28),
+      birthday: new Date(Date.UTC(2000, (i * 37) % 12, (i * 55) % 28)),
       graduationYear: 2020 + (i % 6),
       major: { connect: { id: (i % 5) + 1 } },
       credentials: { create: { type: CredentialType.Password, value: await hash(data.uid) } },
