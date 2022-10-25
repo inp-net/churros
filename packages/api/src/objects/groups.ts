@@ -123,19 +123,24 @@ builder.mutationField('createGroup', (t) =>
       parentUid: t.arg.string({ required: false }),
     },
     authScopes: (_, {}, { user }) => Boolean(user?.canEditGroups),
-    resolve: async (query, _, { type, name, schoolId, parentUid }) =>
-      prisma.group.create({
+    async resolve(query, _, { type, name, schoolId, parentUid }) {
+      const parent = parentUid
+        ? await prisma.group.findUniqueOrThrow({ where: { uid: parentUid } })
+        : undefined;
+      return prisma.group.create({
         ...query,
         data: {
           type,
           name,
           uid: await createGroupUid(name),
           school: { connect: { id: schoolId } },
-          parent: parentUid ? { connect: { uid: parentUid } } : {},
+          parent: parent ? { connect: { id: parent.id } } : undefined,
+          familyRoot: parent ? { connect: { id: parent.familyId } } : undefined,
           color: '#' + Math.random().toString(16).slice(2, 8).padEnd(6, '0'),
           linkCollection: { create: {} },
         },
-      }),
+      });
+    },
   })
 );
 
