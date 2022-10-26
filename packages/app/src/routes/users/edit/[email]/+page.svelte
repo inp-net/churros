@@ -24,8 +24,7 @@
   // Waiting for https://github.com/graphql-editor/graphql-zeus/issues/262 to be fixed
   graduationYear ??= new Date().getFullYear() + 3;
 
-  const asDate = (x: unknown) => (x as null | Date) && new Date(x as Date);
-  const asInput = (x: unknown) => x as HTMLInputElement;
+  const valueAsDate = (x: unknown) => (x as HTMLInputElement).valueAsDate;
 
   $: args = {
     email: data.userCandidateByEmail.email,
@@ -46,13 +45,13 @@
   const onSubmit = async ({ submitter }: SubmitEvent) => {
     if (loading) return;
 
-    const update = !asInput(submitter).dataset.refuse;
+    const update = !submitter!.dataset.refuse;
 
     try {
       loading = true;
 
       if (update) {
-        const register = Boolean(asInput(submitter).dataset.register);
+        const register = Boolean(submitter!.dataset.register);
         loadingRegister = register;
         loadingSave = !register;
         await updateUserCandidate(register);
@@ -133,9 +132,10 @@
     <FormInput label="Date de naissance :" errors={formErrors?.birthday?._errors}>
       <input
         type="date"
-        value={asDate(birthday)?.toISOString().slice(0, 10)}
+        value={birthday?.toISOString().slice(0, 10)}
         on:change={({ target }) => {
-          birthday = new Date(asInput(target).valueAsNumber);
+          // @ts-expect-error https://github.com/graphql-editor/graphql-zeus/issues/262
+          birthday = valueAsDate(target);
         }}
       />
     </FormInput>

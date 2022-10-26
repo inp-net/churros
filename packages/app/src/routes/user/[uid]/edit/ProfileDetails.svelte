@@ -25,8 +25,7 @@
     birthday = null,
   } = data.user;
 
-  const asDate = (x: unknown) => new Date(x as Date);
-  const asInput = (x: unknown) => x as HTMLInputElement;
+  const valueAsDate = (x: unknown) => (x as HTMLInputElement).valueAsDate;
 
   let loading = false;
   const updateUser = async () => {
@@ -154,9 +153,9 @@
       {:else}
         <input
           type="date"
-          value={asDate(birthday).toISOString().slice(0, 10)}
+          value={birthday.toISOString().slice(0, 10)}
           on:change={({ target }) => {
-            birthday = new Date(asInput(target).valueAsNumber);
+            birthday = valueAsDate(target);
           }}
         />
         <GhostButton
