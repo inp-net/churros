@@ -31,13 +31,10 @@ const yoga = createYoga({
     formDataLimits: { files: 1, fileSize: 10 * 1024 * 1024 },
   }),
   maskedErrors: {
-    formatError(error, message, isDev) {
-      if (isDev) console.error(error);
+    maskError(error, message) {
+      if (process.env['NODE_ENV'] === 'development') console.error(error);
 
       const cause = (error as GraphQLError).originalError;
-
-      // If the error has no cause, return it as is
-      if (cause === undefined) return error as GraphQLError;
 
       // These are user errors, no need to take special care of them
       if (cause instanceof NotFoundError)
@@ -52,8 +49,11 @@ const yoga = createYoga({
         });
       }
 
-      // These are server errors, we should log them
-      if (!isDev) console.error(cause);
+      // Below this point are server errors
+      if (process.env['NODE_ENV'] !== 'development') console.error(error);
+
+      // If the error has no cause, return it as is
+      if (cause === undefined) return error as GraphQLError;
 
       if (cause instanceof PrismaClientKnownRequestError) {
         return new GraphQLError('Database error.', {
