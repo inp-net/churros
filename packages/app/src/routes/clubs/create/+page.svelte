@@ -11,7 +11,7 @@
   let name = '';
   let parentUid: string | undefined;
 
-  $: schoolId = data.schools[0].id;
+  let schoolId = data.schools[0].id;
 
   let loading = false;
   const createGroup = async () => {
