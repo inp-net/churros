@@ -16,7 +16,7 @@
     let url = new URL($page.url.searchParams.get('to') ?? '/', $page.url);
     if (url.origin !== $page.url.origin || url.pathname.startsWith('/login'))
       url = new URL('/', $page.url);
-    return goto(url);
+    return goto(url, { invalidateAll: true });
   };
 
   let loading = false;
@@ -46,7 +46,6 @@
       }
 
       saveSessionToken(login.data);
-      await invalidateAll();
       await redirect();
     } finally {
       loading = false;

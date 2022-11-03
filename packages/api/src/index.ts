@@ -23,8 +23,25 @@ const yoga = createYoga({
   cors: false,
   context,
   graphiql: {
-    defaultQuery:
-      'query {\n  homepage {\n    edges {\n      node {\n        title\n        body\n        author {\n          firstName\n          lastName\n        }\n        group {\n          name\n        }\n      }\n    }\n  }\n}',
+    defaultQuery: /* GraphQL */ `
+      query {
+        homepage {
+          edges {
+            node {
+              title
+              body
+              author {
+                firstName
+                lastName
+              }
+              group {
+                name
+              }
+            }
+          }
+        }
+      }
+    `,
   },
   fetchAPI: createFetch({
     useNodeFetch: true,
