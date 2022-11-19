@@ -1,5 +1,6 @@
 {
   "name": "arborist",
+  "version": "0.1.0",
   "devDependencies": {
     "@types/node": "^18.11.9",
     "c8": "^7.12.0",
@@ -10,7 +11,13 @@
     "development": "./index.ts",
     "default": "./build/index.js"
   },
-  "private": true,
+  "files": [
+    "build",
+    "index.ts",
+    "package.json"
+  ],
+  "homepage": "https://git.inpt.fr/inp-net/centraverse/-/tree/main/packages/arborist",
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
     "test": "c8 ts-node-esm ./test.ts"
