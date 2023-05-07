@@ -1,4 +1,8 @@
-<ul>
+<script lang="ts">
+  export let horizontal = false;
+</script>
+
+<ul class:horizontal>
   <slot />
 </ul>
 
@@ -18,5 +22,9 @@
       align-items: center;
       color: inherit;
     }
+  }
+
+  ul.horizontal {
+    flex-direction: row;
   }
 </style>
