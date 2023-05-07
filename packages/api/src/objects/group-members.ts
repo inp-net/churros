@@ -51,18 +51,35 @@ builder.mutationField('updateGroupMember', (t) =>
       memberId: t.arg.id(),
       groupId: t.arg.id(),
       title: t.arg.string(),
+      president: t.arg.boolean(),
+      treasurer: t.arg.boolean(),
     },
     authScopes: (_, { groupId }, { user }) =>
       Boolean(
         user?.canEditGroups ||
           user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id)
       ),
-    resolve: (query, _, { memberId, groupId, title }) =>
-      prisma.groupMember.update({
+    async resolve(query, _, { memberId, groupId, title, president, treasurer }) {
+      if (president) {
+        await prisma.groupMember.updateMany({
+          where: { groupId, president: true },
+          data: { president: false },
+        });
+      }
+
+      if (treasurer) {
+        await prisma.groupMember.updateMany({
+          where: { groupId, treasurer: true },
+          data: { treasurer: false },
+        });
+      }
+
+      return prisma.groupMember.update({
         ...query,
         where: { groupId_memberId: { groupId, memberId } },
-        data: { title },
-      }),
+        data: { title, president, treasurer, canEditMembers: president || treasurer },
+      });
+    },
   })
 );
 

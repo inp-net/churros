@@ -45,18 +45,33 @@
     }
   };
 
-  const updateGroupMember = async (memberId: string) => {
+  const updateGroupMember = async (
+    memberId: string,
+    { makePresident, makeTreasurer }: { makePresident?: boolean; makeTreasurer?: boolean } = {}
+  ) => {
     try {
       const member = data.group.members.find((member) => member.memberId === memberId);
       if (!member) throw new Error('Member not found');
       const { updateGroupMember } = await $zeus.mutate({
         updateGroupMember: [
-          { groupId: extractIdInteger(data.group.id), memberId, title: member.title },
-          { title: true },
+          {
+            groupId: extractIdInteger(data.group.id),
+            memberId,
+            title: member.title,
+            president: makePresident ?? member.president,
+            treasurer: makeTreasurer ?? member.treasurer,
+          },
+          { title: true, president: true, treasurer: true },
         ],
       });
       data.group.members = data.group.members.map((member) =>
-        member.memberId === memberId ? { ...member, ...updateGroupMember } : member
+        member.memberId === memberId
+          ? { ...member, ...updateGroupMember }
+          : {
+              ...member,
+              president: updateGroupMember.president ? false : member.president,
+              treasurer: updateGroupMember.treasurer ? false : member.treasurer,
+            }
       );
     } catch (error: unknown) {
       console.error(error);
@@ -76,9 +91,27 @@
           on:change={async () => updateGroupMember(memberId)}
         />
       </td>
-      <td>
-        <button type="button" on:click={async () => deleteGroupMember(memberId)}> ❌ </button>
-      </td>
+      {#if !president && !treasurer}
+        <td>
+          <button type="button" on:click={async () => deleteGroupMember(memberId)}> ❌ </button>
+        </td>
+      {/if}
+      {#if !president}
+        <td
+          ><button
+            type="button"
+            on:click={async () => updateGroupMember(memberId, { makePresident: true })}>👑</button
+          ></td
+        >
+      {/if}
+      {#if !treasurer}
+        <td
+          ><button
+            type="button"
+            on:click={async () => updateGroupMember(memberId, { makeTreasurer: true })}>💰</button
+          ></td
+        >
+      {/if}
     </tr>
   {/each}
 </table>
