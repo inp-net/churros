@@ -110,7 +110,11 @@ api.use('/dump', async (req, res) => {
   try {
     const credential = await prisma.credential.findFirstOrThrow({
       where: { type: CredentialType.Token, value: token },
-      include: { user: { include: { groups: true, articles: true, linkCollection: true } } },
+      include: {
+        user: {
+          include: { groups: true, articles: true, linkCollection: { include: { links: true } } },
+        },
+      },
     });
     res.json({ _: `Downloaded on ${new Date().toISOString()}`, ...credential.user });
   } catch {
