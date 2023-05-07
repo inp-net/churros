@@ -49,7 +49,7 @@
       </select>
     </label>
   </p>
-  <Button type="submit" theme="primary" {loading}>Créer le group</Button>
+  <Button type="submit" theme="primary" {loading}>Créer le groupe</Button>
 </form>
 
 <style lang="scss">
