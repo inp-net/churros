@@ -11,7 +11,9 @@
   style:--text={isDarkColor(groupMember.group.color) ? 'white' : 'black'}
 >
   <span>{groupMember.group.name}</span>
-  <span>{groupMember.title}</span>
+  {#if groupMember.title.toLowerCase() !== 'membre'}
+    <span>{groupMember.title}</span>
+  {/if}
 </span>
 
 <style lang="scss">
