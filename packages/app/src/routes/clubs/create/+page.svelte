@@ -10,6 +10,7 @@
 
   let name = '';
   let parentUid: string | undefined;
+  let selfJoinable = false;
 
   let schoolId = data.schools[0].id;
 
@@ -20,7 +21,10 @@
     try {
       loading = true;
       const { createGroup: group } = await $zeus.mutate({
-        createGroup: [{ type: GroupType.Club, name, schoolId, parentUid }, { uid: true }],
+        createGroup: [
+          { type: GroupType.Club, name, schoolId, parentUid, selfJoinable },
+          { uid: true },
+        ],
       });
       await goto(`/club/${group.uid}`);
     } catch (error: unknown) {
@@ -49,6 +53,12 @@
       </select>
     </label>
   </p>
+  <p class="oneline">
+    <label>
+      <input type="checkbox" bind:checked={selfJoinable} />
+      Autoriser l'auto-inscription
+    </label>
+  </p>
   <Button type="submit" theme="primary" {loading}>Créer le groupe</Button>
 </form>
 
@@ -57,5 +67,12 @@
   select {
     display: block;
     width: 100%;
+  }
+
+  .oneline {
+    input {
+      display: inline-block;
+      width: unset;
+    }
   }
 </style>

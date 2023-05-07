@@ -43,6 +43,30 @@ builder.mutationField('addGroupMember', (t) =>
   })
 );
 
+/** Adds a member to a group that is self-joinable. Does not require the same auth scopes. */
+builder.mutationField('selfJoinGroup', (t) =>
+  t.prismaField({
+    type: GroupMemberType,
+    args: {
+      groupUid: t.arg.string(),
+      uid: t.arg.string(),
+    },
+    authScopes: (_, {}, { user }) => Boolean(user),
+    async resolve(query, _, { groupUid, uid }) {
+      const group = await prisma.group.findUnique({ where: { uid: groupUid } });
+      if (!group?.selfJoinable) throw new Error('This group is not self-joinable.');
+      return prisma.groupMember.create({
+        ...query,
+        data: {
+          member: { connect: { uid } },
+          group: { connect: { uid: groupUid } },
+          title: 'Membre', // don't allow people to name themselves "Président", for example.
+        },
+      });
+    },
+  })
+);
+
 /** Updates a group member. */
 builder.mutationField('updateGroupMember', (t) =>
   t.prismaField({

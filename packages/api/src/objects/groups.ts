@@ -44,6 +44,7 @@ export const GroupType = builder.prismaNode('Group', {
     }),
     school: t.relation('school', { nullable: true }),
     parent: t.relation('parent'),
+    selfJoinable: t.exposeBoolean('selfJoinable'),
   }),
 });
 
@@ -144,9 +145,10 @@ builder.mutationField('createGroup', (t) =>
       name: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       schoolId: t.arg.id(),
       parentUid: t.arg.string({ required: false }),
+      selfJoinable: t.arg.boolean({ required: false }),
     },
     authScopes: (_, {}, { user }) => Boolean(user?.canEditGroups),
-    async resolve(query, _, { type, name, schoolId, parentUid }) {
+    async resolve(query, _, { type, name, schoolId, parentUid, selfJoinable }) {
       const parent = parentUid
         ? await prisma.group.findUniqueOrThrow({ where: { uid: parentUid } })
         : undefined;
@@ -161,6 +163,7 @@ builder.mutationField('createGroup', (t) =>
           familyRoot: parent ? { connect: { id: parent.familyId } } : undefined,
           color: '#' + Math.random().toString(16).slice(2, 8).padEnd(6, '0'),
           linkCollection: { create: {} },
+          selfJoinable: selfJoinable ?? false,
         },
       });
     },

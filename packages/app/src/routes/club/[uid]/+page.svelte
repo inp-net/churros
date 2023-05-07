@@ -9,10 +9,24 @@
   import MajesticonsPlus from '~icons/majesticons/plus';
   import type { PageData } from './$types';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
+  import Button from '$lib/components/buttons/Button.svelte';
+  import Row from '$lib/components/rows/Row.svelte';
+  import { zeus } from '$lib/zeus';
 
   export let data: PageData;
 
   $: ({ group } = data);
+
+  const joinGroup = async (groupUid: string) => {
+    try {
+      await $zeus.mutate({
+        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }],
+      });
+      window.location.reload();
+    } catch (error: unknown) {
+      console.error(error);
+    }
+  };
 </script>
 
 <div class="top">
@@ -68,6 +82,11 @@
     <Alert theme="warning">
       <p>Le groupe ne contient aucun membre, il vient peut-être d'être créé.</p>
     </Alert>
+  {/if}
+  {#if group.selfJoinable}
+    <p>
+      <Button on:click={async () => joinGroup(group.uid)}>Rejoindre le groupe</Button>
+    </p>
   {/if}
   {#if $me?.canEditGroups || $me?.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === data.group.uid)}
     <p>
