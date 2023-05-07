@@ -54,7 +54,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     ...data,
     group: {
       ...data.group,
-      members: data.group.members.sort(byMemberGroupTitleImportance),
+      members: (data.group.members ?? []).sort(byMemberGroupTitleImportance),
     },
   };
 };
