@@ -96,7 +96,7 @@ builder.queryField('searchUsers', (t) =>
     authScopes: { loggedIn: true },
     async resolve(query, _, { q }) {
       const terms = new Set(String(q).split(' ').filter(Boolean));
-      const numberTerm = [...terms].map(Number).find((n) => !Number.isNaN(n));
+      const numberTerms = [...terms].map(Number).filter((n) => !Number.isNaN(n));
       const search = [...terms].join('&');
       return prisma.user.findMany({
         ...query,
@@ -107,7 +107,7 @@ builder.queryField('searchUsers', (t) =>
             { uid: { search } },
             { nickname: { search } },
             { major: { name: { search } } },
-            { graduationYear: { equals: numberTerm ?? -1 } },
+            { graduationYear: { in: numberTerms } },
           ],
         },
       });
