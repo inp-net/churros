@@ -1,10 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import type { PageData } from './$types';
 
   export let data: PageData;
 
   let q = '';
+  const results = [...data.searchUsers, ...data.searchGroups];
 </script>
 
 <form
@@ -17,14 +19,25 @@
   </p>
 </form>
 
-{#if data.searchUsers === undefined}
+{#if data.searchUsers === undefined || data.searchGroups === undefined}
   <p>Cherchez !</p>
-{:else if data.searchUsers.length === 0}
+{:else if results.length === 0}
   <p>Aucun résultat</p>
 {:else}
-  <ul>
-    {#each data.searchUsers as { uid, firstName, lastName }}
-      <li><a href="/user/{uid}/">{firstName} {lastName}</a></li>
-    {/each}
-  </ul>
+  {#if data.searchUsers.length > 0}
+    <h2>Personnes</h2>
+    <ul>
+      {#each data.searchUsers as { uid, firstName, lastName }}
+        <li><a href="/user/{uid}/">{firstName} {lastName}</a></li>
+      {/each}
+    </ul>
+  {/if}
+  {#if data.searchGroups.length > 0}
+    <h2>Groupes</h2>
+    <ul>
+      {#each data.searchGroups as { uid, name }}
+        <li><a href="/club/{uid}/">{name}</a></li>
+      {/each}
+    </ul>
+  {/if}
 {/if}

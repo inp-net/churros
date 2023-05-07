@@ -103,6 +103,29 @@ builder.queryField('searchGroup', (t) =>
   })
 );
 
+builder.queryField('searchGroups', (t) =>
+  t.prismaField({
+    type: [GroupType],
+    args: { q: t.arg.string() },
+    authScopes: { loggedIn: true },
+    async resolve(query, _, { q }) {
+      const terms = new Set(String(q).split(' ').filter(Boolean));
+      const search = [...terms].join('&');
+      return prisma.group.findMany({
+        ...query,
+        where: {
+          OR: [
+            { uid: { search } },
+            { name: { search } },
+            { description: { search } },
+            { email: { search } },
+          ],
+        },
+      });
+    },
+  })
+);
+
 const createGroupUid = async (name: string) => {
   const groupSlug = slug(name);
   const createUid = (i: number) => (i === 1 ? groupSlug : `${groupSlug}-${i}`);
