@@ -5,7 +5,7 @@
 
   export let data: PageData;
 
-  let q = '';
+  let q = $page.url.searchParams.get('q') ?? '';
   const results = [...data.searchUsers, ...data.searchGroups];
 </script>
 
