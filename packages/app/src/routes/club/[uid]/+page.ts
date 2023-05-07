@@ -1,9 +1,10 @@
+import { byMemberGroupTitleImportance } from '$lib/sorting';
 import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
   const { me } = await parent();
-  return loadQuery(
+  const data = await loadQuery(
     {
       group: [
         params,
@@ -49,4 +50,11 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     },
     { fetch, parent }
   );
+  return {
+    ...data,
+    group: {
+      ...data.group,
+      members: data.group.members.sort(byMemberGroupTitleImportance),
+    },
+  };
 };

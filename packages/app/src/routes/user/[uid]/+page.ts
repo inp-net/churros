@@ -1,11 +1,12 @@
 import { redirectToLogin } from '$lib/session';
+import { byMemberGroupTitleImportance } from '$lib/sorting';
 import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   const { me } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
-  return loadQuery(
+  const data = await loadQuery(
     {
       user: [
         params,
@@ -21,7 +22,12 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           nickname: true,
           phone: true,
           pictureFile: true,
-          groups: { group: { uid: true, name: true, color: true }, title: true },
+          groups: {
+            group: { uid: true, name: true, color: true },
+            title: true,
+            president: true,
+            treasurer: true,
+          },
           linkCollection: { links: { type: true, value: true } },
           major: { name: true, schools: { name: true, color: true } },
         },
@@ -29,4 +35,12 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
     },
     { fetch, parent }
   );
+
+  return {
+    ...data,
+    user: {
+      ...data.user,
+      groups: data.user.groups.sort(byMemberGroupTitleImportance),
+    },
+  };
 };

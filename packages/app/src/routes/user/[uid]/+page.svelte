@@ -14,6 +14,7 @@
   import MajesticonsLocationMarker from '~icons/majesticons/location-marker-line';
   import MajesticonsPhone from '~icons/majesticons/phone-line';
   import type { PageData } from './$types';
+  import { byMemberGroupTitleImportance } from '$lib/sorting';
 
   export let data: PageData;
 
@@ -100,8 +101,8 @@
   </FlexList>
 
   <h2 class="mb-1">Groupes</h2>
-  <FlexList>
-    {#each user.groups as groupMember}
+  <FlexList horizontal>
+    {#each user.groups.sort(byMemberGroupTitleImportance) as groupMember (groupMember.group.uid)}
       <li>
         <a href="/club/{groupMember.group.uid}/" class="no-underline">
           <GroupMemberBadge {groupMember} />

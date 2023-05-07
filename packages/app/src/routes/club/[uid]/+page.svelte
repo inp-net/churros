@@ -8,6 +8,7 @@
   import { me } from '$lib/session.js';
   import MajesticonsPlus from '~icons/majesticons/plus';
   import type { PageData } from './$types';
+  import { byMemberGroupTitleImportance } from '$lib/sorting';
 
   export let data: PageData;
 
@@ -50,7 +51,7 @@
   <h2>Membres</h2>
   {#if group.members.length > 0}
     <table>
-      {#each group.members as { member, president, treasurer, title }}
+      {#each group.members.sort(byMemberGroupTitleImportance) as { member, president, treasurer, title } (member.uid)}
         <tr>
           <td>{president ? '👑' : ''}{treasurer ? '💰' : ''}</td>
           <td>
