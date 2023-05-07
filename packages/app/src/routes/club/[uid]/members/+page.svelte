@@ -8,6 +8,11 @@
   let uid = '';
   let title = '';
 
+  // Please tell me there's a better way to do this
+  function extractIdInteger(groupId: string): string {
+    return atob(groupId).split(':')[1];
+  }
+
   const addGroupMember = async () => {
     try {
       const { addGroupMember } = await $zeus.mutate({
@@ -31,7 +36,9 @@
 
   const deleteGroupMember = async (memberId: string) => {
     try {
-      await $zeus.mutate({ deleteGroupMember: [{ groupId: $page.params.id, memberId }, true] });
+      await $zeus.mutate({
+        deleteGroupMember: [{ groupId: extractIdInteger(data.group.id), memberId }, true],
+      });
       data.group.members = data.group.members.filter((member) => member.memberId !== memberId);
     } catch (error: unknown) {
       console.error(error);
@@ -44,7 +51,7 @@
       if (!member) throw new Error('Member not found');
       const { updateGroupMember } = await $zeus.mutate({
         updateGroupMember: [
-          { groupId: $page.params.id, memberId, title: member.title },
+          { groupId: extractIdInteger(data.group.id), memberId, title: member.title },
           { title: true },
         ],
       });
