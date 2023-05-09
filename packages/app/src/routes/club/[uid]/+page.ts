@@ -30,6 +30,8 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 title: true,
                 president: true,
                 treasurer: true,
+                vicePresident: true,
+                secretary: true,
               },
             }
           : // Unauthenticated query

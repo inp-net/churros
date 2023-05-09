@@ -23,6 +23,8 @@
             title: true,
             president: true,
             treasurer: true,
+            secretary: true,
+            vicePresident: true,
             canEditMembers: true,
             member: { firstName: true, lastName: true },
           },
@@ -47,7 +49,17 @@
 
   const updateGroupMember = async (
     memberId: string,
-    { makePresident, makeTreasurer }: { makePresident?: boolean; makeTreasurer?: boolean } = {}
+    {
+      makePresident,
+      makeTreasurer,
+      makeVicePresident,
+      makeSecretary,
+    }: {
+      makePresident?: boolean;
+      makeTreasurer?: boolean;
+      makeVicePresident?: boolean;
+      makeSecretary?: boolean;
+    } = {}
   ) => {
     try {
       const member = data.group.members.find((member) => member.memberId === memberId);
@@ -60,8 +72,10 @@
             title: member.title,
             president: makePresident ?? member.president,
             treasurer: makeTreasurer ?? member.treasurer,
+            vicePresident: makeVicePresident ?? member.vicePresident,
+            secretary: makeSecretary ?? member.secretary,
           },
-          { title: true, president: true, treasurer: true },
+          { title: true, president: true, treasurer: true, vicePresident: true, secretary: true },
         ],
       });
       data.group.members = data.group.members.map((member) =>
@@ -70,7 +84,6 @@
           : {
               ...member,
               president: updateGroupMember.president ? false : member.president,
-              treasurer: updateGroupMember.treasurer ? false : member.treasurer,
             }
       );
     } catch (error: unknown) {
@@ -80,9 +93,13 @@
 </script>
 
 <table>
-  {#each data.group.members as { memberId, member, president, treasurer }, i}
+  {#each data.group.members as { memberId, member, president, treasurer, vicePresident, secretary }, i}
     <tr>
-      <td>{president ? '👑' : ''}{treasurer ? '💰' : ''}</td>
+      <td
+        >{president ? '👑' : ''}{treasurer ? '💰' : ''}{vicePresident ? '⭐' : ''}{secretary
+          ? '📜'
+          : ''}</td
+      >
       <td>{member.firstName} {member.lastName}</td>
       <td>
         <input
@@ -96,22 +113,34 @@
           <button type="button" on:click={async () => deleteGroupMember(memberId)}> ❌ </button>
         </td>
       {/if}
-      {#if !president}
-        <td
-          ><button
-            type="button"
-            on:click={async () => updateGroupMember(memberId, { makePresident: true })}>👑</button
-          ></td
+      <td
+        ><button
+          type="button"
+          on:click={async () => updateGroupMember(memberId, { makePresident: !president })}
+          >👑</button
+        ></td
+      >
+      <td
+        ><button
+          type="button"
+          on:click={async () => updateGroupMember(memberId, { makeTreasurer: !treasurer })}
+          >💰</button
+        ></td
+      >
+      <td>
+        <button
+          type="button"
+          on:click={async () => updateGroupMember(memberId, { makeVicePresident: !vicePresident })}
+          >⭐</button
         >
-      {/if}
-      {#if !treasurer}
-        <td
-          ><button
-            type="button"
-            on:click={async () => updateGroupMember(memberId, { makeTreasurer: true })}>💰</button
-          ></td
+      </td>
+      <td>
+        <button
+          type="button"
+          on:click={async () => updateGroupMember(memberId, { makeSecretary: !secretary })}
+          >📜</button
         >
-      {/if}
+      </td>
     </tr>
   {/each}
 </table>

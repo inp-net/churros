@@ -213,6 +213,8 @@ model GroupMember {
   title           String   @default("") @db.VarChar(255)
   president       Boolean  @default(false)
   treasurer       Boolean  @default(false)
+  vicePresident   Boolean  @default(false)
+  secretary       Boolean  @default(false)
   canEditMembers  Boolean  @default(false)
   canEditArticles Boolean  @default(false)
   createdAt       DateTime @default(now())

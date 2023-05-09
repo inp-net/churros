@@ -26,6 +26,8 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             title: true,
             president: true,
             treasurer: true,
+            secretary: true,
+            vicePresident: true,
             canEditMembers: true,
           },
         },

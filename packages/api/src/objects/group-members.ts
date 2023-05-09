@@ -9,6 +9,8 @@ export const GroupMemberType = builder.prismaObject('GroupMember', {
     title: t.string({ resolve: ({ title }) => title || 'Membre' }),
     president: t.exposeBoolean('president'),
     treasurer: t.exposeBoolean('treasurer'),
+    vicePresident: t.exposeBoolean('vicePresident'),
+    secretary: t.exposeBoolean('secretary'),
     canEditMembers: t.exposeBoolean('canEditMembers'),
     canEditArticles: t.exposeBoolean('canEditArticles'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
@@ -77,13 +79,19 @@ builder.mutationField('updateGroupMember', (t) =>
       title: t.arg.string(),
       president: t.arg.boolean(),
       treasurer: t.arg.boolean(),
+      vicePresident: t.arg.boolean(),
+      secretary: t.arg.boolean(),
     },
     authScopes: (_, { groupId }, { user }) =>
       Boolean(
         user?.canEditGroups ||
           user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id)
       ),
-    async resolve(query, _, { memberId, groupId, title, president, treasurer }) {
+    async resolve(
+      query,
+      _,
+      { memberId, groupId, title, president, treasurer, secretary, vicePresident }
+    ) {
       if (president) {
         await prisma.groupMember.updateMany({
           where: { groupId, president: true },
@@ -91,17 +99,17 @@ builder.mutationField('updateGroupMember', (t) =>
         });
       }
 
-      if (treasurer) {
-        await prisma.groupMember.updateMany({
-          where: { groupId, treasurer: true },
-          data: { treasurer: false },
-        });
-      }
-
       return prisma.groupMember.update({
         ...query,
         where: { groupId_memberId: { groupId, memberId } },
-        data: { title, president, treasurer, canEditMembers: president || treasurer },
+        data: {
+          title,
+          president,
+          treasurer,
+          canEditMembers: president || treasurer,
+          secretary,
+          vicePresident,
+        },
       });
     },
   })
