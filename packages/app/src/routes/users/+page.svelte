@@ -14,8 +14,12 @@
       ({ node }) => node.email !== email
     );
   };
+
+  const byGraduationYear = (a: { graduationYear: number }, b: { graduationYear: number }) =>
+    a.graduationYear - b.graduationYear;
 </script>
 
+<h2>Demandes d'inscription</h2>
 {#if userCandidates.length > 0}
   <div class="flex flex-col my-4 gap-2">
     {#each userCandidates as { email, firstName, lastName, major, graduationYear }}
@@ -43,3 +47,17 @@
 {:else}
   <p>Aucune inscription en attente.</p>
 {/if}
+
+<h2>Utilisateurs</h2>
+<table>
+  {#each data.searchUsers
+    .sort(byGraduationYear)
+    .reverse() as { uid, firstName, lastName, graduationYear, major: { name: majorName } }}
+    <tr>
+      <td><a href="/user/{uid}">{firstName}</a></td>
+      <td><a href="/user/{uid}">{lastName}</a></td>
+      <td><a href="/search/?q={graduationYear}">{graduationYear}</a></td>
+      <td><a href="/search/?q={majorName}">{majorName}</a></td>
+    </tr>
+  {/each}
+</table>

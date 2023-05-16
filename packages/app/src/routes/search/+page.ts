@@ -5,9 +5,8 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ fetch, parent, url }) => {
   const { me } = await parent();
   if (!me) throw redirectToLogin(url.pathname + url.search);
-  if (!url.searchParams.has('q')) 
-    return { searchUsers: [], searchGroups: [] };
-  
+  if (!url.searchParams.has('q')) return { searchUsers: [], searchGroups: [] };
+
   return loadQuery(
     {
       searchUsers: [
