@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import type { PageData } from './$types';
 
@@ -11,7 +10,12 @@
 
 <form
   method="get"
-  on:submit|preventDefault={async () => goto(`?${new URLSearchParams({ q }).toString()}`)}
+  on:submit|preventDefault={() => {
+    // goto does not re-trigger the page load function when submitting after the first load (see #1)
+    // may be liked to the fact that we only change a query parameter
+    // using this works (instead of goto())
+    window.location.search = `?${new URLSearchParams({ q }).toString()}`;
+  }}
 >
   <p>
     <input type="search" name="q" bind:value={q} />
