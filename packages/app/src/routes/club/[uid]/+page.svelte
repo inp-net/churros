@@ -80,7 +80,15 @@
     </table>
   {:else}
     <Alert theme="warning">
-      <p>Le groupe ne contient aucun membre, il vient peut-être d'être créé.</p>
+      {#if $me}
+        <p>Le groupe ne contient aucun membre, il vient peut-être d'être créé.</p>
+      {:else}
+        <p>
+          <a href="/login?{new URLSearchParams({ to: window.location.pathname }).toString()}"
+            >Connectez-vous</a
+          > pour consulter les membres des clubs
+        </p>
+      {/if}
     </Alert>
   {/if}
   {#if group.selfJoinable && $me && !$me.groups.some(({ group }) => group.uid === data.group.uid)}
