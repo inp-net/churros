@@ -1,8 +1,10 @@
 /* eslint-disable */
-const sw = /** @type {ServiceWorkerGlobalScope} */ /** @type {unknown} */ self;
 
 import { build, files, version } from '$service-worker';
 import { self } from 'svelte/internal';
+
+// @ts-ignore
+const sw = /** @type {ServiceWorkerGlobalScope} */ /** @type {unknown} */ self;
 
 // Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
@@ -12,6 +14,7 @@ const ASSETS = [
   ...files, // everything in `static`
 ];
 
+// @ts-ignore
 self.addEventListener('install', (event) => {
   // Create a new cache and add all files to it
   async function addFilesToCache() {
@@ -22,6 +25,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(addFilesToCache());
 });
 
+// @ts-ignore
 self.addEventListener('activate', (event) => {
   // Remove previous cached data from disk
   async function deleteOldCaches() {
@@ -33,6 +37,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(deleteOldCaches());
 });
 
+// @ts-ignore
 self.addEventListener('fetch', (event) => {
   // ignore POST requests etc
   if (event.request.method !== 'GET') return;
