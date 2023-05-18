@@ -7,6 +7,7 @@
   import SocialLink from '$lib/components/links/SocialLink.svelte';
   import { me } from '$lib/session.js';
   import MajesticonsPlus from '~icons/majesticons/plus';
+  import MajesticonsEdit from '~icons/majesticons/edit-pen-2-line';
   import type { PageData } from './$types';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import Button from '$lib/components/buttons/Button.svelte';
@@ -15,6 +16,12 @@
   export let data: PageData;
 
   $: ({ group } = data);
+
+  const isOnClubBoard = (user: { uid: string }) =>
+    Object.entries(group.members.find((m) => m.member.uid === user.uid) ?? {}).some(
+      ([role, hasRole]) =>
+        ['president', 'vicePresident', 'treasurer', 'secretary'].includes(role) && hasRole
+    );
 
   const joinGroup = async (groupUid: string) => {
     if (!$me) return;
@@ -44,6 +51,11 @@
     <h1 class="mt-1">
       {group.name}
       {#if group.school}<SchoolBadge schools={[group.school]} />{/if}
+      {#if $me?.canEditGroups || ($me && isOnClubBoard($me))}
+        <a href="edit/" title="Éditer">
+          <MajesticonsEdit aria-label="Éditer" />
+        </a>
+      {/if}
     </h1>
     <div>{group.description}</div>
     {#if group.linkCollection.links.length > 0}

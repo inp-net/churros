@@ -92,6 +92,8 @@
   };
 </script>
 
+<a href="../edit">Modifier les informations du club</a>
+
 <table>
   {#each data.group.members as { memberId, member, president, treasurer, vicePresident, secretary }, i}
     <tr>
@@ -107,34 +109,23 @@
           bind:value={data.group.members[i].title}
           on:change={async () => updateGroupMember(memberId)}
         />
-      </td>
-      {#if !president && !treasurer}
-        <td>
+        {#if !president && !treasurer}
           <button type="button" on:click={async () => deleteGroupMember(memberId)}> ❌ </button>
-        </td>
-      {/if}
-      <td
-        ><button
+        {/if}
+        <button
           type="button"
           on:click={async () => updateGroupMember(memberId, { makePresident: !president })}
           >👑</button
-        ></td
-      >
-      <td
         ><button
           type="button"
           on:click={async () => updateGroupMember(memberId, { makeTreasurer: !treasurer })}
           >💰</button
-        ></td
-      >
-      <td>
+        >
         <button
           type="button"
           on:click={async () => updateGroupMember(memberId, { makeVicePresident: !vicePresident })}
           >⭐</button
         >
-      </td>
-      <td>
         <button
           type="button"
           on:click={async () => updateGroupMember(memberId, { makeSecretary: !secretary })}
@@ -159,3 +150,10 @@
   </p>
   <p><button type="submit">Ajouter</button></p>
 </form>
+
+<style>
+  td.actions {
+    display: flex;
+    flex-wrap: wrap;
+  }
+</style>

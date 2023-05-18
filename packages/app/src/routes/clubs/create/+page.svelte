@@ -1,8 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import Alert from '$lib/components/alerts/Alert.svelte';
   import Button from '$lib/components/buttons/Button.svelte';
   import FormInput from '$lib/components/inputs/FormInput.svelte';
-  import { GroupType, zeus, ZeusError } from '$lib/zeus';
+  import { GraphQLError, GroupType, zeus, ZeusError } from '$lib/zeus';
   import type { PageData } from './$types';
   import ParentSearch from './ParentSearch.svelte';
 
@@ -11,6 +12,7 @@
   let name = '';
   let parentUid: string | undefined;
   let selfJoinable = false;
+  let serverError = '';
 
   let schoolId = data.schools[0].id;
 
@@ -19,6 +21,7 @@
     if (loading) return;
 
     try {
+      serverError = '';
       loading = true;
       const { createGroup: group } = await $zeus.mutate({
         createGroup: [
@@ -28,7 +31,8 @@
       });
       await goto(`/club/${group.uid}`);
     } catch (error: unknown) {
-      if (!(error instanceof ZeusError)) throw error;
+      if (!(error instanceof ZeusError) && !(error instanceof GraphQLError)) throw error;
+      serverError = error.message;
     } finally {
       loading = false;
     }
@@ -60,6 +64,9 @@
     </label>
   </p>
   <Button type="submit" theme="primary" {loading}>Créer le groupe</Button>
+  {#if serverError}
+    <Alert theme="danger">{serverError}</Alert>
+  {/if}
 </form>
 
 <style lang="scss">

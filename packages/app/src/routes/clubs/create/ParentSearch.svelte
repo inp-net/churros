@@ -12,7 +12,7 @@
   export let parentUid: string | undefined;
 
   let loading = false;
-  let enabled = false;
+  let enabled: boolean;
   let q = '';
   let options: Array<{ uid: string; name: string }> = [];
 
@@ -20,18 +20,30 @@
 </script>
 
 <FormInput label="Groupe parent :">
-  {#if enabled}
+  {#if enabled || parentUid}
     <span>
+      {#if parentUid}
+        <a href="/club/{parentUid}">{parentUid}</a>
+      {/if}
+      {#if loading}
+        <InlineLoader />
+      {:else if parentUid}
+        <MajesticonsCheckLine aria-label="Valeur acceptée" aria-live="polite" />
+      {:else}
+        <MajesticonsDotsHorizontal aria-label="Entrez un nom de groupe" />
+      {/if}
       <input
         bind:this={input}
         type="search"
         list="parents"
         class="flex-1"
+        placeholder="Rechercher un groupe parent"
         required
         bind:value={q}
         on:input={async () => {
           if (!q) return;
           loading = true;
+          enabled = true;
           parentUid = undefined;
           try {
             const { group } = await $zeus.query({
@@ -52,13 +64,6 @@
       />
       <!-- The following span is used as a placeholder to space things a bit -->
       <span />
-      {#if loading}
-        <InlineLoader />
-      {:else if parentUid}
-        <MajesticonsCheckLine aria-label="Valeur acceptée" aria-live="polite" />
-      {:else}
-        <MajesticonsDotsHorizontal aria-label="Entrez un nom de groupe" />
-      {/if}
       <GhostButton
         title="Supprimer"
         on:click={() => {

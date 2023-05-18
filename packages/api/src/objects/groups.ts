@@ -1,10 +1,12 @@
 import { GroupType as GroupPrismaType } from '@prisma/client';
-import { mappedGetAncestors } from 'arborist';
+import { getDescendants, hasCycle, mappedGetAncestors } from 'arborist';
 import dichotomid from 'dichotomid';
 import slug from 'slug';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
+import { LinkInput } from './links.js';
+import { GraphQLError } from 'graphql';
 
 export const GroupEnumType = builder.enumType(GroupPrismaType, { name: 'GroupType' });
 
@@ -152,6 +154,9 @@ builder.mutationField('createGroup', (t) =>
       const parent = parentUid
         ? await prisma.group.findUniqueOrThrow({ where: { uid: parentUid } })
         : undefined;
+      if (parent && hasCycle([{ parentId: parent.id, id: -1 }, ...(await prisma.group.findMany({}))])) 
+          throw new GraphQLError('Le choix de ce groupe parent créerait un cycle.');
+        
       return prisma.group.create({
         ...query,
         data: {
@@ -164,6 +169,130 @@ builder.mutationField('createGroup', (t) =>
           color: '#' + Math.random().toString(16).slice(2, 8).padEnd(6, '0'),
           linkCollection: { create: {} },
           selfJoinable: selfJoinable ?? false,
+        },
+      });
+    },
+  })
+);
+
+/** Updates a group. */
+builder.mutationField('updateGroup', (t) =>
+  t.prismaField({
+    type: GroupType,
+    errors: {},
+    args: {
+      uid: t.arg.string(),
+      // type: t.arg({ type: GroupEnumType }),
+      type: t.arg.string({
+        validate: { regex: new RegExp('^' + Object.values(GroupPrismaType).join('|') + '$') },
+      }),
+      parentId: t.arg.id({ required: false }),
+      name: t.arg.string({ validate: { maxLength: 255 } }),
+      color: t.arg.string({ validate: { regex: /#[\dA-Fa-f]{6}/ } }),
+      address: t.arg.string({ validate: { maxLength: 255 } }),
+      description: t.arg.string({ validate: { maxLength: 255 } }),
+      email: t.arg.string({ validate: { email: true } }),
+      longDescription: t.arg.string(),
+      links: t.arg({ type: [LinkInput] }),
+      selfJoinable: t.arg.boolean(),
+    },
+    authScopes: (_, { uid }, { user }) =>
+      user?.canEditGroups ||
+      (user?.groups ?? []).some(
+        ({ president, secretary, treasurer, vicePresident, group }) =>
+          group.uid === uid && (president || secretary || treasurer || vicePresident)
+      ),
+    async resolve(
+      query,
+      _,
+      {
+        uid,
+        selfJoinable,
+        type,
+        parentId,
+        name,
+        color,
+        address,
+        description,
+        email,
+        longDescription,
+        links,
+      }
+    ) {
+      // We have 3 possible cases for updating the parent: either it is:
+      // - null: the group does not have a parent anymore;
+      //   In that case, the root (set by familyId) is the group itself.
+      //   We don't need to change the root's children
+      // - undefined: the group's parent is not changed;
+      //   In that case, the root is unchanged too.
+      // - a number: the group's parent is changed to the group with that ID.
+      //   In that case, the root is changed to the root of the new parent.
+      //
+      let familyId;
+      const oldGroup = await prisma.group.findUnique({ where: { uid } });
+      if (oldGroup?.id === undefined)
+        throw new GraphQLError("Impossible de trouver l'ID du groupe");
+      if (parentId !== undefined) {
+        if (parentId === null) {
+          // First case (null): the group does not have a parent anymore.
+          // Set both the parent and the root to the group itself.
+          // eslint-disable-next-line unicorn/no-null
+          parentId = null;
+          familyId = oldGroup.id;
+        } else {
+          // Third case (number): the group's parent is changed to the group with that ID.
+          const newParent = await prisma.group.findUnique({ where: { id: parentId } });
+          if (!newParent) throw new GraphQLError('ID de groupe parent invalide');
+          familyId = newParent.familyId;
+          // Update all descendants' familyId to the new parent's familyId
+          const allGroups = await prisma.group.findMany({});
+          if (
+            hasCycle(allGroups.map((g) => (g.id === oldGroup.id ? { ...oldGroup, parentId } : g)))
+          ) 
+            throw new GraphQLError('La modification créerait un cycle dans les groupes');
+          
+          const descendants = getDescendants(allGroups, oldGroup.id);
+          console.log({ [`setting familyId to ${familyId} for`]: descendants.map((g) => g.name) });
+          await prisma.group.updateMany({
+            where: { id: { in: descendants.map((g) => g.id) } },
+            data: {
+              familyId,
+            },
+          });
+        }
+      }
+
+      if (parentId === oldGroup.id) 
+        throw new GraphQLError('Le groupe ne peut pas être son propre parent');
+      
+      console.log({ parentId, familyId });
+      return prisma.group.update({
+        ...query,
+        where: { uid },
+        data: {
+          type: type as GroupPrismaType,
+          selfJoinable,
+          name,
+          color,
+          parent:
+            parentId === undefined
+              ? undefined
+              : parentId === null
+              ? { disconnect: true }
+              : { connect: { id: parentId } },
+          familyRoot: familyId ? { connect: { id: familyId } } : undefined,
+          address,
+          description,
+          email,
+          longDescription,
+          linkCollection: {
+            update: {
+              links: {
+                deleteMany: {},
+                createMany: { data: links },
+              },
+            },
+          },
         },
       });
     },

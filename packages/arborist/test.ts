@@ -1,6 +1,12 @@
 import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
-import { createForest, getAncestors, mappedGetAncestors } from './index.js';
+import {
+  createForest,
+  getAncestors,
+  getDescendants,
+  mappedGetAncestors,
+  hasCycle,
+} from './index.js';
 
 describe('arborist', () => {
   it('should create a simple forest', () => {
@@ -58,6 +64,29 @@ describe('arborist', () => {
     ]);
   });
 
+  it('should retrieve descendants', () => {
+    const descendants = getDescendants(
+      [
+        { id: 2, parentId: 1 },
+        { id: 4, parentId: 3 },
+        { id: 1, parentId: undefined },
+        { id: 3, parentId: 2 },
+      ],
+      1 as number
+    );
+    assert.deepStrictEqual(descendants, [
+      { id: 1, parentId: undefined },
+      { id: 2, parentId: 1 },
+      { id: 4, parentId: 3 },
+      { id: 3, parentId: 2 },
+    ]);
+  });
+
+  it('should return an empty array if the id is not found', () => {
+    const ancestors = getAncestors([{ id: 1 }], 2 as number);
+    assert.deepStrictEqual(ancestors, []);
+  });
+
   it('should retrieve mapped ancestors', () => {
     const nodes = [
       { id: 2, parentId: 1 },
@@ -107,5 +136,21 @@ describe('arborist', () => {
 
     const ancestors = getAncestors([{ id: 1 }, { id: 2, parentId: 1 }, { id: 3 }], 2 as number);
     assert.deepStrictEqual(ancestors, [{ id: 2, parentId: 1 }, { id: 1 }]);
+  });
+
+  it('can detect cycles', () => {
+    const actual = hasCycle([
+      { id: 1, parentId: 2 },
+      { id: 2, parentId: 1 },
+    ]);
+    assert.equal(actual, true);
+  });
+
+  it('does not detect cycles when there are none', () => {
+    const actual = hasCycle([
+      { id: 1, parentId: 2 },
+      { id: 2, parentId: undefined },
+    ]);
+    assert.equal(actual, false);
   });
 });

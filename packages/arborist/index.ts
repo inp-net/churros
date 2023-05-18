@@ -132,3 +132,75 @@ export const mappedGetAncestors = <
     return ancestors;
   });
 };
+
+/** Returns the list of all the descendants of the item of given `id`. The list starts with the node. */
+export const getDescendants = <
+  T extends { [K in V]: U } & { [K in W]?: U | null | undefined },
+  U extends PropertyKey = PropertyKey,
+  V extends PropertyKey = 'id',
+  W extends PropertyKey = 'parentId'
+>(
+  list: T[],
+  id: U,
+  { idKey = 'id' as V, parentIdKey = 'parentId' as W }: { idKey?: V; parentIdKey?: W } = {}
+) => {
+  const map = new Map<U, T>();
+
+  // Register all the items
+  for (const item of list) map.set(item[idKey], item);
+
+  const current = map.get(id);
+  if (!current) return [];
+
+  const descendants: T[] = [current];
+
+  // Loop through all items
+  for (const item of list) {
+    // Follow `current.parentId` until we reach id
+    let current: T | undefined = item;
+    while (current) {
+      if (current[parentIdKey] === id) {
+        // We reached the parent of the item, so we can add it to the descendants.
+        descendants.push(item);
+        break;
+      }
+
+      // `current.parentId` may be undefined despite the non-null assertion
+      // In this case, `map.get` returns `undefined`, breaking the loop
+      current = map.get(current[parentIdKey]!);
+    }
+  }
+
+  return descendants;
+};
+
+/** Returns true if the given list of items contains a cycle. */
+export const hasCycle = <
+  T extends { [K in V]: U } & { [K in W]?: U | null | undefined },
+  U extends PropertyKey = PropertyKey,
+  V extends PropertyKey = 'id',
+  W extends PropertyKey = 'parentId'
+>(
+  list: T[],
+  { idKey = 'id' as V, parentIdKey = 'parentId' as W }: { idKey?: V; parentIdKey?: W } = {}
+) => {
+  const map = new Map<U, T>();
+
+  // Register all the items
+  for (const item of list) map.set(item[idKey], item);
+
+  for (const item of list) {
+    // Traverse parents until we reach:
+    // - a root (in that case, there is no cycle in this branch)
+    // - this item (in that case, there is a cycle)
+    let current = map.get(item[parentIdKey]);
+    while (current) {
+      if (current[idKey] === item[idKey]) 
+        return true;
+      
+      current = map.get(current[parentIdKey]!);
+    }
+  }
+
+  return false;
+};
