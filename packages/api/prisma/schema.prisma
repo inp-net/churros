@@ -51,6 +51,9 @@ model User {
   groups         GroupMember[]
   credentials    Credential[]
   linkCollection LinkCollection @relation(fields: [linkCollectionId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  Reservation    Registration[]
+  EventManager   EventManager[]
+  LogEntry       LogEntry[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -228,19 +231,169 @@ model GroupMember {
 
 /// An article is a post in a group
 model Article {
-  id          Int      @id @default(autoincrement())
+  id          Int             @id @default(autoincrement())
   authorId    Int?
   groupId     Int
-  slug        String   @db.VarChar(255)
-  title       String   @db.VarChar(255)
-  body        String   @db.Text
-  published   Boolean  @default(false)
-  homepage    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  publishedAt DateTime @default(now())
+  slug        String          @db.VarChar(255)
+  title       String          @db.VarChar(255)
+  body        String          @db.Text
+  published   Boolean         @default(false)
+  homepage    Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  publishedAt DateTime        @default(now())
+  images      Image[]
+  actions     ArticleAction[]
 
-  author User? @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  group  Group @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  author  User?  @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  group   Group  @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Event   Event? @relation(fields: [eventId], references: [id])
+  eventId Int?
 
   @@unique([groupId, slug])
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  articleId Int
+  path      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  position  Int
+  alt       String   @default("") @db.VarChar(255)
+
+  article Article @relation(fields: [articleId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@unique([articleId, position])
+}
+
+/// An event action is something that a user can do and is related to an event. For example, fill out a form, or watch a livestream.
+model ArticleAction {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(255)
+  url       String @db.VarChar(255)
+  articleId Int
+
+  Article Article @relation(fields: [articleId], references: [id])
+}
+
+/// An event is a date, time and place, as well as an optional ticket
+model Event {
+  id             Int             @id @default(autoincrement())
+  authorId       Int?
+  groupId        Int
+  contactMail    String
+  beneficiary    LydiaAccount?   @relation(fields: [lydiaAccountId], references: [id])
+  description    String          @db.VarChar(255)
+  slug           String          @db.VarChar(255)
+  title          String          @db.VarChar(255)
+  startsAt       DateTime
+  endsAt         DateTime
+  location       String          @default("") @db.VarChar(255)
+  visibility     EventVisibility
+  managers       EventManager[]
+  tickets        Ticket[]
+  ticketGroups   TicketGroup[]
+  articles       Article[]
+  lydiaAccountId Int?
+}
+
+enum EventVisibility {
+  Private
+  Unlisted
+  Restricted
+  Public
+}
+
+/// An event manager is a user that can scan tickets, and may be able to manage the event
+model EventManager {
+  id                     Int     @id @default(autoincrement())
+  eventId                Int
+  userId                 Int
+  canVerifyRegistrations Boolean @default(true) // Can scan tickets
+  canEdit                Boolean @default(false)
+  canEditPermissions     Boolean @default(false)
+
+  event Event @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+/// A ticket group allows for conditions on multiple tickets, such as an upper limit on the sum of registrations in the sub-tickets
+model TicketGroup {
+  id      Int    @id @default(autoincrement())
+  eventId Int
+  name    String @db.VarChar(255)
+
+  capacity Int      @default(0) // 0 means unlimited, capacity is on the sum of sub-tickets registrations
+  tickets  Ticket[]
+  Event    Event    @relation(fields: [eventId], references: [id])
+}
+
+/// A ticket is a way to register for an event. May include a price and conditions.
+model Ticket {
+  id            Int            @id @default(autoincrement())
+  eventId       Int
+  ticketGroupId Int?
+  name          String         @db.VarChar(255)
+  description   String         @db.VarChar(255)
+  opensAt       DateTime?
+  closesAt      DateTime?
+  price         Int // in EUR
+  capacity      Int            @default(0) // 0 means unlimited
+  reservations  Registration[]
+
+  // Conditions for that ticket.
+  openToPromotions        Int[]    @default([])
+  openToAlumni            Boolean? @default(false) // false means only non-alumni, true means only alumni, null means both
+  openToExternal          Boolean? @default(false) // same thing
+  openToNonAEContributors Boolean? @default(false) // same thing
+  openToSchool            String[] @default([])
+  openToGroups            String[] @default([])
+  godsonLimit             Int      @default(0) // 0 means unlimited
+
+  onlyManagersCanProvide Boolean @default(false)
+
+  Event       Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  TicketGroup TicketGroup? @relation(fields: [ticketGroupId], references: [id])
+}
+
+/// A reservation is a user's registration for a ticket
+model Registration {
+  id            Int            @id @default(autoincrement())
+  ticketId      Int
+  beneficiary   String         @default("")
+  userId        Int
+  name          String         @db.VarChar(255)
+  price         Int?
+  createdAt     DateTime       @default(now())
+  paymentMethod PaymentMethod? // NULL means not paid yet
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+enum PaymentMethod {
+  Lydia
+  Card
+  Transfer
+  Cash
+}
+
+/// A log entry is a log of an action that happened on the website
+model LogEntry {
+  id         String   @id @default(cuid())
+  happenedAt DateTime @default(now())
+  userId     Int?
+  area       String   @db.VarChar(255) // billeterie, gestion clubs, etc. à typer, mais pas dans la DB (pour être plus flexible)
+  message    String   @db.Text
+
+  User User? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+}
+
+/// A Lydia account
+model LydiaAccount {
+  id           Int     @id @default(autoincrement())
+  groupId      Int
+  description  String  @default("") @db.VarChar(255)
+  privateToken String  @default("") @db.VarChar(255)
+  vendorToken  String  @default("") @db.VarChar(255)
+  Event        Event[]
 }
