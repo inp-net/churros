@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
+  previewFeatures = ["fullTextSearch", "postgresqlExtensions"]
 }
 
 // See https://pothos-graphql.dev/docs/plugins/prisma#setup
@@ -9,8 +9,9 @@ generator pothos {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pg_trgm]
 }
 
 /// Users are the people who use the app
@@ -52,8 +53,9 @@ model User {
   credentials    Credential[]
   linkCollection LinkCollection @relation(fields: [linkCollectionId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   Reservation    Registration[]
-  EventManager   EventManager[]
+  managedEvents  EventManager[]
   LogEntry       LogEntry[]
+  Event          Event[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -85,14 +87,6 @@ model UserCandidate {
   @@unique([schoolServer, schoolUid])
 }
 
-/// Social link types
-enum LinkType {
-  Facebook
-  Instagram
-  Telegram
-  Twitter
-}
-
 /// Ways to contact a user or a group outside of the app
 model LinkCollection {
   id    Int    @id @default(autoincrement())
@@ -101,13 +95,16 @@ model LinkCollection {
   groups              Group[]
   studentAssociations StudentAssociation[]
   users               User[]
+  Article             Article[]
+  Event               Event[]
+  Ticket              Ticket[]
 }
 
 /// A single external link
 model Link {
   id           Int      @id @default(autoincrement())
   collectionId Int
-  type         LinkType
+  name         String   @db.VarChar(255)
   value        String   @db.VarChar(255)
   createdAt    DateTime @default(now())
 
@@ -208,6 +205,8 @@ model Group {
   members            GroupMember[]
   school             School?             @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   studentAssociation StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  Event              Event[]
+  LydiaAccount       LydiaAccount[]
 }
 
 /// The intermediate model between users and groups
@@ -231,23 +230,24 @@ model GroupMember {
 
 /// An article is a post in a group
 model Article {
-  id          Int             @id @default(autoincrement())
+  id          Int            @id @default(autoincrement())
   authorId    Int?
   groupId     Int
-  slug        String          @db.VarChar(255)
-  title       String          @db.VarChar(255)
-  body        String          @db.Text
-  published   Boolean         @default(false)
-  homepage    Boolean         @default(false)
-  createdAt   DateTime        @default(now())
-  publishedAt DateTime        @default(now())
+  slug        String         @db.VarChar(255)
+  title       String         @db.VarChar(255)
+  body        String         @db.Text
+  published   Boolean        @default(false)
+  homepage    Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  publishedAt DateTime       @default(now())
   images      Image[]
-  actions     ArticleAction[]
+  links       LinkCollection @relation(fields: [linkCollectionId], references: [id])
 
-  author  User?  @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  group   Group  @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  Event   Event? @relation(fields: [eventId], references: [id])
-  eventId Int?
+  author           User?  @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  group            Group  @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Event            Event? @relation(fields: [eventId], references: [id])
+  eventId          Int?
+  linkCollectionId Int
 
   @@unique([groupId, slug])
 }
@@ -265,35 +265,29 @@ model Image {
   @@unique([articleId, position])
 }
 
-/// An event action is something that a user can do and is related to an event. For example, fill out a form, or watch a livestream.
-model ArticleAction {
-  id        Int    @id @default(autoincrement())
-  name      String @db.VarChar(255)
-  url       String @db.VarChar(255)
-  articleId Int
-
-  Article Article @relation(fields: [articleId], references: [id])
-}
-
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
-  id             Int             @id @default(autoincrement())
-  authorId       Int?
-  groupId        Int
-  contactMail    String
-  beneficiary    LydiaAccount?   @relation(fields: [lydiaAccountId], references: [id])
-  description    String          @db.VarChar(255)
-  slug           String          @db.VarChar(255)
-  title          String          @db.VarChar(255)
-  startsAt       DateTime
-  endsAt         DateTime
-  location       String          @default("") @db.VarChar(255)
-  visibility     EventVisibility
-  managers       EventManager[]
-  tickets        Ticket[]
-  ticketGroups   TicketGroup[]
-  articles       Article[]
-  lydiaAccountId Int?
+  id               Int             @id @default(autoincrement())
+  authorId         Int?
+  groupId          Int
+  contactMail      String
+  beneficiary      LydiaAccount?   @relation(fields: [lydiaAccountId], references: [id])
+  description      String          @db.VarChar(255)
+  slug             String          @db.VarChar(255)
+  title            String          @db.VarChar(255)
+  startsAt         DateTime
+  endsAt           DateTime
+  location         String          @default("") @db.VarChar(255)
+  visibility       EventVisibility
+  managers         EventManager[]
+  author           User?           @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  group            Group           @relation(fields: [groupId], references: [id])
+  tickets          Ticket[]
+  ticketGroups     TicketGroup[]
+  articles         Article[]
+  lydiaAccountId   Int?
+  links            LinkCollection  @relation(fields: [linkCollectionId], references: [id])
+  linkCollectionId Int
 }
 
 enum EventVisibility {
@@ -329,16 +323,18 @@ model TicketGroup {
 
 /// A ticket is a way to register for an event. May include a price and conditions.
 model Ticket {
-  id            Int            @id @default(autoincrement())
-  eventId       Int
-  ticketGroupId Int?
-  name          String         @db.VarChar(255)
-  description   String         @db.VarChar(255)
-  opensAt       DateTime?
-  closesAt      DateTime?
-  price         Int // in EUR
-  capacity      Int            @default(0) // 0 means unlimited
-  reservations  Registration[]
+  id                    Int             @id @default(autoincrement())
+  eventId               Int
+  ticketGroupId         Int?
+  name                  String          @db.VarChar(255)
+  description           String          @db.VarChar(255)
+  opensAt               DateTime?
+  closesAt              DateTime?
+  price                 Int // in EUR
+  capacity              Int             @default(0) // 0 means unlimited
+  reservations          Registration[]
+  links                 LinkCollection  @relation(fields: [linkCollectionId], references: [id])
+  allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
 
   // Conditions for that ticket.
   openToPromotions        Int[]    @default([])
@@ -351,20 +347,21 @@ model Ticket {
 
   onlyManagersCanProvide Boolean @default(false)
 
-  Event       Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  TicketGroup TicketGroup? @relation(fields: [ticketGroupId], references: [id])
+  Event            Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  TicketGroup      TicketGroup? @relation(fields: [ticketGroupId], references: [id])
+  linkCollectionId Int
 }
 
 /// A reservation is a user's registration for a ticket
 model Registration {
-  id            Int            @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   ticketId      Int
-  beneficiary   String         @default("")
+  beneficiary   String        @default("")
   userId        Int
-  name          String         @db.VarChar(255)
-  price         Int?
-  createdAt     DateTime       @default(now())
-  paymentMethod PaymentMethod? // NULL means not paid yet
+  name          String        @db.VarChar(255)
+  createdAt     DateTime      @default(now())
+  paymentMethod PaymentMethod
+  paid          Boolean       @default(false)
 
   ticket Ticket @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -375,6 +372,7 @@ enum PaymentMethod {
   Card
   Transfer
   Cash
+  Other
 }
 
 /// A log entry is a log of an action that happened on the website
@@ -392,8 +390,9 @@ model LogEntry {
 model LydiaAccount {
   id           Int     @id @default(autoincrement())
   groupId      Int
+  group        Group   @relation(fields: [groupId], references: [id])
   description  String  @default("") @db.VarChar(255)
   privateToken String  @default("") @db.VarChar(255)
   vendorToken  String  @default("") @db.VarChar(255)
-  Event        Event[]
+  events       Event[]
 }

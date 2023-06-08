@@ -31,5 +31,9 @@ declare namespace NodeJS {
     STORAGE: string;
     /** The email from which will be sent all emails. */
     SUPPORT_EMAIL: string;
+    /**
+     * Lydia API URL.
+     */
+    LYDIA_API_URL: string;
   }
 }

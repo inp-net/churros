@@ -1,5 +1,6 @@
 import ldap from 'ldapjs';
 import '../context.js';
+import bunyan from 'bunyan';
 
 export interface LdapUser {
   schoolUid: string;
@@ -16,6 +17,8 @@ const settings = JSON.parse(process.env.LDAP) as {
   emailDomains: Record<string, string>;
 };
 
+const log = bunyan.createLogger({ name: '@centraverse/api ldap client', level: 'trace' });
+
 /** Finds a user in a school database or returns `undefined`. */
 export const findSchoolUser = async (
   email: string
@@ -23,28 +26,44 @@ export const findSchoolUser = async (
   const [emailLogin, emailDomain] = email.split('@') as [string, string];
 
   if (!emailDomain) throw new Error('Invalid email address');
+  console.log(emailDomain);
   const schoolServer = settings.emailDomains[emailDomain];
+  console.log(schoolServer);
   if (!schoolServer || !settings.servers[schoolServer]) return;
 
   const { url, filterAttribute, wholeEmail, attributesMap } = settings.servers[schoolServer]!;
 
-  const client = ldap.createClient({ url });
+  const client = ldap.createClient({ url, log });
 
   const ldapObject = await new Promise<ldap.SearchEntryObject | undefined>((resolve, reject) => {
+    // console.log(`Searching for ou=people,dc=n7,dc=fr with ${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}`);
+    client.bind('cn=anonymous', '', (err) => {
+      if (err) console.log(err);
+    });
     client.search(
       'ou=people,dc=n7,dc=fr',
       { filter: `${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}` },
+      // {filter: `uid=elebihan`},
       (error, results) => {
+        console.log(results);
         if (error) {
           reject(error);
           return;
         }
 
+        results.on('connectRefused', console.log);
+
+        results.on('connectTimeout', console.log);
+
+        results.on('searchReference', console.log);
+
         results.on('searchEntry', ({ object }) => {
+          console.log(object);
           resolve(object);
         });
 
-        results.on('end', () => {
+        results.on('end', (a) => {
+          console.log(a);
           // eslint-disable-next-line unicorn/no-useless-undefined
           resolve(undefined);
         });

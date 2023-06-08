@@ -4,6 +4,7 @@ import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
 import { DateTimeScalar } from './scalars.js';
+import { LinkInput } from './links.js';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
@@ -20,6 +21,7 @@ export const ArticleType = builder.prismaNode('Article', {
     publishedAt: t.expose('publishedAt', { type: DateTimeScalar }),
     author: t.relation('author', { nullable: true }),
     group: t.relation('group'),
+    links: t.relation('links'),
   }),
 });
 
@@ -105,6 +107,7 @@ builder.mutationField('createArticle', (t) =>
           slug: slug(title),
           title,
           body,
+          links: { create: [] },
         },
       }),
   })
@@ -116,9 +119,11 @@ builder.mutationField('updateArticle', (t) =>
     args: {
       id: t.arg.id(),
       authorId: t.arg.id({ required: false }),
+      groupId: t.arg.id({ required: false }),
       title: t.arg.string(),
       body: t.arg.string(),
       published: t.arg.boolean(),
+      links: t.arg({ type: [LinkInput] }),
     },
     async authScopes(_, { id, authorId }, { user }) {
       if (!user) return false;
@@ -152,11 +157,23 @@ builder.mutationField('updateArticle', (t) =>
         )
       );
     },
-    resolve: async (query, _, { id, authorId, title, body, published }) =>
+    resolve: async (query, _, { id, authorId, groupId, title, body, published, links }) =>
       prisma.article.update({
         ...query,
         where: { id },
-        data: { authorId, title, body, published, publishedAt: published ? new Date() : undefined },
+        data: {
+          authorId: authorId ?? undefined,
+          groupId: groupId ?? undefined,
+          title,
+          body,
+          published,
+          publishedAt: published ? new Date() : undefined,
+          links: {
+            update: {
+              links: { deleteMany: {}, createMany: { data: links } },
+            },
+          },
+        },
       }),
   })
 );

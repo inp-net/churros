@@ -6,7 +6,7 @@
  * @module
  */
 
-import { CredentialType, GroupType, LinkType, type Prisma } from '@prisma/client';
+import { CredentialType, GroupType, type Prisma } from '@prisma/client';
 import { hash } from 'argon2';
 import slug from 'slug';
 import { prisma } from './prisma.js';
@@ -86,10 +86,10 @@ for (const [i, data] of users.entries()) {
         create: {
           links: {
             create: [
-              { type: LinkType.Facebook, value: '#' },
-              { type: LinkType.Instagram, value: '#' },
-              { type: LinkType.Telegram, value: '#' },
-              { type: LinkType.Twitter, value: '#' },
+              { name: 'Facebook', value: '#' },
+              { name: 'Instagram', value: '#' },
+              { name: 'Telegram', value: '#' },
+              { name: 'Twitter', value: '#' },
             ],
           },
         },
@@ -183,8 +183,8 @@ suos auras atra!
           links: {
             createMany: {
               data: [
-                { type: LinkType.Facebook, value: '#' },
-                { type: LinkType.Instagram, value: '#' },
+                { name: 'Facebook', value: '#' },
+                { name: 'Instagram', value: '#' },
               ],
             },
           },
