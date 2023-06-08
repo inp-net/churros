@@ -49,6 +49,6 @@ server.search('ou=people,dc=n7,dc=fr', (req, res, next) => {
   res.end();
 });
 
-server.listen(1389, () => {
+server.listen(1389, 'localhost', () => {
   console.log(`Mock n7 ldap server listening on ${server.url}`);
 });
