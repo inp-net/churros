@@ -12,6 +12,8 @@
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import Button from '$lib/components/buttons/Button.svelte';
   import { zeus } from '$lib/zeus';
+  import UserPicture from '$lib/components/pictures/UserPicture.svelte';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
 
   export let data: PageData;
 
@@ -37,7 +39,14 @@
 </script>
 
 <div class="top">
-  <img src="https://picsum.photos/1000/1000" alt="" />
+  <div class="user-picture">
+    <UserPicture
+      src={group.pictureFile
+        ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
+        : 'https://via.placeholder.com/160'}
+      alt={group.name}
+    />
+  </div>
   <Card>
     <p class="muted text-sm mb-0">
       {#if group.ancestors && group.ancestors.length > 1}
@@ -139,7 +148,7 @@
     justify-content: stretch;
     margin-block: 1rem;
 
-    img {
+    .user-picture {
       justify-self: center;
       max-height: 15rem;
     }

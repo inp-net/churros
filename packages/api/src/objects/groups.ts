@@ -7,6 +7,9 @@ import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
 import { LinkInput } from './links.js';
 import { GraphQLError } from 'graphql';
+import { unlink, writeFile } from 'node:fs/promises';
+import { FileScalar } from './scalars.js';
+import imageType, { minimumBytes } from 'image-type';
 
 export const GroupEnumType = builder.enumType(GroupPrismaType, { name: 'GroupType' });
 
@@ -28,6 +31,7 @@ export const GroupType = builder.prismaNode('Group', {
     longDescriptionHtml: t.string({
       resolve: async ({ longDescription }) => toHtml(longDescription),
     }),
+    pictureFile: t.exposeString('pictureFile'),
     articles: t.relation('articles', {
       query: { orderBy: { publishedAt: 'desc' } },
     }),
@@ -154,9 +158,12 @@ builder.mutationField('createGroup', (t) =>
       const parent = parentUid
         ? await prisma.group.findUniqueOrThrow({ where: { uid: parentUid } })
         : undefined;
-      if (parent && hasCycle([{ parentId: parent.id, id: -1 }, ...(await prisma.group.findMany({}))])) 
-          throw new GraphQLError('Le choix de ce groupe parent créerait un cycle.');
-        
+      if (
+        parent &&
+        hasCycle([{ parentId: parent.id, id: -1 }, ...(await prisma.group.findMany({}))])
+      )
+        throw new GraphQLError('Le choix de ce groupe parent créerait un cycle.');
+
       return prisma.group.create({
         ...query,
         data: {
@@ -248,9 +255,9 @@ builder.mutationField('updateGroup', (t) =>
           const allGroups = await prisma.group.findMany({});
           if (
             hasCycle(allGroups.map((g) => (g.id === oldGroup.id ? { ...oldGroup, parentId } : g)))
-          ) 
+          )
             throw new GraphQLError('La modification créerait un cycle dans les groupes');
-          
+
           const descendants = getDescendants(allGroups, oldGroup.id);
           console.log({ [`setting familyId to ${familyId} for`]: descendants.map((g) => g.name) });
           await prisma.group.updateMany({
@@ -262,9 +269,9 @@ builder.mutationField('updateGroup', (t) =>
         }
       }
 
-      if (parentId === oldGroup.id) 
+      if (parentId === oldGroup.id)
         throw new GraphQLError('Le groupe ne peut pas être son propre parent');
-      
+
       console.log({ parentId, familyId });
       return prisma.group.update({
         ...query,
@@ -311,6 +318,68 @@ builder.mutationField('deleteGroup', (t) =>
       ),
     async resolve(_, { uid }) {
       await prisma.group.delete({ where: { uid } });
+      return true;
+    },
+  })
+);
+
+/** Update the club's picture */
+builder.mutationField('updateGroupPicture', (t) =>
+  t.field({
+    type: 'String',
+    args: {
+      uid: t.arg.string(),
+      file: t.arg({ type: FileScalar }),
+    },
+    authScopes: (_, { uid }, { user }) =>
+      Boolean(user?.canEditGroups || user?.groups.some(({ group }) => group.uid === uid)),
+    async resolve(_, { uid, file }) {
+      console.log('updating group picture');
+      const type = await file
+        .slice(0, minimumBytes)
+        .arrayBuffer()
+        .then((array) => Buffer.from(array))
+        .then(async (buffer) => imageType(buffer));
+      if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
+        throw new GraphQLError('File format not supported');
+      console.log(`file type: ${type.ext}`);
+
+      // Delete the existing picture
+      const { pictureFile } = await prisma.group.findUniqueOrThrow({
+        where: { uid },
+        select: { pictureFile: true },
+      });
+
+      console.log(`existing picture: ${pictureFile}`);
+
+      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
+
+      const path = `${uid}.${type.ext}`;
+      await writeFile(new URL(path, process.env.STORAGE), file.stream());
+      await prisma.group.update({ where: { uid }, data: { pictureFile: path } });
+      return path;
+    },
+  })
+);
+
+/** Delete the club's picture */
+builder.mutationField('deleteGroupPicture', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: { uid: t.arg.string() },
+    authScopes: (_, { uid }, { user }) => Boolean(user?.canEditGroups || uid === user?.uid),
+    async resolve(_, { uid }) {
+      const { pictureFile } = await prisma.user.findUniqueOrThrow({
+        where: { uid },
+        select: { pictureFile: true },
+      });
+
+      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
+
+      await prisma.user.update({
+        where: { uid },
+        data: { pictureFile: '' },
+      });
       return true;
     },
   })

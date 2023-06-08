@@ -15,6 +15,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               uid: true,
               type: true,
               name: true,
+              pictureFile: true,
               address: true,
               color: true,
               description: true,
@@ -41,6 +42,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               type: true,
               name: true,
               address: true,
+              pictureFile: true,
               color: true,
               description: true,
               longDescriptionHtml: true,
@@ -58,7 +60,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     ...data,
     group: {
       ...data.group,
-      members: (data.group.members ?? []).sort(byMemberGroupTitleImportance),
+      members: data.group.members.sort(byMemberGroupTitleImportance),
     },
   };
 };

@@ -180,6 +180,7 @@ model Group {
   familyId             Int       @default(autoincrement())
   schoolId             Int?
   studentAssociationId Int?
+  pictureFile          String    @default("") @db.VarChar(255)
   name                 String    @db.VarChar(255)
   type                 GroupType
   color                String    @db.VarChar(7)

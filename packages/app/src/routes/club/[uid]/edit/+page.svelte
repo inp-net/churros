@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import ClubDetails from './ClubDetails.svelte';
+  import ClubPicture from './ClubPicture.svelte';
 
   export let data: PageData;
 
@@ -11,4 +12,5 @@
 
 <a href="../members">Modifier les membres</a>
 
+<ClubPicture club={group} />
 <ClubDetails bind:data />
