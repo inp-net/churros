@@ -58,6 +58,8 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
 
     // If the payload contains files, send as multipart/form-data
     if (files.size > 0) {
+      // Sometimes, Content-Type: application/json is already set when we get here. Delete it so that the browser can set the correct content-type header (including the boundary)
+      headers.delete('Content-Type');
       body = new FormData();
       body.append('operations', JSON.stringify({ query, variables: clone }));
       body.append('map', JSON.stringify([...files.values()]));
