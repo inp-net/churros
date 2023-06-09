@@ -3,6 +3,7 @@ import { builder } from '../builder';
 import { DateTimeScalar } from './scalars';
 import { prisma } from '../prisma';
 import { eventAccessibleByUser } from './events';
+import { placesLeft } from './tickets';
 
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
   name: 'PaymentMethod',
@@ -105,8 +106,19 @@ builder.mutationField('createRegistration', (t) =>
     async authScopes(_, { ticketId }, { user }) {
       if (!user) return false;
 
+      // Check that the event is accessible by the user
       const event = await prisma.ticket.findUnique({ where: { id: ticketId } }).event();
-      return eventAccessibleByUser(event, user);
+      if (!await eventAccessibleByUser(event, user)) return false;
+      
+      // Check that the ticket is still open
+      const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
+      if (!ticket) return false;
+      if (ticket.closesAt && ticket.closesAt.valueOf() < Date.now()) return false;
+
+      // Check that the ticket is not full
+      const ticketAndRegistrations = await prisma.ticket.findUnique({ where: { id: ticketId }, include: { registrations: true, group: { include: { tickets: { include: {registrations: true} } }} } });
+      return placesLeft(ticketAndRegistrations!) > 0
+      
     },
     resolve: async (query, {}, { ticketId, beneficiary, paymentMethod }, { user }) =>
       prisma.registration.create({

@@ -56,7 +56,7 @@ builder.queryField('homepage', (t) =>
         // Get all groups in the same family as the user's groups
         .findMany({
           where: { familyId: { in: user.groups.map(({ group }) => group.familyId) } },
-          select: { id: true, parentId: true },
+          select: { id: true, parentId: true, uid: true },
         })
         // Get all ancestors of the groups
         .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
@@ -74,7 +74,7 @@ builder.queryField('homepage', (t) =>
               group: { school: { id: { in: user.major.schools.map(({ id }) => id) } } },
             },
             // Show articles from groups whose user is a member
-            { group: { id: { in: ancestors.map(({ id }) => id) } } },
+            { group: { uid: { in: ancestors.map(({ uid }) => uid) } } },
           ],
         },
         orderBy: { publishedAt: 'desc' },

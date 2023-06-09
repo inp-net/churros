@@ -6,6 +6,23 @@ import { eventAccessibleByUser, eventManagedByUser } from './events';
 import { DateTimeScalar } from './scalars';
 import { LinkInput } from './links';
 
+export const placesLeft = (ticket: { name: string; capacity: number; registrations: Array<{ paid: boolean }>; group: null | { capacity: number; tickets: Array<{ registrations: Array<{ paid: boolean }> }> } }) => {
+  let placesLeftInGroup = Number.POSITIVE_INFINITY;
+  if (ticket.group?.capacity) {
+    placesLeftInGroup =
+      ticket.group.capacity -
+      ticket.group.tickets.reduce(
+        (sum, { registrations }) => sum + registrations.filter(({ paid }) => paid).length,
+        0
+      );
+  }
+
+  const placesLeftInTicket =
+    ticket.capacity - ticket.registrations.filter(({ paid }) => paid).length;
+    console.log(`Places left for ticket ${ticket.name}: self=${placesLeftInTicket}, group=${placesLeftInGroup}`)
+  return Math.min(placesLeftInGroup, placesLeftInTicket);
+}
+
 export const TicketType = builder.prismaNode('Ticket', {
   id: { field: 'id' },
   fields: (t) => ({
@@ -30,7 +47,9 @@ export const TicketType = builder.prismaNode('Ticket', {
     godsonLimit: t.exposeInt('godsonLimit'),
     onlyManagersCanProvide: t.exposeBoolean('onlyManagersCanProvide'),
     event: t.relation('event'),
-    group: t.relation('group'),
+    group: t.relation('group', {nullable: true}),
+    authorId: t.exposeID('authorId'),
+    author: t.relation('author', { nullable: true }),
     linkCollectionId: t.exposeID('linkCollectionId', { nullable: true }),
     placesLeft: t.int({
       async resolve({ id }) {
@@ -42,20 +61,9 @@ export const TicketType = builder.prismaNode('Ticket', {
           },
         });
         if (!ticket) return 0;
-        let placesLeftInGroup = 0;
-        if (ticket.group?.capacity) {
-          placesLeftInGroup =
-            ticket.group.capacity -
-            ticket.group.tickets.reduce(
-              (sum, { registrations }) => sum + registrations.filter(({ paid }) => paid).length,
-              0
-            );
-        }
-
-        const placesLeftInTicket =
-          ticket.capacity - ticket.registrations.filter(({ paid }) => paid).length;
-        return Math.min(placesLeftInGroup, placesLeftInTicket);
+        return placesLeft(ticket);
       },
+      complexity: 5
     }),
   }),
 });

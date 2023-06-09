@@ -7,7 +7,7 @@ export const TicketGroupType = builder.prismaNode('TicketGroup', {
     eventId: t.exposeID('eventId'),
     event: t.relation('event'),
     authorId: t.exposeID('authorId'),
-    author: t.relation('author'),
+    author: t.relation('author', {nullable: true}),
     capacity: t.exposeInt('capacity'),
     tickets: t.relation('tickets'),
   }),

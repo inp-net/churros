@@ -38,6 +38,7 @@ export const EventType = builder.prismaNode('Event', {
     articles: t.relation('articles'),
     group: t.relation('group'),
     links: t.relation('links'),
+    author: t.relation('author', { nullable: true }),
   }),
 });
 
@@ -52,9 +53,8 @@ builder.queryField('event', (t) =>
   })
 );
 
-builder.queryField('homepageEvents', (t) =>
+builder.queryField('events', (t) =>
   t.prismaConnection({
-    description: 'Gest the homepage events, customized if the user is logged in.',
     type: EventType,
     cursor: 'id',
     async resolve(query, _, {}, { user }) {
@@ -65,13 +65,17 @@ builder.queryField('homepageEvents', (t) =>
         });
       }
 
+      console.log(`User ${user.id} is fetching events`);
+
       const ancestors = await prisma.group
         .findMany({
           where: { familyId: { in: user.groups.map(({ group }) => group.familyId) } },
-          select: { id: true, parentId: true },
+          select: { id: true, parentId: true, uid: true },
         })
         .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
         .then((groups) => groups.flat());
+
+      console.log(`User ${user.id} has ${JSON.stringify(ancestors.map(g => g.id))} ancestors`)
 
       return prisma.event.findMany({
         ...query,
@@ -87,8 +91,8 @@ builder.queryField('homepageEvents', (t) =>
             // Events in the user's groups
             {
               group: {
-                id: {
-                  in: ancestors.map(({ id }) => id),
+                uid: {
+                  in: ancestors.map(({ uid }) => uid)
                 },
               },
             },

@@ -290,7 +290,7 @@ model Event {
   ticketGroups     TicketGroup[]
   articles         Article[]
   lydiaAccountId   Int?
-  links            LinkCollection  @relation(fields: [linkCollectionId], references: [id])
+  links            LinkCollection  @relation(fields: [linkCollectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   linkCollectionId Int
 }
 
@@ -318,20 +318,20 @@ model EventManager {
 model TicketGroup {
   id       Int    @id @default(autoincrement())
   eventId  Int
-  authorId Int
+  authorId Int?
   name     String @db.VarChar(255)
 
   capacity Int      @default(0) // 0 means unlimited, capacity is on the sum of sub-tickets registrations
   tickets  Ticket[]
   event    Event    @relation(fields: [eventId], references: [id])
-  author   User     @relation(fields: [authorId], references: [id])
+  author   User?    @relation(fields: [authorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 }
 
 /// A ticket is a way to register for an event. May include a price and conditions.
 model Ticket {
   id                    Int             @id @default(autoincrement())
   eventId               Int
-  authorId              Int
+  authorId              Int?
   ticketGroupId         Int?
   name                  String          @db.VarChar(255)
   description           String          @db.VarChar(255)
@@ -342,6 +342,7 @@ model Ticket {
   registrations         Registration[]
   links                 LinkCollection  @relation(fields: [linkCollectionId], references: [id])
   allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
+  author                User?           @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
 
   // Conditions for that ticket.
   openToPromotions        Int[]    @default([])
@@ -354,11 +355,9 @@ model Ticket {
 
   onlyManagersCanProvide Boolean @default(false)
 
-  author           User         @relation(fields: [userId], references: [id])
   event            Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   group            TicketGroup? @relation(fields: [ticketGroupId], references: [id])
   linkCollectionId Int
-  userId           Int
 }
 
 /// A reservation is a user's registration for a ticket
@@ -392,7 +391,7 @@ model LogEntry {
   area       String   @db.VarChar(255) // billeterie, gestion clubs, etc. à typer, mais pas dans la DB (pour être plus flexible)
   message    String   @db.Text
 
-  User User? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  user User? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
 }
 
 /// A Lydia account
