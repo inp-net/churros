@@ -6,7 +6,7 @@
  * @module
  */
 
-import { CredentialType, GroupType, type Prisma } from '@prisma/client';
+import { CredentialType, EventVisibility, GroupType, type Prisma } from '@prisma/client';
 import { hash } from 'argon2';
 import slug from 'slug';
 import { prisma } from './prisma.js';
@@ -278,6 +278,7 @@ for (let i = 0; i < end; i++) {
     publishedAt: new Date(
       startDate * (1 - i / end) + endDate * (i / end) + (i % 7) * 24 * 60 * 60 * 1000
     ),
+    linkCollectionId: 1,
   });
 }
 
@@ -326,5 +327,45 @@ await prisma.article.create({
     slug: 'cest-le-debut-de-l-inte',
     groupId: parent.id,
     published: true,
+   linkCollectionId: 1,
+  },
+});
+
+await prisma.event.create({
+  data: {
+    contactMail: 'hey@ewen.works',
+    description: 'Ceci est un événement',
+    endsAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+    startsAt: new Date(),
+    slug: 'ceci-est-un-evenement',
+    title: 'Ceci est un événement',
+    group: { connect: { id: 1 } },
+    visibility: EventVisibility.Public,
+    articles: {
+      createMany: {
+        data: [{
+          body: "Ceci est un article d'événement",
+          groupId: 1,
+          slug: "ceci-est-un-article-d-evenement",
+          title: "Ceci est un article d'événement",
+          linkCollectionId: 1,
+        }]
+      }
+    },
+    links: {
+      create: {
+        links: {
+          createMany: {
+            data: [{
+              name: 'Facebook',
+              value: 'https://facebook.com',
+            }, {
+              name: "Trop cool",
+              value: "https://youtu.be/dQw4w9WgXcQ"
+            }]
+          }
+        }
+      }
+    }
   },
 });

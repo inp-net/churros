@@ -65,24 +65,41 @@ builder.mutationField('createLydiaAccount', (t) =>
   })
 );
 
-builder.queryField('lydiaAccounts', t => t.prismaConnection({
+builder.queryField('lydiaAccounts', (t) =>
+  t.prismaConnection({
     type: LydiaAccountType,
     cursor: 'id',
     authScopes: (_, {}, { user }) => Boolean(user),
     async resolve(query, _, {}) {
-        const results = await prisma.lydiaAccount.findMany({ ...query }) 
-        return results.map(result => Object.fromEntries(Object.entries(result).map(([key, value]) => [key, ['privateToken', 'vendorToken'].includes(key) ? "*****************" : value]))) as LydiaAccount[]
-    }
-}))
+      const results = await prisma.lydiaAccount.findMany({ ...query });
+      return results.map((result) =>
+        Object.fromEntries(
+          Object.entries(result).map(([key, value]) => [
+            key,
+            ['privateToken', 'vendorToken'].includes(key) ? '*****************' : value,
+          ])
+        )
+      ) as LydiaAccount[];
+    },
+  })
+);
 
-builder.queryField('lydiaAccountsOfGroup', t => t.prismaConnection({
+builder.queryField('lydiaAccountsOfGroup', (t) =>
+  t.prismaConnection({
     type: LydiaAccountType,
     cursor: 'id',
     args: {
-        uid: t.arg.string()
+      uid: t.arg.string(),
     },
-    authScopes: (_, { uid }, { user }) => Boolean(user?.admin || user?.groups.some(({ group, president, treasurer }) => group.uid === uid && (president || treasurer))),
+    authScopes: (_, { uid }, { user }) =>
+      Boolean(
+        user?.admin ||
+          user?.groups.some(
+            ({ group, president, treasurer }) => group.uid === uid && (president || treasurer)
+          )
+      ),
     async resolve(query, _, { uid }) {
-        return prisma.lydiaAccount.findMany({ ...query, where: { group: {uid} } })
-    }
-}))
+      return prisma.lydiaAccount.findMany({ ...query, where: { group: { uid } } });
+    },
+  })
+);

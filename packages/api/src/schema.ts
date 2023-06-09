@@ -15,6 +15,12 @@ import './objects/scalars.js';
 import './objects/schools.js';
 import './objects/user-candidates.js';
 import './objects/users.js';
+import './objects/events.js';
+import './objects/tickets.js';
+import './objects/ticket-groups.js';
+import './objects/registration.js';
+import './objects/bank-accounts.js';
+import './objects/event-managers.js';
 
 export const schema = builder.toSchema({});
 

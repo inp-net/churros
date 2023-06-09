@@ -56,6 +56,8 @@ model User {
   managedEvents  EventManager[]
   LogEntry       LogEntry[]
   Event          Event[]
+  Ticket         Ticket[]
+  TicketGroup    TicketGroup[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -129,6 +131,7 @@ model School {
   groups              Group[]
   majors              Major[]
   studentAssociations StudentAssociation[]
+  accessibleTickets   Ticket[]
 }
 
 enum CredentialType {
@@ -207,6 +210,7 @@ model Group {
   studentAssociation StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   Event              Event[]
   LydiaAccount       LydiaAccount[]
+  tickets            Ticket[]
 }
 
 /// The intermediate model between users and groups
@@ -312,27 +316,30 @@ model EventManager {
 
 /// A ticket group allows for conditions on multiple tickets, such as an upper limit on the sum of registrations in the sub-tickets
 model TicketGroup {
-  id      Int    @id @default(autoincrement())
-  eventId Int
-  name    String @db.VarChar(255)
+  id       Int    @id @default(autoincrement())
+  eventId  Int
+  authorId Int
+  name     String @db.VarChar(255)
 
   capacity Int      @default(0) // 0 means unlimited, capacity is on the sum of sub-tickets registrations
   tickets  Ticket[]
-  Event    Event    @relation(fields: [eventId], references: [id])
+  event    Event    @relation(fields: [eventId], references: [id])
+  author   User     @relation(fields: [authorId], references: [id])
 }
 
 /// A ticket is a way to register for an event. May include a price and conditions.
 model Ticket {
   id                    Int             @id @default(autoincrement())
   eventId               Int
+  authorId              Int
   ticketGroupId         Int?
   name                  String          @db.VarChar(255)
   description           String          @db.VarChar(255)
   opensAt               DateTime?
   closesAt              DateTime?
-  price                 Int // in EUR
+  price                 Float // in EUR
   capacity              Int             @default(0) // 0 means unlimited
-  reservations          Registration[]
+  registrations         Registration[]
   links                 LinkCollection  @relation(fields: [linkCollectionId], references: [id])
   allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
 
@@ -341,15 +348,17 @@ model Ticket {
   openToAlumni            Boolean? @default(false) // false means only non-alumni, true means only alumni, null means both
   openToExternal          Boolean? @default(false) // same thing
   openToNonAEContributors Boolean? @default(false) // same thing
-  openToSchool            String[] @default([])
-  openToGroups            String[] @default([])
+  openToSchools           School[]
+  openToGroups            Group[]
   godsonLimit             Int      @default(0) // 0 means unlimited
 
   onlyManagersCanProvide Boolean @default(false)
 
-  Event            Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  TicketGroup      TicketGroup? @relation(fields: [ticketGroupId], references: [id])
+  author           User         @relation(fields: [userId], references: [id])
+  event            Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  group            TicketGroup? @relation(fields: [ticketGroupId], references: [id])
   linkCollectionId Int
+  userId           Int
 }
 
 /// A reservation is a user's registration for a ticket
@@ -357,14 +366,14 @@ model Registration {
   id            Int           @id @default(autoincrement())
   ticketId      Int
   beneficiary   String        @default("")
-  userId        Int
-  name          String        @db.VarChar(255)
+  authorId      Int
   createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
   paymentMethod PaymentMethod
   paid          Boolean       @default(false)
 
   ticket Ticket @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  author User   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 enum PaymentMethod {

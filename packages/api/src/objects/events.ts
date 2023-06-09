@@ -1,11 +1,17 @@
 import { builder } from '../builder';
-import { EventVisibility as EventPrismaVisibility } from '@prisma/client';
+import {
+  type Event as EventPrisma,
+  EventVisibility as EventPrismaVisibility,
+  EventVisibility,
+} from '@prisma/client';
 import { toHtml } from '../services/markdown';
 import { prisma } from '../prisma';
 import { DateTimeScalar } from './scalars';
 import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { LinkInput } from './links';
+import { EventManagerType } from './event-managers';
+import type { Context } from '../context';
 
 export const EventEnumVisibility = builder.enumType(EventPrismaVisibility, {
   name: 'EventVisibility',
@@ -46,7 +52,7 @@ builder.queryField('event', (t) =>
   })
 );
 
-builder.queryField('homepage', (t) =>
+builder.queryField('homepageEvents', (t) =>
   t.prismaConnection({
     description: 'Gest the homepage events, customized if the user is logged in.',
     type: EventType,
@@ -137,6 +143,11 @@ builder.mutationField('createEvent', (t) =>
           endsAt,
           location,
           title,
+          links: {
+            create: {
+              links: {},
+            },
+          },
           beneficiary: {
             connect: {
               id: beneficiary,
@@ -237,11 +248,90 @@ builder.mutationField('updateEvent', (t) =>
   })
 );
 
-builder.mutationField('updateEventManagers', (t) => {
-  t.prismaField({
-    type: EventType,
-    args: {
-      managers: t.arg({ type: [EventMana] }),
-    },
-  });
+const ManagerOfEventInput = builder.inputType('ManagerOfEventInput', {
+  fields: (t) => ({
+    userId: t.field({ type: 'ID' }),
+    canEdit: t.field({ type: 'Boolean' }),
+    canEditPermissions: t.field({ type: 'Boolean' }),
+    canVerifyRegistrations: t.field({ type: 'Boolean' }),
+  }),
 });
+
+builder.mutationField('setManagersOfEvent', (t) =>
+  t.prismaField({
+    type: [EventManagerType],
+    args: {
+      eventId: t.arg.id(),
+      managers: t.arg({ type: [ManagerOfEventInput] }),
+    },
+    authScopes: (_, { eventId }, { user }) =>
+      Boolean(
+        user?.admin ||
+          user?.managedEvents.some(
+            ({ event, canEditPermissions }) => event.id === eventId && canEditPermissions
+          )
+      ),
+    async resolve(query, _, { eventId, managers }) {
+      await prisma.event.update({
+        where: { id: eventId },
+        data: {
+          managers: {
+            deleteMany: {},
+            createMany: {
+              data: managers.map(
+                ({ userId, canEdit, canEditPermissions, canVerifyRegistrations }) => ({
+                  userId,
+                  canEdit,
+                  canEditPermissions,
+                  canVerifyRegistrations,
+                })
+              ),
+            },
+          },
+        },
+      });
+
+      return prisma.eventManager.findMany({
+        ...query,
+        where: {
+          eventId,
+        },
+      });
+    },
+  })
+);
+
+export async function eventAccessibleByUser(event: EventPrisma | null, user: Context['user']) {
+  switch (event?.visibility) {
+    case EventVisibility.Public:
+    case EventVisibility.Unlisted: {
+      return true;
+    }
+
+    case EventVisibility.Restricted: {
+      if (!user) return false;
+      const ancestors = await prisma.group
+        .findMany({
+          where: { familyId: { in: user.groups.map(({ group }) => group.familyId) } },
+          select: { id: true, parentId: true },
+        })
+        .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
+        .then((groups) => groups.flat());
+
+      return Boolean(ancestors.some(({ id }) => id === event.groupId));
+    }
+
+    case EventVisibility.Private: {
+      return Boolean(user?.managedEvents.some(({ event: { id } }) => id === event.id));
+    }
+
+    default: {
+      return false;
+    }
+  }
+}
+
+export function eventManagedByUser(event: EventPrisma, user: Context['user']) {
+  if (!user) return false;
+  return Boolean(user.managedEvents.some(({ event: { id } }) => id === event.id));
+}
