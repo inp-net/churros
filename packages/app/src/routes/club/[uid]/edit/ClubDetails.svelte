@@ -33,7 +33,7 @@
   let parentUid = '';
   onMount(async () => {
     // See https://github.com/graphql-editor/graphql-zeus/issues/262
-     
+
     ({ parentId = '' } = data.group);
     ({ groups: otherGroups } = await $zeus.query({
       groups: [{}, { groupId: true, uid: true }],

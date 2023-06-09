@@ -2,7 +2,7 @@ import { loadQuery, Selector } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-export const clubQuery = Selector('Group')({
+const clubQuery = Selector('Group')({
   uid: true,
   parentId: true,
   groupId: true,
@@ -17,7 +17,7 @@ export const clubQuery = Selector('Group')({
   linkCollection: {
     id: true,
     links: {
-      type: true,
+      name: true,
       value: true,
     },
   },
@@ -43,7 +43,6 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
   return loadQuery(
     {
       group: [params, clubQuery],
-      linkTypes: true,
       schoolGroups: { names: true, majors: { id: true, name: true } },
     },
     { fetch, parent }

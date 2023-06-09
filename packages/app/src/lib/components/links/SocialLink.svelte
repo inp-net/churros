@@ -1,29 +1,28 @@
 <script lang="ts">
-  import { LinkType } from '$lib/zeus';
   import SimpleIconsFacebook from '~icons/simple-icons/facebook';
   import SimpleIconsInstagram from '~icons/simple-icons/instagram';
   import SimpleIconsTelegram from '~icons/simple-icons/telegram';
   import SimpleIconsTwitter from '~icons/simple-icons/twitter';
 
-  export let type: LinkType;
+  export let name: string;
   export let value: string;
 
   const map = new Map([
-    [LinkType.Facebook, SimpleIconsFacebook],
-    [LinkType.Instagram, SimpleIconsInstagram],
-    [LinkType.Telegram, SimpleIconsTelegram],
-    [LinkType.Twitter, SimpleIconsTwitter],
+    ["Facebook", SimpleIconsFacebook],
+    ["Instagram", SimpleIconsInstagram],
+    ["Telegram", SimpleIconsTelegram],
+    ["Twitter", SimpleIconsTwitter],
   ]);
 
   /** Marks a variable as non null. */
   const bang = <T extends {}>(x?: T) => x!;
 </script>
 
-<a href={value} title={type} target="social">
-  {#if map.has(type)}
-    <svelte:component this={bang(map.get(type))} aria-label={type} />
+<a href={value} title={name} target="social">
+  {#if map.has(name)}
+    <svelte:component this={bang(map.get(name))} aria-label={name} />
   {:else}
-    {type}
+    {name}
   {/if}
 </a>
 

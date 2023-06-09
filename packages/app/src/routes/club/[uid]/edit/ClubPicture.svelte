@@ -34,9 +34,7 @@
     try {
       deleting = true;
       const deleted = await $zeus.mutate({ deleteGroupPicture: [{ uid: club.uid }, true] });
-      if (deleted) 
-        pictureFile = '';
-      
+      if (deleted) pictureFile = '';
     } finally {
       deleting = false;
     }

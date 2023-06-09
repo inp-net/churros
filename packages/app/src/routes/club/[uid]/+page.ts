@@ -25,7 +25,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               ancestors: { uid: true, name: true },
               articles: { slug: true, title: true, bodyHtml: true },
               school: { name: true, color: true },
-              linkCollection: { links: { type: true, value: true } },
+              linkCollection: { links: { name: true, value: true } },
               members: {
                 member: { uid: true, firstName: true, lastName: true },
                 title: true,
@@ -50,7 +50,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               selfJoinable: true,
               articles: { slug: true, title: true, bodyHtml: true },
               school: { name: true, color: true },
-              linkCollection: { links: { type: true, value: true } },
+              linkCollection: { links: { name: true, value: true } },
             },
       ],
     },
@@ -60,7 +60,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     ...data,
     group: {
       ...data.group,
-      members: data.group.members.sort(byMemberGroupTitleImportance),
+      members: data.group.members?.sort(byMemberGroupTitleImportance),
     },
   };
 };
