@@ -1,9 +1,9 @@
 import { PaymentMethod as PaymentMethodPrisma } from '@prisma/client';
-import { builder } from '../builder';
-import { DateTimeScalar } from './scalars';
-import { prisma } from '../prisma';
-import { eventAccessibleByUser } from './events';
-import { placesLeft } from './tickets';
+import { builder } from '../builder.js';
+import { DateTimeScalar } from './scalars.js';
+import { prisma } from '../prisma.js';
+import { eventAccessibleByUser } from './events.js';
+import { placesLeft } from './tickets.js';
 
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
   name: 'PaymentMethod',
@@ -42,7 +42,7 @@ builder.queryField('registration', (t) =>
         where: {
           id,
           ticket: {
-            Event: {
+            event: {
               managers: {
                 some: {
                   userId: user?.id,
@@ -71,7 +71,7 @@ builder.queryField('registrationsOfEvent', (t) =>
     async resolve(query, _, { event }) {
       return prisma.registration.findMany({
         ...query,
-        where: { ticket: { Event: { id: event } } },
+        where: { ticket: { event: { id: event } } },
       });
     },
   })

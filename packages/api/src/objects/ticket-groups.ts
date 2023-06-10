@@ -1,5 +1,5 @@
-import { builder } from '../builder';
-import { prisma } from '../prisma';
+import { builder } from '../builder.js';
+import { prisma } from '../prisma.js';
 
 export const TicketGroupType = builder.prismaNode('TicketGroup', {
   id: { field: 'id' },
@@ -7,7 +7,7 @@ export const TicketGroupType = builder.prismaNode('TicketGroup', {
     name: t.exposeString('name'),
     eventId: t.exposeID('eventId'),
     event: t.relation('event'),
-    authorId: t.exposeID('authorId'),
+    authorId: t.exposeID('authorId', { nullable: true }),
     author: t.relation('author', { nullable: true }),
     capacity: t.exposeInt('capacity'),
     tickets: t.relation('tickets'),

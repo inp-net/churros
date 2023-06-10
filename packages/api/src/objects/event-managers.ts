@@ -1,5 +1,5 @@
-import { builder } from '../builder';
-import { prisma } from '../prisma';
+import { builder } from '../builder.js';
+import { prisma } from '../prisma.js';
 
 export const EventManagerType = builder.prismaNode('EventManager', {
   id: { field: 'id' },

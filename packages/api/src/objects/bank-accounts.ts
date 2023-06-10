@@ -1,6 +1,6 @@
 import type { LydiaAccount } from '@prisma/client';
-import { builder } from '../builder';
-import { prisma } from '../prisma';
+import { builder } from '../builder.js';
+import { prisma } from '../prisma.js';
 
 import { createHash } from 'node:crypto';
 

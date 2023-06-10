@@ -1,10 +1,10 @@
-import { builder } from '../builder';
-import { prisma } from '../prisma';
-import { toHtml } from '../services/markdown';
-import { PaymentMethodEnum } from './registration';
-import { eventAccessibleByUser, eventManagedByUser } from './events';
-import { DateTimeScalar } from './scalars';
-import { LinkInput } from './links';
+import { builder } from '../builder.js';
+import { prisma } from '../prisma.js';
+import { toHtml } from '../services/markdown.js';
+import { PaymentMethodEnum } from './registration.js';
+import { eventAccessibleByUser, eventManagedByUser } from './events.js';
+import { DateTimeScalar } from './scalars.js';
+import { LinkInput } from './links.js';
 
 export const placesLeft = (ticket: {
   name: string;

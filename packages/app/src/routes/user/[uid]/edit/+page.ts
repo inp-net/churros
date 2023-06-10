@@ -2,7 +2,7 @@ import { loadQuery, Selector } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-const userQuery = Selector('User')({
+export const _userQuery = Selector('User')({
   uid: true,
   firstName: true,
   lastName: true,
@@ -23,7 +23,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 
   return loadQuery(
     {
-      user: [params, userQuery],
+      user: [params, _userQuery],
       // If the user is an admin, we also load the permissions
       __alias: {
         userPermissions: me.admin

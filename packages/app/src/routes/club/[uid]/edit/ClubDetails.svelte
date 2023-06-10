@@ -6,7 +6,7 @@
   import MajesticonsPlus from '~icons/majesticons/plus';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
-  import { clubQuery } from './+page';
+  import { _clubQuery as clubQuery } from './+page';
   import Button from '$lib/components/buttons/Button.svelte';
   import { onMount } from 'svelte';
   import Alert from '$lib/components/alerts/Alert.svelte';
@@ -126,11 +126,7 @@
       {#each linkCollection.links as link, i}
         <li>
           <InputGroup>
-            <select bind:value={link.type}>
-              {#each data.linkTypes as type}
-                <option>{type}</option>
-              {/each}
-            </select>
+            <input bind:value={link.name} />
             <input bind:value={link.value} />
           </InputGroup>
           <InputGroup>
@@ -164,10 +160,7 @@
         <button
           type="button"
           on:click={() => {
-            linkCollection.links = [
-              ...linkCollection.links,
-              { type: data.linkTypes[0], value: '' },
-            ];
+            linkCollection.links = [...linkCollection.links, { name: '', value: '' }];
           }}><MajesticonsPlus aria-hidden="true" />Ajouter</button
         >
       </li>

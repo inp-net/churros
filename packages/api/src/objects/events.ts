@@ -1,17 +1,17 @@
-import { builder } from '../builder';
+import { builder } from '../builder.js';
 import {
   type Event as EventPrisma,
   EventVisibility as EventPrismaVisibility,
   EventVisibility,
 } from '@prisma/client';
-import { toHtml } from '../services/markdown';
-import { prisma } from '../prisma';
-import { DateTimeScalar } from './scalars';
+import { toHtml } from '../services/markdown.js';
+import { prisma } from '../prisma.js';
+import { DateTimeScalar } from './scalars.js';
 import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
-import { LinkInput } from './links';
-import { EventManagerType } from './event-managers';
-import type { Context } from '../context';
+import { LinkInput } from './links.js';
+import { EventManagerType } from './event-managers.js';
+import type { Context } from '../context.js';
 
 export const EventEnumVisibility = builder.enumType(EventPrismaVisibility, {
   name: 'EventVisibility',
@@ -190,7 +190,7 @@ builder.mutationField('updateEvent', (t) =>
       location: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       visibility: t.arg({ type: EventEnumVisibility }),
       groupId: t.arg.id({ required: false }),
-      authorId: t.arg.id({ required: false }),
+      authorId: t.arg.id(),
       links: t.arg({ type: [LinkInput] }),
     },
     authScopes: (_, { id }, { user }) =>
@@ -244,8 +244,20 @@ builder.mutationField('updateEvent', (t) =>
               id: lydiaAccountId,
             },
           },
-          authorId,
-          groupId: groupId ?? undefined,
+          author: authorId
+            ? {
+                connect: {
+                  id: authorId,
+                },
+              }
+            : undefined,
+          group: groupId
+            ? {
+                connect: {
+                  id: groupId,
+                },
+              }
+            : undefined,
         },
       });
     },

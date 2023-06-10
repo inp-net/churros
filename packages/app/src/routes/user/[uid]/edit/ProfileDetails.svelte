@@ -7,7 +7,7 @@
   import MajesticonsClose from '~icons/majesticons/close';
   import MajesticonsPlus from '~icons/majesticons/plus';
   import type { PageData } from './$types';
-  import { userQuery } from './+page';
+  import { _userQuery as userQuery } from './+page';
 
   export let data: PageData;
 
@@ -79,11 +79,7 @@
       {#each linkCollection.links as link, i}
         <li>
           <InputGroup>
-            <select bind:value={link.type}>
-              {#each data.linkTypes as type}
-                <option>{type}</option>
-              {/each}
-            </select>
+            <input bind:value={link.name} />
             <input bind:value={link.value} />
           </InputGroup>
           <InputGroup>
@@ -117,10 +113,7 @@
         <button
           type="button"
           on:click={() => {
-            linkCollection.links = [
-              ...linkCollection.links,
-              { type: data.linkTypes[0], value: '' },
-            ];
+            linkCollection.links = [...linkCollection.links, { name: '', value: '' }];
           }}><MajesticonsPlus aria-hidden="true" />Ajouter</button
         >
       </li>
