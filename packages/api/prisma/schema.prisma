@@ -211,6 +211,7 @@ model Group {
   Event              Event[]
   LydiaAccount       LydiaAccount[]
   tickets            Ticket[]
+  barWeeks           BarWeek[]
 }
 
 /// The intermediate model between users and groups
@@ -292,6 +293,8 @@ model Event {
   lydiaAccountId   Int?
   links            LinkCollection  @relation(fields: [linkCollectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   linkCollectionId Int
+
+  @@unique([groupId, slug])
 }
 
 enum EventVisibility {
@@ -379,6 +382,7 @@ enum PaymentMethod {
   Lydia
   Card
   Transfer
+  Check
   Cash
   Other
 }
@@ -399,8 +403,17 @@ model LydiaAccount {
   id           Int     @id @default(autoincrement())
   groupId      Int
   group        Group   @relation(fields: [groupId], references: [id])
-  description  String  @default("") @db.VarChar(255)
+  name         String  @default("") @db.VarChar(255)
   privateToken String  @default("") @db.VarChar(255)
   vendorToken  String  @default("") @db.VarChar(255)
   events       Event[]
+}
+
+/// A bar week is a week during which some groups takeover the bar staff
+model BarWeek {
+  id          Int      @id @default(autoincrement())
+  groups      Group[]
+  startsAt    DateTime
+  endsAt      DateTime
+  description String   @default("") @db.VarChar(255)
 }

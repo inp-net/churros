@@ -8,10 +8,10 @@
   export let value: string;
 
   const map = new Map([
-    ["Facebook", SimpleIconsFacebook],
-    ["Instagram", SimpleIconsInstagram],
-    ["Telegram", SimpleIconsTelegram],
-    ["Twitter", SimpleIconsTwitter],
+    ['Facebook', SimpleIconsFacebook],
+    ['Instagram', SimpleIconsInstagram],
+    ['Telegram', SimpleIconsTelegram],
+    ['Twitter', SimpleIconsTwitter],
   ]);
 
   /** Marks a variable as non null. */

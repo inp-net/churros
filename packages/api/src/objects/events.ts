@@ -47,6 +47,11 @@ builder.queryField('event', (t) =>
     type: EventType,
     args: {
       slug: t.arg.string(),
+      group: t.arg.string()
+    },
+    async authScopes(_, { slug, group }, { user }) {
+      const event = await prisma.event.findFirstOrThrow({ where: { slug, group :{ uid: group } } });
+      return eventAccessibleByUser(event, user);
     },
     resolve: async (query, _, { slug }) =>
       prisma.event.findFirstOrThrow({ ...query, where: { slug } }),
@@ -65,8 +70,6 @@ builder.queryField('events', (t) =>
         });
       }
 
-      console.log(`User ${user.id} is fetching events`);
-
       const ancestors = await prisma.group
         .findMany({
           where: { familyId: { in: user.groups.map(({ group }) => group.familyId) } },
@@ -74,8 +77,6 @@ builder.queryField('events', (t) =>
         })
         .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
         .then((groups) => groups.flat());
-
-      console.log(`User ${user.id} has ${JSON.stringify(ancestors.map((g) => g.id))} ancestors`);
 
       return prisma.event.findMany({
         ...query,
@@ -103,6 +104,58 @@ builder.queryField('events', (t) =>
     },
   })
 );
+
+builder.queryField('eventsOfGroup', (t) =>
+  t.prismaConnection({
+    type: EventType,
+    cursor: 'id',
+    args: {
+      group: t.arg.string(),
+    },
+    async resolve(query, {}, { group }, { user }) {
+if (!user) {
+        return prisma.event.findMany({
+          ...query,
+          where: { visibility: EventPrismaVisibility.Public, group: {uid: group} },
+        });
+      }
+
+      const ancestors = await prisma.group
+        .findMany({
+          where: { familyId: { in: user.groups.map(({ group }) => group.familyId) } },
+          select: { id: true, parentId: true, uid: true },
+        })
+        .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
+        .then((groups) => groups.flat());
+
+      return prisma.event.findMany({
+        ...query,
+        where: {
+          visibility: {
+            notIn: [EventPrismaVisibility.Private, EventPrismaVisibility.Unlisted],
+          },
+          group: {
+            uid: group
+          },
+          OR: [
+            // Completely public events
+            {
+              visibility: EventPrismaVisibility.Public,
+            },
+            // Events in the user's groups
+            {
+              group: {
+                uid: {
+                  in: ancestors.map(({ uid }) => uid),
+                },
+              },
+            },
+          ],
+        },
+        orderBy: { startsAt: 'desc' },
+      });
+    }}));
+
 
 builder.mutationField('createEvent', (t) =>
   t.prismaField({

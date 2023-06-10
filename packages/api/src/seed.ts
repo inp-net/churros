@@ -327,7 +327,7 @@ await prisma.article.create({
     slug: 'cest-le-debut-de-l-inte',
     groupId: parent.id,
     published: true,
-   linkCollectionId: 1,
+    linkCollectionId: 1,
   },
 });
 
@@ -343,129 +343,141 @@ const event1 = await prisma.event.create({
     visibility: EventVisibility.Public,
     articles: {
       createMany: {
-        data: [{
-          body: "Ceci est un article d'événement",
-          groupId: 1,
-          slug: "ceci-est-un-article-d-evenement",
-          title: "Ceci est un article d'événement",
-          linkCollectionId: 1,
-        }]
-      }
+        data: [
+          {
+            body: "Ceci est un article d'événement",
+            groupId: 1,
+            slug: 'ceci-est-un-article-d-evenement',
+            title: "Ceci est un article d'événement",
+            linkCollectionId: 1,
+          },
+        ],
+      },
     },
     links: {
       create: {
         links: {
           createMany: {
-            data: [{
-              name: 'Facebook',
-              value: 'https://facebook.com',
-            }, {
-              name: "Trop cool",
-              value: "https://youtu.be/dQw4w9WgXcQ"
-            }]
-          }
-        }
-      }
+            data: [
+              {
+                name: 'Facebook',
+                value: 'https://facebook.com',
+              },
+              {
+                name: 'Trop cool',
+                value: 'https://youtu.be/dQw4w9WgXcQ',
+              },
+            ],
+          },
+        },
+      },
     },
     tickets: {
       createMany: {
-        data: [{
-          name: "Staff TVn7",
-          authorId: 1,
-          description: "Staffeurs :sparkles: TVn7 :sparkles:, par ici!",
-          linkCollectionId: 1,
-          price: 0,
-          capacity: 12,
-          opensAt: new Date(),
-          closesAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-          allowedPaymentMethods: ["Cash", "Lydia", "Card"],
-          openToPromotions: [2024, 2025, 2026],
-          openToAlumni: false,
-          openToExternal: false,
-          openToNonAEContributors: false,
-          godsonLimit: 0,
-          onlyManagersCanProvide: false,
-        }]
-      }
-    }
+        data: [
+          {
+            name: 'Staff TVn7',
+            authorId: 1,
+            description: 'Staffeurs :sparkles: TVn7 :sparkles:, par ici!',
+            linkCollectionId: 1,
+            price: 0,
+            capacity: 12,
+            opensAt: new Date(),
+            closesAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+            allowedPaymentMethods: ['Cash', 'Lydia', 'Card'],
+            openToPromotions: [2024, 2025, 2026],
+            openToAlumni: false,
+            openToExternal: false,
+            openToNonAEContributors: false,
+            godsonLimit: 0,
+            onlyManagersCanProvide: false,
+          },
+        ],
+      },
+    },
   },
   include: {
-    tickets: true
-  }
+    tickets: true,
+  },
 });
 
 await prisma.ticket.update({
   where: { id: event1.tickets[0]!.id },
   data: {
     openToGroups: {
-      connect: [{ uid: "ski" }]
-    }
-  }
-})
+      connect: [{ uid: 'ski' }],
+    },
+  },
+});
 
 await prisma.event.create({
   data: {
     contactMail: 'contact@tvn7.fr',
-    description: "Viens passer la passation TVn7 avec nous !",
+    description: 'Viens passer la passation TVn7 avec nous !',
     endsAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
     startsAt: new Date(),
     slug: 'passation-tvn7',
-    title: "Passation TVn7",
+    title: 'Passation TVn7',
     visibility: EventVisibility.Restricted,
-    author: { connect: { uid: "quentin"} },
-    group: { connect: { uid: "ski" } },
+    author: { connect: { uid: 'quentin' } },
+    group: { connect: { uid: 'ski' } },
     links: {
       create: {
         links: {
           createMany: {
-            data:[{
-              name: "Menu",
-              value: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-            }]
-          }
-        }
-      }
+            data: [
+              {
+                name: 'Menu',
+                value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+              },
+            ],
+          },
+        },
+      },
     },
     tickets: {
       createMany: {
-        data: [{
-          name: "",
-          authorId: 1,
-          description: "",
-          linkCollectionId: 1,
-          price: 3.5,
-          capacity: 70,
-          allowedPaymentMethods: ['Lydia'],
-          closesAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-          opensAt: new Date(),
-          godsonLimit: 0,
-          // eslint-disable-next-line unicorn/no-null
-          openToAlumni: null,
-          openToExternal: false,
-          // eslint-disable-next-line unicorn/no-null
-          openToNonAEContributors: null,
-          openToPromotions: [],
-        }]
-    }
-  }
-}})
+        data: [
+          {
+            name: '',
+            authorId: 1,
+            description: '',
+            linkCollectionId: 1,
+            price: 3.5,
+            capacity: 70,
+            allowedPaymentMethods: ['Lydia'],
+            closesAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+            opensAt: new Date(),
+            godsonLimit: 0,
+            // eslint-disable-next-line unicorn/no-null
+            openToAlumni: null,
+            openToExternal: false,
+            // eslint-disable-next-line unicorn/no-null
+            openToNonAEContributors: null,
+            openToPromotions: [],
+          },
+        ],
+      },
+    },
+  },
+});
 
 await prisma.registration.create({
   data: {
     ticketId: event1.tickets[0]!.id,
     authorId: 2,
-    paymentMethod: "Lydia",
+    paymentMethod: 'Lydia',
     paid: false,
-    beneficiary: "annie",
-  }
-})
+    beneficiary: 'annie',
+  },
+});
 
 await prisma.registration.create({
   data: {
     ticketId: event1.tickets[0]!.id,
     authorId: 4,
-    paymentMethod: "Lydia",
+    paymentMethod: 'Lydia',
     paid: true,
-    beneficiary: "quentin",
-  }
-})
+    beneficiary: 'quentin',
+  },
+});

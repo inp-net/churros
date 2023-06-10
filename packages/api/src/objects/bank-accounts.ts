@@ -9,8 +9,8 @@ export const LydiaAccountType = builder.prismaNode('LydiaAccount', {
   fields: (t) => ({
     groupId: t.exposeID('groupId'),
     group: t.relation('group'),
-    description: t.exposeString('description'),
     events: t.relation('events'),
+    name: t.exposeString('name'),
     // tokens are NOT EXPOSED, they should never quit the backend
   }),
 });
@@ -48,15 +48,22 @@ builder.mutationField('createLydiaAccount', (t) =>
     type: LydiaAccountType,
     args: {
       groupId: t.arg.id(),
-      description: t.arg.string(),
+      name: t.arg.string(),
       privateToken: t.arg.string(),
       vendorToken: t.arg.string(),
     },
-    resolve: async (query, {}, { groupId, description, privateToken, vendorToken }) =>
+    authScopes: (_, {groupId}, { user }) =>
+      Boolean(
+        user?.admin ||
+          user?.groups.some(
+            ({ group, president, treasurer }) => group.id === groupId && (president || treasurer)
+          )
+      ),
+    resolve: async (query, {}, { groupId, name, privateToken, vendorToken }) =>
       prisma.lydiaAccount.create({
         ...query,
         data: {
-          description,
+          name,
           group: { connect: { id: groupId } },
           privateToken,
           vendorToken,
