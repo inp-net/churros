@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type { PageData } from "./$types";
+  import type { PageData } from './$types';
 
-    export let data: PageData;
+  export let data: PageData;
 </script>
 
 <pre>
-    {JSON.stringify(data, null, 2)}
+    {JSON.stringify(data, undefined, 2)}
 </pre>

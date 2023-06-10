@@ -8,6 +8,9 @@
 </script>
 
 <button {type} disabled={disabled || loading} class={theme} class:loading {...$$restProps} on:click>
+  <div class="icon">
+    <slot name="icon" />
+  </div>
   <slot />
 </button>
 

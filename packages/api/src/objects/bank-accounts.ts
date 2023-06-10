@@ -52,7 +52,7 @@ builder.mutationField('createLydiaAccount', (t) =>
       privateToken: t.arg.string(),
       vendorToken: t.arg.string(),
     },
-    resolve: async (query, _, { groupId, description, privateToken, vendorToken }) =>
+    resolve: async (query, {}, { groupId, description, privateToken, vendorToken }) =>
       prisma.lydiaAccount.create({
         ...query,
         data: {
@@ -70,7 +70,7 @@ builder.queryField('lydiaAccounts', (t) =>
     type: LydiaAccountType,
     cursor: 'id',
     authScopes: (_, {}, { user }) => Boolean(user),
-    async resolve(query, _, {}) {
+    async resolve(query, {}, {}) {
       const results = await prisma.lydiaAccount.findMany({ ...query });
       return results.map((result) =>
         Object.fromEntries(

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/stores';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
 
@@ -150,10 +149,3 @@
   </p>
   <p><button type="submit">Ajouter</button></p>
 </form>
-
-<style>
-  td.actions {
-    display: flex;
-    flex-wrap: wrap;
-  }
-</style>

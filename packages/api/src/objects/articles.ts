@@ -162,8 +162,8 @@ builder.mutationField('updateArticle', (t) =>
         ...query,
         where: { id },
         data: {
-          authorId: authorId ?? undefined,
-          groupId: groupId ?? undefined,
+          author: { connect: authorId === null ? undefined : { id: authorId } },
+          group: { connect: groupId === null ? undefined : { id: groupId } },
           title,
           body,
           published,

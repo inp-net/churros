@@ -6,7 +6,12 @@ import { eventAccessibleByUser, eventManagedByUser } from './events';
 import { DateTimeScalar } from './scalars';
 import { LinkInput } from './links';
 
-export const placesLeft = (ticket: { name: string; capacity: number; registrations: Array<{ paid: boolean }>; group: null | { capacity: number; tickets: Array<{ registrations: Array<{ paid: boolean }> }> } }) => {
+export const placesLeft = (ticket: {
+  name: string;
+  capacity: number;
+  registrations: Array<{ paid: boolean }>;
+  group: null | { capacity: number; tickets: Array<{ registrations: Array<{ paid: boolean }> }> };
+}) => {
   let placesLeftInGroup = Number.POSITIVE_INFINITY;
   if (ticket.group?.capacity) {
     placesLeftInGroup =
@@ -19,9 +24,11 @@ export const placesLeft = (ticket: { name: string; capacity: number; registratio
 
   const placesLeftInTicket =
     ticket.capacity - ticket.registrations.filter(({ paid }) => paid).length;
-    console.log(`Places left for ticket ${ticket.name}: self=${placesLeftInTicket}, group=${placesLeftInGroup}`)
+  console.log(
+    `Places left for ticket ${ticket.name}: self=${placesLeftInTicket}, group=${placesLeftInGroup}`
+  );
   return Math.min(placesLeftInGroup, placesLeftInTicket);
-}
+};
 
 export const TicketType = builder.prismaNode('Ticket', {
   id: { field: 'id' },
@@ -47,8 +54,8 @@ export const TicketType = builder.prismaNode('Ticket', {
     godsonLimit: t.exposeInt('godsonLimit'),
     onlyManagersCanProvide: t.exposeBoolean('onlyManagersCanProvide'),
     event: t.relation('event'),
-    group: t.relation('group', {nullable: true}),
-    authorId: t.exposeID('authorId'),
+    group: t.relation('group', { nullable: true }),
+    authorId: t.exposeID('authorId', { nullable: true }),
     author: t.relation('author', { nullable: true }),
     linkCollectionId: t.exposeID('linkCollectionId', { nullable: true }),
     placesLeft: t.int({
@@ -63,7 +70,7 @@ export const TicketType = builder.prismaNode('Ticket', {
         if (!ticket) return 0;
         return placesLeft(ticket);
       },
-      complexity: 5
+      complexity: 5,
     }),
   }),
 });
@@ -197,7 +204,7 @@ builder.mutationField('updateTicket', (t) =>
       links: t.arg({ type: [LinkInput] }),
       allowedPaymentMethods: t.arg({ type: [PaymentMethodEnum] }),
       openToPromotions: t.arg({ type: ['Int'] }),
-      // XXX values can be null, but we aren't allowed to set them, so we interpret undefined as null, and not as "don't change".
+      // Values can be null, but we aren't allowed to set them, so we interpret undefined as null, and not as "don't change".
       openToAlumni: t.arg.boolean({ required: false }),
       openToExternal: t.arg.boolean({ required: false }),
       openToSchools: t.arg({ type: ['Int'] }),

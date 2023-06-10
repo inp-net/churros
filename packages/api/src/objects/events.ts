@@ -75,7 +75,7 @@ builder.queryField('events', (t) =>
         .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
         .then((groups) => groups.flat());
 
-      console.log(`User ${user.id} has ${JSON.stringify(ancestors.map(g => g.id))} ancestors`)
+      console.log(`User ${user.id} has ${JSON.stringify(ancestors.map((g) => g.id))} ancestors`);
 
       return prisma.event.findMany({
         ...query,
@@ -92,7 +92,7 @@ builder.queryField('events', (t) =>
             {
               group: {
                 uid: {
-                  in: ancestors.map(({ uid }) => uid)
+                  in: ancestors.map(({ uid }) => uid),
                 },
               },
             },
@@ -239,13 +239,13 @@ builder.mutationField('updateEvent', (t) =>
           startsAt,
           title,
           visibility,
-          authorId: authorId ?? undefined,
-          groupId: groupId ?? undefined,
           beneficiary: {
             connect: {
               id: lydiaAccountId,
             },
           },
+          authorId,
+          groupId: groupId ?? undefined,
         },
       });
     },

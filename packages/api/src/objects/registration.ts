@@ -23,8 +23,6 @@ export const RegistrationType = builder.prismaNode('Registration', {
     author: t.relation('author'),
     authorIsBeneficiary: t.boolean({
       async resolve({ authorId, beneficiary }) {
-        // don't know why it thinks { id: authorId } is an unsafe assignement, as authorId is a string and id is a string | undefined
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const author = await prisma.user.findUnique({ where: { id: authorId } });
         return author?.uid === beneficiary;
       },
@@ -108,17 +106,22 @@ builder.mutationField('createRegistration', (t) =>
 
       // Check that the event is accessible by the user
       const event = await prisma.ticket.findUnique({ where: { id: ticketId } }).event();
-      if (!await eventAccessibleByUser(event, user)) return false;
-      
+      if (!(await eventAccessibleByUser(event, user))) return false;
+
       // Check that the ticket is still open
       const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
       if (!ticket) return false;
       if (ticket.closesAt && ticket.closesAt.valueOf() < Date.now()) return false;
 
       // Check that the ticket is not full
-      const ticketAndRegistrations = await prisma.ticket.findUnique({ where: { id: ticketId }, include: { registrations: true, group: { include: { tickets: { include: {registrations: true} } }} } });
-      return placesLeft(ticketAndRegistrations!) > 0
-      
+      const ticketAndRegistrations = await prisma.ticket.findUnique({
+        where: { id: ticketId },
+        include: {
+          registrations: true,
+          group: { include: { tickets: { include: { registrations: true } } } },
+        },
+      });
+      return placesLeft(ticketAndRegistrations!) > 0;
     },
     resolve: async (query, {}, { ticketId, beneficiary, paymentMethod }, { user }) =>
       prisma.registration.create({

@@ -60,6 +60,8 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     ...data,
     group: {
       ...data.group,
+      // typescript infers data.group.members as ... | never[] when it's actually ... | undefined
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       members: data.group.members?.sort(byMemberGroupTitleImportance),
     },
   };
