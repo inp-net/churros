@@ -1,10 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
-  type School = { id: number; name: string; color: string };
-
   const emit = createEventDispatcher();
-  export let value: School[] = [];
+  export let value: string[] = [];
 
   $: emit('input', value);
 </script>
@@ -13,13 +11,12 @@
   {#each value as v, i}
     <input
       type="text"
-      on:blur={(e) => {
-        const val = e.target.value;
-        if (!val) {
-          value = value.filter((g) => g.name !== val);
+      on:blur={() => {
+        if (!value[i]) {
+          value = value.filter((g) => g !== value[i]);
         }
       }}
-      bind:value={value[i].name}
+      bind:value={value[i]}
     />
   {/each}
   <input
@@ -28,14 +25,7 @@
       const val = e.target.value;
       console.log(val);
       if (val) {
-        value = [
-          ...value,
-          {
-            name: val,
-            id: Math.floor(Math.random() * 1000),
-            color: '#000000',
-          },
-        ];
+        value = [...value, val];
         e.target.value = '';
       }
     }}

@@ -376,6 +376,8 @@ model Registration {
 
   ticket Ticket @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   author User   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@unique([ticketId, beneficiary])
 }
 
 enum PaymentMethod {

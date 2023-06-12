@@ -4,8 +4,6 @@ import { prisma } from '../prisma.js';
 export const EventManagerType = builder.prismaNode('EventManager', {
   id: { field: 'id' },
   fields: (t) => ({
-    eventId: t.exposeID('eventId'),
-    userId: t.exposeID('userId'),
     canVerifyRegistrations: t.exposeBoolean('canVerifyRegistrations'),
     canEdit: t.exposeBoolean('canEdit'),
     canEditPermissions: t.exposeBoolean('canEditPermissions'),
@@ -37,6 +35,52 @@ builder.queryField('managersOfEvent', (t) =>
         ...query,
         where: { event: { slug } },
       });
+    },
+  })
+);
+
+export const ManagerOfEventInput = builder.inputType('ManagerOfEventInput', {
+  fields: (t) => ({
+    userId: t.field({ type: 'ID' }),
+    canEdit: t.field({ type: 'Boolean' }),
+    canEditPermissions: t.field({ type: 'Boolean' }),
+    canVerifyRegistrations: t.field({ type: 'Boolean' }),
+  }),
+});
+
+builder.mutationField('upsertManagersOfEvent', (t) =>
+  t.prismaField({
+    type: [EventManagerType],
+    args: {
+      eventId: t.arg.id(),
+      managers: t.arg({ type: [ManagerOfEventInput] }),
+    },
+    authScopes(_, { eventId }, { user }) {
+      return Boolean(
+        user?.managedEvents.some(
+          ({ event, canEditPermissions }) => event.id === eventId && canEditPermissions
+        )
+      );
+    },
+    async resolve(query, _, { eventId, managers }) {
+      return prisma.event
+        .update({
+          include: {
+            managers: {
+              include: query.include,
+            },
+          },
+          where: { id: eventId },
+          data: {
+            managers: {
+              deleteMany: {},
+              createMany: {
+                data: managers,
+              },
+            },
+          },
+        })
+        .managers();
     },
   })
 );

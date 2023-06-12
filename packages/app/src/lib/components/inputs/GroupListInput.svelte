@@ -1,19 +1,43 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
+
   type Group = { uid: string; name: string; pictureFile: string };
+
+  const emit = createEventDispatcher();
   export let value: Group[] = [];
 
-  let valueToAdd: Group;
+  $: emit('input', value);
 </script>
 
 <div class="integer-list-input">
   {#each value as v, i}
-    <input type="text" bind:value={value[i]} />
+    <input
+      type="text"
+      on:blur={(e) => {
+        const val = e.target.value;
+        if (!val) {
+          value = value.filter((g) => g.uid !== val);
+        }
+      }}
+      bind:value={value[i].uid}
+    />
   {/each}
   <input
     type="text"
-    bind:value={valueToAdd}
-    on:blur={() => {
-      value = [...value, valueToAdd];
+    on:blur={(e) => {
+      const val = e.target.value;
+      console.log(val);
+      if (val) {
+        value = [
+          ...value,
+          {
+            uid: val,
+            name: val,
+            pictureFile: '',
+          },
+        ];
+        e.target.value = '';
+      }
     }}
   />
 </div>

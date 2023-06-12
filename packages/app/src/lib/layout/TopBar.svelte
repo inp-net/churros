@@ -37,7 +37,7 @@
     <div>
       {#if me && token}
         <a href="/me">{me.firstName}</a>
-        <a href="/logout/?{new URLSearchParams({ token })}" data-sveltekit-prefetch="off">
+        <a href="/logout/?{new URLSearchParams({ token })}" data-sveltekit-preload-data="off">
           Se déconnecter
         </a>
       {:else}

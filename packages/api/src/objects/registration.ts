@@ -2,7 +2,7 @@ import { PaymentMethod as PaymentMethodPrisma } from '@prisma/client';
 import { builder } from '../builder.js';
 import { DateTimeScalar } from './scalars.js';
 import { prisma } from '../prisma.js';
-import { eventAccessibleByUser } from './events.js';
+import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { placesLeft } from './tickets.js';
 
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
@@ -93,45 +93,140 @@ builder.queryField('registrationsOfTicket', (t) =>
   })
 );
 
-builder.mutationField('createRegistration', (t) =>
+builder.queryField('verifyRegistration', (t) => t.prismaField({
+  type: RegistrationType,
+  args: {
+    beneficiary: t.arg.string(),
+    ticketId: t.arg.id(),
+  },
+  async authScopes(_, { ticketId }, { user }) {
+    const event = await prisma.ticket.findUnique({ where: { id: ticketId } }).event();
+    if (!event) return false;
+    return eventManagedByUser(event, user, {canVerifyRegistrations: true});
+  },
+  async resolve(query, {}, { beneficiary, ticketId }, {}) {
+    return await prisma.registration.findFirstOrThrow({
+      ...query,
+      where: { ticketId, beneficiary },
+    })
+  }
+}));
+
+
+builder.mutationField('upsertRegistration', (t) =>
   t.prismaField({
     type: RegistrationType,
     args: {
+      id: t.arg.id(),
       ticketId: t.arg.id(),
+      paid: t.arg.boolean(),
       beneficiary: t.arg.string({ required: false }),
       paymentMethod: t.arg({ type: PaymentMethodEnum }),
     },
-    async authScopes(_, { ticketId }, { user }) {
+    async authScopes(_, { ticketId, id }, { user }) {
+      const creating = !id;
       if (!user) return false;
 
-      // Check that the event is accessible by the user
-      const event = await prisma.ticket.findUnique({ where: { id: ticketId } }).event();
-      if (!(await eventAccessibleByUser(event, user))) return false;
+      if (creating) {
+        const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } , include: {event: true}});
+        if (!ticket) return false;
 
-      // Check that the ticket is still open
-      const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
-      if (!ticket) return false;
-      if (ticket.closesAt && ticket.closesAt.valueOf() < Date.now()) return false;
+        // Check that the user can access the event
+        if (!(await eventAccessibleByUser(ticket.event, user))) return false;
 
-      // Check that the ticket is not full
-      const ticketAndRegistrations = await prisma.ticket.findUnique({
-        where: { id: ticketId },
-        include: {
-          registrations: true,
-          group: { include: { tickets: { include: { registrations: true } } } },
-        },
+        // Check for tickets that only managers can provide
+        if (ticket?.onlyManagersCanProvide && !eventManagedByUser(ticket.event, user, {canVerifyRegistrations: true}) ) return false;
+
+        // Check that the ticket is still open
+        if (ticket.closesAt && ticket.closesAt.valueOf() < Date.now()) return false;
+
+        // Check that the ticket is not full
+        const ticketAndRegistrations = await prisma.ticket.findUnique({
+          where: { id: ticketId },
+          include: {
+            registrations: true,
+            group: { include: { tickets: { include: { registrations: true } } } },
+          },
+        });
+        return placesLeft(ticketAndRegistrations!) > 0;
+      }
+
+      // We are updating an existing registration. The permissions required are totally different.
+      const registration = await prisma.registration.findUnique({
+        where: { id },
+        include: { ticket: { include: { event: true } } },
       });
-      return placesLeft(ticketAndRegistrations!) > 0;
+      if (!registration) return false;
+      if (!eventManagedByUser(registration.ticket.event, user, {canVerifyRegistrations: true})) return false;
+      return true;
     },
-    resolve: async (query, {}, { ticketId, beneficiary, paymentMethod }, { user }) =>
-      prisma.registration.create({
+    async resolve(query, {}, { id, ticketId, beneficiary, paymentMethod, paid }, { user }) {
+      if (!paid) {
+        const ticket = await prisma.ticket.findUniqueOrThrow({ where: { id: ticketId } })
+        await requestPayment(user!, ticket.price, paymentMethod);
+      }
+
+      return prisma.registration.upsert({
         ...query,
-        data: {
+        where: { id },
+        update: {
+          paymentMethod,
+          beneficiary: beneficiary || user?.uid,
+          paid,
+        },
+        create: {
           ticket: { connect: { id: ticketId } },
           author: { connect: { id: user?.id } },
           paymentMethod,
           beneficiary: beneficiary || user?.uid,
         },
-      }),
+      })
+    }
   })
 );
+
+builder.mutationField('deleteRegistration', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: {
+      id: t.arg.id(),
+    },
+    async authScopes(_, {id }, { user }) {
+      if (!user) return false;
+      const registration = await prisma.registration.findFirst({
+        where: {id},
+        include: { ticket: { include: { event: true } }, author: true },
+      });
+      if (!registration) return false;
+
+      // Only managers can delete other's registrations
+      if (registration.author.uid !== user.uid) 
+        return eventManagedByUser(registration.ticket.event, user, {canVerifyRegistrations: true});
+      
+
+      // The author can delete their own registrations
+      return true;
+    },
+    async resolve(_, {id }, { }) {
+      const registration = await prisma.registration.findFirstOrThrow({
+        where: {id},
+        include: { ticket: true, author: true },
+      });
+      if (registration.paid) 
+        await pay(registration.author, registration.ticket.price, registration.paymentMethod)
+      
+      await prisma.registration.deleteMany({
+        where: {id},
+      })
+      return true;
+    },
+  })
+);
+
+async function pay(recipient: { uid: string }, amount: number, by: PaymentMethodPrisma) {
+  // todo
+}
+
+async function requestPayment(from: { uid: string }, amount: number, by: PaymentMethodPrisma) {
+  // todo
+}

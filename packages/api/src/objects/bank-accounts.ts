@@ -4,10 +4,9 @@ import { prisma } from '../prisma.js';
 
 import { createHash } from 'node:crypto';
 
-export const LydiaAccountType = builder.prismaNode('LydiaAccount', {
-  id: { field: 'id' },
+export const LydiaAccountType = builder.prismaObject('LydiaAccount', {
   fields: (t) => ({
-    groupId: t.exposeID('groupId'),
+    id: t.exposeID('groupId'),
     group: t.relation('group'),
     events: t.relation('events'),
     name: t.exposeString('name'),
@@ -47,24 +46,24 @@ builder.mutationField('createLydiaAccount', (t) =>
   t.prismaField({
     type: LydiaAccountType,
     args: {
-      groupId: t.arg.id(),
+      group: t.arg.string(),
       name: t.arg.string(),
       privateToken: t.arg.string(),
       vendorToken: t.arg.string(),
     },
-    authScopes: (_, {groupId}, { user }) =>
+    authScopes: (_, { group: groupUid }, { user }) =>
       Boolean(
         user?.admin ||
           user?.groups.some(
-            ({ group, president, treasurer }) => group.id === groupId && (president || treasurer)
+            ({ group, president, treasurer }) => group.uid === groupUid && (president || treasurer)
           )
       ),
-    resolve: async (query, {}, { groupId, name, privateToken, vendorToken }) =>
+    resolve: async (query, _, { group, name, privateToken, vendorToken }) =>
       prisma.lydiaAccount.create({
         ...query,
         data: {
           name,
-          group: { connect: { id: groupId } },
+          group: { connect: { uid: group } },
           privateToken,
           vendorToken,
         },

@@ -29,8 +29,8 @@ builder.mutationField('createBarWeek', (t) =>
   t.prismaField({
     type: BarWeekType,
     args: {
-      startsAt: t.arg({type: DateTimeScalar}),
-      endsAt: t.arg({type: DateTimeScalar}),
+      startsAt: t.arg({ type: DateTimeScalar }),
+      endsAt: t.arg({ type: DateTimeScalar }),
       description: t.arg.string(),
       groups: t.arg({ type: ['String'] }),
     },

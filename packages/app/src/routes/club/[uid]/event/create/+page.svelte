@@ -20,7 +20,7 @@
     slug: '',
     startsAt: undefined,
     title: '',
-    visibility: 'Private' as 'Private' | 'Public' | 'Restricted' | 'Unlisted'
+    visibility: 'Private' as 'Private' | 'Public' | 'Restricted' | 'Unlisted',
   };
 </script>
 

@@ -6,13 +6,23 @@
 
 <div class="integer-list-input">
   {#each value as v, i}
-    <input type="number" bind:value={value[i]} />
+    <input
+      type="number"
+      on:blur={() => {
+        if (value[i]) {
+          value = value.filter((_, index) => index !== i);
+        }
+      }}
+      bind:value={value[i]}
+    />
   {/each}
   <input
     type="number"
-    bind:value={valueToAdd}
-    on:blur={() => {
-      value = [...value, valueToAdd];
+    on:blur={(e) => {
+      if (e.target.value) {
+        value = [...value, e.target.value];
+        e.target.value = null;
+      }
     }}
   />
 </div>

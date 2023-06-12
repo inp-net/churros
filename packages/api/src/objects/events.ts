@@ -12,6 +12,9 @@ import slug from 'slug';
 import { LinkInput } from './links.js';
 import { EventManagerType } from './event-managers.js';
 import type { Context } from '../context.js';
+import { TicketInput, TicketType } from './tickets.js';
+import { TicketGroupInput, TicketGroupType } from './ticket-groups.js';
+import { decodeGlobalID } from '@pothos/plugin-relay';
 
 export const EventEnumVisibility = builder.enumType(EventPrismaVisibility, {
   name: 'EventVisibility',
@@ -20,8 +23,8 @@ export const EventEnumVisibility = builder.enumType(EventPrismaVisibility, {
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
   fields: (t) => ({
-    authorId: t.exposeID('authorId', { nullable: true }),
-    groupId: t.exposeID('groupId'),
+    // authorId: t.exposeID('authorId', { nullable: true }),
+    // groupId: t.exposeID('groupId'),
     contactMail: t.exposeString('contactMail'),
     beneficiary: t.relation('beneficiary', { nullable: true }),
     description: t.exposeString('description'),
@@ -47,10 +50,10 @@ builder.queryField('event', (t) =>
     type: EventType,
     args: {
       slug: t.arg.string(),
-      group: t.arg.string()
+      group: t.arg.string(),
     },
     async authScopes(_, { slug, group }, { user }) {
-      const event = await prisma.event.findFirstOrThrow({ where: { slug, group :{ uid: group } } });
+      const event = await prisma.event.findFirstOrThrow({ where: { slug, group: { uid: group } } });
       return eventAccessibleByUser(event, user);
     },
     resolve: async (query, _, { slug }) =>
@@ -112,11 +115,11 @@ builder.queryField('eventsOfGroup', (t) =>
     args: {
       group: t.arg.string(),
     },
-    async resolve(query, {}, { group }, { user }) {
-if (!user) {
+    async resolve(query, _, { group }, { user }) {
+      if (!user) {
         return prisma.event.findMany({
           ...query,
-          where: { visibility: EventPrismaVisibility.Public, group: {uid: group} },
+          where: { visibility: EventPrismaVisibility.Public, group: { uid: group } },
         });
       }
 
@@ -135,7 +138,7 @@ if (!user) {
             notIn: [EventPrismaVisibility.Private, EventPrismaVisibility.Unlisted],
           },
           group: {
-            uid: group
+            uid: group,
           },
           OR: [
             // Completely public events
@@ -154,8 +157,9 @@ if (!user) {
         },
         orderBy: { startsAt: 'desc' },
       });
-    }}));
-
+    },
+  })
+);
 
 builder.mutationField('createEvent', (t) =>
   t.prismaField({
@@ -227,144 +231,127 @@ builder.mutationField('createEvent', (t) =>
   })
 );
 
-builder.mutationField('updateEvent', (t) =>
-  t.prismaField({
-    type: EventType,
-    errors: {},
+builder.mutationField('deleteEvent', (t) =>
+  t.field({
+    type: 'Boolean',
     args: {
       id: t.arg.id(),
-      contactMail: t.arg.string(),
-      lydiaAccountId: t.arg.id(),
-      description: t.arg.string(),
-      slug: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      title: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      startsAt: t.arg({ type: DateTimeScalar }),
-      endsAt: t.arg({ type: DateTimeScalar }),
-      location: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      visibility: t.arg({ type: EventEnumVisibility }),
-      groupId: t.arg.id({ required: false }),
-      authorId: t.arg.id(),
-      links: t.arg({ type: [LinkInput] }),
     },
-    authScopes: (_, { id }, { user }) =>
-      Boolean(
+    authScopes(_, { id }, { user }) {
+      return Boolean(
         user?.admin || user?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit)
-      ),
-    async resolve(
-      query,
-      _,
-      {
-        contactMail,
-        lydiaAccountId,
-        description,
-        endsAt,
-        links,
-        location,
-        id,
-        slug,
-        startsAt,
-        title,
-        visibility,
-        authorId,
-        groupId,
-      }
-    ) {
-      const event = await prisma.event.findFirst({ ...query, where: { id } });
-      if (!event) throw new Error('Event not found');
-
-      return prisma.event.update({
-        ...query,
+      );
+    },
+    async resolve(_, { id }, {}) {
+      await prisma.event.delete({
         where: { id },
-        data: {
-          contactMail,
-          description,
-          endsAt,
-          links: {
-            update: {
-              links: {
-                deleteMany: {},
-                createMany: { data: links },
-              },
-            },
-          },
-          location,
-          slug,
-          startsAt,
-          title,
-          visibility,
-          beneficiary: {
-            connect: {
-              id: lydiaAccountId,
-            },
-          },
-          author: authorId
-            ? {
-                connect: {
-                  id: authorId,
-                },
-              }
-            : undefined,
-          group: groupId
-            ? {
-                connect: {
-                  id: groupId,
-                },
-              }
-            : undefined,
-        },
       });
+      return true;
     },
   })
 );
 
-const ManagerOfEventInput = builder.inputType('ManagerOfEventInput', {
-  fields: (t) => ({
-    userId: t.field({ type: 'ID' }),
-    canEdit: t.field({ type: 'Boolean' }),
-    canEditPermissions: t.field({ type: 'Boolean' }),
-    canVerifyRegistrations: t.field({ type: 'Boolean' }),
-  }),
-});
-
-builder.mutationField('setManagersOfEvent', (t) =>
+builder.mutationField('upsertEvent', (t) =>
   t.prismaField({
-    type: [EventManagerType],
+    type: EventType,
     args: {
-      eventId: t.arg.id(),
-      managers: t.arg({ type: [ManagerOfEventInput] }),
+      id: t.arg.string({required: false}),
+      ticketGroups: t.arg({ type: ['String'] }),
+      tickets: t.arg({ type: ['String'] }),
+      description: t.arg.string(),
+      groupUid: t.arg.string(),
+      contactMail: t.arg.string(),
+      links: t.arg({ type: [LinkInput] }),
+      lydiaAccountId: t.arg.string({ required: false }),
+      location: t.arg.string(),
+      title: t.arg.string(),
+      visibility: t.arg({ type: EventEnumVisibility }),
+      startsAt: t.arg({ type: DateTimeScalar }),
+      endsAt: t.arg({ type: DateTimeScalar }),
     },
-    authScopes: (_, { eventId }, { user }) =>
-      Boolean(
-        user?.admin ||
-          user?.managedEvents.some(
-            ({ event, canEditPermissions }) => event.id === eventId && canEditPermissions
-          )
-      ),
-    async resolve(query, _, { eventId, managers }) {
-      await prisma.event.update({
-        where: { id: eventId },
-        data: {
-          managers: {
-            deleteMany: {},
-            createMany: {
-              data: managers.map(
-                ({ userId, canEdit, canEditPermissions, canVerifyRegistrations }) => ({
-                  userId,
-                  canEdit,
-                  canEditPermissions,
-                  canVerifyRegistrations,
-                })
-              ),
+    authScopes(_, { id, groupUid }, { user }) {
+      const creating = !id;
+      if (creating) {
+        return Boolean(
+          user?.canEditGroups ||
+            user?.groups.some(
+              ({ group: { uid }, canEditArticles }) => canEditArticles && uid === groupUid
+            )
+        );
+      }
+
+      return Boolean(
+        user?.admin || user?.managedEvents.some(({ event, canEdit }) => event.id === Number.parseFloat(decodeGlobalID(id).id) && canEdit)
+      );
+    },
+    async resolve(
+      query,
+      _,
+      {
+        id,
+        ticketGroups,
+        lydiaAccountId,
+        startsAt,
+        endsAt,
+        tickets,
+        description,
+        groupUid,
+        contactMail,
+        links,
+        location,
+        title,
+        visibility,
+      },
+      { user }
+    ) {
+      console.log(lydiaAccountId)
+      const upsertData = {
+        group: {
+          connect: {
+            uid: groupUid,
+          },
+        },
+        ticketGroups: {
+          connect: ticketGroups.map((id) => ({ id: Number.parseFloat(decodeGlobalID(id).id) })),
+        },
+        tickets: {
+          connect: tickets.map((id) => ({ id: Number.parseFloat(decodeGlobalID(id).id) })),
+        },
+        author: {
+          connect: {
+            id: user!.id,
+          },
+        },
+        description,
+        contactMail,
+        links: {
+          create: {
+            links: {
+              createMany: {
+                data: links,
+              },
             },
           },
         },
-      });
-
-      return prisma.eventManager.findMany({
+        location,
+        slug: slug(title),
+        title,
+        visibility,
+        startsAt,
+        endsAt,
+        beneficiary: lydiaAccountId
+          ? {
+              connect: {
+                id: Number.parseFloat(decodeGlobalID(lydiaAccountId).id),
+              },
+            }
+          : undefined,
+      };
+      return prisma.event.upsert({
         ...query,
-        where: {
-          eventId,
-        },
+        where: { id: id ? Number.parseFloat(decodeGlobalID(id).id) : -1 },
+        create: upsertData,
+        update: upsertData,
       });
     },
   })
@@ -379,6 +366,9 @@ export async function eventAccessibleByUser(event: EventPrisma | null, user: Con
 
     case EventVisibility.Restricted: {
       if (!user) return false;
+      // All managers can see the event, no matter their permissions
+      if(eventManagedByUser(event, user, { canEdit: false, canEditPermissions: false, canVerifyRegistrations: false })) return true;
+
       const ancestors = await prisma.group
         .findMany({
           where: { familyId: { in: user.groups.map(({ group }) => group.familyId) } },
@@ -391,7 +381,8 @@ export async function eventAccessibleByUser(event: EventPrisma | null, user: Con
     }
 
     case EventVisibility.Private: {
-      return Boolean(user?.managedEvents.some(({ event: { id } }) => id === event.id));
+      // All managers can see the event, no matter their permissions
+      return eventManagedByUser(event, user, { canEdit: false, canEditPermissions: false, canVerifyRegistrations: false })
     }
 
     default: {
@@ -400,7 +391,11 @@ export async function eventAccessibleByUser(event: EventPrisma | null, user: Con
   }
 }
 
-export function eventManagedByUser(event: EventPrisma, user: Context['user']) {
+export function eventManagedByUser(event: EventPrisma, user: Context['user'],  { canEdit = true, canEditPermissions = false, canVerifyRegistrations = false }) {
   if (!user) return false;
-  return Boolean(user.managedEvents.some(({ event: { id } }) => id === event.id));
+  return Boolean(user.managedEvents.some(({ event: { id }, ...permissions}) => id === event.id && (
+    (permissions.canEdit && canEdit) ||
+    (permissions.canEditPermissions && canEditPermissions) ||
+    (permissions.canVerifyRegistrations && canVerifyRegistrations)
+  ) ));
 }

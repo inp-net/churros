@@ -14,6 +14,14 @@ export const TicketGroupType = builder.prismaNode('TicketGroup', {
   }),
 });
 
+export const TicketGroupInput = builder.inputType('TicketGroupInput', {
+  fields: (t) => ({
+    name: t.string(),
+    capacity: t.int({ validate: { min: 0 } }),
+    tickets: t.stringList(),
+  }),
+});
+
 builder.queryField('ticketGroup', (t) =>
   t.prismaField({
     type: TicketGroupType,

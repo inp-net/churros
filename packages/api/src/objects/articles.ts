@@ -9,8 +9,8 @@ import { LinkInput } from './links.js';
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
   fields: (t) => ({
-    authorId: t.exposeID('authorId', { nullable: true }),
-    groupId: t.exposeID('groupId'),
+    // authorId: t.exposeID('authorId', { nullable: true }),
+    // groupId: t.exposeID('groupId'),
     slug: t.exposeString('slug'),
     title: t.exposeString('title'),
     body: t.exposeString('body'),

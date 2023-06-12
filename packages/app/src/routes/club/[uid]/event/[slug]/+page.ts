@@ -1,7 +1,7 @@
 import { Selector, loadQuery } from '$lib/zeus';
 import type { PageLoad } from '../[slug]/$types';
 
-export const load: PageLoad = async ({ fetch, parent, params }) => 
+export const load: PageLoad = async ({ fetch, parent, params }) =>
   loadQuery(
     {
       event: [

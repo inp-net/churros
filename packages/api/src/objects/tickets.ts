@@ -75,6 +75,27 @@ export const TicketType = builder.prismaNode('Ticket', {
   }),
 });
 
+export const TicketInput = builder.inputType('TicketInput', {
+  fields: (t) => ({
+    allowedPaymentMethods: t.field({ type: [PaymentMethodEnum] }),
+    capacity: t.int(),
+    price: t.float(),
+    opensAt: t.field({ type: DateTimeScalar }),
+    description: t.string(),
+    godsonLimit: t.int(),
+    links: t.field({ type: [LinkInput] }),
+    name: t.string(),
+    onlyManagersCanProvide: t.boolean(),
+    openToAlumni: t.boolean({ required: false }),
+    openToExternal: t.boolean({ required: false }),
+    openToGroups: t.field({ type: ['String'] }),
+    openToNonAEContributors: t.boolean({ required: false }),
+    openToPromotions: t.field({ type: ['Int'] }),
+    openToSchools: t.field({ type: ['Int'] }),
+    id: t.id({ required: false }),
+  }),
+});
+
 builder.queryField('ticket', (t) =>
   t.prismaField({
     type: TicketType,
@@ -109,10 +130,11 @@ builder.queryField('ticketsOfEvent', (t) =>
   })
 );
 
-builder.mutationField('createTicket', (t) =>
+builder.mutationField('upsertTicket', (t) =>
   t.prismaField({
     type: TicketType,
     args: {
+      id: t.arg.id({ required: false }),
       eventId: t.arg.id(),
       ticketGroupId: t.arg.id({ required: false }),
       name: t.arg.string(),
@@ -132,15 +154,23 @@ builder.mutationField('createTicket', (t) =>
       godsonLimit: t.arg.int(),
       onlyManagersCanProvide: t.arg.boolean(),
     },
-    async authScopes(_, { eventId }, { user }) {
-      const event = await prisma.event.findUnique({ where: { id: eventId } });
-      if (!event) return false;
-      return eventManagedByUser(event, user);
+    async authScopes(_, { eventId, id }, { user }) {
+      const creating = !id;
+      if (creating) {
+        const event = await prisma.event.findUnique({ where: { id: eventId } });
+        if (!event) return false;
+        return eventManagedByUser(event, user, {canEdit: true});
+      }
+
+      return Boolean(
+        user?.managedEvents.some(({ event, canEdit }) => event.id === eventId && canEdit)
+      );
     },
     async resolve(
       _,
       {},
       {
+        id,
         eventId,
         ticketGroupId,
         name,
@@ -161,120 +191,31 @@ builder.mutationField('createTicket', (t) =>
       },
       { user }
     ) {
-      if (!user) throw new Error('You must be logged in to create a ticket');
-      return prisma.ticket.create({
-        data: {
-          event: { connect: { id: eventId } },
-          group: ticketGroupId ? { connect: { id: ticketGroupId } } : undefined,
-          name,
-          description,
-          opensAt,
-          closesAt,
-          price,
-          capacity,
-          links: {
-            create: links.map((link) => ({ ...link, author: { connect: { id: user.id } } })),
-          },
-          allowedPaymentMethods: { set: allowedPaymentMethods },
-          openToPromotions: { set: openToPromotions },
-          openToAlumni,
-          openToExternal,
-          openToSchools: { connect: openToSchools.map((id) => ({ id })) },
-          godsonLimit,
-          onlyManagersCanProvide,
-          openToNonAEContributors,
-        },
-      });
-    },
-  })
-);
-
-builder.mutationField('updateTicket', (t) =>
-  t.prismaField({
-    type: TicketType,
-    args: {
-      id: t.arg.id(),
-      eventId: t.arg.id(),
-      name: t.arg.string(),
-      description: t.arg.string(),
-      opensAt: t.arg({ type: DateTimeScalar }),
-      closesAt: t.arg({ type: DateTimeScalar }),
-      price: t.arg.float(),
-      capacity: t.arg.int(),
-      links: t.arg({ type: [LinkInput] }),
-      allowedPaymentMethods: t.arg({ type: [PaymentMethodEnum] }),
-      openToPromotions: t.arg({ type: ['Int'] }),
-      // Values can be null, but we aren't allowed to set them, so we interpret undefined as null, and not as "don't change".
-      openToAlumni: t.arg.boolean({ required: false }),
-      openToExternal: t.arg.boolean({ required: false }),
-      openToSchools: t.arg({ type: ['Int'] }),
-      openToGroups: t.arg({ type: ['String'] }),
-      openToNonAEContributors: t.arg.boolean({ required: false }),
-      godsonLimit: t.arg.int(),
-      onlyManagersCanProvide: t.arg.boolean(),
-    },
-    async authScopes(_, { id }, { user }) {
-      const ticket = await prisma.ticket.findUnique({ where: { id }, include: { event: true } });
-      if (!ticket) return false;
-      return eventManagedByUser(ticket.event, user);
-    },
-    async resolve(
-      query,
-      {},
-      {
-        id,
-        eventId,
+      const upsertData = {
+        event: { connect: { id: eventId } },
+        group: ticketGroupId ? { connect: { id: ticketGroupId } } : undefined,
         name,
         description,
         opensAt,
         closesAt,
         price,
         capacity,
-        links,
-        allowedPaymentMethods,
-        openToPromotions,
+        links: {
+          create: links.map((link) => ({ ...link, author: { connect: { id: user!.id } } })),
+        },
+        allowedPaymentMethods: { set: allowedPaymentMethods },
+        openToPromotions: { set: openToPromotions },
         openToAlumni,
         openToExternal,
-        openToSchools,
-        openToNonAEContributors,
+        openToSchools: { connect: openToSchools.map((id) => ({ id })) },
         godsonLimit,
         onlyManagersCanProvide,
-      },
-      { user }
-    ) {
-      if (!user) throw new Error('You must be logged in to update a ticket');
-      return prisma.ticket.update({
-        ...query,
-        where: { id },
-        data: {
-          name,
-          event: { connect: { id: eventId } },
-          description,
-          opensAt,
-          closesAt,
-          price,
-          capacity,
-          links: {
-            update: {
-              links: {
-                deleteMany: {},
-                create: links.map((link) => ({ ...link, author: { connect: { id: user.id } } })),
-              },
-            },
-          },
-          allowedPaymentMethods: { set: allowedPaymentMethods },
-          openToPromotions: { set: openToPromotions },
-          // eslint-disable-next-line unicorn/no-null
-          openToAlumni: openToAlumni === undefined ? null : openToAlumni,
-          // eslint-disable-next-line unicorn/no-null
-          openToExternal: openToExternal === undefined ? null : openToExternal,
-          openToSchools: { connect: openToSchools.map((id) => ({ id })) },
-          godsonLimit,
-          onlyManagersCanProvide,
-          openToNonAEContributors:
-            // eslint-disable-next-line unicorn/no-null
-            openToNonAEContributors === undefined ? null : openToNonAEContributors,
-        },
+        openToNonAEContributors,
+      };
+      return prisma.ticket.upsert({
+        where: { id: id ?? undefined },
+        create: upsertData,
+        update: upsertData,
       });
     },
   })
@@ -289,7 +230,7 @@ builder.mutationField('deleteTicket', (t) =>
     async authScopes(_, { id }, { user }) {
       const ticket = await prisma.ticket.findUnique({ where: { id }, include: { event: true } });
       if (!ticket) return false;
-      return eventManagedByUser(ticket.event, user);
+      return eventManagedByUser(ticket.event, user, {canEdit: true});
     },
     async resolve(_, { id }) {
       await prisma.ticket.delete({ where: { id } });
