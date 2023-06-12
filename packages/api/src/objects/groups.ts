@@ -164,7 +164,7 @@ builder.mutationField('createGroup', (t) =>
       )
         throw new GraphQLError('Le choix de ce groupe parent créerait un cycle.');
 
-      return prisma.group.create({
+      let group = await prisma.group.create({
         ...query,
         data: {
           type,
@@ -178,6 +178,18 @@ builder.mutationField('createGroup', (t) =>
           selfJoinable: selfJoinable ?? false,
         },
       });
+
+      if (!parent) {
+        group = await prisma.group.update({
+          ...query,
+          where: { id: group.id },
+          data: {
+            familyId: group.id,
+          },
+        });
+      }
+
+      return group;
     },
   })
 );

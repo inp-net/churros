@@ -11,6 +11,38 @@ import { hash } from 'argon2';
 import slug from 'slug';
 import { prisma } from './prisma.js';
 
+type SizedArray<T, N extends number> = N extends N
+  ? number extends N
+    ? T[]
+    : _TupleOf<T, N, []>
+  : never;
+type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N
+  ? R
+  : _TupleOf<T, N, [T, ...R]>;
+
+function randomChoice<T>(array: T[]): T {
+  return array[Math.floor(Math.random() * array.length)]!;
+}
+
+function randomIdOf(objects: Array<{ id: string }>): string {
+  return randomChoice(objects).id;
+}
+
+function randomIdsOf<Count extends number>(
+  objects: Array<{ id: string }>,
+  count: Count
+): SizedArray<string, Count> {
+  const result = [] as string[];
+  let pool = objects;
+  while (result.length < count) {
+    const choice = randomChoice(pool);
+    result.push(choice.id);
+    pool = pool.filter((o) => o.id !== choice.id);
+  }
+
+  return result as SizedArray<string, Count>;
+}
+
 await prisma.school.createMany({
   data: [
     { name: 'EAU', color: '#00ffff' },
@@ -20,34 +52,43 @@ await prisma.school.createMany({
   ],
 });
 
-await prisma.major.create({
-  data: { name: 'Mécanique des fluides', schools: { connect: { id: 1 } } },
+const schools = await prisma.school.findMany();
+
+const MécaniqueDesFluides = await prisma.major.create({
+  data: { name: 'Mécanique des fluides', schools: { connect: { id: schools[0]!.id } } },
 });
-await prisma.major.create({
-  data: { name: 'Vapeur', schools: { connect: [{ id: 1 }, { id: 2 }] } },
+const Vapeur = await prisma.major.create({
+  data: { name: 'Vapeur', schools: { connect: [{ id: schools[0]!.id }, { id: schools[1]!.id }] } },
 });
-await prisma.major.create({
-  data: { name: 'Boue', schools: { connect: [{ id: 1 }, { id: 3 }] } },
+const Boue = await prisma.major.create({
+  data: {
+    name: 'Boue',
+    schools: { connect: [{ id: schools[1 - 1]!.id }, { id: schools[3 - 1]!.id }] },
+  },
 });
-await prisma.major.create({
-  data: { name: 'Roche', schools: { connect: [{ id: 3 }] } },
+const Roche = await prisma.major.create({
+  data: { name: 'Roche', schools: { connect: [{ id: schools[3 - 1]!.id }] } },
 });
-await prisma.major.create({
-  data: { name: 'Vent', schools: { connect: [{ id: 4 }] } },
+const Vent = await prisma.major.create({
+  data: { name: 'Vent', schools: { connect: [{ id: schools[4 - 1]!.id }] } },
 });
+
+const majors = [MécaniqueDesFluides, Vapeur, Boue, Roche, Vent];
 
 for (const [i, name] of ['AE EAU 2022', 'AE FEU 2022', 'AE TERRE 2022', 'AE AIR 2022'].entries()) {
   await prisma.studentAssociation.create({
     data: {
       name,
-      school: { connect: { id: i + 1 } },
+      school: { connect: { id: schools[i]!.id } },
       year: 2022,
       linkCollection: { create: {} },
     },
   });
 }
 
-const users = [
+const studentAssociations = await prisma.studentAssociation.findMany();
+
+const usersData = [
   { uid: 'annie', firstName: 'Annie', lastName: 'Versaire', admin: true },
   { uid: 'bernard', firstName: 'Bernard', lastName: 'Tichaut', canEditGroups: true },
   { uid: 'camille', firstName: 'Camille', lastName: 'Honnête', canEditUsers: true },
@@ -76,7 +117,7 @@ const users = [
   { uid: 'zinedine', firstName: 'Zinédine', lastName: 'Pacesoir' },
 ]; // satisfies Array<Partial<Prisma.UserCreateInput>>;
 
-for (const [i, data] of users.entries()) {
+for (const [i, data] of usersData.entries()) {
   await prisma.user.create({
     data: {
       ...data,
@@ -98,13 +139,15 @@ for (const [i, data] of users.entries()) {
       address: '2 rue Charles Camichel, 31000 Toulouse',
       birthday: new Date(Date.UTC(2000, (i * 37) % 12, (i * 55) % 28)),
       graduationYear: 2020 + (i % 6),
-      major: { connect: { id: (i % 5) + 1 } },
+      major: { connect: { id: randomIdOf(majors) } },
       credentials: { create: { type: CredentialType.Password, value: await hash(data.uid) } },
     },
   });
 }
 
-const clubs = [
+const users = await prisma.user.findMany();
+
+const clubsData = [
   { name: 'Art' },
   { name: 'Basket' },
   { name: 'Cinéma' },
@@ -149,8 +192,8 @@ const color = (str: string) => {
   return `#${h(red)}${h(green)}${h(blue)}`;
 };
 
-for (const [i, group] of clubs.entries()) {
-  await prisma.group.create({
+for (const [i, group] of clubsData.entries()) {
+  const { id: groupId } = await prisma.group.create({
     data: {
       ...group,
       uid: slug(group.name),
@@ -176,8 +219,8 @@ suos auras atra!
 > diversa. Placuit omnia; flammas Hoc ventis nobis primordia flammis Mavors
 > dabat horrida conplecti cremantur. A mundus, metu Anius gestare caelatus,
 > Alpheos est, lecti et?`,
-      school: { connect: { id: (i % 4) + 1 } },
-      studentAssociation: { connect: { id: (i % 4) + 1 } },
+      school: { connect: { id: randomIdOf(schools) } },
+      studentAssociation: { connect: { id: randomIdOf(studentAssociations) } },
       linkCollection: {
         create: {
           links: {
@@ -192,59 +235,111 @@ suos auras atra!
       },
     },
   });
+  await prisma.group.update({
+    where: { id: groupId },
+    data: {
+      familyRoot: { connect: { id: groupId } },
+    },
+  });
 }
+
+let Intégration2022 = await prisma.group.create({
+  data: {
+    name: 'Intégration 2022',
+    type: GroupType.Group,
+    uid: 'integration-2022',
+    color: '#ff0000',
+    linkCollection: { create: { links: { create: [] } } },
+  },
+});
+
+Intégration2022 = await prisma.group.update({
+  where: { id: Intégration2022.id },
+  data: {
+    familyRoot: { connect: { id: Intégration2022.id } },
+  },
+});
+
+const Groupe1 = await prisma.group.create({
+  data: {
+    name: 'Groupe 1',
+    type: GroupType.Integration,
+    uid: 'groupe-1',
+    color: '#00ff00',
+    parent: { connect: { id: Intégration2022.id } },
+    familyRoot: { connect: { id: Intégration2022.familyId as string } },
+    linkCollection: { create: {} },
+    // members: { createMany: { data: [{ memberId: 2 }, { memberId: 3 }, { memberId: 4 }] } },
+  },
+});
+
+const Groupe2 = await prisma.group.create({
+  data: {
+    name: 'Groupe 2',
+    type: GroupType.Integration,
+    uid: 'groupe-2',
+    color: '#0000ff',
+    parent: { connect: { id: Intégration2022.id } },
+    familyRoot: { connect: { id: Intégration2022.familyId as string } },
+    linkCollection: { create: {} },
+    // members: { createMany: { data: [{ memberId: 5 }, { memberId: 6 }, { memberId: 7 }] } },
+  },
+});
+
+const groups = await prisma.group.findMany();
 
 const groupMembers: Prisma.GroupMemberCreateManyInput[] = [];
 
-for (let groupId = 1; groupId <= 26; groupId++) {
+for (const group of groups) {
+  const randomUserIDs = randomIdsOf(users, 7);
   groupMembers.push(
     {
-      groupId,
-      memberId: groupId,
+      groupId: group.id,
+      memberId: randomUserIDs[0],
       title: 'Prez',
       president: true,
       canEditArticles: true,
       canEditMembers: true,
     },
     {
-      groupId,
-      memberId: (groupId % 26) + 1,
+      groupId: group.id,
+      memberId: randomUserIDs[1],
       title: 'Trez',
       treasurer: true,
       canEditArticles: true,
       canEditMembers: true,
     },
     {
-      groupId,
-      memberId: ((groupId + 1) % 26) + 1,
+      groupId: group.id,
+      memberId: randomUserIDs[2],
       title: 'Secrétaire',
       canEditArticles: true,
       canEditMembers: true,
     },
     {
-      groupId,
-      memberId: ((groupId + 2) % 26) + 1,
+      groupId: group.id,
+      memberId: randomUserIDs[3],
       title: 'Respo Com',
       canEditArticles: true,
     },
     {
-      groupId,
-      memberId: ((groupId + 3) % 26) + 1,
+      groupId: group.id,
+      memberId: randomUserIDs[4],
     },
     {
-      groupId,
-      memberId: ((groupId + 4) % 26) + 1,
+      groupId: group.id,
+      memberId: randomUserIDs[5],
     },
     {
-      groupId,
-      memberId: ((groupId + 5) % 26) + 1,
+      groupId: group.id,
+      memberId: randomUserIDs[6],
     }
   );
 }
 
 await prisma.groupMember.createMany({ data: groupMembers });
 
-const articleData: Prisma.ArticleCreateManyInput[] = [];
+const articleData: Prisma.ArticleCreateInput[] = [];
 
 const end = 26 * 5;
 const startDate = new Date('2021-01-01T13:00:00.000Z').getTime();
@@ -252,10 +347,19 @@ const endDate = new Date('2022-09-01T13:00:00.000Z').getTime();
 
 for (let i = 0; i < end; i++) {
   articleData.push({
-    slug: `article-${i}`,
+    uid: `article-${i}`,
     title: `Article ${i}`,
-    groupId: ((i * 7) % 26) + 1,
-    authorId: i % 11 === 0 ? undefined : ((i * 9) % 26) + 1,
+    group: {
+      connect: {
+        id: randomIdOf(groups),
+      },
+    },
+    author:
+      i % 11 === 0
+        ? undefined
+        : {
+            connect: { id: randomIdOf(users) },
+          },
     body: `**Lorem ipsum dolor sit amet**, consectetur adipiscing elit. Ut feugiat velit sit amet tincidunt gravida. Duis eget laoreet sapien, id.
 
 [Lorem ipsum dolor.](/)
@@ -278,56 +382,60 @@ for (let i = 0; i < end; i++) {
     publishedAt: new Date(
       startDate * (1 - i / end) + endDate * (i / end) + (i % 7) * 24 * 60 * 60 * 1000
     ),
-    linkCollectionId: 1,
+    links: {
+      create: {
+        links: {
+          create: [
+            {
+              name: 'Facebook',
+              value: 'https://facebook.com',
+            },
+            {
+              name: 'Trop cool',
+              value: 'https://youtu.be/dQw4w9WgXcQ',
+            },
+          ],
+        },
+      },
+    },
   });
 }
 
-await prisma.article.createMany({ data: articleData });
-
-const parent = await prisma.group.create({
-  data: {
-    name: 'Intégration 2022',
-    type: GroupType.Group,
-    uid: 'integration-2022',
-    color: '#ff0000',
-    linkCollection: { create: {} },
-  },
-});
-
-await prisma.group.create({
-  data: {
-    name: 'Groupe 1',
-    type: GroupType.Integration,
-    uid: 'groupe-1',
-    color: '#00ff00',
-    parent: { connect: { id: parent.id } },
-    familyRoot: { connect: { id: parent.familyId } },
-    linkCollection: { create: {} },
-    members: { createMany: { data: [{ memberId: 2 }, { memberId: 3 }, { memberId: 4 }] } },
-  },
-});
-
-await prisma.group.create({
-  data: {
-    name: 'Groupe 2',
-    type: GroupType.Integration,
-    uid: 'groupe-2',
-    color: '#0000ff',
-    parent: { connect: { id: parent.id } },
-    familyRoot: { connect: { id: parent.familyId } },
-    linkCollection: { create: {} },
-    members: { createMany: { data: [{ memberId: 5 }, { memberId: 6 }, { memberId: 7 }] } },
-  },
-});
+for (const data of articleData) await prisma.article.create({ data });
 
 await prisma.article.create({
   data: {
     title: "C'est le début de l'inté",
     body: '_youpi_',
-    slug: 'cest-le-debut-de-l-inte',
-    groupId: parent.id,
+    uid: 'cest-le-debut-de-l-inte',
+    group: {
+      connect: { id: Intégration2022.id },
+    },
     published: true,
-    linkCollectionId: 1,
+    links: {
+      create: {
+        links: {
+          create: [],
+        },
+      },
+    },
+  },
+});
+
+const event1LinkCollection = await prisma.linkCollection.create({
+  data: {
+    links: {
+      create: [
+        {
+          name: 'Ptdr',
+          value: 'https://ewen.works',
+        },
+        {
+          name: 'Trop cool',
+          value: 'https://youtu.be/dQw4w9WgXcQ',
+        },
+      ],
+    },
   },
 });
 
@@ -337,19 +445,19 @@ const event1 = await prisma.event.create({
     description: 'Ceci est un événement',
     endsAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
     startsAt: new Date(),
-    slug: 'ceci-est-un-evenement',
+    uid: 'ceci-est-un-evenement',
     title: 'Ceci est un événement',
-    group: { connect: { id: 1 } },
+    group: { connect: { id: Groupe1.id } },
     visibility: EventVisibility.Public,
     articles: {
       createMany: {
         data: [
           {
             body: "Ceci est un article d'événement",
-            groupId: 1,
-            slug: 'ceci-est-un-article-d-evenement',
+            groupId: Groupe1.id,
+            uid: 'ceci-est-un-article-d-evenement',
             title: "Ceci est un article d'événement",
-            linkCollectionId: 1,
+            linkCollectionId: event1LinkCollection.id,
           },
         ],
       },
@@ -377,9 +485,9 @@ const event1 = await prisma.event.create({
         data: [
           {
             name: 'Staff TVn7',
-            authorId: 1,
+            authorId: randomIdOf(users),
             description: 'Staffeurs :sparkles: TVn7 :sparkles:, par ici!',
-            linkCollectionId: 1,
+            linkCollectionId: event1LinkCollection.id,
             price: 0,
             capacity: 12,
             opensAt: new Date(),
@@ -407,6 +515,20 @@ await prisma.ticket.update({
     openToGroups: {
       connect: [{ uid: 'ski' }],
     },
+    links: {
+      update: {
+        links: {
+          createMany: {
+            data: [
+              {
+                name: "C'est le menu",
+                value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+              },
+            ],
+          },
+        },
+      },
+    },
   },
 });
 
@@ -416,7 +538,7 @@ await prisma.event.create({
     description: 'Viens passer la passation TVn7 avec nous !',
     endsAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
     startsAt: new Date(),
-    slug: 'passation-tvn7',
+    uid: 'passation-tvn7',
     title: 'Passation TVn7',
     visibility: EventVisibility.Restricted,
     author: { connect: { uid: 'quentin' } },
@@ -440,9 +562,9 @@ await prisma.event.create({
         data: [
           {
             name: '',
-            authorId: 1,
+            authorId: randomIdOf(users),
             description: '',
-            linkCollectionId: 1,
+            linkCollectionId: event1LinkCollection.id,
             price: 3.5,
             capacity: 70,
             allowedPaymentMethods: ['Lydia'],
@@ -462,10 +584,10 @@ await prisma.event.create({
   },
 });
 
-await prisma.registration.create({
+const registration = await prisma.registration.create({
   data: {
-    ticketId: event1.tickets[0]!.id,
-    authorId: 2,
+    ticketId: randomIdOf(event1.tickets),
+    authorId: randomIdOf(users),
     paymentMethod: 'Lydia',
     paid: false,
     beneficiary: 'annie',
@@ -474,10 +596,22 @@ await prisma.registration.create({
 
 await prisma.registration.create({
   data: {
-    ticketId: event1.tickets[0]!.id,
-    authorId: 4,
+    ticketId: randomIdOf(event1.tickets),
+    authorId: randomIdOf(users.filter((u) => u.id !== registration.authorId)),
     paymentMethod: 'Lydia',
     paid: true,
     beneficiary: 'quentin',
+  },
+});
+
+await prisma.barWeek.create({
+  data: {
+    endsAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+    startsAt: new Date(),
+    uid: 'ski-escalade-2023',
+    description: 'Semaine de bar de ski et escalade!',
+    groups: {
+      connect: [{ uid: 'ski' }, { uid: 'escalade' }],
+    },
   },
 });

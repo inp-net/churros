@@ -3,6 +3,6 @@
   "compilerOptions": {
     // Waiting for https://github.com/prisma/prisma/issues/10894 to be fixed
     "exactOptionalPropertyTypes": false,
-    "outDir": "./build"
+    "outDir": "./build",
   }
 }

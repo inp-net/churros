@@ -1,8 +1,7 @@
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 
-export const EventManagerType = builder.prismaNode('EventManager', {
-  id: { field: 'id' },
+export const EventManagerType = builder.prismaObject('EventManager', {
   fields: (t) => ({
     canVerifyRegistrations: t.exposeBoolean('canVerifyRegistrations'),
     canEdit: t.exposeBoolean('canEdit'),
@@ -16,26 +15,11 @@ builder.queryField('eventManager', (t) =>
   t.prismaField({
     type: EventManagerType,
     args: {
-      id: t.arg.id(),
+      user: t.arg.string(),
+      eventId: t.arg.id(),
     },
-    resolve: async (query, _, { id }) =>
-      prisma.eventManager.findFirstOrThrow({ ...query, where: { id } }),
-  })
-);
-
-builder.queryField('managersOfEvent', (t) =>
-  t.prismaConnection({
-    type: EventManagerType,
-    cursor: 'id',
-    args: {
-      slug: t.arg.string(),
-    },
-    async resolve(query, _, { slug }) {
-      return prisma.eventManager.findMany({
-        ...query,
-        where: { event: { slug } },
-      });
-    },
+    resolve: async (query, _, { user, eventId }) =>
+      prisma.eventManager.findFirstOrThrow({ ...query, where: { user: {uid: user}, eventId } }),
   })
 );
 

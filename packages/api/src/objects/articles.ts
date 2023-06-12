@@ -11,7 +11,7 @@ export const ArticleType = builder.prismaNode('Article', {
   fields: (t) => ({
     // authorId: t.exposeID('authorId', { nullable: true }),
     // groupId: t.exposeID('groupId'),
-    slug: t.exposeString('slug'),
+    uid: t.exposeString('uid'),
     title: t.exposeString('title'),
     body: t.exposeString('body'),
     bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),

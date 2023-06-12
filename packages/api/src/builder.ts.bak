@@ -15,32 +15,10 @@ import { prisma } from './prisma.js';
 
 /**
  * Maps database ID prefixes to GraphQL type names. Please add new types here as they are added to
- * the schema, by running node scripts/update-id-prefix-to-typename-map.js.
+ * the schema.
  */
-/* @generated from schema by file:///home/ewen/projects/centraverse/packages/api/scripts/update-id-prefix-to-typename-map.js */ export const ID_PREFIXES_TO_TYPENAMES = {"u":"User","candidate":"UserCandidate","links":"LinkCollection","link":"Link","major":"Major","school":"School","credential":"Credential","ae":"StudentAssociation","g":"Group","a":"Article","img":"Image","e":"Event","tg":"TicketGroup","t":"Ticket","r":"Registration","log":"LogEntry","lydia":"LydiaAccount","barweek":"BarWeek"}
+/* @generated from schema */
 /* end @generated from schema */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export const builder = new SchemaBuilder<{
   AuthContexts: AuthContexts;
@@ -77,15 +55,12 @@ export const builder = new SchemaBuilder<{
     decodeGlobalID(globalID, {}) {
       const [typename, id] = globalID.split(':');
       if (!typename || !id) throw new Error(`Invalid global ID: ${globalID}`);
-      if (!(typename in ID_PREFIXES_TO_TYPENAMES)) throw new Error(`Unknown typename: ${typename}`);
-      return {
-        typename: ID_PREFIXES_TO_TYPENAMES[typename as keyof typeof ID_PREFIXES_TO_TYPENAMES],
-        id: globalID,
-      };
+      if (!(typename in TYPENAME_MAP)) throw new Error(`Unknown typename: ${typename}`);
+      return { typename: TYPENAME_MAP[typename as keyof typeof TYPENAME_MAP], id: globalID };
     },
   },
   tracing: {
-    default: (conn) => isRootField(config),
+    default: (config) => isRootField(config),
     wrap: (resolver, _options, config) =>
       wrapResolver(resolver, (_error, duration) => {
         console.log(

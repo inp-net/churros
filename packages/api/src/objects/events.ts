@@ -10,10 +10,7 @@ import { DateTimeScalar } from './scalars.js';
 import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { LinkInput } from './links.js';
-import { EventManagerType } from './event-managers.js';
 import type { Context } from '../context.js';
-import { TicketInput, TicketType } from './tickets.js';
-import { TicketGroupInput, TicketGroupType } from './ticket-groups.js';
 import { decodeGlobalID } from '@pothos/plugin-relay';
 
 export const EventEnumVisibility = builder.enumType(EventPrismaVisibility, {
@@ -23,13 +20,13 @@ export const EventEnumVisibility = builder.enumType(EventPrismaVisibility, {
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
   fields: (t) => ({
-    // authorId: t.exposeID('authorId', { nullable: true }),
-    // groupId: t.exposeID('groupId'),
+    authorId: t.exposeID('authorId', { nullable: true }),
+    groupId: t.exposeID('groupId'),
     contactMail: t.exposeString('contactMail'),
     beneficiary: t.relation('beneficiary', { nullable: true }),
     description: t.exposeString('description'),
     descriptionHtml: t.string({ resolve: async ({ description }) => toHtml(description) }),
-    slug: t.exposeString('slug'),
+    uid: t.exposeString('uid'),
     title: t.exposeString('title'),
     startsAt: t.expose('startsAt', { type: DateTimeScalar }),
     endsAt: t.expose('endsAt', { type: DateTimeScalar }),

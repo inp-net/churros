@@ -11,12 +11,12 @@ generator pothos {
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
-  extensions = [pg_trgm]
+  extensions = [pg_trgm, pgcrypto]
 }
 
 /// Users are the people who use the app
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(dbgenerated("nanoid('u:')"))
   uid       String   @unique @db.VarChar(255)
   createdAt DateTime @default(now())
 
@@ -29,7 +29,7 @@ model User {
   email          String @unique @db.VarChar(255)
   firstName      String @db.VarChar(255)
   lastName       String @db.VarChar(255)
-  majorId        Int
+  majorId        String
   major          Major  @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   graduationYear Int
 
@@ -40,7 +40,7 @@ model User {
   nickname         String    @default("") @db.VarChar(255)
   phone            String    @default("") @db.VarChar(255)
   pictureFile      String    @default("") @db.VarChar(255)
-  linkCollectionId Int
+  linkCollectionId String
 
   // Permissions
   admin         Boolean @default(false)
@@ -64,7 +64,7 @@ model User {
 
 /// UserCandidates are users in the registration process
 model UserCandidate {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(dbgenerated("nanoid('candidate:')"))
   createdAt DateTime @default(now())
 
   email          String  @unique @db.VarChar(255)
@@ -75,12 +75,12 @@ model UserCandidate {
   schoolUid    String? @db.VarChar(255)
   schoolEmail  String? @unique @db.VarChar(255)
 
-  firstName      String @default("") @db.VarChar(255)
-  lastName       String @default("") @db.VarChar(255)
-  majorId        Int?
-  major          Major? @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  firstName      String  @default("") @db.VarChar(255)
+  lastName       String  @default("") @db.VarChar(255)
+  majorId        String?
+  major          Major?  @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   graduationYear Int?
-  password       String @default("") @db.VarChar(255)
+  password       String  @default("") @db.VarChar(255)
 
   address  String    @default("") @db.VarChar(255)
   birthday DateTime?
@@ -91,7 +91,7 @@ model UserCandidate {
 
 /// Ways to contact a user or a group outside of the app
 model LinkCollection {
-  id    Int    @id @default(autoincrement())
+  id    String @id @default(dbgenerated("nanoid('links:')"))
   links Link[]
 
   groups              Group[]
@@ -104,8 +104,8 @@ model LinkCollection {
 
 /// A single external link
 model Link {
-  id           Int      @id @default(autoincrement())
-  collectionId Int
+  id           String   @id @default(dbgenerated("nanoid('link:')"))
+  collectionId String
   name         String   @db.VarChar(255)
   value        String   @db.VarChar(255)
   createdAt    DateTime @default(now())
@@ -115,7 +115,7 @@ model Link {
 
 /// A school syllabus
 model Major {
-  id   Int    @id @default(autoincrement())
+  id   String @id @default(dbgenerated("nanoid('major:')"))
   name String @db.VarChar(255)
 
   schools        School[]
@@ -124,7 +124,7 @@ model Major {
 }
 
 model School {
-  id    Int    @id @default(autoincrement())
+  id    String @id @default(dbgenerated("nanoid('school:')"))
   name  String @db.VarChar(255)
   color String @db.VarChar(7)
 
@@ -141,8 +141,8 @@ enum CredentialType {
 
 /// A credential is a way to authenticate a user
 model Credential {
-  id        Int            @id @default(autoincrement())
-  userId    Int
+  id        String         @id @default(dbgenerated("nanoid('credential:')"))
+  userId    String
   type      CredentialType
   value     String         @db.VarChar(255)
   userAgent String         @default("") @db.VarChar(255)
@@ -154,11 +154,11 @@ model Credential {
 
 /// There is one student association per school and per year
 model StudentAssociation {
-  id               Int    @id @default(autoincrement())
-  schoolId         Int
+  id               String @id @default(dbgenerated("nanoid('ae:')"))
+  schoolId         String
   name             String @unique @db.VarChar(255)
   year             Int    @db.Integer
-  linkCollectionId Int
+  linkCollectionId String
 
   linkCollection LinkCollection @relation(fields: [linkCollectionId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   school         School         @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
@@ -176,13 +176,14 @@ enum GroupType {
 
 /// A group is a collection of users
 model Group {
-  id                   Int       @id @default(autoincrement())
+  id                   String    @id @default(dbgenerated("nanoid('g:')"))
   uid                  String    @unique @db.VarChar(255)
-  parentId             Int?
+  parentId             String?
   /// Helper field to get a whole tree without processing all groups
-  familyId             Int       @default(autoincrement())
-  schoolId             Int?
-  studentAssociationId Int?
+  /// To be set to the group's id itself for root groups.
+  familyId             String?
+  schoolId             String?
+  studentAssociationId String?
   pictureFile          String    @default("") @db.VarChar(255)
   name                 String    @db.VarChar(255)
   type                 GroupType
@@ -193,14 +194,14 @@ model Group {
   description      String @default("") @db.VarChar(255)
   email            String @default("") @db.VarChar(255)
   longDescription  String @default("")
-  linkCollectionId Int
+  linkCollectionId String
 
   /// Parent group, from which this group inherits its permissions
   parent   Group?  @relation("parent", fields: [parentId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   children Group[] @relation("parent")
 
   /// Family root, only created for performance reasons
-  familyRoot     Group   @relation("root", fields: [familyId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  familyRoot     Group?  @relation("root", fields: [familyId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   familyChildren Group[] @relation("root")
 
   articles           Article[]
@@ -216,8 +217,8 @@ model Group {
 
 /// The intermediate model between users and groups
 model GroupMember {
-  groupId         Int
-  memberId        Int
+  groupId         String
+  memberId        String
   title           String   @default("") @db.VarChar(255)
   president       Boolean  @default(false)
   treasurer       Boolean  @default(false)
@@ -235,10 +236,10 @@ model GroupMember {
 
 /// An article is a post in a group
 model Article {
-  id          Int            @id @default(autoincrement())
-  authorId    Int?
-  groupId     Int
-  slug        String         @db.VarChar(255)
+  id          String         @id @default(dbgenerated("nanoid('a:')"))
+  authorId    String?
+  groupId     String
+  uid         String         @db.VarChar(255)
   title       String         @db.VarChar(255)
   body        String         @db.Text
   published   Boolean        @default(false)
@@ -248,18 +249,18 @@ model Article {
   images      Image[]
   links       LinkCollection @relation(fields: [linkCollectionId], references: [id])
 
-  author           User?  @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  group            Group  @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  Event            Event? @relation(fields: [eventId], references: [id])
-  eventId          Int?
-  linkCollectionId Int
+  author           User?   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  group            Group   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Event            Event?  @relation(fields: [eventId], references: [id])
+  eventId          String?
+  linkCollectionId String
 
-  @@unique([groupId, slug])
+  @@unique([groupId, uid])
 }
 
 model Image {
-  id        String   @id @default(cuid())
-  articleId Int
+  id        String   @id @default(dbgenerated("nanoid('img:')"))
+  articleId String
   path      String   @db.VarChar(255)
   createdAt DateTime @default(now())
   position  Int
@@ -272,13 +273,13 @@ model Image {
 
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
-  id               Int             @id @default(autoincrement())
-  authorId         Int?
-  groupId          Int
+  id               String          @id @default(dbgenerated("nanoid('e:')"))
+  authorId         String?
+  groupId          String
   contactMail      String
   beneficiary      LydiaAccount?   @relation(fields: [lydiaAccountId], references: [id])
   description      String          @db.VarChar(255)
-  slug             String          @db.VarChar(255)
+  uid              String          @db.VarChar(255)
   title            String          @db.VarChar(255)
   startsAt         DateTime
   endsAt           DateTime
@@ -290,11 +291,11 @@ model Event {
   tickets          Ticket[]
   ticketGroups     TicketGroup[]
   articles         Article[]
-  lydiaAccountId   Int?
+  lydiaAccountId   String?
   links            LinkCollection  @relation(fields: [linkCollectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  linkCollectionId Int
+  linkCollectionId String
 
-  @@unique([groupId, slug])
+  @@unique([groupId, uid])
 }
 
 enum EventVisibility {
@@ -306,23 +307,24 @@ enum EventVisibility {
 
 /// An event manager is a user that can scan tickets, and may be able to manage the event
 model EventManager {
-  id                     Int     @id @default(autoincrement())
-  eventId                Int
-  userId                 Int
+  eventId                String
+  userId                 String
   canVerifyRegistrations Boolean @default(true) // Can scan tickets
   canEdit                Boolean @default(false)
   canEditPermissions     Boolean @default(false)
 
   event Event @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@unique([eventId, userId])
 }
 
 /// A ticket group allows for conditions on multiple tickets, such as an upper limit on the sum of registrations in the sub-tickets
 model TicketGroup {
-  id       Int    @id @default(autoincrement())
-  eventId  Int
-  authorId Int?
-  name     String @db.VarChar(255)
+  id       String  @id @default(dbgenerated("nanoid('tg:')"))
+  eventId  String
+  authorId String?
+  name     String  @db.VarChar(255)
 
   capacity Int      @default(0) // 0 means unlimited, capacity is on the sum of sub-tickets registrations
   tickets  Ticket[]
@@ -332,10 +334,10 @@ model TicketGroup {
 
 /// A ticket is a way to register for an event. May include a price and conditions.
 model Ticket {
-  id                    Int             @id @default(autoincrement())
-  eventId               Int
-  authorId              Int?
-  ticketGroupId         Int?
+  id                    String          @id @default(dbgenerated("nanoid('t:')"))
+  eventId               String
+  authorId              String?
+  ticketGroupId         String?
   name                  String          @db.VarChar(255)
   description           String          @db.VarChar(255)
   opensAt               DateTime?
@@ -360,15 +362,15 @@ model Ticket {
 
   event            Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   group            TicketGroup? @relation(fields: [ticketGroupId], references: [id])
-  linkCollectionId Int
+  linkCollectionId String
 }
 
 /// A reservation is a user's registration for a ticket
 model Registration {
-  id            Int           @id @default(autoincrement())
-  ticketId      Int
+  id            String        @id @default(dbgenerated("nanoid('r:')"))
+  ticketId      String
   beneficiary   String        @default("")
-  authorId      Int
+  authorId      String
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   paymentMethod PaymentMethod
@@ -391,9 +393,9 @@ enum PaymentMethod {
 
 /// A log entry is a log of an action that happened on the website
 model LogEntry {
-  id         String   @id @default(cuid())
+  id         String   @id @default(dbgenerated("nanoid('log:')"))
   happenedAt DateTime @default(now())
-  userId     Int?
+  userId     String?
   area       String   @db.VarChar(255) // billeterie, gestion clubs, etc. à typer, mais pas dans la DB (pour être plus flexible)
   message    String   @db.Text
 
@@ -402,10 +404,11 @@ model LogEntry {
 
 /// A Lydia account
 model LydiaAccount {
-  id           Int     @id @default(autoincrement())
-  groupId      Int
+  id           String  @id @default(dbgenerated("nanoid('lydia:')"))
+  groupId      String
   group        Group   @relation(fields: [groupId], references: [id])
   name         String  @default("") @db.VarChar(255)
+  uid          String  @unique
   privateToken String  @default("") @db.VarChar(255)
   vendorToken  String  @default("") @db.VarChar(255)
   events       Event[]
@@ -413,7 +416,8 @@ model LydiaAccount {
 
 /// A bar week is a week during which some groups takeover the bar staff
 model BarWeek {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(dbgenerated("nanoid('barweek:')"))
+  uid         String   @unique
   groups      Group[]
   startsAt    DateTime
   endsAt      DateTime
