@@ -154,7 +154,7 @@ for (const [i, data] of usersData.entries()) {
       birthday: new Date(Date.UTC(2000, (i * 37) % 12, (i * 55) % 28)),
       graduationYear: 2020 + (i % 6),
       major: { connect: { id: randomIdOf(majors) } },
-      credentials: { create: { type: CredentialType.Password, value: 'a' } },
+      credentials: { create: { type: CredentialType.Password, value: await hash('a') } },
     },
   });
 }
