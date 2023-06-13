@@ -182,6 +182,7 @@ You need to do a few things:
    - a single-resource query, that you get by uid or id if the
      resource has no uid
    - a "list" query, tha gets all of the resources
+   - if it makes sense, a "search" query that searches fuzzily.
 1. Define its mutations, each resource should have at least:
    - an "upsert" mutation, that takes all of the data and an optinal `id` argument. If `id` is null, the resource will be created with the data, else, the resource identified by `id` will be updated.
    - a deletion mutation, that takes the `id` of the resource and returns `true` if the resource was deleted and `false` otherwise.

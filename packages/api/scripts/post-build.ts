@@ -1,6 +1,6 @@
 const start = performance.now();
 
-import { writeSchema } from './schema.js';
+import { writeSchema } from '../src/schema.js';
 await writeSchema();
 
 console.log(

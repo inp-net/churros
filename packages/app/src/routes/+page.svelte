@@ -28,10 +28,10 @@
 
 <h1>Bienvenue sur Centraverse</h1>
 
-{#each data.homepage.edges as { cursor, node: { slug, title, bodyHtml, publishedAt, group, author, homepage } }}
+{#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, homepage } }}
   <ArticleCard
     {title}
-    href="/club/{group.uid}/post/{slug}/"
+    href="/club/{group.uid}/post/{uid}/"
     img={publishedAt.getTime() % 2
       ? { src: `https://picsum.photos/seed/${cursor}/960/400`, alt: '', width: 960, height: 400 }
       : undefined}

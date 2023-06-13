@@ -1,4 +1,4 @@
-import { GroupType as GroupPrismaType } from '@prisma/client';
+import { Group, GroupType as GroupPrismaType } from '@prisma/client';
 import { getDescendants, hasCycle, mappedGetAncestors } from 'arborist';
 import dichotomid from 'dichotomid';
 import slug from 'slug';
@@ -10,6 +10,12 @@ import { GraphQLError } from 'graphql';
 import { unlink, writeFile } from 'node:fs/promises';
 import { FileScalar } from './scalars.js';
 import imageType, { minimumBytes } from 'image-type';
+import {
+  type FuzzySearchResult,
+  levenshteinFilterAndSort,
+  splitSearchTerms,
+  levenshteinSorter,
+} from '../services/search.js';
 
 export const GroupEnumType = builder.enumType(GroupPrismaType, { name: 'GroupType' });
 
@@ -116,19 +122,41 @@ builder.queryField('searchGroups', (t) =>
     args: { q: t.arg.string() },
     authScopes: { loggedIn: true },
     async resolve(query, _, { q }) {
-      const terms = new Set(String(q).split(' ').filter(Boolean));
-      const search = [...terms].join('&');
-      return prisma.group.findMany({
+      q = q.trim();
+      const { searchString: search } = splitSearchTerms(q);
+      const fuzzyResults: FuzzySearchResult = await prisma.$queryRaw`
+SELECT "id", levenshtein_less_equal("name", ${q}, 15) as changes
+FROM "Group"
+ORDER BY changes ASC
+LIMIT 20
+`;
+      const resultsByFuzzySearch = await prisma.group.findMany({
+        ...query,
+        where: {
+          id: { in: fuzzyResults.map(({ id }) => id) },
+        },
+      });
+      const results = await prisma.group.findMany({
         ...query,
         where: {
           OR: [
             { uid: { search } },
             { name: { search } },
             { description: { search } },
+            { longDescription: { search } },
             { email: { search } },
           ],
         },
       });
+
+      return [
+        ...results.sort(levenshteinSorter(fuzzyResults)),
+        ...levenshteinFilterAndSort<Group>(
+          fuzzyResults,
+          3,
+          results.map(({ id }) => id)
+        )(resultsByFuzzySearch),
+      ];
     },
   })
 );
@@ -252,7 +280,7 @@ builder.mutationField('updateGroup', (t) =>
       if (oldGroup?.id === undefined)
         throw new GraphQLError("Impossible de trouver l'ID du groupe");
       if (parentId !== undefined) {
-        if (parentId === null) {
+        if (parentId === null || parentId === '') {
           // First case (null): the group does not have a parent anymore.
           // Set both the parent and the root to the group itself.
           // eslint-disable-next-line unicorn/no-null

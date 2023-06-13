@@ -7,7 +7,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
   const data = await loadQuery(
     {
       group: [
-        params,
+        { uid: params.group },
         me
           ? // Authenticated query
             {
@@ -23,7 +23,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               email: true,
               selfJoinable: true,
               ancestors: { uid: true, name: true },
-              articles: { slug: true, title: true, bodyHtml: true },
+              articles: { uid: true, title: true, bodyHtml: true },
               school: { name: true, color: true },
               linkCollection: { links: { name: true, value: true } },
               members: {
@@ -48,7 +48,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               longDescriptionHtml: true,
               email: true,
               selfJoinable: true,
-              articles: { slug: true, title: true, bodyHtml: true },
+              articles: { uid: true, title: true, bodyHtml: true },
               school: { name: true, color: true },
               linkCollection: { links: { name: true, value: true } },
             },

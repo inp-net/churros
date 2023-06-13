@@ -107,7 +107,7 @@ builder.mutationField('createArticle', (t) =>
           uid: slug(title),
           title,
           body,
-          links: { create: [] },
+          links: { create: { links: { create: [] } } },
         },
       }),
   })
@@ -204,3 +204,13 @@ builder.mutationField('deleteArticle', (t) =>
     },
   })
 );
+
+builder.queryField('searchArticles', t => t.prismaField({
+  type: [ArticleType],
+  args: {
+    q: t.arg.string(),
+  },
+  async resolve(query, _, { q }) {
+    const terms = new Set(String(q).split(' ').filter(Boolean));
+  }
+}))

@@ -133,9 +133,9 @@
   {/if}
 </h2>
 
-{#each group.articles as { slug, title, bodyHtml }}
+{#each group.articles as { uid, title, bodyHtml }}
   <Card element="article">
-    <h3><a href="./post/{slug}">{title}</a></h3>
+    <h3><a href="./post/{uid}">{title}</a></h3>
     {@html bodyHtml}
   </Card>
 {/each}

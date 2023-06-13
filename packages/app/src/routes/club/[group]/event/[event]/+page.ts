@@ -1,11 +1,11 @@
 import { Selector, loadQuery } from '$lib/zeus';
-import type { PageLoad } from '../[slug]/$types';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent, params }) =>
   loadQuery(
     {
       event: [
-        { group: params.uid, slug: params.slug },
+        { groupUid: params.group, uid: params.event },
         Selector('Event')({
           articles: {
             slug: true,

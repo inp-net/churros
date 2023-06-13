@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-const map = {};
+const map: Record<string, string> = {};
 
 /**
  * @param {string} line
  * @returns {string | undefined}
  */
-const declaredModelName = (line) => {
+const declaredModelName = (line: string): string | undefined => {
   const match = /^model\s+([\dA-Za-z]\w*)\s+{$/.exec(line);
   return match ? match[1] : undefined;
 };
 
-const idPrefixUsed = (/** @type {string} */ line) => {
+const idPrefixUsed = (line: string) => {
   const match = /nanoid\('(\w+):'/.exec(line);
   return match ? match[1] : undefined;
 };
@@ -21,7 +21,7 @@ const idPrefixUsed = (/** @type {string} */ line) => {
 // If we find a model declaration, we look for the associated id prefix in the next line.
 
 const readFrom = path.join(
-  path.dirname(import.meta.url.replace(/^file:/, '')),
+  path.dirname(import.meta.url.replace(/^file:/, '')).replace('build/', ''),
   '../prisma/schema.prisma'
 );
 const lines = readFileSync(readFrom, 'utf8').split('\n');
@@ -31,15 +31,15 @@ console.log(`Read from ${readFrom}`);
 for (const [index, line] of lines.entries()) {
   const modelName = declaredModelName(line);
   if (modelName) {
-    // @ts-expect-error - we know the next line exists
-    const idPrefix = idPrefixUsed(lines[index + 1]);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    const idPrefix = idPrefixUsed(lines[index + 1]!);
     if (idPrefix) map[idPrefix] = modelName;
   }
 }
 
-const writeTo = path.join(path.dirname(import.meta.url.replace(/^file:/, '')), '../src/builder.ts');
+const writeTo = path.join(
+  path.dirname(import.meta.url.replace(/^file:/, '')).replace('build/', ''),
+  '../src/builder.ts'
+);
 console.log(`Writing to ${writeTo}`);
 
 const writeToLines = readFileSync(writeTo, 'utf8').split('\n');

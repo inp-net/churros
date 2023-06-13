@@ -42,7 +42,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 
   return loadQuery(
     {
-      group: [params, _clubQuery],
+      group: [{ uid: params.group }, _clubQuery],
       schoolGroups: { names: true, majors: { id: true, name: true } },
     },
     { fetch, parent }

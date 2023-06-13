@@ -104,7 +104,7 @@
     endsAt: Date | undefined;
     links: Array<{ name: string; url: string }>;
     location: string;
-    slug: string;
+    uid: string;
     startsAt: Date | undefined;
     title: string;
     visibility: 'Public' | 'Private' | 'Restricted' | 'Unlisted';
