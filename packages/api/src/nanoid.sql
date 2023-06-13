@@ -1,5 +1,5 @@
-# This function is installed in the first migration by editing it manually to include this CREATE OR REPLACE FUNCTION statement.
-# It needs the pgcrypto extension to function.
+-- This function-is installed in the first migration by editing it manually to include this CREATE OR REPLACE FUNCTION statement.
+-- It needs the pgcrypto extension to function.
 
 CREATE OR REPLACE FUNCTION NANOID(PREFIX TEXT DEFAULT 
 '', SIZE INT DEFAULT 16, ALPHABET TEXT DEFAULT '0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz'

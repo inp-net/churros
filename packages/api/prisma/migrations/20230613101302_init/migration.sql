@@ -1,4 +1,12 @@
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+
+-- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+
+-- This function is installed in the first migration by editing it manually to include this CREATE OR REPLACE FUNCTION statement.
+-- It needs the pgcrypto extension to function.
 
 CREATE OR REPLACE FUNCTION NANOID(PREFIX TEXT DEFAULT 
 '', SIZE INT DEFAULT 16, ALPHABET TEXT DEFAULT '0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz'
@@ -34,11 +42,6 @@ CREATE OR REPLACE FUNCTION NANOID(PREFIX TEXT DEFAULT
 	END 
 $$; 
 
--- CreateExtension
-CREATE EXTENSION IF NOT EXISTS "pg_trgm";
-
--- CreateExtension
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- CreateEnum
 CREATE TYPE "CredentialType" AS ENUM ('Password', 'Token');
@@ -81,7 +84,7 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "UserCandidate" (
-    "id" TEXT NOT NULL DEFAULT nanoid('uc:'),
+    "id" TEXT NOT NULL DEFAULT nanoid('candidate:'),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "email" VARCHAR(255) NOT NULL,
     "token" TEXT NOT NULL,
@@ -130,6 +133,7 @@ CREATE TABLE "Major" (
 -- CreateTable
 CREATE TABLE "School" (
     "id" TEXT NOT NULL DEFAULT nanoid('school:'),
+    "uid" VARCHAR(255) NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "color" VARCHAR(7) NOT NULL,
 
@@ -138,7 +142,7 @@ CREATE TABLE "School" (
 
 -- CreateTable
 CREATE TABLE "Credential" (
-    "id" TEXT NOT NULL DEFAULT nanoid('c:'),
+    "id" TEXT NOT NULL DEFAULT nanoid('credential:'),
     "userId" TEXT NOT NULL,
     "type" "CredentialType" NOT NULL,
     "value" VARCHAR(255) NOT NULL,
@@ -386,6 +390,9 @@ CREATE UNIQUE INDEX "UserCandidate_schoolEmail_key" ON "UserCandidate"("schoolEm
 
 -- CreateIndex
 CREATE UNIQUE INDEX "UserCandidate_schoolServer_schoolUid_key" ON "UserCandidate"("schoolServer", "schoolUid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "School_uid_key" ON "School"("uid");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "StudentAssociation_name_key" ON "StudentAssociation"("name");

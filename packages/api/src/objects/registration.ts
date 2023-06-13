@@ -93,25 +93,26 @@ builder.queryField('registrationsOfTicket', (t) =>
   })
 );
 
-builder.queryField('verifyRegistration', (t) => t.prismaField({
-  type: RegistrationType,
-  args: {
-    beneficiary: t.arg.string(),
-    ticketId: t.arg.id(),
-  },
-  async authScopes(_, { ticketId }, { user }) {
-    const event = await prisma.ticket.findUnique({ where: { id: ticketId } }).event();
-    if (!event) return false;
-    return eventManagedByUser(event, user, {canVerifyRegistrations: true});
-  },
-  async resolve(query, {}, { beneficiary, ticketId }, {}) {
-    return await prisma.registration.findFirstOrThrow({
-      ...query,
-      where: { ticketId, beneficiary },
-    })
-  }
-}));
-
+builder.queryField('verifyRegistration', (t) =>
+  t.prismaField({
+    type: RegistrationType,
+    args: {
+      beneficiary: t.arg.string(),
+      ticketId: t.arg.id(),
+    },
+    async authScopes(_, { ticketId }, { user }) {
+      const event = await prisma.ticket.findUnique({ where: { id: ticketId } }).event();
+      if (!event) return false;
+      return eventManagedByUser(event, user, { canVerifyRegistrations: true });
+    },
+    async resolve(query, {}, { beneficiary, ticketId }, {}) {
+      return prisma.registration.findFirstOrThrow({
+        ...query,
+        where: { ticketId, beneficiary },
+      });
+    },
+  })
+);
 
 builder.mutationField('upsertRegistration', (t) =>
   t.prismaField({
@@ -128,14 +129,21 @@ builder.mutationField('upsertRegistration', (t) =>
       if (!user) return false;
 
       if (creating) {
-        const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } , include: {event: true}});
+        const ticket = await prisma.ticket.findUnique({
+          where: { id: ticketId },
+          include: { event: true },
+        });
         if (!ticket) return false;
 
         // Check that the user can access the event
         if (!(await eventAccessibleByUser(ticket.event, user))) return false;
 
         // Check for tickets that only managers can provide
-        if (ticket?.onlyManagersCanProvide && !eventManagedByUser(ticket.event, user, {canVerifyRegistrations: true}) ) return false;
+        if (
+          ticket.onlyManagersCanProvide &&
+          !eventManagedByUser(ticket.event, user, { canVerifyRegistrations: true })
+        )
+          return false;
 
         // Check that the ticket is still open
         if (ticket.closesAt && ticket.closesAt.valueOf() < Date.now()) return false;
@@ -157,12 +165,13 @@ builder.mutationField('upsertRegistration', (t) =>
         include: { ticket: { include: { event: true } } },
       });
       if (!registration) return false;
-      if (!eventManagedByUser(registration.ticket.event, user, {canVerifyRegistrations: true})) return false;
+      if (!eventManagedByUser(registration.ticket.event, user, { canVerifyRegistrations: true }))
+        return false;
       return true;
     },
     async resolve(query, {}, { id, ticketId, beneficiary, paymentMethod, paid }, { user }) {
       if (!paid) {
-        const ticket = await prisma.ticket.findUniqueOrThrow({ where: { id: ticketId } })
+        const ticket = await prisma.ticket.findUniqueOrThrow({ where: { id: ticketId } });
         await requestPayment(user!, ticket.price, paymentMethod);
       }
 
@@ -180,8 +189,8 @@ builder.mutationField('upsertRegistration', (t) =>
           paymentMethod,
           beneficiary: beneficiary || user?.uid,
         },
-      })
-    }
+      });
+    },
   })
 );
 
@@ -191,33 +200,34 @@ builder.mutationField('deleteRegistration', (t) =>
     args: {
       id: t.arg.id(),
     },
-    async authScopes(_, {id }, { user }) {
+    async authScopes(_, { id }, { user }) {
       if (!user) return false;
       const registration = await prisma.registration.findFirst({
-        where: {id},
+        where: { id },
         include: { ticket: { include: { event: true } }, author: true },
       });
       if (!registration) return false;
 
       // Only managers can delete other's registrations
-      if (registration.author.uid !== user.uid) 
-        return eventManagedByUser(registration.ticket.event, user, {canVerifyRegistrations: true});
-      
+      if (registration.author.uid !== user.uid)
+        {return eventManagedByUser(registration.ticket.event, user, {
+          canVerifyRegistrations: true,
+        });}
 
       // The author can delete their own registrations
       return true;
     },
-    async resolve(_, {id }, { }) {
+    async resolve(_, { id }, {}) {
       const registration = await prisma.registration.findFirstOrThrow({
-        where: {id},
+        where: { id },
         include: { ticket: true, author: true },
       });
-      if (registration.paid) 
-        await pay(registration.author, registration.ticket.price, registration.paymentMethod)
-      
+      if (registration.paid)
+        await pay(registration.author, registration.ticket.price, registration.paymentMethod);
+
       await prisma.registration.deleteMany({
-        where: {id},
-      })
+        where: { id },
+      });
       return true;
     },
   })

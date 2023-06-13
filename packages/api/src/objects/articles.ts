@@ -9,8 +9,8 @@ import { LinkInput } from './links.js';
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
   fields: (t) => ({
-    // authorId: t.exposeID('authorId', { nullable: true }),
-    // groupId: t.exposeID('groupId'),
+    authorId: t.exposeID('authorId', { nullable: true }),
+    groupId: t.exposeID('groupId'),
     uid: t.exposeString('uid'),
     title: t.exposeString('title'),
     body: t.exposeString('body'),
@@ -29,11 +29,11 @@ builder.queryField('article', (t) =>
   t.prismaField({
     type: ArticleType,
     args: {
+      groupUid: t.arg.string(),
       uid: t.arg.string(),
-      slug: t.arg.string(),
     },
-    resolve: async (query, _, { uid, slug }) =>
-      prisma.article.findFirstOrThrow({ ...query, where: { slug, group: { uid } } }),
+    resolve: async (query, _, { uid, groupUid }) =>
+      prisma.article.findFirstOrThrow({ ...query, where: { uid, group: { uid: groupUid } } }),
   })
 );
 
@@ -55,7 +55,7 @@ builder.queryField('homepage', (t) =>
       const ancestors = await prisma.group
         // Get all groups in the same family as the user's groups
         .findMany({
-          where: { familyId: { in: user.groups.map(({ group }) => group.familyId) } },
+          where: { familyId: { in: user.groups.map(({ group }) => group.familyId ?? group.id) } },
           select: { id: true, parentId: true, uid: true },
         })
         // Get all ancestors of the groups
@@ -104,7 +104,7 @@ builder.mutationField('createArticle', (t) =>
         data: {
           group: { connect: { uid: groupUid } },
           author: { connect: { id: user!.id } },
-          slug: slug(title),
+          uid: slug(title),
           title,
           body,
           links: { create: [] },

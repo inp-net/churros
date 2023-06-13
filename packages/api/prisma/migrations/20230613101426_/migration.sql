@@ -5,7 +5,7 @@ ALTER TABLE "Article" ALTER COLUMN "id" SET DEFAULT nanoid('a:');
 ALTER TABLE "BarWeek" ALTER COLUMN "id" SET DEFAULT nanoid('barweek:');
 
 -- AlterTable
-ALTER TABLE "Credential" ALTER COLUMN "id" SET DEFAULT nanoid('c:');
+ALTER TABLE "Credential" ALTER COLUMN "id" SET DEFAULT nanoid('credential:');
 
 -- AlterTable
 ALTER TABLE "Event" ALTER COLUMN "id" SET DEFAULT nanoid('e:');
@@ -50,4 +50,4 @@ ALTER TABLE "TicketGroup" ALTER COLUMN "id" SET DEFAULT nanoid('tg:');
 ALTER TABLE "User" ALTER COLUMN "id" SET DEFAULT nanoid('u:');
 
 -- AlterTable
-ALTER TABLE "UserCandidate" ALTER COLUMN "id" SET DEFAULT nanoid('uc:');
+ALTER TABLE "UserCandidate" ALTER COLUMN "id" SET DEFAULT nanoid('candidate:');

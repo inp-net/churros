@@ -19,7 +19,7 @@ builder.queryField('eventManager', (t) =>
       eventId: t.arg.id(),
     },
     resolve: async (query, _, { user, eventId }) =>
-      prisma.eventManager.findFirstOrThrow({ ...query, where: { user: {uid: user}, eventId } }),
+      prisma.eventManager.findFirstOrThrow({ ...query, where: { user: { uid: user }, eventId } }),
   })
 );
 
@@ -65,51 +65,6 @@ builder.mutationField('upsertManagersOfEvent', (t) =>
           },
         })
         .managers();
-    },
-  })
-);
-
-builder.mutationField('updateEventManager', (t) =>
-  t.prismaField({
-    type: EventManagerType,
-    args: {
-      eventId: t.arg.id(),
-      user: t.arg.string(),
-      canVerifyRegistrations: t.arg.boolean(),
-      canEdit: t.arg.boolean(),
-      canEditPermissions: t.arg.boolean(),
-    },
-    authScopes: (_, { eventId }, { user: currentUser }) =>
-      Boolean(
-        currentUser?.admin ||
-          currentUser?.managedEvents.some(
-            ({ canEditPermissions, event }) => event.id === eventId && canEditPermissions
-          )
-      ),
-    async resolve(
-      query,
-      _,
-      { eventId, user, canVerifyRegistrations, canEdit, canEditPermissions }
-    ) {
-      const eventManager = await prisma.eventManager.findFirst({
-        where: { eventId, user: { uid: user } },
-      });
-      return prisma.eventManager.upsert({
-        ...query,
-        where: { id: eventManager?.id },
-        update: {
-          canVerifyRegistrations,
-          canEdit,
-          canEditPermissions,
-        },
-        create: {
-          canVerifyRegistrations,
-          canEdit,
-          canEditPermissions,
-          event: { connect: { id: eventId } },
-          user: { connect: { uid: user } },
-        },
-      });
     },
   })
 );

@@ -46,10 +46,10 @@ function randomIdsOf<Count extends number>(
 
 await prisma.school.createMany({
   data: [
-    { name: 'EAU', color: '#00ffff' },
-    { name: 'FEU', color: '#b22222' },
-    { name: 'TERRE', color: '#5e3f13' },
-    { name: 'AIR', color: '#d9eaff' },
+    { name: 'EAU', uid: 'o', color: '#00ffff' },
+    { name: 'FEU', uid: 'feu', color: '#b22222' },
+    { name: 'TERRE', uid: '3', color: '#5e3f13' },
+    { name: 'AIR', uid: 'air', color: '#d9eaff' },
   ],
 });
 

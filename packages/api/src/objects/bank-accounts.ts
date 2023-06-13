@@ -3,6 +3,7 @@ import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 
 import { createHash } from 'node:crypto';
+import slug from 'slug';
 
 export const LydiaAccountType = builder.prismaObject('LydiaAccount', {
   fields: (t) => ({
@@ -46,24 +47,25 @@ builder.mutationField('createLydiaAccount', (t) =>
   t.prismaField({
     type: LydiaAccountType,
     args: {
-      group: t.arg.string(),
+      groupUid: t.arg.string(),
       name: t.arg.string(),
       privateToken: t.arg.string(),
       vendorToken: t.arg.string(),
     },
-    authScopes: (_, { group: groupUid }, { user }) =>
+    authScopes: (_, { groupUid }, { user }) =>
       Boolean(
         user?.admin ||
           user?.groups.some(
             ({ group, president, treasurer }) => group.uid === groupUid && (president || treasurer)
           )
       ),
-    resolve: async (query, _, { group, name, privateToken, vendorToken }) =>
+    resolve: async (query, _, { groupUid, name, privateToken, vendorToken }) =>
       prisma.lydiaAccount.create({
         ...query,
         data: {
+          uid: slug(name),
           name,
-          group: { connect: { uid: group } },
+          group: { connect: { uid: groupUid } },
           privateToken,
           vendorToken,
         },

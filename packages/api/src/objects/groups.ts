@@ -63,7 +63,7 @@ builder.objectField(GroupType, 'ancestors', (t) =>
     description: 'All the ancestors of this group, from the current group to the root.',
     // Because this request can be expensive, only allow logged in users
     authScopes: { loggedIn: true },
-    resolve: ({ id, familyId }) => ({ id, familyId }),
+    resolve: ({ id, familyId }) => ({ id, familyId: familyId ?? id }),
     load: async (ids) =>
       prisma.group
         // Get all groups in the same family as the current groups
@@ -172,7 +172,7 @@ builder.mutationField('createGroup', (t) =>
           uid: await createGroupUid(name),
           school: { connect: { id: schoolId } },
           parent: parent ? { connect: { id: parent.id } } : undefined,
-          familyRoot: parent ? { connect: { id: parent.familyId } } : undefined,
+          familyRoot: parent ? { connect: { id: parent.familyId ?? parent.id } } : undefined,
           color: '#' + Math.random().toString(16).slice(2, 8).padEnd(6, '0'),
           linkCollection: { create: {} },
           selfJoinable: selfJoinable ?? false,
@@ -262,7 +262,7 @@ builder.mutationField('updateGroup', (t) =>
           // Third case (number): the group's parent is changed to the group with that ID.
           const newParent = await prisma.group.findUnique({ where: { id: parentId } });
           if (!newParent) throw new GraphQLError('ID de groupe parent invalide');
-          familyId = newParent.familyId;
+          familyId = newParent.familyId ?? newParent.id;
           // Update all descendants' familyId to the new parent's familyId
           const allGroups = await prisma.group.findMany({});
           if (

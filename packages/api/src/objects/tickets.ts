@@ -148,7 +148,7 @@ builder.mutationField('upsertTicket', (t) =>
       openToPromotions: t.arg({ type: ['Int'] }),
       openToAlumni: t.arg.boolean({ required: false }),
       openToExternal: t.arg.boolean({ required: false }),
-      openToSchools: t.arg({ type: ['Int'] }),
+      openToSchools: t.arg({ type: ['String'] }),
       openToGroups: t.arg({ type: ['String'] }),
       openToNonAEContributors: t.arg.boolean(),
       godsonLimit: t.arg.int(),
@@ -159,7 +159,7 @@ builder.mutationField('upsertTicket', (t) =>
       if (creating) {
         const event = await prisma.event.findUnique({ where: { id: eventId } });
         if (!event) return false;
-        return eventManagedByUser(event, user, {canEdit: true});
+        return eventManagedByUser(event, user, { canEdit: true });
       }
 
       return Boolean(
@@ -230,7 +230,7 @@ builder.mutationField('deleteTicket', (t) =>
     async authScopes(_, { id }, { user }) {
       const ticket = await prisma.ticket.findUnique({ where: { id }, include: { event: true } });
       if (!ticket) return false;
-      return eventManagedByUser(ticket.event, user, {canEdit: true});
+      return eventManagedByUser(ticket.event, user, { canEdit: true });
     },
     async resolve(_, { id }) {
       await prisma.ticket.delete({ where: { id } });

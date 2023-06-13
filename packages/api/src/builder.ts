@@ -1,4 +1,4 @@
-import SchemaBuilder from '@pothos/core';
+import SchemaBuilder, { type BuiltinScalarRef } from '@pothos/core';
 import ComplexityPlugin from '@pothos/plugin-complexity';
 import DataloaderPlugin from '@pothos/plugin-dataloader';
 import ErrorsPlugin from '@pothos/plugin-errors';
@@ -12,6 +12,7 @@ import ValidationPlugin from '@pothos/plugin-validation';
 import { authScopes, type AuthContexts, type AuthScopes } from './auth.js';
 import type { Context } from './context.js';
 import { prisma } from './prisma.js';
+import { GraphQLError, Kind } from 'graphql';
 
 /**
  * Maps database ID prefixes to GraphQL type names. Please add new types here as they are added to
@@ -49,7 +50,7 @@ export const builder = new SchemaBuilder<{
   Scalars: {
     DateTime: { Input: Date; Output: Date };
     File: { Input: never; Output: File };
-    ID: { Input: number; Output: number };
+    ID: { Input: string; Output: string };
   };
 }>({
   plugins: [
@@ -97,3 +98,18 @@ export const builder = new SchemaBuilder<{
 
 builder.queryType({});
 builder.mutationType({});
+
+// Parse GraphQL IDs as strings
+const id = (builder.configStore.getInputTypeRef('ID') as BuiltinScalarRef<string, string>).type;
+
+id.parseValue = (value: unknown) => {
+  if (typeof value === 'number') return value.toString();
+  if (typeof value === 'string') return value;
+  throw new GraphQLError('Expected ID to be a number or a string.');
+};
+
+id.parseLiteral = (node) => {
+  if (node.kind !== Kind.INT && node.kind !== Kind.STRING)
+    throw new GraphQLError('Expected ID to be a numeric.');
+  return id.parseValue(node.value);
+};

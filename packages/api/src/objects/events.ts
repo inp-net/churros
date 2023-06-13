@@ -46,15 +46,17 @@ builder.queryField('event', (t) =>
   t.prismaField({
     type: EventType,
     args: {
-      slug: t.arg.string(),
-      group: t.arg.string(),
+      uid: t.arg.string(),
+      groupUid: t.arg.string(),
     },
-    async authScopes(_, { slug, group }, { user }) {
-      const event = await prisma.event.findFirstOrThrow({ where: { slug, group: { uid: group } } });
+    async authScopes(_, { uid, groupUid }, { user }) {
+      const event = await prisma.event.findFirstOrThrow({
+        where: { uid, group: { uid: groupUid } },
+      });
       return eventAccessibleByUser(event, user);
     },
-    resolve: async (query, _, { slug }) =>
-      prisma.event.findFirstOrThrow({ ...query, where: { slug } }),
+    resolve: async (query, _, { uid }) =>
+      prisma.event.findFirstOrThrow({ ...query, where: { uid } }),
   })
 );
 
@@ -110,19 +112,19 @@ builder.queryField('eventsOfGroup', (t) =>
     type: EventType,
     cursor: 'id',
     args: {
-      group: t.arg.string(),
+      groupUid: t.arg.string(),
     },
-    async resolve(query, _, { group }, { user }) {
+    async resolve(query, _, { groupUid }, { user }) {
       if (!user) {
         return prisma.event.findMany({
           ...query,
-          where: { visibility: EventPrismaVisibility.Public, group: { uid: group } },
+          where: { visibility: EventPrismaVisibility.Public, group: { uid: groupUid } },
         });
       }
 
       const ancestors = await prisma.group
         .findMany({
-          where: { familyId: { in: user.groups.map(({ group }) => group.familyId) } },
+          where: { familyId: { in: user.groups.map(({ group }) => group.familyId ?? group.id) } },
           select: { id: true, parentId: true, uid: true },
         })
         .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
@@ -135,7 +137,7 @@ builder.queryField('eventsOfGroup', (t) =>
             notIn: [EventPrismaVisibility.Private, EventPrismaVisibility.Unlisted],
           },
           group: {
-            uid: group,
+            uid: groupUid,
           },
           OR: [
             // Completely public events
@@ -193,7 +195,7 @@ builder.mutationField('createEvent', (t) =>
             },
           },
           author: { connect: { id: user!.id } },
-          slug: slug(title),
+          uid: slug(title),
           description: body,
           contactMail: user!.email,
           visibility,
@@ -252,7 +254,7 @@ builder.mutationField('upsertEvent', (t) =>
   t.prismaField({
     type: EventType,
     args: {
-      id: t.arg.string({required: false}),
+      id: t.arg.string({ required: false }),
       ticketGroups: t.arg({ type: ['String'] }),
       tickets: t.arg({ type: ['String'] }),
       description: t.arg.string(),
@@ -278,7 +280,7 @@ builder.mutationField('upsertEvent', (t) =>
       }
 
       return Boolean(
-        user?.admin || user?.managedEvents.some(({ event, canEdit }) => event.id === Number.parseFloat(decodeGlobalID(id).id) && canEdit)
+        user?.admin || user?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit)
       );
     },
     async resolve(
@@ -301,7 +303,7 @@ builder.mutationField('upsertEvent', (t) =>
       },
       { user }
     ) {
-      console.log(lydiaAccountId)
+      console.log(lydiaAccountId);
       const upsertData = {
         group: {
           connect: {
@@ -309,10 +311,10 @@ builder.mutationField('upsertEvent', (t) =>
           },
         },
         ticketGroups: {
-          connect: ticketGroups.map((id) => ({ id: Number.parseFloat(decodeGlobalID(id).id) })),
+          connect: ticketGroups.map((id) => ({ id })),
         },
         tickets: {
-          connect: tickets.map((id) => ({ id: Number.parseFloat(decodeGlobalID(id).id) })),
+          connect: tickets.map((id) => ({ id })),
         },
         author: {
           connect: {
@@ -331,7 +333,7 @@ builder.mutationField('upsertEvent', (t) =>
           },
         },
         location,
-        slug: slug(title),
+        uid: slug(title),
         title,
         visibility,
         startsAt,
@@ -339,14 +341,14 @@ builder.mutationField('upsertEvent', (t) =>
         beneficiary: lydiaAccountId
           ? {
               connect: {
-                id: Number.parseFloat(decodeGlobalID(lydiaAccountId).id),
+                id: lydiaAccountId,
               },
             }
           : undefined,
       };
       return prisma.event.upsert({
         ...query,
-        where: { id: id ? Number.parseFloat(decodeGlobalID(id).id) : -1 },
+        where: { id: id ?? undefined },
         create: upsertData,
         update: upsertData,
       });
@@ -364,11 +366,18 @@ export async function eventAccessibleByUser(event: EventPrisma | null, user: Con
     case EventVisibility.Restricted: {
       if (!user) return false;
       // All managers can see the event, no matter their permissions
-      if(eventManagedByUser(event, user, { canEdit: false, canEditPermissions: false, canVerifyRegistrations: false })) return true;
+      if (
+        eventManagedByUser(event, user, {
+          canEdit: false,
+          canEditPermissions: false,
+          canVerifyRegistrations: false,
+        })
+      )
+        return true;
 
       const ancestors = await prisma.group
         .findMany({
-          where: { familyId: { in: user.groups.map(({ group }) => group.familyId) } },
+          where: { familyId: { in: user.groups.map(({ group }) => group.familyId ?? group.id) } },
           select: { id: true, parentId: true },
         })
         .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
@@ -379,7 +388,11 @@ export async function eventAccessibleByUser(event: EventPrisma | null, user: Con
 
     case EventVisibility.Private: {
       // All managers can see the event, no matter their permissions
-      return eventManagedByUser(event, user, { canEdit: false, canEditPermissions: false, canVerifyRegistrations: false })
+      return eventManagedByUser(event, user, {
+        canEdit: false,
+        canEditPermissions: false,
+        canVerifyRegistrations: false,
+      });
     }
 
     default: {
@@ -388,11 +401,19 @@ export async function eventAccessibleByUser(event: EventPrisma | null, user: Con
   }
 }
 
-export function eventManagedByUser(event: EventPrisma, user: Context['user'],  { canEdit = true, canEditPermissions = false, canVerifyRegistrations = false }) {
+export function eventManagedByUser(
+  event: EventPrisma,
+  user: Context['user'],
+  { canEdit = true, canEditPermissions = false, canVerifyRegistrations = false }
+) {
   if (!user) return false;
-  return Boolean(user.managedEvents.some(({ event: { id }, ...permissions}) => id === event.id && (
-    (permissions.canEdit && canEdit) ||
-    (permissions.canEditPermissions && canEditPermissions) ||
-    (permissions.canVerifyRegistrations && canVerifyRegistrations)
-  ) ));
+  return Boolean(
+    user.managedEvents.some(
+      ({ event: { id }, ...permissions }) =>
+        id === event.id &&
+        ((permissions.canEdit && canEdit) ||
+          (permissions.canEditPermissions && canEditPermissions) ||
+          (permissions.canVerifyRegistrations && canVerifyRegistrations))
+    )
+  );
 }
