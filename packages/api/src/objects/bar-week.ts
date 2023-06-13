@@ -27,6 +27,25 @@ builder.queryField('barWeek', (t) =>
   })
 );
 
+builder.queryField('barWeekNow', (t) =>
+  t.prismaField({
+    type: BarWeekType,
+    args: {
+      now: t.arg({ type: DateTimeScalar }),
+    },
+    async resolve(query, _, { now }) {
+      return prisma.barWeek.findFirstOrThrow({
+        ...query,
+        where: {
+          startsAt: { lte: now },
+          endsAt: { gte: now },
+        },
+        orderBy: { startsAt: 'desc' },
+      });
+    },
+  })
+);
+
 builder.queryField('barWeeks', (t) =>
   t.prismaField({
     type: [BarWeekType],
