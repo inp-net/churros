@@ -206,7 +206,8 @@ const color = (str: string) => {
   return `#${h(red)}${h(green)}${h(blue)}`;
 };
 
-for (const [i, group] of clubsData.entries()) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+for (const [_, group] of clubsData.entries()) {
   const { id: groupId } = await prisma.group.create({
     data: {
       ...group,
@@ -287,7 +288,7 @@ const Groupe1 = await prisma.group.create({
   },
 });
 
-const Groupe2 = await prisma.group.create({
+await prisma.group.create({
   data: {
     name: 'Groupe 2',
     type: GroupType.Integration,

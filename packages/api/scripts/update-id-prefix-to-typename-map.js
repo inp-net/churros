@@ -1,8 +1,7 @@
+/* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 import { readFileSync, writeFileSync } from 'node:fs';
-import { writeFile } from 'node:fs/promises';
-import { url } from 'node:inspector';
 import path from 'node:path';
-let map = {};
+const map = {};
 
 /**
  * @param {string} line
@@ -13,7 +12,7 @@ const declaredModelName = (line) => {
   return match ? match[1] : undefined;
 };
 
-const idPrefixUsed = (line) => {
+const idPrefixUsed = (/** @type {string} */ line) => {
   const match = /nanoid\('(\w+):'/.exec(line);
   return match ? match[1] : undefined;
 };
@@ -32,7 +31,10 @@ console.log(`Read from ${readFrom}`);
 for (const [index, line] of lines.entries()) {
   const modelName = declaredModelName(line);
   if (modelName) {
+    // @ts-expect-error - we know the next line exists
     const idPrefix = idPrefixUsed(lines[index + 1]);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (idPrefix) map[idPrefix] = modelName;
   }
 }

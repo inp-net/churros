@@ -11,7 +11,6 @@ import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { LinkInput } from './links.js';
 import type { Context } from '../context.js';
-import { decodeGlobalID } from '@pothos/plugin-relay';
 
 export const EventEnumVisibility = builder.enumType(EventPrismaVisibility, {
   name: 'EventVisibility',
@@ -74,7 +73,7 @@ builder.queryField('events', (t) =>
 
       const ancestors = await prisma.group
         .findMany({
-          where: { familyId: { in: user.groups.map(({ group }) => group.familyId) } },
+          where: { familyId: { in: user.groups.map(({ group }) => group.familyId ?? group.id) } },
           select: { id: true, parentId: true, uid: true },
         })
         .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
