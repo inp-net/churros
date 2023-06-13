@@ -4,6 +4,7 @@ import { DateTimeScalar } from './scalars.js';
 import { prisma } from '../prisma.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { placesLeft } from './tickets.js';
+import { GraphQLError } from 'graphql';
 
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
   name: 'PaymentMethod',
@@ -209,10 +210,11 @@ builder.mutationField('deleteRegistration', (t) =>
       if (!registration) return false;
 
       // Only managers can delete other's registrations
-      if (registration.author.uid !== user.uid)
-        {return eventManagedByUser(registration.ticket.event, user, {
+      if (registration.author.uid !== user.uid) {
+        return eventManagedByUser(registration.ticket.event, user, {
           canVerifyRegistrations: true,
-        });}
+        });
+      }
 
       // The author can delete their own registrations
       return true;
@@ -234,9 +236,15 @@ builder.mutationField('deleteRegistration', (t) =>
 );
 
 async function pay(recipient: { uid: string }, amount: number, by: PaymentMethodPrisma) {
-  // todo
+  return new Promise((_resolve, reject) => {
+    reject(new GraphQLError(`Attempt to pay ${recipient.uid} ${amount} by ${by}: not implemented`));
+  });
 }
 
 async function requestPayment(from: { uid: string }, amount: number, by: PaymentMethodPrisma) {
-  // todo
+  return new Promise((_resolve, reject) => {
+    reject(
+      new GraphQLError(`Attempt to request payment ${from.uid} ${amount} by ${by}: not implemented`)
+    );
+  });
 }
