@@ -11,6 +11,7 @@ export const ArticleType = builder.prismaNode('Article', {
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
+    eventId: t.exposeID('eventId', { nullable: true }),
     uid: t.exposeString('uid'),
     title: t.exposeString('title'),
     body: t.exposeString('body'),
@@ -22,6 +23,7 @@ export const ArticleType = builder.prismaNode('Article', {
     author: t.relation('author', { nullable: true }),
     group: t.relation('group'),
     links: t.relation('links'),
+    event: t.relation('event', { nullable: true }),
   }),
 });
 
@@ -83,51 +85,32 @@ builder.queryField('homepage', (t) =>
   })
 );
 
-builder.mutationField('createArticle', (t) =>
+builder.mutationField('upsertArticle', (t) =>
   t.prismaField({
     type: ArticleType,
     args: {
-      groupUid: t.arg.string(),
-      title: t.arg.string(),
-      body: t.arg.string(),
-    },
-    authScopes: (_, { groupUid }, { user }) =>
-      Boolean(
-        user?.canEditGroups ||
-          user?.groups.some(
-            ({ group: { uid }, canEditArticles }) => canEditArticles && groupUid === uid
-          )
-      ),
-    resolve: (query, _, { groupUid, body, title }, { user }) =>
-      prisma.article.create({
-        ...query,
-        data: {
-          group: { connect: { uid: groupUid } },
-          author: { connect: { id: user!.id } },
-          uid: slug(title),
-          title,
-          body,
-          links: { create: { links: { create: [] } } },
-        },
-      }),
-  })
-);
-
-builder.mutationField('updateArticle', (t) =>
-  t.prismaField({
-    type: ArticleType,
-    args: {
-      id: t.arg.id(),
+      id: t.arg.id({ required: false }),
       authorId: t.arg.id({ required: false }),
       groupId: t.arg.id({ required: false }),
       title: t.arg.string(),
       body: t.arg.string(),
       published: t.arg.boolean(),
       links: t.arg({ type: [LinkInput] }),
+      eventId: t.arg.id({ required: false }),
     },
-    async authScopes(_, { id, authorId }, { user }) {
+    async authScopes(_, { id, authorId, groupId }, { user }) {
+      const creating = !id;
       if (!user) return false;
       if (user.canEditGroups) return true;
+
+      if (creating) {
+        if (!groupId) return false;
+        return Boolean(
+          user.groups.some(
+            ({ group: { id }, canEditArticles }) => canEditArticles && groupId === id
+          )
+        );
+      }
 
       const article = await prisma.article.findUniqueOrThrow({ where: { id } });
 
@@ -157,24 +140,46 @@ builder.mutationField('updateArticle', (t) =>
         )
       );
     },
-    resolve: async (query, _, { id, authorId, groupId, title, body, published, links }) =>
-      prisma.article.update({
+    async resolve(query, _, { id, eventId, authorId, groupId, title, body, published, links }) {
+      const data = {
+        uid: slug(title),
+        author: { connect: authorId === null ? undefined : { id: authorId } },
+        group: { connect: groupId === null ? undefined : { id: groupId } },
+        title,
+        body,
+        published,
+        publishedAt: published ? new Date() : undefined,
+        event: eventId
+          ? {
+              connect: { id: eventId },
+            }
+          : {
+              disconnect: true,
+            },
+      };
+      return prisma.article.upsert({
         ...query,
-        where: { id },
-        data: {
-          author: { connect: authorId === null ? undefined : { id: authorId } },
-          group: { connect: groupId === null ? undefined : { id: groupId } },
-          title,
-          body,
-          published,
-          publishedAt: published ? new Date() : undefined,
+        where: { id: id ?? '' },
+        create: {
+          ...data,
+          links: {
+            create: {
+              links: {
+                create: links,
+              },
+            },
+          },
+        },
+        update: {
+          ...data,
           links: {
             update: {
               links: { deleteMany: {}, createMany: { data: links } },
             },
           },
         },
-      }),
+      });
+    },
   })
 );
 
@@ -205,12 +210,12 @@ builder.mutationField('deleteArticle', (t) =>
   })
 );
 
-builder.queryField('searchArticles', t => t.prismaField({
-  type: [ArticleType],
-  args: {
-    q: t.arg.string(),
-  },
-  async resolve(query, _, { q }) {
-    const terms = new Set(String(q).split(' ').filter(Boolean));
-  }
-}))
+// builder.queryField('searchArticles', t => t.prismaField({
+//   type: [ArticleType],
+//   args: {
+//     q: t.arg.string(),
+//   },
+//   async resolve(query, _, { q }) {
+//     const terms = new Set(String(q).split(' ').filter(Boolean));
+//   }
+// }))

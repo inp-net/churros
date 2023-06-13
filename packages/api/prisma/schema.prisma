@@ -54,10 +54,10 @@ model User {
   linkCollection LinkCollection @relation(fields: [linkCollectionId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   Reservation    Registration[]
   managedEvents  EventManager[]
-  LogEntry       LogEntry[]
-  Event          Event[]
-  Ticket         Ticket[]
-  TicketGroup    TicketGroup[]
+  logs           LogEntry[]
+  events         Event[]
+  tickets        Ticket[]
+  ticketGroups   TicketGroup[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -97,9 +97,9 @@ model LinkCollection {
   groups              Group[]
   studentAssociations StudentAssociation[]
   users               User[]
-  Article             Article[]
-  Event               Event[]
-  Ticket              Ticket[]
+  articles            Article[]
+  events              Event[]
+  tickets             Ticket[]
 }
 
 /// A single external link
@@ -210,8 +210,8 @@ model Group {
   members            GroupMember[]
   school             School?             @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   studentAssociation StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  Event              Event[]
-  LydiaAccount       LydiaAccount[]
+  events             Event[]
+  lyiaAccounts       LydiaAccount[]
   tickets            Ticket[]
   barWeeks           BarWeek[]
 }
@@ -252,7 +252,7 @@ model Article {
 
   author           User?   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   group            Group   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  Event            Event?  @relation(fields: [eventId], references: [id])
+  event            Event?  @relation(fields: [eventId], references: [id])
   eventId          String?
   linkCollectionId String
 

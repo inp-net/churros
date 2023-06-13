@@ -3,6 +3,7 @@ import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
 import { DateTimeScalar } from './scalars.js';
+import { userIsInBureauOf } from './groups.js';
 
 export const BarWeekType = builder.prismaNode('BarWeek', {
   id: { field: 'id' },
@@ -63,7 +64,11 @@ builder.mutationField('upsertBarWeek', (t) =>
       description: t.arg.string(),
       groupsUids: t.arg({ type: ['String'] }),
     },
-
+    authScopes(_, {}, { user }) {
+      // Only members of a certain group(s) can upsert a bar week
+      const foyGroupsUids = process.env.FOY_GROUPS.split(',');
+      return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
+    },
     async resolve(query, _, { id, startsAt, endsAt, description, groupsUids }) {
       const data = {
         startsAt,

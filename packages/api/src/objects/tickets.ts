@@ -193,7 +193,7 @@ builder.mutationField('upsertTicket', (t) =>
     ) {
       const upsertData = {
         event: { connect: { id: eventId } },
-        group: ticketGroupId ? { connect: { id: ticketGroupId } } : undefined,
+        group: ticketGroupId ? { connect: { id: ticketGroupId } } : { disconnect: true },
         name,
         description,
         opensAt,

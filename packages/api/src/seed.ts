@@ -21,6 +21,22 @@ type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N
   ? R
   : _TupleOf<T, N, [T, ...R]>;
 
+const color = (str: string) => {
+  let hash = 0xc0_ff_ee;
+  /* eslint-disable */
+  for (const char of str) hash = ((hash << 5) - hash + char.charCodeAt(0)) | 0;
+  const red = ((hash & 0xff0000) >> 16) + 1;
+  const green = ((hash & 0x00ff00) >> 8) + 1;
+  const blue = (hash & 0x0000ff) + 1;
+  /* eslint-enable */
+  const l = 0.4 * red + 0.4 * green + 0.2 * blue;
+  const h = (n: number) =>
+    Math.min(0xd0, Math.max(0x60, Math.floor((n * 0xd0) / l)))
+      .toString(16)
+      .padStart(2, '0');
+  return `#${h(red)}${h(green)}${h(blue)}`;
+};
+
 function randomChoice<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)]!;
 }
@@ -87,7 +103,38 @@ for (const [i, name] of ['AE EAU 2022', 'AE FEU 2022', 'AE TERRE 2022', 'AE AIR 
   });
 }
 
-const studentAssociations = await prisma.studentAssociation.findMany();
+const studentAssociations = await prisma.studentAssociation.findMany({ include: { school: true } });
+
+for (const asso of studentAssociations) {
+  for (const name of ['FOY', 'BDE', 'BDD', 'BDA', 'BDS']) {
+    await prisma.group.create({
+      data: {
+        name,
+        uid: slug(name + ' ' + asso.name),
+        color: color(name),
+        type: GroupType.StudentAssociationSection,
+        studentAssociation: { connect: { id: asso.id } },
+        linkCollection: {
+          create: {
+            links: {
+              create: [],
+            },
+          },
+        },
+        address: '2 rue Charles Camichel, 31000 Toulouse',
+        email: `${slug(name)}@list.example.com`,
+        lyiaAccounts: {
+          create: {
+            name: `${asso.school.name.toUpperCase()} ${name.toUpperCase()}`,
+            uid: `${slug(asso.school.name)}-${slug(name)}`,
+            privateToken: 'a',
+            vendorToken: 'a',
+          },
+        },
+      },
+    });
+  }
+}
 
 const usersData = [
   { firstName: 'Annie', lastName: 'Versaire', admin: true },
@@ -189,22 +236,6 @@ const clubsData = [
   { name: 'Yoga' },
   { name: 'Zumba' },
 ];
-
-const color = (str: string) => {
-  let hash = 0xc0_ff_ee;
-  /* eslint-disable */
-  for (const char of str) hash = ((hash << 5) - hash + char.charCodeAt(0)) | 0;
-  const red = ((hash & 0xff0000) >> 16) + 1;
-  const green = ((hash & 0x00ff00) >> 8) + 1;
-  const blue = (hash & 0x0000ff) + 1;
-  /* eslint-enable */
-  const l = 0.4 * red + 0.4 * green + 0.2 * blue;
-  const h = (n: number) =>
-    Math.min(0xd0, Math.max(0x60, Math.floor((n * 0xd0) / l)))
-      .toString(16)
-      .padStart(2, '0');
-  return `#${h(red)}${h(green)}${h(blue)}`;
-};
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 for (const [_, group] of clubsData.entries()) {

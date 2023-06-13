@@ -1,9 +1,9 @@
 import type { LydiaAccount } from '@prisma/client';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
-
 import { createHash } from 'node:crypto';
 import slug from 'slug';
+import { userIsPresidentOf, userIsTreasurerOf } from './groups.js';
 
 export const LydiaAccountType = builder.prismaObject('LydiaAccount', {
   fields: (t) => ({
@@ -43,10 +43,11 @@ export function lydiaSignature(
     .digest('hex');
 }
 
-builder.mutationField('createLydiaAccount', (t) =>
+builder.mutationField('upsertLydiaAccount', (t) =>
   t.prismaField({
     type: LydiaAccountType,
     args: {
+      id: t.arg.id({ required: false }),
       groupUid: t.arg.string(),
       name: t.arg.string(),
       privateToken: t.arg.string(),
@@ -54,22 +55,25 @@ builder.mutationField('createLydiaAccount', (t) =>
     },
     authScopes: (_, { groupUid }, { user }) =>
       Boolean(
-        user?.admin ||
-          user?.groups.some(
-            ({ group, president, treasurer }) => group.uid === groupUid && (president || treasurer)
-          )
+        user?.admin || userIsPresidentOf(user, groupUid) || userIsTreasurerOf(user, groupUid)
       ),
-    resolve: async (query, _, { groupUid, name, privateToken, vendorToken }) =>
-      prisma.lydiaAccount.create({
+    async resolve(query, _, { id, groupUid, name, privateToken, vendorToken }) {
+      const data = {
+        uid: slug(name),
+        name,
+        group: { connect: { uid: groupUid } },
+        privateToken,
+        vendorToken,
+      };
+      return prisma.lydiaAccount.upsert({
         ...query,
-        data: {
-          uid: slug(name),
-          name,
-          group: { connect: { uid: groupUid } },
-          privateToken,
-          vendorToken,
+        create: data,
+        update: data,
+        where: {
+          id: id ?? '',
         },
-      }),
+      });
+    },
   })
 );
 
@@ -100,12 +104,7 @@ builder.queryField('lydiaAccountsOfGroup', (t) =>
       uid: t.arg.string(),
     },
     authScopes: (_, { uid }, { user }) =>
-      Boolean(
-        user?.admin ||
-          user?.groups.some(
-            ({ group, president, treasurer }) => group.uid === uid && (president || treasurer)
-          )
-      ),
+      Boolean(user?.admin || userIsPresidentOf(user, uid) || userIsTreasurerOf(user, uid)),
     async resolve(query, _, { uid }) {
       return prisma.lydiaAccount.findMany({ ...query, where: { group: { uid } } });
     },
