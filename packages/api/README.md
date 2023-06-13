@@ -165,3 +165,32 @@ query {
   - **objects/**: GraphQL operations grouped by object type
   - **services/**: business logic grouped by purpose
   - **index.ts**: starts the server
+
+## Adding a new resource
+
+You need to do a few things:
+
+1. Define its model in `prisma/schema.prisma`
+   1. Make sure that the line immediately after the model declaration (`model MyName {`) defines the id of the resource
+   1. Use `@default(dbgenerated("nanoid('prefix:')"))` where `prefix` is a short prefix corresponding to your resource's name as the id's default value
+   1. Execute `node scripts/update-id-prefix-to-typename-map.js` to update the ID prefix to typename map in `src/builder.ts`.
+1. Define the object in `src/objects/my-resource-name.ts`
+1. Define its fields, using:
+   - a `prismaNode` if you need paging support
+   - a `prismaObject` otherwise
+1. Define its queries, each resource should have at least:
+   - a single-resource query, that you get by uid or id if the
+     resource has no uid
+   - a "list" query, tha gets all of the resources
+1. Define its mutations, each resource should have at least:
+   - an "upsert" mutation, that takes all of the data and an optinal `id` argument. If `id` is null, the resource will be created with the data, else, the resource identified by `id` will be updated.
+   - a deletion mutation, that takes the `id` of the resource and returns `true` if the resource was deleted and `false` otherwise.
+1. Make sure to get permissions right.
+
+   - Each query and mutation should define an `authScope` method that makes sure the logged-in user has the right to get, list, update, create or delete the requested resource.
+
+1. TEST that your API works using the GraphiQL endpoint (`localhost:4000/graphql` in your browser), setting the `Authorization` header to various Bearer tokens that represent:
+   - An admin user
+   - Every possible case dependending on the permissions of the resource (for example, managers of an event for the `EventManager` resource)
+   - A regular user
+   - A logged-out user (i.e. no `Authorization` header)
