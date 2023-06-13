@@ -17,30 +17,28 @@ import { prisma } from './prisma.js';
  * Maps database ID prefixes to GraphQL type names. Please add new types here as they are added to
  * the schema, by running node scripts/update-id-prefix-to-typename-map.js.
  */
-/* @generated from schema by file:///home/ewen/projects/centraverse/packages/api/scripts/update-id-prefix-to-typename-map.js */ export const ID_PREFIXES_TO_TYPENAMES = {"u":"User","candidate":"UserCandidate","links":"LinkCollection","link":"Link","major":"Major","school":"School","credential":"Credential","ae":"StudentAssociation","g":"Group","a":"Article","img":"Image","e":"Event","tg":"TicketGroup","t":"Ticket","r":"Registration","log":"LogEntry","lydia":"LydiaAccount","barweek":"BarWeek"}
+/* @generated from schema by file:///home/ewen/projects/centraverse/packages/api/scripts/update-id-prefix-to-typename-map.js */ export const ID_PREFIXES_TO_TYPENAMES =
+  {
+    u: 'User',
+    candidate: 'UserCandidate',
+    links: 'LinkCollection',
+    link: 'Link',
+    major: 'Major',
+    school: 'School',
+    credential: 'Credential',
+    ae: 'StudentAssociation',
+    g: 'Group',
+    a: 'Article',
+    img: 'Image',
+    e: 'Event',
+    tg: 'TicketGroup',
+    t: 'Ticket',
+    r: 'Registration',
+    log: 'LogEntry',
+    lydia: 'LydiaAccount',
+    barweek: 'BarWeek',
+  };
 /* end @generated from schema */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export const builder = new SchemaBuilder<{
   AuthContexts: AuthContexts;
@@ -85,7 +83,7 @@ export const builder = new SchemaBuilder<{
     },
   },
   tracing: {
-    default: (conn) => isRootField(config),
+    default: (config) => isRootField(config),
     wrap: (resolver, _options, config) =>
       wrapResolver(resolver, (_error, duration) => {
         console.log(

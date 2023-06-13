@@ -10,6 +10,7 @@ import { CredentialType, EventVisibility, GroupType, type Prisma } from '@prisma
 import { hash } from 'argon2';
 import slug from 'slug';
 import { prisma } from './prisma.js';
+import { createUid } from './services/registration.js';
 
 type SizedArray<T, N extends number> = N extends N
   ? number extends N
@@ -89,39 +90,52 @@ for (const [i, name] of ['AE EAU 2022', 'AE FEU 2022', 'AE TERRE 2022', 'AE AIR 
 const studentAssociations = await prisma.studentAssociation.findMany();
 
 const usersData = [
-  { uid: 'annie', firstName: 'Annie', lastName: 'Versaire', admin: true },
-  { uid: 'bernard', firstName: 'Bernard', lastName: 'Tichaut', canEditGroups: true },
-  { uid: 'camille', firstName: 'Camille', lastName: 'Honnête', canEditUsers: true },
-  { uid: 'denis', firstName: 'Denis', lastName: 'Chon' },
-  { uid: 'elie', firstName: 'Élie', lastName: 'Coptère' },
-  { uid: 'fred', firstName: 'Fred', lastName: 'Voyage' },
-  { uid: 'gerard', firstName: 'Gérard', lastName: 'Menvu' },
-  { uid: 'henri', firstName: 'Henri', lastName: 'Cochet' },
-  { uid: 'ines', firstName: 'Inès', lastName: 'Alamaternité' },
-  { uid: 'jennifer', firstName: 'Jennifer', lastName: 'Arepassé' },
-  { uid: 'kelly', firstName: 'Kelly', lastName: 'Diote' },
-  { uid: 'lara', firstName: 'Lara', lastName: 'Clette' },
-  { uid: 'marc', firstName: 'Marc', lastName: 'Des Points' },
-  { uid: 'nordine', firstName: 'Nordine', lastName: 'Ateur' },
-  { uid: 'otto', firstName: 'Otto', lastName: 'Graf' },
-  { uid: 'paul', firstName: 'Paul', lastName: 'Ochon' },
-  { uid: 'quentin', firstName: 'Quentin', lastName: 'Deux Trois' },
-  { uid: 'rick', firstName: 'Rick', lastName: 'Astley' },
-  { uid: 'sacha', firstName: 'Sacha', lastName: 'Touille' },
-  { uid: 'therese', firstName: 'Thérèse', lastName: 'Ponsable' },
-  { uid: 'urbain', firstName: 'Urbain', lastName: 'De Bouche' },
-  { uid: 'vivien', firstName: 'Vivien', lastName: 'Chezmoi' },
-  { uid: 'wendy', firstName: 'Wendy', lastName: 'Gestion' },
-  { uid: 'xavier', firstName: 'Xavier', lastName: 'K. Paétrela' },
-  { uid: 'yvon', firstName: 'Yvon', lastName: 'Enbavé' },
-  { uid: 'zinedine', firstName: 'Zinédine', lastName: 'Pacesoir' },
+  { firstName: 'Annie', lastName: 'Versaire', admin: true },
+  { firstName: 'Bernard', lastName: 'Tichaut', canEditGroups: true },
+  { firstName: 'Camille', lastName: 'Honnête', canEditUsers: true },
+  { firstName: 'Denis', lastName: 'Chon' },
+  { firstName: 'Élie', lastName: 'Coptère' },
+  { firstName: 'Fred', lastName: 'Voyage' },
+  { firstName: 'Gérard', lastName: 'Menvu' },
+  { firstName: 'Henri', lastName: 'Cochet' },
+  { firstName: 'Inès', lastName: 'Alamaternité' },
+  { firstName: 'Jennifer', lastName: 'Arepassé' },
+  { firstName: 'Kelly', lastName: 'Diote' },
+  { firstName: 'Lara', lastName: 'Clette' },
+  { firstName: 'Marc', lastName: 'Des Points' },
+  { firstName: 'Nordine', lastName: 'Ateur' },
+  { firstName: 'Otto', lastName: 'Graf' },
+  { firstName: 'Paul', lastName: 'Ochon' },
+  { firstName: 'Quentin', lastName: 'Deux Trois' },
+  { firstName: 'Rick', lastName: 'Astley' },
+  { firstName: 'Sacha', lastName: 'Touille' },
+  { firstName: 'Thérèse', lastName: 'Ponsable' },
+  { firstName: 'Urbain', lastName: 'De Bouche' },
+  { firstName: 'Vivien', lastName: 'Chezmoi' },
+  { firstName: 'Wendy', lastName: 'Gestion' },
+  { firstName: 'Xavier', lastName: 'K. Paétrela' },
+  { firstName: 'Yvon', lastName: 'Enbavé' },
+  { firstName: 'Zinédine', lastName: 'Pacesoir' },
 ]; // satisfies Array<Partial<Prisma.UserCreateInput>>;
 
 for (const [i, data] of usersData.entries()) {
   await prisma.user.create({
     data: {
       ...data,
-      email: `${data.uid}@example.com`,
+      uid: await createUid(data),
+      email: `${data.firstName.toLowerCase().replace(/[^a-z]/g, '-')}.${data.lastName
+        .toLowerCase()
+        .replace(/[^a-z]/g, '-')}@${randomChoice([
+        'gmail.com',
+        'outlook.com',
+        'hotmail.fr',
+        'orange.fr',
+        'free.fr',
+        'gmail.fr',
+        'laposte.net',
+        'wanadoo.fr',
+        'sfr.fr',
+      ])}`,
       description: i % 2 ? "Salut c'est moi" : '',
       linkCollection: {
         create: {
@@ -140,7 +154,7 @@ for (const [i, data] of usersData.entries()) {
       birthday: new Date(Date.UTC(2000, (i * 37) % 12, (i * 55) % 28)),
       graduationYear: 2020 + (i % 6),
       major: { connect: { id: randomIdOf(majors) } },
-      credentials: { create: { type: CredentialType.Password, value: await hash(data.uid) } },
+      credentials: { create: { type: CredentialType.Password, value: 'a' } },
     },
   });
 }
@@ -267,7 +281,7 @@ const Groupe1 = await prisma.group.create({
     uid: 'groupe-1',
     color: '#00ff00',
     parent: { connect: { id: Intégration2022.id } },
-    familyRoot: { connect: { id: Intégration2022.familyId as string } },
+    familyRoot: { connect: { id: Intégration2022.familyId! } },
     linkCollection: { create: {} },
     // members: { createMany: { data: [{ memberId: 2 }, { memberId: 3 }, { memberId: 4 }] } },
   },
@@ -280,7 +294,7 @@ const Groupe2 = await prisma.group.create({
     uid: 'groupe-2',
     color: '#0000ff',
     parent: { connect: { id: Intégration2022.id } },
-    familyRoot: { connect: { id: Intégration2022.familyId as string } },
+    familyRoot: { connect: { id: Intégration2022.familyId! } },
     linkCollection: { create: {} },
     // members: { createMany: { data: [{ memberId: 5 }, { memberId: 6 }, { memberId: 7 }] } },
   },
@@ -541,7 +555,7 @@ await prisma.event.create({
     uid: 'passation-tvn7',
     title: 'Passation TVn7',
     visibility: EventVisibility.Restricted,
-    author: { connect: { uid: 'quentin' } },
+    author: { connect: { uid: 'deuxtroisq' } },
     group: { connect: { uid: 'ski' } },
     links: {
       create: {
