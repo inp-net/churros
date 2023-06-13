@@ -11,6 +11,7 @@
   import { onMount } from 'svelte';
   import Alert from '$lib/components/alerts/Alert.svelte';
   import ParentSearch from '../../../clubs/create/ParentSearch.svelte';
+  import { goto } from '$app/navigation';
 
   export let data: PageData;
 
@@ -26,7 +27,7 @@
     name,
     selfJoinable,
     type,
-    parentId = '',
+    parentId = ''
   } = data.group;
 
   let otherGroups: Array<{ groupId: string; uid: string }> = [];
@@ -36,7 +37,7 @@
 
     ({ parentId = '' } = data.group);
     ({ groups: otherGroups } = await $zeus.query({
-      groups: [{}, { groupId: true, uid: true }],
+      groups: [{}, { groupId: true, uid: true }]
     }));
     parentUid = parentId ? otherGroups.find((g) => g.groupId === parentId)?.uid ?? '' : '';
   });
@@ -47,8 +48,8 @@
     if (loading) return;
     try {
       loading = true;
-      const { updateGroup } = await $zeus.mutate({
-        updateGroup: [
+      const { upsertGroup } = await $zeus.mutate({
+        upsertGroup: [
           {
             uid: data.group.uid,
             address,
@@ -60,23 +61,26 @@
             name,
             selfJoinable,
             parentId,
-            type,
+            type
           },
           {
             __typename: true,
             '...on Error': { message: true },
-            '...on MutationUpdateGroupSuccess': { data: clubQuery },
-          },
-        ],
+            '...on MutationUpsertGroupSuccess': { data: clubQuery }
+          }
+        ]
       });
 
-      if (updateGroup.__typename === 'Error') {
-        serverError = updateGroup.message;
+      if (upsertGroup.__typename === 'Error') {
+        serverError = upsertGroup.message;
         return;
       }
 
       serverError = '';
-      data.group = updateGroup.data;
+      data.group = upsertGroup.data;
+      if (data.group.uid) {
+        goto(`/club/${data.group.uid}/edit`);
+      }
     } finally {
       loading = false;
     }
@@ -97,6 +101,7 @@
         </select></label
       >
     </p>
+    <p><label><input type="checkbox" bind:value={selfJoinable} /> Auto-joignable</label></p>
     <p><label>Nom : <input type="text" bind:value={name} /></label></p>
     <p>
       <label
@@ -118,9 +123,9 @@
     <p>
       <label>Adresse : <input type="text" bind:value={address} /></label>
     </p>
-    <!-- <p>
-        <label>Email : <input type="email" bind:value={email} /></label>
-    </p> -->
+    <p>
+      <label>Email : <input type="email" bind:value={email} /></label>
+    </p>
     <p>Réseaux sociaux :</p>
     <ul>
       {#each linkCollection.links as link, i}
@@ -146,7 +151,7 @@
                     ...linkCollection.links.slice(0, i - 1),
                     linkCollection.links[i],
                     linkCollection.links[i - 1],
-                    ...linkCollection.links.slice(i + 1),
+                    ...linkCollection.links.slice(i + 1)
                   ];
                 }}
               >

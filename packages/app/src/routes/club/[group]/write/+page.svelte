@@ -2,16 +2,31 @@
   import { goto } from '$app/navigation';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
+  import EventSearch from './EventSearch.svelte';
+  import { page } from '$app/stores';
+  import { me } from '$lib/session';
 
   export let data: PageData;
 
   let title = '';
   let body = '';
+  let eventId: string | undefined;
 
   const createArticle = async () => {
     try {
       await $zeus.mutate({
-        createArticle: [{ title, body, groupUid: data.group.uid }, { id: true }],
+        upsertArticle: [
+          {
+            title,
+            body,
+            groupId: data.group.id,
+            authorId: $me?.id,
+            links: [],
+            published: false,
+            eventId
+          },
+          { id: true }
+        ]
       });
       await goto('..');
     } catch (error: unknown) {
@@ -21,6 +36,7 @@
 </script>
 
 <form on:submit|preventDefault={createArticle}>
+  <p><EventSearch groupUid={$page.params.group} bind:eventId /></p>
   <p>
     <label>
       Titre :

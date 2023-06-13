@@ -2,7 +2,7 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
-  let { author, title, bodyHtml, group } = data.article;
+  let { author, title, bodyHtml, group, event } = data.article;
 
   let memberTitle = data.article.author?.groups.find(
     (g) => g.group.uid === data.article.group.uid
@@ -12,6 +12,12 @@
 <h1>{title}</h1>
 
 {@html bodyHtml}
+
+{#if event}
+  <section class="event">
+    <a href="/club/{group.uid}/event/{event.uid}">Voir l'évènement «{event.title}» </a>
+  </section>
+{/if}
 
 {#if author}
   <section class="author">

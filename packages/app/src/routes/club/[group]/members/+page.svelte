@@ -3,20 +3,16 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
+  let { group } = data;
 
   let uid = '';
   let title = '';
-
-  // Please tell me there's a better way to do this
-  function extractIdInteger(groupId: string): string {
-    return atob(groupId).split(':')[1];
-  }
 
   const addGroupMember = async () => {
     try {
       const { addGroupMember } = await $zeus.mutate({
         addGroupMember: [
-          { groupUid: data.group.uid, uid, title },
+          { groupUid: group.uid, uid, title },
           {
             memberId: true,
             title: true,
@@ -25,9 +21,9 @@
             secretary: true,
             vicePresident: true,
             canEditMembers: true,
-            member: { firstName: true, lastName: true },
-          },
-        ],
+            member: { firstName: true, lastName: true }
+          }
+        ]
       });
       data.group.members = [...data.group.members, addGroupMember];
     } catch (error: unknown) {
@@ -38,7 +34,7 @@
   const deleteGroupMember = async (memberId: string) => {
     try {
       await $zeus.mutate({
-        deleteGroupMember: [{ groupId: extractIdInteger(data.group.id), memberId }, true],
+        deleteGroupMember: [{ groupId: group.id, memberId }, true]
       });
       data.group.members = data.group.members.filter((member) => member.memberId !== memberId);
     } catch (error: unknown) {
@@ -52,7 +48,7 @@
       makePresident,
       makeTreasurer,
       makeVicePresident,
-      makeSecretary,
+      makeSecretary
     }: {
       makePresident?: boolean;
       makeTreasurer?: boolean;
@@ -63,26 +59,26 @@
     try {
       const member = data.group.members.find((member) => member.memberId === memberId);
       if (!member) throw new Error('Member not found');
-      const { updateGroupMember } = await $zeus.mutate({
-        updateGroupMember: [
+      const { upsertGroupMember } = await $zeus.mutate({
+        upsertGroupMember: [
           {
-            groupId: extractIdInteger(data.group.id),
+            groupId: data.group.id,
             memberId,
             title: member.title,
             president: makePresident ?? member.president,
             treasurer: makeTreasurer ?? member.treasurer,
             vicePresident: makeVicePresident ?? member.vicePresident,
-            secretary: makeSecretary ?? member.secretary,
+            secretary: makeSecretary ?? member.secretary
           },
-          { title: true, president: true, treasurer: true, vicePresident: true, secretary: true },
-        ],
+          { title: true, president: true, treasurer: true, vicePresident: true, secretary: true }
+        ]
       });
       data.group.members = data.group.members.map((member) =>
         member.memberId === memberId
-          ? { ...member, ...updateGroupMember }
+          ? { ...member, ...upsertGroupMember }
           : {
               ...member,
-              president: updateGroupMember.president ? false : member.president,
+              president: upsertGroupMember.president ? false : member.president
             }
       );
     } catch (error: unknown) {

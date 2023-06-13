@@ -9,14 +9,14 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
 
   if (
     !me.canEditGroups &&
-    !me.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === params.uid)
+    !me.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === params.group)
   )
     throw redirect(307, '.');
 
   return loadQuery(
     {
       group: [
-        params,
+        { uid: params.group },
         {
           id: true,
           uid: true,

@@ -19,13 +19,13 @@ export const load: PageLoad = async ({ fetch, parent, url, params }) => {
   return loadQuery(
     {
       group: [
-        params,
+        { uid: params.group },
         Selector('Group')({
           email: true,
         }),
       ],
       lydiaAccountsOfGroup: [
-        params,
+        { uid: params.group },
         Selector('QueryLydiaAccountsConnection')({
           pageInfo: { hasNextPage: true, endCursor: true },
           edges: {

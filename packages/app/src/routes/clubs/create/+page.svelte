@@ -4,70 +4,19 @@
   import Button from '$lib/components/buttons/Button.svelte';
   import FormInput from '$lib/components/inputs/FormInput.svelte';
   import { GraphQLError, GroupType, zeus, ZeusError } from '$lib/zeus';
+  import ClubDetails from '$lib/../routes/club/[group]/edit/ClubDetails.svelte';
   import type { PageData } from './$types';
   import ParentSearch from './ParentSearch.svelte';
+  import ClubPicture from '$lib/../routes/club/[group]/edit/ClubPicture.svelte';
+  import { onMount } from 'svelte';
 
   export let data: PageData;
-
-  let name = '';
-  let parentUid: string | undefined;
-  let selfJoinable = false;
-  let serverError = '';
-
-  let schoolId = data.schools[0].id;
-
-  let loading = false;
-  const createGroup = async () => {
-    if (loading) return;
-
-    try {
-      serverError = '';
-      loading = true;
-      const { createGroup: group } = await $zeus.mutate({
-        createGroup: [
-          { type: GroupType.Club, name, schoolId, parentUid, selfJoinable },
-          { uid: true },
-        ],
-      });
-      await goto(`/club/${group.uid}`);
-    } catch (error: unknown) {
-      if (!(error instanceof ZeusError) && !(error instanceof GraphQLError)) throw error;
-      serverError = error.message;
-    } finally {
-      loading = false;
-    }
-  };
 </script>
 
-<form on:submit|preventDefault={createGroup}>
-  <FormInput label="Nom du groupe :">
-    <input type="text" bind:value={name} required />
-  </FormInput>
+<h1>Création d'un groupe</h1>
 
-  <p>
-    <ParentSearch bind:parentUid />
-  </p>
-  <p>
-    <label>
-      École&nbsp;:
-      <select id="school" bind:value={schoolId}>
-        {#each data.schools as { id, name }}
-          <option value={id}>{name}</option>
-        {/each}
-      </select>
-    </label>
-  </p>
-  <p class="oneline">
-    <label>
-      <input type="checkbox" bind:checked={selfJoinable} />
-      Autoriser l'auto-inscription
-    </label>
-  </p>
-  <Button type="submit" theme="primary" {loading}>Créer le groupe</Button>
-  {#if serverError}
-    <Alert theme="danger">{serverError}</Alert>
-  {/if}
-</form>
+<!-- <ClubPicture bind:club={data.group} /> -->
+<ClubDetails bind:data />
 
 <style lang="scss">
   input,

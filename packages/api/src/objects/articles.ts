@@ -90,8 +90,8 @@ builder.mutationField('upsertArticle', (t) =>
     type: ArticleType,
     args: {
       id: t.arg.id({ required: false }),
-      authorId: t.arg.id({ required: false }),
-      groupId: t.arg.id({ required: false }),
+      authorId: t.arg.id(),
+      groupId: t.arg.id(),
       title: t.arg.string(),
       body: t.arg.string(),
       published: t.arg.boolean(),
@@ -143,8 +143,16 @@ builder.mutationField('upsertArticle', (t) =>
     async resolve(query, _, { id, eventId, authorId, groupId, title, body, published, links }) {
       const data = {
         uid: slug(title),
-        author: { connect: authorId === null ? undefined : { id: authorId } },
-        group: { connect: groupId === null ? undefined : { id: groupId } },
+        author: {
+          connect: {
+            id: authorId,
+          },
+        },
+        group: {
+          connect: {
+            id: groupId,
+          },
+        },
         title,
         body,
         published,

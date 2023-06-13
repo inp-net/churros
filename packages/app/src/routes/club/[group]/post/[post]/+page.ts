@@ -19,6 +19,10 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
             uid: true,
             groups: { group: { name: true, uid: true }, title: true },
           },
+          event: {
+            uid: true,
+            title: true,
+          }
         },
       ],
     },

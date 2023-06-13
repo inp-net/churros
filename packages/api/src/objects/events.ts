@@ -346,3 +346,14 @@ export function eventManagedByUser(
     )
   );
 }
+
+builder.queryField('searchEvents', t => t.prismaField({
+  type: [EventType],
+  args: {
+    q: t.arg.string(),
+  },
+  async resolve(query, _, { q}) {
+
+  }
+
+}))

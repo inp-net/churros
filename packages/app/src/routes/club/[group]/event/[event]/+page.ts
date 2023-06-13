@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
         { groupUid: params.group, uid: params.event },
         Selector('Event')({
           articles: {
-            slug: true,
+            uid: true,
             bodyHtml: true,
             title: true,
             group: {

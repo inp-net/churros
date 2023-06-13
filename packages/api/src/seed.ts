@@ -332,7 +332,7 @@ await prisma.group.create({
   },
 });
 
-const groups = await prisma.group.findMany();
+let groups = await prisma.group.findMany({ include: { members: { include: { member: true } } } });
 
 const groupMembers: Prisma.GroupMemberCreateManyInput[] = [];
 
@@ -385,6 +385,8 @@ for (const group of groups) {
 
 await prisma.groupMember.createMany({ data: groupMembers });
 
+groups = await prisma.group.findMany({ include: { members: { include: { member: true } } } });
+
 const articleData: Prisma.ArticleCreateInput[] = [];
 
 const end = 26 * 5;
@@ -392,19 +394,20 @@ const startDate = new Date('2021-01-01T13:00:00.000Z').getTime();
 const endDate = new Date('2022-09-01T13:00:00.000Z').getTime();
 
 for (let i = 0; i < end; i++) {
+  const group = randomChoice(groups);
   articleData.push({
     uid: `article-${i}`,
     title: `Article ${i}`,
     group: {
       connect: {
-        id: randomIdOf(groups),
+        id: group.id,
       },
     },
     author:
       i % 11 === 0
         ? undefined
         : {
-            connect: { id: randomIdOf(users) },
+            connect: { id: randomIdOf(group.members.map((m) => m.member)) },
           },
     body: `**Lorem ipsum dolor sit amet**, consectetur adipiscing elit. Ut feugiat velit sit amet tincidunt gravida. Duis eget laoreet sapien, id.
 
