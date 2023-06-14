@@ -1,9 +1,12 @@
 export type FuzzySearchResult = Array<{ id: string; changes: number }>;
 
 export const levenshteinSorter =
-  (fuzzySearchResults: FuzzySearchResult) => (a: { id: string }, b: { id: string }) =>
-    fuzzySearchResults.find(({ id }) => id === a.id)!.changes -
-    fuzzySearchResults.find(({ id }) => id === b.id)!.changes;
+  (fuzzySearchResults: FuzzySearchResult) => (a: { id: string }, b: { id: string }) => {
+    const aObj = fuzzySearchResults.find(({ id }) => id === a.id);
+    const bObj = fuzzySearchResults.find(({ id }) => id === b.id);
+    if (aObj?.changes && bObj?.changes) return aObj.changes - bObj.changes;
+    return 0;
+  };
 
 export function levenshteinFilterAndSort<T extends { id: string }>(
   fuzzySearchResults: FuzzySearchResult,
@@ -14,22 +17,13 @@ export function levenshteinFilterAndSort<T extends { id: string }>(
     const changesCountMap = new Map<string, number>();
     for (const { id, changes } of fuzzySearchResults) changesCountMap.set(id, changes);
 
-    console.log(
-      `Filtering and sorting ${results.length} results with map ${JSON.stringify(
-        Object.fromEntries(
-          [...changesCountMap.entries()].map(([id, changes]) => [
-            id,
-            { changes, uid: results.find(({ id: _id }) => _id === id)?.uid },
-          ])
-        )
-      )}`
-    );
-
-    const changes = (a: T) => changesCountMap.get(a.id)!;
+    const changes = (a: T) => changesCountMap.get(a.id);
 
     return results
       .filter(({ id }) => !excludeIDs.includes(id) && changesCountMap.get(id)! <= maxChanges)
-      .sort((a: T, b: T) => changes(a) - changes(b));
+      .sort((a: T, b: T) =>
+        changes(a) !== undefined && changes(b) !== undefined ? changes(a)! - changes(b)! : 0
+      );
   };
 }
 
