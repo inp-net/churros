@@ -14,21 +14,23 @@
 
   const createArticle = async () => {
     try {
-      await $zeus.mutate({
+      const {
+        upsertArticle: { uid },
+      } = await $zeus.mutate({
         upsertArticle: [
           {
             title,
             body,
             groupId: data.group.id,
-            authorId: $me?.id,
+            authorId: $me!.id,
             links: [],
             published: false,
-            eventId
+            eventId,
           },
-          { id: true }
-        ]
+          { id: true, uid: true },
+        ],
       });
-      await goto('..');
+      await goto(`../post/${uid}`);
     } catch (error: unknown) {
       console.error(error);
     }

@@ -15,9 +15,7 @@
       type="text"
       on:blur={(e) => {
         const val = e.target.value;
-        if (!val) {
-          value = value.filter((g) => g.uid !== val);
-        }
+        if (!val) value = value.filter((g) => g.uid !== val);
       }}
       bind:value={value[i].uid}
     />

@@ -4,7 +4,6 @@
   import MajesticonsPlus from '~icons/majesticons/plus';
   import MajesticonsChevronDown from '~icons/majesticons/chevron-down-line';
   import MajesticonsChevronUp from '~icons/majesticons/chevron-up-line';
-  import FormCard from '../cards/FormCard.svelte';
   import FormInput from '../inputs/FormInput.svelte';
   import IntegerListInput from '../inputs/IntegerListInput.svelte';
   import GroupListInput from '../inputs/GroupListInput.svelte';
@@ -20,21 +19,15 @@
   }
 
   function nextTicketId(): number {
-    console.log(
-      `finding max of ${[
-        ...event.tickets.map(({ id }) => id),
-        ...event.ticketGroups.map(({ tickets }) => tickets.map(({ id }) => id)).flat(),
-      ]}`
-    );
     return (
       Math.max(
         ...event.tickets.map(({ id }) => id),
-        ...event.ticketGroups.map(({ tickets }) => tickets.map(({ id }) => id)).flat()
+        ...event.ticketGroups.flatMap(({ tickets }) => tickets.map(({ id }) => id))
       ) + 1
     );
   }
 
-  const bang = (x: any) => x!;
+  const bang = <T extends {}>(x?: T) => x!;
 
   const defaultTicket = (id: number) => ({
     allowedPaymentMethods: ['Cash', 'Lydia'] as Array<'Cash' | 'Lydia'>,
@@ -48,9 +41,11 @@
     links: [],
     name: '',
     onlyManagersCanProvide: false,
+    // eslint-disable-next-line unicorn/no-null
     openToAlumni: null,
     openToExternal: false,
     openToGroups: [],
+    // eslint-disable-next-line unicorn/no-null
     openToNonAEContributors: null,
     openToPromotions: [],
     openToSchools: [],
@@ -91,7 +86,7 @@
   }>;
 
   export let event: {
-    tickets: Array<Ticket>;
+    tickets: Ticket[];
 
     ticketGroups: Array<{
       name: string;
@@ -498,12 +493,12 @@
 
 <style>
   .ticket-group {
-    background: lightgray;
     padding: 1em;
+    background: lightgray;
   }
 
   .ticket {
-    background: lightcyan;
     padding: 1em;
+    background: lightcyan;
   }
 </style>

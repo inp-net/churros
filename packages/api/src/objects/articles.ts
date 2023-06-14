@@ -5,6 +5,7 @@ import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
 import { DateTimeScalar } from './scalars.js';
 import { LinkInput } from './links.js';
+import { dichotomid } from 'dichotomid';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
@@ -114,35 +115,26 @@ builder.mutationField('upsertArticle', (t) =>
 
       const article = await prisma.article.findUniqueOrThrow({ where: { id } });
 
-      // Who can change the author?
-      if (authorId !== undefined) {
-        // To set their-self or remove the author, the user must be allowed to write articles
-        if (authorId === user.id || authorId === null) {
-          return (
-            authorId === article.authorId ||
-            user.groups.some(
-              ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
-            )
-          );
-        }
-
-        // Spoofing is forbidden
-        return false;
-      }
-
-      // Who can edit this article?
       return (
+        // Spoofing is disallowed
+        ((authorId === user.id &&
+          // To set their-self or remove the author, the user must be allowed to write articles
+          authorId === article.authorId) ||
+          user.groups.some(
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
+          )) &&
+        // Who can edit this article?
         // The author
-        user.id === article.authorId ||
-        // Other authors of the group
-        user.groups.some(
-          ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
-        )
+        (user.id === article.authorId ||
+          // Other authors of the group
+          user.groups.some(
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
+          ))
       );
     },
     async resolve(query, _, { id, eventId, authorId, groupId, title, body, published, links }) {
       const data = {
-        uid: slug(title),
+        uid: await createUid({ title, groupId }),
         author: {
           connect: {
             id: authorId,
@@ -227,3 +219,15 @@ builder.mutationField('deleteArticle', (t) =>
 //     const terms = new Set(String(q).split(' ').filter(Boolean));
 //   }
 // }))
+
+export async function createUid({ title, groupId }: { title: string; groupId: string }) {
+  const base = slug(title);
+  const n = await dichotomid(
+    async (n) =>
+      !(await prisma.article.findUnique({
+        where: { groupId_uid: { groupId, uid: `${base}${n > 1 ? `-${n}` : ''}` } },
+      }))
+  );
+  console.log(`${base}${n > 1 ? `-${n}` : ''}`);
+  return `${base}${n > 1 ? `-${n}` : ''}`;
+}

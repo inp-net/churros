@@ -2,9 +2,9 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
-  let { author, title, bodyHtml, group, event } = data.article;
+  const { author, title, bodyHtml, group, event } = data.article;
 
-  let memberTitle = data.article.author?.groups.find(
+  const memberTitle = data.article.author?.groups.find(
     (g) => g.group.uid === data.article.group.uid
   )?.title;
 </script>

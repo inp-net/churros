@@ -12,9 +12,7 @@
     <input
       type="text"
       on:blur={() => {
-        if (!value[i]) {
-          value = value.filter((g) => g !== value[i]);
-        }
+        if (!value[i]) value = value.filter((g) => g !== value[i]);
       }}
       bind:value={value[i]}
     />

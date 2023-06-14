@@ -9,7 +9,6 @@ import { LinkInput } from './links.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
 import {
   type FuzzySearchResult,
-  prepareLevenshteinQuery,
   splitSearchTerms,
   levenshteinSorter,
   levenshteinFilterAndSort,

@@ -3,14 +3,14 @@
   import IconCheckmark from '~icons/majesticons/plus-line';
   import IconClose from '~icons/majesticons/close-line';
 
-  export let tristate: boolean = true;
+  export let tristate = true;
+  // eslint-disable-next-line unicorn/no-null
   export let value: boolean | null = null;
   export let name: string | undefined = undefined;
   let previousValue: boolean | null = value;
 
-  const getTriState = (target: HTMLInputElement) => {
-    return target.indeterminate ? null : target.checked;
-  };
+  // eslint-disable-next-line unicorn/no-null
+  const getTriState = (target: HTMLInputElement) => (target.indeterminate ? null : target.checked);
 
   const setTriState = (target: HTMLInputElement, value: boolean | null) => {
     if (value === null) {
@@ -20,22 +20,24 @@
       target.indeterminate = false;
       target.checked = value;
     }
+
     previousValue = value;
   };
 
-  export let labelTrue: string = 'Oui';
-  export let labelFalse: string = 'Non';
-  export let labelNull: string = 'Inconnu';
+  export let labelTrue = 'Oui';
+  export let labelFalse = 'Non';
+  export let labelNull = 'Inconnu';
   export let label: string;
 
   let checkboxElement: HTMLInputElement;
 
-  onMount(async () => {
+  onMount(() => {
     previousValue = value;
     setTriState(checkboxElement, value);
   });
 
-  const bang = (x: any) => x!;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const bang = (x: any) => x;
 </script>
 
 <label class="input-checkbox" class:tristate>
@@ -44,13 +46,11 @@
     bind:this={checkboxElement}
     on:change={(event) => {
       event.preventDefault();
-      if (previousValue === null) {
-        setTriState(bang(event).target, true);
-      } else if (previousValue === true) {
-        setTriState(bang(event).target, false);
-      } else {
-        setTriState(bang(event).target, tristate ? null : true);
-      }
+      if (previousValue === null) setTriState(bang(event).target, true);
+      else if (previousValue) setTriState(bang(event).target, false);
+      // eslint-disable-next-line unicorn/no-null
+      else setTriState(bang(event).target, tristate ? null : true);
+
       value = getTriState(bang(event).target);
       previousValue = value;
     }}
@@ -79,8 +79,8 @@
 
 <style>
   .label-value {
-    color: var(--sky);
     grid-area: value;
+    color: var(--sky);
   }
 
   .label {
@@ -90,36 +90,43 @@
   input {
     display: none;
   }
+
   .checkbox {
     --icon-color: var(--fg);
-    grid-area: box;
+
+    position: relative;
     display: inline-block;
+    grid-area: box;
     width: 2rem;
     height: 2rem;
     border: var(--border-width) solid var(--fg);
-    position: relative;
   }
+
   .checkbox[data-state='null']::after {
-    content: '';
-    width: var(--border-width);
-    height: 2rem;
-    transform: rotate(45deg);
-    background: var(--fg);
     position: absolute;
     left: calc(2rem / 2 - var(--border-width) / 2);
+    width: var(--border-width);
+    height: 2rem;
+    content: '';
+    background: var(--fg);
+    transform: rotate(45deg);
   }
+
   .checkbox[data-state='true'],
   .tristate .checkbox[data-state='false'] {
     --icon-color: var(--bg);
+
     background: var(--fg);
   }
+
   label {
     display: flex;
-    align-items: center;
     gap: 0.5rem;
+    align-items: center;
     min-width: 120px /* XXX: based on width of input when the label is smaller than "Peu importe" */;
     cursor: pointer;
   }
+
   .labels {
     display: flex;
     flex-direction: column;

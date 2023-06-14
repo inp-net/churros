@@ -14,6 +14,20 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
         { uid: true, firstName: true, lastName: true },
       ],
       searchGroups: [{ q: url.searchParams.get('q')! }, { uid: true, name: true }],
+      searchEvents: [
+        {
+          q: url.searchParams.get('q')!,
+        },
+        {
+          uid: true,
+          title: true,
+          group: {
+            uid: true,
+            name: true,
+            pictureFile: true,
+          },
+        },
+      ],
     },
     { fetch, parent }
   );

@@ -3,7 +3,7 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
-  let { group } = data;
+  const { group } = data;
 
   let uid = '';
   let title = '';
@@ -21,9 +21,9 @@
             secretary: true,
             vicePresident: true,
             canEditMembers: true,
-            member: { firstName: true, lastName: true }
-          }
-        ]
+            member: { firstName: true, lastName: true },
+          },
+        ],
       });
       data.group.members = [...data.group.members, addGroupMember];
     } catch (error: unknown) {
@@ -34,7 +34,7 @@
   const deleteGroupMember = async (memberId: string) => {
     try {
       await $zeus.mutate({
-        deleteGroupMember: [{ groupId: group.id, memberId }, true]
+        deleteGroupMember: [{ groupId: group.id, memberId }, true],
       });
       data.group.members = data.group.members.filter((member) => member.memberId !== memberId);
     } catch (error: unknown) {
@@ -48,7 +48,7 @@
       makePresident,
       makeTreasurer,
       makeVicePresident,
-      makeSecretary
+      makeSecretary,
     }: {
       makePresident?: boolean;
       makeTreasurer?: boolean;
@@ -68,17 +68,17 @@
             president: makePresident ?? member.president,
             treasurer: makeTreasurer ?? member.treasurer,
             vicePresident: makeVicePresident ?? member.vicePresident,
-            secretary: makeSecretary ?? member.secretary
+            secretary: makeSecretary ?? member.secretary,
           },
-          { title: true, president: true, treasurer: true, vicePresident: true, secretary: true }
-        ]
+          { title: true, president: true, treasurer: true, vicePresident: true, secretary: true },
+        ],
       });
       data.group.members = data.group.members.map((member) =>
         member.memberId === memberId
           ? { ...member, ...upsertGroupMember }
           : {
               ...member,
-              president: upsertGroupMember.president ? false : member.president
+              president: upsertGroupMember.president ? false : member.president,
             }
       );
     } catch (error: unknown) {

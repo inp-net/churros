@@ -123,21 +123,6 @@ builder.queryField('group', (t) =>
     resolve: (query, _, { uid }) => prisma.group.findUniqueOrThrow({ ...query, where: { uid } }),
   })
 );
-
-builder.queryField('searchGroup', (t) =>
-  t.prismaConnection({
-    type: GroupType,
-    cursor: 'id',
-    // authScopes: { loggedIn: true },
-    args: { q: t.arg.string() },
-    resolve: async (query, _, { q }) =>
-      prisma.group.findMany({
-        ...query,
-        where: { name: { startsWith: q, mode: 'insensitive' } },
-      }),
-  })
-);
-
 builder.queryField('searchGroups', (t) =>
   t.prismaField({
     type: [GroupType],
@@ -199,10 +184,7 @@ builder.mutationField('upsertGroup', (t) =>
     errors: {},
     args: {
       uid: t.arg.string({ required: false }),
-      // type: t.arg({ type: GroupEnumType }),
-      type: t.arg.string({
-        validate: { regex: new RegExp('^' + Object.values(GroupPrismaType).join('|') + '$') },
-      }),
+      type: t.arg({ type: GroupEnumType }),
       parentId: t.arg.id({ required: false }),
       schoolId: t.arg.id({ required: false }),
       studentAssociationId: t.arg.id({ required: false }),
@@ -295,7 +277,7 @@ builder.mutationField('upsertGroup', (t) =>
       if (parentId === oldGroup?.id) throw new GraphQLError('Group cannot be its own parent');
 
       const data = {
-        type: type as GroupPrismaType,
+        type,
         selfJoinable,
         name,
         color,

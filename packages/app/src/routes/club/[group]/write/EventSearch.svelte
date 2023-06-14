@@ -9,8 +9,8 @@
   import MajesticonsDotsHorizontal from '~icons/majesticons/dots-horizontal';
   import MajesticonsPlus from '~icons/majesticons/plus';
 
-  export let eventId: string | undefined;
-  export let eventUid: string | undefined;
+  export let eventId: string | undefined = undefined;
+  export let eventUid: string | undefined = undefined;
   export let groupUid: string;
 
   let loading = false;
@@ -51,21 +51,18 @@
             const { event } = await $zeus.query({
               event: [
                 { uid: q, groupUid },
-                { uid: true, title: true, id: true }
-              ]
+                { uid: true, title: true, id: true },
+              ],
             });
             input.setCustomValidity('');
             eventUid = event.uid;
             eventId = event.id;
           } catch {
             input.setCustomValidity('Veuillez entrer un évènement valide');
-            const { searchGroup } = await $zeus.query({
-              searchGroup: [
-                { q, first: 10 },
-                { edges: { node: { uid: true, name: true, id: true } } }
-              ]
+            const { searchEvents } = await $zeus.query({
+              searchEvents: [{ q }, { title: true, uid: true }],
             });
-            options = searchGroup.edges.map(({ node }) => node);
+            options = searchEvents;
           } finally {
             loading = false;
           }

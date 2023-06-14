@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 const map: Record<string, string> = {};

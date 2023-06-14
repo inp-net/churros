@@ -27,7 +27,7 @@
     name,
     selfJoinable,
     type,
-    parentId = ''
+    parentId = '',
   } = data.group;
 
   let otherGroups: Array<{ groupId: string; uid: string }> = [];
@@ -37,7 +37,7 @@
 
     ({ parentId = '' } = data.group);
     ({ groups: otherGroups } = await $zeus.query({
-      groups: [{}, { groupId: true, uid: true }]
+      groups: [{}, { groupId: true, uid: true }],
     }));
     parentUid = parentId ? otherGroups.find((g) => g.groupId === parentId)?.uid ?? '' : '';
   });
@@ -61,14 +61,14 @@
             name,
             selfJoinable,
             parentId,
-            type
+            type,
           },
           {
             __typename: true,
             '...on Error': { message: true },
-            '...on MutationUpsertGroupSuccess': { data: clubQuery }
-          }
-        ]
+            '...on MutationUpsertGroupSuccess': { data: clubQuery },
+          },
+        ],
       });
 
       if (upsertGroup.__typename === 'Error') {
@@ -78,9 +78,7 @@
 
       serverError = '';
       data.group = upsertGroup.data;
-      if (data.group.uid) {
-        goto(`/club/${data.group.uid}/edit`);
-      }
+      if (data.group.uid) await goto(`/club/${data.group.uid}/edit`);
     } finally {
       loading = false;
     }
@@ -151,7 +149,7 @@
                     ...linkCollection.links.slice(0, i - 1),
                     linkCollection.links[i],
                     linkCollection.links[i - 1],
-                    ...linkCollection.links.slice(i + 1)
+                    ...linkCollection.links.slice(i + 1),
                   ];
                 }}
               >

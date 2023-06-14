@@ -1,8 +1,10 @@
 import { builder } from '../builder.js';
+
 import {
   type Event as EventPrisma,
   EventVisibility as EventPrismaVisibility,
   EventVisibility,
+  type Event,
 } from '@prisma/client';
 import { toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
@@ -11,6 +13,14 @@ import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { LinkInput } from './links.js';
 import type { Context } from '../context.js';
+import dichotomid from 'dichotomid';
+import {
+  type FuzzySearchResult,
+  levenshteinFilterAndSort,
+  levenshteinSorter,
+  splitSearchTerms,
+} from '../services/search.js';
+import { dateFromNumbers } from '../date.js';
 
 export const EventEnumVisibility = builder.enumType(EventPrismaVisibility, {
   name: 'EventVisibility',
@@ -187,7 +197,7 @@ builder.mutationField('upsertEvent', (t) =>
       ticketGroups: t.arg({ type: ['String'] }),
       tickets: t.arg({ type: ['String'] }),
       description: t.arg.string(),
-      groupUid: t.arg.string(),
+      groupId: t.arg.string(),
       contactMail: t.arg.string(),
       links: t.arg({ type: [LinkInput] }),
       lydiaAccountId: t.arg.string({ required: false }),
@@ -197,13 +207,13 @@ builder.mutationField('upsertEvent', (t) =>
       startsAt: t.arg({ type: DateTimeScalar }),
       endsAt: t.arg({ type: DateTimeScalar }),
     },
-    authScopes(_, { id, groupUid }, { user }) {
+    authScopes(_, { id, groupId }, { user }) {
       const creating = !id;
       if (creating) {
         return Boolean(
           user?.canEditGroups ||
             user?.groups.some(
-              ({ group: { uid }, canEditArticles }) => canEditArticles && uid === groupUid
+              ({ group, canEditArticles }) => canEditArticles && group.id === groupId
             )
         );
       }
@@ -223,7 +233,7 @@ builder.mutationField('upsertEvent', (t) =>
         endsAt,
         tickets,
         description,
-        groupUid,
+        groupId,
         contactMail,
         links,
         location,
@@ -236,7 +246,7 @@ builder.mutationField('upsertEvent', (t) =>
       const upsertData = {
         group: {
           connect: {
-            uid: groupUid,
+            id: groupId,
           },
         },
         ticketGroups: {
@@ -262,7 +272,7 @@ builder.mutationField('upsertEvent', (t) =>
           },
         },
         location,
-        uid: slug(title),
+        uid: await createUid({ title, groupId }),
         title,
         visibility,
         startsAt,
@@ -285,7 +295,10 @@ builder.mutationField('upsertEvent', (t) =>
   })
 );
 
-export async function eventAccessibleByUser(event: EventPrisma | null, user: Context['user']) {
+export async function eventAccessibleByUser(
+  event: EventPrisma | null,
+  user: Context['user']
+): Promise<boolean> {
   switch (event?.visibility) {
     case EventVisibility.Public:
     case EventVisibility.Unlisted: {
@@ -347,13 +360,77 @@ export function eventManagedByUser(
   );
 }
 
-builder.queryField('searchEvents', t => t.prismaField({
-  type: [EventType],
-  args: {
-    q: t.arg.string(),
-  },
-  async resolve(query, _, { q}) {
+builder.queryField('searchEvents', (t) =>
+  t.prismaField({
+    type: [EventType],
+    args: {
+      q: t.arg.string(),
+    },
+    async resolve(query, _, { q }, { user }) {
+      q = q.trim();
+      const { searchString: search, numberTerms } = splitSearchTerms(q);
+      const fuzzyIDs: FuzzySearchResult = await prisma.$queryRaw`
+      SELECT "id", levenshtein("title", ${search}) as changes
+      FROM "Event"
+      ORDER BY changes ASC
+      LIMIT 30
+      `;
+      const fuzzyEvents = await prisma.event.findMany({
+        ...query,
+        where: {
+          id: {
+            in: fuzzyIDs.map(({ id }) => id),
+          },
+        },
+      });
+      const results = await prisma.event.findMany({
+        ...query,
+        where: {
+          OR: [
+            { uid: { search } },
+            { title: { search } },
+            { description: { search } },
+            numberTerms.length > 0
+              ? {
+                  AND: [
+                    {
+                      startsAt: {
+                        gte: dateFromNumbers(numberTerms),
+                      },
+                    },
+                    {
+                      endsAt: { lte: dateFromNumbers(numberTerms) },
+                    },
+                  ],
+                }
+              : {},
+            { location: { search } },
+            { contactMail: { search } },
+          ],
+        },
+      });
 
-  }
+      return [
+        ...results.sort(levenshteinSorter(fuzzyIDs)),
+        ...levenshteinFilterAndSort<Event>(
+          fuzzyIDs,
+          10,
+          results.map(({ id }) => id)
+        )(fuzzyEvents),
+        // what in the actual name of fuck do i need this?
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      ].filter(async (event) => eventAccessibleByUser(event, user));
+    },
+  })
+);
 
-}))
+export async function createUid({ title, groupId }: { title: string; groupId: string }) {
+  const base = slug(title);
+  const n = await dichotomid(
+    async (n) =>
+      !(await prisma.event.findUnique({
+        where: { groupId_uid: { groupId, uid: `${base}${n > 1 ? `-${n}` : ''}` } },
+      }))
+  );
+  return `${base}${n > 1 ? `-${n}` : ''}`;
+}
