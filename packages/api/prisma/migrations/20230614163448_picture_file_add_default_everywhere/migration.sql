@@ -1,5 +1,14 @@
+/*
+  Warnings:
+
+  - You are about to alter the column `pictureFile` on the `Article` table. The data in that column could be lost. The data in that column will be cast from `Text` to `VarChar(255)`.
+  - You are about to alter the column `pictureFile` on the `Event` table. The data in that column could be lost. The data in that column will be cast from `Text` to `VarChar(255)`.
+
+*/
 -- AlterTable
-ALTER TABLE "Article" ALTER COLUMN "id" SET DEFAULT nanoid('a:');
+ALTER TABLE "Article" ALTER COLUMN "id" SET DEFAULT nanoid('a:'),
+ALTER COLUMN "pictureFile" SET DEFAULT '',
+ALTER COLUMN "pictureFile" SET DATA TYPE VARCHAR(255);
 
 -- AlterTable
 ALTER TABLE "BarWeek" ALTER COLUMN "id" SET DEFAULT nanoid('barweek:');
@@ -8,19 +17,15 @@ ALTER TABLE "BarWeek" ALTER COLUMN "id" SET DEFAULT nanoid('barweek:');
 ALTER TABLE "Credential" ALTER COLUMN "id" SET DEFAULT nanoid('credential:');
 
 -- AlterTable
-ALTER TABLE "Event" ALTER COLUMN "id" SET DEFAULT nanoid('e:');
+ALTER TABLE "Event" ALTER COLUMN "id" SET DEFAULT nanoid('e:'),
+ALTER COLUMN "pictureFile" SET DEFAULT '',
+ALTER COLUMN "pictureFile" SET DATA TYPE VARCHAR(255);
 
 -- AlterTable
 ALTER TABLE "Group" ALTER COLUMN "id" SET DEFAULT nanoid('g:');
 
 -- AlterTable
-ALTER TABLE "Image" ALTER COLUMN "id" SET DEFAULT nanoid('img:');
-
--- AlterTable
 ALTER TABLE "Link" ALTER COLUMN "id" SET DEFAULT nanoid('link:');
-
--- AlterTable
-ALTER TABLE "LinkCollection" ALTER COLUMN "id" SET DEFAULT nanoid('links:');
 
 -- AlterTable
 ALTER TABLE "LogEntry" ALTER COLUMN "id" SET DEFAULT nanoid('log:');

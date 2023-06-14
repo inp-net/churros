@@ -48,6 +48,7 @@ export const EventType = builder.prismaNode('Event', {
     group: t.relation('group'),
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),
+    pictureFile: t.exposeString('pictureFile'),
   }),
 });
 
@@ -262,15 +263,6 @@ builder.mutationField('upsertEvent', (t) =>
         },
         description,
         contactMail,
-        links: {
-          create: {
-            links: {
-              createMany: {
-                data: links,
-              },
-            },
-          },
-        },
         location,
         uid: await createUid({ title, groupId }),
         title,
@@ -288,8 +280,16 @@ builder.mutationField('upsertEvent', (t) =>
       return prisma.event.upsert({
         ...query,
         where: { id: id ?? undefined },
-        create: upsertData,
-        update: upsertData,
+        create: { ...upsertData, links: { create: links } },
+        update: {
+          ...upsertData,
+          links: {
+            deleteMany: {},
+            createMany: {
+              data: links,
+            },
+          },
+        },
       });
     },
   })
@@ -365,8 +365,9 @@ builder.queryField('searchEvents', (t) =>
     type: [EventType],
     args: {
       q: t.arg.string(),
+      groupUid: t.arg.string({ required: false }),
     },
-    async resolve(query, _, { q }, { user }) {
+    async resolve(query, _, { q, groupUid }, { user }) {
       q = q.trim();
       const { searchString: search, numberTerms } = splitSearchTerms(q);
       const fuzzyIDs: FuzzySearchResult = await prisma.$queryRaw`
@@ -381,11 +382,13 @@ builder.queryField('searchEvents', (t) =>
           id: {
             in: fuzzyIDs.map(({ id }) => id),
           },
+          ...(groupUid ? { group: { uid: groupUid } } : {}),
         },
       });
       const results = await prisma.event.findMany({
         ...query,
         where: {
+          ...(groupUid ? { group: { uid: groupUid } } : {}),
           OR: [
             { uid: { search } },
             { title: { search } },

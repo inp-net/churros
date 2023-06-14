@@ -112,7 +112,7 @@ api.use('/dump', async (req, res) => {
       where: { type: CredentialType.Token, value: token },
       include: {
         user: {
-          include: { groups: true, articles: true, linkCollection: { include: { links: true } } },
+          include: { groups: true, articles: true, links: true },
         },
       },
     });

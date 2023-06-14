@@ -60,7 +60,10 @@
           } catch {
             input.setCustomValidity('Veuillez entrer un évènement valide');
             const { searchEvents } = await $zeus.query({
-              searchEvents: [{ q }, { title: true, uid: true }],
+              searchEvents: [
+                { q, groupUid },
+                { title: true, uid: true },
+              ],
             });
             options = searchEvents;
           } finally {

@@ -30,7 +30,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             vicePresident: true,
             secretary: true,
           },
-          linkCollection: { links: { name: true, value: true } },
+          links: { name: true, value: true },
           major: { name: true, schools: { name: true, color: true } },
         },
       ],

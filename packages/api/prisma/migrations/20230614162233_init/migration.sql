@@ -1,17 +1,17 @@
 -- CreateExtension
-CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+CREATE EXTENSION IF NOT EXISTS "fuzzystrmatch";
 
 -- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+-- This function-is installed in the first migration by editing it manually to include this CREATE OR REPLACE FUNCTION statement.
 
--- This function is installed in the first migration by editing it manually to include this CREATE OR REPLACE FUNCTION statement.
 -- It needs the pgcrypto extension to function.
 
 CREATE OR REPLACE FUNCTION NANOID(PREFIX TEXT DEFAULT 
-'', SIZE INT DEFAULT 16, ALPHABET TEXT DEFAULT '0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz'
-) RETURNS TEXT LANGUAGE PLPGSQL VOLATILE AS $$ 
-	DECLARE idBuilder text := '';
+'', SIZE INT DEFAULT 16, ALPHABET TEXT DEFAULT '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ'
+) RETURNS TEXT LANGUAGE PLPGSQL VOLATILE AS 
+	$$ DECLARE idBuilder text := '';
 	counter int := 0;
 	bytes bytea;
 	alphabetIndex int;
@@ -30,18 +30,26 @@ CREATE OR REPLACE FUNCTION NANOID(PREFIX TEXT DEFAULT
 	) - 1;
 	step := cast(ceil(1.6 * mask * size / alphabetLength) AS int);
 	while true loop bytes := gen_random_bytes(step);
-	while counter < step loop alphabetIndex := (get_byte(bytes, counter) & mask) + 1;
+	while counter < step
+	loop
+	    alphabetIndex := (get_byte(bytes, counter) & mask) + 1;
 	if alphabetIndex <= alphabetLength then idBuilder := idBuilder || alphabetArray [alphabetIndex];
-	if length(idBuilder) = size then return PREFIX || idBuilder;
-	end if;
-	end if;
-	counter := counter + 1;
-	end loop;
-	counter := 0;
-	end loop;
-	END 
-$$; 
+	if length(idBuilder) = size then return PREFIX || 
+IDBUILDER; 
 
+end if;
+
+end if;
+
+counter := counter + 1;
+
+end loop;
+
+counter := 0;
+
+end loop;
+
+END $$;
 
 -- CreateEnum
 CREATE TYPE "CredentialType" AS ENUM ('Password', 'Token');
@@ -74,7 +82,6 @@ CREATE TABLE "User" (
     "nickname" VARCHAR(255) NOT NULL DEFAULT '',
     "phone" VARCHAR(255) NOT NULL DEFAULT '',
     "pictureFile" VARCHAR(255) NOT NULL DEFAULT '',
-    "linkCollectionId" TEXT NOT NULL,
     "admin" BOOLEAN NOT NULL DEFAULT false,
     "canEditUsers" BOOLEAN NOT NULL DEFAULT false,
     "canEditGroups" BOOLEAN NOT NULL DEFAULT false,
@@ -105,19 +112,17 @@ CREATE TABLE "UserCandidate" (
 );
 
 -- CreateTable
-CREATE TABLE "LinkCollection" (
-    "id" TEXT NOT NULL DEFAULT nanoid('links:'),
-
-    CONSTRAINT "LinkCollection_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Link" (
     "id" TEXT NOT NULL DEFAULT nanoid('link:'),
-    "collectionId" TEXT NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "value" VARCHAR(255) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "userId" TEXT,
+    "studentAssociationId" TEXT,
+    "groupId" TEXT,
+    "articleId" TEXT,
+    "eventId" TEXT,
+    "ticketId" TEXT,
 
     CONSTRAINT "Link_pkey" PRIMARY KEY ("id")
 );
@@ -159,7 +164,6 @@ CREATE TABLE "StudentAssociation" (
     "schoolId" TEXT NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "year" INTEGER NOT NULL,
-    "linkCollectionId" TEXT NOT NULL,
 
     CONSTRAINT "StudentAssociation_pkey" PRIMARY KEY ("id")
 );
@@ -181,7 +185,6 @@ CREATE TABLE "Group" (
     "description" VARCHAR(255) NOT NULL DEFAULT '',
     "email" VARCHAR(255) NOT NULL DEFAULT '',
     "longDescription" TEXT NOT NULL DEFAULT '',
-    "linkCollectionId" TEXT NOT NULL,
 
     CONSTRAINT "Group_pkey" PRIMARY KEY ("id")
 );
@@ -214,22 +217,10 @@ CREATE TABLE "Article" (
     "homepage" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "publishedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "pictureFile" TEXT NOT NULL,
     "eventId" TEXT,
-    "linkCollectionId" TEXT NOT NULL,
 
     CONSTRAINT "Article_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Image" (
-    "id" TEXT NOT NULL DEFAULT nanoid('img:'),
-    "articleId" TEXT NOT NULL,
-    "path" VARCHAR(255) NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "position" INTEGER NOT NULL,
-    "alt" VARCHAR(255) NOT NULL DEFAULT '',
-
-    CONSTRAINT "Image_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -245,8 +236,8 @@ CREATE TABLE "Event" (
     "endsAt" TIMESTAMP(3) NOT NULL,
     "location" VARCHAR(255) NOT NULL DEFAULT '',
     "visibility" "EventVisibility" NOT NULL,
+    "pictureFile" TEXT NOT NULL,
     "lydiaAccountId" TEXT,
-    "linkCollectionId" TEXT NOT NULL,
 
     CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
 );
@@ -290,7 +281,6 @@ CREATE TABLE "Ticket" (
     "openToNonAEContributors" BOOLEAN DEFAULT false,
     "godsonLimit" INTEGER NOT NULL DEFAULT 0,
     "onlyManagersCanProvide" BOOLEAN NOT NULL DEFAULT false,
-    "linkCollectionId" TEXT NOT NULL,
 
     CONSTRAINT "Ticket_pkey" PRIMARY KEY ("id")
 );
@@ -404,9 +394,6 @@ CREATE UNIQUE INDEX "Group_uid_key" ON "Group"("uid");
 CREATE UNIQUE INDEX "Article_groupId_uid_key" ON "Article"("groupId", "uid");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Image_articleId_position_key" ON "Image"("articleId", "position");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Event_groupId_uid_key" ON "Event"("groupId", "uid");
 
 -- CreateIndex
@@ -449,19 +436,28 @@ CREATE INDEX "_BarWeekToGroup_B_index" ON "_BarWeekToGroup"("B");
 ALTER TABLE "User" ADD CONSTRAINT "User_majorId_fkey" FOREIGN KEY ("majorId") REFERENCES "Major"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_linkCollectionId_fkey" FOREIGN KEY ("linkCollectionId") REFERENCES "LinkCollection"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "UserCandidate" ADD CONSTRAINT "UserCandidate_majorId_fkey" FOREIGN KEY ("majorId") REFERENCES "Major"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Link" ADD CONSTRAINT "Link_collectionId_fkey" FOREIGN KEY ("collectionId") REFERENCES "LinkCollection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Link" ADD CONSTRAINT "Link_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Link" ADD CONSTRAINT "Link_studentAssociationId_fkey" FOREIGN KEY ("studentAssociationId") REFERENCES "StudentAssociation"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Link" ADD CONSTRAINT "Link_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Link" ADD CONSTRAINT "Link_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "Article"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Link" ADD CONSTRAINT "Link_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Link" ADD CONSTRAINT "Link_ticketId_fkey" FOREIGN KEY ("ticketId") REFERENCES "Ticket"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Credential" ADD CONSTRAINT "Credential_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "StudentAssociation" ADD CONSTRAINT "StudentAssociation_linkCollectionId_fkey" FOREIGN KEY ("linkCollectionId") REFERENCES "LinkCollection"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "StudentAssociation" ADD CONSTRAINT "StudentAssociation_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "School"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -471,9 +467,6 @@ ALTER TABLE "Group" ADD CONSTRAINT "Group_parentId_fkey" FOREIGN KEY ("parentId"
 
 -- AddForeignKey
 ALTER TABLE "Group" ADD CONSTRAINT "Group_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "Group"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Group" ADD CONSTRAINT "Group_linkCollectionId_fkey" FOREIGN KEY ("linkCollectionId") REFERENCES "LinkCollection"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Group" ADD CONSTRAINT "Group_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "School"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -488,9 +481,6 @@ ALTER TABLE "GroupMember" ADD CONSTRAINT "GroupMember_groupId_fkey" FOREIGN KEY 
 ALTER TABLE "GroupMember" ADD CONSTRAINT "GroupMember_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Article" ADD CONSTRAINT "Article_linkCollectionId_fkey" FOREIGN KEY ("linkCollectionId") REFERENCES "LinkCollection"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Article" ADD CONSTRAINT "Article_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -500,9 +490,6 @@ ALTER TABLE "Article" ADD CONSTRAINT "Article_groupId_fkey" FOREIGN KEY ("groupI
 ALTER TABLE "Article" ADD CONSTRAINT "Article_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Image" ADD CONSTRAINT "Image_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "Article"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Event" ADD CONSTRAINT "Event_lydiaAccountId_fkey" FOREIGN KEY ("lydiaAccountId") REFERENCES "LydiaAccount"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -510,9 +497,6 @@ ALTER TABLE "Event" ADD CONSTRAINT "Event_authorId_fkey" FOREIGN KEY ("authorId"
 
 -- AddForeignKey
 ALTER TABLE "Event" ADD CONSTRAINT "Event_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Event" ADD CONSTRAINT "Event_linkCollectionId_fkey" FOREIGN KEY ("linkCollectionId") REFERENCES "LinkCollection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EventManager" ADD CONSTRAINT "EventManager_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -525,9 +509,6 @@ ALTER TABLE "TicketGroup" ADD CONSTRAINT "TicketGroup_eventId_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "TicketGroup" ADD CONSTRAINT "TicketGroup_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Ticket" ADD CONSTRAINT "Ticket_linkCollectionId_fkey" FOREIGN KEY ("linkCollectionId") REFERENCES "LinkCollection"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Ticket" ADD CONSTRAINT "Ticket_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -14,12 +14,9 @@ export const _clubQuery = Selector('Group')({
   email: true,
   pictureFile: true,
   longDescription: true,
-  linkCollection: {
-    id: true,
-    links: {
-      name: true,
-      value: true,
-    },
+  links: {
+    name: true,
+    value: true,
   },
   school: {
     id: true,

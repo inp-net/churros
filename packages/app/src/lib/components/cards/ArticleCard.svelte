@@ -16,7 +16,7 @@
     {/if}
   </svelte:fragment>
   <header>
-    <h2>{title}</h2>
+    <a {href}><h2>{title}</h2></a>
   </header>
   <slot />
 </Card>

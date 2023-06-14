@@ -98,7 +98,7 @@ for (const [i, name] of ['AE EAU 2022', 'AE FEU 2022', 'AE TERRE 2022', 'AE AIR 
       name,
       school: { connect: { id: schools[i]!.id } },
       year: 2022,
-      linkCollection: { create: {} },
+      links: { create: [] },
     },
   });
 }
@@ -114,12 +114,8 @@ for (const asso of studentAssociations) {
         color: color(name),
         type: GroupType.StudentAssociationSection,
         studentAssociation: { connect: { id: asso.id } },
-        linkCollection: {
-          create: {
-            links: {
-              create: [],
-            },
-          },
+        links: {
+          create: [],
         },
         address: '2 rue Charles Camichel, 31000 Toulouse',
         email: `${slug(name)}@list.example.com`,
@@ -184,17 +180,13 @@ for (const [i, data] of usersData.entries()) {
         'sfr.fr',
       ])}`,
       description: i % 2 ? "Salut c'est moi" : '',
-      linkCollection: {
-        create: {
-          links: {
-            create: [
-              { name: 'Facebook', value: '#' },
-              { name: 'Instagram', value: '#' },
-              { name: 'Telegram', value: '#' },
-              { name: 'Twitter', value: '#' },
-            ],
-          },
-        },
+      links: {
+        create: [
+          { name: 'Facebook', value: '#' },
+          { name: 'Instagram', value: '#' },
+          { name: 'Telegram', value: '#' },
+          { name: 'Twitter', value: '#' },
+        ],
       },
       phone: '+33612345678',
       address: '2 rue Charles Camichel, 31000 Toulouse',
@@ -267,16 +259,12 @@ suos auras atra!
 > Alpheos est, lecti et?`,
       school: { connect: { id: randomIdOf(schools) } },
       studentAssociation: { connect: { id: randomIdOf(studentAssociations) } },
-      linkCollection: {
-        create: {
-          links: {
-            createMany: {
-              data: [
-                { name: 'Facebook', value: '#' },
-                { name: 'Instagram', value: '#' },
-              ],
-            },
-          },
+      links: {
+        createMany: {
+          data: [
+            { name: 'Facebook', value: '#' },
+            { name: 'Instagram', value: '#' },
+          ],
         },
       },
     },
@@ -295,7 +283,7 @@ let Intégration2022 = await prisma.group.create({
     type: GroupType.Group,
     uid: 'integration-2022',
     color: '#ff0000',
-    linkCollection: { create: { links: { create: [] } } },
+    links: { create: [] },
   },
 });
 
@@ -314,7 +302,7 @@ const Groupe1 = await prisma.group.create({
     color: '#00ff00',
     parent: { connect: { id: Intégration2022.id } },
     familyRoot: { connect: { id: Intégration2022.familyId! } },
-    linkCollection: { create: {} },
+    links: { create: [] },
     // members: { createMany: { data: [{ memberId: 2 }, { memberId: 3 }, { memberId: 4 }] } },
   },
 });
@@ -327,7 +315,7 @@ await prisma.group.create({
     color: '#0000ff',
     parent: { connect: { id: Intégration2022.id } },
     familyRoot: { connect: { id: Intégration2022.familyId! } },
-    linkCollection: { create: {} },
+    links: { create: [] },
     // members: { createMany: { data: [{ memberId: 5 }, { memberId: 6 }, { memberId: 7 }] } },
   },
 });
@@ -432,20 +420,16 @@ for (let i = 0; i < end; i++) {
       startDate * (1 - i / end) + endDate * (i / end) + (i % 7) * 24 * 60 * 60 * 1000
     ),
     links: {
-      create: {
-        links: {
-          create: [
-            {
-              name: 'Facebook',
-              value: 'https://facebook.com',
-            },
-            {
-              name: 'Trop cool',
-              value: 'https://youtu.be/dQw4w9WgXcQ',
-            },
-          ],
+      create: [
+        {
+          name: 'Facebook',
+          value: 'https://facebook.com',
         },
-      },
+        {
+          name: 'Trop cool',
+          value: 'https://youtu.be/dQw4w9WgXcQ',
+        },
+      ],
     },
   });
 }
@@ -462,28 +446,7 @@ await prisma.article.create({
     },
     published: true,
     links: {
-      create: {
-        links: {
-          create: [],
-        },
-      },
-    },
-  },
-});
-
-const event1LinkCollection = await prisma.linkCollection.create({
-  data: {
-    links: {
-      create: [
-        {
-          name: 'Ptdr',
-          value: 'https://ewen.works',
-        },
-        {
-          name: 'Trop cool',
-          value: 'https://youtu.be/dQw4w9WgXcQ',
-        },
-      ],
+      create: [],
     },
   },
 });
@@ -506,27 +469,22 @@ const event1 = await prisma.event.create({
             groupId: Groupe1.id,
             uid: 'ceci-est-un-article-d-evenement',
             title: "Ceci est un article d'événement",
-            linkCollectionId: event1LinkCollection.id,
           },
         ],
       },
     },
     links: {
-      create: {
-        links: {
-          createMany: {
-            data: [
-              {
-                name: 'Facebook',
-                value: 'https://facebook.com',
-              },
-              {
-                name: 'Trop cool',
-                value: 'https://youtu.be/dQw4w9WgXcQ',
-              },
-            ],
+      createMany: {
+        data: [
+          {
+            name: 'Facebook',
+            value: 'https://facebook.com',
           },
-        },
+          {
+            name: 'Trop cool',
+            value: 'https://youtu.be/dQw4w9WgXcQ',
+          },
+        ],
       },
     },
     tickets: {
@@ -536,7 +494,6 @@ const event1 = await prisma.event.create({
             name: 'Staff TVn7',
             authorId: randomIdOf(users),
             description: 'Staffeurs :sparkles: TVn7 :sparkles:, par ici!',
-            linkCollectionId: event1LinkCollection.id,
             price: 0,
             capacity: 12,
             opensAt: new Date(),
@@ -565,17 +522,13 @@ await prisma.ticket.update({
       connect: [{ uid: 'ski' }],
     },
     links: {
-      update: {
-        links: {
-          createMany: {
-            data: [
-              {
-                name: "C'est le menu",
-                value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-              },
-            ],
+      createMany: {
+        data: [
+          {
+            name: "C'est le menu",
+            value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
           },
-        },
+        ],
       },
     },
   },
@@ -593,17 +546,13 @@ await prisma.event.create({
     author: { connect: { uid: 'deuxtroisq' } },
     group: { connect: { uid: 'ski' } },
     links: {
-      create: {
-        links: {
-          createMany: {
-            data: [
-              {
-                name: 'Menu',
-                value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-              },
-            ],
+      createMany: {
+        data: [
+          {
+            name: 'Menu',
+            value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
           },
-        },
+        ],
       },
     },
     tickets: {
@@ -613,7 +562,6 @@ await prisma.event.create({
             name: '',
             authorId: randomIdOf(users),
             description: '',
-            linkCollectionId: event1LinkCollection.id,
             price: 3.5,
             capacity: 70,
             allowedPaymentMethods: ['Lydia'],

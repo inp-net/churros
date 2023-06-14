@@ -54,10 +54,7 @@
           } catch {
             input.setCustomValidity('Veuillez entrer un groupe parent valide');
             const { searchGroups } = await $zeus.query({
-              searchGroups: [
-                { q, first: 10 },
-                { name: true, uid: true },
-              ],
+              searchGroups: [{ q }, { name: true, uid: true }],
             });
             options = searchGroups;
           } finally {

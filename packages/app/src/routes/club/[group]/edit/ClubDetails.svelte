@@ -22,7 +22,7 @@
     color,
     description,
     email,
-    linkCollection,
+    links,
     longDescription,
     name,
     selfJoinable,
@@ -56,7 +56,7 @@
             color,
             description,
             email,
-            links: linkCollection.links,
+            links,
             longDescription,
             name,
             selfJoinable,
@@ -126,7 +126,7 @@
     </p>
     <p>Réseaux sociaux :</p>
     <ul>
-      {#each linkCollection.links as link, i}
+      {#each links as link, i}
         <li>
           <InputGroup>
             <input bind:value={link.name} />
@@ -136,7 +136,7 @@
             <GhostButton
               title="Supprimer"
               on:click={() => {
-                linkCollection.links = linkCollection.links.filter((_, j) => i !== j);
+                links = links.filter((_, j) => i !== j);
               }}
             >
               <MajesticonsClose aria-label="Supprimer" />
@@ -145,12 +145,7 @@
               <GhostButton
                 title="Remonter"
                 on:click={() => {
-                  linkCollection.links = [
-                    ...linkCollection.links.slice(0, i - 1),
-                    linkCollection.links[i],
-                    linkCollection.links[i - 1],
-                    ...linkCollection.links.slice(i + 1),
-                  ];
+                  links = [...links.slice(0, i - 1), links[i], links[i - 1], ...links.slice(i + 1)];
                 }}
               >
                 <MajesticonsChevronUp aria-label="Remonter" />
@@ -163,7 +158,7 @@
         <button
           type="button"
           on:click={() => {
-            linkCollection.links = [...linkCollection.links, { name: '', value: '' }];
+            links = [...links, { name: '', value: '' }];
           }}><MajesticonsPlus aria-hidden="true" />Ajouter</button
         >
       </li>

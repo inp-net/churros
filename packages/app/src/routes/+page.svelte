@@ -7,6 +7,7 @@
   import { pageQuery } from './+page';
   import MajesticonsShare from '~icons/majesticons/share';
   import GhostButton from '$lib/components/buttons/GhostButton.svelte';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
 
   export let data: PageData;
 
@@ -26,15 +27,13 @@
   };
 </script>
 
-<h1>Bienvenue sur Centraverse</h1>
+<h1>Mon feed</h1>
 
-{#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, homepage } }}
+{#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, homepage, pictureFile } }}
   <ArticleCard
     {title}
     href="/club/{group.uid}/post/{uid}/"
-    img={publishedAt.getTime() % 2
-      ? { src: `https://picsum.photos/seed/${cursor}/960/400`, alt: '', width: 960, height: 400 }
-      : undefined}
+    img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
   >
     <p>
       Par <a href="/club/{group.uid}/">{group.name}</a>

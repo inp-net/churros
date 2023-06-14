@@ -26,10 +26,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
       description: '',
       email: 'contact@bde.enseeiht.fr',
       longDescription: '',
-      linkCollection: {
-        id: '',
-        links: [],
-      },
+      links: [],
       pictureFile: '',
       selfJoinable: true,
     },

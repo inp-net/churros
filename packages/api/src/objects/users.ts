@@ -36,7 +36,7 @@ export const UserType = builder.prismaNode('User', {
       nullable: true,
       authScopes: { loggedIn: true, $granted: 'me' },
     }),
-    linkCollection: t.relation('linkCollection', {
+    links: t.relation('links', {
       authScopes: { loggedIn: true, $granted: 'me' },
     }),
     nickname: t.exposeString('nickname', { authScopes: { loggedIn: true, $granted: 'me' } }),
@@ -186,7 +186,7 @@ builder.mutationField('updateUser', (t) =>
           address,
           phone,
           birthday,
-          linkCollection: { update: { links: { deleteMany: {}, createMany: { data: links } } } },
+          links: { deleteMany: {}, createMany: { data: links } },
         },
       });
     },

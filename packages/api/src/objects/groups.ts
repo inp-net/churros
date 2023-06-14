@@ -63,7 +63,7 @@ export const GroupType = builder.prismaNode('Group', {
     articles: t.relation('articles', {
       query: { orderBy: { publishedAt: 'desc' } },
     }),
-    linkCollection: t.relation('linkCollection'),
+    links: t.relation('links'),
     members: t.relation('members', {
       // Seeing group members requires being logged in
       authScopes: { loggedIn: true },
@@ -296,29 +296,24 @@ builder.mutationField('upsertGroup', (t) =>
         studentAssociation: studentAssociationId ? { connect: { id: studentAssociationId } } : {},
       };
 
+      // if (uid) {
+      //   const id = (await prisma.group.findUnique({ where: { uid: uid ?? '' } }))?.id;
+      //   await prisma.link.deleteMany({ where: { groupId: id ?? '' } });
+      // }
+
       return prisma.group.upsert({
         ...query,
         where: { uid: uid ?? '' },
         create: {
           ...data,
+          links: { create: links },
           uid: await createGroupUid(name),
-          linkCollection: {
-            create: {
-              links: {
-                createMany: { data: links },
-              },
-            },
-          },
         },
         update: {
           ...data,
-          linkCollection: {
-            update: {
-              links: {
-                deleteMany: {},
-                createMany: { data: links },
-              },
-            },
+          links: {
+            deleteMany: {},
+            createMany: { data: links },
           },
         },
       });

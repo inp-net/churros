@@ -34,13 +34,13 @@ model User {
   graduationYear Int
 
   // Optional profile details
-  address          String    @default("") @db.VarChar(255)
-  birthday         DateTime?
-  description      String    @default("") @db.VarChar(255)
-  nickname         String    @default("") @db.VarChar(255)
-  phone            String    @default("") @db.VarChar(255)
-  pictureFile      String    @default("") @db.VarChar(255)
-  linkCollectionId String
+  address     String    @default("") @db.VarChar(255)
+  birthday    DateTime?
+  description String    @default("") @db.VarChar(255)
+  nickname    String    @default("") @db.VarChar(255)
+  phone       String    @default("") @db.VarChar(255)
+  pictureFile String    @default("") @db.VarChar(255)
+  links       Link[]
 
   // Permissions
   admin         Boolean @default(false)
@@ -48,16 +48,15 @@ model User {
   canEditGroups Boolean @default(false)
 
   // Relationships
-  articles       Article[]
-  groups         GroupMember[]
-  credentials    Credential[]
-  linkCollection LinkCollection @relation(fields: [linkCollectionId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  Reservation    Registration[]
-  managedEvents  EventManager[]
-  logs           LogEntry[]
-  events         Event[]
-  tickets        Ticket[]
-  ticketGroups   TicketGroup[]
+  articles      Article[]
+  groups        GroupMember[]
+  credentials   Credential[]
+  Reservation   Registration[]
+  managedEvents EventManager[]
+  logs          LogEntry[]
+  events        Event[]
+  tickets       Ticket[]
+  ticketGroups  TicketGroup[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -89,28 +88,26 @@ model UserCandidate {
   @@unique([schoolServer, schoolUid])
 }
 
-/// Ways to contact a user or a group outside of the app
-model LinkCollection {
-  id    String @id @default(dbgenerated("nanoid('links:')"))
-  links Link[]
-
-  groups              Group[]
-  studentAssociations StudentAssociation[]
-  users               User[]
-  articles            Article[]
-  events              Event[]
-  tickets             Ticket[]
-}
-
 /// A single external link
 model Link {
-  id           String   @id @default(dbgenerated("nanoid('link:')"))
-  collectionId String
-  name         String   @db.VarChar(255)
-  value        String   @db.VarChar(255)
-  createdAt    DateTime @default(now())
+  id        String   @id @default(dbgenerated("nanoid('link:')"))
+  name      String   @db.VarChar(255)
+  value     String   @db.VarChar(255)
+  createdAt DateTime @default(now())
 
-  collection LinkCollection @relation(fields: [collectionId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  // All resources that can have links
+  User                 User?               @relation(fields: [userId], references: [id])
+  userId               String?
+  StudentAssociation   StudentAssociation? @relation(fields: [studentAssociationId], references: [id])
+  studentAssociationId String?
+  Group                Group?              @relation(fields: [groupId], references: [id])
+  groupId              String?
+  Article              Article?            @relation(fields: [articleId], references: [id])
+  articleId            String?
+  Event                Event?              @relation(fields: [eventId], references: [id])
+  eventId              String?
+  Ticket               Ticket?             @relation(fields: [ticketId], references: [id])
+  ticketId             String?
 }
 
 /// A school syllabus
@@ -155,15 +152,14 @@ model Credential {
 
 /// There is one student association per school and per year
 model StudentAssociation {
-  id               String @id @default(dbgenerated("nanoid('ae:')"))
-  schoolId         String
-  name             String @unique @db.VarChar(255)
-  year             Int    @db.Integer
-  linkCollectionId String
+  id       String @id @default(dbgenerated("nanoid('ae:')"))
+  schoolId String
+  name     String @unique @db.VarChar(255)
+  year     Int    @db.Integer
+  links    Link[]
 
-  linkCollection LinkCollection @relation(fields: [linkCollectionId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  school         School         @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  groups         Group[]
+  school School  @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  groups Group[]
 }
 
 /// The different kinds of groups
@@ -191,11 +187,11 @@ model Group {
   color                String    @db.VarChar(7)
   selfJoinable         Boolean   @default(false)
 
-  address          String @default("") @db.VarChar(255)
-  description      String @default("") @db.VarChar(255)
-  email            String @default("") @db.VarChar(255)
-  longDescription  String @default("")
-  linkCollectionId String
+  address         String @default("") @db.VarChar(255)
+  description     String @default("") @db.VarChar(255)
+  email           String @default("") @db.VarChar(255)
+  longDescription String @default("")
+  links           Link[]
 
   /// Parent group, from which this group inherits its permissions
   parent   Group?  @relation("parent", fields: [parentId], references: [id], onUpdate: Cascade, onDelete: Restrict)
@@ -206,7 +202,6 @@ model Group {
   familyChildren Group[] @relation("root")
 
   articles           Article[]
-  linkCollection     LinkCollection      @relation(fields: [linkCollectionId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   members            GroupMember[]
   school             School?             @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   studentAssociation StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
@@ -237,64 +232,50 @@ model GroupMember {
 
 /// An article is a post in a group
 model Article {
-  id          String         @id @default(dbgenerated("nanoid('a:')"))
+  id          String   @id @default(dbgenerated("nanoid('a:')"))
   authorId    String?
   groupId     String
-  uid         String         @db.VarChar(255)
-  title       String         @db.VarChar(255)
-  body        String         @db.Text
-  published   Boolean        @default(false)
-  homepage    Boolean        @default(false)
-  createdAt   DateTime       @default(now())
-  publishedAt DateTime       @default(now())
-  images      Image[]
-  links       LinkCollection @relation(fields: [linkCollectionId], references: [id])
+  uid         String   @db.VarChar(255)
+  title       String   @db.VarChar(255)
+  body        String   @db.Text
+  published   Boolean  @default(false)
+  homepage    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  publishedAt DateTime @default(now())
+  pictureFile String   @default("") @db.VarChar(255)
+  links       Link[]
 
-  author           User?   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  group            Group   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  event            Event?  @relation(fields: [eventId], references: [id])
-  eventId          String?
-  linkCollectionId String
+  author  User?   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  group   Group   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  event   Event?  @relation(fields: [eventId], references: [id])
+  eventId String?
 
   @@unique([groupId, uid])
 }
 
-model Image {
-  id        String   @id @default(dbgenerated("nanoid('img:')"))
-  articleId String
-  path      String   @db.VarChar(255)
-  createdAt DateTime @default(now())
-  position  Int
-  alt       String   @default("") @db.VarChar(255)
-
-  article Article @relation(fields: [articleId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-
-  @@unique([articleId, position])
-}
-
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
-  id               String          @id @default(dbgenerated("nanoid('e:')"))
-  authorId         String?
-  groupId          String
-  contactMail      String
-  beneficiary      LydiaAccount?   @relation(fields: [lydiaAccountId], references: [id])
-  description      String          @db.VarChar(255)
-  uid              String          @db.VarChar(255)
-  title            String          @db.VarChar(255)
-  startsAt         DateTime
-  endsAt           DateTime
-  location         String          @default("") @db.VarChar(255)
-  visibility       EventVisibility
-  managers         EventManager[]
-  author           User?           @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  group            Group           @relation(fields: [groupId], references: [id])
-  tickets          Ticket[]
-  ticketGroups     TicketGroup[]
-  articles         Article[]
-  lydiaAccountId   String?
-  links            LinkCollection  @relation(fields: [linkCollectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  linkCollectionId String
+  id             String          @id @default(dbgenerated("nanoid('e:')"))
+  authorId       String?
+  groupId        String
+  contactMail    String
+  beneficiary    LydiaAccount?   @relation(fields: [lydiaAccountId], references: [id])
+  description    String          @db.VarChar(255)
+  uid            String          @db.VarChar(255)
+  title          String          @db.VarChar(255)
+  startsAt       DateTime
+  endsAt         DateTime
+  location       String          @default("") @db.VarChar(255)
+  visibility     EventVisibility
+  pictureFile    String          @default("") @db.VarChar(255)
+  managers       EventManager[]
+  author         User?           @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  group          Group           @relation(fields: [groupId], references: [id])
+  tickets        Ticket[]
+  ticketGroups   TicketGroup[]
+  articles       Article[]
+  lydiaAccountId String?
+  links          Link[]
 
   @@unique([groupId, uid])
 }
@@ -346,7 +327,7 @@ model Ticket {
   price                 Float // in EUR
   capacity              Int             @default(0) // 0 means unlimited
   registrations         Registration[]
-  links                 LinkCollection  @relation(fields: [linkCollectionId], references: [id])
+  links                 Link[]
   allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
   author                User?           @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
 
@@ -361,9 +342,8 @@ model Ticket {
 
   onlyManagersCanProvide Boolean @default(false)
 
-  event            Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  group            TicketGroup? @relation(fields: [ticketGroupId], references: [id])
-  linkCollectionId String
+  event Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  group TicketGroup? @relation(fields: [ticketGroupId], references: [id])
 }
 
 /// A reservation is a user's registration for a ticket

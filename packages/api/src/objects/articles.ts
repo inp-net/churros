@@ -3,9 +3,13 @@ import slug from 'slug';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
-import { DateTimeScalar } from './scalars.js';
+import { DateTimeScalar, FileScalar } from './scalars.js';
 import { LinkInput } from './links.js';
 import { dichotomid } from 'dichotomid';
+import { GraphQLError } from 'graphql';
+import { mkdir, unlink, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import imageType, { minimumBytes } from 'image-type';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
@@ -21,6 +25,7 @@ export const ArticleType = builder.prismaNode('Article', {
     homepage: t.exposeBoolean('homepage'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     publishedAt: t.expose('publishedAt', { type: DateTimeScalar }),
+    pictureFile: t.exposeString('pictureFile'),
     author: t.relation('author', { nullable: true }),
     group: t.relation('group'),
     links: t.relation('links'),
@@ -89,13 +94,14 @@ builder.queryField('homepage', (t) =>
 builder.mutationField('upsertArticle', (t) =>
   t.prismaField({
     type: ArticleType,
+    errors: {},
     args: {
       id: t.arg.id({ required: false }),
       authorId: t.arg.id(),
       groupId: t.arg.id(),
       title: t.arg.string(),
       body: t.arg.string(),
-      published: t.arg.boolean(),
+      publishedAt: t.arg({ type: DateTimeScalar }),
       links: t.arg({ type: [LinkInput] }),
       eventId: t.arg.id({ required: false }),
     },
@@ -132,9 +138,8 @@ builder.mutationField('upsertArticle', (t) =>
           ))
       );
     },
-    async resolve(query, _, { id, eventId, authorId, groupId, title, body, published, links }) {
+    async resolve(query, _, { id, eventId, authorId, groupId, title, body, publishedAt, links }) {
       const data = {
-        uid: await createUid({ title, groupId }),
         author: {
           connect: {
             id: authorId,
@@ -147,37 +152,15 @@ builder.mutationField('upsertArticle', (t) =>
         },
         title,
         body,
-        published,
-        publishedAt: published ? new Date() : undefined,
-        event: eventId
-          ? {
-              connect: { id: eventId },
-            }
-          : {
-              disconnect: true,
-            },
+        publishedAt,
+        published: publishedAt <= new Date(),
+        eventId,
       };
       return prisma.article.upsert({
         ...query,
         where: { id: id ?? '' },
-        create: {
-          ...data,
-          links: {
-            create: {
-              links: {
-                create: links,
-              },
-            },
-          },
-        },
-        update: {
-          ...data,
-          links: {
-            update: {
-              links: { deleteMany: {}, createMany: { data: links } },
-            },
-          },
-        },
+        create: { ...data, uid: await createUid({ title, groupId }), links: { create: links } },
+        update: { ...data, links: { deleteMany: {}, createMany: { data: links } } },
       });
     },
   })
@@ -231,3 +214,85 @@ export async function createUid({ title, groupId }: { title: string; groupId: st
   console.log(`${base}${n > 1 ? `-${n}` : ''}`);
   return `${base}${n > 1 ? `-${n}` : ''}`;
 }
+
+builder.mutationField('updateArticlePicture', (t) =>
+  t.field({
+    type: 'String',
+    args: {
+      id: t.arg.id(),
+      file: t.arg({ type: FileScalar }),
+    },
+    async authScopes(_, { id }, { user }) {
+      const article = await prisma.article.findUniqueOrThrow({
+        where: { id },
+      });
+
+      return Boolean(
+        // Who can edit this article?
+        // The author
+        user?.id === article.authorId ||
+          // Other authors of the group
+          user?.groups.some(
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
+          )
+      );
+    },
+    async resolve(_, { id, file }) {
+      const type = await file
+        .slice(0, minimumBytes)
+        .arrayBuffer()
+        .then((array) => Buffer.from(array))
+        .then(async (buffer) => imageType(buffer));
+      if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
+        throw new GraphQLError('File format not supported');
+
+      // Delete the existing picture
+      const { pictureFile } = await prisma.article.findUniqueOrThrow({
+        where: { id },
+        select: { pictureFile: true },
+      });
+
+      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
+
+      const path = join(`articles`, `${id}.${type.ext}`);
+      await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
+      await writeFile(new URL(path, process.env.STORAGE), file.stream());
+      await prisma.article.update({ where: { id }, data: { pictureFile: path } });
+      return path;
+    },
+  })
+);
+
+builder.mutationField('deleteArticlePicture', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: {
+      id: t.arg.id(),
+    },
+    async authScopes(_, { id }, { user }) {
+      const article = await prisma.article.findUniqueOrThrow({
+        where: { id },
+      });
+
+      return Boolean(
+        // Who can edit this article?
+        // The author
+        user?.id === article.authorId ||
+          // Other authors of the group
+          user?.groups.some(
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
+          )
+      );
+    },
+    async resolve(_, { id }) {
+      const { pictureFile } = await prisma.article.findUniqueOrThrow({
+        where: { id },
+        select: { pictureFile: true },
+      });
+
+      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
+      await prisma.article.update({ where: { id }, data: { pictureFile: '' } });
+      return true;
+    },
+  })
+);

@@ -8,7 +8,6 @@ import './objects/credentials.js';
 import './objects/errors.js';
 import './objects/group-members.js';
 import './objects/groups.js';
-import './objects/link-collections.js';
 import './objects/links.js';
 import './objects/majors.js';
 import './objects/scalars.js';

@@ -57,7 +57,6 @@ export const TicketType = builder.prismaNode('Ticket', {
     group: t.relation('group', { nullable: true }),
     authorId: t.exposeID('authorId', { nullable: true }),
     author: t.relation('author', { nullable: true }),
-    linkCollectionId: t.exposeID('linkCollectionId', { nullable: true }),
     placesLeft: t.int({
       async resolve({ id }) {
         const ticket = await prisma.ticket.findUnique({
@@ -188,21 +187,17 @@ builder.mutationField('upsertTicket', (t) =>
         openToNonAEContributors,
         godsonLimit,
         onlyManagersCanProvide,
-      },
-      { user }
+      }
     ) {
       const upsertData = {
         event: { connect: { id: eventId } },
-        group: ticketGroupId ? { connect: { id: ticketGroupId } } : { disconnect: true },
+        groupId: ticketGroupId,
         name,
         description,
         opensAt,
         closesAt,
         price,
         capacity,
-        links: {
-          create: links.map((link) => ({ ...link, author: { connect: { id: user!.id } } })),
-        },
         allowedPaymentMethods: { set: allowedPaymentMethods },
         openToPromotions: { set: openToPromotions },
         openToAlumni,
@@ -214,8 +209,16 @@ builder.mutationField('upsertTicket', (t) =>
       };
       return prisma.ticket.upsert({
         where: { id: id ?? undefined },
-        create: upsertData,
-        update: upsertData,
+        create: { ...upsertData, links: { create: links } },
+        update: {
+          ...upsertData,
+          links: {
+            deleteMany: {},
+            createMany: {
+              data: links,
+            },
+          },
+        },
       });
     },
   })

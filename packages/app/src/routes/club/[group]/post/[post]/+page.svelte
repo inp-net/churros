@@ -1,13 +1,23 @@
 <script lang="ts">
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { me } from '$lib/session';
   import type { PageData } from './$types';
 
   export let data: PageData;
-  const { author, title, bodyHtml, group, event } = data.article;
+  const { author, title, bodyHtml, group, pictureFile, event } = data.article;
 
   const memberTitle = data.article.author?.groups.find(
     (g) => g.group.uid === data.article.group.uid
   )?.title;
 </script>
+
+{#if pictureFile}
+  <img src="{PUBLIC_STORAGE_URL}{pictureFile}" alt="" />
+{/if}
+
+{#if $me?.admin || $me?.groups.some(({ group: { uid } }) => uid === group.uid)}
+  <a href="./edit">Éditer</a>
+{/if}
 
 <h1>{title}</h1>
 

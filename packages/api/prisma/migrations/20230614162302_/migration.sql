@@ -14,13 +14,7 @@ ALTER TABLE "Event" ALTER COLUMN "id" SET DEFAULT nanoid('e:');
 ALTER TABLE "Group" ALTER COLUMN "id" SET DEFAULT nanoid('g:');
 
 -- AlterTable
-ALTER TABLE "Image" ALTER COLUMN "id" SET DEFAULT nanoid('img:');
-
--- AlterTable
 ALTER TABLE "Link" ALTER COLUMN "id" SET DEFAULT nanoid('link:');
-
--- AlterTable
-ALTER TABLE "LinkCollection" ALTER COLUMN "id" SET DEFAULT nanoid('links:');
 
 -- AlterTable
 ALTER TABLE "LogEntry" ALTER COLUMN "id" SET DEFAULT nanoid('log:');

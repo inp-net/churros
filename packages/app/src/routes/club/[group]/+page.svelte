@@ -67,9 +67,9 @@
       {/if}
     </h1>
     <div>{group.description}</div>
-    {#if group.linkCollection.links.length > 0}
+    {#if group.links.length > 0}
       <div class="flex flex-wrap my-4 gap-3">
-        {#each data.group.linkCollection.links as link}
+        {#each data.group.links as link}
           <SocialLink {...link} />
         {/each}
       </div>

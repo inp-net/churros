@@ -33,10 +33,8 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
           descriptionHtml: true,
           title: true,
           links: {
-            links: {
-              name: true,
-              value: true,
-            },
+            name: true,
+            value: true,
           },
           tickets: {
             name: true,
@@ -45,10 +43,8 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             capacity: true,
             placesLeft: true,
             links: {
-              links: {
-                name: true,
-                value: true,
-              },
+              name: true,
+              value: true,
             },
             opensAt: true,
             closesAt: true,
