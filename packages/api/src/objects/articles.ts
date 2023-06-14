@@ -154,13 +154,21 @@ builder.mutationField('upsertArticle', (t) =>
         body,
         publishedAt,
         published: publishedAt <= new Date(),
-        eventId,
       };
       return prisma.article.upsert({
         ...query,
         where: { id: id ?? '' },
-        create: { ...data, uid: await createUid({ title, groupId }), links: { create: links } },
-        update: { ...data, links: { deleteMany: {}, createMany: { data: links } } },
+        create: {
+          ...data,
+          uid: await createUid({ title, groupId }),
+          links: { create: links },
+          event: eventId ? { connect: { id: eventId } } : undefined,
+        },
+        update: {
+          ...data,
+          links: { deleteMany: {}, createMany: { data: links } },
+          event: eventId ? { connect: { id: eventId } } : { disconnect: true },
+        },
       });
     },
   })

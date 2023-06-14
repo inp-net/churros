@@ -1,5 +1,6 @@
 <script lang="ts">
   import Alert from '$lib/components/alerts/Alert.svelte';
+  import MajesticonsShare from '~icons/majesticons/share';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
   import Breadcrumb from '$lib/components/breadcrumbs/Breadcrumb.svelte';
   import Breadcrumbs from '$lib/components/breadcrumbs/Breadcrumbs.svelte';
@@ -14,6 +15,9 @@
   import { zeus } from '$lib/zeus';
   import UserPicture from '$lib/components/pictures/UserPicture.svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import ArticleCard from '$lib/components/cards/ArticleCard.svelte';
+  import { formatDateTime } from '$lib/dates';
+  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
 
   export let data: PageData;
 
@@ -133,11 +137,14 @@
   {/if}
 </h2>
 
-{#each group.articles as { uid, title, bodyHtml }}
-  <Card element="article">
-    <h3><a href="./post/{uid}">{title}</a></h3>
+{#each group.articles as { uid, title, bodyHtml, pictureFile }}
+  <ArticleCard
+    href="/club/{group.uid}/post/{uid}/"
+    {title}
+    img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
+  >
     {@html bodyHtml}
-  </Card>
+  </ArticleCard>
 {/each}
 
 <style lang="scss">

@@ -22,7 +22,6 @@ import { GraphQLError, Kind } from 'graphql';
   {
     u: 'User',
     candidate: 'UserCandidate',
-    links: 'LinkCollection',
     link: 'Link',
     major: 'Major',
     school: 'School',
@@ -30,7 +29,6 @@ import { GraphQLError, Kind } from 'graphql';
     ae: 'StudentAssociation',
     g: 'Group',
     a: 'Article',
-    img: 'Image',
     e: 'Event',
     tg: 'TicketGroup',
     t: 'Ticket',

@@ -23,7 +23,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               email: true,
               selfJoinable: true,
               ancestors: { uid: true, name: true },
-              articles: { uid: true, title: true, bodyHtml: true },
+              articles: { uid: true, title: true, bodyHtml: true, pictureFile: true },
               school: { name: true, color: true },
               links: { name: true, value: true },
               members: {
@@ -48,7 +48,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               longDescriptionHtml: true,
               email: true,
               selfJoinable: true,
-              articles: { uid: true, title: true, bodyHtml: true },
+              articles: { uid: true, title: true, bodyHtml: true, pictureFile: true },
               school: { name: true, color: true },
               links: { name: true, value: true },
             },

@@ -13,5 +13,24 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   )
     throw redirect(307, '.');
 
-  return loadQuery({ group: [{uid: params.group}, { uid: true, id: true, name: true }] }, { fetch, parent });
+  const { group } = await loadQuery(
+    { group: [{ uid: params.group }, { uid: true, id: true, name: true }] },
+    { fetch, parent }
+  );
+  return {
+    article: {
+      id: '',
+      title: '',
+      body: '',
+      publishedAt: new Date(),
+      pictureFile: '',
+      links: [],
+      eventId: undefined,
+      event: undefined,
+      author: me,
+      authorId: me.id,
+      group,
+      groupId: group.id,
+    },
+  };
 };

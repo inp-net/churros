@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 import imageType, { minimumBytes } from 'image-type';
-import { unlink, writeFile } from 'node:fs/promises';
+import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import { phone as parsePhoneNumber } from 'phone';
 import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
@@ -14,6 +14,7 @@ import {
   levenshteinFilterAndSort,
 } from '../services/search.js';
 import type { User } from '@prisma/client';
+import { dirname, join } from 'node:path';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -239,7 +240,8 @@ builder.mutationField('updateUserPicture', (t) =>
 
       if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
 
-      const path = `${uid}.${type.ext}`;
+      const path = join(`users`, `${uid}.${type.ext}`);
+      await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
       purgeUserSessions(uid);
       await writeFile(new URL(path, process.env.STORAGE), file.stream());
       await prisma.user.update({ where: { uid }, data: { pictureFile: path } });

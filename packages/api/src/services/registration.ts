@@ -110,7 +110,7 @@ export const saveUser = async ({
       schoolServer,
       schoolUid,
       credentials: { create: { type: CredentialType.Password, value: password } },
-      linkCollection: { create: {} },
+      links: { create: [] },
     },
   });
 

@@ -7,7 +7,8 @@ import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
 import { LinkInput } from './links.js';
 import { GraphQLError } from 'graphql';
-import { unlink, writeFile } from 'node:fs/promises';
+import { unlink, writeFile, mkdir } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 import { FileScalar } from './scalars.js';
 import imageType, { minimumBytes } from 'image-type';
 import {
@@ -369,7 +370,8 @@ builder.mutationField('updateGroupPicture', (t) =>
 
       if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
 
-      const path = `${uid}.${type.ext}`;
+      const path = join(`groups`, `${uid}.${type.ext}`);
+      await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
       await writeFile(new URL(path, process.env.STORAGE), file.stream());
       await prisma.group.update({ where: { uid }, data: { pictureFile: path } });
       return path;

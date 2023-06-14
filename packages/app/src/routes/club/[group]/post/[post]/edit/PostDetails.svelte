@@ -9,12 +9,15 @@
   import { _articleQuery } from './+page';
   import FormInput from '$lib/components/inputs/FormInput.svelte';
   import LinkCollectionInput from '$lib/components/inputs/LinkCollectionInput.svelte';
+  import { formatDatetimeLocal } from '$lib/dates';
 
   export let data: PageData;
 
   let serverError = '';
 
   let { id, event, eventId, title, author, body, publishedAt, links, group } = data.article;
+
+  $: console.log(publishedAt);
 
   let loading = false;
   const updateArticle = async () => {
@@ -30,7 +33,7 @@
             groupId: group.id,
             title,
             body,
-            publishedAt,
+            publishedAt: publishedAt?.toISOString(),
             links,
           },
           {
@@ -47,7 +50,7 @@
         serverError = upsertArticle.message;
         return;
       }
-  
+
       serverError = '';
       data.article = upsertArticle.data;
       ({ id, event, eventId, title, author, body, publishedAt, links, group } = data.article);
@@ -65,7 +68,13 @@
     <input type="text" required bind:value={title} />
   </FormInput>
   <FormInput label="Publier le">
-    <input type="datetime-local" bind:value={publishedAt} />
+    <input
+      type="datetime-local"
+      value={publishedAt ? formatDatetimeLocal(publishedAt) : ''}
+      on:input={({ target: { value } }) => {
+        publishedAt = new Date(Date.parse(value));
+      }}
+    />
   </FormInput>
   <FormInput label="Description">
     <textarea bind:value={body} cols="30" rows="10" />
