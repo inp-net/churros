@@ -55,8 +55,6 @@ model User {
   managedEvents EventManager[]
   logs          LogEntry[]
   events        Event[]
-  tickets       Ticket[]
-  ticketGroups  TicketGroup[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -303,22 +301,19 @@ model EventManager {
 
 /// A ticket group allows for conditions on multiple tickets, such as an upper limit on the sum of registrations in the sub-tickets
 model TicketGroup {
-  id       String  @id @default(dbgenerated("nanoid('tg:')"))
-  eventId  String
-  authorId String?
-  name     String  @db.VarChar(255)
+  id      String @id @default(dbgenerated("nanoid('tg:')"))
+  eventId String
+  name    String @db.VarChar(255)
 
   capacity Int      @default(0) // 0 means unlimited, capacity is on the sum of sub-tickets registrations
   tickets  Ticket[]
   event    Event    @relation(fields: [eventId], references: [id])
-  author   User?    @relation(fields: [authorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 }
 
 /// A ticket is a way to register for an event. May include a price and conditions.
 model Ticket {
   id                    String          @id @default(dbgenerated("nanoid('t:')"))
   eventId               String
-  authorId              String?
   ticketGroupId         String?
   name                  String          @db.VarChar(255)
   description           String          @db.VarChar(255)
@@ -329,7 +324,6 @@ model Ticket {
   registrations         Registration[]
   links                 Link[]
   allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
-  author                User?           @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
 
   // Conditions for that ticket.
   openToPromotions        Int[]    @default([])

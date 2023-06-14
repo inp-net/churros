@@ -55,8 +55,6 @@ export const TicketType = builder.prismaNode('Ticket', {
     onlyManagersCanProvide: t.exposeBoolean('onlyManagersCanProvide'),
     event: t.relation('event'),
     group: t.relation('group', { nullable: true }),
-    authorId: t.exposeID('authorId', { nullable: true }),
-    author: t.relation('author', { nullable: true }),
     placesLeft: t.int({
       async resolve({ id }) {
         const ticket = await prisma.ticket.findUnique({

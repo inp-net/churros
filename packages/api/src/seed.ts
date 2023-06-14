@@ -492,7 +492,6 @@ const event1 = await prisma.event.create({
         data: [
           {
             name: 'Staff TVn7',
-            authorId: randomIdOf(users),
             description: 'Staffeurs :sparkles: TVn7 :sparkles:, par ici!',
             price: 0,
             capacity: 12,
@@ -560,7 +559,6 @@ await prisma.event.create({
         data: [
           {
             name: '',
-            authorId: randomIdOf(users),
             description: '',
             price: 3.5,
             capacity: 70,
