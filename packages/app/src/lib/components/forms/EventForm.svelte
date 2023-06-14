@@ -135,6 +135,8 @@
     if (permissions.canVerifyRegistrations) return 'verify';
     return 'readonly';
   }
+
+  const aspermissionlevel = (x: any) => x as 'readonly' | 'verify' | 'editor' | 'fullaccess';
 </script>
 
 <form on:submit|preventDefault>
@@ -459,9 +461,10 @@
       <input type="text" bind:value={event.managers[i].user.uid} />
       <select
         on:input={(e) => {
+          if (!e.target || !('value' in e.target)) return;
           event.managers[i] = {
             ...manager,
-            ...permissionsFromLevel(e.target.value),
+            ...permissionsFromLevel(aspermissionlevel(e.target.value)),
           };
         }}
         value={levelFromPermissions(manager)}

@@ -5,6 +5,8 @@
   export let value: string[] = [];
 
   $: emit('input', value);
+
+  const asstring = (x: any) => x as string;
 </script>
 
 <div class="integer-list-input">
@@ -20,7 +22,8 @@
   <input
     type="text"
     on:blur={(e) => {
-      const val = e.target.value;
+      if (!e.target || !('value' in e.target)) return;
+      const val = asstring(e.target.value);
       console.log(val);
       if (val) {
         value = [...value, val];

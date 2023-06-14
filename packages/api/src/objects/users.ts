@@ -13,6 +13,7 @@ import {
   levenshteinSorter,
   levenshteinFilterAndSort,
 } from '../services/search.js';
+import type { User } from '@prisma/client';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -130,7 +131,7 @@ LIMIT 10
 
       return [
         ...users.sort(levenshteinSorter(searchResults)),
-        ...levenshteinFilterAndSort(
+        ...levenshteinFilterAndSort<User>(
           searchResults,
           5,
           users.map(({ id }) => id)

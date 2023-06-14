@@ -6,6 +6,7 @@
 
   export let data: PageData;
   let event = {
+    uid: '',
     ticketGroups: [],
     tickets: [],
     authorUid: $me?.uid || '',

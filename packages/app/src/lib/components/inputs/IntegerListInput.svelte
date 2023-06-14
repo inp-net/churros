@@ -1,5 +1,7 @@
 <script lang="ts">
   export let value: number[] = [];
+
+  const asnumber = (x: any) => x as number;
 </script>
 
 <div class="integer-list-input">
@@ -15,8 +17,9 @@
   <input
     type="number"
     on:blur={(e) => {
+      if (!e.target || !('value' in e.target)) return;
       if (e.target.value) {
-        value = [...value, e.target.value];
+        value = [...value, asnumber(e.target.value)];
         e.target.value = undefined;
       }
     }}

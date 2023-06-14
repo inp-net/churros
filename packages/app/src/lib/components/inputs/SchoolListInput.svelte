@@ -7,14 +7,17 @@
   export let value: School[] = [];
 
   $: emit('input', value);
+
+  const asstring = (x: any) => x as string;
 </script>
 
-<div class="integer-list-input">
+<div class="school-list-input">
   {#each value as v, i}
     <input
       type="text"
       on:blur={(e) => {
-        const val = e.target.value;
+        if (!e.target || !('value' in e.target)) return;
+        const val = asstring(e.target.value);
         if (!val) value = value.filter((g) => g.name !== val);
       }}
       bind:value={value[i].name}
@@ -23,8 +26,8 @@
   <input
     type="text"
     on:blur={(e) => {
-      const val = e.target.value;
-      console.log(val);
+      if (!e.target || !('value' in e.target)) return;
+      const val = asstring(e.target.value);
       if (val) {
         value = [
           ...value,
