@@ -29,7 +29,7 @@
 
 <h1>Mon feed</h1>
 
-{#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, homepage, pictureFile } }}
+{#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile } }}
   <ArticleCard
     {title}
     href="/club/{group.uid}/post/{uid}/"
@@ -38,7 +38,6 @@
     <p>
       Par <a href="/club/{group.uid}/">{group.name}</a>
       le {formatDateTime(publishedAt)}
-      {#if homepage}en page d'accueil{/if}
       <GhostButton
         on:click={async () => {
           await navigator.share({ url: window.location.href, title });

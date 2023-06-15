@@ -25,8 +25,4 @@
   };
 </script>
 
-<EventForm
-  bind:event
-  availableLydiaAccounts={data.lydiaAccountsOfGroup.edges.map(({ node }) => node)}
-  availableGroups={[]}
-/>
+<EventForm bind:event availableLydiaAccounts={data.lydiaAccountsOfGroup} availableGroups={[]} />

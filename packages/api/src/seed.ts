@@ -6,7 +6,7 @@
  * @module
  */
 
-import { CredentialType, EventVisibility, GroupType, type Prisma } from '@prisma/client';
+import { CredentialType, Visibility, GroupType, type Prisma } from '@prisma/client';
 import { hash } from 'argon2';
 import slug from 'slug';
 import { prisma } from './prisma.js';
@@ -413,7 +413,7 @@ for (let i = 0; i < end; i++) {
 - Deux
 - Trois
 `,
-    homepage: i % 3 === 0,
+    visibility: i % 3 === 0 ? Visibility.Public : Visibility.Restricted,
     published: i % 7 > 1,
     createdAt: new Date(startDate * (1 - i / end) + endDate * (i / end)),
     publishedAt: new Date(
@@ -460,7 +460,7 @@ const event1 = await prisma.event.create({
     uid: 'ceci-est-un-evenement',
     title: 'Ceci est un événement',
     group: { connect: { id: Groupe1.id } },
-    visibility: EventVisibility.Public,
+    visibility: Visibility.Public,
     articles: {
       createMany: {
         data: [
@@ -541,7 +541,7 @@ await prisma.event.create({
     startsAt: new Date(),
     uid: 'passation-tvn7',
     title: 'Passation TVn7',
-    visibility: EventVisibility.Restricted,
+    visibility: Visibility.Restricted,
     author: { connect: { uid: 'deuxtroisq' } },
     group: { connect: { uid: 'ski' } },
     links: {

@@ -26,15 +26,9 @@ export const load: PageLoad = async ({ fetch, parent, url, params }) => {
       ],
       lydiaAccountsOfGroup: [
         { uid: params.group },
-        Selector('QueryLydiaAccountsConnection')({
-          pageInfo: { hasNextPage: true, endCursor: true },
-          edges: {
-            cursor: true,
-            node: {
-              id: true,
-              name: true,
-            },
-          },
+        Selector('LydiaAccount')({
+          id: true,
+          name: true,
         }),
       ],
     },

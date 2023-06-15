@@ -5,13 +5,12 @@ CREATE EXTENSION IF NOT EXISTS "fuzzystrmatch";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- This function-is installed in the first migration by editing it manually to include this CREATE OR REPLACE FUNCTION statement.
-
 -- It needs the pgcrypto extension to function.
 
 CREATE OR REPLACE FUNCTION NANOID(PREFIX TEXT DEFAULT 
 '', SIZE INT DEFAULT 16, ALPHABET TEXT DEFAULT '0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz'
-) RETURNS TEXT LANGUAGE PLPGSQL VOLATILE AS 
-	$$ DECLARE idBuilder text := '';
+) RETURNS TEXT LANGUAGE PLPGSQL VOLATILE AS $$ 
+	DECLARE idBuilder text := '';
 	counter int := 0;
 	bytes bytea;
 	alphabetIndex int;
@@ -30,26 +29,18 @@ CREATE OR REPLACE FUNCTION NANOID(PREFIX TEXT DEFAULT
 	) - 1;
 	step := cast(ceil(1.6 * mask * size / alphabetLength) AS int);
 	while true loop bytes := gen_random_bytes(step);
-	while counter < step
-	loop
-	    alphabetIndex := (get_byte(bytes, counter) & mask) + 1;
+	while counter < step loop alphabetIndex := (get_byte(bytes, counter) & mask) + 1;
 	if alphabetIndex <= alphabetLength then idBuilder := idBuilder || alphabetArray [alphabetIndex];
-	if length(idBuilder) = size then return PREFIX || 
-IDBUILDER; 
+	if length(idBuilder) = size then return PREFIX || idBuilder;
+	end if;
+	end if;
+	counter := counter + 1;
+	end loop;
+	counter := 0;
+	end loop;
+	END 
+$$; 
 
-end if;
-
-end if;
-
-counter := counter + 1;
-
-end loop;
-
-counter := 0;
-
-end loop;
-
-END $$;
 
 -- CreateEnum
 CREATE TYPE "CredentialType" AS ENUM ('Password', 'Token');
@@ -58,7 +49,7 @@ CREATE TYPE "CredentialType" AS ENUM ('Password', 'Token');
 CREATE TYPE "GroupType" AS ENUM ('Association', 'Club', 'Group', 'Integration', 'StudentAssociationSection');
 
 -- CreateEnum
-CREATE TYPE "EventVisibility" AS ENUM ('Private', 'Unlisted', 'Restricted', 'Public');
+CREATE TYPE "Visibility" AS ENUM ('Private', 'Unlisted', 'Restricted', 'Public');
 
 -- CreateEnum
 CREATE TYPE "PaymentMethod" AS ENUM ('Lydia', 'Card', 'Transfer', 'Check', 'Cash', 'Other');
@@ -214,10 +205,10 @@ CREATE TABLE "Article" (
     "title" VARCHAR(255) NOT NULL,
     "body" TEXT NOT NULL,
     "published" BOOLEAN NOT NULL DEFAULT false,
-    "homepage" BOOLEAN NOT NULL DEFAULT false,
+    "visibility" "Visibility" NOT NULL DEFAULT 'Private',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "publishedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "pictureFile" TEXT NOT NULL,
+    "pictureFile" VARCHAR(255) NOT NULL DEFAULT '',
     "eventId" TEXT,
 
     CONSTRAINT "Article_pkey" PRIMARY KEY ("id")
@@ -235,8 +226,8 @@ CREATE TABLE "Event" (
     "startsAt" TIMESTAMP(3) NOT NULL,
     "endsAt" TIMESTAMP(3) NOT NULL,
     "location" VARCHAR(255) NOT NULL DEFAULT '',
-    "visibility" "EventVisibility" NOT NULL,
-    "pictureFile" TEXT NOT NULL,
+    "visibility" "Visibility" NOT NULL,
+    "pictureFile" VARCHAR(255) NOT NULL DEFAULT '',
     "lydiaAccountId" TEXT,
 
     CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
@@ -255,7 +246,6 @@ CREATE TABLE "EventManager" (
 CREATE TABLE "TicketGroup" (
     "id" TEXT NOT NULL DEFAULT nanoid('tg:'),
     "eventId" TEXT NOT NULL,
-    "authorId" TEXT,
     "name" VARCHAR(255) NOT NULL,
     "capacity" INTEGER NOT NULL DEFAULT 0,
 
@@ -266,7 +256,6 @@ CREATE TABLE "TicketGroup" (
 CREATE TABLE "Ticket" (
     "id" TEXT NOT NULL DEFAULT nanoid('t:'),
     "eventId" TEXT NOT NULL,
-    "authorId" TEXT,
     "ticketGroupId" TEXT,
     "name" VARCHAR(255) NOT NULL,
     "description" VARCHAR(255) NOT NULL,
@@ -289,7 +278,7 @@ CREATE TABLE "Ticket" (
 CREATE TABLE "Registration" (
     "id" TEXT NOT NULL DEFAULT nanoid('r:'),
     "ticketId" TEXT NOT NULL,
-    "beneficiary" TEXT NOT NULL DEFAULT '',
+    "beneficiary" TEXT NOT NULL,
     "authorId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -400,10 +389,10 @@ CREATE UNIQUE INDEX "Event_groupId_uid_key" ON "Event"("groupId", "uid");
 CREATE UNIQUE INDEX "EventManager_eventId_userId_key" ON "EventManager"("eventId", "userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Registration_ticketId_beneficiary_key" ON "Registration"("ticketId", "beneficiary");
+CREATE UNIQUE INDEX "LydiaAccount_uid_key" ON "LydiaAccount"("uid");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "LydiaAccount_uid_key" ON "LydiaAccount"("uid");
+CREATE UNIQUE INDEX "LydiaAccount_privateToken_vendorToken_groupId_key" ON "LydiaAccount"("privateToken", "vendorToken", "groupId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "BarWeek_uid_key" ON "BarWeek"("uid");
@@ -506,12 +495,6 @@ ALTER TABLE "EventManager" ADD CONSTRAINT "EventManager_userId_fkey" FOREIGN KEY
 
 -- AddForeignKey
 ALTER TABLE "TicketGroup" ADD CONSTRAINT "TicketGroup_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TicketGroup" ADD CONSTRAINT "TicketGroup_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Ticket" ADD CONSTRAINT "Ticket_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Ticket" ADD CONSTRAINT "Ticket_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE;

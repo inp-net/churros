@@ -2,8 +2,8 @@ import { builder } from '../builder.js';
 
 import {
   type Event as EventPrisma,
-  EventVisibility as EventPrismaVisibility,
-  EventVisibility,
+  Visibility as VisibilityPrisma,
+  Visibility,
   type Event,
 } from '@prisma/client';
 import { toHtml } from '../services/markdown.js';
@@ -22,8 +22,8 @@ import {
 } from '../services/search.js';
 import { dateFromNumbers } from '../date.js';
 
-export const EventEnumVisibility = builder.enumType(EventPrismaVisibility, {
-  name: 'EventVisibility',
+export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
+  name: 'Visibility',
 });
 
 export const EventType = builder.prismaNode('Event', {
@@ -40,7 +40,7 @@ export const EventType = builder.prismaNode('Event', {
     startsAt: t.expose('startsAt', { type: DateTimeScalar }),
     endsAt: t.expose('endsAt', { type: DateTimeScalar }),
     location: t.exposeString('location'),
-    visibility: t.expose('visibility', { type: EventEnumVisibility }),
+    visibility: t.expose('visibility', { type: VisibilityEnum }),
     managers: t.relation('managers'),
     tickets: t.relation('tickets'),
     ticketGroups: t.relation('ticketGroups'),
@@ -78,7 +78,7 @@ builder.queryField('events', (t) =>
       if (!user) {
         return prisma.event.findMany({
           ...query,
-          where: { visibility: EventPrismaVisibility.Public },
+          where: { visibility: VisibilityPrisma.Public },
         });
       }
 
@@ -94,12 +94,12 @@ builder.queryField('events', (t) =>
         ...query,
         where: {
           visibility: {
-            notIn: [EventPrismaVisibility.Private, EventPrismaVisibility.Unlisted],
+            notIn: [VisibilityPrisma.Private, VisibilityPrisma.Unlisted],
           },
           OR: [
             // Completely public events
             {
-              visibility: EventPrismaVisibility.Public,
+              visibility: VisibilityPrisma.Public,
             },
             // Events in the user's groups
             {
@@ -128,7 +128,7 @@ builder.queryField('eventsOfGroup', (t) =>
       if (!user) {
         return prisma.event.findMany({
           ...query,
-          where: { visibility: EventPrismaVisibility.Public, group: { uid: groupUid } },
+          where: { visibility: VisibilityPrisma.Public, group: { uid: groupUid } },
         });
       }
 
@@ -144,7 +144,7 @@ builder.queryField('eventsOfGroup', (t) =>
         ...query,
         where: {
           visibility: {
-            notIn: [EventPrismaVisibility.Private, EventPrismaVisibility.Unlisted],
+            notIn: [VisibilityPrisma.Private, VisibilityPrisma.Unlisted],
           },
           group: {
             uid: groupUid,
@@ -152,7 +152,7 @@ builder.queryField('eventsOfGroup', (t) =>
           OR: [
             // Completely public events
             {
-              visibility: EventPrismaVisibility.Public,
+              visibility: VisibilityPrisma.Public,
             },
             // Events in the user's groups
             {
@@ -204,7 +204,7 @@ builder.mutationField('upsertEvent', (t) =>
       lydiaAccountId: t.arg.string({ required: false }),
       location: t.arg.string(),
       title: t.arg.string(),
-      visibility: t.arg({ type: EventEnumVisibility }),
+      visibility: t.arg({ type: VisibilityEnum }),
       startsAt: t.arg({ type: DateTimeScalar }),
       endsAt: t.arg({ type: DateTimeScalar }),
     },
@@ -302,12 +302,12 @@ export async function eventAccessibleByUser(
   if (user?.admin) return true;
 
   switch (event?.visibility) {
-    case EventVisibility.Public:
-    case EventVisibility.Unlisted: {
+    case Visibility.Public:
+    case Visibility.Unlisted: {
       return true;
     }
 
-    case EventVisibility.Restricted: {
+    case Visibility.Restricted: {
       if (!user) return false;
       // All managers can see the event, no matter their permissions
       if (
@@ -330,7 +330,7 @@ export async function eventAccessibleByUser(
       return Boolean(ancestors.some(({ id }) => id === event.groupId));
     }
 
-    case EventVisibility.Private: {
+    case Visibility.Private: {
       // All managers can see the event, no matter their permissions
       return eventManagedByUser(event, user, {
         canEdit: false,
@@ -423,6 +423,7 @@ builder.queryField('searchEvents', (t) =>
           results.map(({ id }) => id)
         )(fuzzyEvents),
         // what in the actual name of fuck do i need this?
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       ].filter(async (event) => eventAccessibleByUser(event, user));
     },
   })

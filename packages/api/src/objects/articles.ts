@@ -10,6 +10,8 @@ import { GraphQLError } from 'graphql';
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import imageType, { minimumBytes } from 'image-type';
+import { VisibilityEnum } from './events.js';
+import { Visibility } from '@prisma/client';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
@@ -22,7 +24,7 @@ export const ArticleType = builder.prismaNode('Article', {
     body: t.exposeString('body'),
     bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),
     published: t.exposeBoolean('published'),
-    homepage: t.exposeBoolean('homepage'),
+    visibility: t.expose('visibility', { type: VisibilityEnum }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     publishedAt: t.expose('publishedAt', { type: DateTimeScalar }),
     pictureFile: t.exposeString('pictureFile'),
@@ -54,7 +56,7 @@ builder.queryField('homepage', (t) =>
       if (!user) {
         return prisma.article.findMany({
           ...query,
-          where: { published: true, homepage: true },
+          where: { published: true, visibility: Visibility.Public },
           orderBy: { publishedAt: 'desc' },
         });
       }
@@ -78,11 +80,14 @@ builder.queryField('homepage', (t) =>
           OR: [
             // Show articles from the same school as the user
             {
-              homepage: true,
+              visibility: Visibility.Public,
               group: { school: { id: { in: user.major.schools.map(({ id }) => id) } } },
             },
             // Show articles from groups whose user is a member
-            { group: { uid: { in: ancestors.map(({ uid }) => uid) } } },
+            {
+              visibility: Visibility.Public || Visibility.Restricted,
+              group: { uid: { in: ancestors.map(({ uid }) => uid) } },
+            },
           ],
         },
         orderBy: { publishedAt: 'desc' },
