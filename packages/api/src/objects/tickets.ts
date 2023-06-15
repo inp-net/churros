@@ -23,9 +23,9 @@ export const placesLeft = (ticket: {
   }
 
   let placesLeftInTicket = Number.POSITIVE_INFINITY;
-  if (ticket.capacity) 
+  if (ticket.capacity)
     placesLeftInTicket = ticket.capacity - ticket.registrations.filter(({ paid }) => paid).length;
-  
+
   console.log(
     `Places left for ticket ${ticket.name}: self=${placesLeftInTicket}, group=${placesLeftInGroup}`
   );

@@ -188,7 +188,7 @@ builder.mutationField('upsertRegistration', (t) =>
           ticket: { connect: { id: ticketId } },
           author: { connect: { id: user?.id } },
           paymentMethod,
-          beneficiary: beneficiary || user?.uid,
+          beneficiary: beneficiary || user?.uid || '',
         },
       });
     },
