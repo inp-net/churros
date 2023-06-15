@@ -7,7 +7,8 @@ import { userIsPresidentOf, userIsTreasurerOf } from './groups.js';
 
 export const LydiaAccountType = builder.prismaObject('LydiaAccount', {
   fields: (t) => ({
-    id: t.exposeID('groupId'),
+    id: t.exposeID('id'),
+    groupId: t.exposeID('groupId'),
     group: t.relation('group'),
     events: t.relation('events'),
     name: t.exposeString('name'),
@@ -78,9 +79,8 @@ builder.mutationField('upsertLydiaAccount', (t) =>
 );
 
 builder.queryField('lydiaAccounts', (t) =>
-  t.prismaConnection({
-    type: LydiaAccountType,
-    cursor: 'id',
+  t.prismaField({
+    type: [LydiaAccountType],
     authScopes: (_, {}, { user }) => Boolean(user),
     async resolve(query, {}, {}) {
       const results = await prisma.lydiaAccount.findMany({ ...query });
@@ -97,9 +97,8 @@ builder.queryField('lydiaAccounts', (t) =>
 );
 
 builder.queryField('lydiaAccountsOfGroup', (t) =>
-  t.prismaConnection({
-    type: LydiaAccountType,
-    cursor: 'id',
+  t.prismaField({
+    type: [LydiaAccountType],
     args: {
       uid: t.arg.string(),
     },

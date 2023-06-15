@@ -299,6 +299,8 @@ export async function eventAccessibleByUser(
   event: EventPrisma | null,
   user: Context['user']
 ): Promise<boolean> {
+  if (user?.admin) return true;
+
   switch (event?.visibility) {
     case EventVisibility.Public:
     case EventVisibility.Unlisted: {
@@ -421,7 +423,6 @@ builder.queryField('searchEvents', (t) =>
           results.map(({ id }) => id)
         )(fuzzyEvents),
         // what in the actual name of fuck do i need this?
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       ].filter(async (event) => eventAccessibleByUser(event, user));
     },
   })

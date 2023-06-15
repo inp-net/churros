@@ -55,6 +55,8 @@ model User {
   managedEvents EventManager[]
   logs          LogEntry[]
   events        Event[]
+  tickets       Ticket[]
+  ticketGroups  TicketGroup[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -230,17 +232,17 @@ model GroupMember {
 
 /// An article is a post in a group
 model Article {
-  id          String   @id @default(dbgenerated("nanoid('a:')"))
+  id          String     @id @default(dbgenerated("nanoid('a:')"))
   authorId    String?
   groupId     String
-  uid         String   @db.VarChar(255)
-  title       String   @db.VarChar(255)
-  body        String   @db.Text
-  published   Boolean  @default(false)
-  homepage    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  publishedAt DateTime @default(now())
-  pictureFile String   @default("") @db.VarChar(255)
+  uid         String     @db.VarChar(255)
+  title       String     @db.VarChar(255)
+  body        String     @db.Text
+  published   Boolean    @default(false)
+  visibility  Visibility @default(Private)
+  createdAt   DateTime   @default(now())
+  publishedAt DateTime   @default(now())
+  pictureFile String     @default("") @db.VarChar(255)
   links       Link[]
 
   author  User?   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
@@ -253,22 +255,22 @@ model Article {
 
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
-  id             String          @id @default(dbgenerated("nanoid('e:')"))
+  id             String         @id @default(dbgenerated("nanoid('e:')"))
   authorId       String?
   groupId        String
   contactMail    String
-  beneficiary    LydiaAccount?   @relation(fields: [lydiaAccountId], references: [id])
-  description    String          @db.VarChar(255)
-  uid            String          @db.VarChar(255)
-  title          String          @db.VarChar(255)
+  beneficiary    LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
+  description    String         @db.VarChar(255)
+  uid            String         @db.VarChar(255)
+  title          String         @db.VarChar(255)
   startsAt       DateTime
   endsAt         DateTime
-  location       String          @default("") @db.VarChar(255)
-  visibility     EventVisibility
-  pictureFile    String          @default("") @db.VarChar(255)
+  location       String         @default("") @db.VarChar(255)
+  visibility     Visibility
+  pictureFile    String         @default("") @db.VarChar(255)
   managers       EventManager[]
-  author         User?           @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  group          Group           @relation(fields: [groupId], references: [id])
+  author         User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  group          Group          @relation(fields: [groupId], references: [id])
   tickets        Ticket[]
   ticketGroups   TicketGroup[]
   articles       Article[]
@@ -278,7 +280,7 @@ model Event {
   @@unique([groupId, uid])
 }
 
-enum EventVisibility {
+enum Visibility {
   Private
   Unlisted
   Restricted
@@ -301,19 +303,22 @@ model EventManager {
 
 /// A ticket group allows for conditions on multiple tickets, such as an upper limit on the sum of registrations in the sub-tickets
 model TicketGroup {
-  id      String @id @default(dbgenerated("nanoid('tg:')"))
-  eventId String
-  name    String @db.VarChar(255)
+  id       String  @id @default(dbgenerated("nanoid('tg:')"))
+  eventId  String
+  authorId String?
+  name     String  @db.VarChar(255)
 
   capacity Int      @default(0) // 0 means unlimited, capacity is on the sum of sub-tickets registrations
   tickets  Ticket[]
   event    Event    @relation(fields: [eventId], references: [id])
+  author   User?    @relation(fields: [authorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 }
 
 /// A ticket is a way to register for an event. May include a price and conditions.
 model Ticket {
   id                    String          @id @default(dbgenerated("nanoid('t:')"))
   eventId               String
+  authorId              String?
   ticketGroupId         String?
   name                  String          @db.VarChar(255)
   description           String          @db.VarChar(255)
@@ -324,6 +329,7 @@ model Ticket {
   registrations         Registration[]
   links                 Link[]
   allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
+  author                User?           @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
 
   // Conditions for that ticket.
   openToPromotions        Int[]    @default([])
@@ -344,7 +350,7 @@ model Ticket {
 model Registration {
   id            String        @id @default(dbgenerated("nanoid('r:')"))
   ticketId      String
-  beneficiary   String        @default("")
+  beneficiary   String
   authorId      String
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
@@ -353,8 +359,6 @@ model Registration {
 
   ticket Ticket @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   author User   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-
-  @@unique([ticketId, beneficiary])
 }
 
 enum PaymentMethod {
@@ -387,6 +391,8 @@ model LydiaAccount {
   privateToken String  @default("") @db.VarChar(255)
   vendorToken  String  @default("") @db.VarChar(255)
   events       Event[]
+
+  @@unique([privateToken, vendorToken, groupId])
 }
 
 /// A bar week is a week during which some groups takeover the bar staff

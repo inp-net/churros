@@ -492,6 +492,8 @@
   <pre>
     {JSON.stringify(event, undefined, 2)}
   </pre>
+
+  <Button type="submit">Enregistrer</Button>
 </form>
 
 <style>
