@@ -1516,6 +1516,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.21.0":
+  version: 7.22.5
+  resolution: "@babel/runtime@npm:7.22.5"
+  dependencies:
+    regenerator-runtime: "npm:^0.13.11"
+  checksum: 28820c2de3e0819b188661addcf2c8e9ffba60ca778d351ddf3c3d6a11c749a1aa740908dd84ed359640621f54db5b31a04dc63833e936fad5f59baddb1dcc12
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:~7.5.4":
   version: 7.5.5
   resolution: "@babel/runtime@npm:7.5.5"
@@ -1634,7 +1643,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.20.2"
     "@centraverse/api": "workspace:^"
-    "@iconify-json/majesticons": "npm:^1.1.3"
+    "@iconify-json/material-symbols": "npm:^1.1.48"
     "@iconify-json/simple-icons": "npm:^1.1.34"
     "@storybook/addon-actions": "npm:^6.5.13"
     "@storybook/addon-docs": "npm:^6.5.13"
@@ -1654,6 +1663,7 @@ __metadata:
     "@types/ua-parser-js": "npm:^0.7.36"
     arborist: "workspace:^"
     cookie: "npm:^0.5.0"
+    date-fns: "npm:^2.30.0"
     extract-files: "npm:^13.0.0"
     graphql: "npm:^16.6.0"
     graphql-zeus: "npm:^5.2.0"
@@ -2241,12 +2251,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify-json/majesticons@npm:^1.1.3":
-  version: 1.1.3
-  resolution: "@iconify-json/majesticons@npm:1.1.3"
+"@iconify-json/material-symbols@npm:^1.1.48":
+  version: 1.1.48
+  resolution: "@iconify-json/material-symbols@npm:1.1.48"
   dependencies:
     "@iconify/types": "npm:*"
-  checksum: 5f896ec1ec1fd4c60f404e0abfc0c02442769a4fcbf528f20353e2bd4c4bf7ebd1e19d554ffe584439c2df25a20ef7e316d29ca103451eb37d918eae863548aa
+  checksum: 1e753bbbe45f59c1c759095f61bc0a92bade416e8d79b9b1691919305e0352b2373faf909a1fc812c4895c56a909044200b561eeaa566ca5926f6fcda0822819
   languageName: node
   linkType: hard
 
@@ -7709,6 +7719,15 @@ __metadata:
   version: 2.1.0
   resolution: "dataloader@npm:2.1.0"
   checksum: 3a1a04ca8ce5d670f9bb315ea17fdddcd2983c10afd54a1b56e2ee6c23349efadbc8b2168210238ae77efb08452ceb89762026027d914f66fb0efc8fbdd92aee
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^2.30.0":
+  version: 2.30.0
+  resolution: "date-fns@npm:2.30.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.21.0"
+  checksum: 1edbb6ae2e10008de7f5ef37faee6c993926b008c98ca1d0cb4b0263c8448f2d3db5d84ac9475044f2295dee5d0d80bf6e92fe289f7f397420f0c8ad4bd7c069
   languageName: node
   linkType: hard
 
@@ -15098,7 +15117,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"regenerator-runtime@npm:^0.13.10, regenerator-runtime@npm:^0.13.2, regenerator-runtime@npm:^0.13.7":
+"regenerator-runtime@npm:^0.13.10, regenerator-runtime@npm:^0.13.11, regenerator-runtime@npm:^0.13.2, regenerator-runtime@npm:^0.13.7":
   version: 0.13.11
   resolution: "regenerator-runtime@npm:0.13.11"
   checksum: 0485db63ce47760e28329590cb9f8b208365d076dbf2edaa32e551a7c0451fc6f7557b225268422c960ffa4fbc6ff86d63d6a747aacbf6b10ed6a747b432e3c8
