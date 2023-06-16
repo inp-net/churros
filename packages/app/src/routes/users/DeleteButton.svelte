@@ -2,7 +2,7 @@
   import Button from '$lib/components/buttons/Button.svelte';
   import { zeus } from '$lib/zeus.js';
   import { createEventDispatcher } from 'svelte';
-  import MajesticonsTrashLine from '~icons/majesticons/trash-line';
+  import IconTrashLine from '~icons/mdi/delete';
 
   export let email: string;
 
@@ -21,4 +21,4 @@
   };
 </script>
 
-<Button theme="danger" {loading} on:click={refuseRegistration}><MajesticonsTrashLine /></Button>
+<Button theme="danger" {loading} on:click={refuseRegistration}><IconTrashLine /></Button>

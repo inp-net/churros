@@ -1,7 +1,7 @@
 <script lang="ts">
-  import MajesticonsClose from '~icons/majesticons/close-line';
-  import MajesticonsPlus from '~icons/majesticons/plus-line';
-  import MajesticonsChevronUp from '~icons/majesticons/chevron-up-line';
+  import IconClose from '~icons/mdi/close';
+  import IconPlus from '~icons/mdi/plus';
+  import IconChevronUp from '~icons/mdi/chevron-up';
   import GhostButton from '../buttons/GhostButton.svelte';
   import InputGroup from '../groups/InputGroup.svelte';
 
@@ -22,7 +22,7 @@
             value = value.filter((_, j) => i !== j);
           }}
         >
-          <MajesticonsClose aria-label="Supprimer" />
+          <IconClose aria-label="Supprimer" />
         </GhostButton>
         {#if i > 0}
           <GhostButton
@@ -31,7 +31,7 @@
               value = [...value.slice(0, i - 1), value[i], value[i - 1], ...value.slice(i + 1)];
             }}
           >
-            <MajesticonsChevronUp aria-label="Remonter" />
+            <IconChevronUp aria-label="Remonter" />
           </GhostButton>
         {/if}
       </InputGroup>
@@ -42,7 +42,7 @@
       type="button"
       on:click={() => {
         value = [...value, { name: '', value: '' }];
-      }}><MajesticonsPlus aria-hidden="true" />Ajouter</button
+      }}><IconPlus aria-hidden="true" />Ajouter</button
     >
   </li>
 </ul>

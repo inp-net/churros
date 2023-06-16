@@ -1,14 +1,14 @@
 <script lang="ts">
   import Alert from '$lib/components/alerts/Alert.svelte';
-  import MajesticonsShare from '~icons/majesticons/share';
+  import IconShare from '~icons/mdi/share';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
   import Breadcrumb from '$lib/components/breadcrumbs/Breadcrumb.svelte';
   import Breadcrumbs from '$lib/components/breadcrumbs/Breadcrumbs.svelte';
   import Card from '$lib/components/cards/Card.svelte';
   import SocialLink from '$lib/components/links/SocialLink.svelte';
   import { me } from '$lib/session.js';
-  import MajesticonsPlus from '~icons/majesticons/plus';
-  import MajesticonsEdit from '~icons/majesticons/edit-pen-2-line';
+  import IconPlus from '~icons/mdi/plus';
+  import IconEdit from '~icons/mdi/pencil';
   import type { PageData } from './$types';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import Button from '$lib/components/buttons/Button.svelte';
@@ -66,7 +66,7 @@
       {#if group.school}<SchoolBadge schools={[group.school]} />{/if}
       {#if $me?.canEditGroups || ($me && isOnClubBoard($me))}
         <a href="edit/" title="Éditer">
-          <MajesticonsEdit aria-label="Éditer" />
+          <IconEdit aria-label="Éditer" />
         </a>
       {/if}
     </h1>
@@ -132,7 +132,7 @@
   Articles
   {#if $me?.canEditGroups || $me?.groups.some(({ group, canEditArticles }) => group.uid === data.group.uid && canEditArticles)}
     <a href="./write/" title="Écrire un article">
-      <MajesticonsPlus aria-label="Écrire un article" />
+      <IconPlus aria-label="Écrire un article" />
     </a>
   {/if}
 </h2>

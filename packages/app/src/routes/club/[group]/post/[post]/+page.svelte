@@ -15,7 +15,7 @@
   <img src="{PUBLIC_STORAGE_URL}{pictureFile}" alt="" />
 {/if}
 
-{#if $me?.admin || $me?.groups.some(({ group: { uid } }) => uid === group.uid)}
+{#if $me?.admin || $me?.groups.some(({ group: { uid }, canEditArticles }) => uid === group.uid && canEditArticles)}
   <a href="./edit">Éditer</a>
 {/if}
 

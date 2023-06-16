@@ -3,8 +3,8 @@
   import GhostButton from '$lib/components/buttons/GhostButton.svelte';
   import InputGroup from '$lib/components/groups/InputGroup.svelte';
   import { zeus } from '$lib/zeus';
-  import MajesticonsClose from '~icons/majesticons/close';
-  import MajesticonsPlus from '~icons/majesticons/plus';
+  import IconClose from '~icons/mdi/close';
+  import IconPlus from '~icons/mdi/plus';
   import type { PageData } from './$types';
   import { _userQuery as userQuery } from './+page';
   import LinkCollectionInput from '$lib/components/inputs/LinkCollectionInput.svelte';
@@ -99,7 +99,7 @@
             birthday = new Date();
           }}
         >
-          <MajesticonsPlus aria-label="Ajouter" />
+          <IconPlus aria-label="Ajouter" />
         </GhostButton>
       {:else}
         <input
@@ -116,7 +116,7 @@
             birthday = null;
           }}
         >
-          <MajesticonsClose aria-label="Supprimer" />
+          <IconClose aria-label="Supprimer" />
         </GhostButton>
       {/if}
     </p>

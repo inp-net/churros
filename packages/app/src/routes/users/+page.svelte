@@ -1,6 +1,6 @@
 <script lang="ts">
   import Row from '$lib/components/rows/Row.svelte';
-  import MajesticonsEditPen2Line from '~icons/majesticons/edit-pen-2-line';
+  import IconEditPen2Line from '~icons/mdi/pencil';
   import type { PageData } from './$types';
   import AcceptButton from './AcceptButton.svelte';
   import DeleteButton from './DeleteButton.svelte';
@@ -27,7 +27,7 @@
         <strong>{firstName} {lastName}</strong>
         <span>{email} {major.name} {graduationYear}</span>
         <svelte:fragment slot="actions">
-          <a href="./edit/{encodeURIComponent(email)}"><MajesticonsEditPen2Line /></a>
+          <a href="./edit/{encodeURIComponent(email)}"><IconEditPen2Line /></a>
           <AcceptButton
             {email}
             on:accept={() => {

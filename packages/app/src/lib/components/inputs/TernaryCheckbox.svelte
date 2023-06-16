@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import IconCheckmark from '~icons/majesticons/plus-line';
-  import IconClose from '~icons/majesticons/close-line';
+  import IconCheckmark from '~icons/mdi/check';
+  import IconClose from '~icons/mdi/close';
 
   export let tristate = true;
   // eslint-disable-next-line unicorn/no-null

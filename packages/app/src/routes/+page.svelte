@@ -5,7 +5,7 @@
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
   import { pageQuery } from './+page';
-  import MajesticonsShare from '~icons/majesticons/share';
+  import IconShare from '~icons/mdi/share';
   import GhostButton from '$lib/components/buttons/GhostButton.svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
 
@@ -43,7 +43,7 @@
           await navigator.share({ url: window.location.href, title });
         }}
       >
-        <MajesticonsShare />
+        <IconShare />
       </GhostButton>
     </p>
     {@html bodyHtml}

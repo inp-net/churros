@@ -4,10 +4,10 @@
   import InlineLoader from '$lib/components/loaders/InlineLoader.svelte';
   import { zeus } from '$lib/zeus';
   import { tick } from 'svelte';
-  import MajesticonsCheckLine from '~icons/majesticons/check-line';
-  import MajesticonsClose from '~icons/majesticons/close';
-  import MajesticonsDotsHorizontal from '~icons/majesticons/dots-horizontal';
-  import MajesticonsPlus from '~icons/majesticons/plus';
+  import IconCheckLine from '~icons/mdi/check';
+  import IconClose from '~icons/mdi/close';
+  import IconDotsHorizontal from '~icons/mdi/dots-horizontal';
+  import IconPlus from '~icons/mdi/plus';
 
   export let parentUid: string | undefined;
 
@@ -28,9 +28,9 @@
       {#if loading}
         <InlineLoader />
       {:else if parentUid}
-        <MajesticonsCheckLine aria-label="Valeur acceptée" aria-live="polite" />
+        <IconCheckLine aria-label="Valeur acceptée" aria-live="polite" />
       {:else}
-        <MajesticonsDotsHorizontal aria-label="Entrez un nom de groupe" />
+        <IconDotsHorizontal aria-label="Entrez un nom de groupe" />
       {/if}
       <input
         bind:this={input}
@@ -71,7 +71,7 @@
           enabled = false;
         }}
       >
-        <MajesticonsClose aria-label="Supprimer" />
+        <IconClose aria-label="Supprimer" />
       </GhostButton>
     </span>
   {:else}
@@ -89,7 +89,7 @@
         input.focus();
       }}
     >
-      <MajesticonsPlus aria-hidden="true" /> Définir un groupe parent
+      <IconPlus aria-hidden="true" /> Définir un groupe parent
     </button>
   {/if}
 </FormInput>

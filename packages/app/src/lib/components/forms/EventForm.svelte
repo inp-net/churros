@@ -1,9 +1,9 @@
 <script lang="ts">
   import { me } from '$lib/session';
   import Button from '../buttons/Button.svelte';
-  import MajesticonsPlus from '~icons/majesticons/plus';
-  import MajesticonsChevronDown from '~icons/majesticons/chevron-down-line';
-  import MajesticonsChevronUp from '~icons/majesticons/chevron-up-line';
+  import IconPlus from '~icons/mdi/plus';
+  import IconChevronDown from '~icons/mdi/chevron-down';
+  import IconChevronUp from '~icons/mdi/chevron-up';
   import FormInput from '../inputs/FormInput.svelte';
   import IntegerListInput from '../inputs/IntegerListInput.svelte';
   import GroupListInput from '../inputs/GroupListInput.svelte';
@@ -192,7 +192,7 @@
         }}
       >
         <slot name="icon">
-          <MajesticonsPlus aria-hidden="true" />
+          <IconPlus aria-hidden="true" />
         </slot>
         Groupe
       </Button>
@@ -204,7 +204,7 @@
         }}
       >
         <slot name="icon">
-          <MajesticonsPlus aria-hidden="true" />
+          <IconPlus aria-hidden="true" />
         </slot>
         Billet
       </Button>
@@ -325,7 +325,7 @@
                       expandedTicketId = -1;
                     }}
                   >
-                    <MajesticonsChevronUp />
+                    <IconChevronUp />
                   </GhostButton>
                 </div>
               {:else}
@@ -338,7 +338,7 @@
                     expandedTicketId = ticket.id;
                   }}
                 >
-                  <MajesticonsChevronDown />
+                  <IconChevronDown />
                 </GhostButton>
               {/if}
             </article>
@@ -437,7 +437,7 @@
               expandedTicketId = -1;
             }}
           >
-            <MajesticonsChevronUp />
+            <IconChevronUp />
           </GhostButton>
         </div>
       {:else}
@@ -449,7 +449,7 @@
             expandedTicketId = ticket.id;
           }}
         >
-          <MajesticonsChevronDown />
+          <IconChevronDown />
         </GhostButton>
       {/if}
     </article>
