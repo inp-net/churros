@@ -11,6 +11,7 @@
   import TernaryCheckbox from '../inputs/TernaryCheckbox.svelte';
   import GhostButton from '../buttons/GhostButton.svelte';
   import InputGroup from '../groups/InputGroup.svelte';
+  import DateInput from '../inputs/DateInput.svelte';
 
   let expandedTicketId = -1;
 
@@ -49,7 +50,7 @@
     openToNonAEContributors: null,
     openToPromotions: [],
     openToSchools: [],
-    id,
+    id
   });
 
   type Ticket = {
@@ -121,7 +122,7 @@
     return {
       canEditPermissions: level === 'fullaccess',
       canEdit: level === 'editor' || level === 'fullaccess',
-      canVerifyRegistrations: level === 'verify' || level === 'editor' || level === 'fullaccess',
+      canVerifyRegistrations: level === 'verify' || level === 'editor' || level === 'fullaccess'
     };
   }
 
@@ -156,11 +157,11 @@
 
   <div class="side-by-side">
     <FormInput label="Début">
-      <input type="datetime-local" bind:value={event.startsAt} />
+      <DateInput bind:value={event.startsAt} />
     </FormInput>
 
     <FormInput label="Fin">
-      <input type="datetime-local" bind:value={event.endsAt} />
+      <DateInput bind:value={event.endsAt} />
     </FormInput>
   </div>
 
@@ -186,8 +187,8 @@
             {
               name: '',
               capacity: 0,
-              tickets: [],
-            },
+              tickets: []
+            }
           ];
         }}
       >
@@ -464,7 +465,7 @@
           if (!e.target || !('value' in e.target)) return;
           event.managers[i] = {
             ...manager,
-            ...permissionsFromLevel(aspermissionlevel(e.target.value)),
+            ...permissionsFromLevel(aspermissionlevel(e.target.value))
           };
         }}
         value={levelFromPermissions(manager)}
@@ -483,8 +484,8 @@
         ...event.managers,
         {
           user: { uid: '', firstName: '', lastName: '', pictureFile: '' },
-          ...permissionsFromLevel('readonly'),
-        },
+          ...permissionsFromLevel('readonly')
+        }
       ];
     }}>Ajouter un manager</Button
   >

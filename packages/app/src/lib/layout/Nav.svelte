@@ -41,8 +41,8 @@
     </li>
     <li>
       <Item
-        href="/calendar/"
-        selected={$page.url.pathname.startsWith('/calendar/')}
+        href="/week/"
+        selected={$page.url.pathname.startsWith('/week/')}
         icon={IconCalendarLine}
         selectedIcon={IconCalendar}
       >
