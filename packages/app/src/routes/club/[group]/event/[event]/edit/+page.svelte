@@ -1,5 +1,6 @@
 <script lang="ts">
   import EventForm from '$lib/components/forms/EventForm.svelte';
+  import Tabs from '$lib/components/navigation/Tabs.svelte';
   import { me } from '$lib/session';
   import { Selector, zeus } from '$lib/zeus';
   import type { PageData } from './$types';
@@ -19,6 +20,14 @@
     })
     .catch(console.error);
 </script>
+
+<Tabs
+  tabs={[
+    { name: 'Infos', href: `.` },
+    { name: 'Réservations', href: '../registrations' },
+    { name: 'Vérifier', href: '../scan' }
+  ]}
+/>
 
 <EventForm
   availableGroups={data.groups.filter((g) =>

@@ -10,7 +10,7 @@
   import { me } from '$lib/session.js';
   import IconAcademicCap from '~icons/mdi/school';
   import IconCake from '~icons/mdi/cake';
-  import IconEdit from '~icons/';
+  import IconEdit from '~icons/mdi/pencil';
   import IconLocationMarker from '~icons/mdi/map-marker-outline';
   import IconPhone from '~icons/mdi/phone-outline';
   import type { PageData } from './$types';

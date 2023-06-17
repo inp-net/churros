@@ -1669,6 +1669,7 @@ __metadata:
     graphql: "npm:^16.6.0"
     graphql-zeus: "npm:^5.2.0"
     is-dark-color: "npm:^1.2.0"
+    json-to-csv-in-browser: "npm:^1.0.8"
     party-js: "npm:^2.2.0"
     sanitize.css: "npm:^13.0.0"
     sass: "npm:^1.56.1"
@@ -11918,6 +11919,13 @@ __metadata:
   version: 1.0.1
   resolution: "json-stable-stringify-without-jsonify@npm:1.0.1"
   checksum: fcea02bf8b7e6067bec7e4019b1e4e15a2f1c8148ad9ea5f9fbc3098efee939f93f53f475f27a44f4b8996e9990c56b39bef6ff0bdbb4243e485084f619d5399
+  languageName: node
+  linkType: hard
+
+"json-to-csv-in-browser@npm:^1.0.8":
+  version: 1.0.8
+  resolution: "json-to-csv-in-browser@npm:1.0.8"
+  checksum: 9bb06903c9f57bdc9825039499585640305947c7f305e3effa1c9d86fe0ad30bac2b334d6898ef718b53fcd5f2a7675c359aae3205ad5ca6fbbbc66e1220fa7b
   languageName: node
   linkType: hard
 

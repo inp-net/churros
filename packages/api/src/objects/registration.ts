@@ -61,18 +61,20 @@ builder.queryField('registrationsOfEvent', (t) =>
     type: RegistrationType,
     cursor: 'id',
     args: {
-      event: t.arg.id(),
+      eventUid: t.arg.string(),
     },
-    authScopes: (_, { event }, { user }) =>
+    authScopes: (_, { eventUid }, { user }) =>
       Boolean(
-        user?.managedEvents.some(
-          ({ event: { id }, canVerifyRegistrations }) => id === event && canVerifyRegistrations
-        )
+        user?.admin ||
+          user?.managedEvents.some(
+            ({ event: { uid }, canVerifyRegistrations }) =>
+              uid === eventUid && canVerifyRegistrations
+          )
       ),
-    async resolve(query, _, { event }) {
+    async resolve(query, _, { eventUid }) {
       return prisma.registration.findMany({
         ...query,
-        where: { ticket: { event: { id: event } } },
+        where: { ticket: { event: { uid: eventUid } } },
       });
     },
   })
@@ -176,7 +178,8 @@ builder.mutationField('upsertRegistration', (t) =>
           where: { id: ticketId },
           include: { event: { include: { beneficiary: true } } },
         });
-        await pay(user!, ticket.event.beneficiary, ticket.price, paymentMethod);
+        if (ticket.event.beneficiary)
+          await pay(user!, ticket.event.beneficiary, ticket.price, paymentMethod);
       }
 
       return prisma.registration.upsert({
@@ -184,14 +187,14 @@ builder.mutationField('upsertRegistration', (t) =>
         where: { id },
         update: {
           paymentMethod,
-          beneficiary: beneficiary || user?.uid,
+          beneficiary: beneficiary || user?.id,
           paid,
         },
         create: {
           ticket: { connect: { id: ticketId } },
           author: { connect: { id: user?.id } },
           paymentMethod,
-          beneficiary: beneficiary || user?.uid,
+          beneficiary: (beneficiary || user?.id) ?? '',
         },
       });
     },
@@ -225,11 +228,14 @@ builder.mutationField('deleteRegistration', (t) =>
     async resolve(_, { id }, {}) {
       const registration = await prisma.registration.findFirstOrThrow({
         where: { id },
-        include: { ticket: true, author: true, event: { include: { beneficiary: true } } },
+        include: {
+          ticket: { include: { event: { include: { beneficiary: true } } } },
+          author: true,
+        },
       });
-      if (registration.paid) {
+      if (registration.paid && registration.ticket.event.beneficiary) {
         await pay(
-          registration.event.beneficiary,
+          registration.ticket.event.beneficiary,
           registration.author,
           registration.ticket.price,
           registration.paymentMethod

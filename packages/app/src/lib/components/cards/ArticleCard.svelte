@@ -1,7 +1,6 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import { formatRelative } from 'date-fns';
-  import dateFnsLocaleFrench from 'date-fns/locale/fr';
+  import { intlFormatDistance } from 'date-fns';
   import Card from './Card.svelte';
 
   export let title: string;
@@ -59,10 +58,7 @@
       </div>
     </div>
     <div class="published-at">
-      {formatRelative(publishedAt, new Date(), {
-        weekStartsOn: 1,
-        locale: dateFnsLocaleFrench
-      })}
+      {intlFormatDistance(publishedAt, new Date())}
     </div>
   </section>
 </Card>
