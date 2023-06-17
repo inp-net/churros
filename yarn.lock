@@ -1644,6 +1644,7 @@ __metadata:
     "@babel/core": "npm:^7.20.2"
     "@centraverse/api": "workspace:^"
     "@iconify-json/material-symbols": "npm:^1.1.48"
+    "@iconify-json/mdi": "npm:^1.1.52"
     "@iconify-json/simple-icons": "npm:^1.1.34"
     "@storybook/addon-actions": "npm:^6.5.13"
     "@storybook/addon-docs": "npm:^6.5.13"
@@ -2257,6 +2258,15 @@ __metadata:
   dependencies:
     "@iconify/types": "npm:*"
   checksum: 1e753bbbe45f59c1c759095f61bc0a92bade416e8d79b9b1691919305e0352b2373faf909a1fc812c4895c56a909044200b561eeaa566ca5926f6fcda0822819
+  languageName: node
+  linkType: hard
+
+"@iconify-json/mdi@npm:^1.1.52":
+  version: 1.1.52
+  resolution: "@iconify-json/mdi@npm:1.1.52"
+  dependencies:
+    "@iconify/types": "npm:*"
+  checksum: 378046920b64c5b3f23057e051df282c01133529400535111e50f276bfef79546fddce813c9bb115a82c39f583bb5acf4f979aede8edcc5136cae61c06c88647
   languageName: node
   linkType: hard
 

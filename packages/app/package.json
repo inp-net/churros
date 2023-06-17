@@ -17,6 +17,7 @@
     "@babel/core": "^7.20.2",
     "@centraverse/api": "workspace:^",
     "@iconify-json/material-symbols": "^1.1.48",
+    "@iconify-json/mdi": "^1.1.52",
     "@iconify-json/simple-icons": "^1.1.34",
     "@storybook/addon-actions": "^6.5.13",
     "@storybook/addon-docs": "^6.5.13",
