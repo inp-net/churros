@@ -11,7 +11,8 @@
 
   export let data: PageData;
 
-  let { id, tickets, title, startsAt, pictureFile, descriptionHtml, links } = data.event;
+  let { id, tickets, title, startsAt, pictureFile, descriptionHtml, links, group, contactMail } =
+    data.event;
 
   $: usersRegistration = tickets
     .map((t) => t.registrations)
@@ -109,6 +110,22 @@
   </ul>
 </section>
 
+<section class="organizer">
+  <h2>Organisé par</h2>
+  <div class="organizer-name-and-contact">
+    <div class="organizer-name">
+      <img
+        src={group.pictureFile
+          ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
+          : 'https://placehold.it/400/400'}
+        alt=""
+      />
+      {group.name}
+    </div>
+    <a href="malto:{contactMail}"> Contact </a>
+  </div>
+</section>
+
 <style lang="scss">
   .header {
     background-size: cover;
@@ -142,6 +159,23 @@
 
     .text {
       width: 100%;
+    }
+  }
+
+  .organizer-name-and-contact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .organizer-name {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    img {
+      height: 3rem;
+      width: 3rem;
     }
   }
 </style>

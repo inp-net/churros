@@ -5,6 +5,7 @@
   import type { PageData } from './$types';
   import { pageQuery } from './+page';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import * as htmlToText from 'html-to-text';
 
   export let data: PageData;
 
@@ -26,7 +27,7 @@
 
 <h1>Mon feed</h1>
 
-{#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile, links } }}
+{#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile, links, body } }}
   <ArticleCard
     {title}
     {publishedAt}
@@ -36,7 +37,7 @@
     href="/club/{group.uid}/post/{uid}/"
     img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
   >
-    {@html bodyHtml}
+    {@html htmlToText.convert(bodyHtml).replaceAll('\n', '<br>')}
   </ArticleCard>
 {/each}
 

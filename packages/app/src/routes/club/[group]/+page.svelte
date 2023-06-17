@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as htmlToText from "html-to-text"
   import Alert from '$lib/components/alerts/Alert.svelte';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
   import Breadcrumb from '$lib/components/breadcrumbs/Breadcrumb.svelte';
@@ -143,7 +144,7 @@
     {publishedAt}
     img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
   >
-    {@html bodyHtml}
+    {@html htmlToText.convert(bodyHtml).replaceAll('\n', '<br>')}
   </ArticleCard>
 {/each}
 

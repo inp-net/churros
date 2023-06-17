@@ -40,6 +40,12 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             name: true,
             value: true,
           },
+          group: {
+            uid: true,
+            name: true,
+            pictureFile: true
+          },
+          contactMail: true,
           tickets: {
             id: true,
             name: true,
