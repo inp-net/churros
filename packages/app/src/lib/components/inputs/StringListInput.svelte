@@ -9,7 +9,7 @@
   const asstring = (x: any) => x as string;
 </script>
 
-<div class="integer-list-input">
+<div class="string-list-input">
   {#each value as v, i}
     <input
       type="text"
@@ -32,3 +32,12 @@
     }}
   />
 </div>
+
+<style>
+  .string-list-input {
+    display: flex;
+    justify-content: start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+</style>

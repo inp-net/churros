@@ -58,9 +58,9 @@
   <input type="hidden" {name} value={value === null ? 'indeterminate' : value ? 'on' : 'off'} />
   <div class="checkbox" data-state={JSON.stringify(value)}>
     {#if value === true}
-      <IconCheckmark />
+      <IconCheckmark color="var(--bg)" />
     {:else if value === false}
-      <IconClose />
+      <IconClose color="var(--bg)" />
     {/if}
   </div>
   <div class="labels">
@@ -80,7 +80,7 @@
 <style>
   .label-value {
     grid-area: value;
-    color: var(--sky);
+    color: var(--primary-bg);
   }
 
   .label {
@@ -92,23 +92,23 @@
   }
 
   .checkbox {
-    --icon-color: var(--fg);
+    --icon-color: var(--text);
 
     position: relative;
     display: inline-block;
     grid-area: box;
     width: 2rem;
     height: 2rem;
-    border: var(--border-width) solid var(--fg);
+    border: var(--border-block) solid var(--text);
   }
 
   .checkbox[data-state='null']::after {
     position: absolute;
-    left: calc(2rem / 2 - var(--border-width) / 2);
-    width: var(--border-width);
+    left: calc(2rem / 2 - var(--border-block) / 2);
+    width: var(--border-block);
     height: 2rem;
     content: '';
-    background: var(--fg);
+    background: var(--text);
     transform: rotate(45deg);
   }
 
@@ -116,7 +116,7 @@
   .tristate .checkbox[data-state='false'] {
     --icon-color: var(--bg);
 
-    background: var(--fg);
+    background: var(--text);
   }
 
   label {

@@ -12,8 +12,9 @@ export const pageQuery = Selector('QueryHomepageConnection')({
       visibility: true,
       publishedAt: true,
       pictureFile: true,
-      group: { uid: true, name: true },
+      group: { uid: true, name: true, pictureFile: true },
       author: { uid: true, firstName: true, lastName: true },
+      links: { value: true, name: true },
     },
   },
 });

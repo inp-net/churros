@@ -9,7 +9,7 @@
     <input
       type="number"
       on:blur={() => {
-        if (value[i]) value = value.filter((_, index) => index !== i);
+        if (!value[i]) value = value.filter((_, index) => index !== i);
       }}
       bind:value={value[i]}
     />
@@ -25,3 +25,12 @@
     }}
   />
 </div>
+
+<style>
+  .integer-list-input {
+    display: flex;
+    justify-content: start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+</style>

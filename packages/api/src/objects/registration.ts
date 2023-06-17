@@ -172,8 +172,11 @@ builder.mutationField('upsertRegistration', (t) =>
     },
     async resolve(query, {}, { id, ticketId, beneficiary, paymentMethod, paid }, { user }) {
       if (!paid) {
-        const ticket = await prisma.ticket.findUniqueOrThrow({ where: { id: ticketId } });
-        await requestPayment(user!, ticket.price, paymentMethod);
+        const ticket = await prisma.ticket.findUniqueOrThrow({
+          where: { id: ticketId },
+          include: { event: { include: { beneficiary: true } } },
+        });
+        await pay(user!, ticket.event.beneficiary, ticket.price, paymentMethod);
       }
 
       return prisma.registration.upsert({
@@ -222,10 +225,16 @@ builder.mutationField('deleteRegistration', (t) =>
     async resolve(_, { id }, {}) {
       const registration = await prisma.registration.findFirstOrThrow({
         where: { id },
-        include: { ticket: true, author: true },
+        include: { ticket: true, author: true, event: { include: { beneficiary: true } } },
       });
-      if (registration.paid)
-        await pay(registration.author, registration.ticket.price, registration.paymentMethod);
+      if (registration.paid) {
+        await pay(
+          registration.event.beneficiary,
+          registration.author,
+          registration.ticket.price,
+          registration.paymentMethod
+        );
+      }
 
       await prisma.registration.deleteMany({
         where: { id },
@@ -235,16 +244,17 @@ builder.mutationField('deleteRegistration', (t) =>
   })
 );
 
-async function pay(recipient: { uid: string }, amount: number, by: PaymentMethodPrisma) {
-  return new Promise((_resolve, reject) => {
-    reject(new GraphQLError(`Attempt to pay ${recipient.uid} ${amount} by ${by}: not implemented`));
-  });
-}
-
-async function requestPayment(from: { uid: string }, amount: number, by: PaymentMethodPrisma) {
+async function pay(
+  from: { uid: string },
+  to: { uid: string },
+  amount: number,
+  by: PaymentMethodPrisma
+) {
   return new Promise((_resolve, reject) => {
     reject(
-      new GraphQLError(`Attempt to request payment ${from.uid} ${amount} by ${by}: not implemented`)
+      new GraphQLError(
+        `Attempt to pay ${to.uid} ${amount} from ${from.uid} by ${by}: not implemented`
+      )
     );
   });
 }

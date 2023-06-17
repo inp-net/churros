@@ -33,6 +33,7 @@ export const EventType = builder.prismaNode('Event', {
     groupId: t.exposeID('groupId'),
     contactMail: t.exposeString('contactMail'),
     beneficiary: t.relation('beneficiary', { nullable: true }),
+    lydiaAccountId: t.exposeID('lydiaAccountId', { nullable: true }),
     description: t.exposeString('description'),
     descriptionHtml: t.string({ resolve: async ({ description }) => toHtml(description) }),
     uid: t.exposeString('uid'),

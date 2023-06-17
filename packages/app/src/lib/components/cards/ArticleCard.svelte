@@ -1,8 +1,15 @@
 <script lang="ts">
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { formatRelative } from 'date-fns';
+  import dateFnsLocaleFrench from 'date-fns/locale/fr';
   import Card from './Card.svelte';
 
   export let title: string;
   export let href: string;
+  export let publishedAt: Date;
+  export let links: Array<{ value: string; name: string }> = [];
+  export let group: { uid: string; name: string; pictureFile: string };
+  export let author: { uid: string; firstName: string; lastName: string } | undefined = undefined;
   export let img: { src: string; alt: string; width: number; height: number } | undefined =
     undefined;
 </script>
@@ -18,7 +25,46 @@
   <header>
     <a {href}><h2>{title}</h2></a>
   </header>
+
   <slot />
+
+  {#if links.length > 0}
+    <ul class="links">
+      {#each links as link}
+        <li>
+          <a href={link.value}>{link.name}</a>
+        </li>
+      {/each}
+    </ul>
+  {/if}
+
+  <section class="author-and-date">
+    <div class="author">
+      <a href="/club/{group.uid}">
+        <img
+          src={group.pictureFile
+            ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
+            : 'https://placehold.it/400/400'}
+          alt=""
+        />
+      </a>
+      <div class="names">
+        <span class="name">{group.name}</span>
+        {#if author}
+          <span class="author">
+            {author.firstName}
+            {author.lastName}
+          </span>
+        {/if}
+      </div>
+    </div>
+    <div class="published-at">
+      {formatRelative(publishedAt, new Date(), {
+        weekStartsOn: 1,
+        locale: dateFnsLocaleFrench
+      })}
+    </div>
+  </section>
 </Card>
 
 <style lang="scss">
@@ -26,6 +72,30 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .author-and-date {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .author {
+    display: flex;
+    gap: 0.5rem;
+    img {
+      height: 3rem;
+      width: 3rem;
+      object-fit: contain;
+      border-radius: var(--radius-inline);
+    }
+  }
+
+  .links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
 
   .header {

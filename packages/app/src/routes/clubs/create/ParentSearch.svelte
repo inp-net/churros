@@ -10,6 +10,7 @@
   import IconPlus from '~icons/mdi/plus';
 
   export let parentUid: string | undefined;
+  export let label = 'Groupe parent';
 
   let loading = false;
   let enabled: boolean;
@@ -19,7 +20,7 @@
   let input: HTMLInputElement;
 </script>
 
-<FormInput label="Groupe parent :">
+<FormInput label="{label} :">
   {#if enabled || parentUid}
     <span>
       {#if parentUid}

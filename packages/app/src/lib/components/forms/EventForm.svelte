@@ -12,6 +12,7 @@
   import GhostButton from '../buttons/GhostButton.svelte';
   import InputGroup from '../groups/InputGroup.svelte';
   import DateInput from '../inputs/DateInput.svelte';
+  import ParentSearch from '../../../routes/clubs/create/ParentSearch.svelte';
 
   let expandedTicketId = -1;
 
@@ -104,8 +105,12 @@
     startsAt: Date | undefined;
     title: string;
     visibility: 'Public' | 'Private' | 'Restricted' | 'Unlisted';
-    authorUid: string;
-    groupUid: string;
+    // authorUid: string;
+    group: {
+      uid: string;
+      name: string;
+      pictureFile: string;
+    };
     managers: Array<{
       user: { uid: string; firstName: string; lastName: string; pictureFile: string };
       canEdit: boolean;
@@ -142,9 +147,7 @@
 
 <form on:submit|preventDefault>
   {#if availableGroups.length > 0}
-    <FormInput label="Groupe">
-      <input type="text" bind:value={event.groupUid} />
-    </FormInput>
+    <ParentSearch label="Groupe" bind:parentUid={event.group.uid} />
   {/if}
 
   <FormInput label="Titre">

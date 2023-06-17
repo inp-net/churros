@@ -4,7 +4,7 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
-  const { author, title, bodyHtml, group, pictureFile, event } = data.article;
+  const { author, links, title, bodyHtml, group, pictureFile, event } = data.article;
 
   const memberTitle = data.article.author?.groups.find(
     (g) => g.group.uid === data.article.group.uid
@@ -23,6 +23,16 @@
 
 {@html bodyHtml}
 
+{#if links.length > 0}
+  <ul class="links">
+    {#each links as link}
+      <li>
+        <a href={link.value}>{link.name}</a>
+      </li>
+    {/each}
+  </ul>
+{/if}
+
 {#if event}
   <section class="event">
     <a href="/club/{group.uid}/event/{event.uid}">Voir l'évènement «{event.title}» </a>
@@ -35,3 +45,12 @@
     {#if memberTitle}, {memberTitle} de {group.name}{/if}
   </section>
 {/if}
+
+<style>
+  .links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+</style>

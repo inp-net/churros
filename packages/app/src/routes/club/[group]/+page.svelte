@@ -1,6 +1,5 @@
 <script lang="ts">
   import Alert from '$lib/components/alerts/Alert.svelte';
-  import IconShare from '~icons/mdi/share';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
   import Breadcrumb from '$lib/components/breadcrumbs/Breadcrumb.svelte';
   import Breadcrumbs from '$lib/components/breadcrumbs/Breadcrumbs.svelte';
@@ -16,8 +15,6 @@
   import UserPicture from '$lib/components/pictures/UserPicture.svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import ArticleCard from '$lib/components/cards/ArticleCard.svelte';
-  import { formatDateTime } from '$lib/dates';
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
 
   export let data: PageData;
 
@@ -33,7 +30,7 @@
     if (!$me) return;
     try {
       await $zeus.mutate({
-        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }],
+        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }]
       });
       window.location.reload();
     } catch (error: unknown) {
@@ -137,10 +134,13 @@
   {/if}
 </h2>
 
-{#each group.articles as { uid, title, bodyHtml, pictureFile }}
+{#each group.articles as { uid, title, bodyHtml, pictureFile, author, publishedAt }}
   <ArticleCard
     href="/club/{group.uid}/post/{uid}/"
     {title}
+    {group}
+    {author}
+    {publishedAt}
     img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
   >
     {@html bodyHtml}

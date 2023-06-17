@@ -27,7 +27,7 @@
 
 <section class="bar-week">
   {#if canChangeBarWeek}
-    <Button on:click={() => goto('/bar-weeks')}>Gérer les semaines de bar</Button>
+    <Button on:click={async () => goto('/bar-weeks')}>Gérer les semaines de bar</Button>
   {/if}
   {#if barWeek.groups.length > 0}
     <div class="description">
