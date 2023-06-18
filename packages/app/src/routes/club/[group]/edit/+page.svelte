@@ -2,6 +2,7 @@
   import type { PageData } from './$types';
   import ClubDetails from './ClubDetails.svelte';
   import ClubPicture from './ClubPicture.svelte';
+  import ClubComptes from './ClubComptes.svelte';
 
   export let data: PageData;
 
@@ -14,3 +15,4 @@
 
 <ClubPicture club={group} />
 <ClubDetails bind:data />
+<ClubComptes bind:data />
