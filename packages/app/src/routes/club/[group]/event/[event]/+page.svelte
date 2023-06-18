@@ -17,7 +17,11 @@
   $: usersRegistration = tickets
     .map((t) => t.registrations)
     .flat()
-    .find(({ beneficiary }) => beneficiary === $me?.uid);
+    .find(
+      ({ beneficiary, authorIsBeneficiary, author }) =>
+        (authorIsBeneficiary && author.uid === $me?.uid) ||
+        [$me?.uid, `${$me?.firstName} ${$me?.lastName}`].includes(beneficiary)
+    );
 
   $: eventCapacity = tickets.reduce(
     (sum, { capacity, group }) => sum + Math.min(capacity, group?.capacity ?? Infinity),
@@ -46,7 +50,7 @@
 </section>
 
 {#if usersRegistration}
-  <Button theme="primary"
+  <Button theme="primary" on:click={async () => goto(`./billet`)}
     >Mon billet <span class="ticket-name">{usersRegistration.ticket.name}</span></Button
   >
 {/if}
@@ -72,7 +76,7 @@
   </h2>
 
   <ul>
-    {#each tickets as { name, id, descriptionHtml, opensAt, closesAt, placesLeft, capacity, price }}
+    {#each tickets as { name, uid, descriptionHtml, opensAt, closesAt, placesLeft, capacity, price }}
       <li class="ticket">
         <div class="text">
           <h3>{name}</h3>
@@ -100,7 +104,7 @@
           {#if isFuture(new Date(closesAt)) && isPast(new Date(opensAt))}
             <Button
               on:click={async () => {
-                goto(`./book/${id}`);
+                goto(`./book/${uid}`);
               }}>Réserver</Button
             >
           {/if}
@@ -129,8 +133,15 @@
 <style lang="scss">
   .header {
     background-size: cover;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    gap: 0.25rem;
     > * {
       color: white;
+      margin: 0;
     }
   }
 

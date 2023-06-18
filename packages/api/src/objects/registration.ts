@@ -25,11 +25,23 @@ export const RegistrationType = builder.prismaNode('Registration', {
     authorIsBeneficiary: t.boolean({
       async resolve({ authorId, beneficiary }) {
         const author = await prisma.user.findUnique({ where: { id: authorId } });
-        return author?.uid === beneficiary;
+        if (!author) return false;
+        return authorIsBeneficiary(author, beneficiary);
       },
     }),
   }),
 });
+
+export function authorIsBeneficiary(
+  author: { uid: string; firstName: string; lastName: string },
+  beneficiary: string
+) {
+  return (
+    !beneficiary.trim() ||
+    author.uid === beneficiary ||
+    `${author.firstName} ${author.lastName}` === beneficiary
+  );
+}
 
 builder.queryField('registration', (t) =>
   t.prismaField({
@@ -53,6 +65,36 @@ builder.queryField('registration', (t) =>
           },
         },
       }),
+  })
+);
+
+builder.queryField('registrationOfUser', (t) =>
+  t.prismaField({
+    type: RegistrationType,
+    args: {
+      userUid: t.arg.string(),
+      eventUid: t.arg.string(),
+    },
+    async resolve(query, _, { userUid, eventUid }, { user }) {
+      console.log(eventUid, userUid);
+      if (!user) throw new GraphQLError('User not found');
+      const registrations = await prisma.registration.findMany({
+        include: {
+          ...query.include,
+          author: 'author' in query.include ? query.include.author : true,
+        },
+        where: { ticket: { event: { uid: eventUid } } },
+      });
+
+      console.log(JSON.stringify(registrations, undefined, 2));
+      console.log(JSON.stringify(query, undefined, 2));
+
+      return registrations.find(
+        ({ author, beneficiary }) =>
+          (author.uid === userUid && authorIsBeneficiary(author, beneficiary)) ||
+          [user.uid, `${user.firstName} ${user.lastName}`].includes(beneficiary)
+      );
+    },
   })
 );
 
@@ -120,14 +162,15 @@ builder.queryField('verifyRegistration', (t) =>
 builder.mutationField('upsertRegistration', (t) =>
   t.prismaField({
     type: RegistrationType,
+    errors: {},
     args: {
-      id: t.arg.id(),
+      id: t.arg.id({ required: false }),
       ticketId: t.arg.id(),
       paid: t.arg.boolean(),
       beneficiary: t.arg.string({ required: false }),
       paymentMethod: t.arg({ type: PaymentMethodEnum }),
     },
-    async authScopes(_, { ticketId, id }, { user }) {
+    async authScopes(_, { ticketId, id, beneficiary }, { user }) {
       const creating = !id;
       if (!user) return false;
 
@@ -172,7 +215,19 @@ builder.mutationField('upsertRegistration', (t) =>
         return false;
       return true;
     },
-    async resolve(query, {}, { id, ticketId, beneficiary, paymentMethod, paid }, { user }) {
+    async resolve(query, _, { id, ticketId, beneficiary, paymentMethod, paid }, { user }) {
+      if (!id) {
+        const event = await prisma.event.findFirstOrThrow({
+          where: { tickets: { some: { id: ticketId } } },
+        });
+        // Check that the user has not already registered
+        const existingRegistration = await prisma.registration.findFirst({
+          where: { ticket: { event: { id: event.id } }, authorId: user.id, beneficiary },
+        });
+        if (existingRegistration) throw new GraphQLError('Vous êtes déjà inscrit à cet événement');
+      }
+
+      if (existingRegistration) return false;
       if (!paid) {
         const ticket = await prisma.ticket.findUniqueOrThrow({
           where: { id: ticketId },
@@ -184,17 +239,17 @@ builder.mutationField('upsertRegistration', (t) =>
 
       return prisma.registration.upsert({
         ...query,
-        where: { id },
+        where: { id: id ?? '' },
         update: {
           paymentMethod,
-          beneficiary: beneficiary || user?.id,
+          beneficiary,
           paid,
         },
         create: {
           ticket: { connect: { id: ticketId } },
           author: { connect: { id: user?.id } },
           paymentMethod,
-          beneficiary: (beneficiary || user?.id) ?? '',
+          beneficiary,
         },
       });
     },

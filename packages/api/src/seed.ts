@@ -491,6 +491,7 @@ const event1 = await prisma.event.create({
       createMany: {
         data: [
           {
+            uid: 'staff-tvn7',
             name: 'Staff TVn7',
             description: 'Staffeurs :sparkles: TVn7 :sparkles:, par ici!',
             price: 0,
@@ -560,6 +561,7 @@ await prisma.event.create({
           {
             name: '',
             description: '',
+            uid: 'ticket',
             price: 3.5,
             capacity: 70,
             allowedPaymentMethods: ['Lydia'],

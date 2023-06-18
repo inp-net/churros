@@ -12,6 +12,7 @@
     "is-dark-color": "^1.2.0",
     "json-to-csv-in-browser": "^1.0.8",
     "party-js": "^2.2.0",
+    "qr-code-generator-lib": "^1.0.1",
     "svelte-tenor": "^0.2.0",
     "ua-parser-js": "^1.0.32"
   },

@@ -9,6 +9,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
         Selector('Event')({
           startsAt: true,
           endsAt: true,
+          uid: true,
           id: true,
           pictureFile: true,
           articles: {
@@ -47,6 +48,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
           },
           contactMail: true,
           tickets: {
+            uid: true,
             id: true,
             name: true,
             descriptionHtml: true,
@@ -65,6 +67,10 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             registrations: {
               id: true,
               beneficiary: true,
+              authorIsBeneficiary: true,
+              author: {
+                uid: true
+              },
               paid: true,
               ticket: {
                 name: true,
