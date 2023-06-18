@@ -3,7 +3,6 @@ CREATE EXTENSION IF NOT EXISTS "fuzzystrmatch";
 
 -- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
 -- This function-is installed in the first migration by editing it manually to include this CREATE OR REPLACE FUNCTION statement.
 -- It needs the pgcrypto extension to function.
 
@@ -255,6 +254,7 @@ CREATE TABLE "TicketGroup" (
 -- CreateTable
 CREATE TABLE "Ticket" (
     "id" TEXT NOT NULL DEFAULT nanoid('t:'),
+    "uid" TEXT NOT NULL,
     "eventId" TEXT NOT NULL,
     "ticketGroupId" TEXT,
     "name" VARCHAR(255) NOT NULL,
@@ -387,6 +387,9 @@ CREATE UNIQUE INDEX "Event_groupId_uid_key" ON "Event"("groupId", "uid");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "EventManager_eventId_userId_key" ON "EventManager"("eventId", "userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Ticket_eventId_uid_key" ON "Ticket"("eventId", "uid");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "LydiaAccount_uid_key" ON "LydiaAccount"("uid");

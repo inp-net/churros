@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Meta, Story } from '@storybook/addon-svelte-csf';
-  import MajesticonsChevronDown from '~icons/majesticons/chevron-down';
-  import MajesticonsChevronUp from '~icons/majesticons/chevron-up';
-  import MajesticonsClose from '~icons/majesticons/close';
+  import IconChevronDown from '~icons/mdi/chevron-down';
+  import IconChevronUp from '~icons/mdi/chevron-up';
+  import IconClose from '~icons/mdi/close';
   import InputGroup from '../groups/InputGroup.svelte';
   import GhostButton from './GhostButton.svelte';
 </script>
@@ -15,20 +15,20 @@
 
 <Story name="Default" let:args>
   <GhostButton on:click={args.onClick}>
-    <MajesticonsClose />
+    <IconClose />
   </GhostButton>
 </Story>
 
 <Story name="Grouped">
   <InputGroup>
     <GhostButton>
-      <MajesticonsChevronUp />
+      <IconChevronUp />
     </GhostButton>
     <GhostButton>
-      <MajesticonsClose />
+      <IconClose />
     </GhostButton>
     <GhostButton>
-      <MajesticonsChevronDown />
+      <IconChevronDown />
     </GhostButton>
   </InputGroup>
 </Story>

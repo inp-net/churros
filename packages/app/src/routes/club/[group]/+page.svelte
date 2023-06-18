@@ -1,14 +1,14 @@
 <script lang="ts">
+  import * as htmlToText from "html-to-text"
   import Alert from '$lib/components/alerts/Alert.svelte';
-  import MajesticonsShare from '~icons/majesticons/share';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
   import Breadcrumb from '$lib/components/breadcrumbs/Breadcrumb.svelte';
   import Breadcrumbs from '$lib/components/breadcrumbs/Breadcrumbs.svelte';
   import Card from '$lib/components/cards/Card.svelte';
   import SocialLink from '$lib/components/links/SocialLink.svelte';
   import { me } from '$lib/session.js';
-  import MajesticonsPlus from '~icons/majesticons/plus';
-  import MajesticonsEdit from '~icons/majesticons/edit-pen-2-line';
+  import IconPlus from '~icons/mdi/plus';
+  import IconEdit from '~icons/mdi/pencil';
   import type { PageData } from './$types';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import Button from '$lib/components/buttons/Button.svelte';
@@ -16,8 +16,6 @@
   import UserPicture from '$lib/components/pictures/UserPicture.svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import ArticleCard from '$lib/components/cards/ArticleCard.svelte';
-  import { formatDateTime } from '$lib/dates';
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
 
   export let data: PageData;
 
@@ -33,7 +31,7 @@
     if (!$me) return;
     try {
       await $zeus.mutate({
-        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }],
+        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }]
       });
       window.location.reload();
     } catch (error: unknown) {
@@ -66,7 +64,7 @@
       {#if group.school}<SchoolBadge schools={[group.school]} />{/if}
       {#if $me?.canEditGroups || ($me && isOnClubBoard($me))}
         <a href="edit/" title="Éditer">
-          <MajesticonsEdit aria-label="Éditer" />
+          <IconEdit aria-label="Éditer" />
         </a>
       {/if}
     </h1>
@@ -132,18 +130,21 @@
   Articles
   {#if $me?.canEditGroups || $me?.groups.some(({ group, canEditArticles }) => group.uid === data.group.uid && canEditArticles)}
     <a href="./write/" title="Écrire un article">
-      <MajesticonsPlus aria-label="Écrire un article" />
+      <IconPlus aria-label="Écrire un article" />
     </a>
   {/if}
 </h2>
 
-{#each group.articles as { uid, title, bodyHtml, pictureFile }}
+{#each group.articles as { uid, title, bodyHtml, pictureFile, author, publishedAt }}
   <ArticleCard
     href="/club/{group.uid}/post/{uid}/"
     {title}
+    {group}
+    {author}
+    {publishedAt}
     img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
   >
-    {@html bodyHtml}
+    {@html htmlToText.convert(bodyHtml).replaceAll('\n', '<br>')}
   </ArticleCard>
 {/each}
 

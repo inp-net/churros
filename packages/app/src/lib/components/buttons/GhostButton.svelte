@@ -1,8 +1,9 @@
 <script lang="ts">
   export let type: 'button' | 'reset' | 'submit' = 'button';
+  export let darkShadow = false;
 </script>
 
-<button {type} {...$$restProps} on:click><slot /></button>
+<button class:darkShadow {type} {...$$restProps} on:click><slot /></button>
 
 <style lang="scss">
   button {
@@ -24,7 +25,12 @@
     &:focus-visible {
       --text: var(--hover-text);
 
-      background: var(--hover-bg);
+      &:not(.darkShadow) {
+        background: var(--hover-bg);
+      }
+      &.darkShadow {
+        background: rgba($color: #fff, $alpha: 0.5);
+      }
     }
   }
 </style>

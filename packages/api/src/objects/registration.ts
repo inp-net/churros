@@ -25,11 +25,23 @@ export const RegistrationType = builder.prismaNode('Registration', {
     authorIsBeneficiary: t.boolean({
       async resolve({ authorId, beneficiary }) {
         const author = await prisma.user.findUnique({ where: { id: authorId } });
-        return author?.uid === beneficiary;
+        if (!author) return false;
+        return authorIsBeneficiary(author, beneficiary);
       },
     }),
   }),
 });
+
+export function authorIsBeneficiary(
+  author: { uid: string; firstName: string; lastName: string },
+  beneficiary: string
+) {
+  return (
+    !beneficiary.trim() ||
+    author.uid === beneficiary ||
+    `${author.firstName} ${author.lastName}` === beneficiary
+  );
+}
 
 builder.queryField('registration', (t) =>
   t.prismaField({
@@ -56,23 +68,55 @@ builder.queryField('registration', (t) =>
   })
 );
 
+builder.queryField('registrationOfUser', (t) =>
+  t.prismaField({
+    type: RegistrationType,
+    args: {
+      userUid: t.arg.string(),
+      eventUid: t.arg.string(),
+    },
+    async resolve(query, _, { userUid, eventUid }, { user }) {
+      console.log(eventUid, userUid);
+      if (!user) throw new GraphQLError('User not found');
+      const registrations = await prisma.registration.findMany({
+        include: {
+          ...query.include,
+          author: 'author' in query.include ? query.include.author : true,
+        },
+        where: { ticket: { event: { uid: eventUid } } },
+      });
+
+      console.log(JSON.stringify(registrations, undefined, 2));
+      console.log(JSON.stringify(query, undefined, 2));
+
+      return registrations.find(
+        ({ author, beneficiary }) =>
+          (author.uid === userUid && authorIsBeneficiary(author, beneficiary)) ||
+          [user.uid, `${user.firstName} ${user.lastName}`].includes(beneficiary)
+      );
+    },
+  })
+);
+
 builder.queryField('registrationsOfEvent', (t) =>
   t.prismaConnection({
     type: RegistrationType,
     cursor: 'id',
     args: {
-      event: t.arg.id(),
+      eventUid: t.arg.string(),
     },
-    authScopes: (_, { event }, { user }) =>
+    authScopes: (_, { eventUid }, { user }) =>
       Boolean(
-        user?.managedEvents.some(
-          ({ event: { id }, canVerifyRegistrations }) => id === event && canVerifyRegistrations
-        )
+        user?.admin ||
+          user?.managedEvents.some(
+            ({ event: { uid }, canVerifyRegistrations }) =>
+              uid === eventUid && canVerifyRegistrations
+          )
       ),
-    async resolve(query, _, { event }) {
+    async resolve(query, _, { eventUid }) {
       return prisma.registration.findMany({
         ...query,
-        where: { ticket: { event: { id: event } } },
+        where: { ticket: { event: { uid: eventUid } } },
       });
     },
   })
@@ -118,14 +162,15 @@ builder.queryField('verifyRegistration', (t) =>
 builder.mutationField('upsertRegistration', (t) =>
   t.prismaField({
     type: RegistrationType,
+    errors: {},
     args: {
-      id: t.arg.id(),
+      id: t.arg.id({ required: false }),
       ticketId: t.arg.id(),
       paid: t.arg.boolean(),
       beneficiary: t.arg.string({ required: false }),
       paymentMethod: t.arg({ type: PaymentMethodEnum }),
     },
-    async authScopes(_, { ticketId, id }, { user }) {
+    async authScopes(_, { ticketId, id, beneficiary }, { user }) {
       const creating = !id;
       if (!user) return false;
 
@@ -170,25 +215,41 @@ builder.mutationField('upsertRegistration', (t) =>
         return false;
       return true;
     },
-    async resolve(query, {}, { id, ticketId, beneficiary, paymentMethod, paid }, { user }) {
+    async resolve(query, _, { id, ticketId, beneficiary, paymentMethod, paid }, { user }) {
+      if (!id) {
+        const event = await prisma.event.findFirstOrThrow({
+          where: { tickets: { some: { id: ticketId } } },
+        });
+        // Check that the user has not already registered
+        const existingRegistration = await prisma.registration.findFirst({
+          where: { ticket: { event: { id: event.id } }, authorId: user.id, beneficiary },
+        });
+        if (existingRegistration) throw new GraphQLError('Vous êtes déjà inscrit à cet événement');
+      }
+
+      if (existingRegistration) return false;
       if (!paid) {
-        const ticket = await prisma.ticket.findUniqueOrThrow({ where: { id: ticketId } });
-        await requestPayment(user!, ticket.price, paymentMethod);
+        const ticket = await prisma.ticket.findUniqueOrThrow({
+          where: { id: ticketId },
+          include: { event: { include: { beneficiary: true } } },
+        });
+        if (ticket.event.beneficiary)
+          await pay(user!, ticket.event.beneficiary, ticket.price, paymentMethod);
       }
 
       return prisma.registration.upsert({
         ...query,
-        where: { id },
+        where: { id: id ?? '' },
         update: {
           paymentMethod,
-          beneficiary: beneficiary || user?.uid,
+          beneficiary,
           paid,
         },
         create: {
           ticket: { connect: { id: ticketId } },
           author: { connect: { id: user?.id } },
           paymentMethod,
-          beneficiary: beneficiary || user?.uid || '',
+          beneficiary,
         },
       });
     },
@@ -222,10 +283,19 @@ builder.mutationField('deleteRegistration', (t) =>
     async resolve(_, { id }, {}) {
       const registration = await prisma.registration.findFirstOrThrow({
         where: { id },
-        include: { ticket: true, author: true },
+        include: {
+          ticket: { include: { event: { include: { beneficiary: true } } } },
+          author: true,
+        },
       });
-      if (registration.paid)
-        await pay(registration.author, registration.ticket.price, registration.paymentMethod);
+      if (registration.paid && registration.ticket.event.beneficiary) {
+        await pay(
+          registration.ticket.event.beneficiary,
+          registration.author,
+          registration.ticket.price,
+          registration.paymentMethod
+        );
+      }
 
       await prisma.registration.deleteMany({
         where: { id },
@@ -235,16 +305,17 @@ builder.mutationField('deleteRegistration', (t) =>
   })
 );
 
-async function pay(recipient: { uid: string }, amount: number, by: PaymentMethodPrisma) {
-  return new Promise((_resolve, reject) => {
-    reject(new GraphQLError(`Attempt to pay ${recipient.uid} ${amount} by ${by}: not implemented`));
-  });
-}
-
-async function requestPayment(from: { uid: string }, amount: number, by: PaymentMethodPrisma) {
+async function pay(
+  from: { uid: string },
+  to: { uid: string },
+  amount: number,
+  by: PaymentMethodPrisma
+) {
   return new Promise((_resolve, reject) => {
     reject(
-      new GraphQLError(`Attempt to request payment ${from.uid} ${amount} by ${by}: not implemented`)
+      new GraphQLError(
+        `Attempt to pay ${to.uid} ${amount} from ${from.uid} by ${by}: not implemented`
+      )
     );
   });
 }

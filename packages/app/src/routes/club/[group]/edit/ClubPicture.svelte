@@ -5,7 +5,7 @@
   import Loader from '$lib/components/loaders/Loader.svelte';
   import UserPicture from '$lib/components/pictures/UserPicture.svelte';
   import { $ as Zvar, zeus } from '$lib/zeus';
-  import MajesticonsEdit from '~icons/majesticons/edit-pen-2-line';
+  import IconEdit from '~icons/mdi/pencil';
 
   export let club: { pictureFile: string; uid: string; name: string };
 
@@ -50,7 +50,7 @@
           {#if updating}
             <Loader />
           {:else}
-            <MajesticonsEdit />
+            <IconEdit />
           {/if}
         </div>
         <UserPicture

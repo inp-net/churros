@@ -4,6 +4,7 @@ import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
 import { DateTimeScalar } from './scalars.js';
 import { userIsInBureauOf } from './groups.js';
+import { GraphQLError } from 'graphql';
 
 export const BarWeekType = builder.prismaNode('BarWeek', {
   id: { field: 'id' },
@@ -35,14 +36,23 @@ builder.queryField('barWeekNow', (t) =>
       now: t.arg({ type: DateTimeScalar }),
     },
     async resolve(query, _, { now }) {
-      return prisma.barWeek.findFirstOrThrow({
-        ...query,
-        where: {
-          startsAt: { lte: now },
-          endsAt: { gte: now },
-        },
-        orderBy: { startsAt: 'desc' },
-      });
+      return (
+        (await prisma.barWeek.findFirst({
+          ...query,
+          where: {
+            startsAt: { lte: now },
+            endsAt: { gte: now },
+          },
+          orderBy: { startsAt: 'desc' },
+        })) ?? {
+          description: '',
+          endsAt: new Date(),
+          startsAt: new Date(),
+          groups: [],
+          id: '',
+          uid: '',
+        }
+      );
     },
   })
 );
@@ -57,6 +67,7 @@ builder.queryField('barWeeks', (t) =>
 builder.mutationField('upsertBarWeek', (t) =>
   t.prismaField({
     type: BarWeekType,
+    errors: {},
     args: {
       id: t.arg.id({ required: false }),
       startsAt: t.arg({ type: DateTimeScalar }),
@@ -70,6 +81,20 @@ builder.mutationField('upsertBarWeek', (t) =>
       return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
     },
     async resolve(query, _, { id, startsAt, endsAt, description, groupsUids }) {
+      // Check if ends at date is after starts at date
+      if (endsAt < startsAt) throw new GraphQLError('Bar week ends before it starts.');
+      // Check for overlaps in the bar week dates
+      const overlaps = await prisma.barWeek.findMany({
+        where: {
+          id: { not: { equals: id ?? '' } },
+          OR: [
+            { startsAt: { lte: startsAt }, endsAt: { gte: startsAt } },
+            { startsAt: { lte: endsAt }, endsAt: { gte: endsAt } },
+            { startsAt: { gte: startsAt }, endsAt: { lte: endsAt } },
+          ],
+        },
+      });
+      if (overlaps.length > 0) throw new GraphQLError('Bar week overlaps with another bar week.');
       const data = {
         startsAt,
         endsAt,
@@ -92,6 +117,22 @@ builder.mutationField('upsertBarWeek', (t) =>
           },
         },
       });
+    },
+  })
+);
+
+builder.mutationField('deleteBarWeek', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: { id: t.arg.id() },
+    authScopes(_, {}, { user }) {
+      // Only members of a certain group(s) can upsert a bar week
+      const foyGroupsUids = process.env.FOY_GROUPS.split(',');
+      return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
+    },
+    async resolve(_, { id }) {
+      await prisma.barWeek.delete({ where: { id } });
+      return true;
     },
   })
 );

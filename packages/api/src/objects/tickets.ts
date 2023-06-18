@@ -5,6 +5,8 @@ import { PaymentMethodEnum } from './registration.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { DateTimeScalar } from './scalars.js';
 import { LinkInput } from './links.js';
+import slug from 'slug';
+import dichotomid from 'dichotomid';
 
 export const placesLeft = (ticket: {
   name: string;
@@ -36,6 +38,7 @@ export const TicketType = builder.prismaNode('Ticket', {
   id: { field: 'id' },
   fields: (t) => ({
     eventId: t.exposeID('eventId'),
+    uid: t.exposeString('uid'),
     ticketGroupId: t.exposeID('ticketGroupId', { nullable: true }),
     name: t.exposeString('name'),
     description: t.exposeString('description'),
@@ -110,6 +113,27 @@ builder.queryField('ticket', (t) =>
       prisma.ticket.findFirstOrThrow({ ...query, where: { id } }),
   })
 );
+
+builder.queryField('ticketByUid', (t) =>
+  t.prismaField({
+    type: TicketType,
+    args: {
+      uid: t.arg.string(),
+      eventUid: t.arg.string(),
+    },
+    async authScopes(_, { uid, eventUid }, { user }) {
+      const ticket = await prisma.ticket.findFirst({
+        where: { uid, event: { uid: eventUid } },
+        include: { event: true },
+      });
+      if (!ticket) return false;
+      return eventAccessibleByUser(ticket.event, user);
+    },
+    resolve: async (query, _, { uid, eventUid }) =>
+      prisma.ticket.findFirstOrThrow({ ...query, where: { uid, event: { uid: eventUid } } }),
+  })
+);
+
 
 builder.queryField('ticketsOfEvent', (t) =>
   t.prismaConnection({
@@ -190,6 +214,7 @@ builder.mutationField('upsertTicket', (t) =>
       }
     ) {
       const upsertData = {
+        uid: await createUid(name),
         event: { connect: { id: eventId } },
         groupId: ticketGroupId,
         name,
@@ -241,3 +266,14 @@ builder.mutationField('deleteTicket', (t) =>
     },
   })
 );
+
+export async function createUid(name: string) {
+  const base = slug(name);
+  const n = await dichotomid(
+    async (n) =>
+      !(await prisma.ticket.findFirst({
+        where: { name: `${base}${n > 1 ? `-${n}` : ''}` },
+      }))
+  );
+  return `${base}${n > 1 ? `-${n}` : ''}`;
+}

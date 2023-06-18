@@ -1,9 +1,9 @@
 <script lang="ts">
   import { me } from '$lib/session';
   import Button from '../buttons/Button.svelte';
-  import MajesticonsPlus from '~icons/majesticons/plus';
-  import MajesticonsChevronDown from '~icons/majesticons/chevron-down-line';
-  import MajesticonsChevronUp from '~icons/majesticons/chevron-up-line';
+  import IconPlus from '~icons/mdi/plus';
+  import IconChevronDown from '~icons/mdi/chevron-down';
+  import IconChevronUp from '~icons/mdi/chevron-up';
   import FormInput from '../inputs/FormInput.svelte';
   import IntegerListInput from '../inputs/IntegerListInput.svelte';
   import GroupListInput from '../inputs/GroupListInput.svelte';
@@ -11,6 +11,8 @@
   import TernaryCheckbox from '../inputs/TernaryCheckbox.svelte';
   import GhostButton from '../buttons/GhostButton.svelte';
   import InputGroup from '../groups/InputGroup.svelte';
+  import DateInput from '../inputs/DateInput.svelte';
+  import ParentSearch from '../../../routes/clubs/create/ParentSearch.svelte';
 
   let expandedTicketId = -1;
 
@@ -49,7 +51,7 @@
     openToNonAEContributors: null,
     openToPromotions: [],
     openToSchools: [],
-    id,
+    id
   });
 
   type Ticket = {
@@ -103,8 +105,12 @@
     startsAt: Date | undefined;
     title: string;
     visibility: 'Public' | 'Private' | 'Restricted' | 'Unlisted';
-    authorUid: string;
-    groupUid: string;
+    // authorUid: string;
+    group: {
+      uid: string;
+      name: string;
+      pictureFile: string;
+    };
     managers: Array<{
       user: { uid: string; firstName: string; lastName: string; pictureFile: string };
       canEdit: boolean;
@@ -121,7 +127,7 @@
     return {
       canEditPermissions: level === 'fullaccess',
       canEdit: level === 'editor' || level === 'fullaccess',
-      canVerifyRegistrations: level === 'verify' || level === 'editor' || level === 'fullaccess',
+      canVerifyRegistrations: level === 'verify' || level === 'editor' || level === 'fullaccess'
     };
   }
 
@@ -141,9 +147,7 @@
 
 <form on:submit|preventDefault>
   {#if availableGroups.length > 0}
-    <FormInput label="Groupe">
-      <input type="text" bind:value={event.groupUid} />
-    </FormInput>
+    <ParentSearch label="Groupe" bind:parentUid={event.group.uid} />
   {/if}
 
   <FormInput label="Titre">
@@ -156,11 +160,11 @@
 
   <div class="side-by-side">
     <FormInput label="Début">
-      <input type="datetime-local" bind:value={event.startsAt} />
+      <DateInput bind:value={event.startsAt} />
     </FormInput>
 
     <FormInput label="Fin">
-      <input type="datetime-local" bind:value={event.endsAt} />
+      <DateInput bind:value={event.endsAt} />
     </FormInput>
   </div>
 
@@ -186,13 +190,13 @@
             {
               name: '',
               capacity: 0,
-              tickets: [],
-            },
+              tickets: []
+            }
           ];
         }}
       >
         <slot name="icon">
-          <MajesticonsPlus aria-hidden="true" />
+          <IconPlus aria-hidden="true" />
         </slot>
         Groupe
       </Button>
@@ -204,7 +208,7 @@
         }}
       >
         <slot name="icon">
-          <MajesticonsPlus aria-hidden="true" />
+          <IconPlus aria-hidden="true" />
         </slot>
         Billet
       </Button>
@@ -325,7 +329,7 @@
                       expandedTicketId = -1;
                     }}
                   >
-                    <MajesticonsChevronUp />
+                    <IconChevronUp />
                   </GhostButton>
                 </div>
               {:else}
@@ -338,7 +342,7 @@
                     expandedTicketId = ticket.id;
                   }}
                 >
-                  <MajesticonsChevronDown />
+                  <IconChevronDown />
                 </GhostButton>
               {/if}
             </article>
@@ -437,7 +441,7 @@
               expandedTicketId = -1;
             }}
           >
-            <MajesticonsChevronUp />
+            <IconChevronUp />
           </GhostButton>
         </div>
       {:else}
@@ -449,7 +453,7 @@
             expandedTicketId = ticket.id;
           }}
         >
-          <MajesticonsChevronDown />
+          <IconChevronDown />
         </GhostButton>
       {/if}
     </article>
@@ -464,7 +468,7 @@
           if (!e.target || !('value' in e.target)) return;
           event.managers[i] = {
             ...manager,
-            ...permissionsFromLevel(aspermissionlevel(e.target.value)),
+            ...permissionsFromLevel(aspermissionlevel(e.target.value))
           };
         }}
         value={levelFromPermissions(manager)}
@@ -483,8 +487,8 @@
         ...event.managers,
         {
           user: { uid: '', firstName: '', lastName: '', pictureFile: '' },
-          ...permissionsFromLevel('readonly'),
-        },
+          ...permissionsFromLevel('readonly')
+        }
       ];
     }}>Ajouter un manager</Button
   >

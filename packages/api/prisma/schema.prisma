@@ -313,6 +313,7 @@ model TicketGroup {
 /// A ticket is a way to register for an event. May include a price and conditions.
 model Ticket {
   id                    String          @id @default(dbgenerated("nanoid('t:')"))
+  uid                   String
   eventId               String
   ticketGroupId         String?
   name                  String          @db.VarChar(255)
@@ -338,6 +339,8 @@ model Ticket {
 
   event Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   group TicketGroup? @relation(fields: [ticketGroupId], references: [id])
+
+  @@unique([eventId, uid])
 }
 
 /// A reservation is a user's registration for a ticket

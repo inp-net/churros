@@ -1,13 +1,11 @@
 <script lang="ts">
   import Button from '$lib/components/buttons/Button.svelte';
   import ArticleCard from '$lib/components/cards/ArticleCard.svelte';
-  import { formatDateTime } from '$lib/dates';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
   import { pageQuery } from './+page';
-  import MajesticonsShare from '~icons/majesticons/share';
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import * as htmlToText from 'html-to-text';
 
   export let data: PageData;
 
@@ -17,7 +15,7 @@
     try {
       loading = true;
       const { homepage } = await $zeus.query({
-        homepage: [{ after: data.homepage.pageInfo.endCursor }, pageQuery],
+        homepage: [{ after: data.homepage.pageInfo.endCursor }, pageQuery]
       });
       data.homepage.pageInfo = homepage.pageInfo;
       data.homepage.edges = [...data.homepage.edges, ...homepage.edges];
@@ -29,34 +27,17 @@
 
 <h1>Mon feed</h1>
 
-{#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile } }}
+{#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile, links, body } }}
   <ArticleCard
     {title}
+    {publishedAt}
+    {links}
+    {group}
+    {author}
     href="/club/{group.uid}/post/{uid}/"
     img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
   >
-    <p>
-      Par <a href="/club/{group.uid}/">{group.name}</a>
-      le {formatDateTime(publishedAt)}
-      <GhostButton
-        on:click={async () => {
-          await navigator.share({ url: window.location.href, title });
-        }}
-      >
-        <MajesticonsShare />
-      </GhostButton>
-    </p>
-    {@html bodyHtml}
-    {#if author}
-      <p>
-        <em>
-          Auteur : <a href="/user/{author.uid}/">
-            {author.firstName}
-            {author.lastName}
-          </a>
-        </em>
-      </p>
-    {/if}
+    {@html htmlToText.convert(bodyHtml).replaceAll('\n', '<br>')}
   </ArticleCard>
 {/each}
 

@@ -1,0 +1,24 @@
+import { loadQuery, Selector } from '$lib/zeus';
+import type { PageLoad } from './$types';
+
+export const load: PageLoad = async ({ params, fetch, parent }) =>
+  loadQuery(
+    {
+      ticketByUid: [
+        { uid: params.ticket, eventUid: params.event },
+        Selector('Ticket')({
+          uid: true,
+          id: true,
+          name: true,
+          onlyManagersCanProvide: true,
+          allowedPaymentMethods: true,
+          event: {
+            title: true,
+            contactMail: true,
+            pictureFile: true,
+          },
+        }),
+      ],
+    },
+    { fetch, parent }
+  );

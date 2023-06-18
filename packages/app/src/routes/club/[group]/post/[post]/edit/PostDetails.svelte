@@ -10,6 +10,7 @@
   import FormInput from '$lib/components/inputs/FormInput.svelte';
   import LinkCollectionInput from '$lib/components/inputs/LinkCollectionInput.svelte';
   import { formatDatetimeLocal } from '$lib/dates';
+    import DateInput from '$lib/components/inputs/DateInput.svelte';
 
   export let data: PageData;
 
@@ -68,13 +69,7 @@
     <input type="text" required bind:value={title} />
   </FormInput>
   <FormInput label="Publier le">
-    <input
-      type="datetime-local"
-      value={publishedAt ? formatDatetimeLocal(publishedAt) : ''}
-      on:input={({ target: { value } }) => {
-        publishedAt = new Date(Date.parse(value));
-      }}
-    />
+    <DateInput bind:value={publishedAt} />
   </FormInput>
   <FormInput label="Description">
     <textarea bind:value={body} cols="30" rows="10" />

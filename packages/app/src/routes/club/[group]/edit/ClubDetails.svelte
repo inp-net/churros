@@ -1,9 +1,9 @@
 <script lang="ts">
   import GhostButton from '$lib/components/buttons/GhostButton.svelte';
   import InputGroup from '$lib/components/groups/InputGroup.svelte';
-  import MajesticonsClose from '~icons/majesticons/close';
-  import MajesticonsChevronUp from '~icons/majesticons/chevron-up';
-  import MajesticonsPlus from '~icons/majesticons/plus';
+  import IconClose from '~icons/mdi/close';
+  import IconChevronUp from '~icons/mdi/chevron-up';
+  import IconPlus from '~icons/mdi/plus';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
   import { _clubQuery as clubQuery } from './+page';
@@ -139,7 +139,7 @@
                 links = links.filter((_, j) => i !== j);
               }}
             >
-              <MajesticonsClose aria-label="Supprimer" />
+              <IconClose aria-label="Supprimer" />
             </GhostButton>
             {#if i > 0}
               <GhostButton
@@ -148,7 +148,7 @@
                   links = [...links.slice(0, i - 1), links[i], links[i - 1], ...links.slice(i + 1)];
                 }}
               >
-                <MajesticonsChevronUp aria-label="Remonter" />
+                <IconChevronUp aria-label="Remonter" />
               </GhostButton>
             {/if}
           </InputGroup>
@@ -159,7 +159,7 @@
           type="button"
           on:click={() => {
             links = [...links, { name: '', value: '' }];
-          }}><MajesticonsPlus aria-hidden="true" />Ajouter</button
+          }}><IconPlus aria-hidden="true" />Ajouter</button
         >
       </li>
     </ul>

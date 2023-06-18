@@ -17,6 +17,6 @@
   }
 
   .card-content {
-    padding: 0 1rem;
+    padding: 1rem;
   }
 </style>

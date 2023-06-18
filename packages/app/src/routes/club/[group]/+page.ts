@@ -23,7 +23,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               email: true,
               selfJoinable: true,
               ancestors: { uid: true, name: true },
-              articles: { uid: true, title: true, bodyHtml: true, pictureFile: true },
+              articles: { uid: true, title: true, bodyHtml: true, pictureFile: true, author: {firstName: true, lastName: true, uid: true}, publishedAt: true },
               school: { name: true, color: true },
               links: { name: true, value: true },
               members: {

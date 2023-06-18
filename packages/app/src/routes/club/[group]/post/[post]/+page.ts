@@ -20,6 +20,10 @@ export const _articleQuery = Selector('Article')({
     uid: true,
     title: true,
   },
+  links: {
+    name: true,
+    value: true,
+  }
 });
 
 export const load: PageLoad = async ({ fetch, params, parent }) =>

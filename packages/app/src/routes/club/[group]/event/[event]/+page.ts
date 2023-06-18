@@ -7,6 +7,11 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
       event: [
         { groupUid: params.group, uid: params.event },
         Selector('Event')({
+          startsAt: true,
+          endsAt: true,
+          uid: true,
+          id: true,
+          pictureFile: true,
           articles: {
             uid: true,
             bodyHtml: true,
@@ -36,18 +41,41 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             name: true,
             value: true,
           },
+          group: {
+            uid: true,
+            name: true,
+            pictureFile: true
+          },
+          contactMail: true,
           tickets: {
+            uid: true,
+            id: true,
             name: true,
             descriptionHtml: true,
             price: true,
             capacity: true,
             placesLeft: true,
+            opensAt: true,
+            closesAt: true,
+            group: {
+              capacity: true
+            },
             links: {
               name: true,
               value: true,
             },
-            opensAt: true,
-            closesAt: true,
+            registrations: {
+              id: true,
+              beneficiary: true,
+              authorIsBeneficiary: true,
+              author: {
+                uid: true
+              },
+              paid: true,
+              ticket: {
+                name: true,
+              },
+            },
             openToAlumni: true,
             openToExternal: true,
             openToGroups: {

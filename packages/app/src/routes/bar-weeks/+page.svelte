@@ -1,0 +1,180 @@
+<script lang="ts">
+  import Card from '$lib/components/cards/Card.svelte';
+  import Alert from '$lib/components/alerts/Alert.svelte';
+  import IconEdit from '~icons/mdi/pencil';
+  import DateInput from '$lib/components/inputs/DateInput.svelte';
+  import FormInput from '$lib/components/inputs/FormInput.svelte';
+  import StringListInput from '$lib/components/inputs/StringListInput.svelte';
+  import { endOfWeek, startOfWeek } from 'date-fns';
+  import type { PageData } from './$types';
+  import Button from '$lib/components/buttons/Button.svelte';
+  import { zeus } from '$lib/zeus';
+  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
+  import { dateFormatter } from '$lib/dates';
+
+  export let data: PageData;
+
+  const EMPTY_BAR_WEEK = {
+    id: undefined,
+    description: '',
+    groups: [] as string[],
+    startsAt: startOfWeek(new Date()),
+    endsAt: endOfWeek(new Date())
+  };
+
+  let { barWeeks } = data;
+  let newBarWeek = EMPTY_BAR_WEEK;
+  let serverErrors: Record<string, string> = {};
+  let expandedBarWeekId: string | undefined = undefined;
+
+  $: console.log(barWeeks);
+
+  async function deleteBarWeek({ id }: { id: string }) {
+    await $zeus.mutate({
+      deleteBarWeek: [{ id }, true]
+    });
+    barWeeks = barWeeks.filter((bw) => bw.id !== id);
+  }
+
+  async function updateBarWeek(barWeek: {
+    id: string | undefined;
+    description: string;
+    groups: string[];
+    startsAt: Date;
+    endsAt: Date;
+  }) {
+    const { upsertBarWeek } = await $zeus.mutate({
+      upsertBarWeek: [
+        {
+          description: barWeek.description,
+          endsAt: barWeek.endsAt,
+          startsAt: barWeek.startsAt,
+          id: barWeek.id,
+          groupsUids: barWeek.groups.map(({ uid }) => uid)
+        },
+        {
+          __typename: true,
+          '...on Error': {
+            message: true
+          },
+          '...on MutationUpsertBarWeekSuccess': {
+            data: {
+              id: true,
+              description: true,
+              descriptionHtml: true,
+              endsAt: true,
+              startsAt: true,
+              groups: {
+                uid: true,
+                name: true,
+                pictureFile: true
+              },
+              uid: true
+            }
+          }
+        }
+      ]
+    });
+
+    if (upsertBarWeek.__typename === 'Error') {
+      serverErrors[barWeek.id ?? 'new'] = upsertBarWeek.message;
+      console.error(upsertBarWeek.message);
+      return;
+    }
+
+    upsertBarWeek.data = {
+      ...upsertBarWeek.data,
+      startsAt: Date.parse(upsertBarWeek.data.startsAt),
+      endsAt: Date.parse(upsertBarWeek.data.endsAt)
+    };
+
+    serverErrors[barWeek.id ?? 'new'] = '';
+    expandedBarWeekId = undefined;
+    if (barWeek.id === undefined) {
+      barWeeks = [...barWeeks, upsertBarWeek.data];
+      newBarWeek = EMPTY_BAR_WEEK;
+    } else {
+      barWeeks = barWeeks.map((bw) => (bw.id === barWeek.id ? upsertBarWeek.data : bw));
+    }
+  }
+</script>
+
+<h1>Semaines de bar</h1>
+
+<ul>
+  {#each barWeeks as barWeek, i (barWeek.id)}
+    <li>
+      <Card>
+        {#if expandedBarWeekId === barWeek.id}
+          <FormInput label="Description">
+            <textarea bind:value={barWeeks[i].description} cols="30" rows="10" />
+          </FormInput>
+
+          <FormInput label="Groupes">
+            <StringListInput
+              on:input={({ detail: val }) => {
+                if (
+                  barWeek.groups
+                    .map(({ uid }) => uid)
+                    .sort()
+                    .join(',') === val.sort().join(',')
+                )
+                  return;
+                barWeeks[i].groups = val.map((uid) => ({ uid }));
+              }}
+              value={barWeek.groups.map(({ uid }) => uid)}
+            />
+          </FormInput>
+          <div class="side-by-side">
+            <FormInput label="Début">
+              <DateInput bind:value={barWeeks[i].startsAt} />
+            </FormInput>
+
+            <FormInput label="Fin">
+              <DateInput bind:value={barWeeks[i].endsAt} />
+            </FormInput>
+          </div>
+          {#if serverErrors[barWeek.id]}
+            <Alert theme="danger">{serverErrors[barWeek.id]}</Alert>
+          {/if}
+          <Button on:click={async () => updateBarWeek(barWeek)}>Enregistrer</Button>
+        {:else}
+          <h2>
+            {dateFormatter.format(barWeek.startsAt)}—{dateFormatter.format(barWeek.endsAt)}
+            {barWeek.groups.map(({ name }) => name).join(', ')}
+          </h2>
+          <div class="description">
+            {@html barWeek.descriptionHtml}
+          </div>
+          <GhostButton on:click={() => (expandedBarWeekId = barWeek.id)}><IconEdit /></GhostButton>
+        {/if}
+        <Button theme="danger" on:click={(async) => deleteBarWeek(barWeek)}>Supprimer</Button>
+      </Card>
+    </li>
+  {/each}
+  <li>
+    <Card>
+      <FormInput label="Description">
+        <textarea bind:value={newBarWeek.description} cols="30" rows="10" />
+      </FormInput>
+
+      <FormInput label="Groupes">
+        <StringListInput value={newBarWeek.groups.map(({ uid }) => uid)} />
+      </FormInput>
+      <div class="side-by-side">
+        <FormInput label="Début">
+          <DateInput bind:value={newBarWeek.startsAt} />
+        </FormInput>
+
+        <FormInput label="Fin">
+          <DateInput bind:value={newBarWeek.endsAt} />
+        </FormInput>
+      </div>
+
+      {#if serverErrors['new']}
+        <Alert theme="danger">{serverErrors['new']}</Alert>
+      {/if}
+      <Button on:click={async () => updateBarWeek(newBarWeek)}>Ajouter</Button>
+    </Card>
+  </li>
+</ul>
