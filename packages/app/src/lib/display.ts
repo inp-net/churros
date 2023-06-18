@@ -6,3 +6,10 @@ export const DISPLAY_PAYMENT_METHODS = {
   Lydia: 'Lydia',
   Other: 'Autre',
 };
+
+export const DISPLAY_VISIBILITY = {
+  Public: 'Public',
+  Restricted: 'Restreint',
+  Unlisted: 'Non répertorié',
+  Private: 'Privé',
+}

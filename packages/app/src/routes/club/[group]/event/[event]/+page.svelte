@@ -126,7 +126,7 @@
 <section class="organizer">
   <h2>Organisé par</h2>
   <div class="organizer-name-and-contact">
-    <div class="organizer-name">
+    <a class="organizer-name" href="/club/{group.uid}">
       <img
         src={group.pictureFile
           ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
@@ -134,7 +134,7 @@
         alt=""
       />
       {group.name}
-    </div>
+    </a>
     <a href="malto:{contactMail}"> Contact </a>
   </div>
 </section>

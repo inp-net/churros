@@ -6,7 +6,7 @@
   import { goto } from '$app/navigation';
   import { me } from '$lib/session';
   import Button from '$lib/components/buttons/Button.svelte';
-  import { DISPLAY_PAYMENT_METHODS } from '$lib/payment-methods';
+  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { zeus } from '$lib/zeus';
   import FormInput from '$lib/components/inputs/FormInput.svelte';
   import Alert from '$lib/components/alerts/Alert.svelte';

@@ -76,7 +76,9 @@ builder.queryField('homepage', (t) =>
       return prisma.article.findMany({
         ...query,
         where: {
-          published: true,
+          publishedAt: {
+            lte: new Date(),
+          },
           OR: [
             // Show articles from the same school as the user
             {
@@ -85,7 +87,7 @@ builder.queryField('homepage', (t) =>
             },
             // Show articles from groups whose user is a member
             {
-              visibility: Visibility.Public || Visibility.Restricted,
+              visibility: { in: [Visibility.Public, Visibility.Restricted] },
               group: { uid: { in: ancestors.map(({ uid }) => uid) } },
             },
           ],

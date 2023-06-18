@@ -1,6 +1,6 @@
 <script lang="ts">
   import Alert from '$lib/components/alerts/Alert.svelte';
-  import { zeus } from '$lib/zeus';
+  import { Visibility, zeus } from '$lib/zeus';
   import type { PageData } from '../$types';
   import Button from '$lib/components/buttons/Button.svelte';
   import { goto } from '$app/navigation';
@@ -10,13 +10,15 @@
   import FormInput from '$lib/components/inputs/FormInput.svelte';
   import LinkCollectionInput from '$lib/components/inputs/LinkCollectionInput.svelte';
   import { formatDatetimeLocal } from '$lib/dates';
-    import DateInput from '$lib/components/inputs/DateInput.svelte';
+  import DateInput from '$lib/components/inputs/DateInput.svelte';
+  import { DISPLAY_VISIBILITY } from '$lib/display';
 
   export let data: PageData;
 
   let serverError = '';
 
-  let { id, event, eventId, title, author, body, publishedAt, links, group } = data.article;
+  let { id, event, eventId, title, author, body, publishedAt, visibility, links, group } =
+    data.article;
 
   $: console.log(publishedAt);
 
@@ -35,16 +37,16 @@
             title,
             body,
             publishedAt: publishedAt?.toISOString(),
-            links,
+            links
           },
           {
             __typename: true,
             '...on Error': { message: true },
             '...on MutationUpsertArticleSuccess': {
-              data: _articleQuery,
-            },
-          },
-        ],
+              data: _articleQuery
+            }
+          }
+        ]
       });
 
       if (upsertArticle.__typename === 'Error') {
@@ -70,6 +72,13 @@
   </FormInput>
   <FormInput label="Publier le">
     <DateInput bind:value={publishedAt} />
+  </FormInput>
+  <FormInput label="Visibilité">
+    <select bind:value={visibility}>
+      {#each Object.keys(Visibility) as idx}
+        <option value={Visibility[idx]}>{DISPLAY_VISIBILITY[Visibility[idx]]}</option>
+      {/each}
+    </select>
   </FormInput>
   <FormInput label="Description">
     <textarea bind:value={body} cols="30" rows="10" />
