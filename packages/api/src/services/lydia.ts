@@ -1,58 +1,11 @@
-import slug from 'slug';
 import { prisma } from '../prisma.js';
-import crypto from 'node:crypto';
+import { createHash } from 'node:crypto';
 
 // Get the Lydia API URL from the environment
-const {LYDIA_API_URL} = process.env;
-const LYDIA_WEBHOOK_URL: string =
-  process.env['LYDIA_WEBHOOK_URL'] ?? 'http://localhost:5173/lydia-webhook';
-
-// Retrieve lydia tokens from a user using their phone number and password
-export async function getLydiaTokens(phone: string, password: string): Promise<string[]> {
-  const response = await fetch(`${LYDIA_API_URL}/api/auth/login.json`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      phone,
-      password,
-    }),
-  });
-  if (!response.ok) throw new Error('Invalid credentials');
-  // Parse the response
-  const { business_list } = (await response.json()) as { business_list: string[] };
-  // Return list of tokens
-  return business_list;
-}
+const { LYDIA_API_URL, LYDIA_WEBHOOK_URL } = process.env;
 
 // Add lydia account to a group
-export async function addLydiaAccount(
-  name: string,
-  vendor_token: string,
-  vendor_id: string,
-  groupUid: string,
-  userId: string
-): Promise<void> {
-  // Check if the user is a president or treasurer of the group
-  // Get the group and the member and the lydia account
-  const group = await prisma.group.findUnique({
-    where: { uid: groupUid },
-    include: {
-      members: {
-        where: { memberId: userId },
-      },
-      lyiaAccounts: true,
-    },
-  });
-  if (!group) throw new Error('Group not found');
-  const member = group.members.find((member) => member.memberId === userId);
-  if (!member) throw new Error('User not found');
-  if (!member.president && !member.treasurer)
-    throw new Error('User is not a president or treasurer of the group');
-  // Check if the lydia account already exists
-  if (group.lyiaAccounts.some((account) => account.vendorToken === vendor_token))
-    throw new Error('Lydia account already exists');
+export async function checkLydiaAccount(vendor_token: string, vendor_id: string): Promise<void> {
   // Check if the lydia account is available
   const response = await fetch(`${LYDIA_API_URL}/api/auth/vendortoken.json`, {
     method: 'POST',
@@ -65,16 +18,6 @@ export async function addLydiaAccount(
     }),
   });
   if (!response.ok) throw new Error('Invalid tokens');
-  // Create the lydia account
-  await prisma.lydiaAccount.create({
-    data: {
-      uid: slug(name),
-      name,
-      group: { connect: { uid: groupUid } },
-      privateToken: vendor_id,
-      vendorToken: vendor_token,
-    },
-  });
 }
 
 // Send a payment request to a number
@@ -111,8 +54,6 @@ export async function sendLydiaPaymentRequest(
     });
   }
 
-  // TODO: Check if their is place left
-  // TODO: Check if the user has already paid
   // Cancel the previous transaction
   if (transaction.requestId && transaction.requestUuid) {
     // Cancel the previous transaction
@@ -161,27 +102,19 @@ export async function sendLydiaPaymentRequest(
   });
 }
 
-interface Param {
-  transaction_identifier: string;
-  amount: string;
-}
-
-// Create lydia signature
-const createLydiaSignature = (requestId: string, amount: number, privateToken: string): string => {
-  const param: Param = {
-    transaction_identifier: requestId,
-    amount: amount.toString(),
-  };
-
-  const sortedKeys = Object.keys(param).sort();
-
-  const sig = sortedKeys.map((key) => `${key}=${param[key as keyof Param]}`);
-
-  const concatenatedSig = sig.join('&');
-  const callSig = crypto
-    .createHash('md5')
-    .update(concatenatedSig + '&' + privateToken)
+export function lydiaSignature(
+  { privateToken }: { privateToken: string },
+  params: Record<string, string>
+): string {
+  return createHash('md5')
+    .update(
+      new URLSearchParams(
+        Object.keys(params)
+          .sort()
+          .map((key) => [key, params[key]!])
+      ).toString() +
+        '&' +
+        privateToken
+    )
     .digest('hex');
-
-  return callSig;
-};
+}
