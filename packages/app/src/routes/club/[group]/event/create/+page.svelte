@@ -6,10 +6,11 @@
 
   export let data: PageData;
   let event = {
+    id: '',
     uid: '',
     ticketGroups: [],
     tickets: [],
-    authorUid: $me?.uid || '',
+    group: data.group,
     description: '',
     endsAt: undefined,
     groupUid: $page.params.uid,

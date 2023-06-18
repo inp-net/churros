@@ -1673,6 +1673,7 @@ __metadata:
     is-dark-color: "npm:^1.2.0"
     json-to-csv-in-browser: "npm:^1.0.8"
     party-js: "npm:^2.2.0"
+    qr-code-generator-lib: "npm:^1.0.1"
     sanitize.css: "npm:^13.0.0"
     sass: "npm:^1.56.1"
     svelte: "npm:^3.53.1"
@@ -14897,6 +14898,13 @@ __metadata:
   version: 1.5.1
   resolution: "q@npm:1.5.1"
   checksum: 276b7e93fc76c4979fba33e571e7ff7dec8c93ee0bed8a8f9b212e4bf5b923bb6b632ce0c8981cbb4b49656cf77c163cba032a7e657cba38401c85957ec92fd4
+  languageName: node
+  linkType: hard
+
+"qr-code-generator-lib@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "qr-code-generator-lib@npm:1.0.1"
+  checksum: 2e8cfe8d4e3211a882d97a4b7a848e168afd355a10c45d1bb8b0da0e0f5e748b98433971933d54f266157606be20960849bd8f117925d24acfc0c3f19daa4674
   languageName: node
   linkType: hard
 

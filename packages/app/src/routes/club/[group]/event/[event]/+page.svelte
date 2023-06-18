@@ -8,6 +8,7 @@
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import GhostButton from '$lib/components/buttons/GhostButton.svelte';
+  import BackButton from '$lib/components/buttons/BackButton.svelte';
 
   export let data: PageData;
 
@@ -38,6 +39,7 @@
     : 'https://picsum.photos/400/400'})"
 >
   <h1>
+    <BackButton go="../.." white />
     {title}
 
     {#if $me?.admin || $me?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit)}
@@ -69,10 +71,13 @@
 
 <section class="tickets">
   <h2>
-    Places <span class="places"
-      ><span class="left">{eventPlacesLeft}</span><span class="capacity">{eventCapacity}</span
-      ></span
-    >
+    Places <span class="places">
+      {#if eventPlacesLeft < 0}
+        illimitées
+      {:else}
+        <span class="left">{eventPlacesLeft}</span><span class="capacity">{eventCapacity}</span>
+      {/if}
+    </span>
   </h2>
 
   <ul>
@@ -95,10 +100,14 @@
               Gratos
             {/if}
           </p>
-          <p class="places">
-            <span class="left">{placesLeft}</span>
-            <span class="capacity">{capacity}</span>
-          </p>
+          <span class="places">
+            {#if placesLeft === -1}
+              Illimité
+            {:else}
+              <span class="left">{placesLeft}</span>
+              <span class="capacity">{capacity}</span>
+            {/if}
+          </span>
         </div>
         <div class="book">
           {#if isFuture(new Date(closesAt)) && isPast(new Date(opensAt))}
@@ -159,6 +168,10 @@
     width: 3px;
   }
 
+  .places {
+    display: inline-block;
+  }
+
   .ticket .places .left::after {
     width: 1px;
   }
@@ -170,6 +183,13 @@
 
     .text {
       width: 100%;
+    }
+
+    .numbers {
+      display: flex;
+      flex-direction: column;
+      align-items: end;
+      width: 5rem;
     }
   }
 

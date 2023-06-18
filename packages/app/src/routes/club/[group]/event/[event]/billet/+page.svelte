@@ -3,6 +3,7 @@
   import { dateTimeFormatter } from '$lib/dates';
   import * as qrcode from 'qr-code-generator-lib';
   import type { PageData } from './$types';
+  import BackButton from '$lib/components/buttons/BackButton.svelte';
 
   export let data: PageData;
 
@@ -13,7 +14,10 @@
   $: ({ d: qrcodePath, dim: qrcodeDimension } = qrcode.renderPath(qrcode.getMatrix(id)));
 </script>
 
-<h1>Ma place</h1>
+<h1>
+  <BackButton />
+  Ma place
+</h1>
 <h2>
   {#if authorIsBeneficiary}
     {author.firstName} {author.lastName}

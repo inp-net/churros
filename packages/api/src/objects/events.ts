@@ -1,5 +1,6 @@
 import { builder } from '../builder.js';
 import { startOfWeek, endOfWeek } from 'date-fns';
+import { createUid as createTicketUid } from './tickets.js';
 import {
   type Event as EventPrisma,
   Visibility as VisibilityPrisma,
@@ -21,6 +22,8 @@ import {
   splitSearchTerms,
 } from '../services/search.js';
 import { dateFromNumbers } from '../date.js';
+import { TicketInput } from './tickets.js';
+import { TicketGroupInput } from './ticket-groups.js';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -253,8 +256,8 @@ builder.mutationField('upsertEvent', (t) =>
     type: EventType,
     args: {
       id: t.arg.string({ required: false }),
-      ticketGroups: t.arg({ type: ['String'] }),
-      tickets: t.arg({ type: ['String'] }),
+      ticketGroups: t.arg({ type: [TicketGroupInput] }),
+      tickets: t.arg({ type: [TicketInput] }),
       description: t.arg.string(),
       groupId: t.arg.string(),
       contactMail: t.arg.string(),
@@ -301,18 +304,15 @@ builder.mutationField('upsertEvent', (t) =>
       },
       { user }
     ) {
+      const connectFromListOfUids = (uids: string[]) => ({ connect: uids.map((uid) => ({ uid })) });
+      console.log(JSON.stringify({ ticketGroups, tickets }));
       console.log(lydiaAccountId);
+      // First, create or update the event without any tickets
       const upsertData = {
         group: {
           connect: {
             id: groupId,
           },
-        },
-        ticketGroups: {
-          connect: ticketGroups.map((id) => ({ id })),
-        },
-        tickets: {
-          connect: tickets.map((id) => ({ id })),
         },
         author: {
           connect: {
@@ -335,9 +335,9 @@ builder.mutationField('upsertEvent', (t) =>
             }
           : undefined,
       };
-      return prisma.event.upsert({
+      const event = await prisma.event.upsert({
         ...query,
-        where: { id: id ?? undefined },
+        where: { id: id ?? '' },
         create: { ...upsertData, links: { create: links } },
         update: {
           ...upsertData,
@@ -349,6 +349,121 @@ builder.mutationField('upsertEvent', (t) =>
           },
         },
       });
+      console.log(`Upserted the event without tickets or ticket groups`);
+      // Update the existing tickets
+      await Promise.all(
+        tickets
+          .filter((t) => Boolean(t.id))
+          .map(async (ticket) =>
+            prisma.ticket.update({
+              where: { id: ticket.id! },
+              data: {
+                ...ticket,
+                id: ticket.id!,
+                links: {
+                  deleteMany: {},
+                  createMany: {
+                    data: ticket.links,
+                  },
+                },
+                openToGroups: connectFromListOfUids(ticket.openToGroups),
+                openToSchools: connectFromListOfUids(ticket.openToSchools),
+              },
+            })
+          )
+      );
+      console.log('Updated the existing tickets');
+      // Create the new tickets
+      for (const [i, ticket] of Object.entries(tickets.filter((t) => !t.id))) {
+        const newTicket = await prisma.ticket.create({
+          data: {
+            ...ticket,
+            links: {
+              create: ticket.links,
+            },
+            id: undefined,
+            openToGroups: connectFromListOfUids(ticket.openToGroups),
+            openToSchools: connectFromListOfUids(ticket.openToSchools),
+            eventId: event.id,
+            uid: await createTicketUid(ticket.name),
+          },
+        });
+
+        tickets[Number.parseInt(i)] = { ...ticket, id: newTicket.id };
+      }
+
+      console.log('Created the new tickets outside of groups');
+
+      // Create the group's new tickets
+      for (const [i, ticketGroup] of Object.entries(ticketGroups)) {
+        for (const [j, ticket] of Object.entries(ticketGroup.tickets.filter((t) => !t.id))) {
+          const newTicket = await prisma.ticket.create({
+            data: {
+              ...ticket,
+              links: {
+                create: ticket.links,
+              },
+              id: undefined,
+              openToGroups: connectFromListOfUids(ticket.openToGroups),
+              openToSchools: connectFromListOfUids(ticket.openToSchools),
+              eventId: event.id,
+              uid: await createTicketUid(ticket.name),
+            },
+          });
+
+          ticketGroups[Number.parseInt(i)].tickets[Number.parseInt(j)] = {
+            ...ticket,
+            id: newTicket.id,
+          };
+        }
+      }
+
+      console.log("Created the new ticket groups' tickets");
+
+      // Update the existing ticket groups
+      await Promise.all(
+        ticketGroups
+          .filter((t) => Boolean(t.id))
+          .map(async (ticketGroup) =>
+            prisma.ticketGroup.update({
+              where: { id: ticketGroup.id! },
+              data: {
+                capacity: ticketGroup.capacity,
+                name: ticketGroup.name,
+                tickets: {
+                  set: ticketGroup.tickets.map(({ id }) => ({ id: id! })),
+                },
+              },
+            })
+          )
+      );
+
+      console.log('Updated the existing ticket groups');
+
+      // Create the new ticket groups
+      for (const [i, ticketGroup] of Object.entries(ticketGroups.filter((t) => !t.id))) {
+        const newTicketGroup = await prisma.ticketGroup.create({
+          data: {
+            ...ticketGroup,
+            id: undefined,
+            eventId: event.id,
+            tickets: {
+              connect: ticketGroup.tickets.map(({ id }) => ({ id: id! })),
+            },
+          },
+        });
+        ticketGroups[Number.parseInt(i)] = { ...ticketGroup, id: newTicketGroup.id };
+      }
+
+      console.log('Created the new ticket groups');
+
+      const result = await prisma.event.findUniqueOrThrow({
+        ...query,
+        where: { id: event.id },
+      });
+
+      console.log("Updated the event's tickets and ticket groups");
+      return result;
     },
   })
 );

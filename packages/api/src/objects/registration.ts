@@ -227,7 +227,6 @@ builder.mutationField('upsertRegistration', (t) =>
         if (existingRegistration) throw new GraphQLError('Vous êtes déjà inscrit à cet événement');
       }
 
-      if (existingRegistration) return false;
       if (!paid) {
         const ticket = await prisma.ticket.findUniqueOrThrow({
           where: { id: ticketId },

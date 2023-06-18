@@ -80,6 +80,7 @@ export const GroupType = builder.prismaNode('Group', {
     school: t.relation('school', { nullable: true }),
     parent: t.relation('parent'),
     selfJoinable: t.exposeBoolean('selfJoinable'),
+    events: t.relation('events'),
   }),
 });
 

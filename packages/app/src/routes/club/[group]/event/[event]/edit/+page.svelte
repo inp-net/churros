@@ -29,6 +29,8 @@
   ]}
 />
 
+<a href="../">Voir l'évènement</a>
+
 <EventForm
   availableGroups={data.groups.filter((g) =>
     $me?.groups.some(({ group, canEditArticles }) => canEditArticles && group.id === g.id)

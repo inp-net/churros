@@ -7,6 +7,7 @@ import { DateTimeScalar } from './scalars.js';
 import { LinkInput } from './links.js';
 import slug from 'slug';
 import dichotomid from 'dichotomid';
+import { SchoolInput } from './schools.js';
 
 export const placesLeft = (ticket: {
   name: string;
@@ -70,7 +71,9 @@ export const TicketType = builder.prismaNode('Ticket', {
           },
         });
         if (!ticket) return 0;
-        return placesLeft(ticket);
+        const places = placesLeft(ticket);
+        if (places === Number.POSITIVE_INFINITY) return -1;
+        return places;
       },
       complexity: 5,
     }),
@@ -83,6 +86,7 @@ export const TicketInput = builder.inputType('TicketInput', {
     capacity: t.int(),
     price: t.float(),
     opensAt: t.field({ type: DateTimeScalar }),
+    closesAt: t.field({ type: DateTimeScalar }),
     description: t.string(),
     godsonLimit: t.int(),
     links: t.field({ type: [LinkInput] }),
@@ -93,7 +97,7 @@ export const TicketInput = builder.inputType('TicketInput', {
     openToGroups: t.field({ type: ['String'] }),
     openToNonAEContributors: t.boolean({ required: false }),
     openToPromotions: t.field({ type: ['Int'] }),
-    openToSchools: t.field({ type: ['Int'] }),
+    openToSchools: t.field({ type: ['String'] }),
     id: t.id({ required: false }),
   }),
 });
@@ -133,7 +137,6 @@ builder.queryField('ticketByUid', (t) =>
       prisma.ticket.findFirstOrThrow({ ...query, where: { uid, event: { uid: eventUid } } }),
   })
 );
-
 
 builder.queryField('ticketsOfEvent', (t) =>
   t.prismaConnection({

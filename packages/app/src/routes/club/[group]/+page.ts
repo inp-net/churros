@@ -23,7 +23,14 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               email: true,
               selfJoinable: true,
               ancestors: { uid: true, name: true },
-              articles: { uid: true, title: true, bodyHtml: true, pictureFile: true, author: {firstName: true, lastName: true, uid: true}, publishedAt: true },
+              articles: {
+                uid: true,
+                title: true,
+                bodyHtml: true,
+                pictureFile: true,
+                author: { firstName: true, lastName: true, uid: true },
+                publishedAt: true,
+              },
               school: { name: true, color: true },
               links: { name: true, value: true },
               members: {
@@ -33,6 +40,15 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 treasurer: true,
                 vicePresident: true,
                 secretary: true,
+              },
+              events: {
+                uid: true,
+                title: true,
+                startsAt: true,
+                endsAt: true,
+                pictureFile: true,
+                visibility: true,
+                location: true,
               },
             }
           : // Unauthenticated query
@@ -51,6 +67,15 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               articles: { uid: true, title: true, bodyHtml: true, pictureFile: true },
               school: { name: true, color: true },
               links: { name: true, value: true },
+              events: {
+                uid: true,
+                title: true,
+                startsAt: true,
+                visibility: true,
+                endsAt: true,
+                pictureFile: true,
+                location: true,
+              },
             },
       ],
     },

@@ -11,10 +11,13 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
           uid: params.event,
         },
         Selector('Event')({
+          id: true,
           startsAt: true,
           endsAt: true,
           pictureFile: true,
+          description: true,
           group: {
+            id: true,
             uid: true,
             name: true,
             pictureFile: true,
@@ -33,6 +36,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             },
             allowedPaymentMethods: true,
             openToPromotions: true,
+            openToExternal: true,
             openToAlumni: true,
             openToSchools: {
               uid: true,

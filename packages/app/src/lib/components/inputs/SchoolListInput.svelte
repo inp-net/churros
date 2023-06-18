@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
-  type School = { id: number; name: string; color: string };
+  type School = { uid: string; name: string; color: string };
 
   const emit = createEventDispatcher();
   export let value: School[] = [];
@@ -33,9 +33,9 @@
           ...value,
           {
             name: val,
-            id: Math.floor(Math.random() * 1000),
-            color: '#000000',
-          },
+            uid: 'school:' + Math.floor(Math.random() * 1000),
+            color: '#000000'
+          }
         ];
         e.target.value = '';
       }

@@ -10,6 +10,7 @@
   import { zeus } from '$lib/zeus';
   import FormInput from '$lib/components/inputs/FormInput.svelte';
   import Alert from '$lib/components/alerts/Alert.svelte';
+  import BackButton from '$lib/components/buttons/BackButton.svelte';
 
   let serverError = '';
 
@@ -49,7 +50,7 @@
     }
 
     serverError = '';
-    goto(`./billet`);
+    goto(`../../billet`);
   }
 </script>
 
@@ -60,12 +61,7 @@
     : 'https://picsum.photos/400/400'})"
 >
   <h1>
-    <GhostButton
-      darkShadow
-      on:click={async () => {
-        goto('../../');
-      }}><IconBack color="white" /></GhostButton
-    >
+    <BackButton go="../.." white />
     Paiement de ma place
   </h1>
   <p>

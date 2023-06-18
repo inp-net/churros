@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as htmlToText from "html-to-text"
+  import * as htmlToText from 'html-to-text';
   import Alert from '$lib/components/alerts/Alert.svelte';
   import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
   import Breadcrumb from '$lib/components/breadcrumbs/Breadcrumb.svelte';
@@ -12,10 +12,11 @@
   import type { PageData } from './$types';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import Button from '$lib/components/buttons/Button.svelte';
-  import { zeus } from '$lib/zeus';
+  import { Visibility, zeus } from '$lib/zeus';
   import UserPicture from '$lib/components/pictures/UserPicture.svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import ArticleCard from '$lib/components/cards/ArticleCard.svelte';
+  import { isFuture, isPast } from 'date-fns';
 
   export let data: PageData;
 
@@ -125,6 +126,29 @@
     </p>
   {/if}
 {/if}
+
+<h2>
+  Évènements
+  {#if $me?.canEditGroups || $me?.groups.some(({ group, canEditArticles }) => group.uid === data.group.uid && canEditArticles)}
+    <a href="./event/create/" title="Créer un événement">
+      <IconPlus aria-label="Créer un événement" />
+    </a>
+  {/if}
+
+  <ul>
+    {#each group.events as { uid, visibility, title, startsAt, endsAt }}
+      {#if $me?.admin || visibility === 'Public' || (visibility === 'Restricted' && $me?.groups.some(({ group }) => group.uid === data.group.uid))}
+        <li>
+          <a href="/club/{group.uid}/event/{uid}/">
+            {title}
+            {#if isFuture(startsAt)}<span class="muted">À venir</span>{/if}
+            {#if isPast(endsAt)}<span class="muted">Terminé</span>{/if}
+          </a>
+        </li>
+      {/if}
+    {/each}
+  </ul>
+</h2>
 
 <h2>
   Articles
