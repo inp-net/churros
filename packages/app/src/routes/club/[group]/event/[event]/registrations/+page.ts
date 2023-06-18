@@ -4,6 +4,7 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ fetch, parent, params }) =>
   loadQuery(
     {
+      event: [{ groupUid: params.group, uid: params.event }, Selector('Event')({ id: true })],
       registrationsOfEvent: [
         {
           eventUid: params.event,
@@ -25,6 +26,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
               createdAt: true,
               paymentMethod: true,
               ticket: {
+                id: true,
                 name: true,
                 group: {
                   name: true,

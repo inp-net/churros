@@ -11,6 +11,7 @@ export const load: PageLoad = async ({ params, fetch, parent }) => {
         },
         Selector('Registration')({
           id: true,
+          paid: true,
           beneficiary: true,
           authorIsBeneficiary: true,
           author: {

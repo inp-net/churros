@@ -24,6 +24,7 @@ import {
 import { dateFromNumbers } from '../date.js';
 import { TicketInput } from './tickets.js';
 import { TicketGroupInput } from './ticket-groups.js';
+import { ManagerOfEventInput } from './event-managers.js';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -254,6 +255,7 @@ builder.mutationField('deleteEvent', (t) =>
 builder.mutationField('upsertEvent', (t) =>
   t.prismaField({
     type: EventType,
+    errors: {},
     args: {
       id: t.arg.string({ required: false }),
       ticketGroups: t.arg({ type: [TicketGroupInput] }),
@@ -268,6 +270,7 @@ builder.mutationField('upsertEvent', (t) =>
       visibility: t.arg({ type: VisibilityEnum }),
       startsAt: t.arg({ type: DateTimeScalar }),
       endsAt: t.arg({ type: DateTimeScalar }),
+      managers: t.arg({ type: [ManagerOfEventInput] }),
     },
     authScopes(_, { id, groupId }, { user }) {
       const creating = !id;
@@ -291,6 +294,7 @@ builder.mutationField('upsertEvent', (t) =>
         id,
         ticketGroups,
         lydiaAccountId,
+        managers,
         startsAt,
         endsAt,
         tickets,
@@ -307,6 +311,28 @@ builder.mutationField('upsertEvent', (t) =>
       const connectFromListOfUids = (uids: string[]) => ({ connect: uids.map((uid) => ({ uid })) });
       console.log(JSON.stringify({ ticketGroups, tickets }));
       console.log(lydiaAccountId);
+      // First, delete all the tickets and ticket groups that are not in the new list
+
+      if (id) {
+        await prisma.ticketGroup.deleteMany({
+          where: {
+            eventId: id,
+            id: {
+              notIn: ticketGroups.map(({ id }) => id ?? ''),
+            },
+          },
+        });
+
+        await prisma.ticket.deleteMany({
+          where: {
+            eventId: id,
+            id: {
+              notIn: tickets.map(({ id }) => id ?? ''),
+            },
+          },
+        });
+      }
+
       // First, create or update the event without any tickets
       const upsertData = {
         group: {
@@ -322,7 +348,6 @@ builder.mutationField('upsertEvent', (t) =>
         description,
         contactMail,
         location,
-        uid: await createUid({ title, groupId }),
         title,
         visibility,
         startsAt,
@@ -338,7 +363,19 @@ builder.mutationField('upsertEvent', (t) =>
       const event = await prisma.event.upsert({
         ...query,
         where: { id: id ?? '' },
-        create: { ...upsertData, links: { create: links } },
+        create: {
+          ...upsertData,
+          uid: await createUid({ title, groupId }),
+          links: { create: links },
+          managers: {
+            create: managers.map((m) => ({
+              user: { connect: { uid: m.userUid } },
+              canEdit: m.canEdit,
+              canEditPermissions: m.canEditPermissions,
+              canVerifyRegistrations: m.canVerifyRegistrations,
+            })),
+          },
+        },
         update: {
           ...upsertData,
           links: {
@@ -346,6 +383,15 @@ builder.mutationField('upsertEvent', (t) =>
             createMany: {
               data: links,
             },
+          },
+          managers: {
+            deleteMany: {},
+            create: managers.map((m) => ({
+              user: { connect: { uid: m.userUid } },
+              canEdit: m.canEdit,
+              canEditPermissions: m.canEditPermissions,
+              canVerifyRegistrations: m.canVerifyRegistrations,
+            })),
           },
         },
       });

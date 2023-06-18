@@ -16,6 +16,7 @@ export const load: PageLoad = async ({ params, fetch, parent }) =>
             title: true,
             contactMail: true,
             pictureFile: true,
+            startsAt: true,
           },
         }),
       ],

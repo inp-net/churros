@@ -53,6 +53,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             onlyManagersCanProvide: true,
           },
           ticketGroups: {
+            id: true,
             name: true,
             capacity: true,
             tickets: {

@@ -2,6 +2,7 @@
   import { me } from '$lib/session';
   import Button from '../buttons/Button.svelte';
   import IconPlus from '~icons/mdi/plus';
+  import { nanoid } from 'nanoid';
   import IconChevronDown from '~icons/mdi/chevron-down';
   import IconChevronUp from '~icons/mdi/chevron-up';
   import FormInput from '../inputs/FormInput.svelte';
@@ -15,6 +16,9 @@
   import ParentSearch from '../../../routes/clubs/create/ParentSearch.svelte';
   import { zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
+  import Alert from '../alerts/Alert.svelte';
+
+  let serverError = '';
 
   function eraseFakeIds(id: string): string {
     if (id.includes(':fake:')) {
@@ -43,6 +47,7 @@
           startsAt: event.startsAt,
           ticketGroups: event.ticketGroups.map((tg) => ({
             ...tg,
+            id: eraseFakeIds(tg.id),
             tickets: tg.tickets.map((t) => ({
               ...t,
               id: eraseFakeIds(t.id),
@@ -58,77 +63,96 @@
           })),
           title: event.title,
           visibility: event.visibility,
+          managers: event.managers.map(({ user, ...permissions }) => ({
+            ...permissions,
+            userUid: user.uid
+          })),
           id: event.id,
           lydiaAccountId: event.lydiaAccountId
         },
         {
-          author: {
-            uid: true
+          __typename: true,
+          '...on Error': {
+            message: true
           },
-          uid: true,
-          id: true,
-          title: true,
-          description: true,
-          startsAt: true,
-          endsAt: true,
-          location: true,
-          visibility: true,
-          contactMail: true,
-          lydiaAccountId: true,
-          ticketGroups: {
-            name: true,
-            capacity: true,
-            tickets: {
-              name: true,
-              description: true,
-              price: true,
-              capacity: true,
-              opensAt: true,
-              closesAt: true,
-              links: { name: true, value: true },
-              allowedPaymentMethods: true,
-              openToPromotions: true,
-              openToExternal: true,
-              openToAlumni: true,
-              openToSchools: { name: true, color: true, id: true },
-              openToGroups: { name: true, uid: true, pictureFile: true },
-              openToNonAEContributors: true,
-              godsonLimit: true,
-              onlyManagersCanProvide: true
-            }
-          },
-          tickets: {
-            name: true,
-            description: true,
-            price: true,
-            capacity: true,
-            opensAt: true,
-            closesAt: true,
-            links: { name: true, value: true },
-            allowedPaymentMethods: true,
-            openToPromotions: true,
-            openToExternal: true,
-            openToAlumni: true,
-            openToSchools: { name: true, color: true, id: true },
-            openToGroups: { name: true, uid: true, pictureFile: true },
-            openToNonAEContributors: true,
-            godsonLimit: true,
-            onlyManagersCanProvide: true
-          },
-          managers: {
-            user: {
+          '...on MutationUpsertEventSuccess': {
+            data: {
+              author: {
+                uid: true
+              },
               uid: true,
-              firstName: true,
-              lastName: true,
-              pictureFile: true
-            },
-            canEdit: true,
-            canEditPermissions: true,
-            canVerifyRegistrations: true
+              id: true,
+              title: true,
+              description: true,
+              startsAt: true,
+              endsAt: true,
+              location: true,
+              visibility: true,
+              contactMail: true,
+              lydiaAccountId: true,
+              ticketGroups: {
+                name: true,
+                capacity: true,
+                tickets: {
+                  name: true,
+                  description: true,
+                  price: true,
+                  capacity: true,
+                  opensAt: true,
+                  closesAt: true,
+                  links: { name: true, value: true },
+                  allowedPaymentMethods: true,
+                  openToPromotions: true,
+                  openToExternal: true,
+                  openToAlumni: true,
+                  openToSchools: { name: true, color: true, id: true },
+                  openToGroups: { name: true, uid: true, pictureFile: true },
+                  openToNonAEContributors: true,
+                  godsonLimit: true,
+                  onlyManagersCanProvide: true
+                }
+              },
+              tickets: {
+                name: true,
+                description: true,
+                price: true,
+                capacity: true,
+                opensAt: true,
+                closesAt: true,
+                links: { name: true, value: true },
+                allowedPaymentMethods: true,
+                openToPromotions: true,
+                openToExternal: true,
+                openToAlumni: true,
+                openToSchools: { name: true, color: true, id: true },
+                openToGroups: { name: true, uid: true, pictureFile: true },
+                openToNonAEContributors: true,
+                godsonLimit: true,
+                onlyManagersCanProvide: true
+              },
+              managers: {
+                user: {
+                  uid: true,
+                  firstName: true,
+                  lastName: true,
+                  pictureFile: true
+                },
+                canEdit: true,
+                canEditPermissions: true,
+                canVerifyRegistrations: true
+              }
+            }
           }
         }
       ]
     });
+
+    if (upsertEvent?.__typename === 'Error') {
+      serverError = upsertEvent.message;
+      return;
+    }
+
+    serverError = '';
 
     if (!event.id) {
       await goto(`../${upsertEvent.uid}`);
@@ -142,17 +166,11 @@
   }
 
   function nextTicketId(): string {
-    if (event.tickets.length === 0 && event.ticketGroups.length === 0) return 't:fake:0';
-    return (
-      't:fake:' +
-      (Math.max(
-        ...[
-          ...event.tickets.map(({ id }) => id),
-          ...event.ticketGroups.flatMap(({ tickets }) => tickets.map(({ id }) => id))
-        ].map((id) => parseInt(id.replace(/^t:/, ''), 10))
-      ) +
-        1)
-    );
+    return 't:fake:' + nanoid(10);
+  }
+
+  function nextTicketGroupId(): string {
+    return 'tg:fake:' + nanoid(10);
   }
 
   const bang = <T extends {}>(x?: T) => x!;
@@ -215,6 +233,7 @@
     tickets: Ticket[];
     id: string;
     ticketGroups: Array<{
+      id: string;
       name: string;
       capacity: number;
       tickets: Ticket[];
@@ -243,7 +262,7 @@
     }>;
   };
 
-  function permissionsFromLevel(level: 'readonly' | 'verify' | 'editor' | 'fullaccess'): {
+  function permissionsFromLevel(level: 'readonly' | 'verifyer' | 'editor' | 'fullaccess'): {
     canEdit: boolean;
     canEditPermissions: boolean;
     canVerifyRegistrations: boolean;
@@ -251,7 +270,7 @@
     return {
       canEditPermissions: level === 'fullaccess',
       canEdit: level === 'editor' || level === 'fullaccess',
-      canVerifyRegistrations: level === 'verify' || level === 'editor' || level === 'fullaccess'
+      canVerifyRegistrations: level === 'verifyer' || level === 'editor' || level === 'fullaccess'
     };
   }
 
@@ -259,10 +278,10 @@
     canEdit: boolean;
     canEditPermissions: boolean;
     canVerifyRegistrations: boolean;
-  }): 'readonly' | 'verify' | 'editor' | 'fullaccess' {
+  }): 'readonly' | 'verifyer' | 'editor' | 'fullaccess' {
     if (permissions.canEditPermissions) return 'fullaccess';
     if (permissions.canEdit) return 'editor';
-    if (permissions.canVerifyRegistrations) return 'verify';
+    if (permissions.canVerifyRegistrations) return 'verifyer';
     return 'readonly';
   }
 
@@ -312,6 +331,7 @@
           event.ticketGroups = [
             ...event.ticketGroups,
             {
+              id: nextTicketGroupId(),
               name: '',
               capacity: 0,
               tickets: []
@@ -482,6 +502,14 @@
             expandedTicketId = id;
           }}>Ajouter un billet dans le groupe</Button
         >
+        <Button
+          theme="danger"
+          on:click={() => {
+            if (ticketGroup.tickets.some((t) => expanded(t, expandedTicketId)))
+              expandedTicketId = '';
+            event.ticketGroups = event.ticketGroups.filter((tg) => tg.id !== ticketGroup.id);
+          }}>Supprimer le groupe</Button
+        >
       </article>
     {/each}
   </section>
@@ -602,7 +630,8 @@
     <InputGroup>
       <input type="text" bind:value={event.managers[i].user.uid} />
       <select
-        on:input={(e) => {
+        on:change={(e) => {
+          console.log(permissionsFromLevel(e.target.value))
           if (!e.target || !('value' in e.target)) return;
           event.managers[i] = {
             ...manager,
@@ -630,6 +659,10 @@
       ];
     }}>Ajouter un manager</Button
   >
+
+  {#if serverError}
+    <Alert theme="danger">Impossible de sauvegarder l'évènement: {serverError}</Alert>
+  {/if}
 
   <Button type="submit" on:click={async () => saveChanges()}>Enregistrer</Button>
 </form>

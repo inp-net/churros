@@ -11,6 +11,7 @@
     "html-to-text": "^9.0.5",
     "is-dark-color": "^1.2.0",
     "json-to-csv-in-browser": "^1.0.8",
+    "nanoid": "^4.0.2",
     "party-js": "^2.2.0",
     "qr-code-generator-lib": "^1.0.1",
     "svelte-tenor": "^0.2.0",

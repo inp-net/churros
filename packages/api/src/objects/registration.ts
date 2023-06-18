@@ -46,6 +46,7 @@ export function authorIsBeneficiary(
 builder.queryField('registration', (t) =>
   t.prismaField({
     type: RegistrationType,
+    errors: {},
     args: {
       id: t.arg.id(),
     },
@@ -170,17 +171,29 @@ builder.mutationField('upsertRegistration', (t) =>
       beneficiary: t.arg.string({ required: false }),
       paymentMethod: t.arg({ type: PaymentMethodEnum }),
     },
-    async authScopes(_, { ticketId, id, beneficiary }, { user }) {
+    async authScopes(_, { ticketId, id, beneficiary, paid }, { user }) {
       const creating = !id;
       if (!user) return false;
+      const ticket = await prisma.ticket.findUnique({
+        where: { id: ticketId },
+        include: { event: true },
+      });
+      if (!ticket) return false;
+
+      // Only managers can mark a registration as paid
+      if (
+        paid &&
+        !(
+          user.admin ||
+          user.managedEvents.some(
+            ({ event: { id }, canVerifyRegistrations }) =>
+              id === ticket.event.id && canVerifyRegistrations
+          )
+        )
+      )
+        return false;
 
       if (creating) {
-        const ticket = await prisma.ticket.findUnique({
-          where: { id: ticketId },
-          include: { event: true },
-        });
-        if (!ticket) return false;
-
         // Check that the user can access the event
         if (!(await eventAccessibleByUser(ticket.event, user))) return false;
 
@@ -211,7 +224,10 @@ builder.mutationField('upsertRegistration', (t) =>
         include: { ticket: { include: { event: true } } },
       });
       if (!registration) return false;
-      if (!eventManagedByUser(registration.ticket.event, user, { canVerifyRegistrations: true }))
+      if (
+        !user.admin &&
+        !eventManagedByUser(registration.ticket.event, user, { canVerifyRegistrations: true })
+      )
         return false;
       return true;
     },
@@ -227,14 +243,12 @@ builder.mutationField('upsertRegistration', (t) =>
         if (existingRegistration) throw new GraphQLError('Vous êtes déjà inscrit à cet événement');
       }
 
-      if (!paid) {
-        const ticket = await prisma.ticket.findUniqueOrThrow({
-          where: { id: ticketId },
-          include: { event: { include: { beneficiary: true } } },
-        });
-        if (ticket.event.beneficiary)
-          await pay(user!, ticket.event.beneficiary, ticket.price, paymentMethod);
-      }
+      const ticket = await prisma.ticket.findUniqueOrThrow({
+        where: { id: ticketId },
+        include: { event: { include: { beneficiary: true } } },
+      });
+      if (ticket.event.beneficiary)
+        await pay(user!, ticket.event.beneficiary, ticket.price, paymentMethod);
 
       return prisma.registration.upsert({
         ...query,
@@ -249,6 +263,7 @@ builder.mutationField('upsertRegistration', (t) =>
           author: { connect: { id: user?.id } },
           paymentMethod,
           beneficiary,
+          paid: ticket.price === 0,
         },
       });
     },

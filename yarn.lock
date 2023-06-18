@@ -1672,6 +1672,7 @@ __metadata:
     html-to-text: "npm:^9.0.5"
     is-dark-color: "npm:^1.2.0"
     json-to-csv-in-browser: "npm:^1.0.8"
+    nanoid: "npm:^4.0.2"
     party-js: "npm:^2.2.0"
     qr-code-generator-lib: "npm:^1.0.1"
     sanitize.css: "npm:^13.0.0"
@@ -13399,6 +13400,15 @@ __metadata:
   bin:
     nanoid: bin/nanoid.js
   checksum: b6263a2a2425999b5aecabd18b25442ae4ef13048b2809ff173e0b0066f376b6fb2605d423763d1d26512cb095e71beee3d8b927f984603e05e169e171d8f6f0
+  languageName: node
+  linkType: hard
+
+"nanoid@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "nanoid@npm:4.0.2"
+  bin:
+    nanoid: bin/nanoid.js
+  checksum: 0e28bade6b10396bc0936980c7569e9710341b3dd8775bcd0645b7d23f59ff64e59c4413f48836bc336711ef1cc4f61f6453946a3bf69c4c235fab9d221f9216
   languageName: node
   linkType: hard
 

@@ -3,9 +3,12 @@
   import Tabs from '$lib/components/navigation/Tabs.svelte';
   import type { PageData } from './$types';
   import * as jsonToCsv from 'json-to-csv-in-browser';
+  import IconCheck from '~icons/mdi/check';
+  import IconCancel from '~icons/mdi/cancel';
   import { page } from '$app/stores';
   import { dateTimeFormatter } from '$lib/dates';
   import { intlFormatDistance } from 'date-fns';
+  import { PaymentMethod, zeus } from '$lib/zeus';
 
   function saveAsCsv() {
     if (!registrations) return;
@@ -36,7 +39,7 @@
   }
 
   export let data: PageData;
-  let { registrationsOfEvent: registrations } = data;
+  let { registrationsOfEvent: registrations, event } = data;
 
   const CATEGORIES = [
     'En attente de paiement',
@@ -60,7 +63,10 @@
       paid: boolean;
       createdAt: Date;
       beneficiary: string;
+      id: string;
+      paymentMethod: PaymentMethod;
       author: { uid: string; firstName: string; lastName: string };
+      ticket: { id: string; name: string };
     }>
   >;
 
@@ -71,6 +77,39 @@
 
     registrationsByCategory['En attente de paiement'] = registrations.filter((r) => !r.paid) ?? [];
     registrationsByCategory['Payées'] = registrations.filter((r) => r.paid) ?? [];
+  }
+
+  async function updatePaidStatus(
+    markAsPaid: boolean,
+    registration: typeof registrationsByCategory[typeof CATEGORIES[number]][number]
+  ): Promise<void> {
+    const { upsertRegistration } = await $zeus.mutate({
+      upsertRegistration: [
+        {
+          id: registration.id,
+          paymentMethod: registration.paymentMethod,
+          beneficiary: registration.beneficiary,
+          ticketId: registration.ticket.id,
+          paid: markAsPaid
+        },
+        {
+          __typename: true,
+          '...on MutationUpsertRegistrationSuccess': {
+            data: {
+              paid: true
+            }
+          },
+          '...on Error': {
+            message: true
+          }
+        }
+      ]
+    });
+    if (upsertRegistration.__typename !== 'Error') {
+      registrations.edges[
+        registrations.edges.findIndex((r) => r.node.id === registration.id)
+      ].node.paid = upsertRegistration.data.paid;
+    }
   }
 
   $: updateRegistrationsByCategory(registrations?.edges.map(({ node }) => node));
@@ -92,7 +131,7 @@
   <h2>{category}</h2>
 
   <ul>
-    {#each registrationsByCategory[category] as registration}
+    {#each registrationsByCategory[category] as registration (registration.id)}
       <li>
         {dateTimeFormatter.format(registration.createdAt)} &bull; {intlFormatDistance(
           registration.createdAt,
@@ -100,6 +139,19 @@
         )} &bull;
         {registration.author.firstName}
         {registration.author.lastName} pour {registration.beneficiary}
+        {#if category === 'En attente de paiement'}
+          <Button
+            on:click={async () => {
+              updatePaidStatus(true, registration);
+            }}><IconCheck /> Payée</Button
+          >
+        {:else}
+          <Button
+            on:click={async () => {
+              updatePaidStatus(false, registration);
+            }}><IconCancel /> Non payée</Button
+          >
+        {/if}
       </li>
     {/each}
   </ul>

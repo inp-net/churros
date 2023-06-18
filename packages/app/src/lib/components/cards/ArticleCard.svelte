@@ -2,6 +2,7 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import { intlFormatDistance } from 'date-fns';
   import Card from './Card.svelte';
+  import IconDots from '~icons/mdi/dots-horizontal';
 
   export let title: string;
   export let href: string;
@@ -38,6 +39,8 @@
       {/each}
     </ul>
   {/if}
+
+  <a class="see-more" {href}><IconDots /> Voir plus</a>
 
   <section class="author-and-date">
     <div class="author">
@@ -115,5 +118,10 @@
     color: #fff;
     text-decoration: unset;
     background: linear-gradient(160deg, tomato, purple);
+  }
+
+  .see-more {
+    display: inline-block;
+    margin: 2rem 0;
   }
 </style>
