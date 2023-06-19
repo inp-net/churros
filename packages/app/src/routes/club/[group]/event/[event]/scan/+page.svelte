@@ -24,16 +24,27 @@
     | false
     | undefined = undefined;
 
-  $: check(code).then((r) => {
-    result = r;
-  });
+  function resultChanged(old: typeof result, now: typeof result): boolean {
+    if (old === undefined) {
+      return now !== undefined;
+    }
+    if (old === false) {
+      return now !== false;
+    }
+    if (now === undefined || now === false) {
+      return true;
+    }
+    return old.id !== now.id;
+  }
+
+  $: check(code);
 
   onMount(() => {
     let scanner = new Html5QrcodeScanner(
       'reader',
       {
         fps: 5,
-        qrbox: { width: 300, height: 600 },
+        qrbox: { width: 300, height: 600 }
       },
       false
     );
@@ -56,7 +67,7 @@
         {
           __typename: true,
           '...on Error': {
-            message: true,
+            message: true
           },
           '...on QueryRegistrationSuccess': {
             data: {
@@ -66,18 +77,30 @@
               paid: true,
               id: true,
               ticket: { name: true, group: { name: true } },
-              paymentMethod: true,
-            },
-          },
-        },
-      ],
+              paymentMethod: true
+            }
+          }
+        }
+      ]
     });
 
+    let r: typeof result;
+
     if (registration.__typename === 'Error') {
-      return false;
+      r = false;
+    } else {
+      r = registration.data;
     }
 
-    return registration.data;
+    if (resultChanged(result, r) && r !== undefined) {
+      if (r === false || !r?.paid) {
+        window.navigator.vibrate([200, 100, 200]);
+      } else {
+        window.navigator.vibrate(100);
+      }
+    }
+
+    result = r;
   }
 </script>
 
@@ -85,7 +108,7 @@
   tabs={[
     { name: 'Infos', href: `../edit` },
     { name: 'Réservations', href: '../registrations' },
-    { name: 'Vérifier', href: '.' },
+    { name: 'Vérifier', href: '.' }
   ]}
 />
 
