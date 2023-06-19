@@ -34,7 +34,7 @@
     if (now === undefined || now === false) {
       return true;
     }
-    return old.id !== now.id;
+    return JSON.stringify(old) !== JSON.stringify(now);
   }
 
   $: check(code);
