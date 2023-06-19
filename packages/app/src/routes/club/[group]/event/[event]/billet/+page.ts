@@ -1,13 +1,12 @@
 import { Selector, loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, fetch, parent }) => {
-  const { me } = await parent();
-  return loadQuery(
+export const load: PageLoad = async ({ params, fetch, parent, url }) =>
+  loadQuery(
     {
       registrationOfUser: [
         {
-          userUid: me?.uid ?? '',
+          beneficiary: url.searchParams.get('for') ?? undefined,
           eventUid: params.event,
         },
         Selector('Registration')({
@@ -35,4 +34,3 @@ export const load: PageLoad = async ({ params, fetch, parent }) => {
     },
     { fetch, parent }
   );
-};

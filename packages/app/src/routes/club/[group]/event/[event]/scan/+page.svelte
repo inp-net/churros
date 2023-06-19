@@ -1,19 +1,31 @@
 <script lang="ts">
   import Alert from '$lib/components/alerts/Alert.svelte';
   import Button from '$lib/components/buttons/Button.svelte';
+  import IconChevronRight from '~icons/mdi/chevron-right';
   import FormInput from '$lib/components/inputs/FormInput.svelte';
   import Tabs from '$lib/components/navigation/Tabs.svelte';
-  import { zeus } from '$lib/zeus';
+  import { PaymentMethod, zeus } from '$lib/zeus';
   import { onMount } from 'svelte';
   import { Html5QrcodeScanner } from 'html5-qrcode';
+  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
 
   let manualRegistrationCode = '';
-  let manualResult: boolean | undefined = undefined;
-  let qrRegistrationCode = '';
-  let qrResult: boolean | undefined = undefined;
+  let code = '';
+  let result:
+    | {
+        beneficiary: string;
+        authorIsBeneficiary: boolean;
+        author: { firstName: string; lastName: string };
+        paid: boolean;
+        id: string;
+        ticket: { name: string; group?: { name: string } };
+        paymentMethod: PaymentMethod;
+      }
+    | false
+    | undefined = undefined;
 
-  $: check(qrRegistrationCode).then((result) => {
-    qrResult = result;
+  $: check(code).then((r) => {
+    result = r;
   });
 
   onMount(() => {
@@ -21,38 +33,51 @@
       'reader',
       {
         fps: 5,
-        qrbox: { width: 300, height: 600 }
+        qrbox: { width: 300, height: 600 },
       },
       false
     );
     console.log('initialized qr scanner');
     scanner.render(
       (text, _result) => {
-        qrRegistrationCode = text;
+        code = text;
       },
       (_err) => {}
     );
   });
 
-  async function check(decodedContents: string): Promise<boolean> {
+  async function check(decodedContents: string): Promise<typeof result> {
+    if (!decodedContents.startsWith('r:')) {
+      return undefined;
+    }
     const { registration } = await $zeus.query({
       registration: [
         { id: decodedContents },
         {
           __typename: true,
           '...on Error': {
-            message: true
+            message: true,
           },
           '...on QueryRegistrationSuccess': {
             data: {
-              __typename: true
-            }
-          }
-        }
-      ]
+              beneficiary: true,
+              authorIsBeneficiary: true,
+              author: { firstName: true, lastName: true },
+              paid: true,
+              id: true,
+              ticket: { name: true, group: { name: true } },
+              paymentMethod: true,
+            },
+          },
+        },
+      ],
     });
 
-    return registration.__typename !== 'Error';
+    if (registration.__typename === 'Error') {
+      return false;
+    }
+
+    return registration.data;
   }
 </script>
 
@@ -60,7 +85,7 @@
   tabs={[
     { name: 'Infos', href: `../edit` },
     { name: 'Réservations', href: '../registrations' },
-    { name: 'Vérifier', href: '.' }
+    { name: 'Vérifier', href: '.' },
   ]}
 />
 
@@ -68,24 +93,47 @@
   <div id="reader" />
 </section>
 
-{#if qrResult === false}
-  <Alert theme="danger">Billet invalide</Alert>
-{:else if qrResult === true}
-  <Alert theme="success">Billet valide</Alert>
-{/if}
-
 <h2>Vérifier manuellement</h2>
 <FormInput label="Code de réservation">
   <input type="text" bind:value={manualRegistrationCode} />
 </FormInput>
 <Button
   on:click={async () => {
-    manualResult = await check('r:' + manualRegistrationCode.toLowerCase());
+    code = 'r:' + manualRegistrationCode.toLowerCase();
   }}>Vérifier</Button
 >
 
-{#if manualResult === false}
+{#if result === false}
   <Alert theme="danger">Billet invalide</Alert>
-{:else if manualResult === true}
-  <Alert theme="success">Billet valide</Alert>
+{:else if result !== undefined}
+  <Alert theme={result.paid ? 'success' : 'warning'}>
+    {#if result.authorIsBeneficiary}
+      <h3>{result.author.firstName} {result.author.lastName}</h3>
+    {:else}
+      <h3>{result.beneficiary}</h3>
+      {#if result.paid}
+        <p>Achetée par {result.author.firstName} {result.author.lastName}</p>
+      {/if}
+    {/if}
+    {#if result.paid}
+      <p>Payée par {DISPLAY_PAYMENT_METHODS[result.paymentMethod]}</p>
+    {:else}
+      <p><strong>Non payée</strong></p>
+    {/if}
+
+    <span class="label">Billet</span>
+    {#if result.ticket.group}
+      {result.ticket.group.name} <IconChevronRight />
+    {/if}
+    {result.ticket.name}
+  </Alert>
 {/if}
+
+<style>
+  .label {
+    text-transform: uppercase;
+    font-size: 0.8em;
+    font-weight: bold;
+    display: block;
+  }
+</style>

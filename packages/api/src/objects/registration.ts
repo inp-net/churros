@@ -73,11 +73,11 @@ builder.queryField('registrationOfUser', (t) =>
   t.prismaField({
     type: RegistrationType,
     args: {
-      userUid: t.arg.string(),
       eventUid: t.arg.string(),
+      beneficiary: t.arg.string({ required: false }),
     },
-    async resolve(query, _, { userUid, eventUid }, { user }) {
-      console.log(eventUid, userUid);
+    async resolve(query, _, { eventUid, beneficiary: argBeneficiary }, { user }) {
+      console.log(eventUid, argBeneficiary);
       if (!user) throw new GraphQLError('User not found');
       const registrations = await prisma.registration.findMany({
         include: {
@@ -92,8 +92,8 @@ builder.queryField('registrationOfUser', (t) =>
 
       const registration = registrations.find(
         ({ author, beneficiary }) =>
-          (author.uid === userUid && authorIsBeneficiary(author, beneficiary)) ||
-          [user.uid, `${user.firstName} ${user.lastName}`].includes(beneficiary)
+          author.uid === user.uid &&
+          (authorIsBeneficiary(author, beneficiary) || beneficiary === argBeneficiary)
       );
 
       if (!registration) throw new GraphQLError('Registration not found');
