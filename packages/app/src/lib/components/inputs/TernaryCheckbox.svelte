@@ -5,15 +5,15 @@
 
   export let tristate = true;
   // eslint-disable-next-line unicorn/no-null
-  export let value: boolean | null = null;
+  export let value: boolean | null | undefined = null;
   export let name: string | undefined = undefined;
-  let previousValue: boolean | null = value;
+  let previousValue: boolean | null | undefined = value;
 
   // eslint-disable-next-line unicorn/no-null
   const getTriState = (target: HTMLInputElement) => (target.indeterminate ? null : target.checked);
 
-  const setTriState = (target: HTMLInputElement, value: boolean | null) => {
-    if (value === null) {
+  const setTriState = (target: HTMLInputElement, value: boolean | null | undefined) => {
+    if (value === null || value === undefined) {
       target.indeterminate = true;
       target.checked = false;
     } else {

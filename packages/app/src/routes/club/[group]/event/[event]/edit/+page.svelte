@@ -7,7 +7,7 @@
 
   export let data: PageData;
 
-  let availableLydiaAccounts = [];
+  let availableLydiaAccounts: Array<{ name: string; id: string }> = [];
   $: $zeus
     .query({
       lydiaAccountsOfGroup: [

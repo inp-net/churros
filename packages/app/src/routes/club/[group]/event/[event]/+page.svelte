@@ -86,7 +86,9 @@
         <div class="text">
           <h3>{name}</h3>
           <div class="description">{@html descriptionHtml}</div>
-          {#if isFuture(new Date(opensAt))}
+          {#if !opensAt || !closesAt}
+            <p>Mise en vente sans limite de date</p>
+          {:else if isFuture(new Date(opensAt))}
             <p>Mise en vente le {dateTimeFormatter.format(opensAt)}</p>
           {:else}
             <p>Mise en vente jusqu'au {dateTimeFormatter.format(closesAt)}</p>
@@ -110,7 +112,7 @@
           </span>
         </div>
         <div class="book">
-          {#if isFuture(new Date(closesAt)) && isPast(new Date(opensAt))}
+          {#if (!closesAt && !opensAt) || (closesAt && opensAt && isFuture(new Date(closesAt)) && isPast(new Date(opensAt)))}
             <Button
               on:click={async () => {
                 goto(`./book/${uid}`);

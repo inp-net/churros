@@ -171,10 +171,6 @@
     .events-of-day {
       width: 100%;
 
-      > a {
-        text-decoration: none;
-      }
-
       .event-of-day {
         border-radius: var(--radius-block);
 

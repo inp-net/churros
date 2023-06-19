@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import EventForm from '$lib/components/forms/EventForm.svelte';
-  import { me } from '$lib/session';
+  import { Visibility } from '$lib/zeus';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -22,7 +22,7 @@
     slug: '',
     startsAt: undefined,
     title: '',
-    visibility: 'Private' as 'Private' | 'Public' | 'Restricted' | 'Unlisted',
+    visibility: Visibility.Private
   };
 </script>
 

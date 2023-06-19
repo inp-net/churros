@@ -1,5 +1,5 @@
 import { redirectToLogin } from '$lib/session';
-import { loadQuery } from '$lib/zeus.js';
+import { Visibility, loadQuery } from '$lib/zeus.js';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
@@ -20,6 +20,9 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   return {
     article: {
       id: '',
+      uid: '',
+      bodyHtml: '',
+      visibility: Visibility.Private,
       title: '',
       body: '',
       publishedAt: new Date(),

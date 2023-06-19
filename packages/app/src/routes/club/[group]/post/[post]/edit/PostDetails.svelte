@@ -1,7 +1,7 @@
 <script lang="ts">
   import Alert from '$lib/components/alerts/Alert.svelte';
   import { Visibility, zeus } from '$lib/zeus';
-  import type { PageData } from '../$types';
+  import type { PageData } from './$types';
   import Button from '$lib/components/buttons/Button.svelte';
   import { goto } from '$app/navigation';
   import EventSearch from '../../../write/EventSearch.svelte';
@@ -31,7 +31,7 @@
         upsertArticle: [
           {
             id,
-            authorId: author?.id,
+            authorId: author?.id ?? '',
             eventId: event?.id,
             groupId: group.id,
             title,
@@ -75,9 +75,10 @@
   </FormInput>
   <FormInput label="Visibilité">
     <select bind:value={visibility}>
-      {#each Object.keys(Visibility) as idx}
-        <option value={Visibility[idx]}>{DISPLAY_VISIBILITY[Visibility[idx]]}</option>
-      {/each}
+      <option value={Visibility.Private}>{DISPLAY_VISIBILITY.Private}</option>
+      <option value={Visibility.Restricted}>{DISPLAY_VISIBILITY.Restricted}</option>
+      <option value={Visibility.Unlisted}>{DISPLAY_VISIBILITY.Unlisted}</option>
+      <option value={Visibility.Public}>{DISPLAY_VISIBILITY.Public}</option>
     </select>
   </FormInput>
   <FormInput label="Description">

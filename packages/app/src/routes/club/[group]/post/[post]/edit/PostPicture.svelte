@@ -7,7 +7,7 @@
   import { $ as Zvar, zeus } from '$lib/zeus';
   import IconEdit from '~icons/mdi/pencil';
 
-  export let article: { pictureFile: string; id: string; name: string };
+  export let article: { pictureFile: string; id: string; title: string };
 
   let { pictureFile } = article;
 
@@ -57,7 +57,7 @@
           src={pictureFile
             ? `${PUBLIC_STORAGE_URL}${pictureFile}`
             : 'https://via.placeholder.com/160'}
-          alt={article.name}
+          alt={article.title}
           on:load={() => {
             updating = false;
           }}

@@ -14,7 +14,7 @@
   import InputGroup from '../groups/InputGroup.svelte';
   import DateInput from '../inputs/DateInput.svelte';
   import ParentSearch from '../../../routes/clubs/create/ParentSearch.svelte';
-  import { zeus } from '$lib/zeus';
+  import { PaymentMethod, Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import Alert from '../alerts/Alert.svelte';
 
@@ -155,7 +155,7 @@
     serverError = '';
 
     if (!event.id) {
-      await goto(`../${upsertEvent.uid}`);
+      await goto(`../${upsertEvent.data.uid}`);
     }
   }
 
@@ -176,10 +176,10 @@
   const bang = <T extends {}>(x?: T) => x!;
 
   const defaultTicket = (id: string) => ({
-    allowedPaymentMethods: ['Cash', 'Lydia'] as Array<'Cash' | 'Lydia'>,
+    allowedPaymentMethods: ['Cash', 'Lydia'] as Array<PaymentMethod>,
     capacity: 0,
     price: 0,
-    closesAt: event.endsAt,
+    closesAt: event.endsAt ?? new Date(),
     opensAt: new Date((event.startsAt ?? new Date()).valueOf() - 1 * 24 * 3600 * 1e3),
     description: '',
     godsonLimit: 0,
@@ -203,16 +203,16 @@
     description: string;
     price: number;
     capacity: number;
-    opensAt: Date | undefined;
-    closesAt: Date | undefined;
+    opensAt?: Date | undefined;
+    closesAt?: Date | undefined;
     links: Array<{ name: string; value: string }>;
-    allowedPaymentMethods: Array<'Lydia' | 'Cash' | 'Check' | 'Transfer' | 'Card' | 'Other'>;
+    allowedPaymentMethods: Array<PaymentMethod>;
     openToPromotions: number[];
-    openToExternal: boolean | null;
-    openToAlumni: boolean | null;
+    openToExternal?: boolean | null | undefined;
+    openToAlumni?: boolean | null | undefined;
     openToSchools: Array<{ name: string; color: string; uid: string }>;
     openToGroups: Array<{ name: string; uid: string; pictureFile: string }>;
-    openToNonAEContributors: boolean | null;
+    openToNonAEContributors?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
   };
@@ -239,15 +239,15 @@
       tickets: Ticket[];
     }>;
     contactMail: string;
-    lydiaAccountId: string | undefined;
+    lydiaAccountId?: string | undefined;
     description: string;
-    endsAt: Date | undefined;
+    endsAt?: Date | undefined;
     links: Array<{ name: string; value: string }>;
     location: string;
     uid: string;
-    startsAt: Date | undefined;
+    startsAt?: Date | undefined;
     title: string;
-    visibility: 'Public' | 'Private' | 'Restricted' | 'Unlisted';
+    visibility: Visibility;
     group: {
       id: string;
       uid: string;
@@ -285,7 +285,7 @@
     return 'readonly';
   }
 
-  const aspermissionlevel = (x: any) => x as 'readonly' | 'verify' | 'editor' | 'fullaccess';
+  const aspermissionlevel = (x: any) => x as 'readonly' | 'verifyer' | 'editor' | 'fullaccess';
 </script>
 
 <form on:submit|preventDefault>
@@ -631,7 +631,6 @@
       <input type="text" bind:value={event.managers[i].user.uid} />
       <select
         on:change={(e) => {
-          console.log(permissionsFromLevel(e.target.value))
           if (!e.target || !('value' in e.target)) return;
           event.managers[i] = {
             ...manager,

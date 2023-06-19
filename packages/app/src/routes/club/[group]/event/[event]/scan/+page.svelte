@@ -39,7 +39,15 @@
       registration: [
         { id: decodedContents },
         {
-          __typename: true
+          __typename: true,
+          '...on Error': {
+            message: true
+          },
+          '...on QueryRegistrationSuccess': {
+            data: {
+              __typename: true
+            }
+          }
         }
       ]
     });

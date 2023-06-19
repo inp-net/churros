@@ -7,7 +7,6 @@ import { DateTimeScalar } from './scalars.js';
 import { LinkInput } from './links.js';
 import slug from 'slug';
 import dichotomid from 'dichotomid';
-import { SchoolInput } from './schools.js';
 
 export const placesLeft = (ticket: {
   name: string;
@@ -85,8 +84,8 @@ export const TicketInput = builder.inputType('TicketInput', {
     allowedPaymentMethods: t.field({ type: [PaymentMethodEnum] }),
     capacity: t.int(),
     price: t.float(),
-    opensAt: t.field({ type: DateTimeScalar }),
-    closesAt: t.field({ type: DateTimeScalar }),
+    opensAt: t.field({ type: DateTimeScalar, required: false }),
+    closesAt: t.field({ type: DateTimeScalar, required: false }),
     description: t.string(),
     godsonLimit: t.int(),
     links: t.field({ type: [LinkInput] }),

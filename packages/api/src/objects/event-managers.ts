@@ -58,9 +58,10 @@ builder.mutationField('upsertManagersOfEvent', (t) =>
           data: {
             managers: {
               deleteMany: {},
-              createMany: {
-                data: managers,
-              },
+              create: managers.map((m) => ({
+                ...m,
+                user: { connect: { uid: m.userUid } },
+              })),
             },
           },
         })

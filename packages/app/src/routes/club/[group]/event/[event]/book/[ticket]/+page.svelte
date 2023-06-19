@@ -8,7 +8,7 @@
   import { me } from '$lib/session';
   import Button from '$lib/components/buttons/Button.svelte';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
-  import { zeus } from '$lib/zeus';
+  import { PaymentMethod, zeus } from '$lib/zeus';
   import FormInput from '$lib/components/inputs/FormInput.svelte';
   import Alert from '$lib/components/alerts/Alert.svelte';
   import BackButton from '$lib/components/buttons/BackButton.svelte';
@@ -31,7 +31,7 @@
     event: { contactMail, title, pictureFile, startsAt }
   } = data.ticketByUid;
 
-  async function payBy(method: string) {
+  async function payBy(method: PaymentMethod) {
     const { upsertRegistration } = await $zeus.mutate({
       upsertRegistration: [
         {
@@ -45,6 +45,11 @@
           __typename: true,
           '...on Error': {
             message: true
+          },
+          '...on MutationUpsertRegistrationSuccess': {
+            data: {
+              __typename: true
+            }
           }
         }
       ]

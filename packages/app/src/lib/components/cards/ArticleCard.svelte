@@ -10,7 +10,7 @@
   export let links: Array<{ value: string; name: string }> = [];
   export let group: { uid: string; name: string; pictureFile: string };
   export let author: { uid: string; firstName: string; lastName: string } | undefined = undefined;
-  export let img: { src: string; alt: string; width: number; height: number } | undefined =
+  export let img: { src: string; alt?: string; width?: number; height?: number } | undefined =
     undefined;
 </script>
 
