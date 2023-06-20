@@ -345,14 +345,14 @@ model Ticket {
 
 /// A reservation is a user's registration for a ticket
 model Registration {
-  id            String        @id @default(dbgenerated("nanoid('r:')"))
+  id            String         @id @default(dbgenerated("nanoid('r:')"))
   ticketId      String
   beneficiary   String
   authorId      String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  paymentMethod PaymentMethod
-  paid          Boolean       @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  paymentMethod PaymentMethod?
+  paid          Boolean        @default(false)
 
   ticket Ticket @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   author User   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)

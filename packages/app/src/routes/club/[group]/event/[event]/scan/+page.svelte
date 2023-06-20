@@ -19,7 +19,7 @@
         paid: boolean;
         id: string;
         ticket: { name: string; group?: { name: string } };
-        paymentMethod: PaymentMethod;
+        paymentMethod?: PaymentMethod | undefined;
       }
     | false
     | undefined = undefined;
@@ -139,7 +139,9 @@
       {/if}
     {/if}
     {#if result.paid}
-      <p>Payée par {DISPLAY_PAYMENT_METHODS[result.paymentMethod]}</p>
+      <p>
+        Payée{#if result.paymentMethod} par {DISPLAY_PAYMENT_METHODS[result.paymentMethod]}{/if}
+      </p>
     {:else}
       <p><strong>Non payée</strong></p>
     {/if}

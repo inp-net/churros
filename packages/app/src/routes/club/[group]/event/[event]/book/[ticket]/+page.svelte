@@ -29,9 +29,10 @@
     onlyManagersCanProvide,
     name,
     event: { contactMail, title, pictureFile, startsAt },
+    price
   } = data.ticketByUid;
 
-  async function payBy(method: PaymentMethod) {
+  async function payBy(method: PaymentMethod|undefined) {
     const { upsertRegistration } = await $zeus.mutate({
       upsertRegistration: [
         {
@@ -114,6 +115,9 @@
   {#if onlyManagersCanProvide}
     <h2>Seul·e un·e manager peut te fournir cette place.</h2>
     <a href="mailto:{contactMail}">Contacter un·e manager</a>
+  {:else if price <= 0}
+    <h2>Cette place est gratuite! 🐀</h2>
+    <Button on:click={async () => payBy(undefined)}>Réserver</Button>
   {:else}
     <h2>Mode de paiement</h2>
     <p>Ta place n'est pas réservée tant que le paiement n'est pas terminé.</p>

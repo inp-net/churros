@@ -18,7 +18,7 @@ export const RegistrationType = builder.prismaNode('Registration', {
     beneficiary: t.exposeString('beneficiary'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
-    paymentMethod: t.expose('paymentMethod', { type: PaymentMethodEnum }),
+    paymentMethod: t.expose('paymentMethod', { type: PaymentMethodEnum, nullable: true }),
     paid: t.exposeBoolean('paid'),
     ticket: t.relation('ticket'),
     author: t.relation('author'),
@@ -172,7 +172,7 @@ builder.mutationField('upsertRegistration', (t) =>
       ticketId: t.arg.id(),
       paid: t.arg.boolean(),
       beneficiary: t.arg.string({ required: false }),
-      paymentMethod: t.arg({ type: PaymentMethodEnum }),
+      paymentMethod: t.arg({ type: PaymentMethodEnum, required: false }),
     },
     async authScopes(_, { ticketId, id, paid }, { user }) {
       const creating = !id;
@@ -256,21 +256,30 @@ builder.mutationField('upsertRegistration', (t) =>
         where: { id: ticketId },
         include: { event: { include: { beneficiary: true } } },
       });
-      if (ticket.event.beneficiary)
-        await pay(user, ticket.event.beneficiary, ticket.price, paymentMethod);
+
+      if (ticket.price > 0) {
+        if (!paymentMethod) {
+          throw new GraphQLError(
+            "La place n'est pas gratuite, il faut choisir un moyen de paiement"
+          );
+        }
+
+        if (ticket.event.beneficiary)
+          await pay(user, ticket.event.beneficiary, ticket.price, paymentMethod);
+      }
 
       return prisma.registration.upsert({
         ...query,
         where: { id: id ?? '' },
         update: {
-          paymentMethod,
+          paymentMethod: paymentMethod ?? null,
           beneficiary: beneficiary ?? '',
           paid,
         },
         create: {
           ticket: { connect: { id: ticketId } },
           author: { connect: { id: user.id } },
-          paymentMethod,
+          paymentMethod: paymentMethod ?? null,
           beneficiary: beneficiary ?? '',
           paid: ticket.price === 0,
         },
@@ -311,7 +320,12 @@ builder.mutationField('deleteRegistration', (t) =>
           author: true,
         },
       });
-      if (registration.paid && registration.ticket.event.beneficiary) {
+      if (
+        registration.paid &&
+        registration.ticket.event.beneficiary &&
+        registration.ticket.price > 0 &&
+        registration.paymentMethod
+      ) {
         await pay(
           registration.ticket.event.beneficiary,
           registration.author,

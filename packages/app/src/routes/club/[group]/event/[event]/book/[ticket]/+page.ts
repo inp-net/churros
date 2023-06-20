@@ -11,6 +11,7 @@ export const load: PageLoad = async ({ params, fetch, parent }) =>
           id: true,
           name: true,
           onlyManagersCanProvide: true,
+          price: true,
           allowedPaymentMethods: true,
           event: {
             title: true,

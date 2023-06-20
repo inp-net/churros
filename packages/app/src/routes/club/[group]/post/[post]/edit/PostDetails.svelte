@@ -93,10 +93,3 @@
   {/if}
   <Button theme="primary" {loading} type="submit">Enregistrer</Button>
 </form>
-
-<style>
-  .explanation {
-    font-size: 0.75em;
-    opacity: 0.75;
-  }
-</style>
