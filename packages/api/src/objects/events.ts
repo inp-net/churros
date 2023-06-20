@@ -9,7 +9,7 @@ import {
 } from '@prisma/client';
 import { toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
-import { DateTimeScalar } from './scalars.js';
+import { DateTimeScalar, FileScalar } from './scalars.js';
 import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { LinkInput } from './links.js';
@@ -25,6 +25,10 @@ import { dateFromNumbers } from '../date.js';
 import { TicketInput } from './tickets.js';
 import { TicketGroupInput } from './ticket-groups.js';
 import { ManagerOfEventInput } from './event-managers.js';
+import imageType, { minimumBytes } from 'image-type';
+import { GraphQLError } from 'graphql';
+import { dirname, join } from 'node:path';
+import { mkdir, unlink, writeFile } from 'node:fs/promises';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -275,6 +279,8 @@ builder.mutationField('upsertEvent', (t) =>
     },
     authScopes(_, { id, groupId }, { user }) {
       const creating = !id;
+      if (user?.admin) return true;
+
       if (creating) {
         return Boolean(
           user?.canEditGroups ||
@@ -284,9 +290,7 @@ builder.mutationField('upsertEvent', (t) =>
         );
       }
 
-      return Boolean(
-        user?.admin || user?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit)
-      );
+      return Boolean(user?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit));
     },
     async resolve(
       query,
@@ -659,3 +663,85 @@ export async function createUid({ title, groupId }: { title: string; groupId: st
   );
   return `${base}${n > 1 ? `-${n}` : ''}`;
 }
+
+builder.mutationField('updateEventPicture', (t) =>
+  t.field({
+    type: 'String',
+    args: {
+      id: t.arg.id(),
+      file: t.arg({ type: FileScalar }),
+    },
+    async authScopes(_, { id }, { user }) {
+      const event = await prisma.event.findUniqueOrThrow({
+        where: { id },
+      });
+
+      return Boolean(
+        // Who can edit this event?
+        // The author
+        user?.id === event.authorId ||
+          // Other authors of the group
+          user?.groups.some(
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId
+          )
+      );
+    },
+    async resolve(_, { id, file }) {
+      const type = await file
+        .slice(0, minimumBytes)
+        .arrayBuffer()
+        .then((array) => Buffer.from(array))
+        .then(async (buffer) => imageType(buffer));
+      if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
+        throw new GraphQLError('File format not supported');
+
+      // Delete the existing picture
+      const { pictureFile } = await prisma.event.findUniqueOrThrow({
+        where: { id },
+        select: { pictureFile: true },
+      });
+
+      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
+
+      const path = join(`events`, `${id}.${type.ext}`);
+      await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
+      await writeFile(new URL(path, process.env.STORAGE), file.stream());
+      await prisma.event.update({ where: { id }, data: { pictureFile: path } });
+      return path;
+    },
+  })
+);
+
+builder.mutationField('deleteEventPicture', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: {
+      id: t.arg.id(),
+    },
+    async authScopes(_, { id }, { user }) {
+      const event = await prisma.event.findUniqueOrThrow({
+        where: { id },
+      });
+
+      return Boolean(
+        // Who can edit this event?
+        // The author
+        user?.id === event.authorId ||
+          // Other authors of the group
+          user?.groups.some(
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId
+          )
+      );
+    },
+    async resolve(_, { id }) {
+      const { pictureFile } = await prisma.event.findUniqueOrThrow({
+        where: { id },
+        select: { pictureFile: true },
+      });
+
+      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
+      await prisma.event.update({ where: { id }, data: { pictureFile: '' } });
+      return true;
+    },
+  })
+);

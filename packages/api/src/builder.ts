@@ -41,6 +41,7 @@ import { GraphQLError, Kind } from 'graphql';
 
 
 
+
 export const builder = new SchemaBuilder<{
   AuthContexts: AuthContexts;
   AuthScopes: AuthScopes;
