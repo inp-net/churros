@@ -12,6 +12,14 @@ export const SchoolType = builder.prismaObject('School', {
   }),
 });
 
+export const SchoolInput = builder.inputType('SchoolInput', {
+  fields: (t) => ({
+    id: t.id({ required: false }),
+    name: t.string(),
+    color: t.string(),
+  }),
+});
+
 builder.queryField('schools', (t) =>
   t.prismaField({
     type: [SchoolType],

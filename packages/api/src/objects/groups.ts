@@ -80,6 +80,7 @@ export const GroupType = builder.prismaNode('Group', {
     school: t.relation('school', { nullable: true }),
     parent: t.relation('parent'),
     selfJoinable: t.exposeBoolean('selfJoinable'),
+    events: t.relation('events'),
   }),
 });
 
@@ -386,14 +387,14 @@ builder.mutationField('deleteGroupPicture', (t) =>
     args: { uid: t.arg.string() },
     authScopes: (_, { uid }, { user }) => Boolean(user?.canEditGroups || uid === user?.uid),
     async resolve(_, { uid }) {
-      const { pictureFile } = await prisma.user.findUniqueOrThrow({
+      const { pictureFile } = await prisma.group.findUniqueOrThrow({
         where: { uid },
         select: { pictureFile: true },
       });
 
       if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
 
-      await prisma.user.update({
+      await prisma.group.update({
         where: { uid },
         data: { pictureFile: '' },
       });

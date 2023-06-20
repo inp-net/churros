@@ -12,14 +12,16 @@
   import GhostButton from '$lib/components/buttons/GhostButton.svelte';
   import { dateFormatter } from '$lib/dates';
 
+  const asstringarray = (x: any) => x as string[];
+
   export let data: PageData;
 
   const EMPTY_BAR_WEEK = {
     id: undefined,
     description: '',
-    groups: [] as string[],
+    groups: [] as { uid: string; pictureFile: string; name: string }[],
     startsAt: startOfWeek(new Date()),
-    endsAt: endOfWeek(new Date())
+    endsAt: endOfWeek(new Date()),
   };
 
   let { barWeeks } = data;
@@ -31,7 +33,7 @@
 
   async function deleteBarWeek({ id }: { id: string }) {
     await $zeus.mutate({
-      deleteBarWeek: [{ id }, true]
+      deleteBarWeek: [{ id }, true],
     });
     barWeeks = barWeeks.filter((bw) => bw.id !== id);
   }
@@ -39,7 +41,7 @@
   async function updateBarWeek(barWeek: {
     id: string | undefined;
     description: string;
-    groups: string[];
+    groups: { uid: string }[];
     startsAt: Date;
     endsAt: Date;
   }) {
@@ -50,12 +52,12 @@
           endsAt: barWeek.endsAt,
           startsAt: barWeek.startsAt,
           id: barWeek.id,
-          groupsUids: barWeek.groups.map(({ uid }) => uid)
+          groupsUids: barWeek.groups.map(({ uid }) => uid),
         },
         {
           __typename: true,
           '...on Error': {
-            message: true
+            message: true,
           },
           '...on MutationUpsertBarWeekSuccess': {
             data: {
@@ -67,13 +69,13 @@
               groups: {
                 uid: true,
                 name: true,
-                pictureFile: true
+                pictureFile: true,
               },
-              uid: true
-            }
-          }
-        }
-      ]
+              uid: true,
+            },
+          },
+        },
+      ],
     });
 
     if (upsertBarWeek.__typename === 'Error') {
@@ -82,11 +84,11 @@
       return;
     }
 
-    upsertBarWeek.data = {
-      ...upsertBarWeek.data,
-      startsAt: Date.parse(upsertBarWeek.data.startsAt),
-      endsAt: Date.parse(upsertBarWeek.data.endsAt)
-    };
+    // upsertBarWeek.data = {
+    //   ...upsertBarWeek.data,
+    //   startsAt: upsertBarWeek.data.startsAt,
+    //   endsAt: upsertBarWeek.data.endsAt
+    // };
 
     serverErrors[barWeek.id ?? 'new'] = '';
     expandedBarWeekId = undefined;
@@ -112,7 +114,9 @@
 
           <FormInput label="Groupes">
             <StringListInput
-              on:input={({ detail: val }) => {
+              on:input={(e) => {
+                if (!e.detail) return;
+                const val = asstringarray(e.detail);
                 if (
                   barWeek.groups
                     .map(({ uid }) => uid)
@@ -120,7 +124,7 @@
                     .join(',') === val.sort().join(',')
                 )
                   return;
-                barWeeks[i].groups = val.map((uid) => ({ uid }));
+                barWeeks[i].groups = val.map((uid) => ({ uid, name: '', pictureFile: '' }));
               }}
               value={barWeek.groups.map(({ uid }) => uid)}
             />

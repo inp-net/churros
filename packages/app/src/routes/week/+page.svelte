@@ -60,13 +60,13 @@
         <span class="day-name"
           >{day
             .toLocaleDateString('default', {
-              weekday: 'short'
+              weekday: 'short',
             })
             .replace(/\.$/, '')}</span
         >
         <span class="month-name"
           >{day.toLocaleDateString('default', {
-            month: 'long'
+            month: 'long',
           })}</span
         >
         <span class="day-number">
@@ -170,10 +170,6 @@
 
     .events-of-day {
       width: 100%;
-
-      > a {
-        text-decoration: none;
-      }
 
       .event-of-day {
         border-radius: var(--radius-block);

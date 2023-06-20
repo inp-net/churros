@@ -22,6 +22,10 @@ export const load: PageLoad = async ({ fetch, parent, url, params }) => {
         { uid: params.group },
         Selector('Group')({
           email: true,
+          name: true,
+          pictureFile: true,
+          uid: true,
+          id: true,
         }),
       ],
       lydiaAccountsOfGroup: [

@@ -1672,7 +1672,10 @@ __metadata:
     html-to-text: "npm:^9.0.5"
     is-dark-color: "npm:^1.2.0"
     json-to-csv-in-browser: "npm:^1.0.8"
+    modern-svelte-qr-scanner: "npm:1.3.6"
+    nanoid: "npm:^4.0.2"
     party-js: "npm:^2.2.0"
+    qr-code-generator-lib: "npm:^1.0.1"
     sanitize.css: "npm:^13.0.0"
     sass: "npm:^1.56.1"
     svelte: "npm:^3.53.1"
@@ -6840,6 +6843,7 @@ __metadata:
     eslint-config-xo-typescript: "npm:^0.55.0"
     eslint-plugin-svelte3: "npm:^4.0.0"
     eslint-plugin-unicorn: "npm:^44.0.2"
+    html5-qrcode: "npm:^2.3.8"
     husky: "npm:^8.0.2"
     lint-staged: "npm:^13.0.3"
     postcss-html: "npm:^1.5.0"
@@ -7821,6 +7825,13 @@ __metadata:
   version: 0.2.0
   resolution: "decode-uri-component@npm:0.2.0"
   checksum: 6944873192e84e58c4fd6483ce8846f2907b4ab1f0170a44bcc259fd976b7f6eecaad2016c9ada00a75155692b443f7970036c60a4d78853d0a0e2bec6f55ec8
+  languageName: node
+  linkType: hard
+
+"dedent-js@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "dedent-js@npm:1.0.1"
+  checksum: 602699587124bfbbf2bdf588a7b80a52777a9bd4c08bd1f3b6ed8085713a1b73a6bfd20d788c6adf7c78574a9db96f074f4bbee211a3412721a80933a8082552
   languageName: node
   linkType: hard
 
@@ -9169,7 +9180,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"events@npm:^3.0.0, events@npm:^3.2.0":
+"events@npm:^3.0.0, events@npm:^3.2.0, events@npm:^3.3.0":
   version: 3.3.0
   resolution: "events@npm:3.3.0"
   checksum: ef0af671f7bdc20f14274c77925c3e47a4df7991563ee1827dff577f66a9ed1a5b63d9adab8bc5949a16a1341883abdaf9df7a1841f8d5d2fc65ab4f5570b32b
@@ -10772,6 +10783,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"html5-qrcode@npm:^2.3.8":
+  version: 2.3.8
+  resolution: "html5-qrcode@npm:2.3.8"
+  checksum: 54950a1dcff957148ef48e7c5a3aa6b0b857fd4b9b652dfcb3f7137e6bd40c64884cf659e00763d0077cf7c86fae4bdd02d365f6abf70006e118dfe5dcd221bd
+  languageName: node
+  linkType: hard
+
 "htmlparser2-svelte@npm:4.1.0":
   version: 4.1.0
   resolution: "htmlparser2-svelte@npm:4.1.0"
@@ -12024,6 +12042,13 @@ __metadata:
   version: 1.3.1
   resolution: "jsonparse@npm:1.3.1"
   checksum: b1398d295020c3406d781d33980eeb5a05c08d6e956adee538e5073feecd1ebc82c01b519f0d0fd9cb67778bf62c0e859dddb99a1d95456e6c331505ae4d1c53
+  languageName: node
+  linkType: hard
+
+"jsqr@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "jsqr@npm:1.4.0"
+  checksum: 51e4cc631b4b80c392f79eb688a0c9e3bcc08a82da0129d4833f365ac7923e6d06a4e626f7254865a2101975fd2c6d565918e2512204e3c9688305fc3601adf1
   languageName: node
   linkType: hard
 
@@ -13300,6 +13325,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"modern-svelte-qr-scanner@npm:1.3.6":
+  version: 1.3.6
+  resolution: "modern-svelte-qr-scanner@npm:1.3.6"
+  dependencies:
+    events: "npm:^3.3.0"
+    jsqr: "npm:^1.4.0"
+    lodash: "npm:^4.17.21"
+    stampit: "npm:^4.3.2"
+    svelte-select: "npm:^4.4.4"
+    svelte2tsx: "npm:^0.5.2"
+    tslib: "npm:^2.3.1"
+    uuid: "npm:^8.3.2"
+    visibilityjs: "npm:^2.0.2"
+  checksum: 3ba46382fa979dc88eb9ffcd99f7a137504d23a043af36cd36745e35ef56c478260273a61b8ef938cd78a81769307209178280af4ff072e7d21d72e129d812d5
+  languageName: node
+  linkType: hard
+
 "moment@npm:^2.19.3":
   version: 2.29.4
   resolution: "moment@npm:2.29.4"
@@ -13398,6 +13440,15 @@ __metadata:
   bin:
     nanoid: bin/nanoid.js
   checksum: b6263a2a2425999b5aecabd18b25442ae4ef13048b2809ff173e0b0066f376b6fb2605d423763d1d26512cb095e71beee3d8b927f984603e05e169e171d8f6f0
+  languageName: node
+  linkType: hard
+
+"nanoid@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "nanoid@npm:4.0.2"
+  bin:
+    nanoid: bin/nanoid.js
+  checksum: 0e28bade6b10396bc0936980c7569e9710341b3dd8775bcd0645b7d23f59ff64e59c4413f48836bc336711ef1cc4f61f6453946a3bf69c4c235fab9d221f9216
   languageName: node
   linkType: hard
 
@@ -14163,7 +14214,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pascal-case@npm:^3.1.2":
+"pascal-case@npm:^3.1.1, pascal-case@npm:^3.1.2":
   version: 3.1.2
   resolution: "pascal-case@npm:3.1.2"
   dependencies:
@@ -14897,6 +14948,13 @@ __metadata:
   version: 1.5.1
   resolution: "q@npm:1.5.1"
   checksum: 276b7e93fc76c4979fba33e571e7ff7dec8c93ee0bed8a8f9b212e4bf5b923bb6b632ce0c8981cbb4b49656cf77c163cba032a7e657cba38401c85957ec92fd4
+  languageName: node
+  linkType: hard
+
+"qr-code-generator-lib@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "qr-code-generator-lib@npm:1.0.1"
+  checksum: 2e8cfe8d4e3211a882d97a4b7a848e168afd355a10c45d1bb8b0da0e0f5e748b98433971933d54f266157606be20960849bd8f117925d24acfc0c3f19daa4674
   languageName: node
   linkType: hard
 
@@ -16439,6 +16497,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"stampit@npm:^4.3.2":
+  version: 4.3.2
+  resolution: "stampit@npm:4.3.2"
+  checksum: 8b34b56330422050cef946f77232ebbfd0cb790ec354332f59eec842f724828b2e8a797f4de60082aba66721e89f65ffbfba524158bf30a729b863c57a020148
+  languageName: node
+  linkType: hard
+
 "state-toggle@npm:^1.0.0":
   version: 1.0.3
   resolution: "state-toggle@npm:1.0.3"
@@ -17088,10 +17153,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"svelte-select@npm:^4.4.4":
+  version: 4.4.7
+  resolution: "svelte-select@npm:4.4.7"
+  checksum: 9414930b37b069e60b02213cc10869593f912f6a4d50d841bd502e60f8284cdf81adf68abafd4f34ef7df61c8281bcad907ce9eff20c06a1acb80e8a9df16e5b
+  languageName: node
+  linkType: hard
+
 "svelte-tenor@npm:^0.2.0":
   version: 0.2.0
   resolution: "svelte-tenor@npm:0.2.0"
   checksum: 0c0562f86223bc2617ae883aab9a5a316c0a9bbb124625f60dac3cfbc87aeabeaf7903f41ad5332fdcb1dc41a7c74fc4b111edfba2e1b39bdb322a2be177965c
+  languageName: node
+  linkType: hard
+
+"svelte2tsx@npm:^0.5.2":
+  version: 0.5.23
+  resolution: "svelte2tsx@npm:0.5.23"
+  dependencies:
+    dedent-js: "npm:^1.0.1"
+    pascal-case: "npm:^3.1.1"
+  peerDependencies:
+    svelte: ^3.24
+    typescript: ^4.1.2
+  checksum: 6c3cabae39cef56a873a4af028ff77b02c8acb9bffe40316dbf45a9b5bd3a9f52cad8b3294d51286afcb0ac7d44a63cb4228c862cd7f8cf938fdf9783a75d3e6
   languageName: node
   linkType: hard
 
@@ -18228,6 +18313,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uuid@npm:^8.3.2":
+  version: 8.3.2
+  resolution: "uuid@npm:8.3.2"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 236a12282c6fa32f326aa1b6d5699a843572e9ab7de84a1507a6b7c315fdcf55bf6ed333fd37d35c5c656f4cb96af998844e1c8cae281c442a1ec3b66df62962
+  languageName: node
+  linkType: hard
+
 "uvu@npm:^0.5.0":
   version: 0.5.6
   resolution: "uvu@npm:0.5.6"
@@ -18370,6 +18464,13 @@ __metadata:
     unist-util-stringify-position: "npm:^3.0.0"
     vfile-message: "npm:^3.0.0"
   checksum: a31b69ea7dd0aa23da7c99b0b96fa6e3f9cfd57f2a1010dad4493762b5e3a38688638ca8ca9fb0f93602f67f47208fedbee189d81fd949ef42b8bb335c1a824f
+  languageName: node
+  linkType: hard
+
+"visibilityjs@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "visibilityjs@npm:2.0.2"
+  checksum: dba12a239af576fabd3e08bcd34bd5ab9e1941b1adec28ad04cb302a3c3747a2edaf53cd464c150182122ceb2b1fe2df60321e80633b6ae3bd196a5468a89e10
   languageName: node
   linkType: hard
 

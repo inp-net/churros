@@ -7,33 +7,33 @@
   import { $ as Zvar, zeus } from '$lib/zeus';
   import IconEdit from '~icons/mdi/pencil';
 
-  export let article: { pictureFile: string; id: string; title: string };
+  export let event: { pictureFile: string; id: string; title: string };
 
-  let { pictureFile } = article;
+  let { pictureFile } = event;
 
   let files: FileList;
   let updating = false;
-  const updateArticlePicture = async () => {
+  const updateEventPicture = async () => {
     if (updating) return;
     try {
       updating = true;
-      const { updateArticlePicture } = await $zeus.mutate(
-        { updateArticlePicture: [{ id: article.id, file: Zvar('file', 'File!') }, true] },
+      const { updateEventPicture } = await $zeus.mutate(
+        { updateEventPicture: [{ id: event.id, file: Zvar('file', 'File!') }, true] },
         { variables: { file: files[0] } }
       );
       // Add a timestamp to the URL to force the browser to reload the image
-      pictureFile = `${updateArticlePicture}?v=${Date.now()}`;
+      pictureFile = `${updateEventPicture}?v=${Date.now()}`;
     } finally {
       // `updating` is set to false when the image loads
     }
   };
 
   let deleting = false;
-  const deleteArticlePicture = async () => {
+  const deleteEventPicture = async () => {
     if (deleting) return;
     try {
       deleting = true;
-      const deleted = await $zeus.mutate({ deleteArticlePicture: [{ id: article.id }, true] });
+      const deleted = await $zeus.mutate({ deleteEventPicture: [{ id: event.id }, true] });
       if (deleted) pictureFile = '';
     } finally {
       deleting = false;
@@ -44,7 +44,7 @@
 <form on:submit|preventDefault>
   <fieldset>
     <legend>Image de l'article</legend>
-    <FileInput bind:files on:change={updateArticlePicture} accept="image/jpeg,image/png">
+    <FileInput bind:files on:change={updateEventPicture} accept="image/jpeg,image/png">
       <div class="relative">
         <div class="picture-edit">
           {#if updating}
@@ -57,7 +57,7 @@
           src={pictureFile
             ? `${PUBLIC_STORAGE_URL}${pictureFile}`
             : 'https://via.placeholder.com/160'}
-          alt={article.title}
+          alt={event.title}
           on:load={() => {
             updating = false;
           }}
@@ -66,7 +66,7 @@
     </FileInput>
     {#if pictureFile}
       <p>
-        <Button type="button" theme="danger" loading={deleting} on:click={deleteArticlePicture}
+        <Button type="button" theme="danger" loading={deleting} on:click={deleteEventPicture}
           >Supprimer</Button
         >
       </p>

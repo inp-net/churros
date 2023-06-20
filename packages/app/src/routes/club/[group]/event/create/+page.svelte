@@ -1,15 +1,16 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import EventForm from '$lib/components/forms/EventForm.svelte';
-  import { me } from '$lib/session';
+  import { Visibility } from '$lib/zeus';
   import type { PageData } from './$types';
 
   export let data: PageData;
   let event = {
+    id: '',
     uid: '',
     ticketGroups: [],
     tickets: [],
-    authorUid: $me?.uid || '',
+    group: data.group,
     description: '',
     endsAt: undefined,
     groupUid: $page.params.uid,
@@ -21,7 +22,7 @@
     slug: '',
     startsAt: undefined,
     title: '',
-    visibility: 'Private' as 'Private' | 'Public' | 'Restricted' | 'Unlisted',
+    visibility: Visibility.Private,
   };
 </script>
 

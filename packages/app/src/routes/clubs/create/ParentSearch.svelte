@@ -11,11 +11,12 @@
 
   export let parentUid: string | undefined;
   export let label = 'Groupe parent';
+  export let required = false;
 
   let loading = false;
   let enabled: boolean;
   let q = '';
-  let options: Array<{ uid: string; name: string }> = [];
+  let options: Array<{ uid: string; name: string; id: string }> = [];
 
   let input: HTMLInputElement;
 </script>
@@ -39,7 +40,7 @@
         list="parents"
         class="flex-1"
         placeholder="Rechercher un groupe parent"
-        required
+        required={required && !parentUid}
         bind:value={q}
         on:input={async () => {
           if (!q) return;
@@ -48,14 +49,14 @@
           parentUid = undefined;
           try {
             const { group } = await $zeus.query({
-              group: [{ uid: q }, { uid: true, name: true }],
+              group: [{ uid: q }, { uid: true, name: true, id: true }],
             });
             input.setCustomValidity('');
             parentUid = group.uid;
           } catch {
             input.setCustomValidity('Veuillez entrer un groupe parent valide');
             const { searchGroups } = await $zeus.query({
-              searchGroups: [{ q }, { name: true, uid: true }],
+              searchGroups: [{ q }, { name: true, uid: true, id: true }],
             });
             options = searchGroups;
           } finally {

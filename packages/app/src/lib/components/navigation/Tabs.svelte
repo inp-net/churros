@@ -9,19 +9,19 @@
 </ul>
 
 <style>
-    ul {
-        list-style: none;
-        padding-left: 0;
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
+  ul {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
 
-    a {
-        text-decoration: none;
-    }
+  a {
+    text-decoration: none;
+  }
 
-    li.active {
-        border-bottom: var(--border-inline) solid var(--primary-border);
-    }
+  li.active {
+    border-bottom: var(--border-inline) solid var(--primary-border);
+  }
 </style>

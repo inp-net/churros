@@ -1,7 +1,7 @@
 <script lang="ts">
   import Alert from '$lib/components/alerts/Alert.svelte';
-  import { zeus } from '$lib/zeus';
-  import type { PageData } from '../$types';
+  import { Visibility, zeus } from '$lib/zeus';
+  import type { PageData } from './$types';
   import Button from '$lib/components/buttons/Button.svelte';
   import { goto } from '$app/navigation';
   import EventSearch from '../../../write/EventSearch.svelte';
@@ -9,14 +9,15 @@
   import { _articleQuery } from './+page';
   import FormInput from '$lib/components/inputs/FormInput.svelte';
   import LinkCollectionInput from '$lib/components/inputs/LinkCollectionInput.svelte';
-  import { formatDatetimeLocal } from '$lib/dates';
-    import DateInput from '$lib/components/inputs/DateInput.svelte';
+  import DateInput from '$lib/components/inputs/DateInput.svelte';
+  import { DISPLAY_VISIBILITY, HELP_VISIBILITY } from '$lib/display';
 
   export let data: PageData;
 
   let serverError = '';
 
-  let { id, event, eventId, title, author, body, publishedAt, links, group } = data.article;
+  let { id, event, eventId, title, author, body, publishedAt, visibility, links, group } =
+    data.article;
 
   $: console.log(publishedAt);
 
@@ -29,22 +30,23 @@
         upsertArticle: [
           {
             id,
-            authorId: author?.id,
+            authorId: author?.id ?? '',
             eventId: event?.id,
             groupId: group.id,
             title,
             body,
             publishedAt: publishedAt?.toISOString(),
             links,
+            visibility
           },
           {
             __typename: true,
             '...on Error': { message: true },
             '...on MutationUpsertArticleSuccess': {
-              data: _articleQuery,
-            },
-          },
-        ],
+              data: _articleQuery
+            }
+          }
+        ]
       });
 
       if (upsertArticle.__typename === 'Error') {
@@ -70,6 +72,14 @@
   </FormInput>
   <FormInput label="Publier le">
     <DateInput bind:value={publishedAt} />
+  </FormInput>
+  <FormInput label="Visibilité" hint={HELP_VISIBILITY[visibility]}>
+    <select bind:value={visibility}>
+      <option value={Visibility.Private}>{DISPLAY_VISIBILITY.Private} </option>
+      <option value={Visibility.Restricted}>{DISPLAY_VISIBILITY.Restricted} </option>
+      <option value={Visibility.Unlisted}>{DISPLAY_VISIBILITY.Unlisted} </option>
+      <option value={Visibility.Public}>{DISPLAY_VISIBILITY.Public} </option>
+    </select>
   </FormInput>
   <FormInput label="Description">
     <textarea bind:value={body} cols="30" rows="10" />

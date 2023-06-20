@@ -1,7 +1,7 @@
 <script lang="ts">
   export let value: number[] = [];
 
-  const asnumber = (x: any) => x as number;
+  const asstring = (x: any) => x as string;
 </script>
 
 <div class="integer-list-input">
@@ -19,7 +19,7 @@
     on:blur={(e) => {
       if (!e.target || !('value' in e.target)) return;
       if (e.target.value) {
-        value = [...value, asnumber(e.target.value)];
+        value = [...value, Number.parseInt(asstring(e.target.value), 10)];
         e.target.value = undefined;
       }
     }}

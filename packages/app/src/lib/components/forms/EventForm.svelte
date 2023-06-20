@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { me } from '$lib/session';
   import Button from '../buttons/Button.svelte';
   import IconPlus from '~icons/mdi/plus';
+  import { nanoid } from 'nanoid';
   import IconChevronDown from '~icons/mdi/chevron-down';
   import IconChevronUp from '~icons/mdi/chevron-up';
   import FormInput from '../inputs/FormInput.svelte';
@@ -13,30 +13,175 @@
   import InputGroup from '../groups/InputGroup.svelte';
   import DateInput from '../inputs/DateInput.svelte';
   import ParentSearch from '../../../routes/clubs/create/ParentSearch.svelte';
+  import { PaymentMethod, Visibility, zeus } from '$lib/zeus';
+  import { goto } from '$app/navigation';
+  import Alert from '../alerts/Alert.svelte';
+  import { DISPLAY_VISIBILITY, HELP_VISIBILITY } from '$lib/display';
 
-  let expandedTicketId = -1;
+  let serverError = '';
 
-  function expanded(ticket: { id: number }, expandedTicketId: number): boolean {
+  const visibilities = Object.keys(DISPLAY_VISIBILITY) as Array<keyof typeof Visibility>;
+
+  function eraseFakeIds(id: string): string {
+    if (id.includes(':fake:')) {
+      return '';
+    }
+    return id;
+  }
+
+  function ticketIsInGroup(ticket: { id: string }): boolean {
+    return event.ticketGroups
+      .map((g) => g.tickets.map((t) => t.id))
+      .flat()
+      .includes(ticket.id);
+  }
+
+  async function saveChanges() {
+    const { upsertEvent } = await $zeus.mutate({
+      upsertEvent: [
+        {
+          groupId: event.group.id,
+          contactMail: event.contactMail,
+          description: event.description,
+          endsAt: event.endsAt,
+          links: event.links,
+          location: event.location,
+          startsAt: event.startsAt,
+          ticketGroups: event.ticketGroups.map((tg) => ({
+            ...tg,
+            id: eraseFakeIds(tg.id),
+            tickets: tg.tickets.map((t) => ({
+              ...t,
+              id: eraseFakeIds(t.id),
+              openToGroups: t.openToGroups.map(({ uid }) => uid),
+              openToSchools: t.openToSchools.map(({ uid }) => uid)
+            }))
+          })),
+          tickets: event.tickets.map((t) => ({
+            ...t,
+            id: eraseFakeIds(t.id),
+            openToGroups: t.openToGroups.map(({ uid }) => uid),
+            openToSchools: t.openToSchools.map(({ uid }) => uid)
+          })),
+          title: event.title,
+          visibility: event.visibility,
+          managers: event.managers.map(({ user, ...permissions }) => ({
+            ...permissions,
+            userUid: user.uid
+          })),
+          id: event.id,
+          lydiaAccountId: event.lydiaAccountId
+        },
+        {
+          __typename: true,
+          '...on Error': {
+            message: true
+          },
+          '...on MutationUpsertEventSuccess': {
+            data: {
+              author: {
+                uid: true
+              },
+              uid: true,
+              id: true,
+              title: true,
+              description: true,
+              startsAt: true,
+              endsAt: true,
+              location: true,
+              visibility: true,
+              contactMail: true,
+              lydiaAccountId: true,
+              ticketGroups: {
+                name: true,
+                capacity: true,
+                tickets: {
+                  name: true,
+                  description: true,
+                  price: true,
+                  capacity: true,
+                  opensAt: true,
+                  closesAt: true,
+                  links: { name: true, value: true },
+                  allowedPaymentMethods: true,
+                  openToPromotions: true,
+                  openToExternal: true,
+                  openToAlumni: true,
+                  openToSchools: { name: true, color: true, id: true },
+                  openToGroups: { name: true, uid: true, pictureFile: true },
+                  openToNonAEContributors: true,
+                  godsonLimit: true,
+                  onlyManagersCanProvide: true
+                }
+              },
+              tickets: {
+                name: true,
+                description: true,
+                price: true,
+                capacity: true,
+                opensAt: true,
+                closesAt: true,
+                links: { name: true, value: true },
+                allowedPaymentMethods: true,
+                openToPromotions: true,
+                openToExternal: true,
+                openToAlumni: true,
+                openToSchools: { name: true, color: true, id: true },
+                openToGroups: { name: true, uid: true, pictureFile: true },
+                openToNonAEContributors: true,
+                godsonLimit: true,
+                onlyManagersCanProvide: true
+              },
+              managers: {
+                user: {
+                  uid: true,
+                  firstName: true,
+                  lastName: true,
+                  pictureFile: true
+                },
+                canEdit: true,
+                canEditPermissions: true,
+                canVerifyRegistrations: true
+              }
+            }
+          }
+        }
+      ]
+    });
+
+    if (upsertEvent?.__typename === 'Error') {
+      serverError = upsertEvent.message;
+      return;
+    }
+
+    serverError = '';
+
+    if (!event.id) {
+      await goto(`../${upsertEvent.data.uid}`);
+    }
+  }
+
+  let expandedTicketId = '';
+
+  function expanded(ticket: { id: string }, expandedTicketId: string): boolean {
     return ticket.id === expandedTicketId;
   }
 
-  function nextTicketId(): number {
-    return (
-      Math.max(
-        ...event.tickets.map(({ id }) => id),
-        ...event.ticketGroups.flatMap(({ tickets }) => tickets.map(({ id }) => id))
-      ) + 1
-    );
+  function nextTicketId(): string {
+    return 't:fake:' + nanoid(10);
+  }
+
+  function nextTicketGroupId(): string {
+    return 'tg:fake:' + nanoid(10);
   }
 
   const bang = <T extends {}>(x?: T) => x!;
 
-  const defaultTicket = (id: number) => ({
-    allowedPaymentMethods: ['Cash', 'Lydia'] as Array<'Cash' | 'Lydia'>,
-    authorUid: bang($me).uid,
+  const defaultTicket = (id: string) => ({
+    allowedPaymentMethods: ['Cash', 'Lydia'] as Array<PaymentMethod>,
     capacity: 0,
     price: 0,
-    closesAt: event.endsAt,
+    closesAt: event.endsAt ?? new Date(),
     opensAt: new Date((event.startsAt ?? new Date()).valueOf() - 1 * 24 * 3600 * 1e3),
     description: '',
     godsonLimit: 0,
@@ -55,24 +200,23 @@
   });
 
   type Ticket = {
-    id: number;
+    id: string;
     name: string;
     description: string;
     price: number;
     capacity: number;
-    opensAt: Date | undefined;
-    closesAt: Date | undefined;
-    links: Array<{ name: string; url: string }>;
-    allowedPaymentMethods: Array<'Lydia' | 'Cash' | 'Check' | 'Transfer' | 'Card' | 'Other'>;
+    opensAt?: Date | undefined;
+    closesAt?: Date | undefined;
+    links: Array<{ name: string; value: string }>;
+    allowedPaymentMethods: Array<PaymentMethod>;
     openToPromotions: number[];
-    openToExternal: boolean | null;
-    openToAlumni: boolean | null;
-    openToSchools: Array<{ name: string; color: string; id: number }>;
+    openToExternal?: boolean | null | undefined;
+    openToAlumni?: boolean | null | undefined;
+    openToSchools: Array<{ name: string; color: string; uid: string }>;
     openToGroups: Array<{ name: string; uid: string; pictureFile: string }>;
-    openToNonAEContributors: boolean | null;
+    openToNonAEContributors?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
-    authorUid: string;
   };
 
   export let availableLydiaAccounts: Array<{
@@ -89,24 +233,25 @@
 
   export let event: {
     tickets: Ticket[];
-
+    id: string;
     ticketGroups: Array<{
+      id: string;
       name: string;
       capacity: number;
       tickets: Ticket[];
     }>;
     contactMail: string;
-    lydiaAccountId: string | undefined;
+    lydiaAccountId?: string | undefined;
     description: string;
-    endsAt: Date | undefined;
-    links: Array<{ name: string; url: string }>;
+    endsAt?: Date | undefined;
+    links: Array<{ name: string; value: string }>;
     location: string;
     uid: string;
-    startsAt: Date | undefined;
+    startsAt?: Date | undefined;
     title: string;
-    visibility: 'Public' | 'Private' | 'Restricted' | 'Unlisted';
-    // authorUid: string;
+    visibility: Visibility;
     group: {
+      id: string;
       uid: string;
       name: string;
       pictureFile: string;
@@ -119,7 +264,7 @@
     }>;
   };
 
-  function permissionsFromLevel(level: 'readonly' | 'verify' | 'editor' | 'fullaccess'): {
+  function permissionsFromLevel(level: 'readonly' | 'verifyer' | 'editor' | 'fullaccess'): {
     canEdit: boolean;
     canEditPermissions: boolean;
     canVerifyRegistrations: boolean;
@@ -127,7 +272,7 @@
     return {
       canEditPermissions: level === 'fullaccess',
       canEdit: level === 'editor' || level === 'fullaccess',
-      canVerifyRegistrations: level === 'verify' || level === 'editor' || level === 'fullaccess'
+      canVerifyRegistrations: level === 'verifyer' || level === 'editor' || level === 'fullaccess'
     };
   }
 
@@ -135,20 +280,28 @@
     canEdit: boolean;
     canEditPermissions: boolean;
     canVerifyRegistrations: boolean;
-  }): 'readonly' | 'verify' | 'editor' | 'fullaccess' {
+  }): 'readonly' | 'verifyer' | 'editor' | 'fullaccess' {
     if (permissions.canEditPermissions) return 'fullaccess';
     if (permissions.canEdit) return 'editor';
-    if (permissions.canVerifyRegistrations) return 'verify';
+    if (permissions.canVerifyRegistrations) return 'verifyer';
     return 'readonly';
   }
 
-  const aspermissionlevel = (x: any) => x as 'readonly' | 'verify' | 'editor' | 'fullaccess';
+  const aspermissionlevel = (x: any) => x as 'readonly' | 'verifyer' | 'editor' | 'fullaccess';
 </script>
 
 <form on:submit|preventDefault>
   {#if availableGroups.length > 0}
     <ParentSearch label="Groupe" bind:parentUid={event.group.uid} />
   {/if}
+
+  <FormInput label="Visibilité" hint={HELP_VISIBILITY[event.visibility]}>
+    <select bind:value={event.visibility}>
+      {#each visibilities as value}
+        <option {value}>{DISPLAY_VISIBILITY[value]}</option>
+      {/each}
+    </select>
+  </FormInput>
 
   <FormInput label="Titre">
     <input type="text" bind:value={event.title} />
@@ -188,6 +341,7 @@
           event.ticketGroups = [
             ...event.ticketGroups,
             {
+              id: nextTicketGroupId(),
               name: '',
               capacity: 0,
               tickets: []
@@ -228,16 +382,16 @@
             />
           </FormInput>
           <FormInput label="Places dans le groupe">
-            <input
-              type="number"
-              placeholder={ticketGroup.capacity.toString()}
-              bind:value={event.ticketGroups[i].capacity}
-            />
+            <input type="number" bind:value={event.ticketGroups[i].capacity} />
           </FormInput>
         </div>
         <section class="tickets">
-          {#each ticketGroup.tickets as ticket, j}
-            <article class="ticket" class:expanded={expanded(ticket, expandedTicketId)}>
+          {#each ticketGroup.tickets as ticket, j (ticket.id)}
+            <article
+              data-id={ticket.id}
+              class="ticket"
+              class:expanded={expanded(ticket, expandedTicketId)}
+            >
               {#if expanded(ticket, expandedTicketId)}
                 <FormInput label="Nom">
                   <input type="text" bind:value={event.ticketGroups[i].tickets[j].name} />
@@ -249,16 +403,10 @@
 
                 <div class="side-by-side">
                   <FormInput label="Date du shotgun">
-                    <input
-                      type="datetime-local"
-                      bind:value={event.ticketGroups[i].tickets[j].opensAt}
-                    />
+                    <DateInput bind:value={event.ticketGroups[i].tickets[j].opensAt} />
                   </FormInput>
                   <FormInput label="Clôture">
-                    <input
-                      type="datetime-local"
-                      bind:value={event.ticketGroups[i].tickets[j].closesAt}
-                    />
+                    <DateInput bind:value={event.ticketGroups[i].tickets[j].closesAt} />
                   </FormInput>
                 </div>
 
@@ -322,11 +470,18 @@
                 </FormInput>
 
                 <div class="actions">
-                  <Button theme="danger">Supprimer</Button>
+                  <Button
+                    on:click={() => {
+                      event.ticketGroups[j].tickets = event.ticketGroups[j].tickets.filter(
+                        (t) => t.id !== ticket.id
+                      );
+                    }}
+                    theme="danger">Supprimer</Button
+                  >
 
                   <GhostButton
                     on:click={() => {
-                      expandedTicketId = -1;
+                      expandedTicketId = '';
                     }}
                   >
                     <IconChevronUp />
@@ -337,13 +492,15 @@
                 <span class="capacity">{ticket.capacity} place{ticket.capacity > 1 ? 's' : ''}</span
                 >
                 <span class="prix">{ticket.price}€</span>
-                <GhostButton
-                  on:click={() => {
-                    expandedTicketId = ticket.id;
-                  }}
-                >
-                  <IconChevronDown />
-                </GhostButton>
+                <div class="expand-button">
+                  <GhostButton
+                    on:click={() => {
+                      expandedTicketId = ticket.id;
+                    }}
+                  >
+                    <IconChevronDown />
+                  </GhostButton>
+                </div>
               {/if}
             </article>
           {/each}
@@ -355,108 +512,127 @@
             expandedTicketId = id;
           }}>Ajouter un billet dans le groupe</Button
         >
+        <Button
+          theme="danger"
+          on:click={() => {
+            if (ticketGroup.tickets.some((t) => expanded(t, expandedTicketId)))
+              expandedTicketId = '';
+            event.ticketGroups = event.ticketGroups.filter((tg) => tg.id !== ticketGroup.id);
+          }}>Supprimer le groupe</Button
+        >
       </article>
     {/each}
   </section>
 
-  {#each event.tickets as ticket, i}
-    <article class="ticket" class:expanded={expanded(ticket, expandedTicketId)}>
-      {#if expanded(ticket, expandedTicketId)}
-        <FormInput label="Nom">
-          <input type="text" bind:value={event.tickets[i].name} />
-        </FormInput>
-
-        <FormInput label="Description">
-          <textarea bind:value={event.tickets[i].description} />
-        </FormInput>
-
-        <div class="side-by-side">
-          <FormInput label="Date du shotgun">
-            <input type="datetime-local" bind:value={event.tickets[i].opensAt} />
-          </FormInput>
-          <FormInput label="Clôture">
-            <input type="datetime-local" bind:value={event.tickets[i].closesAt} />
-          </FormInput>
-        </div>
-
-        <div class="side-by-side">
-          <FormInput label="Prix">
-            <input type="number" bind:value={event.tickets[i].price} />
+  {#each event.tickets as ticket, i (ticket.id)}
+    {#if !ticketIsInGroup(ticket)}
+      <article
+        class="ticket"
+        data-id={ticket.id}
+        class:expanded={expanded(ticket, expandedTicketId)}
+      >
+        {#if expanded(ticket, expandedTicketId)}
+          <FormInput label="Nom">
+            <input type="text" bind:value={event.tickets[i].name} />
           </FormInput>
 
-          <FormInput label="Nombre de places">
-            <input type="number" bind:value={event.tickets[i].capacity} />
+          <FormInput label="Description">
+            <textarea bind:value={event.tickets[i].description} />
           </FormInput>
-        </div>
 
-        <FormInput label="Promos">
-          <IntegerListInput bind:value={event.tickets[i].openToPromotions} />
-        </FormInput>
+          <div class="side-by-side">
+            <FormInput label="Date du shotgun">
+              <DateInput bind:value={event.tickets[i].opensAt} />
+            </FormInput>
+            <FormInput label="Clôture">
+              <DateInput bind:value={event.tickets[i].closesAt} />
+            </FormInput>
+          </div>
 
-        <FormInput label="Groupes">
-          <GroupListInput bind:value={event.tickets[i].openToGroups} />
-        </FormInput>
+          <div class="side-by-side">
+            <FormInput label="Prix">
+              <input type="number" bind:value={event.tickets[i].price} />
+            </FormInput>
 
-        <FormInput label="Écoles">
-          <SchoolListInput bind:value={event.tickets[i].openToSchools} />
-        </FormInput>
+            <FormInput label="Nombre de places">
+              <input type="number" bind:value={event.tickets[i].capacity} />
+            </FormInput>
+          </div>
 
-        <div class="conditions">
-          <TernaryCheckbox
-            label="Extés"
-            labelFalse="Interdit"
-            labelNull="Peu importe"
-            labelTrue="Obligatoire"
-            bind:value={event.tickets[i].openToExternal}
-          />
-          <TernaryCheckbox
-            label="Alumnis"
-            labelFalse="Interdit"
-            labelNull="Peu importe"
-            labelTrue="Obligatoire"
-            bind:value={event.tickets[i].openToAlumni}
-          />
-          <TernaryCheckbox
-            label="Cotisants"
-            labelFalse="Interdit"
-            labelNull="Peu importe"
-            labelTrue="Obligatoire"
-            bind:value={event.tickets[i].openToNonAEContributors}
-          />
-        </div>
+          <FormInput label="Promos">
+            <IntegerListInput bind:value={event.tickets[i].openToPromotions} />
+          </FormInput>
 
-        <FormInput label="Limite de parrainages">
-          <input type="number" bind:value={event.tickets[i].godsonLimit} />
-        </FormInput>
+          <FormInput label="Groupes">
+            <GroupListInput bind:value={event.tickets[i].openToGroups} />
+          </FormInput>
 
-        <FormInput label="Seul un manager peut donner ce billet">
-          <input type="checkbox" bind:value={event.tickets[i].onlyManagersCanProvide} />
-        </FormInput>
+          <FormInput label="Écoles">
+            <SchoolListInput bind:value={event.tickets[i].openToSchools} />
+          </FormInput>
 
-        <div class="actions">
-          <Button theme="danger">Supprimer</Button>
+          <div class="conditions">
+            <TernaryCheckbox
+              label="Extés"
+              labelFalse="Interdit"
+              labelNull="Peu importe"
+              labelTrue="Obligatoire"
+              bind:value={event.tickets[i].openToExternal}
+            />
+            <TernaryCheckbox
+              label="Alumnis"
+              labelFalse="Interdit"
+              labelNull="Peu importe"
+              labelTrue="Obligatoire"
+              bind:value={event.tickets[i].openToAlumni}
+            />
+            <TernaryCheckbox
+              label="Cotisants"
+              labelFalse="Interdit"
+              labelNull="Peu importe"
+              labelTrue="Obligatoire"
+              bind:value={event.tickets[i].openToNonAEContributors}
+            />
+          </div>
 
+          <FormInput label="Limite de parrainages">
+            <input type="number" bind:value={event.tickets[i].godsonLimit} />
+          </FormInput>
+
+          <FormInput label="Seul un manager peut donner ce billet">
+            <input type="checkbox" bind:value={event.tickets[i].onlyManagersCanProvide} />
+          </FormInput>
+
+          <div class="actions">
+            <Button
+              on:click={() => {
+                event.tickets = event.tickets.filter((t) => t.id !== ticket.id);
+              }}
+              theme="danger">Supprimer</Button
+            >
+
+            <GhostButton
+              on:click={() => {
+                expandedTicketId = '';
+              }}
+            >
+              <IconChevronUp />
+            </GhostButton>
+          </div>
+        {:else}
+          <span class="name">{ticket.name}</span>
+          <span class="capacity">{ticket.capacity} place{ticket.capacity > 1 ? 's' : ''}</span>
+          <span class="prix">{ticket.price}€</span>
           <GhostButton
             on:click={() => {
-              expandedTicketId = -1;
+              expandedTicketId = ticket.id;
             }}
           >
-            <IconChevronUp />
+            <IconChevronDown />
           </GhostButton>
-        </div>
-      {:else}
-        <span class="name">{ticket.name}</span>
-        <span class="capacity">{ticket.capacity} place{ticket.capacity > 1 ? 's' : ''}</span>
-        <span class="prix">{ticket.price}€</span>
-        <GhostButton
-          on:click={() => {
-            expandedTicketId = ticket.id;
-          }}
-        >
-          <IconChevronDown />
-        </GhostButton>
-      {/if}
-    </article>
+        {/if}
+      </article>
+    {/if}
   {/each}
 
   <h2>Managers</h2>
@@ -464,7 +640,7 @@
     <InputGroup>
       <input type="text" bind:value={event.managers[i].user.uid} />
       <select
-        on:input={(e) => {
+        on:change={(e) => {
           if (!e.target || !('value' in e.target)) return;
           event.managers[i] = {
             ...manager,
@@ -493,21 +669,52 @@
     }}>Ajouter un manager</Button
   >
 
-  <pre>
-    {JSON.stringify(event, undefined, 2)}
-  </pre>
+  {#if serverError}
+    <Alert theme="danger">Impossible de sauvegarder l'évènement: {serverError}</Alert>
+  {/if}
 
-  <Button type="submit">Enregistrer</Button>
+  <Button type="submit" on:click={async () => saveChanges()}>Enregistrer</Button>
 </form>
 
-<style>
+<style lang="scss">
   .ticket-group {
     padding: 1em;
-    background: lightgray;
+    border: var(--border-block) solid var(--border);
+    border-radius: var(--radius-block);
   }
 
   .ticket {
     padding: 1em;
-    background: lightcyan;
+    border-radius: var(--radius-block);
+    box-shadow: var(--shadow);
+    display: flex;
+  }
+
+  .ticket:not(.expanded) {
+    gap: 1rem;
+
+    .expand-button {
+      margin-left: auto;
+    }
+  }
+
+  .ticket.expanded {
+    flex-direction: column;
+  }
+
+  .side-by-side {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .ticket-group .tickets {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .ticket-groups {
+    margin-bottom: 2rem;
   }
 </style>

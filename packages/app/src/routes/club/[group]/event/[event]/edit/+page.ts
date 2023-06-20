@@ -4,17 +4,20 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ fetch, parent, params }) =>
   loadQuery(
     {
-      groups: [{}, Selector('Group')({ uid: true, name: true, pictureFile: true })],
+      groups: [{}, Selector('Group')({ uid: true, id: true, name: true, pictureFile: true })],
       event: [
         {
           groupUid: params.group,
           uid: params.event,
         },
         Selector('Event')({
+          id: true,
           startsAt: true,
           endsAt: true,
           pictureFile: true,
+          description: true,
           group: {
+            id: true,
             uid: true,
             name: true,
             pictureFile: true,
@@ -33,6 +36,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             },
             allowedPaymentMethods: true,
             openToPromotions: true,
+            openToExternal: true,
             openToAlumni: true,
             openToSchools: {
               uid: true,
@@ -49,6 +53,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             onlyManagersCanProvide: true,
           },
           ticketGroups: {
+            id: true,
             name: true,
             capacity: true,
             tickets: {

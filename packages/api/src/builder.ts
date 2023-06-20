@@ -40,6 +40,31 @@ import { GraphQLError, Kind } from 'graphql';
   };
 /* end @generated from schema */
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export const builder = new SchemaBuilder<{
   AuthContexts: AuthContexts;
   AuthScopes: AuthScopes;
@@ -87,9 +112,9 @@ export const builder = new SchemaBuilder<{
     wrap: (resolver, _options, config) =>
       wrapResolver(resolver, (_error, duration) => {
         console.log(
-          `Executed \u001B[36;1m${config.parentType}.${config.name}\u001B[0m in \u001B[36;1m${Number(
-            duration.toPrecision(3)
-          )} ms\u001B[0m`
+          `Executed \u001B[36;1m${config.parentType}.${
+            config.name
+          }\u001B[0m in \u001B[36;1m${Number(duration.toPrecision(3))} ms\u001B[0m`
         );
       }),
   },

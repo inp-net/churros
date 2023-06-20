@@ -70,7 +70,9 @@ export const TicketType = builder.prismaNode('Ticket', {
           },
         });
         if (!ticket) return 0;
-        return placesLeft(ticket);
+        const places = placesLeft(ticket);
+        if (places === Number.POSITIVE_INFINITY) return -1;
+        return places;
       },
       complexity: 5,
     }),
@@ -82,7 +84,8 @@ export const TicketInput = builder.inputType('TicketInput', {
     allowedPaymentMethods: t.field({ type: [PaymentMethodEnum] }),
     capacity: t.int(),
     price: t.float(),
-    opensAt: t.field({ type: DateTimeScalar }),
+    opensAt: t.field({ type: DateTimeScalar, required: false }),
+    closesAt: t.field({ type: DateTimeScalar, required: false }),
     description: t.string(),
     godsonLimit: t.int(),
     links: t.field({ type: [LinkInput] }),
@@ -93,7 +96,7 @@ export const TicketInput = builder.inputType('TicketInput', {
     openToGroups: t.field({ type: ['String'] }),
     openToNonAEContributors: t.boolean({ required: false }),
     openToPromotions: t.field({ type: ['Int'] }),
-    openToSchools: t.field({ type: ['Int'] }),
+    openToSchools: t.field({ type: ['String'] }),
     id: t.id({ required: false }),
   }),
 });
@@ -133,7 +136,6 @@ builder.queryField('ticketByUid', (t) =>
       prisma.ticket.findFirstOrThrow({ ...query, where: { uid, event: { uid: eventUid } } }),
   })
 );
-
 
 builder.queryField('ticketsOfEvent', (t) =>
   t.prismaConnection({

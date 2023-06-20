@@ -25,7 +25,7 @@ builder.queryField('eventManager', (t) =>
 
 export const ManagerOfEventInput = builder.inputType('ManagerOfEventInput', {
   fields: (t) => ({
-    userId: t.field({ type: 'ID' }),
+    userUid: t.field({ type: 'String' }),
     canEdit: t.field({ type: 'Boolean' }),
     canEditPermissions: t.field({ type: 'Boolean' }),
     canVerifyRegistrations: t.field({ type: 'Boolean' }),
@@ -58,9 +58,10 @@ builder.mutationField('upsertManagersOfEvent', (t) =>
           data: {
             managers: {
               deleteMany: {},
-              createMany: {
-                data: managers,
-              },
+              create: managers.map((m) => ({
+                ...m,
+                user: { connect: { uid: m.userUid } },
+              })),
             },
           },
         })

@@ -56,7 +56,7 @@ builder.queryField('homepage', (t) =>
       if (!user) {
         return prisma.article.findMany({
           ...query,
-          where: { published: true, visibility: Visibility.Public },
+          where: { publishedAt: { lte: new Date() }, visibility: Visibility.Public },
           orderBy: { publishedAt: 'desc' },
         });
       }
@@ -76,7 +76,9 @@ builder.queryField('homepage', (t) =>
       return prisma.article.findMany({
         ...query,
         where: {
-          published: true,
+          publishedAt: {
+            lte: new Date(),
+          },
           OR: [
             // Show articles from the same school as the user
             {
@@ -85,7 +87,7 @@ builder.queryField('homepage', (t) =>
             },
             // Show articles from groups whose user is a member
             {
-              visibility: Visibility.Public || Visibility.Restricted,
+              visibility: { in: [Visibility.Public, Visibility.Restricted] },
               group: { uid: { in: ancestors.map(({ uid }) => uid) } },
             },
           ],
@@ -109,6 +111,7 @@ builder.mutationField('upsertArticle', (t) =>
       publishedAt: t.arg({ type: DateTimeScalar }),
       links: t.arg({ type: [LinkInput] }),
       eventId: t.arg.id({ required: false }),
+      visibility: t.arg({ type: VisibilityEnum }),
     },
     async authScopes(_, { id, authorId, groupId }, { user }) {
       const creating = !id;
@@ -143,7 +146,11 @@ builder.mutationField('upsertArticle', (t) =>
           ))
       );
     },
-    async resolve(query, _, { id, eventId, authorId, groupId, title, body, publishedAt, links }) {
+    async resolve(
+      query,
+      _,
+      { id, eventId, visibility, authorId, groupId, title, body, publishedAt, links }
+    ) {
       const data = {
         author: {
           connect: {
@@ -157,6 +164,7 @@ builder.mutationField('upsertArticle', (t) =>
         },
         title,
         body,
+        visibility: Visibility[visibility as keyof typeof Visibility],
         publishedAt,
         published: publishedAt <= new Date(),
       };

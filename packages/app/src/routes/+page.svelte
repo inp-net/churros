@@ -15,7 +15,7 @@
     try {
       loading = true;
       const { homepage } = await $zeus.query({
-        homepage: [{ after: data.homepage.pageInfo.endCursor }, pageQuery]
+        homepage: [{ after: data.homepage.pageInfo.endCursor }, pageQuery],
       });
       data.homepage.pageInfo = homepage.pageInfo;
       data.homepage.edges = [...data.homepage.edges, ...homepage.edges];
