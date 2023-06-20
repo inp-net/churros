@@ -34,8 +34,8 @@
           {
             name: val,
             uid: 'school:' + Math.floor(Math.random() * 1000),
-            color: '#000000'
-          }
+            color: '#000000',
+          },
         ];
         e.target.value = '';
       }

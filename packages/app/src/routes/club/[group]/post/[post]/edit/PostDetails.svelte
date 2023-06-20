@@ -9,9 +9,8 @@
   import { _articleQuery } from './+page';
   import FormInput from '$lib/components/inputs/FormInput.svelte';
   import LinkCollectionInput from '$lib/components/inputs/LinkCollectionInput.svelte';
-  import { formatDatetimeLocal } from '$lib/dates';
   import DateInput from '$lib/components/inputs/DateInput.svelte';
-  import { DISPLAY_VISIBILITY } from '$lib/display';
+  import { DISPLAY_VISIBILITY, HELP_VISIBILITY } from '$lib/display';
 
   export let data: PageData;
 
@@ -37,7 +36,8 @@
             title,
             body,
             publishedAt: publishedAt?.toISOString(),
-            links
+            links,
+            visibility
           },
           {
             __typename: true,
@@ -73,12 +73,12 @@
   <FormInput label="Publier le">
     <DateInput bind:value={publishedAt} />
   </FormInput>
-  <FormInput label="Visibilité">
+  <FormInput label="Visibilité" hint={HELP_VISIBILITY[visibility]}>
     <select bind:value={visibility}>
-      <option value={Visibility.Private}>{DISPLAY_VISIBILITY.Private}</option>
-      <option value={Visibility.Restricted}>{DISPLAY_VISIBILITY.Restricted}</option>
-      <option value={Visibility.Unlisted}>{DISPLAY_VISIBILITY.Unlisted}</option>
-      <option value={Visibility.Public}>{DISPLAY_VISIBILITY.Public}</option>
+      <option value={Visibility.Private}>{DISPLAY_VISIBILITY.Private} </option>
+      <option value={Visibility.Restricted}>{DISPLAY_VISIBILITY.Restricted} </option>
+      <option value={Visibility.Unlisted}>{DISPLAY_VISIBILITY.Unlisted} </option>
+      <option value={Visibility.Public}>{DISPLAY_VISIBILITY.Public} </option>
     </select>
   </FormInput>
   <FormInput label="Description">
@@ -93,3 +93,10 @@
   {/if}
   <Button theme="primary" {loading} type="submit">Enregistrer</Button>
 </form>
+
+<style>
+  .explanation {
+    font-size: 0.75em;
+    opacity: 0.75;
+  }
+</style>

@@ -12,8 +12,8 @@
     .query({
       lydiaAccountsOfGroup: [
         { uid: data.event.group.uid },
-        Selector('LydiaAccount')({ id: true, name: true })
-      ]
+        Selector('LydiaAccount')({ id: true, name: true }),
+      ],
     })
     .then(({ lydiaAccountsOfGroup }) => {
       availableLydiaAccounts = lydiaAccountsOfGroup;
@@ -25,7 +25,7 @@
   tabs={[
     { name: 'Infos', href: `.` },
     { name: 'Réservations', href: '../registrations' },
-    { name: 'Vérifier', href: '../scan' }
+    { name: 'Vérifier', href: '../scan' },
   ]}
 />
 

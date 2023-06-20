@@ -1,7 +1,7 @@
 <script lang="ts">
   import { formatDatetimeLocal } from '$lib/dates';
 
-  export let value: Date | undefined ;
+  export let value: Date | undefined;
   export const asstring = (x: any) => x as string;
 </script>
 

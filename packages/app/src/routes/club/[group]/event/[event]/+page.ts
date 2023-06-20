@@ -44,7 +44,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
           group: {
             uid: true,
             name: true,
-            pictureFile: true
+            pictureFile: true,
           },
           contactMail: true,
           tickets: {
@@ -58,7 +58,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             opensAt: true,
             closesAt: true,
             group: {
-              capacity: true
+              capacity: true,
             },
             links: {
               name: true,
@@ -69,7 +69,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
               beneficiary: true,
               authorIsBeneficiary: true,
               author: {
-                uid: true
+                uid: true,
               },
               paid: true,
               ticket: {

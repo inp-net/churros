@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { me } from '$lib/session';
   import Button from '../buttons/Button.svelte';
   import IconPlus from '~icons/mdi/plus';
   import { nanoid } from 'nanoid';
@@ -17,8 +16,11 @@
   import { PaymentMethod, Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import Alert from '../alerts/Alert.svelte';
+  import { DISPLAY_VISIBILITY, HELP_VISIBILITY } from '$lib/display';
 
   let serverError = '';
+
+  const visibilities = Object.keys(DISPLAY_VISIBILITY) as Array<keyof typeof Visibility>;
 
   function eraseFakeIds(id: string): string {
     if (id.includes(':fake:')) {
@@ -292,6 +294,14 @@
   {#if availableGroups.length > 0}
     <ParentSearch label="Groupe" bind:parentUid={event.group.uid} />
   {/if}
+
+  <FormInput label="Visibilité" hint={HELP_VISIBILITY[event.visibility]}>
+    <select bind:value={event.visibility}>
+      {#each visibilities as value}
+        <option {value}>{DISPLAY_VISIBILITY[value]}</option>
+      {/each}
+    </select>
+  </FormInput>
 
   <FormInput label="Titre">
     <input type="text" bind:value={event.title} />

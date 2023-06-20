@@ -23,7 +23,7 @@ export const _articleQuery = Selector('Article')({
   links: {
     name: true,
     value: true,
-  }
+  },
 });
 
 export const load: PageLoad = async ({ fetch, params, parent }) =>

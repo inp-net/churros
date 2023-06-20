@@ -22,7 +22,7 @@
     slug: '',
     startsAt: undefined,
     title: '',
-    visibility: Visibility.Private
+    visibility: Visibility.Private,
   };
 </script>
 

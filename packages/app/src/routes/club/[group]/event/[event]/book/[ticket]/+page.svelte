@@ -28,7 +28,7 @@
     allowedPaymentMethods,
     onlyManagersCanProvide,
     name,
-    event: { contactMail, title, pictureFile, startsAt }
+    event: { contactMail, title, pictureFile, startsAt },
   } = data.ticketByUid;
 
   async function payBy(method: PaymentMethod) {
@@ -39,20 +39,20 @@
           paid: false,
           paymentMethod: method,
           beneficiary: payingForThemself ? '' : beneficiary,
-          ticketId: id
+          ticketId: id,
         },
         {
           __typename: true,
           '...on Error': {
-            message: true
+            message: true,
           },
           '...on MutationUpsertRegistrationSuccess': {
             data: {
-              __typename: true
-            }
-          }
-        }
-      ]
+              __typename: true,
+            },
+          },
+        },
+      ],
     });
 
     if (upsertRegistration?.__typename === 'Error') {

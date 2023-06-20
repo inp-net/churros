@@ -60,13 +60,13 @@
         <span class="day-name"
           >{day
             .toLocaleDateString('default', {
-              weekday: 'short'
+              weekday: 'short',
             })
             .replace(/\.$/, '')}</span
         >
         <span class="month-name"
           >{day.toLocaleDateString('default', {
-            month: 'long'
+            month: 'long',
           })}</span
         >
         <span class="day-number">

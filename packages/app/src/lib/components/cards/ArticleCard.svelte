@@ -2,8 +2,15 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import { intlFormatDistance } from 'date-fns';
   import Card from './Card.svelte';
+  import IconLock from '~icons/mdi/lock-outline';
+  import IconCommunity from '~icons/mdi/google-circles-extended';
+  import IconLinkLock from '~icons/mdi/link-lock';
+  import IconGlobe from '~icons/mdi/earth';
   import IconDots from '~icons/mdi/dots-horizontal';
+  import { Visibility } from '$lib/zeus';
+  import { DISPLAY_VISIBILITY } from '$lib/display';
 
+  export let visibility: Visibility | undefined = undefined;
   export let title: string;
   export let href: string;
   export let publishedAt: Date;
@@ -24,6 +31,17 @@
   </svelte:fragment>
   <header>
     <a {href}><h2>{title}</h2></a>
+    <div class="visibility" title={visibility ? DISPLAY_VISIBILITY[visibility] : undefined}>
+      {#if visibility === Visibility.Private}
+        <IconLock />
+      {:else if visibility === Visibility.Unlisted}
+        <IconLinkLock />
+      {:else if visibility === Visibility.Restricted}
+        <IconCommunity />
+      {:else if visibility === Visibility.Public}
+        <IconGlobe />
+      {/if}
+    </div>
   </header>
 
   <div class="description">
@@ -118,6 +136,12 @@
     color: #fff;
     text-decoration: unset;
     background: linear-gradient(160deg, tomato, purple);
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .see-more {

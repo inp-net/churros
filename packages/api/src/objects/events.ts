@@ -191,6 +191,7 @@ builder.queryField('eventsOfGroup', (t) =>
         return prisma.event.findMany({
           ...query,
           where: { visibility: VisibilityPrisma.Public, group: { uid: groupUid } },
+          orderBy: { startsAt: 'desc' },
         });
       }
 
@@ -268,8 +269,8 @@ builder.mutationField('upsertEvent', (t) =>
       location: t.arg.string(),
       title: t.arg.string(),
       visibility: t.arg({ type: VisibilityEnum }),
-      startsAt: t.arg({ type: DateTimeScalar}),
-      endsAt: t.arg({ type: DateTimeScalar}),
+      startsAt: t.arg({ type: DateTimeScalar }),
+      endsAt: t.arg({ type: DateTimeScalar }),
       managers: t.arg({ type: [ManagerOfEventInput] }),
     },
     authScopes(_, { id, groupId }, { user }) {

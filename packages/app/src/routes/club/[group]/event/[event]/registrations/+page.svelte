@@ -23,15 +23,15 @@
               author: { firstName, lastName },
               paid,
               paymentMethod,
-              ticket
-            }
+              ticket,
+            },
           }) => ({
             'Date de réservation': dateTimeFormatter.format(createdAt),
             Bénéficiaire: beneficiary,
             'Achat par': `${firstName} ${lastName}`,
             Payée: paid ? 'Oui' : 'Non',
             'Méthode de paiement': paymentMethod,
-            Billet: ticket.name
+            Billet: ticket.name,
           })
         )
       ).convertToCSVstring()
@@ -47,7 +47,7 @@
     'Validées',
     'Refusées',
     'En attente de remboursement',
-    'Remboursées'
+    'Remboursées',
   ] as const;
 
   let registrationsByCategory = {
@@ -56,7 +56,7 @@
     Validées: [],
     Refusées: [],
     'En attente de remboursement': [],
-    Remboursées: []
+    Remboursées: [],
   } as unknown as Record<
     typeof CATEGORIES[number],
     Array<{
@@ -90,20 +90,20 @@
           paymentMethod: registration.paymentMethod,
           beneficiary: registration.beneficiary,
           ticketId: registration.ticket.id,
-          paid: markAsPaid
+          paid: markAsPaid,
         },
         {
           __typename: true,
           '...on MutationUpsertRegistrationSuccess': {
             data: {
-              paid: true
-            }
+              paid: true,
+            },
           },
           '...on Error': {
-            message: true
-          }
-        }
-      ]
+            message: true,
+          },
+        },
+      ],
     });
     if (upsertRegistration.__typename !== 'Error') {
       registrations.edges[
@@ -119,7 +119,7 @@
   tabs={[
     { name: 'Infos', href: `../edit` },
     { name: 'Réservations', href: '.' },
-    { name: 'Vérifier', href: '../scan' }
+    { name: 'Vérifier', href: '../scan' },
   ]}
 />
 

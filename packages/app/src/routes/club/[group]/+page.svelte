@@ -134,21 +134,27 @@
       <IconPlus aria-label="Créer un événement" />
     </a>
   {/if}
-
-  <ul>
-    {#each group.events as { uid, visibility, title, startsAt, endsAt }}
-      {#if $me?.admin || visibility === 'Public' || (visibility === 'Restricted' && $me?.groups.some(({ group }) => group.uid === data.group.uid))}
-        <li>
-          <a href="/club/{group.uid}/event/{uid}/">
-            {title}
-            {#if isFuture(startsAt)}<span class="muted">À venir</span>{/if}
-            {#if isPast(endsAt)}<span class="muted">Terminé</span>{/if}
-          </a>
-        </li>
-      {/if}
-    {/each}
-  </ul>
 </h2>
+
+{#each group.events
+  .sort((a, b) => (a?.startsAt.valueOf() ?? 0) - (b.startsAt?.valueOf() ?? 0))
+  .reverse() as { uid, visibility, title, startsAt, pictureFile, links, descriptionHtml } (uid)}
+  <!-- Events can be seen if you are admin, a manager of the event, someone that can edit articles on this group or if the event is either public or restricted (and you're a member of the group) -->
+  {#if $me?.admin || $me?.groups.some(({ group, canEditArticles }) => group.uid === uid && canEditArticles) || $me?.managedEvents.some(({ event }) => event.uid === uid) || visibility === 'Public' || (visibility === 'Restricted' && $me?.groups.some(({ group }) => group.uid === data.group.uid))}
+    <ArticleCard
+      {group}
+      {visibility}
+      href="./event/{uid}"
+      publishedAt={startsAt}
+      {title}
+      author={undefined}
+      img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
+      {links}
+    >
+      {@html htmlToText.convert(descriptionHtml).replaceAll('\n', '<br>')}
+    </ArticleCard>
+  {/if}
+{/each}
 
 <h2>
   Articles
@@ -159,17 +165,21 @@
   {/if}
 </h2>
 
-{#each group.articles as { uid, title, bodyHtml, pictureFile, author, publishedAt }}
-  <ArticleCard
-    href="/club/{group.uid}/post/{uid}/"
-    {title}
-    {group}
-    {author}
-    {publishedAt}
-    img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
-  >
-    {@html htmlToText.convert(bodyHtml).replaceAll('\n', '<br>')}
-  </ArticleCard>
+{#each group.articles.sort((a, b) => (a.publishedAt?.valueOf() ?? 0) - (b.publishedAt?.valueOf() ?? 0)) as { uid, title, bodyHtml, pictureFile, author, publishedAt, visibility } (uid)}
+  <!-- To see an article, ether you are an admin, or you can edit articles in the group, or you wrote it, or it's published AND it's either Public or it's Restricted but you're a member of the group  -->
+  {#if $me?.admin || $me?.groups.some(({ group, canEditArticles }) => canEditArticles && group.uid === uid) || (author && $me?.uid === author.uid) || (publishedAt && isPast(new Date(publishedAt)) && (visibility === Visibility.Public || (visibility === Visibility.Restricted && $me?.groups.some(({ group }) => group.uid === uid))))}
+    <ArticleCard
+      href="/club/{group.uid}/post/{uid}/"
+      {title}
+      {visibility}
+      {group}
+      {author}
+      {publishedAt}
+      img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
+    >
+      {@html htmlToText.convert(bodyHtml).replaceAll('\n', '<br>')}
+    </ArticleCard>
+  {/if}
 {/each}
 
 <style lang="scss">

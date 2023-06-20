@@ -24,6 +24,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               selfJoinable: true,
               ancestors: { uid: true, name: true },
               articles: {
+                visibility: true,
                 uid: true,
                 title: true,
                 bodyHtml: true,
@@ -42,7 +43,12 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 secretary: true,
               },
               events: {
+                descriptionHtml: true,
                 uid: true,
+                links: {
+                  name: true,
+                  value: true,
+                },
                 title: true,
                 startsAt: true,
                 endsAt: true,
@@ -64,11 +70,22 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               longDescriptionHtml: true,
               email: true,
               selfJoinable: true,
-              articles: { uid: true, title: true, bodyHtml: true, pictureFile: true },
+              articles: {
+                visibility: true,
+                uid: true,
+                title: true,
+                bodyHtml: true,
+                pictureFile: true,
+              },
               school: { name: true, color: true },
               links: { name: true, value: true },
               events: {
+                descriptionHtml: true,
                 uid: true,
+                links: {
+                  name: true,
+                  value: true,
+                },
                 title: true,
                 startsAt: true,
                 visibility: true,

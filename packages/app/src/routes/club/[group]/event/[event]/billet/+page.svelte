@@ -102,7 +102,7 @@
       <Button
         on:click={async () => {
           await $zeus.mutate({
-            deleteRegistration: [{ id }, true]
+            deleteRegistration: [{ id }, true],
           });
           await goto('..');
         }}>Oui, je confirme</Button

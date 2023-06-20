@@ -21,7 +21,7 @@
     description: '',
     groups: [] as { uid: string; pictureFile: string; name: string }[],
     startsAt: startOfWeek(new Date()),
-    endsAt: endOfWeek(new Date())
+    endsAt: endOfWeek(new Date()),
   };
 
   let { barWeeks } = data;
@@ -33,7 +33,7 @@
 
   async function deleteBarWeek({ id }: { id: string }) {
     await $zeus.mutate({
-      deleteBarWeek: [{ id }, true]
+      deleteBarWeek: [{ id }, true],
     });
     barWeeks = barWeeks.filter((bw) => bw.id !== id);
   }
@@ -52,12 +52,12 @@
           endsAt: barWeek.endsAt,
           startsAt: barWeek.startsAt,
           id: barWeek.id,
-          groupsUids: barWeek.groups.map(({ uid }) => uid)
+          groupsUids: barWeek.groups.map(({ uid }) => uid),
         },
         {
           __typename: true,
           '...on Error': {
-            message: true
+            message: true,
           },
           '...on MutationUpsertBarWeekSuccess': {
             data: {
@@ -69,13 +69,13 @@
               groups: {
                 uid: true,
                 name: true,
-                pictureFile: true
+                pictureFile: true,
               },
-              uid: true
-            }
-          }
-        }
-      ]
+              uid: true,
+            },
+          },
+        },
+      ],
     });
 
     if (upsertBarWeek.__typename === 'Error') {
