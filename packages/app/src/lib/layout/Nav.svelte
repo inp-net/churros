@@ -1,18 +1,18 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { theme } from '$lib/theme';
-  import MajesticonsCalendar from '~icons/majesticons/calendar';
-  import MajesticonsCalendarLine from '~icons/majesticons/calendar-line';
-  import MajesticonsHome from '~icons/majesticons/home';
-  import MajesticonsHomeLine from '~icons/majesticons/home-line';
-  import MajesticonsMoon from '~icons/majesticons/moon';
-  import MajesticonsSearch from '~icons/majesticons/search-circle';
-  import MajesticonsSearchLine from '~icons/majesticons/search-circle-line';
-  import MajesticonsSun from '~icons/majesticons/sun';
-  import MajesticonsUserAdd from '~icons/majesticons/user-add';
-  import MajesticonsUserAddLine from '~icons/majesticons/user-add-line';
-  import MajesticonsUserGroup from '~icons/majesticons/user-group';
-  import MajesticonsUserGroupLine from '~icons/majesticons/user-group-line';
+  import IconCalendar from '~icons/mdi/calendar';
+  import IconCalendarLine from '~icons/mdi/calendar-blank-outline';
+  import IconHome from '~icons/mdi/home';
+  import IconHomeLine from '~icons/mdi/home-outline';
+  import IconMoon from '~icons/mdi/weather-night';
+  import IconSearch from '~icons/mdi/card-search';
+  import IconSearchLine from '~icons/mdi/card-search-outline';
+  import IconSun from '~icons/mdi/white-balance-sunny';
+  import IconUserAdd from '~icons/mdi/account-plus';
+  import IconUserAddLine from '~icons/mdi/account-plus-outline';
+  import IconUserGroup from '~icons/mdi/account-group';
+  import IconUserGroupLine from '~icons/mdi/account-group-outline';
   import Item from './Item.svelte';
 </script>
 
@@ -22,8 +22,8 @@
       <Item
         href="/"
         selected={$page.url.pathname === '/'}
-        icon={MajesticonsHomeLine}
-        selectedIcon={MajesticonsHome}
+        icon={IconHomeLine}
+        selectedIcon={IconHome}
       >
         Accueil
       </Item>
@@ -33,18 +33,18 @@
         href="/clubs/"
         selected={$page.url.pathname.startsWith('/clubs/') ||
           $page.url.pathname.startsWith('/club/')}
-        icon={MajesticonsUserGroupLine}
-        selectedIcon={MajesticonsUserGroup}
+        icon={IconUserGroupLine}
+        selectedIcon={IconUserGroup}
       >
         Clubs
       </Item>
     </li>
     <li>
       <Item
-        href="/calendar/"
-        selected={$page.url.pathname.startsWith('/calendar/')}
-        icon={MajesticonsCalendarLine}
-        selectedIcon={MajesticonsCalendar}
+        href="/week/"
+        selected={$page.url.pathname.startsWith('/week/')}
+        icon={IconCalendarLine}
+        selectedIcon={IconCalendar}
       >
         Calendrier
       </Item>
@@ -53,8 +53,8 @@
       <Item
         href="/search/"
         selected={$page.url.pathname.startsWith('/search/')}
-        icon={MajesticonsSearchLine}
-        selectedIcon={MajesticonsSearch}
+        icon={IconSearchLine}
+        selectedIcon={IconSearch}
       >
         Recherche
       </Item>
@@ -64,8 +64,8 @@
         <Item
           href="/users/"
           selected={$page.url.pathname.startsWith('/users/')}
-          icon={MajesticonsUserAddLine}
-          selectedIcon={MajesticonsUserAdd}
+          icon={IconUserAddLine}
+          selectedIcon={IconUserAdd}
         >
           Utilisateurs
         </Item>
@@ -79,9 +79,9 @@
         }}
       >
         {#if $theme === 'dark'}
-          <MajesticonsSun aria-label="Désactiver" />
+          <IconSun aria-label="Désactiver" />
         {:else}
-          <MajesticonsMoon aria-label="Activer" />
+          <IconMoon aria-label="Activer" />
         {/if}
       </button>
     </li>

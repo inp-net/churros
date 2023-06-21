@@ -2,7 +2,7 @@
   import Button from '$lib/components/buttons/Button.svelte';
   import { zeus } from '$lib/zeus';
   import { createEventDispatcher } from 'svelte';
-  import MajesticonsCheckLine from '~icons/majesticons/check-line';
+  import IconCheckLine from '~icons/mdi/check';
 
   export let email: string;
 
@@ -21,4 +21,4 @@
   };
 </script>
 
-<Button theme="primary" {loading} on:click={acceptRegistration}><MajesticonsCheckLine /></Button>
+<Button theme="primary" {loading} on:click={acceptRegistration}><IconCheckLine /></Button>

@@ -9,10 +9,36 @@ import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
 import TracingPlugin, { isRootField, wrapResolver } from '@pothos/plugin-tracing';
 import ValidationPlugin from '@pothos/plugin-validation';
-import { GraphQLError, Kind } from 'graphql';
 import { authScopes, type AuthContexts, type AuthScopes } from './auth.js';
 import type { Context } from './context.js';
 import { prisma } from './prisma.js';
+import { GraphQLError, Kind } from 'graphql';
+
+/**
+ * Maps database ID prefixes to GraphQL type names. Please add new types here as they are added to
+ * the schema, by running node scripts/update-id-prefix-to-typename-map.js.
+ */
+/* @generated from schema by file:///home/whidix/repos/centraverse/packages/api/build/scripts/update-id-prefix-to-typename-map.js */ export const ID_PREFIXES_TO_TYPENAMES =
+  {
+    u: 'User',
+    candidate: 'UserCandidate',
+    link: 'Link',
+    major: 'Major',
+    school: 'School',
+    credential: 'Credential',
+    ae: 'StudentAssociation',
+    g: 'Group',
+    a: 'Article',
+    e: 'Event',
+    tg: 'TicketGroup',
+    t: 'Ticket',
+    r: 'Registration',
+    log: 'LogEntry',
+    lydia: 'LydiaAccount',
+    lydiapayment: 'LydiaTransaction',
+    barweek: 'BarWeek',
+  };
+/* end @generated from schema */
 
 export const builder = new SchemaBuilder<{
   AuthContexts: AuthContexts;
@@ -23,7 +49,7 @@ export const builder = new SchemaBuilder<{
   Scalars: {
     DateTime: { Input: Date; Output: Date };
     File: { Input: never; Output: File };
-    ID: { Input: number; Output: number };
+    ID: { Input: string; Output: string };
   };
 }>({
   plugins: [
@@ -38,11 +64,24 @@ export const builder = new SchemaBuilder<{
     ValidationPlugin,
   ],
   authScopes,
-  complexity: { limit: { complexity: 500, depth: 6, breadth: 40 } },
+  complexity: { limit: { complexity: 11_000, depth: 6, breadth: 100 } },
   defaultInputFieldRequiredness: true,
   errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma, exposeDescriptions: true },
-  relayOptions: { clientMutationId: 'omit', cursorType: 'String' },
+  relayOptions: {
+    clientMutationId: 'omit',
+    cursorType: 'String',
+    encodeGlobalID: (_typename, id, {}) => id.toString(),
+    decodeGlobalID(globalID, {}) {
+      const [typename, id] = globalID.split(':');
+      if (!typename || !id) throw new Error(`Invalid global ID: ${globalID}`);
+      if (!(typename in ID_PREFIXES_TO_TYPENAMES)) throw new Error(`Unknown typename: ${typename}`);
+      return {
+        typename: ID_PREFIXES_TO_TYPENAMES[typename as keyof typeof ID_PREFIXES_TO_TYPENAMES],
+        id: globalID,
+      };
+    },
+  },
   tracing: {
     default: (config) => isRootField(config),
     wrap: (resolver, _options, config) =>
@@ -59,14 +98,13 @@ export const builder = new SchemaBuilder<{
 builder.queryType({});
 builder.mutationType({});
 
-// Parse GraphQL IDs as numbers
-const id = (builder.configStore.getInputTypeRef('ID') as BuiltinScalarRef<number, string>).type;
+// Parse GraphQL IDs as strings
+const id = (builder.configStore.getInputTypeRef('ID') as BuiltinScalarRef<string, string>).type;
 
 id.parseValue = (value: unknown) => {
-  const coerced = Number(value);
-  if (Number.isNaN(coerced) || !Number.isFinite(coerced)) return value;
-  // throw new GraphQLError('Expected ID to be a numeric.');
-  return coerced;
+  if (typeof value === 'number') return value.toString();
+  if (typeof value === 'string') return value;
+  throw new GraphQLError('Expected ID to be a number or a string.');
 };
 
 id.parseLiteral = (node) => {

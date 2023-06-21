@@ -1,0 +1,42 @@
+<script lang="ts">
+  import EventForm from '$lib/components/forms/EventForm.svelte';
+  import Tabs from '$lib/components/navigation/Tabs.svelte';
+  import { me } from '$lib/session';
+  import { Selector, zeus } from '$lib/zeus';
+  import type { PageData } from './$types';
+  import EventPicture from './EventPicture.svelte';
+
+  export let data: PageData;
+
+  let availableLydiaAccounts: Array<{ name: string; id: string }> = [];
+  $: $zeus
+    .query({
+      lydiaAccountsOfGroup: [
+        { uid: data.event.group.uid },
+        Selector('LydiaAccount')({ id: true, name: true }),
+      ],
+    })
+    .then(({ lydiaAccountsOfGroup }) => {
+      availableLydiaAccounts = lydiaAccountsOfGroup;
+    })
+    .catch(console.error);
+</script>
+
+<Tabs
+  tabs={[
+    { name: 'Infos', href: `.` },
+    { name: 'Réservations', href: '../registrations' },
+    { name: 'Vérifier', href: '../scan' },
+  ]}
+/>
+
+<a href="../">Voir l'évènement</a>
+
+<EventPicture bind:event={data.event} />
+<EventForm
+  availableGroups={data.groups.filter((g) =>
+    $me?.groups.some(({ group, canEditArticles }) => canEditArticles && group.id === g.id)
+  )}
+  {availableLydiaAccounts}
+  bind:event={data.event}
+/>

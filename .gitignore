@@ -14,3 +14,4 @@
 build/
 coverage/
 node_modules/
+packages/app/static/version.json

@@ -70,7 +70,7 @@ builder.mutationField('selfJoinGroup', (t) =>
 );
 
 /** Updates a group member. */
-builder.mutationField('updateGroupMember', (t) =>
+builder.mutationField('upsertGroupMember', (t) =>
   t.prismaField({
     type: GroupMemberType,
     args: {
@@ -85,7 +85,7 @@ builder.mutationField('updateGroupMember', (t) =>
     authScopes: (_, { groupId }, { user }) =>
       Boolean(
         user?.canEditGroups ||
-          user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id)
+          user?.groups.some(({ group, canEditMembers }) => canEditMembers && group.id === groupId)
       ),
     async resolve(
       query,
@@ -94,22 +94,27 @@ builder.mutationField('updateGroupMember', (t) =>
     ) {
       if (president) {
         await prisma.groupMember.updateMany({
-          where: { groupId, president: true },
+          where: { group: { id: groupId }, president: true },
           data: { president: false },
         });
       }
 
-      return prisma.groupMember.update({
+      const data = {
+        title,
+        president,
+        treasurer,
+        groupId,
+        memberId,
+        canEditMembers: president || treasurer,
+        secretary,
+        vicePresident,
+      };
+
+      return prisma.groupMember.upsert({
         ...query,
         where: { groupId_memberId: { groupId, memberId } },
-        data: {
-          title,
-          president,
-          treasurer,
-          canEditMembers: president || treasurer,
-          secretary,
-          vicePresident,
-        },
+        create: data,
+        update: data,
       });
     },
   })

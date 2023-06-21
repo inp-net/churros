@@ -1,12 +1,20 @@
 import { GraphQLError } from 'graphql';
 import imageType, { minimumBytes } from 'image-type';
-import { unlink, writeFile } from 'node:fs/promises';
+import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import { phone as parsePhoneNumber } from 'phone';
 import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
 import { prisma } from '../prisma.js';
 import { LinkInput } from './links.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
+import {
+  type FuzzySearchResult,
+  splitSearchTerms,
+  levenshteinSorter,
+  levenshteinFilterAndSort,
+} from '../services/search.js';
+import type { User } from '@prisma/client';
+import { dirname, join } from 'node:path';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -29,7 +37,7 @@ export const UserType = builder.prismaNode('User', {
       nullable: true,
       authScopes: { loggedIn: true, $granted: 'me' },
     }),
-    linkCollection: t.relation('linkCollection', {
+    links: t.relation('links', {
       authScopes: { loggedIn: true, $granted: 'me' },
     }),
     nickname: t.exposeString('nickname', { authScopes: { loggedIn: true, $granted: 'me' } }),
@@ -55,7 +63,7 @@ export const UserType = builder.prismaNode('User', {
       query: { orderBy: { publishedAt: 'desc' } },
     }),
     groups: t.relation('groups', {
-      authScopes: { loggedIn: true, $granted: 'me' },
+      // authScopes: { loggedIn: true, $granted: 'me' },
       query: { orderBy: { group: { name: 'asc' } } },
     }),
     credentials: t.relation('credentials', {
@@ -63,6 +71,7 @@ export const UserType = builder.prismaNode('User', {
       query: { orderBy: { createdAt: 'desc' } },
     }),
     major: t.relation('major', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    managedEvents: t.relation('managedEvents', { authScopes: { loggedIn: true, $granted: 'me' } }),
   }),
 });
 
@@ -95,10 +104,15 @@ builder.queryField('searchUsers', (t) =>
     args: { q: t.arg.string() },
     authScopes: { loggedIn: true },
     async resolve(query, _, { q }) {
-      const terms = new Set(String(q).split(' ').filter(Boolean));
-      const numberTerms = [...terms].map(Number).filter((n) => !Number.isNaN(n));
-      const search = [...terms].join('&');
-      return prisma.user.findMany({
+      const { numberTerms, searchString: search } = splitSearchTerms(q);
+      const searchResults: FuzzySearchResult = await prisma.$queryRaw`
+SELECT "id", levenshtein_less_equal("firstName" ||' '|| "lastName", ${q}, 20) as changes
+FROM "User"
+ORDER BY changes ASC
+LIMIT 10
+`;
+
+      const users = await prisma.user.findMany({
         ...query,
         where: {
           OR: [
@@ -111,6 +125,20 @@ builder.queryField('searchUsers', (t) =>
           ],
         },
       });
+
+      const fuzzyUsers = await prisma.user.findMany({
+        ...query,
+        where: { id: { in: searchResults.map(({ id }) => id) } },
+      });
+
+      return [
+        ...users.sort(levenshteinSorter(searchResults)),
+        ...levenshteinFilterAndSort<User>(
+          searchResults,
+          5,
+          users.map(({ id }) => id)
+        )(fuzzyUsers),
+      ];
     },
   })
 );
@@ -160,7 +188,7 @@ builder.mutationField('updateUser', (t) =>
           address,
           phone,
           birthday,
-          linkCollection: { update: { links: { deleteMany: {}, createMany: { data: links } } } },
+          links: { deleteMany: {}, createMany: { data: links } },
         },
       });
     },
@@ -213,7 +241,8 @@ builder.mutationField('updateUserPicture', (t) =>
 
       if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
 
-      const path = `${uid}.${type.ext}`;
+      const path = join(`users`, `${uid}.${type.ext}`);
+      await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
       purgeUserSessions(uid);
       await writeFile(new URL(path, process.env.STORAGE), file.stream());
       await prisma.user.update({ where: { uid }, data: { pictureFile: path } });

@@ -31,5 +31,12 @@ declare namespace NodeJS {
     STORAGE: string;
     /** The email from which will be sent all emails. */
     SUPPORT_EMAIL: string;
+    /** Lydia API URL. */
+    LYDIA_API_URL: string;
+    /**
+     * Foy groups. Only users that are part of the bureau of one of these groups can create/modify
+     * bar weeks. Must be a comma-separated list of group UIDs.
+     */
+    FOY_GROUPS: string;
   }
 }

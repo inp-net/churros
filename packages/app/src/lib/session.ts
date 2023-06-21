@@ -15,13 +15,20 @@ export const sessionUserQuery = () =>
     canEditGroups: true,
     canEditUsers: true,
     groups: {
-      group: { uid: true },
+      group: { uid: true, id: true },
+      title: true,
       president: true,
       secretary: true,
       vicePresident: true,
       treasurer: true,
       canEditArticles: true,
       canEditMembers: true,
+    },
+    managedEvents: {
+      event: { uid: true, id: true },
+      canEdit: true,
+      canEditPermissions: true,
+      canVerifyRegistrations: true,
     },
     major: { id: true, name: true, schools: { id: true, name: true } },
   });

@@ -6,13 +6,16 @@ export const pageQuery = Selector('QueryHomepageConnection')({
   edges: {
     cursor: true,
     node: {
-      slug: true,
+      uid: true,
       title: true,
       bodyHtml: true,
-      homepage: true,
+      body: true,
+      visibility: true,
       publishedAt: true,
-      group: { uid: true, name: true },
+      pictureFile: true,
+      group: { uid: true, name: true, pictureFile: true },
       author: { uid: true, firstName: true, lastName: true },
+      links: { value: true, name: true },
     },
   },
 });
