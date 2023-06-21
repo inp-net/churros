@@ -26,15 +26,13 @@
           password,
         }),
       });
-      if (!response.ok) 
-        throw new Error('Mauvais identifiants');
-      
+      if (!response.ok) throw new Error('Mauvais identifiants');
+
       let { business_list } = await response.json();
       business_list = business_list.filter(
-        (business: { name: string; api_token_id: string; api_token: string }) => 
+        (business: { name: string; api_token_id: string; api_token: string }) =>
           // If the lydia account is already linked to the group, don't show it
-           !lydiaAccountsOfGroup.some((lydiaAccount) => lydiaAccount.name === business.name)
-        
+          !lydiaAccountsOfGroup.some((lydiaAccount) => lydiaAccount.name === business.name)
       );
       lydiaAccounts = business_list;
     } finally {
@@ -61,9 +59,8 @@
         ],
       });
 
-      if (upsertLydiaAccount.__typename === 'LydiaAccount') 
+      if (upsertLydiaAccount.__typename === 'LydiaAccount')
         lydiaAccounts = lydiaAccounts.filter((lydiaAccount) => lydiaAccount.name !== name);
-      
     } finally {
       loading = false;
     }

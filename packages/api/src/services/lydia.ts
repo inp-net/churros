@@ -23,9 +23,10 @@ export async function checkLydiaAccount(vendor_token: string, vendor_id: string)
 // Send a payment request to a number
 export async function sendLydiaPaymentRequest(
   phone: string,
-  registrationId: string
+  registrationId?: string
 ): Promise<void> {
   // Get the lydia tokens from the registration
+  console.log(registrationId);
   const registration = await prisma.registration.findUnique({
     where: { id: registrationId },
     include: {
@@ -41,6 +42,7 @@ export async function sendLydiaPaymentRequest(
       lydiaTransaction: true,
     },
   });
+  console.log(registration);
   if (!registration) throw new Error('Registration not found');
   let transaction = registration.lydiaTransaction;
   // Check if a lydia transaction already exists
@@ -59,31 +61,27 @@ export async function sendLydiaPaymentRequest(
     // Cancel the previous transaction
     await fetch(`${LYDIA_API_URL}/api/request/cancel.json`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: new URLSearchParams({
         request_id: transaction.requestId,
-        vendor_token: registration.ticket.event.beneficiary?.vendorToken,
+        vendor_token: registration.ticket.event.beneficiary?.vendorToken || '',
       }),
     });
   }
 
+  const formParams = {
+    message: `Paiement de ${registration.ticket.event.title}`,
+    amount: registration.ticket.price.toString(),
+    currency: 'EUR',
+    type: 'phone',
+    recipient: phone,
+    vendor_token: registration.ticket.event.beneficiary?.vendorToken || '',
+    confirm_url: LYDIA_WEBHOOK_URL || '',
+  };
+
   // Send the lydia payment request
   const response = await fetch(`${LYDIA_API_URL}/api/request/do.json`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      message: `Paiement de ${registration.ticket.event.title}`,
-      amount: registration.ticket.price,
-      cuurency: 'EUR',
-      type: 'phone',
-      recipient: phone,
-      vendor_token: registration.ticket.event.beneficiary?.vendorToken,
-      confirm_url: LYDIA_WEBHOOK_URL,
-    }),
+    body: new URLSearchParams(formParams),
   });
   if (!response.ok) throw new Error('Error while sending the payment request');
   // Retrieve the requestId and requestUuid

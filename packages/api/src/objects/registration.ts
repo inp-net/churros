@@ -3,6 +3,7 @@ import { builder } from '../builder.js';
 import { DateTimeScalar } from './scalars.js';
 import { prisma } from '../prisma.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
+import { sendLydiaPaymentRequest } from '../services/lydia.js';
 import { placesLeft } from './tickets.js';
 import { GraphQLError } from 'graphql';
 
@@ -257,17 +258,6 @@ builder.mutationField('upsertRegistration', (t) =>
         include: { event: { include: { beneficiary: true } } },
       });
 
-      if (ticket.price > 0) {
-        if (!paymentMethod) {
-          throw new GraphQLError(
-            "La place n'est pas gratuite, il faut choisir un moyen de paiement"
-          );
-        }
-
-        if (ticket.event.beneficiary)
-          await pay(user, ticket.event.beneficiary, ticket.price, paymentMethod);
-      }
-
       return prisma.registration.upsert({
         ...query,
         where: { id: id ?? '' },
@@ -282,6 +272,84 @@ builder.mutationField('upsertRegistration', (t) =>
           paymentMethod: paymentMethod ?? null,
           beneficiary: beneficiary ?? '',
           paid: ticket.price === 0,
+        },
+      });
+    },
+  })
+);
+
+builder.mutationField('paidRegistration', (t) =>
+  t.prismaField({
+    type: RegistrationType,
+    args: {
+      regId: t.arg.id(),
+      beneficiary: t.arg.string({ required: false }),
+      paymentMethod: t.arg({ type: PaymentMethodEnum, required: false }),
+      phone: t.arg.string({ required: false }),
+    },
+    async authScopes(_, { regId }, { user }) {
+      const creating = !regId;
+      if (!user) return false;
+      const registration = await prisma.registration.findUnique({
+        where: { id: regId },
+        include: { ticket: { include: { event: true } } },
+      });
+      if (!registration) return false;
+
+      if (creating) {
+        // Check that the user can access the event
+        if (!(await eventAccessibleByUser(registration.ticket.event, user))) return false;
+
+        // Check for tickets that only managers can provide
+        if (
+          registration.ticket.onlyManagersCanProvide &&
+          !eventManagedByUser(registration.ticket.event, user, { canVerifyRegistrations: true })
+        )
+          return false;
+
+        // Check that the ticket is still open
+        if (registration.ticket.closesAt && registration.ticket.closesAt.valueOf() < Date.now())
+          return false;
+
+        // Check that the ticket is not full
+        const ticketAndRegistrations = await prisma.ticket.findUnique({
+          where: { id: registration.ticket.id },
+          include: {
+            registrations: true,
+            group: { include: { tickets: { include: { registrations: true } } } },
+          },
+        });
+        return placesLeft(ticketAndRegistrations!) > 0;
+      }
+      return true;
+    },
+    async resolve(query, _, { regId, beneficiary, paymentMethod, phone }, { user }) {
+      if (!user) throw new GraphQLError('User not found');
+
+      const registration = await prisma.registration.findUnique({
+        where: { id: regId ?? '' },
+        include: { ticket: { include: { event: true } } },
+      });
+      if (!registration) throw new GraphQLError('Registration not found');
+
+      const ticket = await prisma.ticket.findUnique({
+        where: { id: registration.ticket.id },
+        include: { event: { include: { beneficiary: true } } },
+      });
+      if (!ticket) throw new GraphQLError('Ticket not found');
+      if (!paymentMethod) throw new GraphQLError('Payment method not found');
+      if (!ticket.event.beneficiary) throw new GraphQLError('Beneficiary not found');
+      if (!phone) throw new GraphQLError('Phone not found');
+      // Process payment
+      pay(user!, ticket.event.beneficiary, ticket.price, paymentMethod, phone, regId);
+
+      return prisma.registration.update({
+        ...query,
+        where: { id: regId ?? '' },
+        data: {
+          paid: true,
+          paymentMethod: paymentMethod ?? null,
+          beneficiary: beneficiary ?? '',
         },
       });
     },
@@ -346,13 +414,22 @@ async function pay(
   from: { uid: string },
   to: { uid: string },
   amount: number,
-  by: PaymentMethodPrisma
+  by: PaymentMethodPrisma,
+  phone?: string,
+  registrationId?: string
 ) {
-  return new Promise((_resolve, reject) => {
-    reject(
-      new GraphQLError(
-        `Attempt to pay ${to.uid} ${amount} from ${from.uid} by ${by}: not implemented`
-      )
-    );
-  });
+  switch (by) {
+    case 'Lydia':
+      if (!phone) throw new GraphQLError('Missing phone number');
+      console.log(`Paying ${amount}€ from ${from.uid} to ${to.uid} by Lydia`);
+      return sendLydiaPaymentRequest(phone, registrationId);
+    default:
+      return new Promise((_resolve, reject) => {
+        reject(
+          new GraphQLError(
+            `Attempt to pay ${to.uid} ${amount} from ${from.uid} by ${by}: not implemented`
+          )
+        );
+      });
+  }
 }

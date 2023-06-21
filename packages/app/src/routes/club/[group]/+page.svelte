@@ -32,7 +32,7 @@
     if (!$me) return;
     try {
       await $zeus.mutate({
-        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }]
+        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }],
       });
       window.location.reload();
     } catch (error: unknown) {

@@ -64,7 +64,7 @@
       createdAt: Date;
       beneficiary: string;
       id: string;
-      paymentMethod?: PaymentMethod|undefined;
+      paymentMethod?: PaymentMethod | undefined;
       author: { uid: string; firstName: string; lastName: string };
       ticket: { id: string; name: string };
     }>

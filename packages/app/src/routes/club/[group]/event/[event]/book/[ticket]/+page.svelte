@@ -1,8 +1,6 @@
 <script lang="ts">
-  import IconBack from '~icons/mdi/arrow-left';
   import IconCheck from '~icons/mdi/check';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import { me } from '$lib/session';
@@ -29,10 +27,10 @@
     onlyManagersCanProvide,
     name,
     event: { contactMail, title, pictureFile, startsAt },
-    price
+    price,
   } = data.ticketByUid;
 
-  async function payBy(method: PaymentMethod|undefined) {
+  async function payBy(method: PaymentMethod | undefined) {
     const { upsertRegistration } = await $zeus.mutate({
       upsertRegistration: [
         {

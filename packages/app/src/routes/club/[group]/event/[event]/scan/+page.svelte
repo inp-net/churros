@@ -44,7 +44,7 @@
       'reader',
       {
         fps: 5,
-        qrbox: { width: 300, height: 600 }
+        qrbox: { width: 300, height: 600 },
       },
       false
     );
@@ -67,7 +67,7 @@
         {
           __typename: true,
           '...on Error': {
-            message: true
+            message: true,
           },
           '...on QueryRegistrationSuccess': {
             data: {
@@ -77,11 +77,11 @@
               paid: true,
               id: true,
               ticket: { name: true, group: { name: true } },
-              paymentMethod: true
-            }
-          }
-        }
-      ]
+              paymentMethod: true,
+            },
+          },
+        },
+      ],
     });
 
     let r: typeof result;
@@ -108,7 +108,7 @@
   tabs={[
     { name: 'Infos', href: `../edit` },
     { name: 'Réservations', href: '../registrations' },
-    { name: 'Vérifier', href: '.' }
+    { name: 'Vérifier', href: '.' },
   ]}
 />
 
