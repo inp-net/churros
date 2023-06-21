@@ -85,6 +85,7 @@ const yoga = createYoga({
   plugins: [useNoBatchedQueries({ allow: 4 })],
 });
 
+
 const api = express();
 api.use(
   // Allow queries from the frontend only

@@ -48,13 +48,15 @@ model User {
   canEditGroups Boolean @default(false)
 
   // Relationships
-  articles      Article[]
-  groups        GroupMember[]
-  credentials   Credential[]
-  Reservation   Registration[]
-  managedEvents EventManager[]
-  logs          LogEntry[]
-  events        Event[]
+  articles                  Article[]
+  groups                    GroupMember[]
+  credentials               Credential[]
+  Reservation               Registration[]
+  managedEvents             EventManager[]
+  logs                      LogEntry[]
+  events                    Event[]
+  notificationSubscriptions NotificationSubscription[]
+  notifications             Notification[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -207,6 +209,7 @@ model Group {
   lyiaAccounts       LydiaAccount[]
   tickets            Ticket[]
   barWeeks           BarWeek[]
+  Notification       Notification[]
 }
 
 /// The intermediate model between users and groups
@@ -402,4 +405,46 @@ model BarWeek {
   startsAt    DateTime
   endsAt      DateTime
   description String   @default("") @db.VarChar(255)
+}
+
+/// A NotificationSubscription stores a user's subscription to push notifications on a user agent
+model NotificationSubscription {
+  id        String    @id @default(dbgenerated("nanoid('notifsub:')"))
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  owner     User      @relation(fields: [ownerId], references: [id])
+  ownerId   String
+  endpoint  String    @unique
+  expiresAt DateTime?
+  authKey   String
+  p256dhKey String
+}
+
+/// A notification is a push notification that was sent to a user
+model Notification {
+  id          String           @id @default(dbgenerated("nanoid('notif:')"))
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  timestamp   DateTime?
+  recipient   User             @relation(fields: [recipientId], references: [id])
+  recipientId String
+  title       String           @db.VarChar(255)
+  imageFile   String           @default("")
+  body        String           @db.Text
+  vibrate     Int[]            @default([])
+  group       Group?           @relation(fields: [groupId], references: [id])
+  groupId     String?
+  type        NotificationType
+}
+
+/// A NotificationType represents the different kinds of reasons why you might receive a notification: a shotgun just opened, etc.
+enum NotificationType {
+  NewArticle
+  NewEvent
+  ShotgunOpeningSoon
+  ShotgunOpened
+  ShotgunClosingSoon
+  EventStartingSoon
+  EventStarted
+  Other // should't be used too much
 }

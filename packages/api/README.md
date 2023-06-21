@@ -190,6 +190,8 @@ You need to do a few things:
 
    - Each query and mutation should define an `authScope` method that makes sure the logged-in user has the right to get, list, update, create or delete the requested resource.
 
+1. Register the resource to the schema by importing it in `schema.ts`
+
 1. TEST that your API works using the GraphiQL endpoint (`localhost:4000/graphql` in your browser), setting the `Authorization` header to various Bearer tokens that represent:
    - An admin user
    - Every possible case dependending on the permissions of the resource (for example, managers of an event for the `EventManager` resource)

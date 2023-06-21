@@ -2,6 +2,8 @@
   import { page } from '$app/stores';
   import { theme } from '$lib/theme';
   import IconCalendar from '~icons/mdi/calendar';
+  import IconBell from '~icons/mdi/bell';
+  import IconBellLine from '~icons/mdi/bell-outline';
   import IconCalendarLine from '~icons/mdi/calendar-blank-outline';
   import IconHome from '~icons/mdi/home';
   import IconHomeLine from '~icons/mdi/home-outline';
@@ -68,6 +70,18 @@
           selectedIcon={IconUserAdd}
         >
           Utilisateurs
+        </Item>
+      </li>
+    {/if}
+    {#if $page.data.me}
+      <li>
+        <Item
+          href="/notifications/"
+          selected={$page.url.pathname.startsWith('/notifications/')}
+          icon={IconBellLine}
+          selectedIcon={IconBell}
+        >
+          Notifications
         </Item>
       </li>
     {/if}
