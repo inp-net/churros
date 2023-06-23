@@ -1,13 +1,16 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import IconCheckmark from '~icons/mdi/check';
   import IconClose from '~icons/mdi/close';
+  const emit = createEventDispatcher();
 
   export let tristate = true;
   // eslint-disable-next-line unicorn/no-null
   export let value: boolean | null | undefined = null;
   export let name: string | undefined = undefined;
   let previousValue: boolean | null | undefined = value;
+
+  $: emit('change', value);
 
   // eslint-disable-next-line unicorn/no-null
   const getTriState = (target: HTMLInputElement) => (target.indeterminate ? null : target.checked);

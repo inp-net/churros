@@ -10,7 +10,6 @@
   import { _notificationsQuery } from './+page';
 
   export let data: PageData;
-  let { notifications } = data;
   let subscription: PushSubscription | null;
 
   onMount(async () => {
@@ -19,14 +18,15 @@
     if (!subscription) {
       return;
     }
-    ({ notifications } = await $zeus.query({
+    const { notifications } = await $zeus.query({
       notifications: [
         {
           subscriptionEndpoint: subscription.endpoint,
         },
         _notificationsQuery,
       ],
-    }));
+    });
+    data.notifications = notifications;
   });
 
   let subscribed = false;
@@ -114,13 +114,13 @@
 
 {#if subscribed}
   <ul class="notifications">
-    {#each notifications.edges.map(({ node }) => node) as { id, title, body, timestamp, actions } (id)}
+    {#each data.notifications.edges.map(({ node }) => node) as { id, title, body, timestamp, actions } (id)}
       <li class="notification" data-id={id}>
         <h2>{title}</h2>
         <p>{body}</p>
         {#if timestamp}
           <p>
-            {formatDistance(timestamp, new Date(), {
+            {formatDistance(new Date(timestamp), new Date(), {
               locale: dateFnsFrenchLocale,
               addSuffix: true,
             })}

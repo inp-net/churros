@@ -7,6 +7,7 @@ import {
   type TicketGroup,
   type User,
   Visibility,
+  type NotificationSetting,
 } from '@prisma/client';
 import { prisma } from '../prisma.js';
 import webpush from 'web-push';
@@ -62,7 +63,9 @@ export async function scheduleShotgunNotifications(
   const shotgunDate = getShotgunDate(event);
   if (Number.isNaN(shotgunDate.valueOf())) return;
 
-  const allUsers = await prisma.user.findMany({ include: { groups: true } });
+  const allUsers = await prisma.user.findMany({
+    include: { groups: true },
+  });
   const recipients =
     event.visibility === Visibility.Restricted
       ? allUsers.filter(({ groups }) => groups.some(({ groupId }) => event.groupId === groupId))
@@ -106,7 +109,7 @@ export async function scheduleShotgunNotifications(
       title: `Le shotgun pour ${event.title} ouvre bientôt !`,
       body: `À vos marques`,
       data: {
-        group: event.groupId,
+        group: event.group.uid,
         type: NotificationType.ShotgunOpeningSoon,
       },
       image: event.pictureFile,
@@ -131,7 +134,7 @@ export async function scheduleShotgunNotifications(
         },
       ],
       data: {
-        group: event.groupId,
+        group: event.group.uid,
         type: NotificationType.ShotgunOpened,
       },
       image: event.pictureFile,
@@ -179,7 +182,15 @@ export async function notify(
       },
     },
     include: {
-      owner: true,
+      owner: {
+        include: {
+          notificationSettings: {
+            include: {
+              group: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -188,6 +199,17 @@ export async function notify(
   for (const sub of subscriptions) {
     const { endpoint, authKey, p256dhKey, owner, id } = sub;
     const notif = typeof notification === 'function' ? await notification(owner) : notification;
+    if (!canSendNotificationToUser(owner.notificationSettings, notif.data.type, notif.data.group)) {
+      console.log(
+        `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
+          owner.id
+        }] Skipping since user has disabled ${notif.data.type} on ${
+          notif.data.group ?? 'global'
+        } notifications`
+      );
+      continue;
+    }
+
     await webpush.sendNotification(
       {
         endpoint,
@@ -208,12 +230,14 @@ export async function notify(
         timestamp: notif.timestamp ? new Date(notif.timestamp) : new Date(),
         actions: {
           createMany: {
-            data: (notif.actions ?? [])
-              .filter(({ action }) => action.startsWith('https://'))
-              .map(({ action, title }) => ({
-                value: action,
-                name: title,
-              })),
+            data: [
+              ...(notif.actions ?? [])
+                .filter(({ action }) => /^https?:\/\//.test(action))
+                .map(({ action, title }) => ({
+                  value: action,
+                  name: title,
+                })),
+            ],
           },
         },
         title: notif.title,
@@ -228,4 +252,23 @@ export async function notify(
   }
 
   return sentSubscriptions;
+}
+
+export function canSendNotificationToUser(
+  notificationSettings: Array<NotificationSetting & { group: Group | null }>,
+  type: NotificationType,
+  groupUid: string | undefined
+): boolean {
+  if (groupUid) {
+    const groupSetting = notificationSettings.find(
+      ({ type: t, group }) => t === type && group?.uid === groupUid
+    );
+    if (groupSetting) return groupSetting.allow;
+  }
+
+  const setting = notificationSettings.find(({ type: t }) => t === type);
+  if (!setting) return false;
+  if (setting.allow) return true;
+
+  return false;
 }

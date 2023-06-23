@@ -1,4 +1,4 @@
-import { CredentialType, type UserCandidate } from '@prisma/client';
+import { CredentialType, NotificationType, type UserCandidate } from '@prisma/client';
 import dichotomid from 'dichotomid';
 import { nanoid } from 'nanoid';
 import { createTransport } from 'nodemailer';
@@ -111,6 +111,14 @@ export const saveUser = async ({
       schoolUid,
       credentials: { create: { type: CredentialType.Password, value: password } },
       links: { create: [] },
+      // enable all notifications by default.
+      // the consent is still given per-device by the user on the frontend (see notification subscriptions).
+      notificationSettings: {
+        create: Object.values(NotificationType).map((type) => ({
+          type,
+          allow: true,
+        })),
+      },
     },
   });
 

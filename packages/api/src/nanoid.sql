@@ -1,4 +1,5 @@
 -- This function-is installed in the first migration by editing it manually to include this CREATE OR REPLACE FUNCTION statement.
+
 -- It needs the pgcrypto extension to function.
 
 CREATE OR REPLACE FUNCTION NANOID(PREFIX TEXT DEFAULT 

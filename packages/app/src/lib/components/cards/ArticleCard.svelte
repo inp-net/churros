@@ -8,7 +8,7 @@
   import IconGlobe from '~icons/mdi/earth';
   import IconDots from '~icons/mdi/dots-horizontal';
   import { Visibility } from '$lib/zeus';
-  import { DISPLAY_VISIBILITY } from '$lib/display';
+  import { DISPLAY_VISIBILITIES } from '$lib/display';
 
   export let visibility: Visibility | undefined = undefined;
   export let title: string;
@@ -31,7 +31,7 @@
   </svelte:fragment>
   <header>
     <a {href}><h2>{title}</h2></a>
-    <div class="visibility" title={visibility ? DISPLAY_VISIBILITY[visibility] : undefined}>
+    <div class="visibility" title={visibility ? DISPLAY_VISIBILITIES[visibility] : undefined}>
       {#if visibility === Visibility.Private}
         <IconLock />
       {:else if visibility === Visibility.Unlisted}

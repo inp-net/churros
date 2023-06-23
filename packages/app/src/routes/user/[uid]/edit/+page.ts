@@ -15,6 +15,17 @@ export const _userQuery = Selector('User')({
   phone: true,
   birthday: true,
   links: { name: true, value: true },
+  notificationSettings: {
+    id: true,
+    type: true,
+    allow: true,
+    group: {
+      id: true,
+      uid: true,
+      name: true,
+      pictureFile: true,
+    },
+  },
 });
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
