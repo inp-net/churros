@@ -54,33 +54,33 @@
               ...t,
               id: eraseFakeIds(t.id),
               openToGroups: t.openToGroups.map(({ uid }) => uid),
-              openToSchools: t.openToSchools.map(({ uid }) => uid)
-            }))
+              openToSchools: t.openToSchools.map(({ uid }) => uid),
+            })),
           })),
           tickets: event.tickets.map((t) => ({
             ...t,
             id: eraseFakeIds(t.id),
             openToGroups: t.openToGroups.map(({ uid }) => uid),
-            openToSchools: t.openToSchools.map(({ uid }) => uid)
+            openToSchools: t.openToSchools.map(({ uid }) => uid),
           })),
           title: event.title,
           visibility: event.visibility,
           managers: event.managers.map(({ user, ...permissions }) => ({
             ...permissions,
-            userUid: user.uid
+            userUid: user.uid,
           })),
           id: event.id,
-          lydiaAccountId: event.lydiaAccountId
+          lydiaAccountId: event.lydiaAccountId,
         },
         {
           __typename: true,
           '...on Error': {
-            message: true
+            message: true,
           },
           '...on MutationUpsertEventSuccess': {
             data: {
               author: {
-                uid: true
+                uid: true,
               },
               uid: true,
               id: true,
@@ -111,8 +111,8 @@
                   openToGroups: { name: true, uid: true, pictureFile: true },
                   openToNonAEContributors: true,
                   godsonLimit: true,
-                  onlyManagersCanProvide: true
-                }
+                  onlyManagersCanProvide: true,
+                },
               },
               tickets: {
                 name: true,
@@ -130,23 +130,23 @@
                 openToGroups: { name: true, uid: true, pictureFile: true },
                 openToNonAEContributors: true,
                 godsonLimit: true,
-                onlyManagersCanProvide: true
+                onlyManagersCanProvide: true,
               },
               managers: {
                 user: {
                   uid: true,
                   firstName: true,
                   lastName: true,
-                  pictureFile: true
+                  pictureFile: true,
                 },
                 canEdit: true,
                 canEditPermissions: true,
-                canVerifyRegistrations: true
-              }
-            }
-          }
-        }
-      ]
+                canVerifyRegistrations: true,
+              },
+            },
+          },
+        },
+      ],
     });
 
     if (upsertEvent?.__typename === 'Error') {
@@ -196,7 +196,7 @@
     openToNonAEContributors: null,
     openToPromotions: [],
     openToSchools: [],
-    id
+    id,
   });
 
   type Ticket = {
@@ -272,7 +272,7 @@
     return {
       canEditPermissions: level === 'fullaccess',
       canEdit: level === 'editor' || level === 'fullaccess',
-      canVerifyRegistrations: level === 'verifyer' || level === 'editor' || level === 'fullaccess'
+      canVerifyRegistrations: level === 'verifyer' || level === 'editor' || level === 'fullaccess',
     };
   }
 
@@ -344,8 +344,8 @@
               id: nextTicketGroupId(),
               name: '',
               capacity: 0,
-              tickets: []
-            }
+              tickets: [],
+            },
           ];
         }}
       >
@@ -644,7 +644,7 @@
           if (!e.target || !('value' in e.target)) return;
           event.managers[i] = {
             ...manager,
-            ...permissionsFromLevel(aspermissionlevel(e.target.value))
+            ...permissionsFromLevel(aspermissionlevel(e.target.value)),
           };
         }}
         value={levelFromPermissions(manager)}
@@ -663,8 +663,8 @@
         ...event.managers,
         {
           user: { uid: '', firstName: '', lastName: '', pictureFile: '' },
-          ...permissionsFromLevel('readonly')
-        }
+          ...permissionsFromLevel('readonly'),
+        },
       ];
     }}>Ajouter un manager</Button
   >

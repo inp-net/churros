@@ -37,16 +37,16 @@
             body,
             publishedAt: publishedAt?.toISOString(),
             links,
-            visibility
+            visibility,
           },
           {
             __typename: true,
             '...on Error': { message: true },
             '...on MutationUpsertArticleSuccess': {
-              data: _articleQuery
-            }
-          }
-        ]
+              data: _articleQuery,
+            },
+          },
+        ],
       });
 
       if (upsertArticle.__typename === 'Error') {

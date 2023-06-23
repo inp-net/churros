@@ -108,6 +108,8 @@ model Link {
   eventId              String?
   Ticket               Ticket?             @relation(fields: [ticketId], references: [id])
   ticketId             String?
+  Notification         Notification?       @relation(fields: [notificationId], references: [id])
+  notificationId       String?
 }
 
 /// A school syllabus
@@ -409,32 +411,36 @@ model BarWeek {
 
 /// A NotificationSubscription stores a user's subscription to push notifications on a user agent
 model NotificationSubscription {
-  id        String    @id @default(dbgenerated("nanoid('notifsub:')"))
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  owner     User      @relation(fields: [ownerId], references: [id])
-  ownerId   String
-  endpoint  String    @unique
-  expiresAt DateTime?
-  authKey   String
-  p256dhKey String
+  id            String         @id @default(dbgenerated("nanoid('notifsub:')"))
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  owner         User           @relation(fields: [ownerId], references: [id])
+  ownerId       String
+  endpoint      String         @unique
+  expiresAt     DateTime?
+  authKey       String
+  p256dhKey     String
+  notifications Notification[]
 }
 
 /// A notification is a push notification that was sent to a user
 model Notification {
-  id          String           @id @default(dbgenerated("nanoid('notif:')"))
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  timestamp   DateTime?
-  recipient   User             @relation(fields: [recipientId], references: [id])
-  recipientId String
-  title       String           @db.VarChar(255)
-  imageFile   String           @default("")
-  body        String           @db.Text
-  vibrate     Int[]            @default([])
-  group       Group?           @relation(fields: [groupId], references: [id])
-  groupId     String?
-  type        NotificationType
+  id             String                   @id @default(dbgenerated("nanoid('notif:')"))
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  timestamp      DateTime?
+  subscription   NotificationSubscription @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String
+  actions        Link[]
+  title          String                   @db.VarChar(255)
+  imageFile      String                   @default("")
+  body           String                   @db.Text
+  vibrate        Int[]                    @default([])
+  group          Group?                   @relation(fields: [groupId], references: [id])
+  groupId        String?
+  type           NotificationType
+  User           User?                    @relation(fields: [userId], references: [id])
+  userId         String?
 }
 
 /// A NotificationType represents the different kinds of reasons why you might receive a notification: a shotgun just opened, etc.

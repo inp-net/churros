@@ -39,6 +39,7 @@
     "@types/html-to-text": "^9.0.1",
     "@types/js-cookie": "^3.0.2",
     "@types/ua-parser-js": "^0.7.36",
+    "dotenv": "^16.3.1",
     "graphql-zeus": "^5.2.0",
     "sanitize.css": "^13.0.0",
     "sass": "^1.56.1",
@@ -55,7 +56,7 @@
   },
   "private": true,
   "scripts": {
-    "build": "svelte-kit sync & yarn zeus && yarn check --threshold warning && vite build",
+    "build": "node src/scripts/generate-dotenv-service-worker.js && svelte-kit sync & yarn zeus && yarn check --threshold warning && vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json --use-new-transformation",
     "clean": "git clean -Xdf .",
     "dev": "yarn zeus && vite dev --host",

@@ -21,7 +21,8 @@ import './objects/registration.js';
 import './objects/bank-accounts.js';
 import './objects/event-managers.js';
 import './objects/bar-week.js';
-import './objects/notification-subscriptions.js'
+import './objects/notification-subscriptions.js';
+import './objects/notifications.js';
 
 export const schema = builder.toSchema({});
 

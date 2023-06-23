@@ -29,10 +29,10 @@
     onlyManagersCanProvide,
     name,
     event: { contactMail, title, pictureFile, startsAt },
-    price
+    price,
   } = data.ticketByUid;
 
-  async function payBy(method: PaymentMethod|undefined) {
+  async function payBy(method: PaymentMethod | undefined) {
     const { upsertRegistration } = await $zeus.mutate({
       upsertRegistration: [
         {

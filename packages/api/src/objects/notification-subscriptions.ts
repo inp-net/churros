@@ -1,8 +1,7 @@
 import { GraphQLError } from 'graphql';
-import { builder } from '../builder';
-import { prisma } from '../prisma';
-import { DateTimeScalar } from './scalars';
-import { notify } from '../services/notifications';
+import { builder } from '../builder.js';
+import { prisma } from '../prisma.js';
+import { DateTimeScalar } from './scalars.js';
 
 export const NotificationSubscriptionType = builder.prismaObject('NotificationSubscription', {
   fields: (t) => ({
@@ -121,50 +120,6 @@ builder.mutationField('deleteNotificationSubscription', (t) =>
         },
       });
       return true;
-    },
-  })
-);
-
-builder.mutationField('notify', (t) =>
-  t.field({
-    type: [NotificationSubscriptionType],
-    args: {
-      userUids: t.arg({ type: ['String'] }),
-      title: t.arg.string(),
-      message: t.arg.string(),
-    },
-
-    async resolve(_, { userUids, title, message }) {
-      const users = await prisma.user.findMany({
-        where: {
-          uid: {
-            in: userUids,
-          },
-        },
-      });
-      return notify(users, (u) => ({
-        title: `Ara ara~~~ ${u.firstName}-kun~~~~`,
-        badge: 'https://centraverse2.ewen.works/favicon.png',
-        icon: 'https://centraverse2.ewen.works/favicon.png',
-        body: message,
-        actions: [
-          {
-            action: 'https://www.youtube.com/shorts/0WqjLD5FT9o',
-            title: 'OwO',
-            icon: 'https://centraverse2.ewen.works/favicon.png',
-          },
-          {
-            action: 'uwu',
-            title: 'UwU',
-            icon: 'https://centraverse2.ewen.works/favicon.png',
-          },
-          {
-            action: 'what',
-            title: 'Eeeehm mam what are you saying',
-            icon: 'https://centraverse2.ewen.works/favicon.png',
-          },
-        ],
-      }));
     },
   })
 );

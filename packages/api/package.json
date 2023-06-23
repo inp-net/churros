@@ -65,7 +65,7 @@
     "build": "prisma generate && tsc && node ./build/scripts/update-id-prefix-to-typename-map.js && prisma generate && tsc && node ./build/scripts/post-build.js",
     "clean": "git clean -Xdf .",
     "dev": "NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
-    "start": "FRONTEND_ORIGIN=http://localhost:3000 node ./build/index.js"
+    "start": "FRONTEND_ORIGIN=http://localhost:3000 node ./build/src/index.js"
   },
   "type": "module",
   "volta": {

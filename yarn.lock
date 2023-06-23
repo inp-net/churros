@@ -1670,6 +1670,7 @@ __metadata:
     arborist: "workspace:^"
     cookie: "npm:^0.5.0"
     date-fns: "npm:^2.30.0"
+    dotenv: "npm:^16.3.1"
     extract-files: "npm:^13.0.0"
     graphql: "npm:^16.6.0"
     graphql-zeus: "npm:^5.2.0"
@@ -8256,6 +8257,13 @@ __metadata:
   version: 5.1.0
   resolution: "dotenv-expand@npm:5.1.0"
   checksum: 45ac32cdf6e194ed587ffc87745d3bacc8a831b73d70fef5c4d86294b4eb2e441b745df8fc031df38f5772276ec0f4af74999f4ff5d4e48b1f98cab3b720f394
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^16.3.1":
+  version: 16.3.1
+  resolution: "dotenv@npm:16.3.1"
+  checksum: 10accb903da092a279d5a952c54290c0980c1c3ab0767b0dbc3013526593ebc98944e26352c9bef1d0fe93589a7c78e4810daae1bd53c7432c69997b17de0b3d
   languageName: node
   linkType: hard
 
