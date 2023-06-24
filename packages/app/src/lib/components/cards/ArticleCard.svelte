@@ -66,7 +66,7 @@
         <img
           src={group.pictureFile
             ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
-            : 'https://placehold.it/400/400'}
+            : 'https://via.placeholder.com/400/400'}
           alt=""
         />
       </a>
@@ -104,26 +104,27 @@
 
   .author-and-date {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
   }
 
   .author {
     display: flex;
     gap: 0.5rem;
+
     img {
-      height: 3rem;
       width: 3rem;
-      object-fit: contain;
+      height: 3rem;
       border-radius: var(--radius-inline);
+      object-fit: contain;
     }
   }
 
   .links {
-    list-style: none;
     display: flex;
-    gap: 1rem;
     flex-wrap: wrap;
+    gap: 1rem;
+    list-style: none;
   }
 
   .header {
@@ -140,8 +141,8 @@
 
   header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
   }
 
   .see-more {

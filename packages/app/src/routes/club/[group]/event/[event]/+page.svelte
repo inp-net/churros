@@ -12,20 +12,19 @@
 
   export let data: PageData;
 
-  let { id, tickets, title, startsAt, pictureFile, descriptionHtml, links, group, contactMail } =
+  const { id, tickets, title, startsAt, pictureFile, descriptionHtml, links, group, contactMail } =
     data.event;
 
   $: usersRegistration = tickets
-    .map((t) => t.registrations)
-    .flat()
+    .flatMap((t) => t.registrations)
     .find(
       ({ beneficiary, authorIsBeneficiary, author }) =>
         (authorIsBeneficiary && author.uid === $me?.uid) ||
-        [$me?.uid, `${$me?.firstName} ${$me?.lastName}`].includes(beneficiary)
+        [$me?.uid, `${$me?.firstName ?? ''} ${$me?.lastName ?? ''}`].includes(beneficiary)
     );
 
   $: eventCapacity = tickets.reduce(
-    (sum, { capacity, group }) => sum + Math.min(capacity, group?.capacity ?? Infinity),
+    (sum, { capacity, group }) => sum + Math.min(capacity, group?.capacity ?? Number.POSITIVE_INFINITY),
     0
   );
 
@@ -115,7 +114,7 @@
           {#if (!closesAt && !opensAt) || (closesAt && opensAt && isFuture(new Date(closesAt)) && isPast(new Date(opensAt)))}
             <Button
               on:click={async () => {
-                goto(`./book/${uid}`);
+                await goto(`./book/${uid}`);
               }}>Réserver</Button
             >
           {/if}
@@ -132,7 +131,7 @@
       <img
         src={group.pictureFile
           ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
-          : 'https://placehold.it/400/400'}
+          : 'https://via.placeholder.com/400/400'}
         alt=""
       />
       {group.name}
@@ -143,27 +142,28 @@
 
 <style lang="scss">
   .header {
-    background-size: cover;
     display: flex;
-    justify-content: center;
     flex-direction: column;
-    align-items: center;
-    padding: 1rem;
     gap: 0.25rem;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-size: cover;
+
     > * {
-      color: white;
       margin: 0;
+      color: white;
     }
   }
 
   .places .left::after {
-    content: '';
     display: inline-block;
-    background: var(--text);
     height: 1.25em;
-    transform: rotate(30deg);
     margin: 0.3em;
     margin-bottom: -0.25em;
+    content: '';
+    background: var(--text);
+    transform: rotate(30deg);
   }
 
   h2 .places .left::after {
@@ -180,8 +180,8 @@
 
   .ticket {
     display: flex;
-    align-items: center;
     gap: 1rem;
+    align-items: center;
 
     .text {
       width: 100%;
@@ -207,8 +207,8 @@
     align-items: center;
 
     img {
-      height: 3rem;
       width: 3rem;
+      height: 3rem;
     }
   }
 </style>

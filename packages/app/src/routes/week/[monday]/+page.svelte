@@ -105,7 +105,7 @@
             src={group.pictureFile
               ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 `${PUBLIC_STORAGE_URL}${group.pictureFile}`
-              : 'https://placehold.it/400/400'}
+              : 'https://via.placeholder.com/400/400'}
             alt=""
           />
           <span class="name">{group.name}</span>
