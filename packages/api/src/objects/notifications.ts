@@ -87,8 +87,8 @@ builder.mutationField('testNotification', (t) =>
       await notify(await prisma.user.findMany({ include: { notificationSettings: true } }), {
         title: 'Test notification',
         body: 'Its working!!',
-        badge: '/favicon.png',
-        icon: '/monochrome-icon.png',
+        badge: '/monochrome-icon.png',
+        icon: '/favicon.png',
         actions: [],
         image: undefined,
         data: {
