@@ -17,6 +17,7 @@
 <style>
   .person {
     display: flex;
+    gap: 0.5rem;
     align-items: center;
     width: fit-content;
     padding: 0.5rem;
