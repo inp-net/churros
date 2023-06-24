@@ -43,14 +43,12 @@ sw.addEventListener('push', (event) => {
   const { image, ...notificationData } = event.data.json() as unknown as NotificationOptions & {
     title: string;
   };
-  if (event.target instanceof ServiceWorkerRegistration) {
-    event.waitUntil(
-      event.target.showNotification(notificationData.title, {
-        ...notificationData,
-        image: image ? `${PUBLIC_STORAGE_URL}${image}` : undefined,
-      })
-    );
-  }
+  event.waitUntil(
+    sw.registration.showNotification(notificationData.title, {
+      ...notificationData,
+      image: image ? `${PUBLIC_STORAGE_URL}${image}` : undefined,
+    })
+  );
 });
 
 sw.addEventListener('notificationclick', (clickEvent) => {
