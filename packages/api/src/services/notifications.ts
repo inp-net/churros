@@ -13,6 +13,7 @@ import { prisma } from '../prisma.js';
 import webpush, { WebPushError } from 'web-push';
 import { CronJob } from 'cron';
 import type { MaybePromise } from '@pothos/core';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
 
 webpush.setVapidDetails(
   `mailto:${process.env.CONTACT_EMAIL}`,
@@ -255,11 +256,19 @@ export async function notify(
         error instanceof WebPushError &&
         error.body.trim() === 'push subscription has unsubscribed or expired.'
       ) {
-        await prisma.notificationSubscription.delete({
-          where: {
-            endpoint,
-          },
-        });
+        await prisma.notificationSubscription
+          .delete({
+            where: {
+              endpoint,
+            },
+          })
+          .catch((error) => {
+            if (error instanceof PrismaClientKnownRequestError && error.code === 'P2003') {
+              // Subscription was deleted in the meantime, nothing to worry about
+            } else {
+              throw error;
+            }
+          });
       }
     }
   }
