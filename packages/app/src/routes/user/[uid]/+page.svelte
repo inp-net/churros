@@ -8,11 +8,11 @@
   import UserPicture from '$lib/components/pictures/UserPicture.svelte';
   import { formatDate } from '$lib/dates.js';
   import { me } from '$lib/session.js';
-  import MajesticonsAcademicCap from '~icons/majesticons/academic-cap-line';
-  import MajesticonsCake from '~icons/majesticons/cake-line';
-  import MajesticonsEdit from '~icons/majesticons/edit-pen-2-line';
-  import MajesticonsLocationMarker from '~icons/majesticons/location-marker-line';
-  import MajesticonsPhone from '~icons/majesticons/phone-line';
+  import IconAcademicCap from '~icons/mdi/school';
+  import IconCake from '~icons/mdi/cake';
+  import IconEdit from '~icons/mdi/pencil';
+  import IconLocationMarker from '~icons/mdi/map-marker-outline';
+  import IconPhone from '~icons/mdi/phone-outline';
   import type { PageData } from './$types';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
 
@@ -43,7 +43,7 @@
         {user.lastName}
         {#if user.uid === $me?.uid || $me?.canEditUsers}
           <a href="edit/" title="Éditer">
-            <MajesticonsEdit aria-label="Éditer" />
+            <IconEdit aria-label="Éditer" />
           </a>
         {/if}
       </h1>
@@ -54,9 +54,9 @@
           {['👻', '🌵', '🕸️', '💤'][user.createdAt.getTime() % 4]}
         {/if}
       </div>
-      {#if user.linkCollection.links.length > 0}
+      {#if user.links.length > 0}
         <div class="flex flex-wrap mt-2 gap-3">
-          {#each user.linkCollection.links as link}
+          {#each user.links as link}
             <SocialLink {...link} />
           {/each}
         </div>
@@ -66,14 +66,14 @@
 
   <FlexList>
     <li>
-      <MajesticonsAcademicCap aria-label="Filière" />
+      <IconAcademicCap aria-label="Filière" />
       {user.major.name}
       {user.graduationYear}
       <SchoolBadge schools={user.major.schools} />
     </li>
     {#if user.birthday}
       <li>
-        <MajesticonsCake aria-label="Anniversaire" />
+        <IconCake aria-label="Anniversaire" />
         {formatDate(user.birthday)}
       </li>
     {/if}
@@ -85,7 +85,7 @@
           })}"
           target="maps"
         >
-          <MajesticonsLocationMarker aria-label="Adresse" />
+          <IconLocationMarker aria-label="Adresse" />
           {user.address}
         </a>
       </li>
@@ -93,7 +93,7 @@
     {#if user.phone}
       <li>
         <a href="tel:{user.phone}">
-          <MajesticonsPhone aria-label="Téléphone" />
+          <IconPhone aria-label="Téléphone" />
           {formatPhoneNumber(user.phone)}
         </a>
       </li>

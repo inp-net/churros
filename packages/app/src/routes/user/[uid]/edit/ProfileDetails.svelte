@@ -3,11 +3,11 @@
   import GhostButton from '$lib/components/buttons/GhostButton.svelte';
   import InputGroup from '$lib/components/groups/InputGroup.svelte';
   import { zeus } from '$lib/zeus';
-  import MajesticonsChevronUp from '~icons/majesticons/chevron-up';
-  import MajesticonsClose from '~icons/majesticons/close';
-  import MajesticonsPlus from '~icons/majesticons/plus';
+  import IconClose from '~icons/mdi/close';
+  import IconPlus from '~icons/mdi/plus';
   import type { PageData } from './$types';
-  import { userQuery } from './+page';
+  import { _userQuery as userQuery } from './+page';
+  import LinkCollectionInput from '$lib/components/inputs/LinkCollectionInput.svelte';
 
   export let data: PageData;
 
@@ -16,7 +16,7 @@
     address,
     description,
     graduationYear,
-    linkCollection,
+    links,
     majorId,
     nickname,
     phone,
@@ -38,7 +38,7 @@
             uid: data.user.uid,
             nickname,
             description,
-            links: linkCollection.links,
+            links,
             address,
             graduationYear,
             majorId,
@@ -75,56 +75,7 @@
       <label>Description : <input type="text" bind:value={description} /></label>
     </p>
     <p>Réseaux sociaux :</p>
-    <ul>
-      {#each linkCollection.links as link, i}
-        <li>
-          <InputGroup>
-            <select bind:value={link.type}>
-              {#each data.linkTypes as type}
-                <option>{type}</option>
-              {/each}
-            </select>
-            <input bind:value={link.value} />
-          </InputGroup>
-          <InputGroup>
-            <GhostButton
-              title="Supprimer"
-              on:click={() => {
-                linkCollection.links = linkCollection.links.filter((_, j) => i !== j);
-              }}
-            >
-              <MajesticonsClose aria-label="Supprimer" />
-            </GhostButton>
-            {#if i > 0}
-              <GhostButton
-                title="Remonter"
-                on:click={() => {
-                  linkCollection.links = [
-                    ...linkCollection.links.slice(0, i - 1),
-                    linkCollection.links[i],
-                    linkCollection.links[i - 1],
-                    ...linkCollection.links.slice(i + 1),
-                  ];
-                }}
-              >
-                <MajesticonsChevronUp aria-label="Remonter" />
-              </GhostButton>
-            {/if}
-          </InputGroup>
-        </li>
-      {/each}
-      <li>
-        <button
-          type="button"
-          on:click={() => {
-            linkCollection.links = [
-              ...linkCollection.links,
-              { type: data.linkTypes[0], value: '' },
-            ];
-          }}><MajesticonsPlus aria-hidden="true" />Ajouter</button
-        >
-      </li>
-    </ul>
+    <LinkCollectionInput bind:value={links} />
     <p>
       Filière et promotion :
       <InputGroup>
@@ -148,7 +99,7 @@
             birthday = new Date();
           }}
         >
-          <MajesticonsPlus aria-label="Ajouter" />
+          <IconPlus aria-label="Ajouter" />
         </GhostButton>
       {:else}
         <input
@@ -165,7 +116,7 @@
             birthday = null;
           }}
         >
-          <MajesticonsClose aria-label="Supprimer" />
+          <IconClose aria-label="Supprimer" />
         </GhostButton>
       {/if}
     </p>

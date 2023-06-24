@@ -88,7 +88,8 @@ const yoga = createYoga({
 const api = express();
 api.use(
   // Allow queries from the frontend only
-  cors({ origin: [process.env.FRONTEND_ORIGIN, 'http://app'] }),
+  // cors({ origin: ['http://192.168.*', process.env.FRONTEND_ORIGIN, 'http://app'] }),
+  cors(),
   // Set basic security headers
   helmet({
     contentSecurityPolicy: false,
@@ -112,7 +113,7 @@ api.use('/dump', async (req, res) => {
       where: { type: CredentialType.Token, value: token },
       include: {
         user: {
-          include: { groups: true, articles: true, linkCollection: { include: { links: true } } },
+          include: { groups: true, articles: true, links: true },
         },
       },
     });

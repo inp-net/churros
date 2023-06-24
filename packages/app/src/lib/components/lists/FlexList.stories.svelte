@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Meta, Story } from '@storybook/addon-svelte-csf';
-  import MajesticonsLightBulb from '~icons/majesticons/light-bulb';
-  import MajesticonsRocket3Start from '~icons/majesticons/rocket-3-start';
+  import IconLightBulb from '~icons/mdi/lightbulb';
+  import IconRocket3Start from '~icons/mdi/rocket';
   import FlexList from './FlexList.svelte';
 </script>
 
@@ -10,12 +10,12 @@
 <Story name="Default">
   <FlexList>
     <li>
-      <MajesticonsLightBulb />
+      <IconLightBulb />
       I have an idea
     </li>
     <li>
       <a href={'#'}>
-        <MajesticonsRocket3Start />
+        <IconRocket3Start />
         Take me to space!
       </a>
     </li>

@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid';
 import { createTransport } from 'nodemailer';
 import { prisma } from '../prisma.js';
 import { findSchoolUser } from './ldap.js';
+import slug from 'slug';
 
 const transporter = createTransport(process.env.SMTP_URL);
 
@@ -39,8 +40,32 @@ export const register = async (email: string): Promise<boolean> => {
   return true;
 };
 
-const createUid = async (email: string) => {
-  const base = email.split('@')[0]?.replace(/\W/g, '') ?? 'user';
+export const createUid = async ({
+  firstName,
+  lastName,
+}: {
+  firstName: string;
+  lastName: string;
+}) => {
+  const toAscii = (x: string) =>
+    slug(x.toLocaleLowerCase(), {
+      charmap: {
+        é: 'e',
+        è: 'e',
+        ê: 'e',
+        ë: 'e',
+        à: 'a',
+        â: 'a',
+        ä: 'a',
+        ô: 'o',
+        ö: 'o',
+        û: 'u',
+        ü: 'u',
+        ï: 'i',
+        ç: 'c',
+      },
+    }).replaceAll('-', '');
+  const base = toAscii(lastName).slice(0, 16) + toAscii(firstName).charAt(0);
   const n = await dichotomid(
     async (n) => !(await prisma.user.findFirst({ where: { uid: `${base}${n > 1 ? n : ''}` } }))
   );
@@ -72,7 +97,7 @@ export const saveUser = async ({
   // Create a user profile
   await prisma.user.create({
     data: {
-      uid: await createUid(email),
+      uid: await createUid({ firstName, lastName }),
       email,
       graduationYear: graduationYear!,
       firstName,
@@ -85,7 +110,7 @@ export const saveUser = async ({
       schoolServer,
       schoolUid,
       credentials: { create: { type: CredentialType.Password, value: password } },
-      linkCollection: { create: {} },
+      links: { create: [] },
     },
   });
 

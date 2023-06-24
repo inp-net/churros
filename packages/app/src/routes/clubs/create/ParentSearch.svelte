@@ -4,22 +4,24 @@
   import InlineLoader from '$lib/components/loaders/InlineLoader.svelte';
   import { zeus } from '$lib/zeus';
   import { tick } from 'svelte';
-  import MajesticonsCheckLine from '~icons/majesticons/check-line';
-  import MajesticonsClose from '~icons/majesticons/close';
-  import MajesticonsDotsHorizontal from '~icons/majesticons/dots-horizontal';
-  import MajesticonsPlus from '~icons/majesticons/plus';
+  import IconCheckLine from '~icons/mdi/check';
+  import IconClose from '~icons/mdi/close';
+  import IconDotsHorizontal from '~icons/mdi/dots-horizontal';
+  import IconPlus from '~icons/mdi/plus';
 
   export let parentUid: string | undefined;
+  export let label = 'Groupe parent';
+  export let required = false;
 
   let loading = false;
   let enabled: boolean;
   let q = '';
-  let options: Array<{ uid: string; name: string }> = [];
+  let options: Array<{ uid: string; name: string; id: string }> = [];
 
   let input: HTMLInputElement;
 </script>
 
-<FormInput label="Groupe parent :">
+<FormInput label="{label} :">
   {#if enabled || parentUid}
     <span>
       {#if parentUid}
@@ -28,9 +30,9 @@
       {#if loading}
         <InlineLoader />
       {:else if parentUid}
-        <MajesticonsCheckLine aria-label="Valeur acceptée" aria-live="polite" />
+        <IconCheckLine aria-label="Valeur acceptée" aria-live="polite" />
       {:else}
-        <MajesticonsDotsHorizontal aria-label="Entrez un nom de groupe" />
+        <IconDotsHorizontal aria-label="Entrez un nom de groupe" />
       {/if}
       <input
         bind:this={input}
@@ -38,7 +40,7 @@
         list="parents"
         class="flex-1"
         placeholder="Rechercher un groupe parent"
-        required
+        required={required && !parentUid}
         bind:value={q}
         on:input={async () => {
           if (!q) return;
@@ -47,16 +49,16 @@
           parentUid = undefined;
           try {
             const { group } = await $zeus.query({
-              group: [{ uid: q }, { uid: true, name: true }],
+              group: [{ uid: q }, { uid: true, name: true, id: true }],
             });
             input.setCustomValidity('');
             parentUid = group.uid;
           } catch {
             input.setCustomValidity('Veuillez entrer un groupe parent valide');
-            const { searchGroup } = await $zeus.query({
-              searchGroup: [{ q, first: 10 }, { edges: { node: { uid: true, name: true } } }],
+            const { searchGroups } = await $zeus.query({
+              searchGroups: [{ q }, { name: true, uid: true, id: true }],
             });
-            options = searchGroup.edges.map(({ node }) => node);
+            options = searchGroups;
           } finally {
             loading = false;
           }
@@ -71,7 +73,7 @@
           enabled = false;
         }}
       >
-        <MajesticonsClose aria-label="Supprimer" />
+        <IconClose aria-label="Supprimer" />
       </GhostButton>
     </span>
   {:else}
@@ -89,7 +91,7 @@
         input.focus();
       }}
     >
-      <MajesticonsPlus aria-hidden="true" /> Définir un groupe parent
+      <IconPlus aria-hidden="true" /> Définir un groupe parent
     </button>
   {/if}
 </FormInput>

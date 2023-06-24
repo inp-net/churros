@@ -8,13 +8,19 @@ import './objects/credentials.js';
 import './objects/errors.js';
 import './objects/group-members.js';
 import './objects/groups.js';
-import './objects/link-collections.js';
 import './objects/links.js';
 import './objects/majors.js';
 import './objects/scalars.js';
 import './objects/schools.js';
 import './objects/user-candidates.js';
 import './objects/users.js';
+import './objects/events.js';
+import './objects/tickets.js';
+import './objects/ticket-groups.js';
+import './objects/registration.js';
+import './objects/bank-accounts.js';
+import './objects/event-managers.js';
+import './objects/bar-week.js';
 
 export const schema = builder.toSchema({});
 

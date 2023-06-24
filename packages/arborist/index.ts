@@ -195,9 +195,8 @@ export const hasCycle = <
     // - this item (in that case, there is a cycle)
     let current = map.get(item[parentIdKey]);
     while (current) {
-      if (current[idKey] === item[idKey]) 
-        return true;
-      
+      if (current[idKey] === item[idKey]) return true;
+
       current = map.get(current[parentIdKey]!);
     }
   }

@@ -13,7 +13,7 @@ export const CredentialEnumType = builder.enumType(CredentialPrismaType, {
 export const CredentialType = builder.prismaObject('Credential', {
   fields: (t) => ({
     id: t.exposeID('id'),
-    userId: t.exposeID('userId'),
+    // userId: t.exposeID('userId'),
     type: t.expose('type', { type: CredentialEnumType }),
     token: t.exposeString('value', { authScopes: { $granted: 'login' } }),
     userAgent: t.exposeString('userAgent'),

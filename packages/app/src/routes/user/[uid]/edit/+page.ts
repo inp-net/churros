@@ -2,7 +2,7 @@ import { loadQuery, Selector } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-export const userQuery = Selector('User')({
+export const _userQuery = Selector('User')({
   uid: true,
   firstName: true,
   lastName: true,
@@ -14,7 +14,7 @@ export const userQuery = Selector('User')({
   majorId: true,
   phone: true,
   birthday: true,
-  linkCollection: { links: { type: true, value: true } },
+  links: { name: true, value: true },
 });
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
@@ -23,14 +23,13 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 
   return loadQuery(
     {
-      user: [params, userQuery],
+      user: [params, _userQuery],
       // If the user is an admin, we also load the permissions
       __alias: {
         userPermissions: me.admin
           ? { user: [params, { admin: true, canEditUsers: true, canEditGroups: true }] }
           : {},
       },
-      linkTypes: true,
       schoolGroups: { names: true, majors: { id: true, name: true } },
     },
     { fetch, parent }

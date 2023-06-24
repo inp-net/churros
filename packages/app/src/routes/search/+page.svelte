@@ -5,7 +5,7 @@
   export let data: PageData;
 
   let q = $page.url.searchParams.get('q') ?? '';
-  const results = [...data.searchUsers, ...data.searchGroups];
+  const results = [...data.searchUsers, ...data.searchGroups, ...data.searchEvents];
 </script>
 
 <form
@@ -41,6 +41,14 @@
     <ul>
       {#each data.searchGroups as { uid, name }}
         <li><a href="/club/{uid}/">{name}</a></li>
+      {/each}
+    </ul>
+  {/if}
+  {#if data.searchEvents.length > 0}
+    <h2>Évènements</h2>
+    <ul>
+      {#each data.searchEvents as { group, uid, title }}
+        <li><a href="/club/{group.uid}/event/{uid}">{title}</a></li>
       {/each}
     </ul>
   {/if}

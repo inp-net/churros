@@ -2,8 +2,8 @@
   export let label: string;
   export let errors: string[] | undefined = undefined;
   export let hint = '';
-  import MajesticonsAlertCircle from '~icons/majesticons/alert-circle';
-  import MajesticonsInfoCircle from '~icons/majesticons/info-circle';
+  import IconAlertCircle from '~icons/mdi/alert-circle';
+  import IconInfoCircle from '~icons/mdi/information';
 </script>
 
 <!-- svelte-ignore a11y-label-has-associated-control -->
@@ -12,13 +12,13 @@
   {#if errors && errors.length > 0}
     {#each errors as error}
       <span class="error">
-        <MajesticonsAlertCircle aria-hidden="true" />
+        <IconAlertCircle aria-hidden="true" />
         {error}
       </span>
     {/each}
   {:else if hint}
     <span class="hint">
-      <MajesticonsInfoCircle aria-hidden="true" />
+      <IconInfoCircle aria-hidden="true" />
       {hint}
     </span>
   {/if}

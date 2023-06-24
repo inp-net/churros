@@ -34,6 +34,7 @@
     "dev": "docker compose up -d && yarn workspaces foreach -piv run dev",
     "format": "prettier . --write --ignore-unknown",
     "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
+    "lintfix": "eslint --fix . & stylelint --fix '**/*.{css,scss,svelte}' &",
     "postinstall": "husky install",
     "prisma": "yarn workspace @centraverse/api run prisma",
     "reset": "docker compose up -d && yarn prisma migrate reset --force",
@@ -46,5 +47,8 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "html5-qrcode": "^2.3.8"
+  }
 }
