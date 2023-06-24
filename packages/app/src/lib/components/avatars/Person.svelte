@@ -27,8 +27,8 @@
   }
 
   .person .img {
-    width: 4rem;
-    height: 4rem;
+    width: 3rem;
+    height: 3rem;
     overflow: hidden;
     border-radius: 50%;
   }
