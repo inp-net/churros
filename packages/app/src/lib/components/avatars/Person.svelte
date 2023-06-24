@@ -7,7 +7,9 @@
 </script>
 
 <div class="person">
-  <img {src} alt={name} />
+  <div class="img">
+    <img {src} alt={name} />
+  </div>
   <div class="desc">
     <p class="text name">{name}</p>
     <p class="text role">{role}</p>
@@ -24,9 +26,17 @@
     margin: 0;
   }
 
-  .person img {
+  .person .img {
+    width: 4rem;
     height: 4rem;
-    border-radius: 100%;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+
+  .person .img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   p {
