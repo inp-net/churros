@@ -10,7 +10,7 @@ import {
   type NotificationSetting,
 } from '@prisma/client';
 import { prisma } from '../prisma.js';
-import webpush from 'web-push';
+import webpush, { WebPushError } from 'web-push';
 import { CronJob } from 'cron';
 import type { MaybePromise } from '@pothos/core';
 
@@ -210,45 +210,58 @@ export async function notify(
       continue;
     }
 
-    await webpush.sendNotification(
-      {
-        endpoint,
-        keys: {
-          auth: authKey,
-          p256dh: p256dhKey,
-        },
-      },
-      JSON.stringify(notif)
-    );
-    await prisma.notification.create({
-      data: {
-        subscription: {
-          connect: {
-            id,
+    try {
+      await webpush.sendNotification(
+        {
+          endpoint,
+          keys: {
+            auth: authKey,
+            p256dh: p256dhKey,
           },
         },
-        timestamp: notif.timestamp ? new Date(notif.timestamp) : new Date(),
-        actions: {
-          createMany: {
-            data: [
-              ...(notif.actions ?? [])
-                .filter(({ action }) => /^https?:\/\//.test(action))
-                .map(({ action, title }) => ({
-                  value: action,
-                  name: title,
-                })),
-            ],
+        JSON.stringify(notif)
+      );
+      await prisma.notification.create({
+        data: {
+          subscription: {
+            connect: {
+              id,
+            },
           },
+          timestamp: notif.timestamp ? new Date(notif.timestamp) : new Date(),
+          actions: {
+            createMany: {
+              data: [
+                ...(notif.actions ?? [])
+                  .filter(({ action }) => /^https?:\/\//.test(action))
+                  .map(({ action, title }) => ({
+                    value: action,
+                    name: title,
+                  })),
+              ],
+            },
+          },
+          title: notif.title,
+          body: notif.body,
+          imageFile: notif.image,
+          vibrate: notif.vibrate,
+          type: notif.data.type,
+          ...(notif.data.group ? { group: { connect: { uid: notif.data.group } } } : {}),
         },
-        title: notif.title,
-        body: notif.body,
-        imageFile: notif.image,
-        vibrate: notif.vibrate,
-        type: notif.data.type,
-        ...(notif.data.group ? { group: { connect: { uid: notif.data.group } } } : {}),
-      },
-    });
-    sentSubscriptions.push(sub);
+      });
+      sentSubscriptions.push(sub);
+    } catch (error: unknown) {
+      if (
+        error instanceof WebPushError &&
+        error.body.trim() === 'push subscription has unsubscribed or expired.'
+      ) {
+        await prisma.notificationSubscription.delete({
+          where: {
+            endpoint,
+          },
+        });
+      }
+    }
   }
 
   return sentSubscriptions;
