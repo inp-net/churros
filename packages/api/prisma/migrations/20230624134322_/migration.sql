@@ -1,19 +1,3 @@
-/*
-  Warnings:
-
-  - The values [NewEvent,EventStartingSoon,EventStarted] on the enum `NotificationType` will be removed. If these variants are still used in the database, this will fail.
-
-*/
--- AlterEnum
-BEGIN;
-CREATE TYPE "NotificationType_new" AS ENUM ('NewArticle', 'ShotgunOpeningSoon', 'ShotgunOpened', 'ShotgunClosingSoon', 'ShotgunClosed', 'GodsonRequestReceived', 'GodsonRequestAccepted', 'GodsonRequestRefused', 'PermissionsChanged', 'Other');
-ALTER TABLE "Notification" ALTER COLUMN "type" TYPE "NotificationType_new" USING ("type"::text::"NotificationType_new");
-ALTER TABLE "NotificationSetting" ALTER COLUMN "type" TYPE "NotificationType_new" USING ("type"::text::"NotificationType_new");
-ALTER TYPE "NotificationType" RENAME TO "NotificationType_old";
-ALTER TYPE "NotificationType_new" RENAME TO "NotificationType";
-DROP TYPE "NotificationType_old";
-COMMIT;
-
 -- AlterTable
 ALTER TABLE "Article" ALTER COLUMN "id" SET DEFAULT nanoid('a:');
 
@@ -37,6 +21,9 @@ ALTER TABLE "LogEntry" ALTER COLUMN "id" SET DEFAULT nanoid('log:');
 
 -- AlterTable
 ALTER TABLE "LydiaAccount" ALTER COLUMN "id" SET DEFAULT nanoid('lydia:');
+
+-- AlterTable
+ALTER TABLE "LydiaTransaction" ALTER COLUMN "id" SET DEFAULT nanoid('lydiapayment:');
 
 -- AlterTable
 ALTER TABLE "Major" ALTER COLUMN "id" SET DEFAULT nanoid('major:');

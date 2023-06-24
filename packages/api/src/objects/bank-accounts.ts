@@ -1,7 +1,7 @@
 import type { LydiaAccount } from '@prisma/client';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
-import { createHash } from 'node:crypto';
+import { checkLydiaAccount } from '../services/lydia.js';
 import slug from 'slug';
 import { userIsPresidentOf, userIsTreasurerOf } from './groups.js';
 
@@ -27,23 +27,6 @@ builder.queryField('lydiaAccount', (t) =>
   })
 );
 
-export function lydiaSignature(
-  { privateToken }: { privateToken: string },
-  params: Record<string, string>
-): string {
-  return createHash('md5')
-    .update(
-      new URLSearchParams(
-        Object.keys(params)
-          .sort()
-          .map((key) => [key, params[key]!])
-      ).toString() +
-        '&' +
-        privateToken
-    )
-    .digest('hex');
-}
-
 builder.mutationField('upsertLydiaAccount', (t) =>
   t.prismaField({
     type: LydiaAccountType,
@@ -59,6 +42,7 @@ builder.mutationField('upsertLydiaAccount', (t) =>
         user?.admin || userIsPresidentOf(user, groupUid) || userIsTreasurerOf(user, groupUid)
       ),
     async resolve(query, _, { id, groupUid, name, privateToken, vendorToken }) {
+      await checkLydiaAccount(vendorToken, privateToken);
       const data = {
         uid: slug(name),
         name,

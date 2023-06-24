@@ -2,28 +2,89 @@
   import { PUBLIC_FOY_GROUPS, PUBLIC_STORAGE_URL } from '$env/static/public';
   import IconChevronUp from '~icons/mdi/chevron-up';
   import IconChevronDown from '~icons/mdi/chevron-down';
-  import { addDays, startOfWeek, isSameDay } from 'date-fns';
+  import IconBackward from '~icons/mdi/chevron-left';
+  import IconForward from '~icons/mdi/chevron-right';
+  import {
+    addDays,
+    startOfWeek,
+    isSameDay,
+    differenceInWeeks,
+    previousMonday,
+    nextMonday,
+    formatISO,
+  } from 'date-fns';
   import type { PageData } from './$types';
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
   import { me } from '$lib/session';
   import Button from '$lib/components/buttons/Button.svelte';
   import { goto } from '$app/navigation';
+  import { dateFormatter } from '$lib/dates';
+  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
+
+  $: pageTitle = computePageTitle(data.shownWeek);
+
+  function computePageTitle(shownWeek: Date): string {
+    switch (
+      differenceInWeeks(
+        startOfWeek(shownWeek, { weekStartsOn: 1 }),
+        startOfWeek(new Date(), { weekStartsOn: 1 })
+      )
+    ) {
+      case 0: {
+        return 'Cette semaine';
+      }
+
+      case 1: {
+        return 'La semaine prochaine';
+      }
+
+      case -1: {
+        return 'La semaine dernière';
+      }
+
+      case 2: {
+        return 'Dans deux semaines';
+      }
+
+      case -2: {
+        return 'Il y a deux semaines';
+      }
+
+      default: {
+        return `Semaine du ${dateFormatter.format(startOfWeek(shownWeek, { weekStartsOn: 1 }))}`;
+      }
+    }
+  }
 
   export let data: PageData;
-  let { barWeekNow: barWeek, eventsInWeek: events } = data;
-  const daysOfWeek = Array(7)
+
+  let barWeek: typeof data.barWeekNow;
+  let events: typeof data.eventsInWeek;
+  $: ({ barWeekNow: barWeek, eventsInWeek: events } = data);
+
+  let daysOfWeek: Date[] = [];
+  $: daysOfWeek = Array.from({ length: 7 })
     .fill(0)
-    .map((_, i) => addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), i));
+    .map((_, i) => addDays(startOfWeek(data.shownWeek, { weekStartsOn: 1 }), i));
+
   let expandedEventUid: string | undefined = undefined;
-  const expanded = (event: any, expandedEventUid: string | undefined) =>
+  const expanded = (event: { uid: string }, expandedEventUid: string | undefined) =>
     expandedEventUid === event.uid;
-  let canChangeBarWeek = Boolean(
+
+  const canChangeBarWeek = Boolean(
     $me?.admin ||
       $me?.groups.some(({ group: { uid } }) => PUBLIC_FOY_GROUPS.split(',').includes(uid))
   );
 </script>
 
-<h1>Cette semaine</h1>
+<h1>
+  <a href="/week/{formatISO(previousMonday(data.shownWeek), { representation: 'date' })}"
+    ><IconBackward /></a
+  >
+  {pageTitle}
+  <a href="/week/{formatISO(nextMonday(data.shownWeek), { representation: 'date' })}"
+    ><IconForward /></a
+  >
+</h1>
 
 <section class="bar-week">
   {#if canChangeBarWeek}
@@ -42,7 +103,8 @@
         <a href="/club/{group.uid}" class="group">
           <img
             src={group.pictureFile
-              ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
+              ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                `${PUBLIC_STORAGE_URL}${group.pictureFile}`
               : 'https://placehold.it/400/400'}
             alt=""
           />
@@ -64,14 +126,16 @@
             })
             .replace(/\.$/, '')}</span
         >
-        <span class="month-name"
-          >{day.toLocaleDateString('default', {
-            month: 'long',
-          })}</span
-        >
         <span class="day-number">
           {day.getDate()}
         </span>
+        {#if [...new Set(daysOfWeek.map((d) => d.getMonth()))].length > 1}
+          <span class="month-name"
+            >{day.toLocaleDateString('default', {
+              month: 'long',
+            })}</span
+          >
+        {/if}
       </div>
       <div class="events-of-day">
         {#each events.filter((e) => isSameDay(e.startsAt, day)) as event}
@@ -79,7 +143,8 @@
             <div
               class="header"
               style:background-image="linear-gradient(#000000aa, #000000aa), url({event.pictureFile
-                ? `${PUBLIC_STORAGE_URL}${event.pictureFile}`
+                ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                  `${PUBLIC_STORAGE_URL}${event.pictureFile}`
                 : 'https://picsum.photos/400/400'})"
             >
               <a href="/club/{event.group.uid}/event/{event.uid}">
@@ -112,21 +177,23 @@
   h1 {
     text-align: center;
   }
+
   .bar-week {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
+
   .bar-week-groups {
-    list-style: none;
     display: flex;
     gap: 1rem;
+    list-style: none;
 
     .group {
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
 
       img {
         width: 5rem;
@@ -149,13 +216,13 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 5rem;
       width: 5rem;
+      height: 5rem;
       border: var(--border-block) solid black;
       border-radius: var(--radius-block);
 
       > * {
-        margin: -0.25rem;
+        line-height: 1;
       }
 
       .day-name {
@@ -175,11 +242,11 @@
         border-radius: var(--radius-block);
 
         .header {
-          background-size: cover;
-          padding: 0.5rem 1.5rem;
           display: flex;
           align-items: center;
           justify-content: space-between;
+          padding: 0.5rem 1.5rem;
+          background-size: cover;
         }
 
         .header * {

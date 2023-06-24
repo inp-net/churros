@@ -31,14 +31,14 @@
   "private": true,
   "scripts": {
     "build": "yarn workspaces foreach --topological-dev -pv run build",
-    "dev": "docker compose up -d --wait && yarn workspaces foreach -piv run dev",
+    "dev": "docker compose up -d && yarn workspaces foreach -piv run dev",
     "format": "prettier . --write --ignore-unknown",
     "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
     "lintfix": "eslint --fix . & stylelint --fix '**/*.{css,scss,svelte}' &",
     "postinstall": "husky install",
     "prisma": "yarn workspace @centraverse/api run prisma",
-    "reset": "docker compose up -dV --wait && yarn prisma migrate reset --force",
-    "start": "docker compose up -d --wait && yarn workspaces foreach -piv run start",
+    "reset": "docker compose up -d && yarn prisma migrate reset --force",
+    "start": "docker compose up -d && yarn workspaces foreach -piv run start",
     "storybook": "yarn workspace @centraverse/app run storybook"
   },
   "volta": {

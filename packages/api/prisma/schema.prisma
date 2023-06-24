@@ -362,10 +362,9 @@ model Registration {
   paymentMethod PaymentMethod?
   paid          Boolean        @default(false)
 
-  ticket Ticket @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  author User   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-
-  @@unique([ticketId, authorId, beneficiary])
+  lydiaTransaction LydiaTransaction?
+  ticket           Ticket            @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  author           User              @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 enum PaymentMethod {
@@ -400,6 +399,18 @@ model LydiaAccount {
   events       Event[]
 
   @@unique([privateToken, vendorToken, groupId])
+}
+
+// Lydia payment
+model LydiaTransaction {
+  id             String       @id @default(dbgenerated("nanoid('lydiapayment:')"))
+  phoneNumber    String       @default("") @db.VarChar(255)
+  registrationId String       @unique
+  registration   Registration @relation(fields: [registrationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  requestId      String?
+  requestUuid    String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
 
 /// A bar week is a week during which some groups takeover the bar staff

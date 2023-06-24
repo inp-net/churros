@@ -56,7 +56,7 @@ CREATE TYPE "Visibility" AS ENUM ('Private', 'Unlisted', 'Restricted', 'Public')
 CREATE TYPE "PaymentMethod" AS ENUM ('Lydia', 'Card', 'Transfer', 'Check', 'Cash', 'Other');
 
 -- CreateEnum
-CREATE TYPE "NotificationType" AS ENUM ('NewArticle', 'NewEvent', 'ShotgunOpeningSoon', 'ShotgunOpened', 'ShotgunClosingSoon', 'EventStartingSoon', 'EventStarted', 'Other');
+CREATE TYPE "NotificationType" AS ENUM ('NewArticle', 'ShotgunOpeningSoon', 'ShotgunOpened', 'ShotgunClosingSoon', 'ShotgunClosed', 'GodsonRequestReceived', 'GodsonRequestAccepted', 'GodsonRequestRefused', 'PermissionsChanged', 'Other');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -318,6 +318,19 @@ CREATE TABLE "LydiaAccount" (
 );
 
 -- CreateTable
+CREATE TABLE "LydiaTransaction" (
+    "id" TEXT NOT NULL DEFAULT nanoid('lydiapayment:'),
+    "phoneNumber" VARCHAR(255) NOT NULL DEFAULT '',
+    "registrationId" TEXT NOT NULL,
+    "requestId" TEXT,
+    "requestUuid" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "LydiaTransaction_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "BarWeek" (
     "id" TEXT NOT NULL DEFAULT nanoid('barweek:'),
     "uid" TEXT NOT NULL,
@@ -441,13 +454,13 @@ CREATE UNIQUE INDEX "EventManager_eventId_userId_key" ON "EventManager"("eventId
 CREATE UNIQUE INDEX "Ticket_eventId_uid_key" ON "Ticket"("eventId", "uid");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Registration_ticketId_authorId_beneficiary_key" ON "Registration"("ticketId", "authorId", "beneficiary");
-
--- CreateIndex
 CREATE UNIQUE INDEX "LydiaAccount_uid_key" ON "LydiaAccount"("uid");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "LydiaAccount_privateToken_vendorToken_groupId_key" ON "LydiaAccount"("privateToken", "vendorToken", "groupId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "LydiaTransaction_registrationId_key" ON "LydiaTransaction"("registrationId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "BarWeek_uid_key" ON "BarWeek"("uid");
@@ -576,6 +589,9 @@ ALTER TABLE "LogEntry" ADD CONSTRAINT "LogEntry_userId_fkey" FOREIGN KEY ("userI
 ALTER TABLE "LydiaAccount" ADD CONSTRAINT "LydiaAccount_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "LydiaTransaction" ADD CONSTRAINT "LydiaTransaction_registrationId_fkey" FOREIGN KEY ("registrationId") REFERENCES "Registration"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "NotificationSubscription" ADD CONSTRAINT "NotificationSubscription_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -616,4 +632,3 @@ ALTER TABLE "_BarWeekToGroup" ADD CONSTRAINT "_BarWeekToGroup_A_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "_BarWeekToGroup" ADD CONSTRAINT "_BarWeekToGroup_B_fkey" FOREIGN KEY ("B") REFERENCES "Group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
