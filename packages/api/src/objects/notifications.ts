@@ -88,7 +88,7 @@ builder.mutationField('testNotification', (t) =>
         title: 'Test notification',
         body: 'Its working!!',
         badge: '/favicon.png',
-        icon: '/favicon.png',
+        icon: '/monochrome-icon.png',
         actions: [],
         image: undefined,
         data: {
