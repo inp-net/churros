@@ -38,7 +38,7 @@ sw.addEventListener('activate', (event) => {
   event.waitUntil(deleteOldCaches());
 });
 
-sw.addEventListener('push', async (event) => {
+sw.addEventListener('push', (event) => {
   if (!event.data || !event.target) return;
   const { image, ...notificationData } = event.data.json() as unknown as NotificationOptions & {
     title: string;
@@ -46,10 +46,12 @@ sw.addEventListener('push', async (event) => {
   if (event.target instanceof ServiceWorkerRegistration) return;
   // dunno why typescript can't do this by itself
   const target = event.target as unknown as ServiceWorkerRegistration;
-  await target.showNotification(notificationData.title, {
-    ...notificationData,
-    image: image ? `${PUBLIC_STORAGE_URL}${image}` : undefined,
-  });
+  event.waitUntil(
+    target.showNotification(notificationData.title, {
+      ...notificationData,
+      image: image ? `${PUBLIC_STORAGE_URL}${image}` : undefined,
+    })
+  );
 });
 
 sw.addEventListener('notificationclick', (clickEvent) => {
