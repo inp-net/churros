@@ -62,20 +62,27 @@ sw.addEventListener('activate', async (event) => {
   event.waitUntil(deleteOldCaches());
 });
 
-sw.addEventListener('push', async (event) => {
-  await log('got push');
-  if (!event.data || !event.target) return;
-  const { image, ...notificationData } = event.data.json() as unknown as PushNotification;
-  await log(
-    `push data on ${notificationData.data.subscriptionName ?? '(unknown)'} is ${JSON.stringify(
-      notificationData
-    )}`
-  );
+const emptyPromise: () => Promise<void> = async () =>
+  new Promise((resolve) => {
+    resolve();
+  });
+
+sw.addEventListener('push', (event) => {
   event.waitUntil(
-    sw.registration.showNotification(notificationData.title, {
-      ...notificationData,
-      image: image ? `${PUBLIC_STORAGE_URL}${image}` : undefined,
-    })
+    (async () => {
+      await log('got push');
+      if (!event.data || !event.target) return emptyPromise();
+      const { image, ...notificationData } = event.data.json() as unknown as PushNotification;
+      await log(
+        `push data on ${notificationData.data.subscriptionName ?? '(unknown)'} is ${JSON.stringify(
+          notificationData
+        )}`
+      );
+      return sw.registration.showNotification(notificationData.title, {
+        ...notificationData,
+        image: image ? `${PUBLIC_STORAGE_URL}${image}` : undefined,
+      });
+    })()
   );
 });
 
