@@ -16,9 +16,8 @@
   onMount(async () => {
     const sw = await navigator.serviceWorker.ready;
     subscription = await sw.pushManager.getSubscription();
-    if (!subscription) 
-      return;
-    
+    if (!subscription) return;
+
     const { notifications } = await $zeus.query({
       notifications: [
         {
@@ -63,7 +62,7 @@
         console.error('subscription does not exist on the server');
         return;
       }
-  
+
       subscribed = false;
     }
   }
@@ -115,6 +114,11 @@
     <input type="text" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
     <Button on:click={async () => subscribeToNotifications()}>Activer les notifications</Button>
   {/if}
+  <Button
+    on:click={async () => {
+      await $zeus.mutate({ testNotification: true });
+    }}>Envoyer notif de test à tout le monde</Button
+  >
 {/await}
 
 {#if subscribed}
