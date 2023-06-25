@@ -27,7 +27,8 @@
 
   export let data: PageData;
 
-  let { beneficiary, authorIsBeneficiary, paid, author, ticket, id } = data.registrationOfUser;
+  const { beneficiary, beneficiaryUser, authorIsBeneficiary, paid, author, ticket, id } =
+    data.registration;
   let phone: string;
   let qrcodeViewbox: string;
   let qrcodeDim: number;
@@ -35,7 +36,7 @@
   let qrcodePath: string;
   $: ({ d: qrcodePath, dim: qrcodeDim } = qrcode.renderPath(qrcode.getMatrix(id)));
   $: qrcodeClientRect = qrcodeElement?.querySelector('path')?.getBoundingClientRect();
-  let qrcodeBuiltinPadding = 4;
+  const qrcodeBuiltinPadding = 4;
   $: qrcodeViewbox = `${qrcodeBuiltinPadding} ${qrcodeBuiltinPadding} ${
     qrcodeDim - 2 * qrcodeBuiltinPadding
   } ${qrcodeDim - 2 * qrcodeBuiltinPadding}`;
@@ -48,6 +49,8 @@
 <h2>
   {#if authorIsBeneficiary}
     {author.firstName} {author.lastName}
+  {:else if beneficiaryUser}
+    {beneficiaryUser.firstName} {beneficiaryUser.lastName}
   {:else}
     {beneficiary}
   {/if}
@@ -66,19 +69,26 @@
 
 <h2>Évènement</h2>
 <p>
-  «{ticket.event.title}» {#if ticket.event.startsAt}du {dateTimeFormatter.format(
-      new Date(ticket.event.startsAt)
-    )}{/if}
+  «<a href="/club/{ticket.event.group.uid}/event/{ticket.event.uid}">{ticket.event.title}</a>» {#if ticket.event.startsAt}du
+    {dateTimeFormatter.format(new Date(ticket.event.startsAt))}{/if}
 </p>
 
 {#if paid}
   <Alert theme="success">Place payée</Alert>
-  <svg bind:this={qrcodeElement} viewBox={qrcodeViewbox} stroke="#000" stroke-width="1.05">
-    <path d={qrcodePath} fill="black" />
+  <section class="code">
+    <svg
+      class="qrcode"
+      bind:this={qrcodeElement}
+      viewBox={qrcodeViewbox}
+      stroke="#000"
+      stroke-width="1.05"
+    >
+      <path d={qrcodePath} fill="black" />
+    </svg>
     <p class="registration-code">
       {id.split(':', 2)[1].toUpperCase()}
     </p>
-  </svg>
+  </section>
   <section class="cancel">
     {#if !confirmingCancellation}
       <Button
@@ -124,11 +134,21 @@
 {/if}
 
 <style>
+  section.code {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .qrcode {
+    max-height: 50vh;
+  }
+
   .registration-code {
     margin-top: -1rem;
-    font-weight: bold;
-    font-size: 2rem;
     font-family: monospace;
+    font-size: 2rem;
+    font-weight: bold;
     text-align: center;
   }
 

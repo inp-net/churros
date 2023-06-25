@@ -6,6 +6,7 @@ import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { sendLydiaPaymentRequest } from '../services/lydia.js';
 import { placesLeft } from './tickets.js';
 import { GraphQLError } from 'graphql';
+import { UserType } from './users.js';
 
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
   name: 'PaymentMethod',
@@ -17,6 +18,14 @@ export const RegistrationType = builder.prismaNode('Registration', {
     ticketId: t.exposeID('ticketId'),
     authorId: t.exposeID('authorId'),
     beneficiary: t.exposeString('beneficiary'),
+    beneficiaryUser: t.field({
+      type: UserType,
+      nullable: true,
+      async resolve({ beneficiary }) {
+        if (!beneficiary) return;
+        return prisma.user.findUnique({ where: { uid: beneficiary } });
+      },
+    }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     paymentMethod: t.expose('paymentMethod', { type: PaymentMethodEnum, nullable: true }),
@@ -51,22 +60,38 @@ builder.queryField('registration', (t) =>
     args: {
       id: t.arg.id(),
     },
-    resolve: async (query, _, { id }, { user }) =>
-      prisma.registration.findFirstOrThrow({
+    async resolve(query, _, { id }, { user }) {
+      console.log(id);
+      if (!user) throw new GraphQLError('Not logged in');
+      return prisma.registration.findFirstOrThrow({
         ...query,
         where: {
           id,
-          ticket: {
-            event: {
-              managers: {
-                some: {
-                  userId: user?.id,
+          OR: [
+            {
+              ticket: {
+                event: {
+                  managers: {
+                    some: {
+                      userId: user.id,
+                    },
+                  },
                 },
               },
             },
-          },
+            {
+              authorId: user.id,
+            },
+            {
+              beneficiary: user.uid,
+            },
+            {
+              beneficiary: `${user.firstName} ${user.lastName}`,
+            },
+          ],
         },
-      }),
+      });
+    },
   })
 );
 
@@ -99,6 +124,35 @@ builder.queryField('registrationOfUser', (t) =>
 
       if (!registration) throw new GraphQLError('Registration not found');
       return registration;
+    },
+  })
+);
+
+builder.queryField('registrationsOfUser', (t) =>
+  t.prismaConnection({
+    type: RegistrationType,
+    cursor: 'id',
+    args: {
+      userUid: t.arg.string(),
+    },
+    authScopes(_, { userUid }, { user }) {
+      if (!user) throw new GraphQLError('User not found');
+      return Boolean(user.admin || user.uid === userUid);
+    },
+    async resolve(query, _, { userUid }, { user: me }) {
+      if (!me) throw new GraphQLError('Not logged in');
+      const user = await prisma.user.findUnique({ where: { uid: userUid } });
+      if (!user) throw new GraphQLError('User not found');
+      return prisma.registration.findMany({
+        ...query,
+        where: {
+          OR: [
+            { author: { uid: userUid } },
+            { beneficiary: userUid },
+            { beneficiary: `${user.firstName} ${user.lastName}` },
+          ],
+        },
+      });
     },
   })
 );
@@ -262,6 +316,7 @@ builder.mutationField('upsertRegistration', (t) =>
         ...query,
         where: { id: id ?? '' },
         update: {
+          // eslint-disable-next-line unicorn/no-null
           paymentMethod: paymentMethod ?? null,
           beneficiary: beneficiary ?? '',
           paid,
@@ -269,6 +324,7 @@ builder.mutationField('upsertRegistration', (t) =>
         create: {
           ticket: { connect: { id: ticketId } },
           author: { connect: { id: user.id } },
+          // eslint-disable-next-line unicorn/no-null
           paymentMethod: paymentMethod ?? null,
           beneficiary: beneficiary ?? '',
           paid: ticket.price === 0,
@@ -321,13 +377,14 @@ builder.mutationField('paidRegistration', (t) =>
         });
         return placesLeft(ticketAndRegistrations!) > 0;
       }
+
       return true;
     },
     async resolve(query, _, { regId, beneficiary, paymentMethod, phone }, { user }) {
       if (!user) throw new GraphQLError('User not found');
 
       const registration = await prisma.registration.findUnique({
-        where: { id: regId ?? '' },
+        where: { id: regId },
         include: { ticket: { include: { event: true } } },
       });
       if (!registration) throw new GraphQLError('Registration not found');
@@ -340,15 +397,16 @@ builder.mutationField('paidRegistration', (t) =>
       if (!paymentMethod) throw new GraphQLError('Payment method not found');
       if (!ticket.event.beneficiary) throw new GraphQLError('Beneficiary not found');
       if (!phone) throw new GraphQLError('Phone not found');
+
       // Process payment
-      pay(user!, ticket.event.beneficiary, ticket.price, paymentMethod, phone, regId);
+      await pay(user, ticket.event.beneficiary, ticket.price, paymentMethod, phone, regId);
 
       return prisma.registration.update({
         ...query,
-        where: { id: regId ?? '' },
+        where: { id: regId },
         data: {
           paid: true,
-          paymentMethod: paymentMethod ?? null,
+          paymentMethod,
           beneficiary: beneficiary ?? '',
         },
       });
@@ -410,6 +468,7 @@ builder.mutationField('deleteRegistration', (t) =>
   })
 );
 
+// eslint-disable-next-line max-params
 async function pay(
   from: { uid: string },
   to: { uid: string },
@@ -419,11 +478,13 @@ async function pay(
   registrationId?: string
 ) {
   switch (by) {
-    case 'Lydia':
+    case 'Lydia': {
       if (!phone) throw new GraphQLError('Missing phone number');
       console.log(`Paying ${amount}€ from ${from.uid} to ${to.uid} by Lydia`);
       return sendLydiaPaymentRequest(phone, registrationId);
-    default:
+    }
+
+    default: {
       return new Promise((_resolve, reject) => {
         reject(
           new GraphQLError(
@@ -431,5 +492,6 @@ async function pay(
           )
         );
       });
+    }
   }
 }

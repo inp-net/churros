@@ -8,7 +8,7 @@
   import { page } from '$app/stores';
   import { dateTimeFormatter } from '$lib/dates';
   import { intlFormatDistance } from 'date-fns';
-  import { PaymentMethod, zeus } from '$lib/zeus';
+  import { type PaymentMethod, zeus } from '$lib/zeus';
 
   function saveAsCsv() {
     if (!registrations) return;
@@ -39,7 +39,7 @@
   }
 
   export let data: PageData;
-  let { registrationsOfEvent: registrations, event } = data;
+  const { registrationsOfEvent: registrations } = data;
 
   const CATEGORIES = [
     'En attente de paiement',
@@ -50,7 +50,7 @@
     'Remboursées',
   ] as const;
 
-  let registrationsByCategory = {
+  const registrationsByCategory = {
     'En attente de paiement': [],
     Payées: [],
     Validées: [],
@@ -125,7 +125,11 @@
 
 <h1>{registrations?.edges.length} Réservations</h1>
 
-<Button on:click={() => saveAsCsv()}>Exporter en .csv</Button>
+<Button
+  on:click={() => {
+    saveAsCsv();
+  }}>Exporter en .csv</Button
+>
 
 {#each CATEGORIES as category}
   <h2>{category}</h2>
@@ -137,18 +141,20 @@
           registration.createdAt,
           new Date()
         )} &bull;
+        {registration.ticket.name}
+        &bull;
         {registration.author.firstName}
         {registration.author.lastName} pour {registration.beneficiary}
         {#if category === 'En attente de paiement'}
           <Button
             on:click={async () => {
-              updatePaidStatus(true, registration);
+              await updatePaidStatus(true, registration);
             }}><IconCheck /> Payée</Button
           >
         {:else}
           <Button
             on:click={async () => {
-              updatePaidStatus(false, registration);
+              await updatePaidStatus(false, registration);
             }}><IconCancel /> Non payée</Button
           >
         {/if}

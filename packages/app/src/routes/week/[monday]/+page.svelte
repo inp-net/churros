@@ -32,23 +32,23 @@
       case 0: {
         return 'Cette semaine';
       }
-  
+
       case 1: {
         return 'La semaine prochaine';
       }
-  
+
       case -1: {
         return 'La semaine dernière';
       }
-  
+
       case 2: {
         return 'Dans deux semaines';
       }
-  
+
       case -2: {
         return 'Il y a deux semaines';
       }
-  
+
       default: {
         return `Semaine du ${dateFormatter.format(startOfWeek(shownWeek, { weekStartsOn: 1 }))}`;
       }
@@ -62,7 +62,7 @@
   $: ({ barWeekNow: barWeek, eventsInWeek: events } = data);
 
   let daysOfWeek: Date[] = [];
-  $: daysOfWeek = Array.from({length: 7})
+  $: daysOfWeek = Array.from({ length: 7 })
     .fill(0)
     .map((_, i) => addDays(startOfWeek(data.shownWeek, { weekStartsOn: 1 }), i));
 
