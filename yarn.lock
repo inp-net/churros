@@ -2462,7 +2462,7 @@ __metadata:
     argon2: "npm:^0.30.2"
     bunyan: "npm:^1.8.15"
     cors: "npm:^2.8.5"
-    cron: "npm:^2.3.1"
+    croner: "npm:^6.0.5"
     dataloader: "npm:^2.1.0"
     dichotomid: "npm:^0.0.3"
     envelop-no-batched-queries: "npm:^3.0.2"
@@ -7240,12 +7240,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cron@npm:^2.3.1":
-  version: 2.3.1
-  resolution: "cron@npm:2.3.1"
-  dependencies:
-    luxon: "npm:^3.2.1"
-  checksum: f36f102d0e36bbfd5084e40170e97cca2e39cacc9cd454a869941b2f7c25703cfb789f4ae96c4d9463b04726535f9102cd82d744f758636e1883fd614213e95a
+"croner@npm:^6.0.5":
+  version: 6.0.5
+  resolution: "croner@npm:6.0.5"
+  checksum: 813e12bb69068a297b3724e91ae2c18996248c6dac265859fc93d15b36d38495b094a72d2ccadcc1819c55806fe77a729056627b8cd19035d3a057649fd1dc6c
   languageName: node
   linkType: hard
 
@@ -10835,13 +10833,6 @@ __metadata:
   version: 7.14.1
   resolution: "lru-cache@npm:7.14.1"
   checksum: e4c8c073d9632585dde73bb2c857c22866f61f3ee75fea6e1dcc5412b59eca4107bc511c4b4ae4e038c7f59a15488b67448b24a3a1154def46c8ab1d07935d85
-  languageName: node
-  linkType: hard
-
-"luxon@npm:^3.2.1":
-  version: 3.3.0
-  resolution: "luxon@npm:3.3.0"
-  checksum: 2c028c47f829c934708b8bb90b28aa126e65389e70431cab4347bf01bc4a8361a7e6f46df00c89a4f4a4a3e8d5f99e9eb30300ec3011759eb86001cf6e47ebd7
   languageName: node
   linkType: hard
 

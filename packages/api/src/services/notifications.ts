@@ -8,12 +8,17 @@ import {
   type User,
   Visibility,
   type NotificationSetting,
+  type Article,
+  type GroupMember,
 } from '@prisma/client';
+import * as htmlToText from 'html-to-text';
 import { prisma } from '../prisma.js';
 import webpush, { WebPushError } from 'web-push';
-import { CronJob } from 'cron';
+import { Cron } from 'croner';
 import type { MaybePromise } from '@pothos/core';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
+import { toHtml } from './markdown.js';
+import { resolveFieldType } from '@pothos/plugin-tracing';
 
 webpush.setVapidDetails(
   `mailto:${process.env.CONTACT_EMAIL}`,
@@ -24,8 +29,8 @@ webpush.setVapidDetails(
 export type PushNotification = {
   title: string;
   actions?: Array<{ action: string; title: string; icon?: string }>;
-  badge: string;
-  icon: string;
+  badge?: string;
+  icon?: string;
   image?: string;
   body: string;
   renotify?: boolean;
@@ -40,139 +45,297 @@ export type PushNotification = {
   };
 };
 
-export async function scheduleShotgunNotifications(
-  event: Event & {
-    group: Group;
-    tickets: Ticket[];
-    ticketGroups: Array<TicketGroup & { tickets: Ticket[] }>;
-  }
-): Promise<[CronJob | undefined, CronJob | undefined] | undefined> {
-  if (event.visibility === Visibility.Unlisted || event.visibility === Visibility.Private) return;
+export const scheduledNotificationID = (type: NotificationType, objectId: string) =>
+  `notification/${type}/${objectId}`;
 
-  const getShotgunDate = (event: {
-    tickets: Ticket[];
-    ticketGroups: Array<{ tickets: Ticket[] }>;
-  }) =>
-    new Date(
-      Math.min(
-        ...event.tickets.map(({ opensAt }) => opensAt?.valueOf() ?? Number.POSITIVE_INFINITY),
-        ...event.ticketGroups.flatMap(({ tickets }) =>
-          tickets.map(({ opensAt }) => opensAt?.valueOf() ?? Number.POSITIVE_INFINITY)
-        )
+export async function scheduleNewArticleNotification({
+  id,
+  publishedAt,
+  eager,
+}: {
+  id: string;
+  publishedAt: Date;
+  eager: boolean;
+}): Promise<Cron | boolean> {
+  const ellipsis = (text: string) =>
+    `${text
+      .split(
+        '\n'
+      )[0]! /* the separator is not the empty string so there's no way to get an empty array of of String#split */
+      .slice(0, 100)}…`;
+
+  return scheduleNotification(
+    async (user) => {
+      const article = await prisma.article.findUnique({
+        where: { id },
+        include: { group: true },
+      });
+
+      // If the article does not exist anymore
+      if (!article) return;
+      // If the article was set to private or unlisted after the notification was scheduled
+      if (article.visibility === Visibility.Unlisted || article.visibility === Visibility.Private)
+        return;
+      // If the article was set to restricted and/or the user is not in the group anymore
+      if (
+        article.visibility === Visibility.Restricted &&
+        !user.groups.some(({ group }) => group.id === article.groupId)
       )
-    );
-  const shotgunDate = getShotgunDate(event);
-  if (Number.isNaN(shotgunDate.valueOf())) return;
+        return;
 
-  const allUsers = await prisma.user.findMany({
-    include: { groups: true },
-  });
-  const recipients =
-    event.visibility === Visibility.Restricted
-      ? allUsers.filter(({ groups }) => groups.some(({ groupId }) => event.groupId === groupId))
-      : allUsers;
-
-  const soonDate = (date: Date) => new Date(date.valueOf() - 5 * 60 * 1000);
-
-  const cancelIf = async () => {
-    const freshEvent = await prisma.event.findUnique({
-      where: {
-        id: event.id,
-      },
-      include: {
-        tickets: true,
-        ticketGroups: {
-          include: {
-            tickets: true,
-          },
+      return {
+        title: `Nouvel article de ${article.group.name}: ${article.title}`,
+        body: ellipsis(htmlToText.convert(await toHtml(article.body))),
+        data: {
+          group: article.group.uid,
+          type: NotificationType.NewArticle,
         },
-      },
-    });
-    if (!freshEvent) return true;
-    if (
-      freshEvent.visibility === Visibility.Unlisted ||
-      freshEvent.visibility === Visibility.Private
-    )
-      return true;
-    const freshShotgunDate = getShotgunDate(freshEvent);
-    if (Number.isNaN(freshShotgunDate.valueOf())) return true;
-    if (freshShotgunDate.valueOf() !== shotgunDate.valueOf()) return true;
-    return false;
-  };
-
-  const soonJob = scheduleNotification(
-    `shotgun-soon-${event.id}`,
-    soonDate(shotgunDate),
-    recipients,
-    {
-      badge: process.env.FRONTEND_ORIGIN + '/favicon.png',
-      icon: process.env.FRONTEND_ORIGIN + '/favicon.png',
-      title: `Le shotgun pour ${event.title} ouvre bientôt !`,
-      body: `À vos marques`,
-      data: {
-        group: event.group.uid,
-        type: NotificationType.ShotgunOpeningSoon,
-      },
-      image: event.pictureFile,
-      timestamp: shotgunDate.valueOf(),
+      };
     },
-    cancelIf
-  );
-
-  const nowJob = scheduleNotification(
-    `shotgun-now-${event.id}`,
-    shotgunDate,
-    recipients,
     {
-      badge: process.env.FRONTEND_ORIGIN + '/favicon.png',
-      icon: process.env.FRONTEND_ORIGIN + '/favicon.png',
-      title: `La chasse est ouverte !`,
-      body: `Viens prendre ta place pour ${event.title}`,
-      actions: [
-        {
-          action: process.env.FRONTEND_ORIGIN + `/club/${event.group.uid}/event/${event.uid}`,
-          title: 'Go',
-        },
-      ],
-      data: {
-        group: event.group.uid,
-        type: NotificationType.ShotgunOpened,
-      },
-      image: event.pictureFile,
-      vibrate: [500, 200, 500],
-    },
-    cancelIf
+      type: NotificationType.NewArticle,
+      at: publishedAt,
+      objectId: id,
+      eager,
+    }
   );
-
-  return [soonJob, nowJob];
 }
 
-export function scheduleNotification(
-  id: string,
-  at: Date,
-  users: User[],
-  notification: PushNotification | ((user: User) => MaybePromise<PushNotification>),
-  cancelIf: () => MaybePromise<boolean>
-): CronJob | undefined {
-  if (at.valueOf() < Date.now()) return;
-  // TODO fix timezone
-  const job = new CronJob(at, async () => {
-    if (await cancelIf()) {
-      console.log(`[cron ${id}] Job for ${at.toISOString()} cancelled`);
-      return;
-    }
+export async function scheduleShotgunNotifications({
+  id,
+  tickets,
+}: {
+  id: string;
+  tickets: Ticket[];
+}): Promise<SizedArray<Cron | boolean, 4> | undefined> {
+  const soonDate = (date: Date) => new Date(date.valueOf() - 5 * 60 * 1000);
 
-    console.log(`[cron ${id}] Sending notification (time is ${at.toISOString()})`);
-    await notify(users, notification);
-  });
+  const opensAt = new Date(
+    Math.min(...tickets.map(({ opensAt }) => opensAt?.valueOf() ?? Number.POSITIVE_INFINITY))
+  );
+
+  const closesAt = new Date(
+    Math.min(...tickets.map(({ closesAt }) => closesAt?.valueOf() ?? Number.POSITIVE_INFINITY))
+  );
+
+  // All 4 notifications are sensibly the same
+  const makeNotification =
+    (type: NotificationType) =>
+    async (user: User & { groups: Array<GroupMember & { group: Group }> }) => {
+      const event = await prisma.event.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          tickets: true,
+          group: true,
+        },
+      });
+
+      // Don't send if event does not exist anymore
+      if (!event) return;
+
+      // Don't send notifications for unlisted or private events
+      if (event.visibility === Visibility.Unlisted || event.visibility === Visibility.Private)
+        return;
+
+      // Don't send if the event is unlisted and the recipient is not in the group
+      if (
+        event.visibility === Visibility.Restricted &&
+        !user.groups.some(({ group }) => group.id === event.groupId)
+      )
+        return;
+
+      // For closing notifications, don't send if the user has registered a ticket
+      if (type === NotificationType.ShotgunClosingSoon || type === NotificationType.ShotgunClosed) {
+        const registration = await prisma.registration.findFirst({
+          where: {
+            ticket: {
+              eventId: id,
+            },
+            paid: true,
+            OR: [
+              {
+                authorId: user.id,
+                beneficiary: '',
+              },
+              {
+                beneficiary: user.uid,
+              },
+              {
+                beneficiary: `${user.firstName} ${user.lastName}`,
+              },
+            ],
+          },
+        });
+        if (registration) return;
+      }
+
+      const notification: PushNotification = {
+        title: '',
+        body: '',
+        data: {
+          group: event.group.uid,
+          type,
+        },
+        image: event.pictureFile,
+      };
+
+      const openedShotgunActions: PushNotification['actions'] = [
+        {
+          action: `/club/${event.group.uid}/event/${event.id}`,
+          title: 'Go !',
+        },
+      ];
+
+      switch (type) {
+        case NotificationType.ShotgunOpeningSoon: {
+          notification.title = `Le shotgun pour ${event.title} ouvre bientôt !`;
+          notification.body = `À vos marques`;
+          notification.timestamp = opensAt.valueOf();
+          break;
+        }
+
+        case NotificationType.ShotgunOpened: {
+          notification.title = `La chasse est ouverte !`;
+          notification.body = `Viens prendre ta place pour ${event.title}`;
+          notification.actions = openedShotgunActions;
+          break;
+        }
+
+        case NotificationType.ShotgunClosingSoon: {
+          notification.title = `Le shotgun pour ${event.title} ferme bientôt !`;
+          notification.body = `Dépêche-toi`;
+          notification.timestamp = closesAt.valueOf();
+          notification.actions = openedShotgunActions;
+          break;
+        }
+
+        case NotificationType.ShotgunClosed: {
+          notification.title = `Le shotgun pour ${event.title} est fermé !`;
+          notification.body = `Trop tard`;
+          break;
+        }
+
+        default: {
+          break;
+        }
+      }
+
+      return notification;
+    };
+
+  return [
+    await scheduleNotification(makeNotification(NotificationType.ShotgunOpeningSoon), {
+      at: soonDate(opensAt),
+      type: NotificationType.ShotgunOpeningSoon,
+      objectId: id,
+    }),
+    await scheduleNotification(makeNotification(NotificationType.ShotgunOpened), {
+      at: opensAt,
+      type: NotificationType.ShotgunOpened,
+      objectId: id,
+    }),
+    await scheduleNotification(makeNotification(NotificationType.ShotgunClosingSoon), {
+      at: soonDate(closesAt),
+      type: NotificationType.ShotgunClosingSoon,
+      objectId: id,
+    }),
+    await scheduleNotification(makeNotification(NotificationType.ShotgunClosed), {
+      at: closesAt,
+      type: NotificationType.ShotgunClosed,
+      objectId: id,
+    }),
+  ];
+}
+
+/**
+ * @param notification A function that returns a PushNotification to send, or undefined to send
+ *   nothing and cancel the job.
+ * @param options.type Notification type
+ * @param options.objectId ID of the object to which the notification is related. Together with
+ *   `options.type`, this is used to identify the cron job associated with the notification.
+ * @param options.at Date at which the notification should be sent
+ * @param options.eager If true, the notification will be sent immediately if `options.at` is in the
+ *   past
+ * @returns The created job, false if no notification was sent and true if notifications were sent
+ *   eagerly
+ */
+export async function scheduleNotification(
+  notification: (
+    user: User & { groups: Array<GroupMember & { group: Group }> }
+  ) => MaybePromise<PushNotification | undefined>,
+  {
+    at,
+    type,
+    objectId,
+    eager = false,
+  }: {
+    at: Date;
+    type: NotificationType;
+    objectId: string;
+    eager?: boolean;
+  }
+): Promise<Cron | boolean> {
+  const id = scheduledNotificationID(type, objectId);
+  if (at.valueOf() <= Date.now() && !eager) {
+    console.log(`[cron ${id}] Not scheduling notification in the past and eager is false`);
+    return false;
+  }
+
+  if (Cron.scheduledJobs.some((job) => job.name === id)) {
+    console.log(`[cron ${id}] Cancelling existing job`);
+    Cron.scheduledJobs.find((job) => job.name === id)?.stop();
+  }
+
+  const users = await prisma.user.findMany({ include: { groups: { include: { group: true } } } });
+
+  if (at.valueOf() <= Date.now()) {
+    console.log(
+      `[cron ${id}] Sending notification immediately (time is ${at.toISOString()} and now is ${new Date().toISOString()})`
+    );
+    await notifyInBulk(id, users, notification);
+    return true;
+  }
+
   console.log(`[cron ${id}] Starting cron job for ${at.toISOString()}`);
-  job.start();
+  const job = new Cron(
+    at,
+    {
+      name: id,
+    },
+    async () => {
+      for (const user of users) {
+        console.log(
+          `[cron ${id} @ ${user.uid}] Sending notification (time is ${at.toISOString()})`
+        );
+        const notificationToSend = await notification(user);
+        if (notificationToSend) await notify([user], notificationToSend);
+      }
+    }
+  );
   return job;
 }
 
-export async function notify(
-  users: User[],
-  notification: PushNotification | ((user: User) => MaybePromise<PushNotification>)
+export async function notifyInBulk<U extends User>(
+  jobId: string,
+  users: U[],
+  notification: (user: U) => MaybePromise<PushNotification | undefined>
+) {
+  for (const user of users) {
+    const notificationToSend = await notification(user);
+    if (notificationToSend) {
+      console.log(
+        `[cron ${jobId} @ ${user.uid}] Sending notification ${JSON.stringify(notificationToSend)}`
+      );
+      await notify([user], notificationToSend);
+    }
+  }
+}
+
+export async function notify<U extends User>(
+  users: U[],
+  notification: PushNotification | ((user: U) => MaybePromise<PushNotification>)
 ): Promise<NotificationSubscription[]> {
   const subscriptions = await prisma.notificationSubscription.findMany({
     where: {
@@ -197,10 +360,23 @@ export async function notify(
 
   const sentSubscriptions = [];
 
-  for (const sub of subscriptions) {
-    const { endpoint, authKey, p256dhKey, owner, id } = sub;
-    const notif = typeof notification === 'function' ? await notification(owner) : notification;
-    if (!canSendNotificationToUser(owner.notificationSettings, notif.data.type, notif.data.group)) {
+  for (const subscription of subscriptions) {
+    const { endpoint, authKey, p256dhKey, id } = subscription;
+    const owner = users.find(({ id }) => id === subscription.owner.id);
+    if (!owner) continue;
+    let notif = typeof notification === 'function' ? await notification(owner) : notification;
+    notif = {
+      badge: '/monochrome-icon.png',
+      icon: '/favicon.png',
+      ...notif,
+    };
+    if (
+      !canSendNotificationToUser(
+        subscription.owner.notificationSettings,
+        notif.data.type,
+        notif.data.group
+      )
+    ) {
       console.log(
         `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
           owner.id
@@ -220,7 +396,7 @@ export async function notify(
             p256dh: p256dhKey,
           },
         },
-        JSON.stringify(notif)
+        JSON.stringify({ ...notif, data: { ...notif.data, subscriptionName: subscription.name } })
       );
       await prisma.notification.create({
         data: {
@@ -250,7 +426,7 @@ export async function notify(
           ...(notif.data.group ? { group: { connect: { uid: notif.data.group } } } : {}),
         },
       });
-      sentSubscriptions.push(sub);
+      sentSubscriptions.push(subscription);
     } catch (error: unknown) {
       if (
         error instanceof WebPushError &&
@@ -294,3 +470,12 @@ export function canSendNotificationToUser(
 
   return false;
 }
+
+type SizedArray<T, N extends number> = N extends N
+  ? number extends N
+    ? T[]
+    : _TupleOf<T, N, []>
+  : never;
+type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N
+  ? R
+  : _TupleOf<T, N, [T, ...R]>;

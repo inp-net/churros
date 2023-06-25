@@ -17,7 +17,7 @@
     "arborist": "workspace:^",
     "argon2": "^0.30.2",
     "cors": "^2.8.5",
-    "cron": "^2.3.1",
+    "croner": "^6.0.5",
     "dataloader": "^2.1.0",
     "dichotomid": "^0.0.3",
     "envelop-no-batched-queries": "^3.0.2",
