@@ -23,7 +23,8 @@
     );
 
   $: eventCapacity = tickets.reduce(
-    (sum, { capacity, group }) => sum + Math.min(capacity, group?.capacity ?? Number.POSITIVE_INFINITY),
+    (sum, { capacity, group }) =>
+      sum + Math.min(capacity, group?.capacity ?? Number.POSITIVE_INFINITY),
     0
   );
 

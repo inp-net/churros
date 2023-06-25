@@ -125,7 +125,11 @@
 
 <h1>{registrations?.edges.length} Réservations</h1>
 
-<Button on:click={() => { saveAsCsv(); }}>Exporter en .csv</Button>
+<Button
+  on:click={() => {
+    saveAsCsv();
+  }}>Exporter en .csv</Button
+>
 
 {#each CATEGORIES as category}
   <h2>{category}</h2>
