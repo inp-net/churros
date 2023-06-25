@@ -16,11 +16,13 @@ import type { MaybePromise } from '@pothos/core';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
 import { toHtml } from './markdown.js';
 
-webpush.setVapidDetails(
-  `mailto:${process.env.CONTACT_EMAIL}`,
-  process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
-);
+if (process.env.CONTACT_EMAIL && process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    `mailto:${process.env.CONTACT_EMAIL}`,
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+}
 
 export type PushNotification = {
   title: string;
