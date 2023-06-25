@@ -19,6 +19,7 @@
     "cors": "^2.8.5",
     "croner": "^6.0.5",
     "dataloader": "^2.1.0",
+    "date-fns": "^2.30.0",
     "dichotomid": "^0.0.3",
     "envelop-no-batched-queries": "^3.0.2",
     "express": "^4.18.2",

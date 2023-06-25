@@ -7,6 +7,8 @@ import {
   Visibility,
   type NotificationSetting,
   type GroupMember,
+  type Major,
+  type School,
 } from '@prisma/client';
 import * as htmlToText from 'html-to-text';
 import { prisma } from '../prisma.js';
@@ -15,6 +17,7 @@ import { Cron } from 'croner';
 import type { MaybePromise } from '@pothos/core';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
 import { toHtml } from './markdown.js';
+import { differenceInSeconds, minutesToSeconds, subMinutes } from 'date-fns';
 
 if (process.env.CONTACT_EMAIL && process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
   webpush.setVapidDetails(
@@ -67,13 +70,32 @@ export async function scheduleNewArticleNotification({
     async (user) => {
       const article = await prisma.article.findUnique({
         where: { id },
-        include: { group: true },
+        include: {
+          group: {
+            include: {
+              school: true,
+              studentAssociation: {
+                include: {
+                  school: true,
+                },
+              },
+            },
+          },
+        },
       });
 
       // If the article does not exist anymore
       if (!article) return;
-      // If the article was set to private or unlisted after the notification was scheduled
+      // If the article was set to private or unlisted
       if (article.visibility === Visibility.Unlisted || article.visibility === Visibility.Private)
+        return;
+      // If the article's group is not in a school the user is in
+      if (
+        !user.major.schools.some(
+          (school) =>
+            school.id === (article.group.school?.id ?? article.group.studentAssociation?.school.id)
+        )
+      )
         return;
       // If the article was set to restricted and/or the user is not in the group anymore
       if (
@@ -107,7 +129,7 @@ export async function scheduleShotgunNotifications({
   id: string;
   tickets: Ticket[];
 }): Promise<SizedArray<Cron | boolean, 4> | undefined> {
-  const soonDate = (date: Date) => new Date(date.valueOf() - 5 * 60 * 1000);
+  const soonDate = (date: Date) => subMinutes(date, 10);
 
   const opensAt = new Date(
     Math.min(...tickets.map(({ opensAt }) => opensAt?.valueOf() ?? Number.POSITIVE_INFINITY))
@@ -120,19 +142,37 @@ export async function scheduleShotgunNotifications({
   // All 4 notifications are sensibly the same
   const makeNotification =
     (type: NotificationType) =>
-    async (user: User & { groups: Array<GroupMember & { group: Group }> }) => {
+    async (
+      user: User & {
+        major: Major & { schools: School[] };
+        groups: Array<GroupMember & { group: Group }>;
+      }
+    ) => {
       const event = await prisma.event.findUnique({
         where: {
           id,
         },
         include: {
           tickets: true,
-          group: true,
+          group: {
+            include: {
+              studentAssociation: {
+                include: {
+                  school: true,
+                },
+              },
+              school: true,
+            },
+          },
         },
       });
 
       // Don't send if event does not exist anymore
       if (!event) return;
+
+      // Don't send if the event is not open to any school the user is in
+      const schoolOfEvent = event.group.school ?? event.group.studentAssociation?.school;
+      if (!user.major.schools.some((school) => school.id === schoolOfEvent?.id)) return;
 
       // Don't send notifications for unlisted or private events
       if (event.visibility === Visibility.Unlisted || event.visibility === Visibility.Private)
@@ -229,21 +269,27 @@ export async function scheduleShotgunNotifications({
       at: soonDate(opensAt),
       type: NotificationType.ShotgunOpeningSoon,
       objectId: id,
+      // Only show the soon notification if the shotgun is opening in more than 2 minutes, else there's no point.
+      eager: differenceInSeconds(new Date(), opensAt) > minutesToSeconds(2),
     }),
     await scheduleNotification(makeNotification(NotificationType.ShotgunOpened), {
       at: opensAt,
       type: NotificationType.ShotgunOpened,
       objectId: id,
+      eager: true,
     }),
     await scheduleNotification(makeNotification(NotificationType.ShotgunClosingSoon), {
       at: soonDate(closesAt),
       type: NotificationType.ShotgunClosingSoon,
       objectId: id,
+      // Only show the soon notification if the shotgun is closing in more than 2 minutes, else there's no point.
+      eager: differenceInSeconds(new Date(), closesAt) > minutesToSeconds(2),
     }),
     await scheduleNotification(makeNotification(NotificationType.ShotgunClosed), {
       at: closesAt,
       type: NotificationType.ShotgunClosed,
       objectId: id,
+      eager: true,
     }),
   ];
 }
@@ -262,7 +308,10 @@ export async function scheduleShotgunNotifications({
  */
 export async function scheduleNotification(
   notification: (
-    user: User & { groups: Array<GroupMember & { group: Group }> }
+    user: User & {
+      major: Major & { schools: School[] };
+      groups: Array<GroupMember & { group: Group }>;
+    }
   ) => MaybePromise<PushNotification | undefined>,
   {
     at,
@@ -287,7 +336,9 @@ export async function scheduleNotification(
     Cron.scheduledJobs.find((job) => job.name === id)?.stop();
   }
 
-  const users = await prisma.user.findMany({ include: { groups: { include: { group: true } } } });
+  const users = await prisma.user.findMany({
+    include: { groups: { include: { group: true } }, major: { include: { schools: true } } },
+  });
 
   if (at.valueOf() <= Date.now()) {
     console.log(
