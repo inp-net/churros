@@ -479,6 +479,14 @@ export async function notify<U extends User>(
       });
       sentSubscriptions.push(subscription);
     } catch (error: unknown) {
+      if (error instanceof WebPushError) {
+        console.error(
+          `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
+            owner.id
+          }] ${error.body.trim()}`
+        );
+      }
+
       if (
         error instanceof WebPushError &&
         error.body.trim() === 'push subscription has unsubscribed or expired.'

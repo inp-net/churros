@@ -10,7 +10,7 @@
   import { _notificationsQuery } from './+page';
 
   export let data: PageData;
-  let subscriptionName: string;
+  let subscriptionName = '';
   let subscription: PushSubscription | null;
 
   onMount(async () => {
@@ -111,7 +111,7 @@
       >Désactiver les notifications</Button
     >
   {:else}
-    <input type="text" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
+    <input type="hidden" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
     <Button on:click={async () => subscribeToNotifications()}>Activer les notifications</Button>
   {/if}
   <Button
