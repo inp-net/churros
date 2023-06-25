@@ -6,8 +6,8 @@ function reverseMap<K extends string, V extends string>(obj: Record<K, V>): Reco
   return Object.fromEntries(Object.entries(obj).map(([k, v]) => [v, k])) as unknown as Record<V, K>;
 }
 
-export const load: PageServerLoad = async ({ fetch, parent, params }) =>
-  loadQuery(
+export const load: PageServerLoad = async ({ fetch, parent, params }) => {
+  const { registration } = await loadQuery(
     {
       registration: [
         {
@@ -16,30 +16,38 @@ export const load: PageServerLoad = async ({ fetch, parent, params }) =>
           }:${params.pseudoID.toLowerCase()}`,
         },
         Selector('Registration')({
-          id: true,
-          beneficiary: true,
-          beneficiaryUser: {
-            uid: true,
-            firstName: true,
-            lastName: true,
+          __typename: true,
+          '...on Error': {
+            message: true,
           },
-          authorIsBeneficiary: true,
-          paid: true,
-          author: {
-            uid: true,
-            firstName: true,
-            lastName: true,
-          },
-          ticket: {
-            name: true,
-            group: {
-              name: true,
-            },
-            event: {
-              uid: true,
-              title: true,
-              startsAt: true,
-              group: { uid: true },
+          '...on QueryRegistrationSuccess': {
+            data: {
+              id: true,
+              beneficiary: true,
+              beneficiaryUser: {
+                uid: true,
+                firstName: true,
+                lastName: true,
+              },
+              authorIsBeneficiary: true,
+              paid: true,
+              author: {
+                uid: true,
+                firstName: true,
+                lastName: true,
+              },
+              ticket: {
+                name: true,
+                group: {
+                  name: true,
+                },
+                event: {
+                  uid: true,
+                  title: true,
+                  startsAt: true,
+                  group: { uid: true },
+                },
+              },
             },
           },
         }),
@@ -47,3 +55,13 @@ export const load: PageServerLoad = async ({ fetch, parent, params }) =>
     },
     { fetch, parent }
   );
+
+  if (registration.__typename === 'Error') {
+    return {
+      status: 404,
+      error: new Error(registration.message),
+    };
+  }
+
+  return registration.data;
+};

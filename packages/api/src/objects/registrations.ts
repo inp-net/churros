@@ -56,6 +56,7 @@ export function authorIsBeneficiary(
 builder.queryField('registration', (t) =>
   t.prismaField({
     type: RegistrationType,
+    errors: {},
     args: {
       id: t.arg.id(),
     },
