@@ -10,14 +10,15 @@
   import { _notificationsQuery } from './+page';
 
   export let data: PageData;
+  let subscriptionName: string;
   let subscription: PushSubscription | null;
 
   onMount(async () => {
     const sw = await navigator.serviceWorker.ready;
     subscription = await sw.pushManager.getSubscription();
-    if (!subscription) {
+    if (!subscription) 
       return;
-    }
+    
     const { notifications } = await $zeus.query({
       notifications: [
         {
@@ -62,6 +63,7 @@
         console.error('subscription does not exist on the server');
         return;
       }
+  
       subscribed = false;
     }
   }
@@ -76,10 +78,12 @@
       });
       const { expirationTime, endpoint } = subscription;
       console.log(JSON.stringify(subscription));
-      const { upsertNotificationSubscription } = await $zeus.mutate({
+      await $zeus.mutate({
         upsertNotificationSubscription: [
           {
+            // eslint-disable-next-line unicorn/no-null
             expiresAt: expirationTime ? new Date(expirationTime) : null,
+            name: subscriptionName,
             endpoint,
             keys: {
               auth: await arrayBufferToBase64(subscription.getKey('auth') ?? new ArrayBuffer(0)),
@@ -108,6 +112,7 @@
       >Désactiver les notifications</Button
     >
   {:else}
+    <input type="text" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
     <Button on:click={async () => subscribeToNotifications()}>Activer les notifications</Button>
   {/if}
 {/await}

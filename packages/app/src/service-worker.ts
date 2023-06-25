@@ -17,7 +17,10 @@ const ASSETS = [
   ...$serviceWorker.files, // everything in `static`
 ];
 
-sw.addEventListener('install', (event) => {
+sw.addEventListener('install', async (event) => {
+  await fetch(
+    new URL(`../log?message=installed-version-${$serviceWorker.version}`, PUBLIC_STORAGE_URL)
+  );
   console.log(event);
   // Create a new cache and add all files to it
   const addFilesToCache = async () => {
@@ -38,8 +41,16 @@ sw.addEventListener('activate', (event) => {
   event.waitUntil(deleteOldCaches());
 });
 
-sw.addEventListener('push', (event) => {
+sw.addEventListener('push', async (event) => {
   if (!event.data || !event.target) return;
+  console.log('logging to server');
+  await fetch(
+    new URL(
+      `../log?message=${encodeURIComponent(`got-push-${JSON.stringify(event.data.json())}`)}`,
+      PUBLIC_STORAGE_URL
+    )
+  );
+  console.log('log done');
   const { image, ...notificationData } = event.data.json() as unknown as NotificationOptions & {
     title: string;
   };
@@ -54,8 +65,16 @@ sw.addEventListener('push', (event) => {
 sw.addEventListener('notificationclick', (clickEvent) => {
   console.log(clickEvent);
   const { action } = clickEvent;
-  if (action.startsWith('https://')) clickEvent.waitUntil(sw.clients.openWindow(action));
+  if (action.startsWith('https://')) clickEvent.waitUntil(openURL(action));
 });
+
+async function openURL(url: string) {
+  const windowClients = await sw.clients.matchAll({ type: 'window', includeUncontrolled: true });
+  for (const client of windowClients)
+    if (client.url === url && 'focus' in client) return client.focus();
+
+  if ('openWindow' in sw.clients) return sw.clients.openWindow(url);
+}
 
 sw.addEventListener('fetch', (event) => {
   // ignore POST requests etc

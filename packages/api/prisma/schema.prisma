@@ -346,7 +346,7 @@ model Ticket {
   onlyManagersCanProvide Boolean @default(false)
 
   event Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  group TicketGroup? @relation(fields: [ticketGroupId], references: [id])
+  group TicketGroup? @relation(fields: [ticketGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   @@unique([eventId, uid])
 }
@@ -391,7 +391,7 @@ model LogEntry {
 model LydiaAccount {
   id           String  @id @default(dbgenerated("nanoid('lydia:')"))
   groupId      String
-  group        Group   @relation(fields: [groupId], references: [id])
+  group        Group   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   name         String  @default("") @db.VarChar(255)
   uid          String  @unique
   privateToken String  @default("") @db.VarChar(255)
@@ -426,9 +426,10 @@ model BarWeek {
 /// A NotificationSubscription stores a user's subscription to push notifications on a user agent
 model NotificationSubscription {
   id            String         @id @default(dbgenerated("nanoid('notifsub:')"))
+  name          String         @default("") @db.VarChar(255)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  owner         User           @relation(fields: [ownerId], references: [id])
+  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   ownerId       String
   endpoint      String         @unique
   expiresAt     DateTime?
@@ -443,17 +444,18 @@ model Notification {
   createdAt      DateTime                 @default(now())
   updatedAt      DateTime                 @updatedAt
   timestamp      DateTime?
-  subscription   NotificationSubscription @relation(fields: [subscriptionId], references: [id])
+  subscription   NotificationSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   subscriptionId String
+  image          String                   @default("")
   actions        Link[]
   title          String                   @db.VarChar(255)
   imageFile      String                   @default("")
   body           String                   @db.Text
   vibrate        Int[]                    @default([])
-  group          Group?                   @relation(fields: [groupId], references: [id])
+  group          Group?                   @relation(fields: [groupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   groupId        String?
   type           NotificationType
-  User           User?                    @relation(fields: [userId], references: [id])
+  user           User?                    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   userId         String?
 }
 

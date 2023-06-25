@@ -9,9 +9,10 @@ export const NotificationSubscriptionType = builder.prismaObject('NotificationSu
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
     expiresAt: t.expose('expiresAt', { type: 'DateTime', nullable: true }),
-    endpoint: t.expose('endpoint', { type: 'String' }),
+    endpoint: t.exposeString('endpoint'),
     ownerId: t.exposeID('ownerId'),
     owner: t.relation('owner'),
+    name: t.exposeString('name'),
   }),
 });
 
@@ -60,6 +61,7 @@ builder.mutationField('upsertNotificationSubscription', (t) =>
   t.prismaField({
     type: NotificationSubscriptionType,
     args: {
+      name: t.arg.string(),
       endpoint: t.arg.string(),
       expiresAt: t.arg({ type: DateTimeScalar, required: false }),
       keys: t.arg({
@@ -71,7 +73,7 @@ builder.mutationField('upsertNotificationSubscription', (t) =>
         }),
       }),
     },
-    async resolve(query, _, { endpoint, expiresAt, keys }, { user }) {
+    async resolve(query, _, { endpoint, name, expiresAt, keys }, { user }) {
       if (!user) throw new GraphQLError('You must be logged in.');
       const subscription = await prisma.notificationSubscription.findFirst({
         where: {
@@ -83,6 +85,7 @@ builder.mutationField('upsertNotificationSubscription', (t) =>
         throw new GraphQLError('This subscription does not belong to you.');
 
       const upsertData = {
+        name,
         endpoint,
         owner: {
           connect: {
