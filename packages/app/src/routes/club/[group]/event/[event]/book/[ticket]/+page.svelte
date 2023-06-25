@@ -60,7 +60,7 @@
 
     serverError = '';
     // eslint-disable-next-line no-warning-comments
-    // TODO handle actually going there only when paument has gone through
+    // TODO handle actually going there only when payment has gone through
     await goto(`?done`);
   }
 </script>
@@ -93,7 +93,7 @@
     </p>
     <Button
       on:click={async () => {
-        await goto('../../billet');
+        await goto('../../booking');
       }}
       theme="primary">Mon billet</Button
     >

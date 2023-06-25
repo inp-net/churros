@@ -15,6 +15,8 @@
   import IconUserAddLine from '~icons/mdi/account-plus-outline';
   import IconUserGroup from '~icons/mdi/account-group';
   import IconUserGroupLine from '~icons/mdi/account-group-outline';
+  import IconTicketLine from '~icons/mdi/ticket-outline';
+  import IconTicketConfirmation from '~icons/mdi/ticket-confirmation';
   import Item from './Item.svelte';
 </script>
 
@@ -61,6 +63,18 @@
         Recherche
       </Item>
     </li>
+    {#if $page.data.me}
+      <li>
+        <Item
+          href="/bookings/"
+          selected={$page.url.pathname.startsWith('/bookings/')}
+          icon={IconTicketLine}
+          selectedIcon={IconTicketConfirmation}
+        >
+          Mes places
+        </Item>
+      </li>
+    {/if}
     {#if $page.data.me?.canEditUsers}
       <li>
         <Item

@@ -6,6 +6,7 @@ import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { sendLydiaPaymentRequest } from '../services/lydia.js';
 import { placesLeft } from './tickets.js';
 import { GraphQLError } from 'graphql';
+import { UserType } from './users.js';
 
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
   name: 'PaymentMethod',
@@ -17,6 +18,14 @@ export const RegistrationType = builder.prismaNode('Registration', {
     ticketId: t.exposeID('ticketId'),
     authorId: t.exposeID('authorId'),
     beneficiary: t.exposeString('beneficiary'),
+    beneficiaryUser: t.field({
+      type: UserType,
+      nullable: true,
+      async resolve({ beneficiary }) {
+        if (!beneficiary) return;
+        return prisma.user.findUnique({ where: { uid: beneficiary } });
+      },
+    }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     paymentMethod: t.expose('paymentMethod', { type: PaymentMethodEnum, nullable: true }),
@@ -51,22 +60,38 @@ builder.queryField('registration', (t) =>
     args: {
       id: t.arg.id(),
     },
-    resolve: async (query, _, { id }, { user }) =>
-      prisma.registration.findFirstOrThrow({
+    async resolve(query, _, { id }, { user }) {
+      console.log(id);
+      if (!user) throw new GraphQLError('Not logged in');
+      return prisma.registration.findFirstOrThrow({
         ...query,
         where: {
           id,
-          ticket: {
-            event: {
-              managers: {
-                some: {
-                  userId: user?.id,
+          OR: [
+            {
+              ticket: {
+                event: {
+                  managers: {
+                    some: {
+                      userId: user.id,
+                    },
+                  },
                 },
               },
             },
-          },
+            {
+              authorId: user.id,
+            },
+            {
+              beneficiary: user.uid,
+            },
+            {
+              beneficiary: `${user.firstName} ${user.lastName}`,
+            },
+          ],
         },
-      }),
+      });
+    },
   })
 );
 
@@ -99,6 +124,35 @@ builder.queryField('registrationOfUser', (t) =>
 
       if (!registration) throw new GraphQLError('Registration not found');
       return registration;
+    },
+  })
+);
+
+builder.queryField('registrationsOfUser', (t) =>
+  t.prismaConnection({
+    type: RegistrationType,
+    cursor: 'id',
+    args: {
+      userUid: t.arg.string(),
+    },
+    authScopes(_, { userUid }, { user }) {
+      if (!user) throw new GraphQLError('User not found');
+      return Boolean(user.admin || user.uid === userUid);
+    },
+    async resolve(query, _, { userUid }, { user: me }) {
+      if (!me) throw new GraphQLError('Not logged in');
+      const user = await prisma.user.findUnique({ where: { uid: userUid } });
+      if (!user) throw new GraphQLError('User not found');
+      return prisma.registration.findMany({
+        ...query,
+        where: {
+          OR: [
+            { author: { uid: userUid } },
+            { beneficiary: userUid },
+            { beneficiary: `${user.firstName} ${user.lastName}` },
+          ],
+        },
+      });
     },
   })
 );
@@ -343,6 +397,7 @@ builder.mutationField('paidRegistration', (t) =>
       if (!paymentMethod) throw new GraphQLError('Payment method not found');
       if (!ticket.event.beneficiary) throw new GraphQLError('Beneficiary not found');
       if (!phone) throw new GraphQLError('Phone not found');
+
       // Process payment
       await pay(user, ticket.event.beneficiary, ticket.price, paymentMethod, phone, regId);
 

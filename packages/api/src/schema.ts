@@ -17,7 +17,7 @@ import './objects/users.js';
 import './objects/events.js';
 import './objects/tickets.js';
 import './objects/ticket-groups.js';
-import './objects/registration.js';
+import './objects/registrations.js';
 import './objects/bank-accounts.js';
 import './objects/event-managers.js';
 import './objects/bar-week.js';

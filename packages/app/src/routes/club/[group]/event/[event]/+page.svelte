@@ -19,16 +19,19 @@
     .flatMap((t) => t.registrations)
     .find(
       ({ beneficiary, authorIsBeneficiary, author }) =>
-        (authorIsBeneficiary && author.uid === $me?.uid) ||
-        [$me?.uid, `${$me?.firstName ?? ''} ${$me?.lastName ?? ''}`].includes(beneficiary)
+        (authorIsBeneficiary && author.uid === $me?.uid) || beneficiary === $me?.uid
     );
 
   $: eventCapacity = tickets.reduce(
-    (sum, { capacity, group }) => sum + Math.min(capacity, group?.capacity ?? Number.POSITIVE_INFINITY),
+    (sum, { capacity, group }) =>
+      sum + Math.min(capacity, group?.capacity ?? Number.POSITIVE_INFINITY),
     0
   );
 
   $: eventPlacesLeft = tickets.reduce((sum, { placesLeft }) => sum + placesLeft, 0);
+
+  const bookingURL = (registration: typeof usersRegistration) =>
+    `/bookings/${(registration?.id.split(':', 2)?.[1] ?? '') as string}`;
 </script>
 
 <section
@@ -51,7 +54,7 @@
 </section>
 
 {#if usersRegistration}
-  <Button theme="primary" on:click={async () => goto(`./billet`)}
+  <Button theme="primary" on:click={async () => goto(bookingURL(usersRegistration))}
     >Mon billet <span class="ticket-name">{usersRegistration.ticket.name}</span></Button
   >
 {/if}

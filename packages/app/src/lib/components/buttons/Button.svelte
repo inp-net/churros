@@ -17,6 +17,7 @@
 <style lang="scss">
   button {
     position: relative;
+    flex: 0;
   }
 
   button::before {

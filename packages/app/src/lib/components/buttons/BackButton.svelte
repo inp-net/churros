@@ -4,12 +4,14 @@
   import IconBack from '~icons/mdi/arrow-left';
 
   export let white = false;
-  export let go = '..';
+  export let go = '';
 </script>
 
 <GhostButton
   on:click={async () => {
-    goto(go);
+    if (go) await goto(go);
+    else if (history.length > 1) history.back();
+    else await goto('..');
   }}
   darkShadow={white}
 >

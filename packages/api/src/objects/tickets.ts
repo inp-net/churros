@@ -1,7 +1,7 @@
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
-import { PaymentMethodEnum } from './registration.js';
+import { PaymentMethodEnum } from './registrations.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { DateTimeScalar } from './scalars.js';
 import { LinkInput } from './links.js';
