@@ -3,6 +3,8 @@
 /// <reference no-default-lib="true"/>
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
+import type { PushNotification } from '@centraverse/api/src/services/notifications';
+import { default as parseUserAgent } from 'ua-parser-js';
 import * as $serviceWorker from '$service-worker';
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
@@ -17,10 +19,28 @@ const ASSETS = [
   ...$serviceWorker.files, // everything in `static`
 ];
 
-sw.addEventListener('install', async (event) => {
+async function log(message: string) {
+  const ua = parseUserAgent(sw.navigator.userAgent);
   await fetch(
-    new URL(`../log?message=installed-version-${$serviceWorker.version}`, PUBLIC_STORAGE_URL)
+    new URL(
+      `../log?message=${encodeURIComponent(
+        `[${new Date(Number.parseInt($serviceWorker.version, 10)).toISOString()} on ${
+          ua.device.type ?? 'unknown device type'
+        } ${
+          ua.device.model && ua.device.vendor
+            ? `${ua.device.vendor} ${ua.device.model}`
+            : 'unknown device'
+        } ${ua.browser.name ?? 'unknown'}/${ua.browser.version ?? '?'} ${
+          ua.os.name ?? 'unkown OS'
+        }/${ua.os.version ?? '?'}] ${message}`
+      )}`,
+      PUBLIC_STORAGE_URL
+    )
   );
+}
+
+sw.addEventListener('install', async (event) => {
+  await log('installed');
   console.log(event);
   // Create a new cache and add all files to it
   const addFilesToCache = async () => {
@@ -31,7 +51,8 @@ sw.addEventListener('install', async (event) => {
   event.waitUntil(addFilesToCache());
 });
 
-sw.addEventListener('activate', (event) => {
+sw.addEventListener('activate', async (event) => {
+  await log('activated');
   console.log(event);
   // Remove previous cached data from disk
   const deleteOldCaches = async () => {
@@ -42,18 +63,14 @@ sw.addEventListener('activate', (event) => {
 });
 
 sw.addEventListener('push', async (event) => {
+  await log('got push');
   if (!event.data || !event.target) return;
-  console.log('logging to server');
-  await fetch(
-    new URL(
-      `../log?message=${encodeURIComponent(`got-push-${JSON.stringify(event.data.json())}`)}`,
-      PUBLIC_STORAGE_URL
-    )
+  const { image, ...notificationData } = event.data.json() as unknown as PushNotification;
+  await log(
+    `push data on ${notificationData.data.subscriptionName ?? '(unknown)'} is ${JSON.stringify(
+      notificationData
+    )}`
   );
-  console.log('log done');
-  const { image, ...notificationData } = event.data.json() as unknown as NotificationOptions & {
-    title: string;
-  };
   event.waitUntil(
     sw.registration.showNotification(notificationData.title, {
       ...notificationData,
@@ -62,7 +79,8 @@ sw.addEventListener('push', async (event) => {
   );
 });
 
-sw.addEventListener('notificationclick', (clickEvent) => {
+sw.addEventListener('notificationclick', async (clickEvent) => {
+  await log('clicked notification');
   console.log(clickEvent);
   const { action } = clickEvent;
   if (action.startsWith('https://')) clickEvent.waitUntil(openURL(action));
