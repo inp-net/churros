@@ -48,13 +48,16 @@ model User {
   canEditGroups Boolean @default(false)
 
   // Relationships
-  articles      Article[]
-  groups        GroupMember[]
-  credentials   Credential[]
-  Reservation   Registration[]
-  managedEvents EventManager[]
-  logs          LogEntry[]
-  events        Event[]
+  articles                  Article[]
+  groups                    GroupMember[]
+  credentials               Credential[]
+  Reservation               Registration[]
+  managedEvents             EventManager[]
+  logs                      LogEntry[]
+  events                    Event[]
+  notificationSubscriptions NotificationSubscription[]
+  notifications             Notification[]
+  notificationSettings      NotificationSetting[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -106,6 +109,8 @@ model Link {
   eventId              String?
   Ticket               Ticket?             @relation(fields: [ticketId], references: [id])
   ticketId             String?
+  Notification         Notification?       @relation(fields: [notificationId], references: [id])
+  notificationId       String?
 }
 
 /// A school syllabus
@@ -207,6 +212,9 @@ model Group {
   lyiaAccounts       LydiaAccount[]
   tickets            Ticket[]
   barWeeks           BarWeek[]
+
+  Notification        Notification[]
+  NotificationSetting NotificationSetting[]
 }
 
 /// The intermediate model between users and groups
@@ -338,7 +346,7 @@ model Ticket {
   onlyManagersCanProvide Boolean @default(false)
 
   event Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  group TicketGroup? @relation(fields: [ticketGroupId], references: [id])
+  group TicketGroup? @relation(fields: [ticketGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   @@unique([eventId, uid])
 }
@@ -383,7 +391,7 @@ model LogEntry {
 model LydiaAccount {
   id           String  @id @default(dbgenerated("nanoid('lydia:')"))
   groupId      String
-  group        Group   @relation(fields: [groupId], references: [id])
+  group        Group   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   name         String  @default("") @db.VarChar(255)
   uid          String  @unique
   privateToken String  @default("") @db.VarChar(255)
@@ -413,4 +421,71 @@ model BarWeek {
   startsAt    DateTime
   endsAt      DateTime
   description String   @default("") @db.VarChar(255)
+}
+
+/// A NotificationSubscription stores a user's subscription to push notifications on a user agent
+model NotificationSubscription {
+  id            String         @id @default(dbgenerated("nanoid('notifsub:')"))
+  name          String         @default("") @db.VarChar(255)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ownerId       String
+  endpoint      String         @unique
+  expiresAt     DateTime?
+  authKey       String
+  p256dhKey     String
+  notifications Notification[]
+}
+
+/// A notification is a push notification that was sent to a user
+model Notification {
+  id             String                   @id @default(dbgenerated("nanoid('notif:')"))
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  timestamp      DateTime?
+  subscription   NotificationSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subscriptionId String
+  image          String                   @default("")
+  actions        Link[]
+  title          String                   @db.VarChar(255)
+  imageFile      String                   @default("")
+  body           String                   @db.Text
+  vibrate        Int[]                    @default([])
+  group          Group?                   @relation(fields: [groupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  groupId        String?
+  type           NotificationType
+  user           User?                    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  userId         String?
+}
+
+/// A NotificationType represents the different kinds of reasons why you might receive a notification: a shotgun just opened, etc.
+enum NotificationType {
+  NewArticle
+  ShotgunOpeningSoon
+  ShotgunOpened
+  ShotgunClosingSoon
+  ShotgunClosed
+  GodsonRequestReceived
+  GodsonRequestAccepted
+  GodsonRequestRefused
+  PermissionsChanged
+  Other // should't be used too much
+}
+
+/// NotificationSetting is a user-specific (and maybe group-specific) setting to allow or disallow a type of notification
+/// If the group is not set, the setting applies to all groups, except those that have an override. NotificationSettings that have a group set are overrides.
+model NotificationSetting {
+  id      String           @id @default(dbgenerated("nanoid('notifsetting:')"))
+  user    User             @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId  String
+  group   Group?           @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  groupId String?          @default("")
+  type    NotificationType
+  allow   Boolean
+
+  // See https://github.com/prisma/prisma/issues/3387
+  // Another way would be to create a "Null group", which is a special group with a uid of "", and use that instead of null. This is REALLY messy, and I don't want that.
+  // This would remove the need for an id.
+  // @@unique([userId, groupId, type], distinctNulls: false)
 }

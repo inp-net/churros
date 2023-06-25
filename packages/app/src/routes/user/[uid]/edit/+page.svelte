@@ -1,4 +1,5 @@
 <script lang="ts">
+  import NotificationSettingsForm from '$lib/components/forms/NotificationSettingsForm.svelte';
   import type { PageData } from './$types';
   import Permissions from './Permissions.svelte';
   import ProfileDetails from './ProfileDetails.svelte';
@@ -15,3 +16,9 @@
 {#if data.userPermissions}
   <Permissions bind:data />
 {/if}
+
+<NotificationSettingsForm
+  availableGroups={data.me?.groups.map((g) => g.group) ?? []}
+  userUid={data.user.uid}
+  bind:settings={data.user.notificationSettings}
+/>

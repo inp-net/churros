@@ -3,7 +3,9 @@ CREATE EXTENSION IF NOT EXISTS "fuzzystrmatch";
 
 -- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 -- This function-is installed in the first migration by editing it manually to include this CREATE OR REPLACE FUNCTION statement.
+
 -- It needs the pgcrypto extension to function.
 
 CREATE OR REPLACE FUNCTION NANOID(PREFIX TEXT DEFAULT 
@@ -52,6 +54,9 @@ CREATE TYPE "Visibility" AS ENUM ('Private', 'Unlisted', 'Restricted', 'Public')
 
 -- CreateEnum
 CREATE TYPE "PaymentMethod" AS ENUM ('Lydia', 'Card', 'Transfer', 'Check', 'Cash', 'Other');
+
+-- CreateEnum
+CREATE TYPE "NotificationType" AS ENUM ('NewArticle', 'ShotgunOpeningSoon', 'ShotgunOpened', 'ShotgunClosingSoon', 'ShotgunClosed', 'GodsonRequestReceived', 'GodsonRequestAccepted', 'GodsonRequestRefused', 'PermissionsChanged', 'Other');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -113,6 +118,7 @@ CREATE TABLE "Link" (
     "articleId" TEXT,
     "eventId" TEXT,
     "ticketId" TEXT,
+    "notificationId" TEXT,
 
     CONSTRAINT "Link_pkey" PRIMARY KEY ("id")
 );
@@ -282,7 +288,7 @@ CREATE TABLE "Registration" (
     "authorId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "paymentMethod" "PaymentMethod" NOT NULL,
+    "paymentMethod" "PaymentMethod",
     "paid" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Registration_pkey" PRIMARY KEY ("id")
@@ -312,6 +318,19 @@ CREATE TABLE "LydiaAccount" (
 );
 
 -- CreateTable
+CREATE TABLE "LydiaTransaction" (
+    "id" TEXT NOT NULL DEFAULT nanoid('lydiapayment:'),
+    "phoneNumber" VARCHAR(255) NOT NULL DEFAULT '',
+    "registrationId" TEXT NOT NULL,
+    "requestId" TEXT,
+    "requestUuid" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "LydiaTransaction_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "BarWeek" (
     "id" TEXT NOT NULL DEFAULT nanoid('barweek:'),
     "uid" TEXT NOT NULL,
@@ -320,6 +339,49 @@ CREATE TABLE "BarWeek" (
     "description" VARCHAR(255) NOT NULL DEFAULT '',
 
     CONSTRAINT "BarWeek_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "NotificationSubscription" (
+    "id" TEXT NOT NULL DEFAULT nanoid('notifsub:'),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "ownerId" TEXT NOT NULL,
+    "endpoint" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3),
+    "authKey" TEXT NOT NULL,
+    "p256dhKey" TEXT NOT NULL,
+
+    CONSTRAINT "NotificationSubscription_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Notification" (
+    "id" TEXT NOT NULL DEFAULT nanoid('notif:'),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "timestamp" TIMESTAMP(3),
+    "subscriptionId" TEXT NOT NULL,
+    "title" VARCHAR(255) NOT NULL,
+    "imageFile" TEXT NOT NULL DEFAULT '',
+    "body" TEXT NOT NULL,
+    "vibrate" INTEGER[] DEFAULT ARRAY[]::INTEGER[],
+    "groupId" TEXT,
+    "type" "NotificationType" NOT NULL,
+    "userId" TEXT,
+
+    CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "NotificationSetting" (
+    "id" TEXT NOT NULL DEFAULT nanoid('notifsetting:'),
+    "userId" TEXT NOT NULL,
+    "groupId" TEXT DEFAULT '',
+    "type" "NotificationType" NOT NULL,
+    "allow" BOOLEAN NOT NULL,
+
+    CONSTRAINT "NotificationSetting_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -398,7 +460,13 @@ CREATE UNIQUE INDEX "LydiaAccount_uid_key" ON "LydiaAccount"("uid");
 CREATE UNIQUE INDEX "LydiaAccount_privateToken_vendorToken_groupId_key" ON "LydiaAccount"("privateToken", "vendorToken", "groupId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "LydiaTransaction_registrationId_key" ON "LydiaTransaction"("registrationId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "BarWeek_uid_key" ON "BarWeek"("uid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "NotificationSubscription_endpoint_key" ON "NotificationSubscription"("endpoint");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_MajorToSchool_AB_unique" ON "_MajorToSchool"("A", "B");
@@ -447,6 +515,9 @@ ALTER TABLE "Link" ADD CONSTRAINT "Link_eventId_fkey" FOREIGN KEY ("eventId") RE
 
 -- AddForeignKey
 ALTER TABLE "Link" ADD CONSTRAINT "Link_ticketId_fkey" FOREIGN KEY ("ticketId") REFERENCES "Ticket"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Link" ADD CONSTRAINT "Link_notificationId_fkey" FOREIGN KEY ("notificationId") REFERENCES "Notification"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Credential" ADD CONSTRAINT "Credential_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -516,6 +587,27 @@ ALTER TABLE "LogEntry" ADD CONSTRAINT "LogEntry_userId_fkey" FOREIGN KEY ("userI
 
 -- AddForeignKey
 ALTER TABLE "LydiaAccount" ADD CONSTRAINT "LydiaAccount_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "LydiaTransaction" ADD CONSTRAINT "LydiaTransaction_registrationId_fkey" FOREIGN KEY ("registrationId") REFERENCES "Registration"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "NotificationSubscription" ADD CONSTRAINT "NotificationSubscription_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "NotificationSubscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "NotificationSetting" ADD CONSTRAINT "NotificationSetting_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "NotificationSetting" ADD CONSTRAINT "NotificationSetting_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_MajorToSchool" ADD CONSTRAINT "_MajorToSchool_A_fkey" FOREIGN KEY ("A") REFERENCES "Major"("id") ON DELETE CASCADE ON UPDATE CASCADE;

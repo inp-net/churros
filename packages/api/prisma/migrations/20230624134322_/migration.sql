@@ -23,7 +23,19 @@ ALTER TABLE "LogEntry" ALTER COLUMN "id" SET DEFAULT nanoid('log:');
 ALTER TABLE "LydiaAccount" ALTER COLUMN "id" SET DEFAULT nanoid('lydia:');
 
 -- AlterTable
+ALTER TABLE "LydiaTransaction" ALTER COLUMN "id" SET DEFAULT nanoid('lydiapayment:');
+
+-- AlterTable
 ALTER TABLE "Major" ALTER COLUMN "id" SET DEFAULT nanoid('major:');
+
+-- AlterTable
+ALTER TABLE "Notification" ALTER COLUMN "id" SET DEFAULT nanoid('notif:');
+
+-- AlterTable
+ALTER TABLE "NotificationSetting" ALTER COLUMN "id" SET DEFAULT nanoid('notifsetting:');
+
+-- AlterTable
+ALTER TABLE "NotificationSubscription" ALTER COLUMN "id" SET DEFAULT nanoid('notifsub:');
 
 -- AlterTable
 ALTER TABLE "Registration" ALTER COLUMN "id" SET DEFAULT nanoid('r:');

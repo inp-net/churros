@@ -29,6 +29,7 @@ import imageType, { minimumBytes } from 'image-type';
 import { GraphQLError } from 'graphql';
 import { dirname, join } from 'node:path';
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
+import { scheduleShotgunNotifications } from '../services/notifications.js';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -512,6 +513,21 @@ builder.mutationField('upsertEvent', (t) =>
         ...query,
         where: { id: event.id },
       });
+
+      const finalEvent = await prisma.event.findUniqueOrThrow({
+        where: { id: event.id },
+        include: {
+          tickets: true,
+          group: true,
+          ticketGroups: {
+            include: {
+              tickets: true,
+            },
+          },
+        },
+      });
+
+      await scheduleShotgunNotifications(finalEvent);
 
       console.log("Updated the event's tickets and ticket groups");
       return result;

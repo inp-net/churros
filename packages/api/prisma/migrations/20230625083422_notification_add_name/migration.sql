@@ -1,9 +1,3 @@
-/*
-  Warnings:
-
-  - A unique constraint covering the columns `[ticketId,authorId,beneficiary]` on the table `Registration` will be added. If there are existing duplicate values, this will fail.
-
-*/
 -- AlterTable
 ALTER TABLE "Article" ALTER COLUMN "id" SET DEFAULT nanoid('a:');
 
@@ -29,11 +23,23 @@ ALTER TABLE "LogEntry" ALTER COLUMN "id" SET DEFAULT nanoid('log:');
 ALTER TABLE "LydiaAccount" ALTER COLUMN "id" SET DEFAULT nanoid('lydia:');
 
 -- AlterTable
+ALTER TABLE "LydiaTransaction" ALTER COLUMN "id" SET DEFAULT nanoid('lydiapayment:');
+
+-- AlterTable
 ALTER TABLE "Major" ALTER COLUMN "id" SET DEFAULT nanoid('major:');
 
 -- AlterTable
-ALTER TABLE "Registration" ALTER COLUMN "id" SET DEFAULT nanoid('r:'),
-ALTER COLUMN "paymentMethod" DROP NOT NULL;
+ALTER TABLE "Notification" ALTER COLUMN "id" SET DEFAULT nanoid('notif:');
+
+-- AlterTable
+ALTER TABLE "NotificationSetting" ALTER COLUMN "id" SET DEFAULT nanoid('notifsetting:');
+
+-- AlterTable
+ALTER TABLE "NotificationSubscription" ADD COLUMN     "name" VARCHAR(255) NOT NULL DEFAULT '',
+ALTER COLUMN "id" SET DEFAULT nanoid('notifsub:');
+
+-- AlterTable
+ALTER TABLE "Registration" ALTER COLUMN "id" SET DEFAULT nanoid('r:');
 
 -- AlterTable
 ALTER TABLE "School" ALTER COLUMN "id" SET DEFAULT nanoid('school:');
@@ -52,6 +58,3 @@ ALTER TABLE "User" ALTER COLUMN "id" SET DEFAULT nanoid('u:');
 
 -- AlterTable
 ALTER TABLE "UserCandidate" ALTER COLUMN "id" SET DEFAULT nanoid('candidate:');
-
--- CreateIndex
-CREATE UNIQUE INDEX "Registration_ticketId_authorId_beneficiary_key" ON "Registration"("ticketId", "authorId", "beneficiary");

@@ -37,6 +37,9 @@ import { GraphQLError, Kind } from 'graphql';
     lydia: 'LydiaAccount',
     lydiapayment: 'LydiaTransaction',
     barweek: 'BarWeek',
+    notifsub: 'NotificationSubscription',
+    notif: 'Notification',
+    notifsetting: 'NotificationSetting',
   };
 /* end @generated from schema */
 

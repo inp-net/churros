@@ -1,4 +1,5 @@
 {
+  "files.autoSaveDelay": 1000,
   "cssvar.extensions": ["css", "scss", "svelte"],
   "cssvar.files": ["packages/app/src/design/default-theme.scss"],
   "cssvar.postcssSyntax": { "postcss-scss": ["scss", "svelte"] },

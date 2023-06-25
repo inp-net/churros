@@ -16,11 +16,11 @@
   import { PaymentMethod, Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import Alert from '../alerts/Alert.svelte';
-  import { DISPLAY_VISIBILITY, HELP_VISIBILITY } from '$lib/display';
+  import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
 
   let serverError = '';
 
-  const visibilities = Object.keys(DISPLAY_VISIBILITY) as Array<keyof typeof Visibility>;
+  const visibilities = Object.keys(DISPLAY_VISIBILITIES) as Array<keyof typeof Visibility>;
 
   function eraseFakeIds(id: string): string {
     if (id.includes(':fake:')) {
@@ -298,7 +298,7 @@
   <FormInput label="Visibilité" hint={HELP_VISIBILITY[event.visibility]}>
     <select bind:value={event.visibility}>
       {#each visibilities as value}
-        <option {value}>{DISPLAY_VISIBILITY[value]}</option>
+        <option {value}>{DISPLAY_VISIBILITIES[value]}</option>
       {/each}
     </select>
   </FormInput>

@@ -12,6 +12,7 @@ import { dirname, join } from 'node:path';
 import imageType, { minimumBytes } from 'image-type';
 import { VisibilityEnum } from './events.js';
 import { Visibility } from '@prisma/client';
+import { scheduleNewArticleNotification } from '../services/notifications.js';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
@@ -151,6 +152,7 @@ builder.mutationField('upsertArticle', (t) =>
       _,
       { id, eventId, visibility, authorId, groupId, title, body, publishedAt, links }
     ) {
+      const old = await prisma.article.findUnique({ where: { id: id ?? '' } });
       const data = {
         author: {
           connect: {
@@ -168,8 +170,11 @@ builder.mutationField('upsertArticle', (t) =>
         publishedAt,
         published: publishedAt <= new Date(),
       };
-      return prisma.article.upsert({
-        ...query,
+      const result = await prisma.article.upsert({
+        include: {
+          ...query.include,
+          group: query.include?.group || true,
+        },
         where: { id: id ?? '' },
         create: {
           ...data,
@@ -183,6 +188,13 @@ builder.mutationField('upsertArticle', (t) =>
           event: eventId ? { connect: { id: eventId } } : { disconnect: true },
         },
       });
+      await scheduleNewArticleNotification({
+        ...result,
+        // Only post the notification immediately if the article was not already published before.
+        // This prevents notifications if the content of the article is changed after its publication; but allows to send notifications immediately if the article was previously set to be published in the future and the author changes their mind and decides to publish it now.
+        eager: !old || old.publishedAt > new Date(),
+      });
+      return result;
     },
   })
 );

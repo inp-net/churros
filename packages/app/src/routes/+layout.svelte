@@ -47,6 +47,7 @@
   }}
   on:touchmove={({ changedTouches }) => {
     if (!mobile || !start || !diff) return;
+    // @ts-expect-error for some reason it thinks that a TouchList is not iterable
     const touch = [...changedTouches].find(({ identifier }) => identifier === start?.identifier);
     if (!touch) return;
 
@@ -60,6 +61,7 @@
   }}
   on:touchend={({ touches }) => {
     if (!mobile || !diff) return;
+    // @ts-expect-error for some reason it thinks that a TouchList is not iterable
     if ([...touches].some(({ identifier }) => identifier === start?.identifier)) return;
 
     menuOpen =

@@ -134,7 +134,7 @@
       <img
         src={group.pictureFile
           ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
-          : 'https://placehold.it/400/400'}
+          : 'https://via.placeholder.com/400/400'}
         alt=""
       />
       {group.name}

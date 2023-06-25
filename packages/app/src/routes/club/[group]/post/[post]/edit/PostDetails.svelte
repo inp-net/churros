@@ -10,7 +10,7 @@
   import FormInput from '$lib/components/inputs/FormInput.svelte';
   import LinkCollectionInput from '$lib/components/inputs/LinkCollectionInput.svelte';
   import DateInput from '$lib/components/inputs/DateInput.svelte';
-  import { DISPLAY_VISIBILITY, HELP_VISIBILITY } from '$lib/display';
+  import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
 
   export let data: PageData;
 
@@ -75,10 +75,10 @@
   </FormInput>
   <FormInput label="Visibilité" hint={HELP_VISIBILITY[visibility]}>
     <select bind:value={visibility}>
-      <option value={Visibility.Private}>{DISPLAY_VISIBILITY.Private} </option>
-      <option value={Visibility.Restricted}>{DISPLAY_VISIBILITY.Restricted} </option>
-      <option value={Visibility.Unlisted}>{DISPLAY_VISIBILITY.Unlisted} </option>
-      <option value={Visibility.Public}>{DISPLAY_VISIBILITY.Public} </option>
+      <option value={Visibility.Private}>{DISPLAY_VISIBILITIES.Private} </option>
+      <option value={Visibility.Restricted}>{DISPLAY_VISIBILITIES.Restricted} </option>
+      <option value={Visibility.Unlisted}>{DISPLAY_VISIBILITIES.Unlisted} </option>
+      <option value={Visibility.Public}>{DISPLAY_VISIBILITIES.Public} </option>
     </select>
   </FormInput>
   <FormInput label="Description">

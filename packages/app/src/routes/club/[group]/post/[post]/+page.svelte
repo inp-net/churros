@@ -1,10 +1,11 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { dateTimeFormatter } from '$lib/dates';
   import { me } from '$lib/session';
   import type { PageData } from './$types';
 
   export let data: PageData;
-  const { author, links, title, bodyHtml, group, pictureFile, event } = data.article;
+  const { author, publishedAt, links, title, bodyHtml, group, pictureFile, event } = data.article;
 
   const memberTitle = data.article.author?.groups.find(
     (g) => g.group.uid === data.article.group.uid
@@ -45,6 +46,8 @@
     {#if memberTitle}, {memberTitle} de {group.name}{/if}
   </section>
 {/if}
+
+<p>Publié le {dateTimeFormatter.format(publishedAt)}</p>
 
 <style>
   .links {

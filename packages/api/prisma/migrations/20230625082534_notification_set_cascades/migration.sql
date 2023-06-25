@@ -1,5 +1,11 @@
--- DropIndex
-DROP INDEX "Registration_ticketId_authorId_beneficiary_key";
+-- DropForeignKey
+ALTER TABLE "LydiaAccount" DROP CONSTRAINT "LydiaAccount_groupId_fkey";
+
+-- DropForeignKey
+ALTER TABLE "Notification" DROP CONSTRAINT "Notification_subscriptionId_fkey";
+
+-- DropForeignKey
+ALTER TABLE "NotificationSubscription" DROP CONSTRAINT "NotificationSubscription_ownerId_fkey";
 
 -- AlterTable
 ALTER TABLE "Article" ALTER COLUMN "id" SET DEFAULT nanoid('a:');
@@ -26,7 +32,20 @@ ALTER TABLE "LogEntry" ALTER COLUMN "id" SET DEFAULT nanoid('log:');
 ALTER TABLE "LydiaAccount" ALTER COLUMN "id" SET DEFAULT nanoid('lydia:');
 
 -- AlterTable
+ALTER TABLE "LydiaTransaction" ALTER COLUMN "id" SET DEFAULT nanoid('lydiapayment:');
+
+-- AlterTable
 ALTER TABLE "Major" ALTER COLUMN "id" SET DEFAULT nanoid('major:');
+
+-- AlterTable
+ALTER TABLE "Notification" ADD COLUMN     "image" TEXT NOT NULL DEFAULT '',
+ALTER COLUMN "id" SET DEFAULT nanoid('notif:');
+
+-- AlterTable
+ALTER TABLE "NotificationSetting" ALTER COLUMN "id" SET DEFAULT nanoid('notifsetting:');
+
+-- AlterTable
+ALTER TABLE "NotificationSubscription" ALTER COLUMN "id" SET DEFAULT nanoid('notifsub:');
 
 -- AlterTable
 ALTER TABLE "Registration" ALTER COLUMN "id" SET DEFAULT nanoid('r:');
@@ -49,21 +68,11 @@ ALTER TABLE "User" ALTER COLUMN "id" SET DEFAULT nanoid('u:');
 -- AlterTable
 ALTER TABLE "UserCandidate" ALTER COLUMN "id" SET DEFAULT nanoid('candidate:');
 
--- CreateTable
-CREATE TABLE "LydiaTransaction" (
-    "id" TEXT NOT NULL DEFAULT nanoid('lydiapayment:'),
-    "phoneNumber" VARCHAR(255) NOT NULL DEFAULT '',
-    "registrationId" TEXT NOT NULL,
-    "requestId" TEXT,
-    "requestUuid" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "LydiaTransaction_pkey" PRIMARY KEY ("id")
-);
-
--- CreateIndex
-CREATE UNIQUE INDEX "LydiaTransaction_registrationId_key" ON "LydiaTransaction"("registrationId");
+-- AddForeignKey
+ALTER TABLE "LydiaAccount" ADD CONSTRAINT "LydiaAccount_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "LydiaTransaction" ADD CONSTRAINT "LydiaTransaction_registrationId_fkey" FOREIGN KEY ("registrationId") REFERENCES "Registration"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "NotificationSubscription" ADD CONSTRAINT "NotificationSubscription_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "NotificationSubscription"("id") ON DELETE CASCADE ON UPDATE CASCADE;
