@@ -192,7 +192,7 @@ builder.mutationField('upsertArticle', (t) =>
         ...result,
         // Only post the notification immediately if the article was not already published before.
         // This prevents notifications if the content of the article is changed after its publication; but allows to send notifications immediately if the article was previously set to be published in the future and the author changes their mind and decides to publish it now.
-        eager: Boolean(old?.publishedAt && old.publishedAt > new Date()),
+        eager: !old || old.publishedAt > new Date(),
       });
       return result;
     },
