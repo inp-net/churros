@@ -1,14 +1,11 @@
 import {
-  type Event,
   type Group,
   type NotificationSubscription,
   NotificationType,
   type Ticket,
-  type TicketGroup,
   type User,
   Visibility,
   type NotificationSetting,
-  type Article,
   type GroupMember,
 } from '@prisma/client';
 import * as htmlToText from 'html-to-text';
@@ -18,7 +15,6 @@ import { Cron } from 'croner';
 import type { MaybePromise } from '@pothos/core';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
 import { toHtml } from './markdown.js';
-import { resolveFieldType } from '@pothos/plugin-tracing';
 
 webpush.setVapidDetails(
   `mailto:${process.env.CONTACT_EMAIL}`,
@@ -42,6 +38,7 @@ export type PushNotification = {
   data: {
     group: string | undefined;
     type: NotificationType;
+    subscriptionName?: string;
   };
 };
 
@@ -370,6 +367,7 @@ export async function notify<U extends User>(
       icon: '/favicon.png',
       ...notif,
     };
+    notif.data.subscriptionName = subscription.name;
     if (
       !canSendNotificationToUser(
         subscription.owner.notificationSettings,
@@ -396,7 +394,7 @@ export async function notify<U extends User>(
             p256dh: p256dhKey,
           },
         },
-        JSON.stringify({ ...notif, data: { ...notif.data, subscriptionName: subscription.name } })
+        JSON.stringify(notif)
       );
       await prisma.notification.create({
         data: {
