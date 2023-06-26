@@ -9,6 +9,7 @@
   import IconDots from '~icons/mdi/dots-horizontal';
   import { Visibility } from '$lib/zeus';
   import { DISPLAY_VISIBILITIES } from '$lib/display';
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
   export let visibility: Visibility | undefined = undefined;
   export let title: string;
@@ -52,7 +53,7 @@
     <ul class="links">
       {#each links as link}
         <li>
-          <a href={link.value}>{link.name}</a>
+          <ButtonSecondary href={link.value}>{link.name}</ButtonSecondary>
         </li>
       {/each}
     </ul>
