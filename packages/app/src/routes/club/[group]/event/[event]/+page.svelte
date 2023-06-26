@@ -17,10 +17,7 @@
 
   $: usersRegistration = tickets
     .flatMap((t) => t.registrations)
-    .find(
-      ({ beneficiary, authorIsBeneficiary, author }) =>
-        (authorIsBeneficiary && author.uid === $me?.uid) || beneficiary === $me?.uid
-    );
+    .filter(({ beneficiary, author }) => author.uid === $me?.uid || beneficiary === $me?.uid);
 
   $: eventCapacity = tickets.reduce(
     (sum, { capacity, group }) =>
@@ -30,8 +27,8 @@
 
   $: eventPlacesLeft = tickets.reduce((sum, { placesLeft }) => sum + placesLeft, 0);
 
-  const bookingURL = (registration: typeof usersRegistration) =>
-    `/bookings/${(registration?.id.split(':', 2)?.[1] ?? '') as string}`;
+  const bookingURL = (registrationId: string) =>
+    `/bookings/${registrationId.split(':', 2)[1].toUpperCase() }`;
 </script>
 
 <section
@@ -52,12 +49,13 @@
   </h1>
   <p>{dateTimeFormatter.format(startsAt)}</p>
 </section>
-
-{#if usersRegistration}
-  <Button theme="primary" on:click={async () => goto(bookingURL(usersRegistration))}
-    >Mon billet <span class="ticket-name">{usersRegistration.ticket.name}</span></Button
+{#each usersRegistration as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id }}
+  <Button theme="primary" on:click={async () => goto(bookingURL(id))}
+    >{#if authorIsBeneficiary || author.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
+        {beneficiaryUser.lastName}{:else}{beneficiary}{/if}{/if}
+    <span class="ticket-name">{ticket.name}</span></Button
   >
-{/if}
+{/each}
 
 <section class="description">
   {@html descriptionHtml}

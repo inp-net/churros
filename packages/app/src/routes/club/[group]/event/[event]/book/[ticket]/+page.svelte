@@ -93,7 +93,7 @@
     </p>
     <Button
       on:click={async () => {
-        await goto('../../booking');
+        await goto('../../bookings');
       }}
       theme="primary">Mon billet</Button
     >
