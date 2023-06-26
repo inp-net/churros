@@ -1,7 +1,7 @@
 <script lang="ts">
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
-  import FormInput from '$lib/components/inputs/FormInput.svelte';
-  import InlineLoader from '$lib/components/loaders/InlineLoader.svelte';
+  import GhostButton from '$lib/components/ButtonGhost.svelte';
+  import FormInput from '$lib/components/InputForm.svelte';
+  import InlineLoader from '$lib/components/LoaderInline.svelte';
   import { zeus } from '$lib/zeus';
   import { tick } from 'svelte';
   import IconCheckLine from '~icons/mdi/check';

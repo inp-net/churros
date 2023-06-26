@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Row from '$lib/components/rows/Row.svelte';
   import IconEditPen2Line from '~icons/mdi/pencil';
   import type { PageData } from './$types';
   import AcceptButton from './AcceptButton.svelte';
@@ -21,12 +20,12 @@
 
 <h2>Demandes d'inscription</h2>
 {#if userCandidates.length > 0}
-  <div class="flex flex-col my-4 gap-2">
+  <ul>
     {#each userCandidates as { email, firstName, lastName, major, graduationYear }}
-      <Row>
+      <li>
         <strong>{firstName} {lastName}</strong>
         <span>{email} {major.name} {graduationYear}</span>
-        <svelte:fragment slot="actions">
+        <div class="actions">
           <a href="./edit/{encodeURIComponent(email)}"><IconEditPen2Line /></a>
           <AcceptButton
             {email}
@@ -40,10 +39,10 @@
               removeRow(email);
             }}
           />
-        </svelte:fragment>
-      </Row>
+        </div>
+      </li>
     {/each}
-  </div>
+  </ul>
 {:else}
   <p>Aucune inscription en attente.</p>
 {/if}

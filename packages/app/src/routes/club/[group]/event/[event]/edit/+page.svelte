@@ -1,6 +1,6 @@
 <script lang="ts">
-  import EventForm from '$lib/components/forms/EventForm.svelte';
-  import Tabs from '$lib/components/navigation/Tabs.svelte';
+  import EventForm from '$lib/components/FormEvent.svelte';
+  import Tabs from '$lib/components/NavigationTabs.svelte';
   import { me } from '$lib/session';
   import { Selector, zeus } from '$lib/zeus';
   import type { PageData } from './$types';

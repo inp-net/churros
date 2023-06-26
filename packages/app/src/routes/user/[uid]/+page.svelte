@@ -1,11 +1,11 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import GroupMemberBadge from '$lib/components/badges/GroupMemberBadge.svelte';
-  import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
-  import Card from '$lib/components/cards/Card.svelte';
-  import SocialLink from '$lib/components/links/SocialLink.svelte';
-  import FlexList from '$lib/components/lists/FlexList.svelte';
-  import UserPicture from '$lib/components/pictures/UserPicture.svelte';
+  import GroupMemberBadge from '$lib/components/BadgeGroupMember.svelte';
+  import SchoolBadge from '$lib/components/BadgeSchool.svelte';
+  import Card from '$lib/components/Card.svelte';
+  import SocialLink from '$lib/components/SocialLink.svelte';
+
+  import UserPicture from '$lib/components/PictureUser.svelte';
   import { formatDate } from '$lib/dates.js';
   import { me } from '$lib/session.js';
   import IconAcademicCap from '~icons/mdi/school';
@@ -64,7 +64,7 @@
     </div>
   </div>
 
-  <FlexList>
+  <ul>
     <li>
       <IconAcademicCap aria-label="Filière" />
       {user.major.name}
@@ -98,10 +98,10 @@
         </a>
       </li>
     {/if}
-  </FlexList>
+  </ul>
 
   <h2 class="mb-1">Groupes</h2>
-  <FlexList horizontal>
+  <ul>
     {#each user.groups.sort(byMemberGroupTitleImportance) as groupMember (groupMember.group.uid)}
       <li>
         <a href="/club/{groupMember.group.uid}/" class="no-underline">
@@ -109,7 +109,7 @@
         </a>
       </li>
     {/each}
-  </FlexList>
+  </ul>
 </Card>
 
 <style lang="scss">

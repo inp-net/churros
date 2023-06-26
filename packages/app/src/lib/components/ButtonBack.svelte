@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import GhostButton from './GhostButton.svelte';
+  import GhostButton from './ButtonGhost.svelte';
   import IconBack from '~icons/mdi/arrow-left';
 
   export let white = false;

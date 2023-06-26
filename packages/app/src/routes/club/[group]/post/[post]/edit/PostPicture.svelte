@@ -1,9 +1,9 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import Button from '$lib/components/buttons/Button.svelte';
-  import FileInput from '$lib/components/inputs/FileInput.svelte';
-  import Loader from '$lib/components/loaders/Loader.svelte';
-  import UserPicture from '$lib/components/pictures/UserPicture.svelte';
+  import Button from '$lib/components/Button.svelte';
+  import FileInput from '$lib/components/InputFile.svelte';
+  import Loader from '$lib/components/Loader.svelte';
+  import UserPicture from '$lib/components/PictureUser.svelte';
   import { $ as Zvar, zeus } from '$lib/zeus';
   import IconEdit from '~icons/mdi/pencil';
 

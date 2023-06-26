@@ -1,15 +1,14 @@
 <script lang="ts">
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
-  import InputGroup from '$lib/components/groups/InputGroup.svelte';
+  import GhostButton from '$lib/components/ButtonGhost.svelte';
   import IconClose from '~icons/mdi/close';
   import IconChevronUp from '~icons/mdi/chevron-up';
   import IconPlus from '~icons/mdi/plus';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
   import { _clubQuery as clubQuery } from './+page';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
   import { onMount } from 'svelte';
-  import Alert from '$lib/components/alerts/Alert.svelte';
+  import Alert from '$lib/components/Alert.svelte';
   import ParentSearch from '../../../clubs/create/ParentSearch.svelte';
   import { goto } from '$app/navigation';
 
@@ -128,30 +127,26 @@
     <ul>
       {#each links as link, i}
         <li>
-          <InputGroup>
-            <input bind:value={link.name} />
-            <input bind:value={link.value} />
-          </InputGroup>
-          <InputGroup>
+          <input bind:value={link.name} />
+          <input bind:value={link.value} />
+          <GhostButton
+            title="Supprimer"
+            on:click={() => {
+              links = links.filter((_, j) => i !== j);
+            }}
+          >
+            <IconClose aria-label="Supprimer" />
+          </GhostButton>
+          {#if i > 0}
             <GhostButton
-              title="Supprimer"
+              title="Remonter"
               on:click={() => {
-                links = links.filter((_, j) => i !== j);
+                links = [...links.slice(0, i - 1), links[i], links[i - 1], ...links.slice(i + 1)];
               }}
             >
-              <IconClose aria-label="Supprimer" />
+              <IconChevronUp aria-label="Remonter" />
             </GhostButton>
-            {#if i > 0}
-              <GhostButton
-                title="Remonter"
-                on:click={() => {
-                  links = [...links.slice(0, i - 1), links[i], links[i - 1], ...links.slice(i + 1)];
-                }}
-              >
-                <IconChevronUp aria-label="Remonter" />
-              </GhostButton>
-            {/if}
-          </InputGroup>
+          {/if}
         </li>
       {/each}
       <li>

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import Button from '$lib/components/buttons/Button.svelte';
-  import InputGroup from '$lib/components/groups/InputGroup.svelte';
+  import Button from '$lib/components/Button.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
 
@@ -77,7 +76,7 @@
     vous pouvez l'ajouter ici en vous connectant avec vos identifiants Lydia. (Aucun mot de passe
     n'est enregistré sur nos serveurs.)
   </p>
-  <InputGroup>
+  <div class="input-group">
     <label>
       Numéro de téléphone
       <input type="text" bind:value={phone} />
@@ -87,7 +86,7 @@
       <input type="password" bind:value={password} />
     </label>
     <Button type="submit" theme="primary">Rechercher</Button>
-  </InputGroup>
+  </div>
 </form>
 
 {#if lydiaAccounts.length > 0}
@@ -95,7 +94,7 @@
     <fieldset>
       <legend>Comptes</legend>
       {#each lydiaAccounts as { name, api_token_id, api_token } (api_token_id)}
-        <InputGroup>
+        <div>
           <label>
             Nom du compte
             <input type="text" value={name} readonly />
@@ -109,7 +108,7 @@
             theme="primary"
             on:click={async () => addLydiaAccount(name, api_token_id, api_token)}>Ajouter</Button
           >
-        </InputGroup>
+        </div>
       {/each}
     </fieldset>
   </form>

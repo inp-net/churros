@@ -2,8 +2,9 @@
   import { DISPLAY_NOTIFICATION_TYPES, ORDER_NOTIFICATION_TYPES } from '$lib/display';
   import { NotificationType, Selector, zeus } from '$lib/zeus';
   import { nanoid } from 'nanoid';
-  import Button from '../buttons/Button.svelte';
-  import TernaryCheckbox from '../inputs/TernaryCheckbox.svelte';
+  import Button from './Button.svelte';
+
+  const asBooleanOrNull = (v: unknown) => v as boolean | null;
 
   let loading = false;
   export let availableGroups: { uid: string; name: string; id: string }[];
@@ -104,31 +105,32 @@
       {#if selectedGroup}
         {#each displayedSettings as { type, allow, id, group, index }}
           <li>
-            <TernaryCheckbox
-              label={DISPLAY_NOTIFICATION_TYPES[type]}
-              labelNull="Utiliser le réglage global"
-              labelFalse="Bloquer"
-              labelTrue="Autoriser"
-              value={index === -1 ? null : allow}
-              on:change={({ detail }) => {
-                console.log(detail);
-                if (detail === null && index > 0) {
-                  settings = settings.filter((_, i) => i !== index);
-                } else if (index === -1 && detail !== null) {
-                  settings = [
-                    ...settings,
-                    {
-                      type,
-                      allow: detail,
-                      group,
-                      id: 'notifsetting:fake:' + nanoid(10),
-                    },
-                  ];
-                } else if (detail !== null) {
-                  settings[index].allow = detail;
-                }
-              }}
-            />
+            <label>
+              <input
+                type="checkbox"
+                checked={index === -1 ? null : allow}
+                on:change={(e) => {
+                  if (!('detail' in e)) return;
+                  const detail = asBooleanOrNull(e.detail);
+                  console.log(detail);
+                  if (detail === null && index > 0) {
+                    settings = settings.filter((_, i) => i !== index);
+                  } else if (index === -1 && detail !== null) {
+                    settings = [
+                      ...settings,
+                      {
+                        type,
+                        allow: detail,
+                        group,
+                        id: 'notifsetting:fake:' + nanoid(10),
+                      },
+                    ];
+                  } else if (detail !== null) {
+                    settings[index].allow = detail;
+                  }
+                }}
+              />{DISPLAY_NOTIFICATION_TYPES[type]}</label
+            >
           </li>
         {/each}
       {:else}

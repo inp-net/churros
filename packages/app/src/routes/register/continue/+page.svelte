@@ -1,9 +1,9 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import Alert from '$lib/components/alerts/Alert.svelte';
-  import Button from '$lib/components/buttons/Button.svelte';
-  import FormCard from '$lib/components/cards/FormCard.svelte';
-  import FormInput from '$lib/components/inputs/FormInput.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import Button from '$lib/components/Button.svelte';
+
+  import FormInput from '$lib/components/InputForm.svelte';
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { saveSessionToken, sessionUserQuery } from '$lib/session.js';
   import { zeus } from '$lib/zeus.js';
@@ -105,7 +105,7 @@
 </script>
 
 {#if result === undefined || result}
-  <FormCard large title="Finaliser mon inscription" on:submit={register}>
+  <form title="Finaliser mon inscription" on:submit={register}>
     {#if data.userCandidate.emailValidated}
       <Alert theme="success" inline>
         <strong>Votre inscription est en attente de validation manuelle.</strong><br />
@@ -210,7 +210,7 @@
     <p class="text-center">
       <Button type="submit" theme="primary" {loading}>S'inscrire</Button>
     </p>
-  </FormCard>
+  </form>
 {:else}
   <Alert theme="success">
     <h3>Demande enregistrée&nbsp;!</h3>

@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import Card from '$lib/components/cards/Card.svelte';
+  import Card from '$lib/components/Card.svelte';
   import IconPlus from '~icons/mdi/plus';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
 
   export let data: PageData;
 

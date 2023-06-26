@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Button from '$lib/components/buttons/Button.svelte';
-  import Tabs from '$lib/components/navigation/Tabs.svelte';
+  import Button from '$lib/components/Button.svelte';
+  import Tabs from '$lib/components/NavigationTabs.svelte';
   import type { PageData } from './$types';
   import * as jsonToCsv from 'json-to-csv-in-browser';
   import IconCheck from '~icons/mdi/check';

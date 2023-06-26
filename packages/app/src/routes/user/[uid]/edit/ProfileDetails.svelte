@@ -1,13 +1,12 @@
 <script lang="ts">
-  import Button from '$lib/components/buttons/Button.svelte';
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
-  import InputGroup from '$lib/components/groups/InputGroup.svelte';
+  import Button from '$lib/components/Button.svelte';
+  import GhostButton from '$lib/components/ButtonGhost.svelte';
   import { zeus } from '$lib/zeus';
   import IconClose from '~icons/mdi/close';
   import IconPlus from '~icons/mdi/plus';
   import type { PageData } from './$types';
   import { _userQuery as userQuery } from './+page';
-  import LinkCollectionInput from '$lib/components/inputs/LinkCollectionInput.svelte';
+  import LinkCollectionInput from '$lib/components/InputLinks.svelte';
 
   export let data: PageData;
 
@@ -76,21 +75,19 @@
     </p>
     <p>Réseaux sociaux :</p>
     <LinkCollectionInput bind:value={links} />
-    <p>
-      Filière et promotion :
-      <InputGroup>
-        <select bind:value={majorId}>
-          {#each data.schoolGroups as { majors, names }}
-            <optgroup label={names.join(', ')}>
-              {#each majors as { id, name }}
-                <option value={id}>{name}</option>
-              {/each}
-            </optgroup>
-          {/each}
-        </select>
-        <input type="number" bind:value={graduationYear} size="4" />
-      </InputGroup>
-    </p>
+    Filière et promotion :
+    <div class="input-group">
+      <select bind:value={majorId}>
+        {#each data.schoolGroups as { majors, names }}
+          <optgroup label={names.join(', ')}>
+            {#each majors as { id, name }}
+              <option value={id}>{name}</option>
+            {/each}
+          </optgroup>
+        {/each}
+      </select>
+      <input type="number" bind:value={graduationYear} size="4" />
+    </div>
     <p>
       Anniversaire :
       {#if birthday === null}

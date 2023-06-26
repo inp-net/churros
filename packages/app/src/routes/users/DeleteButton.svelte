@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
   import { zeus } from '$lib/zeus.js';
   import { createEventDispatcher } from 'svelte';
   import IconTrashLine from '~icons/mdi/delete';

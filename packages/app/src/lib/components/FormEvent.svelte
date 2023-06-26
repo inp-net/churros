@@ -1,21 +1,19 @@
 <script lang="ts">
-  import Button from '../buttons/Button.svelte';
+  import Button from './Button.svelte';
   import IconPlus from '~icons/mdi/plus';
   import { nanoid } from 'nanoid';
   import IconChevronDown from '~icons/mdi/chevron-down';
   import IconChevronUp from '~icons/mdi/chevron-up';
-  import FormInput from '../inputs/FormInput.svelte';
-  import IntegerListInput from '../inputs/IntegerListInput.svelte';
-  import GroupListInput from '../inputs/GroupListInput.svelte';
-  import SchoolListInput from '../inputs/SchoolListInput.svelte';
-  import TernaryCheckbox from '../inputs/TernaryCheckbox.svelte';
-  import GhostButton from '../buttons/GhostButton.svelte';
-  import InputGroup from '../groups/InputGroup.svelte';
-  import DateInput from '../inputs/DateInput.svelte';
-  import ParentSearch from '../../../routes/clubs/create/ParentSearch.svelte';
+  import InputField from './InputField.svelte';
+  import IntegerListInput from './InputIntegerList.svelte';
+  import GroupListInput from './InputGroupList.svelte';
+  import SchoolListInput from './InputSchoolList.svelte';
+  import GhostButton from './ButtonGhost.svelte';
+  import DateInput from './InputDate.svelte';
+  import ParentSearch from '../../routes/clubs/create/ParentSearch.svelte';
   import { PaymentMethod, Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
-  import Alert from '../alerts/Alert.svelte';
+  import Alert from './Alert.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
 
   let serverError = '';
@@ -295,43 +293,43 @@
     <ParentSearch label="Groupe" bind:parentUid={event.group.uid} />
   {/if}
 
-  <FormInput label="Visibilité" hint={HELP_VISIBILITY[event.visibility]}>
+  <InputField label="Visibilité" hint={HELP_VISIBILITY[event.visibility]}>
     <select bind:value={event.visibility}>
       {#each visibilities as value}
         <option {value}>{DISPLAY_VISIBILITIES[value]}</option>
       {/each}
     </select>
-  </FormInput>
+  </InputField>
 
-  <FormInput label="Titre">
+  <InputField label="Titre">
     <input type="text" bind:value={event.title} />
-  </FormInput>
+  </InputField>
 
-  <FormInput label="Description">
+  <InputField label="Description">
     <textarea bind:value={event.description} />
-  </FormInput>
+  </InputField>
 
   <div class="side-by-side">
-    <FormInput label="Début">
+    <InputField label="Début">
       <DateInput bind:value={event.startsAt} />
-    </FormInput>
+    </InputField>
 
-    <FormInput label="Fin">
+    <InputField label="Fin">
       <DateInput bind:value={event.endsAt} />
-    </FormInput>
+    </InputField>
   </div>
 
-  <FormInput label="Lieu">
+  <InputField label="Lieu">
     <input type="text" bind:value={event.location} />
-  </FormInput>
+  </InputField>
 
-  <FormInput label="Compte Lydia bénéficiaire">
+  <InputField label="Compte Lydia bénéficiaire">
     <select>
       {#each availableLydiaAccounts as account}
         <option value={account.id}> {account.name}</option>
       {/each}
     </select>
-  </FormInput>
+  </InputField>
 
   <div class="side-by-side">
     <h2>Billets</h2>
@@ -374,16 +372,16 @@
     {#each event.ticketGroups as ticketGroup, i}
       <article class="ticket-group">
         <div class="side-by-side">
-          <FormInput label="Nom du groupe">
+          <InputField label="Nom du groupe">
             <input
               type="text"
               placeholder={ticketGroup.name}
               bind:value={event.ticketGroups[i].name}
             />
-          </FormInput>
-          <FormInput label="Places dans le groupe">
+          </InputField>
+          <InputField label="Places dans le groupe">
             <input type="number" bind:value={event.ticketGroups[i].capacity} />
-          </FormInput>
+          </InputField>
         </div>
         <section class="tickets">
           {#each ticketGroup.tickets as ticket, j (ticket.id)}
@@ -393,81 +391,78 @@
               class:expanded={expanded(ticket, expandedTicketId)}
             >
               {#if expanded(ticket, expandedTicketId)}
-                <FormInput label="Nom">
+                <InputField label="Nom">
                   <input type="text" bind:value={event.ticketGroups[i].tickets[j].name} />
-                </FormInput>
+                </InputField>
 
-                <FormInput label="Description">
+                <InputField label="Description">
                   <textarea bind:value={event.ticketGroups[i].tickets[j].description} />
-                </FormInput>
+                </InputField>
 
                 <div class="side-by-side">
-                  <FormInput label="Date du shotgun">
+                  <InputField label="Date du shotgun">
                     <DateInput bind:value={event.ticketGroups[i].tickets[j].opensAt} />
-                  </FormInput>
-                  <FormInput label="Clôture">
+                  </InputField>
+                  <InputField label="Clôture">
                     <DateInput bind:value={event.ticketGroups[i].tickets[j].closesAt} />
-                  </FormInput>
+                  </InputField>
                 </div>
 
                 <div class="side-by-side">
-                  <FormInput label="Prix">
+                  <InputField label="Prix">
                     <input type="number" bind:value={event.ticketGroups[i].tickets[j].price} />
-                  </FormInput>
+                  </InputField>
 
-                  <FormInput label="Nombre de places">
+                  <InputField label="Nombre de places">
                     <input type="number" bind:value={event.ticketGroups[i].tickets[j].capacity} />
-                  </FormInput>
+                  </InputField>
                 </div>
 
-                <FormInput label="Promos">
+                <InputField label="Promos">
                   <IntegerListInput
                     bind:value={event.ticketGroups[i].tickets[j].openToPromotions}
                   />
-                </FormInput>
+                </InputField>
 
-                <FormInput label="Groupes">
+                <InputField label="Groupes">
                   <GroupListInput bind:value={event.ticketGroups[i].tickets[j].openToGroups} />
-                </FormInput>
+                </InputField>
 
-                <FormInput label="Écoles">
+                <InputField label="Écoles">
                   <SchoolListInput bind:value={event.ticketGroups[i].tickets[j].openToSchools} />
-                </FormInput>
+                </InputField>
 
                 <div class="conditions">
-                  <TernaryCheckbox
-                    label="Extés"
-                    labelFalse="Interdit"
-                    labelNull="Peu importe"
-                    labelTrue="Obligatoire"
-                    bind:value={event.ticketGroups[i].tickets[j].openToExternal}
-                  />
-                  <TernaryCheckbox
-                    label="Alumnis"
-                    labelFalse="Interdit"
-                    labelNull="Peu importe"
-                    labelTrue="Obligatoire"
-                    bind:value={event.ticketGroups[i].tickets[j].openToAlumni}
-                  />
-                  <TernaryCheckbox
-                    label="Cotisants"
-                    labelFalse="Interdit"
-                    labelNull="Peu importe"
-                    labelTrue="Obligatoire"
-                    bind:value={event.ticketGroups[i].tickets[j].openToNonAEContributors}
-                  />
+                  <label>
+                    <input
+                      type="checkbox"
+                      bind:checked={event.ticketGroups[i].tickets[j].openToExternal}
+                    />Extés</label
+                  >
+                  <label>
+                    <input
+                      type="checkbox"
+                      bind:checked={event.ticketGroups[i].tickets[j].openToAlumni}
+                    />Alumnis</label
+                  >
+                  <label>
+                    <input
+                      type="checkbox"
+                      bind:checked={event.ticketGroups[i].tickets[j].openToNonAEContributors}
+                    />Cotisants</label
+                  >
                 </div>
 
-                <FormInput label="Limite de parrainages">
+                <InputField label="Limite de parrainages">
                   <input type="number" bind:value={event.ticketGroups[i].tickets[j].godsonLimit} />
-                </FormInput>
+                </InputField>
 
-                <FormInput label="Seul un manager peut donner ce billet">
+                <InputField label="Seul un manager peut donner ce billet">
                   <input
                     type="checkbox"
                     bind:value={event.ticketGroups[i].tickets[j].onlyManagersCanProvide}
                   />
-                </FormInput>
+                </InputField>
 
                 <div class="actions">
                   <Button
@@ -532,76 +527,67 @@
         class:expanded={expanded(ticket, expandedTicketId)}
       >
         {#if expanded(ticket, expandedTicketId)}
-          <FormInput label="Nom">
+          <InputField label="Nom">
             <input type="text" bind:value={event.tickets[i].name} />
-          </FormInput>
+          </InputField>
 
-          <FormInput label="Description">
+          <InputField label="Description">
             <textarea bind:value={event.tickets[i].description} />
-          </FormInput>
+          </InputField>
 
           <div class="side-by-side">
-            <FormInput label="Date du shotgun">
+            <InputField label="Date du shotgun">
               <DateInput bind:value={event.tickets[i].opensAt} />
-            </FormInput>
-            <FormInput label="Clôture">
+            </InputField>
+            <InputField label="Clôture">
               <DateInput bind:value={event.tickets[i].closesAt} />
-            </FormInput>
+            </InputField>
           </div>
 
           <div class="side-by-side">
-            <FormInput label="Prix">
+            <InputField label="Prix">
               <input type="number" bind:value={event.tickets[i].price} />
-            </FormInput>
+            </InputField>
 
-            <FormInput label="Nombre de places">
+            <InputField label="Nombre de places">
               <input type="number" bind:value={event.tickets[i].capacity} />
-            </FormInput>
+            </InputField>
           </div>
 
-          <FormInput label="Promos">
+          <InputField label="Promos">
             <IntegerListInput bind:value={event.tickets[i].openToPromotions} />
-          </FormInput>
+          </InputField>
 
-          <FormInput label="Groupes">
+          <InputField label="Groupes">
             <GroupListInput bind:value={event.tickets[i].openToGroups} />
-          </FormInput>
+          </InputField>
 
-          <FormInput label="Écoles">
+          <InputField label="Écoles">
             <SchoolListInput bind:value={event.tickets[i].openToSchools} />
-          </FormInput>
+          </InputField>
 
           <div class="conditions">
-            <TernaryCheckbox
-              label="Extés"
-              labelFalse="Interdit"
-              labelNull="Peu importe"
-              labelTrue="Obligatoire"
-              bind:value={event.tickets[i].openToExternal}
-            />
-            <TernaryCheckbox
-              label="Alumnis"
-              labelFalse="Interdit"
-              labelNull="Peu importe"
-              labelTrue="Obligatoire"
-              bind:value={event.tickets[i].openToAlumni}
-            />
-            <TernaryCheckbox
-              label="Cotisants"
-              labelFalse="Interdit"
-              labelNull="Peu importe"
-              labelTrue="Obligatoire"
-              bind:value={event.tickets[i].openToNonAEContributors}
-            />
+            <label for="">
+              <input type="checkbox" bind:checked={event.tickets[i].openToExternal} />Extés
+            </label>
+            <label for="">
+              <input type="checkbox" bind:checked={event.tickets[i].openToAlumni} />Alumnis
+            </label>
+            <label for="">
+              <input
+                type="checkbox"
+                bind:checked={event.tickets[i].openToNonAEContributors}
+              />Cotisants
+            </label>
           </div>
 
-          <FormInput label="Limite de parrainages">
+          <InputField label="Limite de parrainages">
             <input type="number" bind:value={event.tickets[i].godsonLimit} />
-          </FormInput>
+          </InputField>
 
-          <FormInput label="Seul un manager peut donner ce billet">
+          <InputField label="Seul un manager peut donner ce billet">
             <input type="checkbox" bind:value={event.tickets[i].onlyManagersCanProvide} />
-          </FormInput>
+          </InputField>
 
           <div class="actions">
             <Button
@@ -637,7 +623,7 @@
 
   <h2>Managers</h2>
   {#each event.managers as manager, i}
-    <InputGroup>
+    <div class="input-group">
       <input type="text" bind:value={event.managers[i].user.uid} />
       <select
         on:change={(e) => {
@@ -654,7 +640,7 @@
         <option value="editor">Modification</option>
         <option value="fullaccess">Modification des permissions</option>
       </select>
-    </InputGroup>
+    </div>
   {/each}
 
   <Button

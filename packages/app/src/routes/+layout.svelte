@@ -1,8 +1,6 @@
 <script lang="ts">
   import { navigating, page } from '$app/stores';
-  import BurgerButton from '$lib/components/buttons/BurgerButton.svelte';
-  import Nav from '$lib/layout/Nav.svelte';
-  import TopBar from '$lib/layout/TopBar.svelte';
+  import TopBar from '$lib/components/NavigationTop.svelte';
   import { theme } from '$lib/theme.js';
   import { onMount } from 'svelte';
   import { tweened } from 'svelte/motion';
@@ -79,17 +77,6 @@
   <title>Centraverse</title>
 </svelte:head>
 
-{#if mobile}
-  <div class="top-0 left-0 z-10 fixed">
-    <BurgerButton
-      openness={$menuOpenness}
-      on:click={() => {
-        menuOpen = !menuOpen;
-      }}
-    />
-  </div>
-{/if}
-
 <TopBar {mobile} />
 
 {#if mobile}
@@ -109,17 +96,13 @@
     bind:clientWidth={menuWidth}
   >
     <div class="flex-shrink-0 h-10" />
-    <div class="flex-shrink flex-1 px-2 overflow-auto overscroll-contain">
-      <Nav />
-    </div>
+    <div class="flex-shrink flex-1 px-2 overflow-auto overscroll-contain" />
   </div>
 {/if}
 
 <div class="layout">
   {#if !mobile}
-    <div class="min-w-48">
-      <Nav />
-    </div>
+    <div class="min-w-48" />
   {/if}
   <main>
     <slot />

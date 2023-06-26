@@ -16,7 +16,9 @@
     "party-js": "^2.2.0",
     "qr-code-generator-lib": "^1.0.1",
     "svelte-tenor": "^0.2.0",
-    "ua-parser-js": "^1.0.32"
+    "sveltejs-tippy": "^3.0.0",
+    "ua-parser-js": "^1.0.32",
+    "xss": "^1.0.14"
   },
   "devDependencies": {
     "@babel/core": "^7.20.2",

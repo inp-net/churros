@@ -1,14 +1,14 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
   import { dateTimeFormatter } from '$lib/dates';
   import { me } from '$lib/session';
   import IconEdit from '~icons/mdi/pencil';
   import { isFuture, isPast } from 'date-fns';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
-  import BackButton from '$lib/components/buttons/BackButton.svelte';
+  import GhostButton from '$lib/components/ButtonGhost.svelte';
+  import BackButton from '$lib/components/ButtonBack.svelte';
 
   export let data: PageData;
 
@@ -28,7 +28,7 @@
   $: eventPlacesLeft = tickets.reduce((sum, { placesLeft }) => sum + placesLeft, 0);
 
   const bookingURL = (registrationId: string) =>
-    `/bookings/${registrationId.split(':', 2)[1].toUpperCase() }`;
+    `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
 </script>
 
 <section

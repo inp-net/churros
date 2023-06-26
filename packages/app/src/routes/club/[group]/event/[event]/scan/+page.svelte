@@ -1,9 +1,9 @@
 <script lang="ts">
-  import Alert from '$lib/components/alerts/Alert.svelte';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import Button from '$lib/components/Button.svelte';
   import IconChevronRight from '~icons/mdi/chevron-right';
-  import FormInput from '$lib/components/inputs/FormInput.svelte';
-  import Tabs from '$lib/components/navigation/Tabs.svelte';
+  import FormInput from '$lib/components/InputForm.svelte';
+  import Tabs from '$lib/components/NavigationTabs.svelte';
   import { PaymentMethod, zeus } from '$lib/zeus';
   import { onMount } from 'svelte';
   import { Html5QrcodeScanner } from 'html5-qrcode';

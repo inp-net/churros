@@ -14,117 +14,6 @@
   background: var(--bg);
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 1rem 0;
-  color: var(--title);
-}
-
-h1 {
-  font-size: 2em;
-  line-height: 1.25;
-}
-
-h2 {
-  font-size: 1.5em;
-  line-height: 1.25;
-}
-
-h3 {
-  font-size: 1.25em;
-  line-height: 1.25;
-}
-
-h4 {
-  font-size: 1.125em;
-}
-
-h5 {
-  font-size: 1.063em;
-}
-
-h6 {
-  font-size: 1em;
-}
-
-a {
-  color: var(--link);
-  border-radius: var(--radius-inline);
-  outline: 0 solid var(--ring);
-  transition: all 80ms ease-in;
-
-  &:focus-visible {
-    outline-width: 0.25rem;
-  }
-}
-
-button,
-input,
-select,
-textarea {
-  padding: 0.25em 0.5em;
-  font: inherit;
-  color: var(--text);
-  background: var(--bg);
-  border: var(--border-inline) solid var(--border);
-  border-radius: var(--radius-inline);
-  outline: 0 solid var(--ring);
-  transition: all 80ms ease-in, width 0s, height 0s;
-}
-
-input[type='color'] {
-  height: 2em;
-}
-
-select {
-  // For some reasons, `select` ignores `line-height`
-  height: calc(2em + 2 * var(--border-inline));
-}
-
-button {
-  user-select: none;
-  box-shadow: 0 -0.125em 0.125em #0002 inset;
-
-  &:hover,
-  &:focus-visible {
-    --text: var(--hover-text);
-    --bg: var(--hover-bg);
-    --border: var(--hover-border);
-  }
-
-  &:active {
-    box-shadow: 0 0.125em 0.125em #0002 inset;
-  }
-}
-
-input:enabled,
-select:enabled,
-textarea:enabled {
-  box-shadow: 0 0.125em 0.125em #0001 inset;
-}
-
-button:disabled,
-input:disabled,
-select:disabled,
-textarea:disabled {
-  --text: var(--disabled-text);
-  --bg: var(--disabled-bg);
-  --border: var(--disabled-border);
-
-  pointer-events: none;
-}
-
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline-width: 0.25rem;
-}
-
 hr {
   height: var(--border-block);
   background: var(--border);
@@ -203,4 +92,138 @@ hr {
 
 [hidden] {
   display: none !important;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+html {
+  --font-main: 'Space Grotesk', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --border-width: 2px;
+
+  /* Title */
+  --size-title: 1.6rem;
+  --weight-title: 700;
+
+  /* Field label */
+  --size-field-label: 0.9rem;
+  --weight-field-label: 500;
+
+  /* Paragraph */
+  --size-paragraph: 1rem;
+  --weight-paragraph: 500;
+
+  /* Details */
+  --size-details: 0.85rem;
+  --weight-details: 700;
+
+  /* Big Figure */
+  --size-big-figure: 2.4rem;
+  --weight-big-figure: 500;
+
+  /* Big button */
+  --size-big-button: 1.2rem;
+  --weight-big-button: 700;
+}
+
+.typo-title,
+h1,
+h2 {
+  font-size: var(--size-title);
+  line-height: 0.95;
+}
+
+.typo-field-label {
+  font-size: var(--size-field-label);
+  font-weight: var(--weight-field-label);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  /* font-feature-settings: "ss04" 1; */
+}
+
+.typo-big-figure {
+  font-size: var(--size-big-figure);
+  font-weight: var(--weight-big-figure);
+}
+
+.typo-paragraph,
+p {
+  font-size: var(--size-paragraph);
+  font-weight: var(--weight-paragraph);
+}
+
+.typo-details {
+  font-size: var(--size-details);
+  font-weight: var(--weight-details);
+}
+
+.typo-big-button {
+  font-size: var(--size-big-button);
+  font-weight: var(--weight-big-button);
+}
+
+a {
+  text-decoration: none;
+  color: unset;
+}
+
+p > a:not([class^='button']),
+dd > a,
+a.in-body {
+  color: var(--sky);
+  text-decoration: underline;
+  text-underline-offset: 0.5ch;
+  text-decoration-thickness: 0.125em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  padding-left: 1em;
+}
+
+* {
+  font-family: var(--font-main);
+  color: var(--fg);
+}
+
+body {
+  background-color: var(--bg);
+}
+
+ins {
+  background-color: var(--success-bg);
+  color: var(--success-text);
+  text-decoration: none;
+}
+
+del {
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+hr {
+  width: 80%;
+  max-width: 1000px;
+  border: var(--border-block) solid var(--muted-bg);
+  border-radius: 1000px;
+}
+
+code {
+  color: currentColor;
+  font-family: var(--font-mono);
+  font-weight: bold;
 }

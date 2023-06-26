@@ -2,8 +2,7 @@
   import IconClose from '~icons/mdi/close';
   import IconPlus from '~icons/mdi/plus';
   import IconChevronUp from '~icons/mdi/chevron-up';
-  import GhostButton from '../buttons/GhostButton.svelte';
-  import InputGroup from '../groups/InputGroup.svelte';
+  import GhostButton from './ButtonGhost.svelte';
 
   export let value: Array<{ name: string; value: string }> = [];
 </script>
@@ -11,11 +10,11 @@
 <ul>
   {#each value as link, i}
     <li>
-      <InputGroup>
+      <div class="input-group">
         <input bind:value={link.name} />
         <input bind:value={link.value} />
-      </InputGroup>
-      <InputGroup>
+      </div>
+      <div>
         <GhostButton
           title="Supprimer"
           on:click={() => {
@@ -34,7 +33,7 @@
             <IconChevronUp aria-label="Remonter" />
           </GhostButton>
         {/if}
-      </InputGroup>
+      </div>
     </li>
   {/each}
   <li>

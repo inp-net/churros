@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import Alert from '$lib/components/alerts/Alert.svelte';
-  import Button from '$lib/components/buttons/Button.svelte';
-  import FormCard from '$lib/components/cards/FormCard.svelte';
-  import FormInput from '$lib/components/inputs/FormInput.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import Button from '$lib/components/Button.svelte';
+
+  import FormInput from '$lib/components/InputForm.svelte';
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { zeus } from '$lib/zeus.js';
   import type { ZodFormattedError } from 'zod';
@@ -99,7 +99,7 @@
   };
 </script>
 
-<FormCard large title="Modifier une inscription" on:submit={onSubmit}>
+<form title="Modifier une inscription" on:submit={onSubmit}>
   <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
     <strong>{(formErrors?._errors ?? []).join(' ')}</strong>
   </Alert>
@@ -166,4 +166,4 @@
     </Button>
     <a href="../..">Retour à la liste</a>
   </p>
-</FormCard>
+</form>

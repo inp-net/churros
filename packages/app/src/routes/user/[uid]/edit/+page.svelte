@@ -1,5 +1,5 @@
 <script lang="ts">
-  import NotificationSettingsForm from '$lib/components/forms/NotificationSettingsForm.svelte';
+  import NotificationSettingsForm from '$lib/components/FormNotificationSettings.svelte';
   import type { PageData } from './$types';
   import Permissions from './Permissions.svelte';
   import ProfileDetails from './ProfileDetails.svelte';
