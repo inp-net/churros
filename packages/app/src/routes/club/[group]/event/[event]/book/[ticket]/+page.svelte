@@ -6,11 +6,11 @@
   import Button from '$lib/components/Button.svelte';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { type PaymentMethod, zeus } from '$lib/zeus';
-  import FormInput from '$lib/components/InputForm.svelte';
   import Alert from '$lib/components/Alert.svelte';
   import BackButton from '$lib/components/ButtonBack.svelte';
   import { page } from '$app/stores';
   import { dateTimeFormatter } from '$lib/dates';
+  import InputField from '$lib/components/InputField.svelte';
 
   let done = false;
   $: done = $page.url.searchParams.has('done');
@@ -106,7 +106,8 @@
     <input type="checkbox" bind:checked={payingForThemself} /> Je paie pour moi
   </label>
   {#if !payingForThemself}
-    <FormInput label="Nom du bénéficiaire"><input type="text" bind:value={beneficiary} /></FormInput
+    <InputField label="Nom du bénéficiaire"
+      ><input type="text" bind:value={beneficiary} /></InputField
     >
   {/if}
 

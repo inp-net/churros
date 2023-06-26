@@ -2,7 +2,7 @@
   import NotificationSettingsForm from '$lib/components/FormNotificationSettings.svelte';
   import type { PageData } from './$types';
   import Permissions from './Permissions.svelte';
-  import ProfileDetails from '../../../../lib/components/FormUser.svelte';
+  import ProfileDetails from '$lib/components/FormUser.svelte';
   import FormPicture from '$lib/components/FormPicture.svelte';
 
   export let data: PageData;

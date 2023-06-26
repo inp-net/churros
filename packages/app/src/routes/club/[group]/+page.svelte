@@ -16,7 +16,7 @@
   import PictureUser from '$lib/components/PictureUser.svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import ArticleCard from '$lib/components/CardArticle.svelte';
-  import { isFuture, isPast } from 'date-fns';
+  import { isPast } from 'date-fns';
 
   export let data: PageData;
 

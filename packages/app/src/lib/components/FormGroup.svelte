@@ -9,8 +9,8 @@
   import Button from '$lib/components/Button.svelte';
   import { onMount } from 'svelte';
   import Alert from '$lib/components/Alert.svelte';
-  import ParentSearch from '../../routes/clubs/create/ParentSearch.svelte';
   import { goto } from '$app/navigation';
+  import InputGroup from './InputGroup.svelte';
 
   export let data: PageData;
 
@@ -159,7 +159,7 @@
       </li>
     </ul>
     <p>
-      <ParentSearch bind:parentUid />
+      <InputGroup label="Groupe parent" bind:uid={parentUid} />
     </p>
     {#if serverError}
       <Alert theme="danger"

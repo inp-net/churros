@@ -2,8 +2,8 @@
   import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
   import Button from '$lib/components/Button.svelte';
+  import InputField from '$lib/components/InputField.svelte';
 
-  import FormInput from '$lib/components/InputForm.svelte';
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { zeus } from '$lib/zeus';
   import type { ZodFormattedError } from 'zod';
@@ -59,13 +59,13 @@
         <strong>{(formErrors?._errors ?? []).join(' ')} </strong>
       </Alert>
       <p>
-        <FormInput
+        <InputField
           label="Adresse e-mail universitaire :"
           hint="Elle finit par @etu.[ecole].fr."
           errors={formErrors?.email?._errors}
         >
           <input type="email" bind:value={email} minlength="1" maxlength="255" required />
-        </FormInput>
+        </InputField>
       </p>
       <p class="text-center">
         <Button type="submit" theme="primary" {loading}>S'inscrire</Button>

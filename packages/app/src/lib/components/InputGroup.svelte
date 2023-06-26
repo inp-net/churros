@@ -1,6 +1,5 @@
 <script lang="ts">
   import GhostButton from '$lib/components/ButtonGhost.svelte';
-  import FormInput from '$lib/components/InputForm.svelte';
   import InlineLoader from '$lib/components/LoaderInline.svelte';
   import { zeus } from '$lib/zeus';
   import { tick } from 'svelte';
@@ -8,9 +7,10 @@
   import IconClose from '~icons/mdi/close';
   import IconDotsHorizontal from '~icons/mdi/dots-horizontal';
   import IconPlus from '~icons/mdi/plus';
+  import InputField from './InputField.svelte';
 
-  export let parentUid: string | undefined;
-  export let label = 'Groupe parent';
+  export let uid: string | undefined;
+  export let label: string;
   export let required = false;
 
   let loading = false;
@@ -21,15 +21,15 @@
   let input: HTMLInputElement;
 </script>
 
-<FormInput label="{label} :">
-  {#if enabled || parentUid}
+<InputField {label} {required}>
+  {#if enabled || uid}
     <span>
-      {#if parentUid}
-        <a href="/club/{parentUid}">{parentUid}</a>
+      {#if uid}
+        <a href="/club/{uid}">{uid}</a>
       {/if}
       {#if loading}
         <InlineLoader />
-      {:else if parentUid}
+      {:else if uid}
         <IconCheckLine aria-label="Valeur acceptée" aria-live="polite" />
       {:else}
         <IconDotsHorizontal aria-label="Entrez un nom de groupe" />
@@ -39,22 +39,22 @@
         type="search"
         list="parents"
         class="flex-1"
-        placeholder="Rechercher un groupe parent"
-        required={required && !parentUid}
+        placeholder="Rechercher un groupe"
+        required={required && !uid}
         bind:value={q}
         on:input={async () => {
           if (!q) return;
           loading = true;
           enabled = true;
-          parentUid = undefined;
+          uid = undefined;
           try {
             const { group } = await $zeus.query({
               group: [{ uid: q }, { uid: true, name: true, id: true }],
             });
             input.setCustomValidity('');
-            parentUid = group.uid;
+            uid = group.uid;
           } catch {
-            input.setCustomValidity('Veuillez entrer un groupe parent valide');
+            input.setCustomValidity('Veuillez entrer un groupe valide');
             const { searchGroups } = await $zeus.query({
               searchGroups: [{ q }, { name: true, uid: true, id: true }],
             });
@@ -69,7 +69,7 @@
       <GhostButton
         title="Supprimer"
         on:click={() => {
-          parentUid = undefined;
+          uid = undefined;
           enabled = false;
         }}
       >
@@ -94,7 +94,7 @@
       <IconPlus aria-hidden="true" /> Définir un groupe parent
     </button>
   {/if}
-</FormInput>
+</InputField>
 
 <datalist id="parents">
   {#each options as { uid, name }}

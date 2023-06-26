@@ -1,5 +1,5 @@
 <script lang="ts">
-  import EventForm from '$lib/components/FormEvent.svelte';
+  import FormEvent from '$lib/components/FormEvent.svelte';
   import Tabs from '$lib/components/NavigationTabs.svelte';
   import { me } from '$lib/session';
   import { Selector, zeus } from '$lib/zeus';
@@ -33,7 +33,7 @@
 <a href="../">Voir l'évènement</a>
 
 <FormPicture objectName="Event" bind:object={data.event} />
-<EventForm
+<FormEvent
   availableGroups={data.groups.filter((g) =>
     $me?.groups.some(({ group, canEditArticles }) => canEditArticles && group.id === g.id)
   )}

@@ -1,16 +1,16 @@
 <script lang="ts">
   import Alert from '$lib/components/Alert.svelte';
   import { Visibility, zeus } from '$lib/zeus';
-  import type { PageData } from './$types';
+  import type { PageData } from '../../routes/club/[group]/post/[post]/edit/$types';
   import Button from '$lib/components/Button.svelte';
   import { goto } from '$app/navigation';
-  import EventSearch from '../../../write/EventSearch.svelte';
+  import EventSearch from '../../routes/club/[group]/write/EventSearch.svelte';
   import { page } from '$app/stores';
-  import { _articleQuery } from './+page';
-  import FormInput from '$lib/components/InputForm.svelte';
+  import { _articleQuery } from '../../routes/club/[group]/post/[post]/edit/+page';
   import LinkCollectionInput from '$lib/components/InputLinks.svelte';
   import DateInput from '$lib/components/InputDate.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
+  import InputField from '$lib/components/InputField.svelte';
 
   export let data: PageData;
 
@@ -67,23 +67,23 @@
 
 <form on:submit|preventDefault={updateArticle}>
   <EventSearch groupUid={$page.params.group} bind:eventId />
-  <FormInput label="Titre">
+  <InputField label="Titre">
     <input type="text" required bind:value={title} />
-  </FormInput>
-  <FormInput label="Publier le">
+  </InputField>
+  <InputField label="Publier le">
     <DateInput bind:value={publishedAt} />
-  </FormInput>
-  <FormInput label="Visibilité" hint={HELP_VISIBILITY[visibility]}>
+  </InputField>
+  <InputField label="Visibilité" hint={HELP_VISIBILITY[visibility]}>
     <select bind:value={visibility}>
       <option value={Visibility.Private}>{DISPLAY_VISIBILITIES.Private} </option>
       <option value={Visibility.Restricted}>{DISPLAY_VISIBILITIES.Restricted} </option>
       <option value={Visibility.Unlisted}>{DISPLAY_VISIBILITIES.Unlisted} </option>
       <option value={Visibility.Public}>{DISPLAY_VISIBILITIES.Public} </option>
     </select>
-  </FormInput>
-  <FormInput label="Description">
+  </InputField>
+  <InputField label="Description">
     <textarea bind:value={body} cols="30" rows="10" />
-  </FormInput>
+  </InputField>
   <p>Liens:</p>
   <LinkCollectionInput bind:value={links} />
   {#if serverError}

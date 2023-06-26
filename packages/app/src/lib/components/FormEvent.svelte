@@ -10,7 +10,7 @@
   import SchoolListInput from './InputSchoolList.svelte';
   import GhostButton from './ButtonGhost.svelte';
   import DateInput from './InputDate.svelte';
-  import ParentSearch from '../../routes/clubs/create/ParentSearch.svelte';
+  import ParentSearch from './InputGroup.svelte';
   import { PaymentMethod, Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
@@ -290,7 +290,7 @@
 
 <form on:submit|preventDefault>
   {#if availableGroups.length > 0}
-    <ParentSearch label="Groupe" bind:parentUid={event.group.uid} />
+    <ParentSearch label="Groupe" bind:uid={event.group.uid} />
   {/if}
 
   <InputField label="Visibilité" hint={HELP_VISIBILITY[event.visibility]}>

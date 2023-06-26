@@ -111,7 +111,13 @@
 
   function onDocumentClick(e: Event) {
     if (!(e.target instanceof HTMLElement)) return;
-    if (e.composedPath().some((path) => path instanceof HTMLElement ? path?.dataset?.suggestionsId === uniqueId : false)) {
+    if (
+      e
+        .composedPath()
+        .some((path) =>
+          path instanceof HTMLElement ? path?.dataset?.suggestionsId === uniqueId : false
+        )
+    ) {
       highlight();
       if (e.target.tagName === 'LI') {
         selectHighlighted();

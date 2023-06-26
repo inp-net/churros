@@ -1,6 +1,6 @@
 <script lang="ts">
   import GhostButton from '$lib/components/ButtonGhost.svelte';
-  import FormInput from '$lib/components/InputForm.svelte';
+  import InputField from '$lib/components/InputField.svelte';
   import InlineLoader from '$lib/components/LoaderInline.svelte';
   import { zeus } from '$lib/zeus';
   import { tick } from 'svelte';
@@ -21,7 +21,7 @@
   let input: HTMLInputElement;
 </script>
 
-<FormInput label="Évènement : ">
+<InputField label="Évènement : ">
   {#if enabled || eventUid}
     <span>
       {#if eventUid}
@@ -101,7 +101,7 @@
       <IconPlus aria-hidden="true" /> Choisir un évènement
     </button>
   {/if}
-</FormInput>
+</InputField>
 
 <datalist id="events">
   {#each options as { uid, title }}

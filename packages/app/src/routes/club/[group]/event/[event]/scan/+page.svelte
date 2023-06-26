@@ -2,12 +2,12 @@
   import Alert from '$lib/components/Alert.svelte';
   import Button from '$lib/components/Button.svelte';
   import IconChevronRight from '~icons/mdi/chevron-right';
-  import FormInput from '$lib/components/InputForm.svelte';
   import Tabs from '$lib/components/NavigationTabs.svelte';
   import { PaymentMethod, zeus } from '$lib/zeus';
   import { onMount } from 'svelte';
   import { Html5QrcodeScanner } from 'html5-qrcode';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
+  import InputField from '$lib/components/InputField.svelte';
 
   let manualRegistrationCode = '';
   let code = '';
@@ -117,9 +117,9 @@
 </section>
 
 <h2>Vérifier manuellement</h2>
-<FormInput label="Code de réservation">
+<InputField label="Code de réservation">
   <input type="text" bind:value={manualRegistrationCode} />
-</FormInput>
+</InputField>
 <Button
   on:click={async () => {
     code = 'r:' + manualRegistrationCode.toLowerCase();

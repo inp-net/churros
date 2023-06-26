@@ -3,11 +3,11 @@
   import Alert from '$lib/components/Alert.svelte';
   import Button from '$lib/components/Button.svelte';
 
-  import FormInput from '$lib/components/InputForm.svelte';
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { zeus } from '$lib/zeus.js';
   import type { ZodFormattedError } from 'zod';
   import type { PageData } from './$types';
+  import InputField from '$lib/components/InputField.svelte';
 
   export let data: PageData;
 
@@ -105,15 +105,15 @@
   </Alert>
   <p>Demande envoyée par <strong>{data.userCandidateByEmail.email}</strong>.</p>
   <p class="grid gap-4 desktop:grid-cols-2">
-    <FormInput label="Prénom :" errors={formErrors?.firstName?._errors}>
+    <InputField label="Prénom :" errors={formErrors?.firstName?._errors}>
       <input type="text" bind:value={firstName} required />
-    </FormInput>
-    <FormInput label="Nom de famille :" errors={formErrors?.lastName?._errors}>
+    </InputField>
+    <InputField label="Nom de famille :" errors={formErrors?.lastName?._errors}>
       <input type="text" bind:value={lastName} required />
-    </FormInput>
+    </InputField>
   </p>
   <p class="grid gap-4 desktop:grid-cols-2">
-    <FormInput label="Filière :" errors={formErrors?.majorId?._errors}>
+    <InputField label="Filière :" errors={formErrors?.majorId?._errors}>
       <select bind:value={majorId} required>
         {#each data.schoolGroups as { majors, names }}
           <optgroup label={names.join(', ')}>
@@ -123,13 +123,13 @@
           </optgroup>
         {/each}
       </select>
-    </FormInput>
-    <FormInput label="Promotion :" errors={formErrors?.graduationYear?._errors}>
+    </InputField>
+    <InputField label="Promotion :" errors={formErrors?.graduationYear?._errors}>
       <input type="number" bind:value={graduationYear} size="4" required />
-    </FormInput>
+    </InputField>
   </p>
   <p class="grid gap-4 grid-cols-2">
-    <FormInput label="Date de naissance :" errors={formErrors?.birthday?._errors}>
+    <InputField label="Date de naissance :" errors={formErrors?.birthday?._errors}>
       <input
         type="date"
         value={birthday?.toISOString().slice(0, 10)}
@@ -138,15 +138,15 @@
           birthday = valueAsDate(target);
         }}
       />
-    </FormInput>
-    <FormInput label="Numéro de téléphone :" errors={formErrors?.phone?._errors}>
+    </InputField>
+    <InputField label="Numéro de téléphone :" errors={formErrors?.phone?._errors}>
       <input type="tel" bind:value={phone} />
-    </FormInput>
+    </InputField>
   </p>
   <p>
-    <FormInput label="Adresse :" errors={formErrors?.address?._errors}>
+    <InputField label="Adresse :" errors={formErrors?.address?._errors}>
       <input type="text" bind:value={address} />
-    </FormInput>
+    </InputField>
   </p>
   <p class="text-center">
     <Button type="submit" theme="primary" disabled={loading} loading={loadingSave} data-save>
