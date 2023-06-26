@@ -67,6 +67,11 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             registrations: {
               id: true,
               beneficiary: true,
+              beneficiaryUser: {
+                uid: true,
+                firstName: true,
+                lastName: true,
+              },
               authorIsBeneficiary: true,
               author: {
                 uid: true,
