@@ -4,12 +4,12 @@
   import IconChevronUp from '~icons/mdi/chevron-up';
   import IconPlus from '~icons/mdi/plus';
   import { zeus } from '$lib/zeus';
-  import type { PageData } from './$types';
-  import { _clubQuery as clubQuery } from './+page';
+  import type { PageData } from '../../routes/club/[group]/edit/$types';
+  import { _clubQuery as clubQuery } from '../../routes/club/[group]/edit/+page';
   import Button from '$lib/components/Button.svelte';
   import { onMount } from 'svelte';
   import Alert from '$lib/components/Alert.svelte';
-  import ParentSearch from '../../../clubs/create/ParentSearch.svelte';
+  import ParentSearch from '../../routes/clubs/create/ParentSearch.svelte';
   import { goto } from '$app/navigation';
 
   export let data: PageData;

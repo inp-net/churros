@@ -4,7 +4,7 @@
   import { me } from '$lib/session';
   import { Selector, zeus } from '$lib/zeus';
   import type { PageData } from './$types';
-  import EventPicture from './EventPicture.svelte';
+  import FormPicture from '$lib/components/FormPicture.svelte';
 
   export let data: PageData;
 
@@ -32,7 +32,7 @@
 
 <a href="../">Voir l'évènement</a>
 
-<EventPicture bind:event={data.event} />
+<FormPicture objectName="Event" bind:object={data.event} />
 <EventForm
   availableGroups={data.groups.filter((g) =>
     $me?.groups.some(({ group, canEditArticles }) => canEditArticles && group.id === g.id)

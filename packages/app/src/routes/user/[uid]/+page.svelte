@@ -5,7 +5,7 @@
   import Card from '$lib/components/Card.svelte';
   import SocialLink from '$lib/components/SocialLink.svelte';
 
-  import UserPicture from '$lib/components/PictureUser.svelte';
+  import PictureUser from '$lib/components/PictureUser.svelte';
   import { formatDate } from '$lib/dates.js';
   import { me } from '$lib/session.js';
   import IconAcademicCap from '~icons/mdi/school';
@@ -29,7 +29,7 @@
 <Card>
   <div class="user-header">
     <div class="user-picture">
-      <UserPicture
+      <PictureUser
         src={user.pictureFile
           ? `${PUBLIC_STORAGE_URL}${user.pictureFile}`
           : 'https://via.placeholder.com/160'}

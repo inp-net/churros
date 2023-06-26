@@ -3,37 +3,45 @@
   import Button from '$lib/components/Button.svelte';
   import FileInput from '$lib/components/InputFile.svelte';
   import Loader from '$lib/components/Loader.svelte';
-  import UserPicture from '$lib/components/PictureUser.svelte';
+  import PictureUser from '$lib/components/PictureUser.svelte';
   import { $ as Zvar, zeus } from '$lib/zeus';
   import IconEdit from '~icons/mdi/pencil';
 
-  export let event: { pictureFile: string; id: string; title: string };
-
-  let { pictureFile } = event;
+  export const LEGENDS = {
+    Group: 'Logo du groupe',
+    User: 'Photo de profil',
+    Article: 'Photo de l’article',
+    Event: 'Photo de l’événement',
+  };
+  export let objectName: 'Group' | 'User' | 'Article' | 'Event';
+  export let object: { pictureFile: string; uid: string };
+  export let alt = '';
+  $: ({ pictureFile, uid } = object);
+  $: alt = alt || uid;
 
   let files: FileList;
   let updating = false;
-  const updateEventPicture = async () => {
+  const updatePicture = async () => {
     if (updating) return;
     try {
       updating = true;
-      const { updateEventPicture } = await $zeus.mutate(
-        { updateEventPicture: [{ id: event.id, file: Zvar('file', 'File!') }, true] },
+      const result = await $zeus.mutate(
+        { [`update${objectName}Picture`]: [{ uid, file: Zvar('file', 'File!') }, true] },
         { variables: { file: files[0] } }
       );
       // Add a timestamp to the URL to force the browser to reload the image
-      pictureFile = `${updateEventPicture}?v=${Date.now()}`;
+      pictureFile = `${result[`update${objectName}Picture`]}?v=${Date.now()}`;
     } finally {
       // `updating` is set to false when the image loads
     }
   };
 
   let deleting = false;
-  const deleteEventPicture = async () => {
+  const deletePicture = async () => {
     if (deleting) return;
     try {
       deleting = true;
-      const deleted = await $zeus.mutate({ deleteEventPicture: [{ id: event.id }, true] });
+      const deleted = await $zeus.mutate({ [`delete${objectName}Picture`]: [{ uid }, true] });
       if (deleted) pictureFile = '';
     } finally {
       deleting = false;
@@ -43,8 +51,8 @@
 
 <form on:submit|preventDefault>
   <fieldset>
-    <legend>Image de l'article</legend>
-    <FileInput bind:files on:change={updateEventPicture} accept="image/jpeg,image/png">
+    <legend>{LEGENDS[objectName]}</legend>
+    <FileInput bind:files on:change={updatePicture} accept="image/jpeg,image/png">
       <div class="relative">
         <div class="picture-edit">
           {#if updating}
@@ -53,11 +61,11 @@
             <IconEdit />
           {/if}
         </div>
-        <UserPicture
+        <PictureUser
           src={pictureFile
             ? `${PUBLIC_STORAGE_URL}${pictureFile}`
             : 'https://via.placeholder.com/160'}
-          alt={event.title}
+          {alt}
           on:load={() => {
             updating = false;
           }}
@@ -66,7 +74,7 @@
     </FileInput>
     {#if pictureFile}
       <p>
-        <Button type="button" theme="danger" loading={deleting} on:click={deleteEventPicture}
+        <Button type="button" theme="danger" loading={deleting} on:click={deletePicture}
           >Supprimer</Button
         >
       </p>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import PostDetails from './PostDetails.svelte';
-  import PostPicture from './PostPicture.svelte';
+  import FormPicture from '$lib/components/FormPicture.svelte';
 
   export let data: PageData;
 
@@ -10,5 +10,5 @@
 
 <h1>Édition de l'article {title}</h1>
 
-<PostPicture bind:article={data.article} />
+<FormPicture objectName="Article" bind:object={data.article} />
 <PostDetails bind:data />

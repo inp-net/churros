@@ -4,8 +4,8 @@
   import { zeus } from '$lib/zeus';
   import IconClose from '~icons/mdi/close';
   import IconPlus from '~icons/mdi/plus';
-  import type { PageData } from './$types';
-  import { _userQuery as userQuery } from './+page';
+  import type { PageData } from '../../routes/user/[uid]/edit/$types';
+  import { _userQuery as userQuery } from '../../routes/user/[uid]/edit/+page';
   import LinkCollectionInput from '$lib/components/InputLinks.svelte';
 
   export let data: PageData;

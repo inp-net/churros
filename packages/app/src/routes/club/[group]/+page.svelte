@@ -13,7 +13,7 @@
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import Button from '$lib/components/Button.svelte';
   import { Visibility, zeus } from '$lib/zeus';
-  import UserPicture from '$lib/components/PictureUser.svelte';
+  import PictureUser from '$lib/components/PictureUser.svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import ArticleCard from '$lib/components/CardArticle.svelte';
   import { isFuture, isPast } from 'date-fns';
@@ -43,7 +43,7 @@
 
 <div class="top">
   <div class="user-picture">
-    <UserPicture
+    <PictureUser
       src={group.pictureFile
         ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
         : 'https://via.placeholder.com/160'}

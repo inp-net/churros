@@ -18,30 +18,31 @@ import { GraphQLError, Kind } from 'graphql';
  * Maps database ID prefixes to GraphQL type names. Please add new types here as they are added to
  * the schema, by running node scripts/update-id-prefix-to-typename-map.js.
  */
-/* @generated from schema by file:///mnt/datacore/projects/centraverse/packages/api/build/scripts/update-id-prefix-to-typename-map.js */ export const ID_PREFIXES_TO_TYPENAMES =
-  {
-    u: 'User',
-    candidate: 'UserCandidate',
-    link: 'Link',
-    major: 'Major',
-    school: 'School',
-    credential: 'Credential',
-    ae: 'StudentAssociation',
-    g: 'Group',
-    a: 'Article',
-    e: 'Event',
-    tg: 'TicketGroup',
-    t: 'Ticket',
-    r: 'Registration',
-    log: 'LogEntry',
-    lydia: 'LydiaAccount',
-    lydiapayment: 'LydiaTransaction',
-    barweek: 'BarWeek',
-    notifsub: 'NotificationSubscription',
-    notif: 'Notification',
-    notifsetting: 'NotificationSetting',
-  };
+/* @generated from schema by file:///mnt/datacore/projects/centraverse/packages/api/build/scripts/update-id-prefix-to-typename-map.js */ export const ID_PREFIXES_TO_TYPENAMES = {"u":"User","candidate":"UserCandidate","link":"Link","major":"Major","school":"School","credential":"Credential","ae":"StudentAssociation","g":"Group","a":"Article","e":"Event","tg":"TicketGroup","t":"Ticket","r":"Registration","log":"LogEntry","lydia":"LydiaAccount","lydiapayment":"LydiaTransaction","barweek":"BarWeek","notifsub":"NotificationSubscription","notif":"Notification","notifsetting":"NotificationSetting"}
 /* end @generated from schema */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const builder = new SchemaBuilder<{
   AuthContexts: AuthContexts;

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ClubDetails from '$lib/../routes/club/[group]/edit/ClubDetails.svelte';
+  import ClubDetails from '$lib/components/FormGroup.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
