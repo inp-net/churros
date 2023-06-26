@@ -6,6 +6,5 @@
     "prisma.prisma",
     "stylelint.vscode-stylelint",
     "svelte.svelte-vscode",
-    "voorjaar.windicss-intellisense"
   ]
 }

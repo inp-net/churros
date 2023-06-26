@@ -2547,7 +2547,6 @@ __metadata:
     ua-parser-js: "npm:^1.0.32"
     unplugin-icons: "npm:^0.14.13"
     vite: "npm:^3.2.4"
-    vite-plugin-windicss: "npm:^1.8.8"
     xss: "npm:^1.0.14"
     zod: "npm:^3.19.1"
   languageName: unknown
@@ -5751,32 +5750,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@windicss/config@npm:1.8.8":
-  version: 1.8.8
-  resolution: "@windicss/config@npm:1.8.8"
-  dependencies:
-    debug: "npm:^4.3.4"
-    jiti: "npm:^1.14.0"
-    windicss: "npm:^3.5.6"
-  checksum: 8f087c3b8898212edef5b068d779e177649f48100b3d676f9dd115ee1cba55a74485279d6bf3e5394f1737da5690c94899dcbf1b937c615575223844c1191028
-  languageName: node
-  linkType: hard
-
-"@windicss/plugin-utils@npm:1.8.8":
-  version: 1.8.8
-  resolution: "@windicss/plugin-utils@npm:1.8.8"
-  dependencies:
-    "@antfu/utils": "npm:^0.5.2"
-    "@windicss/config": "npm:1.8.8"
-    debug: "npm:^4.3.4"
-    fast-glob: "npm:^3.2.11"
-    magic-string: "npm:^0.26.2"
-    micromatch: "npm:^4.0.5"
-    windicss: "npm:^3.5.6"
-  checksum: d889c1c851a93bcecb0d0fd72df49adf9b4f3ca353917ad495c884c37ed1210ecce472cb6ec595908f63a68d8d93a64f586b99460f7492b3048712928a6c12ed
-  languageName: node
-  linkType: hard
-
 "@yarnpkg/esbuild-plugin-pnp@npm:^3.0.0-rc.10":
   version: 3.0.0-rc.15
   resolution: "@yarnpkg/esbuild-plugin-pnp@npm:3.0.0-rc.15"
@@ -8686,7 +8659,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.2.11, fast-glob@npm:^3.2.12, fast-glob@npm:^3.2.7, fast-glob@npm:^3.2.9":
+"fast-glob@npm:^3.2.12, fast-glob@npm:^3.2.7, fast-glob@npm:^3.2.9":
   version: 3.2.12
   resolution: "fast-glob@npm:3.2.12"
   dependencies:
@@ -10363,15 +10336,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jiti@npm:^1.14.0":
-  version: 1.16.0
-  resolution: "jiti@npm:1.16.0"
-  bin:
-    jiti: bin/jiti.js
-  checksum: 9a528a1be9a7a7121ca22dc7a52bb203ac49308cadacfc17e4dba7aa5c8732343fa210f3fbe107ec99536be2220d0173ef741dbd47561410bed131431f6d91c3
-  languageName: node
-  linkType: hard
-
 "js-sdsl@npm:^4.1.4":
   version: 4.1.5
   resolution: "js-sdsl@npm:4.1.5"
@@ -10869,7 +10833,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:^0.26.2, magic-string@npm:^0.26.4, magic-string@npm:^0.26.7":
+"magic-string@npm:^0.26.4, magic-string@npm:^0.26.7":
   version: 0.26.7
   resolution: "magic-string@npm:0.26.7"
   dependencies:
@@ -15300,20 +15264,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-windicss@npm:^1.8.8":
-  version: 1.8.8
-  resolution: "vite-plugin-windicss@npm:1.8.8"
-  dependencies:
-    "@windicss/plugin-utils": "npm:1.8.8"
-    debug: "npm:^4.3.4"
-    kolorist: "npm:^1.5.1"
-    windicss: "npm:^3.5.6"
-  peerDependencies:
-    vite: ^2.0.1 || ^3.0.0
-  checksum: 998b6c74d30cef38ad4a354a7996197ed77b5b0004d0b6cf74f675808c60ead4317cae9fc5494c79295977c1a0e01941b601cfd329a3e13c2275d893e86cad44
-  languageName: node
-  linkType: hard
-
 "vite@npm:^3.2.4":
   version: 3.2.4
   resolution: "vite@npm:3.2.4"
@@ -15519,15 +15469,6 @@ __metadata:
   dependencies:
     string-width: "npm:^1.0.2 || 2 || 3 || 4"
   checksum: 39915f81cdc6cee1f54bfd7672619cc6d0bd558089f968ea7831324cd4b5ed00e78e710a64f05e5d75ed7880e45eef97295907f68d5aabb9d2899436c917b275
-  languageName: node
-  linkType: hard
-
-"windicss@npm:^3.5.6":
-  version: 3.5.6
-  resolution: "windicss@npm:3.5.6"
-  bin:
-    windicss: cli/index.js
-  checksum: 9518d23914cfa3e24aacca50df655a65829bc9277f76913637e777031241a1cd6dce044ab8d56a424be19db3c54e2c2e149943e1186529d6cfbfd73e2af7a36e
   languageName: node
   linkType: hard
 

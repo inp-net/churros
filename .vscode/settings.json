@@ -5,5 +5,4 @@
   "cssvar.postcssSyntax": { "postcss-scss": ["scss", "svelte"] },
   "scss.lint.unknownAtRules": "ignore",
   "typescript.tsdk": "node_modules/typescript/lib",
-  "windicss.sortOnSave": true
 }

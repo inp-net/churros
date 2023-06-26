@@ -56,7 +56,6 @@
     "typescript": "^4.9.3",
     "unplugin-icons": "^0.14.13",
     "vite": "^3.2.4",
-    "vite-plugin-windicss": "^1.8.8",
     "zod": "^3.19.1"
   },
   "private": true,

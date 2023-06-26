@@ -4,7 +4,6 @@
   import { theme } from '$lib/theme.js';
   import { onMount } from 'svelte';
   import { tweened } from 'svelte/motion';
-  import 'virtual:windi.css';
   import '../design/app.scss';
   import type { LayoutData } from './$types';
 
