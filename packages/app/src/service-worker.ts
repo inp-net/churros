@@ -3,7 +3,7 @@
 /// <reference no-default-lib="true"/>
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
-import type { PushNotification } from '@centraverse/api/src/services/notifications';
+import { notifyInBulk, type PushNotification } from '@centraverse/api/src/services/notifications';
 import { default as parseUserAgent } from 'ua-parser-js';
 import * as $serviceWorker from '$service-worker';
 const sw = self as unknown as ServiceWorkerGlobalScope;
@@ -86,11 +86,17 @@ sw.addEventListener('push', (event) => {
   );
 });
 
-sw.addEventListener('notificationclick', async (clickEvent) => {
-  await log('clicked notification');
-  console.log(clickEvent);
-  const { action } = clickEvent;
-  if (action.startsWith('https://')) clickEvent.waitUntil(openURL(action));
+sw.addEventListener('notificationclick', (clickEvent) => {
+  clickEvent.waitUntil(
+    (async () => {
+      await log('clicked notification');
+      console.log(clickEvent);
+      const { action, notification } = clickEvent;
+      if (action.startsWith('https://')) await openURL(action);
+      const data = notification.data as PushNotification['data'];
+      if (data.goto) await openURL(data.goto);
+    })()
+  );
 });
 
 async function openURL(url: string) {
