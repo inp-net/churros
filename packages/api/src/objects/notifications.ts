@@ -25,6 +25,7 @@ export const NotificationType = builder.prismaNode('Notification', {
     imageFile: t.exposeString('imageFile'),
     type: t.expose('type', { type: NotificationTypeEnum }),
     actions: t.relation('actions'),
+    goto: t.exposeString('goto'),
   }),
 });
 
@@ -94,6 +95,7 @@ builder.mutationField('testNotification', (t) =>
         data: {
           type: NotificationTypePrisma.Other,
           group: undefined,
+          goto: 'https://www.youtube.com/watch?v=chaLRQZKi6w?t=7',
         },
       });
       return true;

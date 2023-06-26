@@ -44,6 +44,7 @@ export type PushNotification = {
     group: string | undefined;
     type: NotificationType;
     subscriptionName?: string;
+    goto: string;
   };
 };
 
@@ -110,6 +111,7 @@ export async function scheduleNewArticleNotification({
         data: {
           group: article.group.uid,
           type: NotificationType.NewArticle,
+          goto: `/club/${article.group.uid}/post/${article.uid}`,
         },
       };
     },
@@ -216,13 +218,14 @@ export async function scheduleShotgunNotifications({
         data: {
           group: event.group.uid,
           type,
+          goto: `/club/${event.group.uid}/event/${event.uid}`,
         },
         image: event.pictureFile,
       };
 
       const openedShotgunActions: PushNotification['actions'] = [
         {
-          action: `/club/${event.group.uid}/event/${event.id}`,
+          action: `/club/${event.group.uid}/event/${event.uid}`,
           title: 'Go !',
         },
       ];
@@ -473,6 +476,7 @@ export async function notify<U extends User>(
           body: notif.body,
           imageFile: notif.image,
           vibrate: notif.vibrate,
+          goto: notif.data.goto,
           type: notif.data.type,
           ...(notif.data.group ? { group: { connect: { uid: notif.data.group } } } : {}),
         },

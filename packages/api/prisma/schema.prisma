@@ -457,6 +457,7 @@ model Notification {
   type           NotificationType
   user           User?                    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   userId         String?
+  goto           String                   @default("")
 }
 
 /// A NotificationType represents the different kinds of reasons why you might receive a notification: a shotgun just opened, etc.
