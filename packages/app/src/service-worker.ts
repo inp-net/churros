@@ -3,7 +3,7 @@
 /// <reference no-default-lib="true"/>
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
-import { notifyInBulk, type PushNotification } from '@centraverse/api/src/services/notifications';
+import type { PushNotification } from '@centraverse/api/src/services/notifications';
 import { default as parseUserAgent } from 'ua-parser-js';
 import * as $serviceWorker from '$service-worker';
 const sw = self as unknown as ServiceWorkerGlobalScope;
