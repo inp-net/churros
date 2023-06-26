@@ -1,10 +1,15 @@
 <script lang="ts">
   import IconEditPen2Line from '~icons/mdi/pencil';
   import type { PageData } from './$types';
-  import AcceptButton from './AcceptButton.svelte';
-  import DeleteButton from './DeleteButton.svelte';
+  import IconCheck from '~icons/mdi/check';
+  import IconTrash from '~icons/mdi/delete';
+  import Button from '$lib/components/Button.svelte';
+  import { zeus } from '$lib/zeus';
 
   export let data: PageData;
+
+  // emails of registrations that are currently being accepted/refused
+  let loadingRegistrations: string[] = [];
 
   $: userCandidates = data.userCandidates.edges.map(({ node }) => node);
 
@@ -13,6 +18,27 @@
       ({ node }) => node.email !== email
     );
   };
+
+  async function decide(email: string, accept: boolean): Promise<void> {
+    if (loadingRegistrations.includes(email)) return;
+
+    try {
+      loadingRegistrations.push(email);
+      let result = false;
+      if (accept) {
+        ({ acceptRegistration: result } = await $zeus.mutate({
+          acceptRegistration: [{ email }, true],
+        }));
+      } else {
+        ({ refuseRegistration: result } = await $zeus.mutate({
+          refuseRegistration: [{ email }, true],
+        }));
+      }
+      if (result) removeRow(email);
+    } finally {
+      loadingRegistrations = loadingRegistrations.filter((e) => e !== email);
+    }
+  }
 
   const byGraduationYear = (a: { graduationYear: number }, b: { graduationYear: number }) =>
     a.graduationYear - b.graduationYear;
@@ -27,18 +53,20 @@
         <span>{email} {major.name} {graduationYear}</span>
         <div class="actions">
           <a href="./edit/{encodeURIComponent(email)}"><IconEditPen2Line /></a>
-          <AcceptButton
-            {email}
-            on:accept={() => {
-              removeRow(email);
+          <Button
+            on:click={() => {
+              decide(email, true);
             }}
-          />
-          <DeleteButton
-            {email}
-            on:refuse={() => {
-              removeRow(email);
+          >
+            <IconCheck />
+          </Button>
+          <Button
+            on:click={() => {
+              decide(email, false);
             }}
-          />
+          >
+            <IconTrash />
+          </Button>
         </div>
       </li>
     {/each}

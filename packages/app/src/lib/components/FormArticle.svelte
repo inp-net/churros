@@ -4,7 +4,7 @@
   import type { PageData } from '../../routes/club/[group]/post/[post]/edit/$types';
   import Button from '$lib/components/Button.svelte';
   import { goto } from '$app/navigation';
-  import EventSearch from '../../routes/club/[group]/write/EventSearch.svelte';
+  import EventSearch from './InputEvent.svelte';
   import { page } from '$app/stores';
   import { _articleQuery } from '../../routes/club/[group]/post/[post]/edit/+page';
   import LinkCollectionInput from '$lib/components/InputLinks.svelte';

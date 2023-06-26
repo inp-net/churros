@@ -10,7 +10,7 @@
   export let errors: string[] | undefined = [];
 </script>
 
-<div class="field" use:tooltip={hint}>
+<div class="field">
   <svelte:element this={id === null ? 'p' : 'label'} for={id}
     ><span class="label typo-field-label"
       >{label}{#if required}

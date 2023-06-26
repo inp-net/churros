@@ -2,7 +2,7 @@
   import { invalidateAll } from '$app/navigation';
   import Button from '$lib/components/Button.svelte';
   import { zeus } from '$lib/zeus';
-  import type { PageData } from './$types';
+  import type { PageData } from '../../routes/user/[uid]/edit/$types';
 
   export let data: PageData;
 

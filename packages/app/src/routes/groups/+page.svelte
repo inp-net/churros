@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import Group from './Group.svelte';
+  import Group from '../../lib/components/TreeGroups.svelte';
   import { createForest } from 'arborist';
 
   export let data: PageData;
