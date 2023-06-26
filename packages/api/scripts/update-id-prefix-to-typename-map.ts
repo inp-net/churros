@@ -24,7 +24,7 @@ const readFrom = path.join(
 );
 const lines = readFileSync(readFrom, 'utf8').split('\n');
 
-console.log(`Read from ${readFrom}`);
+console.log(`Constructing ID_PREFIXES_TO_TYPENAMES from ${readFrom}`);
 
 function updateInFile(filename: string, exported: boolean): void {
   for (const [index, line] of lines.entries()) {
@@ -39,7 +39,7 @@ function updateInFile(filename: string, exported: boolean): void {
     path.dirname(import.meta.url.replace(/^file:/, '')).replace('build/', ''),
     filename
   );
-  console.log(`Writing to ${writeTo}`);
+  console.log(`Injecting ID_PREFIXES_TO_TYPENAMES in ${writeTo}`);
 
   const writeToLines = readFileSync(writeTo, 'utf8').split('\n');
 
