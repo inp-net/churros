@@ -32,10 +32,8 @@
   let phone: string;
   let qrcodeViewbox: string;
   let qrcodeDim: number;
-  let qrcodeElement: SVGElement;
   let qrcodePath: string;
   $: ({ d: qrcodePath, dim: qrcodeDim } = qrcode.renderPath(qrcode.getMatrix(id)));
-  $: qrcodeClientRect = qrcodeElement?.querySelector('path')?.getBoundingClientRect();
   const qrcodeBuiltinPadding = 4;
   $: qrcodeViewbox = `${qrcodeBuiltinPadding} ${qrcodeBuiltinPadding} ${
     qrcodeDim - 2 * qrcodeBuiltinPadding
@@ -76,13 +74,7 @@
 {#if paid}
   <Alert theme="success">Place payée</Alert>
   <section class="code">
-    <svg
-      class="qrcode"
-      bind:this={qrcodeElement}
-      viewBox={qrcodeViewbox}
-      stroke="#000"
-      stroke-width="1.05"
-    >
+    <svg class="qrcode" viewBox={qrcodeViewbox} stroke="#000" stroke-width="1.05">
       <path d={qrcodePath} fill="black" />
     </svg>
     <p class="registration-code">
