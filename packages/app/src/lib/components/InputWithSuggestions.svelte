@@ -60,8 +60,7 @@
       text = selected;
     }
 
-    dispatch('change', selected);
-    dispatch('select', selected);
+    dispatch('input', selected);
   }
 
   $: selected, onSelectedItemChanged();

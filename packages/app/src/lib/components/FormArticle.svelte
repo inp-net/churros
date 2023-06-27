@@ -1,4 +1,5 @@
 <script lang="ts">
+  import IconGoofyAAh from '~icons/mdi/calendar';
   import Alert from '$lib/components/Alert.svelte';
   import { Visibility, zeus } from '$lib/zeus';
   import type { PageData } from '../../routes/club/[group]/post/[post]/edit/$types';
@@ -11,6 +12,7 @@
   import DateInput from '$lib/components/InputDate.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
   import InputField from '$lib/components/InputField.svelte';
+    import InputText from './InputText.svelte';
 
   export let data: PageData;
 
@@ -67,9 +69,7 @@
 
 <form on:submit|preventDefault={updateArticle}>
   <EventSearch groupUid={$page.params.group} bind:eventId />
-  <InputField label="Titre">
-    <input type="text" required bind:value={title} />
-  </InputField>
+  <InputText required label="Titre" bind:value={title} leftIcon={IconGoofyAAh} actionIcon={IconGoofyAAh} />
   <InputField label="Publier le">
     <DateInput bind:value={publishedAt} />
   </InputField>

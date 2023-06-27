@@ -11,6 +11,7 @@
   import Alert from '$lib/components/Alert.svelte';
   import { goto } from '$app/navigation';
   import InputGroup from './InputGroup.svelte';
+    import InputText from './InputText.svelte';
 
   export let data: PageData;
 
@@ -99,7 +100,7 @@
       >
     </p>
     <p><label><input type="checkbox" bind:value={selfJoinable} /> Auto-joignable</label></p>
-    <p><label>Nom : <input type="text" bind:value={name} /></label></p>
+    <InputText required label="Nom" bind:value={name} />
     <p>
       <label
         >Description courte :
@@ -159,7 +160,7 @@
       </li>
     </ul>
     <p>
-      <InputGroup label="Groupe parent" bind:uid={parentUid} />
+      <InputGroup label="Groupe parent" bind:uid={parentUid}>Ajouter un groupe parent</InputGroup>
     </p>
     {#if serverError}
       <Alert theme="danger"
