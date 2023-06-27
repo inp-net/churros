@@ -34,15 +34,13 @@
 <style>
   .button-secondary {
     display: inline-flex;
-    align-items: center;
     gap: 0.5em;
+    align-items: center;
     padding: 0.25rem 0.75rem;
-
-    background: var(--bg);
-    border: var(--border-width) solid var(--text);
-    border-radius: 1000px;
-
     cursor: pointer;
+    background: var(--bg);
+    border: var(--border-block) solid var(--text);
+    border-radius: 1000px;
   }
 
   .button-secondary.inside-prose {
@@ -51,13 +49,21 @@
 
   .button-secondary:hover,
   .button-secondary:focus {
-    background: var(--text);
     color: var(--bg);
+    background: var(--text);
+
     --icon-color: var(--bg);
   }
 
   .icon {
-    height: 1em;
-    width: 1em;
+    display: flex;
+    justify-content: center;
+    width: 1.15em;
+    height: 1.15em;
+  }
+
+  .icon :global(> svg) {
+    width: 100%;
+    height: 100%;
   }
 </style>
