@@ -95,7 +95,7 @@ builder.mutationField('testNotification', (t) =>
         data: {
           type: NotificationTypePrisma.Other,
           group: undefined,
-          goto: 'https://www.youtube.com/watch?v=chaLRQZKi6w?t=7',
+          goto: 'https://www.youtube.com/watch?v=chaLRQZKi6w&t=7',
         },
       });
       return true;
