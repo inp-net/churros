@@ -1,6 +1,5 @@
 <script lang="ts">
   import FormEvent from '$lib/components/FormEvent.svelte';
-  import Tabs from '$lib/components/NavigationTabs.svelte';
   import { me } from '$lib/session';
   import { Selector, zeus } from '$lib/zeus';
   import type { PageData } from './$types';
@@ -21,14 +20,6 @@
     })
     .catch(console.error);
 </script>
-
-<Tabs
-  tabs={[
-    { name: 'Infos', href: `.` },
-    { name: 'Réservations', href: '../registrations' },
-    { name: 'Vérifier', href: '../scan' },
-  ]}
-/>
 
 <a href="../">Voir l'évènement</a>
 
