@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { formatDatetimeLocal } from '$lib/dates';
+  import BaseInputText from './BaseInputText.svelte';
+  import InputField from './InputField.svelte';
 
-  export let value: Date | undefined;
-  export const asstring = (x: any) => x as string;
+  export let value: Date | null;
+  export let name: string | undefined = undefined;
+  export let initial: Date | undefined = undefined;
+  export let placeholder = '';
+  export let required = false;
+  export let label: string;
 </script>
 
-<input
-  type="datetime-local"
-  value={value ? formatDatetimeLocal(value) : ''}
-  on:input={(e) => {
-    if (!(e.target && 'value' in e.target)) return;
-    value = new Date(Date.parse(asstring(e.target.value)));
-  }}
-/>
+<InputField {label} {required}>
+  <BaseInputText {placeholder} type="date" bind:value {name} {initial} {required} />
+</InputField>
