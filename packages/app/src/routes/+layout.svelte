@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { navigating, page } from '$app/stores';
+  import { page } from '$app/stores';
   import TopBar from '$lib/components/NavigationTop.svelte';
   import { theme } from '$lib/theme.js';
   import { onMount } from 'svelte';
-  import { tweened } from 'svelte/motion';
   import '../design/app.scss';
   import type { LayoutData } from './$types';
+  import NavigationBottom from '$lib/components/NavigationBottom.svelte';
 
   let { mobile } = $page.data as LayoutData;
   const onResize = () => {
@@ -14,18 +14,18 @@
 
   onMount(onResize);
 
-  let menuOpen = false;
-  let menuWidth = 0;
-  const menuOpenness = tweened(0, { duration: 80 });
-  let start: Touch | undefined;
-  let startedAt = 0;
-  let diff: { x: number; y: number } | undefined;
+  function currentTab(url: URL): 'events' | 'search' | 'more' | 'home' {
+    const starts = (segment: string) => url.pathname.startsWith(segment);
 
-  $: if ($navigating || !mobile) menuOpen = false;
-  $: $menuOpenness = menuOpen ? 1 : 0;
+    if (starts('/search')) return 'search';
+    if (starts('/week') || starts('/bookings') || starts('/events')) return 'events';
+    if (starts('/more')) return 'more';
+    return 'home';
+  }
 
   onMount(() => {
     let currentTheme = $theme;
+    $theme = 'light';
     theme.subscribe(($theme) => {
       if (currentTheme) document.documentElement.classList.remove(currentTheme);
       document.documentElement.classList.add($theme);
@@ -34,70 +34,13 @@
   });
 </script>
 
-<svelte:window
-  on:resize={onResize}
-  on:touchstart={({ touches }) => {
-    if (!mobile || touches.length !== 1) return;
-    start = touches[0];
-    startedAt = window.performance.now();
-    diff = { x: 0, y: 0 };
-  }}
-  on:touchmove={({ changedTouches }) => {
-    if (!mobile || !start || !diff) return;
-    // @ts-expect-error for some reason it thinks that a TouchList is not iterable
-    const touch = [...changedTouches].find(({ identifier }) => identifier === start?.identifier);
-    if (!touch) return;
-
-    diff = { x: touch.clientX - start.clientX, y: touch.clientY - start.clientY };
-    if (Math.abs(diff.x) > 2 * Math.abs(diff.y)) {
-      void menuOpenness.set((menuOpen ? 1 : 0) + diff.x / menuWidth, { duration: 0 });
-    } else {
-      $menuOpenness = menuOpen ? 1 : 0;
-      diff = undefined;
-    }
-  }}
-  on:touchend={({ touches }) => {
-    if (!mobile || !diff) return;
-    // @ts-expect-error for some reason it thinks that a TouchList is not iterable
-    if ([...touches].some(({ identifier }) => identifier === start?.identifier)) return;
-
-    menuOpen =
-      Math.abs(diff.x) > Math.max(2 * Math.abs(diff.y), menuWidth / 20) &&
-      window.performance.now() - startedAt < 300
-        ? diff.x > 0
-        : $menuOpenness >= 0.5;
-    $menuOpenness = menuOpen ? 1 : 0;
-
-    diff = undefined;
-  }}
-/>
+<svelte:window on:resize={onResize} />
 
 <svelte:head>
   <title>Centraverse</title>
 </svelte:head>
 
 <TopBar {mobile} />
-
-{#if mobile}
-  <div
-    class="mobile-background"
-    hidden={$menuOpenness === 0}
-    style:opacity={$menuOpenness}
-    on:touchend={() => {
-      menuOpen = false;
-      $menuOpenness = 0;
-    }}
-  />
-  <div
-    class="mobile-menu"
-    style:transform="translateX(-{(1 - $menuOpenness) * 100}%)"
-    hidden={$menuOpenness === 0}
-    bind:clientWidth={menuWidth}
-  >
-    <div class="flex-shrink-0 h-10" />
-    <div class="flex-shrink flex-1 px-2 overflow-auto overscroll-contain" />
-  </div>
-{/if}
 
 <div class="layout">
   {#if !mobile}
@@ -107,6 +50,8 @@
     <slot />
   </main>
 </div>
+
+<NavigationBottom current={currentTab($page.url)} />
 
 <style lang="scss">
   main {
