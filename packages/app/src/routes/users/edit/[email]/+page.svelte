@@ -44,6 +44,7 @@
   let formErrors: ZodFormattedError<typeof args> | undefined;
   const onSubmit = async ({ submitter }: SubmitEvent) => {
     if (loading) return;
+    if (!submitter) return;
 
     const update = !submitter.dataset.refuse;
 
