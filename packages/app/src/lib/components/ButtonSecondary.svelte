@@ -39,7 +39,7 @@
     padding: 0.25rem 0.75rem;
     cursor: pointer;
     background: var(--bg);
-    border: var(--border-block) solid var(--text);
+    border: var(--border-block) solid var(--border);
     border-radius: 1000px;
   }
 
@@ -48,11 +48,9 @@
   }
 
   .button-secondary:hover,
-  .button-secondary:focus {
-    color: var(--bg);
-    background: var(--text);
-
-    --icon-color: var(--bg);
+  .button-secondary:focus-visible {
+    /* color: var(--bg); */
+    background: var(--border);
   }
 
   .icon {
