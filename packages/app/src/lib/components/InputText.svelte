@@ -3,17 +3,16 @@
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
 
-  export let name: string | undefined;
-  export let initial: string | undefined;
-  export let placeholder: string | undefined;
+  export let name: string | undefined = undefined;
+  export let initial: string | undefined = undefined;
+  export let placeholder: string | undefined = undefined;
   export let value: string;
   export let required = false;
-  export let autocomplete: string | undefined;
-  export let errorMessage: string | undefined;
-  export let messageIsWarning: boolean = false;
-  export let actionIcon: typeof SvelteComponent | undefined;
-  export let leftIcon: typeof SvelteComponent | undefined;
-  export let suggestions: string[] | undefined;
+  export let autocomplete: string | undefined = undefined;
+  export let errorMessage: string | undefined = undefined;
+  export let messageIsWarning = false;
+  export let actionIcon: typeof SvelteComponent | undefined = undefined;
+  export let suggestions: string[] | undefined = undefined;
   export let label: string;
 </script>
 
@@ -31,7 +30,6 @@
     {placeholder}
     {required}
     {actionIcon}
-    {leftIcon}
     {suggestions}
   />
 </InputField>
