@@ -16,9 +16,14 @@
   import IconDocument from '~icons/mdi/file-outline';
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
+  import { beforeNavigate } from '$app/navigation';
 
   export let current: 'home' | 'search' | 'events' | 'more';
   let flyoutOpen = false;
+
+  beforeNavigate(() => {
+    flyoutOpen = false;
+  });
 </script>
 
 <nav class:flyout-open={flyoutOpen}>
