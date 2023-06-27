@@ -61,7 +61,7 @@
 </script>
 
 <div class="flex justify-center">
-  <form title="Se connecter" on:submit={login}>
+  <form title="Se connecter" on:submit|preventDefault={login}>
     <Alert theme="danger" closed={errorMessages === undefined} inline>
       {errorMessages?.join(' ')}
     </Alert>

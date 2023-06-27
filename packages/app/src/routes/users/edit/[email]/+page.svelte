@@ -45,13 +45,13 @@
   const onSubmit = async ({ submitter }: SubmitEvent) => {
     if (loading) return;
 
-    const update = !submitter!.dataset.refuse;
+    const update = !submitter.dataset.refuse;
 
     try {
       loading = true;
 
       if (update) {
-        const register = Boolean(submitter!.dataset.register);
+        const register = Boolean(submitter.dataset.register);
         loadingRegister = register;
         loadingSave = !register;
         await updateUserCandidate(register);
@@ -99,7 +99,7 @@
   };
 </script>
 
-<form title="Modifier une inscription" on:submit={onSubmit}>
+<form title="Modifier une inscription" on:submit|preventDefault={onSubmit}>
   <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
     <strong>{(formErrors?._errors ?? []).join(' ')}</strong>
   </Alert>
