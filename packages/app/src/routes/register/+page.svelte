@@ -54,7 +54,7 @@
 
 <div class="flex justify-center">
   {#if result === undefined}
-    <form title="S'inscrire" on:submit={register}>
+    <form title="S'inscrire" on:submit|preventDefault={register}>
       <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
         <strong>{(formErrors?._errors ?? []).join(' ')} </strong>
       </Alert>

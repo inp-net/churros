@@ -105,7 +105,7 @@
 </script>
 
 {#if result === undefined || result}
-  <form title="Finaliser mon inscription" on:submit={register}>
+  <form title="Finaliser mon inscription" on:submit|preventDefault={register}>
     {#if data.userCandidate.emailValidated}
       <Alert theme="success" inline>
         <strong>Votre inscription est en attente de validation manuelle.</strong><br />
