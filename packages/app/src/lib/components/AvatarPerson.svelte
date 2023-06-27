@@ -4,33 +4,42 @@
   export let lastName: string;
   export let role: string;
   export let pictureFile: string;
+  export let href: string;
   const src = `${PUBLIC_STORAGE_URL}${pictureFile}`;
 </script>
 
-<div class="person">
+<a class="person" {href}>
   <div class="img">
     <img {src} alt={firstName} />
   </div>
   <div class="desc">
     <p class="text name">{firstName} {lastName}</p>
-    <p class="text role">{role}</p>
+    {#if role}
+      <p class="text role">{role}</p>
+    {/if}
   </div>
-</div>
+</a>
 
 <style>
   .person {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.5em;
     align-items: center;
     width: fit-content;
-    padding: 0.5rem;
+    padding: 0.5em;
     margin: 0;
   }
 
   .person .img {
-    width: 3rem;
-    height: 3rem;
+    --size: 1.5em;
+
+    width: var(--size);
+    height: var(--size);
     overflow: hidden;
+    line-height: var(--size); /* to vertically center alt text */
+    color: var(--muted-text);
+    text-align: center;
+    background-color: var(--muted-bg);
     border-radius: 50%;
   }
 
@@ -44,13 +53,16 @@
     margin: 0;
   }
 
+  .name,
+  .role {
+    line-height: 1;
+  }
+
   .name {
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: calc(max(1em, 1rem));
   }
 
   .role {
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: calc(max(0.65em, 0.75rem));
   }
 </style>
