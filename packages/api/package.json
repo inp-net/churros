@@ -17,7 +17,9 @@
     "arborist": "workspace:^",
     "argon2": "^0.30.2",
     "cors": "^2.8.5",
+    "croner": "^6.0.5",
     "dataloader": "^2.1.0",
+    "date-fns": "^2.30.0",
     "dichotomid": "^0.0.3",
     "envelop-no-batched-queries": "^3.0.2",
     "express": "^4.18.2",
@@ -36,6 +38,7 @@
     "remark-rehype": "^10.1.0",
     "slug": "^8.2.2",
     "unified": "^10.1.2",
+    "web-push": "^3.6.3",
     "zod": "^3.19.1"
   },
   "devDependencies": {
@@ -43,11 +46,13 @@
     "@types/bunyan": "^1.8.8",
     "@types/cookie": "^0.5.1",
     "@types/cors": "^2.8.12",
+    "@types/cron": "^2.0.1",
     "@types/express": "^4.17.14",
     "@types/ldapjs": "^2.2.5",
     "@types/node": "^18.11.9",
     "@types/nodemailer": "^6.4.6",
     "@types/slug": "^5.0.3",
+    "@types/web-push": "^3.3.2",
     "bunyan": "^1.8.15",
     "prisma": "^4.6.1",
     "tsx": "^3.12.1",
@@ -61,7 +66,7 @@
     "build": "prisma generate && tsc && node ./build/scripts/update-id-prefix-to-typename-map.js && prisma generate && tsc && node ./build/scripts/post-build.js",
     "clean": "git clean -Xdf .",
     "dev": "NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
-    "start": "FRONTEND_ORIGIN=http://localhost:3000 node ./build/index.js"
+    "start": "FRONTEND_ORIGIN=http://localhost:3000 node ./build/src/index.js"
   },
   "type": "module",
   "volta": {

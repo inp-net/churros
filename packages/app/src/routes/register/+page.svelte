@@ -1,9 +1,9 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import Alert from '$lib/components/alerts/Alert.svelte';
-  import Button from '$lib/components/buttons/Button.svelte';
-  import FormCard from '$lib/components/cards/FormCard.svelte';
-  import FormInput from '$lib/components/inputs/FormInput.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import Button from '$lib/components/Button.svelte';
+  import InputField from '$lib/components/InputField.svelte';
+
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { zeus } from '$lib/zeus';
   import type { ZodFormattedError } from 'zod';
@@ -54,23 +54,23 @@
 
 <div class="flex justify-center">
   {#if result === undefined}
-    <FormCard title="S'inscrire" on:submit={register}>
+    <form title="S'inscrire" on:submit|preventDefault={register}>
       <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
         <strong>{(formErrors?._errors ?? []).join(' ')} </strong>
       </Alert>
       <p>
-        <FormInput
+        <InputField
           label="Adresse e-mail universitaire :"
           hint="Elle finit par @etu.[ecole].fr."
           errors={formErrors?.email?._errors}
         >
           <input type="email" bind:value={email} minlength="1" maxlength="255" required />
-        </FormInput>
+        </InputField>
       </p>
       <p class="text-center">
         <Button type="submit" theme="primary" {loading}>S'inscrire</Button>
       </p>
-    </FormCard>
+    </form>
   {:else if result}
     <Alert theme="success">
       <h3>Demande enregistrée&nbsp;!</h3>

@@ -7,7 +7,7 @@ export const DISPLAY_PAYMENT_METHODS = {
   Other: 'Autre',
 };
 
-export const DISPLAY_VISIBILITY = {
+export const DISPLAY_VISIBILITIES = {
   Public: 'Public',
   Restricted: 'Restreint au groupe',
   Unlisted: 'Non répertorié',
@@ -20,3 +20,28 @@ export const HELP_VISIBILITY = {
   Unlisted: 'Visible par tout ceux qui possèdent le lien',
   Private: 'Visible par personne (excepté les administrateurs et organisateurs)',
 };
+
+export const DISPLAY_NOTIFICATION_TYPES = {
+  NewArticle: 'Nouvel article',
+  ShotgunOpeningSoon: "Ouverture imminente d'un shotgun",
+  ShotgunOpened: "Ouverture d'un shotgun",
+  ShotgunClosingSoon: "Fermeture imminente d'un shotgun",
+  ShotgunClosed: "Fermeture d'un shotgun",
+  GodsonRequestReceived: 'Réception de demandes de parrainage',
+  GodsonRequestAccepted: 'Approbation de demandes de parrainage',
+  GodsonRequestRefused: 'Refus de demandes de parrainage',
+  PermissionsChanged: 'Modification de mes permissions',
+  Other: 'Autres',
+};
+
+export const ORDER_NOTIFICATION_TYPES: Array<keyof typeof DISPLAY_NOTIFICATION_TYPES> = [
+  'NewArticle',
+  'ShotgunOpeningSoon',
+  'ShotgunOpened',
+  'ShotgunClosingSoon',
+  'ShotgunClosed',
+  'GodsonRequestReceived',
+  'GodsonRequestAccepted',
+  'GodsonRequestRefused',
+  'PermissionsChanged',
+];

@@ -15,10 +15,10 @@
   } from 'date-fns';
   import type { PageData } from './$types';
   import { me } from '$lib/session';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
   import { goto } from '$app/navigation';
   import { dateFormatter } from '$lib/dates';
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
+  import GhostButton from '$lib/components/ButtonGhost.svelte';
 
   $: pageTitle = computePageTitle(data.shownWeek);
 
@@ -32,23 +32,23 @@
       case 0: {
         return 'Cette semaine';
       }
-  
+
       case 1: {
         return 'La semaine prochaine';
       }
-  
+
       case -1: {
         return 'La semaine dernière';
       }
-  
+
       case 2: {
         return 'Dans deux semaines';
       }
-  
+
       case -2: {
         return 'Il y a deux semaines';
       }
-  
+
       default: {
         return `Semaine du ${dateFormatter.format(startOfWeek(shownWeek, { weekStartsOn: 1 }))}`;
       }
@@ -62,7 +62,7 @@
   $: ({ barWeekNow: barWeek, eventsInWeek: events } = data);
 
   let daysOfWeek: Date[] = [];
-  $: daysOfWeek = Array.from({length: 7})
+  $: daysOfWeek = Array.from({ length: 7 })
     .fill(0)
     .map((_, i) => addDays(startOfWeek(data.shownWeek, { weekStartsOn: 1 }), i));
 
@@ -105,7 +105,7 @@
             src={group.pictureFile
               ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 `${PUBLIC_STORAGE_URL}${group.pictureFile}`
-              : 'https://placehold.it/400/400'}
+              : 'https://via.placeholder.com/400/400'}
             alt=""
           />
           <span class="name">{group.name}</span>

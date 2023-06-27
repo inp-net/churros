@@ -13,8 +13,9 @@ import {
   levenshteinSorter,
   levenshteinFilterAndSort,
 } from '../services/search.js';
-import type { User } from '@prisma/client';
+import type { Group, User } from '@prisma/client';
 import { dirname, join } from 'node:path';
+import { NotificationTypeEnum } from './notifications.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -72,6 +73,27 @@ export const UserType = builder.prismaNode('User', {
     }),
     major: t.relation('major', { authScopes: { loggedIn: true, $granted: 'me' } }),
     managedEvents: t.relation('managedEvents', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    notificationSettings: t.relation('notificationSettings', {
+      authScopes: { loggedIn: true, $granted: 'me' },
+    }),
+  }),
+});
+
+export const NotificationSettingType = builder.prismaObject('NotificationSetting', {
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    type: t.expose('type', { type: NotificationTypeEnum }),
+    allow: t.exposeBoolean('allow'),
+    groupId: t.exposeID('groupId', { nullable: true }),
+    group: t.relation('group', { nullable: true }),
+  }),
+});
+
+export const NotificationSettingInput = builder.inputType('NotificationSettingsInput', {
+  fields: (t) => ({
+    type: t.field({ type: NotificationTypeEnum }),
+    allow: t.boolean(),
+    groupUid: t.string({ required: false }),
   }),
 });
 
@@ -269,6 +291,63 @@ builder.mutationField('deleteUserPicture', (t) =>
         data: { pictureFile: '' },
       });
       return true;
+    },
+  })
+);
+
+builder.mutationField('updateNotificationSettings', (t) =>
+  t.prismaField({
+    type: [NotificationSettingType],
+    args: {
+      uid: t.arg.string(),
+      notificationSettings: t.arg({ type: [NotificationSettingInput] }),
+    },
+    authScopes(_, { uid }, { user }) {
+      return Boolean(user?.canEditUsers || uid === user?.uid);
+    },
+    async resolve(query, _, { uid, notificationSettings }) {
+      const user = await prisma.user.findUniqueOrThrow({ where: { uid } });
+
+      for (const { groupUid, type, allow } of notificationSettings) {
+        let group: Group | undefined;
+        if (groupUid) {
+          group =
+            (await prisma.group.findUnique({
+              where: { uid: groupUid },
+            })) ?? undefined;
+        }
+
+        const notificationSetting = await prisma.notificationSetting.findFirst({
+          where: {
+            userId: user.id,
+            type,
+            // eslint-disable-next-line unicorn/no-null
+            groupId: group?.id ?? null,
+          },
+        });
+
+        await prisma.notificationSetting.upsert({
+          where: { id: notificationSetting?.id ?? '' },
+          create: {
+            userId: user.id,
+            type,
+            allow,
+            // eslint-disable-next-line unicorn/no-null
+            groupId: group?.id ?? null,
+          },
+          update: {
+            allow,
+            type,
+            // eslint-disable-next-line unicorn/no-null
+            groupId: group?.id ?? null,
+          },
+        });
+      }
+
+      return prisma.notificationSetting.findMany({
+        ...query,
+        where: { userId: user.id },
+      });
     },
   })
 );

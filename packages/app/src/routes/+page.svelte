@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Button from '$lib/components/buttons/Button.svelte';
-  import ArticleCard from '$lib/components/cards/ArticleCard.svelte';
+  import Button from '$lib/components/Button.svelte';
+  import ArticleCard from '$lib/components/CardArticle.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
   import { pageQuery } from './+page';

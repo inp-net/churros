@@ -1,15 +1,16 @@
 <script lang="ts">
-  import Card from '$lib/components/cards/Card.svelte';
-  import Alert from '$lib/components/alerts/Alert.svelte';
+  import Card from '$lib/components/Card.svelte';
+  import Alert from '$lib/components/Alert.svelte';
   import IconEdit from '~icons/mdi/pencil';
-  import DateInput from '$lib/components/inputs/DateInput.svelte';
-  import FormInput from '$lib/components/inputs/FormInput.svelte';
-  import StringListInput from '$lib/components/inputs/StringListInput.svelte';
+  import DateInput from '$lib/components/InputDate.svelte';
+  import InputField from '$lib/components/InputField.svelte';
+
+  import StringListInput from '$lib/components/InputStringList.svelte';
   import { endOfWeek, startOfWeek } from 'date-fns';
   import type { PageData } from './$types';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
   import { zeus } from '$lib/zeus';
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
+  import GhostButton from '$lib/components/ButtonGhost.svelte';
   import { dateFormatter } from '$lib/dates';
 
   const asstringarray = (x: any) => x as string[];
@@ -108,11 +109,11 @@
     <li>
       <Card>
         {#if expandedBarWeekId === barWeek.id}
-          <FormInput label="Description">
+          <InputField label="Description">
             <textarea bind:value={barWeeks[i].description} cols="30" rows="10" />
-          </FormInput>
+          </InputField>
 
-          <FormInput label="Groupes">
+          <InputField label="Groupes">
             <StringListInput
               on:input={(e) => {
                 if (!e.detail) return;
@@ -128,15 +129,15 @@
               }}
               value={barWeek.groups.map(({ uid }) => uid)}
             />
-          </FormInput>
+          </InputField>
           <div class="side-by-side">
-            <FormInput label="Début">
+            <InputField label="Début">
               <DateInput bind:value={barWeeks[i].startsAt} />
-            </FormInput>
+            </InputField>
 
-            <FormInput label="Fin">
+            <InputField label="Fin">
               <DateInput bind:value={barWeeks[i].endsAt} />
-            </FormInput>
+            </InputField>
           </div>
           {#if serverErrors[barWeek.id]}
             <Alert theme="danger">{serverErrors[barWeek.id]}</Alert>
@@ -158,21 +159,21 @@
   {/each}
   <li>
     <Card>
-      <FormInput label="Description">
+      <InputField label="Description">
         <textarea bind:value={newBarWeek.description} cols="30" rows="10" />
-      </FormInput>
+      </InputField>
 
-      <FormInput label="Groupes">
+      <InputField label="Groupes">
         <StringListInput value={newBarWeek.groups.map(({ uid }) => uid)} />
-      </FormInput>
+      </InputField>
       <div class="side-by-side">
-        <FormInput label="Début">
+        <InputField label="Début">
           <DateInput bind:value={newBarWeek.startsAt} />
-        </FormInput>
+        </InputField>
 
-        <FormInput label="Fin">
+        <InputField label="Fin">
           <DateInput bind:value={newBarWeek.endsAt} />
-        </FormInput>
+        </InputField>
       </div>
 
       {#if serverErrors['new']}

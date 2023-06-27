@@ -6,7 +6,13 @@
  * @module
  */
 
-import { CredentialType, Visibility, GroupType, type Prisma } from '@prisma/client';
+import {
+  CredentialType,
+  Visibility,
+  GroupType,
+  type Prisma,
+  NotificationType,
+} from '@prisma/client';
 import { hash } from 'argon2';
 import slug from 'slug';
 import { prisma } from './prisma.js';
@@ -194,6 +200,14 @@ for (const [i, data] of usersData.entries()) {
       graduationYear: 2020 + (i % 6),
       major: { connect: { id: randomIdOf(majors) } },
       credentials: { create: { type: CredentialType.Password, value: await hash('a') } },
+      notificationSettings: {
+        create: Object.values(NotificationType).map((type) => ({
+          type,
+          allow: true,
+          // eslint-disable-next-line unicorn/no-null
+          groupId: null,
+        })),
+      },
     },
   });
 }

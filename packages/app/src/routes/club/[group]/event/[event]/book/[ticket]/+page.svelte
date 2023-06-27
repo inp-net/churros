@@ -3,15 +3,14 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import { me } from '$lib/session';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
-  import { PaymentMethod, zeus } from '$lib/zeus';
-  import FormInput from '$lib/components/inputs/FormInput.svelte';
-  import Alert from '$lib/components/alerts/Alert.svelte';
-  import BackButton from '$lib/components/buttons/BackButton.svelte';
+  import { type PaymentMethod, zeus } from '$lib/zeus';
+  import Alert from '$lib/components/Alert.svelte';
+  import BackButton from '$lib/components/ButtonBack.svelte';
   import { page } from '$app/stores';
   import { dateTimeFormatter } from '$lib/dates';
+  import InputField from '$lib/components/InputField.svelte';
 
   let done = false;
   $: done = $page.url.searchParams.has('done');
@@ -21,7 +20,7 @@
   export let data: PageData;
   let beneficiary: string;
   let payingForThemself = true;
-  let {
+  const {
     id,
     allowedPaymentMethods,
     onlyManagersCanProvide,
@@ -60,8 +59,9 @@
     }
 
     serverError = '';
-    // TODO handle actually going there only when paument has gone through
-    goto(`?done`);
+    // eslint-disable-next-line no-warning-comments
+    // TODO handle actually going there only when payment has gone through
+    await goto(`?done`);
   }
 </script>
 
@@ -93,7 +93,7 @@
     </p>
     <Button
       on:click={async () => {
-        goto('../../billet');
+        await goto('../../bookings');
       }}
       theme="primary">Mon billet</Button
     >
@@ -106,7 +106,8 @@
     <input type="checkbox" bind:checked={payingForThemself} /> Je paie pour moi
   </label>
   {#if !payingForThemself}
-    <FormInput label="Nom du bénéficiaire"><input type="text" bind:value={beneficiary} /></FormInput
+    <InputField label="Nom du bénéficiaire"
+      ><input type="text" bind:value={beneficiary} /></InputField
     >
   {/if}
 
@@ -143,16 +144,17 @@
 
 <style lang="scss">
   .header {
-    background-size: cover;
     display: flex;
-    justify-content: center;
     flex-direction: column;
-    align-items: center;
-    padding: 1rem;
     gap: 0.25rem;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-size: cover;
+
     > * {
-      color: white;
       margin: 0;
+      color: white;
     }
   }
 
@@ -163,7 +165,7 @@
   .done {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
   }
 </style>

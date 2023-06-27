@@ -1,22 +1,22 @@
 <script lang="ts">
   import * as htmlToText from 'html-to-text';
-  import Alert from '$lib/components/alerts/Alert.svelte';
-  import SchoolBadge from '$lib/components/badges/SchoolBadge.svelte';
-  import Breadcrumb from '$lib/components/breadcrumbs/Breadcrumb.svelte';
-  import Breadcrumbs from '$lib/components/breadcrumbs/Breadcrumbs.svelte';
-  import Card from '$lib/components/cards/Card.svelte';
-  import SocialLink from '$lib/components/links/SocialLink.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import SchoolBadge from '$lib/components/BadgeSchool.svelte';
+  import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import Card from '$lib/components/Card.svelte';
+  import SocialLink from '$lib/components/SocialLink.svelte';
   import { me } from '$lib/session.js';
   import IconPlus from '~icons/mdi/plus';
   import IconEdit from '~icons/mdi/pencil';
   import type { PageData } from './$types';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
   import { Visibility, zeus } from '$lib/zeus';
-  import UserPicture from '$lib/components/pictures/UserPicture.svelte';
+  import PictureUser from '$lib/components/PictureUser.svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import ArticleCard from '$lib/components/cards/ArticleCard.svelte';
-  import { isFuture, isPast } from 'date-fns';
+  import ArticleCard from '$lib/components/CardArticle.svelte';
+  import { isPast } from 'date-fns';
 
   export let data: PageData;
 
@@ -43,7 +43,7 @@
 
 <div class="top">
   <div class="user-picture">
-    <UserPicture
+    <PictureUser
       src={group.pictureFile
         ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
         : 'https://via.placeholder.com/160'}

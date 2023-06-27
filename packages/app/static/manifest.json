@@ -1,8 +1,27 @@
 {
-  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "short_name": "Centraverse",
+  "name": "Association des Etudiants de l'n7",
+  "short_name": "AEn7",
   "background_color": "#ffffff",
-  "start_url": "http://192.168.1.41:5173",
+  "theme_color": "#ffffff",
+  "start_url": "/",
   "lang": "fr",
-  "display": "standalone"
+  "display": "standalone",
+  "orientation": "portrait",
+  "dir": "auto",
+  "id": "centraverse.aen7.beta",
+  "description": "L'application de l'asso des étudiants de l'ENSEEIHT. Suit des clubs, prends ta place sur des évènements,  sauve tes partiels, et bien plus encore!",
+  "categories": ["events"],
+  "screenshots": [
+    {
+      "src": "/screen.jpeg",
+      "type": "image/jpeg"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
 }

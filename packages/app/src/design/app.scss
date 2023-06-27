@@ -6,129 +6,41 @@
 
 * {
   max-width: 100%;
+  font-family: var(--font-main);
 }
 
 :root {
   line-height: 1.5;
   color: var(--text);
   background: var(--bg);
-}
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 1rem 0;
-  color: var(--title);
-}
+  --font-main: 'Space Grotesk', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --border-width: 2px;
 
-h1 {
-  font-size: 2em;
-  line-height: 1.25;
-}
+  /* Title */
+  --size-title: 1.6rem;
+  --weight-title: 700;
 
-h2 {
-  font-size: 1.5em;
-  line-height: 1.25;
-}
+  /* Field label */
+  --size-field-label: 0.9rem;
+  --weight-field-label: 500;
 
-h3 {
-  font-size: 1.25em;
-  line-height: 1.25;
-}
+  /* Paragraph */
+  --size-paragraph: 1rem;
+  --weight-paragraph: 500;
 
-h4 {
-  font-size: 1.125em;
-}
+  /* Details */
+  --size-details: 0.85rem;
+  --weight-details: 700;
 
-h5 {
-  font-size: 1.063em;
-}
+  /* Big Figure */
+  --size-big-figure: 2.4rem;
+  --weight-big-figure: 500;
 
-h6 {
-  font-size: 1em;
-}
-
-a {
-  color: var(--link);
-  border-radius: var(--radius-inline);
-  outline: 0 solid var(--ring);
-  transition: all 80ms ease-in;
-
-  &:focus-visible {
-    outline-width: 0.25rem;
-  }
-}
-
-button,
-input,
-select,
-textarea {
-  padding: 0.25em 0.5em;
-  font: inherit;
-  color: var(--text);
-  background: var(--bg);
-  border: var(--border-inline) solid var(--border);
-  border-radius: var(--radius-inline);
-  outline: 0 solid var(--ring);
-  transition: all 80ms ease-in, width 0s, height 0s;
-}
-
-input[type='color'] {
-  height: 2em;
-}
-
-select {
-  // For some reasons, `select` ignores `line-height`
-  height: calc(2em + 2 * var(--border-inline));
-}
-
-button {
-  user-select: none;
-  box-shadow: 0 -0.125em 0.125em #0002 inset;
-
-  &:hover,
-  &:focus-visible {
-    --text: var(--hover-text);
-    --bg: var(--hover-bg);
-    --border: var(--hover-border);
-  }
-
-  &:active {
-    box-shadow: 0 0.125em 0.125em #0002 inset;
-  }
-}
-
-input:enabled,
-select:enabled,
-textarea:enabled {
-  box-shadow: 0 0.125em 0.125em #0001 inset;
-}
-
-button:disabled,
-input:disabled,
-select:disabled,
-textarea:disabled {
-  --text: var(--disabled-text);
-  --bg: var(--disabled-bg);
-  --border: var(--disabled-border);
-
-  pointer-events: none;
-}
-
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline-width: 0.25rem;
-}
-
-hr {
-  height: var(--border-block);
-  background: var(--border);
-  border: 0;
+  /* Big button */
+  --size-big-button: 1.1rem;
+  --weight-big-button: 700;
 }
 
 .primary {
@@ -203,4 +115,100 @@ hr {
 
 [hidden] {
   display: none !important;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+.typo-title,
+h1,
+h2 {
+  font-size: var(--size-title);
+  line-height: 0.95;
+}
+
+.typo-field-label {
+  font-size: var(--size-field-label);
+  font-weight: var(--weight-field-label);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+
+  /* font-feature-settings: "ss04" 1; */
+}
+
+.typo-big-figure {
+  font-size: var(--size-big-figure);
+  font-weight: var(--weight-big-figure);
+}
+
+.typo-paragraph,
+p {
+  font-size: var(--size-paragraph);
+  font-weight: var(--weight-paragraph);
+}
+
+.typo-details {
+  font-size: var(--size-details);
+  font-weight: var(--weight-details);
+}
+
+.typo-big-button {
+  font-size: var(--size-big-button);
+  font-weight: var(--weight-big-button);
+}
+
+a {
+  color: unset;
+  text-decoration: none;
+}
+
+dd > a,
+p > a:not([class^='button']),
+a.in-body {
+  color: var(--sky);
+  text-decoration: underline;
+  text-decoration-thickness: 0.125em;
+  text-underline-offset: 0.5ch;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+ul {
+  padding-left: 1em;
+}
+
+ins {
+  color: var(--success-text);
+  text-decoration: none;
+  background-color: var(--success-bg);
+}
+
+del {
+  color: var(--danger-text);
+  background-color: var(--danger-bg);
+}
+
+hr {
+  width: 80%;
+  max-width: 1000px;
+  border: var(--border-block) solid var(--muted-bg);
+  border-radius: 1000px;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-weight: bold;
+  color: currentcolor;
 }

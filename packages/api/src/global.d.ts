@@ -38,5 +38,14 @@ declare namespace NodeJS {
      * bar weeks. Must be a comma-separated list of group UIDs.
      */
     FOY_GROUPS: string;
+    /**
+     * VAPID keys
+     */
+    VAPID_PUBLIC_KEY: string;
+    VAPID_PRIVATE_KEY: string;
+    /**
+     * Contact email (used for push notifications and maybe other things)
+     */
+    CONTACT_EMAIL: string;
   }
 }

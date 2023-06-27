@@ -1,14 +1,14 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import Alert from '$lib/components/alerts/Alert.svelte';
-  import Button from '$lib/components/buttons/Button.svelte';
-  import FormCard from '$lib/components/cards/FormCard.svelte';
-  import FormInput from '$lib/components/inputs/FormInput.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import Button from '$lib/components/Button.svelte';
+
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { saveSessionToken, sessionUserQuery } from '$lib/session.js';
   import { zeus } from '$lib/zeus.js';
   import type { ZodFormattedError } from 'zod';
   import type { PageData } from './$types';
+  import InputField from '$lib/components/InputField.svelte';
 
   export let data: PageData;
 
@@ -105,7 +105,7 @@
 </script>
 
 {#if result === undefined || result}
-  <FormCard large title="Finaliser mon inscription" on:submit={register}>
+  <form title="Finaliser mon inscription" on:submit|preventDefault={register}>
     {#if data.userCandidate.emailValidated}
       <Alert theme="success" inline>
         <strong>Votre inscription est en attente de validation manuelle.</strong><br />
@@ -126,15 +126,15 @@
       <strong>{(formErrors?._errors ?? []).join(' ')}</strong>
     </Alert>
     <p class="grid gap-4 desktop:grid-cols-2">
-      <FormInput label="Prénom :" errors={formErrors?.firstName?._errors}>
+      <InputField label="Prénom :" errors={formErrors?.firstName?._errors}>
         <input type="text" bind:value={firstName} required />
-      </FormInput>
-      <FormInput label="Nom de famille :" errors={formErrors?.lastName?._errors}>
+      </InputField>
+      <InputField label="Nom de famille :" errors={formErrors?.lastName?._errors}>
         <input type="text" bind:value={lastName} required />
-      </FormInput>
+      </InputField>
     </p>
     <p class="grid gap-4 desktop:grid-cols-2">
-      <FormInput label="Filière :" errors={formErrors?.majorId?._errors}>
+      <InputField label="Filière :" errors={formErrors?.majorId?._errors}>
         <select bind:value={majorId} required>
           {#each data.schoolGroups as { majors, names }}
             <optgroup label={names.join(', ')}>
@@ -144,25 +144,25 @@
             </optgroup>
           {/each}
         </select>
-      </FormInput>
-      <FormInput
+      </InputField>
+      <InputField
         label="Promotion :"
         hint="Si c'est votre première année, vous êtes de la promotion {new Date().getFullYear() +
           3}."
         errors={formErrors?.graduationYear?._errors}
       >
         <input type="number" bind:value={graduationYear} size="4" required />
-      </FormInput>
+      </InputField>
     </p>
     <p class="grid gap-4 desktop:grid-cols-2">
-      <FormInput
+      <InputField
         label="Mot de passe :"
         hint="Au moins 8 caractères, mais 12 c'est mieux"
         errors={formErrors?.password?._errors}
       >
         <input type="password" minlength="8" required bind:value={password} />
-      </FormInput>
-      <FormInput
+      </InputField>
+      <InputField
         label="Confirmer le mot de passe :"
         errors={formErrors?.passwordConfirmation?._errors}
       >
@@ -181,14 +181,14 @@
             }
           }}
         />
-      </FormInput>
+      </InputField>
     </p>
     <hr />
     <p>
       Les champs suivant sont facultatifs, ces données seront visibles par les autres utilisateurs.
     </p>
     <p class="grid gap-4 grid-cols-2">
-      <FormInput label="Date de naissance :" errors={formErrors?.birthday?._errors}>
+      <InputField label="Date de naissance :" errors={formErrors?.birthday?._errors}>
         <input
           type="date"
           value={birthday?.toISOString().slice(0, 10)}
@@ -197,20 +197,20 @@
             birthday = valueAsDate(target);
           }}
         />
-      </FormInput>
-      <FormInput label="Numéro de téléphone :" errors={formErrors?.phone?._errors}>
+      </InputField>
+      <InputField label="Numéro de téléphone :" errors={formErrors?.phone?._errors}>
         <input type="tel" bind:value={phone} />
-      </FormInput>
+      </InputField>
     </p>
     <p>
-      <FormInput label="Adresse :" errors={formErrors?.address?._errors}>
+      <InputField label="Adresse :" errors={formErrors?.address?._errors}>
         <input type="text" bind:value={address} />
-      </FormInput>
+      </InputField>
     </p>
     <p class="text-center">
       <Button type="submit" theme="primary" {loading}>S'inscrire</Button>
     </p>
-  </FormCard>
+  </form>
 {:else}
   <Alert theme="success">
     <h3>Demande enregistrée&nbsp;!</h3>

@@ -1,35 +1,34 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
   import { dateTimeFormatter } from '$lib/dates';
   import { me } from '$lib/session';
   import IconEdit from '~icons/mdi/pencil';
   import { isFuture, isPast } from 'date-fns';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
-  import BackButton from '$lib/components/buttons/BackButton.svelte';
+  import GhostButton from '$lib/components/ButtonGhost.svelte';
+  import BackButton from '$lib/components/ButtonBack.svelte';
 
   export let data: PageData;
 
-  let { id, tickets, title, startsAt, pictureFile, descriptionHtml, links, group, contactMail } =
+  const { id, tickets, title, startsAt, pictureFile, descriptionHtml, links, group, contactMail } =
     data.event;
 
   $: usersRegistration = tickets
-    .map((t) => t.registrations)
-    .flat()
-    .find(
-      ({ beneficiary, authorIsBeneficiary, author }) =>
-        (authorIsBeneficiary && author.uid === $me?.uid) ||
-        [$me?.uid, `${$me?.firstName} ${$me?.lastName}`].includes(beneficiary)
-    );
+    .flatMap((t) => t.registrations)
+    .filter(({ beneficiary, author }) => author.uid === $me?.uid || beneficiary === $me?.uid);
 
   $: eventCapacity = tickets.reduce(
-    (sum, { capacity, group }) => sum + Math.min(capacity, group?.capacity ?? Infinity),
+    (sum, { capacity, group }) =>
+      sum + Math.min(capacity, group?.capacity ?? Number.POSITIVE_INFINITY),
     0
   );
 
   $: eventPlacesLeft = tickets.reduce((sum, { placesLeft }) => sum + placesLeft, 0);
+
+  const bookingURL = (registrationId: string) =>
+    `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
 </script>
 
 <section
@@ -50,12 +49,13 @@
   </h1>
   <p>{dateTimeFormatter.format(startsAt)}</p>
 </section>
-
-{#if usersRegistration}
-  <Button theme="primary" on:click={async () => goto(`./billet`)}
-    >Mon billet <span class="ticket-name">{usersRegistration.ticket.name}</span></Button
+{#each usersRegistration as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id }}
+  <Button theme="primary" on:click={async () => goto(bookingURL(id))}
+    >{#if authorIsBeneficiary || author.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
+        {beneficiaryUser.lastName}{:else}{beneficiary}{/if}{/if}
+    <span class="ticket-name">{ticket.name}</span></Button
   >
-{/if}
+{/each}
 
 <section class="description">
   {@html descriptionHtml}
@@ -115,7 +115,7 @@
           {#if (!closesAt && !opensAt) || (closesAt && opensAt && isFuture(new Date(closesAt)) && isPast(new Date(opensAt)))}
             <Button
               on:click={async () => {
-                goto(`./book/${uid}`);
+                await goto(`./book/${uid}`);
               }}>Réserver</Button
             >
           {/if}
@@ -132,7 +132,7 @@
       <img
         src={group.pictureFile
           ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
-          : 'https://placehold.it/400/400'}
+          : 'https://via.placeholder.com/400/400'}
         alt=""
       />
       {group.name}
@@ -143,27 +143,28 @@
 
 <style lang="scss">
   .header {
-    background-size: cover;
     display: flex;
-    justify-content: center;
     flex-direction: column;
-    align-items: center;
-    padding: 1rem;
     gap: 0.25rem;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-size: cover;
+
     > * {
-      color: white;
       margin: 0;
+      color: white;
     }
   }
 
   .places .left::after {
-    content: '';
     display: inline-block;
-    background: var(--text);
     height: 1.25em;
-    transform: rotate(30deg);
     margin: 0.3em;
     margin-bottom: -0.25em;
+    content: '';
+    background: var(--text);
+    transform: rotate(30deg);
   }
 
   h2 .places .left::after {
@@ -180,8 +181,8 @@
 
   .ticket {
     display: flex;
-    align-items: center;
     gap: 1rem;
+    align-items: center;
 
     .text {
       width: 100%;
@@ -207,8 +208,8 @@
     align-items: center;
 
     img {
-      height: 3rem;
       width: 3rem;
+      height: 3rem;
     }
   }
 </style>

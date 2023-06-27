@@ -124,6 +124,10 @@ api.use('/dump', async (req, res) => {
       .send('<h1>401 Unauthorized</h1><p>Usage: <code>/dump?token=[session token]</code></p>');
   }
 });
+api.get('/log', (req, res) => {
+  console.log(req.query['message'] ?? '<empty>');
+  res.send('ok');
+});
 
 api.get('/', (_req, res) => {
   res.send(`<!DOCTYPE html>

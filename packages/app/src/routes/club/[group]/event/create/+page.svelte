@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import EventForm from '$lib/components/forms/EventForm.svelte';
+  import EventForm from '$lib/components/FormEvent.svelte';
   import { Visibility } from '$lib/zeus';
   import type { PageData } from './$types';
 
