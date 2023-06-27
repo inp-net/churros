@@ -4,20 +4,35 @@
   // === Colors ===
   // Default
   --bg: #{$white};
+  --neutral-bg: var(--bg);
   --text: #{$slate-800};
+  --neutral-text: var(--text);
   --title: #{$slate-900};
+  --neutral-title: var(--title);
   --muted: #{$slate-500};
+  --neutral-muted: var(--muted);
   --error: #{$red-800};
+  --neutral-error: var(--error);
   --link: #{$blue-700};
+  --neutral-link: var(--link);
   --border: #{$gray-400};
+  --neutral-border: var(--border);
   --shadow: 0 0 0.125rem #0004, 0 0.125rem 0.5rem #0001;
+  --neutral-shadow: var(--shadow);
   --ring: #{rgba($slate-400, 50%)};
+  --neutral-ring: var(--ring);
   --hover-bg: #{$gray-50};
+  --neutral-hover-bg: var(--hover-bg);
   --hover-text: #{$slate-700};
+  --neutral-hover-text: var(--hover-text);
   --hover-border: #{$gray-500};
+  --neutral-hover-border: var(--hover-border);
   --disabled-bg: #{$gray-100};
+  --neutral-disabled-bg: var(--disabled-bg);
   --disabled-text: #{$slate-600};
+  --neutral-disabled-text: var(--disabled-text);
   --disabled-border: #{$gray-200};
+  --neutral-disabled-border: var(--disabled-border);
 
   // Primary
   --primary-bg: #{$blue-700};

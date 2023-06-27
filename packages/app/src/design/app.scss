@@ -101,6 +101,18 @@
   color: var(--text);
 }
 
+// Allows getting back to default style inside of a themed component.
+.neutral {
+  --bg: var(--neutral-bg);
+  --text: var(--neutral-text);
+  --link: var(--neutral-link);
+  --border: var(--neutral-border);
+  --shadow: var(--neutral-shadow);
+  --disabled-bg: var(--neutral-disabled-bg);
+  --disabled-text: var(--neutral-disabled-text);
+  --disabled-border: var(--neutral-disabled-border);
+}
+
 .icon {
   flex-shrink: 0;
   vertical-align: bottom;

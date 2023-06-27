@@ -25,22 +25,17 @@
       : value?.toString() ?? '';
   $: {
     switch (type) {
-      case 'number': {
-        value = Number(valueString.replace(',', '.'));
+      case 'number':
+        value = +valueString.replace(',', '.');
         break;
-      }
-  
-      case 'date': {
+      case 'date':
         value = new Date(valueString);
         if (!value.valueOf()) {
           value = undefined;
           valueString = '';
         }
-  
         break;
-      }
-  
-      default: {
+      default:
         value = valueString;
       }
     }
@@ -115,21 +110,19 @@
         on:keypress={(e) => {
           if (!(e instanceof KeyboardEvent)) return;
           if (!(e.target instanceof HTMLInputElement)) return;
-          if (e.key === 'Enter' && closeKeyboardOnEnter) 
+          if (e.key === 'Enter' && closeKeyboardOnEnter) {
             e.target.blur();
-          
-        }}
-        on:focus={() => {
-          focused = true;
-        }}
-        on:blur={() => {
-          focused = false;
+          }
         }}
         on:input={(e) => {
           if (valueString !== '') showEmptyErrors = true;
           emit('input', e);
         }}
-      />
+      >
+        <div class="suggestion-item" slot="item" let:item>
+          <slot name="suggestion" {item}>{item}</slot>
+        </div>
+      </InputWithSuggestions>
     {:else}
       <input
         class:danger={errored}
@@ -137,9 +130,9 @@
         on:keyup
         on:keypress={(e) => {
           if (!(e.target instanceof HTMLInputElement)) return;
-          if (e.key === 'Enter' && closeKeyboardOnEnter) 
+          if (e.key === 'Enter' && closeKeyboardOnEnter) {
             e.target.blur();
-          
+          }
         }}
         {type}
         {name}

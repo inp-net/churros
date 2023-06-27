@@ -227,6 +227,7 @@
 <input
   class:hide-arrow={!items.length}
   class:is-loading={loading}
+  class:suggestions-open={showList}
   type="text"
   {id}
   {placeholder}
@@ -273,7 +274,9 @@
           highlightIndex = i;
         }}
       >
-        {item}
+        <slot name="item" {item}>
+          {item}
+        </slot>
       </li>
     {/each}
   {:else if loading}
@@ -287,14 +290,15 @@
 
 <style>
   .autocomplete-list {
-    background: var(--bg);
+    background: var(--neutral-bg);
     position: absolute;
     width: 100%;
     overflow-y: auto;
     z-index: 10000;
     top: 0;
-    left: calc(-1 * var(--border-width));
-    border: var(--border-width) solid var(--fg);
+    left: calc(-1 * var(--border-block));
+    border: var(--border-block) solid var(--neutral-border);
+    border-radius: var(--radius-block);
     max-height: calc(15 * (1rem + 10px) + 15px);
     list-style: none;
     user-select: none;
@@ -305,21 +309,22 @@
   }
   .autocomplete-list-item {
     padding: 0.5em 1em;
-    color: var(--fg);
+    color: var(--neutral-text);
     cursor: pointer;
     line-height: 1;
   }
 
   .autocomplete-list-item.highlighted {
-    background-color: var(--ice);
+    background-color: var(--neutral-hover-bg);
+    color: var(--neutral-hover-text);
   }
   .autocomplete-list-item.selected {
-    background-color: var(--sky);
+    background-color: var(--primary-link);
     color: #fff;
   }
   .autocomplete-list-item-no-results {
     padding: 5px 15px;
-    color: var(--muted);
+    color: var(--muted-text);
     line-height: 1;
   }
   .autocomplete-list-item-loading {
@@ -339,5 +344,6 @@
     width: 100%;
     background: inherit;
     outline: none;
+    color: var(--text);
   }
 </style>
