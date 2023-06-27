@@ -60,7 +60,7 @@
     height: 1.15em;
   }
 
-  .icon :global(> svg) {
+  .icon > :global(svg) {
     width: 100%;
     height: 100%;
   }
