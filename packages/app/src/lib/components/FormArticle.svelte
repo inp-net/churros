@@ -1,6 +1,6 @@
 <script lang="ts">
   import Alert from '$lib/components/Alert.svelte';
-  import { Visibility, zeus } from '$lib/zeus';
+  import { zeus } from '$lib/zeus';
   import type { PageData } from '../../routes/club/[group]/post/[post]/edit/$types';
   import Button from '$lib/components/Button.svelte';
   import { goto } from '$app/navigation';
@@ -11,6 +11,7 @@
   import DateInput from '$lib/components/InputDate.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
   import InputField from '$lib/components/InputField.svelte';
+  import InputSelectOne from './InputSelectOne.svelte';
 
   export let data: PageData;
 
@@ -73,14 +74,13 @@
   <InputField label="Publier le">
     <DateInput bind:value={publishedAt} />
   </InputField>
-  <InputField label="Visibilité" hint={HELP_VISIBILITY[visibility]}>
-    <select bind:value={visibility}>
-      <option value={Visibility.Private}>{DISPLAY_VISIBILITIES.Private} </option>
-      <option value={Visibility.Restricted}>{DISPLAY_VISIBILITIES.Restricted} </option>
-      <option value={Visibility.Unlisted}>{DISPLAY_VISIBILITIES.Unlisted} </option>
-      <option value={Visibility.Public}>{DISPLAY_VISIBILITIES.Public} </option>
-    </select>
-  </InputField>
+  <InputSelectOne
+    required
+    options={DISPLAY_VISIBILITIES}
+    bind:value={visibility}
+    label="Visibilité"
+    hint={HELP_VISIBILITY[visibility]}
+  />
   <InputField label="Description">
     <textarea bind:value={body} cols="30" rows="10" />
   </InputField>
