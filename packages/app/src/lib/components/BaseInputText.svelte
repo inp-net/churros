@@ -1,68 +1,68 @@
 <script lang="ts">
-  import { SvelteComponent, createEventDispatcher, onMount } from 'svelte';
+  import { type SvelteComponent, createEventDispatcher, onMount } from 'svelte';
   import IconReset from '~icons/mdi/reload';
   import InputWithSuggestions from './InputWithSuggestions.svelte';
+  import { tooltip } from '$lib/tooltip';
   const emit = createEventDispatcher();
 
   export let type: HTMLInputElement['type'];
   export let value: string | number | Date | null | undefined;
-  export let autocomplete: string | undefined;
-  export let name: string | undefined;
-  export let initial: string | number | Date | null | undefined;
-  export let unit: string = '';
-  export let placeholder: string = '';
+  export let autocomplete: string | undefined = undefined;
+  export let name: string | undefined = undefined;
+  export let initial: string | number | Date | null | undefined = undefined;
+  export let unit = '';
+  export let placeholder = '';
   export let validate: (value: string) => string = () => '';
-  export let actionIcon: typeof SvelteComponent | undefined;
-  export let suggestions: string[] | undefined;
-  export let required: boolean = false;
-  export let leftIcon: typeof SvelteComponent | undefined;
-  export let closeKeyboardOnEnter: boolean = false;
+  export let actionIcon: typeof SvelteComponent | undefined = undefined;
+  export let suggestions: string[] | undefined = undefined;
+  export let required = false;
+  export let closeKeyboardOnEnter = false;
 
-  let showEmptyErrors: boolean = false;
+  let showEmptyErrors = false;
   let valueString: string =
     type === 'date' && value instanceof Date
       ? value?.toISOString()?.split('T')[0]
       : value?.toString() ?? '';
   $: {
     switch (type) {
-      case 'number':
-        value = +valueString.replace(',', '.');
+      case 'number': {
+        value = Number(valueString.replace(',', '.'));
         break;
-      case 'date':
+      }
+  
+      case 'date': {
         value = new Date(valueString);
         if (!value.valueOf()) {
-          value = null;
+          value = undefined;
           valueString = '';
         }
+  
         break;
-      default:
+      }
+  
+      default: {
         value = valueString;
+      }
     }
   }
 
-  export let errorMessage: string = '';
-  let _errorMessage: string = '';
-  export let messageIsWarning: boolean = false;
+  export let errorMessage = '';
+  let _errorMessage = '';
+  export let messageIsWarning = false;
   $: {
     if (valueString === '' && !showEmptyErrors) {
       _errorMessage = '';
     } else if (errorMessage !== '') {
       _errorMessage = errorMessage;
+    } else if (valueString === '' && showEmptyErrors && required) {
+      _errorMessage = 'Ce champ est requis';
+    } else if (type === 'number' && valueString === '' && required) {
+      // Validate string conversion first
+      _errorMessage = 'Ce champ doit être un nombre';
+    } else if (type === 'date' && value === null) {
+      _errorMessage = '';
     } else {
-      if (valueString === '' && showEmptyErrors && required) {
-        _errorMessage = 'Ce champ est requis';
-      } else {
-        // Validate string conversion first
-        if (type === 'number' && valueString === '' && required) {
-          _errorMessage = 'Ce champ doit être un nombre';
-        } else {
-          if (type === 'date' && value === null) {
-            _errorMessage = '';
-          } else {
-            _errorMessage = validate(valueString);
-          }
-        }
-      }
+      _errorMessage = validate(valueString);
     }
   }
 
@@ -88,19 +88,20 @@
 
 <div
   class="wrapper base-input typo-paragraph"
-  class:errored
-  class:focused
+  class:danger={errored}
+  class:primary={focused}
   style:--intense="var(--{messageIsWarning ? 'safran' : 'blood'})"
   style:--pale="var(--{messageIsWarning ? 'plaster' : 'rose'})"
 >
   <div class="input-area" bind:this={inputContainer}>
-    {#if leftIcon}
+    {#if $$slots.before}
       <div class="left-icon">
-        <svelte:component this={leftIcon} />
+        <slot name="before" />
       </div>
     {/if}
     {#if suggestions}
       <InputWithSuggestions
+        class="{errored ? 'danger' : ''} {focused ? 'primary' : ''}"
         on:close-suggestions
         on:select
         on:input
@@ -114,12 +115,16 @@
         on:keypress={(e) => {
           if (!(e instanceof KeyboardEvent)) return;
           if (!(e.target instanceof HTMLInputElement)) return;
-          if (e.key === 'Enter' && closeKeyboardOnEnter) {
+          if (e.key === 'Enter' && closeKeyboardOnEnter) 
             e.target.blur();
-          }
+          
         }}
-        on:focus={() => (focused = true)}
-        on:blur={() => (focused = false)}
+        on:focus={() => {
+          focused = true;
+        }}
+        on:blur={() => {
+          focused = false;
+        }}
         on:input={(e) => {
           if (valueString !== '') showEmptyErrors = true;
           emit('input', e);
@@ -127,12 +132,14 @@
       />
     {:else}
       <input
+        class:danger={errored}
+        class:primary={focused}
         on:keyup
         on:keypress={(e) => {
           if (!(e.target instanceof HTMLInputElement)) return;
-          if (e.key === 'Enter' && closeKeyboardOnEnter) {
+          if (e.key === 'Enter' && closeKeyboardOnEnter) 
             e.target.blur();
-          }
+          
         }}
         {type}
         {name}
@@ -147,8 +154,12 @@
           if (valueString !== '') showEmptyErrors = true;
           emit('input', e);
         }}
-        on:focus={() => (focused = true)}
-        on:blur={() => (focused = false)}
+        on:focus={() => {
+          focused = true;
+        }}
+        on:blur={() => {
+          focused = false;
+        }}
       />
     {/if}
     {#if actionIcon}
@@ -156,10 +167,12 @@
         <svelte:component this={actionIcon} />
       </button>
     {/if}
-    {#if resettable}
+    {#if initial !== undefined}
       <button
+        disabled={!resettable}
         type="button"
         class="reset"
+        use:tooltip={resettable ? `Revenir à ${JSON.stringify(initial)}` : ''}
         on:click|stopPropagation={() => {
           value = initial;
           valueString =
@@ -168,7 +181,9 @@
               : value?.toString() ?? '';
         }}
       >
-        <IconReset />
+        {#if resettable}
+          <IconReset />
+        {/if}
       </button>
     {:else}
       <span class="unit">{unit}</span>
@@ -183,87 +198,68 @@
 
 <style>
   .wrapper {
-    border: var(--border-block) solid var(--text);
     display: flex;
     flex-direction: column;
-  }
-
-  .wrapper > div {
-    padding: 0.5rem 0.75rem;
-  }
-
-  .input-area {
-    display: flex;
-    align-items: center;
-    position: relative;
+    color: var(--text);
+    background: var(--bg);
+    border: var(--border-block) solid var(--border);
+    border-radius: var(--radius-block);
   }
 
   input {
-    border: none;
-    -moz-appearance: textfield;
-    appearance: textfield;
     width: 100%;
+    border: none;
     outline: none;
-    background-color: var(--bg);
+    appearance: textfield;
+    appearance: textfield;
+  }
+
+  .wrapper:hover,
+  .wrapper:focus-within,
+  .wrapper:hover input,
+  .wrapper:focus-within input {
+    color: var(--hover-text);
+    background: var(--hover-bg);
+    border-color: var(--hover-border);
+  }
+
+  .wrapper > div {
+    padding: 0.5rem 0.6667rem;
+  }
+
+  .input-area {
+    position: relative;
+    display: flex;
+    align-items: center;
   }
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+    appearance: none;
     appearance: none;
     margin: 0;
   }
 
   button.reset,
   button.action {
-    background-color: transparent;
-    border: none;
-    padding: 0;
     width: 1.5rem;
     height: 1.25rem;
+    padding: 0;
     cursor: pointer;
+    background-color: transparent;
+    border: none;
   }
 
   .left-icon {
-    height: 1.5rem;
     width: 1.5rem;
+    height: 1.5rem;
     margin-right: 0.5rem;
   }
 
-  .unit {
-    color: var(--primary-bg);
-  }
-
-  /** Focused */
-  .wrapper:hover,
-  .wrapper.focused {
-    border-color: var(--muted-bg);
-  }
-
-  .wrapper.focused,
-  .wrapper.focused input {
-    outline: none;
-    background: var(--link);
-  }
-
-  /** Errored */
-  .wrapper.errored {
-    border-color: var(--intense);
-  }
-
-  .wrapper.errored .unit {
-    color: var(--intense);
-  }
-  .error-area {
-    background-color: var(--intense);
-  }
-  .error-area p {
-    color: #fff;
-  }
-
-  /** Both */
-  .wrapper.errored.focused,
-  .wrapper.errored.focused input {
-    background-color: var(--pale);
+  .unit,
+  .left-icon,
+  .action,
+  .reset {
+    color: var(--text);
   }
 </style>

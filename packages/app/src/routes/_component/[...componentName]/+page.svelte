@@ -15,7 +15,7 @@
           value = v;
         }
       }
-  
+
       return [k, value];
     })
   );
@@ -30,7 +30,7 @@
           .map(([k, v]) => (v === true ? k : `${k}=${JSON.stringify(v)}`))
           .join(' ');
     }
-  
+
     title += slotContent ? `>${slotContent}</${componentName}>` : '/>';
   }
 

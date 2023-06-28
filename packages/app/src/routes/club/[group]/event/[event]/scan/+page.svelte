@@ -24,15 +24,12 @@
     | undefined = undefined;
 
   function resultChanged(old: typeof result, now: typeof result): boolean {
-    if (old === undefined) 
-      return now !== undefined;
-    
-    if (old === false) 
-      return now !== false;
-    
-    if (now === undefined || now === false) 
-      return true;
-    
+    if (old === undefined) return now !== undefined;
+
+    if (old === false) return now !== false;
+
+    if (now === undefined || now === false) return true;
+
     return JSON.stringify(old) !== JSON.stringify(now);
   }
 
@@ -60,9 +57,8 @@
   });
 
   async function check(decodedContents: string): Promise<typeof result> {
-    if (!decodedContents.startsWith('r:')) 
-      return undefined;
-    
+    if (!decodedContents.startsWith('r:')) return undefined;
+
     const { registration } = await $zeus.query({
       registration: [
         { id: decodedContents },
@@ -88,16 +84,11 @@
 
     let r: typeof result = false;
 
-    if (registration.__typename !== 'Error') 
-      r = registration.data;
-    
+    if (registration.__typename !== 'Error') r = registration.data;
 
     if (resultChanged(result, r) && r !== undefined) {
-      if (r === false || !r?.paid) 
-        window.navigator.vibrate([200, 100, 200]);
-       else 
-        window.navigator.vibrate(100);
-      
+      if (r === false || !r?.paid) window.navigator.vibrate([200, 100, 200]);
+      else window.navigator.vibrate(100);
     }
 
     result = r;
