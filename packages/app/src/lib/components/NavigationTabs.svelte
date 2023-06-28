@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let tabs: { name: string; href: string }[] = [];
+  export let tabs: Array<{ name: string; href: string }> = [];
 </script>
 
 <ul>
@@ -10,18 +10,35 @@
 
 <style>
   ul {
-    list-style: none;
-    padding-left: 0;
     display: flex;
-    gap: 1rem;
     flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    padding-left: 0;
+    list-style: none;
   }
 
   a {
     text-decoration: none;
   }
 
+  li {
+    padding: 0.5rem;
+    text-align: center;
+  }
+
   li.active {
-    border-bottom: var(--border-inline) solid var(--primary-border);
+    color: var(--primary-bg);
+  }
+
+  li.active::after {
+    display: block;
+    width: calc(100% + 2rem);
+    height: calc(2 * var(--border-block));
+    content: '';
+    background-color: var(--primary-bg);
+    border-top-left-radius: var(--radius-block);
+    border-top-right-radius: var(--radius-block);
+    transform: translateX(-1rem);
   }
 </style>
