@@ -70,9 +70,7 @@
   <InputField label="Titre">
     <input type="text" required bind:value={title} />
   </InputField>
-  <InputField label="Publier le">
-    <DateInput bind:value={publishedAt} />
-  </InputField>
+  <DateInput time label="Publier le" bind:value={publishedAt} />
   <InputField label="Visibilité" hint={HELP_VISIBILITY[visibility]}>
     <select bind:value={visibility}>
       <option value={Visibility.Private}>{DISPLAY_VISIBILITIES.Private} </option>

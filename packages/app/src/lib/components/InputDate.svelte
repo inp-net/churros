@@ -2,8 +2,8 @@
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
 
-  export let value: Date | null;
-  export let type: 'date' | 'datetime';
+  export let value: Date | undefined;
+  export let time = false;
   export let name: string | undefined = undefined;
   export let initial: Date | undefined = undefined;
   export let placeholder = '';
@@ -14,7 +14,7 @@
 <InputField {label} {required}>
   <BaseInputText
     {placeholder}
-    type={type === 'datetime' ? 'datetime-local' : 'date'}
+    type={time ? 'datetime-local' : 'date'}
     bind:value
     {name}
     {initial}
