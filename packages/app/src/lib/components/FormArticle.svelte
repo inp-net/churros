@@ -1,6 +1,6 @@
 <script lang="ts">
   import Alert from '$lib/components/Alert.svelte';
-  import { zeus } from '$lib/zeus';
+  import { Visibility, zeus } from '$lib/zeus';
   import type { PageData } from '../../routes/club/[group]/post/[post]/edit/$types';
   import Button from '$lib/components/Button.svelte';
   import { goto } from '$app/navigation';
@@ -11,7 +11,6 @@
   import DateInput from '$lib/components/InputDate.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
   import InputField from '$lib/components/InputField.svelte';
-  import InputSelectOne from './InputSelectOne.svelte';
 
   export let data: PageData;
 
