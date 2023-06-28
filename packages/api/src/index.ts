@@ -152,3 +152,97 @@ api.listen(4000, () => {
 });
 
 await writeSchema();
+
+import { lydiaSignature } from './services/lydia.js';
+
+const webhook = express();
+webhook.use(express.urlencoded({ extended: true }));
+
+// Lydia webhook
+webhook.post('/lydia-webhook', async (req, res) => {
+  // Retrieve the params from the request
+  const {
+    request_id,
+    amount,
+    currency,
+    sig,
+    signed,
+    transaction_identifier,
+    vendor_token,
+  }: {
+    request_id: string;
+    amount: string;
+    currency: string;
+    sig: string;
+    signed: string;
+    transaction_identifier: string;
+    vendor_token: string;
+  } = req.body as {
+    request_id: string;
+    amount: string;
+    currency: string;
+    sig: string;
+    signed: string;
+    transaction_identifier: string;
+    vendor_token: string;
+  };
+
+  try {
+    // Get the lydia transaction from it's requestId
+    const transaction = await prisma.lydiaTransaction.findFirst({
+      where: {
+        requestId: request_id,
+      },
+      include: {
+        registration: {
+          include: {
+            ticket: {
+              include: {
+                event: {
+                  include: {
+                    beneficiary: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!transaction) return res.status(400).send('Transaction not found');
+
+    const sigParams = {
+      currency,
+      request_id,
+      amount,
+      signed,
+      transaction_identifier,
+      vendor_token,
+    };
+
+    // Check if the beneficiary exists
+    if (!transaction.registration.ticket.event.beneficiary)
+      return res.status(400).send('Beneficiary not found');
+
+    if (sig === lydiaSignature(transaction.registration.ticket.event.beneficiary, sigParams)) {
+      await prisma.registration.update({
+        where: {
+          id: transaction.registrationId,
+        },
+        data: {
+          paid: true,
+        },
+      });
+      return res.status(200).send('OK');
+    }
+  } catch {
+    return res.status(500).send('Internal server error');
+  }
+
+  return res.status(400).send('Bad request');
+});
+
+webhook.listen(4001, () => {
+  console.log('Webhook ready at http://localhost:4001');
+});
