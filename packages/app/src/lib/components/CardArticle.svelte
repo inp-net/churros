@@ -10,6 +10,7 @@
   import { Visibility } from '$lib/zeus';
   import { DISPLAY_VISIBILITIES } from '$lib/display';
   import ButtonSecondary from './ButtonSecondary.svelte';
+  import ButtonInk from './ButtonInk.svelte';
 
   export let visibility: Visibility | undefined = undefined;
   export let title: string;
@@ -59,7 +60,9 @@
     </ul>
   {/if}
 
-  <a class="see-more" {href}><IconDots /> Voir plus</a>
+  <div class="see-more">
+    <ButtonInk {href} icon={IconDots}>Voir plus</ButtonInk>
+  </div>
 
   <section class="author-and-date">
     <div class="author">
