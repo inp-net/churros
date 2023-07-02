@@ -16,7 +16,7 @@
 
   let currentTab: keyof typeof TABS = '';
   $: {
-    currentTab = pathLeaf in TABS ? pathLeaf as keyof typeof TABS : '';
+    currentTab = pathLeaf in TABS ? (pathLeaf as keyof typeof TABS) : '';
   }
 </script>
 

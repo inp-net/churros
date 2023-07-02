@@ -11,7 +11,7 @@
   import GhostButton from './ButtonGhost.svelte';
   import DateInput from './InputDate.svelte';
   import ParentSearch from './InputGroup.svelte';
-  import { PaymentMethod, Visibility, zeus } from '$lib/zeus';
+  import { type PaymentMethod, type Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
@@ -21,16 +21,15 @@
   const visibilities = Object.keys(DISPLAY_VISIBILITIES) as Array<keyof typeof Visibility>;
 
   function eraseFakeIds(id: string): string {
-    if (id.includes(':fake:')) {
+    if (id.includes(':fake:')) 
       return '';
-    }
+    
     return id;
   }
 
   function ticketIsInGroup(ticket: { id: string }): boolean {
     return event.ticketGroups
-      .map((g) => g.tickets.map((t) => t.id))
-      .flat()
+      .flatMap((g) => g.tickets.map((t) => t.id))
       .includes(ticket.id);
   }
 
@@ -154,9 +153,9 @@
 
     serverError = '';
 
-    if (!event.id) {
+    if (!event.id) 
       await goto(`../${upsertEvent.data.uid}`);
-    }
+    
   }
 
   let expandedTicketId = '';
@@ -176,7 +175,7 @@
   const bang = <T extends {}>(x?: T) => x!;
 
   const defaultTicket = (id: string) => ({
-    allowedPaymentMethods: ['Cash', 'Lydia'] as Array<PaymentMethod>,
+    allowedPaymentMethods: ['Cash', 'Lydia'] as PaymentMethod[],
     capacity: 0,
     price: 0,
     closesAt: event.endsAt ?? new Date(),
@@ -206,7 +205,7 @@
     opensAt?: Date | undefined;
     closesAt?: Date | undefined;
     links: Array<{ name: string; value: string }>;
-    allowedPaymentMethods: Array<PaymentMethod>;
+    allowedPaymentMethods: PaymentMethod[];
     openToPromotions: number[];
     openToExternal?: boolean | null | undefined;
     openToAlumni?: boolean | null | undefined;
@@ -310,13 +309,8 @@
   </InputField>
 
   <div class="side-by-side">
-    <InputField label="Début">
-      <DateInput bind:value={event.startsAt} />
-    </InputField>
-
-    <InputField label="Fin">
-      <DateInput bind:value={event.endsAt} />
-    </InputField>
+    <DateInput label="Début" time bind:value={event.startsAt} />
+    <DateInput label="Fin" time bind:value={event.endsAt} />
   </div>
 
   <InputField label="Lieu">
@@ -400,12 +394,16 @@
                 </InputField>
 
                 <div class="side-by-side">
-                  <InputField label="Date du shotgun">
-                    <DateInput bind:value={event.ticketGroups[i].tickets[j].opensAt} />
-                  </InputField>
-                  <InputField label="Clôture">
-                    <DateInput bind:value={event.ticketGroups[i].tickets[j].closesAt} />
-                  </InputField>
+                  <DateInput
+                    time
+                    label="Date du shotgun"
+                    bind:value={event.ticketGroups[i].tickets[j].opensAt}
+                  />
+                  <DateInput
+                    time
+                    label="Clôture"
+                    bind:value={event.ticketGroups[i].tickets[j].closesAt}
+                  />
                 </div>
 
                 <div class="side-by-side">
@@ -536,12 +534,8 @@
           </InputField>
 
           <div class="side-by-side">
-            <InputField label="Date du shotgun">
-              <DateInput bind:value={event.tickets[i].opensAt} />
-            </InputField>
-            <InputField label="Clôture">
-              <DateInput bind:value={event.tickets[i].closesAt} />
-            </InputField>
+            <DateInput time label="Date du shotgun" bind:value={event.tickets[i].opensAt} />
+            <DateInput time label="Clôture" bind:value={event.tickets[i].closesAt} />
           </div>
 
           <div class="side-by-side">
@@ -670,10 +664,10 @@
   }
 
   .ticket {
+    display: flex;
     padding: 1em;
     border-radius: var(--radius-block);
     box-shadow: var(--shadow);
-    display: flex;
   }
 
   .ticket:not(.expanded) {

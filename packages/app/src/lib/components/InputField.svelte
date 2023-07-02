@@ -4,14 +4,14 @@
   import { tooltip } from '$lib/tooltip';
 
   export let label: string;
-  export let hint: string = '';
-  export let id: string | null = null;
-  export let required: boolean = false;
+  export let hint = '';
+  export let id: string | undefined = undefined;
+  export let required = false;
   export let errors: string[] | undefined = [];
 </script>
 
 <div class="field">
-  <svelte:element this={id === null ? 'p' : 'label'} for={id}
+  <svelte:element this={id ? 'p' : 'label'} class="label-wrapper" for={id}
     ><span class="label typo-field-label"
       >{label}{#if required}
         <span use:tooltip={'Ce champ est requis'} class="required-indicator">*</span>
@@ -39,17 +39,24 @@
     flex-grow: 1;
   }
 
+  .label-wrapper {
+    line-height: 1;
+  }
+
   .label {
     display: inline-flex;
     justify-content: center;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.125rem;
+    margin-left: calc(var(--radius-block) / 2);
+    line-height: 1;
   }
 
   .required-indicator {
-    color: var(--sky);
-    margin-left: 0.125rem;
-    transform: scale(1.2) translateY(0.1em);
+    margin-left: 0.26rem;
+    color: var(--error);
+    transform: scale(1.2) translateY(0.15em);
   }
+
   .error,
   .hint {
     display: flex;

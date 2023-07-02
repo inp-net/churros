@@ -13,6 +13,7 @@
   import GhostButton from '$lib/components/ButtonGhost.svelte';
   import { dateFormatter } from '$lib/dates';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const asstringarray = (x: any) => x as string[];
 
   export let data: PageData;
@@ -20,14 +21,14 @@
   const EMPTY_BAR_WEEK = {
     id: undefined,
     description: '',
-    groups: [] as { uid: string; pictureFile: string; name: string }[],
+    groups: [] as Array<{ uid: string; pictureFile: string; name: string }>,
     startsAt: startOfWeek(new Date()),
     endsAt: endOfWeek(new Date()),
   };
 
   let { barWeeks } = data;
   let newBarWeek = EMPTY_BAR_WEEK;
-  let serverErrors: Record<string, string> = {};
+  const serverErrors: Record<string, string> = {};
   let expandedBarWeekId: string | undefined = undefined;
 
   $: console.log(barWeeks);
@@ -42,7 +43,7 @@
   async function updateBarWeek(barWeek: {
     id: string | undefined;
     description: string;
-    groups: { uid: string }[];
+    groups: Array<{ uid: string }>;
     startsAt: Date;
     endsAt: Date;
   }) {
@@ -131,13 +132,8 @@
             />
           </InputField>
           <div class="side-by-side">
-            <InputField label="Début">
-              <DateInput bind:value={barWeeks[i].startsAt} />
-            </InputField>
-
-            <InputField label="Fin">
-              <DateInput bind:value={barWeeks[i].endsAt} />
-            </InputField>
+            <DateInput label="Début" bind:value={barWeeks[i].startsAt} />
+            <DateInput label="Fin" bind:value={barWeeks[i].endsAt} />
           </div>
           {#if serverErrors[barWeek.id]}
             <Alert theme="danger">{serverErrors[barWeek.id]}</Alert>
@@ -151,9 +147,13 @@
           <div class="description">
             {@html barWeek.descriptionHtml}
           </div>
-          <GhostButton on:click={() => (expandedBarWeekId = barWeek.id)}><IconEdit /></GhostButton>
+          <GhostButton
+            on:click={() => {
+              expandedBarWeekId = barWeek.id;
+            }}><IconEdit /></GhostButton
+          >
         {/if}
-        <Button theme="danger" on:click={(async) => deleteBarWeek(barWeek)}>Supprimer</Button>
+        <Button theme="danger" on:click={async () => deleteBarWeek(barWeek)}>Supprimer</Button>
       </Card>
     </li>
   {/each}
@@ -167,17 +167,12 @@
         <StringListInput value={newBarWeek.groups.map(({ uid }) => uid)} />
       </InputField>
       <div class="side-by-side">
-        <InputField label="Début">
-          <DateInput bind:value={newBarWeek.startsAt} />
-        </InputField>
-
-        <InputField label="Fin">
-          <DateInput bind:value={newBarWeek.endsAt} />
-        </InputField>
+        <DateInput label="Début" bind:value={newBarWeek.startsAt} />
+        <DateInput label="Fin" bind:value={newBarWeek.endsAt} />
       </div>
 
-      {#if serverErrors['new']}
-        <Alert theme="danger">{serverErrors['new']}</Alert>
+      {#if serverErrors.new}
+        <Alert theme="danger">{serverErrors.new}</Alert>
       {/if}
       <Button on:click={async () => updateBarWeek(newBarWeek)}>Ajouter</Button>
     </Card>
