@@ -1,82 +1,66 @@
 <script lang="ts">
-  import { navigating, page } from '$app/stores';
+  import { page } from '$app/stores';
   import type { LayoutData } from '.svelte-kit/types/src/routes/$types';
-  import { expoOut } from 'svelte/easing';
-  import { derived } from 'svelte/store';
-  import { fly } from 'svelte/transition';
 
-  export let mobile = false;
+  import IconIssue from '~icons/mdi/chat-alert-outline';
+  import IconNotif from '~icons/mdi/bell-outline';
+  import IconTicket from '~icons/mdi/ticket-outline';
+  import IconAccount from '~icons/mdi/account-circle-outline';
+
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
   $: ({ me, token } = $page.data as LayoutData);
-
-  let timeout: unknown;
-  const showLoader = derived(
-    navigating,
-    ($navigating, set) => {
-      if (timeout !== undefined) clearTimeout(timeout as number);
-      if ($navigating) {
-        timeout = setTimeout(() => {
-          set(true);
-        }, 200);
-      } else {
-        set(false);
-      }
-    },
-    false
-  );
 </script>
 
-<div class="top-bar">
-  <div class="flex mx-auto max-w-[100rem] p-4 justify-between">
-    <div class="flex gap-4 items-center">
-      {#if mobile}
-        <div class="w-6" />
-      {/if}
-      <a href="/">(logo)</a>
-    </div>
-    <div>
-      {#if me && token}
-        <a href="/me">{me.firstName}</a>
-        <a href="/logout/?{new URLSearchParams({ token })}" data-sveltekit-preload-data="off">
-          Se déconnecter
-        </a>
-      {:else}
-        <a href="/login?{new URLSearchParams({ to: $page.url.pathname })}"> Se connecter </a>
-        <a href="/register">S'inscrire</a>
-      {/if}
-    </div>
+<nav>
+  <a href="/"><img src="/logo.png" alt="logo de l'AE" /></a>
+
+  <div>
+    {#if me && token}
+      <a href="https://git.inpt.fr/inp-net/centraverse/-/issues/new" style="color:red"
+        ><IconIssue /></a
+      >
+      <a href="/notifications/"><IconNotif /></a>
+      <a href="/bookings/"><IconTicket /></a>
+      <a href="/me/"><IconAccount /></a>
+    {:else}
+      <div><ButtonSecondary href="/register/">Créer un compte</ButtonSecondary></div>
+      <div><ButtonSecondary href="/login/">Connexion</ButtonSecondary></div>
+    {/if}
   </div>
-  {#if $showLoader}
-    <div
-      class="loader"
-      in:fly={{ x: -window.innerWidth, duration: 3000, easing: expoOut, opacity: 1 }}
-      out:fly={{ x: 0.1 * window.innerWidth, duration: 300 }}
-    />
-  {/if}
-</div>
+</nav>
 
-<style lang="scss">
-  .top-bar {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    max-width: 100%;
-    overflow: hidden;
-    color: var(--primary-text);
-    background: var(--primary-bg);
-    box-shadow: var(--primary-shadow);
-
-    a {
-      color: inherit;
-    }
+<style lang="css">
+  nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    margin: 0;
+    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
+    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
+    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
   }
 
-  .loader {
-    position: absolute;
-    bottom: 0;
-    left: -10vw;
-    width: 100%;
-    height: 0.25rem;
-    background: var(--loading-bg);
+  nav > div > div {
+    display: inline-block;
+  }
+
+  nav > div > div:nth-child(n + 2) {
+    margin-left: 0.8rem;
+  }
+
+  nav > div > a {
+    font-size: 1.3rem;
+  }
+
+  nav > div > a:nth-child(n + 2) {
+    margin-left: 2rem;
+  }
+
+  img {
+    height: 6rem;
+    margin: -1.5rem 0;
   }
 </style>
