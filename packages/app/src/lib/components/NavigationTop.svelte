@@ -32,6 +32,10 @@
 
 <style lang="css">
   nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
     display: flex;
     flex-direction: row;
     gap: 1rem;
@@ -39,6 +43,7 @@
     justify-content: space-between;
     padding: 1rem 1.5rem;
     margin: 0;
+    background: var(--bg);
     box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
   }
 

@@ -40,7 +40,7 @@
   <title>Centraverse</title>
 </svelte:head>
 
-<TopBar {mobile} />
+<TopBar />
 
 <div class="layout">
   {#if !mobile}
@@ -54,10 +54,6 @@
 <NavigationBottom current={currentTab($page.url)} />
 
 <style lang="scss">
-  main {
-    grid-column: 2;
-  }
-
   .mobile-background {
     position: fixed;
     inset: 0;
@@ -83,10 +79,15 @@
     grid-template-columns: 1fr minmax(0, 60rem) 1fr;
     max-width: 100rem;
     padding: 0 0.5rem;
+    padding-top: 6rem; // XXX equal to topbar's height
     margin: auto;
 
     > * {
       padding: 0 0.5rem;
     }
+  }
+
+  main {
+    grid-column: 2;
   }
 </style>
