@@ -8,11 +8,21 @@
   import IconAccount from '~icons/mdi/account-circle-outline';
 
   import ButtonSecondary from './ButtonSecondary.svelte';
+  import { browser } from '$app/environment';
+  import { onMount } from 'svelte';
 
   $: ({ me, token } = $page.data as LayoutData);
+
+  onMount(() => {
+    window.addEventListener('scroll', () => {
+      scrolled = window.scrollY >= 3;
+    });
+  });
+
+  let scrolled = false;
 </script>
 
-<nav id="navigation-top">
+<nav id="navigation-top" class:scrolled>
   <a href="/"><img src="/logo.png" alt="logo de l'AE" /></a>
 
   <div class="actions">
@@ -44,6 +54,10 @@
     padding: 1rem 1.5rem;
     margin: 0;
     background: var(--bg);
+    transition: box-shadow 0.25s ease;
+  }
+
+  nav.scrolled {
     box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
   }
 
