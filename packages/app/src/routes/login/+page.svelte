@@ -45,7 +45,7 @@
         return;
       }
 
-      saveSessionToken(login.data);
+      saveSessionToken(document, login.data);
       await redirect();
     } finally {
       loading = false;

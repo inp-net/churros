@@ -90,7 +90,7 @@
         });
 
         if (login.__typename === 'MutationLoginSuccess') {
-          saveSessionToken(login.data);
+          saveSessionToken(document, login.data);
           // Hard refresh (invalidating is not possible because UserCandidate
           // is deleted after registration, throwing a ZeusError)
           location.href = '/welcome/';

@@ -1,17 +1,13 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import type { LayoutData } from '.svelte-kit/types/src/routes/$types';
-
   import IconIssue from '~icons/mdi/chat-alert-outline';
   import IconNotif from '~icons/mdi/bell-outline';
   import IconTicket from '~icons/mdi/ticket-outline';
   import IconAccount from '~icons/mdi/account-circle-outline';
 
   import ButtonSecondary from './ButtonSecondary.svelte';
-  import { browser } from '$app/environment';
   import { onMount } from 'svelte';
-
-  $: ({ me, token } = $page.data as LayoutData);
+  import { me } from '$lib/session';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
 
   onMount(() => {
     window.addEventListener('scroll', () => {
@@ -23,16 +19,22 @@
 </script>
 
 <nav id="navigation-top" class:scrolled>
-  <a href="/"><img src="/logo.png" alt="logo de l'AE" /></a>
+  <a href="/"><img class="logo" src="/logo.png" alt="logo de l'AE" /></a>
 
   <div class="actions">
-    {#if me && token}
+    {#if $me}
       <a href="https://git.inpt.fr/inp-net/centraverse/-/issues/new" style="color:red"
         ><IconIssue /></a
       >
       <a href="/notifications/"><IconNotif /></a>
       <a href="/bookings/"><IconTicket /></a>
-      <a href="/me/"><IconAccount /></a>
+      <a href="/me/">
+        {#if $me.pictureFile}
+          <img class="profilepic" src="{PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
+        {:else}
+          <IconAccount />
+        {/if}
+      </a>
     {:else}
       <div><ButtonSecondary href="/register/">Créer un compte</ButtonSecondary></div>
       <div><ButtonSecondary href="/login/">Connexion</ButtonSecondary></div>
@@ -63,13 +65,28 @@
 
   .actions {
     display: flex;
+    justify-content: center;
     gap: 1.3rem;
     font-size: 1.3em;
   }
 
-  img {
+  img.logo {
     width: 6rem;
     height: 3rem;
     object-fit: cover;
+  }
+
+  .actions a {
+    display: flex;
+    align-items: center;
+  }
+
+  .profilepic {
+    --size: calc(1.3em);
+    border-radius: 50%;
+    height: var(--size);
+    width: var(--size);
+    overflow: hidden;
+    /* border: 3px solid var(--text); */
   }
 </style>
