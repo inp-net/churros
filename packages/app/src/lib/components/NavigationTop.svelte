@@ -12,10 +12,10 @@
   $: ({ me, token } = $page.data as LayoutData);
 </script>
 
-<nav>
+<nav id="navigation-top">
   <a href="/"><img src="/logo.png" alt="logo de l'AE" /></a>
 
-  <div>
+  <div class="actions">
     {#if me && token}
       <a href="https://git.inpt.fr/inp-net/centraverse/-/issues/new" style="color:red"
         ><IconIssue /></a
@@ -34,33 +34,23 @@
   nav {
     display: flex;
     flex-direction: row;
+    gap: 1rem;
     align-items: center;
     justify-content: space-between;
     padding: 1rem 1.5rem;
     margin: 0;
     box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
-    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
-    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
   }
 
-  nav > div > div {
-    display: inline-block;
-  }
-
-  nav > div > div:nth-child(n + 2) {
-    margin-left: 0.8rem;
-  }
-
-  nav > div > a {
-    font-size: 1.3rem;
-  }
-
-  nav > div > a:nth-child(n + 2) {
-    margin-left: 2rem;
+  .actions {
+    display: flex;
+    gap: 1.3rem;
+    font-size: 1.3em;
   }
 
   img {
-    height: 6rem;
-    margin: -1.5rem 0;
+    width: 6rem;
+    height: 3rem;
+    object-fit: cover;
   }
 </style>
