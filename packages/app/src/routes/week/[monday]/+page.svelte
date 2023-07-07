@@ -15,10 +15,10 @@
   } from 'date-fns';
   import type { PageData } from './$types';
   import { me } from '$lib/session';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
   import { goto } from '$app/navigation';
   import { dateFormatter } from '$lib/dates';
-  import GhostButton from '$lib/components/buttons/GhostButton.svelte';
+  import GhostButton from '$lib/components/ButtonGhost.svelte';
 
   $: pageTitle = computePageTitle(data.shownWeek);
 

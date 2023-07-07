@@ -3,13 +3,13 @@
   import { dateTimeFormatter } from '$lib/dates';
   import * as qrcode from 'qr-code-generator-lib';
   import type { PageData } from './$types';
-  import BackButton from '$lib/components/buttons/BackButton.svelte';
+  import BackButton from '$lib/components/ButtonBack.svelte';
   import { onMount } from 'svelte';
   import { theme } from '$lib/theme';
   import { beforeNavigate, goto } from '$app/navigation';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
   import IconCancel from '~icons/mdi/cancel';
-  import Alert from '$lib/components/alerts/Alert.svelte';
+  import Alert from '$lib/components/Alert.svelte';
   import { PaymentMethod, zeus } from '$lib/zeus';
 
   let actualTheme: string;

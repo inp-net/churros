@@ -2,7 +2,7 @@
   import { PUBLIC_VAPID_KEY } from '$env/static/public';
   import { arrayBufferToBase64 } from '$lib/base64';
   import dateFnsFrenchLocale from 'date-fns/locale/fr/index.js';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
   import { zeus } from '$lib/zeus';
   import { formatDistance } from 'date-fns';
   import type { PageData } from './$types';

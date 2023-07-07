@@ -1,12 +1,10 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { fileURLToPath } from 'node:url';
 import { defineConfig, mergeConfig } from 'vite';
-import windi from 'vite-plugin-windicss';
 import icons from 'unplugin-icons/vite';
 
 export const commonConfig = defineConfig({
   plugins: [
-    windi(),
     icons({
       compiler: 'svelte',
       defaultClass: 'icon',
