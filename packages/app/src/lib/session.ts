@@ -3,6 +3,7 @@ import { redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 import { derived } from 'svelte/store';
 import { Selector, type PropsType } from './zeus';
+import { browser } from '$app/environment';
 
 /** What's needed in a user session. */
 export const sessionUserQuery = () =>
@@ -10,6 +11,7 @@ export const sessionUserQuery = () =>
     id: true,
     uid: true,
     firstName: true,
+    pictureFile: true,
     lastName: true,
     admin: true,
     canEditGroups: true,
@@ -36,13 +38,16 @@ export const sessionUserQuery = () =>
 export type SessionUser = PropsType<typeof sessionUserQuery, 'User'>;
 
 /** Saves `token` as a cookie. */
-export const saveSessionToken = ({
-  token,
-  expiresAt,
-}: {
-  token: string;
-  expiresAt?: Date | null;
-}) => {
+export const saveSessionToken = (
+  document: { cookie: string },
+  {
+    token,
+    expiresAt,
+  }: {
+    token: string;
+    expiresAt?: Date | null;
+  }
+) => {
   document.cookie = cookie.serialize('token', token, {
     expires: expiresAt ? new Date(expiresAt) : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     path: '/',

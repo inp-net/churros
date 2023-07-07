@@ -2,8 +2,7 @@
   import Alert from '$lib/components/Alert.svelte';
   import Button from '$lib/components/Button.svelte';
   import IconChevronRight from '~icons/mdi/chevron-right';
-  import Tabs from '$lib/components/NavigationTabs.svelte';
-  import { PaymentMethod, zeus } from '$lib/zeus';
+  import { type PaymentMethod, zeus } from '$lib/zeus';
   import { onMount } from 'svelte';
   import { Html5QrcodeScanner } from 'html5-qrcode';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
@@ -25,22 +24,21 @@
     | undefined = undefined;
 
   function resultChanged(old: typeof result, now: typeof result): boolean {
-    if (old === undefined) {
-      return now !== undefined;
-    }
-    if (old === false) {
-      return now !== false;
-    }
-    if (now === undefined || now === false) {
-      return true;
-    }
+    if (old === undefined) return now !== undefined;
+
+    if (old === false) return now !== false;
+
+    if (now === undefined || now === false) return true;
+
     return JSON.stringify(old) !== JSON.stringify(now);
   }
 
-  $: check(code);
+  $: check(code).catch((error) => {
+    console.error(error);
+  });
 
   onMount(() => {
-    let scanner = new Html5QrcodeScanner(
+    const scanner = new Html5QrcodeScanner(
       'reader',
       {
         fps: 5,
@@ -50,17 +48,17 @@
     );
     console.log('initialized qr scanner');
     scanner.render(
-      (text, _result) => {
+      (text) => {
         code = text;
       },
-      (_err) => {}
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      () => {}
     );
   });
 
   async function check(decodedContents: string): Promise<typeof result> {
-    if (!decodedContents.startsWith('r:')) {
-      return undefined;
-    }
+    if (!decodedContents.startsWith('r:')) return undefined;
+
     const { registration } = await $zeus.query({
       registration: [
         { id: decodedContents },
@@ -84,33 +82,18 @@
       ],
     });
 
-    let r: typeof result;
+    let r: typeof result = false;
 
-    if (registration.__typename === 'Error') {
-      r = false;
-    } else {
-      r = registration.data;
-    }
+    if (registration.__typename !== 'Error') r = registration.data;
 
     if (resultChanged(result, r) && r !== undefined) {
-      if (r === false || !r?.paid) {
-        window.navigator.vibrate([200, 100, 200]);
-      } else {
-        window.navigator.vibrate(100);
-      }
+      if (r === false || !r?.paid) window.navigator.vibrate([200, 100, 200]);
+      else window.navigator.vibrate(100);
     }
 
     result = r;
   }
 </script>
-
-<Tabs
-  tabs={[
-    { name: 'Infos', href: `../edit` },
-    { name: 'Réservations', href: '../registrations' },
-    { name: 'Vérifier', href: '.' },
-  ]}
-/>
 
 <section class="qr">
   <div id="reader" />
@@ -121,7 +104,7 @@
   <input type="text" bind:value={manualRegistrationCode} />
 </InputField>
 <Button
-  on:click={async () => {
+  on:click={() => {
     code = 'r:' + manualRegistrationCode.toLowerCase();
   }}>Vérifier</Button
 >
@@ -156,9 +139,9 @@
 
 <style>
   .label {
-    text-transform: uppercase;
+    display: block;
     font-size: 0.8em;
     font-weight: bold;
-    display: block;
+    text-transform: uppercase;
   }
 </style>

@@ -1,82 +1,94 @@
 <script lang="ts">
-  import { navigating, page } from '$app/stores';
-  import type { LayoutData } from '.svelte-kit/types/src/routes/$types';
-  import { expoOut } from 'svelte/easing';
-  import { derived } from 'svelte/store';
-  import { fly } from 'svelte/transition';
+  import IconIssue from '~icons/mdi/chat-alert-outline';
+  import IconNotif from '~icons/mdi/bell-outline';
+  import IconTicket from '~icons/mdi/ticket-outline';
+  import IconAccount from '~icons/mdi/account-circle-outline';
 
-  export let mobile = false;
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import { onMount } from 'svelte';
+  import { me } from '$lib/session';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
 
-  $: ({ me, token } = $page.data as LayoutData);
+  onMount(() => {
+    window.addEventListener('scroll', () => {
+      scrolled = window.scrollY >= 3;
+    });
+  });
 
-  let timeout: unknown;
-  const showLoader = derived(
-    navigating,
-    ($navigating, set) => {
-      if (timeout !== undefined) clearTimeout(timeout as number);
-      if ($navigating) {
-        timeout = setTimeout(() => {
-          set(true);
-        }, 200);
-      } else {
-        set(false);
-      }
-    },
-    false
-  );
+  let scrolled = false;
 </script>
 
-<div class="top-bar">
-  <div class="flex mx-auto max-w-[100rem] p-4 justify-between">
-    <div class="flex gap-4 items-center">
-      {#if mobile}
-        <div class="w-6" />
-      {/if}
-      <a href="/">(logo)</a>
-    </div>
-    <div>
-      {#if me && token}
-        <a href="/me">{me.firstName}</a>
-        <a href="/logout/?{new URLSearchParams({ token })}" data-sveltekit-preload-data="off">
-          Se déconnecter
-        </a>
-      {:else}
-        <a href="/login?{new URLSearchParams({ to: $page.url.pathname })}"> Se connecter </a>
-        <a href="/register">S'inscrire</a>
-      {/if}
-    </div>
+<nav id="navigation-top" class:scrolled>
+  <a href="/"><img class="logo" src="/logo.png" alt="logo de l'AE" /></a>
+
+  <div class="actions">
+    {#if $me}
+      <a href="https://git.inpt.fr/inp-net/centraverse/-/issues/new" style="color:red"
+        ><IconIssue /></a
+      >
+      <a href="/notifications/"><IconNotif /></a>
+      <a href="/bookings/"><IconTicket /></a>
+      <a href="/me/">
+        {#if $me.pictureFile}
+          <img class="profilepic" src="{PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
+        {:else}
+          <IconAccount />
+        {/if}
+      </a>
+    {:else}
+      <div><ButtonSecondary href="/register/">Créer un compte</ButtonSecondary></div>
+      <div><ButtonSecondary href="/login/">Connexion</ButtonSecondary></div>
+    {/if}
   </div>
-  {#if $showLoader}
-    <div
-      class="loader"
-      in:fly={{ x: -window.innerWidth, duration: 3000, easing: expoOut, opacity: 1 }}
-      out:fly={{ x: 0.1 * window.innerWidth, duration: 300 }}
-    />
-  {/if}
-</div>
+</nav>
 
-<style lang="scss">
-  .top-bar {
-    position: sticky;
+<style lang="css">
+  nav {
+    position: fixed;
     top: 0;
-    z-index: 1;
-    max-width: 100%;
-    overflow: hidden;
-    color: var(--primary-text);
-    background: var(--primary-bg);
-    box-shadow: var(--primary-shadow);
-
-    a {
-      color: inherit;
-    }
+    right: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    margin: 0;
+    background: var(--bg);
+    transition: box-shadow 0.25s ease;
   }
 
-  .loader {
-    position: absolute;
-    bottom: 0;
-    left: -10vw;
-    width: 100%;
-    height: 0.25rem;
-    background: var(--loading-bg);
+  nav.scrolled {
+    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
+  }
+
+  .actions {
+    display: flex;
+    gap: 1.3rem;
+    justify-content: center;
+    font-size: 1.3em;
+  }
+
+  img.logo {
+    width: 6rem;
+    height: 3rem;
+    object-fit: cover;
+  }
+
+  .actions a {
+    display: flex;
+    align-items: center;
+  }
+
+  .profilepic {
+    --size: calc(1.3em);
+
+    width: var(--size);
+    height: var(--size);
+    overflow: hidden;
+    border-radius: 50%;
+
+    /* border: 3px solid var(--text); */
   }
 </style>

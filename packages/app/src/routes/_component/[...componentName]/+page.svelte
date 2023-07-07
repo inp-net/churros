@@ -1,20 +1,21 @@
 <script lang="ts">
   import { page } from '$app/stores';
 
-  let [componentName, slotContent] = $page.params['componentName'].split('/', 2);
+  let [componentName, slotContent] = $page.params.componentName.split('/', 2);
   componentName = componentName.replaceAll('-', '/');
   let props = Object.fromEntries(
-    Array(...$page.url.searchParams.entries()).map(([k, v]) => {
+    [...$page.url.searchParams.entries()].map(([k, v]) => {
       let value;
       if (v === '') {
         value = true;
       } else {
         try {
           value = JSON.parse(v);
-        } catch (e) {
+        } catch {
           value = v;
         }
       }
+
       return [k, value];
     })
   );
@@ -29,11 +30,8 @@
           .map(([k, v]) => (v === true ? k : `${k}=${JSON.stringify(v)}`))
           .join(' ');
     }
-    if (slotContent) {
-      title += `>${slotContent}</${componentName}>`;
-    } else {
-      title += '/>';
-    }
+
+    title += slotContent ? `>${slotContent}</${componentName}>` : '/>';
   }
 
   let wireframe = false;
@@ -46,7 +44,7 @@
   <title>{title}</title>
 </svelte:head>
 <main>
-  <!-- <h1>{title}</h1> -->
+  <h1>{title}</h1>
   {#await import(`../../../lib/components/${componentName}.svelte`) then component}
     <main class:wireframe bind:this={componentDomNode}>
       {#if slotContent}
@@ -62,7 +60,11 @@
         <label for={`prop-${key}`}
           >{key}
           <input id={`prop-${key}`} type="text" bind:value={props[key]} />
-          <button on:click={() => delete props[key]}>del</button>
+          <button
+            on:click={() => {
+              props = Object.fromEntries(Object.entries(props).filter(([k, _v]) => k !== key));
+            }}>del</button
+          >
         </label>
       {/each}
 
@@ -87,8 +89,8 @@
     {#if wireframe}
       <section class="info">
         <code
-          >{componentDomNode?.getBoundingClientRect().width - 2} × {componentDomNode?.getBoundingClientRect()
-            .height - 2}</code
+          >{(componentDomNode?.getBoundingClientRect().width ?? 2) - 2} × {(componentDomNode?.getBoundingClientRect()
+            .height ?? 2) - 2}</code
         >
       </section>
     {/if}
@@ -103,19 +105,23 @@
 
 <style>
   section.errored {
-    background: red;
-    color: white;
     padding: 1em 2em;
+    color: white;
+    background: red;
     border-radius: 0.5em;
   }
 
   main.wireframe {
     border-color: black;
   }
+
   main {
-    border: 1px solid transparent;
-    display: inline-flex;
     box-sizing: content-box;
+    display: flex;
+    display: inline-flex;
+    flex-direction: column;
+    width: 100vw;
+    border: 1px solid transparent;
   }
 
   :global(body) {
@@ -123,15 +129,15 @@
   }
 
   section.props {
-    z-index: 1000000;
     position: fixed;
+    right: 0;
     bottom: 0;
     left: 0;
-    right: 0;
-    padding: 0.5em;
+    z-index: 1000000;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(10em, 1fr));
     gap: 1em;
+    padding: 0.5em;
     background: var(--bg);
   }
 
