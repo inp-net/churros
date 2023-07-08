@@ -2,7 +2,23 @@
   // @ts-expect-error Untyped lib
   import isDarkColor from 'is-dark-color';
 
-  export let groupMember: { group: { name: string; color: string }; title: string };
+  export let groupMember: {
+    group: { name: string; color: string };
+    title: string;
+    president: boolean;
+    treasurer: boolean;
+    vicePresident: boolean;
+    secretary: boolean;
+  };
+  $: roleBadge = groupMember.president
+    ? '👑'
+    : groupMember.treasurer
+    ? '💰'
+    : groupMember.vicePresident
+    ? '🌟'
+    : groupMember.secretary
+    ? '📜'
+    : '';
 </script>
 
 <span
@@ -10,6 +26,9 @@
   style:--bg="{groupMember.group.color}80"
   style:--text={isDarkColor(groupMember.group.color) ? 'white' : 'black'}
 >
+  {#if roleBadge}
+    <span class="badge">{roleBadge}</span>
+  {/if}
   <span>{groupMember.group.name}</span>
   {#if groupMember.title.toLowerCase() !== 'membre'}
     <span>{groupMember.title}</span>

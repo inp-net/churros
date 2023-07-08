@@ -20,6 +20,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           graduationYear: true,
           lastName: true,
           nickname: true,
+          email: true,
           phone: true,
           pictureFile: true,
           groups: {
