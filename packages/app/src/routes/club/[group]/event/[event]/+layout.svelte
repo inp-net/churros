@@ -23,19 +23,19 @@
       case '': {
         return true;
       }
-  
+
       case 'edit': {
-        return Boolean($me?.admin || manager()?.canEdit);
+        return Boolean($me?.admin || manager()?.canEdit || manager()?.canEditPermissions);
       }
-  
+
       case 'scan': {
         return Boolean($me?.admin || manager()?.canVerifyRegistrations);
       }
-  
+
       case 'registrations': {
         return Boolean($me?.admin || manager());
       }
-  
+
       default: {
         return false;
       }
