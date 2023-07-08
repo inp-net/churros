@@ -1,7 +1,10 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+  import { me } from '$lib/session';
+  import type { PageData } from './$types';
 
+  export let data: PageData;
   const TABS = {
     '': 'Infos',
     edit: 'Modifier',
@@ -9,7 +12,35 @@
     scan: 'Vérifier',
   } as const;
 
-  const TABS_ORDER: Array<keyof typeof TABS> = ['', 'edit', 'registrations', 'scan'];
+  function manager():
+    | undefined
+    | { canEdit: boolean; canEditPermissions: boolean; canVerifyRegistrations: boolean } {
+    return $me?.managedEvents.find((m) => m.event.id === data.event.id);
+  }
+
+  const shownTabs = ['', 'edit', 'registrations', 'scan'].filter((tab) => {
+    switch (tab) {
+      case '': {
+        return true;
+      }
+  
+      case 'edit': {
+        return Boolean($me?.admin || manager()?.canEdit);
+      }
+  
+      case 'scan': {
+        return Boolean($me?.admin || manager()?.canVerifyRegistrations);
+      }
+  
+      case 'registrations': {
+        return Boolean($me?.admin || manager());
+      }
+  
+      default: {
+        return false;
+      }
+    }
+  }) as Array<keyof typeof TABS>;
 
   let pathLeaf = '';
   $: pathLeaf = $page.url.pathname.replace(/\/$/, '').split('/').pop() || '';
@@ -20,11 +51,13 @@
   }
 </script>
 
-<NavigationTabs
-  tabs={TABS_ORDER.map((tab) => ({
-    name: TABS[tab],
-    href: currentTab === tab ? '.' : currentTab === '' ? `./${tab}` : `../${tab}`,
-  }))}
-/>
+{#if shownTabs.length > 1}
+  <NavigationTabs
+    tabs={shownTabs.map((tab) => ({
+      name: TABS[tab],
+      href: currentTab === tab ? '.' : currentTab === '' ? `./${tab}` : `../${tab}`,
+    }))}
+  />
+{/if}
 
 <slot />
