@@ -2,6 +2,8 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
+  import IconEyeOff from '~icons/mdi/eye-off';
+  import IconEye from '~icons/mdi/eye';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
@@ -12,6 +14,7 @@
 
   let email = '';
   let password = '';
+  let showingPassword = false;
 
   /** Redirects the user if a `to` parameter exists, or to "/" otherwise. */
   const redirect = async () => {
@@ -73,7 +76,16 @@
     {errorMessages?.join(' ')}
   </Alert>
   <InputText required label="Adresse e-mail ou nom d'utilisateur" bind:value={email} />
-  <InputText required type="password" label="Mot de passe" bind:value={password} />
+  <InputText
+    required
+    type={showingPassword ? 'text' : 'password'}
+    label="Mot de passe"
+    bind:value={password}
+    actionIcon={showingPassword ? IconEyeOff : IconEye}
+    on:action={() => {
+      showingPassword = !showingPassword;
+    }}
+  />
   <section class="submit">
     <ButtonPrimary submits>Se connecter</ButtonPrimary>
   </section>
