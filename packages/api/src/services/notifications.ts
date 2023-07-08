@@ -363,7 +363,7 @@ export async function scheduleNotification(
           `[cron ${id} @ ${user.uid}] Sending notification (time is ${at.toISOString()})`
         );
         const notificationToSend = await notification(user);
-        if (notificationToSend) await notify([user], notificationToSend);
+        if (notificationToSend) await notify([user], { tag: id, ...notificationToSend });
       }
     }
   );
@@ -510,6 +510,12 @@ export async function notify<U extends User>(
           });
       }
     }
+
+    console.log(
+      `[${notif.tag ?? '(untagged)'}] notification sent to ${
+        subscription.owner.uid
+      } with data ${JSON.stringify(notif)} (sub ${id} @ ${endpoint})`
+    );
   }
 
   return sentSubscriptions;
