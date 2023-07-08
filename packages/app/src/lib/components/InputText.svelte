@@ -3,7 +3,10 @@
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
 
+  export let type = 'text';
   export let name: string | undefined = undefined;
+  export let hint = '';
+  export let errors: string[] | undefined = [];
   export let initial: string | undefined = undefined;
   export let placeholder: string | undefined = undefined;
   export let value: string;
@@ -16,9 +19,9 @@
   export let label: string;
 </script>
 
-<InputField {label} {required}>
+<InputField {hint} {errors} {label} {required}>
   <BaseInputText
-    type="text"
+    {type}
     bind:value
     on:input
     on:action

@@ -41,49 +41,43 @@
   };
 </script>
 
-<div class="top">
-  <div class="user-picture">
-    <PictureUser
-      src={group.pictureFile
-        ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
-        : 'https://via.placeholder.com/160'}
-      alt={group.name}
-    />
-  </div>
-  <Card>
-    <p class="muted text-sm mb-0">
-      {#if group.ancestors && group.ancestors.length > 1}
-        <Breadcrumbs>
-          {#each [...group.ancestors].reverse() as { uid, name }}
-            <Breadcrumb><a href="/club/{uid}/">{name}</a></Breadcrumb>
-          {/each}
-        </Breadcrumbs>
-      {/if}
-    </p>
-    <h1 class="mt-1">
-      {group.name}
-      {#if group.school}<SchoolBadge schools={[group.school]} />{/if}
-      {#if $me?.canEditGroups || ($me && isOnClubBoard($me))}
-        <a href="edit/" title="Éditer">
-          <IconEdit aria-label="Éditer" />
-        </a>
-      {/if}
-    </h1>
-    <div>{group.description}</div>
-    {#if group.links.length > 0}
-      <div class="flex flex-wrap my-4 gap-3">
-        {#each data.group.links as link}
-          <SocialLink {...link} />
-        {/each}
-      </div>
-    {/if}
-  </Card>
+<div class="user-picture">
+  <img
+    src={group.pictureFile
+      ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
+      : 'https://via.placeholder.com/160'}
+    alt={group.name}
+  />
 </div>
+<p class="muted text-sm mb-0">
+  {#if group.ancestors && group.ancestors.length > 1}
+    <Breadcrumbs>
+      {#each [...group.ancestors].reverse() as { uid, name }}
+        <Breadcrumb><a href="/club/{uid}/">{name}</a></Breadcrumb>
+      {/each}
+    </Breadcrumbs>
+  {/if}
+</p>
+<h1 class="mt-1">
+  {group.name}
+  {#if group.school}<SchoolBadge schools={[group.school]} />{/if}
+  {#if $me?.canEditGroups || ($me && isOnClubBoard($me))}
+    <a href="edit/" title="Éditer">
+      <IconEdit aria-label="Éditer" />
+    </a>
+  {/if}
+</h1>
+<div>{group.description}</div>
+{#if group.links.length > 0}
+  <div class="flex flex-wrap my-4 gap-3">
+    {#each data.group.links as link}
+      <SocialLink {...link} />
+    {/each}
+  </div>
+{/if}
 
-<Card>
-  <h2>À propos</h2>
-  {@html group.longDescriptionHtml}
-</Card>
+<h2>À propos</h2>
+{@html group.longDescriptionHtml}
 
 {#if group.members}
   <h2>Membres</h2>
@@ -181,26 +175,3 @@
     </ArticleCard>
   {/if}
 {/each}
-
-<style lang="scss">
-  .top {
-    display: grid;
-    gap: 1rem;
-    align-items: center;
-    justify-content: stretch;
-    margin-block: 1rem;
-
-    .user-picture {
-      justify-self: center;
-      max-height: 15rem;
-    }
-
-    > :global(*) {
-      margin: 0;
-    }
-
-    @media (min-width: $breakpoint-mobile) {
-      grid-template-columns: 1fr 2fr;
-    }
-  }
-</style>

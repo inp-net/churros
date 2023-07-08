@@ -2,7 +2,9 @@
   import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
   import Button from '$lib/components/Button.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputField from '$lib/components/InputField.svelte';
+  import InputText from '$lib/components/InputText.svelte';
 
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { zeus } from '$lib/zeus';
@@ -52,36 +54,58 @@
   };
 </script>
 
-<div class="flex justify-center">
-  {#if result === undefined}
-    <form title="S'inscrire" on:submit|preventDefault={register}>
-      <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
-        <strong>{(formErrors?._errors ?? []).join(' ')} </strong>
-      </Alert>
-      <p>
-        <InputField
-          label="Adresse e-mail universitaire :"
-          hint="Elle finit par @etu.[ecole].fr."
-          errors={formErrors?.email?._errors}
-        >
-          <input type="email" bind:value={email} minlength="1" maxlength="255" required />
-        </InputField>
-      </p>
-      <p class="text-center">
-        <Button type="submit" theme="primary" {loading}>S'inscrire</Button>
-      </p>
-    </form>
-  {:else if result}
-    <Alert theme="success">
-      <h3>Demande enregistrée&nbsp;!</h3>
-      <p>Cliquez sur le lien que vous avez reçu par email pour continuer votre inscription.</p>
-      <p><a href="/">Retourner à l'accueil.</a></p>
+<h1>Inscription</h1>
+
+{#if result === undefined}
+  <form title="S'inscrire" on:submit|preventDefault={register}>
+    <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
+      <strong>{(formErrors?._errors ?? []).join(' ')} </strong>
     </Alert>
-  {:else}
-    <Alert theme="danger">
-      <h3>Une erreur est survenue…</h3>
-      <p>Veuillez recommencer plus tard.</p>
-      <p><a href="/">Retourner à l'accueil.</a></p>
-    </Alert>
-  {/if}
-</div>
+    <InputText
+      label="Adresse e-mail universitaire"
+      hint="Elle finit par @etu.[ecole].fr."
+      errors={formErrors?.email?._errors}
+      type="email"
+      bind:value={email}
+      minlength="1"
+      maxlength="255"
+      required
+    />
+
+    <section class="submit">
+      <ButtonPrimary submits {loading}>S'inscrire</ButtonPrimary>
+    </section>
+  </form>
+{:else if result}
+  <Alert theme="success">
+    <h3>Demande enregistrée&nbsp;!</h3>
+    <p>Cliquez sur le lien que vous avez reçu par email pour continuer votre inscription.</p>
+    <p><a href="/">Retourner à l'accueil.</a></p>
+  </Alert>
+{:else}
+  <Alert theme="danger">
+    <h3>Une erreur est survenue…</h3>
+    <p>Veuillez recommencer plus tard.</p>
+    <p><a href="/">Retourner à l'accueil.</a></p>
+  </Alert>
+{/if}
+
+<style>
+  h1 {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  form .submit {
+    display: flex;
+    justify-content: center;
+  }
+</style>

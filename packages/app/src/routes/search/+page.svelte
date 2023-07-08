@@ -1,12 +1,18 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import IconSearch from '~icons/mdi/magnify';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import InputText from '$lib/components/InputText.svelte';
   import type { PageData } from './$types';
+  import BaseInputText from '$lib/components/BaseInputText.svelte';
 
   export let data: PageData;
 
   let q = $page.url.searchParams.get('q') ?? '';
   const results = [...data.searchUsers, ...data.searchGroups, ...data.searchEvents];
 </script>
+
+<h1>Recherche</h1>
 
 <form
   method="get"
@@ -17,10 +23,8 @@
     window.location.search = `?${new URLSearchParams({ q }).toString()}`;
   }}
 >
-  <p>
-    <input type="search" name="q" bind:value={q} />
-    <button type="submit">🔍</button>
-  </p>
+  <BaseInputText type="text" placeholder="Personne, club, évènement, article,…" bind:value={q} />
+  <ButtonGhost><IconSearch /></ButtonGhost>
 </form>
 
 {#if data.searchUsers === undefined || data.searchGroups === undefined}
@@ -30,7 +34,7 @@
 {:else}
   {#if data.searchUsers.length > 0}
     <h2>Personnes</h2>
-    <ul>
+    <ul class="nobullet">
       {#each data.searchUsers as { uid, firstName, lastName }}
         <li><a href="/user/{uid}/">{firstName} {lastName}</a></li>
       {/each}
@@ -38,7 +42,7 @@
   {/if}
   {#if data.searchGroups.length > 0}
     <h2>Groupes</h2>
-    <ul>
+    <ul class="nobullet">
       {#each data.searchGroups as { uid, name }}
         <li><a href="/club/{uid}/">{name}</a></li>
       {/each}
@@ -46,10 +50,31 @@
   {/if}
   {#if data.searchEvents.length > 0}
     <h2>Évènements</h2>
-    <ul>
+    <ul class="nobullet">
       {#each data.searchEvents as { group, uid, title }}
         <li><a href="/club/{group.uid}/event/{uid}">{title}</a></li>
       {/each}
     </ul>
   {/if}
 {/if}
+
+<style>
+  h1 {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  form {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  h2 {
+    margin: 1rem;
+  }
+</style>

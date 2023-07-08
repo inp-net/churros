@@ -23,23 +23,24 @@
     type === 'date' && value instanceof Date
       ? value?.toISOString()?.split('T')[0]
       : value?.toString() ?? '';
+
   $: {
     switch (type) {
       case 'number': {
         value = Number(valueString.replace(',', '.'));
         break;
       }
-  
+
       case 'date': {
         value = new Date(valueString);
         if (!value.valueOf()) {
           value = undefined;
           valueString = '';
         }
-  
+
         break;
       }
-  
+
       default: {
         value = valueString;
       }
@@ -115,9 +116,7 @@
         on:keypress={(e) => {
           if (!(e instanceof KeyboardEvent)) return;
           if (!(e.target instanceof HTMLInputElement)) return;
-          if (e.key === 'Enter' && closeKeyboardOnEnter) 
-            e.target.blur();
-          
+          if (e.key === 'Enter' && closeKeyboardOnEnter) e.target.blur();
         }}
         on:focus={() => {
           focused = true;
@@ -137,9 +136,7 @@
         on:keyup
         on:keypress={(e) => {
           if (!(e.target instanceof HTMLInputElement)) return;
-          if (e.key === 'Enter' && closeKeyboardOnEnter) 
-            e.target.blur();
-          
+          if (e.key === 'Enter' && closeKeyboardOnEnter) e.target.blur();
         }}
         {type}
         {name}
@@ -208,9 +205,9 @@
 
   input {
     width: 100%;
+    background: none;
     border: none;
     outline: none;
-    appearance: textfield;
     appearance: textfield;
   }
 
@@ -235,7 +232,6 @@
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
-    appearance: none;
     appearance: none;
     margin: 0;
   }

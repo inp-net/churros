@@ -1,4 +1,5 @@
 <script lang="ts">
+  import IconEdit from '~icons/mdi/pencil';
   import { PUBLIC_FOY_GROUPS, PUBLIC_STORAGE_URL } from '$env/static/public';
   import IconChevronUp from '~icons/mdi/chevron-up';
   import IconChevronDown from '~icons/mdi/chevron-down';
@@ -19,6 +20,7 @@
   import { goto } from '$app/navigation';
   import { dateFormatter } from '$lib/dates';
   import GhostButton from '$lib/components/ButtonGhost.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   $: pageTitle = computePageTitle(data.shownWeek);
 
@@ -86,10 +88,15 @@
   >
 </h1>
 
-<section class="bar-week">
+<section class="manage">
   {#if canChangeBarWeek}
-    <Button on:click={async () => goto('/bar-weeks')}>Gérer les semaines de bar</Button>
+    <ButtonSecondary icon={IconEdit} on:click={async () => goto('/bar-weeks')}
+      >Gérer</ButtonSecondary
+    >
   {/if}
+</section>
+
+<section class="bar-week">
   {#if barWeek.groups.length > 0}
     <div class="description">
       {#if barWeek.descriptionHtml}
@@ -175,13 +182,27 @@
 
 <style lang="scss">
   h1 {
-    text-align: center;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .manage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -1.5rem;
+    margin-bottom: 1rem;
   }
 
   .bar-week {
     display: flex;
     flex-direction: column;
+    gap: 0.5rem;
     align-items: center;
+    margin-bottom: 1rem;
   }
 
   .bar-week-groups {

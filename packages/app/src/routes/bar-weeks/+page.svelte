@@ -105,7 +105,7 @@
 
 <h1>Semaines de bar</h1>
 
-<ul>
+<ul class="nobullet">
   {#each barWeeks as barWeek, i (barWeek.id)}
     <li>
       <Card>

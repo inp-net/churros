@@ -17,9 +17,15 @@
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
   import { beforeNavigate } from '$app/navigation';
+  import { format, isMonday, previousMonday, startOfWeek } from 'date-fns';
 
   export let current: 'home' | 'search' | 'events' | 'more';
   let flyoutOpen = false;
+
+  function closestMonday(date: Date): Date {
+    if (isMonday(date)) return date;
+    return previousMonday(date);
+  }
 
   beforeNavigate(() => {
     flyoutOpen = false;
@@ -56,7 +62,11 @@
     {/if}
   </button>
 
-  <a href="/week" class:current={!flyoutOpen && current === 'events'} class:disabled={flyoutOpen}>
+  <a
+    href="/week/{format(closestMonday(new Date()), 'yyyy-MM-dd')}"
+    class:current={!flyoutOpen && current === 'events'}
+    class:disabled={flyoutOpen}
+  >
     {#if current === 'events'}
       <IconCalendar />
     {:else}

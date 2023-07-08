@@ -189,6 +189,11 @@ ul {
   padding-left: 1em;
 }
 
+ul.nobullet {
+  padding-left: 0;
+  list-style: none;
+}
+
 ins {
   color: var(--success-text);
   text-decoration: none;
