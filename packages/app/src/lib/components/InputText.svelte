@@ -35,8 +35,6 @@
     {actionIcon}
     {suggestions}
   >
-    <div class="slot-before" slot="before">
-      <slot name="before" />
-    </div>
+    <slot name="before" slot="before" />
   </BaseInputText>
 </InputField>

@@ -258,4 +258,8 @@
   .reset {
     color: var(--text);
   }
+
+  .left-icon:empty {
+    display: none;
+  }
 </style>
