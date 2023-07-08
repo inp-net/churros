@@ -3,6 +3,7 @@
   import IconReset from '~icons/mdi/reload';
   import InputWithSuggestions from './InputWithSuggestions.svelte';
   import { tooltip } from '$lib/tooltip';
+  import { format } from 'date-fns';
   const emit = createEventDispatcher();
 
   export let type: HTMLInputElement['type'];
@@ -18,11 +19,27 @@
   export let required = false;
   export let closeKeyboardOnEnter = false;
 
+  function stringifyValue(val: typeof value, type: string): string {
+    if (val === undefined) return '';
+    switch (type) {
+      case 'date': {
+        return (val as Date).toISOString().split('T')[0];
+      }
+
+      case 'datetime-local':
+      case 'datetime': {
+        return format(val as Date, "yyyy-MM-dd'T'HH:mm");
+      }
+
+      default: {
+        return val?.toString() ?? '';
+      }
+    }
+  }
+
   let showEmptyErrors = false;
-  let valueString: string =
-    type === 'date' && value instanceof Date
-      ? value?.toISOString()?.split('T')[0]
-      : value?.toString() ?? '';
+  $: console.log(valueString);
+  let valueString: string = stringifyValue(value, type);
 
   $: {
     switch (type) {
@@ -31,7 +48,9 @@
         break;
       }
 
-      case 'date': {
+      case 'date':
+      case 'datetime-local':
+      case 'datetime': {
         value = new Date(valueString);
         if (!value.valueOf()) {
           value = undefined;
