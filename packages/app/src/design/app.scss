@@ -128,7 +128,8 @@ h2 {
   line-height: 0.95;
 }
 
-.typo-field-label {
+.typo-field-label,
+dt {
   font-size: var(--size-field-label);
   font-weight: var(--weight-field-label);
   text-transform: uppercase;
@@ -163,10 +164,10 @@ a {
   text-decoration: none;
 }
 
-dd > a,
+dd > a:not([class^='button']),
 p > a:not([class^='button']),
 a.in-body {
-  color: var(--sky);
+  color: var(--link);
   text-decoration: underline;
   text-decoration-thickness: 0.125em;
   text-underline-offset: 0.5ch;

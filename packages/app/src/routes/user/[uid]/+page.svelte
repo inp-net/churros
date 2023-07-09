@@ -12,7 +12,7 @@
   import IconAcademicCap from '~icons/mdi/school';
   import IconCake from '~icons/mdi/cake';
   import IconEdit from '~icons/mdi/pencil';
-  import IconLocationMarker from '~icons/mdi/map-marker-outline';
+  import IconMail from '~icons/mdi/email-outline';
   import IconPhone from '~icons/mdi/phone-outline';
   import type { PageData } from './$types';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
@@ -26,6 +26,7 @@
   import IconDiscord from '~icons/mdi/discord';
   import IconSnapchat from '~icons/mdi/snapchat';
   import BadgeGroupMember from '$lib/components/BadgeGroupMember.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -34,7 +35,7 @@
     matrix: IconMatrix,
     linkedin: IconLinkedin,
     discord: IconDiscord,
-    snapchat: IconSnapchat
+    snapchat: IconSnapchat,
   };
 
   export let data: PageData;
@@ -42,9 +43,9 @@
   function schoolYearStart(): Date {
     const now = new Date();
     const thisYearSeptemberFirst = new Date(now.getFullYear(), 9, 1);
-    if (now > thisYearSeptemberFirst) {
+    if (now > thisYearSeptemberFirst) 
       return thisYearSeptemberFirst;
-    }
+    
     return new Date(now.getFullYear() - 1, 9, 1);
   }
 
@@ -63,81 +64,195 @@
     phone.replace(/^\+33(\d)(\d\d)(\d\d)(\d\d)(\d\d)$/, '0$1 $2 $3 $4 $5');
 </script>
 
-{#if roleBadge}
-  <div class="role-badge">
-    {roleBadge}
-  </div>
-{/if}
+<div class="content">
+  <header>
+    <div class="picture">
+      {#if roleBadge}
+        <div class="role-badge">
+          {roleBadge}
+        </div>
+      {/if}
 
-<header>
-  <img
-    src={user.pictureFile ? `${PUBLIC_STORAGE_URL}${user.pictureFile}` : ''}
-    alt="{user.firstName} {user.lastName}"
-    class="picture"
-  />
+      <img
+        src={user.pictureFile ? `${PUBLIC_STORAGE_URL}${user.pictureFile}` : ''}
+        alt="{user.firstName} {user.lastName}"
+      />
+    </div>
 
-  <div class="identity">
-    <h1>{user.firstName} {user.lastName}</h1>
-    <p class="major">
-      {schoolYearStart().getFullYear() - user.graduationYear + 2}A ({user.graduationYear}) · {user
-        .major.name} · {user.major.schools.map(({ name }) => name).join(', ')}
-    </p>
-    <ul class="social-links">
-      {#each user.links as { name, value }}
+    <div class="identity">
+      <h1>{user.firstName} {user.lastName}</h1>
+      <p class="major">
+        {schoolYearStart().getFullYear() - user.graduationYear + 2}A ({user.graduationYear}) · {user
+          .major.name} · {user.major.schools.map(({ name }) => name).join(', ')}
+      </p>
+      <ul class="social-links nobullet">
+        {#each user.links as { name, value }}
+          <li>
+            <a href={value} title={name}>
+              <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
+            </a>
+          </li>
+        {/each}
+      </ul>
+      <p class="bio">{user.description}</p>
+    </div>
+
+    {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
+      <a class="edit" href="./edit"><IconGear /></a>
+    {/if}
+  </header>
+
+  <section class="info">
+    <dl>
+      {#if user.nickname}
+        <dt>Surnom</dt>
+        <dd>{user.nickname}</dd>
+      {/if}
+      <dt>Email</dt>
+      <dd>
+        <a href="mailto:{user.email}">{formatPhoneNumber(user.phone)}</a>
+      </dd>
+      {#if user.birthday}
+        <dt>Téléphone</dt>
+        <dd>
+          <a href="tel:{user.phone}">{user.email}</a>
+        </dd>
+      {/if}
+      {#if user.birthday}
+        <dt>Anniversaire</dt>
+        <dd>{dateFormatter.format(user.birthday)}</dd>
+        <!-- TODO add to agenda -->
+      {/if}
+      {#if user.address}
+        <dt>Adresse</dt>
+        <dd>{user.address}</dd>
+        <!-- TODO go here with gmaps? -->
+      {/if}
+      <dt>Identifiant</dt>
+      <dd>{user.uid}</dd>
+    </dl>
+  </section>
+
+  <section class="groups">
+    <h2>Groupes</h2>
+
+    <ul class="nobullet">
+      {#each user.groups as member}
         <li>
-          <a href={value} title={name}>
-            <svelte:component this={NAME_TO_ICON?.[name] ?? IconWebsite} />
-          </a>
+          <BadgeGroupMember groupMember={member} />
         </li>
       {/each}
     </ul>
-    <p class="bio">{user.description}</p>
-  </div>
+  </section>
 
-  {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
-    <a class="edit" href="./edit"><IconGear /></a>
-  {/if}
-</header>
+  <section class="family">
+    <h2>Famille</h2>
 
-<section class="info">
-  <dl>
-    {#if user.nickname}
-      <dt>Surnom</dt>
-      <dd>{user.nickname}</dd>
-    {/if}
-    <dt>Email</dt>
-    <dd>{user.email}</dd>
-    {#if user.birthday}
-      <dt>Téléphone</dt>
-      <dd>{user.phone}</dd>
-    {/if}
-    {#if user.birthday}
-      <dt>Anniversaire</dt>
-      <dd>{dateFormatter.format(user.birthday)}</dd>
-    {/if}
-    {#if user.address}
-      <dt>Adresse</dt>
-      <dd>{user.address}</dd>
-    {/if}
-    <dt>Identifiant</dt>
-    <dd>{user.uid}</dd>
-  </dl>
-</section>
+    TODO
+  </section>
 
-<section class="groups">
-  <h2>Groupes</h2>
+  <section class="articles">
+    <h2>Posts</h2>
 
-  <ul>
-    {#each user.groups as member}
-      <li>
-        <BadgeGroupMember groupMember={member} />
-      </li>
-    {/each}
-  </ul>
-</section>
+    TODO
+  </section>
+</div>
 
-<section class="family">
-  <h2>Famille</h2>
+<style>
+  section {
+    margin-bottom: 5rem;
+  }
 
-  TODO
-</section>
+  header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .picture {
+    --size: 7rem;
+    position: relative;
+    height: var(--size);
+    width: var(--size);
+    z-index: -1;
+    flex-shrink: 0;
+  }
+
+  .picture img {
+    object-fit: cover;
+    border-radius: 50%;
+    height: var(--size);
+    width: var(--size);
+  }
+  .picture .role-badge {
+    border-radius: 50%;
+    height: calc(var(--size) / 3);
+    width: calc(var(--size) / 3);
+    font-size: 1.25rem;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    background: var(--bg);
+    border: var(--border-block) solid var(--border);
+  }
+
+  .social-links {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 1.25em;
+  }
+
+  .identity {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 0.5rem;
+    flex-grow: 1;
+  }
+
+  .edit {
+    font-size: 1.5em;
+  }
+
+  .info {
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.5rem;
+  }
+
+  dt {
+    font-weight: bold;
+  }
+
+  dd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin-left: 0;
+  }
+
+  section h2 {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .groups ul {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .content {
+    margin: 0 1rem;
+  }
+</style>
