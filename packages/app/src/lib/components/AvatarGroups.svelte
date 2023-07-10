@@ -22,12 +22,12 @@
 
 <div class="slider-container">
   <div class="slider" style="transform: translateX(-{offset * 7}em);">
-    {#each groups as group}
-      <a href="/club/{group.uid}" class="group">
+    {#each groups as { uid, pictureFile, name }}
+      <a href="/club/{uid}" class="group">
         <div class="img">
-          <img src={`${PUBLIC_STORAGE_URL}group.pictureFile`} alt={group.name} />
+          <img src={`${PUBLIC_STORAGE_URL}${pictureFile}`} alt={name} />
         </div>
-        <h3 class="name">{group.name}</h3>
+        <h3 class="name">{name}</h3>
       </a>
     {/each}
   </div>
