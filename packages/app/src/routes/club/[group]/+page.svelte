@@ -157,7 +157,7 @@
 
     <ul class="nobullet">
       {#each group.articles as { uid, bodyHtml, ...article } (uid)}
-        <CardArticle {group} href="./post/{uid}" {...article}>
+        <CardArticle hideGroup {group} href="./post/{uid}" {...article}>
           {@html bodyHtml}
         </CardArticle>
       {/each}

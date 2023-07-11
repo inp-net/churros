@@ -81,7 +81,7 @@
     <div class="identity">
       <h1>{user.firstName} {user.lastName}</h1>
       <p class="major">
-        {schoolYearStart().getFullYear() - user.graduationYear + 2}A ({user.graduationYear}) · {user
+        {schoolYearStart().getFullYear() - user.graduationYear + 4}A ({user.graduationYear}) · {user
           .major.name} · {user.major.schools.map(({ name }) => name).join(', ')}
       </p>
       <ul class="social-links nobullet">

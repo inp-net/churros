@@ -21,6 +21,7 @@
   export let author: { uid: string; firstName: string; lastName: string } | undefined = undefined;
   export let img: { src: string; alt?: string; width?: number; height?: number } | undefined =
     undefined;
+  export let hideGroup = false;
 </script>
 
 <Card element="article">
@@ -66,23 +67,25 @@
 
   <section class="author-and-date">
     <div class="author">
-      <a href="/club/{group.uid}">
-        <img
-          src={group.pictureFile
-            ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
-            : 'https://via.placeholder.com/400/400'}
-          alt=""
-        />
-      </a>
-      <div class="names">
-        <span class="name">{group.name}</span>
-        {#if author}
-          <span class="author">
-            {author.firstName}
-            {author.lastName}
-          </span>
-        {/if}
-      </div>
+      {#if !hideGroup}
+        <a href="/club/{group.uid}">
+          <img
+            src={group.pictureFile
+              ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
+              : 'https://via.placeholder.com/400/400'}
+            alt=""
+          />
+        </a>
+        <div class="names">
+          <span class="name">{group.name}</span>
+          {#if author}
+            <span class="author">
+              {author.firstName}
+              {author.lastName}
+            </span>
+          {/if}
+        </div>
+      {/if}
     </div>
     <div class="published-at">
       {#if publishedAt}
