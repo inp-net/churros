@@ -2,6 +2,7 @@
   // @ts-expect-error Untyped lib
   import isDarkColor from 'is-dark-color';
 
+  export let href = '';
   export let groupMember: {
     group: { name: string; color: string };
     title: string;
@@ -21,7 +22,9 @@
     : '';
 </script>
 
-<span
+<svelte:element
+  this={href ? 'a' : 'span'}
+  {href}
   class="badge"
   style:--bg="{groupMember.group.color}80"
   style:--text={isDarkColor(groupMember.group.color) ? 'white' : 'black'}
@@ -33,7 +36,7 @@
   {#if groupMember.title.toLowerCase() !== 'membre'}
     <span>{groupMember.title}</span>
   {/if}
-</span>
+</svelte:element>
 
 <style lang="scss">
   .badge {

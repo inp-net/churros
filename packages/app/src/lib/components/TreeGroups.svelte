@@ -6,14 +6,25 @@
     children: Group[];
   };
   export let group: Group;
+  export let highlightUid = '';
 </script>
 
-<a href="/club/{group.uid}/">{group.name}</a>
+<a class:highlight={highlightUid === group.uid} href="/club/{group.uid}/">{group.name}</a>
 
 {#if group.children.length > 0}
   <ul>
     {#each group.children as child}
-      <li><svelte:self group={child} /></li>
+      <li>
+        <a href="/club/{child.uid}" class:highlight={highlightUid === child.uid}>
+          <svelte:self group={child} />
+        </a>
+      </li>
     {/each}
   </ul>
 {/if}
+
+<style>
+  .highlight {
+    font-weight: bold;
+  }
+</style>

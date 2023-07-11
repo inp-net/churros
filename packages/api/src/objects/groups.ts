@@ -81,6 +81,8 @@ export const GroupType = builder.prismaNode('Group', {
     parent: t.relation('parent'),
     selfJoinable: t.exposeBoolean('selfJoinable'),
     events: t.relation('events'),
+    children: t.relation('children'),
+    root: t.relation('familyRoot', { nullable: true }),
   }),
 });
 
@@ -92,7 +94,7 @@ builder.objectField(GroupType, 'ancestors', (t) =>
     type: GroupType,
     description: 'All the ancestors of this group, from the current group to the root.',
     // Because this request can be expensive, only allow logged in users
-    authScopes: { loggedIn: true },
+    // authScopes: { loggedIn: true },
     resolve: ({ id, familyId }) => ({ id, familyId: familyId ?? id }),
     load: async (ids) =>
       prisma.group

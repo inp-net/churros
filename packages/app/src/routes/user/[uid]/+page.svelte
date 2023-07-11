@@ -43,9 +43,8 @@
   function schoolYearStart(): Date {
     const now = new Date();
     const thisYearSeptemberFirst = new Date(now.getFullYear(), 9, 1);
-    if (now > thisYearSeptemberFirst) 
-      return thisYearSeptemberFirst;
-    
+    if (now > thisYearSeptemberFirst) return thisYearSeptemberFirst;
+
     return new Date(now.getFullYear() - 1, 9, 1);
   }
 
@@ -139,7 +138,7 @@
     <ul class="nobullet">
       {#each user.groups as member}
         <li>
-          <BadgeGroupMember groupMember={member} />
+          <BadgeGroupMember href="/club/{member.group.uid}" groupMember={member} />
         </li>
       {/each}
     </ul>
@@ -171,32 +170,40 @@
 
   .picture {
     --size: 7rem;
+
     position: relative;
-    height: var(--size);
-    width: var(--size);
     z-index: -1;
     flex-shrink: 0;
+    width: var(--size);
+    height: var(--size);
   }
 
   .picture img {
-    object-fit: cover;
-    border-radius: 50%;
-    height: var(--size);
-    width: var(--size);
-  }
-  .picture .role-badge {
-    border-radius: 50%;
-    height: calc(var(--size) / 3);
-    width: calc(var(--size) / 3);
-    font-size: 1.25rem;
-    position: absolute;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    width: var(--size);
+    height: var(--size);
+    color: var(--muted-text);
+    text-align: center;
+    background: var(--muted-bg);
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .picture .role-badge {
+    position: absolute;
     top: 0;
     left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(var(--size) / 3);
+    height: calc(var(--size) / 3);
+    font-size: 1.25rem;
     background: var(--bg);
     border: var(--border-block) solid var(--border);
+    border-radius: 50%;
   }
 
   .social-links {
@@ -208,8 +215,8 @@
   .identity {
     display: flex;
     flex-flow: column wrap;
-    gap: 0.5rem;
     flex-grow: 1;
+    gap: 0.5rem;
   }
 
   .edit {
@@ -247,8 +254,8 @@
 
   .groups ul {
     display: flex;
-    gap: 1rem;
     flex-wrap: wrap;
+    gap: 1rem;
     justify-content: center;
   }
 
