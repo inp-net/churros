@@ -1,28 +1,49 @@
 <script lang="ts">
-  import Button from '$lib/components/Button.svelte';
-  import GhostButton from '$lib/components/ButtonGhost.svelte';
   import { zeus } from '$lib/zeus';
-  import IconClose from '~icons/mdi/close';
-  import IconPlus from '~icons/mdi/plus';
-  import type { PageData } from '../../routes/user/[uid]/edit/$types';
+  // FIXME don't use this
   import { _userQuery as userQuery } from '../../routes/user/[uid]/edit/+page';
-  import LinkCollectionInput from '$lib/components/InputLinks.svelte';
+  import InputText from './InputText.svelte';
+  import InputField from './InputField.svelte';
+  import IconClear from '~icons/mdi/clear';
+  import InputDate from './InputDate.svelte';
 
-  export let data: PageData;
+  export let data: {
+    user: {
+      address: string;
+      description: string;
+      graduationYear: number;
+      links: Array<{ name: string; value: string }>;
+      majorId: string;
+      nickname: string;
+      phone: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      location: string;
+      birthday: Date | null;
+      uid: string;
+    };
+  };
 
   // We don't want form bindings to be reactive to let them evolve separately from the data
   let {
-    address,
-    description,
-    graduationYear,
-    links,
-    majorId,
-    nickname,
-    phone,
-    // See https://github.com/graphql-editor/graphql-zeus/issues/262
-    // eslint-disable-next-line unicorn/no-null
-    birthday = null,
-  } = data.user;
+    user: {
+      address,
+      description,
+      graduationYear,
+      links,
+      majorId,
+      nickname,
+      phone,
+      firstName,
+      location,
+      lastName,
+      email,
+      // See https://github.com/graphql-editor/graphql-zeus/issues/262
+      // eslint-disable-next-line unicorn/no-null
+      birthday = null,
+    },
+  } = data;
 
   const valueAsDate = (x: unknown) => (x as HTMLInputElement).valueAsDate;
 
@@ -65,70 +86,41 @@
 </script>
 
 <form on:submit|preventDefault={updateUser}>
-  <fieldset>
-    <legend>Informations personnelles</legend>
-    <p>
-      <label>Surnom : <input type="text" bind:value={nickname} /></label>
-    </p>
-    <p>
-      <label>Description : <input type="text" bind:value={description} /></label>
-    </p>
-    <p>Réseaux sociaux :</p>
-    <LinkCollectionInput bind:value={links} />
-    Filière et promotion :
-    <div class="input-group">
-      <select bind:value={majorId}>
-        {#each data.schoolGroups as { majors, names }}
-          <optgroup label={names.join(', ')}>
-            {#each majors as { id, name }}
-              <option value={id}>{name}</option>
-            {/each}
-          </optgroup>
-        {/each}
-      </select>
-      <input type="number" bind:value={graduationYear} size="4" />
-    </div>
-    <p>
-      Anniversaire :
-      {#if birthday === null}
-        <GhostButton
-          on:click={() => {
-            birthday = new Date();
-          }}
-        >
-          <IconPlus aria-label="Ajouter" />
-        </GhostButton>
-      {:else}
-        <input
-          type="date"
-          value={birthday.toISOString().slice(0, 10)}
-          on:change={({ target }) => {
-            birthday = valueAsDate(target);
-          }}
-        />
-        <GhostButton
-          on:click={() => {
-            // We use null rather than undefined because only null exists in JSON
-            // eslint-disable-next-line unicorn/no-null
-            birthday = null;
-          }}
-        >
-          <IconClose aria-label="Supprimer" />
-        </GhostButton>
-      {/if}
-    </p>
-    <p>
-      <label>
-        Adresse : <input type="text" bind:value={address} />
-      </label>
-    </p>
-    <p>
-      <label>
-        Phone : <input type="tel" bind:value={phone} />
-      </label>
-    </p>
-    <p>
-      <Button type="submit" theme="primary" {loading}>Sauvegarder</Button>
-    </p>
-  </fieldset>
+  <div class="side-by-side">
+    <InputText required label="Prénom" bind:value={firstName} />
+    <InputText required label="Nom de famille" bind:value={lastName} />
+  </div>
+  <!--TODO input rich text  -->
+  <InputField label="Description"
+    ><textarea bind:value={description} cols="30" rows="10" /></InputField
+  >
+  <!-- TODO input person -->
+  <!-- TODO backend for this <InputText label="Parrain (identifiant)"></InputText> -->
+  <InputText type="email" label="Email" bind:value={email} />
+  <InputText label="Surnom" bind:value={nickname} />
+  <InputText type="tel" label="Numéro de téléphone" bind:value={phone} />
+  <InputDate
+    actionIcon={IconClear}
+    on:action={() => {
+      // eslint-disable-next-line unicorn/no-null
+      birthday = null;
+    }}
+    label="Date de naissance"
+    bind:value={birthday}
+  />
+  <InputText label="Adresse postale" bind:value={location} />
 </form>
+
+<style>
+  form {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 0.5rem;
+  }
+
+  .side-by-side {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+</style>

@@ -1,7 +1,9 @@
 <script lang="ts">
   import type { SvelteComponent } from 'svelte';
+  import IconSpinner from '~icons/mdi/loading';
 
   export let icon: typeof SvelteComponent | undefined = undefined;
+  export let loading = false;
   export let id = '';
   export let href = '';
   export let formaction: string | undefined = undefined;
@@ -9,6 +11,7 @@
   export let submits = false;
   export let download: string | undefined = undefined;
   export let insideProse = false;
+  export let disabled = false;
 </script>
 
 <svelte:element
@@ -21,8 +24,12 @@
   {download}
   {formaction}
   {id}
+  disabled={loading || disabled}
   on:click
 >
+  <div class="loading" class:visible={loading}>
+    <IconSpinner />
+  </div>
   {#if icon}
     <div class="icon">
       <svelte:component this={icon} />
@@ -33,6 +40,7 @@
 
 <style>
   .button-secondary {
+    position: relative;
     display: inline-flex;
     gap: 0.5em;
     align-items: center;
@@ -63,5 +71,35 @@
   .icon > :global(svg) {
     width: 100%;
     height: 100%;
+  }
+
+  .loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 500ms ease;
+  }
+
+  .loading.visible {
+    opacity: 1;
+  }
+
+  .loading > :global(svg) {
+    animation: spinner 700ms infinite;
+  }
+
+  @keyframes spinner {
+    from {
+      transform: rotate(0);
+    }
+
+    to {
+      transform: rotate(1turn);
+    }
   }
 </style>

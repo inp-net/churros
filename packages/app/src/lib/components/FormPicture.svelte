@@ -1,11 +1,12 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import Button from '$lib/components/Button.svelte';
+  import IconAdd from '~icons/mdi/add';
   import FileInput from '$lib/components/InputFile.svelte';
-  import Loader from '$lib/components/Loader.svelte';
-  import PictureUser from '$lib/components/PictureUser.svelte';
+  import IconTrash from '~icons/mdi/delete';
   import { $ as Zvar, zeus } from '$lib/zeus';
   import IconEdit from '~icons/mdi/pencil';
+  import InputField from './InputField.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
   export const LEGENDS = {
     Group: 'Logo du groupe',
@@ -13,6 +14,7 @@
     Article: 'Photo de l’article',
     Event: 'Photo de l’événement',
   };
+
   export let objectName: 'Group' | 'User' | 'Article' | 'Event';
   export let object: { pictureFile: string; uid: string };
   export let alt = '';
@@ -20,6 +22,7 @@
   $: alt = alt || uid;
 
   let files: FileList;
+  let inputElement: HTMLInputElement;
   let updating = false;
   const updatePicture = async () => {
     if (updating) return;
@@ -30,6 +33,7 @@
         { variables: { file: files[0] } }
       );
       // Add a timestamp to the URL to force the browser to reload the image
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       pictureFile = `${result[`update${objectName}Picture`]}?v=${Date.now()}`;
     } finally {
       // `updating` is set to false when the image loads
@@ -49,53 +53,70 @@
   };
 </script>
 
-<form on:submit|preventDefault>
-  <fieldset>
-    <legend>{LEGENDS[objectName]}</legend>
-    <FileInput bind:files on:change={updatePicture} accept="image/jpeg,image/png">
-      <div class="relative">
-        <div class="picture-edit">
-          {#if updating}
-            <Loader />
-          {:else}
-            <IconEdit />
-          {/if}
-        </div>
-        <PictureUser
-          src={pictureFile
-            ? `${PUBLIC_STORAGE_URL}${pictureFile}`
-            : 'https://via.placeholder.com/160'}
-          {alt}
-          on:load={() => {
-            updating = false;
-          }}
+<form data-object={objectName.toLowerCase()} on:submit|preventDefault>
+  <InputField label={LEGENDS[objectName]}>
+    <div class="wrapper">
+      <img
+        on:load={() => {
+          updating = false;
+        }}
+        src="{PUBLIC_STORAGE_URL}{pictureFile}"
+        alt={LEGENDS[objectName]}
+      />
+      <div class="actions">
+        <FileInput
+          bind:inputElement
+          bind:files
+          on:change={updatePicture}
+          accept="image/jpeg,image/png"
         />
-      </div>
-    </FileInput>
-    {#if pictureFile}
-      <p>
-        <Button type="button" theme="danger" loading={deleting} on:click={deletePicture}
-          >Supprimer</Button
+        <ButtonSecondary
+          on:click={() => {
+            inputElement.click();
+          }}
+          icon={pictureFile ? IconEdit : IconAdd}
+          >{#if pictureFile}Changer{:else}Ajouter{/if}</ButtonSecondary
         >
-      </p>
-    {/if}
-  </fieldset>
+        {#if pictureFile}
+          <ButtonSecondary icon={IconTrash} danger loading={deleting} on:click={deletePicture}
+            >Supprimer</ButtonSecondary
+          >
+        {/if}
+      </div>
+    </div>
+  </InputField>
 </form>
 
 <style lang="scss">
-  .picture-edit {
-    --text: var(--bg);
+  .wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
 
-    position: absolute;
-    inset: 0;
-    padding: 25%;
-    color: var(--text);
-    background: #0008;
-    border-radius: var(--radius-inline);
+  img {
+    --size: 10rem;
 
-    > :global(.icon) {
-      width: 100%;
-      height: 100%;
-    }
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--size);
+    height: var(--size);
+    color: var(--muted-text);
+    background: var(--muted-bg);
+    border-radius: var(--border-block);
+    object-fit: cover;
+  }
+
+  [data-object='user'] img {
+    border-radius: 50%;
+  }
+
+  .actions {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 0.5rem;
   }
 </style>

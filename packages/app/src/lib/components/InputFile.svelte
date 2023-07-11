@@ -6,6 +6,8 @@
   const dispatch = createEventDispatcher<{ change: FileList }>();
 
   $: if (files) dispatch('change', files);
+
+  export let inputElement: HTMLInputElement;
 </script>
 
 <label
@@ -14,7 +16,7 @@
   }}
   on:dragover|preventDefault
 >
-  <input type="file" bind:files {...$$restProps} />
+  <input bind:this={inputElement} type="file" bind:files {...$$restProps} />
   <slot />
 </label>
 

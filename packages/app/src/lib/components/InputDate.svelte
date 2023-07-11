@@ -2,7 +2,7 @@
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
 
-  export let value: Date | undefined;
+  export let value: Date | undefined | null;
   export let time = false;
   export let name: string | undefined = undefined;
   export let initial: Date | undefined = undefined;
@@ -19,5 +19,6 @@
     {name}
     {initial}
     {required}
+    {...$$restProps}
   />
 </InputField>

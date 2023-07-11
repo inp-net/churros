@@ -4,21 +4,36 @@
   import Permissions from '../../../../lib/components/FormUserPermissions.svelte';
   import ProfileDetails from '$lib/components/FormUser.svelte';
   import FormPicture from '$lib/components/FormPicture.svelte';
+  import { me } from '$lib/session';
 
   export let data: PageData;
 </script>
 
-<h1>Éditer <a href="..">{data.user.firstName} {data.user.nickname} {data.user.lastName}</a></h1>
+<div class="content">
+  <h1>Éditer <a href="..">{data.user.firstName} {data.user.nickname} {data.user.lastName}</a></h1>
 
-<FormPicture objectName="User" bind:object={data.user} />
-<ProfileDetails bind:data />
+  <FormPicture objectName="User" bind:object={data.user} />
+  <ProfileDetails bind:data />
 
-{#if data.userPermissions}
-  <Permissions bind:data />
-{/if}
+  {#if data.userPermissions}
+    <h2>Permissions</h2>
+    <Permissions bind:data />
+  {/if}
 
-<NotificationSettingsForm
-  availableGroups={data.me?.groups.map((g) => g.group) ?? []}
-  userUid={data.user.uid}
-  bind:settings={data.user.notificationSettings}
-/>
+  <h2>Notifications</h2>
+  {#if data.user.uid === $me?.uid}
+    <NotificationSettingsForm
+      availableGroups={data.me?.groups.map((g) => g.group) ?? []}
+      userUid={data.user.uid}
+      bind:settings={data.user.notificationSettings}
+    />
+  {/if}
+</div>
+
+<style>
+  .content {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+  }
+</style>
