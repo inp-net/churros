@@ -1,5 +1,6 @@
 <script lang="ts">
   import NotificationSettingsForm from '$lib/components/FormNotificationSettings.svelte';
+  import IconBack from '~icons/mdi/arrow-left';
   import type { PageData } from './$types';
   import Permissions from '../../../../lib/components/FormUserPermissions.svelte';
   import ProfileDetails from '$lib/components/FormUser.svelte';
@@ -9,7 +10,12 @@
   export let data: PageData;
 </script>
 
-<h1>Éditer <a href="..">{data.user.firstName} {data.user.nickname} {data.user.lastName}</a></h1>
+<h1>
+  <a href=".."> <IconBack /> </a> Éditer
+  {data.user.firstName}
+  {data.user.nickname}
+  {data.user.lastName}
+</h1>
 
 <div class="content">
   <section class="details">
@@ -35,8 +41,12 @@
 
 <style lang="scss">
   h1 {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+
+    // justify-content: center;
     margin-bottom: 2rem;
-    text-align: center;
   }
 
   .content {
