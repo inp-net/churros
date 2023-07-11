@@ -6,6 +6,7 @@
   import InputField from './InputField.svelte';
   import IconClear from '~icons/mdi/clear';
   import InputDate from './InputDate.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
   export let data: {
     user: {
@@ -94,11 +95,13 @@
   <InputField label="Description"
     ><textarea bind:value={description} cols="30" rows="10" /></InputField
   >
+  <InputText label="Surnom" bind:value={nickname} />
   <!-- TODO input person -->
   <!-- TODO backend for this <InputText label="Parrain (identifiant)"></InputText> -->
-  <InputText type="email" label="Email" bind:value={email} />
-  <InputText label="Surnom" bind:value={nickname} />
-  <InputText type="tel" label="Numéro de téléphone" bind:value={phone} />
+  <div class="side-by-side">
+    <InputText type="email" label="Email" bind:value={email} />
+    <InputText type="tel" label="Numéro de téléphone" bind:value={phone} />
+  </div>
   <InputDate
     actionIcon={IconClear}
     on:action={() => {
@@ -109,6 +112,9 @@
     bind:value={birthday}
   />
   <InputText label="Adresse postale" bind:value={location} />
+  <section class="submit">
+    <ButtonSecondary submits>Sauvegarder</ButtonSecondary>
+  </section>
 </form>
 
 <style>
@@ -122,5 +128,11 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+  }
+
+  .submit {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
   }
 </style>

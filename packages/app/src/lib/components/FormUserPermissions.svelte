@@ -70,6 +70,14 @@
     display: flex;
     flex-flow: column wrap;
     gap: 1rem;
-    align-items: center;
+
+    /* align-items: center; */
+  }
+
+  form > :global(fieldset) {
+    display: flex;
+    flex-wrap: wrap;
+
+    /* justify-content: center; */
   }
 </style>
