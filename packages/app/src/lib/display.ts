@@ -1,3 +1,5 @@
+import type { GroupType } from './zeus';
+
 export const DISPLAY_PAYMENT_METHODS = {
   Cash: 'Espèces',
   Check: 'Chèque',
@@ -45,3 +47,11 @@ export const ORDER_NOTIFICATION_TYPES: Array<keyof typeof DISPLAY_NOTIFICATION_T
   'GodsonRequestRefused',
   'PermissionsChanged',
 ];
+
+export const DISPLAY_GROUP_TYPES: Record<GroupType, string> = {
+  Association: 'Association',
+  Club: 'Club',
+  Group: 'Groupe',
+  Integration: "Groupe d'inté",
+  StudentAssociationSection: "Bureau de l'AE",
+};
