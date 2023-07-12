@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   export let groups: Array<{
     name: string;
@@ -6,40 +7,92 @@
     uid: string;
   }>;
 
+  const nbGroups = groups.length;
+
+  let groupsWidth = 0;
+  let nbVisibles = 0;
+
+  let sliding = false;
+  let distance = 0;
+  let startX = 0;
+
   let offset = 0;
 
+  onMount(() => {
+    const sliderContainer = document.querySelector<HTMLElement>('.slider-container');
+    const sliderWidth = sliderContainer?.offsetWidth;
+    const group = sliderContainer?.querySelector<HTMLElement>('.group');
+    groupsWidth = group ? group.offsetWidth : 0;
+    nbVisibles = sliderWidth && groupsWidth ? sliderWidth / groupsWidth : 0;
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mousemove', handleMouseMouve);
+  });
+
   function decreaseOffset() {
-    offset -= 3;
-    if (offset < 0) 
-      offset = 0;
+    offset = Math.ceil(offset - 1);
+    // Floor
+    if (offset <= 0) offset = 0;
+  }
+
+  function increaseOffset() {
+    offset = Math.ceil(offset + 1);
+    // Cap
+    if (offset >= nbGroups - nbVisibles) offset = nbGroups - nbVisibles;
+  }
+
+  function handleMouseDown(e: any) {
+    startX = e.clientX;
+    sliding = true;
+  }
+
+  function handleMouseMouve(event: MouseEvent) {
+    if (sliding) 
+      distance = event.clientX - startX;
     
   }
-  
-  function increaseOffset() {
-    offset += 3;
+
+  function handleMouseUp() {
+    sliding = false;
+    offset -= Math.round(distance / groupsWidth);
+    distance = 0;
+    if (offset <= 0) offset = 0;
+    offset = offset >= nbGroups - nbVisibles ? nbGroups - nbVisibles : Math.round(offset);
   }
 </script>
 
 <div class="slider-container">
-  <div class="slider" style="transform: translateX(-{offset * 7}em);">
+  <div
+    class="slider"
+    style="
+    transition: {sliding ? 'none' : 'transform 0.2s ease-in-out'}
+    ;transform: translateX({math.max(
+      -(nbgroups - nbvisibles) * groupswidth,
+      math.min(-groupswidth * offset + distance, 0)
+    )}px);"
+    on:mousedown={handleMouseDown}
+  >
     {#each groups as { uid, pictureFile, name }}
-      <a href="/club/{uid}" class="group">
+      <a href="/club/{uid}" class="group" draggable="false">
         <div class="img">
-          <img src={`${PUBLIC_STORAGE_URL}${pictureFile}`} alt={name} />
+          <img src={`${PUBLIC_STORAGE_URL}${pictureFile}`} alt={name} draggable="false" />
         </div>
         <h3 class="name">{name}</h3>
       </a>
     {/each}
   </div>
-  <button class="arrow left" on:click={decreaseOffset}>&lt;</button>
-  <button class="arrow right" on:click={increaseOffset}>&gt;</button>
-  <!--Faudra remplacer le > mais pr l'instant jsp quoi mettre -->
+  {#if offset > 0}
+    <button class="arrow left" on:click={decreaseOffset}>&lt;</button>
+  {/if}
+  {#if offset < nbGroups - nbVisibles}
+    <button class="arrow right" on:click={increaseOffset}>&gt;</button>
+  {/if}
+  <!--Faudra remplacer les < et > mais pr l'instant jsp quoi mettre -->
 </div>
 
 <style>
   .slider-container {
     position: relative;
-    width: 22em;
+    width: 50%;
     overflow: hidden;
   }
 
@@ -78,11 +131,13 @@
   .group {
     display: flex;
     flex-direction: column;
-    gap: 0.2em;
     align-items: center;
     width: fit-content;
     padding: 0.5em;
     text-decoration: none;
+    user-select: none; /* Safari */
+    user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
   }
 
   .group .img {
