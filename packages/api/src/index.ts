@@ -1,6 +1,6 @@
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
 import { CredentialType } from '@prisma/client';
-import { NotFoundError, PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
+import { Prisma } from '@prisma/client';
 import { createFetch } from '@whatwg-node/fetch';
 import cors from 'cors';
 import { useNoBatchedQueries } from 'envelop-no-batched-queries';
@@ -54,7 +54,7 @@ const yoga = createYoga({
       const cause = (error as GraphQLError).originalError;
 
       // These are user errors, no need to take special care of them
-      if (cause instanceof NotFoundError)
+      if (cause instanceof Prisma.NotFoundError)
         return new GraphQLError(cause.message, { extensions: { http: { status: 404 } } });
 
       if (cause instanceof ForbiddenError)
@@ -72,7 +72,7 @@ const yoga = createYoga({
       // If the error has no cause, return it as is
       if (cause === undefined) return error as GraphQLError;
 
-      if (cause instanceof PrismaClientKnownRequestError) {
+      if (cause instanceof Prisma.PrismaClientKnownRequestError) {
         return new GraphQLError('Database error.', {
           extensions: { code: 'PRISMA_ERROR', prismaCode: cause.code, http: { status: 500 } },
         });

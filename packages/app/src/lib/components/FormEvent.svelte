@@ -21,16 +21,13 @@
   const visibilities = Object.keys(DISPLAY_VISIBILITIES) as Array<keyof typeof Visibility>;
 
   function eraseFakeIds(id: string): string {
-    if (id.includes(':fake:')) 
-      return '';
-    
+    if (id.includes(':fake:')) return '';
+
     return id;
   }
 
   function ticketIsInGroup(ticket: { id: string }): boolean {
-    return event.ticketGroups
-      .flatMap((g) => g.tickets.map((t) => t.id))
-      .includes(ticket.id);
+    return event.ticketGroups.flatMap((g) => g.tickets.map((t) => t.id)).includes(ticket.id);
   }
 
   async function saveChanges() {
@@ -153,9 +150,7 @@
 
     serverError = '';
 
-    if (!event.id) 
-      await goto(`../${upsertEvent.data.uid}`);
-    
+    if (!event.id) await goto(`../${upsertEvent.data.uid}`);
   }
 
   let expandedTicketId = '';

@@ -2,7 +2,7 @@ import { Selector, loadQuery } from '$lib/zeus';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
-/* @generated from schema by file:///mnt/datacore/projects/centraverse/packages/api/build/scripts/update-id-prefix-to-typename-map.js */ const ID_PREFIXES_TO_TYPENAMES =
+/* @generated from schema by file:///home/whidix/Documents/centraverse/packages/api/build/scripts/update-id-prefix-to-typename-map.js */ const ID_PREFIXES_TO_TYPENAMES =
   {
     u: 'User',
     candidate: 'UserCandidate',

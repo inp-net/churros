@@ -31,7 +31,7 @@
     display: inline-flex;
     gap: 0.5em;
     align-items: center;
-    padding: 0.25em .5em;
+    padding: 0.25em 0.5em;
     font-weight: bold;
     color: var(--primary-bg);
     text-transform: uppercase;
