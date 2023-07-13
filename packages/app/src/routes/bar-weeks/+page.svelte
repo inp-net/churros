@@ -1,5 +1,7 @@
 <script lang="ts">
   import Card from '$lib/components/Card.svelte';
+  import IconConfirm from '~icons/mdi/check';
+  import IconDelete from '~icons/mdi/delete';
   import Alert from '$lib/components/Alert.svelte';
   import IconEdit from '~icons/mdi/pencil';
   import DateInput from '$lib/components/InputDate.svelte';
@@ -10,8 +12,10 @@
   import type { PageData } from './$types';
   import Button from '$lib/components/Button.svelte';
   import { zeus } from '$lib/zeus';
-  import GhostButton from '$lib/components/ButtonGhost.svelte';
   import { dateFormatter } from '$lib/dates';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const asstringarray = (x: any) => x as string[];
@@ -25,6 +29,8 @@
     startsAt: startOfWeek(new Date()),
     endsAt: endOfWeek(new Date()),
   };
+
+  $: console.log(EMPTY_BAR_WEEK);
 
   let { barWeeks } = data;
   let newBarWeek = EMPTY_BAR_WEEK;
@@ -86,11 +92,12 @@
       return;
     }
 
-    // upsertBarWeek.data = {
-    //   ...upsertBarWeek.data,
-    //   startsAt: upsertBarWeek.data.startsAt,
-    //   endsAt: upsertBarWeek.data.endsAt
-    // };
+    // XXX for some reason the mutations returns stringified dates
+    upsertBarWeek.data = {
+      ...upsertBarWeek.data,
+      startsAt: new Date(upsertBarWeek.data.startsAt),
+      endsAt: new Date(upsertBarWeek.data.endsAt),
+    };
 
     serverErrors[barWeek.id ?? 'new'] = '';
     expandedBarWeekId = undefined;
@@ -138,7 +145,9 @@
           {#if serverErrors[barWeek.id]}
             <Alert theme="danger">{serverErrors[barWeek.id]}</Alert>
           {/if}
-          <Button on:click={async () => updateBarWeek(barWeek)}>Enregistrer</Button>
+          <ButtonSecondary icon={IconConfirm} on:click={async () => updateBarWeek(barWeek)}
+            >Enregistrer
+          </ButtonSecondary>
         {:else}
           <h2>
             {dateFormatter.format(barWeek.startsAt)}—{dateFormatter.format(barWeek.endsAt)}
@@ -147,34 +156,56 @@
           <div class="description">
             {@html barWeek.descriptionHtml}
           </div>
-          <GhostButton
+          <ButtonSecondary
+            icon={IconEdit}
             on:click={() => {
               expandedBarWeekId = barWeek.id;
-            }}><IconEdit /></GhostButton
+            }}>Modifier</ButtonSecondary
           >
         {/if}
-        <Button theme="danger" on:click={async () => deleteBarWeek(barWeek)}>Supprimer</Button>
+        <ButtonSecondary danger icon={IconDelete} on:click={async () => deleteBarWeek(barWeek)}
+          >Supprimer</ButtonSecondary
+        >
       </Card>
     </li>
+  {:else}
+    <li>Aucune semaine de bar à afficher.</li>
   {/each}
-  <li>
-    <Card>
-      <InputField label="Description">
-        <textarea bind:value={newBarWeek.description} cols="30" rows="10" />
-      </InputField>
-
-      <InputField label="Groupes">
-        <StringListInput value={newBarWeek.groups.map(({ uid }) => uid)} />
-      </InputField>
-      <div class="side-by-side">
-        <DateInput label="Début" bind:value={newBarWeek.startsAt} />
-        <DateInput label="Fin" bind:value={newBarWeek.endsAt} />
-      </div>
-
-      {#if serverErrors.new}
-        <Alert theme="danger">{serverErrors.new}</Alert>
-      {/if}
-      <Button on:click={async () => updateBarWeek(newBarWeek)}>Ajouter</Button>
-    </Card>
-  </li>
 </ul>
+
+<h2>Nouvelle semaine de bar</h2>
+
+<Card>
+  <form class="new-bar-week" on:submit|preventDefault={async () => updateBarWeek(newBarWeek)}>
+    <InputField label="Groupes">
+      <StringListInput value={newBarWeek.groups.map(({ uid }) => uid)} />
+    </InputField>
+    <InputText label="Description" bind:value={newBarWeek.description} />
+    <div class="side-by-side">
+      <DateInput label="Début" bind:value={newBarWeek.startsAt} />
+      <DateInput label="Fin" bind:value={newBarWeek.endsAt} />
+    </div>
+    {#if serverErrors.new}
+      <Alert theme="danger">{serverErrors.new}</Alert>
+    {/if}
+    <section class="submit">
+      <ButtonPrimary submits>Ajouter</ButtonPrimary>
+    </section>
+  </form>
+</Card>
+
+<style>
+  h2 {
+    margin-top: 2rem;
+  }
+  .new-bar-week {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+  }
+
+  .new-bar-week .submit {
+    display: flex;
+    justify-content: center;
+  }
+</style>

@@ -18,10 +18,10 @@
   const services = [
     Service('La Frappe', 'Sauves tes partiels'),
     Service('Covoiturages', 'Limites ton CO2e'),
-    Service('Photos', 'Merci Photo7 ♥'),
-    Service('TVn7flix', 'Les productions de TVn7'),
-    Service('Loca7', 'Trouves un appart'),
-    Service('Nextcloud', 'Fichiers, etc.'),
+    Service('Photos', 'Merci Photo7 ♥', 'https://photo7.inpt.fr'),
+    Service('TVn7flix', 'Les productions de TVn7', 'https://tvn7flix.fr'),
+    Service('Loca7', 'Trouves un appart', 'https://loca7.fr'),
+    Service('Nextcloud', 'Fichiers, etc.', 'https://cloud.inpt.fr'),
   ];
 </script>
 
