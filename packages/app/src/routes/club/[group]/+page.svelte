@@ -51,7 +51,7 @@
   $: ({ group } = data);
 
   const isOnClubBoard = (user: { uid: string }) =>
-    Object.entries(group.members.find((m) => m.member.uid === user.uid) ?? {}).some(
+    Object.entries(group.members?.find((m) => m.member.uid === user.uid) ?? {}).some(
       ([role, hasRole]) =>
         ['president', 'vicePresident', 'treasurer', 'secretary'].includes(role) && hasRole
     );
@@ -109,9 +109,13 @@
         {/each}
       </ul>
     </div>
-
-    <a href="./edit" class="edit"> <IconGear /> </a>
   </header>
+
+  {#if $me?.admin || $me?.canEditGroups || isOnClubBoard($me?.uid ?? '')}
+    <section class="edit">
+      <ButtonSecondary icon={IconGear} href="./edit">Modifier</ButtonSecondary>
+    </section>
+  {/if}
 
   <section class="description">
     {@html group.longDescriptionHtml}
@@ -174,11 +178,12 @@
 
   header {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
   }
 
   header .picture img {
-    --size: 10rem;
+    --size: 7rem;
 
     display: flex;
     align-items: center;
@@ -201,6 +206,10 @@
     column-gap: 0.5rem;
   }
 
+  header dd {
+    margin-left: 0;
+  }
+
   header .social-links {
     display: flex;
     gap: 0.5rem;
@@ -208,8 +217,8 @@
   }
 
   .edit {
-    margin-left: auto;
-    font-size: 1.5em;
+    display: flex;
+    justify-content: center;
   }
 
   section h2 {
