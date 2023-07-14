@@ -46,15 +46,12 @@
   }
 
   function handleMouseMouve(event: MouseEvent) {
-    if (sliding) 
-      distance = event.clientX - startX;
-    
+    if (sliding) distance = event.clientX - startX;
   }
 
   function handleMouseUp() {
     sliding = false;
     offset -= Math.round(distance / groupsWidth);
-    distance = 0;
     if (offset <= 0) offset = 0;
     offset = offset >= nbGroups - nbVisibles ? nbGroups - nbVisibles : Math.round(offset);
   }
@@ -72,7 +69,16 @@
     on:mousedown={handleMouseDown}
   >
     {#each groups as { uid, pictureFile, name }}
-      <a href="/club/{uid}" class="group" draggable="false">
+      <a
+        href="/club/{uid}"
+        class="group"
+        draggable="false"
+        on:click={(e) => {
+          console.log(`distance at click is ${distance}`);
+          if (distance !== 0) e.preventDefault();
+          distance = 0;
+        }}
+      >
         <div class="img">
           <img src={`${PUBLIC_STORAGE_URL}${pictureFile}`} alt={name} draggable="false" />
         </div>
@@ -92,7 +98,6 @@
 <style>
   .slider-container {
     position: relative;
-    width: 50%;
     overflow: hidden;
   }
 
@@ -113,6 +118,7 @@
     height: 2.5em;
     padding: 0.2em;
     color: inherit;
+    cursor: pointer;
     background-color: var(--bg);
     border: none;
     border-radius: 50%;
@@ -134,8 +140,7 @@
     align-items: center;
     width: fit-content;
     padding: 0.5em;
-    text-decoration: none;
-    user-select: none; /* Safari */
+    text-decoration: none; /* Safari */
     user-select: none; /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
   }
