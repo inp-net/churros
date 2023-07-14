@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import IconForward from '~icons/mdi/arrow-right';
+  import IconBackward from '~icons/mdi/arrow-left';
   export let groups: Array<{
     name: string;
     pictureFile: string;
@@ -87,12 +89,11 @@
     {/each}
   </div>
   {#if offset > 0}
-    <button class="arrow left" on:click={decreaseOffset}>&lt;</button>
+    <button class="arrow left" on:click={decreaseOffset}><IconBackward /> </button>
   {/if}
   {#if offset < nbGroups - nbVisibles}
-    <button class="arrow right" on:click={increaseOffset}>&gt;</button>
+    <button class="arrow right" on:click={increaseOffset}> <IconForward /> </button>
   {/if}
-  <!--Faudra remplacer les < et > mais pr l'instant jsp quoi mettre -->
 </div>
 
 <style>
@@ -140,8 +141,7 @@
     align-items: center;
     width: fit-content;
     padding: 0.5em;
-    text-decoration: none; /* Safari */
-    user-select: none; /* IE 10 and IE 11 */
+    text-decoration: none; /* Safari */ /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
   }
 
