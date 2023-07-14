@@ -5,13 +5,14 @@
   import Card from '$lib/components/Card.svelte';
   import IconPlus from '~icons/mdi/plus';
   import Button from '$lib/components/Button.svelte';
+  import ButtonBack from '$lib/components/ButtonBack.svelte';
 
   export let data: PageData;
 
   $: ({ group, lydiaAccountsOfGroup } = data);
 </script>
 
-<h1>Éditer <a href="..">{group.name}</a></h1>
+<h1><ButtonBack /> Éditer {group.name}</h1>
 
 <a href="../members">Modifier les membres</a>
 
@@ -37,3 +38,11 @@
     </a>
   </fieldset>
 </form>
+
+<style>
+  h1 {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+</style>
