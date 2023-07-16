@@ -57,6 +57,11 @@
     if (offset <= 0) offset = 0;
     offset = offset >= nbGroups - nbVisibles ? nbGroups - nbVisibles : Math.round(offset);
   }
+
+  $: horizontalTranslation = Math.max(
+    -(nbGroups - nbVisibles) * groupsWidth,
+    Math.min(-groupsWidth * offset + distance, 0)
+  );
 </script>
 
 <div class="slider-container">
@@ -64,10 +69,7 @@
     class="slider"
     style="
     transition: {sliding ? 'none' : 'transform 0.2s ease-in-out'}
-    ;transform: translateX({math.max(
-      -(nbgroups - nbvisibles) * groupswidth,
-      math.min(-groupswidth * offset + distance, 0)
-    )}px);"
+    ;transform: translateX({horizontalTranslation}px);"
     on:mousedown={handleMouseDown}
   >
     {#each groups as { uid, pictureFile, name }}
