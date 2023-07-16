@@ -98,7 +98,7 @@
         </select></label
       >
     </p>
-    <p><label><input type="checkbox" bind:value={selfJoinable} /> Auto-joignable</label></p>
+    <p><label><input type="checkbox" bind:checked={selfJoinable} /> Auto-joignable</label></p>
     <p><label>Nom : <input type="text" bind:value={name} /></label></p>
     <p>
       <label

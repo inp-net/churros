@@ -1,8 +1,8 @@
 import { Selector, loadQuery } from '$lib/zeus';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async ({ fetch, parent, params }) =>
-  loadQuery(
+export const load: LayoutLoad = async ({ fetch, parent, params }) => {
+  const queryData = await loadQuery(
     {
       event: [
         {
@@ -16,3 +16,5 @@ export const load: LayoutLoad = async ({ fetch, parent, params }) =>
     },
     { fetch, parent }
   );
+  return { ...(await parent()), ...queryData };
+};

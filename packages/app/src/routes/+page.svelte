@@ -29,7 +29,9 @@
 
 <h1>Mon feed</h1>
 
-<AvatarGroups groups={$me?.groups.map(({ group }) => group)} />
+{#if $me}
+  <AvatarGroups groups={$me.groups.map(({ group }) => group)} />
+{/if}
 
 {#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile, links, body } }}
   <ArticleCard

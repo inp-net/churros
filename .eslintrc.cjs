@@ -24,6 +24,7 @@ module.exports = {
   ],
   settings: { 'svelte3/typescript': () => require('typescript') },
   rules: {
+    'no-warning-comments': 'off',
     '@typescript-eslint/ban-types': 'off',
     '@typescript-eslint/consistent-type-definitions': 'off',
     '@typescript-eslint/naming-convention': 'off',

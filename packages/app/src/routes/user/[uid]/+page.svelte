@@ -1,22 +1,10 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import IconGear from '~icons/mdi/gear';
-  import GroupMemberBadge from '$lib/components/BadgeGroupMember.svelte';
-  import SchoolBadge from '$lib/components/BadgeSchool.svelte';
-  import Card from '$lib/components/Card.svelte';
-  import SocialLink from '$lib/components/SocialLink.svelte';
   import IconWebsite from '~icons/mdi/earth';
-  import PictureUser from '$lib/components/PictureUser.svelte';
-  import { dateFormatter, formatDate } from '$lib/dates.js';
+  import { dateFormatter } from '$lib/dates.js';
   import { me } from '$lib/session.js';
-  import IconAcademicCap from '~icons/mdi/school';
-  import IconCake from '~icons/mdi/cake';
-  import IconEdit from '~icons/mdi/pencil';
-  import IconMail from '~icons/mdi/email-outline';
-  import IconPhone from '~icons/mdi/phone-outline';
   import type { PageData } from './$types';
-  import { byMemberGroupTitleImportance } from '$lib/sorting';
-  import { closestTo } from 'date-fns';
   import IconFacebook from '~icons/mdi/facebook-box';
   import type { SvelteComponent } from 'svelte';
   import IconInstagram from '~icons/mdi/instagram';
@@ -26,7 +14,6 @@
   import IconDiscord from '~icons/mdi/discord';
   import IconSnapchat from '~icons/mdi/snapchat';
   import BadgeGroupMember from '$lib/components/BadgeGroupMember.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -109,12 +96,12 @@
       {/if}
       <dt>Email</dt>
       <dd>
-        <a href="mailto:{user.email}">{formatPhoneNumber(user.phone)}</a>
+        <a href="mailto:{user.email}">{user.email}</a>
       </dd>
-      {#if user.birthday}
+      {#if user.phone}
         <dt>Téléphone</dt>
         <dd>
-          <a href="tel:{user.phone}">{user.email}</a>
+          <a href="tel:{user.phone}">{formatPhoneNumber(user.phone)}</a>
         </dd>
       {/if}
       {#if user.birthday}
