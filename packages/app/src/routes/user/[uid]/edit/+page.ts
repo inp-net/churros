@@ -4,6 +4,7 @@ import type { PageLoad } from './$types';
 
 export const _userQuery = Selector('User')({
   uid: true,
+  email: true,
   firstName: true,
   lastName: true,
   nickname: true,
@@ -32,7 +33,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
   const { me } = await parent();
   if (params.uid !== me?.uid && !me?.canEditUsers) throw redirect(307, '..');
 
-  return loadQuery(
+  const result = await loadQuery(
     {
       user: [params, _userQuery],
       // If the user is an admin, we also load the permissions
@@ -45,4 +46,12 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     },
     { fetch, parent }
   );
+  return {
+    ...result,
+    user: {
+      ...result.user,
+      // eslint-disable-next-line unicorn/no-null
+      birthday: result.user.birthday ?? null,
+    },
+  };
 };

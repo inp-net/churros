@@ -17,7 +17,7 @@ export const sessionUserQuery = () =>
     canEditGroups: true,
     canEditUsers: true,
     groups: {
-      group: { uid: true, id: true, name: true },
+      group: { uid: true, id: true, name: true, pictureFile: true },
       title: true,
       president: true,
       secretary: true,

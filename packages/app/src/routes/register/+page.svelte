@@ -1,9 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import InputField from '$lib/components/InputField.svelte';
   import InputText from '$lib/components/InputText.svelte';
 
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
@@ -67,8 +65,6 @@
       errors={formErrors?.email?._errors}
       type="email"
       bind:value={email}
-      minlength="1"
-      maxlength="255"
       required
     />
 

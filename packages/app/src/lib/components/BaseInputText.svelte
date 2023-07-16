@@ -19,6 +19,7 @@
   export let required = false;
   export let closeKeyboardOnEnter = false;
 
+  // TODO use (HTMLInputElement).valueAsDate instead
   function stringifyValue(val: typeof value, type: string): string {
     if (val === undefined) return '';
     switch (type) {

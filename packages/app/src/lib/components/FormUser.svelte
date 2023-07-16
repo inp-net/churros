@@ -1,12 +1,37 @@
 <script lang="ts">
-  import { zeus } from '$lib/zeus';
-  // FIXME don't use this
-  import { _userQuery as userQuery } from '../../routes/user/[uid]/edit/+page';
+  import { Selector, zeus } from '$lib/zeus';
   import InputText from './InputText.svelte';
   import InputField from './InputField.svelte';
   import IconClear from '~icons/mdi/clear';
   import InputDate from './InputDate.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
+
+  const userQuery = Selector('User')({
+    uid: true,
+    firstName: true,
+    lastName: true,
+    nickname: true,
+    description: true,
+    pictureFile: true,
+    address: true,
+    graduationYear: true,
+    majorId: true,
+    phone: true,
+    birthday: true,
+    email: true,
+    links: { name: true, value: true },
+    notificationSettings: {
+      id: true,
+      type: true,
+      allow: true,
+      group: {
+        id: true,
+        uid: true,
+        name: true,
+        pictureFile: true,
+      },
+    },
+  });
 
   export let data: {
     user: {
@@ -20,7 +45,6 @@
       firstName: string;
       lastName: string;
       email: string;
-      location: string;
       birthday: Date | null;
       uid: string;
     };
@@ -37,7 +61,6 @@
       nickname,
       phone,
       firstName,
-      location,
       lastName,
       email,
       // See https://github.com/graphql-editor/graphql-zeus/issues/262
@@ -45,8 +68,6 @@
       birthday = null,
     },
   } = data;
-
-  const valueAsDate = (x: unknown) => (x as HTMLInputElement).valueAsDate;
 
   let loading = false;
   const updateUser = async () => {
@@ -79,7 +100,8 @@
         return;
       }
 
-      data.user = updateUser.data;
+      // eslint-disable-next-line unicorn/no-null
+      data.user = { ...updateUser.data, birthday: updateUser.data.birthday ?? null };
     } finally {
       loading = false;
     }
@@ -111,7 +133,7 @@
     label="Date de naissance"
     bind:value={birthday}
   />
-  <InputText label="Adresse postale" bind:value={location} />
+  <InputText label="Adresse postale" bind:value={address} />
   <section class="submit">
     <ButtonSecondary submits>Sauvegarder</ButtonSecondary>
   </section>
