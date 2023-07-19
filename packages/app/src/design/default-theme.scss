@@ -12,7 +12,7 @@
   --border: #{$gray-400};
   --shadow: 0 0 0.125rem #0004, 0 0.125rem 0.5rem #0001;
   --ring: #{rgba($slate-400, 50%)};
-  --hover-bg: #{$gray-50};
+  --hover-bg: #{$gray-200};
   --hover-text: #{$slate-700};
   --hover-border: #{$gray-500};
   --disabled-bg: #{$gray-100};
@@ -71,7 +71,7 @@
 
   // === Other props ===
   --border-inline: 1px;
-  --border-block: 1px;
+  --border-block: 2px;
   --radius-inline: 0.25rem;
   --radius-block: 0.5rem;
 }

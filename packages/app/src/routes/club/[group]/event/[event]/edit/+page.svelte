@@ -1,10 +1,9 @@
 <script lang="ts">
-  import EventForm from '$lib/components/forms/EventForm.svelte';
-  import Tabs from '$lib/components/navigation/Tabs.svelte';
+  import FormEvent from '$lib/components/FormEvent.svelte';
   import { me } from '$lib/session';
   import { Selector, zeus } from '$lib/zeus';
   import type { PageData } from './$types';
-  import EventPicture from './EventPicture.svelte';
+  import FormPicture from '$lib/components/FormPicture.svelte';
 
   export let data: PageData;
 
@@ -22,18 +21,10 @@
     .catch(console.error);
 </script>
 
-<Tabs
-  tabs={[
-    { name: 'Infos', href: `.` },
-    { name: 'Réservations', href: '../registrations' },
-    { name: 'Vérifier', href: '../scan' },
-  ]}
-/>
-
 <a href="../">Voir l'évènement</a>
 
-<EventPicture bind:event={data.event} />
-<EventForm
+<FormPicture objectName="Event" bind:object={data.event} />
+<FormEvent
   availableGroups={data.groups.filter((g) =>
     $me?.groups.some(({ group, canEditArticles }) => canEditArticles && group.id === g.id)
   )}

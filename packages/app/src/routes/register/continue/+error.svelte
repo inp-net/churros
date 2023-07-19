@@ -1,5 +1,5 @@
 <script>
-  import Alert from '$lib/components/alerts/Alert.svelte';
+  import Alert from '$lib/components/Alert.svelte';
 </script>
 
 <Alert theme="danger">

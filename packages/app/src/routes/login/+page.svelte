@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import Alert from '$lib/components/alerts/Alert.svelte';
-  import Button from '$lib/components/buttons/Button.svelte';
-  import FormCard from '$lib/components/cards/FormCard.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import Button from '$lib/components/Button.svelte';
+
   import { me, saveSessionToken, sessionUserQuery } from '$lib/session';
   import { zeus } from '$lib/zeus';
   import { onMount } from 'svelte';
@@ -45,7 +45,7 @@
         return;
       }
 
-      saveSessionToken(login.data);
+      saveSessionToken(document, login.data);
       await redirect();
     } finally {
       loading = false;
@@ -61,7 +61,7 @@
 </script>
 
 <div class="flex justify-center">
-  <FormCard title="Se connecter" on:submit={login}>
+  <form title="Se connecter" on:submit|preventDefault={login}>
     <Alert theme="danger" closed={errorMessages === undefined} inline>
       {errorMessages?.join(' ')}
     </Alert>
@@ -72,11 +72,11 @@
     <p class="text-center">
       <Button type="submit" theme="primary" {loading}>Se connecter</Button>
     </p>
-    <svelte:fragment slot="footer">
+    <footer>
       <a href="./forgotten/{linkParams}">Mot de passe oublié</a>
       • <a href="/register/{linkParams}">S'inscrire</a>
-    </svelte:fragment>
-  </FormCard>
+    </footer>
+  </form>
 </div>
 
 <style lang="scss">

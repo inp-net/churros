@@ -1,5 +1,5 @@
 <script lang="ts">
-  import PaymentStatusBadge from '$lib/components/badges/PaymentStatusBadge.svelte';
+  import PaymentStatusBadge from '$lib/components/BadgePaymentStatus.svelte';
   import { me } from '$lib/session';
   import type { PageData } from './$types';
 

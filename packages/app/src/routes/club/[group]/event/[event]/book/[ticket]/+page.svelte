@@ -3,14 +3,14 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Button from '$lib/components/Button.svelte';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { type PaymentMethod, zeus } from '$lib/zeus';
-  import FormInput from '$lib/components/inputs/FormInput.svelte';
-  import Alert from '$lib/components/alerts/Alert.svelte';
-  import BackButton from '$lib/components/buttons/BackButton.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import BackButton from '$lib/components/ButtonBack.svelte';
   import { page } from '$app/stores';
   import { dateTimeFormatter } from '$lib/dates';
+  import InputField from '$lib/components/InputField.svelte';
 
   let done = false;
   $: done = $page.url.searchParams.has('done');
@@ -106,7 +106,8 @@
     <input type="checkbox" bind:checked={payingForThemself} /> Je paie pour moi
   </label>
   {#if !payingForThemself}
-    <FormInput label="Nom du bénéficiaire"><input type="text" bind:value={beneficiary} /></FormInput
+    <InputField label="Nom du bénéficiaire"
+      ><input type="text" bind:value={beneficiary} /></InputField
     >
   {/if}
 

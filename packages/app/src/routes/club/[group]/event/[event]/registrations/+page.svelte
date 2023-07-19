@@ -1,6 +1,5 @@
 <script lang="ts">
-  import Button from '$lib/components/buttons/Button.svelte';
-  import Tabs from '$lib/components/navigation/Tabs.svelte';
+  import Button from '$lib/components/Button.svelte';
   import type { PageData } from './$types';
   import * as jsonToCsv from 'json-to-csv-in-browser';
   import IconCheck from '~icons/mdi/check';
@@ -114,14 +113,6 @@
 
   $: updateRegistrationsByCategory(registrations?.edges.map(({ node }) => node));
 </script>
-
-<Tabs
-  tabs={[
-    { name: 'Infos', href: `../edit` },
-    { name: 'Réservations', href: '.' },
-    { name: 'Vérifier', href: '../scan' },
-  ]}
-/>
 
 <h1>{registrations?.edges.length} Réservations</h1>
 

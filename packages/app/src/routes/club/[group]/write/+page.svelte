@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import PostDetails from '../post/[post]/edit/PostDetails.svelte';
-  import PostPicture from '../post/[post]/edit/PostPicture.svelte';
+  import PostDetails from '$lib/components/FormArticle.svelte';
 
   export let data: PageData;
 </script>
