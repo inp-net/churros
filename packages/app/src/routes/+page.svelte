@@ -6,7 +6,7 @@
   import { pageQuery } from './+page';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import * as htmlToText from 'html-to-text';
-  import AvatarGroups from '$lib/components/AvatarGroups.svelte';
+  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import { me } from '$lib/session';
 
   export let data: PageData;
@@ -30,7 +30,7 @@
 <h1>Mon feed</h1>
 
 {#if $me}
-  <AvatarGroups groups={$me.groups.map(({ group }) => group)} />
+  <CarouselGroups groups={$me.groups.map(({ group }) => group)} />
 {/if}
 
 {#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile, links, body } }}
