@@ -59,7 +59,7 @@
   }
 
   $: horizontalTranslation = Math.max(
-    -(nbGroups - nbVisibles) * groupsWidth,
+    -(nbGroups - nbVisibles > 0 ? nbGroups - nbVisibles : 0) * groupsWidth,
     Math.min(-groupsWidth * offset + distance, 0)
   );
 </script>
