@@ -29,10 +29,6 @@
     groupsWidth = group ? group.offsetWidth : 0;
     nbVisibles = sliderWidth && groupsWidth ? sliderWidth / groupsWidth : 0;
     slideNeeded = sliderWidth ? nbGroups * groupsWidth > sliderWidth : false;
-    document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('touchend', handleTouchUp);
-    document.addEventListener('mousemove', handleMouseMouve);
-    document.addEventListener('touchmove', handleTouchMouve);
   });
 
   function decreaseOffset() {
@@ -79,6 +75,15 @@
     if (offset <= 0) offset = 0;
     offset = offset >= nbGroups - nbVisibles ? nbGroups - nbVisibles : Math.round(offset);
   }
+  
+  function handleClick(e: MouseEvent) {
+    if (Math.abs(distance) >= 5) e.preventDefault();
+    distance = 0;
+  }
+
+  function handleScroll(e: Event) {
+    console.log(e);
+  }
 
   $: horizontalTranslation = slideNeeded
     ? Math.max(
@@ -86,11 +91,6 @@
         Math.min(-groupsWidth * offset + distance, 0)
       )
     : 0;
-
-  function handleClick(e: MouseEvent) {
-    if (Math.abs(distance) >= 5) e.preventDefault();
-    distance = 0;
-  }
 </script>
 
 <div class="slider-container">
@@ -101,6 +101,7 @@
     ;transform: translateX({horizontalTranslation}px);"
     on:mousedown={handleMouseDown}
     on:touchstart={handleTouchDown}
+    on:scroll={handleScroll}
   >
     {#each groups as { uid, pictureFile, name }}
       <a href="/club/{uid}" class="group" draggable="false" on:click={handleClick}>
@@ -118,6 +119,13 @@
     <button class="arrow right" on:click={increaseOffset}> <IconForward /> </button>
   {/if}
 </div>
+
+<svelte:body
+  on:mouseup={handleMouseUp}
+  on:touchend={handleTouchUp}
+  on:mousemove={handleMouseMouve}
+  on:touchmove={handleTouchMouve}
+/>
 
 <style>
   .slider-container {
