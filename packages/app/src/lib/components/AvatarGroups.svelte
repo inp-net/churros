@@ -20,12 +20,15 @@
 
   let offset = 0;
 
+  let slideNeeded = false;
+
   onMount(() => {
     const sliderContainer = document.querySelector<HTMLElement>('.slider-container');
     const sliderWidth = sliderContainer?.offsetWidth;
     const group = sliderContainer?.querySelector<HTMLElement>('.group');
     groupsWidth = group ? group.offsetWidth : 0;
     nbVisibles = sliderWidth && groupsWidth ? sliderWidth / groupsWidth : 0;
+    slideNeeded = sliderWidth ? nbGroups * groupsWidth > sliderWidth : false;
     document.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('mousemove', handleMouseMouve);
   });
@@ -58,10 +61,12 @@
     offset = offset >= nbGroups - nbVisibles ? nbGroups - nbVisibles : Math.round(offset);
   }
 
-  $: horizontalTranslation = Math.max(
-    -(nbGroups - nbVisibles > 0 ? nbGroups - nbVisibles : 0) * groupsWidth,
-    Math.min(-groupsWidth * offset + distance, 0)
-  );
+  $: horizontalTranslation = slideNeeded
+    ? Math.max(
+        -(nbGroups - nbVisibles) * groupsWidth,
+        Math.min(-groupsWidth * offset + distance, 0)
+      )
+    : 0;
 </script>
 
 <div class="slider-container">
@@ -78,8 +83,7 @@
         class="group"
         draggable="false"
         on:click={(e) => {
-          console.log(`distance at click is ${distance}`);
-          if (distance !== 0) e.preventDefault();
+          if (Math.abs(distance) >= 5) e.preventDefault();
           distance = 0;
         }}
       >
