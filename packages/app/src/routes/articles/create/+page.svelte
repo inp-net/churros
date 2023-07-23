@@ -2,16 +2,13 @@
   import AvatarGroups from '$lib/components/AvatarGroups.svelte';
   import { me } from '$lib/session';
 
-  const asstring = (x: unknown) => x as string;
+  const go = (uid: string) => `/club/${uid}/write`;
 </script>
 
 <div class="content">
   <h1>Écrire un article pour</h1>
 
-  <AvatarGroups
-    groups={$me?.groups.map(({ group }) => group) ?? []}
-    go={(uid) => `/club/${asstring(uid)}/write`}
-  />
+  <AvatarGroups groups={$me?.groups.map(({ group }) => group) ?? []} {go} />
 </div>
 
 <style>
