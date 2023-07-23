@@ -12,6 +12,7 @@
   import InputText from './InputText.svelte';
   import InputSocialLinks from './InputSocialLinks.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
+  import InputCheckbox from './InputCheckbox.svelte';
 
   export let data: PageData;
 
@@ -102,9 +103,7 @@
 <form on:submit|preventDefault={updateClub}>
   <InputSelectOne label="Type de groupe" required options={DISPLAY_GROUP_TYPES} bind:value={type} />
 
-  <InputField label="Auto-joignable">
-    <input type="checkbox" bind:checked={selfJoinable} />
-  </InputField>
+  <InputCheckbox label="Auto-joignable" bind:value={selfJoinable} />
 
   <InputText required label="Nom" bind:value={name} />
   <InputText label="Description courte" bind:value={description} />

@@ -10,11 +10,9 @@
   export let labelNull = 'Inconnu';
   let previousValue: boolean | null = value;
 
-  const getTriState = (target: HTMLInputElement) => 
+  const getTriState = (target: HTMLInputElement) =>
     // eslint-disable-next-line unicorn/no-null
-     target.indeterminate ? null : target.checked
-  ;
-
+    target.indeterminate ? null : target.checked;
   const setTriState = (target: HTMLInputElement, value: boolean | null) => {
     if (value === null) {
       target.indeterminate = true;
@@ -23,7 +21,7 @@
       target.indeterminate = false;
       target.checked = value;
     }
-  
+
     previousValue = value;
   };
 
@@ -100,27 +98,31 @@
   }
 
   .checkbox {
+    --size: 1.7rem;
+    --border: var(--border-block);
+
     position: relative;
     display: flex;
     grid-area: box;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border: 0.15rem solid var(--text);
+    width: var(--size);
+    height: var(--size);
+    border: var(--border) solid var(--text);
     border-color: var(--text);
     border-radius: 25%;
   }
 
   .checkbox[data-state='null']::after {
     position: absolute;
-    top: calc(2rem / 2 - 1.85rem / 2);
-    left: calc(2rem / 2 - 0.4rem / 2);
-    width: 0.15rem;
-    height: 1.6rem;
+    top: calc(50% + var(--border) / 2);
+    left: calc(50% - var(--border) / 2);
+    width: calc(var(--size) - 2 * var(--border));
+    height: var(--border);
     content: '';
     background: var(--text);
-    transform: rotate(45deg);
+    transform: translateY(calc(-50% - var(--border) / 2)) translateX(calc(-50% + var(--border) / 2))
+      rotate(45deg);
   }
 
   .checkbox[data-state='true'] {
