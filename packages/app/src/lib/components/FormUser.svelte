@@ -5,6 +5,7 @@
   import IconClear from '~icons/mdi/clear';
   import InputDate from './InputDate.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
+  import InputLongText from './InputLongText.svelte';
 
   const userQuery = Selector('User')({
     uid: true,
@@ -114,9 +115,7 @@
     <InputText required label="Nom de famille" bind:value={lastName} />
   </div>
   <!--TODO input rich text  -->
-  <InputField label="Description"
-    ><textarea bind:value={description} cols="30" rows="10" /></InputField
-  >
+  <InputLongText rich label="Description" bind:value={description} />
   <InputText label="Surnom" bind:value={nickname} />
   <!-- TODO input person -->
   <!-- TODO backend for this <InputText label="Parrain (identifiant)"></InputText> -->

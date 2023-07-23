@@ -8,10 +8,10 @@
   import LinkCollectionInput from '$lib/components/InputLinks.svelte';
   import DateInput from '$lib/components/InputDate.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
-  import InputField from '$lib/components/InputField.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputText from './InputText.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
+  import InputLongText from './InputLongText.svelte';
 
   export let data: {
     article: {
@@ -113,9 +113,7 @@
     label="Visibilité"
     hint={HELP_VISIBILITY[visibility]}
   />
-  <InputField label="Description">
-    <textarea bind:value={body} cols="30" rows="10" />
-  </InputField>
+  <InputLongText label="Description" bind:value={body} rich />
   <p>Liens:</p>
   <LinkCollectionInput bind:value={links} />
   {#if serverError}

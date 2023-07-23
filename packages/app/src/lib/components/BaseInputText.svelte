@@ -107,13 +107,7 @@
   });
 </script>
 
-<div
-  class="wrapper base-input typo-paragraph"
-  class:danger={errored}
-  class:primary={focused}
-  style:--intense="var(--{messageIsWarning ? 'safran' : 'blood'})"
-  style:--pale="var(--{messageIsWarning ? 'plaster' : 'rose'})"
->
+<div class="wrapper base-input typo-paragraph" class:danger={errored} class:primary={focused}>
   <div class="input-area" bind:this={inputContainer}>
     {#if $$slots.before}
       <div class="left-icon">

@@ -12,6 +12,8 @@
   import InputText from './InputText.svelte';
   import InputSocialLinks from './InputSocialLinks.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
+  import InputLongText from './InputLongText.svelte';
+  import InputCheckbox from './InputCheckbox.svelte';
 
   export let data: PageData;
 
@@ -102,20 +104,11 @@
 <form on:submit|preventDefault={updateClub}>
   <InputSelectOne label="Type de groupe" required options={DISPLAY_GROUP_TYPES} bind:value={type} />
 
-  <InputField label="Auto-joignable">
-    <input type="checkbox" bind:checked={selfJoinable} />
-  </InputField>
+  <InputCheckbox bind:value={selfJoinable} label="Auto-joignable" />
 
   <InputText required label="Nom" bind:value={name} />
   <InputText label="Description courte" bind:value={description} />
-  <p>
-    Description longue (syntaxe <a
-      rel="noreferrer"
-      target="_blank"
-      href="https://www.markdownguide.org/cheat-sheet/#basic-syntax">Markdown</a
-    > supportée) :
-  </p>
-  <textarea cols="30" rows="10" bind:value={longDescription} />
+  <InputLongText rich label="Description" bind:value={longDescription} />
   <!-- TODO colors ? -->
   <InputText label="Salle" bind:value={address} />
   <InputText label="Email" type="email" bind:value={email} />
