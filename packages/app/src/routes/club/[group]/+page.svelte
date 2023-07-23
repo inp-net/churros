@@ -1,5 +1,6 @@
 <script lang="ts">
   import Alert from '$lib/components/Alert.svelte';
+  import IconAdd from '~icons/mdi/plus';
   import IconPeople from '~icons/mdi/account-group';
   import IconGear from '~icons/mdi/gear';
   import IconJoinGroup from '~icons/mdi/account-plus';
@@ -24,6 +25,8 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { htmlToText } from 'html-to-text';
+  import Badge from '$lib/components/Badge.svelte';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -37,11 +40,27 @@
 
   export let data: PageData;
 
+  $: onClubBoard = clubBoard.some(({ member }) => member.uid === $me?.uid);
+
+  $: myPermissions = $me?.groups.find(({ group: { uid } }) => uid === group.uid);
+
   $: ({ group } = data);
 
   $: clubBoard = group.members?.filter(
     ({ president, vicePresident, treasurer, secretary }) =>
       president || vicePresident || treasurer || secretary
+  );
+
+  $: canEditDetails = Boolean(
+    $me?.admin || clubBoard.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups
+  );
+  $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || onClubBoard);
+  $: canEditMembers = Boolean(
+    $me?.admin ||
+      myPermissions?.canEditMembers ||
+      onClubBoard ||
+      $me?.canEditGroups ||
+      $me?.canEditUsers
   );
 
   const joinGroup = async (groupUid: string) => {
@@ -64,7 +83,21 @@
     </div>
 
     <div class="identity">
-      <h1>{group.name}</h1>
+      <h1>
+        {group.name}
+
+        {#if $me?.groups.find(({ group: { uid } }) => uid === group.uid)}
+          <Badge theme="success">Membre</Badge>
+        {:else if group.selfJoinable}
+          <ButtonSecondary icon={IconJoinGroup} on:click={async () => joinGroup(group.uid)}
+            >Rejoindre</ButtonSecondary
+          >
+        {/if}
+
+        {#if canEditDetails}
+          <ButtonSecondary icon={IconGear} href="./edit">Modifier</ButtonSecondary>
+        {/if}
+      </h1>
 
       <p>
         {DISPLAY_GROUP_TYPES[group.type]}
@@ -83,7 +116,7 @@
       </dl>
 
       <ul class="social-links nobullet">
-        {#each group.links as { name, value }}
+        {#each group.links.filter(({ value }) => Boolean(value)) as { name, value }}
           <li>
             <a href={value} title={name}>
               <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
@@ -93,31 +126,20 @@
       </ul>
     </div>
   </header>
-  <section class="member-status">
-    {#if $me?.groups.find(({ group: { uid } }) => uid === group.uid)}
-      Vous êtes membre de ce groupe.
-    {:else if group.selfJoinable}
-      <ButtonSecondary icon={IconJoinGroup} on:click={async () => joinGroup(group.uid)}
-        >Rejoindre le groupe</ButtonSecondary
-      >
-    {:else}
-      Vous n'êtes pas membre de ce groupe. Contactez son bureau pour devenir membre.
-    {/if}
-  </section>
-
-  {#if $me?.admin || $me?.canEditGroups || isOnClubBoard($me?.uid ?? '')}
-    <section class="edit">
-      <ButtonSecondary icon={IconGear} href="./edit">Modifier</ButtonSecondary>
-    </section>
-  {/if}
 
   <section class="description">
-    {@html group.longDescriptionHtml}
+    <details>
+      <summary>{htmlToText(group.longDescriptionHtml).split('\n')[0].slice(0, 255)}</summary>
+      {@html group.longDescriptionHtml}
+    </details>
     <!-- TODO read more button -->
   </section>
 
   <section class="bureau">
-    <h2>Bureau</h2>
+    <h2>
+      Bureau {#if canEditMembers}
+        <ButtonSecondary href="./edit/members" icon={IconGear}>Gérer</ButtonSecondary>{/if}
+    </h2>
 
     {#if clubBoard}
       <ul class="nobullet">
@@ -151,13 +173,15 @@
   {/if}
 
   <section class="posts">
-    <h2>Posts</h2>
+    <h2>
+      Posts {#if canEditArticles}<ButtonSecondary href="./write" icon={IconAdd}
+          >Nouveau</ButtonSecondary
+        >{/if}
+    </h2>
 
     <ul class="nobullet">
-      {#each group.articles as { uid, bodyHtml, ...article } (uid)}
-        <CardArticle hideGroup {group} href="./post/{uid}" {...article}>
-          {@html bodyHtml}
-        </CardArticle>
+      {#each group.articles as { uid, ...article } (uid)}
+        <CardArticle hideGroup {group} href="./post/{uid}" {...article} />
       {/each}
     </ul>
   </section>
@@ -174,6 +198,12 @@
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
+  }
+
+  h1 {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
   }
 
   header .picture img {
@@ -210,12 +240,11 @@
     font-size: 1.25em;
   }
 
-  .edit {
-    display: flex;
-    justify-content: center;
-  }
-
   section h2 {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 1rem;
     text-align: center;
   }
@@ -229,12 +258,6 @@
 
   .bureau .more {
     display: flex;
-    justify-content: center;
-  }
-
-  section.member-status {
-    display: flex;
-    flex-wrap: wrap;
     justify-content: center;
   }
 </style>

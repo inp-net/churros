@@ -10,6 +10,7 @@
   }>;
 
   const nbGroups = groups.length;
+  export let go: (groupUid: string) => string = (uid) => `/club/${uid}`;
 
   let groupsWidth = 0;
   let nbVisibles = 0;
@@ -75,7 +76,7 @@
     if (offset <= 0) offset = 0;
     offset = offset >= nbGroups - nbVisibles ? nbGroups - nbVisibles : Math.round(offset);
   }
-  
+
   function handleClick(e: MouseEvent) {
     if (Math.abs(distance) >= 5) e.preventDefault();
     distance = 0;
@@ -104,7 +105,7 @@
     on:scroll={handleScroll}
   >
     {#each groups as { uid, pictureFile, name }}
-      <a href="/club/{uid}" class="group" draggable="false" on:click={handleClick}>
+      <a href={go(uid)} class="group" draggable="false" on:click={handleClick}>
         <div class="img">
           <img src={`${PUBLIC_STORAGE_URL}${pictureFile}`} alt={name} draggable="false" />
         </div>

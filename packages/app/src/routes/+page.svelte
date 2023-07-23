@@ -5,7 +5,6 @@
   import type { PageData } from './$types';
   import { pageQuery } from './+page';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import * as htmlToText from 'html-to-text';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import { me } from '$lib/session';
 
@@ -40,11 +39,10 @@
     {links}
     {group}
     {author}
+    {bodyHtml}
     href="/club/{group.uid}/post/{uid}/"
     img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
-  >
-    {@html htmlToText.convert(bodyHtml).replaceAll('\n', '<br>')}
-  </ArticleCard>
+  />
 {/each}
 
 {#if data.homepage.pageInfo.hasNextPage}

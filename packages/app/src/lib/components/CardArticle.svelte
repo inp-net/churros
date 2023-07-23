@@ -11,10 +11,12 @@
   import { DISPLAY_VISIBILITIES } from '$lib/display';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import ButtonInk from './ButtonInk.svelte';
+  import { htmlToText } from 'html-to-text';
 
   export let visibility: Visibility | undefined = undefined;
   export let title: string;
   export let href: string;
+  export let bodyHtml: string;
   export let publishedAt: Date;
   export let links: Array<{ value: string; name: string }> = [];
   export let group: { uid: string; name: string; pictureFile: string };
@@ -48,11 +50,16 @@
   </header>
 
   <div class="description">
-    <slot />
+    {@html (
+      htmlToText(bodyHtml)
+        .split('\n')
+        .find((line) => line.trim() !== '') ?? ''
+    ).slice(0, 255)}
+    <ButtonInk insideProse {href} icon={IconDots}>Voir plus</ButtonInk>
   </div>
 
   {#if links.length > 0}
-    <ul class="links">
+    <ul class="links nobullet">
       {#each links as link}
         <li>
           <ButtonSecondary href={link.value}>{link.name}</ButtonSecondary>
@@ -60,10 +67,6 @@
       {/each}
     </ul>
   {/if}
-
-  <div class="see-more">
-    <ButtonInk {href} icon={IconDots}>Voir plus</ButtonInk>
-  </div>
 
   <section class="author-and-date">
     <div class="author">
@@ -77,7 +80,7 @@
           />
         </a>
         <div class="names">
-          <span class="name">{group.name}</span>
+          <a href="/club/{group.uid}" class="name">{group.name}</a>
           {#if author}
             <span class="author">
               {author.firstName}
@@ -102,17 +105,11 @@
     object-fit: cover;
   }
 
-  .description {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
   .author-and-date {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-top: 2rem;
   }
 
   .author {
@@ -131,6 +128,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
+    margin-top: 1rem;
     list-style: none;
   }
 
@@ -150,10 +148,5 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
-
-  .see-more {
-    display: inline-block;
-    margin: 2rem 0;
   }
 </style>

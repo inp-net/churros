@@ -1,4 +1,7 @@
 <script lang="ts">
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import IconAdd from '~icons/mdi/add';
+  import InputText from '$lib/components/InputText.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
 
@@ -87,10 +90,8 @@
   };
 </script>
 
-<a href="../edit">Modifier les informations du club</a>
-
 <table>
-  {#each data.group.members as { memberId, member, president, treasurer, vicePresident, secretary }, i}
+  {#each data.group.members as { memberId, member, president, treasurer, vicePresident, secretary, title }, i}
     <tr>
       <td
         >{president ? '👑' : ''}{treasurer ? '💰' : ''}{vicePresident ? '⭐' : ''}{secretary
@@ -99,9 +100,10 @@
       >
       <td>{member.firstName} {member.lastName}</td>
       <td>
-        <input
-          type="text"
+        <InputText
+          label="Titre"
           bind:value={data.group.members[i].title}
+          initial={title}
           on:change={async () => updateGroupMember(memberId)}
         />
         {#if !president && !treasurer}
@@ -131,17 +133,20 @@
   {/each}
 </table>
 
-<form on:submit|preventDefault={addGroupMember}>
+<form class="add-member" on:submit|preventDefault={addGroupMember}>
   <h2>Ajouter un membre</h2>
-  <p>
-    <label>
-      Nom d'utilisateur : <input type="text" bind:value={uid} required />
-    </label>
-  </p>
-  <p>
-    <label>
-      Titre : <input type="text" bind:value={title} />
-    </label>
-  </p>
-  <p><button type="submit">Ajouter</button></p>
+  <InputText required label="Nom d'utilisateur" bind:value={uid} />
+  <InputText label="Titre" bind:value={title} />
+  <section class="submit">
+    <ButtonSecondary submits icon={IconAdd}>Ajouter</ButtonSecondary>
+  </section>
 </form>
+
+<style>
+  form.add-member {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+</style>
