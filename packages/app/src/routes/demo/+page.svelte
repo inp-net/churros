@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Groups from '$lib/components/AvatarGroups.svelte';
+  import Groups from '$lib/components/CarouselGroups.svelte';
 
   const groups = [
     { name: 'Ski', pictureFile: 'groups/ski.jpg', uid: 'ski' },

@@ -123,6 +123,7 @@
     {#if suggestions}
       <InputWithSuggestions
         class="{errored ? 'danger' : ''} {focused ? 'primary' : ''}"
+        on:change
         on:close-suggestions
         on:select
         on:input
@@ -153,6 +154,7 @@
       <input
         class:danger={errored}
         class:primary={focused}
+        on:change
         on:keyup
         on:keypress={(e) => {
           if (!(e.target instanceof HTMLInputElement)) return;

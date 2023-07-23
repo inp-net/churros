@@ -24,6 +24,7 @@
     {type}
     bind:value
     on:input
+    on:change
     on:action
     {autocomplete}
     {name}

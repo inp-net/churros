@@ -8,6 +8,7 @@
   import IconDotsHorizontal from '~icons/mdi/dots-horizontal';
   import IconPlus from '~icons/mdi/plus';
   import InputField from './InputField.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
   export let uid: string | undefined;
   export let label: string;
@@ -77,8 +78,8 @@
       </GhostButton>
     </span>
   {:else}
-    <button
-      type="button"
+    <ButtonSecondary
+      icon={IconPlus}
       on:click={async () => {
         if (input === null) {
           // @ts-expect-error Tricking TS into thinking that input is always defined
@@ -91,8 +92,8 @@
         input.focus();
       }}
     >
-      <IconPlus aria-hidden="true" /> Définir un groupe parent
-    </button>
+      Définir un groupe parent
+    </ButtonSecondary>
   {/if}
 </InputField>
 

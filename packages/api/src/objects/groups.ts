@@ -196,7 +196,7 @@ builder.mutationField('upsertGroup', (t) =>
       color: t.arg.string({ validate: { regex: /#[\dA-Fa-f]{6}/ } }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
       description: t.arg.string({ validate: { maxLength: 255 } }),
-      email: t.arg.string({ validate: { email: true } }),
+      email: t.arg.string({ validate: { email: true }, required: false }),
       longDescription: t.arg.string(),
       links: t.arg({ type: [LinkInput] }),
       selfJoinable: t.arg.boolean(),

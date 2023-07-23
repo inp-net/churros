@@ -10,6 +10,7 @@
   }>;
 
   const nbGroups = groups.length;
+  export let go: (groupUid: string) => string = (uid) => `/club/${uid}`;
 
   let groupsWidth = 0;
   let nbVisibles = 0;
@@ -20,14 +21,15 @@
 
   let offset = 0;
 
+  let slideNeeded = false;
+
   onMount(() => {
     const sliderContainer = document.querySelector<HTMLElement>('.slider-container');
     const sliderWidth = sliderContainer?.offsetWidth;
     const group = sliderContainer?.querySelector<HTMLElement>('.group');
     groupsWidth = group ? group.offsetWidth : 0;
     nbVisibles = sliderWidth && groupsWidth ? sliderWidth / groupsWidth : 0;
-    document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('mousemove', handleMouseMouve);
+    slideNeeded = sliderWidth ? nbGroups * groupsWidth > sliderWidth : false;
   });
 
   function decreaseOffset() {
@@ -42,13 +44,30 @@
     if (offset >= nbGroups - nbVisibles) offset = nbGroups - nbVisibles;
   }
 
-  function handleMouseDown(e: any) {
+  function handleMouseDown(e: MouseEvent) {
     startX = e.clientX;
+    sliding = true;
+  }
+
+  function handleTouchDown(e: TouchEvent) {
+    startX = e.touches[0].clientX;
     sliding = true;
   }
 
   function handleMouseMouve(event: MouseEvent) {
     if (sliding) distance = event.clientX - startX;
+  }
+
+  function handleTouchMouve(event: TouchEvent) {
+    if (sliding) distance = event.touches[0].clientX - startX;
+  }
+
+  function handleTouchUp() {
+    sliding = false;
+    offset -= Math.round(distance / groupsWidth);
+    if (offset <= 0) offset = 0;
+    offset = offset >= nbGroups - nbVisibles ? nbGroups - nbVisibles : Math.round(offset);
+    distance = 0;
   }
 
   function handleMouseUp() {
@@ -58,10 +77,21 @@
     offset = offset >= nbGroups - nbVisibles ? nbGroups - nbVisibles : Math.round(offset);
   }
 
-  $: horizontalTranslation = Math.max(
-    -(nbGroups - nbVisibles) * groupsWidth,
-    Math.min(-groupsWidth * offset + distance, 0)
-  );
+  function handleClick(e: MouseEvent) {
+    if (Math.abs(distance) >= 5) e.preventDefault();
+    distance = 0;
+  }
+
+  function handleScroll(e: Event) {
+    console.log(e);
+  }
+
+  $: horizontalTranslation = slideNeeded
+    ? Math.max(
+        -(nbGroups - nbVisibles) * groupsWidth,
+        Math.min(-groupsWidth * offset + distance, 0)
+      )
+    : 0;
 </script>
 
 <div class="slider-container">
@@ -71,18 +101,11 @@
     transition: {sliding ? 'none' : 'transform 0.2s ease-in-out'}
     ;transform: translateX({horizontalTranslation}px);"
     on:mousedown={handleMouseDown}
+    on:touchstart={handleTouchDown}
+    on:scroll={handleScroll}
   >
     {#each groups as { uid, pictureFile, name }}
-      <a
-        href="/club/{uid}"
-        class="group"
-        draggable="false"
-        on:click={(e) => {
-          console.log(`distance at click is ${distance}`);
-          if (distance !== 0) e.preventDefault();
-          distance = 0;
-        }}
-      >
+      <a href={go(uid)} class="group" draggable="false" on:click={handleClick}>
         <div class="img">
           <img src={`${PUBLIC_STORAGE_URL}${pictureFile}`} alt={name} draggable="false" />
         </div>
@@ -97,6 +120,13 @@
     <button class="arrow right" on:click={increaseOffset}> <IconForward /> </button>
   {/if}
 </div>
+
+<svelte:body
+  on:mouseup={handleMouseUp}
+  on:touchend={handleTouchUp}
+  on:mousemove={handleMouseMouve}
+  on:touchmove={handleTouchMouve}
+/>
 
 <style>
   .slider-container {
