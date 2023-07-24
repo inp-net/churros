@@ -12,6 +12,7 @@
   import InputText from './InputText.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
   import InputLongText from './InputLongText.svelte';
+  import InputLinks from '$lib/components/InputLinks.svelte';
 
   export let data: {
     article: {
@@ -114,8 +115,7 @@
     hint={HELP_VISIBILITY[visibility]}
   />
   <InputLongText label="Description" bind:value={body} rich />
-  <p>Liens:</p>
-  <LinkCollectionInput bind:value={links} />
+  <InputLinks label="Liens" bind:value={links} />
   {#if serverError}
     <Alert theme="danger"
       >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert
@@ -123,3 +123,16 @@
   {/if}
   <section class="submit"><ButtonPrimary {loading} submits>Enregistrer</ButtonPrimary></section>
 </form>
+
+<style>
+  form {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+  }
+
+  .submit {
+    display: flex;
+    justify-content: center;
+  }
+</style>

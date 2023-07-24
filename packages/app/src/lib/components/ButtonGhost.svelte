@@ -3,7 +3,7 @@
   export let darkShadow = false;
 </script>
 
-<button class:darkShadow {type} {...$$restProps} on:click><slot /></button>
+<button class:dark-shadow={darkShadow} {type} {...$$restProps} on:click><slot /></button>
 
 <style lang="scss">
   button {
@@ -12,6 +12,7 @@
     all: unset;
     padding: 0.25em;
     color: var(--text);
+    cursor: pointer;
     background: var(--bg);
     border: var(--border-inline) solid transparent;
     border-radius: var(--radius-inline);
@@ -25,11 +26,12 @@
     &:focus-visible {
       --text: var(--hover-text);
 
-      &:not(.darkShadow) {
+      &:not(.dark-shadow) {
         background: var(--hover-bg);
       }
-      &.darkShadow {
-        background: rgba($color: #fff, $alpha: 0.5);
+
+      &.dark-shadow {
+        background: rgba($color: #fff, $alpha: 50%);
       }
     }
   }

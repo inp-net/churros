@@ -40,19 +40,19 @@
 
   export let data: PageData;
 
-  $: onClubBoard = clubBoard.some(({ member }) => member.uid === $me?.uid);
-
-  $: myPermissions = $me?.groups.find(({ group: { uid } }) => uid === group.uid);
-
-  $: ({ group } = data);
-
   $: clubBoard = group.members?.filter(
     ({ president, vicePresident, treasurer, secretary }) =>
       president || vicePresident || treasurer || secretary
   );
 
+  $: onClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
+
+  $: myPermissions = $me?.groups.find(({ group: { uid } }) => uid === group.uid);
+
+  $: ({ group } = data);
+
   $: canEditDetails = Boolean(
-    $me?.admin || clubBoard.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups
+    $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups
   );
   $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || onClubBoard);
   $: canEditMembers = Boolean(
