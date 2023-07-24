@@ -3,6 +3,8 @@
   import IconSearch from '~icons/mdi/magnify';
   import type { PageData } from './$types';
   import BaseInputText from '$lib/components/BaseInputText.svelte';
+  import CardGroup from '$lib/components/CardGroup.svelte';
+  import CardPerson from '$lib/components/CardPerson.svelte';
 
   export let data: PageData;
 
@@ -36,16 +38,20 @@
   {#if data.searchUsers.length > 0}
     <h2>Personnes</h2>
     <ul class="nobullet">
-      {#each data.searchUsers as { uid, firstName, lastName }}
-        <li><a href="/user/{uid}/">{firstName} {lastName}</a></li>
+      {#each data.searchUsers as { uid, ...rest }}
+        <li>
+          <CardPerson href="/user/{uid}" {...rest} />
+        </li>
       {/each}
     </ul>
   {/if}
   {#if data.searchGroups.length > 0}
     <h2>Groupes</h2>
     <ul class="nobullet">
-      {#each data.searchGroups as { uid, name }}
-        <li><a href="/club/{uid}/">{name}</a></li>
+      {#each data.searchGroups as { uid, ...rest }}
+        <li>
+          <CardGroup href="/club/{uid}" {...rest} />
+        </li>
       {/each}
     </ul>
   {/if}
@@ -76,5 +82,12 @@
 
   h2 {
     margin: 1rem;
+    text-align: center;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 </style>

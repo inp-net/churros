@@ -1,5 +1,6 @@
 <script lang="ts">
-  import AvatarGroups from '$lib/components/AvatarGroups.svelte';
+  import CardGroup from '$lib/components/CardGroup.svelte';
+  import AvatarGroups from '$lib/components/CarouselGroups.svelte';
   import { me } from '$lib/session';
 
   const go = (uid: string) => `/club/${uid}/write`;
@@ -8,7 +9,11 @@
 <div class="content">
   <h1>Écrire un article pour</h1>
 
-  <AvatarGroups groups={$me?.groups.map(({ group }) => group) ?? []} {go} />
+  <section class="groups">
+    {#each $me?.groups.map(({ group }) => group) ?? [] as group (group.uid)}
+      <CardGroup href="/club/{group.uid}/write" name={group.name} pictureFile={group.pictureFile} />
+    {/each}
+  </section>
 </div>
 
 <style>
@@ -20,5 +25,11 @@
 
   h1 {
     text-align: center;
+  }
+
+  .groups {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 </style>

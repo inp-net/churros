@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import IconForward from '~icons/mdi/arrow-right';
   import IconBackward from '~icons/mdi/arrow-left';
+  import CardGroup from './CardGroup.svelte';
   export let groups: Array<{
     name: string;
     pictureFile: string;
@@ -104,13 +104,8 @@
     on:touchstart={handleTouchDown}
     on:scroll={handleScroll}
   >
-    {#each groups as { uid, pictureFile, name }}
-      <a href={go(uid)} class="group" draggable="false" on:click={handleClick}>
-        <div class="img">
-          <img src={`${PUBLIC_STORAGE_URL}${pictureFile}`} alt={name} draggable="false" />
-        </div>
-        <h3 class="name">{name}</h3>
-      </a>
+    {#each groups as { uid, ...rest }}
+      <CardGroup on:click={handleClick} href={go(uid)} {...rest} />
     {/each}
   </div>
   {#if offset > 0}
@@ -150,6 +145,7 @@
     width: 2.5em;
     height: 2.5em;
     padding: 0.2em;
+    font-size: 1.3rem;
     color: inherit;
     cursor: pointer;
     background-color: var(--bg);
@@ -165,46 +161,5 @@
 
   .arrow.left {
     left: 1em;
-  }
-
-  .group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: fit-content;
-    padding: 0.5em;
-    text-decoration: none; /* Safari */ /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
-  }
-
-  .group .img {
-    width: 6em;
-    height: 6em;
-    overflow: hidden;
-    font-weight: bold;
-    line-height: 6em; /* to vertically center alt text */
-    color: var(--muted-text);
-    text-align: center;
-    background-color: var(--muted-bg);
-    border-radius: var(--radius-block);
-    transition: transform 0.25s ease, box-shadow 0.25s ease 0.1s;
-  }
-
-  .group:hover .img,
-  .group:focus-visible .img {
-    box-shadow: var(--shadow);
-    transform: translateY(-0.25em);
-  }
-
-  .group .img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  h3 {
-    margin: 0;
-    font-size: 1em;
-    font-weight: 600;
   }
 </style>

@@ -136,7 +136,7 @@ builder.queryField('searchGroups', (t) =>
       q = q.trim();
       const { searchString: search } = splitSearchTerms(q);
       const fuzzyResults: FuzzySearchResult = await prisma.$queryRaw`
-SELECT "id", levenshtein_less_equal("name", ${q}, 15) as changes
+SELECT "id", levenshtein_less_equal(LOWER("name"), LOWER(${q}), 15) as changes
 FROM "Group"
 ORDER BY changes ASC
 LIMIT 20
@@ -294,7 +294,7 @@ builder.mutationField('upsertGroup', (t) =>
         familyRoot: familyId ? { connect: { id: familyId } } : undefined,
         address,
         description,
-        email,
+        email: email ?? undefined,
         longDescription,
         school: schoolId ? { connect: { id: schoolId } } : {},
         studentAssociation: studentAssociationId ? { connect: { id: studentAssociationId } } : {},
