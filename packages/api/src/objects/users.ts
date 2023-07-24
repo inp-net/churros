@@ -43,7 +43,7 @@ export const UserType = builder.prismaNode('User', {
     }),
     nickname: t.exposeString('nickname', { authScopes: { loggedIn: true, $granted: 'me' } }),
     phone: t.exposeString('phone', { authScopes: { loggedIn: true, $granted: 'me' } }),
-    pictureFile: t.exposeString('pictureFile', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    pictureFile: t.exposeString('pictureFile'),
 
     // Permissions are only visible to admins
     admin: t.exposeBoolean('admin', {
@@ -128,7 +128,7 @@ builder.queryField('searchUsers', (t) =>
     async resolve(query, _, { q }) {
       const { numberTerms, searchString: search } = splitSearchTerms(q);
       const searchResults: FuzzySearchResult = await prisma.$queryRaw`
-SELECT "id", levenshtein_less_equal("firstName" ||' '|| "lastName", ${q}, 20) as changes
+SELECT "id", levenshtein_less_equal(LOWER("firstName" ||' '|| "lastName"), LOWER(${q}), 20) as changes
 FROM "User"
 ORDER BY changes ASC
 LIMIT 10

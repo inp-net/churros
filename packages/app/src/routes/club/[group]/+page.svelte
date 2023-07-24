@@ -192,6 +192,8 @@
     display: flex;
     flex-flow: column wrap;
     gap: 2rem;
+    padding: 0 1rem;
+    margin: 0 auto;
   }
 
   header {

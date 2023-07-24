@@ -2527,6 +2527,7 @@ __metadata:
     html-to-text: "npm:^9.0.5"
     is-dark-color: "npm:^1.2.0"
     json-to-csv-in-browser: "npm:^1.0.8"
+    lodash: "npm:^4.17.21"
     modern-svelte-qr-scanner: "npm:1.3.6"
     nanoid: "npm:^4.0.2"
     party-js: "npm:^2.2.0"

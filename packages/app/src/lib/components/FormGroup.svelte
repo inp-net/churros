@@ -12,6 +12,7 @@
   import InputText from './InputText.svelte';
   import InputSocialLinks from './InputSocialLinks.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
+  import InputLongText from './InputLongText.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
 
   export let data: PageData;
@@ -107,14 +108,7 @@
 
   <InputText required label="Nom" bind:value={name} />
   <InputText label="Description courte" bind:value={description} />
-  <p>
-    Description longue (syntaxe <a
-      rel="noreferrer"
-      target="_blank"
-      href="https://www.markdownguide.org/cheat-sheet/#basic-syntax">Markdown</a
-    > supportée) :
-  </p>
-  <textarea cols="30" rows="10" bind:value={longDescription} />
+  <InputLongText rich label="Description" bind:value={longDescription} />
   <!-- TODO colors ? -->
   <InputText label="Salle" bind:value={address} />
   <InputText label="Email" type="email" bind:value={email} />

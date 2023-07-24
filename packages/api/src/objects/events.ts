@@ -613,7 +613,7 @@ builder.queryField('searchEvents', (t) =>
       q = q.trim();
       const { searchString: search, numberTerms } = splitSearchTerms(q);
       const fuzzyIDs: FuzzySearchResult = await prisma.$queryRaw`
-      SELECT "id", levenshtein("title", ${search}) as changes
+      SELECT "id", levenshtein(LOWER("title"), LOWER(${search})) as changes
       FROM "Event"
       ORDER BY changes ASC
       LIMIT 30
