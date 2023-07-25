@@ -73,7 +73,7 @@
   </label>
 {:else}
   <label class="input-checkbox">
-    <input type="checkbox" bind:checked={value} />
+    <input on:change type="checkbox" bind:checked={value} />
     <div class="checkbox" data-state={JSON.stringify(value)}>
       {#if value === true}
         <Check />

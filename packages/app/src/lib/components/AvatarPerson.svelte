@@ -15,7 +15,9 @@
   <div class="desc">
     <p class="text name">{firstName} {lastName}</p>
     {#if role}
-      <p class="text role">{role}</p>
+      <p class="text role">
+        {role}
+      </p>
     {/if}
   </div>
 </a>

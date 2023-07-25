@@ -23,6 +23,7 @@ export const GroupMemberType = builder.prismaObject('GroupMember', {
 builder.mutationField('addGroupMember', (t) =>
   t.prismaField({
     type: GroupMemberType,
+    errors: {},
     args: {
       groupUid: t.arg.string(),
       uid: t.arg.string(),

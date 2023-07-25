@@ -22,7 +22,8 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           uid: true,
           members: {
             memberId: true,
-            member: { firstName: true, lastName: true },
+            createdAt: true,
+            member: { uid: true, firstName: true, lastName: true, pictureFile: true },
             title: true,
             president: true,
             treasurer: true,

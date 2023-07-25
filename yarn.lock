@@ -6684,6 +6684,7 @@ __metadata:
     eslint-config-xo-typescript: "npm:^0.55.0"
     eslint-plugin-svelte3: "npm:^4.0.0"
     eslint-plugin-unicorn: "npm:^44.0.2"
+    fuse.js: "npm:^6.6.2"
     html5-qrcode: "npm:^2.3.8"
     husky: "npm:^8.0.2"
     lint-staged: "npm:^13.0.3"
@@ -9002,6 +9003,13 @@ __metadata:
   version: 1.0.1
   resolution: "functional-red-black-tree@npm:1.0.1"
   checksum: 275f10e8abe29375137a6dc662b54bf6452704560a4888dde5720b1901b5489703f45169a92e02c758dd0ebc4c6206e2cb57c326a9b9dd6e3992aeaf4038dddc
+  languageName: node
+  linkType: hard
+
+"fuse.js@npm:^6.6.2":
+  version: 6.6.2
+  resolution: "fuse.js@npm:6.6.2"
+  checksum: e22fe31176b52a0d4be7c7ee116758d478653d9694d6c5df5d2e28b002b4d83fc5aa07c24d27a26ee2e85fc31a8b22cafdc071ddb700917a021395023abb16aa
   languageName: node
   linkType: hard
 

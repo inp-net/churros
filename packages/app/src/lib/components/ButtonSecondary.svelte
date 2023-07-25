@@ -24,6 +24,7 @@
   {download}
   {formaction}
   {id}
+  {...$$restProps}
   disabled={loading || disabled}
   on:click
 >

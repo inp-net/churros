@@ -1,36 +1,80 @@
 <script lang="ts">
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import Fuse from 'fuse.js';
+  import IconSearch from '~icons/mdi/search';
   import IconAdd from '~icons/mdi/add';
   import InputText from '$lib/components/InputText.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import { formatISO9075, isBefore } from 'date-fns';
 
   export let data: PageData;
   const { group } = data;
+  let updatingMemberId = '';
 
+  let serverError = '';
+  let search = '';
   let uid = '';
   let title = '';
 
+  function emojis({
+    treasurer,
+    vicePresident,
+    president,
+    secretary,
+  }: {
+    treasurer: boolean;
+    vicePresident: boolean;
+    president: boolean;
+    secretary: boolean;
+  }): string {
+    return [
+      ['👑', president],
+      ['🌟', vicePresident],
+      ['📜', secretary],
+      ['💰', treasurer],
+    ]
+      .filter(([_emoji, v]) => v)
+      .map(([emoji, _v]) => emoji)
+      .join(' ');
+  }
+
   const addGroupMember = async () => {
-    try {
-      const { addGroupMember } = await $zeus.mutate({
-        addGroupMember: [
-          { groupUid: group.uid, uid, title },
-          {
-            memberId: true,
-            title: true,
-            president: true,
-            treasurer: true,
-            secretary: true,
-            vicePresident: true,
-            canEditMembers: true,
-            member: { firstName: true, lastName: true },
+    const { addGroupMember } = await $zeus.mutate({
+      addGroupMember: [
+        { groupUid: group.uid, uid, title },
+        {
+          __typename: true,
+          '...on Error': {
+            message: true,
           },
-        ],
-      });
-      data.group.members = [...data.group.members, addGroupMember];
-    } catch (error: unknown) {
-      console.error(error);
+          '...on MutationAddGroupMemberSuccess': {
+            data: {
+              memberId: true,
+              createdAt: true,
+              title: true,
+              president: true,
+              treasurer: true,
+              secretary: true,
+              vicePresident: true,
+              canEditMembers: true,
+              member: { uid: true, firstName: true, lastName: true, pictureFile: true },
+            },
+          },
+        },
+      ],
+    });
+    if (addGroupMember.__typename === 'Error') {
+      serverError = addGroupMember.message;
+    } else {
+      uid = '';
+      title = '';
+      // XXX for some reason the date is returned as a datestring
+      addGroupMember.data.createdAt = new Date(addGroupMember.data.createdAt);
+      data.group.members = [...data.group.members, addGroupMember.data];
     }
   };
 
@@ -60,7 +104,7 @@
     } = {}
   ) => {
     try {
-      const member = data.group.members.find((member) => member.memberId === memberId);
+      const member = group.members.find((member) => member.memberId === memberId);
       if (!member) throw new Error('Member not found');
       const { upsertGroupMember } = await $zeus.mutate({
         upsertGroupMember: [
@@ -76,7 +120,7 @@
           { title: true, president: true, treasurer: true, vicePresident: true, secretary: true },
         ],
       });
-      data.group.members = data.group.members.map((member) =>
+      data.group.members = group.members.map((member) =>
         member.memberId === memberId
           ? { ...member, ...upsertGroupMember }
           : {
@@ -88,56 +132,104 @@
       console.error(error);
     }
   };
+
+  function membersByImportance(
+    a: typeof data.group.members[number],
+    b: typeof data.group.members[number]
+  ): 1 | -1 | 0 {
+    // President first, then treasurer, then vice-president, then secretary, then the rest, by date added
+    if (a.president && !b.president) return -1;
+    if (!a.president && b.president) return 1;
+    if (a.treasurer && !b.treasurer) return -1;
+    if (!a.treasurer && b.treasurer) return 1;
+    if (a.vicePresident && !b.vicePresident) return -1;
+    if (!a.vicePresident && b.vicePresident) return 1;
+    if (a.secretary && !b.secretary) return -1;
+    if (!a.secretary && b.secretary) return 1;
+    return isBefore(a.createdAt, b.createdAt) ? 1 : -1;
+  }
+
+  $: searcher = new Fuse(data.group.members, {
+    keys: ['member.firstName', 'member.lastName', 'member.uid', 'title'],
+  });
+
+  $: shownMembers = search
+    ? searcher.search(search).map(({ item }) => item)
+    : data.group.members.sort(membersByImportance);
 </script>
 
-<table>
-  {#each data.group.members as { memberId, member, president, treasurer, vicePresident, secretary, title }, i}
-    <tr>
-      <td
-        >{president ? '👑' : ''}{treasurer ? '💰' : ''}{vicePresident ? '⭐' : ''}{secretary
-          ? '📜'
-          : ''}</td
-      >
-      <td>{member.firstName} {member.lastName}</td>
-      <td>
-        <InputText
-          label="Titre"
-          bind:value={data.group.members[i].title}
-          initial={title}
-          on:change={async () => updateGroupMember(memberId)}
+<section class="search">
+  <InputText bind:value={search} label="Rechercher">
+    <svelte:fragment slot="before">
+      <IconSearch />
+    </svelte:fragment>
+  </InputText>
+</section>
+
+<ul class="nobullet members">
+  {#each shownMembers as { memberId, member, president, treasurer, vicePresident, secretary, title, createdAt }, i (member.uid)}
+    <li>
+      <div class="item">
+        <AvatarPerson
+          href="/user/{member.uid}"
+          {...member}
+          lastName="{member.lastName} {emojis({ president, treasurer, vicePresident, secretary })}"
+          role="{title} ({formatISO9075(createdAt, { representation: 'date' })})"
         />
-        {#if !president && !treasurer}
-          <button type="button" on:click={async () => deleteGroupMember(memberId)}> ❌ </button>
-        {/if}
-        <button
-          type="button"
-          on:click={async () => updateGroupMember(memberId, { makePresident: !president })}
-          >👑</button
-        ><button
-          type="button"
-          on:click={async () => updateGroupMember(memberId, { makeTreasurer: !treasurer })}
-          >💰</button
-        >
-        <button
-          type="button"
-          on:click={async () => updateGroupMember(memberId, { makeVicePresident: !vicePresident })}
-          >⭐</button
-        >
-        <button
-          type="button"
-          on:click={async () => updateGroupMember(memberId, { makeSecretary: !secretary })}
-          >📜</button
-        >
-      </td>
-    </tr>
+        <div class="actions">
+          {#if updatingMemberId === memberId}
+            <ButtonSecondary
+              on:click={async () => {
+                await updateGroupMember(memberId);
+                updatingMemberId = '';
+              }}>Terminer</ButtonSecondary
+            >
+          {:else}
+            <ButtonSecondary
+              on:click={() => {
+                updatingMemberId = memberId;
+              }}>Modifier</ButtonSecondary
+            >
+          {/if}
+          <ButtonSecondary
+            danger
+            disabled={president || treasurer}
+            title={president || treasurer
+              ? "Nommez quelqu'un d'autre commme président·e / trésorier·e"
+              : ''}
+            on:click={async () => {
+              await deleteGroupMember(memberId);
+            }}>Virer</ButtonSecondary
+          >
+        </div>
+      </div>
+      <form
+        class:open={updatingMemberId === memberId}
+        on:submit|preventDefault={async () => {
+          await updateGroupMember(memberId);
+        }}
+        class="edit"
+      >
+        <InputText label="Titre" bind:value={group.members[i].title} />
+        <div class="roles">
+          <InputCheckbox label="Président·e" bind:value={group.members[i].president} />
+          <InputCheckbox label="Trésorier·e" bind:value={group.members[i].treasurer} />
+          <InputCheckbox label="Vice-président·e" bind:value={group.members[i].vicePresident} />
+          <InputCheckbox label="Secrétaire" bind:value={group.members[i].secretary} />
+        </div>
+      </form>
+    </li>
   {/each}
-</table>
+</ul>
 
 <form class="add-member" on:submit|preventDefault={addGroupMember}>
   <h2>Ajouter un membre</h2>
   <InputText required label="Nom d'utilisateur" bind:value={uid} />
   <InputText label="Titre" bind:value={title} />
   <section class="submit">
+    {#if serverError}
+      <Alert theme="danger">{serverError}</Alert>
+    {/if}
     <ButtonSecondary submits icon={IconAdd}>Ajouter</ButtonSecondary>
   </section>
 </form>
@@ -148,5 +240,51 @@
     flex-flow: column wrap;
     gap: 1rem;
     margin-top: 3rem;
+  }
+
+  .members {
+    display: flex;
+    flex-flow: column;
+    gap: 0.5rem;
+    max-height: 45vh;
+    overflow: auto;
+  }
+
+  .members .item {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .members form {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+  }
+
+  .members .edit {
+    display: flex;
+    flex-flow: column;
+    gap: 1rem;
+    max-height: 0;
+    overflow-y: hidden;
+    border: none;
+    border-radius: var(--radius-block);
+    transition: max-height 0.25s ease;
+  }
+
+  .members .edit.open {
+    max-height: 20rem;
+    padding: 1rem;
+    border: var(--border-block) solid var(--border);
+  }
+
+  .members .roles {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1rem;
+  }
+
+  .search {
+    margin-bottom: 1rem;
   }
 </style>
