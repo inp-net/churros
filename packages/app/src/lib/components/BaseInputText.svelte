@@ -69,7 +69,6 @@
 
   export let errorMessage = '';
   let _errorMessage = '';
-  export let messageIsWarning = false;
   $: {
     if (valueString === '' && !showEmptyErrors) {
       _errorMessage = '';
@@ -143,7 +142,11 @@
           if (valueString !== '') showEmptyErrors = true;
           emit('input', e);
         }}
-      />
+      >
+        <div class="suggestion" slot="suggestion" let:item>
+          <slot name="suggestion" {item} />
+        </div>
+      </InputWithSuggestions>
     {:else}
       <input
         class:danger={errored}
@@ -263,8 +266,6 @@
   }
 
   .left-icon {
-    width: 1.5rem;
-    height: 1.5rem;
     margin-right: 0.5rem;
   }
 

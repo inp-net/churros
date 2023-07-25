@@ -15,7 +15,7 @@
 
   // UI properties
   // the text displayed when no option is selected
-  export let placeholder: string = '';
+  export let placeholder = '';
 
   // apply a id to the input control
   export let id: string | undefined = undefined;
@@ -25,10 +25,10 @@
   // selected item state
   export let selected: string | undefined = undefined;
   export let value = undefined;
-  export let highlightIndex: number = 0;
+  export let highlightIndex = 0;
 
   // --- Internal State ----
-  const uniqueId = 'sautocomplete-' + Math.floor(Math.random() * 1000);
+  const uniqueId = `sautocomplete-${Math.floor(Math.random() * 1000)}`;
 
   // HTML elements
   let input: HTMLInputElement;
@@ -47,28 +47,29 @@
   // --- Lifecycle events ---
 
   afterUpdate(() => {
-    if (setPositionOnNextUpdate) {
+    if (setPositionOnNextUpdate) 
       setScrollAwareListPosition();
-    }
+    
     setPositionOnNextUpdate = false;
   });
 
   // -- Reactivity --
-  function onSelectedItemChanged() {
+  function onSelectedItemChanged(selected: string | undefined) {
     value = selected;
-    if (selected) {
+    if (selected) 
       text = selected;
-    }
+    
 
     dispatch('change', selected);
     dispatch('select', selected);
+    dispatch('input', selected);
   }
 
-  $: selected, onSelectedItemChanged();
+  $: onSelectedItemChanged(selected);
 
-  $: if (text === '') {
+  $: if (text === '') 
     selected = undefined;
-  }
+  
 
   $: showList = opened && items && items.length > 0;
 
@@ -77,35 +78,36 @@
     selected = undefined; // triggers change even if the the same item is selected
     selected = items[highlightIndex];
     dispatch('select', selected);
+    dispatch('input', selected);
     close();
   }
 
   function up() {
     open();
-    if (highlightIndex > 0) {
+    if (highlightIndex > 0) 
       highlightIndex--;
-    }
+    
     highlight();
   }
 
   function down() {
     open();
-    if (highlightIndex < items.length - 1) {
+    if (highlightIndex < items.length - 1) 
       highlightIndex++;
-    }
+    
 
     highlight();
   }
 
   function highlight() {
     const query = '.selected';
-    const el = list && list.querySelector(query);
+    const el = list?.querySelector(query);
     if (el && 'scrollIntoViewIfNeeded' in el) {
-      if (typeof el.scrollIntoViewIfNeeded === 'function') {
+      if (typeof el.scrollIntoViewIfNeeded === 'function') 
         el.scrollIntoViewIfNeeded();
-      } else if ('scrollIntoView' in el && typeof el.scrollIntoView === 'function') {
+       else if ('scrollIntoView' in el && typeof el.scrollIntoView === 'function') 
         el.scrollIntoView();
-      }
+      
     }
   }
 
@@ -119,40 +121,49 @@
         )
     ) {
       highlight();
-      if (e.target.tagName === 'LI') {
+      if (e.target.tagName === 'LI') 
         selectHighlighted();
-      }
+      
     } else {
       close();
     }
   }
 
   function onKeyDown(e: KeyboardEvent) {
-    let key = e.key;
+    let {key} = e;
     if (key === 'Tab' && e.shiftKey) key = 'ShiftTab';
     switch (key) {
       case 'Tab':
-      case 'ShiftTab':
+      case 'ShiftTab': {
         if (opened) close();
         break;
-      case 'ArrowDown':
+      }
+  
+      case 'ArrowDown': {
         down();
         break;
-      case 'ArrowUp':
+      }
+  
+      case 'ArrowUp': {
         up();
         break;
-      case 'Escape':
+      }
+  
+      case 'Escape': {
         onEsc(e);
         break;
-      default:
+      }
+  
+      default: {
         break;
+      }
     }
   }
 
   function onKeyPress(e: KeyboardEvent) {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter') 
       onEnter(e);
-    }
+    
   }
 
   function onEnter(e: KeyboardEvent) {
@@ -163,7 +174,7 @@
   }
 
   function onEsc(e: KeyboardEvent) {
-    //if (text) return clear();
+    // if (text) return clear();
     e.stopPropagation();
     if (opened) {
       input.focus();
@@ -178,9 +189,9 @@
   }
 
   function onBlurInternal() {
-    if (closeOnBlur) {
+    if (closeOnBlur) 
       close();
-    }
+    
 
     dispatch('blur');
   }
@@ -190,7 +201,7 @@
 
     // find selected item
     if (selected) {
-      highlightIndex = items.findIndex((i) => i === selected);
+      highlightIndex = items.indexOf(selected);
       highlight();
     }
   }
@@ -208,6 +219,7 @@
       highlightIndex = 0;
       selectHighlighted();
     }
+  
     dispatch('close-suggestions');
   }
 
@@ -217,16 +229,14 @@
     const { bottom: inputButtom, height: inputHeight } = inputContainer.getBoundingClientRect();
     const { height: listHeight } = list.getBoundingClientRect();
 
-    if (inputButtom + listHeight > viewPortHeight) {
-      list.style.top = `-${listHeight}px`;
-    } else {
-      list.style.top = `${inputHeight}px`;
-    }
+    list.style.top =
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/restrict-plus-operands
+      inputButtom + listHeight > viewPortHeight ? `-${listHeight}px` : `${inputHeight}px`;
   }
 </script>
 
 <input
-  class:hide-arrow={!items.length}
+  class:hide-arrow={items.length === 0}
   class:is-loading={loading}
   type="text"
   {id}
@@ -274,7 +284,7 @@
           highlightIndex = i;
         }}
       >
-        {item}
+        <slot name="suggestion" {item}>{item}</slot>
       </li>
     {/each}
   {:else if loading}
@@ -284,61 +294,71 @@
   {/if}
 </ul>
 
-<svelte:window on:click={onDocumentClick} on:scroll={() => (setPositionOnNextUpdate = true)} />
+<svelte:window
+  on:click={onDocumentClick}
+  on:scroll={() => {
+    setPositionOnNextUpdate = true;
+  }}
+/>
 
 <style>
   .autocomplete-list {
-    background: var(--bg);
     position: absolute;
-    width: 100%;
-    overflow-y: auto;
-    z-index: 10000;
     top: 0;
     left: calc(-1 * var(--border-width));
-    border: var(--border-width) solid var(--fg);
+    z-index: 10000;
+    width: 100%;
     max-height: calc(15 * (1rem + 10px) + 15px);
+    padding: 0;
+    overflow-y: auto;
     list-style: none;
     user-select: none;
-    padding: 0;
+    background: var(--bg);
+    border: var(--border-width) solid var(--fg);
   }
+
   .autocomplete-list:empty {
     padding: 0;
   }
+
   .autocomplete-list-item {
     padding: 0.5em 1em;
+    line-height: 1;
     color: var(--fg);
     cursor: pointer;
-    line-height: 1;
   }
 
   .autocomplete-list-item.highlighted {
     background-color: var(--ice);
   }
+
   .autocomplete-list-item.selected {
-    background-color: var(--sky);
     color: #fff;
+    background-color: var(--sky);
   }
+
   .autocomplete-list-item-no-results {
     padding: 5px 15px;
-    color: var(--muted);
     line-height: 1;
+    color: var(--muted);
   }
+
   .autocomplete-list-item-loading {
     padding: 5px 15px;
     line-height: 1;
   }
 
   .autocomplete-list.hidden {
-    visibility: hidden;
     height: 0;
+    visibility: hidden;
   }
 
   input {
-    border: none;
-    -moz-appearance: textfield;
-    appearance: textfield;
     width: 100%;
     background: inherit;
+    border: none;
     outline: none;
+    appearance: textfield;
+    appearance: textfield;
   }
 </style>

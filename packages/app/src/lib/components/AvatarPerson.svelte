@@ -8,7 +8,7 @@
   const src = `${PUBLIC_STORAGE_URL}${pictureFile}`;
 </script>
 
-<a class="person" {href}>
+<svelte:element this={href ? 'a' : 'div'} class="person" {href}>
   <div class="img">
     <img {src} alt={firstName} />
   </div>
@@ -20,7 +20,7 @@
       </p>
     {/if}
   </div>
-</a>
+</svelte:element>
 
 <style>
   .person {

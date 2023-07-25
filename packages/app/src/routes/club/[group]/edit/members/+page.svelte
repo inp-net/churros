@@ -10,6 +10,7 @@
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import Alert from '$lib/components/Alert.svelte';
   import { formatISO9075, isBefore } from 'date-fns';
+  import InputPerson from '$lib/components/InputPerson.svelte';
 
   export let data: PageData;
   const { group } = data;
@@ -224,7 +225,12 @@
 
 <form class="add-member" on:submit|preventDefault={addGroupMember}>
   <h2>Ajouter un membre</h2>
-  <InputText required label="Nom d'utilisateur" bind:value={uid} />
+  <InputPerson
+    except={data.group.members.map(({ member: { uid } }) => uid)}
+    required
+    label="Utilisateur·ice"
+    bind:uid
+  />
   <InputText label="Titre" bind:value={title} />
   <section class="submit">
     {#if serverError}
@@ -243,6 +249,7 @@
   }
 
   .members {
+    margin-top: 2rem;
     display: flex;
     flex-flow: column;
     gap: 0.5rem;
