@@ -25,6 +25,7 @@ export const _articleQuery = Selector('Article')({
   links: {
     name: true,
     value: true,
+    computedValue: true,
   },
 });
 

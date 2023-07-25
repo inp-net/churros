@@ -47,18 +47,15 @@
   // --- Lifecycle events ---
 
   afterUpdate(() => {
-    if (setPositionOnNextUpdate) 
-      setScrollAwareListPosition();
-    
+    if (setPositionOnNextUpdate) setScrollAwareListPosition();
+
     setPositionOnNextUpdate = false;
   });
 
   // -- Reactivity --
   function onSelectedItemChanged(selected: string | undefined) {
     value = selected;
-    if (selected) 
-      text = selected;
-    
+    if (selected) text = selected;
 
     dispatch('change', selected);
     dispatch('select', selected);
@@ -67,9 +64,7 @@
 
   $: onSelectedItemChanged(selected);
 
-  $: if (text === '') 
-    selected = undefined;
-  
+  $: if (text === '') selected = undefined;
 
   $: showList = opened && items && items.length > 0;
 
@@ -84,17 +79,14 @@
 
   function up() {
     open();
-    if (highlightIndex > 0) 
-      highlightIndex--;
-    
+    if (highlightIndex > 0) highlightIndex--;
+
     highlight();
   }
 
   function down() {
     open();
-    if (highlightIndex < items.length - 1) 
-      highlightIndex++;
-    
+    if (highlightIndex < items.length - 1) highlightIndex++;
 
     highlight();
   }
@@ -103,11 +95,9 @@
     const query = '.selected';
     const el = list?.querySelector(query);
     if (el && 'scrollIntoViewIfNeeded' in el) {
-      if (typeof el.scrollIntoViewIfNeeded === 'function') 
-        el.scrollIntoViewIfNeeded();
-       else if ('scrollIntoView' in el && typeof el.scrollIntoView === 'function') 
+      if (typeof el.scrollIntoViewIfNeeded === 'function') el.scrollIntoViewIfNeeded();
+      else if ('scrollIntoView' in el && typeof el.scrollIntoView === 'function')
         el.scrollIntoView();
-      
     }
   }
 
@@ -121,16 +111,14 @@
         )
     ) {
       highlight();
-      if (e.target.tagName === 'LI') 
-        selectHighlighted();
-      
+      if (e.target.tagName === 'LI') selectHighlighted();
     } else {
       close();
     }
   }
 
   function onKeyDown(e: KeyboardEvent) {
-    let {key} = e;
+    let { key } = e;
     if (key === 'Tab' && e.shiftKey) key = 'ShiftTab';
     switch (key) {
       case 'Tab':
@@ -138,22 +126,22 @@
         if (opened) close();
         break;
       }
-  
+
       case 'ArrowDown': {
         down();
         break;
       }
-  
+
       case 'ArrowUp': {
         up();
         break;
       }
-  
+
       case 'Escape': {
         onEsc(e);
         break;
       }
-  
+
       default: {
         break;
       }
@@ -161,9 +149,7 @@
   }
 
   function onKeyPress(e: KeyboardEvent) {
-    if (e.key === 'Enter') 
-      onEnter(e);
-    
+    if (e.key === 'Enter') onEnter(e);
   }
 
   function onEnter(e: KeyboardEvent) {
@@ -189,9 +175,7 @@
   }
 
   function onBlurInternal() {
-    if (closeOnBlur) 
-      close();
-    
+    if (closeOnBlur) close();
 
     dispatch('blur');
   }
@@ -219,7 +203,7 @@
       highlightIndex = 0;
       selectHighlighted();
     }
-  
+
     dispatch('close-suggestions');
   }
 
@@ -358,7 +342,6 @@
     background: inherit;
     border: none;
     outline: none;
-    appearance: textfield;
     appearance: textfield;
   }
 </style>

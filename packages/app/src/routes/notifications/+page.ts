@@ -21,6 +21,7 @@ export const _notificationsQuery = Selector('Notification')({
       actions: {
         name: true,
         value: true,
+        computedValue: true,
       },
     },
   },

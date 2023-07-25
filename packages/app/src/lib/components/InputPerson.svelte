@@ -26,7 +26,7 @@
   onMount(async () => {
     if (!uid) return;
     const { user } = await $zeus.query({
-      user: [{ uid: q }, { uid: true, firstName: true, lastName: true, pictureFile: true }]
+      user: [{ uid: q }, { uid: true, firstName: true, lastName: true, pictureFile: true }],
     });
     usersByUid[user.uid] = user;
   });
@@ -53,7 +53,7 @@
       uid = '';
       try {
         const { user } = await $zeus.query({
-          user: [{ uid: q }, { uid: true, firstName: true, lastName: true, pictureFile: true }]
+          user: [{ uid: q }, { uid: true, firstName: true, lastName: true, pictureFile: true }],
         });
         if (!allowed(user.uid)) throw new Error('not allowed');
         console.log(`selected ${user.uid}`);
@@ -61,12 +61,11 @@
         uid = user.uid;
       } catch {
         let { searchUsers } = await $zeus.query({
-          searchUsers: [{ q }, { uid: true, firstName: true, lastName: true, pictureFile: true }]
+          searchUsers: [{ q }, { uid: true, firstName: true, lastName: true, pictureFile: true }],
         });
         searchUsers = searchUsers.filter(({ uid }) => allowed(uid));
-        for (const user of searchUsers) 
-          usersByUid[user.uid] = user;
-        
+        for (const user of searchUsers) usersByUid[user.uid] = user;
+
         suggestions = searchUsers.map((u) => u.uid);
       } finally {
         loading = false;

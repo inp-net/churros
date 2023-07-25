@@ -63,7 +63,7 @@
   {#if links.length > 0}
     <ul class="links">
       {#each links as link}
-        <li><a href={link.value}>{link.name}</a></li>
+        <li><a href={link.computedValue}>{link.name}</a></li>
       {/each}
     </ul>
   {/if}

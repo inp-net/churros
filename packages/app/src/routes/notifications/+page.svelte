@@ -136,8 +136,8 @@
           </p>
         {/if}
         <ul class="actions">
-          {#each actions as { name, value }}
-            <li><a href={value}>{name}</a></li>
+          {#each actions as { name, computedValue }}
+            <li><a href={computedValue}>{name}</a></li>
           {/each}
         </ul>
       </li>

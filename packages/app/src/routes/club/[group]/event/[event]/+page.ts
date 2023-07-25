@@ -44,6 +44,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           links: {
             name: true,
             value: true,
+            computedValue: true,
           },
           group: {
             uid: true,
@@ -67,6 +68,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             links: {
               name: true,
               value: true,
+              computedValue: true,
             },
             registrations: {
               id: true,

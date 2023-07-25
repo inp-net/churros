@@ -18,7 +18,7 @@
   export let href: string;
   export let bodyHtml: string;
   export let publishedAt: Date;
-  export let links: Array<{ value: string; name: string }> = [];
+  export let links: Array<{ value: string; name: string; computedValue: string }> = [];
   export let group: { uid: string; name: string; pictureFile: string };
   export let author: { uid: string; firstName: string; lastName: string } | undefined = undefined;
   export let img: { src: string; alt?: string; width?: number; height?: number } | undefined =
@@ -62,7 +62,7 @@
     <ul class="links nobullet">
       {#each links as link}
         <li>
-          <ButtonSecondary href={link.value}>{link.name}</ButtonSecondary>
+          <ButtonSecondary href={link.computedValue}>{link.name}</ButtonSecondary>
         </li>
       {/each}
     </ul>

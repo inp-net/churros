@@ -58,7 +58,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 publishedAt: true,
               },
               school: { name: true, color: true },
-              links: { name: true, value: true },
+              links: { name: true, value: true, computedValue: true },
               members: {
                 member: { uid: true, firstName: true, lastName: true, pictureFile: true },
                 title: true,
@@ -73,6 +73,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 links: {
                   name: true,
                   value: true,
+                  computedValue: true,
                 },
                 title: true,
                 startsAt: true,
@@ -122,7 +123,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 pictureFile: true,
               },
               school: { name: true, color: true },
-              links: { name: true, value: true },
+              links: { name: true, value: true, computedValue: true },
               ancestors: { uid: true, name: true, pictureFile: true },
               events: {
                 descriptionHtml: true,
@@ -130,6 +131,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 links: {
                   name: true,
                   value: true,
+                  computedValue: true,
                 },
                 title: true,
                 startsAt: true,

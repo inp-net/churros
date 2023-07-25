@@ -1,7 +1,6 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import IconBack from '~icons/mdi/arrow-left';
   import IconGear from '~icons/mdi/gear';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { dateTimeFormatter } from '$lib/dates';
@@ -11,10 +10,6 @@
 
   export let data: PageData;
   const { author, publishedAt, links, title, bodyHtml, group, pictureFile, event } = data.article;
-
-  const memberTitle = data.article.author?.groups.find(
-    (g) => g.group.uid === data.article.group.uid
-  )?.title;
 </script>
 
 {#if pictureFile}
@@ -42,7 +37,7 @@
     <ul class="links nobullet">
       {#each links as link}
         <li>
-          <ButtonSecondary href={link.value}>{link.name}</ButtonSecondary>
+          <ButtonSecondary href={link.computedValue}>{link.name}</ButtonSecondary>
         </li>
       {/each}
     </ul>

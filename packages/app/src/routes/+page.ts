@@ -15,7 +15,7 @@ export const pageQuery = Selector('QueryHomepageConnection')({
       pictureFile: true,
       group: { uid: true, name: true, pictureFile: true },
       author: { uid: true, firstName: true, lastName: true },
-      links: { value: true, name: true },
+      links: { value: true, computedValue: true, name: true },
     },
   },
 });
