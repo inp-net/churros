@@ -119,6 +119,19 @@ builder.queryField('user', (t) =>
   })
 );
 
+builder.queryField('allUsers', (t) =>
+  t.prismaConnection({
+    type: UserType,
+    async resolve(query) {
+      return prisma.user.findMany({
+        ...query,
+        orderBy: { uid: 'asc' },
+      });
+    },
+    cursor: 'id',
+  })
+);
+
 /** Searches for user on all text fields. */
 builder.queryField('searchUsers', (t) =>
   t.prismaField({

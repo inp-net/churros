@@ -1,6 +1,8 @@
 <script lang="ts">
   import IconAdd from '~icons/mdi/add';
+  import IconTerminal from '~icons/mdi/terminal';
   import CardService from '$lib/components/CardService.svelte';
+  import { me } from '$lib/session';
 
   function Service(
     name: string,
@@ -42,6 +44,9 @@
       href="./submit"
     />
   </li>
+  {#if $me?.admin}
+    <CardService logoFile={IconTerminal} name="Backrooms" href="/backrooms" />
+  {/if}
 </ul>
 
 <style>
