@@ -33,6 +33,7 @@
     valueFieldName={valueKey}
     labelFieldName={labelKey}
     noResultsText="Aucun résultat"
+    loadingText="Chargement…"
   >
     <slot slot="item" name="item" let:item {item} />
   </AutoComplete>

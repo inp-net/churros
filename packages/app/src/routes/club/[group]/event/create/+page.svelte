@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import EventForm from '$lib/components/FormEvent.svelte';
   import { Visibility } from '$lib/zeus';
-  import type { PageData } from './$types';
+  import type { PageData, Snapshot } from './$types';
 
   export let data: PageData;
   let event = {

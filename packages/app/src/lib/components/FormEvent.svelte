@@ -151,7 +151,7 @@
     serverError = '';
 
     dispatch('save');
-    await goto(redirectAfterSave(upsertEvent.data.uid));
+    await goto(redirectAfterSave(upsertEvent.data.uid, event.group.uid));
   }
 
   let expandedTicketId = '';
@@ -279,11 +279,7 @@
 </script>
 
 <form on:submit|preventDefault={async () => saveChanges()}>
-  <InputGroup
-    groupsByUid={{ [event.group.uid]: event.group }}
-    label="Groupe"
-    bind:uid={event.group.uid}
-  />
+  <InputGroup group={event.group} label="Groupe" bind:uid={event.group.uid} />
 
   <InputText label="Titre" bind:value={event.title} />
   <InputSelectOne

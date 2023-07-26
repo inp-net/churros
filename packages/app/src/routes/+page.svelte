@@ -28,7 +28,7 @@
 
 <h1>Mon feed</h1>
 
-{#if $me}
+{#if $me?.groups}
   <CarouselGroups groups={$me.groups.map(({ group }) => group)} />
 {/if}
 

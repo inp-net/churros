@@ -1,7 +1,6 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import { zeus } from '$lib/zeus';
-  import { onMount } from 'svelte';
   import IconNone from '~icons/mdi/help';
   import InputField from './InputField.svelte';
   import InputSearchObject from './InputSearchObject.svelte';
@@ -12,18 +11,9 @@
   export let required = false;
   export let allow: string[] = [];
   export let except: string[] = [];
-  export let groupsByUid: Record<string, Group> = {};
   export let group: Group | undefined = undefined;
 
   $: console.log(uid, group);
-
-  onMount(async () => {
-    if (!uid) return;
-    const { group } = await $zeus.query({
-      group: [{ uid: q }, { uid: true, name: true, pictureFile: true }],
-    });
-    groupsByUid[group.uid] = group;
-  });
 
   function allowed(uid: string) {
     const result =
@@ -53,7 +43,7 @@
   <InputSearchObject {search} bind:value={uid} bind:object={group} labelKey="name" valueKey="uid">
     <div class="avatar" slot="thumbnail" let:object>
       {#if object}
-        <img src="{PUBLIC_STORAGE_URL}{object.pictureFile}" alt={object.name} />
+        <img src="{PUBLIC_STORAGE_URL}{object.pictureFile}" alt={object.name?.toString()} />
       {:else}
         <IconNone />
       {/if}

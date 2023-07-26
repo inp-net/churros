@@ -43,6 +43,16 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
           : {},
       },
       schoolGroups: { names: true, majors: { id: true, name: true } },
+      me: {
+        uid: true,
+        credentials: {
+          id: true,
+          type: true,
+          userAgent: true,
+          createdAt: true,
+          active: true,
+        },
+      },
     },
     { fetch, parent }
   );

@@ -108,7 +108,7 @@
 </script>
 
 <form on:submit|preventDefault={updateArticle}>
-  <EventSearch label="Évènement lié" groupUid={$page.params.group} bind:id={eventId} />
+  <EventSearch {event} label="Évènement lié" groupUid={$page.params.group} bind:id={eventId} />
   <InputText required label="Titre" bind:value={title} />
   <DateInput required time label="Publier le" bind:value={publishedAt} />
   <InputSelectOne
