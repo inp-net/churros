@@ -9,11 +9,22 @@
   import { goto } from '$app/navigation';
   import GhostButton from '$lib/components/ButtonGhost.svelte';
   import BackButton from '$lib/components/ButtonBack.svelte';
+  import CardArticle from '$lib/components/CardArticle.svelte';
 
   export let data: PageData;
 
-  const { id, tickets, title, startsAt, pictureFile, descriptionHtml, links, group, contactMail } =
-    data.event;
+  const {
+    id,
+    tickets,
+    title,
+    startsAt,
+    pictureFile,
+    descriptionHtml,
+    links,
+    group,
+    contactMail,
+    articles,
+  } = data.event;
 
   $: usersRegistration = tickets
     .flatMap((t) => t.registrations)
@@ -31,8 +42,7 @@
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
 </script>
 
-<section
-  class="header"
+<header
   style:background-image="linear-gradient(#000000aa, #000000aa), url({pictureFile
     ? `${PUBLIC_STORAGE_URL}${pictureFile}`
     : 'https://picsum.photos/400/400'})"
@@ -48,7 +58,7 @@
     {/if}
   </h1>
   <p>{dateTimeFormatter.format(startsAt)}</p>
-</section>
+</header>
 {#each usersRegistration as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id }}
   <Button theme="primary" on:click={async () => goto(bookingURL(id))}
     >{#if authorIsBeneficiary || author.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
@@ -125,6 +135,17 @@
   </ul>
 </section>
 
+<section class="news">
+  <h2>Actualités</h2>
+  <ul class="nobullet">
+    {#each articles as { uid, ...article } (uid)}
+      <li>
+        <CardArticle href="../../post/{uid}" {...article} />
+      </li>
+    {/each}
+  </ul>
+</section>
+
 <section class="organizer">
   <h2>Organisé par</h2>
   <div class="organizer-name-and-contact">
@@ -142,12 +163,13 @@
 </section>
 
 <style lang="scss">
-  .header {
+  header {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
     align-items: center;
     justify-content: center;
+    width: 100%;
     padding: 1rem;
     background-size: cover;
 
@@ -155,6 +177,16 @@
       margin: 0;
       color: white;
     }
+  }
+
+  section {
+    max-width: 1000px;
+    margin: 0 auto;
+    margin-top: 2rem;
+  }
+
+  h2 {
+    margin-bottom: 1rem;
   }
 
   .places .left::after {

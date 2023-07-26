@@ -2,16 +2,12 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import { intlFormatDistance } from 'date-fns';
   import Card from './Card.svelte';
-  import IconLock from '~icons/mdi/lock-outline';
-  import IconCommunity from '~icons/mdi/google-circles-extended';
-  import IconLinkLock from '~icons/mdi/link-lock';
-  import IconGlobe from '~icons/mdi/earth';
   import IconDots from '~icons/mdi/dots-horizontal';
-  import { Visibility } from '$lib/zeus';
-  import { DISPLAY_VISIBILITIES } from '$lib/display';
+  import type { Visibility } from '$lib/zeus';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import ButtonInk from './ButtonInk.svelte';
   import { htmlToText } from 'html-to-text';
+  import IndicatorVisibility from './IndicatorVisibility.svelte';
 
   export let visibility: Visibility | undefined = undefined;
   export let title: string;
@@ -36,17 +32,7 @@
   </svelte:fragment>
   <header>
     <a {href}><h2>{title}</h2></a>
-    <div class="visibility" title={visibility ? DISPLAY_VISIBILITIES[visibility] : undefined}>
-      {#if visibility === Visibility.Private}
-        <IconLock />
-      {:else if visibility === Visibility.Unlisted}
-        <IconLinkLock />
-      {:else if visibility === Visibility.Restricted}
-        <IconCommunity />
-      {:else if visibility === Visibility.Public}
-        <IconGlobe />
-      {/if}
-    </div>
+    <IndicatorVisibility {visibility} />
   </header>
 
   <div class="description">

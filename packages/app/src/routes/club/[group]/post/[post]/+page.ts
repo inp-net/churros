@@ -21,10 +21,42 @@ export const _articleQuery = Selector('Article')({
   event: {
     uid: true,
     title: true,
+    startsAt: true,
+    descriptionHtml: true,
+    links: {
+      name: true,
+      computedValue: true,
+    },
+    tickets: {
+      uid: true,
+      registrations: {
+        id: true,
+        beneficiary: true,
+        authorIsBeneficiary: true,
+        beneficiaryUser: { uid: true, firstName: true, lastName: true },
+        author: { uid: true },
+        paid: true,
+        ticket: {
+          name: true,
+        },
+      },
+      opensAt: true,
+      closesAt: true,
+      placesLeft: true,
+      capacity: true,
+      name: true,
+      descriptionHtml: true,
+      price: true,
+    },
+    group: {
+      uid: true,
+      pictureFile: true,
+      name: true,
+    },
+    contactMail: true,
   },
   links: {
     name: true,
-    value: true,
     computedValue: true,
   },
 });

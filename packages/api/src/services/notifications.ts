@@ -131,6 +131,7 @@ export async function scheduleShotgunNotifications({
   id: string;
   tickets: Ticket[];
 }): Promise<SizedArray<Cron | boolean, 4> | undefined> {
+  if (tickets.length === 0) return;
   const soonDate = (date: Date) => subMinutes(date, 10);
 
   const opensAt = new Date(

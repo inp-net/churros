@@ -24,6 +24,16 @@
     title: '',
     visibility: Visibility.Private,
   };
+  export const snapshot: Snapshot = {
+    capture: () => ({ event }),
+    restore({ event }) {
+      $page.params.uid = event.groupUid;
+      $page.params.eventUid = event.uid;
+      data.group = event.group;
+      data.event = event;
+    },
+  };
+  const redirectAfterSave = (uid: string) => $page.url.searchParams.get('back') || `../${uid}`;
 </script>
 
-<EventForm bind:event availableLydiaAccounts={data.lydiaAccountsOfGroup} availableGroups={[]} />
+<EventForm {redirectAfterSave} bind:event availableLydiaAccounts={data.lydiaAccountsOfGroup} />

@@ -43,9 +43,6 @@
 <TopBar />
 
 <div class="layout">
-  {#if !mobile}
-    <div class="min-w-48" />
-  {/if}
   <main>
     <slot />
   </main>
@@ -75,8 +72,6 @@
   }
 
   .layout {
-    display: grid;
-    grid-template-columns: 1fr minmax(0, 60rem) 1fr;
     max-width: 100rem;
     padding-top: 6rem; // XXX equal to topbar's height
     padding-bottom: 5rem; /// XXX equal to navbar's height
@@ -85,9 +80,5 @@
     > * {
       padding: 0 0.5rem;
     }
-  }
-
-  main {
-    grid-column: 2;
   }
 </style>

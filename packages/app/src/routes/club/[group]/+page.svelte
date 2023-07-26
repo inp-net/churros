@@ -55,6 +55,7 @@
     $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups
   );
   $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || onClubBoard);
+  $: canEditEvents = canEditArticles;
   $: canEditMembers = Boolean(
     $me?.admin ||
       myPermissions?.canEditMembers ||
@@ -182,6 +183,28 @@
     <ul class="nobullet">
       {#each group.articles as { uid, ...article } (uid)}
         <CardArticle hideGroup {group} href="./post/{uid}" {...article} />
+      {/each}
+    </ul>
+  </section>
+
+  <section class="events">
+    <h2>
+      Évènements {#if canEditEvents}
+        <ButtonSecondary href="./event/create" icon={IconAdd}>Nouveau</ButtonSecondary>
+      {/if}
+    </h2>
+
+    <ul class="nobullet">
+      {#each group.events as { uid, ...event } (uid)}
+        <!-- TODO CardEvent -->
+        <CardArticle
+          hideGroup
+          {group}
+          href="./event/{uid}"
+          {...event}
+          publishedAt={event.startsAt}
+          bodyHtml={event.descriptionHtml}
+        />
       {/each}
     </ul>
   </section>

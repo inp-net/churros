@@ -6692,6 +6692,7 @@ __metadata:
     prettier: "npm:^2.7.1"
     prettier-plugin-jsdoc: "npm:^0.4.2"
     prettier-plugin-svelte: "npm:^2.8.1"
+    simple-svelte-autocomplete: "npm:^2.5.2"
     stylelint: "npm:^14.15.0"
     stylelint-config-html: "npm:^1.1.0"
     stylelint-config-prettier: "npm:^9.0.4"
@@ -13565,6 +13566,13 @@ __metadata:
   version: 3.0.7
   resolution: "signal-exit@npm:3.0.7"
   checksum: 5cf7525c55a72d8d104d914acf2e470f74b2c156197277ad7b331bc5de3d8790170fed3c82ff98c7c31adaa8ff941bfd5ba44f55171cbe8ed0e939fa82a8322a
+  languageName: node
+  linkType: hard
+
+"simple-svelte-autocomplete@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "simple-svelte-autocomplete@npm:2.5.2"
+  checksum: 83861d5309412f5dafba85f9c318b2aacc91366716729eb08018cdf5b03d703b7b35f1c6776aa95749be3f6f69490bfb77cc55df39833210005d7267efa1906a
   languageName: node
   linkType: hard
 

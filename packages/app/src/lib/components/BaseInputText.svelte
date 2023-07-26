@@ -1,7 +1,6 @@
 <script lang="ts">
   import { type SvelteComponent, createEventDispatcher, onMount } from 'svelte';
   import IconReset from '~icons/mdi/reload';
-  import InputWithSuggestions from './InputWithSuggestions.svelte';
   import { tooltip } from '$lib/tooltip';
   import { format } from 'date-fns';
   const emit = createEventDispatcher();
@@ -15,7 +14,6 @@
   export let placeholder = '';
   export let validate: (value: string) => string = () => '';
   export let actionIcon: typeof SvelteComponent | undefined = undefined;
-  export let suggestions: string[] | undefined = undefined;
   export let required = false;
   export let closeKeyboardOnEnter = false;
 
@@ -113,71 +111,35 @@
         <slot name="before" />
       </div>
     {/if}
-    {#if suggestions}
-      <InputWithSuggestions
-        class="{errored ? 'danger' : ''} {focused ? 'primary' : ''}"
-        on:change
-        on:close-suggestions
-        on:select
-        on:input
-        {inputContainer}
-        {autocomplete}
-        items={suggestions}
-        {required}
-        {name}
-        bind:text={valueString}
-        {placeholder}
-        on:keypress={(e) => {
-          if (!(e instanceof KeyboardEvent)) return;
-          if (!(e.target instanceof HTMLInputElement)) return;
-          if (e.key === 'Enter' && closeKeyboardOnEnter) e.target.blur();
-        }}
-        on:focus={() => {
-          focused = true;
-        }}
-        on:blur={() => {
-          focused = false;
-        }}
-        on:input={(e) => {
-          if (valueString !== '') showEmptyErrors = true;
-          emit('input', e);
-        }}
-      >
-        <div class="suggestion" slot="suggestion" let:item>
-          <slot name="suggestion" {item} />
-        </div>
-      </InputWithSuggestions>
-    {:else}
-      <input
-        class:danger={errored}
-        class:primary={focused}
-        on:change
-        on:keyup
-        on:keypress={(e) => {
-          if (!(e.target instanceof HTMLInputElement)) return;
-          if (e.key === 'Enter' && closeKeyboardOnEnter) e.target.blur();
-        }}
-        {type}
-        {name}
-        value={valueString}
-        {required}
-        {autocomplete}
-        {placeholder}
-        on:input={(e) => {
-          if (!(e.target instanceof HTMLInputElement)) return;
-          valueString = e.target?.value;
-          if (valueString === undefined) valueString = '';
-          if (valueString !== '') showEmptyErrors = true;
-          emit('input', e);
-        }}
-        on:focus={() => {
-          focused = true;
-        }}
-        on:blur={() => {
-          focused = false;
-        }}
-      />
-    {/if}
+    <input
+      class:danger={errored}
+      class:primary={focused}
+      on:change
+      on:keyup
+      on:keypress={(e) => {
+        if (!(e.target instanceof HTMLInputElement)) return;
+        if (e.key === 'Enter' && closeKeyboardOnEnter) e.target.blur();
+      }}
+      {type}
+      {name}
+      value={valueString}
+      {required}
+      {autocomplete}
+      {placeholder}
+      on:input={(e) => {
+        if (!(e.target instanceof HTMLInputElement)) return;
+        valueString = e.target?.value;
+        if (valueString === undefined) valueString = '';
+        if (valueString !== '') showEmptyErrors = true;
+        emit('input', e);
+      }}
+      on:focus={() => {
+        focused = true;
+      }}
+      on:blur={() => {
+        focused = false;
+      }}
+    />
     {#if actionIcon}
       <button type="button" class="action" on:click={() => emit('action')}>
         <svelte:component this={actionIcon} />

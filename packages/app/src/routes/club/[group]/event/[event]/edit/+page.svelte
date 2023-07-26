@@ -4,6 +4,7 @@
   import { Selector, zeus } from '$lib/zeus';
   import type { PageData } from './$types';
   import FormPicture from '$lib/components/FormPicture.svelte';
+  import { page } from '$app/stores';
 
   export let data: PageData;
 
@@ -21,10 +22,9 @@
     .catch(console.error);
 </script>
 
-<a href="../">Voir l'évènement</a>
-
 <FormPicture objectName="Event" bind:object={data.event} />
 <FormEvent
+  redirectAfterSave={() => $page.url.searchParams.get('back') || '../'}
   availableGroups={data.groups.filter((g) =>
     $me?.groups.some(({ group, canEditArticles }) => canEditArticles && group.id === g.id)
   )}

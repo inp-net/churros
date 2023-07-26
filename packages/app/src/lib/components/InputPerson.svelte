@@ -1,12 +1,9 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import { zeus } from '$lib/zeus';
-  import { onMount } from 'svelte';
   import IconNone from '~icons/mdi/help';
-  import AvatarPerson from './AvatarPerson.svelte';
-  import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
-  import IconLoading from '~icons/mdi/loading';
+  import InputSearchObject from './InputSearchObject.svelte';
 
   type User = { uid: string; firstName: string; lastName: string; pictureFile: string };
   export let label: string;
@@ -14,22 +11,9 @@
   export let required = false;
   export let allow: string[] = [];
   export let except: string[] = [];
-  let suggestions: string[] = [];
-  let q = '';
-  let loading = false;
-  const usersByUid: Record<string, User> = {};
-
-  $: user = usersByUid?.[uid ?? ''];
+  export let user: User | undefined = undefined;
 
   $: console.log(uid, user);
-
-  onMount(async () => {
-    if (!uid) return;
-    const { user } = await $zeus.query({
-      user: [{ uid: q }, { uid: true, firstName: true, lastName: true, pictureFile: true }],
-    });
-    usersByUid[user.uid] = user;
-  });
 
   function allowed(uid: string) {
     const result =
@@ -38,61 +22,61 @@
     if (!result) console.log(`${uid} disallowed`);
     return result;
   }
+
+  async function search(query: string): Promise<User[]> {
+    console.log(`search(${query})`);
+    const { searchUsers } = await $zeus.query({
+      searchUsers: [
+        { q: query },
+        {
+          uid: true,
+          firstName: true,
+          lastName: true,
+          pictureFile: true,
+        },
+      ],
+    });
+    return searchUsers
+      .filter(({ uid }) => allowed(uid))
+      .map(({ firstName, lastName, ...rest }) => ({
+        ...rest,
+        fullName: `${firstName} ${lastName}`,
+        firstName,
+        lastName,
+      }));
+  }
 </script>
 
 <InputField {label} {required}>
-  <BaseInputText
-    type="text"
-    bind:value={q}
-    {required}
-    {suggestions}
-    on:input={async () => {
-      console.log(`inputed, query is ${q}`);
-      if (!q) return;
-      loading = true;
-      uid = '';
-      try {
-        const { user } = await $zeus.query({
-          user: [{ uid: q }, { uid: true, firstName: true, lastName: true, pictureFile: true }],
-        });
-        if (!allowed(user.uid)) throw new Error('not allowed');
-        console.log(`selected ${user.uid}`);
-        usersByUid[user.uid] = user;
-        uid = user.uid;
-      } catch {
-        let { searchUsers } = await $zeus.query({
-          searchUsers: [{ q }, { uid: true, firstName: true, lastName: true, pictureFile: true }],
-        });
-        searchUsers = searchUsers.filter(({ uid }) => allowed(uid));
-        for (const user of searchUsers) usersByUid[user.uid] = user;
-
-        suggestions = searchUsers.map((u) => u.uid);
-      } finally {
-        loading = false;
-      }
-    }}
+  <InputSearchObject
+    {search}
+    bind:value={uid}
+    bind:object={user}
+    labelKey="fullName"
+    valueKey="uid"
   >
-    <div class="avatar" slot="before">
-      {#if loading}
-        <IconLoading />
-      {:else if user}
+    <div class="avatar" slot="thumbnail" let:object>
+      {#if object}
         <img
-          src="{PUBLIC_STORAGE_URL}{user?.pictureFile}"
-          alt="{user?.firstName} {user?.lastName}"
+          src="{PUBLIC_STORAGE_URL}{object.pictureFile}"
+          alt="{object.firstName} {object.lastName}"
         />
       {:else}
         <IconNone />
       {/if}
     </div>
-    <div class="suggestion" slot="suggestion" let:item={suggestionUid}>
-      <AvatarPerson href="" role="" {...usersByUid[suggestionUid]} />
+    <div class="suggestion" slot="item" let:item>
+      <div class="avatar">
+        <img src="{PUBLIC_STORAGE_URL}{item.pictureFile}" alt="{item.firstName} {item.lastName}" />
+      </div>
+      <div>{item.firstName} {item.lastName}</div>
     </div>
-  </BaseInputText>
+  </InputSearchObject>
 </InputField>
 
 <style>
   .avatar {
-    --size: 2rem;
+    --size: 2.5rem;
 
     display: flex;
     flex-shrink: 0;
@@ -112,5 +96,12 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .suggestion {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
   }
 </style>

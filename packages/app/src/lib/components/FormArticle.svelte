@@ -5,7 +5,6 @@
   import EventSearch from './InputEvent.svelte';
   import { page } from '$app/stores';
   import { _articleQuery } from '../../routes/club/[group]/post/[post]/edit/+page';
-  import LinkCollectionInput from '$lib/components/InputLinks.svelte';
   import DateInput from '$lib/components/InputDate.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
   import ButtonPrimary from './ButtonPrimary.svelte';
@@ -45,6 +44,9 @@
         id: string;
         uid: string;
         title: string;
+        startsAt: Date;
+        visibility: Visibility;
+        pictureFile: string;
       };
       links: Array<{ name: string; value: string }>;
       publishedAt: Date;
@@ -69,7 +71,7 @@
           {
             id,
             authorId: author?.id ?? '',
-            eventId: event?.id,
+            eventId: eventId ?? '',
             groupId: group.id,
             title,
             body,
@@ -101,12 +103,14 @@
       loading = false;
     }
   };
+
+  $: console.log({ eventId });
 </script>
 
 <form on:submit|preventDefault={updateArticle}>
-  <EventSearch groupUid={$page.params.group} bind:eventId />
-  <InputText label="Titre" required bind:value={title} />
-  <DateInput time label="Publier le" bind:value={publishedAt} />
+  <EventSearch label="Évènement lié" groupUid={$page.params.group} bind:id={eventId} />
+  <InputText required label="Titre" bind:value={title} />
+  <DateInput required time label="Publier le" bind:value={publishedAt} />
   <InputSelectOne
     required
     bind:value={visibility}

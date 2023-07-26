@@ -4,6 +4,7 @@
 
   export let icon: typeof SvelteComponent | undefined = undefined;
   export let loading = false;
+  export let circle = false;
   export let id = '';
   export let href = '';
   export let formaction: string | undefined = undefined;
@@ -19,6 +20,7 @@
   type={submits ? 'submit' : 'button'}
   class="button-secondary typo-paragraph"
   class:danger
+  class:circle
   class:inside-prose={insideProse}
   {href}
   {download}
@@ -43,6 +45,8 @@
   .button-secondary {
     position: relative;
     display: inline-flex;
+    flex-grow: 0;
+    flex-shrink: 0;
     gap: 0.5em;
     align-items: center;
     padding: 0.25rem 0.75rem;
@@ -50,6 +54,11 @@
     background: var(--bg);
     border: var(--border-block) solid var(--border);
     border-radius: 1000px;
+  }
+
+  .button-secondary.circle {
+    padding: 0.5rem;
+    font-size: 1.2em;
   }
 
   .button-secondary.inside-prose {

@@ -25,6 +25,9 @@ export const _articleQuery = Selector('Article')({
     id: true,
     uid: true,
     title: true,
+    startsAt: true,
+    pictureFile: true,
+    visibility: true,
   },
   eventId: true,
   links: {

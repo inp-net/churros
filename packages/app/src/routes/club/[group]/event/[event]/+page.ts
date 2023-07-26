@@ -19,6 +19,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           articles: {
             uid: true,
             bodyHtml: true,
+            publishedAt: true,
             title: true,
             group: {
               uid: true,
