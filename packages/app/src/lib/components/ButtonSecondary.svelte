@@ -54,6 +54,7 @@
     background: var(--bg);
     border: var(--border-block) solid var(--border);
     border-radius: 1000px;
+    color: var(--text);
   }
 
   .button-secondary.circle {

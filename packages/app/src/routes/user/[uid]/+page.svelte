@@ -2,7 +2,7 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import IconGear from '~icons/mdi/gear';
   import IconWebsite from '~icons/mdi/earth';
-  import { dateFormatter } from '$lib/dates.js';
+  import { dateFormatter, yearTier } from '$lib/dates.js';
   import { me } from '$lib/session.js';
   import type { PageData } from './$types';
   import IconFacebook from '~icons/mdi/facebook-box';
@@ -14,6 +14,9 @@
   import IconDiscord from '~icons/mdi/discord';
   import IconSnapchat from '~icons/mdi/snapchat';
   import BadgeGroupMember from '$lib/components/BadgeGroupMember.svelte';
+  import TreePersons from '$lib/components/TreePersons.svelte';
+
+  $: console.log(data.user.familyTree);
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -22,10 +25,29 @@
     matrix: IconMatrix,
     linkedin: IconLinkedin,
     discord: IconDiscord,
-    snapchat: IconSnapchat,
+    snapchat: IconSnapchat
   };
 
   export let data: PageData;
+
+  type Nesting = [string, Nesting[]];
+  $: familyNesting = JSON.parse(data.user.familyTree.nesting) as Nesting;
+  type UserTree = typeof data.user.familyTree.users[number] & { children: UserTree[] };
+  function makeFamilyTree(nesting: Nesting): UserTree {
+    console.log(`Working with ${JSON.stringify(nesting)}`);
+    const findUser = (uid: string) => data.user.familyTree.users.find((u) => u.uid === uid);
+
+    let [rootUid, children] = nesting;
+    return {
+      ...findUser(rootUid)!,
+      children: children.map((child) =>
+        typeof child === 'string' ? { ...findUser(child)!, children: [] } : makeFamilyTree(child)
+      )
+    };
+  }
+
+  $: familyTree = makeFamilyTree(familyNesting);
+  $: console.log(familyTree);
 
   function schoolYearStart(): Date {
     const now = new Date();
@@ -68,7 +90,7 @@
     <div class="identity">
       <h1>{user.firstName} {user.lastName}</h1>
       <p class="major">
-        {schoolYearStart().getFullYear() - user.graduationYear + 4}A ({user.graduationYear}) · {user
+        {yearTier(user.graduationYear)}A ({user.graduationYear}) · {user
           .major.name} · {user.major.schools.map(({ name }) => name).join(', ')}
       </p>
       <ul class="social-links nobullet">
@@ -134,7 +156,7 @@
   <section class="family">
     <h2>Famille</h2>
 
-    TODO
+    <TreePersons user={familyTree} highlightUid={user.uid} />
   </section>
 
   <section class="articles">
@@ -248,5 +270,11 @@
 
   .content {
     margin: 0 1rem;
+  }
+
+  .family {
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
   }
 </style>

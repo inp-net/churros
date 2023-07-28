@@ -2,13 +2,14 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   export let firstName: string;
   export let lastName: string;
-  export let role: string;
+  export let role: string = '';
   export let pictureFile: string;
   export let href: string;
+  export let highlighted = false;
   const src = `${PUBLIC_STORAGE_URL}${pictureFile}`;
 </script>
 
-<svelte:element this={href ? 'a' : 'div'} class="person" {href}>
+<svelte:element this={href ? 'a' : 'div'} class:highlighted class="person" {href}>
   <div class="img">
     <img {src} alt={firstName} />
   </div>
@@ -66,5 +67,13 @@
 
   .role {
     font-size: calc(max(0.65em, 0.75rem));
+  }
+
+  .person.highlighted {
+    color: var(--primary-bg);
+  }
+
+  .person.highlighted .name {
+    font-weight: bold;
   }
 </style>

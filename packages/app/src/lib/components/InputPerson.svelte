@@ -7,7 +7,7 @@
 
   type User = { uid: string; firstName: string; lastName: string; pictureFile: string };
   export let label: string;
-  export let uid: string;
+  export let uid: string | undefined;
   export let required = false;
   export let allow: string[] = [];
   export let except: string[] = [];
@@ -32,9 +32,9 @@
           uid: true,
           firstName: true,
           lastName: true,
-          pictureFile: true,
-        },
-      ],
+          pictureFile: true
+        }
+      ]
     });
     return searchUsers
       .filter(({ uid }) => allowed(uid))
@@ -42,7 +42,7 @@
         ...rest,
         fullName: `${firstName} ${lastName}`,
         firstName,
-        lastName,
+        lastName
       }));
   }
 </script>
@@ -55,7 +55,13 @@
     labelKey="fullName"
     valueKey="uid"
   >
-    <div class="avatar" slot="thumbnail" let:object>
+    <svelte:element
+      this={object ? 'a' : 'div'}
+      href={object ? `/user/${object.uid}` : ''}
+      class="avatar"
+      slot="thumbnail"
+      let:object
+    >
       {#if object}
         <img
           src="{PUBLIC_STORAGE_URL}{object.pictureFile}"
@@ -64,7 +70,7 @@
       {:else}
         <IconNone />
       {/if}
-    </div>
+    </svelte:element>
     <div class="suggestion" slot="item" let:item>
       <div class="avatar">
         <img src="{PUBLIC_STORAGE_URL}{item.pictureFile}" alt="{item.firstName} {item.lastName}" />

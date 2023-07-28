@@ -22,3 +22,16 @@ export const formatDatetimeLocal = (date: Date | string) => {
     date.getHours()
   )}:${pad(date.getMinutes())}`;
 };
+
+export function schoolYearStart(): Date {
+    const now = new Date();
+    const thisYearSeptemberFirst = new Date(now.getFullYear(), 9, 1);
+    if (now > thisYearSeptemberFirst) return thisYearSeptemberFirst;
+
+    return new Date(now.getFullYear() - 1, 9, 1);
+  }
+
+
+export function yearTier(graduationYear: number): number {
+return schoolYearStart().getFullYear() - graduationYear + 4
+}
