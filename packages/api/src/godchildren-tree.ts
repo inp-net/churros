@@ -1,5 +1,5 @@
 import type { User } from '@prisma/client';
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 import { GraphQLError } from 'graphql';
 
 export class FamilyTree {
