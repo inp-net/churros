@@ -12,6 +12,7 @@
   export let allow: string[] = [];
   export let except: string[] = [];
   export let group: Group | undefined = undefined;
+  export let clearable = false;
 
   $: console.log(uid, group);
 
@@ -35,12 +36,19 @@
         },
       ],
     });
-    return searchGroups.filter(({ uid }) => allowed(uid)).reverse();
+    return searchGroups.filter(({ uid }) => allowed(uid));
   }
 </script>
 
 <InputField {label} {required}>
-  <InputSearchObject {search} bind:value={uid} bind:object={group} labelKey="name" valueKey="uid">
+  <InputSearchObject
+    {clearable}
+    {search}
+    bind:value={uid}
+    bind:object={group}
+    labelKey="name"
+    valueKey="uid"
+  >
     <div class="avatar" slot="thumbnail" let:object>
       {#if object}
         <img src="{PUBLIC_STORAGE_URL}{object.pictureFile}" alt={object.name?.toString()} />

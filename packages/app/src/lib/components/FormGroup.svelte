@@ -47,14 +47,14 @@
     value: data.group.links.find((link) => link.name === name)?.value ?? '',
   }));
 
-  let otherGroups: Array<{ groupId: string; uid: string }> = [];
+  let otherGroups: Array<{ groupId: string; uid: string; name: string; pictureFile: string }> = [];
   let parentUid = '';
   onMount(async () => {
     // See https://github.com/graphql-editor/graphql-zeus/issues/262
 
     ({ parentId = '' } = data.group);
     ({ groups: otherGroups } = await $zeus.query({
-      groups: [{}, { groupId: true, uid: true }],
+      groups: [{}, { groupId: true, uid: true, name: true, pictureFile: true }],
     }));
     parentUid = parentId ? otherGroups.find((g) => g.groupId === parentId)?.uid ?? '' : '';
   });
@@ -115,7 +115,12 @@
   <InputText label="Salle" bind:value={address} />
   <InputText label="Email" type="email" bind:value={email} />
   <InputSocialLinks label="Réseaux sociaux" bind:value={links} />
-  <InputGroup label="Groupe parent" bind:uid={parentUid} />
+  <InputGroup
+    clearable
+    label="Groupe parent"
+    group={otherGroups.find(({ groupId }) => groupId === parentId)}
+    bind:uid={parentUid}
+  />
   <InputListOfGroups
     label="Groupes à voir"
     bind:groups={related}
