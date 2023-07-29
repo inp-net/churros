@@ -61,6 +61,7 @@
 
   .tag {
     padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
     background: var(--muted-bg);
     border-radius: var(--radius-block);
   }

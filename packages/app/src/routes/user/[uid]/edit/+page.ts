@@ -92,6 +92,14 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
           createdAt: true,
           active: true,
         },
+        groups: {
+          group: {
+            uid: true,
+            name: true,
+            pictureFile: true,
+          },
+          title: true,
+        },
       },
     },
     { fetch, parent }

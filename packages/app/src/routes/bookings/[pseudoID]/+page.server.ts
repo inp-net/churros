@@ -1,6 +1,6 @@
 import { Selector, loadQuery } from '$lib/zeus';
 import type { PageServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 /* @generated from schema by file:///home/ewen/projects/centraverse/packages/api/build/scripts/update-id-prefix-to-typename-map.js */ const ID_PREFIXES_TO_TYPENAMES =
   {
@@ -32,7 +32,14 @@ function reverseMap<K extends string, V extends string>(obj: Record<K, V>): Reco
   return Object.fromEntries(Object.entries(obj).map(([k, v]) => [v, k])) as unknown as Record<V, K>;
 }
 
-export const load: PageServerLoad = async ({ fetch, parent, params }) => {
+export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
+  if (params.pseudoID.startsWith(reverseMap(ID_PREFIXES_TO_TYPENAMES).Registration)) {
+    throw redirect(
+      301,
+      url.pathname.replace(params.pseudoID, params.pseudoID.split(':')[1]!.toUpperCase())
+    );
+  }
+
   const { registration } = await loadQuery(
     {
       registration: [

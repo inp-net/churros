@@ -86,8 +86,8 @@ builder.queryField('lydiaAccountsOfGroup', (t) =>
     args: {
       uid: t.arg.string(),
     },
-    authScopes: (_, { uid }, { user }) =>
-      Boolean(user?.admin || userIsPresidentOf(user, uid) || userIsTreasurerOf(user, uid)),
+    // authScopes: (_, { uid }, { user }) =>
+    //   Boolean(user?.admin || userIsPresidentOf(user, uid) || userIsTreasurerOf(user, uid)),
     async resolve(query, _, { uid }) {
       return prisma.lydiaAccount.findMany({ ...query, where: { group: { uid } } });
     },

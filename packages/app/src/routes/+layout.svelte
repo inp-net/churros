@@ -72,7 +72,7 @@
   }
 
   .layout {
-    max-width: 100rem;
+    // max-width: 100rem;
     padding-top: 6rem; // XXX equal to topbar's height
     padding-bottom: 5rem; /// XXX equal to navbar's height
     margin: auto;

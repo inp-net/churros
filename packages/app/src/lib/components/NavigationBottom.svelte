@@ -17,7 +17,7 @@
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
   import { beforeNavigate } from '$app/navigation';
-  import { format, isMonday, previousMonday, startOfWeek } from 'date-fns';
+  import { format, isMonday, previousMonday } from 'date-fns';
 
   export let current: 'home' | 'search' | 'events' | 'more';
   let flyoutOpen = false;
@@ -83,6 +83,18 @@
   </a>
 </nav>
 
+<svelte:window
+  on:keydown={(e) => {
+    if (!(e instanceof KeyboardEvent)) return;
+    if (!flyoutOpen) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      flyoutOpen = false;
+    }
+  }}
+/>
+
+<!-- svelte-ignore a11y-click-events-have-key-events handled by svelte:window above -->
 <div
   class="flyout-backdrop"
   on:click={() => {

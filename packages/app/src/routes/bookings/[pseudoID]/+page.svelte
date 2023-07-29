@@ -11,6 +11,8 @@
   import IconCancel from '~icons/mdi/cancel';
   import Alert from '$lib/components/Alert.svelte';
   import { PaymentMethod, zeus } from '$lib/zeus';
+  import InputText from '$lib/components/InputText.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
 
   let actualTheme: string;
 
@@ -40,78 +42,78 @@
   } ${qrcodeDim - 2 * qrcodeBuiltinPadding}`;
 </script>
 
-<h1>
-  <BackButton />
-  Ma place
-</h1>
-<h2>
-  {#if authorIsBeneficiary}
-    {author.firstName} {author.lastName}
-  {:else if beneficiaryUser}
-    {beneficiaryUser.firstName} {beneficiaryUser.lastName}
-  {:else}
-    {beneficiary}
-  {/if}
-</h2>
-{#if !authorIsBeneficiary}
-  <p>Achetée par {author.firstName} {author.lastName}</p>
-{/if}
-
-<h2>Billet</h2>
-<p>
-  {#if ticket.group}
-    {ticket.group.name} <IconChevronRight />
-  {/if}
-  {ticket.name}
-</p>
-
-<h2>Évènement</h2>
-<p>
-  «<a href="/club/{ticket.event.group.uid}/event/{ticket.event.uid}">{ticket.event.title}</a>» {#if ticket.event.startsAt}du
-    {dateTimeFormatter.format(new Date(ticket.event.startsAt))}{/if}
-</p>
-
-{#if paid}
-  <Alert theme="success">Place payée</Alert>
-  <section class="code">
-    <svg class="qrcode" viewBox={qrcodeViewbox} stroke="#000" stroke-width="1.05">
-      <path d={qrcodePath} fill="black" />
-    </svg>
-    <p class="registration-code">
-      {id.split(':', 2)[1].toUpperCase()}
-    </p>
-  </section>
-  <section class="cancel">
-    {#if !confirmingCancellation}
-      <Button
-        on:click={() => {
-          confirmingCancellation = true;
-        }}><IconCancel /> Libérer ma place</Button
-      >
+<div class="content">
+  <h1>
+    <BackButton />
+    Ma place
+  </h1>
+  <h2>
+    {#if authorIsBeneficiary}
+      {author.firstName} {author.lastName}
+    {:else if beneficiaryUser}
+      {beneficiaryUser.firstName} {beneficiaryUser.lastName}
     {:else}
-      <Alert theme="danger">
-        <h2>Es-tu sûr·e ?</h2>
-        <p>
-          Il n'est pas possible de revenir en arrière. Tu devras de nouveau prendre une place (s'il
-          en reste) si tu veux de nouveau en réserver une.
-        </p>
-        <Button
-          on:click={async () => {
-            await $zeus.mutate({
-              deleteRegistration: [{ id }, true],
-            });
-            await goto('..');
-          }}>Oui, je confirme</Button
-        >
-      </Alert>
+      {beneficiary}
     {/if}
-  </section>
-{:else}
-  <Alert theme="danger">Place non payée</Alert>
-  <form>
-    <input type="text" placeholder="Numéro de téléphone" bind:value={phone} />
-    <Button
-      on:click={async () => {
+  </h2>
+  {#if !authorIsBeneficiary}
+    <p>Achetée par {author.firstName} {author.lastName}</p>
+  {/if}
+
+  <h2>Billet</h2>
+  <p>
+    {#if ticket.group}
+      {ticket.group.name} <IconChevronRight />
+    {/if}
+    {ticket.name}
+  </p>
+
+  <h2>Évènement</h2>
+  <p>
+    «<a href="/club/{ticket.event.group.uid}/event/{ticket.event.uid}">{ticket.event.title}</a>» {#if ticket.event.startsAt}du
+      {dateTimeFormatter.format(new Date(ticket.event.startsAt))}{/if}
+  </p>
+
+  {#if paid}
+    <Alert theme="success">Place payée</Alert>
+    <section class="code">
+      <svg class="qrcode" viewBox={qrcodeViewbox} stroke="#000" stroke-width="1.05">
+        <path d={qrcodePath} fill="black" />
+      </svg>
+      <p class="registration-code">
+        {id.split(':', 2)[1].toUpperCase()}
+      </p>
+    </section>
+    <section class="cancel">
+      {#if !confirmingCancellation}
+        <Button
+          on:click={() => {
+            confirmingCancellation = true;
+          }}><IconCancel /> Libérer ma place</Button
+        >
+      {:else}
+        <Alert theme="danger">
+          <h2>Es-tu sûr·e ?</h2>
+          <p>
+            Il n'est pas possible de revenir en arrière. Tu devras de nouveau prendre une place
+            (s'il en reste) si tu veux de nouveau en réserver une.
+          </p>
+          <Button
+            on:click={async () => {
+              await $zeus.mutate({
+                deleteRegistration: [{ id }, true],
+              });
+              await goto('..');
+            }}>Oui, je confirme</Button
+          >
+        </Alert>
+      {/if}
+    </section>
+  {:else}
+    <Alert theme="danger">Place non payée</Alert>
+    <form
+      class="pay"
+      on:submit|preventDefault={async () => {
         await $zeus.mutate({
           paidRegistration: [
             { regId: id, phone, beneficiary, paymentMethod: PaymentMethod.Lydia },
@@ -120,10 +122,16 @@
             },
           ],
         });
-      }}>Payer avec Lydia</Button
+        window.location.reload();
+      }}
     >
-  </form>
-{/if}
+      <InputText type="tel" label="Numéro de téléphone" bind:value={phone} />
+      <section class="submit">
+        <ButtonPrimary submits>Payer</ButtonPrimary>
+      </section>
+    </form>
+  {/if}
+</div>
 
 <style>
   section.code {
@@ -148,5 +156,22 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+  }
+
+  form.pay {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: end;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .content {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
   }
 </style>

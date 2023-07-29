@@ -16,9 +16,9 @@
   };
 
   export let objectName: 'Group' | 'User' | 'Article' | 'Event';
-  export let object: { pictureFile: string; uid: string };
+  export let object: { pictureFile: string; uid: string; id: string };
   export let alt = '';
-  $: ({ pictureFile, uid } = object);
+  $: ({ pictureFile, uid, id } = object);
   $: alt = alt || uid;
 
   let files: FileList;
@@ -29,7 +29,15 @@
     try {
       updating = true;
       const result = await $zeus.mutate(
-        { [`update${objectName}Picture`]: [{ uid, file: Zvar('file', 'File!') }, true] },
+        {
+          [`update${objectName}Picture`]: [
+            {
+              ...(['Group', 'User'].includes(objectName) ? { uid } : { id }),
+              file: Zvar('file', 'File!'),
+            },
+            true,
+          ],
+        },
         { variables: { file: files[0] } }
       );
       // Add a timestamp to the URL to force the browser to reload the image

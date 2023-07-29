@@ -26,6 +26,8 @@
   let godparentDeleting = false;
   let godparentDeleteServerError = '';
 
+  $: console.log($me?.groups);
+
   const deleteToken = async (id: string, active: boolean) => {
     if (active) {
       await goto(`/logout/?token=${$page.data.token!}`);
@@ -177,7 +179,6 @@
 
   export let data: PageData;
   let godparentUid = data.user.godparent?.uid;
-  $: godparentUid = godparentUid ?? data.user.godparent?.uid;
 </script>
 
 <h1>
@@ -283,8 +284,6 @@
         userUid={data.user.uid}
         bind:settings={data.user.notificationSettings}
       />
-    {/if}
-    {#if $me?.uid === data.user.uid}
       <h2>Données personnelles</h2>
       <p>
         <a href="{PUBLIC_USER_DUMP_URL}?token={data.token}" download="{data.me.uid}.json">

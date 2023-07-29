@@ -2,7 +2,6 @@
   import FormEvent from '$lib/components/FormEvent.svelte';
   import { Selector, zeus } from '$lib/zeus';
   import type { PageData } from './$types';
-  import FormPicture from '$lib/components/FormPicture.svelte';
   import { page } from '$app/stores';
 
   export let data: PageData;
@@ -21,9 +20,19 @@
     .catch(console.error);
 </script>
 
-<FormPicture objectName="Event" bind:object={data.event} />
-<FormEvent
-  redirectAfterSave={() => $page.url.searchParams.get('back') || '../'}
-  {availableLydiaAccounts}
-  bind:event={data.event}
-/>
+<div class="content">
+  <FormEvent
+    redirectAfterSave={() => $page.url.searchParams.get('back') || '../'}
+    {availableLydiaAccounts}
+    bind:event={data.event}
+  />
+</div>
+
+<style>
+  .content {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+</style>

@@ -11,8 +11,8 @@
   import IconChevronDown from '~icons/mdi/chevron-down';
   import IconChevronUp from '~icons/mdi/chevron-up';
   import IntegerListInput from './InputIntegerList.svelte';
-  import GroupListInput from './InputGroupList.svelte';
   import SchoolListInput from './InputSchoolList.svelte';
+  import InputListOfGroups from './InputListOfGroups.svelte';
   const emit = createEventDispatcher();
 
   export let expandedTicketId = '';
@@ -86,9 +86,11 @@
       <IntegerListInput bind:value={ticket.openToPromotions} />
     </InputField>
 
-    <InputField label="Groupes">
-      <GroupListInput bind:value={ticket.openToGroups} />
-    </InputField>
+    <InputListOfGroups
+      uids={ticket.openToGroups.map(({ uid }) => uid)}
+      label="Groupes"
+      bind:groups={ticket.openToGroups}
+    />
 
     <InputField label="Écoles">
       <SchoolListInput bind:value={ticket.openToSchools} />

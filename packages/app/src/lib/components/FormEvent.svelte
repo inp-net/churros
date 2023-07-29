@@ -18,6 +18,7 @@
   import ButtonPrimary from './ButtonPrimary.svelte';
   import { createEventDispatcher } from 'svelte';
   import InputPerson from './InputPerson.svelte';
+  import FormPicture from './FormPicture.svelte';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
@@ -222,6 +223,7 @@
 
   export let event: {
     tickets: Ticket[];
+    pictureFile: string;
     id: string;
     ticketGroups: Array<{
       id: string;
@@ -283,6 +285,9 @@
 <form on:submit|preventDefault={async () => saveChanges()}>
   <div class="left">
     <h2>Informations</h2>
+    {#if event.id}
+      <FormPicture objectName="Event" bind:object={event} />
+    {/if}
     <InputGroup group={event.group} label="Groupe" bind:uid={event.group.uid} />
     <InputText label="Titre" bind:value={event.title} />
     <InputSelectOne

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Selector, zeus } from '$lib/zeus';
   import InputText from './InputText.svelte';
-  import InputField from './InputField.svelte';
   import IconClear from '~icons/mdi/clear';
   import InputDate from './InputDate.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
@@ -114,11 +113,8 @@
     <InputText required label="Prénom" bind:value={firstName} />
     <InputText required label="Nom de famille" bind:value={lastName} />
   </div>
-  <!--TODO input rich text  -->
   <InputLongText rich label="Description" bind:value={description} />
   <InputText label="Surnom" bind:value={nickname} />
-  <!-- TODO input person -->
-  <!-- TODO backend for this <InputText label="Parrain (identifiant)"></InputText> -->
   <div class="side-by-side">
     <InputText type="email" label="Email" bind:value={email} />
     <InputText type="tel" label="Numéro de téléphone" bind:value={phone} />

@@ -444,7 +444,7 @@ builder.mutationField('paidRegistration', (t) =>
       });
       if (!ticket) throw new GraphQLError('Ticket not found');
       if (!paymentMethod) throw new GraphQLError('Payment method not found');
-      if (!ticket.event.beneficiary) throw new GraphQLError('Beneficiary not found');
+      if (!beneficiary) throw new GraphQLError('Beneficiary not found');
       if (!phone) throw new GraphQLError('Phone not found');
 
       // Process payment
@@ -456,7 +456,7 @@ builder.mutationField('paidRegistration', (t) =>
         data: {
           paid: true,
           paymentMethod,
-          beneficiary: beneficiary ?? '',
+          beneficiary,
         },
       });
     },
@@ -519,8 +519,8 @@ builder.mutationField('deleteRegistration', (t) =>
 
 // eslint-disable-next-line max-params
 async function pay(
-  from: { uid: string },
-  to: { uid: string },
+  from: string,
+  to: string,
   amount: number,
   by: PaymentMethodPrisma,
   phone?: string,
@@ -529,16 +529,14 @@ async function pay(
   switch (by) {
     case 'Lydia': {
       if (!phone) throw new GraphQLError('Missing phone number');
-      console.log(`Paying ${amount}€ from ${from.uid} to ${to.uid} by Lydia`);
+      console.log(`Paying ${amount}€ from ${from} to ${to} by Lydia`);
       return sendLydiaPaymentRequest(phone, registrationId);
     }
 
     default: {
       return new Promise((_resolve, reject) => {
         reject(
-          new GraphQLError(
-            `Attempt to pay ${to.uid} ${amount} from ${from.uid} by ${by}: not implemented`
-          )
+          new GraphQLError(`Attempt to pay ${to} ${amount} from ${from} by ${by}: not implemented`)
         );
       });
     }

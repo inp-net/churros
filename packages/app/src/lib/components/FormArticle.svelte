@@ -13,6 +13,7 @@
   import InputLongText from './InputLongText.svelte';
   import InputLinks from '$lib/components/InputLinks.svelte';
 
+  export let hideEvent = false;
   export let data: {
     article: {
       uid: string;
@@ -108,7 +109,9 @@
 </script>
 
 <form on:submit|preventDefault={updateArticle}>
-  <EventSearch {event} label="Évènement lié" groupUid={$page.params.group} bind:id={eventId} />
+  {#if !hideEvent}
+    <EventSearch {event} label="Évènement lié" groupUid={$page.params.group} bind:id={eventId} />
+  {/if}
   <InputText required label="Titre" bind:value={title} />
   <DateInput required time label="Publier le" bind:value={publishedAt} />
   <InputSelectOne
@@ -125,7 +128,11 @@
       >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert
     >
   {/if}
-  <section class="submit"><ButtonPrimary {loading} submits>Enregistrer</ButtonPrimary></section>
+  <section class="submit">
+    <ButtonPrimary {loading} submits
+      >{#if id === ''}Poster{:else}Enregistrer{/if}</ButtonPrimary
+    >
+  </section>
 </form>
 
 <style>
