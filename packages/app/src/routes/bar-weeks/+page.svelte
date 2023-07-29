@@ -5,20 +5,14 @@
   import Alert from '$lib/components/Alert.svelte';
   import IconEdit from '~icons/mdi/pencil';
   import DateInput from '$lib/components/InputDate.svelte';
-  import InputField from '$lib/components/InputField.svelte';
-
-  import StringListInput from '$lib/components/InputStringList.svelte';
   import { endOfWeek, startOfWeek } from 'date-fns';
   import type { PageData } from './$types';
-  import Button from '$lib/components/Button.svelte';
   import { zeus } from '$lib/zeus';
   import { dateFormatter } from '$lib/dates';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const asstringarray = (x: any) => x as string[];
+  import InputListOfGroups from '$lib/components/InputListOfGroups.svelte';
 
   export let data: PageData;
 
@@ -117,27 +111,14 @@
     <li>
       <Card>
         {#if expandedBarWeekId === barWeek.id}
-          <InputField label="Description">
-            <textarea bind:value={barWeeks[i].description} cols="30" rows="10" />
-          </InputField>
+          <InputText label="Description" bind:value={barWeek.description} />
 
-          <InputField label="Groupes">
-            <StringListInput
-              on:input={(e) => {
-                if (!e.detail) return;
-                const val = asstringarray(e.detail);
-                if (
-                  barWeek.groups
-                    .map(({ uid }) => uid)
-                    .sort()
-                    .join(',') === val.sort().join(',')
-                )
-                  return;
-                barWeeks[i].groups = val.map((uid) => ({ uid, name: '', pictureFile: '' }));
-              }}
-              value={barWeek.groups.map(({ uid }) => uid)}
-            />
-          </InputField>
+          <InputListOfGroups
+            label="Groupes"
+            bind:groups={barWeeks[i].groups}
+            uids={barWeek.groups.map((g) => g.uid)}
+          />
+
           <div class="side-by-side">
             <DateInput label="Début" bind:value={barWeeks[i].startsAt} />
             <DateInput label="Fin" bind:value={barWeeks[i].endsAt} />
@@ -177,9 +158,11 @@
 
 <Card>
   <form class="new-bar-week" on:submit|preventDefault={async () => updateBarWeek(newBarWeek)}>
-    <InputField label="Groupes">
-      <StringListInput value={newBarWeek.groups.map(({ uid }) => uid)} />
-    </InputField>
+    <InputListOfGroups
+      label="Groupes"
+      bind:groups={newBarWeek.groups}
+      uids={newBarWeek.groups.map((g) => g.uid)}
+    />
     <InputText label="Description" bind:value={newBarWeek.description} />
     <div class="side-by-side">
       <DateInput label="Début" bind:value={newBarWeek.startsAt} />
@@ -207,5 +190,11 @@
   .new-bar-week .submit {
     display: flex;
     justify-content: center;
+  }
+
+  .side-by-side {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1rem;
   }
 </style>
