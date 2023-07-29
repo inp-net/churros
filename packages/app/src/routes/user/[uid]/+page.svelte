@@ -268,7 +268,7 @@
   .groups ul {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.5rem;
     justify-content: center;
   }
 

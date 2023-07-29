@@ -1,7 +1,4 @@
 <script lang="ts">
-  // @ts-expect-error Untyped lib
-  import isDarkColor from 'is-dark-color';
-
   export let href = '';
   export let groupMember: {
     group: { name: string; color: string };
@@ -22,38 +19,36 @@
     : '';
 </script>
 
-<svelte:element
-  this={href ? 'a' : 'span'}
-  {href}
-  class="badge"
-  style:--bg="{groupMember.group.color}80"
-  style:--text={isDarkColor(groupMember.group.color) ? 'white' : 'black'}
->
+<svelte:element this={href ? 'a' : 'span'} {href} class="badge">
   {#if roleBadge}
-    <span class="badge">{roleBadge}</span>
+    <span class="role-badge">{roleBadge}</span>
   {/if}
   <span>{groupMember.group.name}</span>
   {#if groupMember.title.toLowerCase() !== 'membre'}
-    <span>{groupMember.title}</span>
+    <span class="title">({groupMember.title})</span>
   {/if}
 </svelte:element>
 
 <style lang="scss">
   .badge {
     display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.25em 0.75em;
     overflow: hidden;
-    color: var(--text);
-    background: var(--bg);
-    border-radius: var(--radius-inline);
+    color: var(--primary-text);
+    background: var(--primary-bg);
+    border-radius: 100000px;
 
-    > :first-child {
-      padding: 0.25rem 0.25rem 0.25rem 0.5rem;
-      font-weight: bold;
-      background: var(--bg);
+    &:hover {
+      color: var(--primary-hover-text);
+      background: var(--primary-hover-bg);
     }
+  }
 
-    > :last-child {
-      padding: 0.25rem 0.5rem 0.25rem 0.25rem;
-    }
+  .title {
+    font-size: 0.8em;
+    font-weight: bold;
+    opacity: 0.8;
   }
 </style>
