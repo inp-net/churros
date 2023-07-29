@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import EventForm from '$lib/components/FormEvent.svelte';
   import { Visibility } from '$lib/zeus';
-  import type { PageData, Snapshot } from './$types';
+  import type { PageData } from './$types';
 
   export let data: PageData;
   let event = {
@@ -24,15 +24,15 @@
     title: '',
     visibility: Visibility.Private,
   };
-  export const snapshot: Snapshot = {
-    capture: () => ({ event }),
-    restore({ event }) {
-      $page.params.uid = event.groupUid;
-      $page.params.eventUid = event.uid;
-      data.group = event.group;
-      data.event = event;
-    },
-  };
+  // export const snapshot: Snapshot = {
+  //   capture: () => ({ event }),
+  //   restore({ event }) {
+  //     $page.params.uid = event.groupUid;
+  //     $page.params.eventUid = event.uid;
+  //     data.group = event.group;
+  //     data.event = event;
+  //   },
+  // };
   const redirectAfterSave = (uid: string) => $page.url.searchParams.get('back') || `../${uid}`;
 </script>
 

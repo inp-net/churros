@@ -8,10 +8,27 @@
   const trees = createForest(data.groups, { idKey: 'groupId' });
 </script>
 
-<ul>
+<h1>Groupes</h1>
+
+<ul class="nobullet">
   {#each trees as group}
     <li>
       <Group {group} />
     </li>
   {/each}
 </ul>
+
+<style>
+  ul {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+</style>

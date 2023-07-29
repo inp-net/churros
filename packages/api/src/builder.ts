@@ -21,6 +21,7 @@ import { GraphQLError, Kind } from 'graphql';
 /* @generated from schema by file:///home/ewen/projects/centraverse/packages/api/build/scripts/update-id-prefix-to-typename-map.js */ export const ID_PREFIXES_TO_TYPENAMES =
   {
     u: 'User',
+    godparentreq: 'GodparentRequest',
     candidate: 'UserCandidate',
     link: 'Link',
     major: 'Major',

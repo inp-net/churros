@@ -41,6 +41,7 @@ model User {
   phone       String    @default("") @db.VarChar(255)
   pictureFile String    @default("") @db.VarChar(255)
   links       Link[]
+  godparentId String?
 
   // Permissions
   admin         Boolean @default(false)
@@ -58,8 +59,26 @@ model User {
   notificationSubscriptions NotificationSubscription[]
   notifications             Notification[]
   notificationSettings      NotificationSetting[]
+  godparent                 User?                      @relation("mentorship", fields: [godparentId], references: [id]) // Le parrain ou la marraine
+  godchildren               User[]                     @relation("mentorship") // Les filleul(e)s
+  incomingGodparentRequests GodparentRequest[]         @relation("godparent")
+  outgoingGodparentRequests GodparentRequest[]         @relation("godchild")
 
   @@unique([schoolServer, schoolUid])
+}
+
+/// Requests to become someone's godchild. Gets deleted once the request has been accepted (or denied). godchild is the requester, godparent is the requested.
+model GodparentRequest {
+  id        String   @id @unique @default(dbgenerated("nanoid('godparentreq:')"))
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  godchild    User   @relation("godchild", fields: [godchildId], references: [id])
+  godchildId  String
+  godparent   User   @relation("godparent", fields: [godparentId], references: [id])
+  godparentId String
+
+  @@unique([godchildId, godparentId])
 }
 
 /// UserCandidates are users in the registration process
@@ -467,10 +486,10 @@ enum NotificationType {
   ShotgunOpened
   ShotgunClosingSoon
   ShotgunClosed
-  GodsonRequestReceived
-  GodsonRequestAccepted
-  GodsonRequestRefused
   PermissionsChanged
+  GodparentRequestReceived
+  GodparentRequestAccepted
+  GodparentRequestRefused
   Other // should't be used too much
 }
 

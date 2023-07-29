@@ -1,33 +1,34 @@
 <script lang="ts">
-  import { PUBLIC_CONTACT_EMAIL, PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { yearTier } from '$lib/dates';
+  import AvatarPerson from './AvatarPerson.svelte';
 
-  type Group = {
+  type User = {
     uid: string;
-    groupId: string;
-    name: string;
-    children: Group[];
+    firstName: string;
+    lastName: string;
+    children: User[];
     pictureFile: string;
-    description: string;
+    graduationYear: number;
   };
-  export let group: Group;
+  export let user: User;
   export let highlightUid = '';
+  $: console.log('<TreePersons>', user);
+  $: role = (user: User) => `${yearTier(user.graduationYear)}A (${user.graduationYear})`;
 </script>
 
-<a class:highlight={highlightUid === group.uid} href="/club/{group.uid}/">
-  <div class="avatar"><img src="{PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} /></div>
-  <div class="text">
-    <p class="name">{group.name}</p>
-    {#if group.description}
-      <p class="description">{group.description}</p>
-    {/if}
-  </div></a
->
+<AvatarPerson
+  role={role(user)}
+  highlighted={highlightUid === user.uid}
+  href="/user/{user.uid}"
+  {...user}
+/>
 
-{#if group.children.length > 0}
+{#if user.children.length > 0}
   <ul class="nobullet children">
-    {#each group.children as child}
+    {#each user.children as child}
       <li>
-        <svelte:self group={child} />
+        <svelte:self role={role(child)} {highlightUid} user={child} />
       </li>
     {/each}
   </ul>

@@ -400,7 +400,7 @@
         on:collapse={() => {
           expandedTicketId = '';
         }}
-        bind:ticket
+        bind:ticket={event.tickets[i]}
       />
     {/if}
   {/each}

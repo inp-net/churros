@@ -33,6 +33,16 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           },
           links: { name: true, value: true, computedValue: true },
           major: { name: true, schools: { name: true, color: true } },
+          familyTree: {
+            nesting: true,
+            users: {
+              uid: true,
+              firstName: true,
+              lastName: true,
+              pictureFile: true,
+              graduationYear: true,
+            },
+          },
         },
       ],
     },

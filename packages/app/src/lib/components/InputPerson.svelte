@@ -5,15 +5,22 @@
   import InputField from './InputField.svelte';
   import InputSearchObject from './InputSearchObject.svelte';
 
-  type User = { uid: string; firstName: string; lastName: string; pictureFile: string };
+  type User = {
+    uid: string;
+    firstName: string;
+    lastName: string;
+    pictureFile: string;
+    fullName?: string;
+  };
   export let label: string;
-  export let uid: string;
+  export let uid: string | undefined;
   export let required = false;
   export let allow: string[] = [];
   export let except: string[] = [];
   export let user: User | undefined = undefined;
 
-  $: console.log(uid, user);
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  $: avatarHref = user ? `/user/${user?.uid ?? ''}` : '';
 
   function allowed(uid: string) {
     const result =
@@ -55,21 +62,30 @@
     labelKey="fullName"
     valueKey="uid"
   >
-    <div class="avatar" slot="thumbnail" let:object>
+    <svelte:element
+      this={user ? 'a' : 'div'}
+      href={avatarHref}
+      class="avatar"
+      slot="thumbnail"
+      let:object
+    >
       {#if object}
         <img
-          src="{PUBLIC_STORAGE_URL}{object.pictureFile}"
-          alt="{object.firstName} {object.lastName}"
+          src="{PUBLIC_STORAGE_URL}{object?.pictureFile ?? ''}"
+          alt="{object?.firstName ?? ''} {object?.lastName ?? ''}"
         />
       {:else}
         <IconNone />
       {/if}
-    </div>
+    </svelte:element>
     <div class="suggestion" slot="item" let:item>
       <div class="avatar">
-        <img src="{PUBLIC_STORAGE_URL}{item.pictureFile}" alt="{item.firstName} {item.lastName}" />
+        <img
+          src="{PUBLIC_STORAGE_URL}{item?.pictureFile ?? ''}"
+          alt="{item?.firstName ?? ''} {item?.lastName ?? ''}"
+        />
       </div>
-      <div>{item.firstName} {item.lastName}</div>
+      <div>{item?.firstName ?? ''} {item?.lastName ?? ''}</div>
     </div>
   </InputSearchObject>
 </InputField>

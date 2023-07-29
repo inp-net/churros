@@ -1,10 +1,8 @@
 <script lang="ts">
-  import * as htmlToText from 'html-to-text';
   import Alert from '$lib/components/Alert.svelte';
   import SchoolBadge from '$lib/components/BadgeSchool.svelte';
   import Breadcrumb from '$lib/components/Breadcrumb.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import Card from '$lib/components/Card.svelte';
   import SocialLink from '$lib/components/SocialLink.svelte';
   import { me } from '$lib/session.js';
   import IconPlus from '~icons/mdi/plus';
@@ -13,7 +11,6 @@
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import Button from '$lib/components/Button.svelte';
   import { Visibility, zeus } from '$lib/zeus';
-  import PictureUser from '$lib/components/PictureUser.svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import ArticleCard from '$lib/components/CardArticle.svelte';
   import { isPast } from 'date-fns';
@@ -144,9 +141,8 @@
       author={undefined}
       img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
       {links}
-    >
-      {@html htmlToText.convert(descriptionHtml).replaceAll('\n', '<br>')}
-    </ArticleCard>
+      bodyHtml={descriptionHtml}
+    />
   {/if}
 {/each}
 
@@ -170,8 +166,7 @@
       {author}
       {publishedAt}
       img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
-    >
-      {@html htmlToText.convert(bodyHtml).replaceAll('\n', '<br>')}
-    </ArticleCard>
+      {bodyHtml}
+    />
   {/if}
 {/each}

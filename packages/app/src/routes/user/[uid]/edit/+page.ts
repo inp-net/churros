@@ -16,6 +16,41 @@ export const _userQuery = Selector('User')({
   phone: true,
   birthday: true,
   links: { name: true, value: true },
+  godparent: {
+    uid: true,
+    firstName: true,
+    lastName: true,
+    pictureFile: true,
+  },
+  godchildren: {
+    uid: true,
+    firstName: true,
+    lastName: true,
+    pictureFile: true,
+  },
+  outgoingGodparentRequests: {
+    id: true,
+    godparent: {
+      uid: true,
+      firstName: true,
+      lastName: true,
+      pictureFile: true,
+    },
+    createdAt: true,
+  },
+  incomingGodparentRequests: {
+    id: true,
+    godchild: {
+      uid: true,
+      firstName: true,
+      lastName: true,
+      pictureFile: true,
+    },
+    createdAt: true,
+  },
+  familyTree: {
+    users: { uid: true },
+  },
   notificationSettings: {
     id: true,
     type: true,

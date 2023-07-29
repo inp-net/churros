@@ -16,6 +16,15 @@ import {
 import type { Group, User } from '@prisma/client';
 import { dirname, join } from 'node:path';
 import { NotificationTypeEnum } from './notifications.js';
+import { FamilyTree, getFamilyTree } from '../godchildren-tree.js';
+
+builder.objectType(FamilyTree, {
+  name: 'FamilyTree',
+  fields: (t) => ({
+    nesting: t.exposeString('nesting'),
+    users: t.expose('users', { type: [UserType] }),
+  }),
+});
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -75,6 +84,16 @@ export const UserType = builder.prismaNode('User', {
     managedEvents: t.relation('managedEvents', { authScopes: { loggedIn: true, $granted: 'me' } }),
     notificationSettings: t.relation('notificationSettings', {
       authScopes: { loggedIn: true, $granted: 'me' },
+    }),
+    godparent: t.relation('godparent', { nullable: true }),
+    godchildren: t.relation('godchildren'),
+    outgoingGodparentRequests: t.relation('outgoingGodparentRequests'),
+    incomingGodparentRequests: t.relation('incomingGodparentRequests'),
+    familyTree: t.field({
+      type: FamilyTree,
+      async resolve({ id, godparentId }) {
+        return getFamilyTree({ id, godparentId: godparentId ?? undefined });
+      },
     }),
   }),
 });
@@ -193,12 +212,24 @@ builder.mutationField('updateUser', (t) =>
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
       description: t.arg.string({ validate: { maxLength: 255 } }),
       links: t.arg({ type: [LinkInput] }),
+      godparentUid: t.arg.string({ required: false }),
     },
     authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
     async resolve(
       query,
       _,
-      { uid, majorId, graduationYear, nickname, description, links, address, phone, birthday }
+      {
+        uid,
+        majorId,
+        graduationYear,
+        nickname,
+        description,
+        links,
+        address,
+        phone,
+        birthday,
+        godparentUid,
+      }
     ) {
       if (phone) {
         const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
@@ -224,6 +255,7 @@ builder.mutationField('updateUser', (t) =>
           phone,
           birthday,
           links: { deleteMany: {}, createMany: { data: links } },
+          godparent: godparentUid ? { connect: { uid: godparentUid } } : { disconnect: true },
         },
       });
     },
@@ -361,6 +393,30 @@ builder.mutationField('updateNotificationSettings', (t) =>
         ...query,
         where: { userId: user.id },
       });
+    },
+  })
+);
+
+builder.mutationField('deleteGodchild', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: {
+      parentUid: t.arg.string(),
+      godchildUid: t.arg.string(),
+    },
+    async resolve(_, { parentUid, godchildUid }) {
+      const parent = await prisma.user.findUniqueOrThrow({ where: { uid: parentUid } });
+      const godchild = await prisma.user.findUniqueOrThrow({ where: { uid: godchildUid } });
+      if (parent.godparentId !== godchild.id) return false;
+      await prisma.user.update({
+        where: {
+          uid: godchildUid,
+        },
+        data: {
+          godparent: { disconnect: true },
+        },
+      });
+      return true;
     },
   })
 );
