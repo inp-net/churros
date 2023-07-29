@@ -83,6 +83,7 @@ export const GroupType = builder.prismaNode('Group', {
     events: t.relation('events'),
     children: t.relation('children'),
     root: t.relation('familyRoot', { nullable: true }),
+    related: t.relation('related'),
   }),
 });
 
@@ -200,6 +201,7 @@ builder.mutationField('upsertGroup', (t) =>
       longDescription: t.arg.string(),
       links: t.arg({ type: [LinkInput] }),
       selfJoinable: t.arg.boolean(),
+      related: t.arg({ type: ['String'] }),
     },
     authScopes(_, { uid }, { user }) {
       const creating = !uid;
@@ -229,6 +231,7 @@ builder.mutationField('upsertGroup', (t) =>
         email,
         longDescription,
         links,
+        related,
       }
     ) {
       // --- First, we update the group's children's familyId according to the new parent of this group. ---
@@ -312,12 +315,16 @@ builder.mutationField('upsertGroup', (t) =>
           ...data,
           links: { create: links },
           uid: await createGroupUid(name),
+          related: { connect: related.map((uid) => ({ uid })) },
         },
         update: {
           ...data,
           links: {
             deleteMany: {},
             createMany: { data: links },
+          },
+          related: {
+            set: related.map((uid) => ({ uid })),
           },
         },
       });

@@ -27,6 +27,7 @@
   import { goto } from '$app/navigation';
   import { htmlToText } from 'html-to-text';
   import Badge from '$lib/components/Badge.svelte';
+  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -181,7 +182,7 @@
     </h2>
 
     <ul class="nobullet">
-      {#each group.articles as { uid, ...article } (uid)}
+      {#each group.articles.slice(0, 3) as { uid, ...article } (uid)}
         <CardArticle hideGroup {group} href="./post/{uid}" {...article} />
       {/each}
     </ul>
@@ -195,7 +196,7 @@
     </h2>
 
     <ul class="nobullet">
-      {#each group.events as { uid, ...event } (uid)}
+      {#each group.events.slice(0, 3) as { uid, ...event } (uid)}
         <!-- TODO CardEvent -->
         <CardArticle
           hideGroup
@@ -208,6 +209,14 @@
       {/each}
     </ul>
   </section>
+
+  {#if group.related.length > 0}
+    <section class="related">
+      <h2>Voir aussi</h2>
+
+      <CarouselGroups groups={group.related} />
+    </section>
+  {/if}
 </div>
 
 <style>

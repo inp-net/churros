@@ -8,12 +8,12 @@
   import InputGroup from './InputGroup.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
-  import InputField from './InputField.svelte';
   import InputText from './InputText.svelte';
   import InputSocialLinks from './InputSocialLinks.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
+  import InputListOfGroups from './InputListOfGroups.svelte';
 
   export let data: PageData;
 
@@ -29,6 +29,7 @@
     selfJoinable,
     type,
     parentId = '',
+    related,
   } = data.group;
 
   const socialMediaNames = [
@@ -78,6 +79,7 @@
             selfJoinable,
             parentId,
             type,
+            related: related.map(({ uid }) => uid),
           },
           {
             __typename: true,
@@ -114,6 +116,11 @@
   <InputText label="Email" type="email" bind:value={email} />
   <InputSocialLinks label="Réseaux sociaux" bind:value={links} />
   <InputGroup label="Groupe parent" bind:uid={parentUid} />
+  <InputListOfGroups
+    label="Groupes à voir"
+    bind:groups={related}
+    uids={related.map((r) => r.uid)}
+  />
   {#if serverError}
     <Alert theme="danger"
       >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert

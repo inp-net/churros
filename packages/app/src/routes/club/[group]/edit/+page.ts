@@ -24,6 +24,11 @@ export const _clubQuery = Selector('Group')({
     name: true,
   },
   selfJoinable: true,
+  related: {
+    uid: true,
+    name: true,
+    pictureFile: true,
+  },
 });
 
 export const load: PageLoad = async ({ fetch, params, url, parent }) => {

@@ -223,6 +223,10 @@ model Group {
   familyRoot     Group?  @relation("root", fields: [familyId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   familyChildren Group[] @relation("root")
 
+  /// Related clubs
+  related   Group[] @relation("related")
+  relatedTo Group[] @relation("related")
+
   articles           Article[]
   members            GroupMember[]
   school             School?             @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
@@ -234,6 +238,7 @@ model Group {
 
   Notification        Notification[]
   NotificationSetting NotificationSetting[]
+  groupId             String?
 }
 
 /// The intermediate model between users and groups
