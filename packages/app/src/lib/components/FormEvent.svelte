@@ -3,6 +3,7 @@
   import { nanoid } from 'nanoid';
   import InputField from './InputField.svelte';
   import DateInput from './InputDate.svelte';
+  import IconClose from '~icons/mdi/close';
   import { type PaymentMethod, type Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
@@ -16,6 +17,7 @@
   import InputGroup from './InputGroup.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import { createEventDispatcher } from 'svelte';
+  import InputPerson from './InputPerson.svelte';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
@@ -279,36 +281,34 @@
 </script>
 
 <form on:submit|preventDefault={async () => saveChanges()}>
-  <InputGroup group={event.group} label="Groupe" bind:uid={event.group.uid} />
-
-  <InputText label="Titre" bind:value={event.title} />
-  <InputSelectOne
-    label="Visibilité"
-    hint={HELP_VISIBILITY[event.visibility]}
-    bind:value={event.visibility}
-    options={DISPLAY_VISIBILITIES}
-  />
-
-  <InputLongText rich label="Description" bind:value={event.description} />
-
-  <div class="side-by-side">
-    <DateInput label="Début" time bind:value={event.startsAt} />
-    <DateInput label="Fin" time bind:value={event.endsAt} />
+  <div class="left">
+    <h2>Informations</h2>
+    <InputGroup group={event.group} label="Groupe" bind:uid={event.group.uid} />
+    <InputText label="Titre" bind:value={event.title} />
+    <InputSelectOne
+      label="Visibilité"
+      hint={HELP_VISIBILITY[event.visibility]}
+      bind:value={event.visibility}
+      options={DISPLAY_VISIBILITIES}
+    />
+    <InputLongText rich label="Description" bind:value={event.description} />
+    <div class="side-by-side">
+      <DateInput label="Début" time bind:value={event.startsAt} />
+      <DateInput label="Fin" time bind:value={event.endsAt} />
+    </div>
+    <InputText label="Lieu" bind:value={event.location} />
+    <InputField label="Compte Lydia bénéficiaire">
+      <select>
+        {#each availableLydiaAccounts as account}
+          <option value={account.id}> {account.name}</option>
+        {/each}
+      </select>
+    </InputField>
   </div>
-
-  <InputText label="Lieu" bind:value={event.location} />
-
-  <InputField label="Compte Lydia bénéficiaire">
-    <select>
-      {#each availableLydiaAccounts as account}
-        <option value={account.id}> {account.name}</option>
-      {/each}
-    </select>
-  </InputField>
-
-  <div class="side-by-side">
+  <div class="right">
     <h2>
       Billets
+
       <div class="actions">
         <ButtonSecondary
           on:click={() => {
@@ -342,120 +342,153 @@
         </ButtonSecondary>
       </div>
     </h2>
-  </div>
-
-  <!-- Tickets inside of groups -->
-  <section class="ticket-groups">
-    {#each event.ticketGroups as ticketGroup, i}
-      <article class="ticket-group">
-        <div class="side-by-side">
-          <InputText
-            label="Nom du groupe"
-            required
-            placeholder={ticketGroup.name}
-            bind:value={event.ticketGroups[i].name}
-          />
-          <InputNumber label="Places dans le groupe" bind:value={event.ticketGroups[i].capacity} />
-        </div>
-        <section class="tickets">
-          {#each ticketGroup.tickets as ticket, j (ticket.id)}
-            <FormEventTicket
-              expanded={expanded(ticket, expandedTicketId)}
-              on:expand={() => {
-                expandedTicketId = ticket.id;
-              }}
-              on:collapse={() => {
-                expandedTicketId = '';
-              }}
-              bind:ticket={event.ticketGroups[i].tickets[j]}
-            />
-          {/each}
-        </section>
-        <ButtonSecondary
-          on:click={() => {
-            const id = nextTicketId();
-            event.ticketGroups[i].tickets = [...event.ticketGroups[i].tickets, defaultTicket(id)];
-            expandedTicketId = id;
-          }}>Ajouter un billet dans le groupe</ButtonSecondary
-        >
-        <ButtonSecondary
-          danger
-          on:click={() => {
-            if (ticketGroup.tickets.some((t) => expanded(t, expandedTicketId)))
-              expandedTicketId = '';
-            event.ticketGroups = event.ticketGroups.filter((tg) => tg.id !== ticketGroup.id);
-          }}>Supprimer le groupe</ButtonSecondary
-        >
-      </article>
-    {/each}
-  </section>
-
-  {#each event.tickets as ticket, i (ticket.id)}
-    {#if !ticketIsInGroup(ticket)}
-      <FormEventTicket
-        expanded={expanded(ticket, expandedTicketId)}
-        on:expand={() => {
-          expandedTicketId = ticket.id;
-        }}
-        on:collapse={() => {
-          expandedTicketId = '';
-        }}
-        bind:ticket={event.tickets[i]}
-      />
+    <!-- Tickets inside of groups -->
+    {#if event.tickets.length + event.ticketGroups.length <= 0}
+      <p class="empty">Aucun billet</p>
     {/if}
-  {/each}
+    <section class="ticket-groups">
+      {#each event.ticketGroups as ticketGroup, i}
+        <article class="ticket-group">
+          <div class="side-by-side">
+            <InputText
+              label="Nom du groupe"
+              required
+              placeholder={ticketGroup.name}
+              bind:value={event.ticketGroups[i].name}
+            />
+            <InputNumber
+              label="Places dans le groupe"
+              bind:value={event.ticketGroups[i].capacity}
+            />
+          </div>
+          <section class="tickets">
+            {#each ticketGroup.tickets as ticket, j (ticket.id)}
+              <FormEventTicket
+                on:delete={() => {
+                  ticketGroup.tickets = ticketGroup.tickets.filter(({ id }) => id !== ticket.id);
+                }}
+                bind:expandedTicketId
+                bind:ticket={event.ticketGroups[i].tickets[j]}
+              />
+            {/each}
+          </section>
+          <section class="actions">
+            <ButtonSecondary
+              icon={IconPlus}
+              on:click={() => {
+                const id = nextTicketId();
+                event.ticketGroups[i].tickets = [
+                  ...event.ticketGroups[i].tickets,
+                  defaultTicket(id),
+                ];
+                expandedTicketId = id;
+              }}>Billet</ButtonSecondary
+            >
+            <ButtonSecondary
+              danger
+              on:click={() => {
+                if (ticketGroup.tickets.some((t) => expanded(t, expandedTicketId)))
+                  expandedTicketId = '';
+                event.ticketGroups = event.ticketGroups.filter((tg) => tg.id !== ticketGroup.id);
+              }}>Supprimer le groupe</ButtonSecondary
+            >
+          </section>
+        </article>
+      {/each}
+    </section>
 
-  <h2>
-    Managers
+    {#each event.tickets as ticket, i (ticket.id)}
+      {#if !ticketIsInGroup(ticket)}
+        <FormEventTicket
+          on:delete={() => {
+            event.tickets = event.tickets.filter(({ id }) => id !== ticket.id);
+          }}
+          bind:expandedTicketId
+          bind:ticket
+        />
+      {/if}
+    {/each}
+  </div>
+  <div class="center">
+    <h2>
+      Managers
 
-    <ButtonSecondary
-      icon={IconPlus}
-      on:click={() => {
-        event.managers = [
-          ...event.managers,
-          {
-            user: { uid: '', firstName: '', lastName: '', pictureFile: '' },
-            ...permissionsFromLevel('readonly'),
-          },
-        ];
-      }}>Manager</ButtonSecondary
-    >
-  </h2>
-  {#each event.managers as manager, i}
-    <div class="input-group">
-      <input type="text" bind:value={event.managers[i].user.uid} />
-      <select
-        on:change={(e) => {
-          if (!e.target || !('value' in e.target)) return;
-          event.managers[i] = {
-            ...manager,
-            ...permissionsFromLevel(aspermissionlevel(e.target.value)),
-          };
-        }}
-        value={levelFromPermissions(manager)}
+      <ButtonSecondary
+        icon={IconPlus}
+        on:click={() => {
+          event.managers = [
+            ...event.managers,
+            {
+              user: { uid: '', firstName: '', lastName: '', pictureFile: '' },
+              ...permissionsFromLevel('readonly'),
+            },
+          ];
+        }}>Manager</ButtonSecondary
       >
-        <option value="readonly">Lecture seule</option>
-        <option value="verifyer">Vérification des billets</option>
-        <option value="editor">Modification</option>
-        <option value="fullaccess">Modification des permissions</option>
-      </select>
-    </div>
-  {/each}
+    </h2>
+    {#if event.managers.length <= 0}
+      <p class="empty">Aucun manager</p>
+    {/if}
+    <ul class="nobullet managers">
+      {#each event.managers as manager, i}
+        <li class="manager">
+          <InputPerson
+            uid={event.managers[i].user?.uid}
+            except={event.managers.map(({ user }) => user?.uid)}
+            label="Utilisateur·ice"
+            bind:user={event.managers[i].user}
+          />
+          <InputSelectOne
+            label="Permissions"
+            on:change={(e) => {
+              if (!e.target || !('value' in e.target)) return;
+              event.managers[i] = {
+                ...manager,
+                ...permissionsFromLevel(aspermissionlevel(e.target.value)),
+              };
+            }}
+            value={levelFromPermissions(manager)}
+            options={{
+              readonly: 'Lecture seule',
+              verifyer: 'Vérification des billets',
+              editor: 'Modification',
+              fullaccess: 'Gestion totale',
+            }}
+          />
+          <ButtonSecondary
+            on:click={() => {
+              event.managers = event.managers.filter(({ user }) => user?.uid !== manager.user?.uid);
+            }}
+            danger
+            icon={IconClose}>Supprimer</ButtonSecondary
+          >
+        </li>
+      {/each}
+    </ul>
+    {#if serverError}
+      <Alert theme="danger">Impossible de sauvegarder l'évènement: {serverError}</Alert>
+    {/if}
 
-  {#if serverError}
-    <Alert theme="danger">Impossible de sauvegarder l'évènement: {serverError}</Alert>
-  {/if}
-
-  <section class="submit">
-    <ButtonPrimary submits>Enregistrer</ButtonPrimary>
-  </section>
+    <section class="submit">
+      <ButtonPrimary submits>Enregistrer</ButtonPrimary>
+    </section>
+  </div>
 </form>
 
 <style lang="scss">
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
   h2 {
     display: flex;
     gap: 1rem;
     align-items: center;
+    margin-bottom: 0.5rem;
   }
 
   h2 .actions {
@@ -481,13 +514,44 @@
     margin: 1rem 0;
   }
 
+  .ticket-group .actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: space-between;
+  }
+
   .ticket-groups {
     margin-bottom: 2rem;
+  }
+
+  .managers {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+  }
+
+  .manager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    background: var(--muted-bg);
+    padding: 1rem;
+    border-radius: var(--radius-block);
+    gap: 1rem;
   }
 
   .submit {
     display: flex;
     justify-content: center;
     margin-top: 2rem;
+  }
+
+  p.empty {
+    padding: 0.5rem;
+    color: var(--muted-text);
+    border: var(--border-block) dashed var(--muted-border);
+    border-radius: var(--radius-block);
   }
 </style>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import EventForm from '$lib/components/FormEvent.svelte';
+  import { me } from '$lib/session';
   import { Visibility } from '$lib/zeus';
   import type { PageData } from './$types';
 
@@ -18,7 +19,16 @@
     lydiaAccountId: undefined,
     links: [],
     location: '',
-    managers: [],
+    managers: $me
+      ? [
+          {
+            user: { ...$me, fullName: `${$me?.firstName} ${$me?.lastName}` },
+            canEdit: true,
+            canEditPermissions: true,
+            canVerifyRegistrations: true,
+          },
+        ]
+      : [],
     slug: '',
     startsAt: undefined,
     title: '',
@@ -36,4 +46,13 @@
   const redirectAfterSave = (uid: string) => $page.url.searchParams.get('back') || `../${uid}`;
 </script>
 
+<h1>Créer un évènement</h1>
+
 <EventForm {redirectAfterSave} bind:event availableLydiaAccounts={data.lydiaAccountsOfGroup} />
+
+<style>
+  h1 {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+</style>

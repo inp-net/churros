@@ -13,10 +13,9 @@
   import IntegerListInput from './InputIntegerList.svelte';
   import GroupListInput from './InputGroupList.svelte';
   import SchoolListInput from './InputSchoolList.svelte';
-  import GhostButton from './ButtonGhost.svelte';
   const emit = createEventDispatcher();
 
-  export let expanded = false;
+  export let expandedTicketId = '';
 
   export let ticket: {
     id: string;
@@ -35,9 +34,39 @@
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
   };
+
+  $: expanded = expandedTicketId === ticket.id;
 </script>
 
 <article class="ticket" data-id={ticket.id} class:expanded>
+  <header>
+    <div class="properties">
+      <span class="name">{ticket.name}</span>
+      <span class="capacity">{ticket.capacity} place{ticket.capacity > 1 ? 's' : ''}</span>
+      <span class="prix">{ticket.price}€</span>
+    </div>
+    <div class="actions">
+      <ButtonSecondary
+        on:click={() => {
+          expandedTicketId = '';
+          emit('delete');
+        }}
+        danger>Supprimer</ButtonSecondary
+      >
+      <ButtonGhost
+        class="toggle-expanded"
+        on:click={() => {
+          expandedTicketId = expanded ? '' : ticket.id;
+        }}
+      >
+        {#if expanded}
+          <IconChevronUp />
+        {:else}
+          <IconChevronDown />
+        {/if}
+      </ButtonGhost>
+    </div>
+  </header>
   {#if expanded}
     <InputText required label="Nom" bind:value={ticket.name} />
 
@@ -102,50 +131,48 @@
     <div class="actions">
       <ButtonSecondary
         on:click={() => {
+          expandedTicketId = '';
           emit('delete');
         }}
         danger>Supprimer</ButtonSecondary
       >
 
       <ButtonGhost
+        class="toggle-expanded"
         on:click={() => {
-          expanded = false;
+          expandedTicketId = '';
         }}
       >
         <IconChevronUp />
       </ButtonGhost>
     </div>
-  {:else}
-    <span class="name">{ticket.name}</span>
-    <span class="capacity">{ticket.capacity} place{ticket.capacity > 1 ? 's' : ''}</span>
-    <span class="prix">{ticket.price}€</span>
-    <GhostButton
-      on:click={() => {
-        emit('expand');
-      }}
-    >
-      <IconChevronDown />
-    </GhostButton>
   {/if}
 </article>
 
 <style lang="scss">
   .ticket {
     display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+    width: 500px;
+    max-width: 100%;
     padding: 1em;
     border-radius: var(--radius-block);
     box-shadow: var(--shadow);
-  }
 
-  .ticket:not(.expanded) {
-    gap: 1rem;
-
-    .expand-button {
+    :global(.toggle-expanded) {
       margin-left: auto;
     }
   }
 
-  .ticket.expanded {
-    flex-direction: column;
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .properties {
+      display: flex;
+      gap: 1rem;
+    }
   }
 </style>

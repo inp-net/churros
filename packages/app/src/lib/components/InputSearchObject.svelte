@@ -25,7 +25,6 @@
     </slot>
   </div>
   <AutoComplete
-    lock
     searchFunction={search}
     localFiltering={false}
     bind:selectedItem={object}

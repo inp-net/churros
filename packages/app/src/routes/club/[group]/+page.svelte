@@ -219,6 +219,11 @@
     margin: 0 auto;
   }
 
+  section {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
   header {
     display: flex;
     flex-wrap: wrap;
