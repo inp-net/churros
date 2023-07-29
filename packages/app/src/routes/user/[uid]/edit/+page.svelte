@@ -165,9 +165,7 @@
     data.user.incomingGodparentRequests = data.user.incomingGodparentRequests.filter(
       (req) => req.id !== id
     );
-    if (accept) 
-      data.user.godchildren = [...data.user.godchildren, godchild];
-    
+    if (accept) data.user.godchildren = [...data.user.godchildren, godchild];
   };
 
   const humanizeUserAgent = (userAgent: string) => {
