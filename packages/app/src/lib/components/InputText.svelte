@@ -13,9 +13,7 @@
   export let required = false;
   export let autocomplete: string | undefined = undefined;
   export let errorMessage: string | undefined = undefined;
-  export let messageIsWarning = false;
   export let actionIcon: typeof SvelteComponent | undefined = undefined;
-  export let suggestions: string[] | undefined = undefined;
   export let label: string;
 </script>
 
@@ -30,11 +28,9 @@
     {name}
     {initial}
     {errorMessage}
-    {messageIsWarning}
     {placeholder}
     {required}
     {actionIcon}
-    {suggestions}
   >
     <slot name="before" slot="before" />
   </BaseInputText>

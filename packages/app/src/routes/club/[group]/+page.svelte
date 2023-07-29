@@ -35,7 +35,7 @@
     matrix: IconMatrix,
     linkedin: IconLinkedin,
     discord: IconDiscord,
-    snapchat: IconSnapchat
+    snapchat: IconSnapchat,
   };
 
   export let data: PageData;
@@ -68,7 +68,7 @@
     if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
     try {
       await $zeus.mutate({
-        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }]
+        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }],
       });
       window.location.reload();
     } catch (error: unknown) {

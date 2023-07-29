@@ -40,9 +40,9 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
               firstName: true,
               lastName: true,
               pictureFile: true,
-              graduationYear: true
-            }
-          }
+              graduationYear: true,
+            },
+          },
         },
       ],
     },

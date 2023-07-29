@@ -22,7 +22,8 @@ export const RegistrationType = builder.prismaNode('Registration', {
       type: UserType,
       nullable: true,
       async resolve({ beneficiary }) {
-        if (!beneficiary) return;
+        // eslint-disable-next-line unicorn/no-null
+        if (!beneficiary) return null;
         return prisma.user.findUnique({ where: { uid: beneficiary } });
       },
     }),

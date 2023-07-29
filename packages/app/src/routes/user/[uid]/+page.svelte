@@ -25,7 +25,7 @@
     matrix: IconMatrix,
     linkedin: IconLinkedin,
     discord: IconDiscord,
-    snapchat: IconSnapchat
+    snapchat: IconSnapchat,
   };
 
   export let data: PageData;
@@ -37,25 +37,17 @@
     console.log(`Working with ${JSON.stringify(nesting)}`);
     const findUser = (uid: string) => data.user.familyTree.users.find((u) => u.uid === uid);
 
-    let [rootUid, children] = nesting;
+    const [rootUid, children] = nesting;
     return {
       ...findUser(rootUid)!,
       children: children.map((child) =>
         typeof child === 'string' ? { ...findUser(child)!, children: [] } : makeFamilyTree(child)
-      )
+      ),
     };
   }
 
   $: familyTree = makeFamilyTree(familyNesting);
   $: console.log(familyTree);
-
-  function schoolYearStart(): Date {
-    const now = new Date();
-    const thisYearSeptemberFirst = new Date(now.getFullYear(), 9, 1);
-    if (now > thisYearSeptemberFirst) return thisYearSeptemberFirst;
-
-    return new Date(now.getFullYear() - 1, 9, 1);
-  }
 
   $: ({ user } = data);
   $: roleBadge = user.groups.some(({ president }) => president)
@@ -90,8 +82,9 @@
     <div class="identity">
       <h1>{user.firstName} {user.lastName}</h1>
       <p class="major">
-        {yearTier(user.graduationYear)}A ({user.graduationYear}) · {user
-          .major.name} · {user.major.schools.map(({ name }) => name).join(', ')}
+        {yearTier(user.graduationYear)}A ({user.graduationYear}) · {user.major.name} · {user.major.schools
+          .map(({ name }) => name)
+          .join(', ')}
       </p>
       <ul class="social-links nobullet">
         {#each user.links as { name, value }}

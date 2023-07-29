@@ -1,6 +1,7 @@
 import { loadQuery, Selector } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
+import { redirectToLogin } from '$lib/session';
 
 export const _clubQuery = Selector('Group')({
   uid: true,
@@ -25,12 +26,12 @@ export const _clubQuery = Selector('Group')({
   selfJoinable: true,
 });
 
-export const load: PageLoad = async ({ fetch, params, parent }) => {
-  const { me } = await parent();
-  console.log(me);
+export const load: PageLoad = async ({ fetch, params, url, parent }) => {
+  const { me, mobile } = await parent();
+  if (!me) throw redirectToLogin(url.pathname);
   if (
-    !me?.canEditGroups &&
-    !me?.groups.some(
+    !me.canEditGroups &&
+    !me.groups.some(
       ({ group, president, secretary, treasurer, vicePresident }) =>
         group.uid === params.group && (president || secretary || treasurer || vicePresident)
     )
@@ -49,6 +50,16 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
       ],
       schoolGroups: { names: true, majors: { id: true, name: true } },
     },
-    { fetch, parent }
+    {
+      fetch,
+      parent: async () =>
+        new Promise((resolve) => {
+          resolve({
+            mobile,
+            me: undefined,
+            token: undefined,
+          });
+        }),
+    }
   );
 };

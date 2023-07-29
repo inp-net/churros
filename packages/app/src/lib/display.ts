@@ -29,9 +29,9 @@ export const DISPLAY_NOTIFICATION_TYPES = {
   ShotgunOpened: "Ouverture d'un shotgun",
   ShotgunClosingSoon: "Fermeture imminente d'un shotgun",
   ShotgunClosed: "Fermeture d'un shotgun",
-  GodsonRequestReceived: 'Réception de demandes de parrainage',
-  GodsonRequestAccepted: 'Approbation de demandes de parrainage',
-  GodsonRequestRefused: 'Refus de demandes de parrainage',
+  GodparentRequestReceived: 'Réception de demandes de parrainage',
+  GodparentRequestAccepted: 'Approbation de demandes de parrainage',
+  GodparentRequestRefused: 'Refus de demandes de parrainage',
   PermissionsChanged: 'Modification de mes permissions',
   Other: 'Autres',
 };
@@ -42,9 +42,9 @@ export const ORDER_NOTIFICATION_TYPES: Array<keyof typeof DISPLAY_NOTIFICATION_T
   'ShotgunOpened',
   'ShotgunClosingSoon',
   'ShotgunClosed',
-  'GodsonRequestReceived',
-  'GodsonRequestAccepted',
-  'GodsonRequestRefused',
+  'GodparentRequestReceived',
+  'GodparentRequestAccepted',
+  'GodparentRequestRefused',
   'PermissionsChanged',
 ];
 

@@ -1,10 +1,10 @@
 import { NotificationType } from '@prisma/client';
-import { builder } from '../builder';
-import { prisma } from '../prisma';
-import { notify } from '../services/notifications';
-import { DateTimeScalar } from './scalars';
+import { builder } from '../builder.js';
+import { prisma } from '../prisma.js';
+import { notify } from '../services/notifications.js';
+import { DateTimeScalar } from './scalars.js';
 import { GraphQLError } from 'graphql';
-import { getFamilyTree } from './users';
+import { getFamilyTree } from '../godchildren-tree.js';
 
 export const GodparentRequestType = builder.prismaObject('GodparentRequest', {
   fields: (t) => ({
@@ -44,8 +44,8 @@ builder.queryField('godparentRequest', (t) =>
       });
       if (!request) return false;
       return Boolean(
-        user?.admin ||
-          user?.canEditUsers ||
+        user.admin ||
+          user.canEditUsers ||
           [request.godchildId, request.godparentId].includes(user.id)
       );
     },
@@ -91,7 +91,7 @@ builder.mutationField('upsertGodparentRequest', (t) =>
           data: {
             goto: `/me`,
             group: undefined,
-            type: NotificationType.GodsonRequestReceived,
+            type: NotificationType.GodparentRequestAccepted,
           },
         });
       }
@@ -151,7 +151,7 @@ builder.mutationField('deleteGodparentRequest', (t) =>
           title: `Demande de parrainage acceptée!`,
           data: {
             goto: `/me`,
-            type: NotificationType.GodsonRequestAccepted,
+            type: NotificationType.GodparentRequestAccepted,
             group: undefined,
           },
         });
@@ -161,7 +161,7 @@ builder.mutationField('deleteGodparentRequest', (t) =>
           title: `Demande de parrainage refusée :/`,
           data: {
             goto: `/me`,
-            type: NotificationType.GodsonRequestRefused,
+            type: NotificationType.GodparentRequestRefused,
             group: undefined,
           },
         });

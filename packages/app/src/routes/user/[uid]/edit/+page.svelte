@@ -1,6 +1,7 @@
 <script lang="ts">
   import NotificationSettingsForm from '$lib/components/FormNotificationSettings.svelte';
   import IconBack from '~icons/mdi/arrow-left';
+  import Alert from '$lib/components/Alert.svelte';
   import IconClose from '~icons/mdi/close';
   import IconCheck from '~icons/mdi/check';
   import IconActive from '~icons/mdi/adjust';
@@ -10,7 +11,7 @@
   import FormPicture from '$lib/components/FormPicture.svelte';
   import { me } from '$lib/session';
   import { formatDate, formatDateTime } from '$lib/dates';
-  import { CredentialType, Selector } from '$lib/zeus';
+  import { CredentialType } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { zeus } from '$lib/zeus';
@@ -19,7 +20,6 @@
   import { PUBLIC_SUPPORT_EMAIL, PUBLIC_USER_DUMP_URL } from '$env/static/public';
   import InputPerson from '$lib/components/InputPerson.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import { update } from 'lodash';
 
   let godparentRequestSendServerError = '';
   let godparentRequestSending = false;
@@ -48,17 +48,18 @@
           '...on Error': { message: true },
           '...on MutationUpsertGodparentRequestSuccess': {
             data: {
+              id: true,
               createdAt: true,
               godparent: {
                 uid: true,
                 firstName: true,
                 lastName: true,
-                pictureFile: true
-              }
-            }
-          }
-        }
-      ]
+                pictureFile: true,
+              },
+            },
+          },
+        },
+      ],
     });
 
     godparentRequestSending = false;
@@ -71,8 +72,8 @@
     data.user.outgoingGodparentRequests = [
       ...data.user.outgoingGodparentRequests,
       {
-        ...upsertGodparentRequest.data
-      }
+        ...upsertGodparentRequest.data,
+      },
     ];
   };
 
@@ -93,7 +94,7 @@
           uid: data.user.uid,
           birthday: data.user.birthday,
           // eslint-disable-next-line unicorn/no-null
-          godparentUid: null
+          godparentUid: null,
         },
         {
           __typename: true,
@@ -104,12 +105,12 @@
                 uid: true,
                 firstName: true,
                 lastName: true,
-                pictureFile: true
-              }
-            }
-          }
-        }
-      ]
+                pictureFile: true,
+              },
+            },
+          },
+        },
+      ],
     });
 
     godparentDeleting = false;
@@ -126,10 +127,10 @@
       deleteGodchild: [
         {
           parentUid: data.user.uid,
-          godchildUid
+          godchildUid,
         },
-        true
-      ]
+        true,
+      ],
     });
 
     if (deleteGodchild) {
@@ -144,15 +145,15 @@
       deleteGodparentRequest: [
         {
           id,
-          accept
+          accept,
         },
         {
-          __typename: true
-        }
-      ]
+          __typename: true,
+        },
+      ],
     });
 
-    if (data.user.outgoingGodparentRequests.find((req) => req.id === id)) {
+    if (data.user.outgoingGodparentRequests.some((req) => req.id === id)) {
       data.user.outgoingGodparentRequests = data.user.outgoingGodparentRequests.filter(
         (req) => req.id !== id
       );
@@ -164,9 +165,9 @@
     data.user.incomingGodparentRequests = data.user.incomingGodparentRequests.filter(
       (req) => req.id !== id
     );
-    if (accept) {
+    if (accept) 
       data.user.godchildren = [...data.user.godchildren, godchild];
-    }
+    
   };
 
   const humanizeUserAgent = (userAgent: string) => {
@@ -206,12 +207,18 @@
       user={data.user.godparent
         ? {
             ...data.user.godparent,
-            fullName: `${data.user.godparent.firstName} ${data.user.godparent.lastName}`
+            fullName: `${data.user.godparent.firstName} ${data.user.godparent.lastName}`,
           }
         : undefined}
       bind:uid={godparentUid}
     />
     <section class="send-request">
+      {#if godparentRequestSendServerError}
+        <Alert theme="danger">{godparentRequestSendServerError}</Alert>
+      {/if}
+      {#if godparentDeleteServerError}
+        <Alert theme="danger">{godparentDeleteServerError}</Alert>
+      {/if}
       <ButtonSecondary
         disabled={!godparentUid || godparentUid === data.user.godparent?.uid}
         loading={godparentRequestSending}
@@ -417,9 +424,9 @@
 
   .send-request {
     display: flex;
-    margin-top: 1rem;
-    justify-content: center;
     gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
   }
 
   .godparent-request,
@@ -433,7 +440,7 @@
   .godchildren-hint {
     padding: 1rem;
     color: var(--muted-text);
-    border-radius: var(--radius-block);
     border: var(--border-block) dashed var(--muted-border);
+    border-radius: var(--radius-block);
   }
 </style>

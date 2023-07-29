@@ -6,3 +6,5 @@ zeus/
 
 *.cjs
 *.config.js
+
+packages/api/src/godchildren-tree.ts

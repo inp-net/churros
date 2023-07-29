@@ -29,9 +29,9 @@
     openToPromotions: number[];
     openToSchools: Array<{ name: string; color: string; uid: string }>;
     openToGroups: Array<{ name: string; uid: string; pictureFile: string }>;
-    openToExternal: boolean | null;
-    openToAlumni: boolean | null;
-    openToNonAEContributors: boolean | null;
+    openToExternal?: boolean | null | undefined;
+    openToAlumni?: boolean | null | undefined;
+    openToNonAEContributors?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
   };

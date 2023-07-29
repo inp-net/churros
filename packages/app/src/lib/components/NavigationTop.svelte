@@ -2,14 +2,14 @@
   import IconIssue from '~icons/mdi/chat-alert-outline';
   import IconNotif from '~icons/mdi/bell-outline';
   import IconTicket from '~icons/mdi/ticket-outline';
-  import IconLightDark from "~icons/mdi/theme-light-dark"
+  import IconLightDark from '~icons/mdi/theme-light-dark';
   import IconAccount from '~icons/mdi/account-circle-outline';
 
   import ButtonSecondary from './ButtonSecondary.svelte';
   import { onMount } from 'svelte';
   import { me } from '$lib/session';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-    import { theme } from '$lib/theme';
+  import { theme } from '$lib/theme';
 
   onMount(() => {
     window.addEventListener('scroll', () => {
@@ -25,10 +25,12 @@
 
   <div class="actions">
     {#if $me}
-      <button on:click={() => {
-        $theme = $theme === "dark" ? "light" : "dark"
-      }}>
-      <IconLightDark></IconLightDark>
+      <button
+        on:click={() => {
+          $theme = $theme === 'dark' ? 'light' : 'dark';
+        }}
+      >
+        <IconLightDark />
       </button>
       <a href="https://git.inpt.fr/inp-net/centraverse/-/issues/new" style="color:red"
         ><IconIssue /></a

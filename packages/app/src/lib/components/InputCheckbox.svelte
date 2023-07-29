@@ -3,18 +3,18 @@
   import Close from '~icons/mdi/close';
 
   export let ternary = false;
-  export let value: boolean | null;
+  export let value: boolean | null | undefined;
   export let label: string;
   export let labelTrue = 'Oui';
   export let labelFalse = 'Non';
   export let labelNull = 'Inconnu';
-  let previousValue: boolean | null = value;
+  let previousValue: boolean | null | undefined = value;
 
   const getTriState = (target: HTMLInputElement) =>
     // eslint-disable-next-line unicorn/no-null
     target.indeterminate ? null : target.checked;
-  const setTriState = (target: HTMLInputElement, value: boolean | null) => {
-    if (value === null) {
+  const setTriState = (target: HTMLInputElement, value: boolean | null | undefined) => {
+    if (value === null || value === undefined) {
       target.indeterminate = true;
       target.checked = false;
     } else {
