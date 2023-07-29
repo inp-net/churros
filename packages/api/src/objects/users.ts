@@ -36,6 +36,13 @@ export const UserType = builder.prismaNode('User', {
     email: t.exposeString('email', { authScopes: { loggedIn: true, $granted: 'me' } }),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
+    fullName: t.field({
+      type: 'String',
+      resolve({ firstName, lastName, nickname }) {
+        if (nickname) return `${nickname} (${firstName} ${lastName})`;
+        return `${firstName} ${lastName}`;
+      },
+    }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     graduationYear: t.exposeInt('graduationYear'),
 

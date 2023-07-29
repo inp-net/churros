@@ -10,7 +10,7 @@
     firstName: string;
     lastName: string;
     pictureFile: string;
-    fullName?: string;
+    fullName: string;
   };
   export let label: string;
   export let uid: string | undefined;
@@ -37,20 +37,14 @@
         { q: query },
         {
           uid: true,
+          fullName: true,
           firstName: true,
           lastName: true,
           pictureFile: true,
         },
       ],
     });
-    return searchUsers
-      .filter(({ uid }) => allowed(uid))
-      .map(({ firstName, lastName, ...rest }) => ({
-        ...rest,
-        fullName: `${firstName} ${lastName}`,
-        firstName,
-        lastName,
-      }));
+    return searchUsers.filter(({ uid }) => allowed(uid));
   }
 </script>
 

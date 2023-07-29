@@ -3,7 +3,6 @@ import { redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 import { derived } from 'svelte/store';
 import { Selector, type PropsType } from './zeus';
-import { browser } from '$app/environment';
 
 /** What's needed in a user session. */
 export const sessionUserQuery = () =>
@@ -13,6 +12,7 @@ export const sessionUserQuery = () =>
     firstName: true,
     pictureFile: true,
     lastName: true,
+    fullName: true,
     admin: true,
     canEditGroups: true,
     canEditUsers: true,

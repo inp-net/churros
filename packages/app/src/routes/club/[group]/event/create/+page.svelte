@@ -22,7 +22,7 @@
     managers: $me
       ? [
           {
-            user: { ...$me, fullName: `${$me?.firstName} ${$me?.lastName}` },
+            user: $me,
             canEdit: true,
             canEditPermissions: true,
             canVerifyRegistrations: true,

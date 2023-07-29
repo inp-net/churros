@@ -202,12 +202,7 @@
     <InputPerson
       label="Parrain/Marraine"
       except={data.user.familyTree.users.map((u) => u.uid)}
-      user={data.user.godparent
-        ? {
-            ...data.user.godparent,
-            fullName: `${data.user.godparent.firstName} ${data.user.godparent.lastName}`,
-          }
-        : undefined}
+      user={data.user.godparent}
       bind:uid={godparentUid}
     />
     <section class="send-request">
