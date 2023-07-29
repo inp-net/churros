@@ -146,11 +146,13 @@
     </ul>
   </section>
 
-  <section class="family">
-    <h2>Famille</h2>
+  {#if data.user.familyTree.users.length >= 2}
+    <section class="family">
+      <h2>Famille</h2>
 
-    <TreePersons user={familyTree} highlightUid={user.uid} />
-  </section>
+      <TreePersons user={familyTree} highlightUid={user.uid} />
+    </section>
+  {/if}
 
   <section class="articles">
     <h2>Posts</h2>
