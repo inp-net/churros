@@ -1,6 +1,7 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import IconGear from '~icons/mdi/gear';
+  import IconAdmin from '~icons/mdi/security';
   import IconWebsite from '~icons/mdi/earth';
   import { dateFormatter, yearTier } from '$lib/dates.js';
   import { me } from '$lib/session.js';
@@ -15,6 +16,7 @@
   import IconSnapchat from '~icons/mdi/snapchat';
   import BadgeGroupMember from '$lib/components/BadgeGroupMember.svelte';
   import TreePersons from '$lib/components/TreePersons.svelte';
+  import Badge from '$lib/components/Badge.svelte';
 
   $: console.log(data.user.familyTree);
 
@@ -80,7 +82,14 @@
     </div>
 
     <div class="identity">
-      <h1>{user.firstName} {user.lastName}</h1>
+      <h1>
+        {user.firstName}
+        {user.lastName}
+        {#if user.admin}<Badge title="Possède tout les droits" theme="info"
+            ><IconAdmin /> ADMIN</Badge
+          >
+        {/if}
+      </h1>
       <p class="major">
         {yearTier(user.graduationYear)}A ({user.graduationYear}) · {user.major.name} · {user.major.schools
           .map(({ name }) => name)
