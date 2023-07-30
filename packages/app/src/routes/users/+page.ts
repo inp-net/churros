@@ -14,6 +14,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
             node: {
               firstName: true,
               lastName: true,
+              fullName: true,
               email: true,
               major: { name: true },
               graduationYear: true,
@@ -29,6 +30,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
           uid: true,
           firstName: true,
           lastName: true,
+          fullName: true,
           email: true,
           major: { name: true },
           graduationYear: true,

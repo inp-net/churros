@@ -46,6 +46,14 @@
     labelKey="name"
     valueKey="uid"
   >
+    <svelte:fragment slot="tag" let:tag>
+      {#if tag.pictureFile !== ''}
+        <div class="avatar">
+          <img src="{PUBLIC_STORAGE_URL}{tag.pictureFile}" alt={tag.name?.toString()} />
+        </div>
+      {/if}
+      {tag.name}
+    </svelte:fragment>
     <div class="suggestion" slot="item" let:item>
       <div class="avatar">
         <img src="{PUBLIC_STORAGE_URL}{item.pictureFile}" alt={item.name} />

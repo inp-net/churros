@@ -3,6 +3,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const _userQuery = Selector('User')({
+  id: true,
   uid: true,
   email: true,
   firstName: true,

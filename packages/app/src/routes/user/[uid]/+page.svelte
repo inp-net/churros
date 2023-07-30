@@ -14,9 +14,9 @@
   import IconLinkedin from '~icons/mdi/linkedin';
   import IconDiscord from '~icons/mdi/discord';
   import IconSnapchat from '~icons/mdi/snapchat';
-  import BadgeGroupMember from '$lib/components/BadgeGroupMember.svelte';
   import TreePersons from '$lib/components/TreePersons.svelte';
   import Badge from '$lib/components/Badge.svelte';
+  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
 
   $: console.log(data.user.familyTree);
 
@@ -52,6 +52,21 @@
   $: console.log(familyTree);
 
   $: ({ user } = data);
+
+  function rolesBadge({
+    president,
+    treasurer,
+    vicePresident,
+    secretary,
+  }: {
+    president: boolean;
+    treasurer: boolean;
+    vicePresident: boolean;
+    secretary: boolean;
+  }): string {
+    return president ? '👑' : treasurer ? '💰' : vicePresident ? '🌟' : secretary ? '📜' : '';
+  }
+
   $: roleBadge = user.groups.some(({ president }) => president)
     ? '👑'
     : user.groups.some(({ treasurer }) => treasurer)
@@ -77,7 +92,7 @@
 
       <img
         src={user.pictureFile ? `${PUBLIC_STORAGE_URL}${user.pictureFile}` : ''}
-        alt="{user.firstName} {user.lastName}"
+        alt={user.fullName}
       />
     </div>
 
@@ -146,13 +161,12 @@
   <section class="groups">
     <h2>Groupes</h2>
 
-    <ul class="nobullet">
-      {#each user.groups as member}
-        <li>
-          <BadgeGroupMember href="/club/{member.group.uid}" groupMember={member} />
-        </li>
-      {/each}
-    </ul>
+    <CarouselGroups
+      groups={user.groups.map(({ group, title, ...roles }) => ({
+        ...group,
+        role: `${rolesBadge(roles)} ${title}`,
+      }))}
+    />
   </section>
 
   {#if data.user.familyTree.users.length >= 2}
@@ -263,13 +277,6 @@
   section h2 {
     margin-bottom: 2rem;
     text-align: center;
-  }
-
-  .groups ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
   }
 
   .content {

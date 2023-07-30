@@ -4,9 +4,9 @@ import { DateTimeScalar } from './scalars.js';
 import { prisma } from '../prisma.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { sendLydiaPaymentRequest } from '../services/lydia.js';
-import { placesLeft } from './tickets.js';
+import { placesLeft, userCanSeeTicket } from './tickets.js';
 import { GraphQLError } from 'graphql';
-import { UserType } from './users.js';
+import { UserType, fullName } from './users.js';
 
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
   name: 'PaymentMethod',
@@ -37,19 +37,20 @@ export const RegistrationType = builder.prismaNode('Registration', {
       async resolve({ authorId, beneficiary }) {
         const author = await prisma.user.findUnique({ where: { id: authorId } });
         if (!author) return false;
-        return authorIsBeneficiary(author, beneficiary);
+        return authorIsBeneficiary({ ...author, fullName: fullName(author) }, beneficiary);
       },
     }),
   }),
 });
 
 export function authorIsBeneficiary(
-  author: { uid: string; firstName: string; lastName: string },
+  author: { uid: string; fullName: string; firstName: string; lastName: string },
   beneficiary: string
 ) {
   return (
     !beneficiary.trim() ||
     author.uid === beneficiary ||
+    author.fullName === beneficiary ||
     `${author.firstName} ${author.lastName}` === beneficiary
   );
 }
@@ -87,7 +88,7 @@ builder.queryField('registration', (t) =>
               beneficiary: user.uid,
             },
             {
-              beneficiary: `${user.firstName} ${user.lastName}`,
+              beneficiary: user.fullName,
             },
           ],
         },
@@ -120,7 +121,8 @@ builder.queryField('registrationOfUser', (t) =>
       const registration = registrations.find(
         ({ author, beneficiary }) =>
           author.uid === user.uid &&
-          (authorIsBeneficiary(author, beneficiary) || beneficiary === argBeneficiary)
+          (authorIsBeneficiary({ ...author, fullName: fullName(author) }, beneficiary) ||
+            beneficiary === argBeneficiary)
       );
 
       if (!registration) throw new GraphQLError('Registration not found');
@@ -150,7 +152,7 @@ builder.queryField('registrationsOfUser', (t) =>
           OR: [
             { author: { uid: userUid } },
             { beneficiary: userUid },
-            { beneficiary: `${user.firstName} ${user.lastName}` },
+            { beneficiary: fullName(user) },
           ],
         },
       });
@@ -283,7 +285,7 @@ builder.mutationField('upsertRegistration', (t) =>
       if (!user) return false;
       const ticket = await prisma.ticket.findUnique({
         where: { id: ticketId },
-        include: { event: true },
+        include: { event: true, openToGroups: true, openToSchools: true },
       });
       if (!ticket) return false;
 
@@ -303,6 +305,9 @@ builder.mutationField('upsertRegistration', (t) =>
       if (creating) {
         // Check that the user can access the event
         if (!(await eventAccessibleByUser(ticket.event, user))) return false;
+
+        // Check that the user can see the event
+        if (!userCanSeeTicket(ticket, user)) return false;
 
         // Check for tickets that only managers can provide
         if (
@@ -448,7 +453,14 @@ builder.mutationField('paidRegistration', (t) =>
       if (!phone) throw new GraphQLError('Phone not found');
 
       // Process payment
-      await pay(user, ticket.event.beneficiary, ticket.price, paymentMethod, phone, regId);
+      await pay(
+        user.uid,
+        ticket.event.beneficiary?.uid ?? '(unregistered)',
+        ticket.price,
+        paymentMethod,
+        phone,
+        regId
+      );
 
       return prisma.registration.update({
         ...query,
@@ -502,8 +514,8 @@ builder.mutationField('deleteRegistration', (t) =>
         registration.paymentMethod
       ) {
         await pay(
-          registration.ticket.event.beneficiary,
-          registration.author,
+          registration.ticket.event.beneficiary.uid ?? '(unregistered)',
+          registration.author.uid,
           registration.ticket.price,
           registration.paymentMethod
         );

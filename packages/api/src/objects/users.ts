@@ -26,6 +26,12 @@ builder.objectType(FamilyTree, {
   }),
 });
 
+export function fullName(user: { firstName: string; lastName: string; nickname?: string }) {
+  const { firstName, lastName, nickname } = user;
+  if (nickname) return `${nickname} (${firstName} ${lastName})`;
+  return `${firstName} ${lastName}`;
+}
+
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
   id: { field: 'id' },
@@ -38,10 +44,7 @@ export const UserType = builder.prismaNode('User', {
     lastName: t.exposeString('lastName'),
     fullName: t.field({
       type: 'String',
-      resolve({ firstName, lastName, nickname }) {
-        if (nickname) return `${nickname} (${firstName} ${lastName})`;
-        return `${firstName} ${lastName}`;
-      },
+      resolve: (user) => fullName(user),
     }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     graduationYear: t.exposeInt('graduationYear'),
@@ -63,7 +66,7 @@ export const UserType = builder.prismaNode('User', {
 
     // Permissions are only visible to admins
     admin: t.exposeBoolean('admin', {
-      authScopes: { admin: true, $granted: 'me' },
+      // authScopes: { admin: true, $granted: 'me' },
     }),
     canEditGroups: t.boolean({
       resolve: ({ admin, canEditGroups }) => admin || canEditGroups,

@@ -17,6 +17,7 @@ export const load: PageLoad = async ({ fetch, url }) => {
           address: true,
           birthday: true,
           firstName: true,
+          fullName: true,
           lastName: true,
           majorId: true,
           graduationYear: true,

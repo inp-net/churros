@@ -5,9 +5,13 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import ButtonGhost from './ButtonGhost.svelte';
 
-  type T = Record<string, unknown>;
+  type T = $$Generic<Record<string, unknown>>;
+  type V = $$Generic<number | string>;
+
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   export let object: T | undefined;
-  export let value: string | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  export let value: V | undefined;
   export let search: (query: string) => Promise<T[]>;
   export let labelKey = 'name';
   export let valueKey = 'id';
@@ -17,10 +21,10 @@
 <div class="input-container">
   <div class="thumbnail">
     <slot name="thumbnail" {object}>
-      {#if object}
+      {#if object?.pictureFile}
         <img
           src="{PUBLIC_STORAGE_URL}{object.pictureFile}"
-          alt={object[labelKey]?.toString() ?? ''}
+          alt={object?.[labelKey]?.toString() ?? ''}
         />
       {:else}
         <IconNone />
@@ -39,7 +43,7 @@
   >
     <slot slot="item" name="item" let:item {item} />
   </AutoComplete>
-  {#if clearable && object !== undefined}
+  {#if clearable && object !== undefined && object !== null}
     <ButtonGhost
       on:click={() => {
         object = undefined;

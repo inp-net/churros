@@ -67,7 +67,7 @@ export const GroupType = builder.prismaNode('Group', {
     links: t.relation('links'),
     members: t.relation('members', {
       // Seeing group members requires being logged in
-      authScopes: { loggedIn: true },
+      // authScopes: { loggedIn: true },
       query: {
         orderBy: [
           { president: 'desc' },
@@ -78,7 +78,7 @@ export const GroupType = builder.prismaNode('Group', {
       },
     }),
     school: t.relation('school', { nullable: true }),
-    parent: t.relation('parent'),
+    parent: t.relation('parent', { nullable: true }),
     selfJoinable: t.exposeBoolean('selfJoinable'),
     events: t.relation('events'),
     children: t.relation('children'),
@@ -190,7 +190,7 @@ builder.mutationField('upsertGroup', (t) =>
     args: {
       uid: t.arg.string({ required: false }),
       type: t.arg({ type: GroupEnumType }),
-      parentId: t.arg.id({ required: false }),
+      parentUid: t.arg.string({ required: false }),
       schoolId: t.arg.id({ required: false }),
       studentAssociationId: t.arg.id({ required: false }),
       name: t.arg.string({ validate: { maxLength: 255 } }),
@@ -221,7 +221,7 @@ builder.mutationField('upsertGroup', (t) =>
         uid,
         selfJoinable,
         type,
-        parentId,
+        parentUid,
         name,
         color,
         address,
@@ -234,6 +234,7 @@ builder.mutationField('upsertGroup', (t) =>
         related,
       }
     ) {
+      console.log(`Updating group parentUid=${JSON.stringify(parentUid)}`);
       // --- First, we update the group's children's familyId according to the new parent of this group. ---
       // We have 2 possible cases for updating the parent: either it is:
       // - null (or set to ''): the group does not have a parent anymore;
@@ -245,24 +246,28 @@ builder.mutationField('upsertGroup', (t) =>
       //
       let familyId;
       const oldGroup = await prisma.group.findUnique({ where: { uid: uid ?? '' } });
-      if (parentId === null || parentId === '') {
+      if (parentUid === null || parentUid === undefined || parentUid === '') {
         // First case (null): the group does not have a parent anymore.
         // Set both the parent and the root to the group itself.
         // eslint-disable-next-line unicorn/no-null
-        parentId = null;
+        parentUid = null;
         // eslint-disable-next-line unicorn/no-null
         familyId = oldGroup?.id ?? null;
       } else {
         // Third case (number): the group's parent is changed to the group with that ID.
-        const newParent = await prisma.group.findUnique({ where: { id: parentId } });
-        if (!newParent) throw new GraphQLError('ID de groupe parent invalide');
+        const newParent = await prisma.group.findUnique({ where: { uid: parentUid } });
+        if (!newParent) throw new GraphQLError('uid de groupe parent invalide');
         familyId = newParent.familyId ?? newParent.id;
         // Update all descendants' familyId to the new parent's familyId
         // Or when creating (i.e. oldGroup is undefined), just check for cycles
         const allGroups = await prisma.group.findMany({});
         if (oldGroup) {
           if (
-            hasCycle(allGroups.map((g) => (g.id === oldGroup.id ? { ...oldGroup, parentId } : g)))
+            hasCycle(
+              allGroups.map((g) =>
+                g.id === oldGroup.id ? { ...oldGroup, parentId: newParent.id } : g
+              )
+            )
           )
             throw new GraphQLError('La modification créerait un cycle dans les groupes');
 
@@ -276,24 +281,18 @@ builder.mutationField('upsertGroup', (t) =>
               familyId,
             },
           });
-        } else if (parentId && hasCycle([{ parentId, id: '' }, ...allGroups])) {
+        } else if (newParent.id && hasCycle([{ parentId: newParent.id, id: '' }, ...allGroups])) {
           throw new GraphQLError("Can't create a cycle");
         }
       }
 
-      if (parentId === oldGroup?.id) throw new GraphQLError('Group cannot be its own parent');
+      if (parentUid === oldGroup?.uid) throw new GraphQLError('Group cannot be its own parent');
 
       const data = {
         type,
         selfJoinable,
         name,
         color,
-        parent:
-          parentId === undefined
-            ? undefined
-            : parentId === null
-            ? {}
-            : { connect: { id: parentId } },
         familyRoot: familyId ? { connect: { id: familyId } } : undefined,
         address,
         description,
@@ -303,11 +302,6 @@ builder.mutationField('upsertGroup', (t) =>
         studentAssociation: studentAssociationId ? { connect: { id: studentAssociationId } } : {},
       };
 
-      // if (uid) {
-      //   const id = (await prisma.group.findUnique({ where: { uid: uid ?? '' } }))?.id;
-      //   await prisma.link.deleteMany({ where: { groupId: id ?? '' } });
-      // }
-
       return prisma.group.upsert({
         ...query,
         where: { uid: uid ?? '' },
@@ -316,6 +310,8 @@ builder.mutationField('upsertGroup', (t) =>
           links: { create: links },
           uid: await createGroupUid(name),
           related: { connect: related.map((uid) => ({ uid })) },
+          parent:
+            parentUid === null || parentUid === undefined ? {} : { connect: { uid: parentUid } },
         },
         update: {
           ...data,
@@ -326,6 +322,10 @@ builder.mutationField('upsertGroup', (t) =>
           related: {
             set: related.map((uid) => ({ uid })),
           },
+          parent:
+            parentUid === null || parentUid === undefined
+              ? { disconnect: true }
+              : { connect: { uid: parentUid } },
         },
       });
     },

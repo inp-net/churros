@@ -17,11 +17,13 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
               paid: true,
               author: {
                 firstName: true,
+                fullName: true,
                 lastName: true,
                 uid: true,
               },
               beneficiary: true,
               beneficiaryUser: {
+                fullName: true,
                 firstName: true,
                 lastName: true,
                 uid: true,

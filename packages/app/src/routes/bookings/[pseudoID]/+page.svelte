@@ -49,15 +49,15 @@
   </h1>
   <h2>
     {#if authorIsBeneficiary}
-      {author.firstName} {author.lastName}
+      {author.fullName}
     {:else if beneficiaryUser}
-      {beneficiaryUser.firstName} {beneficiaryUser.lastName}
+      {beneficiaryUser.fullName}
     {:else}
       {beneficiary}
     {/if}
   </h2>
   {#if !authorIsBeneficiary}
-    <p>Achetée par {author.firstName} {author.lastName}</p>
+    <p>Achetée par {author.fullName}</p>
   {/if}
 
   <h2>Billet</h2>

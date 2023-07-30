@@ -13,6 +13,7 @@ export const _articleQuery = Selector('Article')({
   pictureFile: true,
   author: {
     firstName: true,
+    fullName: true,
     lastName: true,
     pictureFile: true,
     uid: true,
@@ -33,7 +34,7 @@ export const _articleQuery = Selector('Article')({
         id: true,
         beneficiary: true,
         authorIsBeneficiary: true,
-        beneficiaryUser: { uid: true, firstName: true, lastName: true },
+        beneficiaryUser: { uid: true, firstName: true, lastName: true, fullName: true },
         author: { uid: true },
         paid: true,
         ticket: {

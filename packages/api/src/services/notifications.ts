@@ -18,6 +18,7 @@ import type { MaybePromise } from '@pothos/core';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
 import { toHtml } from './markdown.js';
 import { differenceInSeconds, minutesToSeconds, subMinutes } from 'date-fns';
+import { fullName } from '../objects/users.js';
 
 if (process.env.CONTACT_EMAIL && process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
   webpush.setVapidDetails(
@@ -205,7 +206,7 @@ export async function scheduleShotgunNotifications({
                 beneficiary: user.uid,
               },
               {
-                beneficiary: `${user.firstName} ${user.lastName}`,
+                beneficiary: fullName(user),
               },
             ],
           },

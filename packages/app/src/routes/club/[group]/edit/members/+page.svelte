@@ -62,7 +62,13 @@
               secretary: true,
               vicePresident: true,
               canEditMembers: true,
-              member: { uid: true, firstName: true, lastName: true, pictureFile: true },
+              member: {
+                uid: true,
+                firstName: true,
+                lastName: true,
+                pictureFile: true,
+                fullName: true,
+              },
             },
           },
         },
@@ -174,7 +180,7 @@
         <AvatarPerson
           href="/user/{member.uid}"
           {...member}
-          lastName="{member.lastName} {emojis({ president, treasurer, vicePresident, secretary })}"
+          fullName="{member.fullName} {emojis({ president, treasurer, vicePresident, secretary })}"
           role="{title} ({formatISO9075(createdAt, { representation: 'date' })})"
         />
         <div class="actions">
@@ -249,11 +255,11 @@
   }
 
   .members {
-    margin-top: 2rem;
     display: flex;
     flex-flow: column;
     gap: 0.5rem;
     max-height: 45vh;
+    margin-top: 2rem;
     overflow: auto;
   }
 

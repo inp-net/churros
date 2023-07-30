@@ -61,6 +61,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
                 uid: true,
                 firstName: true,
                 lastName: true,
+                fullName: true,
               },
               authorIsBeneficiary: true,
               paid: true,
@@ -68,6 +69,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
                 uid: true,
                 firstName: true,
                 lastName: true,
+                fullName: true,
               },
               ticket: {
                 name: true,

@@ -56,6 +56,7 @@
                 uid: true,
                 firstName: true,
                 lastName: true,
+                fullName: true,
                 pictureFile: true,
               },
             },
@@ -107,6 +108,7 @@
                 uid: true,
                 firstName: true,
                 lastName: true,
+                fullName: true,
                 pictureFile: true,
               },
             },
@@ -183,9 +185,7 @@
 
 <h1>
   <a href=".."> <IconBack /> </a> Éditer
-  {data.user.firstName}
-  {data.user.nickname}
-  {data.user.lastName}
+  {data.user.fullName}
 </h1>
 
 <div class="content">

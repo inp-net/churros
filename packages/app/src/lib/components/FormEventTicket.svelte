@@ -10,12 +10,18 @@
   import ButtonGhost from './ButtonGhost.svelte';
   import IconChevronDown from '~icons/mdi/chevron-down';
   import IconChevronUp from '~icons/mdi/chevron-up';
-  import IntegerListInput from './InputIntegerList.svelte';
-  import SchoolListInput from './InputSchoolList.svelte';
   import InputListOfGroups from './InputListOfGroups.svelte';
+  import InputSearchObjectList from './InputSearchObjectList.svelte';
+  import { zeus } from '$lib/zeus';
+  import Fuse from 'fuse.js';
+  import { fromYearTier, schoolYearStart, yearRangeUpTo, yearTier } from '$lib/dates';
   const emit = createEventDispatcher();
 
   export let expandedTicketId = '';
+
+  function promoLabel(year: number) {
+    return `${yearTier(year)}A (${year})`;
+  }
 
   export let ticket: {
     id: string;
@@ -70,6 +76,11 @@
   {#if expanded}
     <InputText required label="Nom" bind:value={ticket.name} />
 
+    <div class="side-by-side">
+      <InputNumber label="Prix" bind:value={ticket.price} />
+      <InputNumber label="Nombre de places" bind:value={ticket.capacity} />
+    </div>
+
     <InputLongText rich label="Description" bind:value={ticket.description} />
 
     <div class="side-by-side">
@@ -77,13 +88,38 @@
       <InputDate time label="Clôture" bind:value={ticket.closesAt} />
     </div>
 
-    <div class="side-by-side">
-      <InputNumber label="Prix" bind:value={ticket.price} />
-      <InputNumber label="Nombre de places" bind:value={ticket.capacity} />
-    </div>
-
     <InputField label="Promos">
-      <IntegerListInput bind:value={ticket.openToPromotions} />
+      <ButtonSecondary
+        on:click={() => {
+          ticket.openToPromotions = [1, 2, 3].map((y) => fromYearTier(y));
+        }}>1+2+3As</ButtonSecondary
+      >
+      <ButtonSecondary
+        on:click={() => {
+          ticket.openToPromotions = [fromYearTier(1)];
+        }}>1As</ButtonSecondary
+      >
+      <InputSearchObjectList
+        search={(q) => {
+          const range = yearRangeUpTo(schoolYearStart().getFullYear() + 4, 10);
+          return new Fuse(
+            range.map((year) => ({
+              value: year,
+              label: promoLabel(year),
+            })),
+            { keys: ['label'] }
+          )
+            .search(q)
+            .map(({ item }) => item);
+        }}
+        valueKey="value"
+        labelKey="label"
+        bind:values={ticket.openToPromotions}
+        objects={ticket.openToPromotions.map((year) => ({
+          value: year,
+          label: promoLabel(year),
+        }))}
+      />
     </InputField>
 
     <InputListOfGroups
@@ -93,30 +129,75 @@
     />
 
     <InputField label="Écoles">
-      <SchoolListInput bind:value={ticket.openToSchools} />
+      <ButtonSecondary
+        on:click={() => {
+          ticket.openToSchools = [
+            {
+              name: 'ENSEEIHT',
+              uid: 'n7',
+              color: '#0000ff',
+            },
+          ];
+        }}>n7</ButtonSecondary
+      >
+      <ButtonSecondary
+        on:click={() => {
+          ticket.openToSchools = [
+            {
+              name: 'ENSEEIHT',
+              uid: 'n7',
+              color: '#0000ff',
+            },
+            {
+              name: 'ENSIACET',
+              uid: 'A7',
+              color: '#ff0000',
+            },
+            { name: 'ENSAT', uid: 'ensat', color: '#00ff00' },
+          ];
+        }}>INP</ButtonSecondary
+      >
+      <InputSearchObjectList
+        search={async (query) => {
+          const { schools } = await $zeus.query({
+            schools: {
+              name: true,
+              color: true,
+              uid: true,
+            },
+          });
+
+          const searcher = new Fuse(schools, { keys: ['name', 'uid'] });
+          return searcher.search(query).map(({ item }) => item);
+        }}
+        labelKey="name"
+        valueKey="uid"
+        values={ticket.openToSchools.map(({ uid }) => uid)}
+        bind:objects={ticket.openToSchools}
+      />
     </InputField>
 
     <div class="conditions">
       <InputCheckbox
         labelFalse="Interdit"
-        labelNull="Peu importe"
-        labelTrue="Obligatoire"
+        labelNull="Autorisés"
+        labelTrue="Seulement"
         label="Extés"
         ternary
         bind:value={ticket.openToExternal}
       />
       <InputCheckbox
         labelFalse="Interdit"
-        labelNull="Peu importe"
-        labelTrue="Obligatoire"
+        labelNull="Autorisés"
+        labelTrue="Seulement"
         label="Alumnis"
         ternary
         bind:value={ticket.openToAlumni}
       />
       <InputCheckbox
         labelFalse="Interdit"
-        labelNull="Peu importe"
-        labelTrue="Obligatoire"
+        labelNull="Autorisés"
+        labelTrue="Seulement"
         label="Cotisants"
         ternary
         bind:value={ticket.openToNonAEContributors}
@@ -176,5 +257,13 @@
       display: flex;
       gap: 1rem;
     }
+  }
+
+  .side-by-side,
+  .conditions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
   }
 </style>

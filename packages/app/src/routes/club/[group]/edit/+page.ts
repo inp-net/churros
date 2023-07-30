@@ -4,6 +4,7 @@ import type { PageLoad } from './$types';
 import { redirectToLogin } from '$lib/session';
 
 export const _clubQuery = Selector('Group')({
+  id: true,
   uid: true,
   parentId: true,
   groupId: true,
@@ -22,6 +23,11 @@ export const _clubQuery = Selector('Group')({
   school: {
     id: true,
     name: true,
+  },
+  parent: {
+    uid: true,
+    name: true,
+    pictureFile: true,
   },
   selfJoinable: true,
   related: {

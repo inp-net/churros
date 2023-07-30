@@ -14,6 +14,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
               uid: true,
               firstName: true,
               lastName: true,
+              fullName: true,
               pictureFile: true,
             },
             title: true,

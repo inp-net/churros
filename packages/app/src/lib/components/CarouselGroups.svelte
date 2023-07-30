@@ -7,6 +7,7 @@
     name: string;
     pictureFile: string;
     uid: string;
+    role?: string;
   }>;
 
   const nbGroups = groups.length;

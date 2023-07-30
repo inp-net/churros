@@ -1,12 +1,20 @@
 <script lang="ts">
   export let type: 'button' | 'reset' | 'submit' = 'button';
   export let darkShadow = false;
+  export let href = '';
 </script>
 
-<button class:dark-shadow={darkShadow} {type} {...$$restProps} on:click><slot /></button>
+<svelte:element
+  this={href ? 'a' : 'button'}
+  {...$$restProps}
+  class:dark-shadow={darkShadow}
+  {type}
+  class="button-ghost {$$restProps.class}"
+  on:click><slot /></svelte:element
+>
 
 <style lang="scss">
-  button {
+  .button-ghost {
     --bg: transparent;
 
     all: unset;

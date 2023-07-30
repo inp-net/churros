@@ -19,7 +19,7 @@
             node: {
               createdAt,
               beneficiary,
-              author: { firstName, lastName },
+              author: { fullName },
               paid,
               paymentMethod,
               ticket,
@@ -27,7 +27,7 @@
           }) => ({
             'Date de réservation': dateTimeFormatter.format(createdAt),
             Bénéficiaire: beneficiary,
-            'Achat par': `${firstName} ${lastName}`,
+            'Achat par': fullName,
             Payée: paid ? 'Oui' : 'Non',
             'Méthode de paiement': paymentMethod,
             Billet: ticket.name,

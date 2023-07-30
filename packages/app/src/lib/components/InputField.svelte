@@ -12,11 +12,11 @@
 
 <div class="field">
   <svelte:element this={id ? 'p' : 'label'} class="label-wrapper" for={id}
-    ><span class="label typo-field-label"
-      >{label}{#if required}
+    ><p class="label typo-field-label">
+      {label}{#if required}
         <span use:tooltip={'Ce champ est requis'} class="required-indicator">*</span>
-      {/if}</span
-    >
+      {/if}
+    </p>
   </svelte:element>
   {#if errors && errors.length > 0}
     {#each errors as error}
@@ -45,6 +45,8 @@
 
   .label {
     display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
     justify-content: center;
     margin-bottom: 0.125rem;
     margin-left: calc(var(--radius-block) / 2);

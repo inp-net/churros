@@ -34,6 +34,7 @@
           refuseRegistration: [{ email }, true],
         }));
       }
+  
       if (result) removeRow(email);
     } finally {
       loadingRegistrations = loadingRegistrations.filter((e) => e !== email);
@@ -47,22 +48,22 @@
 <h2>Demandes d'inscription</h2>
 {#if userCandidates.length > 0}
   <ul>
-    {#each userCandidates as { email, firstName, lastName, major, graduationYear }}
+    {#each userCandidates as { email, fullName, major, graduationYear }}
       <li>
-        <strong>{firstName} {lastName}</strong>
+        <strong>{fullName}</strong>
         <span>{email} {major.name} {graduationYear}</span>
         <div class="actions">
           <a href="./edit/{encodeURIComponent(email)}"><IconEditPen2Line /></a>
           <Button
-            on:click={() => {
-              decide(email, true);
+            on:click={async () => {
+              await decide(email, true);
             }}
           >
             <IconCheck />
           </Button>
           <Button
-            on:click={() => {
-              decide(email, false);
+            on:click={async () => {
+              await decide(email, false);
             }}
           >
             <IconTrash />

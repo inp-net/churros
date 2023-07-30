@@ -134,6 +134,7 @@
                   uid: true,
                   firstName: true,
                   lastName: true,
+                  fullName: true,
                   pictureFile: true,
                 },
                 canEdit: true,
@@ -248,7 +249,13 @@
       pictureFile: string;
     };
     managers: Array<{
-      user: { uid: string; firstName: string; lastName: string; pictureFile: string };
+      user: {
+        uid: string;
+        firstName: string;
+        lastName: string;
+        pictureFile: string;
+        fullName: string;
+      };
       canEdit: boolean;
       canEditPermissions: boolean;
       canVerifyRegistrations: boolean;
@@ -424,7 +431,7 @@
           event.managers = [
             ...event.managers,
             {
-              user: { uid: '', firstName: '', lastName: '', pictureFile: '' },
+              user: { uid: '', firstName: '', lastName: '', pictureFile: '', fullName: '' },
               ...permissionsFromLevel('readonly'),
             },
           ];
@@ -521,8 +528,8 @@
 
   .ticket-group .actions {
     display: flex;
-    align-items: center;
     gap: 1rem;
+    align-items: center;
     justify-content: space-between;
   }
 
@@ -539,12 +546,12 @@
   .manager {
     display: flex;
     flex-wrap: wrap;
+    gap: 1rem;
     align-items: center;
     justify-content: center;
-    background: var(--muted-bg);
     padding: 1rem;
+    background: var(--muted-bg);
     border-radius: var(--radius-block);
-    gap: 1rem;
   }
 
   .submit {

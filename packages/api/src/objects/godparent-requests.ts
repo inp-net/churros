@@ -86,7 +86,7 @@ builder.mutationField('upsertGodparentRequest', (t) =>
       };
       if (!id) {
         await notify([godparent], {
-          body: `${user.firstName} ${user.lastName} veut devenir votre filleul·e !`,
+          body: `${user.fullName} veut devenir votre filleul·e !`,
           title: `Demande de parrainage reçue`,
           data: {
             goto: `/me`,

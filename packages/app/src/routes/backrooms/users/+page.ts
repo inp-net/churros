@@ -8,6 +8,7 @@ export const _pageQuery = Selector('QueryAllUsersConnection')({
       uid: true,
       firstName: true,
       lastName: true,
+      fullName: true,
       pictureFile: true,
     },
   },

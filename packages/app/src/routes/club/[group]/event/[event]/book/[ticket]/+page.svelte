@@ -62,7 +62,7 @@
     }
 
     serverError = '';
-     
+
     // TODO handle actually going there only when payment has gone through
     await goto('?' + new URLSearchParams({ done: upsertRegistration.data.id }).toString());
   }

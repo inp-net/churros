@@ -2,20 +2,15 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
 
   export let href: string;
-  export let firstName: string;
-  export let lastName: string;
+  export let fullName: string;
   export let pictureFile: string;
 </script>
 
 <a {href} class="person" draggable="false" on:click>
   <div class="img">
-    <img
-      src={`${PUBLIC_STORAGE_URL}${pictureFile}`}
-      alt="{firstName} {lastName}"
-      draggable="false"
-    />
+    <img src={`${PUBLIC_STORAGE_URL}${pictureFile}`} alt={fullName} draggable="false" />
   </div>
-  <p class="name">{firstName} {lastName}</p>
+  <p class="name">{fullName}</p>
 </a>
 
 <style>

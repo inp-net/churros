@@ -7,7 +7,7 @@
 
   type Group = { uid: string; name: string; pictureFile: string };
   export let label: string;
-  export let uid: string;
+  export let uid: string | undefined = undefined;
   export let required = false;
   export let allow: string[] = [];
   export let except: string[] = [];

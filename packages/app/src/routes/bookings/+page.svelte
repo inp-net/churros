@@ -19,16 +19,12 @@
       <p>
         {#if beneficiary && author.uid === $me?.uid}pour
           {#if beneficiaryUser}
-            <a href="/user/{beneficiaryUser.uid}"
-              >{beneficiaryUser.firstName} {beneficiaryUser.lastName}</a
-            >
+            <a href="/user/{beneficiaryUser.uid}">{beneficiaryUser.fullName}</a>
           {:else}
             {beneficiary}
           {/if}
         {/if}
-        {#if author.uid !== $me?.uid}par <a href="/user/{author.uid}"
-            >{author.firstName} {author.lastName}</a
-          >
+        {#if author.uid !== $me?.uid}par <a href="/user/{author.uid}">{author.fullName}</a>
         {/if}
       </p>
     </li>

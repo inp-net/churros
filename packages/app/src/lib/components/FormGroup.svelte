@@ -2,7 +2,6 @@
   import { zeus } from '$lib/zeus';
   import type { PageData } from '../../routes/club/[group]/edit/$types';
   import { _clubQuery as clubQuery } from '../../routes/club/[group]/edit/+page';
-  import { onMount } from 'svelte';
   import Alert from '$lib/components/Alert.svelte';
   import { goto } from '$app/navigation';
   import InputGroup from './InputGroup.svelte';
@@ -28,7 +27,7 @@
     name,
     selfJoinable,
     type,
-    parentId = '',
+    parent,
     related,
   } = data.group;
 
@@ -47,19 +46,6 @@
     value: data.group.links.find((link) => link.name === name)?.value ?? '',
   }));
 
-  let otherGroups: Array<{ groupId: string; uid: string; name: string; pictureFile: string }> = [];
-  let parentUid = '';
-  onMount(async () => {
-    // See https://github.com/graphql-editor/graphql-zeus/issues/262
-
-    ({ parentId = '' } = data.group);
-    ({ groups: otherGroups } = await $zeus.query({
-      groups: [{}, { groupId: true, uid: true, name: true, pictureFile: true }],
-    }));
-    parentUid = parentId ? otherGroups.find((g) => g.groupId === parentId)?.uid ?? '' : '';
-  });
-  $: parentId = parentUid ? otherGroups.find((g) => g.uid === parentUid)?.groupId ?? '' : '';
-
   let loading = false;
   const updateClub = async () => {
     if (loading) return;
@@ -77,7 +63,7 @@
             longDescription,
             name,
             selfJoinable,
-            parentId,
+            parentUid: parent?.uid,
             type,
             related: related.map(({ uid }) => uid),
           },
@@ -115,12 +101,7 @@
   <InputText label="Salle" bind:value={address} />
   <InputText label="Email" type="email" bind:value={email} />
   <InputSocialLinks label="Réseaux sociaux" bind:value={links} />
-  <InputGroup
-    clearable
-    label="Groupe parent"
-    group={otherGroups.find(({ groupId }) => groupId === parentId)}
-    bind:uid={parentUid}
-  />
+  <InputGroup clearable label="Groupe parent" bind:group={parent} uid={parent?.uid} />
   <InputListOfGroups
     label="Groupes à voir"
     bind:groups={related}

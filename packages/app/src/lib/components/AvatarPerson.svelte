@@ -1,8 +1,7 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  export let firstName: string;
-  export let lastName: string;
-  export let role: string = '';
+  export let fullName: string;
+  export let role = '';
   export let pictureFile: string;
   export let href: string;
   export let highlighted = false;
@@ -11,10 +10,10 @@
 
 <svelte:element this={href ? 'a' : 'div'} class:highlighted class="person" {href}>
   <div class="img">
-    <img {src} alt={firstName} />
+    <img {src} alt={fullName} />
   </div>
   <div class="desc">
-    <p class="text name">{firstName} {lastName}</p>
+    <p class="text name">{fullName}</p>
     {#if role}
       <p class="text role">
         {role}

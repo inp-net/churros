@@ -1,12 +1,18 @@
 <script lang="ts">
+  // @ts-expect-error Untyped lib
+  import isDarkColor from 'is-dark-color';
   import AutoComplete from 'simple-svelte-autocomplete';
   import IconClose from '~icons/mdi/close';
   import ButtonGhost from './ButtonGhost.svelte';
 
-  type T = Record<string, unknown>;
+  type T = $$Generic;
+  type V = $$Generic<number | string>;
+
+  type MaybePromise<T> = Promise<T> | T;
+
   export let objects: T[];
-  export let values: string[];
-  export let search: (query: string) => Promise<T[]>;
+  export let values: V[];
+  export let search: (query: string) => MaybePromise<T[]>;
   export let labelKey = 'name';
   export let valueKey = 'id';
 </script>
@@ -24,11 +30,24 @@
     noResultsText="Aucun résultat"
     loadingText="Chargement…"
   >
-    <slot slot="item" name="item" let:item {item} />
-    <div class="tag" slot="tag" let:item let:unselectItem>
+    <slot slot="item" name="item" let:item {item}>
+      {item[labelKey]}
+    </slot>
+    <div
+      style:color={item?.color ? (isDarkColor(item.color) ? 'white' : 'black') : undefined}
+      style:background-color={item?.color}
+      class="tag"
+      slot="tag"
+      let:item
+      let:unselectItem
+    >
       <slot name="tag" tag={item}>{item[labelKey]}</slot>
 
-      <ButtonGhost on:click={unselectItem(item)}><IconClose /></ButtonGhost>
+      <ButtonGhost
+        --text={item?.color ? (isDarkColor(item.color) ? 'white' : 'black') : undefined}
+        darkShadow={item?.color && isDarkColor(item.color)}
+        on:click={unselectItem(item)}><IconClose /></ButtonGhost
+      >
     </div>
   </AutoComplete>
 </div>
@@ -60,6 +79,9 @@
   }
 
   .tag {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
     padding: 0.25rem 0.5rem;
     font-size: 0.8rem;
     background: var(--muted-bg);

@@ -33,6 +33,7 @@
     startsAt: undefined,
     title: '',
     visibility: Visibility.Private,
+    pictureFile: '',
   };
   // export const snapshot: Snapshot = {
   //   capture: () => ({ event }),

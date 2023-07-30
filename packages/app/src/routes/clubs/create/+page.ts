@@ -15,6 +15,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
     )),
     lydiaAccountsOfGroup: [],
     group: {
+      id: '',
       uid: '',
       type: GroupType.Club,
       parentId: undefined,

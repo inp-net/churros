@@ -10,6 +10,7 @@
     uid: true,
     firstName: true,
     lastName: true,
+    fullName: true,
     nickname: true,
     description: true,
     pictureFile: true,

@@ -4,9 +4,8 @@
   import IconPlus from '~icons/mdi/plus';
   import { me } from '$lib/session';
   import IconEdit from '~icons/mdi/pencil';
-  import { isFuture, isPast } from 'date-fns';
+  import { formatRelative, isFuture, isPast } from 'date-fns';
   import type { PageData } from './$types';
-  import { goto } from '$app/navigation';
   import GhostButton from '$lib/components/ButtonGhost.svelte';
   import BackButton from '$lib/components/ButtonBack.svelte';
   import CardArticle from '$lib/components/CardArticle.svelte';
@@ -15,18 +14,12 @@
 
   export let data: PageData;
 
-  const {
-    id,
-    tickets,
-    title,
-    startsAt,
-    pictureFile,
-    descriptionHtml,
-    links,
-    group,
-    contactMail,
-    articles,
-  } = data.event;
+  $: console.log(data);
+
+  const { id, title, startsAt, pictureFile, descriptionHtml, links, group, contactMail, articles } =
+    data.event;
+
+  const tickets = data.ticketsOfEvent;
 
   $: usersRegistration = tickets
     .flatMap((t) => t.registrations)
@@ -54,9 +47,7 @@
     {title}
 
     {#if $me?.admin || $me?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit)}
-      <GhostButton darkShadow on:click={async () => goto(`./edit`)}
-        ><IconEdit color="white" /></GhostButton
-      >
+      <GhostButton darkShadow href="./edit"><IconEdit color="white" /></GhostButton>
     {/if}
   </h1>
   <p>{dateTimeFormatter.format(startsAt)}</p>
@@ -117,20 +108,16 @@
         </div>
         <div class="book">
           {#if (!closesAt && !opensAt) || (closesAt && opensAt && isFuture(new Date(closesAt)) && isPast(new Date(opensAt)))}
-            <ButtonSecondary
-              on:click={async () => {
-                await goto(`./book/${uid}`);
-              }}>{price}€</ButtonSecondary
-            >
+            <ButtonSecondary href="./book/{uid}">{price}€</ButtonSecondary>
           {/if}
         </div>
         <p class="timing typo-details">
-          {#if !opensAt || !closesAt}
-            Mise en vente sans date limite
-          {:else if isFuture(new Date(opensAt))}
-            Mise en vente le {dateTimeFormatter.format(opensAt)}
-          {:else}
-            Mise en vente jusqu'au {dateTimeFormatter.format(closesAt)}
+          {#if !opensAt && !closesAt}
+            Shotgun intemporel
+          {:else if opensAt && isFuture(new Date(opensAt))}
+            Shotgun le {formatRelative(new Date(opensAt), new Date())}
+          {:else if closesAt && isPast(new Date(closesAt))}
+            En vente jusqu'à {formatRelative(new Date(closesAt), new Date())}
           {/if}
         </p>
       </li>
