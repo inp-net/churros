@@ -32,7 +32,7 @@
     left: 0;
     cursor: pointer;
     background-color: #ccc;
-    border-radius: 34px;
+    border-radius: 0.5em;
     transition: 0.3s;
   }
 
