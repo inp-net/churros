@@ -4,6 +4,7 @@ import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { completeRegistration, register, saveUser } from '../services/registration.js';
 import { DateTimeScalar } from './scalars.js';
+import { fullName } from './users.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserCandidateType = builder.prismaNode('UserCandidate', {
@@ -14,6 +15,12 @@ export const UserCandidateType = builder.prismaNode('UserCandidate', {
     emailValidated: t.exposeBoolean('emailValidated'),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
+    fullName: t.field({
+      type: 'String',
+      resolve(user) {
+        return fullName(user);
+      },
+    }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar, nullable: true }),
     graduationYear: t.exposeInt('graduationYear', { nullable: true }),
 
