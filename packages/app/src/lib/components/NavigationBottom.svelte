@@ -1,5 +1,6 @@
 <script lang="ts">
   import IconHomeOutline from '~icons/mdi/home-outline';
+  import IconPeople from '~icons/mdi/account-add-outline';
   import IconHome from '~icons/mdi/home';
   import IconSearchOutline from '~icons/mdi/card-search-outline';
   import IconSearch from '~icons/mdi/card-search';
@@ -18,6 +19,7 @@
   import IconEvent from '~icons/mdi/calendar-plus';
   import { beforeNavigate } from '$app/navigation';
   import { format, isMonday, previousMonday } from 'date-fns';
+  import { me } from '$lib/session';
 
   export let current: 'home' | 'search' | 'events' | 'more';
   let flyoutOpen = false;
@@ -103,20 +105,24 @@
   class:open={flyoutOpen}
 >
   <section class="flyout" class:open={flyoutOpen}>
-    <a href="/bar-weeks">
-      <IconBarWeek />
-      <span>Semaine de bar</span>
-    </a>
+    {#if $me?.admin}
+      <a href="/bar-weeks">
+        <IconBarWeek />
+        <span>Semaine de bar</span>
+      </a>
+    {/if}
 
     <a href="/groups">
       <IconGroup />
       <span>Groupes</span>
     </a>
 
-    <a href="/announcements">
-      <IconAnnouncement />
-      <span>Annonces</span>
-    </a>
+    {#if $me?.admin}
+      <a href="/announcements">
+        <IconAnnouncement />
+        <span>Annonces</span>
+      </a>
+    {/if}
 
     <a href="/frappe/upload">
       <IconDocument />
@@ -132,6 +138,13 @@
       <IconEvent />
       <span>Événement</span>
     </a>
+
+    {#if $me?.admin || $me?.canEditUsers}
+      <a href="/users">
+        <IconPeople />
+        <span>Inscriptions</span>
+      </a>
+    {/if}
   </section>
 </div>
 
@@ -199,14 +212,14 @@
   .flyout {
     position: fixed;
     right: 0;
-    bottom: 4rem;
+    bottom: 3rem;
     left: 0;
     z-index: 2;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-evenly;
-    max-height: 50vh;
+    max-height: 75vh;
     padding: 1rem;
     background: var(--bg);
     border-top: var(--border-block) solid rgb(0 0 0 / 5%);
