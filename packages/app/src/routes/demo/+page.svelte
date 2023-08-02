@@ -6,12 +6,11 @@
 
   function incrementDays() {
     days += 1;
-    console.log(`Days: ${days}`);
   }
 
-  setInterval(incrementDays, 200); // 1000 ms = 1 seconde
+  setInterval(incrementDays, 200);
 
-  $: date = new Date(days * 1000 * 60 * 60 * 24);
+  $: date = new Date(Date.now() + days * 1000 * 60 * 60 * 24);
 </script>
 
 <CalendarDay {date} />

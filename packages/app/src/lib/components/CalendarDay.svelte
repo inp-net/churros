@@ -5,10 +5,12 @@
 
   // Génération jours de la semaine
   const daysOfWeek = Array.from({ length: 7 }, (_, index) => {
-    const currentDate = new Date('July 31, 2023'); // Le lundi le plus proche du jour où je code ça
+    // Le dimanche le plus proche du jour où je code ça (dimanche = premier jour de la semaine)
+    const currentDate = new Date('July 30, 2023');
     currentDate.setDate(currentDate.getDate() + index);
     return format(currentDate, 'iii', { locale: fr }).toUpperCase().slice(0, -1); // Il y a un . à enlever à la fin
   });
+  console.log(daysOfWeek);
 
   // Génération mois
   const months: string[] = Array.from({ length: 12 }, (_, i) => {
@@ -16,12 +18,10 @@
     const month = format(monthDate, 'MMM', { locale: fr });
     return month.charAt(0).toUpperCase() + month.slice(1); // Première lettre en maj
   });
-
-  console.log(months);
 </script>
 
 <div class="date">
-  <span class="day-week">{daysOfWeek[0]}</span>
+  <span class="day-week">{daysOfWeek[date.getDay()]}</span>
   <span class="day-number">{date.getDate()}</span>
   <span class="month">{months[date.getMonth()]}</span>
 </div>
