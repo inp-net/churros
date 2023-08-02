@@ -1,24 +1,27 @@
 <script lang="ts">
+  import { format, startOfYear, addMonths } from 'date-fns';
+  import { fr } from 'date-fns/locale';
   export let date: Date;
-  const week = ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM'];
-  const months = [
-    'Janvier',
-    'Février',
-    'Mars',
-    'Avril',
-    'Mai',
-    'Juin',
-    'Juillet',
-    'Août',
-    'Septembre',
-    'Octobre',
-    'Novembre',
-    'Décembre',
-  ];
+
+  // Génération jours de la semaine
+  const daysOfWeek = Array.from({ length: 7 }, (_, index) => {
+    const currentDate = new Date('July 31, 2023'); // Le lundi le plus proche du jour où je code ça
+    currentDate.setDate(currentDate.getDate() + index);
+    return format(currentDate, 'iii', { locale: fr }).toUpperCase().slice(0, -1); // Il y a un . à enlever à la fin
+  });
+
+  // Génération mois
+  const months: string[] = Array.from({ length: 12 }, (_, i) => {
+    const monthDate = addMonths(startOfYear(new Date()), i);
+    const month = format(monthDate, 'MMM', { locale: fr });
+    return month.charAt(0).toUpperCase() + month.slice(1); // Première lettre en maj
+  });
+
+  console.log(months);
 </script>
 
 <div class="date">
-  <span class="day-week">{week[date.getDay()]}</span>
+  <span class="day-week">{daysOfWeek[0]}</span>
   <span class="day-number">{date.getDate()}</span>
   <span class="month">{months[date.getMonth()]}</span>
 </div>
