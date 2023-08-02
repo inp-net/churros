@@ -1,5 +1,4 @@
 <script lang="ts">
-  import NotificationSettingsForm from '$lib/components/FormNotificationSettings.svelte';
   import IconBack from '~icons/mdi/arrow-left';
   import Alert from '$lib/components/Alert.svelte';
   import IconClose from '~icons/mdi/close';
@@ -278,12 +277,12 @@
       </p>
     {/if}
     {#if data.user.uid === $me?.uid}
-      <h2>Notifications</h2>
+      <!-- <h2>Notifications</h2>
       <NotificationSettingsForm
         availableGroups={$me?.groups?.map((g) => g.group) ?? []}
         userUid={data.user.uid}
         bind:settings={data.user.notificationSettings}
-      />
+      /> -->
       <h2>Données personnelles</h2>
       <p>
         <a href="{PUBLIC_USER_DUMP_URL}?token={data.token}" download="{data.me.uid}.json">
