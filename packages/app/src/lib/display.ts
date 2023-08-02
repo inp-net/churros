@@ -54,4 +54,5 @@ export const DISPLAY_GROUP_TYPES: Record<GroupType, string> = {
   Group: 'Groupe',
   Integration: "Groupe d'inté",
   StudentAssociationSection: "Bureau de l'AE",
+  List: 'Liste',
 };

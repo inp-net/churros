@@ -191,6 +191,7 @@ enum GroupType {
   Group
   Integration
   StudentAssociationSection
+  List
 }
 
 /// A group is a collection of users
