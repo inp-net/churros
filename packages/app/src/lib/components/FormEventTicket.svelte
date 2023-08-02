@@ -211,24 +211,30 @@
       bind:value={ticket.onlyManagersCanProvide}
     />
 
-    <div class="actions">
-      <ButtonSecondary
-        on:click={() => {
-          expandedTicketId = '';
-          emit('delete');
-        }}
-        danger>Supprimer</ButtonSecondary
-      >
-
-      <ButtonGhost
-        class="toggle-expanded"
-        on:click={() => {
-          expandedTicketId = '';
-        }}
-      >
-        <IconChevronUp />
-      </ButtonGhost>
-    </div>
+    <footer>
+      <div class="properties">
+        <span class="name">{ticket.name}</span>
+        <span class="capacity">{ticket.capacity} place{ticket.capacity > 1 ? 's' : ''}</span>
+        <span class="prix">{ticket.price}€</span>
+      </div>
+      <div class="actions">
+        <ButtonSecondary
+          on:click={() => {
+            expandedTicketId = '';
+            emit('delete');
+          }}
+          danger>Supprimer</ButtonSecondary
+        >
+        <ButtonGhost
+          class="toggle-expanded"
+          on:click={() => {
+            expandedTicketId = '';
+          }}
+        >
+          <IconChevronUp />
+        </ButtonGhost>
+      </div>
+    </footer>
   {/if}
 </article>
 
@@ -248,7 +254,8 @@
     }
   }
 
-  header {
+  header,
+  footer {
     display: flex;
     align-items: center;
     justify-content: space-between;

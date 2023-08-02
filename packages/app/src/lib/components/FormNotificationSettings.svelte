@@ -56,18 +56,18 @@
       ({ type, group }: { type: NotificationType; group?: undefined | { uid: string } }) =>
         type === t && (seldGroup ? seldGroup === group?.uid : !group);
 
-    return (ORDER_NOTIFICATION_TYPES as NotificationType[]).map((t) =>
+    return (ORDER_NOTIFICATION_TYPES as NotificationType[]).map((t, i) =>
       notifSettings.some(predicate(t, seldGroup))
         ? {
             ...notifSettings.find(predicate(t, seldGroup))!,
-            index: notifSettings.findIndex(predicate(t, seldGroup))!,
+            index: i,
           }
         : {
             type: t,
             allow: true,
             group: seldGroup ? availableGroups.find(({ uid }) => uid === seldGroup) : undefined,
             id: 'notifsetting:fake:' + nanoid(10),
-            index: -1,
+            index: i,
           }
     );
   }

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
 
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { saveSessionToken, sessionUserQuery } from '$lib/session.js';
@@ -9,6 +8,12 @@
   import type { ZodFormattedError } from 'zod';
   import type { PageData } from './$types';
   import InputField from '$lib/components/InputField.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import InputSearchObject from '$lib/components/InputSearchObject.svelte';
+  import Fuse from 'fuse.js';
+  import InputNumber from '$lib/components/InputNumber.svelte';
+  import InputDate from '$lib/components/InputDate.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
 
   export let data: PageData;
 
@@ -26,8 +31,6 @@
 
   // Waiting for https://github.com/graphql-editor/graphql-zeus/issues/262 to be fixed
   graduationYear ??= new Date().getFullYear() + 3;
-
-  const valueAsDate = (x: unknown) => (x as HTMLInputElement).valueAsDate;
 
   $: token = $page.url.searchParams.get('token')!;
   $: args = {
@@ -104,6 +107,8 @@
   };
 </script>
 
+<h1>Finaliser mon inscription</h1>
+
 {#if result === undefined || result}
   <form title="Finaliser mon inscription" on:submit|preventDefault={register}>
     {#if data.userCandidate.emailValidated}
@@ -125,91 +130,91 @@
     <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
       <strong>{(formErrors?._errors ?? []).join(' ')}</strong>
     </Alert>
-    <p class="grid gap-4 desktop:grid-cols-2">
-      <InputField label="Prénom :" errors={formErrors?.firstName?._errors}>
-        <input type="text" bind:value={firstName} required />
+    <div class="side-by-side">
+      <InputText
+        label="Prénom"
+        errors={formErrors?.firstName?._errors}
+        required
+        bind:value={firstName}
+      />
+      <InputText
+        label="Nom de famille"
+        errors={formErrors?.lastName?._errors}
+        required
+        bind:value={lastName}
+      />
+    </div>
+    <div class="side-by-side">
+      <InputField label="Filière">
+        <InputSearchObject
+          search={(q) => new Fuse(
+              data.schoolGroups.flatMap(({ majors }) => majors),
+              {
+                keys: ['name'],
+                threshold: 0.3,
+              }
+            )
+              .search(q)
+              .map(({ item }) => item)}
+          bind:value={majorId}
+          object={data.schoolGroups
+            .flatMap(({ majors }) => majors)
+            .find((major) => major.id === majorId)}
+          labelKey="name"
+        >
+          <svelte:fragment slot="item" let:item>
+            {item.name} · {item.schools.map(({ name }) => name).join(', ')}
+          </svelte:fragment>
+        </InputSearchObject>
       </InputField>
-      <InputField label="Nom de famille :" errors={formErrors?.lastName?._errors}>
-        <input type="text" bind:value={lastName} required />
-      </InputField>
-    </p>
-    <p class="grid gap-4 desktop:grid-cols-2">
-      <InputField label="Filière :" errors={formErrors?.majorId?._errors}>
-        <select bind:value={majorId} required>
-          {#each data.schoolGroups as { majors, names }}
-            <optgroup label={names.join(', ')}>
-              {#each majors as { id, name }}
-                <option value={id}>{name}</option>
-              {/each}
-            </optgroup>
-          {/each}
-        </select>
-      </InputField>
-      <InputField
-        label="Promotion :"
-        hint="Si c'est votre première année, vous êtes de la promotion {new Date().getFullYear() +
-          3}."
+      <InputNumber
+        bind:value={graduationYear}
+        label="Promotion"
         errors={formErrors?.graduationYear?._errors}
-      >
-        <input type="number" bind:value={graduationYear} size="4" required />
-      </InputField>
-    </p>
-    <p class="grid gap-4 desktop:grid-cols-2">
-      <InputField
-        label="Mot de passe :"
+      />
+    </div>
+    <InputDate
+      label="Date de naissance"
+      errors={formErrors?.birthday?._errors}
+      bind:value={birthday}
+    />
+    <InputText
+      label="Numéro de téléphone"
+      type="tel"
+      errors={formErrors?.phone?._errors}
+      bind:value={phone}
+    />
+    <InputText label="Adresse" errors={formErrors?.address?._errors} bind:value={address} />
+    <div class="side-by-side">
+      <InputText
+        label="Mot de passe"
         hint="Au moins 8 caractères, mais 12 c'est mieux"
         errors={formErrors?.password?._errors}
-      >
-        <input type="password" minlength="8" required bind:value={password} />
-      </InputField>
-      <InputField
-        label="Confirmer le mot de passe :"
+        type="password"
+        required
+        bind:value={password}
+      />
+      <InputText
+        label="Confirmer le mot de passe"
         errors={formErrors?.passwordConfirmation?._errors}
-      >
-        <input
-          type="password"
-          required
-          bind:value={passwordConfirmation}
-          on:change={() => {
-            if (passwordConfirmation === password) {
-              if (formErrors?.passwordConfirmation?._errors)
-                formErrors.passwordConfirmation._errors = [];
-            } else {
-              formErrors ??= { _errors: [] };
-              formErrors.passwordConfirmation ??= { _errors: [] };
-              formErrors.passwordConfirmation._errors = ['Les mots de passe ne correspondent pas.'];
-            }
-          }}
-        />
-      </InputField>
-    </p>
-    <hr />
-    <p>
-      Les champs suivant sont facultatifs, ces données seront visibles par les autres utilisateurs.
-    </p>
-    <p class="grid gap-4 grid-cols-2">
-      <InputField label="Date de naissance :" errors={formErrors?.birthday?._errors}>
-        <input
-          type="date"
-          value={birthday?.toISOString().slice(0, 10)}
-          on:change={({ target }) => {
-            // @ts-expect-error https://github.com/graphql-editor/graphql-zeus/issues/262
-            birthday = valueAsDate(target);
-          }}
-        />
-      </InputField>
-      <InputField label="Numéro de téléphone :" errors={formErrors?.phone?._errors}>
-        <input type="tel" bind:value={phone} />
-      </InputField>
-    </p>
-    <p>
-      <InputField label="Adresse :" errors={formErrors?.address?._errors}>
-        <input type="text" bind:value={address} />
-      </InputField>
-    </p>
-    <p class="text-center">
-      <Button type="submit" theme="primary" {loading}>S'inscrire</Button>
-    </p>
+        type="password"
+        required
+        bind:value={passwordConfirmation}
+        on:input={() => {
+          if (passwordConfirmation === password) {
+            if (formErrors?.passwordConfirmation?._errors)
+              formErrors.passwordConfirmation._errors = [];
+          } else {
+            formErrors ??= { _errors: [] };
+            formErrors.passwordConfirmation ??= { _errors: [] };
+            formErrors.passwordConfirmation._errors = ['Les mots de passe ne correspondent pas.'];
+          }
+        }}
+      />
+    </div>
+    <section class="submit">
+      <ButtonPrimary submits>S'inscrire</ButtonPrimary>
+    </section>
   </form>
 {:else}
   <Alert theme="success">
@@ -221,3 +226,31 @@
     <p><a href="/">Retourner à l'accueil.</a></p>
   </Alert>
 {/if}
+
+<style>
+  h1 {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .side-by-side {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: end;
+  }
+
+  form {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  form .submit {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+</style>

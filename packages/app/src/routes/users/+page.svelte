@@ -3,8 +3,8 @@
   import type { PageData } from './$types';
   import IconCheck from '~icons/mdi/check';
   import IconTrash from '~icons/mdi/delete';
-  import Button from '$lib/components/Button.svelte';
   import { zeus } from '$lib/zeus';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   export let data: PageData;
 
@@ -34,40 +34,42 @@
           refuseRegistration: [{ email }, true],
         }));
       }
-  
+
       if (result) removeRow(email);
     } finally {
       loadingRegistrations = loadingRegistrations.filter((e) => e !== email);
     }
   }
-
-  const byGraduationYear = (a: { graduationYear: number }, b: { graduationYear: number }) =>
-    a.graduationYear - b.graduationYear;
 </script>
 
-<h2>Demandes d'inscription</h2>
+<h1>Demandes d'inscription</h1>
 {#if userCandidates.length > 0}
-  <ul>
+  <ul class="nobullet registrations">
     {#each userCandidates as { email, fullName, major, graduationYear }}
       <li>
         <strong>{fullName}</strong>
-        <span>{email} {major.name} {graduationYear}</span>
+        <span>{email} · {major.name} · {graduationYear}</span>
         <div class="actions">
-          <a href="./edit/{encodeURIComponent(email)}"><IconEditPen2Line /></a>
-          <Button
+          <ButtonSecondary icon={IconEditPen2Line} href="./edit/{encodeURIComponent(email)}"
+            >Modifier</ButtonSecondary
+          >
+          <ButtonSecondary
             on:click={async () => {
               await decide(email, true);
             }}
+            icon={IconCheck}
           >
-            <IconCheck />
-          </Button>
-          <Button
+            Accepter
+          </ButtonSecondary>
+          <ButtonSecondary
             on:click={async () => {
               await decide(email, false);
             }}
+            icon={IconTrash}
+            danger
           >
-            <IconTrash />
-          </Button>
+            Refuser
+          </ButtonSecondary>
         </div>
       </li>
     {/each}
@@ -76,16 +78,41 @@
   <p>Aucune inscription en attente.</p>
 {/if}
 
-<h2>Utilisateurs</h2>
-<table>
-  {#each data.searchUsers
-    .sort(byGraduationYear)
-    .reverse() as { uid, firstName, lastName, graduationYear, major: { name: majorName } }}
-    <tr>
-      <td><a href="/user/{uid}">{firstName}</a></td>
-      <td><a href="/user/{uid}">{lastName}</a></td>
-      <td><a href="/search/?q={graduationYear}">{graduationYear}</a></td>
-      <td><a href="/search/?q={majorName}">{majorName}</a></td>
-    </tr>
-  {/each}
-</table>
+<style>
+  h1 {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  ul {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .registrations {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 2rem;
+  }
+
+  .registrations li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-radius: var(--radius-block);
+  }
+
+  .registrations li .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .registrations li:nth-child(odd) {
+    background: var(--muted-bg);
+  }
+</style>

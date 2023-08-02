@@ -13,7 +13,6 @@
   };
   export let user: User;
   export let highlightUid = '';
-  $: console.log('<TreePersons>', user);
   $: role = (user: User) => `${yearTier(user.graduationYear)}A (${user.graduationYear})`;
 </script>
 

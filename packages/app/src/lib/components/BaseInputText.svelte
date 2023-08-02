@@ -19,7 +19,7 @@
 
   // TODO use (HTMLInputElement).valueAsDate instead
   function stringifyValue(val: typeof value, type: string): string {
-    if (val === undefined) return '';
+    if (val === undefined || val === null) return '';
     switch (type) {
       case 'date': {
         return (val as Date).toISOString().split('T')[0];

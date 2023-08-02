@@ -25,6 +25,7 @@
 <style>
   .person {
     display: flex;
+    flex-shrink: 0;
     gap: 0.5em;
     align-items: center;
     width: fit-content;
@@ -33,8 +34,9 @@
   }
 
   .person .img {
-    --size: 1.5em;
+    --size: 2.5em;
 
+    flex-shrink: 0;
     width: var(--size);
     height: var(--size);
     overflow: hidden;

@@ -16,6 +16,8 @@
     display: flex;
     flex-flow: column wrap;
     gap: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
   }
 
   h1 {

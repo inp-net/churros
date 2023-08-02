@@ -19,6 +19,8 @@
   import { createEventDispatcher } from 'svelte';
   import InputPerson from './InputPerson.svelte';
   import FormPicture from './FormPicture.svelte';
+  import InputSearchObject from './InputSearchObject.svelte';
+  import Fuse from 'fuse.js';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
@@ -67,7 +69,7 @@
             userUid: user.uid,
           })),
           id: event.id,
-          lydiaAccountId: event.lydiaAccountId,
+          lydiaAccountId: event.lydiaAccount?.id,
         },
         {
           __typename: true,
@@ -233,7 +235,7 @@
       tickets: Ticket[];
     }>;
     contactMail: string;
-    lydiaAccountId?: string | undefined;
+    lydiaAccount?: undefined | { name: string; id: string };
     description: string;
     endsAt?: Date | undefined;
     links: Array<{ name: string; value: string }>;
@@ -310,11 +312,20 @@
     </div>
     <InputText label="Lieu" bind:value={event.location} />
     <InputField label="Compte Lydia bénéficiaire">
-      <select>
-        {#each availableLydiaAccounts as account}
-          <option value={account.id}> {account.name}</option>
-        {/each}
-      </select>
+      <InputSearchObject
+        clearable
+        bind:object={event.lydiaAccount}
+        on:clear={() => {
+          event.lydiaAccount = undefined;
+          console.log('cleared');
+        }}
+        value={event.lydiaAccount?.id}
+        labelKey="name"
+        valueKey="id"
+        search={(query) => new Fuse(availableLydiaAccounts, { keys: ['name'] })
+            .search(query)
+            .map((r) => r.item)}
+      />
     </InputField>
   </div>
   <div class="right">

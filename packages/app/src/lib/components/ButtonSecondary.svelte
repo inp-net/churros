@@ -9,6 +9,7 @@
   export let href = '';
   export let formaction: string | undefined = undefined;
   export let danger = false;
+  export let success = false;
   export let submits = false;
   export let download: string | undefined = undefined;
   export let insideProse = false;
@@ -20,6 +21,7 @@
   type={submits ? 'submit' : 'button'}
   class="button-secondary typo-paragraph"
   class:danger
+  class:success
   class:circle
   class:inside-prose={insideProse}
   {href}
@@ -50,11 +52,11 @@
     gap: 0.5em;
     align-items: center;
     padding: 0.25rem 0.75rem;
+    color: var(--text);
     cursor: pointer;
     background: var(--bg);
     border: var(--border-block) solid var(--border);
     border-radius: 1000px;
-    color: var(--text);
   }
 
   .button-secondary.circle {
