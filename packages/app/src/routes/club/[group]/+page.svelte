@@ -256,7 +256,7 @@
     color: var(--muted-text);
     text-align: center;
     background: var(--muted-bg);
-    object-fit: cover;
+    object-fit: contain;
   }
 
   header dt {

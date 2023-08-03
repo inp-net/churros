@@ -65,6 +65,7 @@
   <InputField label={LEGENDS[objectName]}>
     <div class="wrapper">
       <img
+        style:object-fit={objectName === 'Group' ? 'contain' : 'cover'}
         on:load={() => {
           updating = false;
         }}
@@ -115,7 +116,6 @@
     color: var(--muted-text);
     background: var(--muted-bg);
     border-radius: var(--border-block);
-    object-fit: cover;
   }
 
   [data-object='user'] img {
