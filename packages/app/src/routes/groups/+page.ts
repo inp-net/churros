@@ -13,6 +13,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
           parentId: true,
           pictureFile: true,
           description: true,
+          type: true,
         },
       ],
     },
