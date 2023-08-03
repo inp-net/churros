@@ -506,7 +506,7 @@ model NotificationSetting {
   user    User             @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   userId  String
   group   Group?           @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  groupId String?          @default("")
+  groupId String?
   type    NotificationType
   allow   Boolean
 
