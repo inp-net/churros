@@ -2,7 +2,7 @@
   // PAGE DE TEST A SUPPRIMER
   import InputToggle from '$lib/components/InputToggle.svelte';
 
-  const checked = false;
+  const value = false;
 </script>
 
-<InputToggle {checked} />
+<InputToggle label="Thing" {value} />
