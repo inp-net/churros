@@ -174,7 +174,7 @@ builder.queryField('searchUsers', (t) =>
     async resolve(query, _, { q }) {
       const { numberTerms, searchString: search } = splitSearchTerms(q);
       const searchResults: FuzzySearchResult = await prisma.$queryRaw`
-SELECT "id", levenshtein_less_equal(LOWER("firstName" ||' '|| "lastName"), LOWER(${q}), 20) as changes
+SELECT "id", levenshtein_less_equal(LOWER(unaccent("firstName" ||' '|| "lastName")), LOWER(unaccent(${q})), 20) as changes
 FROM "User"
 ORDER BY changes ASC
 LIMIT 10

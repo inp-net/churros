@@ -137,7 +137,7 @@ builder.queryField('searchGroups', (t) =>
       q = q.trim();
       const { searchString: search } = splitSearchTerms(q);
       const fuzzyResults: FuzzySearchResult = await prisma.$queryRaw`
-SELECT "id", levenshtein_less_equal(LOWER("name"), LOWER(${q}), 15) as changes
+SELECT "id", levenshtein_less_equal(LOWER(unaccent("name")), LOWER(unaccent(${q})), 15) as changes
 FROM "Group"
 ORDER BY changes ASC
 LIMIT 20
