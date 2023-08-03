@@ -1,6 +1,7 @@
 <script>
-  import Alert from '$lib/components/alerts/Alert.svelte';
-  import Button from '$lib/components/buttons/Button.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import InputText from '$lib/components/InputText.svelte';
   import { zeus } from '$lib/zeus';
 
   let email = '';
@@ -40,21 +41,56 @@
   }
 </script>
 
-<h1>Réinitialisez votre mot de passe</h1>
-<p>Nous allons vous envoyer un mail contenant un lien.</p>
-<p>Celui-ci vous amènera sur une page sur laquelle vous pourrez choisir un nouveau mot de passe.</p>
+<div class="content">
+  <h1>Réinitialisez votre mot de passe</h1>
 
-<form on:submit|preventDefault={submit}>
-  <label>
-    Adresse e-mail
-    <input type="email" bind:value={email} required />
-  </label>
+  <p>
+    Nous allons vous envoyer un mail contenant un lien. Celui-ci vous amènera sur une page sur
+    laquelle vous pourrez choisir un nouveau mot de passe.
+  </p>
 
-  <Button theme="primary" type="submit" {loading}>Envoyer</Button>
-</form>
+  {#if sent || serverError}
+    <div class="status">
+      {#if serverError}
+        <Alert theme="danger">{serverError}</Alert>
+      {:else if sent}
+        <Alert theme="success">Mail envoyé à {email}</Alert>
+      {/if}
+    </div>
+  {/if}
 
-{#if serverError}
-  <Alert theme="danger">{serverError}</Alert>
-{:else if sent}
-  <Alert theme="success">Mail envoyé à {email}</Alert>
-{/if}
+  <form on:submit|preventDefault={submit}>
+    <InputText label="Votre adresse e-mail" required type="email" bind:value={email} />
+
+    <section class="submit">
+      <ButtonPrimary submits {loading}>Envoyer</ButtonPrimary>
+    </section>
+  </form>
+</div>
+
+<style>
+  .content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  h1,
+  p {
+    text-align: center;
+  }
+
+  form {
+    margin-top: 2rem;
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+  }
+
+  .submit {
+    display: flex;
+    justify-content: center;
+  }
+
+  .status {
+    margin-top: 2rem;
+  }
+</style>

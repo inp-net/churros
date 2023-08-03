@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import Alert from '$lib/components/alerts/Alert.svelte';
-  import Button from '$lib/components/buttons/Button.svelte';
-  import FormInput from '$lib/components/inputs/FormInput.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import InputText from '$lib/components/InputText.svelte';
   import { zeus } from '$lib/zeus';
 
   let newPassword = '';
@@ -41,14 +41,40 @@
   }
 </script>
 
-{#if serverError}
-  <Alert theme="danger">{serverError}</Alert>
-{/if}
+<div class="content">
+  <h1>Choisir mon nouveau mot de passe</h1>
+  {#if serverError}
+    <Alert theme="danger">{serverError}</Alert>
+  {/if}
 
-<form on:submit|preventDefault={usePasswordReset}>
-  <FormInput label="Nouveau mot de passe">
-    <input type="password" bind:value={newPassword} />
-  </FormInput>
+  <form on:submit|preventDefault={usePasswordReset}>
+    <InputText label="Nouveau mot de passe" type="password" bind:value={newPassword} />
 
-  <Button theme="primary" type="submit" {loading}>Changer</Button>
-</form>
+    <section class="submit"><ButtonPrimary submits {loading}>Changer</ButtonPrimary></section>
+  </form>
+</div>
+
+<style>
+  h1 {
+    text-align: center;
+  }
+
+  .content {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  form {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+  }
+
+  .submit {
+    display: flex;
+    justify-content: center;
+  }
+</style>
