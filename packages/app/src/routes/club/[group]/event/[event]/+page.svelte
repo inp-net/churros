@@ -3,10 +3,8 @@
   import { dateTimeFormatter } from '$lib/dates';
   import IconPlus from '~icons/mdi/plus';
   import { me } from '$lib/session';
-  import IconEdit from '~icons/mdi/pencil';
   import { formatRelative, isFuture, isPast } from 'date-fns';
   import type { PageData } from './$types';
-  import GhostButton from '$lib/components/ButtonGhost.svelte';
   import BackButton from '$lib/components/ButtonBack.svelte';
   import CardArticle from '$lib/components/CardArticle.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
@@ -45,10 +43,6 @@
   <h1>
     <BackButton go="../.." white />
     {title}
-
-    {#if $me?.admin || $me?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit)}
-      <GhostButton darkShadow href="./edit"><IconEdit color="white" /></GhostButton>
-    {/if}
   </h1>
   <p>{dateTimeFormatter.format(startsAt)}</p>
 </header>
@@ -77,54 +71,55 @@
   {/if}
 </section>
 
-<section class="tickets">
-  <h2>
-    Places <span class="places">
-      {#if eventPlacesLeft < 0}
-        illimitées
-      {:else}
-        <span class="left">{eventPlacesLeft} restantes</span><span class="capacity"
-          >{eventCapacity}</span
-        >
-      {/if}
-    </span>
-  </h2>
+{#if eventCapacity > 0}
+  <section class="tickets">
+    <h2>
+      Places <span class="places">
+        {#if eventPlacesLeft < 0}
+          illimitées
+        {:else}
+          <span class="left">{eventPlacesLeft} restantes</span><span class="capacity"
+            >{eventCapacity}</span
+          >
+        {/if}
+      </span>
+    </h2>
 
-  <ul class="nobullet">
-    {#each tickets as { name, uid, descriptionHtml, opensAt, closesAt, placesLeft, capacity, price }}
-      <li class="ticket">
-        <div class="text">
-          <h3>{name}</h3>
-          <div class="description">{@html descriptionHtml}</div>
-        </div>
-        <div class="numbers">
-          <span class="places">
-            {#if placesLeft === -1}
-              Illimité
-            {:else}
-              <span class="left">{placesLeft}</span><span class="capacity">{capacity}</span>
+    <ul class="nobullet">
+      {#each tickets as { name, uid, descriptionHtml, opensAt, closesAt, placesLeft, capacity, price }}
+        <li class="ticket">
+          <div class="text">
+            <h3>{name}</h3>
+            <div class="description">{@html descriptionHtml}</div>
+          </div>
+          <div class="numbers">
+            <span class="places">
+              {#if placesLeft === -1}
+                Illimité
+              {:else}
+                <span class="left">{placesLeft}</span><span class="capacity">{capacity}</span>
+              {/if}
+            </span>
+          </div>
+          <div class="book">
+            {#if (!closesAt && !opensAt) || (closesAt && opensAt && isFuture(new Date(closesAt)) && isPast(new Date(opensAt)))}
+              <ButtonSecondary href="./book/{uid}">{price}€</ButtonSecondary>
             {/if}
-          </span>
-        </div>
-        <div class="book">
-          {#if (!closesAt && !opensAt) || (closesAt && opensAt && isFuture(new Date(closesAt)) && isPast(new Date(opensAt)))}
-            <ButtonSecondary href="./book/{uid}">{price}€</ButtonSecondary>
-          {/if}
-        </div>
-        <p class="timing typo-details">
-          {#if !opensAt && !closesAt}
-            Shotgun intemporel
-          {:else if opensAt && isFuture(new Date(opensAt))}
-            Shotgun le {formatRelative(new Date(opensAt), new Date())}
-          {:else if closesAt && isPast(new Date(closesAt))}
-            En vente jusqu'à {formatRelative(new Date(closesAt), new Date())}
-          {/if}
-        </p>
-      </li>
-    {/each}
-  </ul>
-</section>
-
+          </div>
+          <p class="timing typo-details">
+            {#if !opensAt && !closesAt}
+              Shotgun intemporel
+            {:else if opensAt && isFuture(new Date(opensAt))}
+              Shotgun le {formatRelative(new Date(opensAt), new Date())}
+            {:else if closesAt && isPast(new Date(closesAt))}
+              En vente jusqu'à {formatRelative(new Date(closesAt), new Date())}
+            {/if}
+          </p>
+        </li>
+      {/each}
+    </ul>
+  </section>
+{/if}
 <section class="news">
   <h2>
     Actualités
@@ -263,6 +258,7 @@
     img {
       width: 3rem;
       height: 3rem;
+      object-fit: contain;
     }
   }
 
