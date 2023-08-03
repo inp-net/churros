@@ -322,9 +322,8 @@
         value={event.lydiaAccount?.id}
         labelKey="name"
         valueKey="id"
-        search={(query) => new Fuse(availableLydiaAccounts, { keys: ['name'] })
-            .search(query)
-            .map((r) => r.item)}
+        search={(query) =>
+          new Fuse(availableLydiaAccounts, { keys: ['name'] }).search(query).map((r) => r.item)}
       />
     </InputField>
   </div>

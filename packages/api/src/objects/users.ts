@@ -7,6 +7,7 @@ import { purgeUserSessions } from '../context.js';
 import { prisma } from '../prisma.js';
 import { LinkInput } from './links.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
+import { requestEmailChange } from './email-changes.js';
 import {
   type FuzzySearchResult,
   splitSearchTerms,
@@ -104,6 +105,9 @@ export const UserType = builder.prismaNode('User', {
       async resolve({ id, godparentId }) {
         return getFamilyTree({ id, godparentId: godparentId ?? undefined });
       },
+    }),
+    emailChangeRequests: t.relation('emailChanges', {
+      authScopes: { $granted: 'me' },
     }),
   }),
 });
@@ -216,6 +220,7 @@ builder.mutationField('updateUser', (t) =>
       uid: t.arg.string(),
       majorId: t.arg.id(),
       graduationYear: t.arg.int(),
+      email: t.arg.string(),
       birthday: t.arg({ type: DateTimeScalar, required: false }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
       phone: t.arg.string({ validate: { maxLength: 255 } }),
@@ -231,6 +236,7 @@ builder.mutationField('updateUser', (t) =>
       {
         uid,
         majorId,
+        email,
         graduationYear,
         nickname,
         description,
@@ -239,8 +245,11 @@ builder.mutationField('updateUser', (t) =>
         phone,
         birthday,
         godparentUid,
-      }
+      },
+      { user }
     ) {
+      if (!user) throw new GraphQLError('Not logged in');
+
       if (phone) {
         const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
         if (isValid) {
@@ -250,6 +259,26 @@ builder.mutationField('updateUser', (t) =>
           if (!isValid) throw new Error('Numéro de téléphone invalide');
           phone = phoneNumber;
         }
+      }
+
+      const { email: oldEmail } = await prisma.user.findUniqueOrThrow({ where: { uid } });
+      const changingEmail = email !== oldEmail;
+
+      if (changingEmail) {
+        console.log(`Updating mail: ${oldEmail} -> ${email}`);
+        // Check if new email is available
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) throw new GraphQLError('Cet e-mail est déjà utilisé');
+        // Delete all pending password resets for user
+        await prisma.passwordReset.deleteMany({
+          where: {
+            user: {
+              email: { in: [email, oldEmail] },
+            },
+          },
+        });
+        // Send a validation email
+        await requestEmailChange(email, user.id);
       }
 
       purgeUserSessions(uid);

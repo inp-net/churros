@@ -54,7 +54,7 @@ builder.mutationField('selfJoinGroup', (t) =>
       groupUid: t.arg.string(),
       uid: t.arg.string(),
     },
-    authScopes: (_, {}, { user }) => Boolean(user),
+    authScopes: { loggedIn: true },
     async resolve(query, _, { groupUid, uid }) {
       const group = await prisma.group.findUnique({ where: { uid: groupUid } });
       if (!group?.selfJoinable) throw new Error('This group is not self-joinable.');

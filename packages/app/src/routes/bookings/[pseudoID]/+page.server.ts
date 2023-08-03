@@ -7,6 +7,8 @@ import { error, redirect } from '@sveltejs/kit';
     u: 'User',
     godparentreq: 'GodparentRequest',
     candidate: 'UserCandidate',
+    passreset: 'PasswordReset',
+    emailchange: 'EmailChange',
     link: 'Link',
     major: 'Major',
     school: 'School',

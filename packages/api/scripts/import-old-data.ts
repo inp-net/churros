@@ -51,15 +51,6 @@ function bbcode2markdown(text: bbcode): string {
 
 type ecoleId = '1' | '2' | '3' | '4' | '5';
 
-type integerString = `${number}`;
-
-type filiereLdapQuery = `ou=${'gc' | 'gpi' | 'ch'},ou=filiere,o=${
-  | 'inp'
-  | 'n7'
-  | 'ensat'
-  | 'a7'
-  | 'enm'},dc=etu-inpt,dc=fr`;
-
 const SCHOOLS: Record<ecoleId, { uid: string; name: string }> = {
   1: { uid: 'inp', name: 'Toulouse INP' },
   2: { uid: 'n7', name: 'ENSEEIHT' },
@@ -84,26 +75,6 @@ type OldGroup = {
   description: bbcode;
   nom: string;
   logo: string;
-  ecole_id: ecoleId;
-};
-
-type OldUserCandidate = {
-  nom: string;
-  prenom: string;
-  date_naissance: iso8601;
-  promo: integerString;
-  filiere: filiereLdapQuery;
-  login: string;
-  surnom: string;
-  adresse: string;
-  tel_mobile: string;
-  tel_perso: string;
-  date_ajout: iso8601;
-  // etat : (0 - juste crée) ; (1 - ajoutée à la liste, non valide) ;
-  //        (2 - en accord avec le ldap du cri) ; (3 - plus dans la liste, validée)
-  etat: '0' | '1' | '2' | '3';
-  mail_cri: string;
-  ident_cri: string;
   ecole_id: ecoleId;
 };
 

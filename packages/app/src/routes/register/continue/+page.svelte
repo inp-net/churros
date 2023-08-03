@@ -147,7 +147,8 @@
     <div class="side-by-side">
       <InputField label="Filière">
         <InputSearchObject
-          search={(q) => new Fuse(
+          search={(q) =>
+            new Fuse(
               data.schoolGroups.flatMap(({ majors }) => majors),
               {
                 keys: ['name'],

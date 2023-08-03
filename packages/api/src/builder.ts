@@ -23,6 +23,8 @@ import { GraphQLError, Kind } from 'graphql';
     u: 'User',
     godparentreq: 'GodparentRequest',
     candidate: 'UserCandidate',
+    passreset: 'PasswordReset',
+    emailchange: 'EmailChange',
     link: 'Link',
     major: 'Major',
     school: 'School',
