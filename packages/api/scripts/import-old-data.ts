@@ -175,7 +175,9 @@ async function makeUser(user: OldUser, ldapUser: Ldap.User) {
       majorId: major.id,
       nickname: '',
       phone: ldapUser.homePhone,
-      pictureFile: `users/${user.username}.jpeg`,
+      pictureFile: fileExists(`../storage/users/${user.username}.jpeg`)
+        ? `users/${user.username}.jpeg`
+        : '',
       schoolEmail: ldapUser.mailEcole,
       schoolServer: 'inp',
       schoolUid: user.username,
@@ -251,6 +253,8 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
       uid: ldapGroup.cn,
     },
   });
+
+  await prisma.group.update({ where: { id: newGroup.id }, data: { familyId: newGroup.id } });
 
   await Promise.all(
     ldapGroup.memberUid.map(async (uid) => {
@@ -341,6 +345,7 @@ console.log(
 );
 
 await prisma.user.deleteMany({});
+await prisma.userCandidate.deleteMany();
 await prisma.article.deleteMany();
 await prisma.event.deleteMany();
 await prisma.group.deleteMany();
