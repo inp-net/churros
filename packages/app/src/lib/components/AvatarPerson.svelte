@@ -1,5 +1,6 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import IconUser from '~icons/mdi/account';
   export let fullName: string;
   export let role = '';
   export let pictureFile: string;
@@ -10,7 +11,11 @@
 
 <svelte:element this={href ? 'a' : 'div'} class:highlighted class="person" {href}>
   <div class="img">
-    <img {src} alt={fullName} />
+    {#if pictureFile}
+      <img {src} alt={fullName} />
+    {:else}
+      <IconUser />
+    {/if}
   </div>
   <div class="desc">
     <p class="text name">{fullName}</p>
@@ -36,7 +41,10 @@
   .person .img {
     --size: 2.5em;
 
+    display: flex;
     flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
     width: var(--size);
     height: var(--size);
     overflow: hidden;

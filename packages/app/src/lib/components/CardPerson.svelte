@@ -1,5 +1,6 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import IconAccount from '~icons/mdi/account';
 
   export let href: string;
   export let fullName: string;
@@ -8,7 +9,11 @@
 
 <a {href} class="person" draggable="false" on:click>
   <div class="img">
-    <img src={`${PUBLIC_STORAGE_URL}${pictureFile}`} alt={fullName} draggable="false" />
+    {#if pictureFile}
+      <img src={`${PUBLIC_STORAGE_URL}${pictureFile}`} alt={fullName} draggable="false" />
+    {:else}
+      <IconAccount />
+    {/if}
   </div>
   <p class="name">{fullName}</p>
 </a>
@@ -25,6 +30,9 @@
   }
 
   .person .img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 6em;
     height: 6em;
     overflow: hidden;
