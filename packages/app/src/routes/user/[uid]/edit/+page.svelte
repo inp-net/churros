@@ -19,6 +19,7 @@
   import { PUBLIC_SUPPORT_EMAIL, PUBLIC_USER_DUMP_URL } from '$env/static/public';
   import InputPerson from '$lib/components/InputPerson.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import FormNotificationSettings from '$lib/components/FormNotificationSettings.svelte';
 
   let godparentRequestSendServerError = '';
   let godparentRequestSending = false;
@@ -277,12 +278,12 @@
       </p>
     {/if}
     {#if data.user.uid === $me?.uid}
-      <!-- <h2>Notifications</h2>
-      <NotificationSettingsForm
+      <h2>Notifications</h2>
+      <FormNotificationSettings
         availableGroups={$me?.groups?.map((g) => g.group) ?? []}
         userUid={data.user.uid}
         bind:settings={data.user.notificationSettings}
-      /> -->
+      />
       <h2>Données personnelles</h2>
       <p>
         <a href="{PUBLIC_USER_DUMP_URL}?token={data.token}" download="{data.me.uid}.json">

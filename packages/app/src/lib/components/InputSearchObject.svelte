@@ -19,6 +19,8 @@
   export let labelKey = 'name';
   export let valueKey = 'id';
   export let clearable = false;
+
+  export let placeholder = '';
 </script>
 
 <div class="input-container">
@@ -35,6 +37,7 @@
     </slot>
   </div>
   <AutoComplete
+    {placeholder}
     searchFunction={search}
     localFiltering={false}
     bind:selectedItem={object}
