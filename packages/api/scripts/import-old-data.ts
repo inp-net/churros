@@ -335,27 +335,6 @@ for (const oldMajor of LDAP_DATA.majors) {
   console.log(`· Created major ${major.name}`);
 }
 
-await prisma.user.create({
-  data: {
-    email: 'annie.versaire@etu.inp-n7.fr',
-    firstName: 'Annie',
-    lastName: 'Versiaire',
-    uid: 'versairea',
-    graduationYear: 2025,
-    description: 'Ohayou',
-    address: '',
-    admin: true,
-    credentials: {
-      create: { type: 'Password', value: await hash('a') },
-    },
-    major: {
-      connect: {
-        id: (await prisma.major.findFirst())!.id,
-      },
-    },
-  },
-});
-
 const errors: {
   users: Array<{ user: Ldap.User; error: unknown }>;
   clubs: Array<{ club: Ldap.Club; error: unknown }>;
