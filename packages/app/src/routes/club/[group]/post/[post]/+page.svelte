@@ -138,7 +138,7 @@
           />
           {event.group.name}
         </a>
-        <a href="malto:{event.contactMail}"> Contact </a>
+        <ButtonSecondary href="malto:{event.contactMail}">Contact</ButtonSecondary>
       </div>
     </section>
   {/if}
@@ -149,6 +149,8 @@
     display: flex;
     flex-flow: column wrap;
     gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
   }
 
   h1 {
@@ -181,6 +183,7 @@
     img {
       width: 3rem;
       height: 3rem;
+      object-fit: contain;
     }
   }
 </style>
