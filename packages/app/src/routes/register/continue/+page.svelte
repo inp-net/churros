@@ -105,6 +105,8 @@
       loading = false;
     }
   };
+
+  const asmajor = (x: unknown) => x as typeof data['schoolGroups'][number]['majors'][number];
 </script>
 
 <h1>Finaliser mon inscription</h1>
@@ -164,7 +166,9 @@
           labelKey="name"
         >
           <svelte:fragment slot="item" let:item>
-            {item.name} · {item.schools.map(({ name }) => name).join(', ')}
+            {asmajor(item).name} · {asmajor(item)
+              .schools.map(({ name }) => name)
+              .join(', ')}
           </svelte:fragment>
         </InputSearchObject>
       </InputField>

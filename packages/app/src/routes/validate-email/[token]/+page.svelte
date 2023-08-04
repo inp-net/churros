@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Alert from '$lib/components/alerts/Alert.svelte';
+  import Alert from '$lib/components/Alert.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
 
@@ -9,7 +9,14 @@
 
   async function rerequestValidation() {
     await $zeus.mutate({
-      requestEmailChange: [{ email }, true],
+      requestEmailChange: [
+        { email },
+        {
+          __typename: true,
+          '...on Error': { message: true },
+          '...on MutationRequestEmailChangeSuccess': { data: true },
+        },
+      ],
     });
   }
 </script>

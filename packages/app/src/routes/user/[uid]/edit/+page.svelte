@@ -98,6 +98,7 @@
           birthday: data.user.birthday,
           // eslint-disable-next-line unicorn/no-null
           godparentUid: null,
+          email: data.user.email,
         },
         {
           __typename: true,
