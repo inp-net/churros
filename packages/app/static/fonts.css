@@ -26,7 +26,7 @@
 @font-face {
   font-family: 'Space Grotesk';
   font-style: normal;
-  font-weight: 300;
+  font-weight: normal;
   src: url('SpaceGroteskLight-Regular.woff2') format('woff2'),
     url('SpaceGroteskLight-Regular.woff') format('woff');
   font-display: swap;
@@ -41,9 +41,9 @@
 }
 
 @font-face {
-  font-family: 'Space Grotesk Light';
+  font-family: 'Space Grotesk';
   font-style: normal;
-  font-weight: 300;
+  font-weight: 600;
   src: url('SpaceGroteskLight-Medium.woff2') format('woff2'),
     url('SpaceGroteskLight-Medium.woff') format('woff');
   font-display: swap;
@@ -52,7 +52,7 @@
 @font-face {
   font-family: 'Space Grotesk';
   font-style: normal;
-  font-weight: 300;
+  font-weight: 700;
   src: url('SpaceGroteskLight-Bold.woff2') format('woff2'),
     url('SpaceGroteskLight-Bold.woff') format('woff');
   font-display: swap;
@@ -64,14 +64,5 @@
   font-weight: 300;
   src: url('SpaceGrotesk-Light.woff2') format('woff2'),
     url('SpaceGrotesk-Light.woff') format('woff');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Space Grotesk';
-  font-style: normal;
-  font-weight: normal;
-  src: url('SpaceGrotesk-Regular.woff2') format('woff2'),
-    url('SpaceGrotesk-Regular.woff') format('woff');
   font-display: swap;
 }
