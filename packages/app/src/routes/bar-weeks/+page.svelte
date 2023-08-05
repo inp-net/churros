@@ -111,6 +111,10 @@
     {#each barWeeks as barWeek, i (barWeek.id)}
       <li>
         <Card>
+          <h3>
+            {dateFormatter.format(barWeek.startsAt)}—{dateFormatter.format(barWeek.endsAt)}
+            {barWeek.groups.map(({ name }) => name).join(', ')}
+          </h3>
           {#if expandedBarWeekId === barWeek.id}
             <InputText label="Description" bind:value={barWeek.description} />
 
@@ -127,27 +131,34 @@
             {#if serverErrors[barWeek.id]}
               <Alert theme="danger">{serverErrors[barWeek.id]}</Alert>
             {/if}
-            <ButtonSecondary icon={IconConfirm} on:click={async () => updateBarWeek(barWeek)}
-              >Enregistrer
-            </ButtonSecondary>
+            <section class="actions">
+              <ButtonSecondary icon={IconConfirm} on:click={async () => updateBarWeek(barWeek)}
+                >Enregistrer
+              </ButtonSecondary>
+              <ButtonSecondary
+                danger
+                icon={IconDelete}
+                on:click={async () => deleteBarWeek(barWeek)}>Supprimer</ButtonSecondary
+              >
+            </section>
           {:else}
-            <h3>
-              {dateFormatter.format(barWeek.startsAt)}—{dateFormatter.format(barWeek.endsAt)}
-              {barWeek.groups.map(({ name }) => name).join(', ')}
-            </h3>
             <div class="description">
               {@html barWeek.descriptionHtml}
             </div>
-            <ButtonSecondary
-              icon={IconEdit}
-              on:click={() => {
-                expandedBarWeekId = barWeek.id;
-              }}>Modifier</ButtonSecondary
-            >
+            <section class="actions">
+              <ButtonSecondary
+                icon={IconEdit}
+                on:click={() => {
+                  expandedBarWeekId = barWeek.id;
+                }}>Modifier</ButtonSecondary
+              >
+              <ButtonSecondary
+                danger
+                icon={IconDelete}
+                on:click={async () => deleteBarWeek(barWeek)}>Supprimer</ButtonSecondary
+              >
+            </section>
           {/if}
-          <ButtonSecondary danger icon={IconDelete} on:click={async () => deleteBarWeek(barWeek)}
-            >Supprimer</ButtonSecondary
-          >
         </Card>
       </li>
     {:else}
@@ -202,5 +213,13 @@
     display: flex;
     flex-flow: row wrap;
     gap: 1rem;
+  }
+
+  section.actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
   }
 </style>
