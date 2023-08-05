@@ -25,7 +25,6 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { htmlToText } from 'html-to-text';
   import Badge from '$lib/components/Badge.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
 
@@ -130,11 +129,7 @@
   </header>
 
   <section class="description">
-    <details>
-      <summary>{htmlToText(group.longDescriptionHtml).split('\n')[0].slice(0, 255)}</summary>
-      {@html group.longDescriptionHtml}
-    </details>
-    <!-- TODO read more button -->
+    {@html group.longDescriptionHtml}
   </section>
 
   <section class="bureau">
