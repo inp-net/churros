@@ -1,29 +1,41 @@
 <script lang="ts">
   import IconAdd from '~icons/mdi/add';
+  import IconCloud from '~icons/mdi/cloud-outline';
+  import IconCar from '~icons/mdi/car';
+  import IconHand from '~icons/mdi/hand-heart';
   import IconTerminal from '~icons/mdi/terminal';
   import CardService from '$lib/components/CardService.svelte';
   import { me } from '$lib/session';
+  import type { SvelteComponent } from 'svelte';
 
   function Service(
     name: string,
     description: string,
-    href = ''
-  ): { name: string; logoFile: string; descriptionHtml: string; href: string } {
+    {
+      href = '',
+      logo = undefined,
+    }: { href?: string; logo?: undefined | typeof SvelteComponent | string }
+  ): {
+    name: string;
+    logoFile: string | typeof SvelteComponent;
+    descriptionHtml: string;
+    href: string;
+  } {
     return {
       name,
-      logoFile: `logos/${name.toLowerCase().replaceAll(' ', '-')}.png`,
+      logoFile: logo ?? `logos/${name.toLowerCase().replaceAll(' ', '-')}.png`,
       descriptionHtml: description,
       href: href || `/${name.toLowerCase().replaceAll(' ', '-')}`,
     };
   }
 
   const services = [
-    Service('La Frappe', 'Sauve tes partiels'),
-    Service('Covoiturages', 'Limite ton CO2e'),
-    Service('Photos', 'Merci Photo7 ♥', 'https://photo7.inpt.fr'),
-    Service('TVn7flix', 'Les productions de TVn7', 'https://tvn7flix.fr'),
-    Service('Loca7', 'Trouve un appart', 'https://loca7.fr'),
-    Service('Nextcloud', 'Fichiers, etc.', 'https://cloud.inpt.fr'),
+    Service('La Frappe', 'Sauve tes partiels', { logo: IconHand }),
+    Service('Covoiturages', 'Limite ton CO2e', { logo: IconCar }),
+    Service('Photos', 'Merci Photo7 ♥', { href: 'https://photo7.inpt.fr' }),
+    Service('TVn7flix', 'Les productions de TVn7', { href: 'https://tvn7flix.fr' }),
+    Service('Loca7', 'Trouve un appart', { href: 'https://loca7.fr' }),
+    Service('Nextcloud', 'Fichiers, etc.', { href: 'https://cloud.inpt.fr', logo: IconCloud }),
   ];
 </script>
 
