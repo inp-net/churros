@@ -349,7 +349,8 @@ export async function scheduleNotification(
     console.log(
       `[cron ${id}] Sending notification immediately (time is ${at.toISOString()} and now is ${new Date().toISOString()})`
     );
-    await notifyInBulk(id, users, notification);
+    // Start the promise in the background, don't wait for all notifications to be sent out, it takes approx 30 secondes in a real scenario to notify all users for e.g. a public article
+    void notifyInBulk(id, users, notification);
     return true;
   }
 
