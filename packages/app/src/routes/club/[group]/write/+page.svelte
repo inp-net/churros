@@ -7,7 +7,7 @@
 </script>
 
 <div class="content">
-  <h1><ButtonBack /> Écrire un article pour {data.article.group.name}</h1>
+  <h1><ButtonBack /> Écrire un article en tant que {data.article.group.name}</h1>
   <PostDetails bind:data />
 </div>
 

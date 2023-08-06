@@ -82,6 +82,8 @@ builder.mutationField('upsertGroupMember', (t) =>
       treasurer: t.arg.boolean(),
       vicePresident: t.arg.boolean(),
       secretary: t.arg.boolean(),
+      canEditMembers: t.arg.boolean(),
+      canEditArticles: t.arg.boolean(),
     },
     authScopes: (_, { groupId }, { user }) =>
       Boolean(
@@ -91,7 +93,17 @@ builder.mutationField('upsertGroupMember', (t) =>
     async resolve(
       query,
       _,
-      { memberId, groupId, title, president, treasurer, secretary, vicePresident }
+      {
+        memberId,
+        groupId,
+        title,
+        president,
+        treasurer,
+        secretary,
+        vicePresident,
+        canEditArticles,
+        canEditMembers,
+      }
     ) {
       if (president) {
         await prisma.groupMember.updateMany({
@@ -106,8 +118,8 @@ builder.mutationField('upsertGroupMember', (t) =>
         treasurer,
         groupId,
         memberId,
-        canEditMembers: president || treasurer,
-        secretary,
+        canEditMembers: canEditMembers || president || treasurer,
+        canEditArticles: canEditArticles || president || vicePresident || secretary,
         vicePresident,
       };
 
