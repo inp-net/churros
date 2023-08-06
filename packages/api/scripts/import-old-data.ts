@@ -20,13 +20,14 @@ type bbcode = string;
 function bbcode2markdown(text: bbcode): string {
   return (
     text
+      .replaceAll('\0', '')
       // .replaceAll(/\r?\n/gi, '\n')
-      .replaceAll(/\[b](.*?)\[\/b]/gi, '**$1**')
-      .replaceAll(/\[i](.*?)\[\/i]/gi, '*$1*')
-      .replaceAll(/\[u](.*?)\[\/u]/gi, '*$1*')
-      .replaceAll(/\[s](.*?)\[\/s]/gi, '~~$1~~')
+      .replaceAll(/\[b](.*?)\[\/b]/gi, (_, $1: string) => `**${$1.trim()}**`)
+      .replaceAll(/\[i](.*?)\[\/i]/gi, (_, $1: string) => `*${$1.trim()}*`)
+      .replaceAll(/\[u](.*?)\[\/u]/gi, (_, $1: string) => `*${$1.trim()}*`)
+      .replaceAll(/\[s](.*?)\[\/s]/gi, (_, $1: string) => `~~${$1.trim()}~~`)
       .replaceAll(/\[url=(.*?)](.*?)\[\/url]/gi, '[$2]($1)')
-      .replaceAll(/\[url](.*?)\[\/url]/gi, '<$1>')
+      .replaceAll(/\[url](.*?)\[\/url]/gi, (_, $1: string) => `<${$1.trim()}>`)
       .replaceAll(/\[img](.*?)\[\/img]/gi, '![]($1)')
       .replaceAll(/\[color=(.*?)](.*?)\[\/color]/gi, '$2')
       .replaceAll(/\[quote](.*?)\[\/quote]/gi, (_, $1) =>
