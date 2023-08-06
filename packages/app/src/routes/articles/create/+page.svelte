@@ -1,13 +1,10 @@
 <script lang="ts">
   import CardGroup from '$lib/components/CardGroup.svelte';
-  import AvatarGroups from '$lib/components/CarouselGroups.svelte';
   import { me } from '$lib/session';
-
-  const go = (uid: string) => `/club/${uid}/write`;
 </script>
 
 <div class="content">
-  <h1>Écrire un article pour</h1>
+  <h1>Écrire un article en tant que</h1>
 
   <section class="groups">
     {#each $me?.groups.map(({ group }) => group) ?? [] as group (group.uid)}

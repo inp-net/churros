@@ -6,7 +6,7 @@
 </script>
 
 <div class="content">
-  <h1>Écrire un évènement pour</h1>
+  <h1>Créer un évènement en tant que</h1>
 
   <section class="groups">
     {#each $me?.groups.map(({ group }) => group) ?? [] as group (group.uid)}
