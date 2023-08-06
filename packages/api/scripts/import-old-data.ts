@@ -134,7 +134,7 @@ async function makeUser(user: OldUser, ldapUser: Ldap.User) {
     data: {
       address: ldapUser.postalAddress ?? '',
       admin: bool(user.is_superuser),
-      birthday: parse(ldapUser.birthdate as unknown as string, 'yyyy-mm-dd', new Date()),
+      birthday: parse(ldapUser.birthdate as unknown as string, 'yyyy-MM-dd', new Date()),
       canEditGroups: bool(user.is_staff),
       canEditUsers: bool(user.is_staff),
       createdAt: parseISO(user.date_joined),
