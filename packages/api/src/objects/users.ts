@@ -18,6 +18,7 @@ import type { Group, User } from '@prisma/client';
 import { dirname, join } from 'node:path';
 import { NotificationTypeEnum } from './notifications.js';
 import { FamilyTree, getFamilyTree } from '../godchildren-tree.js';
+import { yearTier } from '../date.js';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -49,6 +50,11 @@ export const UserType = builder.prismaNode('User', {
     }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     graduationYear: t.exposeInt('graduationYear'),
+    yearTier: t.int({
+      resolve({ graduationYear }) {
+        return yearTier(graduationYear);
+      },
+    }),
 
     // Profile details
     address: t.exposeString('address', { authScopes: { loggedIn: true, $granted: 'me' } }),
@@ -206,6 +212,31 @@ LIMIT 10
           users.map(({ id }) => id)
         )(fuzzyUsers),
       ];
+    },
+  })
+);
+
+/** Gets the people that were born today */
+builder.queryField('birthdays', (t) =>
+  t.prismaField({
+    type: [UserType],
+    args: {
+      now: t.arg({ type: DateTimeScalar, required: false }),
+      activeOnly: t.arg({ type: 'Boolean', required: false }),
+    },
+    authScopes: { loggedIn: true },
+    async resolve(query, _, { now, activeOnly }) {
+      now = now ?? new Date();
+      activeOnly = activeOnly ?? true;
+      const usersBornToday: Array<{ uid: string }> =
+        await prisma.$queryRaw`SELECT uid from "User" WHERE EXTRACT(DAY FROM "birthday") = EXTRACT(DAY FROM ${now}) AND EXTRACT(MONTH FROM "birthday") = EXTRACT(MONTH FROM ${now})`;
+      const users = await prisma.user.findMany({
+        ...query,
+        where: { uid: { in: usersBornToday.map((u) => u.uid) } },
+      });
+      if (activeOnly)
+        return users.filter(({ graduationYear }) => [1, 2, 3].includes(yearTier(graduationYear)));
+      return users;
     },
   })
 );

@@ -20,5 +20,28 @@ export const pageQuery = Selector('QueryHomepageConnection')({
   },
 });
 
-export const load: PageLoad = async ({ fetch, parent }) =>
-  loadQuery({ homepage: [{}, pageQuery] }, { fetch, parent });
+export const load: PageLoad = async ({ fetch, parent }) => {
+  const { me } = await parent();
+  const { homepage } = await loadQuery({ homepage: [{}, pageQuery] }, { fetch, parent });
+  if (me) {
+    const { birthdays } = await loadQuery(
+      {
+        birthdays: [
+          {},
+          {
+            fullName: true,
+            pictureFile: true,
+            uid: true,
+            birthday: true,
+            yearTier: true,
+            major: { name: true, schools: { uid: true } },
+          },
+        ],
+      },
+      { fetch, parent }
+    );
+    return { homepage, birthdays };
+  }
+
+  return { homepage, birthdays: undefined };
+};

@@ -4,7 +4,7 @@
 
   export let value: string | undefined = undefined;
   export let label: string;
-  export let options: string[] | Record<string, string> = {};
+  export let options: string[] | Record<string, string>;
   export let name: string | undefined = undefined;
   export let required = false;
   export let hint: string | undefined = undefined;
@@ -53,6 +53,8 @@
     padding: 0;
     margin: 0;
     overflow: hidden;
+    font-size: 1rem;
+    font-weight: normal;
     border-radius: var(--radius-block);
 
     /* using a border creates a weird gap with the overflow-hidden rectangle of selected item if it hits the corner. for some reason the outline is thicker than the border at the same width, so we multiply by 2/3 to roughly get the same appearance */

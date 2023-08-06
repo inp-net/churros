@@ -7,10 +7,14 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import { me } from '$lib/session';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import { parseISO } from 'date-fns';
+  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
 
   export let data: PageData;
 
   let loading = false;
+  let selectedBirthdaysYearTier = $me?.yearTier?.toString() ?? 'all';
   const loadMore = async () => {
     if (loading) return;
     try {
@@ -33,6 +37,33 @@
     <CarouselGroups groups={$me.groups.map(({ group }) => group)} />
   {/if}
 </section>
+
+{#if data.birthdays}
+  <section class="birthdays">
+    <h1>
+      Anniversaires
+      <InputSelectOne
+        bind:value={selectedBirthdaysYearTier}
+        label=""
+        options={{ 1: '1As', 2: '2As', 3: '3As', all: 'Tous' }}
+      />
+    </h1>
+    <ul class="nobullet">
+      {#each data.birthdays.filter((u) => (selectedBirthdaysYearTier === 'all' || u.yearTier === Number.parseFloat(selectedBirthdaysYearTier)) && u.major.schools.some( (s) => $me?.major.schools.some((schoolMe) => schoolMe.uid === s.uid) )) as { uid, major, birthday, ...user }}
+        <li>
+          <AvatarPerson
+            href="/user/{uid}"
+            {...user}
+            role="{major.name} · {new Date().getFullYear() - parseISO(birthday).getFullYear()} ans"
+          />
+        </li>
+      {:else}
+        <li>Aucun·e {selectedBirthdaysYearTier}A n'est né·e aujourd'hui :/</li>
+      {/each}
+    </ul>
+  </section>
+{/if}
+
 <section class="articles">
   {#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile, links, body } }}
     <ArticleCard
@@ -66,5 +97,26 @@
   section.articles {
     max-width: 600px;
     margin: 0 auto;
+  }
+
+  section.birthdays h1 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  section.birthdays ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 1rem;
+  }
+
+  section.birthdays {
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
   }
 </style>
