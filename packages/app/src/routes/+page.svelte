@@ -8,7 +8,6 @@
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import { me } from '$lib/session';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import { parseISO } from 'date-fns';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
 
   export let data: PageData;
@@ -54,7 +53,7 @@
           <AvatarPerson
             href="/user/{uid}"
             {...user}
-            role="{major.name} · {new Date().getFullYear() - parseISO(birthday).getFullYear()} ans"
+            role="{major.name} · {new Date().getFullYear() - (birthday?.getFullYear() ?? 0)} ans"
           />
         </li>
       {:else}
