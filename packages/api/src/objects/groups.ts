@@ -191,7 +191,7 @@ builder.mutationField('upsertGroup', (t) =>
       uid: t.arg.string({ required: false }),
       type: t.arg({ type: GroupEnumType }),
       parentUid: t.arg.string({ required: false }),
-      schoolId: t.arg.id({ required: false }),
+      schoolUid: t.arg.id({ required: false }),
       studentAssociationId: t.arg.id({ required: false }),
       name: t.arg.string({ validate: { maxLength: 255 } }),
       color: t.arg.string({ validate: { regex: /#[\dA-Fa-f]{6}/ } }),
@@ -226,7 +226,7 @@ builder.mutationField('upsertGroup', (t) =>
         color,
         address,
         description,
-        schoolId,
+        schoolUid,
         studentAssociationId,
         email,
         longDescription,
@@ -298,8 +298,6 @@ builder.mutationField('upsertGroup', (t) =>
         description,
         email: email ?? undefined,
         longDescription,
-        school: schoolId ? { connect: { id: schoolId } } : {},
-        studentAssociation: studentAssociationId ? { connect: { id: studentAssociationId } } : {},
       };
 
       return prisma.group.upsert({
@@ -312,6 +310,8 @@ builder.mutationField('upsertGroup', (t) =>
           related: { connect: related.map((uid) => ({ uid })) },
           parent:
             parentUid === null || parentUid === undefined ? {} : { connect: { uid: parentUid } },
+          school: schoolUid ? { connect: { uid: schoolUid } } : {},
+          studentAssociation: studentAssociationId ? { connect: { id: studentAssociationId } } : {},
         },
         update: {
           ...data,
@@ -326,6 +326,10 @@ builder.mutationField('upsertGroup', (t) =>
             parentUid === null || parentUid === undefined
               ? { disconnect: true }
               : { connect: { uid: parentUid } },
+          school: schoolUid ? { connect: { uid: schoolUid } } : { disconnect: true },
+          studentAssociation: studentAssociationId
+            ? { connect: { id: studentAssociationId } }
+            : { disconnect: true },
         },
       });
     },

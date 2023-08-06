@@ -13,6 +13,7 @@
   import InputLongText from './InputLongText.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputListOfGroups from './InputListOfGroups.svelte';
+  import InputSchool from './InputSchool.svelte';
 
   export let data: PageData;
 
@@ -29,6 +30,7 @@
     type,
     parent,
     related,
+    school,
   } = data.group;
 
   const socialMediaNames = [
@@ -66,6 +68,7 @@
             parentUid: parent?.uid,
             type,
             related: related.map(({ uid }) => uid),
+            schoolUid: school?.uid,
           },
           {
             __typename: true,
@@ -91,6 +94,8 @@
 
 <form on:submit|preventDefault={updateClub}>
   <InputSelectOne label="Type de groupe" required options={DISPLAY_GROUP_TYPES} bind:value={type} />
+
+  <InputSchool label="École de rattachement" bind:object={school} uid={school?.uid} />
 
   <InputCheckbox label="Auto-joignable" bind:value={selfJoinable} />
 
