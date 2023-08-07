@@ -6,6 +6,7 @@
   export let groups: Array<{
     name: string;
     pictureFile: string;
+    pictureFileDark: string;
     uid: string;
     role?: string;
   }>;

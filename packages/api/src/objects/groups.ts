@@ -61,6 +61,7 @@ export const GroupType = builder.prismaNode('Group', {
       resolve: async ({ longDescription }) => toHtml(longDescription),
     }),
     pictureFile: t.exposeString('pictureFile'),
+    pictureFileDark: t.exposeString('pictureFileDark'),
     articles: t.relation('articles', {
       query: { orderBy: { publishedAt: 'desc' } },
     }),
@@ -360,10 +361,12 @@ builder.mutationField('updateGroupPicture', (t) =>
     args: {
       uid: t.arg.string(),
       file: t.arg({ type: FileScalar }),
+      dark: t.arg.boolean(),
     },
     authScopes: (_, { uid }, { user }) =>
       Boolean(user?.canEditGroups || user?.groups.some(({ group }) => group.uid === uid)),
-    async resolve(_, { uid, file }) {
+    async resolve(_, { uid, file, dark }) {
+      const propertyName = dark ? 'pictureFileDark' : 'pictureFile';
       console.log('updating group picture');
       const type = await file
         .slice(0, minimumBytes)
@@ -375,19 +378,21 @@ builder.mutationField('updateGroupPicture', (t) =>
       console.log(`file type: ${type.ext}`);
 
       // Delete the existing picture
-      const { pictureFile } = await prisma.group.findUniqueOrThrow({
+      const data = await prisma.group.findUniqueOrThrow({
         where: { uid },
-        select: { pictureFile: true },
+        select: { pictureFile: true, pictureFileDark: true },
       });
 
-      console.log(`existing picture: ${pictureFile}`);
+      const pictureFile = data[propertyName] ;
+
+      console.log(`existing picture${dark ? ' (dark)' : ''}: ${pictureFile}`);
 
       if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
 
-      const path = join(`groups`, `${uid}.${type.ext}`);
+      const path = join(dark ? 'groups/dark' : `groups`, `${uid}.${type.ext}`);
       await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
       await writeFile(new URL(path, process.env.STORAGE), file.stream());
-      await prisma.group.update({ where: { uid }, data: { pictureFile: path } });
+      await prisma.group.update({ where: { uid }, data: { [propertyName]: path } });
       return path;
     },
   })
@@ -397,9 +402,9 @@ builder.mutationField('updateGroupPicture', (t) =>
 builder.mutationField('deleteGroupPicture', (t) =>
   t.field({
     type: 'Boolean',
-    args: { uid: t.arg.string() },
+    args: { uid: t.arg.string(), dark: t.arg.boolean() },
     authScopes: (_, { uid }, { user }) => Boolean(user?.canEditGroups || uid === user?.uid),
-    async resolve(_, { uid }) {
+    async resolve(_, { uid, dark }) {
       const { pictureFile } = await prisma.group.findUniqueOrThrow({
         where: { uid },
         select: { pictureFile: true },
@@ -409,7 +414,7 @@ builder.mutationField('deleteGroupPicture', (t) =>
 
       await prisma.group.update({
         where: { uid },
-        data: { pictureFile: '' },
+        data: { [dark ? 'pictureFileDark' : 'pictureFile']: '' },
       });
       return true;
     },

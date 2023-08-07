@@ -27,6 +27,7 @@
   import { goto } from '$app/navigation';
   import Badge from '$lib/components/Badge.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
+  import { isDark } from '$lib/theme';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -80,7 +81,12 @@
 <div class="content">
   <header>
     <div class="picture">
-      <img src="{PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} />
+      <img
+        src="{PUBLIC_STORAGE_URL}{$isDark && group.pictureFileDark
+          ? group.pictureFileDark
+          : group.pictureFile}"
+        alt={group.name}
+      />
     </div>
 
     <div class="identity">

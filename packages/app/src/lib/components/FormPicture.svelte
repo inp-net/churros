@@ -16,9 +16,12 @@
   };
 
   export let objectName: 'Group' | 'User' | 'Article' | 'Event';
-  export let object: { pictureFile: string; uid: string; id: string };
+  export let dark = false;
+  export let object: { pictureFile: string; uid: string; id: string; pictureFileDark?: string };
   export let alt = '';
-  $: ({ pictureFile, uid, id } = object);
+  const pictureFilePropertyName: 'pictureFile' | 'pictureFileDark' =
+    objectName === 'Group' && dark ? 'pictureFileDark' : 'pictureFile';
+  $: ({ uid, id } = object);
   $: alt = alt || uid;
 
   let files: FileList;
@@ -32,7 +35,9 @@
         {
           [`update${objectName}Picture`]: [
             {
-              ...(['Group', 'User'].includes(objectName) ? { uid } : { id }),
+              ...(['Group', 'User'].includes(objectName)
+                ? { uid, ...(objectName === 'Group' ? { dark } : {}) }
+                : { id }),
               file: Zvar('file', 'File!'),
             },
             true,
@@ -42,7 +47,7 @@
       );
       // Add a timestamp to the URL to force the browser to reload the image
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      pictureFile = `${result[`update${objectName}Picture`]}?v=${Date.now()}`;
+      object[pictureFilePropertyName] = `${result[`update${objectName}Picture`]}?v=${Date.now()}`;
     } finally {
       // `updating` is set to false when the image loads
     }
@@ -53,8 +58,13 @@
     if (deleting) return;
     try {
       deleting = true;
-      const deleted = await $zeus.mutate({ [`delete${objectName}Picture`]: [{ uid }, true] });
-      if (deleted) pictureFile = '';
+      const deleted = await $zeus.mutate({
+        [`delete${objectName}Picture`]: [
+          { uid, ...(objectName === 'Group' ? { dark } : {}) },
+          true,
+        ],
+      });
+      if (deleted) object[pictureFilePropertyName] = '';
     } finally {
       deleting = false;
     }
@@ -62,14 +72,14 @@
 </script>
 
 <form data-object={objectName.toLowerCase()} on:submit|preventDefault>
-  <InputField label={LEGENDS[objectName]}>
+  <InputField label="{LEGENDS[objectName]}{dark ? ' (Thème sombre)' : ''}">
     <div class="wrapper">
       <img
         style:object-fit={objectName === 'Group' ? 'contain' : 'cover'}
         on:load={() => {
           updating = false;
         }}
-        src="{PUBLIC_STORAGE_URL}{pictureFile}"
+        src="{PUBLIC_STORAGE_URL}{object[pictureFilePropertyName]}"
         alt={LEGENDS[objectName]}
       />
       <div class="actions">
@@ -83,10 +93,10 @@
           on:click={() => {
             inputElement.click();
           }}
-          icon={pictureFile ? IconEdit : IconAdd}
-          >{#if pictureFile}Changer{:else}Ajouter{/if}</ButtonSecondary
+          icon={object[pictureFilePropertyName] ? IconEdit : IconAdd}
+          >{#if object[pictureFilePropertyName]}Changer{:else}Ajouter{/if}</ButtonSecondary
         >
-        {#if pictureFile}
+        {#if object[pictureFilePropertyName]}
           <ButtonSecondary icon={IconTrash} danger loading={deleting} on:click={deletePicture}
             >Supprimer</ButtonSecondary
           >

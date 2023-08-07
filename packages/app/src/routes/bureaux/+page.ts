@@ -11,6 +11,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
           uid: true,
           name: true,
           pictureFile: true,
+          pictureFileDark: true,
           members: {
             president: true,
             vicePresident: true,

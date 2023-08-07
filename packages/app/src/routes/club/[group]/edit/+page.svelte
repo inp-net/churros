@@ -9,7 +9,10 @@
 </script>
 
 <div class="forms">
-  <FormPicture objectName="Group" bind:object={group} />
+  <div class="logos">
+    <FormPicture objectName="Group" bind:object={group} />
+    <FormPicture objectName="Group" bind:object={group} dark />
+  </div>
   <FormGroup bind:data />
 </div>
 
@@ -18,5 +21,11 @@
     display: flex;
     flex-flow: column wrap;
     gap: 3rem;
+  }
+
+  .logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
 </style>

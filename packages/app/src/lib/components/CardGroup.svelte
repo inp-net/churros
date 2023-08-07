@@ -1,15 +1,21 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { isDark } from '$lib/theme';
 
   export let href: string;
   export let name: string;
   export let pictureFile: string;
+  export let pictureFileDark: string;
   export let role = '';
 </script>
 
 <a {href} class="group" draggable="false" on:click>
   <div class="img">
-    <img src={`${PUBLIC_STORAGE_URL}${pictureFile}`} alt={name} draggable="false" />
+    <img
+      src={`${PUBLIC_STORAGE_URL}${$isDark && pictureFileDark ? pictureFileDark : pictureFile}`}
+      alt={name}
+      draggable="false"
+    />
   </div>
   <p class="name">{name}</p>
   {#if role}

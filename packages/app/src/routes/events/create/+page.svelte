@@ -13,7 +13,12 @@
     {#each $me?.groups
       .filter((member) => canCreateEvent(member, $me))
       .map(({ group }) => group) ?? [] as group (group.uid)}
-      <CardGroup href={go(group.uid)} name={group.name} pictureFile={group.pictureFile} />
+      <CardGroup
+        href={go(group.uid)}
+        name={group.name}
+        pictureFile={group.pictureFile}
+        pictureFileDark={group.pictureFileDark}
+      />
     {/each}
   </section>
 </div>
