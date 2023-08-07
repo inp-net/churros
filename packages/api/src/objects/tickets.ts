@@ -206,9 +206,8 @@ builder.queryField('ticketsOfEvent', (t) =>
     },
     async resolve(query, _, { eventUid, groupUid }, { user }) {
       const allTickets = await prisma.ticket.findMany({
-        ...query,
         where: { event: { uid: eventUid, group: { uid: groupUid } } },
-        include: { openToGroups: true, openToSchools: true, event: true },
+        include: { ...query.include, openToGroups: true, openToSchools: true, event: true },
       });
       return allTickets.filter((ticket) => userCanSeeTicket(ticket, user));
     },
