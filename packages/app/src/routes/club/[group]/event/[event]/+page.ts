@@ -8,6 +8,62 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
 
   return loadQuery(
     {
+      ticketsOfEvent: [
+        {
+          eventUid: params.event,
+          groupUid: params.group,
+        },
+        {
+          uid: true,
+          id: true,
+          name: true,
+          descriptionHtml: true,
+          price: true,
+          capacity: true,
+          placesLeft: true,
+          opensAt: true,
+          closesAt: true,
+          group: {
+            capacity: true,
+          },
+          links: {
+            name: true,
+            value: true,
+            computedValue: true,
+          },
+          registrations: {
+            id: true,
+            beneficiary: true,
+            beneficiaryUser: {
+              uid: true,
+              firstName: true,
+              fullName: true,
+              lastName: true,
+            },
+            authorIsBeneficiary: true,
+            author: {
+              uid: true,
+            },
+            paid: true,
+            ticket: {
+              name: true,
+            },
+          },
+          openToAlumni: true,
+          openToExternal: true,
+          openToGroups: {
+            uid: true,
+            name: true,
+          },
+          openToNonAEContributors: true,
+          openToSchools: {
+            name: true,
+            color: true,
+            id: true,
+          },
+          openToPromotions: true,
+        },
+      ],
       event: [
         { groupUid: params.group, uid: params.event },
         Selector('Event')({
@@ -19,6 +75,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           articles: {
             uid: true,
             bodyHtml: true,
+            publishedAt: true,
             title: true,
             group: {
               uid: true,
@@ -27,6 +84,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             },
             author: {
               uid: true,
+              fullName: true,
               firstName: true,
               lastName: true,
               pictureFile: true,
@@ -36,6 +94,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           author: {
             uid: true,
             firstName: true,
+            fullName: true,
             lastName: true,
             pictureFile: true,
           },
@@ -44,6 +103,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           links: {
             name: true,
             value: true,
+            computedValue: true,
           },
           group: {
             uid: true,
@@ -51,54 +111,6 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             pictureFile: true,
           },
           contactMail: true,
-          tickets: {
-            uid: true,
-            id: true,
-            name: true,
-            descriptionHtml: true,
-            price: true,
-            capacity: true,
-            placesLeft: true,
-            opensAt: true,
-            closesAt: true,
-            group: {
-              capacity: true,
-            },
-            links: {
-              name: true,
-              value: true,
-            },
-            registrations: {
-              id: true,
-              beneficiary: true,
-              beneficiaryUser: {
-                uid: true,
-                firstName: true,
-                lastName: true,
-              },
-              authorIsBeneficiary: true,
-              author: {
-                uid: true,
-              },
-              paid: true,
-              ticket: {
-                name: true,
-              },
-            },
-            openToAlumni: true,
-            openToExternal: true,
-            openToGroups: {
-              uid: true,
-              name: true,
-            },
-            openToNonAEContributors: true,
-            openToSchools: {
-              name: true,
-              color: true,
-              id: true,
-            },
-            openToPromotions: true,
-          },
         }),
       ],
     },

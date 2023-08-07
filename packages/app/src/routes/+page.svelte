@@ -5,11 +5,15 @@
   import type { PageData } from './$types';
   import { pageQuery } from './+page';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import * as htmlToText from 'html-to-text';
+  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
+  import { me } from '$lib/session';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
 
   export let data: PageData;
 
   let loading = false;
+  let selectedBirthdaysYearTier = $me?.yearTier?.toString() ?? 'all';
   const loadMore = async () => {
     if (loading) return;
     try {
@@ -27,19 +31,52 @@
 
 <h1>Mon feed</h1>
 
-{#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile, links, body } }}
-  <ArticleCard
-    {title}
-    {publishedAt}
-    {links}
-    {group}
-    {author}
-    href="/club/{group.uid}/post/{uid}/"
-    img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
-  >
-    {@html htmlToText.convert(bodyHtml).replaceAll('\n', '<br>')}
-  </ArticleCard>
-{/each}
+<section class="groups">
+  {#if $me?.groups}
+    <CarouselGroups groups={$me.groups.map(({ group }) => group)} />
+  {/if}
+</section>
+
+{#if data.birthdays}
+  <section class="birthdays">
+    <h1>
+      Anniversaires
+      <InputSelectOne
+        bind:value={selectedBirthdaysYearTier}
+        label=""
+        options={{ 1: '1As', 2: '2As', 3: '3As', all: 'Tous' }}
+      />
+    </h1>
+    <ul class="nobullet">
+      {#each data.birthdays.filter((u) => (selectedBirthdaysYearTier === 'all' || u.yearTier === Number.parseFloat(selectedBirthdaysYearTier)) && u.major.schools.some( (s) => $me?.major.schools.some((schoolMe) => schoolMe.uid === s.uid) )) as { uid, major, birthday, ...user } (uid)}
+        <li>
+          <AvatarPerson
+            href="/user/{uid}"
+            {...user}
+            role="{major.name} · {new Date().getFullYear() - (birthday?.getFullYear() ?? 0)} ans"
+          />
+        </li>
+      {:else}
+        <li>Aucun·e {selectedBirthdaysYearTier}A n'est né·e aujourd'hui :/</li>
+      {/each}
+    </ul>
+  </section>
+{/if}
+
+<section class="articles">
+  {#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile, links, body } }}
+    <ArticleCard
+      {title}
+      {publishedAt}
+      {links}
+      {group}
+      {author}
+      {bodyHtml}
+      href="/club/{group.uid}/post/{uid}/"
+      img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
+    />
+  {/each}
+</section>
 
 {#if data.homepage.pageInfo.hasNextPage}
   <p class="text-center"><Button on:click={loadMore} {loading}>Voir plus</Button></p>
@@ -48,5 +85,37 @@
 <style>
   h1 {
     text-align: center;
+  }
+
+  section.groups {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 3rem;
+  }
+
+  section.articles {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  section.birthdays h1 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  section.birthdays ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 1rem;
+  }
+
+  section.birthdays {
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
   }
 </style>

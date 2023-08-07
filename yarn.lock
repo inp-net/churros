@@ -2527,6 +2527,7 @@ __metadata:
     html-to-text: "npm:^9.0.5"
     is-dark-color: "npm:^1.2.0"
     json-to-csv-in-browser: "npm:^1.0.8"
+    lodash: "npm:^4.17.21"
     modern-svelte-qr-scanner: "npm:1.3.6"
     nanoid: "npm:^4.0.2"
     party-js: "npm:^2.2.0"
@@ -6692,6 +6693,7 @@ __metadata:
     eslint-config-xo-typescript: "npm:^0.55.0"
     eslint-plugin-svelte3: "npm:^4.0.0"
     eslint-plugin-unicorn: "npm:^44.0.2"
+    fuse.js: "npm:^6.6.2"
     html5-qrcode: "npm:^2.3.8"
     husky: "npm:^8.0.2"
     lint-staged: "npm:^13.0.3"
@@ -6699,6 +6701,7 @@ __metadata:
     prettier: "npm:^2.7.1"
     prettier-plugin-jsdoc: "npm:^0.4.2"
     prettier-plugin-svelte: "npm:^2.8.1"
+    simple-svelte-autocomplete: "npm:^2.5.2"
     stylelint: "npm:^14.15.0"
     stylelint-config-html: "npm:^1.1.0"
     stylelint-config-prettier: "npm:^9.0.4"
@@ -9010,6 +9013,13 @@ __metadata:
   version: 1.0.1
   resolution: "functional-red-black-tree@npm:1.0.1"
   checksum: 275f10e8abe29375137a6dc662b54bf6452704560a4888dde5720b1901b5489703f45169a92e02c758dd0ebc4c6206e2cb57c326a9b9dd6e3992aeaf4038dddc
+  languageName: node
+  linkType: hard
+
+"fuse.js@npm:^6.6.2":
+  version: 6.6.2
+  resolution: "fuse.js@npm:6.6.2"
+  checksum: e22fe31176b52a0d4be7c7ee116758d478653d9694d6c5df5d2e28b002b4d83fc5aa07c24d27a26ee2e85fc31a8b22cafdc071ddb700917a021395023abb16aa
   languageName: node
   linkType: hard
 
@@ -13564,6 +13574,13 @@ __metadata:
   version: 3.0.7
   resolution: "signal-exit@npm:3.0.7"
   checksum: 5cf7525c55a72d8d104d914acf2e470f74b2c156197277ad7b331bc5de3d8790170fed3c82ff98c7c31adaa8ff941bfd5ba44f55171cbe8ed0e939fa82a8322a
+  languageName: node
+  linkType: hard
+
+"simple-svelte-autocomplete@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "simple-svelte-autocomplete@npm:2.5.2"
+  checksum: 83861d5309412f5dafba85f9c318b2aacc91366716729eb08018cdf5b03d703b7b35f1c6776aa95749be3f6f69490bfb77cc55df39833210005d7267efa1906a
   languageName: node
   linkType: hard
 

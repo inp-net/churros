@@ -61,13 +61,14 @@ export const GroupType = builder.prismaNode('Group', {
       resolve: async ({ longDescription }) => toHtml(longDescription),
     }),
     pictureFile: t.exposeString('pictureFile'),
+    pictureFileDark: t.exposeString('pictureFileDark'),
     articles: t.relation('articles', {
       query: { orderBy: { publishedAt: 'desc' } },
     }),
     links: t.relation('links'),
     members: t.relation('members', {
       // Seeing group members requires being logged in
-      authScopes: { loggedIn: true },
+      // authScopes: { loggedIn: true },
       query: {
         orderBy: [
           { president: 'desc' },
@@ -78,9 +79,12 @@ export const GroupType = builder.prismaNode('Group', {
       },
     }),
     school: t.relation('school', { nullable: true }),
-    parent: t.relation('parent'),
+    parent: t.relation('parent', { nullable: true }),
     selfJoinable: t.exposeBoolean('selfJoinable'),
     events: t.relation('events'),
+    children: t.relation('children'),
+    root: t.relation('familyRoot', { nullable: true }),
+    related: t.relation('related'),
   }),
 });
 
@@ -92,7 +96,7 @@ builder.objectField(GroupType, 'ancestors', (t) =>
     type: GroupType,
     description: 'All the ancestors of this group, from the current group to the root.',
     // Because this request can be expensive, only allow logged in users
-    authScopes: { loggedIn: true },
+    // authScopes: { loggedIn: true },
     resolve: ({ id, familyId }) => ({ id, familyId: familyId ?? id }),
     load: async (ids) =>
       prisma.group
@@ -134,7 +138,7 @@ builder.queryField('searchGroups', (t) =>
       q = q.trim();
       const { searchString: search } = splitSearchTerms(q);
       const fuzzyResults: FuzzySearchResult = await prisma.$queryRaw`
-SELECT "id", levenshtein_less_equal("name", ${q}, 15) as changes
+SELECT "id", levenshtein_less_equal(LOWER(unaccent("name")), LOWER(unaccent(${q})), 15) as changes
 FROM "Group"
 ORDER BY changes ASC
 LIMIT 20
@@ -187,17 +191,18 @@ builder.mutationField('upsertGroup', (t) =>
     args: {
       uid: t.arg.string({ required: false }),
       type: t.arg({ type: GroupEnumType }),
-      parentId: t.arg.id({ required: false }),
-      schoolId: t.arg.id({ required: false }),
+      parentUid: t.arg.string({ required: false }),
+      schoolUid: t.arg.id({ required: false }),
       studentAssociationId: t.arg.id({ required: false }),
       name: t.arg.string({ validate: { maxLength: 255 } }),
       color: t.arg.string({ validate: { regex: /#[\dA-Fa-f]{6}/ } }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
       description: t.arg.string({ validate: { maxLength: 255 } }),
-      email: t.arg.string({ validate: { email: true } }),
+      email: t.arg.string({ validate: { email: true }, required: false }),
       longDescription: t.arg.string(),
       links: t.arg({ type: [LinkInput] }),
       selfJoinable: t.arg.boolean(),
+      related: t.arg({ type: ['String'] }),
     },
     authScopes(_, { uid }, { user }) {
       const creating = !uid;
@@ -217,18 +222,20 @@ builder.mutationField('upsertGroup', (t) =>
         uid,
         selfJoinable,
         type,
-        parentId,
+        parentUid,
         name,
         color,
         address,
         description,
-        schoolId,
+        schoolUid,
         studentAssociationId,
         email,
         longDescription,
         links,
+        related,
       }
     ) {
+      console.log(`Updating group parentUid=${JSON.stringify(parentUid)}`);
       // --- First, we update the group's children's familyId according to the new parent of this group. ---
       // We have 2 possible cases for updating the parent: either it is:
       // - null (or set to ''): the group does not have a parent anymore;
@@ -240,24 +247,28 @@ builder.mutationField('upsertGroup', (t) =>
       //
       let familyId;
       const oldGroup = await prisma.group.findUnique({ where: { uid: uid ?? '' } });
-      if (parentId === null || parentId === '') {
+      if (parentUid === null || parentUid === undefined || parentUid === '') {
         // First case (null): the group does not have a parent anymore.
         // Set both the parent and the root to the group itself.
         // eslint-disable-next-line unicorn/no-null
-        parentId = null;
+        parentUid = null;
         // eslint-disable-next-line unicorn/no-null
         familyId = oldGroup?.id ?? null;
       } else {
         // Third case (number): the group's parent is changed to the group with that ID.
-        const newParent = await prisma.group.findUnique({ where: { id: parentId } });
-        if (!newParent) throw new GraphQLError('ID de groupe parent invalide');
+        const newParent = await prisma.group.findUnique({ where: { uid: parentUid } });
+        if (!newParent) throw new GraphQLError('uid de groupe parent invalide');
         familyId = newParent.familyId ?? newParent.id;
         // Update all descendants' familyId to the new parent's familyId
         // Or when creating (i.e. oldGroup is undefined), just check for cycles
         const allGroups = await prisma.group.findMany({});
         if (oldGroup) {
           if (
-            hasCycle(allGroups.map((g) => (g.id === oldGroup.id ? { ...oldGroup, parentId } : g)))
+            hasCycle(
+              allGroups.map((g) =>
+                g.id === oldGroup.id ? { ...oldGroup, parentId: newParent.id } : g
+              )
+            )
           )
             throw new GraphQLError('La modification créerait un cycle dans les groupes');
 
@@ -271,37 +282,24 @@ builder.mutationField('upsertGroup', (t) =>
               familyId,
             },
           });
-        } else if (parentId && hasCycle([{ parentId, id: '' }, ...allGroups])) {
+        } else if (newParent.id && hasCycle([{ parentId: newParent.id, id: '' }, ...allGroups])) {
           throw new GraphQLError("Can't create a cycle");
         }
       }
 
-      if (parentId === oldGroup?.id) throw new GraphQLError('Group cannot be its own parent');
+      if (parentUid === oldGroup?.uid) throw new GraphQLError('Group cannot be its own parent');
 
       const data = {
         type,
         selfJoinable,
         name,
         color,
-        parent:
-          parentId === undefined
-            ? undefined
-            : parentId === null
-            ? {}
-            : { connect: { id: parentId } },
         familyRoot: familyId ? { connect: { id: familyId } } : undefined,
         address,
         description,
-        email,
+        email: email ?? undefined,
         longDescription,
-        school: schoolId ? { connect: { id: schoolId } } : {},
-        studentAssociation: studentAssociationId ? { connect: { id: studentAssociationId } } : {},
       };
-
-      // if (uid) {
-      //   const id = (await prisma.group.findUnique({ where: { uid: uid ?? '' } }))?.id;
-      //   await prisma.link.deleteMany({ where: { groupId: id ?? '' } });
-      // }
 
       return prisma.group.upsert({
         ...query,
@@ -310,6 +308,11 @@ builder.mutationField('upsertGroup', (t) =>
           ...data,
           links: { create: links },
           uid: await createGroupUid(name),
+          related: { connect: related.map((uid) => ({ uid })) },
+          parent:
+            parentUid === null || parentUid === undefined ? {} : { connect: { uid: parentUid } },
+          school: schoolUid ? { connect: { uid: schoolUid } } : {},
+          studentAssociation: studentAssociationId ? { connect: { id: studentAssociationId } } : {},
         },
         update: {
           ...data,
@@ -317,6 +320,17 @@ builder.mutationField('upsertGroup', (t) =>
             deleteMany: {},
             createMany: { data: links },
           },
+          related: {
+            set: related.map((uid) => ({ uid })),
+          },
+          parent:
+            parentUid === null || parentUid === undefined
+              ? { disconnect: true }
+              : { connect: { uid: parentUid } },
+          school: schoolUid ? { connect: { uid: schoolUid } } : { disconnect: true },
+          studentAssociation: studentAssociationId
+            ? { connect: { id: studentAssociationId } }
+            : { disconnect: true },
         },
       });
     },
@@ -347,10 +361,12 @@ builder.mutationField('updateGroupPicture', (t) =>
     args: {
       uid: t.arg.string(),
       file: t.arg({ type: FileScalar }),
+      dark: t.arg.boolean(),
     },
     authScopes: (_, { uid }, { user }) =>
       Boolean(user?.canEditGroups || user?.groups.some(({ group }) => group.uid === uid)),
-    async resolve(_, { uid, file }) {
+    async resolve(_, { uid, file, dark }) {
+      const propertyName = dark ? 'pictureFileDark' : 'pictureFile';
       console.log('updating group picture');
       const type = await file
         .slice(0, minimumBytes)
@@ -362,19 +378,21 @@ builder.mutationField('updateGroupPicture', (t) =>
       console.log(`file type: ${type.ext}`);
 
       // Delete the existing picture
-      const { pictureFile } = await prisma.group.findUniqueOrThrow({
+      const data = await prisma.group.findUniqueOrThrow({
         where: { uid },
-        select: { pictureFile: true },
+        select: { pictureFile: true, pictureFileDark: true },
       });
 
-      console.log(`existing picture: ${pictureFile}`);
+      const pictureFile = data[propertyName] ;
+
+      console.log(`existing picture${dark ? ' (dark)' : ''}: ${pictureFile}`);
 
       if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
 
-      const path = join(`groups`, `${uid}.${type.ext}`);
+      const path = join(dark ? 'groups/dark' : `groups`, `${uid}.${type.ext}`);
       await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
       await writeFile(new URL(path, process.env.STORAGE), file.stream());
-      await prisma.group.update({ where: { uid }, data: { pictureFile: path } });
+      await prisma.group.update({ where: { uid }, data: { [propertyName]: path } });
       return path;
     },
   })
@@ -384,9 +402,9 @@ builder.mutationField('updateGroupPicture', (t) =>
 builder.mutationField('deleteGroupPicture', (t) =>
   t.field({
     type: 'Boolean',
-    args: { uid: t.arg.string() },
+    args: { uid: t.arg.string(), dark: t.arg.boolean() },
     authScopes: (_, { uid }, { user }) => Boolean(user?.canEditGroups || uid === user?.uid),
-    async resolve(_, { uid }) {
+    async resolve(_, { uid, dark }) {
       const { pictureFile } = await prisma.group.findUniqueOrThrow({
         where: { uid },
         select: { pictureFile: true },
@@ -396,7 +414,7 @@ builder.mutationField('deleteGroupPicture', (t) =>
 
       await prisma.group.update({
         where: { uid },
-        data: { pictureFile: '' },
+        data: { [dark ? 'pictureFileDark' : 'pictureFile']: '' },
       });
       return true;
     },

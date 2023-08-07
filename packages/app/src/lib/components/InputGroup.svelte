@@ -1,103 +1,103 @@
 <script lang="ts">
-  import GhostButton from '$lib/components/ButtonGhost.svelte';
-  import InlineLoader from '$lib/components/LoaderInline.svelte';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import { zeus } from '$lib/zeus';
-  import { tick } from 'svelte';
-  import IconCheckLine from '~icons/mdi/check';
-  import IconClose from '~icons/mdi/close';
-  import IconDotsHorizontal from '~icons/mdi/dots-horizontal';
-  import IconPlus from '~icons/mdi/plus';
+  import IconNone from '~icons/mdi/help';
   import InputField from './InputField.svelte';
+  import InputSearchObject from './InputSearchObject.svelte';
+  import type { SvelteComponent } from 'svelte';
 
-  export let uid: string | undefined;
+  type Group = { uid: string; name: string; pictureFile: string };
   export let label: string;
+  export let uid: string | undefined = undefined;
   export let required = false;
+  export let allow: string[] = [];
+  export let except: string[] = [];
+  export let group: Group | undefined = undefined;
+  export let clearable = false;
 
-  let loading = false;
-  let enabled: boolean;
-  let q = '';
-  let options: Array<{ uid: string; name: string; id: string }> = [];
+  export let placeholder = '';
+  export let nullIcon: typeof SvelteComponent = IconNone;
 
-  let input: HTMLInputElement;
+  $: console.log(uid, group);
+
+  function allowed(uid: string) {
+    const result =
+      (allow.length > 0 ? allow.includes(uid) : true) &&
+      (except.length > 0 ? !except.includes(uid) : true);
+    if (!result) console.log(`${uid} disallowed`);
+    return result;
+  }
+
+  async function search(query: string): Promise<Group[]> {
+    console.log(`search(${query})`);
+    const { searchGroups } = await $zeus.query({
+      searchGroups: [
+        { q: query },
+        {
+          uid: true,
+          name: true,
+          pictureFile: true,
+        },
+      ],
+    });
+    return searchGroups.filter(({ uid }) => allowed(uid));
+  }
 </script>
 
 <InputField {label} {required}>
-  {#if enabled || uid}
-    <span>
-      {#if uid}
-        <a href="/club/{uid}">{uid}</a>
-      {/if}
-      {#if loading}
-        <InlineLoader />
-      {:else if uid}
-        <IconCheckLine aria-label="Valeur acceptée" aria-live="polite" />
+  <InputSearchObject
+    {clearable}
+    {search}
+    bind:value={uid}
+    bind:object={group}
+    labelKey="name"
+    valueKey="uid"
+    {placeholder}
+  >
+    <div class="avatar" slot="thumbnail" let:object>
+      {#if object}
+        <img src="{PUBLIC_STORAGE_URL}{object.pictureFile}" alt={object.name?.toString()} />
       {:else}
-        <IconDotsHorizontal aria-label="Entrez un nom de groupe" />
+        <svelte:component this={nullIcon} />
       {/if}
-      <input
-        bind:this={input}
-        type="search"
-        list="parents"
-        class="flex-1"
-        placeholder="Rechercher un groupe"
-        required={required && !uid}
-        bind:value={q}
-        on:input={async () => {
-          if (!q) return;
-          loading = true;
-          enabled = true;
-          uid = undefined;
-          try {
-            const { group } = await $zeus.query({
-              group: [{ uid: q }, { uid: true, name: true, id: true }],
-            });
-            input.setCustomValidity('');
-            uid = group.uid;
-          } catch {
-            input.setCustomValidity('Veuillez entrer un groupe valide');
-            const { searchGroups } = await $zeus.query({
-              searchGroups: [{ q }, { name: true, uid: true, id: true }],
-            });
-            options = searchGroups;
-          } finally {
-            loading = false;
-          }
-        }}
-      />
-      <!-- The following span is used as a placeholder to space things a bit -->
-      <span />
-      <GhostButton
-        title="Supprimer"
-        on:click={() => {
-          uid = undefined;
-          enabled = false;
-        }}
-      >
-        <IconClose aria-label="Supprimer" />
-      </GhostButton>
-    </span>
-  {:else}
-    <button
-      type="button"
-      on:click={async () => {
-        if (input === null) {
-          // @ts-expect-error Tricking TS into thinking that input is always defined
-          input = undefined;
-          return;
-        }
-
-        enabled = true;
-        await tick();
-        input.focus();
-      }}
-    >
-      <IconPlus aria-hidden="true" /> Définir un groupe parent
-    </button>
-  {/if}
+    </div>
+    <div class="suggestion" slot="item" let:item>
+      <div class="avatar">
+        <img src="{PUBLIC_STORAGE_URL}{item.pictureFile}" alt={item.name} />
+      </div>
+      <div>{item.name}</div>
+    </div>
+  </InputSearchObject>
 </InputField>
 
-<datalist id="parents">
-  {#each options as { uid, name }}
-    <option value={uid}>{name}</option>
-  {/each}
-</datalist>
+<style>
+  .avatar {
+    --size: 2rem;
+
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--size);
+    height: var(--size);
+    overflow: hidden;
+    line-height: var(--size);
+    color: var(--muted-text);
+    text-align: center;
+    background: var(--muted-bg);
+    border-radius: var(--radius-block);
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .suggestion {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+</style>

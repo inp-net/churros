@@ -1,35 +1,72 @@
 <script lang="ts">
-  import * as htmlToText from 'html-to-text';
   import Alert from '$lib/components/Alert.svelte';
-  import SchoolBadge from '$lib/components/BadgeSchool.svelte';
-  import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import Card from '$lib/components/Card.svelte';
-  import SocialLink from '$lib/components/SocialLink.svelte';
+  import IconAdd from '~icons/mdi/plus';
+  import IconPeople from '~icons/mdi/account-group';
+  import IconGear from '~icons/mdi/gear';
+  import IconJoinGroup from '~icons/mdi/account-plus';
   import { me } from '$lib/session.js';
-  import IconPlus from '~icons/mdi/plus';
-  import IconEdit from '~icons/mdi/pencil';
   import type { PageData } from './$types';
-  import { byMemberGroupTitleImportance } from '$lib/sorting';
-  import Button from '$lib/components/Button.svelte';
-  import { Visibility, zeus } from '$lib/zeus';
-  import PictureUser from '$lib/components/PictureUser.svelte';
+  import { zeus } from '$lib/zeus';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import ArticleCard from '$lib/components/CardArticle.svelte';
-  import { isPast } from 'date-fns';
+  import { DISPLAY_GROUP_TYPES } from '$lib/display';
+  import IconFacebook from '~icons/mdi/facebook-box';
+  import type { SvelteComponent } from 'svelte';
+  import IconInstagram from '~icons/mdi/instagram';
+  import IconTwitter from '~icons/mdi/twitter';
+  import IconMatrix from '~icons/mdi/matrix';
+  import IconLinkedin from '~icons/mdi/linkedin';
+  import IconDiscord from '~icons/mdi/discord';
+  import IconSnapchat from '~icons/mdi/snapchat';
+  import IconWebsite from '~icons/mdi/earth';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import ButtonInk from '$lib/components/ButtonInk.svelte';
+  import CardArticle from '$lib/components/CardArticle.svelte';
+  import TreeGroups from '$lib/components/TreeGroups.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
+  import Badge from '$lib/components/Badge.svelte';
+  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
+  import { isDark } from '$lib/theme';
+
+  const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
+    facebook: IconFacebook,
+    instagram: IconInstagram,
+    twitter: IconTwitter,
+    matrix: IconMatrix,
+    linkedin: IconLinkedin,
+    discord: IconDiscord,
+    snapchat: IconSnapchat,
+  };
 
   export let data: PageData;
 
+  $: clubBoard = group.members?.filter(
+    ({ president, vicePresident, treasurer, secretary }) =>
+      president || vicePresident || treasurer || secretary
+  );
+
+  $: onClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
+
+  $: myPermissions = $me?.groups.find(({ group: { uid } }) => uid === group.uid);
+
   $: ({ group } = data);
 
-  const isOnClubBoard = (user: { uid: string }) =>
-    Object.entries(group.members.find((m) => m.member.uid === user.uid) ?? {}).some(
-      ([role, hasRole]) =>
-        ['president', 'vicePresident', 'treasurer', 'secretary'].includes(role) && hasRole
-    );
+  $: canEditDetails = Boolean(
+    $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups
+  );
+  $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || onClubBoard);
+  $: canEditEvents = canEditArticles;
+  $: canEditMembers = Boolean(
+    $me?.admin ||
+      myPermissions?.canEditMembers ||
+      onClubBoard ||
+      $me?.canEditGroups ||
+      $me?.canEditUsers
+  );
 
   const joinGroup = async (groupUid: string) => {
-    if (!$me) return;
+    if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
     try {
       await $zeus.mutate({
         selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }],
@@ -41,166 +78,226 @@
   };
 </script>
 
-<div class="top">
-  <div class="user-picture">
-    <PictureUser
-      src={group.pictureFile
-        ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
-        : 'https://via.placeholder.com/160'}
-      alt={group.name}
-    />
-  </div>
-  <Card>
-    <p class="muted text-sm mb-0">
-      {#if group.ancestors && group.ancestors.length > 1}
-        <Breadcrumbs>
-          {#each [...group.ancestors].reverse() as { uid, name }}
-            <Breadcrumb><a href="/club/{uid}/">{name}</a></Breadcrumb>
-          {/each}
-        </Breadcrumbs>
-      {/if}
-    </p>
-    <h1 class="mt-1">
-      {group.name}
-      {#if group.school}<SchoolBadge schools={[group.school]} />{/if}
-      {#if $me?.canEditGroups || ($me && isOnClubBoard($me))}
-        <a href="edit/" title="Éditer">
-          <IconEdit aria-label="Éditer" />
-        </a>
-      {/if}
-    </h1>
-    <div>{group.description}</div>
-    {#if group.links.length > 0}
-      <div class="flex flex-wrap my-4 gap-3">
-        {#each data.group.links as link}
-          <SocialLink {...link} />
+<div class="content">
+  <header>
+    <div class="picture">
+      <img
+        src="{PUBLIC_STORAGE_URL}{$isDark && group.pictureFileDark
+          ? group.pictureFileDark
+          : group.pictureFile}"
+        alt={group.name}
+      />
+    </div>
+
+    <div class="identity">
+      <h1>
+        {group.name}
+
+        {#if $me?.groups.find(({ group: { uid } }) => uid === group.uid)}
+          <Badge theme="success">Membre</Badge>
+        {:else if group.selfJoinable}
+          <ButtonSecondary icon={IconJoinGroup} on:click={async () => joinGroup(group.uid)}
+            >Rejoindre</ButtonSecondary
+          >
+        {/if}
+
+        {#if canEditDetails}
+          <ButtonSecondary icon={IconGear} href="./edit">Modifier</ButtonSecondary>
+        {/if}
+      </h1>
+
+      <p>
+        {DISPLAY_GROUP_TYPES[group.type]}
+        {#if group.school}· {group.school?.name}{/if}
+      </p>
+
+      <dl>
+        {#if group.address}
+          <dt>Salle</dt>
+          <dd>{group.address}</dd>
+        {/if}
+        {#if group.email}
+          <dt>Email</dt>
+          <dd><a href="mailto:{group.email}">{group.email}</a></dd>
+        {/if}
+      </dl>
+
+      <ul class="social-links nobullet">
+        {#each group.links.filter(({ value }) => Boolean(value)) as { name, value }}
+          <li>
+            <a href={value} title={name}>
+              <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
+            </a>
+          </li>
         {/each}
+      </ul>
+    </div>
+  </header>
+
+  <section class="description">
+    {@html group.longDescriptionHtml}
+  </section>
+
+  <section class="bureau">
+    <h2>
+      Bureau {#if canEditMembers}
+        <ButtonSecondary href="./edit/members" icon={IconGear}>Gérer</ButtonSecondary>{/if}
+    </h2>
+
+    {#if clubBoard}
+      <ul class="nobullet">
+        {#each clubBoard as { member, title, ...permissions } (member.uid)}
+          <li>
+            <AvatarPerson role={title} {...member} href="/user/{member.uid}" />
+          </li>
+        {/each}
+      </ul>
+
+      <div class="more">
+        <ButtonInk icon={IconPeople} href="./members">Voir tout les membres</ButtonInk>
       </div>
+    {:else if !$me}
+      <Alert theme="warning"
+        >Connectez-vous pour voir les membres du groupe <ButtonSecondary
+          insideProse
+          href="/login?{new URLSearchParams({ to: $page.url.pathname }).toString()}"
+          >Se connecter</ButtonSecondary
+        >
+      </Alert>
     {/if}
-  </Card>
+  </section>
+
+  {#if group.root && (group.root.children.length ?? 0) > 0}
+    <section class="subgroups">
+      <h2>Sous-groupes</h2>
+
+      <TreeGroups highlightUid={group.uid} group={group.root} />
+    </section>
+  {/if}
+
+  <section class="posts">
+    <h2>
+      Posts {#if canEditArticles}<ButtonSecondary href="./write" icon={IconAdd}
+          >Nouveau</ButtonSecondary
+        >{/if}
+    </h2>
+
+    <ul class="nobullet">
+      {#each group.articles.slice(0, 3) as { uid, ...article } (uid)}
+        <CardArticle hideGroup {group} href="./post/{uid}" {...article} />
+      {/each}
+    </ul>
+  </section>
+
+  <section class="events">
+    <h2>
+      Évènements {#if canEditEvents}
+        <ButtonSecondary href="./event/create" icon={IconAdd}>Nouveau</ButtonSecondary>
+      {/if}
+    </h2>
+
+    <ul class="nobullet">
+      {#each group.events.slice(0, 3) as { uid, ...event } (uid)}
+        <!-- TODO CardEvent -->
+        <CardArticle
+          hideGroup
+          {group}
+          href="./event/{uid}"
+          {...event}
+          publishedAt={event.startsAt}
+          bodyHtml={event.descriptionHtml}
+        />
+      {/each}
+    </ul>
+  </section>
+
+  {#if group.related?.length > 0}
+    <section class="related">
+      <h2>Voir aussi</h2>
+
+      <CarouselGroups groups={group.related} />
+    </section>
+  {/if}
 </div>
 
-<Card>
-  <h2>À propos</h2>
-  {@html group.longDescriptionHtml}
-</Card>
+<style>
+  .content {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 2rem;
+    padding: 0 1rem;
+    margin: 0 auto;
+  }
 
-{#if group.members}
-  <h2>Membres</h2>
-  {#if group.members.length > 0}
-    <table>
-      {#each group.members.sort(byMemberGroupTitleImportance) as { member, president, treasurer, title } (member.uid)}
-        <tr>
-          <td>{president ? '👑' : ''}{treasurer ? '💰' : ''}</td>
-          <td>
-            <a href="/user/{member.uid}/">
-              {member.firstName}
-              {member.lastName}
-            </a>
-          </td>
-          <td>{title}</td>
-        </tr>
-      {/each}
-    </table>
-  {:else}
-    <Alert theme="warning">
-      {#if $me}
-        <p>Le groupe ne contient aucun membre, il vient peut-être d'être créé.</p>
-      {:else}
-        <p>
-          <a href="/login?{new URLSearchParams({ to: window.location.pathname }).toString()}"
-            >Connectez-vous</a
-          > pour consulter les membres des clubs
-        </p>
-      {/if}
-    </Alert>
-  {/if}
-  {#if group.selfJoinable && $me && !$me.groups.some(({ group }) => group.uid === data.group.uid)}
-    <p>
-      <Button on:click={async () => joinGroup(group.uid)}>Rejoindre le groupe</Button>
-    </p>
-  {/if}
-  {#if $me?.canEditGroups || $me?.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === data.group.uid)}
-    <p>
-      <a href="./members/">Modifier la liste des membres</a>
-    </p>
-  {/if}
-{/if}
+  section {
+    max-width: 600px;
+    margin: 0 auto;
+  }
 
-<h2>
-  Évènements
-  {#if $me?.canEditGroups || $me?.groups.some(({ group, canEditArticles }) => group.uid === data.group.uid && canEditArticles)}
-    <a href="./event/create/" title="Créer un événement">
-      <IconPlus aria-label="Créer un événement" />
-    </a>
-  {/if}
-</h2>
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
 
-{#each group.events
-  .sort((a, b) => (a?.startsAt.valueOf() ?? 0) - (b.startsAt?.valueOf() ?? 0))
-  .reverse() as { uid, visibility, title, startsAt, pictureFile, links, descriptionHtml } (uid)}
-  <!-- Events can be seen if you are admin, a manager of the event, someone that can edit articles on this group or if the event is either public or restricted (and you're a member of the group) -->
-  {#if $me?.admin || $me?.groups.some(({ group, canEditArticles }) => group.uid === uid && canEditArticles) || $me?.managedEvents.some(({ event }) => event.uid === uid) || visibility === 'Public' || (visibility === 'Restricted' && $me?.groups.some(({ group }) => group.uid === data.group.uid))}
-    <ArticleCard
-      {group}
-      {visibility}
-      href="./event/{uid}"
-      publishedAt={startsAt}
-      {title}
-      author={undefined}
-      img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
-      {links}
-    >
-      {@html htmlToText.convert(descriptionHtml).replaceAll('\n', '<br>')}
-    </ArticleCard>
-  {/if}
-{/each}
-
-<h2>
-  Articles
-  {#if $me?.canEditGroups || $me?.groups.some(({ group, canEditArticles }) => group.uid === data.group.uid && canEditArticles)}
-    <a href="./write/" title="Écrire un article">
-      <IconPlus aria-label="Écrire un article" />
-    </a>
-  {/if}
-</h2>
-
-{#each group.articles.sort((a, b) => (a.publishedAt?.valueOf() ?? 0) - (b.publishedAt?.valueOf() ?? 0)) as { uid, title, bodyHtml, pictureFile, author, publishedAt, visibility } (uid)}
-  <!-- To see an article, ether you are an admin, or you can edit articles in the group, or you wrote it, or it's published AND it's either Public or it's Restricted but you're a member of the group  -->
-  {#if $me?.admin || $me?.groups.some(({ group, canEditArticles }) => canEditArticles && group.uid === uid) || (author && $me?.uid === author.uid) || (publishedAt && isPast(new Date(publishedAt)) && (visibility === Visibility.Public || (visibility === Visibility.Restricted && $me?.groups.some(({ group }) => group.uid === uid))))}
-    <ArticleCard
-      href="/club/{group.uid}/post/{uid}/"
-      {title}
-      {visibility}
-      {group}
-      {author}
-      {publishedAt}
-      img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
-    >
-      {@html htmlToText.convert(bodyHtml).replaceAll('\n', '<br>')}
-    </ArticleCard>
-  {/if}
-{/each}
-
-<style lang="scss">
-  .top {
-    display: grid;
+  h1 {
+    display: flex;
     gap: 1rem;
     align-items: center;
-    justify-content: stretch;
-    margin-block: 1rem;
+  }
 
-    .user-picture {
-      justify-self: center;
-      max-height: 15rem;
-    }
+  header .picture img {
+    --size: 7rem;
 
-    > :global(*) {
-      margin: 0;
-    }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--size);
+    height: var(--size);
+    color: var(--muted-text);
+    text-align: center;
+    background: var(--muted-bg);
+    object-fit: contain;
+  }
 
-    @media (min-width: $breakpoint-mobile) {
-      grid-template-columns: 1fr 2fr;
-    }
+  header dt {
+    font-weight: bold;
+  }
+
+  header dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.5rem;
+  }
+
+  header dd {
+    margin-left: 0;
+  }
+
+  header .social-links {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 1.25em;
+  }
+
+  section h2 {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .bureau ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .bureau .more {
+    display: flex;
+    justify-content: center;
   }
 </style>

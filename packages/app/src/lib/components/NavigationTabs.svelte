@@ -14,7 +14,9 @@
     flex-wrap: wrap;
     gap: 1rem;
     justify-content: space-between;
+    max-width: 600px;
     padding-left: 0;
+    margin: 0 auto;
     list-style: none;
   }
 

@@ -1,11 +1,12 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import Button from '$lib/components/Button.svelte';
+  import IconAdd from '~icons/mdi/add';
   import FileInput from '$lib/components/InputFile.svelte';
-  import Loader from '$lib/components/Loader.svelte';
-  import PictureUser from '$lib/components/PictureUser.svelte';
+  import IconTrash from '~icons/mdi/delete';
   import { $ as Zvar, zeus } from '$lib/zeus';
   import IconEdit from '~icons/mdi/pencil';
+  import InputField from './InputField.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
   export const LEGENDS = {
     Group: 'Logo du groupe',
@@ -13,24 +14,40 @@
     Article: 'Photo de l’article',
     Event: 'Photo de l’événement',
   };
+
   export let objectName: 'Group' | 'User' | 'Article' | 'Event';
-  export let object: { pictureFile: string; uid: string };
+  export let dark = false;
+  export let object: { pictureFile: string; uid: string; id: string; pictureFileDark?: string };
   export let alt = '';
-  $: ({ pictureFile, uid } = object);
+  const pictureFilePropertyName: 'pictureFile' | 'pictureFileDark' =
+    objectName === 'Group' && dark ? 'pictureFileDark' : 'pictureFile';
+  $: ({ uid, id } = object);
   $: alt = alt || uid;
 
   let files: FileList;
+  let inputElement: HTMLInputElement;
   let updating = false;
   const updatePicture = async () => {
     if (updating) return;
     try {
       updating = true;
       const result = await $zeus.mutate(
-        { [`update${objectName}Picture`]: [{ uid, file: Zvar('file', 'File!') }, true] },
+        {
+          [`update${objectName}Picture`]: [
+            {
+              ...(['Group', 'User'].includes(objectName)
+                ? { uid, ...(objectName === 'Group' ? { dark } : {}) }
+                : { id }),
+              file: Zvar('file', 'File!'),
+            },
+            true,
+          ],
+        },
         { variables: { file: files[0] } }
       );
       // Add a timestamp to the URL to force the browser to reload the image
-      pictureFile = `${result[`update${objectName}Picture`]}?v=${Date.now()}`;
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      object[pictureFilePropertyName] = `${result[`update${objectName}Picture`]}?v=${Date.now()}`;
     } finally {
       // `updating` is set to false when the image loads
     }
@@ -41,61 +58,83 @@
     if (deleting) return;
     try {
       deleting = true;
-      const deleted = await $zeus.mutate({ [`delete${objectName}Picture`]: [{ uid }, true] });
-      if (deleted) pictureFile = '';
+      const deleted = await $zeus.mutate({
+        [`delete${objectName}Picture`]: [
+          { uid, ...(objectName === 'Group' ? { dark } : {}) },
+          true,
+        ],
+      });
+      if (deleted) object[pictureFilePropertyName] = '';
     } finally {
       deleting = false;
     }
   };
 </script>
 
-<form on:submit|preventDefault>
-  <fieldset>
-    <legend>{LEGENDS[objectName]}</legend>
-    <FileInput bind:files on:change={updatePicture} accept="image/jpeg,image/png">
-      <div class="relative">
-        <div class="picture-edit">
-          {#if updating}
-            <Loader />
-          {:else}
-            <IconEdit />
-          {/if}
-        </div>
-        <PictureUser
-          src={pictureFile
-            ? `${PUBLIC_STORAGE_URL}${pictureFile}`
-            : 'https://via.placeholder.com/160'}
-          {alt}
-          on:load={() => {
-            updating = false;
-          }}
+<form data-object={objectName.toLowerCase()} on:submit|preventDefault>
+  <InputField label="{LEGENDS[objectName]}{dark ? ' (Thème sombre)' : ''}">
+    <div class="wrapper">
+      <img
+        style:object-fit={objectName === 'Group' ? 'contain' : 'cover'}
+        on:load={() => {
+          updating = false;
+        }}
+        src="{PUBLIC_STORAGE_URL}{object[pictureFilePropertyName]}"
+        alt={LEGENDS[objectName]}
+      />
+      <div class="actions">
+        <FileInput
+          bind:inputElement
+          bind:files
+          on:change={updatePicture}
+          accept="image/jpeg,image/png"
         />
-      </div>
-    </FileInput>
-    {#if pictureFile}
-      <p>
-        <Button type="button" theme="danger" loading={deleting} on:click={deletePicture}
-          >Supprimer</Button
+        <ButtonSecondary
+          on:click={() => {
+            inputElement.click();
+          }}
+          icon={object[pictureFilePropertyName] ? IconEdit : IconAdd}
+          >{#if object[pictureFilePropertyName]}Changer{:else}Ajouter{/if}</ButtonSecondary
         >
-      </p>
-    {/if}
-  </fieldset>
+        {#if object[pictureFilePropertyName]}
+          <ButtonSecondary icon={IconTrash} danger loading={deleting} on:click={deletePicture}
+            >Supprimer</ButtonSecondary
+          >
+        {/if}
+      </div>
+    </div>
+  </InputField>
 </form>
 
 <style lang="scss">
-  .picture-edit {
-    --text: var(--bg);
+  .wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
 
-    position: absolute;
-    inset: 0;
-    padding: 25%;
-    color: var(--text);
-    background: #0008;
-    border-radius: var(--radius-inline);
+  img {
+    --size: 10rem;
 
-    > :global(.icon) {
-      width: 100%;
-      height: 100%;
-    }
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--size);
+    height: var(--size);
+    color: var(--muted-text);
+    background: var(--muted-bg);
+    border-radius: var(--border-block);
+  }
+
+  [data-object='user'] img {
+    border-radius: 50%;
+  }
+
+  .actions {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 0.5rem;
   }
 </style>

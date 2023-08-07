@@ -38,9 +38,7 @@ builder.queryField('notifications', (t) =>
       groupUids: t.arg({ type: ['String'], required: false, defaultValue: [] }),
       types: t.arg({ type: [NotificationTypeEnum], required: false, defaultValue: [] }),
     },
-    authScopes(_, {}, { user }) {
-      return Boolean(user);
-    },
+    authScopes: { loggedIn: true },
     async resolve(query, _, { groupUids, subscriptionEndpoint, types }, { user }) {
       if (!user) throw new GraphQLError('You must be logged in.');
       return prisma.notification.findMany({
@@ -68,9 +66,7 @@ builder.queryField('notification', (t) =>
     args: {
       id: t.arg.id(),
     },
-    authScopes(_, {}, { user }) {
-      return Boolean(user);
-    },
+    authScopes: { loggedIn: true },
     async resolve(query, _, { id }, { user }) {
       return prisma.notification.findFirstOrThrow({
         ...query,

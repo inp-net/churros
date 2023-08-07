@@ -2,7 +2,11 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
+  import IconEyeOff from '~icons/mdi/eye-off';
+  import IconEye from '~icons/mdi/eye';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputText from '$lib/components/InputText.svelte';
 
   import { me, saveSessionToken, sessionUserQuery } from '$lib/session';
   import { zeus } from '$lib/zeus';
@@ -10,6 +14,7 @@
 
   let email = '';
   let password = '';
+  let showingPassword = false;
 
   /** Redirects the user if a `to` parameter exists, or to "/" otherwise. */
   const redirect = async () => {
@@ -60,28 +65,60 @@
   $: linkParams = email ? `?${new URLSearchParams({ email }).toString()}` : '';
 </script>
 
-<div class="flex justify-center">
-  <form title="Se connecter" on:submit|preventDefault={login}>
-    <Alert theme="danger" closed={errorMessages === undefined} inline>
-      {errorMessages?.join(' ')}
-    </Alert>
-    <p><label>Adresse e-mail&nbsp;: <input type="text" bind:value={email} /></label></p>
-    <p>
-      <label>Mot de passe&nbsp;: <input type="password" bind:value={password} /></label>
-    </p>
-    <p class="text-center">
-      <Button type="submit" theme="primary" {loading}>Se connecter</Button>
-    </p>
-    <footer>
-      <a href="./forgotten/{linkParams}">Mot de passe oublié</a>
-      • <a href="/register/{linkParams}">S'inscrire</a>
-    </footer>
-  </form>
-</div>
+<h1>Connexion</h1>
+
+<form title="Se connecter" on:submit|preventDefault={login}>
+  {#if $page.url.searchParams.has('to')}
+    <Alert theme="warning">Cette page nécéssite une connexion.</Alert>
+  {/if}
+
+  <Alert theme="danger" closed={errorMessages === undefined}>
+    {errorMessages?.join(' ')}
+  </Alert>
+  <InputText required label="Adresse e-mail ou nom d'utilisateur" bind:value={email} />
+  <InputText
+    required
+    type={showingPassword ? 'text' : 'password'}
+    label="Mot de passe"
+    bind:value={password}
+    actionIcon={showingPassword ? IconEyeOff : IconEye}
+    on:action={() => {
+      showingPassword = !showingPassword;
+    }}
+  />
+  <section class="submit">
+    <ButtonPrimary submits>Se connecter</ButtonPrimary>
+  </section>
+
+  <hr />
+  <section class="actions">
+    <ButtonSecondary href="./forgotten/{linkParams}">Mot de passe oublié</ButtonSecondary>
+    <ButtonSecondary href="/register/{linkParams}">Créer un compte</ButtonSecondary>
+  </section>
+</form>
 
 <style lang="scss">
-  input {
-    display: block;
-    width: 100%;
+  h1 {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .submit {
+    display: flex;
+    justify-content: center;
+  }
+
+  .actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
   }
 </style>

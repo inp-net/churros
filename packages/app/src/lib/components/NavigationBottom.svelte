@@ -1,5 +1,6 @@
 <script lang="ts">
   import IconHomeOutline from '~icons/mdi/home-outline';
+  import IconPeople from '~icons/mdi/account-add-outline';
   import IconHome from '~icons/mdi/home';
   import IconSearchOutline from '~icons/mdi/card-search-outline';
   import IconSearch from '~icons/mdi/card-search';
@@ -17,9 +18,16 @@
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
   import { beforeNavigate } from '$app/navigation';
+  import { format, isMonday, previousMonday } from 'date-fns';
+  import { me } from '$lib/session';
 
   export let current: 'home' | 'search' | 'events' | 'more';
   let flyoutOpen = false;
+
+  function closestMonday(date: Date): Date {
+    if (isMonday(date)) return date;
+    return previousMonday(date);
+  }
 
   beforeNavigate(() => {
     flyoutOpen = false;
@@ -56,7 +64,11 @@
     {/if}
   </button>
 
-  <a href="/week" class:current={!flyoutOpen && current === 'events'} class:disabled={flyoutOpen}>
+  <a
+    href="/week/{format(closestMonday(new Date()), 'yyyy-MM-dd')}"
+    class:current={!flyoutOpen && current === 'events'}
+    class:disabled={flyoutOpen}
+  >
     {#if current === 'events'}
       <IconCalendar />
     {:else}
@@ -73,6 +85,18 @@
   </a>
 </nav>
 
+<svelte:window
+  on:keydown={(e) => {
+    if (!(e instanceof KeyboardEvent)) return;
+    if (!flyoutOpen) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      flyoutOpen = false;
+    }
+  }}
+/>
+
+<!-- svelte-ignore a11y-click-events-have-key-events handled by svelte:window above -->
 <div
   class="flyout-backdrop"
   on:click={() => {
@@ -81,20 +105,24 @@
   class:open={flyoutOpen}
 >
   <section class="flyout" class:open={flyoutOpen}>
-    <a href="/bar-weeks">
-      <IconBarWeek />
-      <span>Semaine de bar</span>
-    </a>
+    {#if $me?.admin}
+      <a href="/bar-weeks">
+        <IconBarWeek />
+        <span>Semaine de bar</span>
+      </a>
+    {/if}
 
     <a href="/groups">
       <IconGroup />
       <span>Groupes</span>
     </a>
 
-    <a href="/announcements">
-      <IconAnnouncement />
-      <span>Annonces</span>
-    </a>
+    {#if $me?.admin}
+      <a href="/announcements">
+        <IconAnnouncement />
+        <span>Annonces</span>
+      </a>
+    {/if}
 
     <a href="/frappe/upload">
       <IconDocument />
@@ -110,6 +138,13 @@
       <IconEvent />
       <span>Événement</span>
     </a>
+
+    {#if $me?.admin || $me?.canEditUsers}
+      <a href="/users">
+        <IconPeople />
+        <span>Inscriptions</span>
+      </a>
+    {/if}
   </section>
 </div>
 
@@ -177,14 +212,14 @@
   .flyout {
     position: fixed;
     right: 0;
-    bottom: 4rem;
+    bottom: 3rem;
     left: 0;
     z-index: 2;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-evenly;
-    max-height: 50vh;
+    max-height: 75vh;
     padding: 1rem;
     background: var(--bg);
     border-top: var(--border-block) solid rgb(0 0 0 / 5%);

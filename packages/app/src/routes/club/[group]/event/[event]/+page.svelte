@@ -1,19 +1,23 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import Button from '$lib/components/Button.svelte';
   import { dateTimeFormatter } from '$lib/dates';
+  import IconPlus from '~icons/mdi/plus';
   import { me } from '$lib/session';
-  import IconEdit from '~icons/mdi/pencil';
-  import { isFuture, isPast } from 'date-fns';
+  import { formatRelative, isFuture, isPast } from 'date-fns';
   import type { PageData } from './$types';
-  import { goto } from '$app/navigation';
-  import GhostButton from '$lib/components/ButtonGhost.svelte';
   import BackButton from '$lib/components/ButtonBack.svelte';
+  import CardArticle from '$lib/components/CardArticle.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
 
   export let data: PageData;
 
-  const { id, tickets, title, startsAt, pictureFile, descriptionHtml, links, group, contactMail } =
+  $: console.log(data);
+
+  const { id, title, startsAt, pictureFile, descriptionHtml, links, group, contactMail, articles } =
     data.event;
+
+  const tickets = data.ticketsOfEvent;
 
   $: usersRegistration = tickets
     .flatMap((t) => t.registrations)
@@ -31,8 +35,7 @@
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
 </script>
 
-<section
-  class="header"
+<header
   style:background-image="linear-gradient(#000000aa, #000000aa), url({pictureFile
     ? `${PUBLIC_STORAGE_URL}${pictureFile}`
     : 'https://picsum.photos/400/400'})"
@@ -40,22 +43,21 @@
   <h1>
     <BackButton go="../.." white />
     {title}
-
-    {#if $me?.admin || $me?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit)}
-      <GhostButton darkShadow on:click={async () => goto(`./edit`)}
-        ><IconEdit color="white" /></GhostButton
-      >
-    {/if}
   </h1>
   <p>{dateTimeFormatter.format(startsAt)}</p>
-</section>
-{#each usersRegistration as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id }}
-  <Button theme="primary" on:click={async () => goto(bookingURL(id))}
-    >{#if authorIsBeneficiary || author.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
-        {beneficiaryUser.lastName}{:else}{beneficiary}{/if}{/if}
-    <span class="ticket-name">{ticket.name}</span></Button
-  >
-{/each}
+</header>
+
+<ul class="nobullet bookings">
+  {#each usersRegistration as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id }}
+    <li>
+      <ButtonPrimary href={bookingURL(id)}
+        >{#if authorIsBeneficiary || author.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
+            {beneficiaryUser.lastName}{:else}{beneficiary}{/if}{/if}
+        <span class="ticket-name">{ticket.name}</span></ButtonPrimary
+      >
+    </li>
+  {/each}
+</ul>
 
 <section class="description">
   {@html descriptionHtml}
@@ -63,64 +65,76 @@
   {#if links.length > 0}
     <ul class="links">
       {#each links as link}
-        <li><a href={link.value}>{link.name}</a></li>
+        <li><a href={link.computedValue}>{link.name}</a></li>
       {/each}
     </ul>
   {/if}
 </section>
 
-<section class="tickets">
-  <h2>
-    Places <span class="places">
-      {#if eventPlacesLeft < 0}
-        illimitées
-      {:else}
-        <span class="left">{eventPlacesLeft}</span><span class="capacity">{eventCapacity}</span>
-      {/if}
-    </span>
-  </h2>
+{#if eventCapacity > 0}
+  <section class="tickets">
+    <h2>
+      Places <span class="places">
+        {#if eventPlacesLeft < 0}
+          illimitées
+        {:else}
+          <span class="left">{eventPlacesLeft} restantes</span><span class="capacity"
+            >{eventCapacity}</span
+          >
+        {/if}
+      </span>
+    </h2>
 
-  <ul>
-    {#each tickets as { name, uid, descriptionHtml, opensAt, closesAt, placesLeft, capacity, price }}
-      <li class="ticket">
-        <div class="text">
-          <h3>{name}</h3>
-          <div class="description">{@html descriptionHtml}</div>
-          {#if !opensAt || !closesAt}
-            <p>Mise en vente sans limite de date</p>
-          {:else if isFuture(new Date(opensAt))}
-            <p>Mise en vente le {dateTimeFormatter.format(opensAt)}</p>
-          {:else}
-            <p>Mise en vente jusqu'au {dateTimeFormatter.format(closesAt)}</p>
-          {/if}
-        </div>
-        <div class="numbers">
-          <p class="price">
-            {#if price > 0}
-              {price}€
-            {:else}
-              Gratos
+    <ul class="nobullet">
+      {#each tickets as { name, uid, descriptionHtml, opensAt, closesAt, placesLeft, capacity, price }}
+        <li class="ticket">
+          <div class="text">
+            <h3>{name}</h3>
+            <div class="description">{@html descriptionHtml}</div>
+          </div>
+          <div class="numbers">
+            <span class="places">
+              {#if placesLeft === -1}
+                Illimité
+              {:else}
+                <span class="left">{placesLeft}</span><span class="capacity">{capacity}</span>
+              {/if}
+            </span>
+          </div>
+          <div class="book">
+            {#if (!closesAt && !opensAt) || (closesAt && opensAt && isFuture(new Date(closesAt)) && isPast(new Date(opensAt)))}
+              <ButtonSecondary href="./book/{uid}">{price}€</ButtonSecondary>
+            {/if}
+          </div>
+          <p class="timing typo-details">
+            {#if !opensAt && !closesAt}
+              Shotgun intemporel
+            {:else if opensAt && isFuture(new Date(opensAt))}
+              Shotgun le {formatRelative(new Date(opensAt), new Date())}
+            {:else if closesAt && isPast(new Date(closesAt))}
+              En vente jusqu'à {formatRelative(new Date(closesAt), new Date())}
             {/if}
           </p>
-          <span class="places">
-            {#if placesLeft === -1}
-              Illimité
-            {:else}
-              <span class="left">{placesLeft}</span>
-              <span class="capacity">{capacity}</span>
-            {/if}
-          </span>
-        </div>
-        <div class="book">
-          {#if (!closesAt && !opensAt) || (closesAt && opensAt && isFuture(new Date(closesAt)) && isPast(new Date(opensAt)))}
-            <Button
-              on:click={async () => {
-                await goto(`./book/${uid}`);
-              }}>Réserver</Button
-            >
-          {/if}
-        </div>
+        </li>
+      {/each}
+    </ul>
+  </section>
+{/if}
+<section class="news">
+  <h2>
+    Actualités
+
+    {#if $me?.admin || $me?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit)}
+      <ButtonSecondary icon={IconPlus} href="./write">Article</ButtonSecondary>
+    {/if}
+  </h2>
+  <ul class="nobullet">
+    {#each articles as { uid, ...article } (uid)}
+      <li>
+        <CardArticle href="../../post/{uid}" {...article} />
       </li>
+    {:else}
+      <li class="empty muted">Aucun article pour le moment.</li>
     {/each}
   </ul>
 </section>
@@ -137,17 +151,18 @@
       />
       {group.name}
     </a>
-    <a href="malto:{contactMail}"> Contact </a>
+    <ButtonSecondary href="malto:{contactMail}">Contact</ButtonSecondary>
   </div>
 </section>
 
 <style lang="scss">
-  .header {
+  header {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
     align-items: center;
     justify-content: center;
+    width: 100%;
     padding: 1rem;
     background-size: cover;
 
@@ -155,6 +170,28 @@
       margin: 0;
       color: white;
     }
+  }
+
+  section {
+    max-width: 1000px;
+    margin: 0 auto;
+    margin-top: 2rem;
+  }
+
+  h2 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .places {
+    display: inline-block;
+  }
+
+  h2 .places {
+    margin-left: auto;
   }
 
   .places .left::after {
@@ -171,28 +208,39 @@
     width: 3px;
   }
 
-  .places {
-    display: inline-block;
-  }
-
   .ticket .places .left::after {
     width: 1px;
   }
 
   .ticket {
-    display: flex;
-    gap: 1rem;
+    display: grid;
+    grid-template-areas: 'text numbers book' 'timing timing timing';
+    grid-template-columns: 1fr max-content min-content;
+    column-gap: 1rem;
     align-items: center;
+    padding: 1rem;
+    background: var(--muted-bg);
+    border-radius: var(--radius-block);
 
     .text {
+      grid-area: text;
       width: 100%;
+    }
+
+    .book {
+      grid-area: book;
     }
 
     .numbers {
       display: flex;
       flex-direction: column;
+      grid-area: numbers;
       align-items: end;
       width: 5rem;
+    }
+
+    .timing {
+      grid-area: timing;
     }
   }
 
@@ -210,6 +258,15 @@
     img {
       width: 3rem;
       height: 3rem;
+      object-fit: contain;
     }
+  }
+
+  ul.bookings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0;
   }
 </style>

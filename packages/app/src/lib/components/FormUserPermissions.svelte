@@ -1,12 +1,34 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
-  import Button from '$lib/components/Button.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from '../../routes/user/[uid]/edit/$types';
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import InputSelectMultiple from './InputSelectMultiple.svelte';
 
   export let data: PageData;
 
   let { admin, canEditGroups, canEditUsers } = data.userPermissions;
+
+  function getSelectedPermissions({
+    admin,
+    canEditGroups,
+    canEditUsers,
+  }: {
+    admin: boolean;
+    canEditGroups: boolean;
+    canEditUsers: boolean;
+  }): Array<'admin' | 'canEditGroups' | 'canEditUsers'> {
+    return ['admin', 'canEditGroups', 'canEditUsers'].filter(
+      (p) => ({ admin, canEditGroups, canEditUsers }?.[p] ?? false)
+    ) as Array<'admin' | 'canEditGroups' | 'canEditUsers'>;
+  }
+
+  let selectedPermissions = getSelectedPermissions({ admin, canEditGroups, canEditUsers });
+  $: {
+    admin = selectedPermissions.includes('admin');
+    canEditGroups = selectedPermissions.includes('canEditGroups');
+    canEditUsers = selectedPermissions.includes('canEditUsers');
+  }
 
   let loading = false;
   const updateUserPermissions = async () => {
@@ -23,7 +45,7 @@
       await invalidateAll();
 
       // Because some permissions set others, we need to update the values
-      ({ admin, canEditGroups, canEditUsers } = updateUserPermissions);
+      selectedPermissions = getSelectedPermissions(updateUserPermissions);
     } finally {
       loading = false;
     }
@@ -31,19 +53,31 @@
 </script>
 
 <form on:submit|preventDefault={updateUserPermissions}>
-  <fieldset>
-    <legend>Permissions</legend>
-    <p>
-      <label><input type="checkbox" bind:checked={admin} /> Administrateur</label>
-    </p>
-    <p>
-      <label><input type="checkbox" bind:checked={canEditGroups} /> Édition des groupes</label>
-    </p>
-    <p>
-      <label><input type="checkbox" bind:checked={canEditUsers} /> Édition des utilisateurs</label>
-    </p>
-    <p>
-      <Button type="submit" theme="primary" {loading}>Sauvegarder</Button>
-    </p>
-  </fieldset>
+  <InputSelectMultiple
+    options={{
+      admin: 'Administrateur',
+      canEditGroups: 'Édition des groupes',
+      canEditUsers: 'Édition des utilisateurs',
+    }}
+    bind:selection={selectedPermissions}
+  />
+
+  <section class="submit"><ButtonSecondary {loading} submits>Sauvegarder</ButtonSecondary></section>
 </form>
+
+<style>
+  form {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+
+    /* align-items: center; */
+  }
+
+  form > :global(fieldset) {
+    display: flex;
+    flex-wrap: wrap;
+
+    /* justify-content: center; */
+  }
+</style>

@@ -1,3 +1,5 @@
+import type { GroupType } from './zeus';
+
 export const DISPLAY_PAYMENT_METHODS = {
   Cash: 'Espèces',
   Check: 'Chèque',
@@ -27,9 +29,9 @@ export const DISPLAY_NOTIFICATION_TYPES = {
   ShotgunOpened: "Ouverture d'un shotgun",
   ShotgunClosingSoon: "Fermeture imminente d'un shotgun",
   ShotgunClosed: "Fermeture d'un shotgun",
-  GodsonRequestReceived: 'Réception de demandes de parrainage',
-  GodsonRequestAccepted: 'Approbation de demandes de parrainage',
-  GodsonRequestRefused: 'Refus de demandes de parrainage',
+  GodparentRequestReceived: 'Réception de demandes de parrainage',
+  GodparentRequestAccepted: 'Approbation de demandes de parrainage',
+  GodparentRequestRefused: 'Refus de demandes de parrainage',
   PermissionsChanged: 'Modification de mes permissions',
   Other: 'Autres',
 };
@@ -40,8 +42,24 @@ export const ORDER_NOTIFICATION_TYPES: Array<keyof typeof DISPLAY_NOTIFICATION_T
   'ShotgunOpened',
   'ShotgunClosingSoon',
   'ShotgunClosed',
-  'GodsonRequestReceived',
-  'GodsonRequestAccepted',
-  'GodsonRequestRefused',
+  'GodparentRequestReceived',
+  'GodparentRequestAccepted',
+  'GodparentRequestRefused',
   'PermissionsChanged',
 ];
+
+export const DISPLAY_GROUP_TYPES: Record<GroupType, string> = {
+  Association: 'Association',
+  Club: 'Club',
+  Group: 'Groupe',
+  Integration: "Groupe d'inté",
+  StudentAssociationSection: "Bureau de l'AE",
+  List: 'Liste',
+};
+
+export const DISPLAY_MANAGER_PERMISSION_LEVELS = {
+  readonly: 'Lecture seule',
+  verifyer: 'Vérification des billets',
+  editor: 'Modification',
+  fullaccess: 'Gestion totale',
+} as const;

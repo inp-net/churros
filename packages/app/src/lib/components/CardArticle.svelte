@@ -2,25 +2,24 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import { intlFormatDistance } from 'date-fns';
   import Card from './Card.svelte';
-  import IconLock from '~icons/mdi/lock-outline';
-  import IconCommunity from '~icons/mdi/google-circles-extended';
-  import IconLinkLock from '~icons/mdi/link-lock';
-  import IconGlobe from '~icons/mdi/earth';
   import IconDots from '~icons/mdi/dots-horizontal';
-  import { Visibility } from '$lib/zeus';
-  import { DISPLAY_VISIBILITIES } from '$lib/display';
+  import type { Visibility } from '$lib/zeus';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import ButtonInk from './ButtonInk.svelte';
+  import { htmlToText } from 'html-to-text';
+  import IndicatorVisibility from './IndicatorVisibility.svelte';
 
   export let visibility: Visibility | undefined = undefined;
   export let title: string;
   export let href: string;
+  export let bodyHtml: string;
   export let publishedAt: Date;
-  export let links: Array<{ value: string; name: string }> = [];
+  export let links: Array<{ value: string; name: string; computedValue: string }> = [];
   export let group: { uid: string; name: string; pictureFile: string };
   export let author: { uid: string; firstName: string; lastName: string } | undefined = undefined;
   export let img: { src: string; alt?: string; width?: number; height?: number } | undefined =
     undefined;
+  export let hideGroup = false;
 </script>
 
 <Card element="article">
@@ -33,56 +32,49 @@
   </svelte:fragment>
   <header>
     <a {href}><h2>{title}</h2></a>
-    <div class="visibility" title={visibility ? DISPLAY_VISIBILITIES[visibility] : undefined}>
-      {#if visibility === Visibility.Private}
-        <IconLock />
-      {:else if visibility === Visibility.Unlisted}
-        <IconLinkLock />
-      {:else if visibility === Visibility.Restricted}
-        <IconCommunity />
-      {:else if visibility === Visibility.Public}
-        <IconGlobe />
-      {/if}
-    </div>
+    <IndicatorVisibility {visibility} />
   </header>
 
   <div class="description">
-    <slot />
+    {@html (
+      htmlToText(bodyHtml)
+        .split('\n')
+        .find((line) => line.trim() !== '') ?? ''
+    ).slice(0, 255)}
+    <ButtonInk insideProse {href} icon={IconDots}>Voir plus</ButtonInk>
   </div>
 
   {#if links.length > 0}
-    <ul class="links">
+    <ul class="links nobullet">
       {#each links as link}
         <li>
-          <ButtonSecondary href={link.value}>{link.name}</ButtonSecondary>
+          <ButtonSecondary href={link.computedValue}>{link.name}</ButtonSecondary>
         </li>
       {/each}
     </ul>
   {/if}
 
-  <div class="see-more">
-    <ButtonInk {href} icon={IconDots}>Voir plus</ButtonInk>
-  </div>
-
   <section class="author-and-date">
     <div class="author">
-      <a href="/club/{group.uid}">
-        <img
-          src={group.pictureFile
-            ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
-            : 'https://via.placeholder.com/400/400'}
-          alt=""
-        />
-      </a>
-      <div class="names">
-        <span class="name">{group.name}</span>
-        {#if author}
-          <span class="author">
-            {author.firstName}
-            {author.lastName}
-          </span>
-        {/if}
-      </div>
+      {#if !hideGroup}
+        <a href="/club/{group.uid}">
+          <img
+            src={group.pictureFile
+              ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
+              : 'https://via.placeholder.com/400/400'}
+            alt=""
+          />
+        </a>
+        <div class="names">
+          <a href="/club/{group.uid}" class="name">{group.name}</a>
+          {#if author}
+            <span class="author">
+              {author.firstName}
+              {author.lastName}
+            </span>
+          {/if}
+        </div>
+      {/if}
     </div>
     <div class="published-at">
       {#if publishedAt}
@@ -99,17 +91,11 @@
     object-fit: cover;
   }
 
-  .description {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
   .author-and-date {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-top: 2rem;
   }
 
   .author {
@@ -128,6 +114,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
+    margin-top: 1rem;
     list-style: none;
   }
 
@@ -147,10 +134,5 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
-
-  .see-more {
-    display: inline-block;
-    margin: 2rem 0;
   }
 </style>

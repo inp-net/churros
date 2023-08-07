@@ -11,6 +11,7 @@ import {
 } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { prisma } from './prisma.js';
+import { fullName } from './objects/users.js';
 
 const getToken = ({ headers }: Request) => {
   const auth = headers.get('Authorization');
@@ -21,10 +22,10 @@ const getToken = ({ headers }: Request) => {
 /** In memory store for sessions. */
 const sessions = new Map<
   string,
-  User & {
+  User & { fullName: string } & {
     groups: Array<GroupMember & { group: Group }>;
     major: Major & { schools: School[] };
-    managedEvents: Array<EventManager & { event: Event }>;
+    managedEvents: Array<EventManager & { event: Event & { group: Group } }>;
   }
 >();
 
@@ -46,7 +47,7 @@ const getUser = async (token: string) => {
         user: {
           include: {
             groups: { include: { group: true } },
-            managedEvents: { include: { event: true } },
+            managedEvents: { include: { event: { include: { group: true } } } },
             major: { include: { schools: true } },
           },
         },
@@ -79,9 +80,12 @@ const getUser = async (token: string) => {
   if (sessions.size > 10_000)
     for (const [i, token] of [...sessions.keys()].entries()) if (i % 2) sessions.delete(token);
 
-  sessions.set(token, user);
+  sessions.set(token, { ...user, fullName: fullName(user) });
 
-  return user;
+  return {
+    ...user,
+    fullName: fullName(user),
+  };
 };
 
 export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;

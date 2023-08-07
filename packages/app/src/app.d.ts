@@ -14,3 +14,5 @@ declare namespace App {
     token?: string;
   }
 }
+
+declare module 'simple-svelte-autocomplete';

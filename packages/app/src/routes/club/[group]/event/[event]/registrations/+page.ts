@@ -8,6 +8,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
       registrationsOfEvent: [
         {
           eventUid: params.event,
+          groupUid: params.group,
         },
         Selector('QueryRegistrationsOfEventConnection')({
           pageInfo: { hasNextPage: true, startCursor: true },
@@ -20,6 +21,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
                 uid: true,
                 firstName: true,
                 lastName: true,
+                fullName: true,
               },
               authorIsBeneficiary: true,
               beneficiary: true,

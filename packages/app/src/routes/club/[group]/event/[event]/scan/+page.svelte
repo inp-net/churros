@@ -71,7 +71,7 @@
             data: {
               beneficiary: true,
               authorIsBeneficiary: true,
-              author: { firstName: true, lastName: true },
+              author: { firstName: true, lastName: true, fullName: true },
               paid: true,
               id: true,
               ticket: { name: true, group: { name: true } },

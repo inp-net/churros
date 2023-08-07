@@ -18,6 +18,7 @@ import type { MaybePromise } from '@pothos/core';
 import { Prisma } from '@prisma/client';
 import { toHtml } from './markdown.js';
 import { differenceInSeconds, minutesToSeconds, subMinutes } from 'date-fns';
+import { fullName } from '../objects/users.js';
 
 if (process.env.CONTACT_EMAIL && process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
   webpush.setVapidDetails(
@@ -131,6 +132,7 @@ export async function scheduleShotgunNotifications({
   id: string;
   tickets: Ticket[];
 }): Promise<SizedArray<Cron | boolean, 4> | undefined> {
+  if (tickets.length === 0) return;
   const soonDate = (date: Date) => subMinutes(date, 10);
 
   const opensAt = new Date(
@@ -204,7 +206,7 @@ export async function scheduleShotgunNotifications({
                 beneficiary: user.uid,
               },
               {
-                beneficiary: `${user.firstName} ${user.lastName}`,
+                beneficiary: fullName(user),
               },
             ],
           },
@@ -347,7 +349,8 @@ export async function scheduleNotification(
     console.log(
       `[cron ${id}] Sending notification immediately (time is ${at.toISOString()} and now is ${new Date().toISOString()})`
     );
-    await notifyInBulk(id, users, notification);
+    // Start the promise in the background, don't wait for all notifications to be sent out, it takes approx 30 secondes in a real scenario to notify all users for e.g. a public article
+    void notifyInBulk(id, users, notification);
     return true;
   }
 

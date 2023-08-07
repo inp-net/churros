@@ -1,8 +1,8 @@
 <script lang="ts">
   import { type SvelteComponent, createEventDispatcher, onMount } from 'svelte';
   import IconReset from '~icons/mdi/reload';
-  import InputWithSuggestions from './InputWithSuggestions.svelte';
   import { tooltip } from '$lib/tooltip';
+  import { format } from 'date-fns';
   const emit = createEventDispatcher();
 
   export let type: HTMLInputElement['type'];
@@ -14,15 +14,32 @@
   export let placeholder = '';
   export let validate: (value: string) => string = () => '';
   export let actionIcon: typeof SvelteComponent | undefined = undefined;
-  export let suggestions: string[] | undefined = undefined;
   export let required = false;
   export let closeKeyboardOnEnter = false;
 
+  // TODO use (HTMLInputElement).valueAsDate instead
+  function stringifyValue(val: typeof value, type: string): string {
+    if (val === undefined || val === null) return '';
+    switch (type) {
+      case 'date': {
+        return (val as Date).toISOString().split('T')[0];
+      }
+
+      case 'datetime-local':
+      case 'datetime': {
+        return format(val as Date, "yyyy-MM-dd'T'HH:mm");
+      }
+
+      default: {
+        return val?.toString() ?? '';
+      }
+    }
+  }
+
   let showEmptyErrors = false;
-  let valueString: string =
-    type === 'date' && value instanceof Date
-      ? value?.toISOString()?.split('T')[0]
-      : value?.toString() ?? '';
+  $: console.log(valueString);
+  let valueString: string = stringifyValue(value, type);
+
   $: {
     switch (type) {
       case 'number': {
@@ -30,7 +47,9 @@
         break;
       }
 
-      case 'date': {
+      case 'date':
+      case 'datetime-local':
+      case 'datetime': {
         value = new Date(valueString);
         if (!value.valueOf()) {
           value = undefined;
@@ -48,7 +67,6 @@
 
   export let errorMessage = '';
   let _errorMessage = '';
-  export let messageIsWarning = false;
   $: {
     if (valueString === '' && !showEmptyErrors) {
       _errorMessage = '';
@@ -86,78 +104,42 @@
   });
 </script>
 
-<div
-  class="wrapper base-input typo-paragraph"
-  class:danger={errored}
-  class:primary={focused}
-  style:--intense="var(--{messageIsWarning ? 'safran' : 'blood'})"
-  style:--pale="var(--{messageIsWarning ? 'plaster' : 'rose'})"
->
+<div class="wrapper base-input typo-paragraph" class:danger={errored} class:primary={focused}>
   <div class="input-area" bind:this={inputContainer}>
     {#if $$slots.before}
       <div class="left-icon">
         <slot name="before" />
       </div>
     {/if}
-    {#if suggestions}
-      <InputWithSuggestions
-        class="{errored ? 'danger' : ''} {focused ? 'primary' : ''}"
-        on:close-suggestions
-        on:select
-        on:input
-        {inputContainer}
-        {autocomplete}
-        items={suggestions}
-        {required}
-        {name}
-        bind:text={valueString}
-        {placeholder}
-        on:keypress={(e) => {
-          if (!(e instanceof KeyboardEvent)) return;
-          if (!(e.target instanceof HTMLInputElement)) return;
-          if (e.key === 'Enter' && closeKeyboardOnEnter) e.target.blur();
-        }}
-        on:focus={() => {
-          focused = true;
-        }}
-        on:blur={() => {
-          focused = false;
-        }}
-        on:input={(e) => {
-          if (valueString !== '') showEmptyErrors = true;
-          emit('input', e);
-        }}
-      />
-    {:else}
-      <input
-        class:danger={errored}
-        class:primary={focused}
-        on:keyup
-        on:keypress={(e) => {
-          if (!(e.target instanceof HTMLInputElement)) return;
-          if (e.key === 'Enter' && closeKeyboardOnEnter) e.target.blur();
-        }}
-        {type}
-        {name}
-        value={valueString}
-        {required}
-        {autocomplete}
-        {placeholder}
-        on:input={(e) => {
-          if (!(e.target instanceof HTMLInputElement)) return;
-          valueString = e.target?.value;
-          if (valueString === undefined) valueString = '';
-          if (valueString !== '') showEmptyErrors = true;
-          emit('input', e);
-        }}
-        on:focus={() => {
-          focused = true;
-        }}
-        on:blur={() => {
-          focused = false;
-        }}
-      />
-    {/if}
+    <input
+      class:danger={errored}
+      class:primary={focused}
+      on:change
+      on:keyup
+      on:keypress={(e) => {
+        if (!(e.target instanceof HTMLInputElement)) return;
+        if (e.key === 'Enter' && closeKeyboardOnEnter) e.target.blur();
+      }}
+      {type}
+      {name}
+      value={valueString}
+      {required}
+      {autocomplete}
+      {placeholder}
+      on:input={(e) => {
+        if (!(e.target instanceof HTMLInputElement)) return;
+        valueString = e.target?.value;
+        if (valueString === undefined) valueString = '';
+        if (valueString !== '') showEmptyErrors = true;
+        emit('input', e);
+      }}
+      on:focus={() => {
+        focused = true;
+      }}
+      on:blur={() => {
+        focused = false;
+      }}
+    />
     {#if actionIcon}
       <button type="button" class="action" on:click={() => emit('action')}>
         <svelte:component this={actionIcon} />
@@ -204,6 +186,8 @@
 
   input {
     width: 100%;
+    color: var(--text);
+    background: none;
     border: none;
     outline: none;
     appearance: textfield;
@@ -245,8 +229,6 @@
   }
 
   .left-icon {
-    width: 1.5rem;
-    height: 1.5rem;
     margin-right: 0.5rem;
   }
 
@@ -255,5 +237,9 @@
   .action,
   .reset {
     color: var(--text);
+  }
+
+  .left-icon:empty {
+    display: none;
   }
 </style>

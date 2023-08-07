@@ -1,18 +1,59 @@
 <script lang="ts">
   import Alert from '$lib/components/Alert.svelte';
-  import { Visibility, zeus } from '$lib/zeus';
-  import type { PageData } from '../../routes/club/[group]/post/[post]/edit/$types';
-  import Button from '$lib/components/Button.svelte';
+  import { type Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import EventSearch from './InputEvent.svelte';
   import { page } from '$app/stores';
   import { _articleQuery } from '../../routes/club/[group]/post/[post]/edit/+page';
-  import LinkCollectionInput from '$lib/components/InputLinks.svelte';
   import DateInput from '$lib/components/InputDate.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
-  import InputField from '$lib/components/InputField.svelte';
+  import ButtonPrimary from './ButtonPrimary.svelte';
+  import InputText from './InputText.svelte';
+  import InputSelectOne from './InputSelectOne.svelte';
+  import InputLongText from './InputLongText.svelte';
+  import InputLinks from '$lib/components/InputLinks.svelte';
 
-  export let data: PageData;
+  export let hideEvent = false;
+  export let data: {
+    article: {
+      uid: string;
+      id: string;
+      title: string;
+      body: string;
+      visibility: Visibility;
+      group: {
+        uid: string;
+        name: string;
+        id: string;
+      };
+      author?: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        pictureFile: string;
+        uid: string;
+        groups: Array<{
+          group: {
+            name: string;
+            uid: string;
+          };
+          title: string;
+        }>;
+      };
+      eventId?: string;
+      event?: {
+        id: string;
+        uid: string;
+        title: string;
+        startsAt: Date;
+        visibility: Visibility;
+        pictureFile: string;
+      };
+      links: Array<{ name: string; value: string }>;
+      publishedAt: Date;
+      pictureFile: string;
+    };
+  };
 
   let serverError = '';
 
@@ -31,7 +72,7 @@
           {
             id,
             authorId: author?.id ?? '',
-            eventId: event?.id,
+            eventId: eventId ?? '',
             groupId: group.id,
             title,
             body,
@@ -63,31 +104,46 @@
       loading = false;
     }
   };
+
+  $: console.log({ eventId });
 </script>
 
 <form on:submit|preventDefault={updateArticle}>
-  <EventSearch groupUid={$page.params.group} bind:eventId />
-  <InputField label="Titre">
-    <input type="text" required bind:value={title} />
-  </InputField>
-  <DateInput time label="Publier le" bind:value={publishedAt} />
-  <InputField label="Visibilité" hint={HELP_VISIBILITY[visibility]}>
-    <select bind:value={visibility}>
-      <option value={Visibility.Private}>{DISPLAY_VISIBILITIES.Private} </option>
-      <option value={Visibility.Restricted}>{DISPLAY_VISIBILITIES.Restricted} </option>
-      <option value={Visibility.Unlisted}>{DISPLAY_VISIBILITIES.Unlisted} </option>
-      <option value={Visibility.Public}>{DISPLAY_VISIBILITIES.Public} </option>
-    </select>
-  </InputField>
-  <InputField label="Description">
-    <textarea bind:value={body} cols="30" rows="10" />
-  </InputField>
-  <p>Liens:</p>
-  <LinkCollectionInput bind:value={links} />
+  {#if !hideEvent}
+    <EventSearch {event} label="Évènement lié" groupUid={$page.params.group} bind:id={eventId} />
+  {/if}
+  <InputText required label="Titre" bind:value={title} />
+  <DateInput required time label="Publier le" bind:value={publishedAt} />
+  <InputSelectOne
+    required
+    bind:value={visibility}
+    options={DISPLAY_VISIBILITIES}
+    label="Visibilité"
+    hint={HELP_VISIBILITY[visibility]}
+  />
+  <InputLongText label="Description" bind:value={body} rich />
+  <InputLinks label="Liens" bind:value={links} />
   {#if serverError}
     <Alert theme="danger"
       >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert
     >
   {/if}
-  <Button theme="primary" {loading} type="submit">Enregistrer</Button>
+  <section class="submit">
+    <ButtonPrimary {loading} submits
+      >{#if id === ''}Poster{:else}Enregistrer{/if}</ButtonPrimary
+    >
+  </section>
 </form>
+
+<style>
+  form {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+  }
+
+  .submit {
+    display: flex;
+    justify-content: center;
+  }
+</style>

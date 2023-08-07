@@ -125,11 +125,10 @@ builder.queryField('ticketByUid', (t) =>
       eventUid: t.arg.string(),
     },
     async authScopes(_, { uid, eventUid }, { user }) {
-      const ticket = await prisma.ticket.findFirst({
+      const ticket = await prisma.ticket.findFirstOrThrow({
         where: { uid, event: { uid: eventUid } },
         include: { event: true },
       });
-      if (!ticket) return false;
       return eventAccessibleByUser(ticket.event, user);
     },
     resolve: async (query, _, { uid, eventUid }) =>
@@ -137,20 +136,80 @@ builder.queryField('ticketByUid', (t) =>
   })
 );
 
+export function userCanSeeTicket(
+  {
+    event,
+    onlyManagersCanProvide,
+    openToGroups,
+    openToSchools,
+    openToPromotions,
+  }: {
+    event: { id: string };
+    onlyManagersCanProvide: boolean;
+    openToGroups: Array<{ uid: string }>;
+    openToSchools: Array<{ uid: string }>;
+    openToPromotions: number[];
+  },
+  user?: {
+    groups: Array<{ group: { uid: string } }>;
+    managedEvents: Array<{ event: { id: string } }>;
+    graduationYear: number;
+    major: { schools: Array<{ uid: string }> };
+  }
+): boolean {
+  // Managers can see everything
+  if (user?.managedEvents.some(({ event: { id } }) => id === event.id)) return true;
+
+  if (onlyManagersCanProvide && !user?.managedEvents.some(({ event: { id } }) => id === event.id))
+    return false;
+
+  // Check that the user is in the group
+  console.log(
+    `Checking groups (${openToGroups.map(({ uid }) => uid).join(' ')} against ${
+      user?.groups.map(({ group }) => group.uid).join(' ') ?? '(logged out)'
+    })`
+  );
+  if (
+    openToGroups.length > 0 &&
+    !openToGroups.some(({ uid }) => user?.groups.some(({ group }) => group.uid === uid))
+  )
+    return false;
+
+  // Check that the user is in the school
+  if (
+    openToSchools.length > 0 &&
+    !openToSchools.some(({ uid }) => user?.major.schools.some((school) => school.uid === uid))
+  )
+    return false;
+
+  // Check that the user in the promo
+  if (openToPromotions.length > 0 && (!user || !openToPromotions.includes(user.graduationYear)))
+    return false;
+
+  return true;
+}
+
 builder.queryField('ticketsOfEvent', (t) =>
-  t.prismaConnection({
-    type: TicketType,
-    cursor: 'id',
+  t.prismaField({
+    type: [TicketType],
     args: {
-      event: t.arg.id(),
+      eventUid: t.arg.string(),
+      groupUid: t.arg.string(),
     },
-    async authScopes(_, { event: eventId }, { user }) {
-      const event = await prisma.event.findUnique({ where: { id: eventId } });
+    async authScopes(_, { eventUid, groupUid }, { user }) {
+      const group = await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } });
+      const event = await prisma.event.findUnique({
+        where: { groupId_uid: { groupId: group.id, uid: eventUid } },
+      });
       if (!event) return false;
       return eventAccessibleByUser(event, user);
     },
-    async resolve(query, _, { event }) {
-      return prisma.ticket.findMany({ ...query, where: { eventId: event } });
+    async resolve(query, _, { eventUid, groupUid }, { user }) {
+      const allTickets = await prisma.ticket.findMany({
+        where: { event: { uid: eventUid, group: { uid: groupUid } } },
+        include: { ...query.include, openToGroups: true, openToSchools: true, event: true },
+      });
+      return allTickets.filter((ticket) => userCanSeeTicket(ticket, user));
     },
   })
 );

@@ -3,7 +3,6 @@ import { redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 import { derived } from 'svelte/store';
 import { Selector, type PropsType } from './zeus';
-import { browser } from '$app/environment';
 
 /** What's needed in a user session. */
 export const sessionUserQuery = () =>
@@ -13,11 +12,13 @@ export const sessionUserQuery = () =>
     firstName: true,
     pictureFile: true,
     lastName: true,
+    fullName: true,
     admin: true,
     canEditGroups: true,
     canEditUsers: true,
+    yearTier: true,
     groups: {
-      group: { uid: true, id: true, name: true },
+      group: { uid: true, id: true, name: true, pictureFile: true, pictureFileDark: true },
       title: true,
       president: true,
       secretary: true,
@@ -27,12 +28,12 @@ export const sessionUserQuery = () =>
       canEditMembers: true,
     },
     managedEvents: {
-      event: { uid: true, id: true },
+      event: { uid: true, id: true, group: { uid: true } },
       canEdit: true,
       canEditPermissions: true,
       canVerifyRegistrations: true,
     },
-    major: { id: true, name: true, schools: { id: true, name: true } },
+    major: { id: true, name: true, schools: { id: true, name: true, uid: true, color: true } },
   });
 
 export type SessionUser = PropsType<typeof sessionUserQuery, 'User'>;

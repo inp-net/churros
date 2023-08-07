@@ -35,7 +35,7 @@
     font-weight: bold;
     color: var(--primary-bg);
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.07em;
     cursor: pointer;
     background: transparent;
     border: none;

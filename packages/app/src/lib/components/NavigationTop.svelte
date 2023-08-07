@@ -36,7 +36,7 @@
         {/if}
       </a>
     {:else}
-      <div><ButtonSecondary href="/register/">Créer un compte</ButtonSecondary></div>
+      <div><ButtonSecondary href="/register/">Inscription</ButtonSecondary></div>
       <div><ButtonSecondary href="/login/">Connexion</ButtonSecondary></div>
     {/if}
   </div>
@@ -48,6 +48,7 @@
     top: 0;
     right: 0;
     left: 0;
+    z-index: 10;
     display: flex;
     flex-direction: row;
     gap: 1rem;
@@ -65,8 +66,8 @@
 
   .actions {
     display: flex;
-    justify-content: center;
     gap: 1.3rem;
+    justify-content: center;
     font-size: 1.3em;
   }
 
@@ -83,10 +84,12 @@
 
   .profilepic {
     --size: calc(1.3em);
-    border-radius: 50%;
-    height: var(--size);
+
     width: var(--size);
+    height: var(--size);
     overflow: hidden;
+    border-radius: 50%;
+
     /* border: 3px solid var(--text); */
   }
 </style>

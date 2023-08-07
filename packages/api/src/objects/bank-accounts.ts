@@ -65,7 +65,7 @@ builder.mutationField('upsertLydiaAccount', (t) =>
 builder.queryField('lydiaAccounts', (t) =>
   t.prismaField({
     type: [LydiaAccountType],
-    authScopes: (_, {}, { user }) => Boolean(user),
+    authScopes: { loggedIn: true },
     async resolve(query, {}, {}) {
       const results = await prisma.lydiaAccount.findMany({ ...query });
       return results.map((result) =>
@@ -86,8 +86,8 @@ builder.queryField('lydiaAccountsOfGroup', (t) =>
     args: {
       uid: t.arg.string(),
     },
-    authScopes: (_, { uid }, { user }) =>
-      Boolean(user?.admin || userIsPresidentOf(user, uid) || userIsTreasurerOf(user, uid)),
+    // authScopes: (_, { uid }, { user }) =>
+    //   Boolean(user?.admin || userIsPresidentOf(user, uid) || userIsTreasurerOf(user, uid)),
     async resolve(query, _, { uid }) {
       return prisma.lydiaAccount.findMany({ ...query, where: { group: { uid } } });
     },

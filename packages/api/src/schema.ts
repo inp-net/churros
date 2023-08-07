@@ -23,6 +23,9 @@ import './objects/event-managers.js';
 import './objects/bar-week.js';
 import './objects/notification-subscriptions.js';
 import './objects/notifications.js';
+import './objects/godparent-requests.js';
+import './objects/password-resets.js';
+import './objects/email-changes.js';
 
 export const schema = builder.toSchema({});
 

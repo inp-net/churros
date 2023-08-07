@@ -14,11 +14,34 @@ export const pageQuery = Selector('QueryHomepageConnection')({
       publishedAt: true,
       pictureFile: true,
       group: { uid: true, name: true, pictureFile: true },
-      author: { uid: true, firstName: true, lastName: true },
-      links: { value: true, name: true },
+      author: { uid: true, firstName: true, lastName: true, fullName: true },
+      links: { value: true, computedValue: true, name: true },
     },
   },
 });
 
-export const load: PageLoad = async ({ fetch, parent }) =>
-  loadQuery({ homepage: [{}, pageQuery] }, { fetch, parent });
+export const load: PageLoad = async ({ fetch, parent }) => {
+  const { me } = await parent();
+  const { homepage } = await loadQuery({ homepage: [{}, pageQuery] }, { fetch, parent });
+  if (me) {
+    const { birthdays } = await loadQuery(
+      {
+        birthdays: [
+          {},
+          {
+            fullName: true,
+            pictureFile: true,
+            uid: true,
+            birthday: true,
+            yearTier: true,
+            major: { name: true, schools: { uid: true } },
+          },
+        ],
+      },
+      { fetch, parent }
+    );
+    return { homepage, birthdays };
+  }
+
+  return { homepage, birthdays: undefined };
+};

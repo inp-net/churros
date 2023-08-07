@@ -1,30 +1,74 @@
 <script lang="ts">
-  import Button from '$lib/components/Button.svelte';
-  import GhostButton from '$lib/components/ButtonGhost.svelte';
-  import { zeus } from '$lib/zeus';
-  import IconClose from '~icons/mdi/close';
-  import IconPlus from '~icons/mdi/plus';
-  import type { PageData } from '../../routes/user/[uid]/edit/$types';
-  import { _userQuery as userQuery } from '../../routes/user/[uid]/edit/+page';
-  import LinkCollectionInput from '$lib/components/InputLinks.svelte';
+  import { Selector, zeus } from '$lib/zeus';
+  import InputText from './InputText.svelte';
+  import IconClear from '~icons/mdi/clear';
+  import InputDate from './InputDate.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import InputLongText from './InputLongText.svelte';
 
-  export let data: PageData;
+  const userQuery = Selector('User')({
+    uid: true,
+    firstName: true,
+    lastName: true,
+    fullName: true,
+    nickname: true,
+    description: true,
+    pictureFile: true,
+    address: true,
+    graduationYear: true,
+    majorId: true,
+    phone: true,
+    birthday: true,
+    email: true,
+    links: { name: true, value: true },
+    notificationSettings: {
+      id: true,
+      type: true,
+      allow: true,
+      group: {
+        id: true,
+        uid: true,
+        name: true,
+        pictureFile: true,
+      },
+    },
+  });
+
+  export let data: {
+    user: {
+      address: string;
+      description: string;
+      graduationYear: number;
+      links: Array<{ name: string; value: string }>;
+      majorId: string;
+      nickname: string;
+      phone: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      birthday: Date | null;
+      uid: string;
+    };
+  };
 
   // We don't want form bindings to be reactive to let them evolve separately from the data
   let {
-    address,
-    description,
-    graduationYear,
-    links,
-    majorId,
-    nickname,
-    phone,
-    // See https://github.com/graphql-editor/graphql-zeus/issues/262
-    // eslint-disable-next-line unicorn/no-null
-    birthday = null,
-  } = data.user;
-
-  const valueAsDate = (x: unknown) => (x as HTMLInputElement).valueAsDate;
+    user: {
+      address,
+      description,
+      graduationYear,
+      links,
+      majorId,
+      nickname,
+      phone,
+      firstName,
+      lastName,
+      email,
+      // See https://github.com/graphql-editor/graphql-zeus/issues/262
+      // eslint-disable-next-line unicorn/no-null
+      birthday = null,
+    },
+  } = data;
 
   let loading = false;
   const updateUser = async () => {
@@ -43,6 +87,7 @@
             majorId,
             phone,
             birthday,
+            email,
           },
           {
             __typename: true,
@@ -57,7 +102,8 @@
         return;
       }
 
-      data.user = updateUser.data;
+      // eslint-disable-next-line unicorn/no-null
+      data.user = { ...updateUser.data, birthday: updateUser.data.birthday ?? null };
     } finally {
       loading = false;
     }
@@ -65,70 +111,47 @@
 </script>
 
 <form on:submit|preventDefault={updateUser}>
-  <fieldset>
-    <legend>Informations personnelles</legend>
-    <p>
-      <label>Surnom : <input type="text" bind:value={nickname} /></label>
-    </p>
-    <p>
-      <label>Description : <input type="text" bind:value={description} /></label>
-    </p>
-    <p>Réseaux sociaux :</p>
-    <LinkCollectionInput bind:value={links} />
-    Filière et promotion :
-    <div class="input-group">
-      <select bind:value={majorId}>
-        {#each data.schoolGroups as { majors, names }}
-          <optgroup label={names.join(', ')}>
-            {#each majors as { id, name }}
-              <option value={id}>{name}</option>
-            {/each}
-          </optgroup>
-        {/each}
-      </select>
-      <input type="number" bind:value={graduationYear} size="4" />
-    </div>
-    <p>
-      Anniversaire :
-      {#if birthday === null}
-        <GhostButton
-          on:click={() => {
-            birthday = new Date();
-          }}
-        >
-          <IconPlus aria-label="Ajouter" />
-        </GhostButton>
-      {:else}
-        <input
-          type="date"
-          value={birthday.toISOString().slice(0, 10)}
-          on:change={({ target }) => {
-            birthday = valueAsDate(target);
-          }}
-        />
-        <GhostButton
-          on:click={() => {
-            // We use null rather than undefined because only null exists in JSON
-            // eslint-disable-next-line unicorn/no-null
-            birthday = null;
-          }}
-        >
-          <IconClose aria-label="Supprimer" />
-        </GhostButton>
-      {/if}
-    </p>
-    <p>
-      <label>
-        Adresse : <input type="text" bind:value={address} />
-      </label>
-    </p>
-    <p>
-      <label>
-        Phone : <input type="tel" bind:value={phone} />
-      </label>
-    </p>
-    <p>
-      <Button type="submit" theme="primary" {loading}>Sauvegarder</Button>
-    </p>
-  </fieldset>
+  <div class="side-by-side">
+    <InputText required label="Prénom" bind:value={firstName} />
+    <InputText required label="Nom de famille" bind:value={lastName} />
+  </div>
+  <InputLongText rich label="Description" bind:value={description} />
+  <InputText label="Surnom" bind:value={nickname} />
+  <div class="side-by-side">
+    <InputText type="email" label="Email" bind:value={email} />
+    <InputText type="tel" label="Numéro de téléphone" bind:value={phone} />
+  </div>
+  <InputDate
+    actionIcon={IconClear}
+    on:action={() => {
+      // eslint-disable-next-line unicorn/no-null
+      birthday = null;
+    }}
+    label="Date de naissance"
+    bind:value={birthday}
+  />
+  <InputText label="Adresse postale" bind:value={address} />
+  <section class="submit">
+    <ButtonSecondary submits>Sauvegarder</ButtonSecondary>
+  </section>
 </form>
+
+<style>
+  form {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 0.5rem;
+  }
+
+  .side-by-side {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .submit {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+</style>

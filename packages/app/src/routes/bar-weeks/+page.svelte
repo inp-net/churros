@@ -1,20 +1,18 @@
 <script lang="ts">
   import Card from '$lib/components/Card.svelte';
+  import IconConfirm from '~icons/mdi/check';
+  import IconDelete from '~icons/mdi/delete';
   import Alert from '$lib/components/Alert.svelte';
   import IconEdit from '~icons/mdi/pencil';
   import DateInput from '$lib/components/InputDate.svelte';
-  import InputField from '$lib/components/InputField.svelte';
-
-  import StringListInput from '$lib/components/InputStringList.svelte';
   import { endOfWeek, startOfWeek } from 'date-fns';
   import type { PageData } from './$types';
-  import Button from '$lib/components/Button.svelte';
   import { zeus } from '$lib/zeus';
-  import GhostButton from '$lib/components/ButtonGhost.svelte';
   import { dateFormatter } from '$lib/dates';
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const asstringarray = (x: any) => x as string[];
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import InputListOfGroups from '$lib/components/InputListOfGroups.svelte';
 
   export let data: PageData;
 
@@ -25,6 +23,8 @@
     startsAt: startOfWeek(new Date()),
     endsAt: endOfWeek(new Date()),
   };
+
+  $: console.log(EMPTY_BAR_WEEK);
 
   let { barWeeks } = data;
   let newBarWeek = EMPTY_BAR_WEEK;
@@ -86,11 +86,12 @@
       return;
     }
 
-    // upsertBarWeek.data = {
-    //   ...upsertBarWeek.data,
-    //   startsAt: upsertBarWeek.data.startsAt,
-    //   endsAt: upsertBarWeek.data.endsAt
-    // };
+    // XXX for some reason the mutations returns stringified dates
+    upsertBarWeek.data = {
+      ...upsertBarWeek.data,
+      startsAt: new Date(upsertBarWeek.data.startsAt),
+      endsAt: new Date(upsertBarWeek.data.endsAt),
+    };
 
     serverErrors[barWeek.id ?? 'new'] = '';
     expandedBarWeekId = undefined;
@@ -103,78 +104,122 @@
   }
 </script>
 
-<h1>Semaines de bar</h1>
+<div class="content">
+  <h1>Semaines de bar</h1>
 
-<ul>
-  {#each barWeeks as barWeek, i (barWeek.id)}
-    <li>
-      <Card>
-        {#if expandedBarWeekId === barWeek.id}
-          <InputField label="Description">
-            <textarea bind:value={barWeeks[i].description} cols="30" rows="10" />
-          </InputField>
-
-          <InputField label="Groupes">
-            <StringListInput
-              on:input={(e) => {
-                if (!e.detail) return;
-                const val = asstringarray(e.detail);
-                if (
-                  barWeek.groups
-                    .map(({ uid }) => uid)
-                    .sort()
-                    .join(',') === val.sort().join(',')
-                )
-                  return;
-                barWeeks[i].groups = val.map((uid) => ({ uid, name: '', pictureFile: '' }));
-              }}
-              value={barWeek.groups.map(({ uid }) => uid)}
-            />
-          </InputField>
-          <div class="side-by-side">
-            <DateInput label="Début" bind:value={barWeeks[i].startsAt} />
-            <DateInput label="Fin" bind:value={barWeeks[i].endsAt} />
-          </div>
-          {#if serverErrors[barWeek.id]}
-            <Alert theme="danger">{serverErrors[barWeek.id]}</Alert>
-          {/if}
-          <Button on:click={async () => updateBarWeek(barWeek)}>Enregistrer</Button>
-        {:else}
-          <h2>
+  <ul class="nobullet">
+    {#each barWeeks as barWeek, i (barWeek.id)}
+      <li>
+        <Card>
+          <h3>
             {dateFormatter.format(barWeek.startsAt)}—{dateFormatter.format(barWeek.endsAt)}
             {barWeek.groups.map(({ name }) => name).join(', ')}
-          </h2>
-          <div class="description">
-            {@html barWeek.descriptionHtml}
-          </div>
-          <GhostButton
-            on:click={() => {
-              expandedBarWeekId = barWeek.id;
-            }}><IconEdit /></GhostButton
-          >
-        {/if}
-        <Button theme="danger" on:click={async () => deleteBarWeek(barWeek)}>Supprimer</Button>
-      </Card>
-    </li>
-  {/each}
-  <li>
-    <Card>
-      <InputField label="Description">
-        <textarea bind:value={newBarWeek.description} cols="30" rows="10" />
-      </InputField>
+          </h3>
+          {#if expandedBarWeekId === barWeek.id}
+            <InputText label="Description" bind:value={barWeek.description} />
 
-      <InputField label="Groupes">
-        <StringListInput value={newBarWeek.groups.map(({ uid }) => uid)} />
-      </InputField>
+            <InputListOfGroups
+              label="Groupes"
+              bind:groups={barWeeks[i].groups}
+              uids={barWeek.groups.map((g) => g.uid)}
+            />
+
+            <div class="side-by-side">
+              <DateInput label="Début" bind:value={barWeeks[i].startsAt} />
+              <DateInput label="Fin" bind:value={barWeeks[i].endsAt} />
+            </div>
+            {#if serverErrors[barWeek.id]}
+              <Alert theme="danger">{serverErrors[barWeek.id]}</Alert>
+            {/if}
+            <section class="actions">
+              <ButtonSecondary icon={IconConfirm} on:click={async () => updateBarWeek(barWeek)}
+                >Enregistrer
+              </ButtonSecondary>
+              <ButtonSecondary
+                danger
+                icon={IconDelete}
+                on:click={async () => deleteBarWeek(barWeek)}>Supprimer</ButtonSecondary
+              >
+            </section>
+          {:else}
+            <div class="description">
+              {@html barWeek.descriptionHtml}
+            </div>
+            <section class="actions">
+              <ButtonSecondary
+                icon={IconEdit}
+                on:click={() => {
+                  expandedBarWeekId = barWeek.id;
+                }}>Modifier</ButtonSecondary
+              >
+              <ButtonSecondary
+                danger
+                icon={IconDelete}
+                on:click={async () => deleteBarWeek(barWeek)}>Supprimer</ButtonSecondary
+              >
+            </section>
+          {/if}
+        </Card>
+      </li>
+    {:else}
+      <li>Aucune semaine de bar à afficher.</li>
+    {/each}
+  </ul>
+
+  <h2>Nouvelle semaine de bar</h2>
+
+  <Card>
+    <form class="new-bar-week" on:submit|preventDefault={async () => updateBarWeek(newBarWeek)}>
+      <InputListOfGroups
+        label="Groupes"
+        bind:groups={newBarWeek.groups}
+        uids={newBarWeek.groups.map((g) => g.uid)}
+      />
+      <InputText label="Description" bind:value={newBarWeek.description} />
       <div class="side-by-side">
         <DateInput label="Début" bind:value={newBarWeek.startsAt} />
         <DateInput label="Fin" bind:value={newBarWeek.endsAt} />
       </div>
-
       {#if serverErrors.new}
         <Alert theme="danger">{serverErrors.new}</Alert>
       {/if}
-      <Button on:click={async () => updateBarWeek(newBarWeek)}>Ajouter</Button>
-    </Card>
-  </li>
-</ul>
+      <section class="submit">
+        <ButtonPrimary submits>Ajouter</ButtonPrimary>
+      </section>
+    </form>
+  </Card>
+</div>
+
+<style>
+  .content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  h2 {
+    margin-top: 2rem;
+  }
+  .new-bar-week {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+  }
+
+  .new-bar-week .submit {
+    display: flex;
+    justify-content: center;
+  }
+
+  .side-by-side {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1rem;
+  }
+
+  section.actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+</style>

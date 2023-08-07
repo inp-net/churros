@@ -1,28 +1,36 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  export let firstName: string;
-  export let lastName: string;
-  export let role: string;
+  import IconUser from '~icons/mdi/account';
+  export let fullName: string;
+  export let role = '';
   export let pictureFile: string;
   export let href: string;
+  export let highlighted = false;
   const src = `${PUBLIC_STORAGE_URL}${pictureFile}`;
 </script>
 
-<a class="person" {href}>
+<svelte:element this={href ? 'a' : 'div'} class:highlighted class="person" {href}>
   <div class="img">
-    <img {src} alt={firstName} />
-  </div>
-  <div class="desc">
-    <p class="text name">{firstName} {lastName}</p>
-    {#if role}
-      <p class="text role">{role}</p>
+    {#if pictureFile}
+      <img {src} alt={fullName} />
+    {:else}
+      <IconUser />
     {/if}
   </div>
-</a>
+  <div class="desc">
+    <p class="text name">{fullName}</p>
+    {#if role}
+      <p class="text role">
+        {role}
+      </p>
+    {/if}
+  </div>
+</svelte:element>
 
 <style>
   .person {
     display: flex;
+    flex-shrink: 0;
     gap: 0.5em;
     align-items: center;
     width: fit-content;
@@ -31,8 +39,12 @@
   }
 
   .person .img {
-    --size: 1.5em;
+    --size: 2.5em;
 
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
     width: var(--size);
     height: var(--size);
     overflow: hidden;
@@ -64,5 +76,13 @@
 
   .role {
     font-size: calc(max(0.65em, 0.75rem));
+  }
+
+  .person.highlighted {
+    color: var(--primary-bg);
+  }
+
+  .person.highlighted .name {
+    font-weight: bold;
   }
 </style>

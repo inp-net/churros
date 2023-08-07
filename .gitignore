@@ -15,3 +15,11 @@ build/
 coverage/
 node_modules/
 packages/app/static/version.json
+packages/api/scripts/import-old-data.js
+packages/api/scripts/import.log
+packages/api/scripts/import-errors.json
+packages/api/scripts/dump-ldap.json
+packages/api/scripts/data.json
+packages/api/scripts/dump-ldap.ldif
+packages/api/scripts/ldap-dump.ldif
+packages/api/scripts/ldap-types.js

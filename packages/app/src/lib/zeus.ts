@@ -109,3 +109,11 @@ export const loadQuery = async <Query extends ValueTypes['Query']>(
   const { token } = parent ? await parent() : { token: undefined };
   return chain(fetch, { token })('query', { scalars })(query);
 };
+
+export const makeMutation = async <Mutation extends ValueTypes['Mutation']>(
+  mutation: Mutation,
+  { fetch, parent }: { fetch: LoadEvent['fetch']; parent?: () => Promise<LayoutServerData> }
+) => {
+  const { token } = parent ? await parent() : { token: undefined };
+  return chain(fetch, { token })('mutation', { scalars })(mutation);
+};

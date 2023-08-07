@@ -1,147 +1,86 @@
 <script lang="ts">
-  import { zeus } from '$lib/zeus';
+  import ButtonBack from '$lib/components/ButtonBack.svelte';
+  import IconGear from '~icons/mdi/gear';
+  import { groupBy, startCase } from 'lodash';
   import type { PageData } from './$types';
+  import { getYear, isBefore, startOfYear } from 'date-fns';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import { me } from '$lib/session';
 
   export let data: PageData;
-  const { group } = data;
 
-  let uid = '';
-  let title = '';
+  $: clubBoard = group.members?.filter(
+    ({ president, vicePresident, treasurer, secretary }) =>
+      president || vicePresident || treasurer || secretary
+  );
+  $: onClubBoard = clubBoard.some(({ member }) => member.uid === $me?.uid);
+  $: canEditMembers = Boolean(
+    $me?.admin ||
+      myPermissions?.canEditMembers ||
+      onClubBoard ||
+      $me?.canEditGroups ||
+      $me?.canEditUsers
+  );
+  $: myPermissions = $me?.groups.find(({ group: { uid } }) => uid === group.uid);
 
-  const addGroupMember = async () => {
-    try {
-      const { addGroupMember } = await $zeus.mutate({
-        addGroupMember: [
-          { groupUid: group.uid, uid, title },
-          {
-            memberId: true,
-            title: true,
-            president: true,
-            treasurer: true,
-            secretary: true,
-            vicePresident: true,
-            canEditMembers: true,
-            member: { firstName: true, lastName: true },
-          },
-        ],
-      });
-      data.group.members = [...data.group.members, addGroupMember];
-    } catch (error: unknown) {
-      console.error(error);
-    }
-  };
+  $: ({
+    group: { name, members },
+    group,
+  } = data);
 
-  const deleteGroupMember = async (memberId: string) => {
-    try {
-      await $zeus.mutate({
-        deleteGroupMember: [{ groupId: group.id, memberId }, true],
-      });
-      data.group.members = data.group.members.filter((member) => member.memberId !== memberId);
-    } catch (error: unknown) {
-      console.error(error);
-    }
-  };
+  function schoolYear(date: Date): [number, number] {
+    let startYear = getYear(date);
+    // if we are before september, we are in the previous school year (startYear = currentYear - 1)
+    if (isBefore(date, new Date(startYear, 9, 1))) startYear--;
 
-  const updateGroupMember = async (
-    memberId: string,
-    {
-      makePresident,
-      makeTreasurer,
-      makeVicePresident,
-      makeSecretary,
-    }: {
-      makePresident?: boolean;
-      makeTreasurer?: boolean;
-      makeVicePresident?: boolean;
-      makeSecretary?: boolean;
-    } = {}
-  ) => {
-    try {
-      const member = data.group.members.find((member) => member.memberId === memberId);
-      if (!member) throw new Error('Member not found');
-      const { upsertGroupMember } = await $zeus.mutate({
-        upsertGroupMember: [
-          {
-            groupId: data.group.id,
-            memberId,
-            title: member.title,
-            president: makePresident ?? member.president,
-            treasurer: makeTreasurer ?? member.treasurer,
-            vicePresident: makeVicePresident ?? member.vicePresident,
-            secretary: makeSecretary ?? member.secretary,
-          },
-          { title: true, president: true, treasurer: true, vicePresident: true, secretary: true },
-        ],
-      });
-      data.group.members = data.group.members.map((member) =>
-        member.memberId === memberId
-          ? { ...member, ...upsertGroupMember }
-          : {
-              ...member,
-              president: upsertGroupMember.president ? false : member.president,
-            }
-      );
-    } catch (error: unknown) {
-      console.error(error);
-    }
-  };
+    return [startYear, startYear + 1];
+  }
 </script>
 
-<a href="../edit">Modifier les informations du club</a>
+<div class="content">
+  <h1>
+    <ButtonBack />
 
-<table>
-  {#each data.group.members as { memberId, member, president, treasurer, vicePresident, secretary }, i}
-    <tr>
-      <td
-        >{president ? '👑' : ''}{treasurer ? '💰' : ''}{vicePresident ? '⭐' : ''}{secretary
-          ? '📜'
-          : ''}</td
-      >
-      <td>{member.firstName} {member.lastName}</td>
-      <td>
-        <input
-          type="text"
-          bind:value={data.group.members[i].title}
-          on:change={async () => updateGroupMember(memberId)}
-        />
-        {#if !president && !treasurer}
-          <button type="button" on:click={async () => deleteGroupMember(memberId)}> ❌ </button>
-        {/if}
-        <button
-          type="button"
-          on:click={async () => updateGroupMember(memberId, { makePresident: !president })}
-          >👑</button
-        ><button
-          type="button"
-          on:click={async () => updateGroupMember(memberId, { makeTreasurer: !treasurer })}
-          >💰</button
-        >
-        <button
-          type="button"
-          on:click={async () => updateGroupMember(memberId, { makeVicePresident: !vicePresident })}
-          >⭐</button
-        >
-        <button
-          type="button"
-          on:click={async () => updateGroupMember(memberId, { makeSecretary: !secretary })}
-          >📜</button
-        >
-      </td>
-    </tr>
+    Membres de {name}
+
+    {#if canEditMembers}
+      <a class="edit" href="../edit/members"><IconGear /></a>
+    {/if}
+  </h1>
+
+  {#each Object.entries(groupBy( members, ({ createdAt }) => schoolYear(createdAt).join('-') )) as [year, membersOfYear]}
+    <section class="year">
+      <h2>{year}</h2>
+
+      <ul class="nobullet">
+        {#each membersOfYear as { title, member } (member.uid)}
+          <li>
+            <AvatarPerson href="/user/{member.uid}" {...member} role={title} />
+          </li>
+        {/each}
+      </ul>
+    </section>
   {/each}
-</table>
+</div>
 
-<form on:submit|preventDefault={addGroupMember}>
-  <h2>Ajouter un membre</h2>
-  <p>
-    <label>
-      Nom d'utilisateur : <input type="text" bind:value={uid} required />
-    </label>
-  </p>
-  <p>
-    <label>
-      Titre : <input type="text" bind:value={title} />
-    </label>
-  </p>
-  <p><button type="submit">Ajouter</button></p>
-</form>
+<style>
+  h1 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .content {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+    padding: 0 1rem;
+    margin: 0 auto;
+  }
+
+  .edit {
+    margin-left: auto;
+  }
+</style>

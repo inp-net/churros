@@ -1,9 +1,8 @@
 <script lang="ts">
   import FormEvent from '$lib/components/FormEvent.svelte';
-  import { me } from '$lib/session';
   import { Selector, zeus } from '$lib/zeus';
   import type { PageData } from './$types';
-  import FormPicture from '$lib/components/FormPicture.svelte';
+  import { page } from '$app/stores';
 
   export let data: PageData;
 
@@ -21,13 +20,19 @@
     .catch(console.error);
 </script>
 
-<a href="../">Voir l'évènement</a>
+<div class="content">
+  <FormEvent
+    redirectAfterSave={() => $page.url.searchParams.get('back') || '../'}
+    {availableLydiaAccounts}
+    bind:event={data.event}
+  />
+</div>
 
-<FormPicture objectName="Event" bind:object={data.event} />
-<FormEvent
-  availableGroups={data.groups.filter((g) =>
-    $me?.groups.some(({ group, canEditArticles }) => canEditArticles && group.id === g.id)
-  )}
-  {availableLydiaAccounts}
-  bind:event={data.event}
-/>
+<style>
+  .content {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+</style>

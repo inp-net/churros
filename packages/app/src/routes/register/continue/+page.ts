@@ -17,6 +17,7 @@ export const load: PageLoad = async ({ fetch, url }) => {
           address: true,
           birthday: true,
           firstName: true,
+          fullName: true,
           lastName: true,
           majorId: true,
           graduationYear: true,
@@ -24,7 +25,7 @@ export const load: PageLoad = async ({ fetch, url }) => {
           schoolUid: true,
         },
       ],
-      schoolGroups: { names: true, majors: { id: true, name: true } },
+      schoolGroups: { names: true, majors: { id: true, name: true, schools: { name: true } } },
     },
     { fetch }
   );

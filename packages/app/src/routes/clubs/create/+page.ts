@@ -15,10 +15,11 @@ export const load: PageLoad = async ({ fetch, parent }) => {
     )),
     lydiaAccountsOfGroup: [],
     group: {
+      id: '',
       uid: '',
       type: GroupType.Club,
       parentId: undefined,
-      schoolId: undefined,
+      school: me.major.schools[0],
       groupId: '',
       studentAssociationId: undefined,
       name: '',
@@ -29,7 +30,9 @@ export const load: PageLoad = async ({ fetch, parent }) => {
       longDescription: '',
       links: [],
       pictureFile: '',
-      selfJoinable: true,
+      pictureFileDark: '',
+      selfJoinable: false,
+      related: [],
     },
   };
 };

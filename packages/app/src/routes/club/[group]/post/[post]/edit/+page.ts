@@ -15,8 +15,10 @@ export const _articleQuery = Selector('Article')({
   },
   author: {
     firstName: true,
+    fullName: true,
     lastName: true,
     id: true,
+    pictureFile: true,
     uid: true,
     groups: { group: { name: true, uid: true }, title: true },
   },
@@ -24,6 +26,9 @@ export const _articleQuery = Selector('Article')({
     id: true,
     uid: true,
     title: true,
+    startsAt: true,
+    pictureFile: true,
+    visibility: true,
   },
   eventId: true,
   links: {

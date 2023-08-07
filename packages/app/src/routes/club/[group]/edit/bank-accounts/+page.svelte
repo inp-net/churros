@@ -4,6 +4,8 @@
   import type { PageData } from './$types';
 
   import { PUBLIC_LYDIA_API_URL } from '$env/static/public';
+  import InputText from '$lib/components/InputText.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
 
   export let data: PageData;
 
@@ -66,31 +68,24 @@
   };
 </script>
 
-<h1>Éditer <a href="..">{group.name}</a></h1>
-
-<form on:submit|preventDefault={searchLydiaAccounts}>
-  <legend>Ajouter un compte Lydia</legend>
+<form class="add-account" on:submit|preventDefault={searchLydiaAccounts}>
+  <legend class="typo-title">Ajouter un compte Lydia</legend>
   <p>
     Pour ajouter un compte Lydia pro, vous devez d'abord créer un compte Lydia pour votre club. Pour
     cela, vous pouvez utiliser l'application Lydia Pro sur votre téléphone. Une fois le compte créé,
     vous pouvez l'ajouter ici en vous connectant avec vos identifiants Lydia. (Aucun mot de passe
     n'est enregistré sur nos serveurs.)
   </p>
-  <div class="input-group">
-    <label>
-      Numéro de téléphone
-      <input type="text" bind:value={phone} />
-    </label>
-    <label>
-      Mot de passe Lydia
-      <input type="password" bind:value={password} />
-    </label>
-    <Button type="submit" theme="primary">Rechercher</Button>
-  </div>
+
+  <InputText type="tel" label="Numéro de téléphone" required bind:value={phone} />
+  <InputText type="password" label="Mot de passe Lydia" required bind:value={password} />
+  <section class="submits">
+    <ButtonPrimary submits>Rechercher</ButtonPrimary>
+  </section>
 </form>
 
 {#if lydiaAccounts.length > 0}
-  <form>
+  <form class="accounts-found">
     <fieldset>
       <legend>Comptes</legend>
       {#each lydiaAccounts as { name, api_token_id, api_token } (api_token_id)}
@@ -113,3 +108,16 @@
     </fieldset>
   </form>
 {/if}
+
+<style>
+  form.add-account {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+  }
+
+  section.submits {
+    display: flex;
+    justify-content: center;
+  }
+</style>
