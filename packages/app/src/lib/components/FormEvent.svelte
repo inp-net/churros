@@ -33,12 +33,12 @@
 
   $: canEditManagers =
     !event.uid ||
-    $me?.managedEvents.find(
+    $me?.managedEvents?.find(
       (manager) => manager.event.uid === event.uid && manager.event.group.uid === event.group.uid
     )?.canEditPermissions;
 
   $: console.log({
-    $me: $me?.managedEvents.find((m) => m.event.uid === event.uid),
+    $me: $me?.managedEvents?.find((m) => m.event.uid === event.uid),
     event: event.managers.find((m) => m.user.uid === $me?.uid),
   });
 

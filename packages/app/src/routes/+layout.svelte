@@ -34,7 +34,7 @@
       } else {
         document.documentElement.classList.add($theme);
       }
-  
+
       currentTheme = $theme;
     });
   });
