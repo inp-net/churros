@@ -1,6 +1,3 @@
- 
- 
- 
 /* eslint-disable unicorn/no-await-expression-member */
 /* eslint-disable unicorn/no-null */
 import { type Group, PrismaClient, NotificationType } from '@prisma/client';
@@ -263,7 +260,6 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
           },
         });
       } catch {
-         
         // console.error(`  Could not make ${uid} member of ${ldapGroup.cn}: ${error}`);
       }
     })
@@ -348,7 +344,7 @@ function progressbar(objectName: string, total: number): SingleBar {
     hideCursor: true,
   });
   bar.start(total, 0);
-   
+
   return bar;
 }
 
@@ -362,7 +358,7 @@ for (const oldSchool of LDAP_DATA.schools) {
 bar.stop();
 bar = progressbar('majors', LDAP_DATA.majors.length);
 for (const oldMajor of LDAP_DATA.majors) {
-  const major = await makeMajor(oldMajor);
+  await makeMajor(oldMajor);
   bar.increment();
 }
 
@@ -387,9 +383,8 @@ for (const oldUser of LDAP_DATA.users) {
     date_joined: '2023-01-01 00:00:00',
   };
   try {
-    const user = await makeUser(oldUserPortail, oldUser);
+    await makeUser(oldUserPortail, oldUser);
   } catch (error: unknown) {
-     
     errors.users.push({ user: oldUser, error });
   }
 
@@ -410,9 +405,8 @@ for (const oldGroup of LDAP_DATA.clubs) {
     ({ ident, ecole_id }) => `${ident}-${SCHOOLS[ecole_id].uid}` === oldGroup.cn
   );
   try {
-    const group = await makeGroup(portailClub!, oldGroup);
+    await makeGroup(portailClub!, oldGroup);
   } catch (error: unknown) {
-     
     errors.clubs.push({ club: oldGroup, error });
   }
 

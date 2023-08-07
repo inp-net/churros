@@ -50,10 +50,10 @@ builder.queryField('schoolGroups', (t) =>
       });
       const majorGroups = new Map<
         string,
-        { names: string[]; majors: Array<{ id: string; name: string }> }
+        { names: string[]; majors: Array<{ id: string; name: string; shortName: string }> }
       >();
 
-      for (const { id, name, schools } of majors) {
+      for (const { id, name, shortName, schools } of majors) {
         const key = schools
           .map(({ id }) => id)
           .sort()
@@ -64,7 +64,7 @@ builder.queryField('schoolGroups', (t) =>
           majorGroups.set(key, { names, majors: [] });
         }
 
-        majorGroups.get(key)!.majors.push({ id, name });
+        majorGroups.get(key)!.majors.push({ id, name, shortName });
       }
 
       return [...majorGroups.values()];

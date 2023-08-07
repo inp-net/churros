@@ -77,7 +77,6 @@
   const formatPhoneNumber = (phone: string) =>
     phone.replace(/^\+33(\d)(\d\d)(\d\d)(\d\d)(\d\d)$/, '0$1 $2 $3 $4 $5');
 
-   
   $: pictureFile = user.pictureFile ? `${PUBLIC_STORAGE_URL}${user.pictureFile}` : '';
 </script>
 
@@ -161,7 +160,7 @@
     <CarouselGroups
       groups={user.groups.map(({ group, title, ...roles }) => ({
         ...group,
-         
+
         role: `${rolesBadge(roles)} ${title}`,
       }))}
     />

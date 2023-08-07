@@ -78,22 +78,31 @@ await prisma.school.createMany({
 const schools = await prisma.school.findMany();
 
 const MécaniqueDesFluides = await prisma.major.create({
-  data: { name: 'Mécanique des fluides', schools: { connect: { id: schools[0]!.id } } },
+  data: {
+    shortName: 'MFEE',
+    name: 'Mécanique des fluides',
+    schools: { connect: { id: schools[0]!.id } },
+  },
 });
 const Vapeur = await prisma.major.create({
-  data: { name: 'Vapeur', schools: { connect: [{ id: schools[0]!.id }, { id: schools[1]!.id }] } },
+  data: {
+    shortName: 'Va',
+    name: 'Vapeur',
+    schools: { connect: [{ id: schools[0]!.id }, { id: schools[1]!.id }] },
+  },
 });
 const Boue = await prisma.major.create({
   data: {
+    shortName: 'B',
     name: 'Boue',
     schools: { connect: [{ id: schools[1 - 1]!.id }, { id: schools[3 - 1]!.id }] },
   },
 });
 const Roche = await prisma.major.create({
-  data: { name: 'Roche', schools: { connect: [{ id: schools[3 - 1]!.id }] } },
+  data: { shortName: 'R', name: 'Roche', schools: { connect: [{ id: schools[3 - 1]!.id }] } },
 });
 const Vent = await prisma.major.create({
-  data: { name: 'Vent', schools: { connect: [{ id: schools[4 - 1]!.id }] } },
+  data: { shortName: 'Ve', name: 'Vent', schools: { connect: [{ id: schools[4 - 1]!.id }] } },
 });
 
 const majors = [MécaniqueDesFluides, Vapeur, Boue, Roche, Vent];
