@@ -27,7 +27,14 @@
     let currentTheme = $theme;
     theme.subscribe(($theme) => {
       if (currentTheme) document.documentElement.classList.remove(currentTheme);
-      document.documentElement.classList.add($theme);
+      if ($theme === 'system') {
+        document.documentElement.classList.add(
+          window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        );
+      } else {
+        document.documentElement.classList.add($theme);
+      }
+  
       currentTheme = $theme;
     });
   });

@@ -20,6 +20,8 @@
   import InputPerson from '$lib/components/InputPerson.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import FormNotificationSettings from '$lib/components/FormNotificationSettings.svelte';
+  import { theme } from '$lib/theme';
+  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
 
   let godparentRequestSendServerError = '';
   let godparentRequestSending = false;
@@ -185,8 +187,13 @@
 </script>
 
 <h1>
-  <a href=".."> <IconBack /> </a> Éditer
-  {data.user.fullName}
+  <a href=".."> <IconBack /> </a>
+  {#if data.user.uid === $me?.uid}
+    Paramètres
+  {:else}
+    Éditer
+    {data.user.fullName}
+  {/if}
 </h1>
 
 <div class="content">
@@ -200,6 +207,12 @@
       <h2>Permissions</h2>
       <Permissions bind:data />
     {/if}
+    <h2>Apparence</h2>
+    <InputSelectOne
+      label="Thème"
+      options={{ system: 'Suivre le système', dark: 'Sombre', light: 'Clair' }}
+      bind:value={$theme}
+    />
     <h2>Parrainages</h2>
     <InputPerson
       label="Parrain/Marraine"

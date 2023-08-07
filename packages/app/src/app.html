@@ -18,8 +18,11 @@
     <script>
       // Prevent a flash on page load
       let theme =
-        sessionStorage.getItem('theme') ??
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        (sessionStorage.getItem('theme') ?? 'system') === 'system'
+          ? window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light'
+          : sessionStorage.getItem('theme');
       document.documentElement.classList.add(theme);
     </script>
     <div style="display: contents">%sveltekit.body%</div>

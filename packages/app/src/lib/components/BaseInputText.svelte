@@ -186,6 +186,7 @@
 
   input {
     width: 100%;
+    color: var(--text);
     background: none;
     border: none;
     outline: none;

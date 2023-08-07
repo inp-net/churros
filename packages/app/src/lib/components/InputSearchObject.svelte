@@ -71,15 +71,22 @@
   }
 
   .input-container :global(input) {
+    color: var(--text);
     background: none;
     border: none;
   }
 
   .input-container :global(.autocomplete .autocomplete-list) {
+    color: var(--text);
+    background-color: var(--bg);
     border: var(--border-block) solid var(--border);
     border-top: none;
     border-radius: var(--radius-block);
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+  }
+
+  .input-container :global(.autocomplete .autocomplete-list-item) {
+    color: var(--text);
   }
 </style>
