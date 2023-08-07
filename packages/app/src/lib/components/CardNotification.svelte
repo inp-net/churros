@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { NotificationType } from '$lib/zeus';
-  import type { GraphQLTypes } from '$lib/zeus';
   import { formatDistanceToNow } from 'date-fns';
   import { fr } from 'date-fns/locale';
 
@@ -18,9 +17,11 @@
   export let type: NotificationType;
   export let title: string;
   export let body: string;
-  export let timestamp: number;
-  export let action: Array<GraphQLTypes['Link']>;
-  const date = formatDistanceToNow(new Date(timestamp), { addSuffix: true, locale: fr });
+  export let timestamp: Date | undefined = undefined;
+  export let actions: Array<{ name: string; value: string }>;
+  const date = timestamp
+    ? formatDistanceToNow(timestamp, { addSuffix: true, locale: fr })
+    : undefined;
 </script>
 
 <div class="card-notification">
