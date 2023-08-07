@@ -10,6 +10,7 @@ export const _notificationsQuery = Selector('Notification')({
       id: true,
       title: true,
       body: true,
+      goto: true,
       imageFile: true,
       timestamp: true,
       type: true,

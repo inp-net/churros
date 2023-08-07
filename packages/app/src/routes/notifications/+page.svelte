@@ -1,13 +1,12 @@
 <script lang="ts">
   import { PUBLIC_VAPID_KEY } from '$env/static/public';
   import { arrayBufferToBase64 } from '$lib/base64';
-  import dateFnsFrenchLocale from 'date-fns/locale/fr/index.js';
   import { zeus } from '$lib/zeus';
-  import { formatDistance } from 'date-fns';
   import type { PageData } from './$types';
   import { onMount } from 'svelte';
   import { _notificationsQuery } from './+page';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import CardNotification from '$lib/components/CardNotification.svelte';
 
   export let data: PageData;
   let subscriptionName = '';
@@ -106,43 +105,31 @@
 <h1>
   Notifications
 
-  {#await checkIfSubscribed() then}
-    {#if subscribed}
-      <ButtonSecondary on:click={async () => unsubscribeFromNotifications()}
-        >Désactiver</ButtonSecondary
+  <div class="actions">
+    {#await checkIfSubscribed() then}
+      {#if subscribed}
+        <ButtonSecondary on:click={async () => unsubscribeFromNotifications()}
+          >Désactiver</ButtonSecondary
+        >
+      {:else}
+        <input type="hidden" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
+        <ButtonSecondary on:click={async () => subscribeToNotifications()}>Activer</ButtonSecondary>
+      {/if}
+      <ButtonSecondary
+        danger
+        on:click={async () => {
+          await $zeus.mutate({ testNotification: true });
+        }}>Tester</ButtonSecondary
       >
-    {:else}
-      <input type="hidden" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
-      <ButtonSecondary on:click={async () => subscribeToNotifications()}>Activer</ButtonSecondary>
-    {/if}
-    <ButtonSecondary
-      danger
-      on:click={async () => {
-        await $zeus.mutate({ testNotification: true });
-      }}>Tester</ButtonSecondary
-    >
-  {/await}
+    {/await}
+  </div>
 </h1>
 
 {#if subscribed}
   <ul class="notifications nobullet">
-    {#each data.notifications.edges.map(({ node }) => node) as { id, title, body, timestamp, actions } (id)}
-      <li class="notification" data-id={id}>
-        <h2>{title}</h2>
-        <p>{body}</p>
-        {#if timestamp}
-          <p>
-            {formatDistance(new Date(timestamp), new Date(), {
-              locale: dateFnsFrenchLocale,
-              addSuffix: true,
-            })}
-          </p>
-        {/if}
-        <ul class="actions">
-          {#each actions as { name, computedValue }}
-            <li><a href={computedValue}>{name}</a></li>
-          {/each}
-        </ul>
+    {#each data.notifications.edges.map(({ node }) => node) as { id, ...notif } (id)}
+      <li>
+        <CardNotification {...notif} href={notif.goto} />
       </li>
     {:else}
       <li class="empty">Aucune notification reçue pour le moment.</li>
@@ -152,27 +139,28 @@
 
 <style lang="scss">
   h1 {
-    text-align: center;
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     gap: 1rem;
+    align-items: center;
     justify-content: center;
     margin-bottom: 2rem;
+    text-align: center;
   }
 
   ul.notifications {
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: column wrap;
+    gap: 1rem;
     justify-content: center;
-    margin-top: 2rem;
     max-width: 600px;
     margin: 0 auto;
-    gap: 1rem;
+    margin-top: 2rem;
 
-    li {
-      background: var(--muted-bg);
-      padding: 1rem;
+    li.empty {
       width: 100%;
+      padding: 1rem;
+      background: var(--muted-bg);
       border-radius: var(--radius-block);
     }
   }
