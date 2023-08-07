@@ -48,7 +48,7 @@
     {#each userCandidates as { email, fullName, major, graduationYear }}
       <li>
         <strong>{fullName}</strong>
-        <span>{email} · {major.name} · {graduationYear}</span>
+        <span>{email} · <abbr title={major.name}>{major.shortName}</abbr> · {graduationYear}</span>
         <div class="actions">
           <ButtonSecondary icon={IconEditPen2Line} href="./edit/{encodeURIComponent(email)}"
             >Modifier</ButtonSecondary

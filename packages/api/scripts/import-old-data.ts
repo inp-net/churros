@@ -114,6 +114,7 @@ async function makeMajor(major: Ldap.Major) {
   return prisma.major.create({
     data: {
       name: major.displayName,
+      shortName: major.shortName,
       schools: {
         connect: [
           {
