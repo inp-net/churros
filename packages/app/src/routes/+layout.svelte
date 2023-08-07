@@ -25,7 +25,6 @@
 
   onMount(() => {
     let currentTheme = $theme;
-    $theme = 'light';
     theme.subscribe(($theme) => {
       if (currentTheme) document.documentElement.classList.remove(currentTheme);
       document.documentElement.classList.add($theme);

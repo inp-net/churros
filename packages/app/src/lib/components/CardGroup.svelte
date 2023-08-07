@@ -23,6 +23,7 @@
     flex-direction: column;
     align-items: center;
     width: fit-content;
+    width: 7em;
     padding: 0.5em;
     text-decoration: none; /* Safari */ /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
@@ -54,9 +55,13 @@
   }
 
   .name {
+    max-width: 100%;
     margin: 0;
+    overflow: hidden;
     font-size: 1em;
     font-weight: 600;
     text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 </style>
