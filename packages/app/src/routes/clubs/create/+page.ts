@@ -30,6 +30,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
       longDescription: '',
       links: [],
       pictureFile: '',
+      pictureFileDark: '',
       selfJoinable: false,
       related: [],
     },
