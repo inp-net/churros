@@ -7,13 +7,14 @@
   import IconShotgunOpeningSoon from '~icons/mdi/clock-alert-outline';
   import IconShotgunClosingSoon from '~icons/mdi/clock-alert-outline';
   import IconShotgunClosed from '~icons/mdi/lock-outline';
-  import IconGodsonRequestReceived from '~icons/mdi/account-multiple-plus';
-  import IconGodsonRequestAccepted from '~icons/mdi/check';
-  import IconGodsonRequestRefused from '~icons/mdi/close';
+  import IconGodsonRequestReceived from '~icons/mdi/account-multiple-plus-outline';
+  import IconGodsonRequestAccepted from '~icons/mdi/account-check-outline';
+  import IconGodsonRequestRefused from '~icons/mdi/account-cancel-outline';
   import IconNewArticle from '~icons/mdi/newspaper-variant-outline';
   import IconPermissionsChanged from '~icons/mdi/key-change';
-  import IconOther from '~icons/mdi/help-circle-outline';
+  import IconOther from '~icons/mdi/bell-outline';
 
+  export let href: string;
   export let type: NotificationType;
   export let title: string;
   export let body: string;
@@ -24,56 +25,64 @@
     : undefined;
 </script>
 
-<div class="card-notification">
-  <div class="icon">
-    {#if type === 'ShotgunOpened'}
-      <IconShotgunOpened />
-    {:else if type === 'ShotgunOpeningSoon'}
-      <IconShotgunOpeningSoon />
-    {:else if type === 'ShotgunClosingSoon'}
-      <IconShotgunClosingSoon />
-    {:else if type === 'ShotgunClosed'}
-      <IconShotgunClosed />
-    {:else if type === 'GodparentRequestReceived'}
-      <IconGodsonRequestReceived />
-    {:else if type === 'GodparentRequestAccepted'}
-      <IconGodsonRequestAccepted />
-    {:else if type === 'GodparentRequestRefused'}
-      <IconGodsonRequestRefused />
-    {:else if type === 'NewArticle'}
-      <IconNewArticle />
-    {:else if type === 'PermissionsChanged'}
-      <IconPermissionsChanged />
-    {:else}
-      <IconOther />
-    {/if}
-  </div>
-  <div class="body">
-    <div class="body-title">{title}</div>
-    <div class="body-body">{body}</div>
-    <div class="timestamp">{date}</div>
-  </div>
-  <div class="action" class:mono={action.length === 1} class:duo={action.length === 2}>
-    {#each action as { name, value }, i}
+<article class="card-notification" class:has-actions={actions.length > 0}>
+  <a {href} class="content">
+    <div class="icon">
+      {#if type === 'ShotgunOpened'}
+        <IconShotgunOpened />
+      {:else if type === 'ShotgunOpeningSoon'}
+        <IconShotgunOpeningSoon />
+      {:else if type === 'ShotgunClosingSoon'}
+        <IconShotgunClosingSoon />
+      {:else if type === 'ShotgunClosed'}
+        <IconShotgunClosed />
+      {:else if type === 'GodparentRequestReceived'}
+        <IconGodsonRequestReceived />
+      {:else if type === 'GodparentRequestAccepted'}
+        <IconGodsonRequestAccepted />
+      {:else if type === 'GodparentRequestRefused'}
+        <IconGodsonRequestRefused />
+      {:else if type === 'NewArticle'}
+        <IconNewArticle />
+      {:else if type === 'PermissionsChanged'}
+        <IconPermissionsChanged />
+      {:else}
+        <IconOther />
+      {/if}
+    </div>
+    <div class="body">
+      <div class="body-title">{title}</div>
+      <div class="body-body">{body}</div>
+      <div class="timestamp">{date}</div>
+    </div>
+  </a>
+  <div class="action" class:mono={actions.length === 1} class:duo={actions.length >= 2}>
+    {#each actions.slice(0, 2) as { name, value }, i}
       <a class="action-label" class:up={i === 0} class:down={i === 1} href={value}>{name}</a>
     {/each}
   </div>
-</div>
+</article>
 
-<style>
+<style lang="scss">
   .card-notification {
-    --size: 8rem;
-
     display: flex;
-    flex-flow: column wrap;
+  }
+  .content {
+    display: flex;
+    flex-flow: row wrap;
     align-items: center;
-    justify-content: center;
-    width: calc(2.58 * var(--size));
     height: var(--size);
-    padding: calc(0.05 * var(--size));
+    width: 100%;
+    padding: 1rem 1.5rem;
+    column-gap: 1.5rem;
     border: var(--border-block) solid var(--border);
-    border-top-left-radius: var(--radius-block);
-    border-bottom-left-radius: var(--radius-block);
+    border-radius: var(--radius-block);
+  }
+  .content:hover,
+  .content:focus-visible {
+    border-color: var(--hover-border);
+    background: var(--hover-bg);
+    color: var(--hover-text);
   }
 
   .icon {
@@ -120,8 +129,7 @@
     flex-flow: row wrap;
     align-items: center;
     justify-content: center;
-    width: var(--size);
-    height: var(--size);
+    font-weight: normal;
   }
 
   .mono {
@@ -142,19 +150,14 @@
     flex-flow: row wrap;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem;
+    padding: 1.25rem;
     font-weight: bold;
     text-align: center;
+    width: 100%;
   }
 
   .duo .action-label {
-    width: var(--size);
-    height: calc(0.5 * var(--size));
-  }
-
-  .mono .action-label {
-    width: var(--size);
-    height: var(--size);
+    height: 50%;
   }
 
   .duo .up {
@@ -174,5 +177,23 @@
     color: var(--hover-text);
     background: var(--hover-bg);
     border-color: var(--hover-border);
+  }
+
+  .card-notification.has-actions .content {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .card-notification.has-actions .content:not(:hover):not(:focus-visible) {
+    border-right: none;
+  }
+
+  .content:hover + .action,
+  .content:focus-visible + .action {
+    border-left: none;
+
+    &.duo .action-label {
+      border-left: none;
+    }
   }
 </style>
