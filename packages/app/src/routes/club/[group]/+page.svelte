@@ -205,7 +205,7 @@
     </ul>
   </section>
 
-  {#if group.related.length > 0}
+  {#if group.related?.length > 0}
     <section class="related">
       <h2>Voir aussi</h2>
 
