@@ -1,3 +1,6 @@
+ 
+ 
+ 
 /* eslint-disable unicorn/no-await-expression-member */
 /* eslint-disable unicorn/no-null */
 import { type Group, PrismaClient, NotificationType } from '@prisma/client';
@@ -8,6 +11,7 @@ import type * as Ldap from './ldap-types';
 import { Readable } from 'node:stream';
 import { finished } from 'node:stream/promises';
 import type { ReadableStream } from 'node:stream/web';
+import { SingleBar } from 'cli-progress';
 const prisma = new PrismaClient();
 
 const hashedA = await hash('a');
@@ -188,13 +192,13 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
   if (group.logo) {
     const dest = `../storage/groups/${ldapGroup.cn}.png`;
     if (fileExists(dest)) {
-      console.log(`  Logo of ${ldapGroup.cn} already exists, skipping…`);
+      // console.log(`  Logo of ${ldapGroup.cn} already exists, skipping…`);
     } else {
       const filestream = createWriteStream(dest);
       const url = `https://www.bde.${
         ldapGroup.ecole.displayName?.toLowerCase().replaceAll(' ', '-') ?? 'inp-toulouse'
       }.fr/media/logos-clubs/${ldapGroup.cn}_x224.png`;
-      console.log(`  Downloading ${url} -> ${dest}`);
+      // console.log(`  Downloading ${url} -> ${dest}`);
       try {
         const { body } = await fetch(url);
         if (body === null) group.logo = '';
@@ -258,9 +262,9 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
             member: { connect: { uid } },
           },
         });
-      } catch (error: unknown) {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        console.error(`  Could not make ${uid} member of ${ldapGroup.cn}: ${error}`);
+      } catch {
+         
+        // console.error(`  Could not make ${uid} member of ${ldapGroup.cn}: ${error}`);
       }
     })
   );
@@ -287,11 +291,7 @@ async function connectGodparent(user: Ldap.User) {
         },
       },
     });
-    console.log(`· Connected godparent: ${user.uid} -> ${user.uidParrain}`);
-  } catch (error: unknown) {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    console.error(`· Could not connect godparent ${user.uid} -> ${user.uidParrain}: ${error}`);
-  }
+  } catch {}
 }
 
 const DATA = JSON.parse(readFileSync('./data.json').toString()) as unknown as Array<
@@ -305,8 +305,9 @@ const oldUsersPortail = DATA.find(({ type, name }) => type === 'table' && name =
 const oldClubsPortail = DATA.find(({ type, name }) => type === 'table' && name === 'club_club')![
   'data'
 ] as OldGroup[];
+console.log(`· Loading data from dump files`);
 console.log(
-  `· Loaded portail dump (${oldUsersPortail.length} users, ${oldClubsPortail.length} clubs)`
+  `  Loaded portail dump (${oldUsersPortail.length} users, ${oldClubsPortail.length} clubs)`
 );
 
 const LDAP_DATA = JSON.parse(
@@ -314,27 +315,55 @@ const LDAP_DATA = JSON.parse(
 ) as unknown as Ldap.LDAPTypes;
 
 console.log(
-  `· Loaded LDAP dump (${LDAP_DATA.users.length} users, ${LDAP_DATA.clubs.length} clubs, ${LDAP_DATA.majors.length} majors, ${LDAP_DATA.schools.length} schools)`
+  `  Loaded LDAP dump (${LDAP_DATA.users.length} users, ${LDAP_DATA.clubs.length} clubs, ${LDAP_DATA.majors.length} majors, ${LDAP_DATA.schools.length} schools)`
 );
+console.log('');
 
-await prisma.user.deleteMany({});
-await prisma.userCandidate.deleteMany();
-await prisma.article.deleteMany();
-await prisma.event.deleteMany();
-await prisma.group.deleteMany();
-await prisma.studentAssociation.deleteMany({});
-await prisma.school.deleteMany({});
-await prisma.major.deleteMany({});
+let count = 0;
+console.log(`· Deleting old data`);
+({ count } = await prisma.user.deleteMany({}));
+console.log(`  ${count} users`);
+({ count } = await prisma.userCandidate.deleteMany());
+console.log(`  ${count} user candidates`);
+({ count } = await prisma.article.deleteMany());
+console.log(`  ${count} articles`);
+({ count } = await prisma.event.deleteMany());
+console.log(`  ${count} events`);
+({ count } = await prisma.group.deleteMany());
+console.log(`  ${count} groups`);
+({ count } = await prisma.studentAssociation.deleteMany({}));
+console.log(`  ${count} student associations`);
+({ count } = await prisma.school.deleteMany({}));
+console.log(`  ${count} schools`);
+({ count } = await prisma.major.deleteMany({}));
+console.log(`  ${count} majors`);
 
-for (const oldSchool of LDAP_DATA.schools) {
-  const school = await makeSchool(oldSchool);
-  if (!school) continue;
-  console.log(`· Created ${school.name} (@${school.uid})`);
+console.log('');
+function progressbar(objectName: string, total: number): SingleBar {
+  console.log('');
+  console.log('');
+  console.log(`· Creating ${total} ${objectName}`);
+  const bar = new SingleBar({
+    format: `  {percentage}% {bar} {value} ${objectName} created ({eta_formatted})`,
+    hideCursor: true,
+  });
+  bar.start(total, 0);
+   
+  return bar;
 }
 
+let bar = progressbar('schools', LDAP_DATA.schools.length);
+for (const oldSchool of LDAP_DATA.schools) {
+  const school = await makeSchool(oldSchool);
+  bar.increment();
+  if (!school) continue;
+}
+
+bar.stop();
+bar = progressbar('majors', LDAP_DATA.majors.length);
 for (const oldMajor of LDAP_DATA.majors) {
   const major = await makeMajor(oldMajor);
-  console.log(`· Created major ${major.name}`);
+  bar.increment();
 }
 
 const errors: {
@@ -345,6 +374,8 @@ const errors: {
   clubs: [],
 };
 
+bar.stop();
+bar = progressbar('users', LDAP_DATA.users.length);
 for (const oldUser of LDAP_DATA.users) {
   const oldUserPortail = oldUsersPortail.find(({ username }) => username === oldUser.uid) ?? {
     username: oldUser.uid,
@@ -357,31 +388,39 @@ for (const oldUser of LDAP_DATA.users) {
   };
   try {
     const user = await makeUser(oldUserPortail, oldUser);
-    console.log(
-      `· Created [${user.graduationYear}] ${user.firstName} ${user.lastName} (@${user.uid})`
-    );
   } catch (error: unknown) {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    console.error(`· Failed to create ${oldUser.displayName} (@${oldUser.uid}): ${error}`);
+     
     errors.users.push({ user: oldUser, error });
   }
+
+  bar.increment();
 }
 
-for (const user of LDAP_DATA.users) await connectGodparent(user);
+bar.stop();
+bar = progressbar('godparent relations', LDAP_DATA.users.length);
+for (const user of LDAP_DATA.users) {
+  await connectGodparent(user);
+  bar.increment();
+}
 
+bar.stop();
+bar = progressbar('groups', LDAP_DATA.clubs.length);
 for (const oldGroup of LDAP_DATA.clubs) {
   const portailClub = oldClubsPortail.find(
     ({ ident, ecole_id }) => `${ident}-${SCHOOLS[ecole_id].uid}` === oldGroup.cn
   );
   try {
     const group = await makeGroup(portailClub!, oldGroup);
-    console.log(`· Created ${group.name} (@${group.uid}) (${group.members.length} members)`);
   } catch (error: unknown) {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    console.error(`· Failed to create group ${oldGroup.displayName} (@${oldGroup.cn}): ${error}`);
+     
     errors.clubs.push({ club: oldGroup, error });
   }
+
+  bar.increment();
 }
+
+bar.stop();
+console.log('');
 
 if (errors.clubs.length + errors.users.length > 0) {
   console.log(`Failed to create ${errors.clubs.length} clubs and ${errors.users.length} users`);

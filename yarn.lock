@@ -2449,6 +2449,7 @@ __metadata:
     "@prisma/client": "npm:5"
     "@tsconfig/node18-strictest-esm": "npm:^1.0.1"
     "@types/bunyan": "npm:^1.8.8"
+    "@types/cli-progress": "npm:^3.11.0"
     "@types/cookie": "npm:^0.5.1"
     "@types/cors": "npm:^2.8.12"
     "@types/cron": "npm:^2.0.1"
@@ -2461,6 +2462,7 @@ __metadata:
     arborist: "workspace:^"
     argon2: "npm:^0.30.2"
     bunyan: "npm:^1.8.15"
+    cli-progress: "npm:^3.12.0"
     cors: "npm:^2.8.5"
     croner: "npm:^6.0.5"
     dataloader: "npm:^2.1.0"
@@ -5072,6 +5074,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cli-progress@npm:^3.11.0":
+  version: 3.11.0
+  resolution: "@types/cli-progress@npm:3.11.0"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 4220ae566609d581985fc1d3363b1cd98464b9721022d6f2ce0f0d6391d8113b0b5e860090c6330ea7296b451b239e61f2ef0bcdcd53b3acbc1aab0f0812705c
+  languageName: node
+  linkType: hard
+
 "@types/connect@npm:*":
   version: 3.4.35
   resolution: "@types/connect@npm:3.4.35"
@@ -6824,6 +6835,15 @@ __metadata:
   dependencies:
     restore-cursor: "npm:^3.1.0"
   checksum: 953cdb0291450958e4745da72c078865555c4cce31d48681a51266d14c44ab0641d819762044fd25d6220eebbc878a38acfad913d633eafd3403f9637b1ba4b0
+  languageName: node
+  linkType: hard
+
+"cli-progress@npm:^3.12.0":
+  version: 3.12.0
+  resolution: "cli-progress@npm:3.12.0"
+  dependencies:
+    string-width: "npm:^4.2.3"
+  checksum: b212a73ffcba2f234dd7f65e07877c7dbac85832f906358c1f88b18e1d851c65d3ddef333b264da067f42111eff0dcf8d382dc43fad6c44840d34bef2a2a5d2e
   languageName: node
   linkType: hard
 
