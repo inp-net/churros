@@ -87,6 +87,7 @@
             majorId,
             phone,
             birthday,
+            email,
           },
           {
             __typename: true,

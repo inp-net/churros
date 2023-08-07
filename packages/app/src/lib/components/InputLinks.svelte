@@ -139,6 +139,7 @@
 
   .inputs input {
     padding: 0.25rem 0;
+    background: transparent;
     border: none;
   }
 

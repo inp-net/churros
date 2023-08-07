@@ -11,6 +11,7 @@
   import Alert from '$lib/components/Alert.svelte';
   import { formatISO9075, isBefore } from 'date-fns';
   import InputPerson from '$lib/components/InputPerson.svelte';
+  import InputField from '$lib/components/InputField.svelte';
 
   export let data: PageData;
   const { group } = data;
@@ -62,6 +63,7 @@
               secretary: true,
               vicePresident: true,
               canEditMembers: true,
+              canEditArticles: true,
               member: {
                 uid: true,
                 firstName: true,
@@ -103,11 +105,15 @@
       makeTreasurer,
       makeVicePresident,
       makeSecretary,
+      canEditArticles,
+      canEditMembers,
     }: {
       makePresident?: boolean;
       makeTreasurer?: boolean;
       makeVicePresident?: boolean;
       makeSecretary?: boolean;
+      canEditArticles?: boolean;
+      canEditMembers?: boolean;
     } = {}
   ) => {
     try {
@@ -123,8 +129,18 @@
             treasurer: makeTreasurer ?? member.treasurer,
             vicePresident: makeVicePresident ?? member.vicePresident,
             secretary: makeSecretary ?? member.secretary,
+            canEditArticles: canEditArticles ?? member.canEditArticles,
+            canEditMembers: canEditMembers ?? member.canEditMembers,
           },
-          { title: true, president: true, treasurer: true, vicePresident: true, secretary: true },
+          {
+            title: true,
+            president: true,
+            treasurer: true,
+            vicePresident: true,
+            secretary: true,
+            canEditArticles: true,
+            canEditMembers: true,
+          },
         ],
       });
       data.group.members = group.members.map((member) =>
@@ -219,10 +235,26 @@
       >
         <InputText label="Titre" bind:value={group.members[i].title} />
         <div class="roles">
-          <InputCheckbox label="Président·e" bind:value={group.members[i].president} />
-          <InputCheckbox label="Trésorier·e" bind:value={group.members[i].treasurer} />
-          <InputCheckbox label="Vice-président·e" bind:value={group.members[i].vicePresident} />
-          <InputCheckbox label="Secrétaire" bind:value={group.members[i].secretary} />
+          <InputField label="Bureau">
+            <div class="checkboxes">
+              <InputCheckbox label="Président·e" bind:value={group.members[i].president} />
+              <InputCheckbox label="Trésorier·e" bind:value={group.members[i].treasurer} />
+              <InputCheckbox label="Vice-président·e" bind:value={group.members[i].vicePresident} />
+              <InputCheckbox label="Secrétaire" bind:value={group.members[i].secretary} />
+            </div>
+          </InputField>
+          <InputField label="Permissions">
+            <div class="checkboxes">
+              <InputCheckbox
+                label="Gère les articles/évènements"
+                bind:value={group.members[i].canEditArticles}
+              />
+              <InputCheckbox
+                label="Gère les membres"
+                bind:value={group.members[i].canEditMembers}
+              />
+            </div>
+          </InputField>
         </div>
       </form>
     </li>
@@ -289,6 +321,12 @@
     max-height: 20rem;
     padding: 1rem;
     border: var(--border-block) solid var(--border);
+  }
+
+  .members .checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
   }
 
   .members .roles {

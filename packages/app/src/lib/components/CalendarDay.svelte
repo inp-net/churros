@@ -10,7 +10,6 @@
     currentDate.setDate(currentDate.getDate() + index);
     return format(currentDate, 'iii', { locale: fr }).toUpperCase().slice(0, -1); // Il y a un . à enlever à la fin
   });
-  console.log(daysOfWeek);
 
   // Génération mois
   const months: string[] = Array.from({ length: 12 }, (_, i) => {

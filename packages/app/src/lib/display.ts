@@ -54,4 +54,12 @@ export const DISPLAY_GROUP_TYPES: Record<GroupType, string> = {
   Group: 'Groupe',
   Integration: "Groupe d'inté",
   StudentAssociationSection: "Bureau de l'AE",
+  List: 'Liste',
 };
+
+export const DISPLAY_MANAGER_PERMISSION_LEVELS = {
+  readonly: 'Lecture seule',
+  verifyer: 'Vérification des billets',
+  editor: 'Modification',
+  fullaccess: 'Gestion totale',
+} as const;

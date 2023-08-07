@@ -26,7 +26,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           phone: true,
           pictureFile: true,
           groups: {
-            group: { uid: true, name: true, color: true, pictureFile: true },
+            group: { uid: true, name: true, color: true, pictureFile: true, pictureFileDark: true },
             title: true,
             president: true,
             treasurer: true,
@@ -46,6 +46,22 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
               graduationYear: true,
             },
           },
+          articles: [
+            {},
+            {
+              edges: {
+                node: {
+                  title: true,
+                  uid: true,
+                  group: { uid: true, name: true, pictureFile: true },
+                  bodyHtml: true,
+                  publishedAt: true,
+                  links: { value: true, name: true, computedValue: true },
+                  visibility: true,
+                },
+              },
+            },
+          ],
         },
       ],
     },

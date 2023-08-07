@@ -25,7 +25,7 @@ const sessions = new Map<
   User & { fullName: string } & {
     groups: Array<GroupMember & { group: Group }>;
     major: Major & { schools: School[] };
-    managedEvents: Array<EventManager & { event: Event }>;
+    managedEvents: Array<EventManager & { event: Event & { group: Group } }>;
   }
 >();
 
@@ -47,7 +47,7 @@ const getUser = async (token: string) => {
         user: {
           include: {
             groups: { include: { group: true } },
-            managedEvents: { include: { event: true } },
+            managedEvents: { include: { event: { include: { group: true } } } },
             major: { include: { schools: true } },
           },
         },

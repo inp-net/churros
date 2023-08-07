@@ -25,9 +25,9 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { htmlToText } from 'html-to-text';
   import Badge from '$lib/components/Badge.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
+  import { isDark } from '$lib/theme';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -81,7 +81,12 @@
 <div class="content">
   <header>
     <div class="picture">
-      <img src="{PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} />
+      <img
+        src="{PUBLIC_STORAGE_URL}{$isDark && group.pictureFileDark
+          ? group.pictureFileDark
+          : group.pictureFile}"
+        alt={group.name}
+      />
     </div>
 
     <div class="identity">
@@ -130,11 +135,7 @@
   </header>
 
   <section class="description">
-    <details>
-      <summary>{htmlToText(group.longDescriptionHtml).split('\n')[0].slice(0, 255)}</summary>
-      {@html group.longDescriptionHtml}
-    </details>
-    <!-- TODO read more button -->
+    {@html group.longDescriptionHtml}
   </section>
 
   <section class="bureau">
@@ -210,7 +211,7 @@
     </ul>
   </section>
 
-  {#if group.related.length > 0}
+  {#if group.related?.length > 0}
     <section class="related">
       <h2>Voir aussi</h2>
 
@@ -256,7 +257,7 @@
     color: var(--muted-text);
     text-align: center;
     background: var(--muted-bg);
-    object-fit: cover;
+    object-fit: contain;
   }
 
   header dt {

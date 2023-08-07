@@ -17,8 +17,7 @@
   import TreePersons from '$lib/components/TreePersons.svelte';
   import Badge from '$lib/components/Badge.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
-
-  $: console.log(data.user.familyTree);
+  import CardArticle from '$lib/components/CardArticle.svelte';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -36,7 +35,6 @@
   $: familyNesting = JSON.parse(data.user.familyTree.nesting) as Nesting;
   type UserTree = typeof data.user.familyTree.users[number] & { children: UserTree[] };
   function makeFamilyTree(nesting: Nesting): UserTree {
-    console.log(`Working with ${JSON.stringify(nesting)}`);
     const findUser = (uid: string) => data.user.familyTree.users.find((u) => u.uid === uid);
 
     const [rootUid, children] = nesting;
@@ -49,7 +47,6 @@
   }
 
   $: familyTree = makeFamilyTree(familyNesting);
-  $: console.log(familyTree);
 
   $: ({ user } = data);
 
@@ -79,6 +76,9 @@
 
   const formatPhoneNumber = (phone: string) =>
     phone.replace(/^\+33(\d)(\d\d)(\d\d)(\d\d)(\d\d)$/, '0$1 $2 $3 $4 $5');
+
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  $: pictureFile = user.pictureFile ? `${PUBLIC_STORAGE_URL}${user.pictureFile}` : '';
 </script>
 
 <div class="content">
@@ -90,10 +90,7 @@
         </div>
       {/if}
 
-      <img
-        src={user.pictureFile ? `${PUBLIC_STORAGE_URL}${user.pictureFile}` : ''}
-        alt={user.fullName}
-      />
+      <img src={pictureFile} alt={user.fullName} />
     </div>
 
     <div class="identity">
@@ -164,6 +161,7 @@
     <CarouselGroups
       groups={user.groups.map(({ group, title, ...roles }) => ({
         ...group,
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         role: `${rolesBadge(roles)} ${title}`,
       }))}
     />
@@ -173,14 +171,24 @@
     <section class="family">
       <h2>Famille</h2>
 
-      <TreePersons user={familyTree} highlightUid={user.uid} />
+      <div class="tree">
+        <TreePersons user={familyTree} highlightUid={user.uid} />
+      </div>
     </section>
   {/if}
 
   <section class="articles">
     <h2>Posts</h2>
 
-    TODO
+    <ul class="nobullet">
+      {#each data.user.articles.edges.map(({ node }) => node) as article}
+        <li>
+          <CardArticle href="/club/{article.group.uid}/post/{article.uid}" {...article} />
+        </li>
+      {:else}
+        <li>Aucun article</li>
+      {/each}
+    </ul>
   </section>
 </div>
 
@@ -283,9 +291,22 @@
     margin: 0 1rem;
   }
 
+  .groups {
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+  }
+
   .family {
     display: flex;
     flex-flow: column wrap;
+    align-items: center;
     justify-content: center;
+    overflow: auto;
+  }
+
+  .articles {
+    max-width: 600px;
+    margin: 0 auto;
   }
 </style>

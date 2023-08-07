@@ -1,11 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import IconForward from '~icons/mdi/arrow-right';
-  import IconBackward from '~icons/mdi/arrow-left';
+  import IconForward from '~icons/mdi/chevron-right';
+  import IconBackward from '~icons/mdi/chevron-left';
   import CardGroup from './CardGroup.svelte';
   export let groups: Array<{
     name: string;
     pictureFile: string;
+    pictureFileDark: string;
     uid: string;
     role?: string;
   }>;
@@ -143,8 +144,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.5em;
-    height: 2.5em;
+    width: 1.5em;
+    height: 1.5em;
     padding: 0.2em;
     font-size: 1.3rem;
     color: inherit;
@@ -157,10 +158,10 @@
   }
 
   .arrow.right {
-    right: 1em;
+    right: 0.5em;
   }
 
   .arrow.left {
-    left: 1em;
+    left: 0.5em;
   }
 </style>

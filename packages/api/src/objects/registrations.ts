@@ -165,20 +165,21 @@ builder.queryField('registrationsOfEvent', (t) =>
     type: RegistrationType,
     cursor: 'id',
     args: {
+      groupUid: t.arg.string(),
       eventUid: t.arg.string(),
     },
-    authScopes: (_, { eventUid }, { user }) =>
-      Boolean(
+    authScopes(_, { eventUid, groupUid }, { user }) {
+      return Boolean(
         user?.admin ||
           user?.managedEvents.some(
-            ({ event: { uid }, canVerifyRegistrations }) =>
-              uid === eventUid && canVerifyRegistrations
+            ({ event: { uid, group } }) => uid === eventUid && group.uid === groupUid
           )
-      ),
-    async resolve(query, _, { eventUid }) {
+      );
+    },
+    async resolve(query, _, { eventUid, groupUid }) {
       return prisma.registration.findMany({
         ...query,
-        where: { ticket: { event: { uid: eventUid } } },
+        where: { ticket: { event: { uid: eventUid, group: { uid: groupUid } } } },
       });
     },
   })
@@ -514,7 +515,7 @@ builder.mutationField('deleteRegistration', (t) =>
         registration.paymentMethod
       ) {
         await pay(
-          registration.ticket.event.beneficiary.uid ?? '(unregistered)',
+          registration.ticket.event.beneficiary.uid,
           registration.author.uid,
           registration.ticket.price,
           registration.paymentMethod

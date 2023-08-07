@@ -10,29 +10,33 @@
   export let errors: string[] | undefined = [];
 </script>
 
-<div class="field">
-  <svelte:element this={id ? 'p' : 'label'} class="label-wrapper" for={id}
-    ><p class="label typo-field-label">
-      {label}{#if required}
-        <span use:tooltip={'Ce champ est requis'} class="required-indicator">*</span>
-      {/if}
-    </p>
-  </svelte:element>
-  {#if errors && errors.length > 0}
-    {#each errors as error}
-      <span class="error">
-        <IconAlertCircle aria-hidden="true" />
-        {error}
+{#if label}
+  <div class="field">
+    <svelte:element this={id ? 'p' : 'label'} class="label-wrapper" for={id}
+      ><p class="label typo-field-label">
+        {label}{#if required}
+          <span use:tooltip={'Ce champ est requis'} class="required-indicator">*</span>
+        {/if}
+      </p>
+    </svelte:element>
+    {#if errors && errors.length > 0}
+      {#each errors as error}
+        <span class="error">
+          <IconAlertCircle aria-hidden="true" />
+          {error}
+        </span>
+      {/each}
+    {:else if hint}
+      <span class="hint">
+        <IconInfoCircle aria-hidden="true" />
+        {hint}
       </span>
-    {/each}
-  {:else if hint}
-    <span class="hint">
-      <IconInfoCircle aria-hidden="true" />
-      {hint}
-    </span>
-  {/if}
+    {/if}
+    <slot />
+  </div>
+{:else}
   <slot />
-</div>
+{/if}
 
 <style>
   .field {

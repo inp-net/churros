@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_CONTACT_EMAIL, PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
 
   type Group = {
     uid: string;
@@ -35,39 +35,45 @@
 
 <style>
   .children {
-    margin-top: 1rem;
-    margin-left: 1rem;
-    padding-left: 1rem;
     display: flex;
     flex-flow: column wrap;
     gap: 1rem;
+    padding-left: 1rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
     border-left: var(--border-block) dashed var(--muted-border);
   }
+
   .avatar {
     --size: 4rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: var(--size);
     height: var(--size);
-    border-radius: var(--radius-block);
-    background-color: var(--muted-bg);
+    overflow: hidden;
+    font-size: 1rem;
     color: var(--muted-text);
     text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1rem;
-    overflow: hidden;
+    background-color: var(--muted-bg);
+    border-radius: var(--radius-block);
   }
+
   .avatar img {
-    object-fit: cover;
+    object-fit: contain;
   }
+
   a {
     display: flex;
     gap: 1rem;
     align-items: center;
   }
+
   .name {
     font-size: 1.25rem;
   }
+
   .highlight {
     font-weight: bold;
   }

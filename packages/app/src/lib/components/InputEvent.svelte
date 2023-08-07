@@ -108,7 +108,7 @@
     display: grid;
     flex-wrap: wrap;
     grid-template-columns: auto min-content;
-    gap: 0.25rem;
+    gap: 1rem;
     align-items: center;
   }
 

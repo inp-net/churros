@@ -8,6 +8,12 @@
   --primary-text: #{$slate-100};
   --primary-shadow: 0 0.25rem 0.5rem #{$black};
   --loading-bg: linear-gradient(to right, #{$pink-800}, #{$pink-600});
+  --hover-bg: #{$neutral-700};
+  --hover-text: #{$neutral-200};
+  --muted-bg: #{$neutral-800};
+  --muted-text: #{$neutral-400};
+  --muted-border: #{$neutral-700};
+  --muted-link: #{$indigo-400};
 }
 
 :root.pride {

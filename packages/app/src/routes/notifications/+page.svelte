@@ -2,12 +2,12 @@
   import { PUBLIC_VAPID_KEY } from '$env/static/public';
   import { arrayBufferToBase64 } from '$lib/base64';
   import dateFnsFrenchLocale from 'date-fns/locale/fr/index.js';
-  import Button from '$lib/components/Button.svelte';
   import { zeus } from '$lib/zeus';
   import { formatDistance } from 'date-fns';
   import type { PageData } from './$types';
   import { onMount } from 'svelte';
   import { _notificationsQuery } from './+page';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   export let data: PageData;
   let subscriptionName = '';
@@ -103,26 +103,29 @@
   }
 </script>
 
-<h1>Notifications</h1>
+<h1>
+  Notifications
 
-{#await checkIfSubscribed() then}
-  {#if subscribed}
-    <Button on:click={async () => unsubscribeFromNotifications()}
-      >Désactiver les notifications</Button
+  {#await checkIfSubscribed() then}
+    {#if subscribed}
+      <ButtonSecondary on:click={async () => unsubscribeFromNotifications()}
+        >Désactiver</ButtonSecondary
+      >
+    {:else}
+      <input type="hidden" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
+      <ButtonSecondary on:click={async () => subscribeToNotifications()}>Activer</ButtonSecondary>
+    {/if}
+    <ButtonSecondary
+      danger
+      on:click={async () => {
+        await $zeus.mutate({ testNotification: true });
+      }}>Tester</ButtonSecondary
     >
-  {:else}
-    <input type="hidden" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
-    <Button on:click={async () => subscribeToNotifications()}>Activer les notifications</Button>
-  {/if}
-  <Button
-    on:click={async () => {
-      await $zeus.mutate({ testNotification: true });
-    }}>Envoyer notif de test à tout le monde</Button
-  >
-{/await}
+  {/await}
+</h1>
 
 {#if subscribed}
-  <ul class="notifications">
+  <ul class="notifications nobullet">
     {#each data.notifications.edges.map(({ node }) => node) as { id, title, body, timestamp, actions } (id)}
       <li class="notification" data-id={id}>
         <h2>{title}</h2>
@@ -141,6 +144,36 @@
           {/each}
         </ul>
       </li>
+    {:else}
+      <li class="empty">Aucune notification reçue pour le moment.</li>
     {/each}
   </ul>
 {/if}
+
+<style lang="scss">
+  h1 {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  ul.notifications {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    margin-top: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    gap: 1rem;
+
+    li {
+      background: var(--muted-bg);
+      padding: 1rem;
+      width: 100%;
+      border-radius: var(--radius-block);
+    }
+  }
+</style>

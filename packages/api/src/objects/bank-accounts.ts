@@ -65,7 +65,7 @@ builder.mutationField('upsertLydiaAccount', (t) =>
 builder.queryField('lydiaAccounts', (t) =>
   t.prismaField({
     type: [LydiaAccountType],
-    authScopes: (_, {}, { user }) => Boolean(user),
+    authScopes: { loggedIn: true },
     async resolve(query, {}, {}) {
       const results = await prisma.lydiaAccount.findMany({ ...query });
       return results.map((result) =>

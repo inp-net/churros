@@ -1,15 +1,21 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { isDark } from '$lib/theme';
 
   export let href: string;
   export let name: string;
   export let pictureFile: string;
+  export let pictureFileDark: string;
   export let role = '';
 </script>
 
 <a {href} class="group" draggable="false" on:click>
   <div class="img">
-    <img src={`${PUBLIC_STORAGE_URL}${pictureFile}`} alt={name} draggable="false" />
+    <img
+      src={`${PUBLIC_STORAGE_URL}${$isDark && pictureFileDark ? pictureFileDark : pictureFile}`}
+      alt={name}
+      draggable="false"
+    />
   </div>
   <p class="name">{name}</p>
   {#if role}
@@ -23,6 +29,7 @@
     flex-direction: column;
     align-items: center;
     width: fit-content;
+    width: 7em;
     padding: 0.5em;
     text-decoration: none; /* Safari */ /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
@@ -50,13 +57,17 @@
   .group .img img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   .name {
+    max-width: 100%;
     margin: 0;
+    overflow: hidden;
     font-size: 1em;
     font-weight: 600;
     text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 </style>

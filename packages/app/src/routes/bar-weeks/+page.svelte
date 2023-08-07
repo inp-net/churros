@@ -104,80 +104,97 @@
   }
 </script>
 
-<h1>Semaines de bar</h1>
+<div class="content">
+  <h1>Semaines de bar</h1>
 
-<ul class="nobullet">
-  {#each barWeeks as barWeek, i (barWeek.id)}
-    <li>
-      <Card>
-        {#if expandedBarWeekId === barWeek.id}
-          <InputText label="Description" bind:value={barWeek.description} />
-
-          <InputListOfGroups
-            label="Groupes"
-            bind:groups={barWeeks[i].groups}
-            uids={barWeek.groups.map((g) => g.uid)}
-          />
-
-          <div class="side-by-side">
-            <DateInput label="Début" bind:value={barWeeks[i].startsAt} />
-            <DateInput label="Fin" bind:value={barWeeks[i].endsAt} />
-          </div>
-          {#if serverErrors[barWeek.id]}
-            <Alert theme="danger">{serverErrors[barWeek.id]}</Alert>
-          {/if}
-          <ButtonSecondary icon={IconConfirm} on:click={async () => updateBarWeek(barWeek)}
-            >Enregistrer
-          </ButtonSecondary>
-        {:else}
-          <h2>
+  <ul class="nobullet">
+    {#each barWeeks as barWeek, i (barWeek.id)}
+      <li>
+        <Card>
+          <h3>
             {dateFormatter.format(barWeek.startsAt)}—{dateFormatter.format(barWeek.endsAt)}
             {barWeek.groups.map(({ name }) => name).join(', ')}
-          </h2>
-          <div class="description">
-            {@html barWeek.descriptionHtml}
-          </div>
-          <ButtonSecondary
-            icon={IconEdit}
-            on:click={() => {
-              expandedBarWeekId = barWeek.id;
-            }}>Modifier</ButtonSecondary
-          >
-        {/if}
-        <ButtonSecondary danger icon={IconDelete} on:click={async () => deleteBarWeek(barWeek)}
-          >Supprimer</ButtonSecondary
-        >
-      </Card>
-    </li>
-  {:else}
-    <li>Aucune semaine de bar à afficher.</li>
-  {/each}
-</ul>
+          </h3>
+          {#if expandedBarWeekId === barWeek.id}
+            <InputText label="Description" bind:value={barWeek.description} />
 
-<h2>Nouvelle semaine de bar</h2>
+            <InputListOfGroups
+              label="Groupes"
+              bind:groups={barWeeks[i].groups}
+              uids={barWeek.groups.map((g) => g.uid)}
+            />
 
-<Card>
-  <form class="new-bar-week" on:submit|preventDefault={async () => updateBarWeek(newBarWeek)}>
-    <InputListOfGroups
-      label="Groupes"
-      bind:groups={newBarWeek.groups}
-      uids={newBarWeek.groups.map((g) => g.uid)}
-    />
-    <InputText label="Description" bind:value={newBarWeek.description} />
-    <div class="side-by-side">
-      <DateInput label="Début" bind:value={newBarWeek.startsAt} />
-      <DateInput label="Fin" bind:value={newBarWeek.endsAt} />
-    </div>
-    {#if serverErrors.new}
-      <Alert theme="danger">{serverErrors.new}</Alert>
-    {/if}
-    <section class="submit">
-      <ButtonPrimary submits>Ajouter</ButtonPrimary>
-    </section>
-  </form>
-</Card>
+            <div class="side-by-side">
+              <DateInput label="Début" bind:value={barWeeks[i].startsAt} />
+              <DateInput label="Fin" bind:value={barWeeks[i].endsAt} />
+            </div>
+            {#if serverErrors[barWeek.id]}
+              <Alert theme="danger">{serverErrors[barWeek.id]}</Alert>
+            {/if}
+            <section class="actions">
+              <ButtonSecondary icon={IconConfirm} on:click={async () => updateBarWeek(barWeek)}
+                >Enregistrer
+              </ButtonSecondary>
+              <ButtonSecondary
+                danger
+                icon={IconDelete}
+                on:click={async () => deleteBarWeek(barWeek)}>Supprimer</ButtonSecondary
+              >
+            </section>
+          {:else}
+            <div class="description">
+              {@html barWeek.descriptionHtml}
+            </div>
+            <section class="actions">
+              <ButtonSecondary
+                icon={IconEdit}
+                on:click={() => {
+                  expandedBarWeekId = barWeek.id;
+                }}>Modifier</ButtonSecondary
+              >
+              <ButtonSecondary
+                danger
+                icon={IconDelete}
+                on:click={async () => deleteBarWeek(barWeek)}>Supprimer</ButtonSecondary
+              >
+            </section>
+          {/if}
+        </Card>
+      </li>
+    {:else}
+      <li>Aucune semaine de bar à afficher.</li>
+    {/each}
+  </ul>
+
+  <h2>Nouvelle semaine de bar</h2>
+
+  <Card>
+    <form class="new-bar-week" on:submit|preventDefault={async () => updateBarWeek(newBarWeek)}>
+      <InputListOfGroups
+        label="Groupes"
+        bind:groups={newBarWeek.groups}
+        uids={newBarWeek.groups.map((g) => g.uid)}
+      />
+      <InputText label="Description" bind:value={newBarWeek.description} />
+      <div class="side-by-side">
+        <DateInput label="Début" bind:value={newBarWeek.startsAt} />
+        <DateInput label="Fin" bind:value={newBarWeek.endsAt} />
+      </div>
+      {#if serverErrors.new}
+        <Alert theme="danger">{serverErrors.new}</Alert>
+      {/if}
+      <section class="submit">
+        <ButtonPrimary submits>Ajouter</ButtonPrimary>
+      </section>
+    </form>
+  </Card>
+</div>
 
 <style>
+  .content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
   h2 {
     margin-top: 2rem;
   }
@@ -196,5 +213,13 @@
     display: flex;
     flex-flow: row wrap;
     gap: 1rem;
+  }
+
+  section.actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
   }
 </style>

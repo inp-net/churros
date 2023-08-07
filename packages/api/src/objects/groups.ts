@@ -61,6 +61,7 @@ export const GroupType = builder.prismaNode('Group', {
       resolve: async ({ longDescription }) => toHtml(longDescription),
     }),
     pictureFile: t.exposeString('pictureFile'),
+    pictureFileDark: t.exposeString('pictureFileDark'),
     articles: t.relation('articles', {
       query: { orderBy: { publishedAt: 'desc' } },
     }),
@@ -137,7 +138,7 @@ builder.queryField('searchGroups', (t) =>
       q = q.trim();
       const { searchString: search } = splitSearchTerms(q);
       const fuzzyResults: FuzzySearchResult = await prisma.$queryRaw`
-SELECT "id", levenshtein_less_equal(LOWER("name"), LOWER(${q}), 15) as changes
+SELECT "id", levenshtein_less_equal(LOWER(unaccent("name")), LOWER(unaccent(${q})), 15) as changes
 FROM "Group"
 ORDER BY changes ASC
 LIMIT 20
@@ -191,7 +192,7 @@ builder.mutationField('upsertGroup', (t) =>
       uid: t.arg.string({ required: false }),
       type: t.arg({ type: GroupEnumType }),
       parentUid: t.arg.string({ required: false }),
-      schoolId: t.arg.id({ required: false }),
+      schoolUid: t.arg.id({ required: false }),
       studentAssociationId: t.arg.id({ required: false }),
       name: t.arg.string({ validate: { maxLength: 255 } }),
       color: t.arg.string({ validate: { regex: /#[\dA-Fa-f]{6}/ } }),
@@ -226,7 +227,7 @@ builder.mutationField('upsertGroup', (t) =>
         color,
         address,
         description,
-        schoolId,
+        schoolUid,
         studentAssociationId,
         email,
         longDescription,
@@ -298,8 +299,6 @@ builder.mutationField('upsertGroup', (t) =>
         description,
         email: email ?? undefined,
         longDescription,
-        school: schoolId ? { connect: { id: schoolId } } : {},
-        studentAssociation: studentAssociationId ? { connect: { id: studentAssociationId } } : {},
       };
 
       return prisma.group.upsert({
@@ -312,6 +311,8 @@ builder.mutationField('upsertGroup', (t) =>
           related: { connect: related.map((uid) => ({ uid })) },
           parent:
             parentUid === null || parentUid === undefined ? {} : { connect: { uid: parentUid } },
+          school: schoolUid ? { connect: { uid: schoolUid } } : {},
+          studentAssociation: studentAssociationId ? { connect: { id: studentAssociationId } } : {},
         },
         update: {
           ...data,
@@ -326,6 +327,10 @@ builder.mutationField('upsertGroup', (t) =>
             parentUid === null || parentUid === undefined
               ? { disconnect: true }
               : { connect: { uid: parentUid } },
+          school: schoolUid ? { connect: { uid: schoolUid } } : { disconnect: true },
+          studentAssociation: studentAssociationId
+            ? { connect: { id: studentAssociationId } }
+            : { disconnect: true },
         },
       });
     },
@@ -356,10 +361,12 @@ builder.mutationField('updateGroupPicture', (t) =>
     args: {
       uid: t.arg.string(),
       file: t.arg({ type: FileScalar }),
+      dark: t.arg.boolean(),
     },
     authScopes: (_, { uid }, { user }) =>
       Boolean(user?.canEditGroups || user?.groups.some(({ group }) => group.uid === uid)),
-    async resolve(_, { uid, file }) {
+    async resolve(_, { uid, file, dark }) {
+      const propertyName = dark ? 'pictureFileDark' : 'pictureFile';
       console.log('updating group picture');
       const type = await file
         .slice(0, minimumBytes)
@@ -371,19 +378,21 @@ builder.mutationField('updateGroupPicture', (t) =>
       console.log(`file type: ${type.ext}`);
 
       // Delete the existing picture
-      const { pictureFile } = await prisma.group.findUniqueOrThrow({
+      const data = await prisma.group.findUniqueOrThrow({
         where: { uid },
-        select: { pictureFile: true },
+        select: { pictureFile: true, pictureFileDark: true },
       });
 
-      console.log(`existing picture: ${pictureFile}`);
+      const pictureFile = data[propertyName] ;
+
+      console.log(`existing picture${dark ? ' (dark)' : ''}: ${pictureFile}`);
 
       if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
 
-      const path = join(`groups`, `${uid}.${type.ext}`);
+      const path = join(dark ? 'groups/dark' : `groups`, `${uid}.${type.ext}`);
       await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
       await writeFile(new URL(path, process.env.STORAGE), file.stream());
-      await prisma.group.update({ where: { uid }, data: { pictureFile: path } });
+      await prisma.group.update({ where: { uid }, data: { [propertyName]: path } });
       return path;
     },
   })
@@ -393,9 +402,9 @@ builder.mutationField('updateGroupPicture', (t) =>
 builder.mutationField('deleteGroupPicture', (t) =>
   t.field({
     type: 'Boolean',
-    args: { uid: t.arg.string() },
+    args: { uid: t.arg.string(), dark: t.arg.boolean() },
     authScopes: (_, { uid }, { user }) => Boolean(user?.canEditGroups || uid === user?.uid),
-    async resolve(_, { uid }) {
+    async resolve(_, { uid, dark }) {
       const { pictureFile } = await prisma.group.findUniqueOrThrow({
         where: { uid },
         select: { pictureFile: true },
@@ -405,7 +414,7 @@ builder.mutationField('deleteGroupPicture', (t) =>
 
       await prisma.group.update({
         where: { uid },
-        data: { pictureFile: '' },
+        data: { [dark ? 'pictureFileDark' : 'pictureFile']: '' },
       });
       return true;
     },

@@ -1,20 +1,22 @@
 <script lang="ts">
   import { DISPLAY_NOTIFICATION_TYPES, ORDER_NOTIFICATION_TYPES } from '$lib/display';
   import { type NotificationType, Selector, zeus } from '$lib/zeus';
+  import IconEarth from '~icons/mdi/earth';
   import { nanoid } from 'nanoid';
   import InputCheckbox from './InputCheckbox.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
+  import InputGroup from './InputGroup.svelte';
 
   const asBooleanOrNull = (v: unknown) => v as boolean | null;
 
   let loading = false;
-  export let availableGroups: Array<{ uid: string; name: string; id: string }>;
+  export let availableGroups: Array<{ uid: string; name: string; id: string; pictureFile: string }>;
   export let userUid: string;
   export let settings: Array<{
     type: NotificationType;
     allow: boolean;
     id: string;
-    group?: undefined | { uid: string; name: string; id: string };
+    group?: undefined | { uid: string; name: string; id: string; pictureFile: string };
   }> = [];
 
   async function updateNotificationSettings() {
@@ -38,6 +40,7 @@
             uid: true,
             name: true,
             id: true,
+            pictureFile: true,
           },
         }),
       ],
@@ -51,6 +54,7 @@
     notifSettings: typeof settings,
     seldGroup: typeof selectedGroup
   ) {
+    console.log(notifSettings);
     const predicate =
       (t: NotificationType, seldGroup: typeof selectedGroup) =>
       ({ type, group }: { type: NotificationType; group?: undefined | { uid: string } }) =>
@@ -60,14 +64,14 @@
       notifSettings.some(predicate(t, seldGroup))
         ? {
             ...notifSettings.find(predicate(t, seldGroup))!,
-            index: notifSettings.findIndex(predicate(t, seldGroup))!,
+            index: notifSettings.findIndex(predicate(t, seldGroup)),
           }
         : {
             type: t,
             allow: true,
             group: seldGroup ? availableGroups.find(({ uid }) => uid === seldGroup) : undefined,
             id: 'notifsetting:fake:' + nanoid(10),
-            index: -1,
+            index: notifSettings.findIndex(predicate(t, seldGroup)),
           }
     );
   }
@@ -76,33 +80,39 @@
 
   let selectedGroup: string | undefined;
 
+  function allowOrNull(index: number, allow: boolean): boolean | null {
+    // eslint-disable-next-line unicorn/no-null
+    return index === -1 ? null : allow;
+  }
+
   export const bang = <T>(x: T) => x;
 </script>
 
 <form on:submit|preventDefault={updateNotificationSettings}>
-  <h2>
-    <select
-      on:input={(e) => {
-        if (!e?.target || !('value' in e.target) || typeof e.target.value !== 'string') return;
-        selectedGroup = e.target.value === 'global' ? undefined : e.target.value;
-      }}
-      value={selectedGroup ?? 'global'}
-    >
-      <option value="global">Globalement</option>
-      {#each availableGroups as { name, uid }}
-        <option value={uid}>Pour {name}</option>
-      {/each}
-    </select>
-  </h2>
+  <div class="select-group">
+    <InputGroup
+      nullIcon={IconEarth}
+      placeholder="Globalement"
+      bind:uid={selectedGroup}
+      label="Pour"
+      allow={availableGroups.map((g) => g.uid)}
+      clearable
+      group={availableGroups.find((g) => g.uid === selectedGroup)}
+    />
+  </div>
   <ul class="nobullet">
     {#if selectedGroup}
       {#each displayedSettings as { type, allow, id, group, index }}
         <li>
           <InputCheckbox
             ternary
-            labelNull="Hériter de Globalement"
+            labelNull="Réglage global ({settings.find(
+              (setting) => setting.type === type && setting.group === undefined
+            )?.allow
+              ? 'Oui'
+              : 'Non'})"
             label={DISPLAY_NOTIFICATION_TYPES[type]}
-            value={index === -1 ? undefined : allow}
+            value={allowOrNull(index, allow)}
             on:input={(e) => {
               if (!('detail' in e)) return;
               const detail = asBooleanOrNull(e.detail);
@@ -119,7 +129,7 @@
                     id: 'notifsetting:fake:' + nanoid(10),
                   },
                 ];
-              } else if (detail !== null) {
+              } else if (detail !== null && detail !== undefined) {
                 settings[index].allow = detail;
               }
             }}
@@ -153,5 +163,9 @@
     display: flex;
     justify-content: center;
     margin-top: 1rem;
+  }
+
+  .select-group {
+    margin-bottom: 1rem;
   }
 </style>

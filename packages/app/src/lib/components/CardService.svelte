@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import type { SvelteComponent } from 'svelte';
 
   export let href: string;
@@ -11,7 +10,7 @@
 
 <a class="card-service" {href} class:dashed-border={dashedBorder}>
   {#if typeof logoFile === 'string'}
-    <img class="logo" src="{PUBLIC_STORAGE_URL}{logoFile}" alt={name} />
+    <img class="logo" src="/{logoFile}" alt={name} />
   {:else}
     <div class="logo">
       <svelte:component this={logoFile} />
@@ -59,6 +58,7 @@
     width: 4rem;
     height: 4rem;
     margin-bottom: 0.25rem;
+    font-size: 1.5rem;
     text-align: center;
     object-fit: contain;
   }

@@ -1,17 +1,22 @@
 <script lang="ts">
   import CardGroup from '$lib/components/CardGroup.svelte';
-  import AvatarGroups from '$lib/components/CarouselGroups.svelte';
+  import { canCreateArticle } from '$lib/permissions';
   import { me } from '$lib/session';
-
-  const go = (uid: string) => `/club/${uid}/write`;
 </script>
 
 <div class="content">
-  <h1>Écrire un article pour</h1>
+  <h1>Écrire un article en tant que</h1>
 
   <section class="groups">
-    {#each $me?.groups.map(({ group }) => group) ?? [] as group (group.uid)}
-      <CardGroup href="/club/{group.uid}/write" name={group.name} pictureFile={group.pictureFile} />
+    {#each $me?.groups
+      .filter((m) => canCreateArticle(m, $me))
+      .map(({ group }) => group) ?? [] as group (group.uid)}
+      <CardGroup
+        href="/club/{group.uid}/write"
+        name={group.name}
+        pictureFile={group.pictureFile}
+        pictureFileDark={group.pictureFileDark}
+      />
     {/each}
   </section>
 </div>

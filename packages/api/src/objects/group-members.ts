@@ -54,7 +54,7 @@ builder.mutationField('selfJoinGroup', (t) =>
       groupUid: t.arg.string(),
       uid: t.arg.string(),
     },
-    authScopes: (_, {}, { user }) => Boolean(user),
+    authScopes: { loggedIn: true },
     async resolve(query, _, { groupUid, uid }) {
       const group = await prisma.group.findUnique({ where: { uid: groupUid } });
       if (!group?.selfJoinable) throw new Error('This group is not self-joinable.');
@@ -82,6 +82,8 @@ builder.mutationField('upsertGroupMember', (t) =>
       treasurer: t.arg.boolean(),
       vicePresident: t.arg.boolean(),
       secretary: t.arg.boolean(),
+      canEditMembers: t.arg.boolean(),
+      canEditArticles: t.arg.boolean(),
     },
     authScopes: (_, { groupId }, { user }) =>
       Boolean(
@@ -91,7 +93,17 @@ builder.mutationField('upsertGroupMember', (t) =>
     async resolve(
       query,
       _,
-      { memberId, groupId, title, president, treasurer, secretary, vicePresident }
+      {
+        memberId,
+        groupId,
+        title,
+        president,
+        treasurer,
+        secretary,
+        vicePresident,
+        canEditArticles,
+        canEditMembers,
+      }
     ) {
       if (president) {
         await prisma.groupMember.updateMany({
@@ -106,8 +118,8 @@ builder.mutationField('upsertGroupMember', (t) =>
         treasurer,
         groupId,
         memberId,
-        canEditMembers: president || treasurer,
-        secretary,
+        canEditMembers: canEditMembers || president || treasurer,
+        canEditArticles: canEditArticles || president || vicePresident || secretary,
         vicePresident,
       };
 

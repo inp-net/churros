@@ -11,7 +11,7 @@ generator pothos {
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
-  extensions = [fuzzystrmatch, pgcrypto]
+  extensions = [fuzzystrmatch, pgcrypto, unaccent]
 }
 
 /// Users are the people who use the app
@@ -63,6 +63,8 @@ model User {
   godchildren               User[]                     @relation("mentorship") // Les filleul(e)s
   incomingGodparentRequests GodparentRequest[]         @relation("godparent")
   outgoingGodparentRequests GodparentRequest[]         @relation("godchild")
+  passwordResets            PasswordReset[]
+  emailChanges              EmailChange[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -106,6 +108,28 @@ model UserCandidate {
   phone    String    @default("") @db.VarChar(255)
 
   @@unique([schoolServer, schoolUid])
+}
+
+/// A password reset token
+model PasswordReset {
+  id        String    @id @default(dbgenerated("nanoid('passreset:')"))
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    String
+  expiresAt DateTime?
+}
+
+/// A email validation request
+model EmailChange {
+  id        String    @id @default(dbgenerated("nanoid('emailchange:')"))
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  email     String
+  expiresAt DateTime?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    String
+  pending   Boolean   @default(true)
 }
 
 /// A single external link
@@ -191,6 +215,7 @@ enum GroupType {
   Group
   Integration
   StudentAssociationSection
+  List
 }
 
 /// A group is a collection of users
@@ -204,6 +229,7 @@ model Group {
   schoolId             String?
   studentAssociationId String?
   pictureFile          String    @default("") @db.VarChar(255)
+  pictureFileDark      String    @default("") @db.VarChar(255)
   name                 String    @db.VarChar(255)
   type                 GroupType
   color                String    @db.VarChar(7)
@@ -505,7 +531,7 @@ model NotificationSetting {
   user    User             @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   userId  String
   group   Group?           @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  groupId String?          @default("")
+  groupId String?
   type    NotificationType
   allow   Boolean
 

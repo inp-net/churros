@@ -16,7 +16,6 @@
   } from 'date-fns';
   import type { PageData } from './$types';
   import { me } from '$lib/session';
-  import Button from '$lib/components/Button.svelte';
   import { goto } from '$app/navigation';
   import { dateFormatter } from '$lib/dates';
   import GhostButton from '$lib/components/ButtonGhost.svelte';
@@ -139,7 +138,7 @@
         {#if [...new Set(daysOfWeek.map((d) => d.getMonth()))].length > 1}
           <span class="month-name"
             >{day.toLocaleDateString('default', {
-              month: 'long',
+              month: 'short',
             })}</span
           >
         {/if}

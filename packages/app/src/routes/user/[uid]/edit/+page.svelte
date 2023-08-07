@@ -1,5 +1,4 @@
 <script lang="ts">
-  import NotificationSettingsForm from '$lib/components/FormNotificationSettings.svelte';
   import IconBack from '~icons/mdi/arrow-left';
   import Alert from '$lib/components/Alert.svelte';
   import IconClose from '~icons/mdi/close';
@@ -20,6 +19,9 @@
   import { PUBLIC_SUPPORT_EMAIL, PUBLIC_USER_DUMP_URL } from '$env/static/public';
   import InputPerson from '$lib/components/InputPerson.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import FormNotificationSettings from '$lib/components/FormNotificationSettings.svelte';
+  import { theme } from '$lib/theme';
+  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
 
   let godparentRequestSendServerError = '';
   let godparentRequestSending = false;
@@ -98,6 +100,7 @@
           birthday: data.user.birthday,
           // eslint-disable-next-line unicorn/no-null
           godparentUid: null,
+          email: data.user.email,
         },
         {
           __typename: true,
@@ -184,8 +187,13 @@
 </script>
 
 <h1>
-  <a href=".."> <IconBack /> </a> Éditer
-  {data.user.fullName}
+  <a href=".."> <IconBack /> </a>
+  {#if data.user.uid === $me?.uid}
+    Paramètres
+  {:else}
+    Éditer
+    {data.user.fullName}
+  {/if}
 </h1>
 
 <div class="content">
@@ -199,6 +207,12 @@
       <h2>Permissions</h2>
       <Permissions bind:data />
     {/if}
+    <h2>Apparence</h2>
+    <InputSelectOne
+      label="Thème"
+      options={{ system: 'Suivre le système', dark: 'Sombre', light: 'Clair' }}
+      bind:value={$theme}
+    />
     <h2>Parrainages</h2>
     <InputPerson
       label="Parrain/Marraine"
@@ -279,7 +293,7 @@
     {/if}
     {#if data.user.uid === $me?.uid}
       <h2>Notifications</h2>
-      <NotificationSettingsForm
+      <FormNotificationSettings
         availableGroups={$me?.groups?.map((g) => g.group) ?? []}
         userUid={data.user.uid}
         bind:settings={data.user.notificationSettings}

@@ -390,15 +390,17 @@ builder.mutationField('upsertEvent', (t) =>
               data: links,
             },
           },
-          managers: {
-            deleteMany: {},
-            create: managers.map((m) => ({
-              user: { connect: { uid: m.userUid } },
-              canEdit: m.canEdit,
-              canEditPermissions: m.canEditPermissions,
-              canVerifyRegistrations: m.canVerifyRegistrations,
-            })),
-          },
+          managers: user?.managedEvents.find((m) => m.event.id === id)?.canEditPermissions
+            ? {
+                deleteMany: {},
+                create: managers.map((m) => ({
+                  user: { connect: { uid: m.userUid } },
+                  canEdit: m.canEdit,
+                  canEditPermissions: m.canEditPermissions,
+                  canVerifyRegistrations: m.canVerifyRegistrations,
+                })),
+              }
+            : {},
         },
       });
       console.log(`Upserted the event without tickets or ticket groups`);
@@ -613,7 +615,7 @@ builder.queryField('searchEvents', (t) =>
       q = q.trim();
       const { searchString: search, numberTerms } = splitSearchTerms(q);
       const fuzzyIDs: FuzzySearchResult = await prisma.$queryRaw`
-      SELECT "id", levenshtein(LOWER("title"), LOWER(${search})) as changes
+      SELECT "id", levenshtein(LOWER(unaccent("title")), LOWER(unaccent(${search}))) as changes
       FROM "Event"
       ORDER BY changes ASC
       LIMIT 30

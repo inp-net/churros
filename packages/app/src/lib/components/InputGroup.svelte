@@ -4,6 +4,7 @@
   import IconNone from '~icons/mdi/help';
   import InputField from './InputField.svelte';
   import InputSearchObject from './InputSearchObject.svelte';
+  import type { SvelteComponent } from 'svelte';
 
   type Group = { uid: string; name: string; pictureFile: string };
   export let label: string;
@@ -13,6 +14,9 @@
   export let except: string[] = [];
   export let group: Group | undefined = undefined;
   export let clearable = false;
+
+  export let placeholder = '';
+  export let nullIcon: typeof SvelteComponent = IconNone;
 
   $: console.log(uid, group);
 
@@ -48,12 +52,13 @@
     bind:object={group}
     labelKey="name"
     valueKey="uid"
+    {placeholder}
   >
     <div class="avatar" slot="thumbnail" let:object>
       {#if object}
         <img src="{PUBLIC_STORAGE_URL}{object.pictureFile}" alt={object.name?.toString()} />
       {:else}
-        <IconNone />
+        <svelte:component this={nullIcon} />
       {/if}
     </div>
     <div class="suggestion" slot="item" let:item>
@@ -86,7 +91,7 @@
   .avatar img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   .suggestion {

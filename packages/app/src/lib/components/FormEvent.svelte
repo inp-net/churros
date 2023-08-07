@@ -7,7 +7,11 @@
   import { type PaymentMethod, type Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
-  import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
+  import {
+    DISPLAY_MANAGER_PERMISSION_LEVELS,
+    DISPLAY_VISIBILITIES,
+    HELP_VISIBILITY,
+  } from '$lib/display';
   import InputText from './InputText.svelte';
   import InputNumber from './InputNumber.svelte';
   import InputLongText from './InputLongText.svelte';
@@ -19,9 +23,24 @@
   import { createEventDispatcher } from 'svelte';
   import InputPerson from './InputPerson.svelte';
   import FormPicture from './FormPicture.svelte';
+  import InputSearchObject from './InputSearchObject.svelte';
+  import Fuse from 'fuse.js';
+  import { me } from '$lib/session';
+  import AvatarPerson from './AvatarPerson.svelte';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
+
+  $: canEditManagers =
+    !event.uid ||
+    $me?.managedEvents.find(
+      (manager) => manager.event.uid === event.uid && manager.event.group.uid === event.group.uid
+    )?.canEditPermissions;
+
+  $: console.log({
+    $me: $me?.managedEvents.find((m) => m.event.uid === event.uid),
+    event: event.managers.find((m) => m.user.uid === $me?.uid),
+  });
 
   function eraseFakeIds(id: string): string {
     if (id.includes(':fake:')) return '';
@@ -67,7 +86,7 @@
             userUid: user.uid,
           })),
           id: event.id,
-          lydiaAccountId: event.lydiaAccountId,
+          lydiaAccountId: event.lydiaAccount?.id,
         },
         {
           __typename: true,
@@ -233,7 +252,7 @@
       tickets: Ticket[];
     }>;
     contactMail: string;
-    lydiaAccountId?: string | undefined;
+    lydiaAccount?: undefined | { name: string; id: string };
     description: string;
     endsAt?: Date | undefined;
     links: Array<{ name: string; value: string }>;
@@ -310,11 +329,19 @@
     </div>
     <InputText label="Lieu" bind:value={event.location} />
     <InputField label="Compte Lydia bénéficiaire">
-      <select>
-        {#each availableLydiaAccounts as account}
-          <option value={account.id}> {account.name}</option>
-        {/each}
-      </select>
+      <InputSearchObject
+        clearable
+        bind:object={event.lydiaAccount}
+        on:clear={() => {
+          event.lydiaAccount = undefined;
+          console.log('cleared');
+        }}
+        value={event.lydiaAccount?.id}
+        labelKey="name"
+        valueKey="id"
+        search={(query) =>
+          new Fuse(availableLydiaAccounts, { keys: ['name'] }).search(query).map((r) => r.item)}
+      />
     </InputField>
   </div>
   <div class="right">
@@ -425,55 +452,61 @@
     <h2>
       Managers
 
-      <ButtonSecondary
-        icon={IconPlus}
-        on:click={() => {
-          event.managers = [
-            ...event.managers,
-            {
-              user: { uid: '', firstName: '', lastName: '', pictureFile: '', fullName: '' },
-              ...permissionsFromLevel('readonly'),
-            },
-          ];
-        }}>Manager</ButtonSecondary
-      >
+      {#if canEditManagers}
+        <ButtonSecondary
+          icon={IconPlus}
+          on:click={() => {
+            event.managers = [
+              ...event.managers,
+              {
+                user: { uid: '', firstName: '', lastName: '', pictureFile: '', fullName: '' },
+                ...permissionsFromLevel('readonly'),
+              },
+            ];
+          }}>Manager</ButtonSecondary
+        >
+      {/if}
     </h2>
     {#if event.managers.length <= 0}
       <p class="empty">Aucun manager</p>
     {/if}
     <ul class="nobullet managers">
       {#each event.managers as manager, i}
-        <li class="manager">
-          <InputPerson
-            uid={event.managers[i].user?.uid}
-            except={event.managers.map(({ user }) => user?.uid)}
-            label="Utilisateur·ice"
-            bind:user={event.managers[i].user}
-          />
-          <InputSelectOne
-            label="Permissions"
-            on:change={(e) => {
-              if (!e.target || !('value' in e.target)) return;
-              event.managers[i] = {
-                ...manager,
-                ...permissionsFromLevel(aspermissionlevel(e.target.value)),
-              };
-            }}
-            value={levelFromPermissions(manager)}
-            options={{
-              readonly: 'Lecture seule',
-              verifyer: 'Vérification des billets',
-              editor: 'Modification',
-              fullaccess: 'Gestion totale',
-            }}
-          />
-          <ButtonSecondary
-            on:click={() => {
-              event.managers = event.managers.filter(({ user }) => user?.uid !== manager.user?.uid);
-            }}
-            danger
-            icon={IconClose}>Supprimer</ButtonSecondary
-          >
+        <li class="manager" class:editable={canEditManagers}>
+          {#if canEditManagers}
+            <InputPerson
+              uid={event.managers[i].user?.uid}
+              except={event.managers.map(({ user }) => user?.uid)}
+              label="Utilisateur·ice"
+              bind:user={event.managers[i].user}
+            />
+            <InputSelectOne
+              label="Permissions"
+              on:input={(e) => {
+                event.managers[i] = {
+                  ...manager,
+                  ...permissionsFromLevel(aspermissionlevel(e.detail)),
+                };
+              }}
+              value={levelFromPermissions(manager)}
+              options={DISPLAY_MANAGER_PERMISSION_LEVELS}
+            />
+            <ButtonSecondary
+              on:click={() => {
+                event.managers = event.managers.filter(
+                  ({ user }) => user?.uid !== manager.user?.uid
+                );
+              }}
+              danger
+              icon={IconClose}>Supprimer</ButtonSecondary
+            >
+          {:else}
+            <AvatarPerson
+              href="/user/{manager.user.uid}"
+              {...manager.user}
+              role={DISPLAY_MANAGER_PERMISSION_LEVELS[levelFromPermissions(manager)]}
+            />
+          {/if}
         </li>
       {/each}
     </ul>
@@ -548,10 +581,13 @@
     flex-wrap: wrap;
     gap: 1rem;
     align-items: center;
-    justify-content: center;
     padding: 1rem;
     background: var(--muted-bg);
     border-radius: var(--radius-block);
+  }
+
+  .manager.editable {
+    justify-content: center;
   }
 
   .submit {

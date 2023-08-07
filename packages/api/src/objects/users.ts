@@ -7,6 +7,7 @@ import { purgeUserSessions } from '../context.js';
 import { prisma } from '../prisma.js';
 import { LinkInput } from './links.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
+import { requestEmailChange } from './email-changes.js';
 import {
   type FuzzySearchResult,
   splitSearchTerms,
@@ -17,6 +18,7 @@ import type { Group, User } from '@prisma/client';
 import { dirname, join } from 'node:path';
 import { NotificationTypeEnum } from './notifications.js';
 import { FamilyTree, getFamilyTree } from '../godchildren-tree.js';
+import { yearTier } from '../date.js';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -48,6 +50,11 @@ export const UserType = builder.prismaNode('User', {
     }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     graduationYear: t.exposeInt('graduationYear'),
+    yearTier: t.int({
+      resolve({ graduationYear }) {
+        return yearTier(graduationYear);
+      },
+    }),
 
     // Profile details
     address: t.exposeString('address', { authScopes: { loggedIn: true, $granted: 'me' } }),
@@ -76,7 +83,6 @@ export const UserType = builder.prismaNode('User', {
       resolve: ({ admin, canEditUsers }) => admin || canEditUsers,
       authScopes: { admin: true, $granted: 'me' },
     }),
-
     articles: t.relatedConnection('articles', {
       cursor: 'id',
       authScopes: { loggedIn: true, $granted: 'me' },
@@ -91,7 +97,7 @@ export const UserType = builder.prismaNode('User', {
       query: { orderBy: { createdAt: 'desc' } },
     }),
     major: t.relation('major', { authScopes: { loggedIn: true, $granted: 'me' } }),
-    managedEvents: t.relation('managedEvents', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    managedEvents: t.relation('managedEvents'),
     notificationSettings: t.relation('notificationSettings', {
       authScopes: { loggedIn: true, $granted: 'me' },
     }),
@@ -104,6 +110,9 @@ export const UserType = builder.prismaNode('User', {
       async resolve({ id, godparentId }) {
         return getFamilyTree({ id, godparentId: godparentId ?? undefined });
       },
+    }),
+    emailChangeRequests: t.relation('emailChanges', {
+      authScopes: { $granted: 'me' },
     }),
   }),
 });
@@ -170,7 +179,7 @@ builder.queryField('searchUsers', (t) =>
     async resolve(query, _, { q }) {
       const { numberTerms, searchString: search } = splitSearchTerms(q);
       const searchResults: FuzzySearchResult = await prisma.$queryRaw`
-SELECT "id", levenshtein_less_equal(LOWER("firstName" ||' '|| "lastName"), LOWER(${q}), 20) as changes
+SELECT "id", levenshtein_less_equal(LOWER(unaccent("firstName" ||' '|| "lastName")), LOWER(unaccent(${q})), 20) as changes
 FROM "User"
 ORDER BY changes ASC
 LIMIT 10
@@ -207,6 +216,31 @@ LIMIT 10
   })
 );
 
+/** Gets the people that were born today */
+builder.queryField('birthdays', (t) =>
+  t.prismaField({
+    type: [UserType],
+    args: {
+      now: t.arg({ type: DateTimeScalar, required: false }),
+      activeOnly: t.arg({ type: 'Boolean', required: false }),
+    },
+    authScopes: { loggedIn: true },
+    async resolve(query, _, { now, activeOnly }) {
+      now = now ?? new Date();
+      activeOnly = activeOnly ?? true;
+      const usersBornToday: Array<{ uid: string }> =
+        await prisma.$queryRaw`SELECT uid from "User" WHERE EXTRACT(DAY FROM "birthday") = EXTRACT(DAY FROM ${now}) AND EXTRACT(MONTH FROM "birthday") = EXTRACT(MONTH FROM ${now})`;
+      const users = await prisma.user.findMany({
+        ...query,
+        where: { uid: { in: usersBornToday.map((u) => u.uid) } },
+      });
+      if (activeOnly)
+        return users.filter(({ graduationYear }) => [1, 2, 3].includes(yearTier(graduationYear)));
+      return users;
+    },
+  })
+);
+
 /** Updates a user. */
 builder.mutationField('updateUser', (t) =>
   t.prismaField({
@@ -216,6 +250,7 @@ builder.mutationField('updateUser', (t) =>
       uid: t.arg.string(),
       majorId: t.arg.id(),
       graduationYear: t.arg.int(),
+      email: t.arg.string(),
       birthday: t.arg({ type: DateTimeScalar, required: false }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
       phone: t.arg.string({ validate: { maxLength: 255 } }),
@@ -231,6 +266,7 @@ builder.mutationField('updateUser', (t) =>
       {
         uid,
         majorId,
+        email,
         graduationYear,
         nickname,
         description,
@@ -239,8 +275,11 @@ builder.mutationField('updateUser', (t) =>
         phone,
         birthday,
         godparentUid,
-      }
+      },
+      { user }
     ) {
+      if (!user) throw new GraphQLError('Not logged in');
+
       if (phone) {
         const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
         if (isValid) {
@@ -250,6 +289,26 @@ builder.mutationField('updateUser', (t) =>
           if (!isValid) throw new Error('Numéro de téléphone invalide');
           phone = phoneNumber;
         }
+      }
+
+      const { email: oldEmail } = await prisma.user.findUniqueOrThrow({ where: { uid } });
+      const changingEmail = email !== oldEmail;
+
+      if (changingEmail) {
+        console.log(`Updating mail: ${oldEmail} -> ${email}`);
+        // Check if new email is available
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) throw new GraphQLError('Cet e-mail est déjà utilisé');
+        // Delete all pending password resets for user
+        await prisma.passwordReset.deleteMany({
+          where: {
+            user: {
+              email: { in: [email, oldEmail] },
+            },
+          },
+        });
+        // Send a validation email
+        await requestEmailChange(email, user.id);
       }
 
       purgeUserSessions(uid);

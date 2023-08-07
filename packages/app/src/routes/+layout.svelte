@@ -25,10 +25,16 @@
 
   onMount(() => {
     let currentTheme = $theme;
-    $theme = 'light';
     theme.subscribe(($theme) => {
       if (currentTheme) document.documentElement.classList.remove(currentTheme);
-      document.documentElement.classList.add($theme);
+      if ($theme === 'system') {
+        document.documentElement.classList.add(
+          window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        );
+      } else {
+        document.documentElement.classList.add($theme);
+      }
+  
       currentTheme = $theme;
     });
   });
@@ -51,26 +57,6 @@
 <NavigationBottom current={currentTab($page.url)} />
 
 <style lang="scss">
-  .mobile-background {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    background: rgb(0 0 0 / 50%);
-  }
-
-  .mobile-menu {
-    position: fixed;
-    inset: 0;
-    right: 8rem;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 12rem;
-    max-width: 20rem;
-    background: var(--bg);
-    box-shadow: var(--shadow);
-  }
-
   .layout {
     // max-width: 100rem;
     padding-top: 6rem; // XXX equal to topbar's height
