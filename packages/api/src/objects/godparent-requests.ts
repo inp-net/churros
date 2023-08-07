@@ -5,6 +5,7 @@ import { notify } from '../services/notifications.js';
 import { DateTimeScalar } from './scalars.js';
 import { GraphQLError } from 'graphql';
 import { getFamilyTree } from '../godchildren-tree.js';
+import { fullName } from './users.js';
 
 export const GodparentRequestType = builder.prismaObject('GodparentRequest', {
   fields: (t) => ({
@@ -86,12 +87,12 @@ builder.mutationField('upsertGodparentRequest', (t) =>
       };
       if (!id) {
         await notify([godparent], {
-          body: `${user.fullName} veut devenir votre filleul·e !`,
+          body: `${fullName(godchild)} veut devenir votre filleul·e !`,
           title: `Demande de parrainage reçue`,
           data: {
             goto: `/me`,
             group: undefined,
-            type: NotificationType.GodparentRequestAccepted,
+            type: NotificationType.GodparentRequestReceived,
           },
         });
       }
@@ -147,7 +148,7 @@ builder.mutationField('deleteGodparentRequest', (t) =>
           },
         });
         await notify([request.godchild], {
-          body: `${request.godparent.firstName} ${request.godparent.lastName} a accepté votre demande de parrainage!`,
+          body: `${fullName(request.godparent)} a accepté votre demande de parrainage!`,
           title: `Demande de parrainage acceptée!`,
           data: {
             goto: `/me`,
@@ -157,7 +158,7 @@ builder.mutationField('deleteGodparentRequest', (t) =>
         });
       } else {
         await notify([request.godchild], {
-          body: `${request.godparent.firstName} ${request.godparent.lastName} a refusé votre demande de parrainage!`,
+          body: `${fullName(request.godparent)} a refusé votre demande de parrainage.`,
           title: `Demande de parrainage refusée :/`,
           data: {
             goto: `/me`,
