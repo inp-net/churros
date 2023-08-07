@@ -15,7 +15,7 @@ import { prisma } from '../prisma.js';
 import webpush, { WebPushError } from 'web-push';
 import { Cron } from 'croner';
 import type { MaybePromise } from '@pothos/core';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
+import { Prisma } from '@prisma/client';
 import { toHtml } from './markdown.js';
 import { differenceInSeconds, minutesToSeconds, subMinutes } from 'date-fns';
 import { fullName } from '../objects/users.js';
@@ -505,7 +505,7 @@ export async function notify<U extends User>(
             },
           })
           .catch((error) => {
-            if (error instanceof PrismaClientKnownRequestError && error.code === 'P2003') {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
               // Subscription was deleted in the meantime, nothing to worry about
             } else {
               throw error;
