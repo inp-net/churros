@@ -77,7 +77,7 @@
   const formatPhoneNumber = (phone: string) =>
     phone.replace(/^\+33(\d)(\d\d)(\d\d)(\d\d)(\d\d)$/, '0$1 $2 $3 $4 $5');
 
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+   
   $: pictureFile = user.pictureFile ? `${PUBLIC_STORAGE_URL}${user.pictureFile}` : '';
 </script>
 
@@ -103,9 +103,9 @@
         {/if}
       </h1>
       <p class="major">
-        {yearTier(user.graduationYear)}A ({user.graduationYear}) · {user.major.name} · {user.major.schools
-          .map(({ name }) => name)
-          .join(', ')}
+        {yearTier(user.graduationYear)}A ({user.graduationYear}) ·
+        <abbr title={user.major.name}>{user.major.shortName}</abbr>
+        · {user.major.schools.map(({ name }) => name).join(', ')}
       </p>
       <ul class="social-links nobullet">
         {#each user.links as { name, value }}
@@ -161,7 +161,7 @@
     <CarouselGroups
       groups={user.groups.map(({ group, title, ...roles }) => ({
         ...group,
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+         
         role: `${rolesBadge(roles)} ${title}`,
       }))}
     />

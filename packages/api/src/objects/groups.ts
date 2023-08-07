@@ -113,7 +113,7 @@ builder.queryField('groups', (t) =>
     args: {
       types: t.arg({ type: [GroupEnumType], required: false }),
     },
-    resolve: (query, _, { types }) =>
+    resolve: async (query, _, { types }) =>
       prisma.group.findMany({
         ...query,
         where: types ? { type: { in: types } } : {},
@@ -383,7 +383,7 @@ builder.mutationField('updateGroupPicture', (t) =>
         select: { pictureFile: true, pictureFileDark: true },
       });
 
-      const pictureFile = data[propertyName] ;
+      const pictureFile = data[propertyName];
 
       console.log(`existing picture${dark ? ' (dark)' : ''}: ${pictureFile}`);
 

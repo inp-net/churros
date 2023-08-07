@@ -158,8 +158,9 @@ model Link {
 
 /// A school syllabus
 model Major {
-  id   String @id @default(dbgenerated("nanoid('major:')"))
-  name String @db.VarChar(255)
+  id        String @id @default(dbgenerated("nanoid('major:')"))
+  name      String @db.VarChar(255)
+  shortName String @db.VarChar(255)
 
   schools        School[]
   students       User[]

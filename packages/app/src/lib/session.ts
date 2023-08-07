@@ -33,7 +33,12 @@ export const sessionUserQuery = () =>
       canEditPermissions: true,
       canVerifyRegistrations: true,
     },
-    major: { id: true, name: true, schools: { id: true, name: true, uid: true, color: true } },
+    major: {
+      id: true,
+      name: true,
+      shortName: true,
+      schools: { id: true, name: true, uid: true, color: true },
+    },
   });
 
 export type SessionUser = PropsType<typeof sessionUserQuery, 'User'>;

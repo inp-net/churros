@@ -53,7 +53,8 @@
           <AvatarPerson
             href="/user/{uid}"
             {...user}
-            role="{major.name} · {new Date().getFullYear() - (birthday?.getFullYear() ?? 0)} ans"
+            role="{major.shortName} · {new Date().getFullYear() -
+              (birthday?.getFullYear() ?? 0)} ans"
           />
         </li>
       {:else}
