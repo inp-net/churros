@@ -390,15 +390,17 @@ builder.mutationField('upsertEvent', (t) =>
               data: links,
             },
           },
-          managers: {
-            deleteMany: {},
-            create: managers.map((m) => ({
-              user: { connect: { uid: m.userUid } },
-              canEdit: m.canEdit,
-              canEditPermissions: m.canEditPermissions,
-              canVerifyRegistrations: m.canVerifyRegistrations,
-            })),
-          },
+          managers: user?.managedEvents.find((m) => m.event.id === id)?.canEditPermissions
+            ? {
+                deleteMany: {},
+                create: managers.map((m) => ({
+                  user: { connect: { uid: m.userUid } },
+                  canEdit: m.canEdit,
+                  canEditPermissions: m.canEditPermissions,
+                  canVerifyRegistrations: m.canVerifyRegistrations,
+                })),
+              }
+            : {},
         },
       });
       console.log(`Upserted the event without tickets or ticket groups`);

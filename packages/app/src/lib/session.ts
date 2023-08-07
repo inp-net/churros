@@ -28,7 +28,7 @@ export const sessionUserQuery = () =>
       canEditMembers: true,
     },
     managedEvents: {
-      event: { uid: true, id: true },
+      event: { uid: true, id: true, group: { uid: true } },
       canEdit: true,
       canEditPermissions: true,
       canVerifyRegistrations: true,

@@ -27,7 +27,8 @@
 <InputField {label}>
   <InputSearchObject
     {clearable}
-    search={(q) => new Fuse(schools, {
+    search={(q) =>
+      new Fuse(schools, {
         keys: ['name', 'color', 'uid'],
       })
         .search(q)

@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import InputField from './InputField.svelte';
+  const emit = createEventDispatcher();
 
   export let value: string | undefined = undefined;
   export let label: string;
@@ -30,6 +31,8 @@
     : options;
 
   let fieldsetElement: HTMLFieldSetElement;
+
+  $: emit('input', value);
 </script>
 
 <InputField {label} {required} {hint} errors={errorMessage ? [errorMessage] : []}>

@@ -97,7 +97,7 @@ export const UserType = builder.prismaNode('User', {
       query: { orderBy: { createdAt: 'desc' } },
     }),
     major: t.relation('major', { authScopes: { loggedIn: true, $granted: 'me' } }),
-    managedEvents: t.relation('managedEvents', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    managedEvents: t.relation('managedEvents'),
     notificationSettings: t.relation('notificationSettings', {
       authScopes: { loggedIn: true, $granted: 'me' },
     }),

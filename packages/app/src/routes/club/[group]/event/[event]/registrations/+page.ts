@@ -8,6 +8,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
       registrationsOfEvent: [
         {
           eventUid: params.event,
+          groupUid: params.group,
         },
         Selector('QueryRegistrationsOfEventConnection')({
           pageInfo: { hasNextPage: true, startCursor: true },
