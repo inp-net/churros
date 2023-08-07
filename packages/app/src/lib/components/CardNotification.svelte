@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { NotificationType } from '$lib/zeus';
-  import type { Link } from '$lib/zeus';
+  import type { GraphQLTypes } from '$lib/zeus';
   import { formatDistanceToNow } from 'date-fns';
   import { fr } from 'date-fns/locale';
 
@@ -19,7 +19,7 @@
   export let title: string;
   export let body: string;
   export let timestamp: number;
-  export let action: Link[];
+  export let action: Array<GraphQLTypes['Link']>;
   const date = formatDistanceToNow(new Date(timestamp), { addSuffix: true, locale: fr });
 </script>
 
@@ -53,8 +53,8 @@
     <div class="timestamp">{date}</div>
   </div>
   <div class="action" class:mono={action.length === 1} class:duo={action.length === 2}>
-    {#each action as { label, href }, i}
-      <a class="action-label" class:up={i === 0} class:down={i === 1} {href}>{label}</a>
+    {#each action as { name, value }, i}
+      <a class="action-label" class:up={i === 0} class:down={i === 1} href={value}>{name}</a>
     {/each}
   </div>
 </div>
