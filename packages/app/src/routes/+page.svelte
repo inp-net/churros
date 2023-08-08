@@ -9,6 +9,7 @@
   import { me } from '$lib/session';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   export let data: PageData;
 
@@ -46,6 +47,7 @@
         label=""
         options={{ 1: '1As', 2: '2As', 3: '3As', all: 'Tous' }}
       />
+      <ButtonSecondary href="/birthdays">Autres jours</ButtonSecondary>
     </h1>
     <ul class="nobullet">
       {#each data.birthdays.filter((u) => (selectedBirthdaysYearTier === 'all' || u.yearTier === Number.parseFloat(selectedBirthdaysYearTier)) && u.major.schools.some( (s) => $me?.major.schools.some((schoolMe) => schoolMe.uid === s.uid) )) as { uid, major, birthday, ...user } (uid)}
