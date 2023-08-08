@@ -4,6 +4,8 @@
   import { me } from '$lib/session';
   import type { PageData } from './$types';
 
+  $: ({ group, event } = $page.params);
+
   export let data: PageData;
   const TABS = {
     '': 'Infos',
@@ -49,13 +51,16 @@
   $: {
     currentTab = pathLeaf in TABS ? (pathLeaf as keyof typeof TABS) : '';
   }
+
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  const tabHref = (tab: string) => `/club/${group}/event/${event}/${tab}`;
 </script>
 
 {#if shownTabs.length > 1}
   <NavigationTabs
     tabs={shownTabs.map((tab) => ({
       name: TABS[tab],
-      href: currentTab === tab ? '.' : currentTab === '' ? `./${tab}` : `../${tab}`,
+      href: currentTab === tab ? '.' : tabHref(tab),
     }))}
   />
 {/if}
