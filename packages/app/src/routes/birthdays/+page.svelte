@@ -11,15 +11,12 @@
 
   $: {
     for (const user of data.birthdays) {
-      let key = format(user?.birthday, 'dd MMMM', { locale: fr });
-      if (key === format(new Date(), 'dd MMMM', { locale: fr })) 
-        key = "Aujourd'hui";
-      
-      if (key in groupedByBirthday) 
-        groupedByBirthday[key].push(user);
-       else 
-        groupedByBirthday[key] = [user];
-      
+      if (!user.birthday) continue;
+      let key = format(user.birthday, 'dd MMMM', { locale: fr });
+      if (key === format(new Date(), 'dd MMMM', { locale: fr })) key = "Aujourd'hui";
+
+      if (key in groupedByBirthday) groupedByBirthday[key].push(user);
+      else groupedByBirthday[key] = [user];
     }
   }
 </script>
