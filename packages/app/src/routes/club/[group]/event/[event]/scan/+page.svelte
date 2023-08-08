@@ -51,7 +51,7 @@
   $: console.log(aspectRatio);
 
   onMount(() => {
-    aspectRatio = window.innerWidth / window.innerHeight;
+    aspectRatio = window.innerHeight / window.innerWidth;
     realTheme = $theme;
     $theme = 'dark';
     const scanner = new Html5QrcodeScanner(
