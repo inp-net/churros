@@ -77,9 +77,8 @@
     if (!decodedContents.startsWith('r:')) return undefined;
 
     const controllingManualRegistrationCode = manualRegistrationCode === '';
-    if (controllingManualRegistrationCode) 
+    if (controllingManualRegistrationCode)
       manualRegistrationCode = decodedContents.replace(/^r:/, '');
-    
 
     const { registration } = await $zeus.query({
       registration: [
@@ -114,9 +113,7 @@
     }
 
     result = r;
-    if (controllingManualRegistrationCode) 
-      manualRegistrationCode = '';
-    
+    if (controllingManualRegistrationCode) manualRegistrationCode = '';
 
     if (result === false) {
       if (closeTimeoutHandle) clearTimeout(closeTimeoutHandle);
@@ -316,5 +313,7 @@
 
   #reader :global(#reader__scan_region video) {
     object-fit: cover;
+    width: 100vw;
+    height: 100vh;
   }
 </style>
