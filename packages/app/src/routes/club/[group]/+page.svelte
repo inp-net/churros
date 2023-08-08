@@ -28,6 +28,7 @@
   import Badge from '$lib/components/Badge.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import { isDark } from '$lib/theme';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -101,6 +102,7 @@
           >
         {/if}
 
+        <ButtonShare />
         {#if canEditDetails}
           <ButtonSecondary icon={IconGear} href="./edit">Modifier</ButtonSecondary>
         {/if}

@@ -10,6 +10,8 @@
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import { formatRelative, isFuture, isWithinInterval } from 'date-fns';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
 
   export let data: PageData;
   const { author, publishedAt, links, title, bodyHtml, group, pictureFile, event } = data.article;
@@ -34,8 +36,9 @@
     <h1>
       <ButtonBack />
       {title}
+      <ButtonShare />
       {#if canEditArticles}
-        <a class="edit" href="./edit"> <IconGear /> </a>
+        <ButtonGhost href="./edit"><IconGear /></ButtonGhost>
       {/if}
     </h1>
     <p class="published-at">
@@ -155,12 +158,9 @@
 
   h1 {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     align-items: center;
-  }
-
-  h1 .edit {
-    margin-left: auto;
   }
 
   .links {

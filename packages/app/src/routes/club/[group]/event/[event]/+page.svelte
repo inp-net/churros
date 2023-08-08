@@ -9,6 +9,7 @@
   import CardArticle from '$lib/components/CardArticle.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
 
   export let data: PageData;
 
@@ -43,6 +44,7 @@
   <h1>
     <BackButton go="../.." white />
     {title}
+    <ButtonShare white />
   </h1>
   <p>{dateTimeFormatter.format(startsAt)}</p>
 </header>
@@ -170,6 +172,12 @@
       margin: 0;
       color: white;
     }
+  }
+
+  h1 {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
   }
 
   section {

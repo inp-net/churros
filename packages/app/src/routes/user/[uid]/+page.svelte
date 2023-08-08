@@ -18,6 +18,8 @@
   import Badge from '$lib/components/Badge.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import CardArticle from '$lib/components/CardArticle.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -100,6 +102,11 @@
             ><IconAdmin /> ADMIN</Badge
           >
         {/if}
+
+        <ButtonShare />
+        {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
+          <ButtonGhost href="./edit"><IconGear /></ButtonGhost>
+        {/if}
       </h1>
       <p class="major">
         {yearTier(user.graduationYear)}A ({user.graduationYear}) ·
@@ -147,10 +154,6 @@
         </dl>
       </div>
     </div>
-
-    {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
-      <a class="edit" href="./edit"><IconGear /></a>
-    {/if}
   </header>
 
   <section class="groups">
@@ -202,6 +205,12 @@
     margin-bottom: 2rem;
   }
 
+  h1 {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
   .picture {
     --size: 7rem;
 
@@ -251,10 +260,6 @@
     flex-flow: column wrap;
     flex-grow: 1;
     gap: 0.5rem;
-  }
-
-  .edit {
-    font-size: 1.5em;
   }
 
   .info {
@@ -317,10 +322,6 @@
   .articles {
     max-width: 600px;
     margin: 0 auto;
-  }
-
-  header .edit {
-    flex-shrink: 0;
   }
 
   @media (min-width: 1000px) {
