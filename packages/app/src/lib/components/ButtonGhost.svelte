@@ -18,6 +18,7 @@
     --bg: transparent;
 
     all: unset;
+    flex-shrink: 0;
     padding: 0.25em;
     color: var(--text);
     cursor: pointer;
