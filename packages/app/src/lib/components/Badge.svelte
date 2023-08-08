@@ -5,7 +5,7 @@
   import IconWarning from '~icons/mdi/warning';
 </script>
 
-<div class="badge {theme === 'info' ? 'primary' : theme}" {...$$restProps}>
+<div {...$$restProps} class="badge {theme === 'info' ? 'primary' : theme}">
   {#if theme === 'success'}
     <IconCheck />
   {:else if theme === 'warning'}

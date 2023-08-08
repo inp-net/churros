@@ -57,6 +57,8 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
           },
           '...on QueryRegistrationSuccess': {
             data: {
+              createdAt: true,
+              paymentMethod: true,
               id: true,
               beneficiary: true,
               beneficiaryUser: {
@@ -74,6 +76,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
                 fullName: true,
               },
               ticket: {
+                price: true,
                 name: true,
                 group: {
                   name: true,
