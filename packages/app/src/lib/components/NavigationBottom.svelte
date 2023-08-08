@@ -20,6 +20,7 @@
   import { beforeNavigate } from '$app/navigation';
   import { format, isMonday, previousMonday } from 'date-fns';
   import { me } from '$lib/session';
+  import { page } from '$app/stores';
 
   export let current: 'home' | 'search' | 'events' | 'more';
   let flyoutOpen = false;
@@ -34,7 +35,7 @@
   });
 </script>
 
-<nav class:flyout-open={flyoutOpen}>
+<nav class:flyout-open={flyoutOpen} class:transparent={$page.url.pathname.endsWith('/scan/')}>
   <a href="/" class:current={!flyoutOpen && current === 'home'} class:disabled={flyoutOpen}>
     {#if current === 'home'}
       <IconHome />
@@ -162,6 +163,13 @@
     height: 4rem;
     background: var(--bg);
     border-top: var(--border-block) solid rgb(0 0 0 / 5%);
+  }
+
+  nav.transparent {
+    color: white;
+    background: transparent;
+
+    --text: white;
   }
 
   nav.flyout-open {

@@ -9,6 +9,7 @@
   {...$$restProps}
   class:dark-shadow={darkShadow}
   {type}
+  {href}
   class="button-ghost {$$restProps.class}"
   on:click><slot /></svelte:element
 >

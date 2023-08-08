@@ -58,6 +58,7 @@
 
 {#if shownTabs.length > 1}
   <NavigationTabs
+    --text={currentTab === 'scan' ? 'white' : 'var(--text)'}
     tabs={shownTabs.map((tab) => ({
       name: TABS[tab],
       href: currentTab === tab ? '.' : tabHref(tab),

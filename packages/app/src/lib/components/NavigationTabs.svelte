@@ -26,6 +26,7 @@
 
   li {
     padding: 0.5rem;
+    color: var(--text);
     text-align: center;
   }
 

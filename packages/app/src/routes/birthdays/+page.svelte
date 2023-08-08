@@ -19,13 +19,14 @@
       else groupedByBirthday[key] = [user];
     }
   }
-  
+
   const parseBackDisplayedDate = (date: string) => {
     if (date === "Aujourd'hui") return new Date();
     return parse(date, 'dd MMMM', new Date());
   };
 
-  const sortWithDisplayDate = (a: string, b: string) => parseBackDisplayedDate(a).valueOf() - parseBackDisplayedDate(b).valueOf();
+  const sortWithDisplayDate = (a: string, b: string) =>
+    parseBackDisplayedDate(a).valueOf() - parseBackDisplayedDate(b).valueOf();
 </script>
 
 <h1><ButtonBack /> Anniversaires</h1>

@@ -8,6 +8,7 @@
   import { onMount } from 'svelte';
   import { me } from '$lib/session';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { page } from '$app/stores';
 
   onMount(() => {
     window.addEventListener('scroll', () => {
@@ -18,7 +19,7 @@
   let scrolled = false;
 </script>
 
-<nav id="navigation-top" class:scrolled>
+<nav id="navigation-top" class:scrolled class:transparent={$page.url.pathname.endsWith('/scan/')}>
   <a href="/"><img class="logo" src="/logo.png" alt="logo de l'AE" /></a>
 
   <div class="actions">
@@ -58,6 +59,13 @@
     margin: 0;
     background: var(--bg);
     transition: box-shadow 0.25s ease;
+  }
+
+  nav.transparent {
+    color: white;
+    background: transparent;
+
+    --text: white;
   }
 
   nav.scrolled {

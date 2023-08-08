@@ -12,6 +12,7 @@
   .card {
     margin: 1rem 0;
     overflow: hidden;
+    background-color: var(--card-bg, transparent);
     border-radius: var(--radius-block);
     box-shadow: var(--shadow);
   }
