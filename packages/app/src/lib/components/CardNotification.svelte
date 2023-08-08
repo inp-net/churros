@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { NotificationType } from '$lib/zeus';
   import { formatDistanceToNow } from 'date-fns';
-  import { fr } from 'date-fns/locale/index.js';
+  import fr from 'date-fns/locale/fr/index.js';
 
   import IconShotgunOpened from '~icons/mdi/lock-open-outline';
   import IconShotgunOpeningSoon from '~icons/mdi/clock-alert-outline';
