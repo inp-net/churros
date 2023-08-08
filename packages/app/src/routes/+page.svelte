@@ -113,6 +113,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
+    justify-content: center;
     margin-top: 1rem;
   }
 
@@ -120,5 +121,7 @@
     display: flex;
     flex-flow: column wrap;
     align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
   }
 </style>
