@@ -2,7 +2,7 @@
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import { format } from 'date-fns';
   import type { PageData } from './$types';
-  import fr from 'date-fns/locale/fr';
+  import { fr } from 'date-fns/locale';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
 
   export let data: PageData;

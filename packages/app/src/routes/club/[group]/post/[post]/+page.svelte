@@ -1,6 +1,6 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import dateFnFrenchLocale from 'date-fns/locale/fr';
+  import { fr } from 'date-fns/locale';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import IconGear from '~icons/mdi/gear';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
@@ -75,7 +75,7 @@
 
       <p>
         {formatDateTime(event.startsAt)} · {formatRelative(event.startsAt, new Date(), {
-          locale: dateFnFrenchLocale,
+          locale: fr,
           weekStartsOn: 1,
         })}
       </p>
