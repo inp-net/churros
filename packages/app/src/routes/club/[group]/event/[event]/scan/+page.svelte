@@ -58,7 +58,7 @@
       'reader',
       {
         fps: 5,
-        aspectRatio: 9 / 16,
+        aspectRatio,
         // qrbox: { width: 300, height: 300 }
       },
       false
@@ -305,15 +305,13 @@
     display: none;
   } */
 
-  #reader :global(#html5-qrcode-anchor-scan-type-change),
+  /* #reader :global(#html5-qrcode-anchor-scan-type-change),
   #reader :global(#html5-qrcode-button-camera-stop),
   #reader :global(img[alt='Info icon']) {
     display: none !important;
-  }
+  } */
 
   #reader :global(#reader__scan_region video) {
     object-fit: cover;
-    width: 100vw;
-    height: 100vh;
   }
 </style>
