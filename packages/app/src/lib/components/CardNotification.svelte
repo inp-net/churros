@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { NotificationType } from '$lib/zeus';
   import { formatDistanceToNow } from 'date-fns';
-  import { fr } from 'date-fns/locale';
+  import { fr } from 'date-fns/locale/index.js';
 
   import IconShotgunOpened from '~icons/mdi/lock-open-outline';
   import IconShotgunOpeningSoon from '~icons/mdi/clock-alert-outline';
@@ -67,22 +67,24 @@
   .card-notification {
     display: flex;
   }
+
   .content {
     display: flex;
     flex-flow: row wrap;
-    align-items: center;
-    height: var(--size);
-    width: 100%;
-    padding: 1rem 1.5rem;
     column-gap: 1.5rem;
+    align-items: center;
+    width: 100%;
+    height: var(--size);
+    padding: 1rem 1.5rem;
     border: var(--border-block) solid var(--border);
     border-radius: var(--radius-block);
   }
+
   .content:hover,
   .content:focus-visible {
-    border-color: var(--hover-border);
-    background: var(--hover-bg);
     color: var(--hover-text);
+    background: var(--hover-bg);
+    border-color: var(--hover-border);
   }
 
   .icon {
@@ -150,10 +152,10 @@
     flex-flow: row wrap;
     align-items: center;
     justify-content: center;
+    width: 100%;
     padding: 1.25rem;
     font-weight: bold;
     text-align: center;
-    width: 100%;
   }
 
   .duo .action-label {
@@ -184,7 +186,7 @@
     border-bottom-right-radius: 0;
   }
 
-  .card-notification.has-actions .content:not(:hover):not(:focus-visible) {
+  .card-notification.has-actions .content:not(:hover, :focus-visible) {
     border-right: none;
   }
 

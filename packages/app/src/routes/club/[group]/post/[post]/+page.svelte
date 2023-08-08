@@ -1,6 +1,6 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import { fr } from 'date-fns/locale';
+  import { fr } from 'date-fns/locale/index.js';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import IconGear from '~icons/mdi/gear';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';

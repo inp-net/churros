@@ -1,6 +1,6 @@
 <script lang="ts">
   import { format, startOfYear, addMonths } from 'date-fns';
-  import { fr } from 'date-fns/locale';
+  import { fr } from 'date-fns/locale/index.js';
   export let date: Date;
 
   // Génération jours de la semaine
