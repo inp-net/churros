@@ -9,16 +9,22 @@
   const { title } = data.article;
 </script>
 
-<h1>
-  <ButtonBack />
+<div class="content">
+  <h1>
+    <ButtonBack />
 
-  Édition de l'article {title}
-</h1>
+    Édition de l'article {title}
+  </h1>
 
-<FormPicture objectName="Article" bind:object={data.article} />
-<PostDetails bind:data />
+  <FormPicture objectName="Article" bind:object={data.article} />
+  <PostDetails bind:data />
+</div>
 
 <style>
+  .content {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
   h1 {
     display: flex;
     gap: 1rem;
