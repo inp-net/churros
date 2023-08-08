@@ -116,43 +116,42 @@
         {/each}
       </ul>
       <p class="bio">{user.description}</p>
+      <div class="info">
+        <dl>
+          {#if user.nickname}
+            <dt>Surnom</dt>
+            <dd>{user.nickname}</dd>
+          {/if}
+          <dt>Email</dt>
+          <dd>
+            <a href="mailto:{user.email}">{user.email}</a>
+          </dd>
+          {#if user.phone}
+            <dt>Téléphone</dt>
+            <dd>
+              <a href="tel:{user.phone}">{formatPhoneNumber(user.phone)}</a>
+            </dd>
+          {/if}
+          {#if user.birthday}
+            <dt>Anniversaire</dt>
+            <dd>{dateFormatter.format(user.birthday)}</dd>
+            <!-- TODO add to agenda -->
+          {/if}
+          {#if user.address}
+            <dt>Adresse</dt>
+            <dd>{user.address}</dd>
+            <!-- TODO go here with gmaps? -->
+          {/if}
+          <dt>Identifiant</dt>
+          <dd>{user.uid}</dd>
+        </dl>
+      </div>
     </div>
 
     {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
       <a class="edit" href="./edit"><IconGear /></a>
     {/if}
   </header>
-
-  <section class="info">
-    <dl>
-      {#if user.nickname}
-        <dt>Surnom</dt>
-        <dd>{user.nickname}</dd>
-      {/if}
-      <dt>Email</dt>
-      <dd>
-        <a href="mailto:{user.email}">{user.email}</a>
-      </dd>
-      {#if user.phone}
-        <dt>Téléphone</dt>
-        <dd>
-          <a href="tel:{user.phone}">{formatPhoneNumber(user.phone)}</a>
-        </dd>
-      {/if}
-      {#if user.birthday}
-        <dt>Anniversaire</dt>
-        <dd>{dateFormatter.format(user.birthday)}</dd>
-        <!-- TODO add to agenda -->
-      {/if}
-      {#if user.address}
-        <dt>Adresse</dt>
-        <dd>{user.address}</dd>
-        <!-- TODO go here with gmaps? -->
-      {/if}
-      <dt>Identifiant</dt>
-      <dd>{user.uid}</dd>
-    </dl>
-  </section>
 
   <section class="groups">
     <h2>Groupes</h2>
@@ -198,6 +197,7 @@
 
   header {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 2rem;
   }
@@ -260,13 +260,23 @@
   .info {
     display: flex;
     flex-flow: column wrap;
-    align-items: center;
   }
 
   dl {
     display: grid;
+    flex-wrap: wrap;
     grid-template-columns: auto 1fr;
     column-gap: 0.5rem;
+  }
+
+  @media (max-width: 600px) {
+    dl {
+      grid-template-columns: 1fr;
+    }
+
+    dd {
+      margin-bottom: 1rem;
+    }
   }
 
   dt {
@@ -307,5 +317,35 @@
   .articles {
     max-width: 600px;
     margin: 0 auto;
+  }
+
+  header .edit {
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 1000px) {
+    .content {
+      display: grid;
+      grid-template-areas: 'header header' 'groups groups' 'family articles';
+      grid-template-columns: 50% 50%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      grid-area: header;
+    }
+
+    section.groups {
+      grid-area: groups;
+    }
+
+    section.family {
+      grid-area: family;
+    }
+
+    section.articles {
+      grid-area: articles;
+    }
   }
 </style>
