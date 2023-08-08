@@ -2,7 +2,7 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import fr from 'date-fns/locale/fr/index.js';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import IconGear from '~icons/mdi/gear';
+  import IconGear from '~icons/mdi/gear-outline';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { dateTimeFormatter, formatDateTime } from '$lib/dates';
   import { me } from '$lib/session';

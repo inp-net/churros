@@ -1,6 +1,6 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import IconGear from '~icons/mdi/gear';
+  import IconGear from '~icons/mdi/gear-outline';
   import IconAdmin from '~icons/mdi/security';
   import IconWebsite from '~icons/mdi/earth';
   import { dateFormatter, yearTier } from '$lib/dates.js';

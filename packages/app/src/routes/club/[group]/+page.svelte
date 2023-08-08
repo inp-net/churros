@@ -2,7 +2,7 @@
   import Alert from '$lib/components/Alert.svelte';
   import IconAdd from '~icons/mdi/plus';
   import IconPeople from '~icons/mdi/account-group';
-  import IconGear from '~icons/mdi/gear';
+  import IconGear from '~icons/mdi/gear-outline';
   import IconJoinGroup from '~icons/mdi/account-plus';
   import { me } from '$lib/session.js';
   import type { PageData } from './$types';
@@ -242,9 +242,9 @@
 
   h1 {
     display: flex;
+    flex-wrap: wrap;
     column-gap: 1rem;
     align-items: center;
-    flex-wrap: wrap;
   }
 
   header .picture img {
@@ -307,24 +307,29 @@
       justify-content: start;
       text-align: left;
     }
+
     section {
       margin: 0;
     }
+
     .content {
       display: grid;
       grid-template-areas: 'header header' 'description posts' 'board posts' 'subgroups events' 'related events';
       grid-template-columns: 50% 50%;
+      column-gap: 5rem;
       justify-content: start;
       max-width: 1200px;
       margin: 0 auto;
-      column-gap: 5rem;
     }
+
     header {
       grid-area: header;
     }
+
     section.description {
       grid-area: description;
       justify-content: start;
+
       p {
         text-align: left;
       }
@@ -336,6 +341,7 @@
 
     section.board {
       grid-area: board;
+
       ul {
         justify-content: start;
       }

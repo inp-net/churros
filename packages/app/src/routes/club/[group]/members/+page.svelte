@@ -1,9 +1,9 @@
 <script lang="ts">
   import ButtonBack from '$lib/components/ButtonBack.svelte';
-  import IconGear from '~icons/mdi/gear';
-  import { groupBy, startCase } from 'lodash';
+  import IconGear from '~icons/mdi/gear-outline';
+  import { groupBy } from 'lodash';
   import type { PageData } from './$types';
-  import { getYear, isBefore, startOfYear } from 'date-fns';
+  import { getYear, isBefore } from 'date-fns';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import { me } from '$lib/session';
 
