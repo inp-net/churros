@@ -30,8 +30,8 @@
       const { event } = await $zeus.query({
         event: [
           { uid: page.params.event, groupUid: page.params.group },
-          { title: true, startsAt: true }
-        ]
+          { title: true, startsAt: true },
+        ],
       });
       return event;
     } catch {
