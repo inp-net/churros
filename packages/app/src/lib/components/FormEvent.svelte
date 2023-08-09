@@ -4,7 +4,7 @@
   import InputField from './InputField.svelte';
   import DateInput from './InputDate.svelte';
   import IconClose from '~icons/mdi/close';
-  import { type PaymentMethod, type Visibility, zeus } from '$lib/zeus';
+  import { type PaymentMethod, Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
   import {
@@ -30,6 +30,7 @@
   const dispatch = createEventDispatcher();
 
   let serverError = '';
+  let confirmingDelete = false;
 
   $: canEditManagers =
     !event.uid ||
@@ -440,17 +441,19 @@
       {/each}
     </section>
 
-    {#each event.tickets as ticket, i (ticket.id)}
-      {#if !ticketIsInGroup(ticket)}
-        <FormEventTicket
-          on:delete={() => {
-            event.tickets = event.tickets.filter(({ id }) => id !== ticket.id);
-          }}
-          bind:expandedTicketId
-          bind:ticket
-        />
-      {/if}
-    {/each}
+    <section class="simple-tickets">
+      {#each event.tickets as ticket, i (ticket.id)}
+        {#if !ticketIsInGroup(ticket)}
+          <FormEventTicket
+            on:delete={() => {
+              event.tickets = event.tickets.filter(({ id }) => id !== ticket.id);
+            }}
+            bind:expandedTicketId
+            bind:ticket
+          />
+        {/if}
+      {/each}
+    </section>
   </div>
   <div class="center">
     <h2>
@@ -519,7 +522,41 @@
     {/if}
 
     <section class="submit">
-      <ButtonPrimary submits>Enregistrer</ButtonPrimary>
+      {#if confirmingDelete}
+        <h2>Es-tu sûr·e ?</h2>
+        <ButtonSecondary
+          on:click={() => {
+            confirmingDelete = false;
+          }}>Annuler</ButtonSecondary
+        >
+        <ButtonSecondary
+          on:click={async () => {
+            await $zeus.mutate({
+              deleteEventPicture: [{ id: event.id }, true],
+              deleteEvent: [{ id: event.id }, true],
+            });
+            confirmingDelete = false;
+            await goto('/week/');
+          }}
+          danger>Oui</ButtonSecondary
+        >
+        <ButtonSecondary
+          on:click={() => {
+            event.visibility = Visibility.Private;
+            confirmingDelete = false;
+          }}>Rendre privé</ButtonSecondary
+        >
+      {:else}
+        <ButtonPrimary submits>Enregistrer</ButtonPrimary>
+        {#if event.id}
+          <ButtonSecondary
+            danger
+            on:click={() => {
+              confirmingDelete = true;
+            }}>Supprimer</ButtonSecondary
+          >
+        {/if}
+      {/if}
     </section>
   </div>
 </form>
@@ -556,11 +593,13 @@
     gap: 1rem;
   }
 
-  .ticket-group .tickets {
+  .ticket-group .tickets,
+  .simple-tickets {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     margin: 1rem 0;
+    align-items: center;
   }
 
   .ticket-group .actions {
@@ -598,6 +637,8 @@
     display: flex;
     justify-content: center;
     margin-top: 2rem;
+    gap: 1rem;
+    align-items: center;
   }
 
   p.empty {
