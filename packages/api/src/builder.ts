@@ -43,6 +43,7 @@ import { GraphQLError, Kind } from 'graphql';
     notifsub: 'NotificationSubscription',
     notif: 'Notification',
     notifsetting: 'NotificationSetting',
+    ann: 'Announcement',
   };
 /* end @generated from schema */
 
