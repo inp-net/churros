@@ -97,7 +97,10 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             },
           },
           contactMail: true,
-          lydiaAccountId: true,
+          beneficiary: {
+            id: true,
+            name: true,
+          },
           links: {
             value: true,
             name: true,

@@ -91,7 +91,7 @@
             userUid: user.uid,
           })),
           id: event.id,
-          lydiaAccountId: event.lydiaAccount?.id,
+          lydiaAccountId: event.beneficiary?.id,
         },
         {
           __typename: true,
@@ -112,7 +112,10 @@
               location: true,
               visibility: true,
               contactMail: true,
-              lydiaAccountId: true,
+              beneficiary: {
+                id: true,
+                name: true,
+              },
               ticketGroups: {
                 name: true,
                 capacity: true,
@@ -261,7 +264,7 @@
       tickets: Ticket[];
     }>;
     contactMail: string;
-    lydiaAccount?: undefined | { name: string; id: string };
+    beneficiary?: undefined | { name: string; id: string };
     description: string;
     endsAt?: Date | undefined;
     links: Array<{ name: string; value: string }>;
@@ -340,12 +343,12 @@
     <InputField label="Compte Lydia bénéficiaire">
       <InputSearchObject
         clearable
-        bind:object={event.lydiaAccount}
+        bind:object={event.beneficiary}
         on:clear={() => {
-          event.lydiaAccount = undefined;
+          event.beneficiary = undefined;
           console.log('cleared');
         }}
-        value={event.lydiaAccount?.id}
+        value={event.beneficiary?.id}
         labelKey="name"
         valueKey="id"
         search={(query) =>
@@ -602,8 +605,8 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin: 1rem 0;
     align-items: center;
+    margin: 1rem 0;
   }
 
   .ticket-group .actions {
@@ -639,10 +642,10 @@
 
   .submit {
     display: flex;
-    justify-content: center;
-    margin-top: 2rem;
     gap: 1rem;
     align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
   }
 
   p.empty {
