@@ -233,7 +233,6 @@
 
   section {
     max-width: 600px;
-    margin: 0 auto;
   }
 
   header {
@@ -286,22 +285,18 @@
   section h2 {
     display: flex;
     gap: 1rem;
-    align-items: center;
-    justify-content: center;
     margin-bottom: 1rem;
-    text-align: center;
   }
 
   .board ul {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
+    flex-flow: column wrap;
+    gap: 0.25rem;
   }
 
   .board .more {
     display: flex;
-    justify-content: center;
+    margin-top: 1rem;
   }
 
   @media (min-width: 1000px) {
