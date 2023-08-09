@@ -393,6 +393,7 @@ builder.mutationField('upsertRegistration', (t) =>
 builder.mutationField('paidRegistration', (t) =>
   t.prismaField({
     type: RegistrationType,
+    errors: {},
     args: {
       regId: t.arg.id(),
       beneficiary: t.arg.string({ required: false }),
@@ -406,22 +407,23 @@ builder.mutationField('paidRegistration', (t) =>
         where: { id: regId },
         include: { ticket: { include: { event: true } } },
       });
-      if (!registration) return false;
+      if (!registration) throw new GraphQLError("La réservation associée n'existe pas");
 
       if (creating) {
         // Check that the user can access the event
-        if (!(await eventAccessibleByUser(registration.ticket.event, user))) return false;
+        if (!(await eventAccessibleByUser(registration.ticket.event, user)))
+          throw new GraphQLError("Vous n'avez pas accès à cet événement");
 
         // Check for tickets that only managers can provide
         if (
           registration.ticket.onlyManagersCanProvide &&
           !eventManagedByUser(registration.ticket.event, user, { canVerifyRegistrations: true })
         )
-          return false;
+          throw new GraphQLError('Seul un·e manager peut donner cette place');
 
         // Check that the ticket is still open
         if (registration.ticket.closesAt && registration.ticket.closesAt.valueOf() < Date.now())
-          return false;
+          throw new GraphQLError("Le shotgun n'est plus ouvert");
 
         // Check that the ticket is not full
         const ticketAndRegistrations = await prisma.ticket.findUnique({
@@ -431,7 +433,8 @@ builder.mutationField('paidRegistration', (t) =>
             group: { include: { tickets: { include: { registrations: true } } } },
           },
         });
-        return placesLeft(ticketAndRegistrations!) > 0;
+        if (placesLeft(ticketAndRegistrations!) <= 0)
+          throw new GraphQLError("Il n'y a plus de places disponibles");
       }
 
       return true;
