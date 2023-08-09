@@ -292,6 +292,7 @@ builder.mutationField('upsertRegistration', (t) =>
 
       // Only managers can mark a registration as paid
       if (
+        ticket.price > 0 &&
         paid &&
         !(
           user.admin ||
@@ -450,7 +451,6 @@ builder.mutationField('paidRegistration', (t) =>
       });
       if (!ticket) throw new GraphQLError('Ticket not found');
       if (!paymentMethod) throw new GraphQLError('Payment method not found');
-      if (!beneficiary) throw new GraphQLError('Beneficiary not found');
       if (!phone) throw new GraphQLError('Phone not found');
 
       // Process payment
@@ -469,7 +469,7 @@ builder.mutationField('paidRegistration', (t) =>
         data: {
           paid: true,
           paymentMethod,
-          beneficiary,
+          beneficiary: beneficiary ?? '',
         },
       });
     },
