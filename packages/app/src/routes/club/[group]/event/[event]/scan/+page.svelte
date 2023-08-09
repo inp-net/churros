@@ -1,19 +1,23 @@
 <script lang="ts">
   import IconChevronRight from '~icons/mdi/chevron-right';
   import IconClose from '~icons/mdi/close';
+  import IconGear from '~icons/mdi/gear-outline';
+  import IconGearCancel from '~icons/mdi/cog-off-outline';
   import IconCheck from '~icons/mdi/check';
   import { type PaymentMethod, zeus } from '$lib/zeus';
   import { onDestroy, onMount } from 'svelte';
   import { Html5QrcodeScanner } from 'html5-qrcode';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { theme } from '$lib/theme';
   import Card from '$lib/components/Card.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import { browser } from '$app/environment';
+  import type { QrBounds } from 'html5-qrcode/esm/core';
 
   let manualRegistrationCode = '';
   let code = '';
+  let boundingBox: QrBounds | undefined;
   let result:
     | {
         beneficiary: string;
@@ -41,20 +45,16 @@
     console.error(error);
   });
 
-  let realTheme = '';
   let closeTimeoutHandle: undefined | NodeJS.Timeout = undefined;
+  let showCameraSettings = true;
   let aspectRatio = 16 / 9;
-  onDestroy(() => {
-    $theme = realTheme;
-  });
+  let scanner: Html5QrcodeScanner | undefined;
 
   $: console.log(aspectRatio);
 
   onMount(() => {
     aspectRatio = window.innerHeight / window.innerWidth;
-    realTheme = $theme;
-    $theme = 'dark';
-    const scanner = new Html5QrcodeScanner(
+    scanner = new Html5QrcodeScanner(
       'reader',
       {
         fps: 5,
@@ -65,13 +65,24 @@
     );
     console.log('initialized qr scanner');
     scanner.render(
-      (text) => {
+      (text, { result, result: { bounds } }) => {
+        console.log(`got result ${JSON.stringify(result)}`);
+        boundingBox = bounds;
         code = text;
       },
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       () => {}
     );
   });
+
+  onDestroy(async () => {
+    await scanner?.clear();
+  });
+
+  $: if (browser) {
+    const dashboard = document.querySelector('#reader__dashboard');
+    if (dashboard) dashboard.style.display = showCameraSettings ? 'block' : 'none';
+  }
 
   async function check(decodedContents: string): Promise<typeof result> {
     if (!decodedContents.startsWith('r:')) return undefined;
@@ -125,6 +136,15 @@
 </script>
 
 <section class="qr">
+  {#if boundingBox}
+    <div
+      class="bouding-box"
+      style:width={boundingBox.width}
+      style:height={boundingBox.height}
+      style:left={boundingBox.x}
+      style:tyop={boundingBox.y}
+    />
+  {/if}
   <div id="reader" />
 </section>
 
@@ -198,13 +218,25 @@
         code = 'r:' + manualRegistrationCode.replace(/^r:/, '').trim().toLowerCase();
       }}
     >
+      <section class="camera-settings-toggle" class:shown={showCameraSettings}>
+        <ButtonGhost
+          on:click={() => {
+            showCameraSettings = !showCameraSettings;
+          }}
+          >{#if showCameraSettings}
+            <IconGearCancel />
+          {:else}
+            <IconGear />
+          {/if}</ButtonGhost
+        >
+      </section>
       <InputText label="" placeholder="Code de réservation" bind:value={manualRegistrationCode} />
       <ButtonSecondary submits>Vérifier</ButtonSecondary>
     </form>
   </Card>
 </div>
 
-<style>
+<style lang="scss">
   .result-card {
     --margin: 2.5rem;
 
@@ -212,6 +244,13 @@
     right: var(--margin);
     bottom: calc(var(--margin) + 30px);
     left: var(--margin);
+  }
+
+  .camera-settings-toggle {
+    // position: fixed;
+    // left: 2.25rem;
+    // top: 155px;
+    font-size: 1.2rem;
   }
 
   .manual {
@@ -284,6 +323,11 @@
     text-align: center;
   }
 
+  .bounding-box {
+    border: calc(var(--border-block) * 2) solid var(--success-border);
+    border-radius: var(--radius-block);
+  }
+
   #reader {
     border: none !important;
   }
@@ -301,9 +345,37 @@
     background: black;
   }
 
-  /* #reader :global(#reader__dashboard) {
-    display: none;
-  } */
+  #reader :global(img[alt='Info icon']),
+  #reader :global(#html5-qrcode-anchor-scan-type-change) {
+    display: none !important;
+  }
+
+  #reader :global(#reader__dashboard_section_csr > span:nth-child(2)) {
+    font-size: 0;
+  }
+
+  #reader :global(#reader__dashboard_section) {
+    padding: 0 !important;
+  }
+
+  #reader :global(#reader__dashboard) {
+    position: fixed;
+    top: 150px;
+    left: 2rem;
+    width: calc(100% - 4rem) !important;
+    padding: 1rem;
+    color: var(--text);
+    background-color: var(--bg);
+    border-radius: var(--radius-block);
+  }
+
+  #reader :global(#reader__dashboard button),
+  #reader :global(#reader__dashboard select) {
+    padding: 0.25rem 0.5rem;
+    background: var(--bg);
+    border: var(--border-block) solid var(--border);
+    border-radius: 100000px;
+  }
 
   /* #reader :global(#html5-qrcode-anchor-scan-type-change),
   #reader :global(#html5-qrcode-button-camera-stop),
