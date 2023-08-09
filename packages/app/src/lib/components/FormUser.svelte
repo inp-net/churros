@@ -132,7 +132,7 @@
   />
   <InputText label="Adresse postale" bind:value={address} />
   <section class="submit">
-    <ButtonSecondary submits>Sauvegarder</ButtonSecondary>
+    <ButtonSecondary submits {loading}>Sauvegarder</ButtonSecondary>
   </section>
 </form>
 

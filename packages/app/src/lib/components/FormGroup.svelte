@@ -118,7 +118,7 @@
     >
   {/if}
   <section class="submit">
-    <ButtonPrimary submits>Sauvegarder</ButtonPrimary>
+    <ButtonPrimary submits {loading}>Sauvegarder</ButtonPrimary>
   </section>
 </form>
 

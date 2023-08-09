@@ -90,6 +90,7 @@
           accept="image/jpeg,image/png"
         />
         <ButtonSecondary
+          loading={updating}
           on:click={() => {
             inputElement.click();
           }}

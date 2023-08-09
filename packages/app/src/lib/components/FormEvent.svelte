@@ -30,6 +30,7 @@
   const dispatch = createEventDispatcher();
 
   let serverError = '';
+  let loading = false;
   let confirmingDelete = false;
 
   $: canEditManagers =
@@ -54,6 +55,7 @@
   }
 
   async function saveChanges() {
+    loading = true;
     const { upsertEvent } = await $zeus.mutate({
       upsertEvent: [
         {
@@ -171,9 +173,11 @@
 
     if (upsertEvent?.__typename === 'Error') {
       serverError = upsertEvent.message;
+      loading = false;
       return;
     }
 
+    loading = false;
     serverError = '';
 
     dispatch('save');
@@ -547,7 +551,7 @@
           }}>Rendre privé</ButtonSecondary
         >
       {:else}
-        <ButtonPrimary submits>Enregistrer</ButtonPrimary>
+        <ButtonPrimary submits {loading}>Enregistrer</ButtonPrimary>
         {#if event.id}
           <ButtonSecondary
             danger
