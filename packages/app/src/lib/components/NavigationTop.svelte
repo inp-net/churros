@@ -11,6 +11,9 @@
   import { me } from '$lib/session';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import { page } from '$app/stores';
+  import { zeus } from '$lib/zeus';
+  import ButtonBack from './ButtonBack.svelte';
+  import { formatDate } from '$lib/dates';
 
   onMount(() => {
     window.addEventListener('scroll', () => {
@@ -19,13 +22,43 @@
   });
 
   let scrolled = false;
+  $: scanningTickets = $page.url.pathname.endsWith('/scan/');
+
+  async function getCurrentEvent(page: typeof $page) {
+    if (!page.url.pathname.endsWith('/scan/')) throw `not applicable`;
+    try {
+      const { event } = await $zeus.query({
+        event: [
+          { uid: page.params.event, groupUid: page.params.group },
+          { title: true, startsAt: true }
+        ]
+      });
+      return event;
+    } catch {
+      throw `not found`;
+    }
+  }
 </script>
 
-<nav id="navigation-top" class:scrolled class:transparent={$page.url.pathname.endsWith('/scan/')}>
-  <a href="/"><img class="logo" src="/logo.png" alt="logo de l'AE" /></a>
+<nav id="navigation-top" class:scrolled class:transparent={scanningTickets}>
+  {#await getCurrentEvent($page)}
+    <a href="/"><img class="logo" src="/logo.png" alt="logo de l'AE" /></a>
+  {:then currentEvent}
+    <div class="current-event">
+      <ButtonBack />
+      <div class="event-name">
+        <h1>{currentEvent.title}</h1>
+        <p>{formatDate(currentEvent.startsAt)}</p>
+      </div>
+    </div>
+  {:catch}
+    <a href="/"><img class="logo" src="/logo.png" alt="logo de l'AE" /></a>
+  {/await}
 
   <div class="actions">
-    {#if $me}
+    {#if scanningTickets}
+      <img class="logo" src="/logo.png" alt="logo de l'AE" />
+    {:else if $me}
       <a href="https://git.inpt.fr/inp-net/centraverse/-/issues/new" style="color:red"
         ><IconIssue /></a
       >
@@ -109,5 +142,11 @@
     border-radius: 50%;
 
     /* border: 3px solid var(--text); */
+  }
+
+  .current-event {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
   }
 </style>
