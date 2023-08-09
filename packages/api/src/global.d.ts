@@ -47,5 +47,11 @@ declare namespace NodeJS {
      * Contact email (used for push notifications and maybe other things)
      */
     CONTACT_EMAIL: string;
+    /**
+     * Old LDAP URL (used to migrate passwords)
+     */
+    OLD_LDAP_URL: string;
+    OLD_LDAP_CLIENT_CONSULT_DN: string;
+    OLD_LDAP_CLIENT_CONSULT_PASSWORD: string;
   }
 }

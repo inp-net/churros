@@ -5,6 +5,9 @@ import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
 import { prisma } from '../prisma.js';
 import { DateTimeScalar } from './scalars.js';
+import { authenticate as ldapAuthenticate } from 'ldap-authentication';
+import { GraphQLError } from 'graphql';
+import bunyan from "bunyan"
 
 export const CredentialEnumType = builder.enumType(CredentialPrismaType, {
   name: 'CredentialType',
@@ -37,6 +40,52 @@ builder.mutationField('login', (t) =>
       password: t.arg.string(),
     },
     async resolve(query, _, { email, password }, { request }) {
+      const user = await prisma.user.findFirst({
+        where: {
+          OR: [{email}, {uid: email.trim().toLowerCase()}]
+        },
+        include: {
+          credentials: {
+            where: {
+              type: CredentialPrismaType.Password
+            }
+          }
+        }
+      })
+
+      if (!user) throw new GraphQLError("Inccorect email or password")
+
+      if (true || user.credentials.length <= 0) {
+      // User has no password yet. Check with old LDAP server if the password is valid. If it is, save it as the password.
+        let passwordValidInOldLDAP = false
+
+        const result = await ldapAuthenticate({
+          ldapOpts: {url: process.env.OLD_LDAP_URL, log: bunyan.createLogger({name: "old ldap login", level: "trace"})},
+          adminDn: process.env.OLD_LDAP_CLIENT_CONSULT_DN,
+          adminPassword: process.env.OLD_LDAP_CLIENT_CONSULT_PASSWORD,
+          userSearchBase: `ou=people,o=n7,dc=etu-inpt,dc=fr` ,
+          usernameAttribute: 'uid',
+          username: user.uid,
+          userPassword: password,
+        })
+
+        console.log({result})
+       
+      if (passwordValidInOldLDAP) {
+        await prisma.credential.create({
+          data: {
+            user: {
+              connect: {
+                uid: user.uid
+              }
+            },
+            type: CredentialPrismaType.Password,
+            value: await argon2.hash(password),
+          }
+        })
+      }
+      }
+
       const credentials = await prisma.credential.findMany({
         where: { type: CredentialPrismaType.Password, user: { OR: [{ email }, { uid: email }] } },
       });

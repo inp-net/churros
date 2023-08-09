@@ -2454,7 +2454,7 @@ __metadata:
     "@types/cors": "npm:^2.8.12"
     "@types/cron": "npm:^2.0.1"
     "@types/express": "npm:^4.17.14"
-    "@types/ldapjs": "npm:^2.2.5"
+    "@types/ldapjs": "npm:^3.0.1"
     "@types/node": "npm:^18.11.9"
     "@types/nodemailer": "npm:^6.4.6"
     "@types/slug": "npm:^5.0.3"
@@ -2475,7 +2475,8 @@ __metadata:
     graphql-yoga: "npm:^3.0.0"
     helmet: "npm:^6.0.0"
     image-type: "npm:^5.1.0"
-    ldapjs: "npm:^2.3.3"
+    ldap-authentication: "npm:^3.0.3"
+    ldapjs: "npm:^3.0.4"
     nanoid: "npm:^4.0.0"
     nodemailer: "npm:^6.8.0"
     phone: "npm:^3.1.30"
@@ -3422,6 +3423,95 @@ __metadata:
   version: 3.4.0
   resolution: "@juggle/resize-observer@npm:3.4.0"
   checksum: 5786abce4141d541f563d32a0c04dd0fb62f1f9f31620c0e92809418e73eb56610f7e10ddddf08ed2f09aad032c1eeac8c991eb708e042224002cc658716e67b
+  languageName: node
+  linkType: hard
+
+"@ldapjs/asn1@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@ldapjs/asn1@npm:2.0.0"
+  checksum: f40f922df2d138773e0f94f55e5591a2fd28de7e78a851cfb1e59d9bad75d8862482ea4ca07b09e4fb66dc67c22b707e85ac2d052b2714521207fc050897d004
+  languageName: node
+  linkType: hard
+
+"@ldapjs/asn1@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@ldapjs/asn1@npm:1.2.0"
+  checksum: a42ef8f8bd43349ff1e94bc22de0df91ec357824972df02910170e953c94b499bc953e96121fa6ab6e19cccbd1875dcf0f373b067f4a1bf953b0dea118c57414
+  languageName: node
+  linkType: hard
+
+"@ldapjs/attribute@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@ldapjs/attribute@npm:1.0.0"
+  dependencies:
+    "@ldapjs/asn1": "npm:2.0.0"
+    "@ldapjs/protocol": "npm:^1.2.1"
+    process-warning: "npm:^2.1.0"
+  checksum: be45a8cc4f5b0ab93812429eaae48bbd6e9bd76983bbd55de7c8a17e031d9e57ba3a8c47f66aa735e9053ed3fac464c7da6e7ea1b2824b1c11f560822833590b
+  languageName: node
+  linkType: hard
+
+"@ldapjs/change@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@ldapjs/change@npm:1.0.0"
+  dependencies:
+    "@ldapjs/asn1": "npm:2.0.0"
+    "@ldapjs/attribute": "npm:1.0.0"
+  checksum: 1bcb583b7086f0bd449248765b2e580a696e9071444940392656cd774be2f9bb1e84b3ab708310eb6fcd48c08fd13efa5ea05579567874c50a32432dd8562ad3
+  languageName: node
+  linkType: hard
+
+"@ldapjs/controls@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@ldapjs/controls@npm:2.0.0"
+  dependencies:
+    "@ldapjs/asn1": "npm:^1.2.0"
+    "@ldapjs/protocol": "npm:^1.2.1"
+  checksum: a6d313ef39bdd5ef6c60efb9fc8f21dfde10e8cfce9a6966c78f3affaf8f3aaea1cf7d75da3b8707a01efe5079e3988dfa4d3c1eadeedda6e68b697f861ef580
+  languageName: node
+  linkType: hard
+
+"@ldapjs/dn@npm:1.1.0, @ldapjs/dn@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@ldapjs/dn@npm:1.1.0"
+  dependencies:
+    "@ldapjs/asn1": "npm:2.0.0"
+    process-warning: "npm:^2.1.0"
+  checksum: b30b7456b3b248a44f70c2da7023c689bc12b34653654a464e7c5f86eae20d9db6704ca5c4a638d2fa3b065050cec2f3acabb2380392c9b10b94bb274cdbecd6
+  languageName: node
+  linkType: hard
+
+"@ldapjs/filter@npm:2.1.0, @ldapjs/filter@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@ldapjs/filter@npm:2.1.0"
+  dependencies:
+    "@ldapjs/asn1": "npm:2.0.0"
+    "@ldapjs/protocol": "npm:^1.2.1"
+    process-warning: "npm:^2.1.0"
+  checksum: 1e2d2d0b09deb78b88277f89af2af5755064ee23a6d1e455cb65faf2446c053d8ab99a3d524a98f6eeb4d5f565afdead1dcc19964efee0d72a57d32b544947a7
+  languageName: node
+  linkType: hard
+
+"@ldapjs/messages@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@ldapjs/messages@npm:1.2.0"
+  dependencies:
+    "@ldapjs/asn1": "npm:2.0.0"
+    "@ldapjs/attribute": "npm:1.0.0"
+    "@ldapjs/change": "npm:1.0.0"
+    "@ldapjs/controls": "npm:2.0.0"
+    "@ldapjs/dn": "npm:^1.1.0"
+    "@ldapjs/filter": "npm:^2.1.0"
+    "@ldapjs/protocol": "npm:1.2.1"
+    process-warning: "npm:^2.2.0"
+  checksum: 88614795d9b94e121ff821682ebd1deaed2851e8934bc7c5e5dd376efc45486ee13a7e6cddebe42c70a9ac34297d3c82771b30d17f4ab31fdefe4018dd7a32e0
+  languageName: node
+  linkType: hard
+
+"@ldapjs/protocol@npm:1.2.1, @ldapjs/protocol@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@ldapjs/protocol@npm:1.2.1"
+  checksum: 2ce03ed151052a0d5d1f4ae96220fffafdfaa2892a0ffb46826e27f394b3817fc9efb74fde874d5815d7d6a8120658958a7ee15150631a25b1afb3abe30076f9
   languageName: node
   linkType: hard
 
@@ -5308,6 +5398,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/ldapjs@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@types/ldapjs@npm:3.0.1"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: db98e1b967a6d4247c2ccc875ddfb30b593d0019afd99da022988767f75f6eacb8684f498a5aad90daf730510c840f44af24d5f836819974144972b6298e5647
+  languageName: node
+  linkType: hard
+
 "@types/lodash@npm:^4.14.167":
   version: 4.14.189
   resolution: "@types/lodash@npm:4.14.189"
@@ -5810,7 +5909,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"abstract-logging@npm:^2.0.0":
+"abstract-logging@npm:^2.0.0, abstract-logging@npm:^2.0.1":
   version: 2.0.1
   resolution: "abstract-logging@npm:2.0.1"
   checksum: 502e63f553ad2ce59d6e4e45b68ed06ab958ded383c4b31df240f94976298570af30d4e3e349c2a260a4083a6d22ab29a18a54af85fba7bce6a116f1b607871c
@@ -10615,6 +10714,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ldap-authentication@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "ldap-authentication@npm:3.0.3"
+  dependencies:
+    ldapjs: "npm:^3.0.1"
+  checksum: e5c8af293dfcca033a45a83ba4d2bd9e2b9d18733704d1f51e90271b72438feb440e85a3e57dab6ae0c49eb00178b53962ded2dc994a9fca141b385bc5657ffb
+  languageName: node
+  linkType: hard
+
 "ldap-filter@npm:^0.3.3":
   version: 0.3.3
   resolution: "ldap-filter@npm:0.3.3"
@@ -10637,6 +10745,28 @@ __metadata:
     vasync: "npm:^2.2.0"
     verror: "npm:^1.8.1"
   checksum: 0223a73e931e109a56c78c3d97d4de83e2e1a9f98680809b43ce7f081f63b790468d556a36fd0a82d29b4b81a7dd8da569ac95db34adb72d47c4cf674bb188e8
+  languageName: node
+  linkType: hard
+
+"ldapjs@npm:^3.0.1, ldapjs@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "ldapjs@npm:3.0.4"
+  dependencies:
+    "@ldapjs/asn1": "npm:2.0.0"
+    "@ldapjs/attribute": "npm:1.0.0"
+    "@ldapjs/change": "npm:1.0.0"
+    "@ldapjs/controls": "npm:2.0.0"
+    "@ldapjs/dn": "npm:1.1.0"
+    "@ldapjs/filter": "npm:2.1.0"
+    "@ldapjs/messages": "npm:^1.2.0"
+    "@ldapjs/protocol": "npm:^1.2.1"
+    abstract-logging: "npm:^2.0.1"
+    assert-plus: "npm:^1.0.0"
+    backoff: "npm:^2.5.0"
+    once: "npm:^1.4.0"
+    vasync: "npm:^2.2.1"
+    verror: "npm:^1.10.1"
+  checksum: 758998d7257e73e3ae5e766d6b1242a0cca747db18787bc07620a2e2e8aa9ce1c01f7a735c337566f332a42fc520686800435c8111faaa5f2e5850e9babcd2d0
   languageName: node
   linkType: hard
 
@@ -12566,6 +12696,13 @@ __metadata:
   version: 2.0.1
   resolution: "process-nextick-args@npm:2.0.1"
   checksum: 09ec0ec8e28a923bdf8d0b926bfbba475553de2cf0be9232d76904a21a3c8c03b6dd4625738ee0bab8fa10b9b2f2fda8a3f9d18815c3407c30f13b51f84605e9
+  languageName: node
+  linkType: hard
+
+"process-warning@npm:^2.1.0, process-warning@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "process-warning@npm:2.2.0"
+  checksum: 3f7bd8403a96e9098e0f0775471f851a57a7871415f818726808e88dd2018e613de6baa80c59aefff89e3f67a73e9bb9d49d825942e0c8c59e4c13f81e3b448c
   languageName: node
   linkType: hard
 
@@ -15249,7 +15386,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vasync@npm:^2.2.0":
+"vasync@npm:^2.2.0, vasync@npm:^2.2.1":
   version: 2.2.1
   resolution: "vasync@npm:2.2.1"
   dependencies:
@@ -15269,7 +15406,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"verror@npm:^1.8.1":
+"verror@npm:^1.10.1, verror@npm:^1.8.1":
   version: 1.10.1
   resolution: "verror@npm:1.10.1"
   dependencies:
