@@ -2,7 +2,7 @@
 /* eslint-disable unicorn/no-null */
 import { type Group, PrismaClient, NotificationType } from '@prisma/client';
 import { hash } from 'argon2';
-import { parse, parseISO } from 'date-fns';
+import { differenceInYears, parse, parseISO } from 'date-fns';
 import { createWriteStream, readFileSync, statSync, writeFileSync } from 'node:fs';
 import type * as Ldap from './ldap-types';
 import { Readable } from 'node:stream';
@@ -290,6 +290,7 @@ async function connectGodparent(user: Ldap.User) {
   } catch {}
 }
 
+console.log(`· Loading data from dump files`);
 const DATA = JSON.parse(readFileSync('./data.json').toString()) as unknown as Array<
   Record<string, unknown>
 >;
@@ -301,12 +302,20 @@ const oldUsersPortail = DATA.find(({ type, name }) => type === 'table' && name =
 const oldClubsPortail = DATA.find(({ type, name }) => type === 'table' && name === 'club_club')![
   'data'
 ] as OldGroup[];
-console.log(`· Loading data from dump files`);
 console.log(
   `  Loaded portail dump (${oldUsersPortail.length} users, ${oldClubsPortail.length} clubs)`
 );
 
-const LDAP_DATA = JSON.parse(
+const CAS_DATA = JSON.parse(readFileSync('./cas-data.json').toString()) as unknown as Array<
+  Record<string, unknown>
+>;
+const oldUsersCAS = CAS_DATA.find(({ type, name }) => type === 'table' && name === 'auth_user')![
+  'data'
+] as Array<{ last_login: iso8601; username: string }>;
+
+console.log(`  Loaded CAS dump (${oldUsersCAS.length} users)`);
+
+let LDAP_DATA = JSON.parse(
   readFileSync('./dump-ldap.json').toString()
 ) as unknown as Ldap.LDAPTypes;
 
@@ -323,6 +332,10 @@ console.log(`  ${count} users`);
 console.log(`  ${count} user candidates`);
 ({ count } = await prisma.article.deleteMany());
 console.log(`  ${count} articles`);
+({ count } = await prisma.ticketGroup.deleteMany());
+console.log(`  ${count} ticket groups`);
+({ count } = await prisma.ticket.deleteMany());
+console.log(`  ${count} tickets`);
 ({ count } = await prisma.event.deleteMany());
 console.log(`  ${count} events`);
 ({ count } = await prisma.group.deleteMany());
@@ -335,6 +348,22 @@ console.log(`  ${count} schools`);
 console.log(`  ${count} majors`);
 
 console.log('');
+
+console.log(
+  `· Removing inactive users (where last login was more than 3 years ago) from loaded LDAP dump`
+);
+const oldCount = LDAP_DATA.users.length;
+LDAP_DATA = {
+  ...LDAP_DATA,
+  users: LDAP_DATA.users.filter((user) => {
+    const casUser = oldUsersCAS.find((u) => u.username === user.uid);
+    if (!casUser) return false;
+
+    return differenceInYears(new Date(), parseISO(casUser.last_login)) <= 3;
+  }),
+};
+console.log(`  Removed ${oldCount - LDAP_DATA.users.length} users`);
+
 function progressbar(objectName: string, total: number): SingleBar {
   console.log('');
   console.log('');
