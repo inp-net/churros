@@ -232,7 +232,7 @@
   }
 
   section {
-    max-width: 600px;
+    max-width: min(100%, 600px);
   }
 
   header {
