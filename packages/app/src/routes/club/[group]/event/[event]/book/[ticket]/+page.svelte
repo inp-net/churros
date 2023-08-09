@@ -255,6 +255,7 @@
     flex-flow: column wrap;
     align-items: center;
     justify-content: center;
+    padding: 0 1rem;
 
     h2 {
       margin-top: 2rem;

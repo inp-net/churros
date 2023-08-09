@@ -38,6 +38,11 @@
       currentTheme = $theme;
     });
   });
+
+  function pageIsFullsize() {
+    const fragments = $page.url.pathname.split('/');
+    return fragments[1] === 'club' && fragments[3] === 'event';
+  }
 </script>
 
 <svelte:window on:resize={onResize} />
@@ -49,7 +54,7 @@
 <TopBar />
 
 <div class="layout">
-  <main>
+  <main class:fullsize={pageIsFullsize()}>
     <slot />
   </main>
 </div>
@@ -63,7 +68,7 @@
     padding-bottom: 5rem; /// XXX equal to navbar's height
     margin: auto;
 
-    > * {
+    > *:not(.fullsize) {
       padding: 0 0.5rem;
     }
   }

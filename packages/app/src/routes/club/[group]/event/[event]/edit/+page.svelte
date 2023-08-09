@@ -34,5 +34,6 @@
     flex-flow: column wrap;
     gap: 1rem;
     align-items: center;
+    padding: 0 1rem;
   }
 </style>

@@ -32,6 +32,13 @@
 <style>
   .content {
     max-width: 600px;
+    padding: 0 1rem;
     margin: 0 auto;
+  }
+
+  h1 {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
   }
 </style>

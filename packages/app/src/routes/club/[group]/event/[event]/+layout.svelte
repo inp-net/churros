@@ -56,14 +56,22 @@
   const tabHref = (tab: string) => `/club/${group}/event/${event}/${tab}`;
 </script>
 
-{#if shownTabs.length > 1}
-  <NavigationTabs
-    --text={currentTab === 'scan' ? 'white' : 'var(--text)'}
-    tabs={shownTabs.map((tab) => ({
-      name: TABS[tab],
-      href: currentTab === tab ? '.' : tabHref(tab),
-    }))}
-  />
-{/if}
+<section class="tabs">
+  {#if shownTabs.length > 1}
+    <NavigationTabs
+      --text={currentTab === 'scan' ? 'white' : 'var(--text)'}
+      tabs={shownTabs.map((tab) => ({
+        name: TABS[tab],
+        href: currentTab === tab ? '.' : tabHref(tab),
+      }))}
+    />
+  {/if}
+</section>
 
 <slot />
+
+<style>
+  section.tabs {
+    margin: 0 1.5rem;
+  }
+</style>
