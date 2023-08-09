@@ -25,6 +25,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           closesAt: true,
           group: {
             capacity: true,
+            name: true,
           },
           links: {
             name: true,
@@ -57,6 +58,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           },
           openToNonAEContributors: true,
           openToSchools: {
+            uid: true,
             name: true,
             color: true,
             id: true,
@@ -67,6 +69,8 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             shortName: true,
             id: true,
           },
+          onlyManagersCanProvide: true,
+          event: { id: true },
         },
       ],
       event: [

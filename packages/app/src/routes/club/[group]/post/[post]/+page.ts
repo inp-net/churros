@@ -29,6 +29,7 @@ export const _articleQuery = Selector('Article')({
       computedValue: true,
     },
     tickets: {
+      id: true,
       uid: true,
       registrations: {
         id: true,

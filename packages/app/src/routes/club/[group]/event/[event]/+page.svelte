@@ -1,9 +1,10 @@
 <script lang="ts">
+  import ItemTicket from '$lib/components/ItemTicket.svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import { dateTimeFormatter } from '$lib/dates';
+  import { formatDate, formatDateTime } from '$lib/dates';
   import IconPlus from '~icons/mdi/plus';
   import { me } from '$lib/session';
-  import { formatRelative, isFuture, isPast } from 'date-fns';
+  import { format, isSameDay } from 'date-fns';
   import type { PageData } from './$types';
   import BackButton from '$lib/components/ButtonBack.svelte';
   import CardArticle from '$lib/components/CardArticle.svelte';
@@ -15,8 +16,18 @@
 
   $: console.log(data);
 
-  const { id, title, startsAt, pictureFile, descriptionHtml, links, group, contactMail, articles } =
-    data.event;
+  const {
+    id,
+    title,
+    startsAt,
+    pictureFile,
+    descriptionHtml,
+    links,
+    group,
+    contactMail,
+    articles,
+    endsAt,
+  } = data.event;
 
   const tickets = data.ticketsOfEvent;
 
@@ -34,6 +45,17 @@
 
   const bookingURL = (registrationId: string) =>
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
+
+  function formatEventDates(startsAt: Date, endsAt: Date): string {
+    if (isSameDay(startsAt, endsAt)) {
+      return `Le ${formatDate(startsAt)}, de ${format(startsAt, 'HH:mm')} à ${format(
+        endsAt,
+        'HH:mm'
+      )}`;
+    }
+
+    return `${formatDateTime(startsAt)} — ${formatDateTime(endsAt)}`;
+  }
 </script>
 
 <header
@@ -46,7 +68,7 @@
     {title}
     <ButtonShare white />
   </h1>
-  <p>{dateTimeFormatter.format(startsAt)}</p>
+  <p>{formatEventDates(startsAt, endsAt)}</p>
 </header>
 
 <ul class="nobullet bookings">
@@ -88,35 +110,9 @@
     </h2>
 
     <ul class="nobullet">
-      {#each tickets as { name, uid, descriptionHtml, opensAt, closesAt, placesLeft, capacity, price }}
-        <li class="ticket">
-          <div class="text">
-            <h3>{name}</h3>
-            <div class="description">{@html descriptionHtml}</div>
-          </div>
-          <div class="numbers">
-            <span class="places">
-              {#if placesLeft === -1}
-                Illimité
-              {:else}
-                <span class="left">{placesLeft}</span><span class="capacity">{capacity}</span>
-              {/if}
-            </span>
-          </div>
-          <div class="book">
-            {#if (!closesAt && !opensAt) || (closesAt && opensAt && isFuture(new Date(closesAt)) && isPast(new Date(opensAt)))}
-              <ButtonSecondary href="./book/{uid}">{price}€</ButtonSecondary>
-            {/if}
-          </div>
-          <p class="timing typo-details">
-            {#if !opensAt && !closesAt}
-              Shotgun intemporel
-            {:else if opensAt && isFuture(new Date(opensAt))}
-              Shotgun le {formatRelative(new Date(opensAt), new Date())}
-            {:else if closesAt && isPast(new Date(closesAt))}
-              En vente jusqu'à {formatRelative(new Date(closesAt), new Date())}
-            {/if}
-          </p>
+      {#each tickets.sort( (a, b) => (a.group?.name ?? '').localeCompare(b.group?.name ?? '') ) as { id, ...ticket } (id)}
+        <li>
+          <ItemTicket {...ticket} />
         </li>
       {/each}
     </ul>
@@ -202,6 +198,13 @@
     margin-left: auto;
   }
 
+  .tickets ul {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+    margin: 0 1rem;
+  }
+
   .places .left::after {
     display: inline-block;
     height: 1.25em;
@@ -218,38 +221,6 @@
 
   .ticket .places .left::after {
     width: 1px;
-  }
-
-  .ticket {
-    display: grid;
-    grid-template-areas: 'text numbers book' 'timing timing timing';
-    grid-template-columns: 1fr max-content min-content;
-    column-gap: 1rem;
-    align-items: center;
-    padding: 1rem;
-    background: var(--muted-bg);
-    border-radius: var(--radius-block);
-
-    .text {
-      grid-area: text;
-      width: 100%;
-    }
-
-    .book {
-      grid-area: book;
-    }
-
-    .numbers {
-      display: flex;
-      flex-direction: column;
-      grid-area: numbers;
-      align-items: end;
-      width: 5rem;
-    }
-
-    .timing {
-      grid-area: timing;
-    }
   }
 
   .organizer-name-and-contact {

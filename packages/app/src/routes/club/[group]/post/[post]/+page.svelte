@@ -8,10 +8,11 @@
   import { me } from '$lib/session';
   import type { PageData } from './$types';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
-  import { formatRelative, isFuture, isWithinInterval } from 'date-fns';
+  import { formatRelative } from 'date-fns';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ItemTicket from '$lib/components/ItemTicket.svelte';
 
   export let data: PageData;
   const { author, publishedAt, links, title, bodyHtml, group, pictureFile, event } = data.article;
@@ -72,7 +73,8 @@
   {#if event}
     <section class="event">
       <h2>
-        Évènement {#if canEditArticles}
+        Évènement <ButtonSecondary href="../../event/{event.uid}">Voir</ButtonSecondary>
+        {#if canEditArticles}
           <ButtonSecondary href="../../event/{event.uid}/edit">Modifier</ButtonSecondary>{/if}
       </h2>
 
@@ -82,55 +84,26 @@
           weekStartsOn: 1,
         })}
       </p>
-      {#each usersRegistration ?? [] as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id }}
-        <ButtonPrimary href={bookingURL(id)}
-          >{#if authorIsBeneficiary || author.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
-              {beneficiaryUser.lastName}{:else}{beneficiary}{/if}{/if}
-          <span class="ticket-name">{ticket.name}</span></ButtonPrimary
-        >
-      {/each}
-      <ul>
-        {#each event.tickets as { name, uid, descriptionHtml, opensAt, closesAt, placesLeft, capacity, price }}
-          <li class="ticket">
-            <div class="text">
-              <h3>{name}</h3>
-              <div class="description">{@html descriptionHtml}</div>
-              {#if !opensAt || !closesAt}
-                <p>Mise en vente sans limite de date</p>
-              {:else if isFuture(new Date(opensAt))}
-                <p>Mise en vente le {dateTimeFormatter.format(opensAt)}</p>
-              {:else}
-                <p>Mise en vente jusqu'au {dateTimeFormatter.format(closesAt)}</p>
-              {/if}
-            </div>
-            <div class="numbers">
-              <p class="price">
-                {#if price > 0}
-                  {price}€
-                {:else}
-                  Gratos
-                {/if}
-              </p>
-              <span class="places">
-                {#if placesLeft === -1}
-                  Illimité
-                {:else}
-                  <span class="left">{placesLeft}</span>
-                  <span class="capacity">{capacity}</span>
-                {/if}
-              </span>
-            </div>
-            <div class="book">
-              {#if (!closesAt && !opensAt) || (closesAt && opensAt && isWithinInterval( new Date(), { end: new Date(closesAt), start: new Date(opensAt) } ))}
-                <ButtonSecondary href="./book/${uid}">Réserver</ButtonSecondary>
-              {/if}
-            </div>
+      <section class="bookings">
+        {#each usersRegistration ?? [] as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id }}
+          <ButtonPrimary href={bookingURL(id)}
+            >{#if authorIsBeneficiary || author.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
+                {beneficiaryUser.lastName}{:else}{beneficiary}{/if}{/if}
+            <span class="ticket-name">{ticket.name}</span></ButtonPrimary
+          >
+        {/each}
+      </section>
+      <h3>Places</h3>
+      <ul class="nobullet tickets">
+        {#each event.tickets as { id, ...ticket } (id)}
+          <li>
+            <ItemTicket {...ticket} />
           </li>
         {/each}
       </ul>
     </section>
     <section class="organizer">
-      <h2>Organisé par</h2>
+      <h3>Organisé par</h3>
       <div class="organizer-name-and-contact">
         <a class="organizer-name" href="/club/{event.group.uid}">
           <img
@@ -161,6 +134,21 @@
     flex-wrap: wrap;
     gap: 1rem;
     align-items: center;
+  }
+
+  .bookings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem 0;
+  }
+
+  .tickets {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
   }
 
   .links {
