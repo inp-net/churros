@@ -141,7 +141,6 @@ builder.queryField('ticketByUid', (t) =>
 export function userCanSeeTicket(
   {
     event,
-    onlyManagersCanProvide,
     openToGroups,
     openToSchools,
     openToPromotions,
@@ -163,9 +162,6 @@ export function userCanSeeTicket(
 ): boolean {
   // Managers can see everything
   if (user?.managedEvents.some(({ event: { id } }) => id === event.id)) return true;
-
-  if (onlyManagersCanProvide && !user?.managedEvents.some(({ event: { id } }) => id === event.id))
-    return false;
 
   // Check that the user is in the group
   console.log(
