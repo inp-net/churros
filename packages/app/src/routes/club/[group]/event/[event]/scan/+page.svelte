@@ -80,7 +80,7 @@
   });
 
   $: if (browser) {
-    const dashboard = document.querySelector('#reader__dashboard') ;
+    const dashboard: HTMLDivElement | null = document.querySelector('#reader__dashboard');
     if (dashboard) dashboard.style.display = showCameraSettings ? 'block' : 'none';
   }
 
