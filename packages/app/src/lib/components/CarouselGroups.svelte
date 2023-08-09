@@ -129,6 +129,7 @@
   .slider-container {
     position: relative;
     overflow: hidden;
+    touch-action: none;
   }
 
   .slider {
