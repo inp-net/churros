@@ -13,6 +13,8 @@
   import InputLongText from './InputLongText.svelte';
   import InputLinks from '$lib/components/InputLinks.svelte';
 
+  export let afterGoTo: (article: typeof data['article']) => string = (article) =>
+    `/club/${article.group.uid}/post/${article.uid}/edit`;
   export let hideEvent = false;
   export let data: {
     article: {
@@ -98,8 +100,7 @@
       serverError = '';
       data.article = upsertArticle.data;
       ({ id, event, eventId, title, author, body, publishedAt, links, group } = data.article);
-      if (data.article.uid)
-        await goto(`/club/${data.article.group.uid}/post/${data.article.uid}/edit`);
+      if (data.article.uid) await goto(afterGoTo(data.article));
     } finally {
       loading = false;
     }
