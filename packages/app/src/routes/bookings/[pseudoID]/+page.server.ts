@@ -27,6 +27,7 @@ import { error, redirect } from '@sveltejs/kit';
     notifsub: 'NotificationSubscription',
     notif: 'Notification',
     notifsetting: 'NotificationSetting',
+    ann: 'Announcement',
   };
 /* end @generated from schema */
 

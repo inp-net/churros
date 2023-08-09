@@ -65,6 +65,7 @@ model User {
   outgoingGodparentRequests GodparentRequest[]         @relation("godchild")
   passwordResets            PasswordReset[]
   emailChanges              EmailChange[]
+  Announcement              Announcement[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -542,4 +543,18 @@ model NotificationSetting {
   // Another way would be to create a "Null group", which is a special group with a uid of "", and use that instead of null. This is REALLY messy, and I don't want that.
   // This would remove the need for an id.
   // @@unique([userId, groupId, type], distinctNulls: false)
+}
+
+/// Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
+model Announcement {
+  id        String   @id @default(dbgenerated("nanoid('ann:')"))
+  by        User     @relation(fields: [userId], references: [id])
+  userId    String
+  title     String   @db.VarChar(255)
+  body      String   @db.Text
+  warning   Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  startsAt  DateTime
+  endsAt    DateTime
 }
