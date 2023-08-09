@@ -43,6 +43,11 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
               name: true,
               color: true,
             },
+            openToMajors: {
+              shortName: true,
+              name: true,
+              id: true,
+            },
             openToGroups: {
               uid: true,
               name: true,
@@ -75,6 +80,11 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
                 name: true,
                 uid: true,
                 color: true,
+              },
+              openToMajors: {
+                shortName: true,
+                name: true,
+                id: true,
               },
               openToGroups: {
                 uid: true,

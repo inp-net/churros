@@ -55,6 +55,7 @@ export const TicketType = builder.prismaNode('Ticket', {
     openToExternal: t.exposeBoolean('openToExternal', { nullable: true }),
     openToSchools: t.relation('openToSchools'),
     openToGroups: t.relation('openToGroups'),
+    openToMajors: t.relation('openToMajors'),
     openToNonAEContributors: t.exposeBoolean('openToNonAEContributors', { nullable: true }),
     godsonLimit: t.exposeInt('godsonLimit'),
     onlyManagersCanProvide: t.exposeBoolean('onlyManagersCanProvide'),
@@ -97,6 +98,7 @@ export const TicketInput = builder.inputType('TicketInput', {
     openToNonAEContributors: t.boolean({ required: false }),
     openToPromotions: t.field({ type: ['Int'] }),
     openToSchools: t.field({ type: ['String'] }),
+    openToMajors: t.field({ type: ['String'] }),
     id: t.id({ required: false }),
   }),
 });
@@ -143,18 +145,20 @@ export function userCanSeeTicket(
     openToGroups,
     openToSchools,
     openToPromotions,
+    openToMajors,
   }: {
     event: { id: string };
     onlyManagersCanProvide: boolean;
     openToGroups: Array<{ uid: string }>;
     openToSchools: Array<{ uid: string }>;
     openToPromotions: number[];
+    openToMajors: Array<{ id: string }>;
   },
   user?: {
     groups: Array<{ group: { uid: string } }>;
     managedEvents: Array<{ event: { id: string } }>;
     graduationYear: number;
-    major: { schools: Array<{ uid: string }> };
+    major: { schools: Array<{ uid: string }>; id: string };
   }
 ): boolean {
   // Managers can see everything
@@ -173,6 +177,10 @@ export function userCanSeeTicket(
     openToGroups.length > 0 &&
     !openToGroups.some(({ uid }) => user?.groups.some(({ group }) => group.uid === uid))
   )
+    return false;
+
+  // Check that the user is in the major
+  if (openToMajors.length > 0 && !openToMajors.map((m) => m.id).includes(user?.major.id ?? ''))
     return false;
 
   // Check that the user is in the school
@@ -207,7 +215,13 @@ builder.queryField('ticketsOfEvent', (t) =>
     async resolve(query, _, { eventUid, groupUid }, { user }) {
       const allTickets = await prisma.ticket.findMany({
         where: { event: { uid: eventUid, group: { uid: groupUid } } },
-        include: { ...query.include, openToGroups: true, openToSchools: true, event: true },
+        include: {
+          ...query.include,
+          openToGroups: true,
+          openToSchools: true,
+          event: true,
+          openToMajors: true,
+        },
       });
       return allTickets.filter((ticket) => userCanSeeTicket(ticket, user));
     },
@@ -234,6 +248,7 @@ builder.mutationField('upsertTicket', (t) =>
       openToExternal: t.arg.boolean({ required: false }),
       openToSchools: t.arg({ type: ['String'] }),
       openToGroups: t.arg({ type: ['String'] }),
+      openToMajors: t.arg({ type: ['String'] }),
       openToNonAEContributors: t.arg.boolean(),
       godsonLimit: t.arg.int(),
       onlyManagersCanProvide: t.arg.boolean(),
@@ -269,6 +284,7 @@ builder.mutationField('upsertTicket', (t) =>
         openToAlumni,
         openToExternal,
         openToSchools,
+        openToMajors,
         openToNonAEContributors,
         godsonLimit,
         onlyManagersCanProvide,
@@ -288,16 +304,22 @@ builder.mutationField('upsertTicket', (t) =>
         openToPromotions: { set: openToPromotions },
         openToAlumni,
         openToExternal,
-        openToSchools: { connect: openToSchools.map((id) => ({ id })) },
         godsonLimit,
         onlyManagersCanProvide,
         openToNonAEContributors,
       };
       return prisma.ticket.upsert({
         where: { id: id ?? undefined },
-        create: { ...upsertData, links: { create: links } },
+        create: {
+          ...upsertData,
+          links: { create: links },
+          openToSchools: { connect: openToSchools.map((id) => ({ id })) },
+          openToMajors: { connect: openToMajors.map((id) => ({ id })) },
+        },
         update: {
           ...upsertData,
+          openToSchools: { set: openToSchools.map((id) => ({ id })) },
+          openToMajors: { set: openToMajors.map((id) => ({ id })) },
           links: {
             deleteMany: {},
             createMany: {

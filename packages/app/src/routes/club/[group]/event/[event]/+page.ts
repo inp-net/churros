@@ -62,6 +62,11 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             id: true,
           },
           openToPromotions: true,
+          openToMajors: {
+            name: true,
+            shortName: true,
+            id: true,
+          },
         },
       ],
       event: [

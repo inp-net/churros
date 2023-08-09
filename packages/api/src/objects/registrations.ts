@@ -286,7 +286,7 @@ builder.mutationField('upsertRegistration', (t) =>
       if (!user) return false;
       const ticket = await prisma.ticket.findUnique({
         where: { id: ticketId },
-        include: { event: true, openToGroups: true, openToSchools: true },
+        include: { event: true, openToGroups: true, openToSchools: true, openToMajors: true },
       });
       if (!ticket) return false;
 

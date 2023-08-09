@@ -34,6 +34,7 @@
     openToPromotions: number[];
     openToSchools: Array<{ name: string; color: string; uid: string }>;
     openToGroups: Array<{ name: string; uid: string; pictureFile: string }>;
+    openToMajors: Array<{ name: string; shortName: string; id: string }>;
     openToExternal?: boolean | null | undefined;
     openToAlumni?: boolean | null | undefined;
     openToNonAEContributors?: boolean | null | undefined;
@@ -174,6 +175,26 @@
         valueKey="uid"
         values={ticket.openToSchools.map(({ uid }) => uid)}
         bind:objects={ticket.openToSchools}
+      />
+    </InputField>
+
+    <InputField label="Filières">
+      <InputSearchObjectList
+        search={async (query) => {
+          const { majors } = await $zeus.query({
+            majors: {
+              name: true,
+              shortName: true,
+              id: true,
+            },
+          });
+          const searcher = new Fuse(majors, { keys: ['name', 'shortName'] });
+          return searcher.search(query).map((r) => r.item);
+        }}
+        labelKey="shortName"
+        valueKey="id"
+        values={ticket.openToMajors.map((r) => r.id)}
+        bind:objects={ticket.openToMajors}
       />
     </InputField>
 

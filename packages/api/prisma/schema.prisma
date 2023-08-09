@@ -162,9 +162,10 @@ model Major {
   name      String @db.VarChar(255)
   shortName String @default("") @db.VarChar(255)
 
-  schools        School[]
-  students       User[]
-  userCandidates UserCandidate[]
+  schools           School[]
+  students          User[]
+  userCandidates    UserCandidate[]
+  accessibleTickets Ticket[]
 }
 
 model School {
@@ -391,6 +392,7 @@ model Ticket {
   openToExternal          Boolean? @default(false) // same thing
   openToNonAEContributors Boolean? @default(false) // same thing
   openToSchools           School[]
+  openToMajors            Major[]
   openToGroups            Group[]
   godsonLimit             Int      @default(0) // 0 means unlimited
 

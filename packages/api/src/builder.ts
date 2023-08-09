@@ -70,7 +70,7 @@ export const builder = new SchemaBuilder<{
     ValidationPlugin,
   ],
   authScopes,
-  complexity: { limit: { complexity: 11_000, depth: 7, breadth: 100 } },
+  complexity: { limit: { complexity: 15_000, depth: 7, breadth: 100 } },
   defaultInputFieldRequiredness: true,
   errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma, exposeDescriptions: true },

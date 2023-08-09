@@ -71,6 +71,7 @@
               id: eraseFakeIds(t.id),
               openToGroups: t.openToGroups.map(({ uid }) => uid),
               openToSchools: t.openToSchools.map(({ uid }) => uid),
+              openToMajors: t.openToMajors.map(({ id }) => id),
             })),
           })),
           tickets: event.tickets.map((t) => ({
@@ -78,6 +79,7 @@
             id: eraseFakeIds(t.id),
             openToGroups: t.openToGroups.map(({ uid }) => uid),
             openToSchools: t.openToSchools.map(({ uid }) => uid),
+            openToMajors: t.openToMajors.map(({ id }) => id),
           })),
           title: event.title,
           visibility: event.visibility,
@@ -210,6 +212,7 @@
     openToNonAEContributors: null,
     openToPromotions: [],
     openToSchools: [],
+    openToMajors: [],
     id,
   });
 
@@ -228,6 +231,7 @@
     openToAlumni?: boolean | null | undefined;
     openToSchools: Array<{ name: string; color: string; uid: string }>;
     openToGroups: Array<{ name: string; uid: string; pictureFile: string }>;
+    openToMajors: Array<{ name: string; shortName: string; id: string }>;
     openToNonAEContributors?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;

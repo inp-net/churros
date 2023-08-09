@@ -315,6 +315,7 @@ builder.mutationField('upsertEvent', (t) =>
       { user }
     ) {
       const connectFromListOfUids = (uids: string[]) => ({ connect: uids.map((uid) => ({ uid })) });
+      const connectFromListOfIds = (uids: string[]) => ({ connect: uids.map((id) => ({ id })) });
       console.log(JSON.stringify({ ticketGroups, tickets }));
       console.log(lydiaAccountId);
       // First, delete all the tickets and ticket groups that are not in the new list
@@ -422,6 +423,7 @@ builder.mutationField('upsertEvent', (t) =>
                 },
                 openToGroups: connectFromListOfUids(ticket.openToGroups),
                 openToSchools: connectFromListOfUids(ticket.openToSchools),
+                openToMajors: connectFromListOfIds(ticket.openToMajors),
               },
             })
           )
@@ -438,6 +440,7 @@ builder.mutationField('upsertEvent', (t) =>
             id: undefined,
             openToGroups: connectFromListOfUids(ticket.openToGroups),
             openToSchools: connectFromListOfUids(ticket.openToSchools),
+            openToMajors: connectFromListOfIds(ticket.openToMajors),
             eventId: event.id,
             uid: await createTicketUid(ticket.name),
           },
@@ -460,6 +463,7 @@ builder.mutationField('upsertEvent', (t) =>
               id: undefined,
               openToGroups: connectFromListOfUids(ticket.openToGroups),
               openToSchools: connectFromListOfUids(ticket.openToSchools),
+              openToMajors: connectFromListOfIds(ticket.openToMajors),
               eventId: event.id,
               uid: await createTicketUid(ticket.name),
             },
