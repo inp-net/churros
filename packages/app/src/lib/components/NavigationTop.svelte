@@ -1,7 +1,9 @@
 <script lang="ts">
   import IconIssue from '~icons/mdi/chat-alert-outline';
   import IconNotif from '~icons/mdi/bell-outline';
+  import IconNotifFilled from '~icons/mdi/bell';
   import IconTicket from '~icons/mdi/ticket-outline';
+  import IconTicketFilled from '~icons/mdi/ticket-confirmation';
   import IconAccount from '~icons/mdi/account-circle-outline';
 
   import ButtonSecondary from './ButtonSecondary.svelte';
@@ -27,8 +29,16 @@
       <a href="https://git.inpt.fr/inp-net/centraverse/-/issues/new" style="color:red"
         ><IconIssue /></a
       >
-      <a href="/notifications/"><IconNotif /></a>
-      <a href="/bookings/"><IconTicket /></a>
+      <a href="/notifications/">
+        {#if $page.url.pathname === '/notifications/'}
+          <IconNotifFilled />
+        {:else}
+          <IconNotif />{/if}</a
+      >
+      <a href="/bookings/"
+        >{#if $page.url.pathname.startsWith('/bookings')}<IconTicketFilled />{:else}
+          <IconTicket />{/if}</a
+      >
       <a href="/me/">
         {#if $me.pictureFile}
           <img class="profilepic" src="{PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
