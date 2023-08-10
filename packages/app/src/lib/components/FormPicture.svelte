@@ -35,9 +35,8 @@
         {
           [`update${objectName}Picture`]: [
             {
-              ...(['Group', 'User'].includes(objectName)
-                ? { uid, ...(objectName === 'Group' ? { dark } : {}) }
-                : { id }),
+              ...(['Group', 'User'].includes(objectName) ? { uid } : { id }),
+              ...(objectName === 'Group' ? { dark } : {}),
               file: Zvar('file', 'File!'),
             },
             true,
