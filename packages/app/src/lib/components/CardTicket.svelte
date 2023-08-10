@@ -16,8 +16,10 @@
   class="billet"
   {href}
   class:noimg={!ticket.event.pictureFile}
-  style:background-image="linear-gradient(rgba(0, 0, 0, 0.6), rgba(0,0,0,0.6)), url('{PUBLIC_STORAGE_URL}{ticket
-    .event.pictureFile}')"
+  style:background-image={ticket.event.pictureFile
+    ? `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0,0,0,0.5)), url('${PUBLIC_STORAGE_URL}${ticket.event.pictureFile}')`
+    : undefined}
+  style:--text={ticket.event.pictureFile ? 'white' : 'var(--text)'}
 >
   <div class="overlay-text">
     {#if !authorIsBeneficiary}
@@ -47,11 +49,12 @@
     gap: 2rem;
     align-items: center;
     justify-content: space-between;
-    min-width: 300px;
     padding: 1.5rem;
     background-size: cover;
     border-radius: var(--radius-block);
   }
+
+  .billet:hover, .billet
 
   .billet.noimg {
     border: var(--border-block) solid var(--border);
