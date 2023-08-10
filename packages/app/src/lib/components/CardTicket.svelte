@@ -1,30 +1,35 @@
 <script lang="ts">
   import Qrcode from '~icons/mdi/qrcode';
   import CashClock from '~icons/mdi/cash-clock';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
 
-  export let title: string;
   export let href: string;
-  export let ticket: { name: string; event: { pictureFile: string } };
+  export let ticket: { name: string; event: { pictureFile: string; title: string } };
   export let beneficiary: string;
   export let beneficiaryUser: { fullName: string };
-  export let userIsBeneficiary: boolean;
+  export let authorIsBeneficiary: boolean;
   export let author: { fullName: string };
   export let paid: boolean;
 </script>
 
-<a class="billet" {href} class:noimg={!ticket.event.pictureFile}>
-  {#if ticket.event.pictureFile}
-    <img loading="lazy" src={ticket.event.pictureFile} alt={'Image du billet'} />
-  {/if}
+<a
+  class="billet"
+  {href}
+  class:noimg={!ticket.event.pictureFile}
+  style:background-image="linear-gradient(rgba(0, 0, 0, 0.6), rgba(0,0,0,0.6)), url('{PUBLIC_STORAGE_URL}{ticket
+    .event.pictureFile}')"
+>
   <div class="overlay-text">
-    <div class="beneficiary">
-      {#if userIsBeneficiary}
-        Par {author.fullName}
-      {:else}
-        Pour {beneficiaryUser?.fullName ?? beneficiary}
-      {/if}
-    </div>
-    <div class="title">{title}</div>
+    {#if !authorIsBeneficiary}
+      <div class="beneficiary">
+        {#if beneficiary}
+          Pour {beneficiaryUser?.fullName ?? beneficiary}
+        {:else}
+          Par {author.fullName}
+        {/if}
+      </div>
+    {/if}
+    <div class="title">{ticket.event.title}</div>
     <div class="ticket-name">{ticket.name}</div>
   </div>
   <div class="qrcode" class:paid>
@@ -38,47 +43,32 @@
 
 <style lang="scss">
   .billet {
-    position: relative;
     display: flex;
-    width: 30rem;
-    height: 10rem;
+    gap: 2rem;
     align-items: center;
+    justify-content: space-between;
+    min-width: 300px;
+    padding: 1.5rem;
+    background-size: cover;
+    border-radius: var(--radius-block);
   }
 
   .billet.noimg {
     border: var(--border-block) solid var(--border);
-    border-radius: 1rem;
-  }
-
-  .billet img {
-    position: absolute;
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-    border-radius: 1rem;
   }
 
   .overlay-text {
-    position: absolute;
-    text-align: left;
-    color: var(--text);
-    width: 100%;
     box-sizing: border-box;
-    padding: 1rem;
+    color: var(--text);
+    text-align: left;
   }
 
   .qrcode {
-    position: absolute;
-    color: var(--text);
-    box-sizing: border-box;
-    padding: 2rem;
-    text-align: right;
     right: 0;
-  }
-
-  .qrcode > :global(.icon) {
-    width: 3em;
-    height: 3em;
+    box-sizing: border-box;
+    font-size: 2rem;
+    color: var(--text);
+    text-align: right;
   }
 
   .beneficiary {
