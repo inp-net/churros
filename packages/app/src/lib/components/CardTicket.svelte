@@ -6,7 +6,7 @@
   export let href: string;
   export let ticket: { name: string; event: { pictureFile: string; title: string } };
   export let beneficiary: string;
-  export let beneficiaryUser: { fullName: string };
+  export let beneficiaryUser: undefined | { fullName: string } = undefined;
   export let authorIsBeneficiary: boolean;
   export let author: { fullName: string };
   export let paid: boolean;
