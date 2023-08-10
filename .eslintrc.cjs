@@ -65,6 +65,12 @@ module.exports = {
         'no-undef-init': 'off',
         'unicorn/consistent-destructuring': 'off',
         'unicorn/no-useless-undefined': 'off',
+        'no-console': [
+          'error',
+          {
+            allow: ['warn', 'error', 'info', 'group', 'groupEnd'],
+          },
+        ],
       },
     },
   ],
