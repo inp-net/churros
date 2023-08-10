@@ -60,7 +60,10 @@
       deleting = true;
       const deleted = await $zeus.mutate({
         [`delete${objectName}Picture`]: [
-          { uid, ...(objectName === 'Group' ? { dark } : {}) },
+          {
+            ...(['Group', 'User'].includes(objectName) ? { uid } : { id }),
+            ...(objectName === 'Group' ? { dark } : {}),
+          },
           true,
         ],
       });
