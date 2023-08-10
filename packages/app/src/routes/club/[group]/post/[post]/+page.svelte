@@ -13,6 +13,7 @@
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ItemTicket from '$lib/components/ItemTicket.svelte';
+  import CardEvent from '$lib/components/CardEvent.svelte';
 
   export let data: PageData;
   const { author, publishedAt, links, title, bodyHtml, group, pictureFile, event } = data.article;
@@ -71,6 +72,22 @@
   {/if}
 
   {#if event}
+    <!-- Variables pour cardEvent qui manquent dans l'object event : pictureFile, endsAt, author -->
+    <!-- Les types tickets sont incompatibles -->
+    <CardEvent
+      href="/club/{event.group.uid}/event/{event.uid}"
+      {...event}
+      pictureFile="events/e:f09yt4j0de0mwckv.png"
+      author={{ uid: 'x', pictureFile: 'x', fullName: 'Antonin Litschgy' }}
+      endsAt={event.startsAt}
+      tickets={[
+        {
+          opensAt: new Date(Date.now()),
+          endsAt: new Date(Date.now() + 10e6),
+        },
+      ]}
+    />
+    <!-- A supprimer à terme -->
     <section class="event">
       <h2>
         Évènement <ButtonSecondary href="../../event/{event.uid}">Voir</ButtonSecondary>
