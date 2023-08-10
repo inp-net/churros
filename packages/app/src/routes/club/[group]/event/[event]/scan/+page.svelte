@@ -50,8 +50,6 @@
   let aspectRatio = 16 / 9;
   let scanner: Html5QrcodeScanner | undefined;
 
-  $: console.log(aspectRatio);
-
   onMount(() => {
     aspectRatio = window.innerHeight / window.innerWidth;
     scanner = new Html5QrcodeScanner(
@@ -63,10 +61,8 @@
       },
       false
     );
-    console.log('initialized qr scanner');
     scanner.render(
-      (text, { result, result: { bounds } }) => {
-        console.log(`got result ${JSON.stringify(result)}`);
+      (text, { result: { bounds } }) => {
         boundingBox = bounds;
         code = text;
       },
@@ -257,6 +253,7 @@
     display: flex;
     gap: 1rem;
     align-items: center;
+    justify-content: center;
   }
 
   .result {
