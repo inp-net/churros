@@ -160,4 +160,19 @@
   .arrow.left {
     left: 0.5em;
   }
+
+  @media only screen and (max-width: 600px) {
+    .arrow {
+      width: 2em;
+      height: 2em;
+    }
+
+    .arrow.right {
+      right: 1em;
+    }
+
+    .arrow.left {
+      left: 1em;
+    }
+  }
 </style>
