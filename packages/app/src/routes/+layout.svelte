@@ -37,7 +37,7 @@
     (window as unknown as Window & { NProgress: NProgress }).NProgress.start();
   });
   afterNavigate(() => {
-    const {NProgress} = window as unknown as Window & { NProgress: NProgress };
+    const { NProgress } = window as unknown as Window & { NProgress: NProgress };
 
     NProgress.done();
     setTimeout(() => {
@@ -83,6 +83,9 @@
     if (!browser) return true;
     return Boolean(window.localStorage.getItem(`hideAnnouncement${id}`));
   }
+
+  $: scanningTickets = $page.url.pathname.endsWith('/scan/');
+  $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
 </script>
 
 <svelte:head>
@@ -92,7 +95,7 @@
 <TopBar />
 
 <div class="layout">
-  {#if announcements.length > 0}
+  {#if announcements.length > 0 && !scanningTickets && !showingTicket}
     <section class="announcements fullsize">
       {#each announcements.filter(({ id }) => !announcementHiddenByUser(id)) as { title, bodyHtml, warning, id } (id)}
         <article class="announcement {warning ? 'warning' : 'primary'}">
