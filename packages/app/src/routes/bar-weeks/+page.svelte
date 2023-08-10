@@ -5,7 +5,7 @@
   import Alert from '$lib/components/Alert.svelte';
   import IconEdit from '~icons/mdi/pencil';
   import DateInput from '$lib/components/InputDate.svelte';
-  import { endOfWeek, startOfWeek } from 'date-fns';
+  import { compareDesc, endOfWeek, isFuture, startOfWeek } from 'date-fns';
   import type { PageData } from './$types';
   import { zeus } from '$lib/zeus';
   import { dateFormatter } from '$lib/dates';
@@ -13,6 +13,7 @@
   import InputText from '$lib/components/InputText.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputListOfGroups from '$lib/components/InputListOfGroups.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
 
   export let data: PageData;
 
@@ -24,14 +25,11 @@
     endsAt: endOfWeek(new Date()),
   };
 
-  $: console.log(EMPTY_BAR_WEEK);
-
   let { barWeeks } = data;
   let newBarWeek = EMPTY_BAR_WEEK;
   const serverErrors: Record<string, string> = {};
   let expandedBarWeekId: string | undefined = undefined;
-
-  $: console.log(barWeeks);
+  let showPastBarWeeks = false;
 
   async function deleteBarWeek({ id }: { id: string }) {
     await $zeus.mutate({
@@ -105,10 +103,17 @@
 </script>
 
 <div class="content">
-  <h1>Semaines de bar</h1>
+  <h1>
+    Semaines de bar
+    <div class="toggle-past">
+      <InputCheckbox alignRight label="Passées" bind:value={showPastBarWeeks} />
+    </div>
+  </h1>
 
   <ul class="nobullet">
-    {#each barWeeks as barWeek, i (barWeek.id)}
+    {#each barWeeks
+      .filter((b) => showPastBarWeeks || isFuture(b.endsAt))
+      .sort((a, b) => compareDesc(a.startsAt, b.startsAt)) as barWeek, i (barWeek.id)}
       <li>
         <Card>
           <h3>
@@ -195,9 +200,23 @@
     max-width: 600px;
     margin: 0 auto;
   }
+
+  h1 {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .toggle-past {
+    font-size: 1rem;
+    font-weight: normal;
+  }
+
   h2 {
     margin-top: 2rem;
   }
+
   .new-bar-week {
     display: flex;
     flex-flow: column wrap;
@@ -217,9 +236,9 @@
 
   section.actions {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
     gap: 0.5rem;
+    align-items: center;
     margin-top: 1.5rem;
   }
 </style>

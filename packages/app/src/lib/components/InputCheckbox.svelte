@@ -8,6 +8,7 @@
   export let labelTrue = 'Oui';
   export let labelFalse = 'Non';
   export let labelNull = 'Inconnu';
+  export let alignRight = false;
   let previousValue: boolean | null | undefined = value;
 
   const getTriState = (target: HTMLInputElement) =>
@@ -28,8 +29,8 @@
   let checkboxElement: HTMLInputElement;
 </script>
 
-{#if ternary}
-  <label class="input-checkbox" class:ternary>
+<label class="input-checkbox" class:ternary class:align-right={alignRight}>
+  {#if ternary}
     <input
       type="checkbox"
       bind:this={checkboxElement}
@@ -70,9 +71,7 @@
         {/if}
       </span>
     </div>
-  </label>
-{:else}
-  <label class="input-checkbox">
+  {:else}
     <input on:change type="checkbox" bind:checked={value} />
     <div class="checkbox" data-state={JSON.stringify(value)}>
       {#if value === true}
@@ -80,8 +79,8 @@
       {/if}
     </div>
     <div class="labels">{label}</div>
-  </label>
-{/if}
+  {/if}
+</label>
 
 <style>
   .label-value {
@@ -95,6 +94,16 @@
 
   input {
     display: none;
+  }
+
+  .input-checkbox {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .input-checkbox.align-right {
+    flex-direction: row-reverse;
   }
 
   .checkbox {
