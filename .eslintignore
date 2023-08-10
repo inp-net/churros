@@ -9,3 +9,5 @@ zeus/
 
 packages/api/src/godchildren-tree.ts
 packages/api/scripts/ldap-types.ts
+
+packages/app/static/vendor/*.js  

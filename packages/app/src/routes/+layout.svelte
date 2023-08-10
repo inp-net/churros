@@ -9,6 +9,7 @@
   import IconClose from '~icons/mdi/close';
   import { browser } from '$app/environment';
   import { zeus } from '$lib/zeus';
+  import { afterNavigate, beforeNavigate } from '$app/navigation';
 
   function currentTab(url: URL): 'events' | 'search' | 'more' | 'home' {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -25,6 +26,25 @@
     warning: boolean;
     id: string;
   }>;
+
+  type NProgress = {
+    start: () => void;
+    done: () => void;
+    remove: () => void;
+  };
+
+  beforeNavigate(() => {
+    (window as unknown as Window & { NProgress: NProgress }).NProgress.start();
+  });
+  afterNavigate(() => {
+    const {NProgress} = window as unknown as Window & { NProgress: NProgress };
+
+    NProgress.done();
+    setTimeout(() => {
+      NProgress.remove();
+    }, 1000);
+  });
+
   onMount(async () => {
     const { announcementsNow } = await $zeus.query({
       announcementsNow: [
