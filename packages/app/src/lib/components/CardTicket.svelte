@@ -17,7 +17,7 @@
   {href}
   class:noimg={!ticket.event.pictureFile}
   style:background-image={ticket.event.pictureFile
-    ? `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0,0,0,0.5)), url('${PUBLIC_STORAGE_URL}${ticket.event.pictureFile}')`
+    ? `linear-gradient(rgba(0, 0, 0, var(--alpha)), rgba(0,0,0,var(--alpha))), url('${PUBLIC_STORAGE_URL}${ticket.event.pictureFile}')`
     : undefined}
   style:--text={ticket.event.pictureFile ? 'white' : 'var(--text)'}
 >
@@ -50,14 +50,29 @@
     align-items: center;
     justify-content: space-between;
     padding: 1.5rem;
+    background-color: var(--bg);
     background-size: cover;
     border-radius: var(--radius-block);
-  }
+    transition: all 0.5s ease;
 
-  .billet:hover, .billet
+    --alpha: 0.5;
+  }
 
   .billet.noimg {
     border: var(--border-block) solid var(--border);
+  }
+
+  .billet.noimg:hover,
+  .billet.noimg:focus-visible {
+    --text: var(--hover-text);
+
+    background-color: var(--hover-bg);
+    border-color: var(--hover-border);
+  }
+
+  .billet:not(.noimg):hover,
+  .billet:not(.noimg):focus-visible {
+    --alpha: 0.6;
   }
 
   .overlay-text {
