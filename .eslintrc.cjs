@@ -44,6 +44,18 @@ module.exports = {
   },
   overrides: [
     {
+      files: ['*.ts'],
+      excludedFiles: ['packages/api/scripts/*'],
+      rules: {
+        'no-console': [
+          'error',
+          {
+            allow: ['warn', 'error', 'info', 'group', 'groupEnd'],
+          },
+        ],
+      },
+    },
+    {
       files: ['*.svelte'],
       processor: 'svelte3/svelte3',
       rules: {
