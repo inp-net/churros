@@ -22,6 +22,7 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
                 uid: true,
               },
               beneficiary: true,
+              authorIsBeneficiary: true,
               beneficiaryUser: {
                 fullName: true,
                 firstName: true,
@@ -38,6 +39,7 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
                   },
                   title: true,
                   descriptionHtml: true,
+                  pictureFile: true,
                 },
               },
             },

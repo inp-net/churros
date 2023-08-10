@@ -1,6 +1,5 @@
 <script lang="ts">
-  import PaymentStatusBadge from '$lib/components/BadgePaymentStatus.svelte';
-  import { me } from '$lib/session';
+  import CardTicket from '$lib/components/CardTicket.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -8,25 +7,10 @@
 
 <h1>Mes places</h1>
 
-<ul>
-  {#each data.registrationsOfUser.edges as { node: { ticket, paid, id, beneficiary, beneficiaryUser, author, ticket: { event, event: { group } } } }}
+<ul class="nobullet">
+  {#each data.registrationsOfUser.edges as { node, node: { id } }}
     <li>
-      <a href="/bookings/{id.split(':')[1].toUpperCase()}">
-        <strong>{event.title}</strong>
-        Place {ticket.name}
-      </a>
-      <PaymentStatusBadge {paid} />
-      <p>
-        {#if beneficiary && author.uid === $me?.uid}pour
-          {#if beneficiaryUser}
-            <a href="/user/{beneficiaryUser.uid}">{beneficiaryUser.fullName}</a>
-          {:else}
-            {beneficiary}
-          {/if}
-        {/if}
-        {#if author.uid !== $me?.uid}par <a href="/user/{author.uid}">{author.fullName}</a>
-        {/if}
-      </p>
+      <CardTicket href="/bookings/{id.replace(/^r:/, '')}/" {...node} />
     </li>
   {/each}
 </ul>
@@ -35,5 +19,12 @@
   h1 {
     margin-bottom: 2rem;
     text-align: center;
+  }
+
+  ul {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+    align-items: center;
   }
 </style>
