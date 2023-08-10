@@ -26,5 +26,11 @@
     flex-flow: column wrap;
     gap: 1rem;
     align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  li {
+    width: 100%;
   }
 </style>

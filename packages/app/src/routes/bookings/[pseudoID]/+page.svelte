@@ -261,4 +261,38 @@
     max-width: 600px;
     margin: 0 auto;
   }
+
+  @media (min-width: 1000px) {
+    .content {
+      display: grid;
+      grid-template-areas: 'header header' 'pay pay' 'qrcode details' 'qrcode cancel' 'fineprint fineprint';
+      max-width: 1000px;
+    }
+
+    section.explainer {
+      grid-area: fineprint;
+      max-width: unset;
+      margin-top: 2rem;
+    }
+
+    section.cancel {
+      grid-area: cancel;
+    }
+
+    section.info {
+      grid-area: details;
+    }
+
+    section.code {
+      grid-area: qrcode;
+    }
+
+    h1 {
+      grid-area: header;
+    }
+
+    h1 + form {
+      grid-area: pay;
+    }
+  }
 </style>
