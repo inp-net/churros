@@ -6,7 +6,6 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
   const shownWeek = parse(params.monday, 'yyyy-MM-dd', new Date());
   shownWeek.setHours(23);
   shownWeek.setMinutes(59);
-  console.log(shownWeek);
   return {
     shownWeek,
     ...(await loadQuery(

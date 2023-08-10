@@ -62,8 +62,6 @@
   let { id, event, eventId, title, author, body, publishedAt, visibility, links, group } =
     data.article;
 
-  $: console.log(publishedAt);
-
   let loading = false;
   const updateArticle = async () => {
     if (loading) return;
@@ -105,8 +103,6 @@
       loading = false;
     }
   };
-
-  $: console.log({ eventId });
 </script>
 
 <form on:submit|preventDefault={updateArticle}>

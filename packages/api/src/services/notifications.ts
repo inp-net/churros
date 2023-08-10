@@ -332,12 +332,12 @@ export async function scheduleNotification(
 ): Promise<Cron | boolean> {
   const id = scheduledNotificationID(type, objectId);
   if (at.valueOf() <= Date.now() && !eager) {
-    console.log(`[cron ${id}] Not scheduling notification in the past and eager is false`);
+    console.info(`[cron ${id}] Not scheduling notification in the past and eager is false`);
     return false;
   }
 
   if (Cron.scheduledJobs.some((job) => job.name === id)) {
-    console.log(`[cron ${id}] Cancelling existing job`);
+    console.info(`[cron ${id}] Cancelling existing job`);
     Cron.scheduledJobs.find((job) => job.name === id)?.stop();
   }
 
@@ -346,7 +346,7 @@ export async function scheduleNotification(
   });
 
   if (at.valueOf() <= Date.now()) {
-    console.log(
+    console.info(
       `[cron ${id}] Sending notification immediately (time is ${at.toISOString()} and now is ${new Date().toISOString()})`
     );
     // Start the promise in the background, don't wait for all notifications to be sent out, it takes approx 30 secondes in a real scenario to notify all users for e.g. a public article
@@ -354,7 +354,7 @@ export async function scheduleNotification(
     return true;
   }
 
-  console.log(`[cron ${id}] Starting cron job for ${at.toISOString()}`);
+  console.info(`[cron ${id}] Starting cron job for ${at.toISOString()}`);
   const job = new Cron(
     at,
     {
@@ -362,7 +362,7 @@ export async function scheduleNotification(
     },
     async () => {
       for (const user of users) {
-        console.log(
+        console.info(
           `[cron ${id} @ ${user.uid}] Sending notification (time is ${at.toISOString()})`
         );
         const notificationToSend = await notification(user);
@@ -381,7 +381,7 @@ export async function notifyInBulk<U extends User>(
   for (const user of users) {
     const notificationToSend = await notification(user);
     if (notificationToSend) {
-      console.log(
+      console.info(
         `[cron ${jobId} @ ${user.uid}] Sending notification ${JSON.stringify(notificationToSend)}`
       );
       await notify([user], notificationToSend);
@@ -434,7 +434,7 @@ export async function notify<U extends User>(
         notif.data.group
       )
     ) {
-      console.log(
+      console.info(
         `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
           owner.id
         }] Skipping since user has disabled ${notif.data.type} on ${
@@ -514,7 +514,7 @@ export async function notify<U extends User>(
       }
     }
 
-    console.log(
+    console.info(
       `[${notif.tag ?? '(untagged)'}] notification sent to ${
         subscription.owner.uid
       } with data ${JSON.stringify(notif)} (sub ${id} @ ${endpoint})`

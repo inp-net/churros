@@ -23,7 +23,7 @@ builder.queryField('godparentRequests', (t) =>
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin || user?.canEditUsers);
     },
-    resolve(query) {
+    async resolve(query) {
       return prisma.godparentRequest.findMany({
         ...query,
         orderBy: { updatedAt: 'desc' },

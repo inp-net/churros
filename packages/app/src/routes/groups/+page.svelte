@@ -24,7 +24,6 @@
 
   function findNumber(g: { description: string }): number {
     const result = Number.parseFloat(/\b2\d{3}\b/.exec(g.description)?.[0] ?? '0');
-    console.log(`${g.description} ${result}`);
     return result;
   }
 </script>

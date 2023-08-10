@@ -39,11 +39,6 @@
       (manager) => manager.event.uid === event.uid && manager.event.group.uid === event.group.uid
     )?.canEditPermissions;
 
-  $: console.log({
-    $me: $me?.managedEvents?.find((m) => m.event.uid === event.uid),
-    event: event.managers.find((m) => m.user.uid === $me?.uid),
-  });
-
   function eraseFakeIds(id: string): string {
     if (id.includes(':fake:')) return '';
 
@@ -346,7 +341,6 @@
         bind:object={event.beneficiary}
         on:clear={() => {
           event.beneficiary = undefined;
-          console.log('cleared');
         }}
         value={event.beneficiary?.id}
         labelKey="name"

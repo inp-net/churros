@@ -28,9 +28,6 @@ export const placesLeft = (ticket: {
   if (ticket.capacity)
     placesLeftInTicket = ticket.capacity - ticket.registrations.filter(({ paid }) => paid).length;
 
-  console.log(
-    `Places left for ticket ${ticket.name}: self=${placesLeftInTicket}, group=${placesLeftInGroup}`
-  );
   return Math.min(placesLeftInGroup, placesLeftInTicket);
 };
 
@@ -164,11 +161,6 @@ export function userCanSeeTicket(
   if (user?.managedEvents.some(({ event: { id } }) => id === event.id)) return true;
 
   // Check that the user is in the group
-  console.log(
-    `Checking groups (${openToGroups.map(({ uid }) => uid).join(' ')} against ${
-      user?.groups.map(({ group }) => group.uid).join(' ') ?? '(logged out)'
-    })`
-  );
   if (
     openToGroups.length > 0 &&
     !openToGroups.some(({ uid }) => user?.groups.some(({ group }) => group.uid === uid))

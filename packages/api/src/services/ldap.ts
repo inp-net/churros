@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import ldap from 'ldapjs';
 import '../context.js';
 import bunyan from 'bunyan';

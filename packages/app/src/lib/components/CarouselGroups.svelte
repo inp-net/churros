@@ -84,10 +84,6 @@
     distance = 0;
   }
 
-  function handleScroll(e: Event) {
-    console.log(e);
-  }
-
   $: horizontalTranslation = slideNeeded
     ? Math.max(
         -(nbGroups - nbVisibles) * groupsWidth,
@@ -104,7 +100,6 @@
     ;transform: translateX({horizontalTranslation}px);"
     on:mousedown={handleMouseDown}
     on:touchstart={handleTouchDown}
-    on:scroll={handleScroll}
   >
     {#each groups as { uid, ...rest }}
       <CardGroup on:click={handleClick} href={go(uid)} {...rest} />

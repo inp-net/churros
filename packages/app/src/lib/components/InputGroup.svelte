@@ -18,18 +18,14 @@
   export let placeholder = '';
   export let nullIcon: typeof SvelteComponent = IconNone;
 
-  $: console.log(uid, group);
-
   function allowed(uid: string) {
     const result =
       (allow.length > 0 ? allow.includes(uid) : true) &&
       (except.length > 0 ? !except.includes(uid) : true);
-    if (!result) console.log(`${uid} disallowed`);
     return result;
   }
 
   async function search(query: string): Promise<Group[]> {
-    console.log(`search(${query})`);
     const { searchGroups } = await $zeus.query({
       searchGroups: [
         { q: query },

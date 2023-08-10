@@ -244,7 +244,6 @@ export async function createUid({ title, groupId }: { title: string; groupId: st
         where: { groupId_uid: { groupId, uid: `${base}${n > 1 ? `-${n}` : ''}` } },
       }))
   );
-  console.log(`${base}${n > 1 ? `-${n}` : ''}`);
   return `${base}${n > 1 ? `-${n}` : ''}`;
 }
 

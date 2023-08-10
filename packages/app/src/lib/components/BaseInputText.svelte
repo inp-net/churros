@@ -37,7 +37,6 @@
   }
 
   let showEmptyErrors = false;
-  $: console.log(valueString);
   let valueString: string = stringifyValue(value, type);
 
   $: {

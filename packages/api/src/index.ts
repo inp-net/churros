@@ -125,7 +125,7 @@ api.use('/dump', async (req, res) => {
   }
 });
 api.get('/log', (req, res) => {
-  console.log(req.query['message'] ?? '<empty>');
+  console.info(req.query['message'] ?? '<empty>');
   res.send('ok');
 });
 
@@ -148,7 +148,7 @@ api.get('/', (_req, res) => {
 </html>`);
 });
 api.listen(4000, () => {
-  console.log('API ready at http://localhost:4000');
+  console.info('API ready at http://localhost:4000');
 });
 
 await writeSchema();
@@ -244,5 +244,5 @@ webhook.post('/lydia-webhook', async (req, res) => {
 });
 
 webhook.listen(4001, () => {
-  console.log('Webhook ready at http://localhost:4001');
+  console.info('Webhook ready at http://localhost:4001');
 });

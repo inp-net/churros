@@ -26,12 +26,10 @@
     const result =
       (allow.length > 0 ? allow.includes(uid) : true) &&
       (except.length > 0 ? !except.includes(uid) : true);
-    if (!result) console.log(`${uid} disallowed`);
     return result;
   }
 
   async function search(query: string): Promise<User[]> {
-    console.log(`search(${query})`);
     const { searchUsers } = await $zeus.query({
       searchUsers: [
         { q: query },

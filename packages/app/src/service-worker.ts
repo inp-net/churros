@@ -41,7 +41,6 @@ async function log(message: string) {
 
 sw.addEventListener('install', async (event) => {
   await log('installed');
-  console.log(event);
   // Create a new cache and add all files to it
   const addFilesToCache = async () => {
     const cache = await caches.open(CACHE);
@@ -53,7 +52,6 @@ sw.addEventListener('install', async (event) => {
 
 sw.addEventListener('activate', async (event) => {
   await log('activated');
-  console.log(event);
   // Remove previous cached data from disk
   const deleteOldCaches = async () => {
     for (const key of await caches.keys()) if (key !== CACHE) await caches.delete(key);
@@ -90,7 +88,6 @@ sw.addEventListener('notificationclick', (clickEvent) => {
   clickEvent.waitUntil(
     (async () => {
       await log('clicked notification');
-      console.log(clickEvent);
       const { action, notification } = clickEvent;
       if (action.startsWith('https://')) await openURL(action);
       const data = notification.data as PushNotification['data'];

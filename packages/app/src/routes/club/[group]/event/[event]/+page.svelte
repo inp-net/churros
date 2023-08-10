@@ -14,8 +14,6 @@
 
   export let data: PageData;
 
-  $: console.log(data);
-
   const {
     id,
     title,

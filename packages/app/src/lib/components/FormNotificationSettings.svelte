@@ -54,7 +54,6 @@
     notifSettings: typeof settings,
     seldGroup: typeof selectedGroup
   ) {
-    console.log(notifSettings);
     const predicate =
       (t: NotificationType, seldGroup: typeof selectedGroup) =>
       ({ type, group }: { type: NotificationType; group?: undefined | { uid: string } }) =>
@@ -116,7 +115,6 @@
             on:input={(e) => {
               if (!('detail' in e)) return;
               const detail = asBooleanOrNull(e.detail);
-              console.log(detail);
               if ((detail === null || detail === undefined) && index > 0) {
                 settings = settings.filter((_, i) => i !== index);
               } else if (index === -1 && detail !== null) {

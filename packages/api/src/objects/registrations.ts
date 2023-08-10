@@ -63,7 +63,6 @@ builder.queryField('registration', (t) =>
       id: t.arg.id(),
     },
     async resolve(query, _, { id }, { user }) {
-      console.log(id);
       if (!user) throw new GraphQLError('Not logged in');
       return prisma.registration.findFirstOrThrow({
         ...query,
@@ -105,7 +104,6 @@ builder.queryField('registrationOfUser', (t) =>
       beneficiary: t.arg.string({ required: false }),
     },
     async resolve(query, _, { eventUid, beneficiary: argBeneficiary }, { user }) {
-      console.log(eventUid, argBeneficiary);
       if (!user) throw new GraphQLError('User not found');
       const registrations = await prisma.registration.findMany({
         include: {
@@ -114,9 +112,6 @@ builder.queryField('registrationOfUser', (t) =>
         },
         where: { ticket: { event: { uid: eventUid } } },
       });
-
-      console.log(JSON.stringify(registrations, undefined, 2));
-      console.log(JSON.stringify(query, undefined, 2));
 
       const registration = registrations.find(
         ({ author, beneficiary }) =>
@@ -550,7 +545,6 @@ async function pay(
   switch (by) {
     case 'Lydia': {
       if (!phone) throw new GraphQLError('Missing phone number');
-      console.log(`Paying ${amount}€ from ${from} to ${to} by Lydia`);
       return sendLydiaPaymentRequest(phone, registrationId);
     }
 

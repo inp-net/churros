@@ -8,6 +8,6 @@ zeus/
 *.config.js
 
 packages/api/src/godchildren-tree.ts
-packages/api/scripts/ldap-types.ts
+packages/api/scripts/*
 
 packages/app/static/vendor/*.js  

@@ -235,7 +235,6 @@ builder.mutationField('upsertGroup', (t) =>
         related,
       }
     ) {
-      console.log(`Updating group parentUid=${JSON.stringify(parentUid)}`);
       // --- First, we update the group's children's familyId according to the new parent of this group. ---
       // We have 2 possible cases for updating the parent: either it is:
       // - null (or set to ''): the group does not have a parent anymore;
@@ -273,9 +272,6 @@ builder.mutationField('upsertGroup', (t) =>
             throw new GraphQLError('La modification créerait un cycle dans les groupes');
 
           const descendants = getDescendants(allGroups, oldGroup.id);
-          console.log({
-            [`setting familyId to ${familyId} for`]: descendants.map((g) => g.name),
-          });
           await prisma.group.updateMany({
             where: { id: { in: descendants.map((g) => g.id) } },
             data: {
@@ -367,7 +363,6 @@ builder.mutationField('updateGroupPicture', (t) =>
       Boolean(user?.canEditGroups || user?.groups.some(({ group }) => group.uid === uid)),
     async resolve(_, { uid, file, dark }) {
       const propertyName = dark ? 'pictureFileDark' : 'pictureFile';
-      console.log('updating group picture');
       const type = await file
         .slice(0, minimumBytes)
         .arrayBuffer()
@@ -375,7 +370,6 @@ builder.mutationField('updateGroupPicture', (t) =>
         .then(async (buffer) => imageType(buffer));
       if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
         throw new GraphQLError('File format not supported');
-      console.log(`file type: ${type.ext}`);
 
       // Delete the existing picture
       const data = await prisma.group.findUniqueOrThrow({
@@ -384,8 +378,6 @@ builder.mutationField('updateGroupPicture', (t) =>
       });
 
       const pictureFile = data[propertyName];
-
-      console.log(`existing picture${dark ? ' (dark)' : ''}: ${pictureFile}`);
 
       if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
 

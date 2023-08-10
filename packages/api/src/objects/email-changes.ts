@@ -35,7 +35,6 @@ export async function requestEmailChange(email: string, userId: string): Promise
     process.env.FRONTEND_ORIGIN
   );
 
-  console.log(`Sending email validation mail to ${email}, validation URL is ${url.toString()}`);
   await transporter.sendMail({
     to: email,
     subject: `Validation de votre adresse e-mail`,
@@ -71,7 +70,6 @@ builder.mutationField('validateEmail', (t) =>
     },
     async resolve(_, { token }) {
       const id = `${TYPENAMES_TO_ID_PREFIX['EmailChange']!}:${token.toLowerCase()}`;
-      console.log(`Searching email change with id ${id}`);
       // prisma errors out if the email validation is not found
       const { email, user, pending } = await prisma.emailChange.findUniqueOrThrow({
         where: { id },

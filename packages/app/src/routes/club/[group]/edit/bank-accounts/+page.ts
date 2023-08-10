@@ -27,7 +27,6 @@ export const _clubQuery = Selector('Group')({
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
   const { me, mobile } = await parent();
-  console.log(me);
   if (
     !me?.canEditGroups &&
     !me?.groups.some(

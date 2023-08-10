@@ -28,8 +28,6 @@
   let godparentDeleting = false;
   let godparentDeleteServerError = '';
 
-  $: console.log($me?.groups);
-
   const deleteToken = async (id: string, active: boolean) => {
     if (active) {
       await goto(`/logout/?token=${$page.data.token!}`);

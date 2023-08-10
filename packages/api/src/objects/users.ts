@@ -333,7 +333,6 @@ builder.mutationField('updateUser', (t) =>
       const changingEmail = email !== oldEmail;
 
       if (changingEmail) {
-        console.log(`Updating mail: ${oldEmail} -> ${email}`);
         // Check if new email is available
         const existingUser = await prisma.user.findUnique({ where: { email } });
         if (existingUser) throw new GraphQLError('Cet e-mail est déjà utilisé');

@@ -93,7 +93,7 @@ export const builder = new SchemaBuilder<{
     default: (config) => isRootField(config),
     wrap: (resolver, _options, config) =>
       wrapResolver(resolver, (_error, duration) => {
-        console.log(
+        console.info(
           `Executed \u001B[36;1m${config.parentType}.${
             config.name
           }\u001B[0m in \u001B[36;1m${Number(duration.toPrecision(3))} ms\u001B[0m`

@@ -68,14 +68,12 @@
 
   async function subscribeToNotifications(): Promise<void> {
     if ((await Notification.requestPermission()) === 'granted') {
-      console.log('Waiting for service worker');
       const sw = await navigator.serviceWorker.ready;
       const subscription = await sw.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: PUBLIC_VAPID_KEY,
       });
       const { expirationTime, endpoint } = subscription;
-      console.log(JSON.stringify(subscription));
       await $zeus.mutate({
         upsertNotificationSubscription: [
           {

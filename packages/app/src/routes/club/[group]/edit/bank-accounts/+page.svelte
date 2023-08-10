@@ -42,7 +42,6 @@
   };
 
   const addLydiaAccount = async (name: string, api_token_id: string, api_token: string) => {
-    console.log(name, api_token_id, api_token);
     if (loading) return;
     try {
       loading = true;
