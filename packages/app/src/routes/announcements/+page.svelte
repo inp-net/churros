@@ -82,6 +82,9 @@
     padding: 1rem;
     background: var(--muted-bg);
     border-radius: var(--radius-block);
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
   }
 
   .actions {
