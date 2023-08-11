@@ -33,9 +33,11 @@
       <div class="date-range">
         {formatDateTime(startsAt)}—{formatDateTime(endsAt)}
       </div>
-      <div class="by">
-        <AvatarPerson href="/user/{by.uid}" {...by} />
-      </div>
+      {#if by}
+        <div class="by">
+          <AvatarPerson href="/user/{by.uid}" {...by} />
+        </div>
+      {/if}
       <div class="actions">
         <ButtonSecondary href="/announcements/{id.replace(/^ann:/, '')}/edit"
           >Modifier</ButtonSecondary
