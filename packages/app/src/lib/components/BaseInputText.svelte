@@ -49,9 +49,8 @@
       case 'datetime-local':
       case 'datetime': {
         const date = new Date(valueString);
-        if (!date.valueOf()) 
-          return undefined;
-        
+        if (!date.valueOf()) return undefined;
+
         return date;
       }
 

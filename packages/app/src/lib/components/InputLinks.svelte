@@ -24,13 +24,11 @@
       event.preventDefault();
     }
   }
-  
+
   $: newLinkBothFieldsAreFilled = newValue.name.length > 0 && newValue.value.length > 0;
 
   function newLinkHandleBlur() {
-    if (newLinkBothFieldsAreFilled) 
-      addLink();
-    
+    if (newLinkBothFieldsAreFilled) addLink();
   }
 </script>
 
