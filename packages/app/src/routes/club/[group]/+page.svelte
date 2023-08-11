@@ -287,7 +287,9 @@
 
   section h2 {
     display: flex;
-    gap: 1rem;
+    flex-wrap: wrap;
+    column-gap: 1rem;
+    align-items: center;
     margin-bottom: 1rem;
   }
 
@@ -299,8 +301,8 @@
 
   .board li {
     display: flex;
-    align-items: center;
     gap: 0.5rem;
+    align-items: center;
   }
 
   .board li .emojis {

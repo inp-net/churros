@@ -40,7 +40,7 @@
 
 {#if data.birthdays}
   <section class="birthdays">
-    <h1>
+    <h2>
       Anniversaires
       <InputSelectOne
         bind:value={selectedBirthdaysYearTier}
@@ -48,7 +48,7 @@
         options={{ 1: '1As', 2: '2As', 3: '3As', all: 'Tous' }}
       />
       <ButtonSecondary href="/birthdays">Autres jours</ButtonSecondary>
-    </h1>
+    </h2>
     <ul class="nobullet">
       {#each data.birthdays.filter((u) => (selectedBirthdaysYearTier === 'all' || u.yearTier === Number.parseFloat(selectedBirthdaysYearTier)) && u.major.schools.some( (s) => $me?.major.schools.some((schoolMe) => schoolMe.uid === s.uid) )) as { uid, major, birthday, ...user } (uid)}
         <li>
@@ -101,7 +101,7 @@
     margin: 0 auto;
   }
 
-  section.birthdays h1 {
+  section.birthdays h2 {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
