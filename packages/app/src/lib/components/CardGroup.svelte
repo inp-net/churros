@@ -70,4 +70,9 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  .role {
+    font-size: 0.8em;
+    text-align: center;
+  }
 </style>
