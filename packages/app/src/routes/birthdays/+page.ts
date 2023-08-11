@@ -1,8 +1,11 @@
+import { redirectToLogin } from '$lib/session';
 import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent }) =>
-  loadQuery(
+export const load: PageLoad = async ({ fetch, parent, url }) => {
+  const { me } = await parent();
+  if (!me) throw redirectToLogin(url.pathname);
+  return loadQuery(
     {
       birthdays: [
         {
@@ -19,3 +22,4 @@ export const load: PageLoad = async ({ fetch, parent }) =>
     },
     { fetch, parent }
   );
+};
