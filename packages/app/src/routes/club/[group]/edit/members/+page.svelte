@@ -9,45 +9,44 @@
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import Alert from '$lib/components/Alert.svelte';
-  import { formatISO9075, isBefore } from 'date-fns';
+  import { isBefore } from 'date-fns';
   import InputPerson from '$lib/components/InputPerson.svelte';
   import InputField from '$lib/components/InputField.svelte';
+  import { isOnClubBoard, roleEmojis } from '$lib/permissions';
+  import { onMount } from 'svelte';
 
   export let data: PageData;
   const { group } = data;
-  let updatingMemberId = '';
+
+  let updatingMember: {
+    memberId: string;
+    president: boolean;
+    treasurer: boolean;
+    vicePresident: boolean;
+    secretary: boolean;
+    title: string;
+    canEditArticles: boolean;
+    canEditMembers: boolean;
+  } = {
+    memberId: '',
+    president: false,
+    treasurer: false,
+    vicePresident: false,
+    secretary: false,
+    title: '',
+    canEditArticles: false,
+    canEditMembers: false,
+  };
 
   let serverError = '';
   let search = '';
-  let uid = '';
-  let title = '';
-
-  function emojis({
-    treasurer,
-    vicePresident,
-    president,
-    secretary,
-  }: {
-    treasurer: boolean;
-    vicePresident: boolean;
-    president: boolean;
-    secretary: boolean;
-  }): string {
-    return [
-      ['👑', president],
-      ['🌟', vicePresident],
-      ['📜', secretary],
-      ['💰', treasurer],
-    ]
-      .filter(([_emoji, v]) => v)
-      .map(([emoji, _v]) => emoji)
-      .join(' ');
-  }
+  let newMemberUid = '';
+  let newMemberTitle = '';
 
   const addGroupMember = async () => {
     const { addGroupMember } = await $zeus.mutate({
       addGroupMember: [
-        { groupUid: group.uid, uid, title },
+        { groupUid: group.uid, uid: newMemberUid, title: newMemberTitle },
         {
           __typename: true,
           '...on Error': {
@@ -79,8 +78,8 @@
     if (addGroupMember.__typename === 'Error') {
       serverError = addGroupMember.message;
     } else {
-      uid = '';
-      title = '';
+      newMemberUid = '';
+      newMemberTitle = '';
       // XXX for some reason the date is returned as a datestring
       addGroupMember.data.createdAt = new Date(addGroupMember.data.createdAt);
       data.group.members = [...data.group.members, addGroupMember.data];
@@ -98,39 +97,23 @@
     }
   };
 
-  const updateGroupMember = async (
-    memberId: string,
-    {
-      makePresident,
-      makeTreasurer,
-      makeVicePresident,
-      makeSecretary,
-      canEditArticles,
-      canEditMembers,
-    }: {
-      makePresident?: boolean;
-      makeTreasurer?: boolean;
-      makeVicePresident?: boolean;
-      makeSecretary?: boolean;
-      canEditArticles?: boolean;
-      canEditMembers?: boolean;
-    } = {}
-  ) => {
+  const updateGroupMember = async (memberId: string) => {
     try {
       const member = group.members.find((member) => member.memberId === memberId);
       if (!member) throw new Error('Member not found');
+      const updateData = { ...member, ...updatingMember };
       const { upsertGroupMember } = await $zeus.mutate({
         upsertGroupMember: [
           {
             groupId: data.group.id,
             memberId,
-            title: member.title,
-            president: makePresident ?? member.president,
-            treasurer: makeTreasurer ?? member.treasurer,
-            vicePresident: makeVicePresident ?? member.vicePresident,
-            secretary: makeSecretary ?? member.secretary,
-            canEditArticles: canEditArticles ?? member.canEditArticles,
-            canEditMembers: canEditMembers ?? member.canEditMembers,
+            title: updateData.title,
+            president: updateData.president,
+            treasurer: updateData.treasurer,
+            vicePresident: updateData.vicePresident,
+            secretary: updateData.secretary,
+            canEditArticles: updateData.canEditArticles,
+            canEditMembers: updateData.canEditMembers,
           },
           {
             title: true,
@@ -151,6 +134,7 @@
               president: upsertGroupMember.president ? false : member.president,
             }
       );
+      updatingMember.memberId = '';
     } catch (error: unknown) {
       console.error(error);
     }
@@ -169,16 +153,32 @@
     if (!a.vicePresident && b.vicePresident) return 1;
     if (a.secretary && !b.secretary) return -1;
     if (!a.secretary && b.secretary) return 1;
+    if (!a.canEditMembers && b.canEditMembers) return 1;
+    if (a.canEditMembers && !b.canEditMembers) return -1;
+    if (a.canEditArticles && !b.canEditArticles) return -1;
+    if (!a.canEditArticles && b.canEditArticles) return 1;
     return isBefore(a.createdAt, b.createdAt) ? 1 : -1;
   }
 
-  $: searcher = new Fuse(data.group.members, {
-    keys: ['member.firstName', 'member.lastName', 'member.uid', 'title'],
+  let searcher: Fuse<typeof data.group.members[number]>;
+  onMount(() => {
+    searcher = new Fuse(data.group.members, {
+      keys: [
+        'member.fullName',
+        'member.lastName',
+        'member.firstName',
+        'member.uid',
+        'title',
+        'memberId',
+      ],
+      shouldSort: true,
+    });
   });
 
-  $: shownMembers = search
-    ? searcher.search(search).map(({ item }) => item)
-    : data.group.members.sort(membersByImportance);
+  $: shownMembers =
+    search && searcher
+      ? searcher.search(search).map(({ item }) => item)
+      : data.group.members.sort(membersByImportance);
 </script>
 
 <section class="search">
@@ -190,27 +190,43 @@
 </section>
 
 <ul class="nobullet members">
-  {#each shownMembers as { memberId, member, president, treasurer, vicePresident, secretary, title, createdAt }, i (member.uid)}
+  {#each shownMembers as { memberId, member, president, treasurer, vicePresident, secretary, title, canEditArticles, canEditMembers } (memberId)}
     <li>
-      <div class="item">
+      <div class="item" data-id={member.uid}>
         <AvatarPerson
           href="/user/{member.uid}"
           {...member}
-          fullName="{member.fullName} {emojis({ president, treasurer, vicePresident, secretary })}"
-          role="{title} ({formatISO9075(createdAt, { representation: 'date' })})"
+          fullName="{member.fullName} {roleEmojis({
+            president,
+            treasurer,
+            vicePresident,
+            secretary,
+          })}"
+          role={title}
+          permissions={isOnClubBoard({ president, treasurer, vicePresident, secretary })
+            ? undefined
+            : { canEditArticles, canEditMembers }}
         />
         <div class="actions">
-          {#if updatingMemberId === memberId}
+          {#if updatingMember.memberId === memberId}
             <ButtonSecondary
               on:click={async () => {
                 await updateGroupMember(memberId);
-                updatingMemberId = '';
               }}>Terminer</ButtonSecondary
             >
           {:else}
             <ButtonSecondary
               on:click={() => {
-                updatingMemberId = memberId;
+                updatingMember = {
+                  president,
+                  treasurer,
+                  vicePresident,
+                  secretary,
+                  canEditArticles,
+                  canEditMembers,
+                  title,
+                  memberId,
+                };
               }}>Modifier</ButtonSecondary
             >
           {/if}
@@ -218,7 +234,13 @@
             danger
             disabled={president || treasurer}
             title={president || treasurer
-              ? "Nommez quelqu'un d'autre commme président·e / trésorier·e"
+              ? `Nommez quelqu'un d'autre commme ${
+                  president
+                    ? 'président·e'
+                    : treasurer
+                    ? 'trésorier·e'
+                    : 'président·e et trésorièr·e'
+                }`
               : ''}
             on:click={async () => {
               await deleteGroupMember(memberId);
@@ -227,32 +249,30 @@
         </div>
       </div>
       <form
-        class:open={updatingMemberId === memberId}
+        class:open={updatingMember.memberId === memberId}
         on:submit|preventDefault={async () => {
           await updateGroupMember(memberId);
         }}
         class="edit"
+        data-id={member.uid}
       >
-        <InputText label="Titre" bind:value={group.members[i].title} />
+        <InputText label="Titre" bind:value={updatingMember.title} />
         <div class="roles">
           <InputField label="Bureau">
             <div class="checkboxes">
-              <InputCheckbox label="Président·e" bind:value={group.members[i].president} />
-              <InputCheckbox label="Trésorier·e" bind:value={group.members[i].treasurer} />
-              <InputCheckbox label="Vice-président·e" bind:value={group.members[i].vicePresident} />
-              <InputCheckbox label="Secrétaire" bind:value={group.members[i].secretary} />
+              <InputCheckbox label="Président·e" bind:value={updatingMember.president} />
+              <InputCheckbox label="Trésorier·e" bind:value={updatingMember.treasurer} />
+              <InputCheckbox label="Vice-président·e" bind:value={updatingMember.vicePresident} />
+              <InputCheckbox label="Secrétaire" bind:value={updatingMember.secretary} />
             </div>
           </InputField>
           <InputField label="Permissions">
             <div class="checkboxes">
               <InputCheckbox
                 label="Gère les articles/évènements"
-                bind:value={group.members[i].canEditArticles}
+                bind:value={updatingMember.canEditArticles}
               />
-              <InputCheckbox
-                label="Gère les membres"
-                bind:value={group.members[i].canEditMembers}
-              />
+              <InputCheckbox label="Gère les membres" bind:value={updatingMember.canEditMembers} />
             </div>
           </InputField>
         </div>
@@ -267,9 +287,9 @@
     except={data.group.members.map(({ member: { uid } }) => uid)}
     required
     label="Utilisateur·ice"
-    bind:uid
+    bind:uid={newMemberUid}
   />
-  <InputText label="Titre" bind:value={title} />
+  <InputText label="Titre" bind:value={newMemberTitle} />
   <section class="submit">
     {#if serverError}
       <Alert theme="danger">{serverError}</Alert>

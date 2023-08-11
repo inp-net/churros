@@ -39,27 +39,24 @@
   let showEmptyErrors = false;
   let valueString: string = stringifyValue(value, type);
 
-  $: {
+  function fromStringifiedValue(valueString: string): typeof value {
     switch (type) {
       case 'number': {
-        value = Number(valueString.replace(',', '.'));
-        break;
+        return Number(valueString.replace(',', '.'));
       }
 
       case 'date':
       case 'datetime-local':
       case 'datetime': {
-        value = new Date(valueString);
-        if (!value.valueOf()) {
-          value = undefined;
-          valueString = '';
-        }
-
-        break;
+        const date = new Date(valueString);
+        if (!date.valueOf()) 
+          return undefined;
+        
+        return date;
       }
 
       default: {
-        value = valueString;
+        return valueString;
       }
     }
   }
@@ -121,7 +118,7 @@
       }}
       {type}
       {name}
-      value={valueString}
+      value={stringifyValue(value, type)}
       {required}
       {autocomplete}
       {placeholder}
@@ -130,6 +127,7 @@
         valueString = e.target?.value;
         if (valueString === undefined) valueString = '';
         if (valueString !== '') showEmptyErrors = true;
+        value = fromStringifiedValue(valueString);
         emit('input', e);
       }}
       on:focus={() => {
