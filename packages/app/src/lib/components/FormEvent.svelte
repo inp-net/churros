@@ -591,7 +591,8 @@
 
   .side-by-side {
     display: flex;
-    gap: 1rem;
+    flex-wrap: wrap;
+    column-gap: 1rem;
   }
 
   .ticket-group .tickets,
