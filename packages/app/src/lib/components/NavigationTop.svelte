@@ -72,7 +72,7 @@
         >{#if $page.url.pathname.startsWith('/bookings')}<IconTicketFilled />{:else}
           <IconTicket />{/if}</a
       >
-      <a href="/user/{$me?.uid}">
+      <a href="/users/{$me?.uid}">
         {#if $me.pictureFile}
           <img class="profilepic" src="{PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
         {:else}

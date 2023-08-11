@@ -17,7 +17,7 @@
   <div class="toggle-past">
     <InputCheckbox label="Passées" bind:value={showPastAnnouncements} />
   </div>
-  <ButtonSecondary href="./create" icon={IconAdd}>Créer</ButtonSecondary>
+  <ButtonSecondary href="/announcements/create" icon={IconAdd}>Créer</ButtonSecondary>
 </h1>
 
 <ul class="nobullet">
@@ -35,7 +35,7 @@
       </div>
       {#if by}
         <div class="by">
-          <AvatarPerson href="/user/{by.uid}" {...by} />
+          <AvatarPerson href="/users/{by.uid}" {...by} />
         </div>
       {/if}
       <div class="actions">
@@ -79,12 +79,12 @@
   }
 
   li {
-    padding: 1rem;
-    background: var(--muted-bg);
-    border-radius: var(--radius-block);
     display: flex;
     flex-flow: column wrap;
     gap: 1rem;
+    padding: 1rem;
+    background: var(--muted-bg);
+    border-radius: var(--radius-block);
   }
 
   .actions {

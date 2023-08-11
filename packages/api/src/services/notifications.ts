@@ -112,7 +112,7 @@ export async function scheduleNewArticleNotification({
         data: {
           group: article.group.uid,
           type: NotificationType.NewArticle,
-          goto: `/club/${article.group.uid}/post/${article.uid}`,
+          goto: `/articles/${article.group.uid}/${article.uid}`,
         },
       };
     },
@@ -220,14 +220,14 @@ export async function scheduleShotgunNotifications({
         data: {
           group: event.group.uid,
           type,
-          goto: `/club/${event.group.uid}/event/${event.uid}`,
+          goto: `/events/${event.group.uid}/${event.uid}`,
         },
         image: event.pictureFile,
       };
 
       const openedShotgunActions: PushNotification['actions'] = [
         {
-          action: `/club/${event.group.uid}/event/${event.uid}`,
+          action: `/events/${event.group.uid}/${event.uid}`,
           title: 'Go !',
         },
       ];

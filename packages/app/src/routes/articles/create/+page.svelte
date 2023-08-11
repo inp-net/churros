@@ -12,7 +12,7 @@
       .filter((m) => canCreateArticle(m, $me))
       .map(({ group }) => group) ?? [] as group (group.uid)}
       <CardGroup
-        href="/club/{group.uid}/write"
+        href="/articles/{group.uid}/create"
         name={group.name}
         pictureFile={group.pictureFile}
         pictureFileDark={group.pictureFileDark}

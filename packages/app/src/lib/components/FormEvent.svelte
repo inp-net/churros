@@ -241,7 +241,7 @@
   };
 
   export let redirectAfterSave: (uid: string, groupUid: string) => string = (uid, groupUid) =>
-    `/club/${groupUid}/event/${uid}/edit`;
+    `/events/${groupUid}/${uid}/edit`;
 
   export let availableLydiaAccounts: Array<{
     name: string;
@@ -510,7 +510,7 @@
             >
           {:else}
             <AvatarPerson
-              href="/user/{manager.user.uid}"
+              href="/users/{manager.user.uid}"
               {...manager.user}
               role={DISPLAY_MANAGER_PERMISSION_LEVELS[levelFromPermissions(manager)]}
             />

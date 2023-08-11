@@ -81,7 +81,7 @@
         circle
         insideProse
         icon={IconEdit}
-        href="/club/{groupUid}/event/{event.uid}/edit?{new URLSearchParams({
+        href="/events/{groupUid}/{event.uid}/edit?{new URLSearchParams({
           back: $page.url.pathname,
         }).toString()}"
       />
@@ -89,7 +89,7 @@
       <ButtonSecondary
         circle
         icon={IconPlus}
-        href="/club/{groupUid}/event/create?{new URLSearchParams({
+        href="/events/{groupUid}/create?{new URLSearchParams({
           back: $page.url.pathname,
         }).toString()}"
       />

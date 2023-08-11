@@ -20,7 +20,7 @@
   export let user: User | undefined = undefined;
 
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  $: avatarHref = user ? `/user/${user?.uid ?? ''}` : '';
+  $: avatarHref = user ? `/users/${user?.uid ?? ''}` : '';
 
   function allowed(uid: string) {
     const result =

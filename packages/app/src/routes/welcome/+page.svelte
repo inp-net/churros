@@ -27,9 +27,9 @@
 <h2>Quelques trucs à faire pour commencer</h2>
 
 <ul>
-  <li><a href="/user/{me.uid}/">Personnaliser votre profil</a></li>
-  <li><a href="/calendar/">Consulter les évènements à venir</a></li>
-  <li><a href="/clubs/">Découvrir la liste des clubs</a></li>
+  <li><a href="/users/{me.uid}/">Personnaliser votre profil</a></li>
+  <li><a href="/events/">Consulter les évènements à venir</a></li>
+  <li><a href="/groups/">Découvrir la liste des clubs</a></li>
   <li>Rejoindre les groupes d'actualités de votre école</li>
 </ul>
 

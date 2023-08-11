@@ -42,7 +42,7 @@
           {#each users.filter(Boolean) as { uid, major, birthday, ...user } (uid)}
             <li>
               <AvatarPerson
-                href="/user/{uid}"
+                href="/users/{uid}"
                 {...user}
                 role="{major.shortName} · {new Date().getFullYear() -
                   (birthday?.getFullYear() ?? 0)} ans"
