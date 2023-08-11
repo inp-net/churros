@@ -319,7 +319,7 @@ model Event {
   groupId        String
   contactMail    String
   beneficiary    LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
-  description    String         @db.VarChar(255)
+  description    String         @db.Text
   uid            String         @db.VarChar(255)
   title          String         @db.VarChar(255)
   startsAt       DateTime
