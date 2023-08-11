@@ -25,6 +25,7 @@
     contactMail,
     articles,
     endsAt,
+    location,
   } = data.event;
 
   const tickets = data.ticketsOfEvent;
@@ -66,7 +67,8 @@
     {title}
     <ButtonShare white />
   </h1>
-  <p>{formatEventDates(startsAt, endsAt)}</p>
+  <p class="when">{formatEventDates(startsAt, endsAt)}</p>
+  <p class="where">{location}</p>
 </header>
 
 <ul class="nobullet bookings">

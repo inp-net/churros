@@ -79,6 +79,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           startsAt: true,
           endsAt: true,
           uid: true,
+          location: true,
           id: true,
           pictureFile: true,
           articles: {
