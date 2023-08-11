@@ -15,6 +15,8 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { me } from '$lib/session';
+  import { addMinutes, intervalToDuration, isFuture, parseISO } from 'date-fns';
+  import { PUBLIC_UNPAID_REGISTRATION_VALID_FOR_MINUTES } from '$env/static/public';
 
   let actualTheme: string;
   let confirmingCancellation = false;
@@ -41,6 +43,7 @@
     ticket,
     id,
     createdAt,
+    pending,
     paymentMethod,
   } = data.registration;
   $: phone = $me?.phone ?? '';
@@ -52,6 +55,28 @@
   $: qrcodeViewbox = `${qrcodeBuiltinPadding} ${qrcodeBuiltinPadding} ${
     qrcodeDim - 2 * qrcodeBuiltinPadding
   } ${qrcodeDim - 2 * qrcodeBuiltinPadding}`;
+
+  $: pendingTimeRemaining = computePendingTimeRemaining();
+
+  function computePendingTimeRemaining() {
+    const validUntil = addMinutes(
+      parseISO(createdAt),
+      Number.parseFloat(PUBLIC_UNPAID_REGISTRATION_VALID_FOR_MINUTES)
+    );
+    if (!isFuture(validUntil)) return '';
+    const duration = intervalToDuration({
+      start: new Date(),
+      end: validUntil,
+    });
+
+    return `${duration.minutes ?? 0}'${duration.seconds?.toString().padStart(2, '0') ?? '0'}"`;
+  }
+
+  onMount(() => {
+    setInterval(() => {
+      pendingTimeRemaining = computePendingTimeRemaining();
+    }, 500);
+  });
 </script>
 
 <div class="content">
@@ -59,7 +84,12 @@
     <BackButton />
     Ma place
     <div class="payment-status">
-      <BadgePaymentStatus feminin {paid} />
+      <BadgePaymentStatus
+        feminin
+        {paid}
+        pending={pending && pendingTimeRemaining}
+        {pendingTimeRemaining}
+      />
     </div>
   </h1>
 

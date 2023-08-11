@@ -4,7 +4,7 @@ import { DateTimeScalar } from './scalars.js';
 import { prisma } from '../prisma.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { sendLydiaPaymentRequest } from '../services/lydia.js';
-import { placesLeft, userCanSeeTicket } from './tickets.js';
+import { placesIsValid, placesLeft, userCanSeeTicket } from './tickets.js';
 import { GraphQLError } from 'graphql';
 import { UserType, fullName } from './users.js';
 
@@ -31,6 +31,12 @@ export const RegistrationType = builder.prismaNode('Registration', {
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     paymentMethod: t.expose('paymentMethod', { type: PaymentMethodEnum, nullable: true }),
     paid: t.exposeBoolean('paid'),
+    pending: t.field({
+      type: 'Boolean',
+      resolve({ paid, createdAt }) {
+        return !paid && placesIsValid({ paid, createdAt });
+      },
+    }),
     ticket: t.relation('ticket'),
     author: t.relation('author'),
     authorIsBeneficiary: t.boolean({

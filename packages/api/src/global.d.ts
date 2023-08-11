@@ -47,5 +47,9 @@ declare namespace NodeJS {
      * Contact email (used for push notifications and maybe other things)
      */
     CONTACT_EMAIL: string;
+    /**
+     * Consider unpaid registrations as valid for this many minutes
+     */
+    UNPAID_REGISTRATION_VALID_FOR_MINUTES: `${number}`;
   }
 }

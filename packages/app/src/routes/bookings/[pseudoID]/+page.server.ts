@@ -70,6 +70,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
               },
               authorIsBeneficiary: true,
               paid: true,
+              pending: true,
               author: {
                 uid: true,
                 firstName: true,

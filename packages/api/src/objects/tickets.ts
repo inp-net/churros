@@ -7,26 +7,39 @@ import { DateTimeScalar } from './scalars.js';
 import { LinkInput } from './links.js';
 import slug from 'slug';
 import dichotomid from 'dichotomid';
+import { differenceInMinutes } from 'date-fns';
+
+export function placesIsValid({ paid, createdAt }: { paid: boolean; createdAt: Date }): boolean {
+  return (
+    paid ||
+    differenceInMinutes(new Date(), createdAt) <=
+      Number.parseFloat(process.env.UNPAID_REGISTRATION_VALID_FOR_MINUTES)
+  );
+}
 
 export const placesLeft = (ticket: {
   name: string;
   capacity: number;
-  registrations: Array<{ paid: boolean }>;
-  group: null | { capacity: number; tickets: Array<{ registrations: Array<{ paid: boolean }> }> };
+  registrations: Array<{ paid: boolean; createdAt: Date }>;
+  group: null | {
+    capacity: number;
+    tickets: Array<{ registrations: Array<{ paid: boolean; createdAt: Date }> }>;
+  };
 }) => {
   let placesLeftInGroup = Number.POSITIVE_INFINITY;
   if (ticket.group?.capacity) {
     placesLeftInGroup =
       ticket.group.capacity -
       ticket.group.tickets.reduce(
-        (sum, { registrations }) => sum + registrations.filter(({ paid }) => paid).length,
+        (sum, { registrations }) => sum + registrations.filter((r) => placesIsValid(r)).length,
         0
       );
   }
 
   let placesLeftInTicket = Number.POSITIVE_INFINITY;
   if (ticket.capacity)
-    placesLeftInTicket = ticket.capacity - ticket.registrations.filter(({ paid }) => paid).length;
+    {placesLeftInTicket =
+      ticket.capacity - ticket.registrations.filter((r) => placesIsValid(r)).length;}
 
   return Math.min(placesLeftInGroup, placesLeftInTicket);
 };
