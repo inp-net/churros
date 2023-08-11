@@ -71,9 +71,15 @@
     height: unset !important;
   }
 
+  .input-container :global(.autocomplete .autocomplete-input) {
+    color: var(--text);
+    border-radius: var(--radius-block);
+  }
+
   .input-container :global(.autocomplete .autocomplete-list) {
     position: absolute;
     z-index: 100;
+    background: var(--bg);
     border: var(--border-block) solid var(--border);
     border-radius: var(--radius-block);
   }
@@ -93,7 +99,13 @@
     flex-flow: row wrap;
     gap: 0.5rem;
     height: unset !important;
+    color: var(--text);
+    background-color: var(--bg) !important;
     border: none !important;
     box-shadow: none !important;
+  }
+
+  .input-container :global(.autocomplete .autocomplete-list-item) {
+    color: var(--text);
   }
 </style>
