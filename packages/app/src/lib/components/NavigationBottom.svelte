@@ -35,7 +35,10 @@
   });
 </script>
 
-<nav class:flyout-open={flyoutOpen} class:transparent={$page.url.pathname.endsWith('/scan/')}>
+<nav
+  class:flyout-open={flyoutOpen}
+  class:transparent={$page.url.pathname.endsWith('/scan/') && !flyoutOpen}
+>
   <a href="/" class:current={!flyoutOpen && current === 'home'} class:disabled={flyoutOpen}>
     {#if current === 'home'}
       <IconHome />
