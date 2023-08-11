@@ -96,17 +96,19 @@
 
     <div class="identity">
       <h1>
-        {user.firstName}
-        {user.lastName}
-        {#if user.admin}<Badge title="Possède tout les droits" theme="info"
-            ><IconAdmin /> ADMIN</Badge
-          >
-        {/if}
+        <div class="text">
+          {user.firstName}
+          {user.lastName}
+          {#if user.admin}<Badge title="Possède tout les droits" theme="info"><IconAdmin /></Badge>
+          {/if}
+        </div>
 
-        <ButtonShare />
-        {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
-          <ButtonGhost href="./edit"><IconGear /></ButtonGhost>
-        {/if}
+        <div class="actions">
+          <ButtonShare />
+          {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
+            <ButtonGhost href="./edit"><IconGear /></ButtonGhost>
+          {/if}
+        </div>
       </h1>
       <p class="major">
         {yearTier(user.graduationYear)}A ({user.graduationYear}) ·
@@ -207,8 +209,16 @@
 
   h1 {
     display: flex;
+    column-gap: 2rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  h1 .actions {
+    display: flex;
     gap: 0.5rem;
     align-items: center;
+    flex-wrap: wrap;
   }
 
   .picture {
