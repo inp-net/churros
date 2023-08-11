@@ -240,8 +240,8 @@ builder.queryField('birthdays', (t) =>
         width = Math.ceil(width / 2) * 2;
         const result = [];
         for (
-          let date = addDays(center, -width / 2);
-          date <= addDays(center, width / 2);
+          let date = addDays(center, -width / 2 - 1);
+          date < addDays(center, width / 2);
           date = addDays(date, 1)
         )
           result.push(date);
