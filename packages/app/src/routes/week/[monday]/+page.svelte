@@ -78,22 +78,21 @@
 </script>
 
 <h1>
+  {pageTitle}
+</h1>
+<div class="navigation">
   <a href="/week/{formatISO(previousMonday(data.shownWeek), { representation: 'date' })}"
     ><IconBackward /></a
   >
-  {pageTitle}
-  <a href="/week/{formatISO(nextMonday(data.shownWeek), { representation: 'date' })}"
-    ><IconForward /></a
-  >
-</h1>
-
-<section class="manage">
   {#if canChangeBarWeek}
     <ButtonSecondary icon={IconEdit} on:click={async () => goto('/bar-weeks')}
       >Gérer</ButtonSecondary
     >
   {/if}
-</section>
+  <a href="/week/{formatISO(nextMonday(data.shownWeek), { representation: 'date' })}"
+    ><IconForward /></a
+  >
+</div>
 
 <section class="bar-week">
   {#if barWeek.groups.length > 0}
@@ -185,6 +184,15 @@
     gap: 1rem;
     align-items: center;
     justify-content: center;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .navigation {
+    font-size: 1.5em;
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
     margin-bottom: 2rem;
   }
 
