@@ -387,8 +387,8 @@ function progressbar(objectName: string, total: number): SingleBar {
 let bar = progressbar('schools', LDAP_DATA.schools.length);
 for (const oldSchool of LDAP_DATA.schools) {
   const school = await makeSchool(oldSchool);
-  bar.increment();
   if (!school) continue;
+  bar.increment();
 }
 
 bar.stop();
@@ -420,11 +420,10 @@ for (const oldUser of LDAP_DATA.users) {
   };
   try {
     await makeUser(oldUserPortail, oldUser);
+    bar.increment();
   } catch (error: unknown) {
     errors.users.push({ user: oldUser, error });
   }
-
-  bar.increment();
 }
 
 bar.stop();
@@ -442,11 +441,10 @@ for (const oldGroup of LDAP_DATA.clubs) {
   );
   try {
     await makeGroup(portailClub!, oldGroup);
+    bar.increment();
   } catch (error: unknown) {
     errors.clubs.push({ club: oldGroup, error });
   }
-
-  bar.increment();
 }
 
 bar.stop();
