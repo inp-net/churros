@@ -29,6 +29,8 @@
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import { isDark } from '$lib/theme';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import { roleEmojis } from '$lib/permissions';
+  import { byMemberGroupTitleImportance } from '$lib/sorting';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -148,8 +150,9 @@
 
     {#if clubBoard}
       <ul class="nobullet">
-        {#each clubBoard as { member, title, ...permissions } (member.uid)}
+        {#each clubBoard.sort(byMemberGroupTitleImportance) as { member, title, ...permissions } (member.uid)}
           <li>
+            <span class="emojis">{roleEmojis(permissions)}</span>
             <AvatarPerson role={title} {...member} href="/user/{member.uid}" />
           </li>
         {/each}
@@ -292,6 +295,16 @@
     display: flex;
     flex-flow: column wrap;
     gap: 0.25rem;
+  }
+
+  .board li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .board li .emojis {
+    font-size: 1.2em;
   }
 
   .board .more {
