@@ -29,34 +29,42 @@
     parseBackDisplayedDate(b).valueOf() - parseBackDisplayedDate(a).valueOf();
 </script>
 
-<h1><ButtonBack /> Anniversaires</h1>
+<div class="content">
+  <h1><ButtonBack /> Anniversaires</h1>
 
-<ul class="nobullet birthdays">
-  {#each Object.entries(groupedByBirthday)
-    .sort(([a, _], [b, _2]) => sortWithDisplayDate(a, b))
-    .reverse() as [birthday, users] (birthday)}
-    <li class="birthday">
-      <h2>{birthday}</h2>
-      <ul class="nobullet">
-        {#each users.filter(Boolean) as { uid, major, birthday, ...user } (uid)}
-          <li>
-            <AvatarPerson
-              href="/user/{uid}"
-              {...user}
-              role="{major.shortName} · {new Date().getFullYear() -
-                (birthday?.getFullYear() ?? 0)} ans"
-            />
-          </li>
-        {/each}
-      </ul>
-    </li>
-  {/each}
-</ul>
+  <ul class="nobullet birthdays">
+    {#each Object.entries(groupedByBirthday)
+      .sort(([a, _], [b, _2]) => sortWithDisplayDate(a, b))
+      .reverse() as [birthday, users] (birthday)}
+      <li class="birthday">
+        <h2>{birthday}</h2>
+        <ul class="nobullet">
+          {#each users.filter(Boolean) as { uid, major, birthday, ...user } (uid)}
+            <li>
+              <AvatarPerson
+                href="/user/{uid}"
+                {...user}
+                role="{major.shortName} · {new Date().getFullYear() -
+                  (birthday?.getFullYear() ?? 0)} ans"
+              />
+            </li>
+          {/each}
+        </ul>
+      </li>
+    {/each}
+  </ul>
+</div>
 
 <style>
+  .content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
   h1 {
+    display: flex;
+    align-items: center;
     margin-bottom: 2rem;
-    text-align: center;
   }
 
   .birthdays {
