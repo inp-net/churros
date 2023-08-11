@@ -1,7 +1,9 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import cookie from 'cookie';
   import IconGear from '~icons/mdi/gear-outline';
   import IconAdmin from '~icons/mdi/security';
+  import IconLogout from '~icons/mdi/logout-variant';
   import IconWebsite from '~icons/mdi/earth';
   import { dateFormatter, yearTier } from '$lib/dates.js';
   import { me } from '$lib/session.js';
@@ -20,6 +22,7 @@
   import CardArticle from '$lib/components/CardArticle.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import { goto } from '$app/navigation';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -51,6 +54,11 @@
   $: familyTree = makeFamilyTree(familyNesting);
 
   $: ({ user } = data);
+
+  async function logout() {
+    const cookies = cookie.parse(document.cookie);
+    await goto(`/logout/?token=${cookies.token}`);
+  }
 
   function rolesBadge({
     president,
@@ -107,6 +115,9 @@
           <ButtonShare />
           {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
             <ButtonGhost href="./edit"><IconGear /></ButtonGhost>
+          {/if}
+          {#if $me?.uid === user.uid}
+            <ButtonGhost on:click={logout}><IconLogout /></ButtonGhost>
           {/if}
         </div>
       </h1>
