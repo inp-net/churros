@@ -233,10 +233,25 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
   await Promise.all(
     ldapGroup.memberUid.map(async (uid) => {
       const president = ldapGroup.president === uid;
-      const secretary = (ldapGroup.secretaire ?? []).includes(uid);
-      const vicePresident = (ldapGroup.vicePresident ?? []).includes(uid);
-      const treasurer = ldapGroup.tresorier.includes(uid);
+      const secretaryIndex = (ldapGroup.secretaire ?? []).indexOf(uid);
+      const vicePresidentIndex = (ldapGroup.vicePresident ?? []).indexOf(uid);
+      const treasurerIndex = ldapGroup.tresorier.indexOf(uid);
+      const secretary = secretaryIndex > -1;
+      const vicePresident = vicePresidentIndex > -1;
+      const treasurer = treasurerIndex > -1;
       const bureau = president || secretary || vicePresident || treasurer;
+
+      let title = 'Membre';
+      if (president) {
+        title = 'Prez';
+      } else if (treasurer) {
+        title = treasurerIndex === 0 ? 'Trez' : 'Vice-trez';
+      } else if (vicePresident) {
+        title = (ldapGroup.vicePresident?.length ?? 0) > 1 ? `VP ${vicePresidentIndex + 1}` : 'VP';
+      } else if (secretary) {
+        title = secretaryIndex === 0 ? 'Secrétaire' : 'Vice-secrétaire';
+      }
+
       try {
         await prisma.groupMember.create({
           data: {
@@ -246,15 +261,7 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
             secretary,
             treasurer,
             vicePresident,
-            title: president
-              ? 'Prez'
-              : treasurer
-              ? 'Trez'
-              : vicePresident
-              ? 'VP'
-              : secretary
-              ? 'Secrétaire'
-              : 'Membre',
+            title,
             group: { connect: { uid: newGroup.uid } },
             member: { connect: { uid } },
           },
