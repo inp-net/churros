@@ -72,21 +72,7 @@
   {/if}
 
   {#if event}
-    <!-- Variables pour cardEvent qui manquent dans l'object event : pictureFile, endsAt, author -->
-    <!-- Les types tickets sont incompatibles -->
-    <CardEvent
-      href="/club/{event.group.uid}/event/{event.uid}"
-      {...event}
-      pictureFile="events/e:f09yt4j0de0mwckv.png"
-      author={{ uid: 'x', pictureFile: 'x', fullName: 'Antonin Litschgy' }}
-      endsAt={event.startsAt}
-      tickets={[
-        {
-          opensAt: new Date(Date.now()),
-          endsAt: new Date(Date.now() + 10e6),
-        },
-      ]}
-    />
+    <CardEvent href="/club/{event.group.uid}/event/{event.uid}" {...event} />
     <!-- A supprimer à terme -->
     <section class="event">
       <h2>
