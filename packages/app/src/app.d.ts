@@ -1,3 +1,5 @@
+import type { EventAttributes } from 'ics';
+
 declare namespace App {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   type SessionUserType = import('$lib/session.js').SessionUser;
@@ -16,3 +18,7 @@ declare namespace App {
 }
 
 declare module 'simple-svelte-autocomplete';
+
+declare module 'ics-service' {
+  function generateIcs(title: string, events: EventAttributes[], url: string): string;
+}

@@ -18,17 +18,14 @@
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
   import { beforeNavigate } from '$app/navigation';
-  import { format, isMonday, previousMonday } from 'date-fns';
+  import { format } from 'date-fns';
   import { me } from '$lib/session';
   import { page } from '$app/stores';
+    import { closestMonday } from '$lib/dates';
 
   export let current: 'home' | 'search' | 'events' | 'more';
   let flyoutOpen = false;
 
-  function closestMonday(date: Date): Date {
-    if (isMonday(date)) return date;
-    return previousMonday(date);
-  }
 
   beforeNavigate(() => {
     flyoutOpen = false;

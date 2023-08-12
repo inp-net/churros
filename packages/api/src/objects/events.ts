@@ -84,11 +84,15 @@ builder.queryField('events', (t) =>
   t.prismaConnection({
     type: EventType,
     cursor: 'id',
-    async resolve(query, _, {}, { user }) {
+    args: {
+      future: t.arg.boolean({required: false})
+    },
+    async resolve(query, _, {future}, { user }) {
+      future = future ?? false
       if (!user) {
         return prisma.event.findMany({
           ...query,
-          where: { visibility: VisibilityPrisma.Public },
+          where: { visibility: VisibilityPrisma.Public, startsAt: future ? {gte: new Date()} : undefined },
         });
       }
 
@@ -106,6 +110,7 @@ builder.queryField('events', (t) =>
           visibility: {
             notIn: [VisibilityPrisma.Private, VisibilityPrisma.Unlisted],
           },
+          startsAt: future ? {gte: new Date()} : undefined,
           OR: [
             // Completely public events
             {
