@@ -61,6 +61,7 @@ export const _articleQuery = Selector('Article')({
       uid: true,
       fullName: true,
       pictureFile: true,
+      groups: { group: { name: true, uid: true }, title: true },
     },
     contactMail: true,
   },
