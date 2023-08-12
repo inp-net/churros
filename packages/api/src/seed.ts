@@ -137,7 +137,6 @@ for (const asso of studentAssociations) {
         lyiaAccounts: {
           create: {
             name: `${asso.school.name.toUpperCase()} ${name.toUpperCase()}`,
-            uid: `${slug(asso.school.name)}-${slug(name)}`,
             privateToken: 'a',
             vendorToken: 'a',
           },

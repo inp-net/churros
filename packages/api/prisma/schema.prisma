@@ -447,7 +447,6 @@ model LydiaAccount {
   groupId      String
   group        Group   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   name         String  @default("") @db.VarChar(255)
-  uid          String  @unique
   privateToken String  @default("") @db.VarChar(255)
   vendorToken  String  @default("") @db.VarChar(255)
   events       Event[]

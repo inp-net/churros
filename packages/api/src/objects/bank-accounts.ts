@@ -44,7 +44,6 @@ builder.mutationField('upsertLydiaAccount', (t) =>
     async resolve(query, _, { id, groupUid, name, privateToken, vendorToken }) {
       await checkLydiaAccount(vendorToken, privateToken);
       const data = {
-        uid: slug(name),
         name,
         group: { connect: { uid: groupUid } },
         privateToken,
