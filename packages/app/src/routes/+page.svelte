@@ -50,7 +50,7 @@
       <ButtonSecondary href="/birthdays">Autres jours</ButtonSecondary>
     </h2>
     <ul class="nobullet">
-      {#each data.birthdays.filter((u) => (selectedBirthdaysYearTier === 'all' || u.yearTier === Number.parseFloat(selectedBirthdaysYearTier)) && u.major.schools.some( (s) => $me?.major.schools.some((schoolMe) => schoolMe.uid === s.uid) )) as { uid, major, birthday, ...user } (uid)}
+      {#each data.birthdays.filter((u) => selectedBirthdaysYearTier === 'all' || u.yearTier === Number.parseFloat(selectedBirthdaysYearTier)) as { uid, major, birthday, ...user } (uid)}
         <li>
           <AvatarPerson
             href="/user/{uid}"
