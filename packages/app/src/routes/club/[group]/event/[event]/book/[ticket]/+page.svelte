@@ -24,7 +24,7 @@
   $: paid = $page.url.searchParams.has('paid');
   let registrationId = '';
 
-  $: paymentDetails = { phone: $me?.phone ?? '' };
+  const paymentDetails = { phone: $me?.phone ?? '' };
 
   let serverError = '';
 

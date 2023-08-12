@@ -43,7 +43,7 @@
     createdAt,
     paymentMethod,
   } = data.registration;
-  $: phone = $me?.phone ?? '';
+  let phone = $me?.phone ?? '';
   let qrcodeViewbox: string;
   let qrcodeDim: number;
   let qrcodePath: string;
