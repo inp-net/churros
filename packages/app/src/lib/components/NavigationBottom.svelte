@@ -133,7 +133,7 @@
       <span>Frappe</span>
     </a>
 
-    <a href="/articles/create">
+    <a href="/posts/create">
       <IconArticle />
       <span>Article</span>
     </a>

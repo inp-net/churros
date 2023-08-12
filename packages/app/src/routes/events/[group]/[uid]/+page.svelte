@@ -123,16 +123,16 @@
     Actualités
 
     {#if $me?.admin || $me?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit)}
-      <ButtonSecondary icon={IconPlus} href="./write">Article</ButtonSecondary>
+      <ButtonSecondary icon={IconPlus} href="./write">Post</ButtonSecondary>
     {/if}
   </h2>
   <ul class="nobullet">
     {#each articles as { uid, ...article } (uid)}
       <li>
-        <CardArticle href="/articles/{group.uid}/{uid}/" {...article} />
+        <CardArticle href="/posts/{group.uid}/{uid}/" {...article} />
       </li>
     {:else}
-      <li class="empty muted">Aucun article pour le moment.</li>
+      <li class="empty muted">Aucun post pour le moment.</li>
     {/each}
   </ul>
 </section>

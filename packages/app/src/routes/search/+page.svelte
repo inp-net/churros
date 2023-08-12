@@ -25,7 +25,7 @@
     actionIcon={IconSearch}
     on:action={submitSearchQuery}
     type="text"
-    placeholder="Personne, club, évènement, article,…"
+    placeholder="Personne, club, évènement, post,…"
     bind:value={q}
   />
 </form>

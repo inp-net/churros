@@ -197,10 +197,10 @@
     <ul class="nobullet">
       {#each data.user.articles.edges.map(({ node }) => node) as article}
         <li>
-          <CardArticle href="/articles/{article.group.uid}/{article.uid}" {...article} />
+          <CardArticle href="/posts/{article.group.uid}/{article.uid}" {...article} />
         </li>
       {:else}
-        <li>Aucun article</li>
+        <li>Aucun post</li>
       {/each}
     </ul>
   </section>

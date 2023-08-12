@@ -182,15 +182,14 @@
 
   <section class="posts">
     <h2>
-      Posts {#if canEditArticles}<ButtonSecondary
-          href="/articles/{group.uid}/create/"
-          icon={IconAdd}>Nouveau</ButtonSecondary
+      Posts {#if canEditArticles}<ButtonSecondary href="/posts/{group.uid}/create/" icon={IconAdd}
+          >Nouveau</ButtonSecondary
         >{/if}
     </h2>
 
     <ul class="nobullet">
       {#each group.articles.slice(0, 3) as { uid, ...article } (uid)}
-        <CardArticle hideGroup {group} href="/articles/{group.uid}/{uid}" {...article} />
+        <CardArticle hideGroup {group} href="/posts/{group.uid}/{uid}" {...article} />
       {/each}
     </ul>
   </section>

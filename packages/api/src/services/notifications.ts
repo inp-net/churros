@@ -107,12 +107,12 @@ export async function scheduleNewArticleNotification({
         return;
 
       return {
-        title: `Nouvel article de ${article.group.name}: ${article.title}`,
+        title: `Nouveau post de ${article.group.name}: ${article.title}`,
         body: ellipsis(htmlToText.convert(await toHtml(article.body))),
         data: {
           group: article.group.uid,
           type: NotificationType.NewArticle,
-          goto: `/articles/${article.group.uid}/${article.uid}`,
+          goto: `/posts/${article.group.uid}/${article.uid}`,
         },
       };
     },

@@ -75,7 +75,7 @@
       {group}
       {author}
       {bodyHtml}
-      href="/articles/{group.uid}/{uid}/"
+      href="/posts/{group.uid}/{uid}/"
       img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
     />
   {/each}

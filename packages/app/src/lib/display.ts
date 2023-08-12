@@ -24,7 +24,7 @@ export const HELP_VISIBILITY = {
 };
 
 export const DISPLAY_NOTIFICATION_TYPES = {
-  NewArticle: 'Nouvel article',
+  NewArticle: 'Nouveau post',
   ShotgunOpeningSoon: "Ouverture imminente d'un shotgun",
   ShotgunOpened: "Ouverture d'un shotgun",
   ShotgunClosingSoon: "Fermeture imminente d'un shotgun",

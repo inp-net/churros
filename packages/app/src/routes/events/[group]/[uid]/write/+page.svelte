@@ -25,7 +25,7 @@
 </script>
 
 <div class="content">
-  <h1><ButtonBack /> Écrire un article sur {data.event.title}</h1>
+  <h1><ButtonBack /> Écrire un post sur {data.event.title}</h1>
   <FormArticle afterGoTo={() => '..'} hideEvent bind:data={articleData} />
 </div>
 

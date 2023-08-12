@@ -11,7 +11,7 @@
   export const LEGENDS = {
     Group: 'Logo du groupe',
     User: 'Photo de profil',
-    Article: 'Photo de l’article',
+    Article: 'Photo du post',
     Event: 'Photo de l’événement',
   };
 
