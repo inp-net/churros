@@ -48,12 +48,12 @@
     {/if}
   </h1>
 
-  {#each Object.entries(groupBy( members, ({ createdAt }) => schoolYear(createdAt).join('-') )) as [year, membersOfYear]}
+  {#each Object.entries(groupBy( members, ({ createdAt }) => schoolYear(createdAt).join('-') )).sort( ([a, _], [b, _2]) => b.localeCompare(a) ) as [year, membersOfYear]}
     <section class="year">
       <h2>{year}</h2>
 
       <ul class="nobullet">
-        {#each membersOfYear as { title, member } (member.uid)}
+        {#each membersOfYear as { title, member, createdAt } (member.uid)}
           <li>
             <AvatarPerson href="/user/{member.uid}" {...member} role={title} />
           </li>
