@@ -16,6 +16,7 @@
     display: block;
     width: 100%;
     padding: 0.5rem 0.6667rem;
+    color: var(--text);
     background: var(--bg);
     border: var(--border-block) solid var(--border);
     border-radius: var(--radius-block);
