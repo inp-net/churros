@@ -2,7 +2,7 @@
 /* eslint-disable unicorn/no-null */
 import { type Group, PrismaClient, NotificationType } from '@prisma/client';
 import { hash } from 'argon2';
-import { differenceInYears, parse, parseISO } from 'date-fns';
+import { compareAsc, compareDesc, differenceInYears, parse, parseISO } from 'date-fns';
 import { createWriteStream, readFileSync, statSync, writeFileSync } from 'node:fs';
 import type * as Ldap from './ldap-types';
 import { Readable } from 'node:stream';
@@ -78,6 +78,29 @@ type OldGroup = {
   nom: string;
   logo: string;
   ecole_id: ecoleId;
+};
+
+const PORTAIL_LOG_APPLICATION = {
+  '11': 'acces_annuaire',
+  '12': 'alerte_annuaire',
+  '7': 'gestion_accueil',
+  '1': 'gestion_alias',
+  '9': 'gestion_billetterie',
+  '2': 'gestion_clubs',
+  '8': 'gestion_ecobox',
+  '10': 'gestion_eleves',
+  '4': 'gestion_formations',
+  '3': 'gestion_groupes',
+  '5': 'gestion_permissions',
+  '6': 'pages',
+} as const;
+
+type PortailLog = {
+  id: `${number}`;
+  date: iso8601;
+  operation: string;
+  application_id: keyof typeof PORTAIL_LOG_APPLICATION;
+  user_id: `${number}`;
 };
 
 function bool(tinyIntString: tinyIntString): boolean {
@@ -232,6 +255,8 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
 
   await Promise.all(
     ldapGroup.memberUid.map(async (uid) => {
+      const member = await prisma.user.findUnique({ where: { uid } });
+      if (!member) return;
       const president = ldapGroup.president === uid;
       const secretaryIndex = (ldapGroup.secretaire ?? []).indexOf(uid);
       const vicePresidentIndex = (ldapGroup.vicePresident ?? []).indexOf(uid);
@@ -264,6 +289,9 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
             title,
             group: { connect: { uid: newGroup.uid } },
             member: { connect: { uid } },
+            // xxx: assume user joined on december 1st of their first year if not found in logs
+            createdAt:
+              userJoinedGroupAt(uid, ldapGroup.cn) ?? new Date(member.graduationYear - 3, 12, 1),
           },
         });
       } catch {
@@ -309,9 +337,51 @@ const oldUsersPortail = DATA.find(({ type, name }) => type === 'table' && name =
 const oldClubsPortail = DATA.find(({ type, name }) => type === 'table' && name === 'club_club')![
   'data'
 ] as OldGroup[];
+
+const logsPortail = DATA.find(
+  ({ type, name }) => type === 'table' && name === 'portailuser_logentry'
+)!['data'] as PortailLog[];
 console.log(
-  `  Loaded portail dump (${oldUsersPortail.length} users, ${oldClubsPortail.length} clubs)`
+  `  Loaded portail dump (${oldUsersPortail.length} users, ${oldClubsPortail.length} clubs, ${logsPortail.length} logs)`
 );
+
+// TODO pour tvn7 c'est cassé psk quasi tout le monde est dans "Membres de TVn7" (groupe informel) et pas "TVn7" (club)
+// (merci ghislain)
+const logsAddUserToGroup: Array<{ date: Date; userUid: string; groupUid: string }> = logsPortail
+  .filter(
+    ({ application_id, operation }) =>
+      PORTAIL_LOG_APPLICATION[application_id] === 'gestion_clubs' &&
+      operation.startsWith('A ajouté') &&
+      operation.includes('au club')
+  )
+  .map(({ operation, date }) => {
+    const match = operation
+      .trim()
+      .match(/^A ajouté[^(]*[( ](?<userUid>[\w-]+)\)? au club (?<groupUid>[\w-]+)$/);
+    if (!match) {
+      console.error(`Throwing log that seems valid: ${operation}`);
+      return undefined;
+    }
+    return {
+      date: parseISO(date),
+      userUid: match.groups.userUid,
+      groupUid: match.groups.groupUid + '-n7',
+    };
+  })
+  .filter((o) => o !== undefined);
+
+function userJoinedGroupAt(userUid: string, groupUid: string): Date | undefined {
+  const allAdds = logsAddUserToGroup.filter(
+    (log) => log.userUid === userUid && log.groupUid === groupUid
+  );
+  if (allAdds.length === 0) {
+    // console.log(`${userUid} @ ${groupUid}: No logs found to get join date`)
+    return undefined;
+  }
+
+  // if (allAdds.length > 1) console.log(`${userUid} @ ${groupUid}: Taking add log out of ${allAdds.length} logs`)
+  return allAdds.sort((a, b) => compareAsc(a.date, b.date))[0]?.date;
+}
 
 const CAS_DATA = JSON.parse(readFileSync('./cas-data.json').toString()) as unknown as Array<
   Record<string, unknown>
