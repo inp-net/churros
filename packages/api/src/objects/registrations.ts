@@ -465,7 +465,7 @@ builder.mutationField('paidRegistration', (t) =>
         ...query,
         where: { id: regId },
         data: {
-          paid: true,
+          paid: false,
           paymentMethod,
           beneficiary: beneficiary ?? '',
         },
