@@ -454,7 +454,7 @@ builder.mutationField('paidRegistration', (t) =>
       // Process payment
       await pay(
         user.uid,
-        ticket.event.beneficiary?.uid ?? '(unregistered)',
+        ticket.event.beneficiary?.id ?? '(unregistered)',
         ticket.price,
         paymentMethod,
         phone,
