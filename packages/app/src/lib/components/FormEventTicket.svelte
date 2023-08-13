@@ -43,13 +43,18 @@
   };
 
   $: expanded = expandedTicketId === ticket.id;
+
+  $: displayCapacity =
+    ticket.capacity === 0
+      ? 'Places illimitées'
+      : `${ticket.capacity} place${ticket.capacity > 1 ? 's' : ''}`;
 </script>
 
 <article class="ticket" data-id={ticket.id} class:expanded>
   <header>
     <div class="properties">
       <span class="name">{ticket.name}</span>
-      <span class="capacity">{ticket.capacity} place{ticket.capacity > 1 ? 's' : ''}</span>
+      <span class="capacity">{displayCapacity}</span>
       <span class="prix">{ticket.price}€</span>
     </div>
     <div class="actions">
@@ -235,7 +240,7 @@
     <footer>
       <div class="properties">
         <span class="name">{ticket.name}</span>
-        <span class="capacity">{ticket.capacity} place{ticket.capacity > 1 ? 's' : ''}</span>
+        <span class="capacity">{displayCapacity}</span>
         <span class="prix">{ticket.price}€</span>
       </div>
       <div class="actions">
@@ -278,6 +283,7 @@
   header,
   footer {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
 

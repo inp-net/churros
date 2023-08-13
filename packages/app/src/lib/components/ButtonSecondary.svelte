@@ -14,10 +14,12 @@
   export let download: string | undefined = undefined;
   export let insideProse = false;
   export let disabled = false;
+  export let newTab = false;
 </script>
 
 <svelte:element
   this={href ? 'a' : 'button'}
+  target={newTab ? '_blank' : undefined}
   type={submits ? 'submit' : 'button'}
   class="button-secondary typo-paragraph"
   class:danger
@@ -59,6 +61,11 @@
     border-radius: 1000px;
   }
 
+  .button-secondary:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
   .button-secondary.circle {
     padding: 0.5rem;
     font-size: 1.2em;
@@ -68,8 +75,8 @@
     margin: 0.5rem;
   }
 
-  .button-secondary:hover,
-  .button-secondary:focus-visible {
+  .button-secondary:not(:disabled):hover,
+  .button-secondary:not(:disabled):focus-visible {
     /* color: var(--bg); */
     background: var(--border);
   }

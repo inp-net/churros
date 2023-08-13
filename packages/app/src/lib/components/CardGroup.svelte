@@ -9,7 +9,7 @@
   export let role = '';
 </script>
 
-<a {href} class="group" draggable="false" on:click>
+<a {href} title={name} class="group" draggable="false" on:click>
   <div class="img">
     <img
       src={`${PUBLIC_STORAGE_URL}${$isDark && pictureFileDark ? pictureFileDark : pictureFile}`}
@@ -69,5 +69,10 @@
     text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .role {
+    font-size: 0.8em;
+    text-align: center;
   }
 </style>

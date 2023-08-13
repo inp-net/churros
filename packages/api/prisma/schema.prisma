@@ -319,7 +319,7 @@ model Event {
   groupId        String
   contactMail    String
   beneficiary    LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
-  description    String         @db.VarChar(255)
+  description    String         @db.Text
   uid            String         @db.VarChar(255)
   title          String         @db.VarChar(255)
   startsAt       DateTime
@@ -447,7 +447,6 @@ model LydiaAccount {
   groupId      String
   group        Group   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   name         String  @default("") @db.VarChar(255)
-  uid          String  @unique
   privateToken String  @default("") @db.VarChar(255)
   vendorToken  String  @default("") @db.VarChar(255)
   events       Event[]
@@ -548,8 +547,8 @@ model NotificationSetting {
 /// Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 model Announcement {
   id        String   @id @default(dbgenerated("nanoid('ann:')"))
-  by        User     @relation(fields: [userId], references: [id])
-  userId    String
+  by        User?    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  userId    String?
   title     String   @db.VarChar(255)
   body      String   @db.Text
   warning   Boolean

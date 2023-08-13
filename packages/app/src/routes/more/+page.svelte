@@ -32,11 +32,11 @@
   const services = [
     Service('La Frappe', 'Sauve tes partiels', {
       logo: IconHand,
-      href: 'https://bde.enseeiht.fr/services/frappe',
+      href: 'https://bde.enseeiht.fr/services/frappe/',
     }),
     Service('Covoiturages', 'Limite ton CO2e', {
       logo: IconCar,
-      href: 'https://bde.enseeiht.fr/services/covoiturage',
+      href: 'https://bde.enseeiht.fr/services/covoiturage/',
     }),
     Service('Photos', 'Merci Photo7 ♥', { href: 'https://photo7.inpt.fr' }),
     Service('TVn7flix', 'Les productions de TVn7', { href: 'https://tvn7flix.fr' }),

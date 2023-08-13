@@ -24,6 +24,12 @@
       event.preventDefault();
     }
   }
+
+  $: newLinkBothFieldsAreFilled = newValue.name.length > 0 && newValue.value.length > 0;
+
+  function newLinkHandleBlur() {
+    if (newLinkBothFieldsAreFilled) addLink();
+  }
 </script>
 
 <InputField {label} {required} {hint}>
@@ -73,8 +79,18 @@
 
     <div class="new">
       <div class="inputs">
-        <input type="text" bind:value={newValue.name} placeholder="Nom de l'action" />
-        <input type="text" bind:value={newValue.value} placeholder="Adresse du site" />
+        <input
+          type="text"
+          on:blur={newLinkHandleBlur}
+          bind:value={newValue.name}
+          placeholder="Nom de l'action"
+        />
+        <input
+          type="text"
+          on:blur={newLinkHandleBlur}
+          bind:value={newValue.value}
+          placeholder="Adresse du site"
+        />
       </div>
       <div class="add">
         <GhostButton title="Ajouter" on:click={addLink}>

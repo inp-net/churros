@@ -8,8 +8,8 @@ export const AnnouncementType = builder.prismaNode('Announcement', {
   fields: (t) => ({
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
-    by: t.relation('by'),
-    userId: t.exposeID('userId'),
+    by: t.relation('by', { nullable: true }),
+    userId: t.exposeID('userId', { nullable: true }),
     title: t.exposeString('title'),
     body: t.exposeString('body'),
     bodyHtml: t.field({

@@ -6,10 +6,12 @@
   import '../design/app.scss';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import IconLoading from '~icons/mdi/loading';
   import IconClose from '~icons/mdi/close';
   import { browser } from '$app/environment';
   import { zeus } from '$lib/zeus';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
+  import { me } from '$lib/session';
 
   function currentTab(url: URL): 'events' | 'search' | 'more' | 'home' {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -19,6 +21,20 @@
     if (starts('/more')) return 'more';
     return 'home';
   }
+
+  let showInitialSpinner = true;
+
+  onMount(() => {
+    if (!$me && !localStorage.getItem('isReallyLoggedout')) {
+      localStorage.setItem('isReallyLoggedout', 'true');
+      window.location.reload();
+    } else if ($me) {
+      localStorage.removeItem('isReallyLoggedout');
+      showInitialSpinner = false;
+    } else {
+      showInitialSpinner = false;
+    }
+  });
 
   let announcements = [] as Array<{
     title: string;
@@ -92,6 +108,13 @@
   <title>Centraverse</title>
 </svelte:head>
 
+<div id="loading-overlay" class:visible={showInitialSpinner}>
+  <img src="/logo.png" alt="AEn7" />
+  <div class="spinner">
+    <IconLoading />
+  </div>
+  <p class="typo-details">Connexion en cours…</p>
+</div>
 <TopBar />
 
 <div class="layout">
@@ -124,6 +147,33 @@
 <NavigationBottom current={currentTab($page.url)} />
 
 <style lang="scss">
+  #loading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000000000000000;
+    display: flex;
+    flex-flow: column wrap;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-text);
+    background: var(--primary-bg);
+
+    .spinner {
+      font-size: 2rem;
+      animation: spinner 700ms infinite;
+    }
+
+    img {
+      object-fit: contain;
+      height: 10rem;
+    }
+  }
+
+  #loading-overlay:not(.visible) {
+    display: none;
+  }
+
   .layout {
     // max-width: 100rem;
     padding-top: 5rem; // XXX equal to topbar's height
@@ -157,5 +207,21 @@
     flex-wrap: wrap;
     column-gap: 1rem;
     align-items: center;
+  }
+
+  @keyframes spinner {
+    from {
+      transform: rotate(0);
+    }
+
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @media not all and (display-mode: standalone) {
+    #loading-overlay {
+      display: none;
+    }
   }
 </style>

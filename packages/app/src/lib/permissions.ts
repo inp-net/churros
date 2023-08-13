@@ -40,3 +40,25 @@ export function canCreateEvent(
 ): boolean {
   return canCreateArticle(member, user);
 }
+
+export function roleEmojis({
+  treasurer,
+  vicePresident,
+  president,
+  secretary,
+}: {
+  treasurer: boolean;
+  vicePresident: boolean;
+  president: boolean;
+  secretary: boolean;
+}): string {
+  return [
+    ['👑', president],
+    ['🌟', vicePresident],
+    ['📜', secretary],
+    ['💰', treasurer],
+  ]
+    .filter(([_emoji, v]) => v)
+    .map(([emoji, _v]) => emoji)
+    .join(' ');
+}

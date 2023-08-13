@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
   import { zeus } from '$lib/zeus';
-  import type { PageData } from '../../routes/user/[uid]/edit/$types';
+  import type { PageData } from '../../routes/users/[uid]/edit/$types';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputSelectMultiple from './InputSelectMultiple.svelte';
 

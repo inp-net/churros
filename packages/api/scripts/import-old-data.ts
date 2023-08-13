@@ -2,7 +2,7 @@
 /* eslint-disable unicorn/no-null */
 import { type Group, PrismaClient, NotificationType } from '@prisma/client';
 import { hash } from 'argon2';
-import { differenceInYears, parse, parseISO } from 'date-fns';
+import { compareAsc, differenceInYears, parse, parseISO } from 'date-fns';
 import { createWriteStream, readFileSync, statSync, writeFileSync } from 'node:fs';
 import type * as Ldap from './ldap-types';
 import { Readable } from 'node:stream';
@@ -80,6 +80,29 @@ type OldGroup = {
   ecole_id: ecoleId;
 };
 
+const PORTAIL_LOG_APPLICATION = {
+  '11': 'acces_annuaire',
+  '12': 'alerte_annuaire',
+  '7': 'gestion_accueil',
+  '1': 'gestion_alias',
+  '9': 'gestion_billetterie',
+  '2': 'gestion_clubs',
+  '8': 'gestion_ecobox',
+  '10': 'gestion_eleves',
+  '4': 'gestion_formations',
+  '3': 'gestion_groupes',
+  '5': 'gestion_permissions',
+  '6': 'pages',
+} as const;
+
+type PortailLog = {
+  id: `${number}`;
+  date: iso8601;
+  operation: string;
+  application_id: keyof typeof PORTAIL_LOG_APPLICATION;
+  user_id: `${number}`;
+};
+
 function bool(tinyIntString: tinyIntString): boolean {
   switch (tinyIntString) {
     case '1': {
@@ -148,7 +171,7 @@ async function makeUser(user: OldUser, ldapUser: Ldap.User) {
       graduationYear: ldapUser.promo,
       majorId: major.id,
       nickname: '',
-      phone: ldapUser.homePhone,
+      phone: ldapUser.mobile || ldapUser.homePhone,
       pictureFile: fileExists(`../storage/users/${user.username}.jpeg`)
         ? `users/${user.username}.jpeg`
         : '',
@@ -230,13 +253,38 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
 
   await prisma.group.update({ where: { id: newGroup.id }, data: { familyId: newGroup.id } });
 
+  let memberUids = ldapGroup.memberUid;
+  if (ldapGroup.cn === 'tvn7-n7') {
+    memberUids = [
+      ...memberUids,
+      ...LDAP_DATA.groupesInformels.find(({ cn }) => cn === 'tvn7-membres-n7')!.memberUid!,
+    ];
+  }
+
   await Promise.all(
-    ldapGroup.memberUid.map(async (uid) => {
+    memberUids.map(async (uid) => {
+      const member = await prisma.user.findUnique({ where: { uid } });
+      if (!member) return;
       const president = ldapGroup.president === uid;
-      const secretary = (ldapGroup.secretaire ?? []).includes(uid);
-      const vicePresident = (ldapGroup.vicePresident ?? []).includes(uid);
-      const treasurer = ldapGroup.tresorier.includes(uid);
+      const secretaryIndex = (ldapGroup.secretaire ?? []).indexOf(uid);
+      const vicePresidentIndex = (ldapGroup.vicePresident ?? []).indexOf(uid);
+      const treasurerIndex = ldapGroup.tresorier.indexOf(uid);
+      const secretary = secretaryIndex > -1;
+      const vicePresident = vicePresidentIndex > -1;
+      const treasurer = treasurerIndex > -1;
       const bureau = president || secretary || vicePresident || treasurer;
+
+      let title = 'Membre';
+      if (president) {
+        title = 'Prez';
+      } else if (treasurer) {
+        title = treasurerIndex === 0 ? 'Trez' : 'Vice-trez';
+      } else if (vicePresident) {
+        title = (ldapGroup.vicePresident?.length ?? 0) > 1 ? `VP ${vicePresidentIndex + 1}` : 'VP';
+      } else if (secretary) {
+        title = secretaryIndex === 0 ? 'Secrétaire' : 'Vice-secrétaire';
+      }
+
       try {
         await prisma.groupMember.create({
           data: {
@@ -246,17 +294,12 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
             secretary,
             treasurer,
             vicePresident,
-            title: president
-              ? 'Prez'
-              : treasurer
-              ? 'Trez'
-              : vicePresident
-              ? 'VP'
-              : secretary
-              ? 'Secrétaire'
-              : 'Membre',
+            title,
             group: { connect: { uid: newGroup.uid } },
             member: { connect: { uid } },
+            // xxx: assume user joined on december 1st of their first year if not found in logs
+            createdAt:
+              userJoinedGroupAt(uid, ldapGroup.cn) ?? new Date(member.graduationYear - 3, 12, 1),
           },
         });
       } catch {
@@ -302,9 +345,50 @@ const oldUsersPortail = DATA.find(({ type, name }) => type === 'table' && name =
 const oldClubsPortail = DATA.find(({ type, name }) => type === 'table' && name === 'club_club')![
   'data'
 ] as OldGroup[];
+
+const logsPortail = DATA.find(
+  ({ type, name }) => type === 'table' && name === 'portailuser_logentry'
+)!['data'] as PortailLog[];
 console.log(
-  `  Loaded portail dump (${oldUsersPortail.length} users, ${oldClubsPortail.length} clubs)`
+  `  Loaded portail dump (${oldUsersPortail.length} users, ${oldClubsPortail.length} clubs, ${logsPortail.length} logs)`
 );
+
+const LOG_USER_ADD_TO_GROUP_PATTERN =
+  /^A ajouté[^(]*[( ](?<userUid>[\w-]+)\)? au (?:club|groupe) (?<groupUid>[\w-]+)$/;
+const logsAddUserToGroup: Array<{ date: Date; userUid: string; groupUid: string }> = logsPortail
+  .filter(
+    ({ application_id, operation }) =>
+      PORTAIL_LOG_APPLICATION[application_id] === 'gestion_clubs' &&
+      operation.startsWith('A ajouté') &&
+      (operation.includes('au club') || operation.includes('au groupe')) &&
+      LOG_USER_ADD_TO_GROUP_PATTERN.test(operation)
+  )
+  .map(({ operation, date }) => {
+    const match = operation.trim().match(LOG_USER_ADD_TO_GROUP_PATTERN)!;
+    return {
+      date: parseISO(date),
+      userUid: match.groups!['userUid']!,
+      groupUid: match.groups!['groupUid']! + '-n7',
+    };
+  })
+  .filter((o) => o !== undefined);
+
+function userJoinedGroupAt(userUid: string, groupUid: string): Date | undefined {
+  if (groupUid === 'tvn7-n7') {
+    const dateGroupeInformel = userJoinedGroupAt(userUid, 'tvn7-membres-n7');
+    if (dateGroupeInformel) return dateGroupeInformel;
+  }
+  const allAdds = logsAddUserToGroup.filter(
+    (log) => log.userUid === userUid && log.groupUid === groupUid
+  );
+  if (allAdds.length === 0) {
+    // console.log(`${userUid} @ ${groupUid}: No logs found to get join date`)
+    return undefined;
+  }
+
+  // if (allAdds.length > 1) console.log(`${userUid} @ ${groupUid}: Taking add log out of ${allAdds.length} logs`)
+  return allAdds.sort((a, b) => compareAsc(a.date, b.date))[0]?.date;
+}
 
 const CAS_DATA = JSON.parse(readFileSync('./cas-data.json').toString()) as unknown as Array<
   Record<string, unknown>
@@ -380,8 +464,8 @@ function progressbar(objectName: string, total: number): SingleBar {
 let bar = progressbar('schools', LDAP_DATA.schools.length);
 for (const oldSchool of LDAP_DATA.schools) {
   const school = await makeSchool(oldSchool);
-  bar.increment();
   if (!school) continue;
+  bar.increment();
 }
 
 bar.stop();
@@ -413,11 +497,10 @@ for (const oldUser of LDAP_DATA.users) {
   };
   try {
     await makeUser(oldUserPortail, oldUser);
+    bar.increment();
   } catch (error: unknown) {
     errors.users.push({ user: oldUser, error });
   }
-
-  bar.increment();
 }
 
 bar.stop();
@@ -435,11 +518,10 @@ for (const oldGroup of LDAP_DATA.clubs) {
   );
   try {
     await makeGroup(portailClub!, oldGroup);
+    bar.increment();
   } catch (error: unknown) {
     errors.clubs.push({ club: oldGroup, error });
   }
-
-  bar.increment();
 }
 
 bar.stop();

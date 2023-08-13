@@ -18,24 +18,23 @@
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
   import { beforeNavigate } from '$app/navigation';
-  import { format, isMonday, previousMonday } from 'date-fns';
+  import { format } from 'date-fns';
   import { me } from '$lib/session';
   import { page } from '$app/stores';
+  import { closestMonday } from '$lib/dates';
 
   export let current: 'home' | 'search' | 'events' | 'more';
   let flyoutOpen = false;
-
-  function closestMonday(date: Date): Date {
-    if (isMonday(date)) return date;
-    return previousMonday(date);
-  }
 
   beforeNavigate(() => {
     flyoutOpen = false;
   });
 </script>
 
-<nav class:flyout-open={flyoutOpen} class:transparent={$page.url.pathname.endsWith('/scan/')}>
+<nav
+  class:flyout-open={flyoutOpen}
+  class:transparent={$page.url.pathname.endsWith('/scan/') && !flyoutOpen}
+>
   <a href="/" class:current={!flyoutOpen && current === 'home'} class:disabled={flyoutOpen}>
     {#if current === 'home'}
       <IconHome />
@@ -66,7 +65,7 @@
   </button>
 
   <a
-    href="/week/{format(closestMonday(new Date()), 'yyyy-MM-dd')}"
+    href="/events/week/{format(closestMonday(new Date()), 'yyyy-MM-dd')}"
     class:current={!flyoutOpen && current === 'events'}
     class:disabled={flyoutOpen}
   >
@@ -130,7 +129,7 @@
       <span>Frappe</span>
     </a>
 
-    <a href="/articles/create">
+    <a href="/posts/create">
       <IconArticle />
       <span>Article</span>
     </a>
@@ -141,7 +140,7 @@
     </a>
 
     {#if $me?.admin || $me?.canEditUsers}
-      <a href="/users">
+      <a href="/signups">
         <IconPeople />
         <span>Inscriptions</span>
       </a>

@@ -14,6 +14,7 @@ export const placesLeft = (ticket: {
   registrations: Array<{ paid: boolean }>;
   group: null | { capacity: number; tickets: Array<{ registrations: Array<{ paid: boolean }> }> };
 }) => {
+  if (ticket.capacity === 0) return Number.POSITIVE_INFINITY;
   let placesLeftInGroup = Number.POSITIVE_INFINITY;
   if (ticket.group?.capacity) {
     placesLeftInGroup =
@@ -122,10 +123,11 @@ builder.queryField('ticketByUid', (t) =>
     args: {
       uid: t.arg.string(),
       eventUid: t.arg.string(),
+      groupUid: t.arg.string(),
     },
-    async authScopes(_, { uid, eventUid }, { user }) {
+    async authScopes(_, { uid, eventUid, groupUid }, { user }) {
       const ticket = await prisma.ticket.findFirstOrThrow({
-        where: { uid, event: { uid: eventUid } },
+        where: { uid, event: { uid: eventUid, group: { uid: groupUid } } },
         include: { event: true },
       });
       return eventAccessibleByUser(ticket.event, user);

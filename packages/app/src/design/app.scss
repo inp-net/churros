@@ -108,8 +108,8 @@
   h1 &,
   h2 &,
   h3 & {
-    width: 1.25em;
-    height: 1.25em;
+    width: 1em;
+    height: 1em;
   }
 }
 
@@ -126,6 +126,14 @@ h1,
 h2 {
   font-size: var(--size-title);
   line-height: 0.95;
+}
+
+h1 {
+  font-size: 1.8em;
+}
+
+h2 {
+  font-size: 1.4em;
 }
 
 .typo-field-label,

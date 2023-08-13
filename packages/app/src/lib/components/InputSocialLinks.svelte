@@ -41,6 +41,35 @@
     snapchat: IconSnapchat,
   };
 
+  function urlToUsername({
+    value: url,
+    name,
+  }: {
+    value: string;
+    name: typeof names[number];
+  }): string {
+    if (!url) return '';
+    switch (name) {
+      case 'facebook':
+      case 'instagram':
+      case 'twitter': {
+        try {
+          return decodeURIComponent(new URL(url).pathname.slice(1));
+        } catch {
+          return '';
+        }
+      }
+
+      case 'linkedin': {
+        return decodeURIComponent(new URL(url).pathname[1]) /* [0] is /in/ */;
+      }
+
+      default: {
+        return url;
+      }
+    }
+  }
+
   function usernameToURL({
     value: username,
     name,
@@ -101,7 +130,16 @@
         <BaseInputText
           {required}
           type="text"
-          bind:value={value[index(name)].value}
+          value={urlToUsername(value[index(name)])}
+          on:input={({ detail }) => {
+            value[index(name)] = {
+              ...value[index(name)],
+              value: usernameToURL({
+                name,
+                value: detail.target?.value,
+              }),
+            };
+          }}
           placeholder="@moi"
         >
           <svelte:element
