@@ -19,7 +19,7 @@
 <AvatarPerson
   role={role(user)}
   highlighted={highlightUid === user.uid}
-  href="/user/{user.uid}"
+  href="/users/{user.uid}"
   {...user}
 />
 

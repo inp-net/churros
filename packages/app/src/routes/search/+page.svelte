@@ -25,7 +25,7 @@
     actionIcon={IconSearch}
     on:action={submitSearchQuery}
     type="text"
-    placeholder="Personne, club, évènement, article,…"
+    placeholder="Personne, club, évènement, post,…"
     bind:value={q}
   />
 </form>
@@ -40,7 +40,7 @@
     <ul class="nobullet">
       {#each data.searchUsers as { uid, ...rest }}
         <li>
-          <CardPerson href="/user/{uid}" {...rest} />
+          <CardPerson href="/users/{uid}" {...rest} />
         </li>
       {/each}
     </ul>
@@ -50,7 +50,7 @@
     <ul class="nobullet">
       {#each data.searchGroups as { uid, ...rest }}
         <li>
-          <CardGroup href="/club/{uid}" {...rest} />
+          <CardGroup href="/groups/{uid}" {...rest} />
         </li>
       {/each}
     </ul>
@@ -59,7 +59,7 @@
     <h2>Évènements</h2>
     <ul class="nobullet">
       {#each data.searchEvents as { group, uid, title }}
-        <li><a href="/club/{group.uid}/event/{uid}">{title}</a></li>
+        <li><a href="/events/{group.uid}/{uid}">{title}</a></li>
       {/each}
     </ul>
   {/if}

@@ -13,7 +13,7 @@
   export let highlightUid = '';
 </script>
 
-<a class:highlight={highlightUid === group.uid} href="/club/{group.uid}/">
+<a class:highlight={highlightUid === group.uid} href="/groups/{group.uid}/">
   <div class="avatar"><img src="{PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} /></div>
   <div class="text">
     <p class="name">{group.name}</p>

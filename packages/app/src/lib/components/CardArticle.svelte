@@ -57,7 +57,7 @@
   <section class="author-and-date">
     <div class="author">
       {#if !hideGroup}
-        <a href="/club/{group.uid}">
+        <a href="/groups/{group.uid}">
           <img
             src={group.pictureFile
               ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
@@ -66,7 +66,7 @@
           />
         </a>
         <div class="names">
-          <a href="/club/{group.uid}" class="name">{group.name}</a>
+          <a href="/groups/{group.uid}" class="name">{group.name}</a>
           {#if author}
             <span class="author">
               {author.firstName}

@@ -4,7 +4,7 @@
   import { goto } from '$app/navigation';
   import EventSearch from './InputEvent.svelte';
   import { page } from '$app/stores';
-  import { _articleQuery } from '../../routes/club/[group]/post/[post]/edit/+page';
+  import { _articleQuery } from '../../routes/posts/[group]/[uid]/edit/+page';
   import DateInput from '$lib/components/InputDate.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
   import ButtonPrimary from './ButtonPrimary.svelte';
@@ -14,7 +14,7 @@
   import InputLinks from '$lib/components/InputLinks.svelte';
 
   export let afterGoTo: (article: typeof data['article']) => string = (article) =>
-    `/club/${article.group.uid}/post/${article.uid}/edit`;
+    `/posts/${article.group.uid}/${article.uid}/edit`;
   export let hideEvent = false;
   export let data: {
     article: {

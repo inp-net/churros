@@ -69,7 +69,7 @@
   </button>
 
   <a
-    href="/week/{format(closestMonday(new Date()), 'yyyy-MM-dd')}"
+    href="/events/week/{format(closestMonday(new Date()), 'yyyy-MM-dd')}"
     class:current={!flyoutOpen && current === 'events'}
     class:disabled={flyoutOpen}
   >
@@ -133,7 +133,7 @@
       <span>Frappe</span>
     </a>
 
-    <a href="/articles/create">
+    <a href="/posts/create">
       <IconArticle />
       <span>Article</span>
     </a>
@@ -144,7 +144,7 @@
     </a>
 
     {#if $me?.admin || $me?.canEditUsers}
-      <a href="/users">
+      <a href="/signups">
         <IconPeople />
         <span>Inscriptions</span>
       </a>

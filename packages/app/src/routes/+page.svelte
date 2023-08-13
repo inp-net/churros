@@ -53,7 +53,7 @@
       {#each data.birthdays.filter((u) => selectedBirthdaysYearTier === 'all' || u.yearTier === Number.parseFloat(selectedBirthdaysYearTier)) as { uid, major, birthday, ...user } (uid)}
         <li>
           <AvatarPerson
-            href="/user/{uid}"
+            href="/users/{uid}"
             {...user}
             role="{major.shortName} · {new Date().getFullYear() -
               (birthday?.getFullYear() ?? 0)} ans"
@@ -75,7 +75,7 @@
       {group}
       {author}
       {bodyHtml}
-      href="/club/{group.uid}/post/{uid}/"
+      href="/posts/{group.uid}/{uid}/"
       img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
     />
   {/each}

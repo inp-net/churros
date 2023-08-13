@@ -122,10 +122,11 @@ builder.queryField('ticketByUid', (t) =>
     args: {
       uid: t.arg.string(),
       eventUid: t.arg.string(),
+      groupUid: t.arg.string(),
     },
-    async authScopes(_, { uid, eventUid }, { user }) {
+    async authScopes(_, { uid, eventUid, groupUid }, { user }) {
       const ticket = await prisma.ticket.findFirstOrThrow({
-        where: { uid, event: { uid: eventUid } },
+        where: { uid, event: { uid: eventUid, group: { uid: groupUid } } },
         include: { event: true },
       });
       return eventAccessibleByUser(ticket.event, user);

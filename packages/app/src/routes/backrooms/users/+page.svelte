@@ -27,7 +27,7 @@
 <ul class="nobullet">
   {#each data.allUsers.edges as { node: { uid, fullName, pictureFile } }}
     <li>
-      <AvatarPerson {pictureFile} {fullName} role="@{uid}" href="/user/{uid}" />
+      <AvatarPerson {pictureFile} {fullName} role="@{uid}" href="/users/{uid}" />
     </li>
   {/each}
   {#if data.allUsers.pageInfo.hasNextPage}

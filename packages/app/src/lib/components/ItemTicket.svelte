@@ -13,6 +13,7 @@
   export let price: number;
   export let closesAt: Date | undefined = undefined;
   export let opensAt: Date | undefined = undefined;
+  export let event: { group: { uid: string }; uid: string };
 
   $: shotgunning =
     (!closesAt && !opensAt) ||
@@ -40,7 +41,9 @@
   </div>
   <div class="book">
     {#if shotgunning}
-      <ButtonSecondary href="./book/{uid}">{price}€</ButtonSecondary>
+      <ButtonSecondary href="/events/{event.group.uid}/{event.uid}/book/{uid}"
+        >{price}€</ButtonSecondary
+      >
     {/if}
   </div>
   <p class="timing typo-details">

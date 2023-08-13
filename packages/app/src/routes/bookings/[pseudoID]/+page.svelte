@@ -131,7 +131,7 @@
       <dd>{DISPLAY_PAYMENT_METHODS[paymentMethod ?? 'Other']}</dd>
       <dt>Évènement</dt>
       <dd>
-        <a href="/club/{ticket.event.group.uid}/event/{ticket.event.uid}">{ticket.event.title}</a>
+        <a href="/events/{ticket.event.group.uid}/{ticket.event.uid}">{ticket.event.title}</a>
         {#if ticket.event.startsAt}({dateTimeFormatter.format(
             new Date(ticket.event.startsAt)
           )}){/if}

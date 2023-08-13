@@ -10,5 +10,5 @@ export const load: PageLoad = async ({ parent, url }) => {
   const memberWithPermissions = me.groups.filter((m) => canCreateEvent(m, me));
 
   if (memberWithPermissions.length === 1)
-    throw redirect(301, `/club/${memberWithPermissions[0].group.uid}/event/create`);
+    throw redirect(301, `/events/${memberWithPermissions[0].group.uid}/create`);
 };
