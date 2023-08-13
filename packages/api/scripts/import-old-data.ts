@@ -171,7 +171,7 @@ async function makeUser(user: OldUser, ldapUser: Ldap.User) {
       graduationYear: ldapUser.promo,
       majorId: major.id,
       nickname: '',
-      phone: ldapUser.homePhone,
+      phone: ldapUser.mobile || ldapUser.homePhone,
       pictureFile: fileExists(`../storage/users/${user.username}.jpeg`)
         ? `users/${user.username}.jpeg`
         : '',
