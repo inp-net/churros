@@ -6,6 +6,7 @@
   import { getYear, isBefore } from 'date-fns';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import { me } from '$lib/session';
+  import { byMemberGroupTitleImportance } from '$lib/sorting';
 
   export let data: PageData;
 
@@ -53,7 +54,7 @@
       <h2>{year}</h2>
 
       <ul class="nobullet">
-        {#each membersOfYear as { title, member, createdAt } (member.uid)}
+        {#each membersOfYear.sort(byMemberGroupTitleImportance) as { title, member, createdAt } (member.uid)}
           <li>
             <AvatarPerson href="/user/{member.uid}" {...member} role={title} />
           </li>
@@ -78,6 +79,7 @@
     gap: 1rem;
     padding: 0 1rem;
     margin: 0 auto;
+    max-width: 1000px;
   }
 
   .edit {
