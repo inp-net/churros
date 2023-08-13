@@ -317,6 +317,7 @@
 
   .members .item {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
   }
 
@@ -357,5 +358,15 @@
 
   .search {
     margin-bottom: 1rem;
+  }
+
+  @media (max-width: 500px) {
+    .members .item {
+      flex-direction: column;
+    }
+
+    .members .item .actions {
+      align-self: flex-end;
+    }
   }
 </style>
