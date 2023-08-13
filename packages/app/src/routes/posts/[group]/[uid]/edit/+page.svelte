@@ -13,7 +13,7 @@
   <h1>
     <ButtonBack />
 
-    Édition de l'article {title}
+    Édition du post {title}
   </h1>
 
   <FormPicture objectName="Article" bind:object={data.article} />

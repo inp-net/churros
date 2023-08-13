@@ -9,6 +9,7 @@ export interface LDAPTypes {
   users: User[];
   schools: School[];
   majors: Major[];
+  groupesInformels: GroupesInformel[];
 }
 
 export interface Club {
@@ -87,6 +88,7 @@ export enum SchoolEntryCSN {
   The20150219144717899801Z000000000000000 = '20150219144717.899801Z#000000#000#000000',
   The20160208163018485240Z000000000000000 = '20160208163018.485240Z#000000#000#000000',
   The20160503122641008347Z000000000000000 = '20160503122641.008347Z#000000#000#000000',
+  The20211023100748735581Z000000000000000 = '20211023100748.735581Z#000000#000#000000',
 }
 
 export enum Key {
@@ -117,10 +119,12 @@ export enum SchoolStructuralObjectClass {
 
 export enum Uid {
   ClientManager = 'client-manager',
+  Tvn7 = 'tvn7',
 }
 
 export enum UserPassword {
   SSHA4SAPWCHNt9NrB0DPsrd0CGhbwaKnM8V = '{SSHA}4sAPWCHNt9nrB0/dPsrd0cGhbwaKnM8V',
+  SSHAO0QuSn5JQFbdCa7RwePe2Vhhy3HWaW9 = '{SSHA}o0quSn5jQFbdCa7/RwePe2vhhy3HWaW9',
 }
 
 export enum ClubStructuralObjectClass {
@@ -135,6 +139,24 @@ export enum ClubStructuralObjectClass {
 export enum TypeClub {
   Asso = 'asso',
   Club = 'club',
+}
+
+export interface GroupesInformel {
+  displayName: string;
+  cn: string;
+  objectClass: ClubStructuralObjectClass[];
+  memberUid?: string[];
+  gidNumber: number;
+  hasWebsite: boolean;
+  structuralObjectClass: ClubStructuralObjectClass;
+  entryUUID: string;
+  creatorsName: RsName;
+  createTimestamp: Date;
+  entryCSN: string;
+  modifiersName: School | RsName;
+  modifyTimestamp: Date;
+  key: string;
+  userPassword?: string;
 }
 
 export interface Major {

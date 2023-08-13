@@ -15,6 +15,7 @@
   export let validate: (value: string) => string = () => '';
   export let actionIcon: typeof SvelteComponent | undefined = undefined;
   export let required = false;
+  export let readonly = false;
   export let closeKeyboardOnEnter = false;
 
   // TODO use (HTMLInputElement).valueAsDate instead
@@ -121,6 +122,7 @@
       {required}
       {autocomplete}
       {placeholder}
+      {readonly}
       on:input={(e) => {
         if (!(e.target instanceof HTMLInputElement)) return;
         valueString = e.target?.value;

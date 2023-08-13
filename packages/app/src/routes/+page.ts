@@ -27,7 +27,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
     const { birthdays } = await loadQuery(
       {
         birthdays: [
-          {},
+          { activeOnly: true, width: 0 },
           {
             fullName: true,
             pictureFile: true,

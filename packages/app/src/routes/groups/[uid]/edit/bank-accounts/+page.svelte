@@ -1,11 +1,11 @@
 <script lang="ts">
-  import Button from '$lib/components/Button.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
 
   import { PUBLIC_LYDIA_API_URL } from '$env/static/public';
   import InputText from '$lib/components/InputText.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   export let data: PageData;
 
@@ -54,6 +54,8 @@
             groupUid: group.uid,
           },
           {
+            id: true,
+            name: true,
             __typename: true,
           },
         ],
@@ -61,11 +63,33 @@
 
       if (upsertLydiaAccount.__typename === 'LydiaAccount')
         lydiaAccounts = lydiaAccounts.filter((lydiaAccount) => lydiaAccount.name !== name);
+      lydiaAccountsOfGroup = [
+        ...lydiaAccountsOfGroup,
+        {
+          id: upsertLydiaAccount.id,
+          name: upsertLydiaAccount.name,
+        },
+      ];
     } finally {
       loading = false;
     }
   };
 </script>
+
+<h2>Mes comptes</h2>
+<ul class="nobullet accounts">
+  {#each lydiaAccountsOfGroup as { name } (name)}
+    <li>
+      <p>{name}</p>
+      <p />
+      <div class="actions">
+        <ButtonSecondary danger>Supprimer</ButtonSecondary>
+      </div>
+    </li>
+  {/each}
+</ul>
+
+<hr />
 
 <form class="add-account" on:submit|preventDefault={searchLydiaAccounts}>
   <legend class="typo-title">Ajouter un compte Lydia</legend>
@@ -79,32 +103,26 @@
   <InputText type="tel" label="Numéro de téléphone" required bind:value={phone} />
   <InputText type="password" label="Mot de passe Lydia" required bind:value={password} />
   <section class="submits">
-    <ButtonPrimary submits>Rechercher</ButtonPrimary>
+    <ButtonPrimary {loading} submits>Rechercher</ButtonPrimary>
   </section>
 </form>
 
 {#if lydiaAccounts.length > 0}
   <form class="accounts-found">
-    <fieldset>
-      <legend>Comptes</legend>
+    <h2>Comptes disponibles</h2>
+    <ul class="accounts">
       {#each lydiaAccounts as { name, api_token_id, api_token } (api_token_id)}
-        <div>
-          <label>
-            Nom du compte
-            <input type="text" value={name} readonly />
-          </label>
-          <label>
-            Token
-            <input type="text" value={api_token} readonly />
-          </label>
-          <Button
-            type="button"
-            theme="primary"
-            on:click={async () => addLydiaAccount(name, api_token_id, api_token)}>Ajouter</Button
+        <li>
+          <InputText type="text" label="Nom" value={name} readonly />
+          <InputText type="text" label="Token" value={api_token} readonly />
+          <ButtonPrimary
+            {loading}
+            on:click={async () => addLydiaAccount(name, api_token_id, api_token)}
+            >Ajouter</ButtonPrimary
           >
-        </div>
+        </li>
       {/each}
-    </fieldset>
+    </ul>
   </form>
 {/if}
 
@@ -118,5 +136,21 @@
   section.submits {
     display: flex;
     justify-content: center;
+  }
+
+  li {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .accounts {
+    display: flex;
+    flex-flow: column;
+    gap: 0.5rem;
+    max-height: 45vh;
+    margin-top: 2rem;
+    overflow: auto;
   }
 </style>

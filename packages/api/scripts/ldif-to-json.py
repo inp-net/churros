@@ -103,18 +103,19 @@ for k, v in dikt.items():
     # print(f"Linking {k}")
     linked[k] = link_values(v)
 
-grouped = {"clubs": [], "users": [], "schools": [], "majors": []}
+grouped = {"clubs": [], "users": [], "schools": [], "majors": [], "groupesInformels": []}
 
 for k, v in linked.items():
     objClass = v.get("structuralObjectClass")
 
-    if objClass in {"Club", "Eleve", "Ecole", "Filiere"}:
+    if objClass in {"Club", "Eleve", "Ecole", "Filiere", "Groupe"}:
         grouped[
             {
                 "Club": "clubs",
                 "Eleve": "users",
                 "Ecole": "schools",
                 "Filiere": "majors",
+                "Groupe": "groupesInformels",
             }[objClass]
         ].append(v | {"key": k})
 

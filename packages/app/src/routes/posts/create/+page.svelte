@@ -5,14 +5,14 @@
 </script>
 
 <div class="content">
-  <h1>Écrire un article en tant que</h1>
+  <h1>Écrire un post en tant que</h1>
 
   <section class="groups">
     {#each $me?.groups
       .filter((m) => canCreateArticle(m, $me))
       .map(({ group }) => group) ?? [] as group (group.uid)}
       <CardGroup
-        href="/articles/{group.uid}/create"
+        href="/posts/{group.uid}/create"
         name={group.name}
         pictureFile={group.pictureFile}
         pictureFileDark={group.pictureFileDark}

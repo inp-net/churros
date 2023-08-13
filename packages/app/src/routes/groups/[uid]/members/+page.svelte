@@ -6,6 +6,7 @@
   import { getYear, isBefore } from 'date-fns';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import { me } from '$lib/session';
+  import { byMemberGroupTitleImportance } from '$lib/sorting';
 
   export let data: PageData;
 
@@ -48,12 +49,12 @@
     {/if}
   </h1>
 
-  {#each Object.entries(groupBy( members, ({ createdAt }) => schoolYear(createdAt).join('-') )) as [year, membersOfYear]}
+  {#each Object.entries(groupBy( members, ({ createdAt }) => schoolYear(createdAt).join('-') )).sort( ([a, _], [b, _2]) => b.localeCompare(a) ) as [year, membersOfYear]}
     <section class="year">
       <h2>{year}</h2>
 
       <ul class="nobullet">
-        {#each membersOfYear as { title, member } (member.uid)}
+        {#each membersOfYear.sort(byMemberGroupTitleImportance) as { title, member, createdAt } (member.uid)}
           <li>
             <AvatarPerson href="/users/{member.uid}" {...member} role={title} />
           </li>
@@ -78,6 +79,7 @@
     gap: 1rem;
     padding: 0 1rem;
     margin: 0 auto;
+    max-width: 1000px;
   }
 
   .edit {
