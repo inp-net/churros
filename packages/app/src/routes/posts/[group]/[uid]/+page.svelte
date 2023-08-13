@@ -26,7 +26,6 @@
 
   const bookingURL = (registrationId: string) =>
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
-
 </script>
 
 {#if pictureFile}

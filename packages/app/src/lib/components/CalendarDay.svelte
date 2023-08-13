@@ -7,7 +7,7 @@
   <span class="day-name"
     >{day
       .toLocaleDateString('default', {
-        weekday: 'short'
+        weekday: 'short',
       })
       .replace(/\.$/, '')}</span
   >
@@ -17,7 +17,7 @@
   {#if showMonth}
     <span class="month-name"
       >{day.toLocaleDateString('default', {
-        month: 'short'
+        month: 'short',
       })}</span
     >
   {/if}

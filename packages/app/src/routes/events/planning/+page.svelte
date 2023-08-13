@@ -1,7 +1,7 @@
 <script lang="ts">
   import { groupBy } from 'lodash';
   import type { PageData } from './$types';
-  import IconCalendarPlus from '~icons/mdi/calendar-plus'
+  import IconCalendarPlus from '~icons/mdi/calendar-plus';
   import CalendarDay from '$lib/components/CalendarDay.svelte';
   import IconWeekView from '~icons/mdi/calendar-week-outline';
   import { format, parseISO } from 'date-fns';
@@ -21,7 +21,9 @@
     icon={IconWeekView}
     href="../week/{format(closestMonday(new Date()), 'yyyy-MM-dd')}">Par semaine</ButtonSecondary
   >
-  <ButtonSecondary newTab icon={IconCalendarPlus} href="../feed">Ajouter au calendrier</ButtonSecondary>
+  <ButtonSecondary newTab icon={IconCalendarPlus} href="../feed"
+    >Ajouter au calendrier</ButtonSecondary
+  >
 </div>
 
 {#each Object.entries(groupedByDate).filter(([_day, events]) => events.length > 0) as [day, eventsOfDay] (day)}
@@ -29,11 +31,11 @@
     <CalendarDay showMonth day={parseISO(day)} />
     <ul class="nobullet">
       {#each eventsOfDay as event (event.id)}
-      <li>
-        <a href="../{event.group.uid}/{event.uid}">
-          {event.title}
-        </a>
-      </li>
+        <li>
+          <a href="../{event.group.uid}/{event.uid}">
+            {event.title}
+          </a>
+        </li>
       {/each}
     </ul>
   </section>
@@ -41,10 +43,10 @@
 
 <style>
   section.day {
-    max-width: 1000px;
-    margin: 0 auto;
     display: flex;
     column-gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
   }
 
   h1 {
@@ -56,11 +58,11 @@
 
   .navigation {
     display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.5rem;
     align-items: center;
     justify-content: center;
     margin-top: 0.5rem;
     margin-bottom: 2rem;
-    column-gap: 0.5rem;
-    flex-wrap: wrap;
   }
 </style>

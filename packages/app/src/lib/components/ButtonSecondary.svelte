@@ -14,7 +14,7 @@
   export let download: string | undefined = undefined;
   export let insideProse = false;
   export let disabled = false;
-  export let newTab = false
+  export let newTab = false;
 </script>
 
 <svelte:element
