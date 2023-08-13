@@ -2,7 +2,7 @@
   import CalendarDay from '../../../../lib/components/CalendarDay.svelte';
   import IconEdit from '~icons/mdi/pencil';
   import { PUBLIC_FOY_GROUPS, PUBLIC_STORAGE_URL } from '$env/static/public';
-  import IconCalendarPlus from '~icons/mdi/calendar-plus'
+  import IconCalendarPlus from '~icons/mdi/calendar-plus';
   import IconPlanningView from '~icons/mdi/calendar-multiselect-outline';
   import IconChevronUp from '~icons/mdi/chevron-up';
   import IconChevronDown from '~icons/mdi/chevron-down';
@@ -15,7 +15,7 @@
     differenceInWeeks,
     previousMonday,
     nextMonday,
-    formatISO
+    formatISO,
   } from 'date-fns';
   import type { PageData } from './$types';
   import { me } from '$lib/session';
@@ -93,7 +93,9 @@
       <ButtonSecondary icon={IconEdit} href="/bar-weeks">Semaines de bar</ButtonSecondary>
     {/if}
     <ButtonSecondary icon={IconPlanningView} href="../../planning">Planning</ButtonSecondary>
-    <ButtonSecondary icon={IconCalendarPlus} href="../../feed">Ajouter au calendrier</ButtonSecondary>
+    <ButtonSecondary icon={IconCalendarPlus} href="../../feed"
+      >Ajouter au calendrier</ButtonSecondary
+    >
   </div>
   <ButtonGhost
     href="/events/week/{formatISO(nextMonday(data.shownWeek), { representation: 'date' })}"
@@ -179,19 +181,19 @@
 
   .buttons {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
     flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
     justify-content: center;
   }
 
   .navigation {
     display: flex;
     gap: 1rem;
+    align-items: center;
     justify-content: space-around;
     margin-bottom: 2rem;
     font-size: 1.5em;
-    align-items: center;
   }
 
   .manage {

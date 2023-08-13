@@ -2453,8 +2453,9 @@ __metadata:
     "@types/cookie": "npm:^0.5.1"
     "@types/cors": "npm:^2.8.12"
     "@types/cron": "npm:^2.0.1"
-    "@types/express": "npm:^4.17.14"
+    "@types/express": "npm:^4.17.17"
     "@types/ldapjs": "npm:^2.2.5"
+    "@types/multer": "npm:^1.4.7"
     "@types/node": "npm:^18.11.9"
     "@types/nodemailer": "npm:^6.4.6"
     "@types/slug": "npm:^5.0.3"
@@ -2476,6 +2477,7 @@ __metadata:
     helmet: "npm:^6.0.0"
     image-type: "npm:^5.1.0"
     ldapjs: "npm:^2.3.3"
+    multer: "npm:^1.4.5-lts.1"
     nanoid: "npm:^4.0.0"
     nodemailer: "npm:^6.8.0"
     phone: "npm:^3.1.30"
@@ -5173,17 +5175,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-serve-static-core@npm:^4.17.18":
-  version: 4.17.31
-  resolution: "@types/express-serve-static-core@npm:4.17.31"
-  dependencies:
-    "@types/node": "npm:*"
-    "@types/qs": "npm:*"
-    "@types/range-parser": "npm:*"
-  checksum: 88c17414b7d6d41b705463c002565a694d8f05f1417c3ba2e7523d9dcda4e2c591b8f56e480e144efaf43f6aad98446745a0c3b84174e498577763fe58ac5423
-  languageName: node
-  linkType: hard
-
 "@types/express-serve-static-core@npm:^4.17.33":
   version: 4.17.35
   resolution: "@types/express-serve-static-core@npm:4.17.35"
@@ -5196,19 +5187,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:^4.17.14":
-  version: 4.17.14
-  resolution: "@types/express@npm:4.17.14"
-  dependencies:
-    "@types/body-parser": "npm:*"
-    "@types/express-serve-static-core": "npm:^4.17.18"
-    "@types/qs": "npm:*"
-    "@types/serve-static": "npm:*"
-  checksum: 7e2d23081f1aa8d8e4218fba4e305f2a52e221a99340ecc4694482cd2878cbb344deae1b8899e7682a05cf95c9a130e97534bf0e22d983c45d25a8788351803d
-  languageName: node
-  linkType: hard
-
-"@types/express@npm:^4.7.0":
+"@types/express@npm:*, @types/express@npm:^4.17.17, @types/express@npm:^4.7.0":
   version: 4.17.17
   resolution: "@types/express@npm:4.17.17"
   dependencies:
@@ -5379,6 +5358,15 @@ __metadata:
   version: 0.7.31
   resolution: "@types/ms@npm:0.7.31"
   checksum: cccb52777bb683c65ac5bab61351cd3910c9ce3512b1d903a591fc9694bb83afad6e48bf0beee5b47b6a8b620a05f5d82f8febfd55de05e7d9eb93586cc196c8
+  languageName: node
+  linkType: hard
+
+"@types/multer@npm:^1.4.7":
+  version: 1.4.7
+  resolution: "@types/multer@npm:1.4.7"
+  dependencies:
+    "@types/express": "npm:*"
+  checksum: 7a63a6ddc441429ef3076f458b13bd7d5dc39ca8b225f035160ffa45a1fe7960968225559228be0a022ce308f0630d43ddadc243b19da2d241c23a844d704c00
   languageName: node
   linkType: hard
 
@@ -6003,6 +5991,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"append-field@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "append-field@npm:1.0.0"
+  checksum: 5fab2a28ccd4a6ee6527075def7954f7bd23aabf7ce2303c1fe75c054f4bc19bb168ec28b66114e3b81d653008a05d19d3f73c702b864e1c5e5544f434483627
+  languageName: node
+  linkType: hard
+
 "aproba@npm:^1.0.3 || ^2.0.0":
   version: 2.0.0
   resolution: "aproba@npm:2.0.0"
@@ -6565,7 +6560,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"busboy@npm:^1.6.0":
+"busboy@npm:^1.0.0, busboy@npm:^1.6.0":
   version: 1.6.0
   resolution: "busboy@npm:1.6.0"
   dependencies:
@@ -7083,7 +7078,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"concat-stream@npm:^1.6.2":
+"concat-stream@npm:^1.5.2, concat-stream@npm:^1.6.2":
   version: 1.6.2
   resolution: "concat-stream@npm:1.6.2"
   dependencies:
@@ -11703,6 +11698,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"multer@npm:^1.4.5-lts.1":
+  version: 1.4.5-lts.1
+  resolution: "multer@npm:1.4.5-lts.1"
+  dependencies:
+    append-field: "npm:^1.0.0"
+    busboy: "npm:^1.0.0"
+    concat-stream: "npm:^1.5.2"
+    mkdirp: "npm:^0.5.4"
+    object-assign: "npm:^4.1.1"
+    type-is: "npm:^1.6.4"
+    xtend: "npm:^4.0.0"
+  checksum: 0cbb3be8528ab04f099ef8de8a17d88d62213a7db635e76302bb54b60a7985d51baff19af147967b136acd1f33c2584507e0d99717bfd793dd5c077714474568
+  languageName: node
+  linkType: hard
+
 "mv@npm:~2":
   version: 2.1.1
   resolution: "mv@npm:2.1.1"
@@ -14851,7 +14861,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-is@npm:~1.6.18":
+"type-is@npm:^1.6.4, type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
   dependencies:
@@ -15677,7 +15687,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xtend@npm:~4.0.1":
+"xtend@npm:^4.0.0, xtend@npm:~4.0.1":
   version: 4.0.2
   resolution: "xtend@npm:4.0.2"
   checksum: 3d5d245e44d76b4eaf8a357199541347da8ce522bc0573fdb89b01ff6594b33364569d1dba02ccfe3ee86b384c0d61c06fda1b0cff71f382029e2a18e2f592f7

@@ -1,4 +1,4 @@
-import { isMonday, previousMonday } from "date-fns";
+import { isMonday, previousMonday } from 'date-fns';
 
 export const dateTimeFormatter = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'medium',
@@ -49,7 +49,7 @@ export function yearRangeUpTo(end: number, length: number): number[] {
   return result;
 }
 
-export   function closestMonday(date: Date): Date {
-    if (isMonday(date)) return date;
-    return previousMonday(date);
-  }
+export function closestMonday(date: Date): Date {
+  if (isMonday(date)) return date;
+  return previousMonday(date);
+}

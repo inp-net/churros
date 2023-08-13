@@ -21,11 +21,10 @@
   import { format } from 'date-fns';
   import { me } from '$lib/session';
   import { page } from '$app/stores';
-    import { closestMonday } from '$lib/dates';
+  import { closestMonday } from '$lib/dates';
 
   export let current: 'home' | 'search' | 'events' | 'more';
   let flyoutOpen = false;
-
 
   beforeNavigate(() => {
     flyoutOpen = false;
