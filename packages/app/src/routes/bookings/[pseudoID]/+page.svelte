@@ -92,7 +92,12 @@
     >
       <InputText initial={$me?.phone} type="tel" label="Numéro de téléphone" bind:value={phone} />
       <section class="submit">
-        <ButtonPrimary loading={paymentLoading} submits>Payer {ticket.price}€</ButtonPrimary>
+        <ButtonPrimary loading={paymentLoading} submits
+          >Payer {Intl.NumberFormat('fr-FR', {
+            style: 'currency',
+            currency: 'EUR',
+          }).format(ticket.price)}</ButtonPrimary
+        >
       </section>
     </form>
     {#if serverError}
@@ -244,7 +249,6 @@
     flex-wrap: wrap;
     gap: 1rem;
     align-items: end;
-    max-width: 400px;
     margin: 0 auto;
   }
 
