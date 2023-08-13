@@ -69,9 +69,9 @@
           title: true,
           bodyHtml: true,
           warning: true,
-          id: true
-        }
-      ]
+          id: true,
+        },
+      ],
     });
     announcements = announcementsNow;
 
@@ -216,6 +216,12 @@
 
     to {
       transform: rotate(1turn);
+    }
+  }
+
+  @media not all and (display-mode: standalone) {
+    #loading-overlay {
+      display: none;
     }
   }
 </style>
