@@ -14,6 +14,7 @@ export const placesLeft = (ticket: {
   registrations: Array<{ paid: boolean }>;
   group: null | { capacity: number; tickets: Array<{ registrations: Array<{ paid: boolean }> }> };
 }) => {
+  if (ticket.capacity === 0) return Number.POSITIVE_INFINITY;
   let placesLeftInGroup = Number.POSITIVE_INFINITY;
   if (ticket.group?.capacity) {
     placesLeftInGroup =

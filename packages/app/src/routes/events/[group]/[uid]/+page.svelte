@@ -36,11 +36,18 @@
 
   $: eventCapacity = tickets.reduce(
     (sum, { capacity, group }) =>
-      sum + Math.min(capacity, group?.capacity ?? Number.POSITIVE_INFINITY),
+      sum +
+      Math.min(
+        capacity === 0 ? Number.POSITIVE_INFINITY : capacity,
+        group?.capacity ?? Number.POSITIVE_INFINITY
+      ),
     0
   );
 
-  $: eventPlacesLeft = tickets.reduce((sum, { placesLeft }) => sum + placesLeft, 0);
+  $: eventPlacesLeft = tickets.reduce(
+    (sum, { placesLeft }) => sum + (placesLeft === -1 ? Number.POSITIVE_INFINITY : placesLeft),
+    0
+  );
 
   const bookingURL = (registrationId: string) =>
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
@@ -99,7 +106,7 @@
   <section class="tickets">
     <h2>
       Places <span class="places">
-        {#if eventPlacesLeft < 0}
+        {#if eventPlacesLeft === Number.POSITIVE_INFINITY}
           illimitées
         {:else}
           <span class="left">{eventPlacesLeft} restantes</span><span class="capacity"

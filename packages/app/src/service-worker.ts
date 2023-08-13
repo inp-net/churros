@@ -9,7 +9,7 @@ import * as $serviceWorker from '$service-worker';
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
 // can't import from $env/static/public in service worker
-const PUBLIC_STORAGE_URL = /* @generated */ "http://localhost:4000/storage/"
+const PUBLIC_STORAGE_URL = /* @generated */ 'http://localhost:4000/storage/';
 
 // Create a unique cache name for this deployment
 const CACHE = `cache-${$serviceWorker.version}`;
@@ -109,15 +109,15 @@ sw.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const respond = async () => {
-    const url = new URL(event.request.url);
+    // const url = new URL(event.request.url);
     const cache = await caches.open(CACHE);
 
     // `build`/`files` can always be served from the cache
-    if (ASSETS.includes(url.pathname)) {
-      const response = await cache.match(url.pathname);
-      if (response === undefined) throw new Error('Cache miss in build or files');
-      return response;
-    }
+    // if (ASSETS.includes(url.pathname)) {
+    //   const response = await cache.match(url.pathname);
+    //   if (response === undefined) throw new Error('Cache miss in build or files');
+    //   return response;
+    // }
 
     // for everything else, try the network first, but
     // fall back to the cache if we're offline
