@@ -14,10 +14,12 @@
   export let download: string | undefined = undefined;
   export let insideProse = false;
   export let disabled = false;
+  export let newTab = false
 </script>
 
 <svelte:element
   this={href ? 'a' : 'button'}
+  target={newTab ? '_blank' : undefined}
   type={submits ? 'submit' : 'button'}
   class="button-secondary typo-paragraph"
   class:danger

@@ -1,6 +1,9 @@
 <script lang="ts">
+  import CalendarDay from '../../../../lib/components/CalendarDay.svelte';
   import IconEdit from '~icons/mdi/pencil';
   import { PUBLIC_FOY_GROUPS, PUBLIC_STORAGE_URL } from '$env/static/public';
+  import IconCalendarPlus from '~icons/mdi/calendar-plus'
+  import IconPlanningView from '~icons/mdi/calendar-multiselect-outline';
   import IconChevronUp from '~icons/mdi/chevron-up';
   import IconChevronDown from '~icons/mdi/chevron-down';
   import IconBackward from '~icons/mdi/chevron-left';
@@ -12,14 +15,14 @@
     differenceInWeeks,
     previousMonday,
     nextMonday,
-    formatISO,
+    formatISO
   } from 'date-fns';
   import type { PageData } from './$types';
   import { me } from '$lib/session';
-  import { goto } from '$app/navigation';
   import { dateFormatter } from '$lib/dates';
   import GhostButton from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
 
   $: pageTitle = computePageTitle(data.shownWeek);
 
@@ -81,16 +84,20 @@
   {pageTitle}
 </h1>
 <div class="navigation">
-  <a href="/events/week/{formatISO(previousMonday(data.shownWeek), { representation: 'date' })}"
-    ><IconBackward /></a
+  <ButtonGhost
+    href="/events/week/{formatISO(previousMonday(data.shownWeek), { representation: 'date' })}"
+    ><IconBackward /></ButtonGhost
   >
-  {#if canChangeBarWeek}
-    <ButtonSecondary icon={IconEdit} on:click={async () => goto('/bar-weeks')}
-      >Gérer</ButtonSecondary
-    >
-  {/if}
-  <a href="/events/week/{formatISO(nextMonday(data.shownWeek), { representation: 'date' })}"
-    ><IconForward /></a
+  <div class="buttons">
+    {#if canChangeBarWeek}
+      <ButtonSecondary icon={IconEdit} href="/bar-weeks">Semaines de bar</ButtonSecondary>
+    {/if}
+    <ButtonSecondary icon={IconPlanningView} href="../../planning">Planning</ButtonSecondary>
+    <ButtonSecondary icon={IconCalendarPlus} href="../../feed">Ajouter au calendrier</ButtonSecondary>
+  </div>
+  <ButtonGhost
+    href="/events/week/{formatISO(nextMonday(data.shownWeek), { representation: 'date' })}"
+    ><IconForward /></ButtonGhost
   >
 </div>
 
@@ -123,25 +130,7 @@
 <div class="days">
   {#each daysOfWeek as day}
     <section class="day">
-      <div class="calendar-day">
-        <span class="day-name"
-          >{day
-            .toLocaleDateString('default', {
-              weekday: 'short',
-            })
-            .replace(/\.$/, '')}</span
-        >
-        <span class="day-number">
-          {day.getDate()}
-        </span>
-        {#if [...new Set(daysOfWeek.map((d) => d.getMonth()))].length > 1}
-          <span class="month-name"
-            >{day.toLocaleDateString('default', {
-              month: 'short',
-            })}</span
-          >
-        {/if}
-      </div>
+      <CalendarDay showMonth={[...new Set(daysOfWeek.map((d) => d.getMonth()))].length > 1} {day} />
       <div class="events-of-day">
         {#each events.filter((e) => isSameDay(e.startsAt, day)) as event}
           <article class="event-of-day" class:expanded={expanded(event, expandedEventUid)}>
@@ -188,12 +177,21 @@
     text-align: center;
   }
 
+  .buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
   .navigation {
     display: flex;
     gap: 1rem;
     justify-content: space-around;
     margin-bottom: 2rem;
     font-size: 1.5em;
+    align-items: center;
   }
 
   .manage {
@@ -238,30 +236,6 @@
   .day {
     display: flex;
     gap: 1rem;
-
-    .calendar-day {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 5rem;
-      height: 5rem;
-      border: var(--border-block) solid black;
-      border-radius: var(--radius-block);
-
-      > * {
-        line-height: 1;
-      }
-
-      .day-name {
-        text-transform: uppercase;
-      }
-
-      .day-number {
-        font-size: 2rem;
-        font-weight: bold;
-      }
-    }
 
     .events-of-day {
       width: 100%;
