@@ -30,6 +30,7 @@
 
   const deleteToken = async (id: string, active: boolean) => {
     if (active) {
+      window.localStorage.setItem('isReallyLoggedout', 'true');
       await goto(`/logout/?token=${$page.data.token!}`);
     } else {
       await $zeus.mutate({ deleteToken: [{ id }, true] });

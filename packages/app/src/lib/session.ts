@@ -56,6 +56,7 @@ export const saveSessionToken = (
     expiresAt?: Date | null;
   }
 ) => {
+  window.localStorage.removeItem('isReallyLoggedout');
   document.cookie = cookie.serialize('token', token, {
     expires: expiresAt ? new Date(expiresAt) : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     path: '/',
