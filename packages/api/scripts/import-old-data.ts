@@ -2,7 +2,7 @@
 /* eslint-disable unicorn/no-null */
 import { type Group, PrismaClient, NotificationType } from '@prisma/client';
 import { hash } from 'argon2';
-import { compareAsc, compareDesc, differenceInYears, parse, parseISO } from 'date-fns';
+import { compareAsc, differenceInYears, parse, parseISO } from 'date-fns';
 import { createWriteStream, readFileSync, statSync, writeFileSync } from 'node:fs';
 import type * as Ldap from './ldap-types';
 import { Readable } from 'node:stream';
@@ -353,25 +353,22 @@ console.log(
   `  Loaded portail dump (${oldUsersPortail.length} users, ${oldClubsPortail.length} clubs, ${logsPortail.length} logs)`
 );
 
+const LOG_USER_ADD_TO_GROUP_PATTERN =
+  /^A ajouté[^(]*[( ](?<userUid>[\w-]+)\)? au (?:club|groupe) (?<groupUid>[\w-]+)$/;
 const logsAddUserToGroup: Array<{ date: Date; userUid: string; groupUid: string }> = logsPortail
   .filter(
     ({ application_id, operation }) =>
       PORTAIL_LOG_APPLICATION[application_id] === 'gestion_clubs' &&
       operation.startsWith('A ajouté') &&
-      (operation.includes('au club') || operation.includes('au groupe'))
+      (operation.includes('au club') || operation.includes('au groupe')) &&
+      LOG_USER_ADD_TO_GROUP_PATTERN.test(operation)
   )
   .map(({ operation, date }) => {
-    const match = operation
-      .trim()
-      .match(/^A ajouté[^(]*[( ](?<userUid>[\w-]+)\)? au (?:club|groupe) (?<groupUid>[\w-]+)$/);
-    if (!match) {
-      console.error(`Throwing log that seems valid: ${operation}`);
-      return undefined;
-    }
+    const match = operation.trim().match(LOG_USER_ADD_TO_GROUP_PATTERN)!;
     return {
       date: parseISO(date),
-      userUid: match.groups.userUid,
-      groupUid: match.groups.groupUid + '-n7',
+      userUid: match.groups!['userUid']!,
+      groupUid: match.groups!['groupUid']! + '-n7',
     };
   })
   .filter((o) => o !== undefined);
