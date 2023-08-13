@@ -31,6 +31,7 @@
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import { roleEmojis } from '$lib/permissions';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -96,17 +97,17 @@
       <h1>
         {group.name}
 
-        {#if $me?.groups.find(({ group: { uid } }) => uid === group.uid)}
+        <ButtonShare />
+        {#if canEditDetails}
+          <ButtonGhost href="./edit"><IconGear /></ButtonGhost>
+        {/if}
+
+        {#if group.members.find(({ member: { uid } }) => uid === $me?.uid)}
           <Badge theme="success">Membre</Badge>
         {:else if group.selfJoinable}
           <ButtonSecondary icon={IconJoinGroup} on:click={async () => joinGroup(group.uid)}
             >Rejoindre</ButtonSecondary
           >
-        {/if}
-
-        <ButtonShare />
-        {#if canEditDetails}
-          <ButtonSecondary icon={IconGear} href="./edit">Modifier</ButtonSecondary>
         {/if}
       </h1>
 
