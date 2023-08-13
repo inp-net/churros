@@ -253,8 +253,16 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
 
   await prisma.group.update({ where: { id: newGroup.id }, data: { familyId: newGroup.id } });
 
+  let memberUids = ldapGroup.memberUid;
+  if (ldapGroup.cn === 'tvn7-n7') {
+    memberUids = [
+      ...memberUids,
+      ...LDAP_DATA.groupesInformels.find(({ cn }) => cn === 'tvn7-membres-n7')!.memberUid!,
+    ];
+  }
+
   await Promise.all(
-    ldapGroup.memberUid.map(async (uid) => {
+    memberUids.map(async (uid) => {
       const member = await prisma.user.findUnique({ where: { uid } });
       if (!member) return;
       const president = ldapGroup.president === uid;
@@ -345,19 +353,17 @@ console.log(
   `  Loaded portail dump (${oldUsersPortail.length} users, ${oldClubsPortail.length} clubs, ${logsPortail.length} logs)`
 );
 
-// TODO pour tvn7 c'est cassé psk quasi tout le monde est dans "Membres de TVn7" (groupe informel) et pas "TVn7" (club)
-// (merci ghislain)
 const logsAddUserToGroup: Array<{ date: Date; userUid: string; groupUid: string }> = logsPortail
   .filter(
     ({ application_id, operation }) =>
       PORTAIL_LOG_APPLICATION[application_id] === 'gestion_clubs' &&
       operation.startsWith('A ajouté') &&
-      operation.includes('au club')
+      (operation.includes('au club') || operation.includes('au groupe'))
   )
   .map(({ operation, date }) => {
     const match = operation
       .trim()
-      .match(/^A ajouté[^(]*[( ](?<userUid>[\w-]+)\)? au club (?<groupUid>[\w-]+)$/);
+      .match(/^A ajouté[^(]*[( ](?<userUid>[\w-]+)\)? au (?:club|groupe) (?<groupUid>[\w-]+)$/);
     if (!match) {
       console.error(`Throwing log that seems valid: ${operation}`);
       return undefined;
@@ -371,6 +377,10 @@ const logsAddUserToGroup: Array<{ date: Date; userUid: string; groupUid: string 
   .filter((o) => o !== undefined);
 
 function userJoinedGroupAt(userUid: string, groupUid: string): Date | undefined {
+  if (groupUid === 'tvn7-n7') {
+    const dateGroupeInformel = userJoinedGroupAt(userUid, 'tvn7-membres-n7');
+    if (dateGroupeInformel) return dateGroupeInformel;
+  }
   const allAdds = logsAddUserToGroup.filter(
     (log) => log.userUid === userUid && log.groupUid === groupUid
   );
