@@ -1,63 +1,18 @@
 <script lang="ts">
   import CalendarDay from '../../../../lib/components/CalendarDay.svelte';
-  import IconEdit from '~icons/mdi/pencil';
   import { PUBLIC_FOY_GROUPS, PUBLIC_STORAGE_URL } from '$env/static/public';
-  import IconCalendarPlus from '~icons/mdi/calendar-plus';
-  import IconPlanningView from '~icons/mdi/calendar-multiselect-outline';
   import IconChevronUp from '~icons/mdi/chevron-up';
   import IconChevronDown from '~icons/mdi/chevron-down';
   import IconBackward from '~icons/mdi/chevron-left';
+  import IconGear from '~icons/mdi/cog-outline';
   import IconForward from '~icons/mdi/chevron-right';
-  import {
-    addDays,
-    startOfWeek,
-    isSameDay,
-    differenceInWeeks,
-    previousMonday,
-    nextMonday,
-    formatISO,
-  } from 'date-fns';
+  import { addDays, startOfWeek, isSameDay, previousMonday, nextMonday, formatISO } from 'date-fns';
   import type { PageData } from './$types';
   import { me } from '$lib/session';
-  import { dateFormatter } from '$lib/dates';
   import GhostButton from '$lib/components/ButtonGhost.svelte';
+  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+  import { isDark } from '$lib/theme';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-
-  $: pageTitle = computePageTitle(data.shownWeek);
-
-  function computePageTitle(shownWeek: Date): string {
-    switch (
-      differenceInWeeks(
-        startOfWeek(shownWeek, { weekStartsOn: 1 }),
-        startOfWeek(new Date(), { weekStartsOn: 1 })
-      )
-    ) {
-      case 0: {
-        return 'Cette semaine';
-      }
-
-      case 1: {
-        return 'La semaine prochaine';
-      }
-
-      case -1: {
-        return 'La semaine dernière';
-      }
-
-      case 2: {
-        return 'Dans deux semaines';
-      }
-
-      case -2: {
-        return 'Il y a deux semaines';
-      }
-
-      default: {
-        return `Semaine du ${dateFormatter.format(startOfWeek(shownWeek, { weekStartsOn: 1 }))}`;
-      }
-    }
-  }
 
   export let data: PageData;
 
@@ -80,93 +35,88 @@
   );
 </script>
 
-<h1>
-  {pageTitle}
-</h1>
-<div class="navigation">
-  <ButtonGhost
-    href="/events/week/{formatISO(previousMonday(data.shownWeek), { representation: 'date' })}"
-    ><IconBackward /></ButtonGhost
-  >
-  <div class="buttons">
-    {#if canChangeBarWeek}
-      <ButtonSecondary icon={IconEdit} href="/bar-weeks">Semaines de bar</ButtonSecondary>
-    {/if}
-    <ButtonSecondary icon={IconPlanningView} href="../../planning">Planning</ButtonSecondary>
-    <ButtonSecondary icon={IconCalendarPlus} href="../../feed"
-      >Ajouter au calendrier</ButtonSecondary
+<div class="content">
+  <NavigationTabs
+    tabs={[
+      { name: 'Semaine', href: '.' },
+      { name: 'Planning', href: '../../planning/' },
+    ]}
+  />
+  <div class="navigation">
+    <a href="/events/week/{formatISO(previousMonday(data.shownWeek), { representation: 'date' })}"
+      ><IconBackward /> Précédente</a
     >
+    <a href="/events/week/{formatISO(nextMonday(data.shownWeek), { representation: 'date' })}">
+      Suivante <IconForward />
+    </a>
   </div>
-  <ButtonGhost
-    href="/events/week/{formatISO(nextMonday(data.shownWeek), { representation: 'date' })}"
-    ><IconForward /></ButtonGhost
-  >
-</div>
 
-<section class="bar-week">
-  {#if barWeek.groups.length > 0}
-    <div class="description">
-      {#if barWeek.descriptionHtml}
-        {@html barWeek.descriptionHtml}
-      {:else}
-        <p>Semaine de bar proposée par:</p>
-      {/if}
-    </div>
-    <ul class="bar-week-groups">
-      {#each barWeek.groups as group}
-        <a href="/groups/{group.uid}" class="group">
-          <img
-            src={group.pictureFile
-              ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                `${PUBLIC_STORAGE_URL}${group.pictureFile}`
-              : 'https://via.placeholder.com/400/400'}
-            alt=""
-          />
-          <span class="name">{group.name}</span>
-        </a>
-      {/each}
-    </ul>
-  {/if}
-</section>
-
-<div class="days">
-  {#each daysOfWeek as day}
-    <section class="day">
-      <CalendarDay showMonth={[...new Set(daysOfWeek.map((d) => d.getMonth()))].length > 1} {day} />
-      <div class="events-of-day">
-        {#each events.filter((e) => isSameDay(e.startsAt, day)) as event}
-          <article class="event-of-day" class:expanded={expanded(event, expandedEventUid)}>
-            <div
-              class="header"
-              style:background-image="linear-gradient(#000000aa, #000000aa), url({event.pictureFile
-                ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                  `${PUBLIC_STORAGE_URL}${event.pictureFile}`
-                : 'https://picsum.photos/400/400'})"
-            >
-              <a href="/events/{event.group.uid}/{event.uid}">
-                <h2>{event.title}</h2>
-              </a>
-              <GhostButton
-                darkShadow
-                on:click={() => {
-                  expandedEventUid = expanded(event, expandedEventUid) ? undefined : event.uid;
-                }}
-              >
-                {#if expanded(event, expandedEventUid)}
-                  <IconChevronUp color="white" />
-                {:else}
-                  <IconChevronDown color="white" />
-                {/if}
-              </GhostButton>
-            </div>
-            <div class="description">
-              {@html event.descriptionHtml}
-            </div>
-          </article>
-        {/each}
+  <section class="bar-week">
+    {#if barWeek.groups.length > 0}
+      <div class="description">
+        <p>Semaine de bar de</p>
       </div>
-    </section>
-  {/each}
+      <ul class="bar-week-groups">
+        {#each barWeek.groups as group}
+          <li class="group">
+            <a href="/groups/{group.uid}"
+              ><img
+                src="{PUBLIC_STORAGE_URL}{$isDark ? group.pictureFileDark : group.pictureFile}"
+                alt=""
+              />
+              {group.name}</a
+            >
+          </li>
+        {/each}
+      </ul>
+      {#if canChangeBarWeek}
+        <ButtonSecondary href="/bar-weeks/" icon={IconGear}>Gérer</ButtonSecondary>
+      {/if}
+    {/if}
+  </section>
+
+  <div class="days">
+    {#each daysOfWeek as day}
+      <section class="day">
+        <CalendarDay
+          showMonth={[...new Set(daysOfWeek.map((d) => d.getMonth()))].length > 1}
+          {day}
+        />
+        <div class="events-of-day">
+          {#each events.filter((e) => isSameDay(e.startsAt, day)) as event}
+            <article class="event-of-day" class:expanded={expanded(event, expandedEventUid)}>
+              <div
+                class="header"
+                style:background-image="linear-gradient(#000000aa, #000000aa), url({event.pictureFile
+                  ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                    `${PUBLIC_STORAGE_URL}${event.pictureFile}`
+                  : 'https://picsum.photos/400/400'})"
+              >
+                <a href="/events/{event.group.uid}/{event.uid}">
+                  <h2>{event.title}</h2>
+                </a>
+                <GhostButton
+                  darkShadow
+                  on:click={() => {
+                    expandedEventUid = expanded(event, expandedEventUid) ? undefined : event.uid;
+                  }}
+                >
+                  {#if expanded(event, expandedEventUid)}
+                    <IconChevronUp color="white" />
+                  {:else}
+                    <IconChevronDown color="white" />
+                  {/if}
+                </GhostButton>
+              </div>
+              <div class="description">
+                {@html event.descriptionHtml}
+              </div>
+            </article>
+          {/each}
+        </div>
+      </section>
+    {/each}
+  </div>
 </div>
 
 <style lang="scss">
@@ -179,6 +129,10 @@
     text-align: center;
   }
 
+  .content {
+    padding-bottom: 4rem;
+  }
+
   .buttons {
     display: flex;
     flex-wrap: wrap;
@@ -188,12 +142,20 @@
   }
 
   .navigation {
+    position: fixed;
+    right: 0;
+
+    // font-size: 1.5em;
+    bottom: 2rem;
+    left: 0;
     display: flex;
     gap: 1rem;
     align-items: center;
     justify-content: space-around;
+    padding: 1rem 0;
     margin-bottom: 2rem;
-    font-size: 1.5em;
+    color: var(--text);
+    background: var(--bg);
   }
 
   .manage {
@@ -209,22 +171,28 @@
     flex-direction: column;
     gap: 0.5rem;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
   }
 
   .bar-week-groups {
     display: flex;
-    gap: 1rem;
+    flex-wrap: wrap;
+    gap: 1.5rem;
     list-style: none;
 
-    .group {
+    a {
       display: flex;
-      flex-direction: column;
+      gap: 0.5rem;
       align-items: center;
-      justify-content: center;
 
       img {
-        width: 5rem;
+        width: 3rem;
+        height: 3rem;
+        color: var(--muted-text);
+        background: var(--muted-bg);
+        border-radius: var(--radius-block);
+        object-fit: contain;
       }
     }
   }

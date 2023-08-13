@@ -3,10 +3,10 @@
   import type { PageData } from './$types';
   import IconCalendarPlus from '~icons/mdi/calendar-plus';
   import CalendarDay from '$lib/components/CalendarDay.svelte';
-  import IconWeekView from '~icons/mdi/calendar-week-outline';
   import { format, parseISO } from 'date-fns';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { closestMonday } from '$lib/dates';
+  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
 
   export let data: PageData;
 
@@ -15,12 +15,13 @@
   $: groupedByDate = groupBy(events, (e) => e?.startsAt.toISOString());
 </script>
 
-<h1>Évènements</h1>
+<NavigationTabs
+  tabs={[
+    { name: 'Semaine', href: `../week/${format(closestMonday(new Date()), 'yyyy-MM-dd')}` },
+    { name: 'Planning', href: '.' },
+  ]}
+/>
 <div class="navigation">
-  <ButtonSecondary
-    icon={IconWeekView}
-    href="../week/{format(closestMonday(new Date()), 'yyyy-MM-dd')}">Par semaine</ButtonSecondary
-  >
   <ButtonSecondary newTab icon={IconCalendarPlus} href="../feed"
     >Ajouter au calendrier</ButtonSecondary
   >
@@ -47,13 +48,6 @@
     column-gap: 2rem;
     max-width: 1000px;
     margin: 0 auto;
-  }
-
-  h1 {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0;
   }
 
   .navigation {

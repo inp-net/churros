@@ -29,8 +29,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 5rem;
-    height: 5rem;
+    width: 4rem;
+    height: 4rem;
     border: var(--border-block) solid black;
     border-radius: var(--radius-block);
 
@@ -40,11 +40,12 @@
   }
 
   .day-name {
+    font-size: 0.8em;
     text-transform: uppercase;
   }
 
   .day-number {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: bold;
   }
 </style>
