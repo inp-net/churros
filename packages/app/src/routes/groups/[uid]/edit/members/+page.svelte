@@ -290,10 +290,10 @@
     bind:uid={newMemberUid}
   />
   <InputText label="Titre" bind:value={newMemberTitle} />
+  {#if serverError}
+    <Alert theme="danger">{serverError}</Alert>
+  {/if}
   <section class="submit">
-    {#if serverError}
-      <Alert theme="danger">{serverError}</Alert>
-    {/if}
     <ButtonSecondary submits icon={IconAdd}>Ajouter</ButtonSecondary>
   </section>
 </form>
