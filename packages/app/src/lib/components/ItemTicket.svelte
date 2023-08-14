@@ -21,30 +21,34 @@
 </script>
 
 <article class="ticket">
-  <div class="text">
-    <h3>
-      {#if group}{group.name} <IconChevronRight /> {/if}{name}
-    </h3>
-    <div class="description">{@html descriptionHtml}</div>
-  </div>
-  <div class="numbers">
-    <span class="places">
-      {#if placesLeft === -1 || placesLeft === Number.POSITIVE_INFINITY}
-        Illimité
-      {:else}
-        <span class="left">{placesLeft}</span><span class="capacity">{capacity}</span>
+  <div class="text-and-numbers">
+    <div class="text">
+      <h3>
+        {#if group}{group.name} <IconChevronRight /> {/if}{name}
+      </h3>
+      <div class="description">{@html descriptionHtml}</div>
+    </div>
+    <div class="numbers">
+      <span class="places">
+        {#if placesLeft === -1 || placesLeft === Number.POSITIVE_INFINITY}
+          Illimité
+        {:else}
+          <span class="left">{placesLeft}</span><span class="capacity">{capacity}</span>
+        {/if}
+      </span>
+      {#if !shotgunning}
+        <span class="separator">·</span>
       {/if}
-    </span>
-    {#if !shotgunning}
-      <span class="price">{price}€</span>
-    {/if}
-  </div>
-  <div class="book">
-    {#if shotgunning}
-      <ButtonSecondary href="/events/{event.group.uid}/{event.uid}/book/{uid}"
-        >{price}€</ButtonSecondary
-      >
-    {/if}
+      <div class="price">
+        {#if shotgunning}
+          <ButtonSecondary href="/events/{event.group.uid}/{event.uid}/book/{uid}"
+            >{price}€</ButtonSecondary
+          >
+        {:else}
+          {price}€
+        {/if}
+      </div>
+    </div>
   </div>
   <p class="timing typo-details">
     {#if !opensAt && !closesAt}
@@ -59,9 +63,8 @@
 
 <style lang="scss">
   .ticket {
-    display: grid;
-    grid-template-areas: 'text numbers book' 'timing timing timing';
-    grid-template-columns: 1fr max-content min-content;
+    display: flex;
+    flex-wrap: wrap;
     column-gap: 1rem;
     align-items: center;
     padding: 1rem;
@@ -73,25 +76,31 @@
       align-items: center;
     }
 
-    .text {
-      grid-area: text;
+    .text-and-numbers {
+      display: flex;
+      flex-wrap: wrap;
+      row-gap: 1rem;
+      column-gap: 0.5rem;
+      align-items: center;
+      justify-content: space-between;
       width: 100%;
-    }
-
-    .book {
-      grid-area: book;
     }
 
     .numbers {
       display: flex;
-      flex-direction: column;
-      grid-area: numbers;
-      align-items: end;
-      width: 5rem;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .book {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .timing {
-      grid-area: timing;
+      font-weight: normal;
     }
   }
 
