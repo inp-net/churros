@@ -14,7 +14,7 @@
   import { onDestroy, onMount } from 'svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import IconGear from '~icons/mdi/gear-outline';
-  import ChevronDown from '~icons/mdi/chevron-down';
+  import ChevronUp from '~icons/mdi/chevron-up';
 
   export let collapsible = false;
   export let collapsed = collapsible;
@@ -110,7 +110,7 @@
     class="title"
     style="
     color: {pictureFile ? '#fff' : '#000'};
-    background-image: {pictureFile
+    background-image: {picturefile
       ? `linear-gradient(rgb(0 0 0 / var(--alpha)), rgb(0 0 0 / var(--alpha))), url('${PUBLIC_STORAGE_URL}${pictureFile}') `
       : undefined}
   "
@@ -118,10 +118,10 @@
     <a class="title-link" {href}><h2 class="title-text">{title}</h2></a>
     {#if collapsible}
       <button
-        class="chevron-down {collapsed ? 'collapsed' : ''}"
+        class="chevron-up {collapsed ? 'collapsed' : ''}"
         on:click={() => {
           collapsed = !collapsed;
-        }}><ChevronDown /></button
+        }}><ChevronUp /></button
       >
     {/if}
   </section>
@@ -279,7 +279,7 @@
     margin: 0.5em 0.5em 0 0;
   }
 
-  .chevron-down {
+  .chevron-up {
     padding: 0;
     margin: 0;
     font-size: 2.5em;
@@ -296,7 +296,7 @@
     appearance: none;
   }
 
-  .chevron-down.collapsed {
+  .chevron-up.collapsed {
     transform: rotate(180deg);
   }
 
