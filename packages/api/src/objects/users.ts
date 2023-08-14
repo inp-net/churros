@@ -288,7 +288,7 @@ builder.mutationField('updateUser', (t) =>
     args: {
       uid: t.arg.string(),
       majorId: t.arg.id(),
-      graduationYear: t.arg.int(),
+      graduationYear: t.arg.int({ required: false }),
       email: t.arg.string(),
       birthday: t.arg({ type: DateTimeScalar, required: false }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
@@ -299,8 +299,8 @@ builder.mutationField('updateUser', (t) =>
       godparentUid: t.arg.string({ required: false }),
       contributesTo: t.arg({ type: ['ID'], required: false }),
     },
-    authScopes(_, { uid, contributesTo }, { user }) {
-      if (contributesTo) return Boolean(user?.canEditUsers);
+    authScopes(_, { uid, contributesTo, graduationYear }, { user }) {
+      if (contributesTo || graduationYear) return Boolean(user?.canEditUsers);
       return Boolean(user?.canEditUsers || uid === user?.uid);
     },
     async resolve(
@@ -360,7 +360,7 @@ builder.mutationField('updateUser', (t) =>
         where: { uid },
         data: {
           major: { connect: { id: majorId } },
-          graduationYear,
+          graduationYear: graduationYear ?? undefined,
           nickname,
           description,
           address,
@@ -386,17 +386,16 @@ builder.mutationField('updateUserPermissions', (t) =>
     type: UserType,
     args: {
       uid: t.arg.string(),
-      admin: t.arg.boolean(),
       canEditGroups: t.arg.boolean(),
       canEditUsers: t.arg.boolean(),
     },
     authScopes: (_, {}, { user }) => Boolean(user?.admin),
-    async resolve(query, _, { uid, admin, canEditGroups, canEditUsers }) {
+    async resolve(query, _, { uid, canEditGroups, canEditUsers }) {
       purgeUserSessions(uid);
       return prisma.user.update({
         ...query,
         where: { uid },
-        data: { admin, canEditGroups, canEditUsers },
+        data: { canEditGroups, canEditUsers },
       });
     },
   })

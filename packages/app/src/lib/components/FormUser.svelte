@@ -9,6 +9,7 @@
   import InputSearchObjectList from './InputSearchObjectList.svelte';
   import Fuse from 'fuse.js';
   import InputField from './InputField.svelte';
+  import InputNumber from './InputNumber.svelte';
 
   const userQuery = Selector('User')({
     uid: true,
@@ -132,9 +133,9 @@
   <div class="side-by-side">
     <InputText required label="Prénom" bind:value={firstName} />
     <InputText required label="Nom de famille" bind:value={lastName} />
+    <InputText label="Surnom" bind:value={nickname} />
   </div>
   <InputLongText rich label="Description" bind:value={description} />
-  <InputText label="Surnom" bind:value={nickname} />
   {#if canEditContributions}
     <InputField label="Cotisant à">
       <InputSearchObjectList
@@ -142,13 +143,15 @@
         values={contributesTo.map(({ id }) => id)}
         labelKey="name"
         valueKey="id"
-        search={(query) => new Fuse(studentAssociations, {
+        search={(query) =>
+          new Fuse(studentAssociations, {
             keys: ['name', 'id'],
           })
             .search(query)
             .map((r) => r.item)}
       />
     </InputField>
+    <InputNumber label="Promo" bind:value={graduationYear} />
   {/if}
   <div class="side-by-side">
     <InputText type="email" label="Email" bind:value={email} />
