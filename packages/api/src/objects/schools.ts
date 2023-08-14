@@ -9,6 +9,7 @@ export const SchoolType = builder.prismaObject('School', {
     uid: t.exposeString('uid'),
     name: t.exposeString('name'),
     color: t.exposeString('color'),
+    studentAssociations: t.relation('studentAssociations'),
   }),
 });
 

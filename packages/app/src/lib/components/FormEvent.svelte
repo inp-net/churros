@@ -128,7 +128,7 @@
                   openToAlumni: true,
                   openToSchools: { name: true, color: true, id: true },
                   openToGroups: { name: true, uid: true, pictureFile: true },
-                  openToNonAEContributors: true,
+                  openToContributors: true,
                   godsonLimit: true,
                   onlyManagersCanProvide: true,
                 },
@@ -147,7 +147,7 @@
                 openToAlumni: true,
                 openToSchools: { name: true, color: true, id: true },
                 openToGroups: { name: true, uid: true, pictureFile: true },
-                openToNonAEContributors: true,
+                openToContributors: true,
                 godsonLimit: true,
                 onlyManagersCanProvide: true,
               },
@@ -212,7 +212,7 @@
     openToExternal: false,
     openToGroups: [],
     // eslint-disable-next-line unicorn/no-null
-    openToNonAEContributors: null,
+    openToContributors: null,
     openToPromotions: [],
     openToSchools: [],
     openToMajors: [],
@@ -235,7 +235,7 @@
     openToSchools: Array<{ name: string; color: string; uid: string }>;
     openToGroups: Array<{ name: string; uid: string; pictureFile: string }>;
     openToMajors: Array<{ name: string; shortName: string; id: string }>;
-    openToNonAEContributors?: boolean | null | undefined;
+    openToContributors?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
   };

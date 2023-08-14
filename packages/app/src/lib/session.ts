@@ -41,6 +41,12 @@ export const sessionUserQuery = () =>
       shortName: true,
       schools: { id: true, name: true, uid: true, color: true },
     },
+    contributesTo: {
+      id: true,
+      school: {
+        uid: true,
+      },
+    },
   });
 
 export type SessionUser = PropsType<typeof sessionUserQuery, 'User'>;

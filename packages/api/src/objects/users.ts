@@ -102,6 +102,7 @@ export const UserType = builder.prismaNode('User', {
     notificationSettings: t.relation('notificationSettings', {
       authScopes: { loggedIn: true, $granted: 'me' },
     }),
+    contributesTo: t.relation('contributesTo'),
     godparent: t.relation('godparent', { nullable: true }),
     godchildren: t.relation('godchildren'),
     outgoingGodparentRequests: t.relation('outgoingGodparentRequests'),
@@ -296,8 +297,12 @@ builder.mutationField('updateUser', (t) =>
       description: t.arg.string({ validate: { maxLength: 255 } }),
       links: t.arg({ type: [LinkInput] }),
       godparentUid: t.arg.string({ required: false }),
+      contributesTo: t.arg({ type: ['ID'], required: false }),
     },
-    authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
+    authScopes(_, { uid, contributesTo }, { user }) {
+      if (contributesTo) return Boolean(user?.canEditUsers);
+      return Boolean(user?.canEditUsers || uid === user?.uid);
+    },
     async resolve(
       query,
       _,
@@ -313,6 +318,7 @@ builder.mutationField('updateUser', (t) =>
         phone,
         birthday,
         godparentUid,
+        contributesTo,
       },
       { user }
     ) {
@@ -362,6 +368,13 @@ builder.mutationField('updateUser', (t) =>
           birthday,
           links: { deleteMany: {}, createMany: { data: links } },
           godparent: godparentUid ? { connect: { uid: godparentUid } } : { disconnect: true },
+          ...(contributesTo
+            ? {
+                contributesTo: {
+                  set: contributesTo.map((id) => ({ id })),
+                },
+              }
+            : {}),
         },
       });
     },

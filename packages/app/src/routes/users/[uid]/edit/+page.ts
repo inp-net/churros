@@ -54,8 +54,20 @@ export const _userQuery = Selector('User')({
     },
     createdAt: true,
   },
+  contributesTo: {
+    name: true,
+    id: true,
+  },
   familyTree: {
     users: { uid: true },
+  },
+  major: {
+    schools: {
+      studentAssociations: {
+        name: true,
+        id: true,
+      },
+    },
   },
   notificationSettings: {
     id: true,
@@ -86,6 +98,9 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
       schoolGroups: { names: true, majors: { id: true, name: true } },
       me: {
         uid: true,
+        admin: true,
+        canEditGroups: true,
+        canEditUsers: true,
         credentials: {
           id: true,
           type: true,

@@ -66,6 +66,7 @@ model User {
   passwordResets            PasswordReset[]
   emailChanges              EmailChange[]
   Announcement              Announcement[]
+  contributesTo             StudentAssociation[] // Cotisant à ces AEs
 
   @@unique([schoolServer, schoolUid])
 }
@@ -199,16 +200,19 @@ model Credential {
   user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
-/// There is one student association per school and per year
+/// There is one student association per school
 model StudentAssociation {
   id       String @id @default(dbgenerated("nanoid('ae:')"))
   schoolId String
   name     String @unique @db.VarChar(255)
-  year     Int    @db.Integer
   links    Link[]
 
-  school School  @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  groups Group[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school       School  @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  groups       Group[]
+  contributors User[]
 }
 
 /// The different kinds of groups
@@ -391,7 +395,7 @@ model Ticket {
   openToPromotions        Int[]    @default([])
   openToAlumni            Boolean? @default(false) // false means only non-alumni, true means only alumni, null means both
   openToExternal          Boolean? @default(false) // same thing
-  openToNonAEContributors Boolean? @default(false) // same thing
+  openToContributors Boolean? @default(false) // same thing
   openToSchools           School[]
   openToMajors            Major[]
   openToGroups            Group[]

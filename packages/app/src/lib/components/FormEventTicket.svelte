@@ -37,7 +37,7 @@
     openToMajors: Array<{ name: string; shortName: string; id: string }>;
     openToExternal?: boolean | null | undefined;
     openToAlumni?: boolean | null | undefined;
-    openToNonAEContributors?: boolean | null | undefined;
+    openToContributors?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
   };
@@ -226,11 +226,15 @@
         labelTrue="Seulement"
         label="Cotisants"
         ternary
-        bind:value={ticket.openToNonAEContributors}
+        bind:value={ticket.openToContributors}
       />
     </div>
 
-    <InputNumber label="Limite de parrainages" bind:value={ticket.godsonLimit} />
+    <InputNumber
+      hint="0 signifie aucun parrainage autorisé"
+      label="Limite de parrainages"
+      bind:value={ticket.godsonLimit}
+    />
 
     <InputCheckbox
       label="Seul un manager peut donner ce billet"

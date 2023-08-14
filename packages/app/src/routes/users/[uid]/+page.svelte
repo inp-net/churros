@@ -143,6 +143,16 @@
             <dt>Surnom</dt>
             <dd>{user.nickname}</dd>
           {/if}
+          {#if user.contributesTo}
+            <dt>Cotisant·e</dt>
+            {#if user.contributesTo.length > 0}
+              <dd>
+                {user.contributesTo.map((c) => c.name).join(', ')}
+              </dd>
+            {:else}
+              <dd>Non</dd>
+            {/if}
+          {/if}
           <dt>Email</dt>
           <dd>
             <a href="mailto:{user.email}">{user.email}</a>

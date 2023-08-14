@@ -56,7 +56,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             uid: true,
             name: true,
           },
-          openToNonAEContributors: true,
+          openToContributors: true,
           openToSchools: {
             uid: true,
             name: true,

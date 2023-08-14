@@ -6,7 +6,7 @@
   import IconActive from '~icons/mdi/adjust';
   import type { PageData } from './$types';
   import Permissions from '../../../../lib/components/FormUserPermissions.svelte';
-  import ProfileDetails from '$lib/components/FormUser.svelte';
+  import FormUser from '$lib/components/FormUser.svelte';
   import FormPicture from '$lib/components/FormPicture.svelte';
   import { me } from '$lib/session';
   import { formatDate, formatDateTime } from '$lib/dates';
@@ -198,11 +198,14 @@
 <div class="content">
   <section class="details">
     <FormPicture objectName="User" bind:object={data.user} />
-    <ProfileDetails bind:data />
+    <FormUser
+      studentAssociations={data.user.major?.schools.flatMap((s) => s.studentAssociations)}
+      bind:data
+    />
   </section>
 
   <section class="misc">
-    {#if data.userPermissions && ($me?.admin || $me?.canEditUsers)}
+    {#if $me?.admin || $me?.canEditUsers}
       <h2>Permissions</h2>
       <Permissions bind:data />
     {/if}

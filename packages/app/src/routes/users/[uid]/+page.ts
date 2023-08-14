@@ -46,6 +46,14 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
               graduationYear: true,
             },
           },
+          ...(me.canEditUsers
+            ? {
+                contributesTo: {
+                  name: true,
+                  id: true,
+                },
+              }
+            : {}),
           articles: [
             {},
             {
