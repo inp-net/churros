@@ -25,7 +25,7 @@
     --size: 10rem;
 
     display: flex;
-    flex-flow: column wrap;
+    flex-flow: column;
     align-items: center;
     justify-content: center;
     width: var(--size);
