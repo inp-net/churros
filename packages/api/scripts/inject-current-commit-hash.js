@@ -10,6 +10,7 @@ exec('git rev-parse HEAD').stdout?.on('data', (hash) => {
   exec('git rev-parse --show-toplevel').stdout?.on('data', (toplevel) => {
     if (toplevel.toString().trim() === '') return;
     const filepath = path.join(toplevel.trim(), './packages/app/.env');
+    console.log(`Injecting PUBLIC_CURRENT_COMMIT="${hash.trim()}"`);
     const content = readFileSync(filepath)
       .toString()
       .replace(/^PUBLIC_CURRENT_COMMIT=.*$/m, `PUBLIC_CURRENT_COMMIT="${hash.trim()}"`);
