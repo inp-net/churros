@@ -18,11 +18,6 @@
     try {
       sw = await navigator.serviceWorker.ready;
       subscription = await sw.pushManager.getSubscription();
-
-      if (!subscription) {
-        unsupported = true;
-        return;
-      }
     } catch (error) {
       unsupported = true;
       return;
@@ -45,10 +40,6 @@
 
   async function checkIfSubscribed(): Promise<void> {
     await logOnServer('checking if subscribed')
-    if (!('PushManager' in window)) {
-      unsupported = true;
-      return;
-    }
 
     if (Notification.permission !== 'granted') {
       subscribed = false;
@@ -160,7 +151,7 @@
       <ButtonSecondary
         danger
         on:click={async () => {
-          await $zeus.mutate({ testNotification: true });
+          await $zeus.mutate({ testNotification: [{subscriptionId: subscription?.endpoint }, true] });
         }}>Tester</ButtonSecondary
       >
     {:catch error}
