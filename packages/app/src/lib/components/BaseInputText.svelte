@@ -117,7 +117,9 @@
         if (!(e.target instanceof HTMLInputElement)) return;
         if (e.key === 'Enter' && closeKeyboardOnEnter) e.target.blur();
       }}
-      {type}
+      type={type === 'number' ? 'text' : type}
+      inputmode={type === 'number' ? 'numeric' : undefined}
+      pattern={type === 'number' ? '[0-9.,]*' : undefined}
       {name}
       value={stringifyValue(value, type)}
       {required}
