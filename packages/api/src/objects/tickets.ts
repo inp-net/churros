@@ -245,7 +245,35 @@ builder.queryField('ticketsOfEvent', (t) =>
           group: true,
         },
       });
-      return allTickets.filter((ticket) => userCanSeeTicket(ticket, user));
+      const userWithContributesTo = user
+        ? await prisma.user.findUniqueOrThrow({
+            where: { id: user.id },
+            include: {
+              contributesTo: {
+                include: {
+                  school: true,
+                },
+              },
+              groups: {
+                include: {
+                  group: true,
+                },
+              },
+              managedEvents: {
+                include: {
+                  event: true,
+                },
+              },
+              major: {
+                include: {
+                  schools: true,
+                },
+              },
+            },
+          })
+        : undefined;
+
+      return allTickets.filter((ticket) => userCanSeeTicket(ticket, userWithContributesTo));
     },
   })
 );

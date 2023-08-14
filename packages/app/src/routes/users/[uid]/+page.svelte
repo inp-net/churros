@@ -147,7 +147,10 @@
             <dt>Cotisant·e</dt>
             {#if user.contributesTo.length > 0}
               <dd>
-                {user.contributesTo.map((c) => c.name).join(', ')}
+                {user.contributesTo
+                  .filter((c) => c !== undefined)
+                  .map((c) => c?.name)
+                  .join(', ')}
               </dd>
             {:else}
               <dd>Non</dd>
