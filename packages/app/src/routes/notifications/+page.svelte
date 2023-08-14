@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_STORAGE_URL, PUBLIC_VAPID_KEY } from '$env/static/public';
+  import { PUBLIC_VAPID_KEY } from '$env/static/public';
   import { arrayBufferToBase64 } from '$lib/base64';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
@@ -8,6 +8,8 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import CardNotification from '$lib/components/CardNotification.svelte';
   import Alert from '$lib/components/Alert.svelte';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
 
   export let data: PageData;
   let subscriptionName = '';
@@ -18,7 +20,7 @@
     try {
       sw = await navigator.serviceWorker.ready;
       subscription = await sw.pushManager.getSubscription();
-    } catch (error) {
+    } catch {
       unsupported = true;
       return;
     }
@@ -26,10 +28,10 @@
     const { notifications } = await $zeus.query({
       notifications: [
         {
-          subscriptionEndpoint: subscription?.endpoint
+          subscriptionEndpoint: subscription?.endpoint,
         },
-        _notificationsQuery
-      ]
+        _notificationsQuery,
+      ],
     });
     data.notifications = notifications;
   });
@@ -39,17 +41,12 @@
   let unsupported = false;
 
   async function checkIfSubscribed(): Promise<void> {
-    await logOnServer('checking if subscribed');
-
     if (Notification.permission !== 'granted') {
       subscribed = false;
       return;
     }
 
-    await logOnServer('is subscribed, push manager supported');
-
     const sw = await navigator.serviceWorker.ready;
-    await logOnServer('got service worker');
     const subscription = await sw.pushManager.getSubscription();
     subscribed = data.notificationSubscriptions.some(
       ({ endpoint }) => endpoint === subscription?.endpoint
@@ -64,10 +61,10 @@
       const { deleteNotificationSubscription } = await $zeus.mutate({
         deleteNotificationSubscription: [
           {
-            endpoint: subscription.endpoint
+            endpoint: subscription.endpoint,
           },
-          true
-        ]
+          true,
+        ],
       });
 
       if (!deleteNotificationSubscription) {
@@ -79,35 +76,27 @@
     }
   }
 
-  async function logOnServer(message: string) {
-    await fetch(new URL(`../log?message=${encodeURIComponent(message)}`, PUBLIC_STORAGE_URL));
-  }
-
   async function subscribeToNotifications(): Promise<void> {
     loading = true;
     if ((await Notification.requestPermission()) === 'granted') {
-      await logOnServer('subscribing to notifications');
-      await logOnServer(`has sw: ${'serviceWorker' in navigator}`);
       const sw = await navigator.serviceWorker.ready;
-      await logOnServer('finished waiting on service worker…');
       if (!sw) {
         unsupported = true;
         loading = false;
         return;
       }
-      await logOnServer('got service worker');
+  
       const subscription = await sw.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: PUBLIC_VAPID_KEY
+        applicationServerKey: PUBLIC_VAPID_KEY,
       });
       if (!subscription) {
         unsupported = true;
         loading = false;
         return;
       }
-      await logOnServer('got subscription');
+  
       const { expirationTime, endpoint } = subscription;
-      await logOnServer(`got subscription details: ${expirationTime}, ${endpoint}`);
       await $zeus.mutate({
         upsertNotificationSubscription: [
           {
@@ -117,68 +106,77 @@
             endpoint,
             keys: {
               auth: await arrayBufferToBase64(subscription.getKey('auth') ?? new ArrayBuffer(0)),
-              p256dh: await arrayBufferToBase64(subscription.getKey('p256dh') ?? new ArrayBuffer(0))
-            }
+              p256dh: await arrayBufferToBase64(
+                subscription.getKey('p256dh') ?? new ArrayBuffer(0)
+              ),
+            },
           },
           {
             id: true,
             expiresAt: true,
-            endpoint: true
-          }
-        ]
+            endpoint: true,
+          },
+        ],
       });
       subscribed = true;
     }
+  
     loading = false;
   }
 </script>
 
-<h1>
-  Notifications
-
-  <div class="actions">
-    {#await checkIfSubscribed()}
-      <p class="loading">Chargement…</p>
-    {:then}
-      {#if subscribed}
-        <ButtonSecondary on:click={async () => unsubscribeFromNotifications()}
-          >Désactiver</ButtonSecondary
-        >
-      {:else}
-        <input type="hidden" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
-        <ButtonSecondary {loading} on:click={async () => subscribeToNotifications()}
-          >Activer</ButtonSecondary
-        >
-      {/if}
-      <ButtonSecondary
-        danger
-        on:click={async () => {
-          if (subscription)
-            await $zeus.mutate({
-              testNotification: [{ subscriptionEndpoint: subscription.endpoint }, true]
-            });
-        }}>Tester</ButtonSecondary
+<div class="content" class:subscribed>
+  {#await checkIfSubscribed()}
+    <h1>
+      <LoadingSpinner />
+      Chargement…
+    </h1>
+  {:then}
+    {#if unsupported}
+      <h1>Navigateur non supporté.</h1>
+      <p>Ce navigateur ne supporte pas les notifcations Web Push.</p>
+    {:else if !subscribed}
+      <h1>Les notifications sont désactivées</h1>
+      <input type="hidden" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
+      <ButtonPrimary {loading} on:click={async () => subscribeToNotifications()}
+        >Activer</ButtonPrimary
       >
-    {:catch error}
-      <Alert theme="danger">Impossible d'activer les notifications: {error}</Alert>
-    {/await}
-  </div>
-</h1>
-
-{#if unsupported}
-  <p>Navigateur non supporté.</p>
-  <p class="typo-details">Ce navigateur ne supporte pas les notifcations Web Push.</p>
-{:else if subscribed}
-  <ul class="notifications nobullet">
-    {#each data.notifications.edges.map(({ node }) => node) as { id, ...notif } (id)}
-      <li>
-        <CardNotification {...notif} href={notif.goto} />
-      </li>
     {:else}
-      <li class="empty">Aucune notification reçue pour le moment.</li>
-    {/each}
-  </ul>
-{/if}
+      <h1>
+        Notifications
+
+        <div class="actions">
+          <ButtonSecondary on:click={async () => unsubscribeFromNotifications()}
+            >Désactiver</ButtonSecondary
+          >
+          <ButtonSecondary
+            danger
+            on:click={async () => {
+              if (subscription)
+                {await $zeus.mutate({
+                  testNotification: [{ subscriptionEndpoint: subscription.endpoint }, true],
+                });}
+            }}>Tester</ButtonSecondary
+          >
+        </div>
+      </h1>
+
+      {#if subscribed}
+        <ul class="notifications nobullet">
+          {#each data.notifications.edges.map(({ node }) => node) as { id, ...notif } (id)}
+            <li>
+              <CardNotification {...notif} href={notif.goto} />
+            </li>
+          {:else}
+            <li class="empty">Aucune notification reçue pour le moment.</li>
+          {/each}
+        </ul>
+      {/if}
+    {/if}
+  {:catch error}
+    <Alert theme="danger">Impossible d'activer les notifications: {error}</Alert>
+  {/await}
+</div>
 
 <style lang="scss">
   h1 {
@@ -189,6 +187,16 @@
     justify-content: center;
     margin-bottom: 2rem;
     text-align: center;
+  }
+
+  .content:not(.subscribed) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    text-align: center;
+    margin: 0 0.5rem;
   }
 
   ul.notifications {

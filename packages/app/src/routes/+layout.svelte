@@ -115,36 +115,38 @@
   </div>
   <p class="typo-details">Connexion en cours…</p>
 </div>
-<TopBar />
+<div class="page">
+  <TopBar />
 
-<div class="layout">
-  {#if announcements.length > 0 && !scanningTickets && !showingTicket}
-    <section class="announcements fullsize">
-      {#each announcements.filter(({ id }) => !announcementHiddenByUser(id)) as { title, bodyHtml, warning, id } (id)}
-        <article class="announcement {warning ? 'warning' : 'primary'}">
-          <div class="text">
-            <strong>{title}</strong>
-            <div class="body">
-              {@html bodyHtml}
+  <div class="layout">
+    {#if announcements.length > 0 && !scanningTickets && !showingTicket}
+      <section class="announcements fullsize">
+        {#each announcements.filter(({ id }) => !announcementHiddenByUser(id)) as { title, bodyHtml, warning, id } (id)}
+          <article class="announcement {warning ? 'warning' : 'primary'}">
+            <div class="text">
+              <strong>{title}</strong>
+              <div class="body">
+                {@html bodyHtml}
+              </div>
             </div>
-          </div>
-          <ButtonGhost
-            on:click={() => {
-              window.localStorage.setItem(`hideAnnouncement${id}`, 'true');
-              announcements = announcements.filter((a) => a.id !== id);
-            }}><IconClose /></ButtonGhost
-          >
-        </article>
-      {/each}
-    </section>
-  {/if}
+            <ButtonGhost
+              on:click={() => {
+                window.localStorage.setItem(`hideAnnouncement${id}`, 'true');
+                announcements = announcements.filter((a) => a.id !== id);
+              }}><IconClose /></ButtonGhost
+            >
+          </article>
+        {/each}
+      </section>
+    {/if}
 
-  <main class:fullsize={pageIsFullsize()}>
-    <slot />
-  </main>
+    <main class:fullsize={pageIsFullsize()}>
+      <slot />
+    </main>
+  </div>
+
+  <NavigationBottom current={currentTab($page.url)} />
 </div>
-
-<NavigationBottom current={currentTab($page.url)} />
 
 <style lang="scss">
   #loading-overlay {
@@ -174,6 +176,10 @@
     display: none;
   }
 
+  .page {
+    height: 100vh;
+  }
+
   .layout {
     // max-width: 100rem;
     padding-top: 5rem; // XXX equal to topbar's height
@@ -183,6 +189,11 @@
     > *:not(.fullsize) {
       padding: 0 0.5rem;
     }
+  }
+
+  .layout,
+  main {
+    height: 100%;
   }
 
   .announcements {
