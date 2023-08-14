@@ -26,7 +26,7 @@
     const { notifications } = await $zeus.query({
       notifications: [
         {
-          subscriptionEndpoint: subscription.endpoint
+          subscriptionEndpoint: subscription?.endpoint
         },
         _notificationsQuery
       ]
@@ -151,7 +151,7 @@
       <ButtonSecondary
         danger
         on:click={async () => {
-          await $zeus.mutate({ testNotification: [{subscriptionId: subscription?.endpoint }, true] });
+          await $zeus.mutate({ testNotification: [{subscriptionEndpoint: subscription?.endpoint }, true] });
         }}>Tester</ButtonSecondary
       >
     {:catch error}
