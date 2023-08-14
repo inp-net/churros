@@ -85,7 +85,7 @@
         loading = false;
         return;
       }
-  
+
       const subscription = await sw.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: PUBLIC_VAPID_KEY,
@@ -95,7 +95,7 @@
         loading = false;
         return;
       }
-  
+
       const { expirationTime, endpoint } = subscription;
       await $zeus.mutate({
         upsertNotificationSubscription: [
@@ -120,7 +120,7 @@
       });
       subscribed = true;
     }
-  
+
     loading = false;
   }
 </script>
@@ -152,10 +152,11 @@
           <ButtonSecondary
             danger
             on:click={async () => {
-              if (subscription)
-                {await $zeus.mutate({
+              if (subscription) {
+                await $zeus.mutate({
                   testNotification: [{ subscriptionEndpoint: subscription.endpoint }, true],
-                });}
+                });
+              }
             }}>Tester</ButtonSecondary
           >
         </div>
@@ -191,12 +192,12 @@
 
   .content:not(.subscribed) {
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     height: 100%;
-    text-align: center;
     margin: 0 0.5rem;
+    text-align: center;
   }
 
   ul.notifications {
