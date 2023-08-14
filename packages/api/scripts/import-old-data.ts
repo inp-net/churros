@@ -455,6 +455,58 @@ LDAP_DATA = {
 };
 console.log(`  Removed ${oldCount - LDAP_DATA.users.length} users`);
 
+function findConflictsInSchoolEmails() {
+  const emails = new Set<string>();
+  const conflicts = new Set<string>();
+
+  for (const user of LDAP_DATA.users) {
+    if (!user.mailEcole) continue;
+    if (emails.has(user.mailEcole)) conflicts.add(user.mailEcole);
+    else emails.add(user.mailEcole);
+  }
+
+  return conflicts;
+}
+
+// Fix weird conflict
+LDAP_DATA.users = LDAP_DATA.users.map((u) => {
+  if (u.uid === 'diont') {
+    return {
+      ...u,
+      mailEcole: u.mailEcole.replace('2', '').replace('@etu.inp-n7.fr', '@etu.inp-ensiacet.fr'),
+    };
+  }
+  return u;
+});
+
+const conflicts = findConflictsInSchoolEmails();
+
+if (conflicts.size > 0) {
+  const usersInConflict = LDAP_DATA.users.filter((u) => conflicts.has(u.mailEcole));
+  console.log();
+  console.log(`· Found ${conflicts.size} conflicts in school emails:`);
+  const usersInConflictBySchoolMail: Record<string, Ldap.User[]> = {};
+  for (const user of usersInConflict) {
+    if (!user.mailEcole) continue;
+    if (!usersInConflictBySchoolMail[user.mailEcole])
+      usersInConflictBySchoolMail[user.mailEcole] = [];
+    usersInConflictBySchoolMail[user.mailEcole]!.push(user);
+  }
+
+  for (const [email, users] of Object.entries(usersInConflictBySchoolMail)) {
+    console.log(`  ${email}:`);
+    for (const u of users) {
+      console.log(`    - @${u.uid} [${u.ecole.o}, ${u.promo}] (${u.mailAnnexe?.join(', ') ?? ''})`);
+    }
+    console.log();
+  }
+  if (usersInConflict.some((u) => u.ecole.o === 'n7')) {
+    console.log();
+    console.log('  Some of these users are at n7, stopping.');
+    process.exit(1);
+  }
+}
+
 function progressbar(objectName: string, total: number): SingleBar {
   console.log('');
   console.log('');
@@ -549,6 +601,10 @@ bar.stop();
 console.log('');
 
 if (errors.clubs.length + errors.users.length > 0) {
-  console.log(`Failed to create ${errors.clubs.length} clubs and ${errors.users.length} users`);
+  console.log(
+    `Failed to create ${errors.clubs.length} clubs and ${errors.users.length} users (including ${
+      errors.users.filter((u) => u.user.ecole.o === 'n7').length
+    } at n7)`
+  );
   writeFileSync('./import-errors.json', JSON.stringify(errors));
 }
