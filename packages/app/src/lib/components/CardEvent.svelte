@@ -110,7 +110,7 @@
     class="title"
     style="
     color: {pictureFile ? '#fff' : '#000'};
-    background-image: {picturefile
+    background-image: {pictureFile
       ? `linear-gradient(rgb(0 0 0 / var(--alpha)), rgb(0 0 0 / var(--alpha))), url('${PUBLIC_STORAGE_URL}${pictureFile}') `
       : undefined}
   "
