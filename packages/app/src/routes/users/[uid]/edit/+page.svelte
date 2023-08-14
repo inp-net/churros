@@ -1,5 +1,4 @@
 <script lang="ts">
-  import IconBack from '~icons/mdi/arrow-left';
   import Alert from '$lib/components/Alert.svelte';
   import IconClose from '~icons/mdi/close';
   import IconCheck from '~icons/mdi/check';
@@ -22,6 +21,7 @@
   import FormNotificationSettings from '$lib/components/FormNotificationSettings.svelte';
   import { theme } from '$lib/theme';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
+  import ButtonBack from '$lib/components/ButtonBack.svelte';
 
   let godparentRequestSendServerError = '';
   let godparentRequestSending = false;
@@ -185,17 +185,16 @@
   let godparentUid = data.user.godparent?.uid;
 </script>
 
-<h1>
-  <a href=".."> <IconBack /> </a>
-  {#if data.user.uid === $me?.uid}
-    Paramètres
-  {:else}
-    Éditer
-    {data.user.fullName}
-  {/if}
-</h1>
-
 <div class="content">
+  <h1>
+    <ButtonBack go=".." />
+    {#if data.user.uid === $me?.uid}
+      Paramètres
+    {:else}
+      Éditer
+      {data.user.fullName}
+    {/if}
+  </h1>
   <section class="details">
     <FormPicture objectName="User" bind:object={data.user} />
     <FormUser
@@ -209,12 +208,14 @@
       <h2>Permissions</h2>
       <Permissions bind:data />
     {/if}
-    <h2>Apparence</h2>
-    <InputSelectOne
-      label="Thème"
-      options={{ system: 'Suivre le système', dark: 'Sombre', light: 'Clair' }}
-      bind:value={$theme}
-    />
+    {#if $me?.uid === data.user.uid}
+      <h2>Apparence</h2>
+      <InputSelectOne
+        label="Thème"
+        options={{ system: 'Suivre le système', dark: 'Sombre', light: 'Clair' }}
+        bind:value={$theme}
+      />
+    {/if}
     <h2>Parrainages</h2>
     <InputPerson
       label="Parrain/Marraine"
@@ -365,7 +366,6 @@
     gap: 0.5em;
     align-items: center;
 
-    // justify-content: center;
     margin-bottom: 2rem;
   }
 
@@ -373,8 +373,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 2rem;
-    justify-content: center;
-    max-width: 1000px;
+    max-width: 1200px;
     padding: 0 1.2rem;
     margin: 0 auto;
   }
@@ -383,8 +382,11 @@
     width: 100%;
     min-width: 100px;
 
-    /* width: 400px; */
     max-width: 400px;
+  }
+
+  .content section.details {
+    max-width: 700px;
   }
 
   .content section h2 {

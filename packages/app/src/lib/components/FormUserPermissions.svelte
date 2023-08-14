@@ -7,25 +7,22 @@
 
   export let data: PageData;
 
-  let { admin, canEditGroups, canEditUsers } = data.userPermissions;
+  let { canEditGroups, canEditUsers } = data.userPermissions;
 
   function getSelectedPermissions({
-    admin,
     canEditGroups,
     canEditUsers,
   }: {
-    admin: boolean;
     canEditGroups: boolean;
     canEditUsers: boolean;
-  }): Array<'admin' | 'canEditGroups' | 'canEditUsers'> {
-    return ['admin', 'canEditGroups', 'canEditUsers'].filter(
-      (p) => ({ admin, canEditGroups, canEditUsers }?.[p] ?? false)
-    ) as Array<'admin' | 'canEditGroups' | 'canEditUsers'>;
+  }): Array<'canEditGroups' | 'canEditUsers'> {
+    return ['canEditGroups', 'canEditUsers'].filter(
+      (p) => ({ canEditGroups, canEditUsers }?.[p] ?? false)
+    ) as Array<'canEditGroups' | 'canEditUsers'>;
   }
 
-  let selectedPermissions = getSelectedPermissions({ admin, canEditGroups, canEditUsers });
+  let selectedPermissions = getSelectedPermissions({ canEditGroups, canEditUsers });
   $: {
-    admin = selectedPermissions.includes('admin');
     canEditGroups = selectedPermissions.includes('canEditGroups');
     canEditUsers = selectedPermissions.includes('canEditUsers');
   }
@@ -36,8 +33,8 @@
     try {
       const { updateUserPermissions } = await $zeus.mutate({
         updateUserPermissions: [
-          { uid: data.user.uid, admin, canEditGroups, canEditUsers },
-          { admin: true, canEditGroups: true, canEditUsers: true },
+          { uid: data.user.uid, canEditGroups, canEditUsers },
+          { canEditGroups: true, canEditUsers: true },
         ],
       });
 
@@ -55,7 +52,6 @@
 <form on:submit|preventDefault={updateUserPermissions}>
   <InputSelectMultiple
     options={{
-      admin: 'Administrateur',
       canEditGroups: 'Édition des groupes',
       canEditUsers: 'Édition des utilisateurs',
     }}
