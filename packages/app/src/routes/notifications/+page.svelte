@@ -35,21 +35,21 @@
   });
 
   let subscribed = false;
-  let loading = false
+  let loading = false;
   let unsupported = false;
 
   async function checkIfSubscribed(): Promise<void> {
-    await logOnServer('checking if subscribed')
+    await logOnServer('checking if subscribed');
 
     if (Notification.permission !== 'granted') {
       subscribed = false;
       return;
     }
 
-    await logOnServer('is subscribed, push manager supported')
+    await logOnServer('is subscribed, push manager supported');
 
     const sw = await navigator.serviceWorker.ready;
-    await logOnServer('got service worker')
+    await logOnServer('got service worker');
     const subscription = await sw.pushManager.getSubscription();
     subscribed = data.notificationSubscriptions.some(
       ({ endpoint }) => endpoint === subscription?.endpoint
@@ -84,30 +84,30 @@
   }
 
   async function subscribeToNotifications(): Promise<void> {
-    loading = true
+    loading = true;
     if ((await Notification.requestPermission()) === 'granted') {
-      await logOnServer('subscribing to notifications')
-      await logOnServer(`has sw: ${'serviceWorker' in navigator}`)
+      await logOnServer('subscribing to notifications');
+      await logOnServer(`has sw: ${'serviceWorker' in navigator}`);
       const sw = await navigator.serviceWorker.ready;
-      await logOnServer('finished waiting on service worker…')
+      await logOnServer('finished waiting on service worker…');
       if (!sw) {
         unsupported = true;
-        loading = false
+        loading = false;
         return;
       }
-      await logOnServer('got service worker')
+      await logOnServer('got service worker');
       const subscription = await sw.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: PUBLIC_VAPID_KEY
       });
       if (!subscription) {
         unsupported = true;
-        loading = false
+        loading = false;
         return;
       }
-      await logOnServer('got subscription')
+      await logOnServer('got subscription');
       const { expirationTime, endpoint } = subscription;
-      await logOnServer(`got subscription details: ${expirationTime}, ${endpoint}`)
+      await logOnServer(`got subscription details: ${expirationTime}, ${endpoint}`);
       await $zeus.mutate({
         upsertNotificationSubscription: [
           {
@@ -129,7 +129,7 @@
       });
       subscribed = true;
     }
-    loading = false
+    loading = false;
   }
 </script>
 
@@ -138,7 +138,7 @@
 
   <div class="actions">
     {#await checkIfSubscribed()}
-    <p class="loading">Chargement…</p>
+      <p class="loading">Chargement…</p>
     {:then}
       {#if subscribed}
         <ButtonSecondary on:click={async () => unsubscribeFromNotifications()}
@@ -146,12 +146,17 @@
         >
       {:else}
         <input type="hidden" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
-        <ButtonSecondary {loading} on:click={async () => subscribeToNotifications()}>Activer</ButtonSecondary>
+        <ButtonSecondary {loading} on:click={async () => subscribeToNotifications()}
+          >Activer</ButtonSecondary
+        >
       {/if}
       <ButtonSecondary
         danger
         on:click={async () => {
-          await $zeus.mutate({ testNotification: [{subscriptionEndpoint: subscription?.endpoint }, true] });
+          if (subscription)
+            await $zeus.mutate({
+              testNotification: [{ subscriptionEndpoint: subscription.endpoint }, true]
+            });
         }}>Tester</ButtonSecondary
       >
     {:catch error}
