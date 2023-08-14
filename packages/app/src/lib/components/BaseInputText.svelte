@@ -28,6 +28,7 @@
 
       case 'datetime-local':
       case 'datetime': {
+        if (typeof val === 'string') return val;
         return format(val as Date, "yyyy-MM-dd'T'HH:mm");
       }
 

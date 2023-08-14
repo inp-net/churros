@@ -14,7 +14,7 @@
   import InputLinks from '$lib/components/InputLinks.svelte';
 
   export let afterGoTo: (article: typeof data['article']) => string = (article) =>
-    `/posts/${article.group.uid}/${article.uid}/edit`;
+    `/posts/${article.group.uid}/${article.uid}/`;
   export let hideEvent = false;
   export let data: {
     article: {
