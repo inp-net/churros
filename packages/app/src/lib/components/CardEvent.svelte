@@ -107,13 +107,13 @@
   });
 </script>
 
-<!-- Votre code HTML et CSS ici -->
-<section class="event">
+<article class="event">
   <section
+    class:has-picture={Boolean(pictureFile)}
     class="title"
     style="
-    color: {pictureFile ? '#fff' : '#000'};
-    background-image: {pictureFile
+    color: {pictureFile ? '#fff' : 'var(--text)'};
+    background-image: {picturefile
       ? `linear-gradient(rgb(0 0 0 / var(--alpha)), rgb(0 0 0 / var(--alpha))), url('${PUBLIC_STORAGE_URL}${pictureFile}') `
       : undefined}
   "
@@ -130,10 +130,11 @@
   </section>
   <section class="content {collapsed ? 'collapsed' : ''}">
     <section class="desc">
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html descriptionHtml}
     </section>
     <section class="schedule">
-      <h4>EVÈNEMENT</h4>
+      <h4 class="typo-field-label">Évènement</h4>
       <p>
         {Math.abs(startsAt.getTime() - now.getTime()) > 7 * 24 * 3600 * 1000
           ? formatDateTime(startsAt)
@@ -143,7 +144,7 @@
             })
               .replace('prochain ', '')
               .replace('à ', '')}
-        -
+        —
         {Math.abs(endsAt.getTime() - now.getTime()) > 7 * 24 * 3600 * 1000
           ? startsAt.getDate() === endsAt.getDate()
             ? format(endsAt, 'p', {
@@ -168,7 +169,7 @@
     <!-- Je vois pas pourquoi il y en aurait pas mais dans la db c'est possible -->
     {#if shotgunsStart}
       <section class="shotgun">
-        <h4>SHOTGUN</h4>
+        <h4 class="typo-field-label">Shotgun</h4>
         {#if shotgunning}
           <p>
             <strong>
@@ -230,7 +231,7 @@
       </section>
     {/if}
   </section>
-</section>
+</article>
 
 <style>
   .event {
@@ -245,9 +246,16 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    padding: 5em 0;
     background-position: center;
     background-size: cover;
+  }
+
+  .title:not(.has-picture) {
+    padding: 1rem 0;
+  }
+
+  .title.has-picture {
+    padding: 2rem 0;
   }
 
   .author {
@@ -265,6 +273,11 @@
   .content.collapsed {
     max-height: 0;
     margin: 0 1em;
+  }
+
+  .schedule,
+  .shotgun {
+    margin-top: 1rem;
   }
 
   .ticket-price {
@@ -285,7 +298,7 @@
   .chevron-up {
     padding: 0;
     margin: 0;
-    font-size: 2.5em;
+    font-size: 2rem;
     line-height: inherit;
     color: inherit;
     text-align: inherit;
