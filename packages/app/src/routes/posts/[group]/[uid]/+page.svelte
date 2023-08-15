@@ -44,7 +44,10 @@
     </p>
   </header>
 
-  <section class="body">{@html bodyHtml}</section>
+  <section class="body">
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+    {@html bodyHtml}
+  </section>
 
   {#if links.length > 0}
     <ul class="links nobullet">
@@ -67,8 +70,10 @@
   {/if}
 
   {#if event}
-    <h3>Evènement lié :</h3>
-    <CardEvent href="/events/{event.group.uid}/{event.uid}" canEdit={canEditEvent} {...event} />
+    <section class="event">
+      <h2>Évènement</h2>
+      <CardEvent href="/events/{event.group.uid}/{event.uid}" canEdit={canEditEvent} {...event} />
+    </section>
   {/if}
 </div>
 
@@ -92,5 +97,13 @@
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
+  }
+
+  .event h2 {
+    margin-bottom: 1rem;
+  }
+
+  .event > :global(article) {
+    max-width: 600px;
   }
 </style>
