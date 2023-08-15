@@ -284,7 +284,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@centraverse/api@workspace:packages/api"
   dependencies:
-    "@envelop/core": "npm:^2.6.0"
+    "@envelop/core": "npm:^4.0.0"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@pothos/core": "npm:3.33.0"
     "@pothos/plugin-complexity": "npm:^3.13.0"
@@ -624,18 +624,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@envelop/core@npm:^2.6.0":
-  version: 2.6.0
-  resolution: "@envelop/core@npm:2.6.0"
-  dependencies:
-    "@envelop/types": "npm:2.4.0"
-    tslib: "npm:2.4.0"
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: afd5fe4b6e2540b2572e399b2fbd6fa138b04420b6f379fdbe28ed668f634e6938433b89ad80e0355ce0cdeb6026daa1c866d6a893fd2fba0dac254f57c5e4c6
-  languageName: node
-  linkType: hard
-
 "@envelop/core@npm:^3.0.4":
   version: 3.0.6
   resolution: "@envelop/core@npm:3.0.6"
@@ -646,14 +634,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@envelop/types@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@envelop/types@npm:2.4.0"
+"@envelop/core@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@envelop/core@npm:4.0.0"
   dependencies:
-    tslib: "npm:^2.4.0"
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 79e0fe633c281d0bd89fa97bbbcffcfd135c05fb2440680d468d96712d54d4c8e6ae82cb22a87e1161b89de69140deff2d34c2fedb7449a05e666e34ba91a3ce
+    "@envelop/types": "npm:4.0.0"
+    tslib: "npm:^2.5.0"
+  checksum: 9c036f04677aea735ab75763085d7e34b9f7a06fc6415e97a078698c424da45da5e4f12addea7bb0279f72ddc4f7511da6fc3a3d64c74a4c28ee7fb87e8396d0
   languageName: node
   linkType: hard
 
@@ -663,6 +650,15 @@ __metadata:
   dependencies:
     tslib: "npm:^2.5.0"
   checksum: d648462dd64f151cf00b242d5f349594e0d8c6ff885ce8ffc22ae286337a493ffa7dfc95682fb1d7989d33ab09f9fff02fc70496168f8068f146d963cb2dc104
+  languageName: node
+  linkType: hard
+
+"@envelop/types@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@envelop/types@npm:4.0.0"
+  dependencies:
+    tslib: "npm:^2.5.0"
+  checksum: e66172ed392d07cb6c0a64937d60b1fad0bd0e446c30f1ed4f186c0758eaf41b1fa273941d455bb2accd8466c1826f35e74af06712a009df62907db4cee92440
   languageName: node
   linkType: hard
 
@@ -9262,13 +9258,6 @@ __metadata:
     ts-node-transpile-only: dist/bin-transpile.js
     ts-script: dist/bin-script-deprecated.js
   checksum: c4caff4b9bb7a3a44adbb64a38786ce4203c2ebceb8b5373b504d0826cf047f9f23105767a3e130e2f4078629f592a8332cfd8ee1061b57b7d159de49c7d8f6f
-  languageName: node
-  linkType: hard
-
-"tslib@npm:2.4.0":
-  version: 2.4.0
-  resolution: "tslib@npm:2.4.0"
-  checksum: 022a70708abbc3491734959effd9a87e6e0af5932b61d0c9f1d07b8b80cabbbfc9fc9e9c0fe86e5ab2d32d766ae30117edf00b02d170ff255ab7e60361a4b711
   languageName: node
   linkType: hard
 
