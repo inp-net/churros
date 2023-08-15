@@ -15,6 +15,7 @@
   export let insideProse = false;
   export let disabled = false;
   export let newTab = false;
+  export let tabindex = 0;
 </script>
 
 <svelte:element
@@ -34,7 +35,7 @@
   disabled={loading || disabled}
   on:click
   role="button"
-  tabindex="0"
+  {tabindex}
 >
   <div class="loading" class:visible={loading}>
     <IconSpinner />

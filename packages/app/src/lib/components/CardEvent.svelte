@@ -190,7 +190,7 @@
           <div class="places">
             {#each tickets as { uid, name, price }}
               <div class="link">
-                <ButtonSecondary href={`${href}/book/${uid}`}>
+                <ButtonSecondary tabindex={collapsed ? -1 : undefined} href={`${href}/book/${uid}`}>
                   <strong>
                     {name}
                     <span class="ticket-price">{price} €</span>
