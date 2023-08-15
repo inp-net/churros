@@ -32,7 +32,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@antfu/utils@npm:^0.7.2, @antfu/utils@npm:^0.7.4":
+"@antfu/utils@npm:^0.7.4, @antfu/utils@npm:^0.7.5":
   version: 0.7.6
   resolution: "@antfu/utils@npm:0.7.6"
   checksum: ccc989adbebeb50c07eae0077ed0045c362bd588a3dc1d4ebf16c8721488f571d7fd904e749f7cd9bdc89b5d13ebcca5521ab984287cdc55da2d6ec1b6f80a06
@@ -302,7 +302,7 @@ __metadata:
     "@types/cli-progress": "npm:^3.11.0"
     "@types/cookie": "npm:^0.5.1"
     "@types/cors": "npm:^2.8.13"
-    "@types/cron": "npm:^2.0.1"
+    "@types/cron": "npm:^2.4.0"
     "@types/express": "npm:^4.17.17"
     "@types/ldapjs": "npm:^2.2.5"
     "@types/multer": "npm:^1.4.7"
@@ -311,7 +311,7 @@ __metadata:
     "@types/slug": "npm:^5.0.3"
     "@types/web-push": "npm:^3.3.2"
     arborist: "workspace:^"
-    argon2: "npm:^0.30.3"
+    argon2: "npm:^0.31.0"
     bunyan: "npm:^1.8.15"
     cli-progress: "npm:^3.12.0"
     cors: "npm:^2.8.5"
@@ -391,7 +391,7 @@ __metadata:
     tslib: "npm:^2.6.1"
     typescript: "npm:^5.1.6"
     ua-parser-js: "npm:^1.0.35"
-    unplugin-icons: "npm:^0.14.15"
+    unplugin-icons: "npm:^0.16.5"
     vite: "npm:^4.4.9"
     xss: "npm:^1.0.14"
     zod: "npm:^3.22.0"
@@ -1232,7 +1232,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify/utils@npm:^2.0.3":
+"@iconify/utils@npm:^2.1.7":
   version: 2.1.7
   resolution: "@iconify/utils@npm:2.1.7"
   dependencies:
@@ -1319,7 +1319,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/node-pre-gyp@npm:^1.0.10":
+"@mapbox/node-pre-gyp@npm:^1.0.11":
   version: 1.0.11
   resolution: "@mapbox/node-pre-gyp@npm:1.0.11"
   dependencies:
@@ -1971,13 +1971,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cron@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@types/cron@npm:2.0.1"
+"@types/cron@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@types/cron@npm:2.4.0"
   dependencies:
-    "@types/luxon": "npm:*"
-    "@types/node": "npm:*"
-  checksum: a71a30761f9f82557e670348e59020bfd64288a69419b7ca1bb2352bc1f3e7697c09cf7043858ce82331791d684d373ffbb7248b8d4750fb83761bcfe620f494
+    cron: "npm:*"
+  checksum: 600535525722dfa911f6696ec7a609522e1ca3defd1edc5564ebc7f48b0120922a9f25f0c5c16c3572b8ce60bd74a279d5a2242347f16c0fe54a1e7b3f9cdce9
   languageName: node
   linkType: hard
 
@@ -2087,13 +2086,6 @@ __metadata:
   version: 4.14.197
   resolution: "@types/lodash@npm:4.14.197"
   checksum: 3e2b11acbb2ed88123127757bba04c193682c9cb4cfa644432cb7c4eccb7799fd2d651ca542391916fe3e87c01cee5f15e4b7772a1a92d16b95cf4bd70074e6c
-  languageName: node
-  linkType: hard
-
-"@types/luxon@npm:*":
-  version: 3.3.1
-  resolution: "@types/luxon@npm:3.3.1"
-  checksum: bcc7ff0a8a5e677715d72c00d285ec93a83df6952ef5f41eca39a6ca57757c7066f5445c15bafca2a03adac2b28ac94bc63de4452f1cc5ce589f8aa7e8ac45e1
   languageName: node
   linkType: hard
 
@@ -2684,14 +2676,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"argon2@npm:^0.30.3":
-  version: 0.30.3
-  resolution: "argon2@npm:0.30.3"
+"argon2@npm:^0.31.0":
+  version: 0.31.0
+  resolution: "argon2@npm:0.31.0"
   dependencies:
-    "@mapbox/node-pre-gyp": "npm:^1.0.10"
+    "@mapbox/node-pre-gyp": "npm:^1.0.11"
     "@phc/format": "npm:^1.0.0"
-    node-addon-api: "npm:^5.0.0"
-  checksum: d179215eb42a6caee3c21902268d8dd5bfadd1dbd4a6e2d88247624a1ff92f878c797e5bb7aaa8b741aa43a14953c5a1bab387ae4cdc8dac6b56ef4f0045586a
+    node-addon-api: "npm:^7.0.0"
+  checksum: bd419b7b4817740227af01b1a2b2883e4d7f03e9e712676d31650d17e8f0a0afeb7a09133c035a1b421ecaebed6917fde7841781326ffb4dbfc9678ef10a50c3
   languageName: node
   linkType: hard
 
@@ -3535,6 +3527,15 @@ __metadata:
   version: 1.1.1
   resolution: "create-require@npm:1.1.1"
   checksum: 9db2a6d1a6e69929e4b18045910289a17543f9f07ba4d6027e9c3fdc4c985998cd4b6738a45675ab870287483832332d5aa75a1612c87230149d1fba568ae86a
+  languageName: node
+  linkType: hard
+
+"cron@npm:*":
+  version: 2.4.1
+  resolution: "cron@npm:2.4.1"
+  dependencies:
+    luxon: "npm:^3.2.1"
+  checksum: af7384f250962fb7674fbf3d9c891dd6944db61a0f48a0ee03c6949411c8e63c29122c1d05c7a0eed8547ee307dca43ff81dac45f2326e75049471e12e960d85
   languageName: node
   linkType: hard
 
@@ -5975,7 +5976,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kolorist@npm:^1.6.0, kolorist@npm:^1.8.0":
+"kolorist@npm:^1.8.0":
   version: 1.8.0
   resolution: "kolorist@npm:1.8.0"
   checksum: bb171d482fe21927421e7e7ac1828e252edfa43b1cc6a6dac65a963f8cb71b3eec50aa6cf8be920d1b386766b23d1e0c1ca062fb0102b22883b148787255ca20
@@ -6088,7 +6089,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"local-pkg@npm:^0.4.2, local-pkg@npm:^0.4.3":
+"local-pkg@npm:^0.4.3":
   version: 0.4.3
   resolution: "local-pkg@npm:0.4.3"
   checksum: 1f8d9b1e8ad319acbbeb5d74d53d808d26ac95111e4182a26dd9c826e1663eea48bbb6b84ae76d1b915c391259bd6d3315186c7a1a9b782c141c96786645eab7
@@ -6257,6 +6258,13 @@ __metadata:
   version: 10.0.1
   resolution: "lru-cache@npm:10.0.1"
   checksum: 2a029f0067f9cc179c276af53f6827234bda6c799d003e07586eeaecff23bcebbb87c7985d1687c5be1ab5fd42d64327ee06a465d7905bfcb7ad49343793a0a4
+  languageName: node
+  linkType: hard
+
+"luxon@npm:^3.2.1":
+  version: 3.4.0
+  resolution: "luxon@npm:3.4.0"
+  checksum: 2eb3eeaa891380db61c611a9fa42d0bee77891df67edf479b0d3621782a538acdf1eda9ff11d3bfc9e30edc5edeec73d182952ac6489e6c39e48fbf21e5e5490
   languageName: node
   linkType: hard
 
@@ -7066,12 +7074,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^5.0.0":
-  version: 5.1.0
-  resolution: "node-addon-api@npm:5.1.0"
+"node-addon-api@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "node-addon-api@npm:7.0.0"
   dependencies:
     node-gyp: "npm:latest"
-  checksum: c5b513fd922614490d85f9cfb4325388b5a16d44258d74187f741fc80ef675d8bebae775e71ff1ef457b04ad242cb24dc101531b01762a47e7feedb48a7a91c8
+  checksum: 2c876ca920f92555db2ac387680a16894e192b10636cc7f5fe7de7460b49f8432ac0548849303c6d98d02a5492deeec085da7b57eabe2c6c1d0ed5ea95cdacbb
   languageName: node
   linkType: hard
 
@@ -9469,24 +9477,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unplugin-icons@npm:^0.14.15":
-  version: 0.14.15
-  resolution: "unplugin-icons@npm:0.14.15"
+"unplugin-icons@npm:^0.16.5":
+  version: 0.16.5
+  resolution: "unplugin-icons@npm:0.16.5"
   dependencies:
     "@antfu/install-pkg": "npm:^0.1.1"
-    "@antfu/utils": "npm:^0.7.2"
-    "@iconify/utils": "npm:^2.0.3"
+    "@antfu/utils": "npm:^0.7.5"
+    "@iconify/utils": "npm:^2.1.7"
     debug: "npm:^4.3.4"
-    kolorist: "npm:^1.6.0"
-    local-pkg: "npm:^0.4.2"
-    unplugin: "npm:^1.0.1"
+    kolorist: "npm:^1.8.0"
+    local-pkg: "npm:^0.4.3"
+    unplugin: "npm:^1.3.2"
   peerDependencies:
-    "@svgr/core": ">=5.5.0"
-    "@vue/compiler-sfc": ^3.0.2
+    "@svgr/core": ">=7.0.0"
+    "@svgx/core": ^1.0.1
+    "@vue/compiler-sfc": ^3.0.2 || ^2.7.0
     vue-template-compiler: ^2.6.12
     vue-template-es2015-compiler: ^1.9.0
   peerDependenciesMeta:
     "@svgr/core":
+      optional: true
+    "@svgx/core":
       optional: true
     "@vue/compiler-sfc":
       optional: true
@@ -9494,11 +9505,11 @@ __metadata:
       optional: true
     vue-template-es2015-compiler:
       optional: true
-  checksum: 375e5b13d073e8e259d524aefec8095ea4d2444498a9ac6f5f885f06b4201f12544ccd02e384c13c40433f7211c2385640f578d5292fd210fb1f480aa95488b8
+  checksum: 910af8a55ebd79b71b270886234a7daf3db96fe5a61ba58a32384ebe3b4b8ff5f670a611bd7dfdd0ef6d39c1e5eb40c772a469a5cab00fdb53e5daf02293f56e
   languageName: node
   linkType: hard
 
-"unplugin@npm:^1.0.1":
+"unplugin@npm:^1.3.2":
   version: 1.4.0
   resolution: "unplugin@npm:1.4.0"
   dependencies:
