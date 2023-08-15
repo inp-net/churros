@@ -253,7 +253,12 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
       schoolId: (await prisma.school.findUniqueOrThrow({ where: { uid: ldapGroup.ecole.o } })).id,
       selfJoinable: false,
       studentAssociationId: null,
-      type: ldapGroup.activite === 'liste' ? 'List' : typeClub[ldapGroup.typeClub ?? 'club'],
+      type:
+        ldapGroup.activite === Ldap.Activite.Bureaux
+          ? 'StudentAssociationSection'
+          : ldapGroup.activite === Ldap.Activite.Liste
+          ? 'List'
+          : typeClub[ldapGroup.typeClub ?? 'club'],
       uid: ldapGroup.cn,
     },
   });
