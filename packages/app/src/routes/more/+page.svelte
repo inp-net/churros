@@ -16,10 +16,10 @@
     {
       href = '',
       logo = undefined,
-    }: { href?: string; logo?: undefined | typeof SvelteComponent | string }
+    }: { href?: string; logo?: undefined | typeof SvelteComponent<any> | string }
   ): {
     name: string;
-    logoFile: string | typeof SvelteComponent;
+    logoFile: string | typeof SvelteComponent<any>;
     descriptionHtml: string;
     href: string;
   } {
@@ -89,6 +89,7 @@
     flex-direction: column;
     height: 100%;
   }
+
   h1 {
     margin-bottom: 2rem;
     text-align: center;
@@ -100,15 +101,16 @@
     gap: 1rem;
     justify-content: center;
   }
+
   footer {
-    font-weight: normal;
-    font-size: 0.7em;
-    text-align: center;
-    margin-top: 3rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     justify-self: flex-end;
+    margin-top: 3rem;
+    font-size: 0.7em;
+    font-weight: normal;
+    text-align: center;
   }
 
   footer a {

@@ -2,7 +2,7 @@
   import type { SvelteComponent } from 'svelte';
   import IconSpinner from '~icons/mdi/loading';
 
-  export let icon: typeof SvelteComponent | undefined = undefined;
+  export let icon: typeof SvelteComponent<any> | undefined = undefined;
   export let loading = false;
   export let circle = false;
   export let id = '';
@@ -33,6 +33,8 @@
   {...$$restProps}
   disabled={loading || disabled}
   on:click
+  role="button"
+  tabindex="0"
 >
   <div class="loading" class:visible={loading}>
     <IconSpinner />

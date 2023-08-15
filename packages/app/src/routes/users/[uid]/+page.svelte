@@ -24,7 +24,7 @@
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import { goto } from '$app/navigation';
 
-  const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
+  const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
     instagram: IconInstagram,
     twitter: IconTwitter,
@@ -38,7 +38,7 @@
 
   type Nesting = [string, Nesting[]];
   $: familyNesting = JSON.parse(data.user.familyTree.nesting) as Nesting;
-  type UserTree = typeof data.user.familyTree.users[number] & { children: UserTree[] };
+  type UserTree = (typeof data.user.familyTree.users)[number] & { children: UserTree[] };
   function makeFamilyTree(nesting: Nesting): UserTree {
     const findUser = (uid: string) => data.user.familyTree.users.find((u) => u.uid === uid);
 

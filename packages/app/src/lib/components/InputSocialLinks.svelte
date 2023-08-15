@@ -19,10 +19,12 @@
     'discord',
     'snapchat',
   ] as const;
-  export let initial: Array<{ name: typeof names[number]; value: string }> = names.map((name) => ({
-    name,
-    value: '',
-  }));
+  export let initial: Array<{ name: (typeof names)[number]; value: string }> = names.map(
+    (name) => ({
+      name,
+      value: '',
+    })
+  );
   export let value: typeof initial = initial;
   export let required = false;
   export let label: string;
@@ -31,7 +33,7 @@
     return value.findIndex(({ name: n }) => n === name);
   }
 
-  const NAME_TO_ICON: Record<typeof names[number], typeof SvelteComponent> = {
+  const NAME_TO_ICON: Record<(typeof names)[number], typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
     instagram: IconInstagram,
     twitter: IconTwitter,
@@ -46,7 +48,7 @@
     name,
   }: {
     value: string;
-    name: typeof names[number];
+    name: (typeof names)[number];
   }): string {
     if (!url) return '';
     switch (name) {
@@ -75,7 +77,7 @@
     name,
   }: {
     value: string;
-    name: typeof names[number];
+    name: (typeof names)[number];
   }): string {
     username = username.trim();
     if (username.startsWith('@')) username = username.replace(/^@/, '');
