@@ -3,7 +3,7 @@
   import ArticleCard from '$lib/components/CardArticle.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
-  import { pageQuery } from './+page';
+  import { _pageQuery } from './+page';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import { me } from '$lib/session';
@@ -20,7 +20,7 @@
     try {
       loading = true;
       const { homepage } = await $zeus.query({
-        homepage: [{ after: data.homepage.pageInfo.endCursor }, pageQuery],
+        homepage: [{ after: data.homepage.pageInfo.endCursor }, _pageQuery],
       });
       data.homepage.pageInfo = homepage.pageInfo;
       data.homepage.edges = [...data.homepage.edges, ...homepage.edges];

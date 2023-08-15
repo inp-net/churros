@@ -18,7 +18,7 @@ import { GraphQLError, Kind } from 'graphql';
  * Maps database ID prefixes to GraphQL type names. Please add new types here as they are added to
  * the schema, by running node scripts/update-id-prefix-to-typename-map.js.
  */
-/* @generated from schema by file:///home/ewen/projects/centraverse/packages/api/build/scripts/update-id-prefix-to-typename-map.js */ export const ID_PREFIXES_TO_TYPENAMES =
+/* @generated from schema by file:///home/whidix/Documents/centraverse/packages/api/build/scripts/update-id-prefix-to-typename-map.js */ export const ID_PREFIXES_TO_TYPENAMES =
   {
     u: 'User',
     godparentreq: 'GodparentRequest',

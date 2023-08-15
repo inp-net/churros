@@ -1,6 +1,6 @@
 import { page } from '$app/stores';
 import { PUBLIC_API_URL } from '$env/static/public';
-import type { LayoutServerData } from '.svelte-kit/types/src/routes/$types';
+import type { LayoutServerData } from '../../.svelte-kit/types/src/routes/$types';
 import { error, type LoadEvent } from '@sveltejs/kit';
 import {
   Thunder,
