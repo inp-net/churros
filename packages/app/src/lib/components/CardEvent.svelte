@@ -7,7 +7,7 @@
     intervalToDuration,
     isFuture,
     isPast,
-    format
+    format,
   } from 'date-fns';
   import { formatDateTime } from '$lib/dates';
   import { fr } from 'date-fns/locale';
@@ -150,7 +150,7 @@
           ? formatDateTime(startsAt)
           : formatRelative(startsAt, now, {
               locale: fr,
-              weekStartsOn: 1
+              weekStartsOn: 1,
             })
               .replace('prochain ', '')
               .replace('à ', '')}
@@ -159,17 +159,17 @@
           ? startsAt.getDate() === endsAt.getDate()
             ? format(endsAt, 'p', {
                 locale: fr,
-                weekStartsOn: 1
+                weekStartsOn: 1,
               })
             : formatDateTime(endsAt)
           : startsAt.getDate() === endsAt.getDate()
           ? format(endsAt, 'p', {
               locale: fr,
-              weekStartsOn: 1
+              weekStartsOn: 1,
             })
           : formatRelative(endsAt, now, {
               locale: fr,
-              weekStartsOn: 1
+              weekStartsOn: 1,
             })
               .replace('prochain ', '')
               .replace('à ', '')}
@@ -209,16 +209,16 @@
               : Math.abs(shotgunsStart.getTime() - now.getTime()) > 15 * 60 * 1000
               ? formatRelative(shotgunsStart, now, {
                   locale: fr,
-                  weekStartsOn: 1
+                  weekStartsOn: 1,
                 }).replace('prochain ', '')
               : (shotgunsStart.getTime() - now.getTime() > 0 ? 'dans ' : 'il y a ') +
                 formatDuration(
                   intervalToDuration({
                     start: now,
-                    end: new Date(shotgunsStart.getTime())
+                    end: new Date(shotgunsStart.getTime()),
                   }),
                   {
-                    locale: fr
+                    locale: fr,
                   }
                 )}
           </p>

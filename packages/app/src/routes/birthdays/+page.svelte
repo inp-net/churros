@@ -7,7 +7,7 @@
 
   export let data: PageData;
 
-  const groupedByBirthday: Record<string, Array<typeof data['birthdays'][number]>> = {};
+  const groupedByBirthday: Record<string, Array<(typeof data)['birthdays'][number]>> = {};
 
   $: {
     for (const user of data.birthdays) {

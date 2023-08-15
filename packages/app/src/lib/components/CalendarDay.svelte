@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { isSameDay } from "date-fns";
+  import { isSameDay } from 'date-fns';
 
   export let day: Date;
   export let showMonth = false;
@@ -46,7 +46,7 @@
   .calendar-day.today {
     border-color: var(--primary-border);
 
-    --text: var(--primary-border)
+    --text: var(--primary-border);
   }
 
   .day-name {
