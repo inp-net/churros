@@ -1,9 +1,11 @@
 <script lang="ts">
+    import { isSameDay } from "date-fns";
+
   export let day: Date;
   export let showMonth = false;
 </script>
 
-<div class="calendar-day">
+<div class="calendar-day" class:today={isSameDay(day, new Date())}>
   <span class="day-name"
     >{day
       .toLocaleDateString('default', {
@@ -27,16 +29,24 @@
   .calendar-day {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
     width: 4rem;
     height: 4rem;
-    border: var(--border-block) solid black;
+    color: var(--text);
+    border: var(--border-block) solid var(--border);
     border-radius: var(--radius-block);
 
     > * {
       line-height: 1;
     }
+  }
+
+  .calendar-day.today {
+    border-color: var(--primary-border);
+
+    --text: var(--primary-border)
   }
 
   .day-name {

@@ -1,18 +1,17 @@
 <script lang="ts">
   import CalendarDay from '../../../../lib/components/CalendarDay.svelte';
   import { PUBLIC_FOY_GROUPS, PUBLIC_STORAGE_URL } from '$env/static/public';
-  import IconChevronUp from '~icons/mdi/chevron-up';
-  import IconChevronDown from '~icons/mdi/chevron-down';
   import IconBackward from '~icons/mdi/chevron-left';
   import IconGear from '~icons/mdi/cog-outline';
   import IconForward from '~icons/mdi/chevron-right';
+  import IconCalendarPlus from '~icons/mdi/calendar-plus';
   import { addDays, startOfWeek, isSameDay, previousMonday, nextMonday, formatISO } from 'date-fns';
   import type { PageData } from './$types';
   import { me } from '$lib/session';
-  import GhostButton from '$lib/components/ButtonGhost.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { isDark } from '$lib/theme';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import CardEvent from '$lib/components/CardEvent.svelte';
 
   export let data: PageData;
 
@@ -25,9 +24,7 @@
     .fill(0)
     .map((_, i) => addDays(startOfWeek(data.shownWeek, { weekStartsOn: 1 }), i));
 
-  let expandedEventUid: string | undefined = undefined;
-  const expanded = (event: { uid: string }, expandedEventUid: string | undefined) =>
-    expandedEventUid === event.uid;
+  let expandedEventId: string | undefined = undefined;
 
   const canChangeBarWeek = Boolean(
     $me?.admin ||
@@ -36,6 +33,9 @@
 </script>
 
 <div class="content">
+  <section class="add-to-calendar">
+    <ButtonSecondary href="../feed" icon={IconCalendarPlus}>Ajouter au calendrier</ButtonSecondary>
+  </section>
   <NavigationTabs
     tabs={[
       { name: 'Semaine', href: '.' },
@@ -51,8 +51,8 @@
     </a>
   </div>
 
-  <section class="bar-week">
-    {#if barWeek.groups.length > 0}
+  {#if barWeek.groups.length > 0}
+    <section class="bar-week">
       <div class="description">
         <p>Semaine de bar de</p>
       </div>
@@ -72,8 +72,8 @@
       {#if canChangeBarWeek}
         <ButtonSecondary href="/bar-weeks/" icon={IconGear}>Gérer</ButtonSecondary>
       {/if}
-    {/if}
-  </section>
+    </section>
+  {/if}
 
   <div class="days">
     {#each daysOfWeek as day}
@@ -84,34 +84,12 @@
         />
         <div class="events-of-day">
           {#each events.filter((e) => isSameDay(e.startsAt, day)) as event}
-            <article class="event-of-day" class:expanded={expanded(event, expandedEventUid)}>
-              <div
-                class="header"
-                style:background-image="linear-gradient(#000000aa, #000000aa), url({event.pictureFile
-                  ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                    `${PUBLIC_STORAGE_URL}${event.pictureFile}`
-                  : 'https://picsum.photos/400/400'})"
-              >
-                <a href="/events/{event.group.uid}/{event.uid}">
-                  <h2>{event.title}</h2>
-                </a>
-                <GhostButton
-                  darkShadow
-                  on:click={() => {
-                    expandedEventUid = expanded(event, expandedEventUid) ? undefined : event.uid;
-                  }}
-                >
-                  {#if expanded(event, expandedEventUid)}
-                    <IconChevronUp color="white" />
-                  {:else}
-                    <IconChevronDown color="white" />
-                  {/if}
-                </GhostButton>
-              </div>
-              <div class="description">
-                {@html event.descriptionHtml}
-              </div>
-            </article>
+            <CardEvent
+              collapsible
+              bind:expandedEventId
+              href="/events/{event.group.uid}/{event.uid}"
+              {...event}
+            />
           {/each}
         </div>
       </section>
@@ -120,32 +98,22 @@
 </div>
 
 <style lang="scss">
-  h1 {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0.5rem;
-    text-align: center;
-  }
-
   .content {
-    padding-bottom: 4rem;
+    padding: 0 0.5rem 4rem;
+    max-width: 600px;
+    margin: 0 auto;
   }
-
-  .buttons {
+  .add-to-calendar {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
     justify-content: center;
+    margin: 0.5rem 0;
   }
 
   .navigation {
     position: fixed;
     right: 0;
 
-    // font-size: 1.5em;
+    z-index: 10;
     bottom: 2rem;
     left: 0;
     display: flex;
@@ -157,15 +125,6 @@
     color: var(--text);
     background: var(--bg);
   }
-
-  .manage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: -1.5rem;
-    margin-bottom: 1rem;
-  }
-
   .bar-week {
     display: flex;
     flex-direction: column;
@@ -201,42 +160,20 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: fit-content;
+    min-width: calc(min(100%, 600px));
+    margin: 0 auto;
   }
 
   .day {
     display: flex;
     gap: 1rem;
+    width: fit-content;
 
     .events-of-day {
-      width: 100%;
-
-      .event-of-day {
-        border-radius: var(--radius-block);
-
-        .header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0.5rem 1.5rem;
-          background-size: cover;
-        }
-
-        .header * {
-          color: white;
-        }
-
-        .header a {
-          display: inline-block;
-        }
-
-        .description {
-          overflow: hidden;
-        }
-
-        &:not(.expanded) .description {
-          height: 0;
-        }
-      }
+      display: flex;
+      flex-flow: column wrap;
+      gap: 2rem;
     }
   }
 </style>

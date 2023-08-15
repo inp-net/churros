@@ -7,7 +7,7 @@
     intervalToDuration,
     isFuture,
     isPast,
-    format,
+    format
   } from 'date-fns';
   import { formatDateTime } from '$lib/dates';
   import { fr } from 'date-fns/locale';
@@ -18,7 +18,9 @@
   import { goto } from '$app/navigation';
 
   export let collapsible = false;
-  export let collapsed = collapsible;
+  export let expandedEventId: string | undefined = undefined;
+  export let id: string;
+  $: collapsed = collapsible && expandedEventId !== id;
   export let pictureFile: string;
   export let title: string;
   export let descriptionHtml: string;
@@ -131,7 +133,7 @@
       <button
         class="expand-collapse chevron-up {collapsed ? 'collapsed' : ''}"
         on:click={() => {
-          collapsed = !collapsed;
+          expandedEventId = collapsed ? id : '';
         }}><ChevronUp /></button
       >
     {/if}
@@ -148,7 +150,7 @@
           ? formatDateTime(startsAt)
           : formatRelative(startsAt, now, {
               locale: fr,
-              weekStartsOn: 1,
+              weekStartsOn: 1
             })
               .replace('prochain ', '')
               .replace('à ', '')}
@@ -157,17 +159,17 @@
           ? startsAt.getDate() === endsAt.getDate()
             ? format(endsAt, 'p', {
                 locale: fr,
-                weekStartsOn: 1,
+                weekStartsOn: 1
               })
             : formatDateTime(endsAt)
           : startsAt.getDate() === endsAt.getDate()
           ? format(endsAt, 'p', {
               locale: fr,
-              weekStartsOn: 1,
+              weekStartsOn: 1
             })
           : formatRelative(endsAt, now, {
               locale: fr,
-              weekStartsOn: 1,
+              weekStartsOn: 1
             })
               .replace('prochain ', '')
               .replace('à ', '')}
@@ -207,16 +209,16 @@
               : Math.abs(shotgunsStart.getTime() - now.getTime()) > 15 * 60 * 1000
               ? formatRelative(shotgunsStart, now, {
                   locale: fr,
-                  weekStartsOn: 1,
+                  weekStartsOn: 1
                 }).replace('prochain ', '')
               : (shotgunsStart.getTime() - now.getTime() > 0 ? 'dans ' : 'il y a ') +
                 formatDuration(
                   intervalToDuration({
                     start: now,
-                    end: new Date(shotgunsStart.getTime()),
+                    end: new Date(shotgunsStart.getTime())
                   }),
                   {
-                    locale: fr,
+                    locale: fr
                   }
                 )}
           </p>
@@ -245,6 +247,7 @@
 <style>
   .event {
     overflow: hidden;
+    cursor: pointer;
     border-radius: var(--radius-block);
     box-shadow: var(--primary-shadow);
 
@@ -253,18 +256,32 @@
 
   .title {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-evenly;
+
+    /* ça sert à ce que la hauteur ne varie pas selon si c'est collapsible ou pas */
+    min-height: 5rem;
     background-position: center;
     background-size: cover;
   }
 
+  .title-link {
+    padding-left: 1em;
+    overflow: hidden;
+  }
+
+  .title-text {
+    line-height: 1.1;
+    text-align: center;
+  }
+
   .title:not(.has-picture) {
-    padding: 1rem 0;
+    padding: 0.75rem 1rem;
   }
 
   .title.has-picture {
-    padding: 2rem 0;
+    padding: 1rem;
   }
 
   .author {
@@ -323,20 +340,5 @@
 
   .chevron-up.collapsed {
     transform: rotate(180deg);
-  }
-
-  .title-link {
-    align-self: start;
-    padding-left: 1em;
-    overflow: hidden;
-  }
-
-  .title-text {
-    overflow: hidden;
-
-    /* ça sert à ce que la hauteur ne varie pas selon si c'est collapsible ou pas */
-    line-height: 3em;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 </style>
