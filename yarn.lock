@@ -284,7 +284,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@centraverse/api@workspace:packages/api"
   dependencies:
-    "@envelop/core": "npm:^2.0.0"
+    "@envelop/core": "npm:^2.6.0"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@pothos/core": "npm:3.33.0"
     "@pothos/plugin-complexity": "npm:^3.13.0"
@@ -319,7 +319,6 @@ __metadata:
     dataloader: "npm:^2.2.2"
     date-fns: "npm:^2.30.0"
     dichotomid: "npm:^0.0.3"
-    envelop-no-batched-queries: "npm:^3.0.2"
     express: "npm:^4.18.2"
     graphql: "npm:^16.3.0"
     graphql-scalars: "npm:^1.22.2"
@@ -625,7 +624,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@envelop/core@npm:^2.0.0":
+"@envelop/core@npm:^2.6.0":
   version: 2.6.0
   resolution: "@envelop/core@npm:2.6.0"
   dependencies:
@@ -4003,17 +4002,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"envelop-no-batched-queries@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "envelop-no-batched-queries@npm:3.0.2"
-  dependencies:
-    graphql-no-batched-queries: "npm:2.0.2"
-  peerDependencies:
-    "@envelop/core": ^2.0.0
-  checksum: e0a94a1af174f83f7883d2c1a3337438801814e043916b7d2d99612574c8dcd1eee52ff46ddfb49257916b5dae305c845521be6942b6221dd49920af48c785a4
-  languageName: node
-  linkType: hard
-
 "err-code@npm:^2.0.2":
   version: 2.0.3
   resolution: "err-code@npm:2.0.3"
@@ -5099,15 +5087,6 @@ __metadata:
   dependencies:
     graphql: "npm:15.4.0"
   checksum: b7c1af5ad18d79dd67b01c1620c099a44b9395da9b317c44213464776fff698d86313f9af78de7c8c0a5ac3ac625db0061f7601316ed9d3ba0e6d0ae1d45e892
-  languageName: node
-  linkType: hard
-
-"graphql-no-batched-queries@npm:2.0.2":
-  version: 2.0.2
-  resolution: "graphql-no-batched-queries@npm:2.0.2"
-  peerDependencies:
-    graphql: ^16.3.0
-  checksum: a032438ff47b9976e41864304efa15bdcfa6c3113b2992fdeb448ca050cc5446e192c85bd63225299194ae21055b544a34a61a2803f7c20dc1ad3496cf521abb
   languageName: node
   linkType: hard
 

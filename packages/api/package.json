@@ -1,7 +1,7 @@
 {
   "name": "@centraverse/api",
   "dependencies": {
-    "@envelop/core": "^2.0.0",
+    "@envelop/core": "^2.6.0",
     "@graphql-yoga/node": "^3.9.1",
     "@pothos/core": "3.33.0",
     "@pothos/plugin-complexity": "^3.13.0",
@@ -21,7 +21,6 @@
     "dataloader": "^2.2.2",
     "date-fns": "^2.30.0",
     "dichotomid": "^0.0.3",
-    "envelop-no-batched-queries": "^3.0.2",
     "express": "^4.18.2",
     "graphql": "^16.3.0",
     "graphql-scalars": "^1.22.2",
