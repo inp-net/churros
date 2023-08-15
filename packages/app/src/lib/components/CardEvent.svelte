@@ -15,6 +15,7 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import IconGear from '~icons/mdi/gear-outline';
   import ChevronUp from '~icons/mdi/chevron-up';
+  import { goto } from '$app/navigation';
 
   export let collapsible = false;
   export let collapsed = collapsible;
@@ -105,15 +106,25 @@
   onDestroy(() => {
     clearInterval(interval); // Nettoyer l'intervalle lorsque le composant est détruit
   });
+
+  async function gotoEventIfNotLink(e: MouseEvent | KeyboardEvent) {
+    if (!(e.target instanceof HTMLElement)) return;
+    if (e.target.closest('a, button')) return;
+
+    if (e instanceof MouseEvent || (e instanceof KeyboardEvent && e.key === 'Enter')) 
+      await goto(href);
+    
+  }
 </script>
 
-<article class="event">
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<article class="event" on:click={gotoEventIfNotLink} on:keypress={gotoEventIfNotLink}>
   <section
     class:has-picture={Boolean(pictureFile)}
     class="title"
     style="
     color: {pictureFile ? '#fff' : 'var(--text)'};
-    background-image: {picturefile
+    background-image: {pictureFile
       ? `linear-gradient(rgb(0 0 0 / var(--alpha)), rgb(0 0 0 / var(--alpha))), url('${PUBLIC_STORAGE_URL}${pictureFile}') `
       : undefined}
   "
@@ -121,7 +132,7 @@
     <a class="title-link" {href}><h2 class="title-text">{title}</h2></a>
     {#if collapsible}
       <button
-        class="chevron-up {collapsed ? 'collapsed' : ''}"
+        class="expand-collapse chevron-up {collapsed ? 'collapsed' : ''}"
         on:click={() => {
           collapsed = !collapsed;
         }}><ChevronUp /></button
