@@ -537,7 +537,7 @@
               deleteEvent: [{ id: event.id }, true],
             });
             confirmingDelete = false;
-            await goto('/week/');
+            await goto('/');
           }}
           danger>Oui</ButtonSecondary
         >
