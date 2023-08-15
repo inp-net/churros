@@ -284,7 +284,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@centraverse/api@workspace:packages/api"
   dependencies:
-    "@envelop/core": "npm:^3.0.6"
+    "@envelop/core": "npm:^2.0.0"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@pothos/core": "npm:3.33.0"
     "@pothos/plugin-complexity": "npm:^3.13.0"
@@ -321,7 +321,7 @@ __metadata:
     dichotomid: "npm:^0.0.3"
     envelop-no-batched-queries: "npm:^3.0.2"
     express: "npm:^4.18.2"
-    graphql: "npm:^16.8.0"
+    graphql: "npm:^16.3.0"
     graphql-scalars: "npm:^1.22.2"
     graphql-yoga: "npm:^3.9.1"
     helmet: "npm:^6.2.0"
@@ -367,7 +367,7 @@ __metadata:
     date-fns: "npm:^2.30.0"
     dotenv: "npm:^16.3.1"
     extract-files: "npm:^13.0.0"
-    graphql: "npm:^16.8.0"
+    graphql: "npm:^16.3.0"
     graphql-zeus: "npm:^5.3.0"
     html-to-text: "npm:^9.0.5"
     ics: "npm:^3.4.0"
@@ -375,7 +375,6 @@ __metadata:
     is-dark-color: "npm:^1.2.0"
     json-to-csv-in-browser: "npm:^1.0.8"
     lodash: "npm:^4.17.21"
-    modern-svelte-qr-scanner: "npm:1.6.2"
     nanoid: "npm:^4.0.2"
     party-js: "npm:^2.2.0"
     qr-code-generator-lib: "npm:^1.0.1"
@@ -626,13 +625,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@envelop/core@npm:^3.0.4, @envelop/core@npm:^3.0.6":
+"@envelop/core@npm:^2.0.0":
+  version: 2.6.0
+  resolution: "@envelop/core@npm:2.6.0"
+  dependencies:
+    "@envelop/types": "npm:2.4.0"
+    tslib: "npm:2.4.0"
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: afd5fe4b6e2540b2572e399b2fbd6fa138b04420b6f379fdbe28ed668f634e6938433b89ad80e0355ce0cdeb6026daa1c866d6a893fd2fba0dac254f57c5e4c6
+  languageName: node
+  linkType: hard
+
+"@envelop/core@npm:^3.0.4":
   version: 3.0.6
   resolution: "@envelop/core@npm:3.0.6"
   dependencies:
     "@envelop/types": "npm:3.0.2"
     tslib: "npm:^2.5.0"
   checksum: de3e573c8b15f92fe69b2ad939a68dc50432c5b14473b4aba5089554c805c04f53cc0690daa04b8197e1333c56c437ce377174719d66878af6bd5c73ca25c160
+  languageName: node
+  linkType: hard
+
+"@envelop/types@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@envelop/types@npm:2.4.0"
+  dependencies:
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 79e0fe633c281d0bd89fa97bbbcffcfd135c05fb2440680d468d96712d54d4c8e6ae82cb22a87e1161b89de69140deff2d34c2fedb7449a05e666e34ba91a3ce
   languageName: node
   linkType: hard
 
@@ -2061,6 +2083,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4.14.197":
+  version: 4.14.197
+  resolution: "@types/lodash@npm:4.14.197"
+  checksum: 3e2b11acbb2ed88123127757bba04c193682c9cb4cfa644432cb7c4eccb7799fd2d651ca542391916fe3e87c01cee5f15e4b7772a1a92d16b95cf4bd70074e6c
+  languageName: node
+  linkType: hard
+
 "@types/luxon@npm:*":
   version: 3.3.1
   resolution: "@types/luxon@npm:3.3.1"
@@ -3049,6 +3078,7 @@ __metadata:
   dependencies:
     "@commitlint/cli": "npm:^17.7.1"
     "@commitlint/config-conventional": "npm:^17.7.0"
+    "@types/lodash": "npm:^4.14.197"
     "@typescript-eslint/eslint-plugin": "npm:^5.62.0"
     "@typescript-eslint/parser": "npm:^5.62.0"
     eslint: "npm:^8.47.0"
@@ -3635,13 +3665,6 @@ __metadata:
   dependencies:
     character-entities: "npm:^2.0.0"
   checksum: a42a6a12147a46fb2b0ee5b642089463d7d572116c40c2808829e63a13eb6b06875e3b84ffb2843c1be54fb785804f24007f2338754853fb8754ba24d5b97c89
-  languageName: node
-  linkType: hard
-
-"dedent-js@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "dedent-js@npm:1.0.1"
-  checksum: 602699587124bfbbf2bdf588a7b80a52777a9bd4c08bd1f3b6ed8085713a1b73a6bfd20d788c6adf7c78574a9db96f074f4bbee211a3412721a80933a8082552
   languageName: node
   linkType: hard
 
@@ -4384,13 +4407,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"events@npm:^3.3.0":
-  version: 3.3.0
-  resolution: "events@npm:3.3.0"
-  checksum: ef0af671f7bdc20f14274c77925c3e47a4df7991563ee1827dff577f66a9ed1a5b63d9adab8bc5949a16a1341883abdaf9df7a1841f8d5d2fc65ab4f5570b32b
-  languageName: node
-  linkType: hard
-
 "execa@npm:7.2.0":
   version: 7.2.0
   resolution: "execa@npm:7.2.0"
@@ -5099,7 +5115,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.5.0, graphql@npm:^16.8.0":
+"graphql@npm:^16.3.0, graphql@npm:^16.5.0":
   version: 16.8.0
   resolution: "graphql@npm:16.8.0"
   checksum: 93a2e9e0ff33f05bb64c4f46595814549155e88d27e79a266e9493ded10e66afac0d15fdb44804321b2d54bf1ab25530f0817cb61f33cfb2fabd68ad4c627356
@@ -6212,15 +6228,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lower-case@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "lower-case@npm:2.0.2"
-  dependencies:
-    tslib: "npm:^2.0.3"
-  checksum: 2da56ea650669ee9d2427ba349867da18b4cf0190be2fb2b0f8adaa28cffd27bbf4e39b41a619bf653906a584b84c7df606b7f727d3048a8056e4e419407b3e5
-  languageName: node
-  linkType: hard
-
 "lru-cache@npm:^5.1.1":
   version: 5.1.1
   resolution: "lru-cache@npm:5.1.1"
@@ -6934,22 +6941,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"modern-svelte-qr-scanner@npm:1.6.2":
-  version: 1.6.2
-  resolution: "modern-svelte-qr-scanner@npm:1.6.2"
-  dependencies:
-    events: "npm:^3.3.0"
-    lodash: "npm:^4.17.21"
-    stampit: "npm:^4.3.2"
-    svelte-select: "npm:^4.4.4"
-    svelte2tsx: "npm:^0.5.2"
-    tslib: "npm:^2.3.1"
-    uuid: "npm:^8.3.2"
-    visibilityjs: "npm:^2.0.2"
-  checksum: 29f098927191035cb1e57427130d172b49e7fa51b032ab9daaaa8d62ae798162792a1fc4bd4cdd03db605196837f48b6d180c29ae5b2bc8133cef9467ca75de3
-  languageName: node
-  linkType: hard
-
 "moment@npm:^2.19.3":
   version: 2.29.4
   resolution: "moment@npm:2.29.4"
@@ -7072,16 +7063,6 @@ __metadata:
   version: 0.6.3
   resolution: "negotiator@npm:0.6.3"
   checksum: d8e3b42d99638b1f363ce114c98e6906ade395c230058e50644417bd398b01381133dbca4bc49f30f6b1c93254e4b5a2d50cc47adcdabf2a8476b6f16311ad5d
-  languageName: node
-  linkType: hard
-
-"no-case@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "no-case@npm:3.0.4"
-  dependencies:
-    lower-case: "npm:^2.0.2"
-    tslib: "npm:^2.0.3"
-  checksum: 862a2115a3eb27b2293be320faf1408cb0ee75a1da41a463463f53bfeb34f20c89805279fc2c6123b79c3d366f9e445cfcb8e0582611e2bd6712fa8edfaabbda
   languageName: node
   linkType: hard
 
@@ -7403,16 +7384,6 @@ __metadata:
   version: 2.2.0
   resolution: "party-js@npm:2.2.0"
   checksum: 752f31e7ffcbc047fbf6dbdc04b567801a081f9c6725da5948c6bcd812c514c09fec40658419bc5c9d39596daccb7d48c6b26d670dd76b5ca5406b9a84130337
-  languageName: node
-  linkType: hard
-
-"pascal-case@npm:^3.1.1":
-  version: 3.1.2
-  resolution: "pascal-case@npm:3.1.2"
-  dependencies:
-    no-case: "npm:^3.0.4"
-    tslib: "npm:^2.0.3"
-  checksum: 1d34b5460567fdbdb0d028bb95faaf10e7eeaa4c013922d2654bea50ce75f51a6e42b502d3257de5136ec8b80eebc395a8d2dda466d452b472a3ced16073567a
   languageName: node
   linkType: hard
 
@@ -8529,13 +8500,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stampit@npm:^4.3.2":
-  version: 4.3.2
-  resolution: "stampit@npm:4.3.2"
-  checksum: 8b34b56330422050cef946f77232ebbfd0cb790ec354332f59eec842f724828b2e8a797f4de60082aba66721e89f65ffbfba524158bf30a729b863c57a020148
-  languageName: node
-  linkType: hard
-
 "statuses@npm:2.0.1":
   version: 2.0.1
   resolution: "statuses@npm:2.0.1"
@@ -8989,30 +8953,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte-select@npm:^4.4.4":
-  version: 4.4.7
-  resolution: "svelte-select@npm:4.4.7"
-  checksum: 9414930b37b069e60b02213cc10869593f912f6a4d50d841bd502e60f8284cdf81adf68abafd4f34ef7df61c8281bcad907ce9eff20c06a1acb80e8a9df16e5b
-  languageName: node
-  linkType: hard
-
 "svelte-tenor@npm:^0.2.0":
   version: 0.2.0
   resolution: "svelte-tenor@npm:0.2.0"
   checksum: 0c0562f86223bc2617ae883aab9a5a316c0a9bbb124625f60dac3cfbc87aeabeaf7903f41ad5332fdcb1dc41a7c74fc4b111edfba2e1b39bdb322a2be177965c
-  languageName: node
-  linkType: hard
-
-"svelte2tsx@npm:^0.5.2":
-  version: 0.5.23
-  resolution: "svelte2tsx@npm:0.5.23"
-  dependencies:
-    dedent-js: "npm:^1.0.1"
-    pascal-case: "npm:^3.1.1"
-  peerDependencies:
-    svelte: ^3.24
-    typescript: ^4.1.2
-  checksum: 6c3cabae39cef56a873a4af028ff77b02c8acb9bffe40316dbf45a9b5bd3a9f52cad8b3294d51286afcb0ac7d44a63cb4228c862cd7f8cf938fdf9783a75d3e6
   languageName: node
   linkType: hard
 
@@ -9250,6 +9194,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tslib@npm:2.4.0":
+  version: 2.4.0
+  resolution: "tslib@npm:2.4.0"
+  checksum: 022a70708abbc3491734959effd9a87e6e0af5932b61d0c9f1d07b8b80cabbbfc9fc9e9c0fe86e5ab2d32d766ae30117edf00b02d170ff255ab7e60361a4b711
+  languageName: node
+  linkType: hard
+
 "tslib@npm:^1.8.1":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
@@ -9257,7 +9208,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.0, tslib@npm:^2.0.3, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.5.0, tslib@npm:^2.6.1":
+"tslib@npm:^2.0.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.5.0, tslib@npm:^2.6.1":
   version: 2.6.1
   resolution: "tslib@npm:2.6.1"
   checksum: 401069a2e407204fb442e3367efd49ed8698a93a6ce998d8fae5764439d3e395550f036426a22e7b024b4b8593728044bef79187c97df321718631c71664aa5a
@@ -9610,15 +9561,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^8.3.2":
-  version: 8.3.2
-  resolution: "uuid@npm:8.3.2"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 236a12282c6fa32f326aa1b6d5699a843572e9ab7de84a1507a6b7c315fdcf55bf6ed333fd37d35c5c656f4cb96af998844e1c8cae281c442a1ec3b66df62962
-  languageName: node
-  linkType: hard
-
 "uvu@npm:^0.5.0":
   version: 0.5.6
   resolution: "uvu@npm:0.5.6"
@@ -9742,13 +9684,6 @@ __metadata:
     unist-util-stringify-position: "npm:^3.0.0"
     vfile-message: "npm:^3.0.0"
   checksum: 54ad13e2ace60db147f0b0d288ccf79b883d80b5e3f7c1e76698ed81d1ad1cdbe02d37bb7a0dc8d1eef560160b2c1fa4780c49f0b5df29e257a1b70a31b5ffde
-  languageName: node
-  linkType: hard
-
-"visibilityjs@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "visibilityjs@npm:2.0.2"
-  checksum: dba12a239af576fabd3e08bcd34bd5ab9e1941b1adec28ad04cb302a3c3747a2edaf53cd464c150182122ceb2b1fe2df60321e80633b6ae3bd196a5468a89e10
   languageName: node
   linkType: hard
 
