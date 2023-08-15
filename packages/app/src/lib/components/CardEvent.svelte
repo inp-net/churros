@@ -54,7 +54,11 @@
   };
   export let canEdit: boolean | undefined = false;
 
-  let shotgunsStart = tickets[0].opensAt;
+  let shotgunsStart: Date | undefined;
+
+  if (tickets[0]) 
+    shotgunsStart = tickets[0].opensAt;
+  
 
   for (const ticket of tickets) {
     if (ticket.opensAt && (shotgunsStart === undefined || ticket.opensAt < shotgunsStart))
@@ -110,7 +114,7 @@
     class="title"
     style="
     color: {pictureFile ? '#fff' : '#000'};
-    background-image: {pictureFile
+    background-image: {picturefile
       ? `linear-gradient(rgb(0 0 0 / var(--alpha)), rgb(0 0 0 / var(--alpha))), url('${PUBLIC_STORAGE_URL}${pictureFile}') `
       : undefined}
   "
