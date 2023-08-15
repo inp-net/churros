@@ -97,10 +97,8 @@
         return;
       }
 
-      if (updateUserCandidate.__typename === 'Error') 
+      if (updateUserCandidate.__typename === 'Error')
         formErrors = { _errors: [updateUserCandidate.message] };
-        
-      
     } catch (error: unknown) {
       formErrors = { _errors: [(error as Error).message ?? 'Une erreur est survenue'] };
     }
