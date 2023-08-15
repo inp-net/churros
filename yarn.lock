@@ -304,7 +304,7 @@ __metadata:
     "@types/cors": "npm:^2.8.13"
     "@types/cron": "npm:^2.4.0"
     "@types/express": "npm:^4.17.17"
-    "@types/ldapjs": "npm:^2.2.5"
+    "@types/ldapjs": "npm:^3.0.1"
     "@types/multer": "npm:^1.4.7"
     "@types/node": "npm:^18.17.5"
     "@types/nodemailer": "npm:^6.4.9"
@@ -403,7 +403,7 @@ __metadata:
   dependencies:
     "@faker-js/faker": "npm:^8.0.2"
     "@tsconfig/node18-strictest-esm": "npm:^1.0.1"
-    "@types/ldapjs": "npm:^2.2.5"
+    "@types/ldapjs": "npm:^3.0.1"
     ldapjs: "npm:^3.0.4"
     tsx: "npm:^3.12.7"
   languageName: unknown
@@ -2157,12 +2157,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ldapjs@npm:^2.2.5":
-  version: 2.2.5
-  resolution: "@types/ldapjs@npm:2.2.5"
+"@types/ldapjs@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@types/ldapjs@npm:3.0.1"
   dependencies:
     "@types/node": "npm:*"
-  checksum: e95f3e615cfc7fd455e3ba3130251b12bcb6d96490b8061d26b4a4d09cf8e5526abf46ec60e3b9b8865993c41a220b2886f0d180d048bf0023985aedacdf4a21
+  checksum: db98e1b967a6d4247c2ccc875ddfb30b593d0019afd99da022988767f75f6eacb8684f498a5aad90daf730510c840f44af24d5f836819974144972b6298e5647
   languageName: node
   linkType: hard
 
