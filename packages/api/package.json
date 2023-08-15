@@ -28,7 +28,7 @@
     "graphql-yoga": "^3.9.1",
     "helmet": "^6.2.0",
     "image-type": "^5.2.0",
-    "ldapjs": "^2.3.3",
+    "ldapjs": "^3.0.4",
     "multer": "^1.4.5-lts.1",
     "nanoid": "^4.0.2",
     "nodemailer": "^6.9.4",

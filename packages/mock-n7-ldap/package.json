@@ -2,7 +2,7 @@
   "name": "@centraverse/mock-n7-ldap",
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
-    "ldapjs": "^2.3.3"
+    "ldapjs": "^3.0.4"
   },
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
