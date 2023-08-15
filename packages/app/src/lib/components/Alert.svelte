@@ -8,7 +8,7 @@
 </script>
 
 {#if !closed}
-  <div class="alert {theme} {inline ? 'alert-inline' : ''}" role="alert" transition:slide|local>
+  <div class="alert {theme} {inline ? 'alert-inline' : ''}" role="alert" transition:slide>
     <slot />
   </div>
 {/if}

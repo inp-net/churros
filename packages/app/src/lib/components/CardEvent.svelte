@@ -55,6 +55,7 @@
   export let canEdit: boolean | undefined = false;
 
   let shotgunsStart: Date | undefined;
+  let shotgunsEnd: Date | undefined;
 
   if (tickets[0]) shotgunsStart = tickets[0].opensAt;
 
@@ -63,7 +64,7 @@
       shotgunsStart = ticket.opensAt;
   }
 
-  let shotgunsEnd = tickets[0].closesAt;
+  if (tickets[0]) shotgunsEnd = tickets[0].closesAt;
 
   for (const ticket of tickets) {
     if (ticket.closesAt && (shotgunsEnd === undefined || ticket.closesAt > shotgunsEnd))
@@ -84,7 +85,7 @@
   // Date actuelle mise à jour toutes les secondes
   $: now = new Date();
 
-  let interval: NodeJS.Timer;
+  let interval: NodeJS.Timeout;
 
   const updateTime = () => {
     now = new Date();
