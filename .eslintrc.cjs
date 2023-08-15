@@ -80,14 +80,7 @@ module.exports = {
         'no-undef-init': 'off',
         'unicorn/consistent-destructuring': 'off',
         'unicorn/no-useless-undefined': 'off',
-        'unicorn/filename-case': [
-          'error',
-          {
-            case: {
-              kebabCase: true,
-            },
-          },
-        ]
+        'unicorn/filename-case': 'off',
         'no-console': [
           'error',
           {
