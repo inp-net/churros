@@ -12,8 +12,8 @@ const pick = (/** @type {any[]} */ arr) => arr[Math.floor(Math.random() * arr.le
 
 const users = new Map(
   Array.from({ length: 10 }).map(() => {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
     const suffix = Math.random() > 0.8 ? '2' : '';
     const supannAliasLogin = `${asciify(firstName)}.${asciify(lastName)}${suffix}`;
     const mail = `${supannAliasLogin}@${pick(emails)}`;
