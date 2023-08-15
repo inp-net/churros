@@ -3,7 +3,7 @@ import { builder } from '../builder.js';
 import { DateTimeScalar } from './scalars.js';
 import { prisma } from '../prisma.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
-import { sendLydiaPaymentRequest } from '../services/lydia.js';
+import { payEventRegistrationViaLydia } from '../services/lydia.js';
 import { placesLeft, userCanSeeTicket } from './tickets.js';
 import { GraphQLError } from 'graphql';
 import { UserType, fullName } from './users.js';
@@ -320,9 +320,13 @@ builder.mutationField('upsertRegistration', (t) =>
         const userWithContributesTo = await prisma.user.findUniqueOrThrow({
           where: { id: user.id },
           include: {
-            contributesTo: {
+            contributions: {
               include: {
-                school: true,
+                studentAssociation: {
+                  include: {
+                    school: true,
+                  },
+                },
               },
             },
             groups: {
@@ -585,7 +589,8 @@ async function pay(
   switch (by) {
     case 'Lydia': {
       if (!phone) throw new GraphQLError('Missing phone number');
-      return sendLydiaPaymentRequest(phone, registrationId);
+      await payEventRegistrationViaLydia(phone, registrationId);
+      return;
     }
 
     default: {

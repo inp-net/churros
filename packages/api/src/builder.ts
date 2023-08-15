@@ -30,6 +30,7 @@ import { GraphQLError, Kind } from 'graphql';
     school: 'School',
     credential: 'Credential',
     ae: 'StudentAssociation',
+    contribution: 'Contribution',
     g: 'Group',
     a: 'Article',
     e: 'Event',

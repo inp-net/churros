@@ -14,6 +14,7 @@ import { error, redirect } from '@sveltejs/kit';
     school: 'School',
     credential: 'Credential',
     ae: 'StudentAssociation',
+    contribution: 'Contribution',
     g: 'Group',
     a: 'Article',
     e: 'Event',

@@ -49,11 +49,6 @@ const getUser = async (token: string) => {
             groups: { include: { group: true } },
             managedEvents: { include: { event: { include: { group: true } } } },
             major: { include: { schools: true } },
-            contributesTo: {
-              include: {
-                school: true,
-              },
-            },
           },
         },
       },

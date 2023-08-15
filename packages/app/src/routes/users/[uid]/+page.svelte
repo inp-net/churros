@@ -21,8 +21,11 @@
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import CardArticle from '$lib/components/CardArticle.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import Alert from '$lib/components/Alert.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import { goto } from '$app/navigation';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { zeus } from '$lib/zeus';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
     facebook: IconFacebook,
@@ -59,6 +62,51 @@
     const cookies = cookie.parse(document.cookie);
     window.localStorage.setItem('isReallyLoggedout', 'true');
     await goto(`/logout/?token=${cookies.token}`);
+  }
+
+  let contributeServerError = '';
+  let contributeLoading = false;
+
+  async function contribute() {
+    const studentAssociation = user.major.schools[0].studentAssociations[0];
+    if (!studentAssociation) return;
+    contributeLoading = true;
+    const { contribute } = await $zeus.mutate({
+      contribute: [
+        {
+          id: studentAssociation.id,
+          phone: $me?.phone ?? '',
+        },
+        {
+          __typename: true,
+          '...on Error': { message: true },
+          '...on MutationContributeSuccess': { data: true },
+        },
+      ],
+    });
+
+    contributeLoading = false;
+    if (contribute.__typename === 'Error') {
+      contributeServerError = contribute.message;
+    } else {
+      contributeServerError = '';
+      window.location.reload();
+    }
+  }
+
+  async function cancelContribution(studentAssociationId: string) {
+    contributeLoading = true;
+    try {
+      await $zeus.mutate({
+        cancelPendingContribution: [{ studentAssociationId }, true],
+      });
+    } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      contributeServerError = `${error}`;
+    }
+  
+    contributeLoading = false;
+    window.location.reload();
   }
 
   function rolesBadge({
@@ -182,6 +230,31 @@
       </div>
     </div>
   </header>
+
+  {#if $me?.uid === user.uid && ((user.pendingContributions?.length ?? 0) > 0 || (user.contributesTo?.length ?? 0) <= 0)}
+    <section class="contribution">
+      <h2>Cotisation</h2>
+
+      <div class="manage">
+        {#if (user.pendingContributions?.length ?? 0) > 0}
+          <p class="pending-contribution">Cotisation en attente de paiement.</p>
+          <ButtonSecondary
+            loading={contributeLoading}
+            on:click={async () => {
+              await cancelContribution(user.pendingContributions?.[0]?.id ?? '');
+            }}>Annuler la demande</ButtonSecondary
+          >
+        {:else if (user.contributesTo?.length ?? 0) <= 0}
+          <ButtonSecondary loading={contributeLoading} on:click={contribute}
+            >Cotiser pour {user.major.schools[0].studentAssociations[0].name}</ButtonSecondary
+          >
+        {/if}
+        {#if contributeServerError}
+          <Alert theme="danger">{contributeServerError}</Alert>
+        {/if}
+      </div>
+    </section>
+  {/if}
 
   <section class="groups">
     <h2>Groupes</h2>
@@ -344,6 +417,14 @@
     display: flex;
     flex-flow: column wrap;
     align-items: center;
+  }
+
+  .contribution .manage {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
   }
 
   .family {

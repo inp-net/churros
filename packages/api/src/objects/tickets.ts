@@ -162,7 +162,7 @@ export function userCanSeeTicket(
     managedEvents: Array<{ event: { id: string } }>;
     graduationYear: number;
     major: { schools: Array<{ uid: string }>; id: string };
-    contributesTo: Array<{ id: string; school: { uid: string } }>;
+    contributions: Array<{ studentAssociation: { id: string; school: { uid: string } } }>;
   }
 ): boolean {
   // Managers can see everything
@@ -170,8 +170,8 @@ export function userCanSeeTicket(
 
   // Get the user's contributor status
   const isContributor = Boolean(
-    user?.contributesTo.some(
-      ({ school, id }) =>
+    user?.contributions.some(
+      ({ studentAssociation: { id, school } }) =>
         event.group.studentAssociation?.id === id || event.group.school?.uid === school.uid
     )
   );
@@ -249,9 +249,13 @@ builder.queryField('ticketsOfEvent', (t) =>
         ? await prisma.user.findUniqueOrThrow({
             where: { id: user.id },
             include: {
-              contributesTo: {
+              contributions: {
                 include: {
-                  school: true,
+                  studentAssociation: {
+                    include: {
+                      school: true,
+                    },
+                  },
                 },
               },
               groups: {
