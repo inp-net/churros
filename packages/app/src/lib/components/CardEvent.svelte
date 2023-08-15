@@ -111,9 +111,8 @@
     if (!(e.target instanceof HTMLElement)) return;
     if (e.target.closest('a, button')) return;
 
-    if (e instanceof MouseEvent || (e instanceof KeyboardEvent && e.key === 'Enter')) 
+    if (e instanceof MouseEvent || (e instanceof KeyboardEvent && e.key === 'Enter'))
       await goto(href);
-    
   }
 </script>
 
@@ -122,12 +121,10 @@
   <section
     class:has-picture={Boolean(pictureFile)}
     class="title"
-    style="
-    color: {pictureFile ? '#fff' : 'var(--text)'};
-    background-image: {pictureFile
+    style:color={pictureFile ? 'white' : 'var(--text)'}
+    style:background-image={pictureFile
       ? `linear-gradient(rgb(0 0 0 / var(--alpha)), rgb(0 0 0 / var(--alpha))), url('${PUBLIC_STORAGE_URL}${pictureFile}') `
       : undefined}
-  "
   >
     <a class="title-link" {href}><h2 class="title-text">{title}</h2></a>
     {#if collapsible}
@@ -178,6 +175,7 @@
     </section>
 
     <!-- Je vois pas pourquoi il y en aurait pas mais dans la db c'est possible -->
+    <!-- uwun: si ya pas de billets :p -->
     {#if shotgunsStart}
       <section class="shotgun">
         <h4 class="typo-field-label">Shotgun</h4>
