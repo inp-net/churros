@@ -25,7 +25,8 @@ import { dateFromNumbers } from '../date.js';
 import { TicketInput } from './tickets.js';
 import { TicketGroupInput } from './ticket-groups.js';
 import { ManagerOfEventInput } from './event-managers.js';
-import imageType, { minimumBytes } from 'image-type';
+// import imageType, { minimumBytes } from 'image-type';
+import imageType from 'image-type';
 import { GraphQLError } from 'graphql';
 import { dirname, join } from 'node:path';
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
@@ -705,7 +706,7 @@ builder.mutationField('updateEventPicture', (t) =>
     },
     async resolve(_, { id, file }) {
       const type = await file
-        .slice(0, minimumBytes)
+        // .slice(0, minimumBytes) ERROR Not implemented from Ponyfill.slice @whatwg-node/node-fetch…
         .arrayBuffer()
         .then((array) => Buffer.from(array))
         .then(async (buffer) => imageType(buffer));
