@@ -14,6 +14,9 @@
   import InputDate from '$lib/components/InputDate.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
+  import IconCheck from '~icons/mdi/check';
+  import IconSave from '~icons/mdi/content-save-outline';
+  import IconDelete from '~icons/mdi/delete-outline';
 
   export let data: PageData;
 
@@ -94,16 +97,16 @@
         return;
       }
 
-      if (updateUserCandidate.__typename === 'Error') {
+      if (updateUserCandidate.__typename === 'Error') 
         formErrors = { _errors: [updateUserCandidate.message] };
-        return;
-      }
+        
+      
     } catch (error: unknown) {
       formErrors = { _errors: [(error as Error).message ?? 'Une erreur est survenue'] };
     }
   };
 
-  const asmajor = (x: unknown) => x as typeof data.schoolGroups[number]['majors'][number];
+  const asmajor = (x: unknown) => x as (typeof data.schoolGroups)[number]['majors'][number];
 </script>
 
 <h1>
@@ -169,13 +172,25 @@
   <InputText label="Adresse" errors={formErrors?.address?._errors} bind:value={address} />
 
   <div class="actions">
-    <ButtonSecondary submits data-save loading={loadingSave} disabled={loading}
+    <ButtonSecondary icon={IconSave} submits data-save loading={loadingSave} disabled={loading}
       >Sauvegarder</ButtonSecondary
     >
-    <ButtonSecondary submits data-register success loading={loadingSave} disabled={loading}
-      >Sauvegarder et inscrire</ButtonSecondary
+    <ButtonSecondary
+      icon={IconCheck}
+      submits
+      data-register
+      success
+      loading={loadingRegister}
+      disabled={loading}>Sauvegarder et inscrire</ButtonSecondary
     >
-    <ButtonSecondary submits danger disabled={loading} loading={loadingRefuse} data-refuse>
+    <ButtonSecondary
+      icon={IconDelete}
+      submits
+      danger
+      disabled={loading}
+      loading={loadingRefuse}
+      data-refuse
+    >
       Refuser
     </ButtonSecondary>
   </div>

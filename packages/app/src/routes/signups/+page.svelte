@@ -2,7 +2,7 @@
   import IconEditPen2Line from '~icons/mdi/pencil';
   import type { PageData } from './$types';
   import IconCheck from '~icons/mdi/check';
-  import IconTrash from '~icons/mdi/delete';
+  import IconTrash from '~icons/mdi/delete-outline';
   import { zeus } from '$lib/zeus';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
@@ -43,40 +43,53 @@
 </script>
 
 <h1>Demandes d'inscription</h1>
-{#if userCandidates.length > 0}
-  <ul class="nobullet registrations">
-    {#each userCandidates as { email, fullName, major, graduationYear }}
-      <li>
-        <strong>{fullName}</strong>
-        <span>{email} · <abbr title={major.name}>{major.shortName}</abbr> · {graduationYear}</span>
-        <div class="actions">
-          <ButtonSecondary icon={IconEditPen2Line} href="./edit/{encodeURIComponent(email)}"
-            >Modifier</ButtonSecondary
-          >
-          <ButtonSecondary
-            on:click={async () => {
-              await decide(email, true);
-            }}
-            icon={IconCheck}
-          >
-            Accepter
-          </ButtonSecondary>
-          <ButtonSecondary
-            on:click={async () => {
-              await decide(email, false);
-            }}
-            icon={IconTrash}
-            danger
-          >
-            Refuser
-          </ButtonSecondary>
-        </div>
-      </li>
-    {/each}
-  </ul>
-{:else}
-  <p>Aucune inscription en attente.</p>
-{/if}
+<ul class="nobullet registrations">
+  {#each userCandidates as { email, fullName, major, graduationYear }}
+    <li>
+      <strong>{fullName}</strong>
+      <span>{email} · <abbr title={major.name}>{major.shortName}</abbr> · {graduationYear}</span>
+      <div class="actions">
+        <ButtonSecondary icon={IconEditPen2Line} href="./edit/{encodeURIComponent(email)}"
+          >Modifier</ButtonSecondary
+        >
+        <ButtonSecondary
+          on:click={async () => {
+            await decide(email, true);
+          }}
+          icon={IconCheck}
+        >
+          Accepter
+        </ButtonSecondary>
+        <ButtonSecondary
+          on:click={async () => {
+            await decide(email, false);
+          }}
+          icon={IconTrash}
+          danger
+        >
+          Refuser
+        </ButtonSecondary>
+      </div>
+    </li>
+  {:else}
+    <li>
+      <div class="empty">
+        Aucune demande d'inscription.
+        <ruby>
+          お<rt>o</rt>
+          つ<rt>tsu</rt>
+          か<rt>ka</rt>
+          れ<rt>re</rt>
+          さ<rt>sa</rt>
+          ま<rt>ma</rt>
+          で<rt>de</rt>
+          す <rt>su</rt>
+        </ruby>
+        ～
+      </div>
+    </li>
+  {/each}
+</ul>
 
 <style>
   h1 {
