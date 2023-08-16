@@ -25,6 +25,7 @@ export const _articleQuery = Selector('Article')({
     title: true,
     startsAt: true,
     endsAt: true,
+    location: true,
     descriptionHtml: true,
     pictureFile: true,
     links: {
