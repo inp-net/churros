@@ -8,7 +8,7 @@ import { ID_PREFIXES_TO_TYPENAMES, builder } from '../builder.js';
 const TYPENAMES_TO_ID_PREFIXES = Object.fromEntries(
   Object.entries(ID_PREFIXES_TO_TYPENAMES).map(([k, v]) => [v, k])
 ) as Record<
-  typeof ID_PREFIXES_TO_TYPENAMES[keyof typeof ID_PREFIXES_TO_TYPENAMES],
+  (typeof ID_PREFIXES_TO_TYPENAMES)[keyof typeof ID_PREFIXES_TO_TYPENAMES],
   keyof typeof ID_PREFIXES_TO_TYPENAMES
 >;
 

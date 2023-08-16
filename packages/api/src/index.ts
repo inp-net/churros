@@ -4,7 +4,6 @@ import { Prisma } from '@prisma/client';
 import { verifyLydiaTransaction } from './services/lydia.js';
 import { createFetch } from '@whatwg-node/fetch';
 import cors from 'cors';
-import { useNoBatchedQueries } from 'envelop-no-batched-queries';
 import express, { type Request, type Response } from 'express';
 import multer from 'multer';
 import { GraphQLError } from 'graphql';
@@ -84,7 +83,6 @@ const yoga = createYoga({
       return new GraphQLError(message, { extensions: { http: { status: 500 } } });
     },
   },
-  plugins: [useNoBatchedQueries({ allow: 4 })],
 });
 
 const api = express();

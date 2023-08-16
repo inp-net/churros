@@ -9,20 +9,26 @@
     isPast,
     format,
   } from 'date-fns';
+  import IconLocation from '~icons/mdi/location-outline';
+  import IconWhen from '~icons/mdi/calendar-outline';
   import { formatDateTime } from '$lib/dates';
-  import { fr } from 'date-fns/locale';
+  import fr from 'date-fns/locale/fr/index.js';
   import { onDestroy, onMount } from 'svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import IconGear from '~icons/mdi/gear-outline';
   import ChevronUp from '~icons/mdi/chevron-up';
+  import { goto } from '$app/navigation';
 
   export let collapsible = false;
-  export let collapsed = collapsible;
+  export let expandedEventId: string | undefined = undefined;
+  export let id: string;
+  $: collapsed = collapsible && expandedEventId !== id;
   export let pictureFile: string;
   export let title: string;
   export let descriptionHtml: string;
   export let startsAt: Date;
   export let endsAt: Date;
+  export let location: string;
   export let tickets: Array<{
     name: string;
     price: number;
@@ -54,22 +60,31 @@
   };
   export let canEdit: boolean | undefined = false;
 
-  let shotgunsStart = tickets[0].opensAt;
+  let shotgunsStart: Date | undefined;
+  let shotgunsEnd: Date | undefined;
+
+  if (tickets[0]) shotgunsStart = tickets[0].opensAt;
 
   for (const ticket of tickets) {
     if (ticket.opensAt && (shotgunsStart === undefined || ticket.opensAt < shotgunsStart))
       shotgunsStart = ticket.opensAt;
   }
 
-  let shotgunsEnd = tickets[0].closesAt;
+  if (tickets[0]) shotgunsEnd = tickets[0].closesAt;
 
   for (const ticket of tickets) {
     if (ticket.closesAt && (shotgunsEnd === undefined || ticket.closesAt > shotgunsEnd))
       shotgunsEnd = ticket.closesAt;
   }
 
-  const totalPlacesLeft = tickets.reduce((sum, { placesLeft }) => sum + placesLeft, 0);
-  const totalCapacity = tickets.reduce((sum, { capacity }) => sum + capacity, 0);
+  const totalPlacesLeft = tickets.reduce(
+    (sum, { placesLeft }) => sum + (placesLeft === -1 ? Number.POSITIVE_INFINITY : placesLeft),
+    0
+  );
+  const totalCapacity = tickets.reduce(
+    (sum, { capacity }) => sum + (capacity === 0 ? Number.POSITIVE_INFINITY : capacity),
+    0
+  );
 
   // Est-ce que le shotgun est en cours ? Mis à jour toutes les secondes
   $: shotgunning =
@@ -82,7 +97,7 @@
   // Date actuelle mise à jour toutes les secondes
   $: now = new Date();
 
-  let interval: NodeJS.Timer;
+  let interval: NodeJS.Timeout;
 
   const updateTime = () => {
     now = new Date();
@@ -102,36 +117,50 @@
   onDestroy(() => {
     clearInterval(interval); // Nettoyer l'intervalle lorsque le composant est détruit
   });
+
+  async function gotoEventIfNotLink(e: MouseEvent | KeyboardEvent) {
+    if (!(e.target instanceof HTMLElement)) return;
+    if (e.target.closest('a, button')) return;
+
+    if (e instanceof MouseEvent || (e instanceof KeyboardEvent && e.key === 'Enter'))
+      await goto(href);
+  }
 </script>
 
-<!-- Votre code HTML et CSS ici -->
-<section class="event">
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<article
+  class:collapsed
+  class="event"
+  on:click={gotoEventIfNotLink}
+  on:keypress={gotoEventIfNotLink}
+>
   <section
+    class:has-picture={Boolean(pictureFile)}
     class="title"
-    style="
-    color: {pictureFile ? '#fff' : '#000'};
-    background-image: {pictureFile
+    style:color={pictureFile ? 'white' : 'var(--text)'}
+    style:background-image={pictureFile
       ? `linear-gradient(rgb(0 0 0 / var(--alpha)), rgb(0 0 0 / var(--alpha))), url('${PUBLIC_STORAGE_URL}${pictureFile}') `
       : undefined}
-  "
   >
     <a class="title-link" {href}><h2 class="title-text">{title}</h2></a>
     {#if collapsible}
       <button
-        class="chevron-up {collapsed ? 'collapsed' : ''}"
+        class="expand-collapse chevron-up {collapsed ? 'collapsed' : ''}"
         on:click={() => {
-          collapsed = !collapsed;
+          expandedEventId = collapsed ? id : '';
         }}><ChevronUp /></button
       >
     {/if}
   </section>
   <section class="content {collapsed ? 'collapsed' : ''}">
     <section class="desc">
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html descriptionHtml}
     </section>
     <section class="schedule">
-      <h4>EVÈNEMENT</h4>
+      <h4 class="typo-field-label">Évènement</h4>
       <p>
+        <IconWhen />
         {Math.abs(startsAt.getTime() - now.getTime()) > 7 * 24 * 3600 * 1000
           ? formatDateTime(startsAt)
           : formatRelative(startsAt, now, {
@@ -140,7 +169,7 @@
             })
               .replace('prochain ', '')
               .replace('à ', '')}
-        -
+        —
         {Math.abs(endsAt.getTime() - now.getTime()) > 7 * 24 * 3600 * 1000
           ? startsAt.getDate() === endsAt.getDate()
             ? format(endsAt, 'p', {
@@ -160,24 +189,32 @@
               .replace('prochain ', '')
               .replace('à ', '')}
       </p>
+      {#if location}
+        <p><IconLocation /> {location}</p>
+      {/if}
     </section>
 
     <!-- Je vois pas pourquoi il y en aurait pas mais dans la db c'est possible -->
+    <!-- uwun: si ya pas de billets :p -->
     {#if shotgunsStart}
       <section class="shotgun">
-        <h4>SHOTGUN</h4>
+        <h4 class="typo-field-label">Shotgun</h4>
         {#if shotgunning}
           <p>
-            <strong>
-              <span style={totalPlacesLeft < 0.1 * totalCapacity ? 'color: var(--error)' : ''}>
-                {totalPlacesLeft}
-              </span>/ {totalCapacity}
-            </strong> places restantes
+            {#if totalPlacesLeft + totalCapacity === Number.POSITIVE_INFINITY}
+              Places illimitées
+            {:else}
+              <strong>
+                <span style={totalPlacesLeft < 0.1 * totalCapacity ? 'color: var(--error)' : ''}>
+                  {totalPlacesLeft}
+                </span>/ {totalCapacity}
+              </strong> places restantes
+            {/if}
           </p>
           <div class="places">
             {#each tickets as { uid, name, price }}
               <div class="link">
-                <ButtonSecondary href={`${href}/book/${uid}`}>
+                <ButtonSecondary tabindex={collapsed ? -1 : undefined} href={`${href}/book/${uid}`}>
                   <strong>
                     {name}
                     <span class="ticket-price">{price} €</span>
@@ -219,49 +256,74 @@
           role={author.groups.find((g) => g.group.uid === group.uid)?.title ?? ''}
           {...author}
         />
-        {#if canEdit}
-          <div class="buttonAdmin">
-            <ButtonSecondary href={href + '/edit'}><IconGear /></ButtonSecondary>
-          </div>
-        {/if}
       </section>
     {/if}
+    {#if canEdit}
+      <div class="button-admin">
+        <ButtonSecondary href={href + '/edit'}><IconGear /></ButtonSecondary>
+      </div>
+    {/if}
   </section>
-</section>
+</article>
 
 <style>
   .event {
     overflow: hidden;
+    cursor: pointer;
     border-radius: var(--radius-block);
     box-shadow: var(--primary-shadow);
-
     --alpha: 0.5;
   }
 
   .title {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-evenly;
-    padding: 5em 0;
+
+    /* ça sert à ce que la hauteur ne varie pas selon si c'est collapsible ou pas */
+    min-height: 5rem;
     background-position: center;
     background-size: cover;
   }
 
-  .author {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
+  .collapsed .title {
+    height: 100%;
+  }
+
+  .title-link {
+    padding-left: 1em;
+    overflow: hidden;
+  }
+
+  .title-text {
+    line-height: 1.1;
+    text-align: center;
+  }
+
+  .title:not(.has-picture) {
+    padding: 0.75rem 1rem;
+  }
+
+  .title.has-picture {
+    padding: 1rem;
   }
 
   .content {
+    position: relative;
     margin: 1em;
+    overflow: hidden;
     transition: margin 0.5s cubic-bezier(0, 1, 0, 1);
   }
 
   .content.collapsed {
     max-height: 0;
     margin: 0 1em;
+  }
+
+  .schedule,
+  .shotgun {
+    margin-top: 1rem;
   }
 
   .ticket-price {
@@ -282,7 +344,7 @@
   .chevron-up {
     padding: 0;
     margin: 0;
-    font-size: 2.5em;
+    font-size: 2rem;
     line-height: inherit;
     color: inherit;
     text-align: inherit;
@@ -300,18 +362,9 @@
     transform: rotate(180deg);
   }
 
-  .title-link {
-    align-self: start;
-    padding-left: 1em;
-    overflow: hidden;
-  }
-
-  .title-text {
-    overflow: hidden;
-
-    /* ça sert à ce que la hauteur ne varie pas selon si c'est collapsible ou pas */
-    line-height: 3em;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .button-admin {
+    position: absolute;
+    right: 0;
+    bottom: 0;
   }
 </style>

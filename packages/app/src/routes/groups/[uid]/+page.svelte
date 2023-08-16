@@ -33,7 +33,7 @@
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
 
-  const NAME_TO_ICON: Record<string, typeof SvelteComponent> = {
+  const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
     instagram: IconInstagram,
     twitter: IconTwitter,
@@ -140,6 +140,7 @@
   </header>
 
   <section class="description">
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html group.longDescriptionHtml}
   </section>
 
@@ -343,7 +344,7 @@
       grid-area: description;
       justify-content: start;
 
-      p {
+      :global(p) {
         text-align: left;
       }
     }

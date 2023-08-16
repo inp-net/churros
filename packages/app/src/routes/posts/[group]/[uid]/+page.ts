@@ -20,10 +20,12 @@ export const _articleQuery = Selector('Article')({
     groups: { group: { name: true, uid: true }, title: true },
   },
   event: {
+    id: true,
     uid: true,
     title: true,
     startsAt: true,
     endsAt: true,
+    location: true,
     descriptionHtml: true,
     pictureFile: true,
     links: {

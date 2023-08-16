@@ -57,7 +57,7 @@
     'En attente de remboursement': [],
     Remboursées: [],
   } as unknown as Record<
-    typeof CATEGORIES[number],
+    (typeof CATEGORIES)[number],
     Array<{
       paid: boolean;
       createdAt: Date;
@@ -70,7 +70,7 @@
   >;
 
   function updateRegistrationsByCategory(
-    registrations: typeof registrationsByCategory[typeof CATEGORIES[number]]
+    registrations: (typeof registrationsByCategory)[(typeof CATEGORIES)[number]]
   ) {
     if (!registrations) return;
 
@@ -80,7 +80,7 @@
 
   async function updatePaidStatus(
     markAsPaid: boolean,
-    registration: typeof registrationsByCategory[typeof CATEGORIES[number]][number]
+    registration: (typeof registrationsByCategory)[(typeof CATEGORIES)[number]][number]
   ): Promise<void> {
     const { upsertRegistration } = await $zeus.mutate({
       upsertRegistration: [

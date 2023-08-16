@@ -1,20 +1,19 @@
 <script lang="ts">
   import IconCheck from '~icons/mdi/check';
   import IconPendingPayment from '~icons/mdi/cash-clock';
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { PaymentMethod, zeus } from '$lib/zeus';
   import Alert from '$lib/components/Alert.svelte';
-  import BackButton from '$lib/components/ButtonBack.svelte';
   import { page } from '$app/stores';
-  import { dateTimeFormatter, formatDateTime } from '$lib/dates';
+  import { dateTimeFormatter, formatDate, formatDateTime } from '$lib/dates';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import { me } from '$lib/session';
+  import Header from '../../Header.svelte';
 
   let done = false;
   $: done = $page.url.searchParams.has('done');
@@ -88,21 +87,12 @@
   }
 </script>
 
-<section
-  class="header"
-  style:background-image="linear-gradient(#000000aa, #000000aa), url({pictureFile
-    ? `${PUBLIC_STORAGE_URL}${pictureFile}`
-    : 'https://picsum.photos/400/400'})"
->
-  <h1>
-    <BackButton go="../.." white />
-    Paiement de ma place
-  </h1>
-  <p>
-    {title}
-    {#if name}&mdash; {name}{/if}
-  </p>
-</section>
+<Header
+  {pictureFile}
+  title="Réservation d'une place {name}"
+  subtitle="Pour l'évènement {title} du {formatDate(startsAt)}"
+/>
+
 <div class="content">
   {#if done}
     <div class="done">
@@ -217,21 +207,6 @@
 </div>
 
 <style lang="scss">
-  .header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    background-size: cover;
-
-    > * {
-      margin: 0;
-      color: white;
-    }
-  }
-
   .big-checkmark {
     margin: 4rem 0;
     font-size: 6rem;

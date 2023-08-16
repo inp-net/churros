@@ -13,7 +13,7 @@
   export let unit = '';
   export let placeholder = '';
   export let validate: (value: string) => string = () => '';
-  export let actionIcon: typeof SvelteComponent | undefined = undefined;
+  export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let required = false;
   export let readonly = false;
   export let closeKeyboardOnEnter = false;

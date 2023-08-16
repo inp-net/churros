@@ -141,8 +141,8 @@
   };
 
   function membersByImportance(
-    a: typeof data.group.members[number],
-    b: typeof data.group.members[number]
+    a: (typeof data.group.members)[number],
+    b: (typeof data.group.members)[number]
   ): 1 | -1 | 0 {
     // President first, then treasurer, then vice-president, then secretary, then the rest, by date added
     if (a.president && !b.president) return -1;
@@ -160,7 +160,7 @@
     return isBefore(a.createdAt, b.createdAt) ? 1 : -1;
   }
 
-  let searcher: Fuse<typeof data.group.members[number]>;
+  let searcher: Fuse<(typeof data.group.members)[number]>;
   onMount(() => {
     searcher = new Fuse(data.group.members, {
       keys: [

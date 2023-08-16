@@ -7,12 +7,13 @@ import { DateTimeScalar, FileScalar } from './scalars.js';
 import { LinkInput } from './links.js';
 import { dichotomid } from 'dichotomid';
 import { GraphQLError } from 'graphql';
-import { mkdir, unlink, writeFile } from 'node:fs/promises';
+import { mkdir, unlink } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import imageType, { minimumBytes } from 'image-type';
+import imageType from 'image-type';
 import { VisibilityEnum } from './events.js';
 import { Visibility } from '@prisma/client';
 import { scheduleNewArticleNotification } from '../services/notifications.js';
+import { compressPhoto, supportedExtensions } from '../pictures.js';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
@@ -211,6 +212,8 @@ builder.mutationField('deleteArticle', (t) =>
 
       // Who can delete this article?
       return (
+        // Admins
+        user.admin ||
         // The author
         user.id === article.authorId ||
         // Other authors of the group
@@ -270,12 +273,9 @@ builder.mutationField('updateArticlePicture', (t) =>
       );
     },
     async resolve(_, { id, file }) {
-      const type = await file
-        .slice(0, minimumBytes)
-        .arrayBuffer()
-        .then((array) => Buffer.from(array))
-        .then(async (buffer) => imageType(buffer));
-      if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
+      const buffer = await file.arrayBuffer().then((array) => Buffer.from(array));
+      const type = await imageType(buffer);
+      if (!type || !supportedExtensions.includes(type.ext))
         throw new GraphQLError('File format not supported');
 
       // Delete the existing picture
@@ -286,9 +286,9 @@ builder.mutationField('updateArticlePicture', (t) =>
 
       if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
 
-      const path = join(`articles`, `${id}.${type.ext}`);
+      const path = join(`articles`, `${id}.jpeg`);
       await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
-      await writeFile(new URL(path, process.env.STORAGE), file.stream());
+      await compressPhoto(buffer, new URL(path, process.env.STORAGE).pathname);
       await prisma.article.update({ where: { id }, data: { pictureFile: path } });
       return path;
     },

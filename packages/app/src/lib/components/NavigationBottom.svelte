@@ -96,13 +96,15 @@
   }}
 />
 
-<!-- svelte-ignore a11y-click-events-have-key-events handled by svelte:window above -->
+<!-- eslint-disable-next-line svelte/a11y-click-events-have-key-events handled by svelte:window above -->
+<!-- eslint-disable-next-line svelte/a11y-no-noninteractive-element-interactions -->
 <div
   class="flyout-backdrop"
   on:click={() => {
     flyoutOpen = false;
   }}
   class:open={flyoutOpen}
+  role="presentation"
 >
   <section class="flyout" class:open={flyoutOpen}>
     {#if $me?.admin}
@@ -154,7 +156,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 3;
+    z-index: 101;
     display: flex;
     gap: 1rem;
     align-items: center;
@@ -201,7 +203,7 @@
   .flyout-backdrop.open {
     position: fixed;
     inset: 0;
-    z-index: 1;
+    z-index: 100;
     background: rgb(0 0 0 / 50%);
     animation: fade-in-backdrop 0.2s ease-in-out;
   }

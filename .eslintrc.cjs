@@ -2,7 +2,7 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  plugins: ['svelte3', '@typescript-eslint'],
+  plugins: ['@typescript-eslint'],
   parserOptions: {
     ecmaVersion: 2020,
     project: ['./packages/*/tsconfig.json'],
@@ -20,9 +20,10 @@ module.exports = {
     'xo',
     'xo-typescript',
     'plugin:unicorn/recommended',
+    'plugin:svelte/recommended',
     'prettier',
   ],
-  settings: { 'svelte3/typescript': () => require('typescript') },
+  settings: { 'svelte/typescript': () => require('typescript') },
   rules: {
     'no-warning-comments': 'off',
     '@typescript-eslint/ban-types': 'off',
@@ -47,6 +48,7 @@ module.exports = {
     'unicorn/no-document-cookie': 'off',
     'unicorn/prevent-abbreviations': 'off',
     'unicorn/prefer-top-level-await': 'off',
+    'unicorn/expiring-todo-comments': 'off',
     curly: ['error', 'multi-or-nest', 'consistent'],
   },
   overrides: [
@@ -64,10 +66,11 @@ module.exports = {
     },
     {
       files: ['*.svelte'],
-      processor: 'svelte3/svelte3',
+      parser: 'svelte-eslint-parser',
+      parserOptions: {
+        parser: '@typescript-eslint/parser',
+      },
       rules: {
-        // This is not yet possible to enable some typed rules, see
-        // https://github.com/sveltejs/eslint-plugin-svelte3/issues/89
         '@typescript-eslint/no-unnecessary-condition': 'off',
         '@typescript-eslint/no-unsafe-argument': 'off',
         '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -77,6 +80,7 @@ module.exports = {
         'no-undef-init': 'off',
         'unicorn/consistent-destructuring': 'off',
         'unicorn/no-useless-undefined': 'off',
+        'unicorn/filename-case': 'off',
         'no-console': [
           'error',
           {
