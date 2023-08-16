@@ -323,8 +323,8 @@ builder.mutationField('upsertEvent', (t) =>
       },
       { user }
     ) {
-      const connectFromListOfUids = (uids: string[]) => ({ connect: uids.map((uid) => ({ uid })) });
-      const connectFromListOfIds = (uids: string[]) => ({ connect: uids.map((id) => ({ id })) });
+      const connectFromListOfUids = (uids: string[]) => ({ set: uids.map((uid) => ({ uid })) });
+      const connectFromListOfIds = (uids: string[]) => ({ set: uids.map((id) => ({ id })) });
       // First, delete all the tickets and ticket groups that are not in the new list
 
       if (id) {
