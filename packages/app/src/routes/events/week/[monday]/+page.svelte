@@ -33,9 +33,6 @@
 </script>
 
 <div class="content">
-  <section class="add-to-calendar">
-    <ButtonSecondary href="../feed" icon={IconCalendarPlus}>Ajouter au calendrier</ButtonSecondary>
-  </section>
   <NavigationTabs
     tabs={[
       { name: 'Semaine', href: '.' },
@@ -95,27 +92,32 @@
       </section>
     {/each}
   </div>
+  <section class="add-to-calendar">
+    <ButtonSecondary href="../feed" icon={IconCalendarPlus}
+      >Ajouter à mon calendrier</ButtonSecondary
+    >
+  </section>
 </div>
 
 <style lang="scss">
   .content {
-    padding: 0 0.5rem 4rem;
     max-width: 600px;
+    padding: 0 0.5rem 4rem;
     margin: 0 auto;
   }
+
   .add-to-calendar {
     display: flex;
     justify-content: center;
-    margin: 0.5rem 0;
+    margin-top: 4rem;
   }
 
   .navigation {
     position: fixed;
     right: 0;
-
-    z-index: 10;
     bottom: 2rem;
     left: 0;
+    z-index: 10;
     display: flex;
     gap: 1rem;
     align-items: center;
@@ -125,6 +127,7 @@
     color: var(--text);
     background: var(--bg);
   }
+
   .bar-week {
     display: flex;
     flex-direction: column;
