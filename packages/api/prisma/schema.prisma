@@ -26,11 +26,12 @@ model User {
   schoolEmail  String? @unique @db.VarChar(255)
 
   // Mandatory profile details
-  email          String @unique @db.VarChar(255)
-  firstName      String @db.VarChar(255)
-  lastName       String @db.VarChar(255)
+  email          String   @unique @db.VarChar(255)
+  otherEmails    String[] @db.VarChar(255)
+  firstName      String   @db.VarChar(255)
+  lastName       String   @db.VarChar(255)
   majorId        String
-  major          Major  @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  major          Major    @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   graduationYear Int
 
   // Optional profile details
@@ -392,14 +393,14 @@ model Ticket {
   allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
 
   // Conditions for that ticket.
-  openToPromotions        Int[]    @default([])
-  openToAlumni            Boolean? @default(false) // false means only non-alumni, true means only alumni, null means both
-  openToExternal          Boolean? @default(false) // same thing
+  openToPromotions   Int[]    @default([])
+  openToAlumni       Boolean? @default(false) // false means only non-alumni, true means only alumni, null means both
+  openToExternal     Boolean? @default(false) // same thing
   openToContributors Boolean? @default(false) // same thing
-  openToSchools           School[]
-  openToMajors            Major[]
-  openToGroups            Group[]
-  godsonLimit             Int      @default(0) // 0 means unlimited
+  openToSchools      School[]
+  openToMajors       Major[]
+  openToGroups       Group[]
+  godsonLimit        Int      @default(0) // 0 means unlimited
 
   onlyManagersCanProvide Boolean @default(false)
 
