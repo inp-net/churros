@@ -171,11 +171,12 @@
   .day {
     display: flex;
     gap: 1rem;
-    width: fit-content;
+    width: 100%;
 
     .events-of-day {
       display: flex;
       flex-flow: column wrap;
+      flex-grow: 1;
       gap: 2rem;
     }
   }
