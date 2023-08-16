@@ -10,7 +10,7 @@
     format,
   } from 'date-fns';
   import { formatDateTime } from '$lib/dates';
-  import { fr } from 'date-fns/locale';
+  import fr from 'date-fns/locale/fr/index.js';
   import { onDestroy, onMount } from 'svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import IconGear from '~icons/mdi/gear-outline';
