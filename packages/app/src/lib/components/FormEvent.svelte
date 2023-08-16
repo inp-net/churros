@@ -243,6 +243,7 @@
     openToContributors?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
+    autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;
   };
 
   export let redirectAfterSave: (uid: string, groupUid: string) => string = (uid, groupUid) =>
@@ -262,6 +263,7 @@
       name: string;
       capacity: number;
       tickets: Ticket[];
+      autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;
     }>;
     contactMail: string;
     beneficiary?: undefined | { name: string; id: string };
@@ -369,6 +371,7 @@
                 name: '',
                 capacity: 0,
                 tickets: [],
+                autojoinGroups: [],
               },
             ];
           }}

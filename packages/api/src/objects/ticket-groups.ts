@@ -20,6 +20,7 @@ export const TicketGroupInput = builder.inputType('TicketGroupInput', {
     name: t.string(),
     capacity: t.int({ validate: { min: 0 } }),
     tickets: t.field({ type: [TicketInput] }),
+    autojoinGroups: t.field({ type: ['String'] }),
   }),
 });
 
