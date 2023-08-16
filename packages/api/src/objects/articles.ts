@@ -211,6 +211,8 @@ builder.mutationField('deleteArticle', (t) =>
 
       // Who can delete this article?
       return (
+        // Admins
+        user.admin ||
         // The author
         user.id === article.authorId ||
         // Other authors of the group
