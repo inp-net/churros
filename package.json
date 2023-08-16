@@ -31,7 +31,7 @@
   "packageManager": "yarn@4.0.0-rc.30",
   "private": true,
   "scripts": {
-    "build": "yarn workspaces foreach --topological-dev -pv run build",
+    "build": "yarn workspaces foreach --topological-dev -pv run build && yarn format",
     "dev": "docker compose up -d && yarn workspaces foreach -piv run dev",
     "format": "prettier . --write --ignore-unknown",
     "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
