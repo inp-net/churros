@@ -57,6 +57,7 @@ export const TicketType = builder.prismaNode('Ticket', {
     openToContributors: t.exposeBoolean('openToContributors', { nullable: true }),
     godsonLimit: t.exposeInt('godsonLimit'),
     onlyManagersCanProvide: t.exposeBoolean('onlyManagersCanProvide'),
+    autojoinGroups: t.relation('autojoinGroups'),
     event: t.relation('event'),
     group: t.relation('group', { nullable: true }),
     placesLeft: t.int({
@@ -98,6 +99,7 @@ export const TicketInput = builder.inputType('TicketInput', {
     openToSchools: t.field({ type: ['String'] }),
     openToMajors: t.field({ type: ['String'] }),
     id: t.id({ required: false }),
+    autojoinGroups: t.field({ type: ['String'] }),
   }),
 });
 
@@ -302,6 +304,7 @@ builder.mutationField('upsertTicket', (t) =>
       openToContributors: t.arg.boolean(),
       godsonLimit: t.arg.int(),
       onlyManagersCanProvide: t.arg.boolean(),
+      autojoinGroups: t.arg({ type: ['String'] }),
     },
     async authScopes(_, { eventId, id }, { user }) {
       const creating = !id;
@@ -338,6 +341,7 @@ builder.mutationField('upsertTicket', (t) =>
         openToContributors,
         godsonLimit,
         onlyManagersCanProvide,
+        autojoinGroups,
       }
     ) {
       const upsertData = {
@@ -365,11 +369,13 @@ builder.mutationField('upsertTicket', (t) =>
           links: { create: links },
           openToSchools: { connect: openToSchools.map((id) => ({ id })) },
           openToMajors: { connect: openToMajors.map((id) => ({ id })) },
+          autojoinGroups: { connect: autojoinGroups.map((uid) => ({ uid })) },
         },
         update: {
           ...upsertData,
           openToSchools: { set: openToSchools.map((id) => ({ id })) },
           openToMajors: { set: openToMajors.map((id) => ({ id })) },
+          autojoinGroups: { set: autojoinGroups.map((uid) => ({ uid })) },
           links: {
             deleteMany: {},
             createMany: {

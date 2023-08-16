@@ -7,6 +7,7 @@ import { sendLydiaPaymentRequest } from '../services/lydia.js';
 import { placesLeft, userCanSeeTicket } from './tickets.js';
 import { GraphQLError } from 'graphql';
 import { UserType, fullName } from './users.js';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
   name: 'PaymentMethod',
@@ -400,8 +401,33 @@ builder.mutationField('upsertRegistration', (t) =>
 
       const ticket = await prisma.ticket.findUniqueOrThrow({
         where: { id: ticketId },
-        include: { event: { include: { beneficiary: true } } },
+        include: { event: { include: { beneficiary: true } }, autojoinGroups: true },
       });
+
+      if (paid && ticket.autojoinGroups.length > 0) {
+        try {
+          await prisma.user.update({
+            where: { uid: beneficiary || user.uid },
+            data: {
+              groups: {
+                createMany: {
+                  skipDuplicates: true,
+                  data: ticket.autojoinGroups.map((g) => ({
+                    groupId: g.id,
+                    title: `Membre par ${ticket.event.title}`,
+                  })),
+                },
+              },
+            },
+          });
+        } catch (error: unknown) {
+          if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+            // ok, the beneficiary is just not a user of the app
+          } else {
+            throw error;
+          }
+        }
+      }
 
       return prisma.registration.upsert({
         ...query,
