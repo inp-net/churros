@@ -237,7 +237,6 @@
     openToExternal?: boolean | null | undefined;
     openToAlumni?: boolean | null | undefined;
     openToSchools: Array<{ name: string; color: string; uid: string }>;
-    autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;
     openToGroups: Array<{ name: string; uid: string; pictureFile: string }>;
     openToMajors: Array<{ name: string; shortName: string; id: string }>;
     openToContributors?: boolean | null | undefined;
@@ -263,7 +262,6 @@
       name: string;
       capacity: number;
       tickets: Ticket[];
-      autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;
     }>;
     contactMail: string;
     beneficiary?: undefined | { name: string; id: string };
@@ -371,7 +369,6 @@
                 name: '',
                 capacity: 0,
                 tickets: [],
-                autojoinGroups: [],
               },
             ];
           }}
