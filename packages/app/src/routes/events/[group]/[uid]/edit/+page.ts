@@ -30,6 +30,11 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             capacity: true,
             opensAt: true,
             closesAt: true,
+            autojoinGroups: {
+              uid: true,
+              name: true,
+              pictureFile: true,
+            },
             links: {
               value: true,
               name: true,

@@ -438,6 +438,9 @@ builder.mutationField('upsertEvent', (t) =>
                 openToMajors: {
                   set: connectFromListOfIds(ticket.openToMajors),
                 },
+                autojoinGroups: {
+                  set: connectFromListOfUids(ticket.autojoinGroups),
+                },
               },
             })
           )
@@ -454,6 +457,7 @@ builder.mutationField('upsertEvent', (t) =>
             openToGroups: { connect: connectFromListOfUids(ticket.openToGroups) },
             openToSchools: { connect: connectFromListOfUids(ticket.openToSchools) },
             openToMajors: { connect: connectFromListOfIds(ticket.openToMajors) },
+            autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
             eventId: event.id,
             uid: await createTicketUid(ticket.name),
           },
@@ -475,6 +479,7 @@ builder.mutationField('upsertEvent', (t) =>
               openToGroups: { connect: connectFromListOfUids(ticket.openToGroups) },
               openToSchools: { connect: connectFromListOfUids(ticket.openToSchools) },
               openToMajors: { connect: connectFromListOfIds(ticket.openToMajors) },
+              autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
               eventId: event.id,
               uid: await createTicketUid(ticket.name),
             },

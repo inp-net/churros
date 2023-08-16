@@ -202,8 +202,10 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
                     beneficiary: true,
                   },
                 },
+                autojoinGroups: true,
               },
             },
+            author: true,
           },
         },
       },
@@ -220,11 +222,17 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
       vendor_token,
     };
 
-    // Check if the beneficiary exists
-    if (!transaction.registration.ticket.event.beneficiary)
-      return res.status(400).send('Beneficiary not found');
+    const {
+      ticket: { event },
+      ticket,
+      beneficiary,
+      author,
+    } = transaction.registration;
 
-    if (sig === lydiaSignature(transaction.registration.ticket.event.beneficiary, sigParams)) {
+    // Check if the beneficiary exists
+    if (!event.beneficiary) return res.status(400).send('Beneficiary not found');
+
+    if (sig === lydiaSignature(event.beneficiary, sigParams)) {
       await prisma.registration.update({
         where: {
           id: transaction.registrationId,
@@ -233,6 +241,27 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
           paid: true,
         },
       });
+      if (ticket.autojoinGroups.length > 0) {
+        try {
+          await prisma.user.update({
+            where: { uid: beneficiary || author.uid },
+            data: {
+              groups: {
+                createMany: {
+                  skipDuplicates: true,
+                  data: ticket.autojoinGroups.map((g) => ({
+                    groupId: g.id,
+                    title: `Membre par ${ticket.event.title}`,
+                  })),
+                },
+              },
+            },
+          });
+        } catch (error: unknown) {
+          console.error(error);
+        }
+      }
+
       return res.status(200).send('OK');
     }
   } catch {

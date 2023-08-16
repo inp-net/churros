@@ -70,6 +70,7 @@
               openToGroups: t.openToGroups.map(({ uid }) => uid),
               openToSchools: t.openToSchools.map(({ uid }) => uid),
               openToMajors: t.openToMajors.map(({ id }) => id),
+              autojoinGroups: t.autojoinGroups.map(({ uid }) => uid),
             })),
           })),
           tickets: event.tickets.map((t) => ({
@@ -78,6 +79,7 @@
             openToGroups: t.openToGroups.map(({ uid }) => uid),
             openToSchools: t.openToSchools.map(({ uid }) => uid),
             openToMajors: t.openToMajors.map(({ id }) => id),
+            autojoinGroups: t.autojoinGroups.map(({ uid }) => uid),
           })),
           title: event.title,
           visibility: event.visibility,
@@ -196,7 +198,7 @@
     return 'tg:fake:' + nanoid(10);
   }
 
-  const defaultTicket = (id: string) => ({
+  const defaultTicket: (id: string) => Ticket = (id) => ({
     allowedPaymentMethods: ['Cash', 'Lydia'] as PaymentMethod[],
     capacity: 0,
     price: 0,
@@ -216,6 +218,7 @@
     openToPromotions: [],
     openToSchools: [],
     openToMajors: [],
+    autojoinGroups: [],
     id,
   });
 
@@ -238,6 +241,7 @@
     openToContributors?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
+    autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;
   };
 
   export let redirectAfterSave: (uid: string, groupUid: string) => string = (uid, groupUid) =>
@@ -257,6 +261,7 @@
       name: string;
       capacity: number;
       tickets: Ticket[];
+      autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;
     }>;
     contactMail: string;
     beneficiary?: undefined | { name: string; id: string };
@@ -322,7 +327,7 @@
       <FormPicture objectName="Event" bind:object={event} />
     {/if}
     <InputGroup group={event.group} label="Groupe" bind:uid={event.group.uid} />
-    <InputText label="Titre" bind:value={event.title} />
+    <InputText required label="Titre" bind:value={event.title} />
     <InputSelectOne
       label="Visibilité"
       hint={HELP_VISIBILITY[event.visibility]}
@@ -331,8 +336,8 @@
     />
     <InputLongText rich label="Description" bind:value={event.description} />
     <div class="side-by-side">
-      <DateInput label="Début" time bind:value={event.startsAt} />
-      <DateInput label="Fin" time bind:value={event.endsAt} />
+      <DateInput required label="Début" time bind:value={event.startsAt} />
+      <DateInput required label="Fin" time bind:value={event.endsAt} />
     </div>
     <InputText label="Lieu" bind:value={event.location} />
     <InputField label="Compte Lydia bénéficiaire">
@@ -364,6 +369,7 @@
                 name: '',
                 capacity: 0,
                 tickets: [],
+                autojoinGroups: [],
               },
             ];
           }}
@@ -443,7 +449,7 @@
     </section>
 
     <section class="simple-tickets">
-      {#each event.tickets as ticket, i (ticket.id)}
+      {#each event.tickets as ticket (ticket.id)}
         {#if !ticketIsInGroup(ticket)}
           <FormEventTicket
             on:delete={() => {
