@@ -319,6 +319,7 @@
 
   .content {
     margin: 1em;
+    overflow: hidden;
     transition: margin 0.5s cubic-bezier(0, 1, 0, 1);
   }
 
