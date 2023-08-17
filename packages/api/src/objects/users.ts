@@ -395,6 +395,24 @@ builder.mutationField('updateUser', (t) =>
       }
 
       purgeUserSessions(uid);
+      if (contributesTo) {
+        await prisma.contribution.deleteMany({
+          where: {
+            studentAssociationId: {
+              notIn: contributesTo,
+            },
+          },
+        });
+        await prisma.contribution.createMany({
+          data: contributesTo.map((id) => ({
+            studentAssociationId: id,
+            userId: user.id,
+            paid: true,
+          })),
+          skipDuplicates: true,
+        });
+      }
+
       return prisma.user.update({
         ...query,
         where: { uid },
@@ -409,20 +427,6 @@ builder.mutationField('updateUser', (t) =>
           links: { deleteMany: {}, createMany: { data: links } },
           otherEmails: { set: otherEmails },
           godparent: godparentUid ? { connect: { uid: godparentUid } } : { disconnect: true },
-          ...(contributesTo
-            ? {
-                contributions: {
-                  deleteMany: {},
-                  createMany: {
-                    data: contributesTo.map((id) => ({
-                      paid: true,
-                      studentAssociationId: id,
-                      user: { connect: { uid } },
-                    })),
-                  },
-                },
-              }
-            : {}),
         },
       });
     },
