@@ -256,12 +256,12 @@
           role={author.groups.find((g) => g.group.uid === group.uid)?.title ?? ''}
           {...author}
         />
-        {#if canEdit}
-          <div class="buttonAdmin">
-            <ButtonSecondary href={href + '/edit'}><IconGear /></ButtonSecondary>
-          </div>
-        {/if}
       </section>
+    {/if}
+    {#if canEdit}
+      <div class="button-admin">
+        <ButtonSecondary href={href + '/edit'}><IconGear /></ButtonSecondary>
+      </div>
     {/if}
   </section>
 </article>
@@ -272,7 +272,6 @@
     cursor: pointer;
     border-radius: var(--radius-block);
     box-shadow: var(--primary-shadow);
-
     --alpha: 0.5;
   }
 
@@ -310,15 +309,10 @@
     padding: 1rem;
   }
 
-  .author {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-  }
-
   .content {
+    position: relative;
     margin: 1em;
+    overflow: hidden;
     transition: margin 0.5s cubic-bezier(0, 1, 0, 1);
   }
 
@@ -366,5 +360,11 @@
 
   .chevron-up.collapsed {
     transform: rotate(180deg);
+  }
+
+  .button-admin {
+    position: absolute;
+    right: 0;
+    bottom: 0;
   }
 </style>

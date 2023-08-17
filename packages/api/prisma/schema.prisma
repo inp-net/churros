@@ -26,11 +26,12 @@ model User {
   schoolEmail  String? @unique @db.VarChar(255)
 
   // Mandatory profile details
-  email          String @unique @db.VarChar(255)
-  firstName      String @db.VarChar(255)
-  lastName       String @db.VarChar(255)
+  email          String   @unique @db.VarChar(255)
+  otherEmails    String[] @db.VarChar(255)
+  firstName      String   @db.VarChar(255)
+  lastName       String   @db.VarChar(255)
   majorId        String
-  major          Major  @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  major          Major    @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   graduationYear Int
 
   // Optional profile details

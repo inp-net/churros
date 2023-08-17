@@ -42,6 +42,10 @@ export const UserType = builder.prismaNode('User', {
   fields: (t) => ({
     majorId: t.exposeID('majorId'),
     uid: t.exposeString('uid'),
+    otherEmails: t.expose('otherEmails', {
+      type: ['String'],
+      authScopes: { loggedIn: true, $granted: 'me' },
+    }),
     email: t.exposeString('email', { authScopes: { loggedIn: true, $granted: 'me' } }),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
@@ -290,6 +294,7 @@ builder.mutationField('updateUser', (t) =>
       majorId: t.arg.id(),
       graduationYear: t.arg.int({ required: false }),
       email: t.arg.string(),
+      otherEmails: t.arg.stringList(),
       birthday: t.arg({ type: DateTimeScalar, required: false }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
       phone: t.arg.string({ validate: { maxLength: 255 } }),
@@ -310,6 +315,7 @@ builder.mutationField('updateUser', (t) =>
         uid,
         majorId,
         email,
+        otherEmails,
         graduationYear,
         nickname,
         description,
@@ -367,6 +373,7 @@ builder.mutationField('updateUser', (t) =>
           phone,
           birthday,
           links: { deleteMany: {}, createMany: { data: links } },
+          otherEmails: { set: otherEmails },
           godparent: godparentUid ? { connect: { uid: godparentUid } } : { disconnect: true },
           ...(contributesTo
             ? {

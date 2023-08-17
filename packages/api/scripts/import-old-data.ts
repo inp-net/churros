@@ -165,7 +165,10 @@ async function makeUser(user: OldUser, ldapUser: Ldap.User, ae: StudentAssociati
       canEditUsers: bool(user.is_staff),
       createdAt: parseISO(user.date_joined),
       description: '',
-      email: ldapUser.mailAnnexe?.[0] ?? ldapUser.mail,
+      email: ldapUser.mailEcole,
+      otherEmails: {
+        set: ldapUser.mailAnnexe ?? [],
+      },
       firstName: user.first_name,
       lastName: user.last_name,
       graduationYear: ldapUser.promo,

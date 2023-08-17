@@ -46,15 +46,18 @@
 />
 
 <header
+  class:has-picture={Boolean(pictureFile)}
   style:--horizontal-padding={headerHorizontalPadding || 'unset'}
-  style:background-image="linear-gradient(rgba(0 0 0 / var(--alpha)), rgba(0 0 0 / var(--alpha))),
-  url({pictureFile ? `${PUBLIC_STORAGE_URL}${pictureFile}` : 'https://picsum.photos/400/400'})"
+  style:background-image={pictureFile
+    ? `linear-gradient(rgba(0 0 0 / var(--alpha)), rgba(0 0 0 / var(--alpha))),
+  url(${PUBLIC_STORAGE_URL}${pictureFile})`
+    : undefined}
 >
   <div class="header-content">
     <h1>
-      <BackButton go="../.." white />
+      <BackButton go="../.." white={Boolean(pictureFile)} />
       {title}
-      <ButtonShare white />
+      <ButtonShare white={Boolean(pictureFile)} />
     </h1>
     {#if startsAt && endsAt}
       <p class="when"><IconWhen /> {formatEventDates(startsAt, endsAt)}</p>
@@ -74,16 +77,26 @@
 
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
     width: 100%;
-    padding: var(--horizontal-padding, calc(clamp(2rem, 5vw, 6rem))) 1rem;
+
+    &.has-picture {
+      padding: var(--horizontal-padding, calc(clamp(2rem, 5vw, 6rem))) 1rem;
+    }
+
+    &:not(.has-picture) {
+      padding: 2rem 1rem;
+    }
+
     background-size: cover;
 
     --alpha: 0.6;
 
     > * {
       margin: 0;
+    }
+
+    &.has-picture > * {
       color: white;
     }
   }
@@ -92,6 +105,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    width: calc(min(1000px, 100%));
+    margin: 0 auto;
   }
 
   h1 {
