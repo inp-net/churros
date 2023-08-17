@@ -26,6 +26,7 @@
   import { goto } from '$app/navigation';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { zeus } from '$lib/zeus';
+  import InputText from '$lib/components/InputText.svelte';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
@@ -66,6 +67,7 @@
 
   let contributeServerError = '';
   let contributeLoading = false;
+  let contributePhone = $me?.phone ?? '';
 
   async function contribute() {
     const studentAssociation = user.major.schools[0].studentAssociations[0];
@@ -75,7 +77,7 @@
       contribute: [
         {
           id: studentAssociation.id,
-          phone: $me?.phone ?? '',
+          phone: contributePhone,
         },
         {
           __typename: true,
@@ -104,7 +106,7 @@
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       contributeServerError = `${error}`;
     }
-  
+
     contributeLoading = false;
     window.location.reload();
   }
@@ -234,6 +236,10 @@
   {#if $me?.uid === user.uid && ((user.pendingContributions?.length ?? 0) > 0 || (user.contributesTo?.length ?? 0) <= 0)}
     <section class="contribution">
       <h2>Cotisation</h2>
+      <p class="explain-contribution typo-details">
+        Cotiser, c'est contribuer à l'organisation de la vie associative de ton école. Elle te
+        permet d'être membre de clubs et donne parfois droit à des places à tarif réduit.
+      </p>
 
       <div class="manage">
         {#if (user.pendingContributions?.length ?? 0) > 0}
@@ -245,9 +251,16 @@
             }}>Annuler la demande</ButtonSecondary
           >
         {:else if (user.contributesTo?.length ?? 0) <= 0}
+          <InputText type="tel" label="Numéro de téléphone" bind:value={contributePhone} />
           <ButtonSecondary loading={contributeLoading} on:click={contribute}
-            >Cotiser pour {user.major.schools[0].studentAssociations[0].name}</ButtonSecondary
-          >
+            >Cotiser pour {user.major.schools[0].studentAssociations[0].name}
+            <strong class="price"
+              >{Intl.NumberFormat('fr-FR', {
+                style: 'currency',
+                currency: 'EUR',
+              }).format(user.major.schools[0].studentAssociations[0].contributionPrice)}</strong
+            >
+          </ButtonSecondary>
         {/if}
         {#if contributeServerError}
           <Alert theme="danger">{contributeServerError}</Alert>
@@ -417,6 +430,15 @@
     display: flex;
     flex-flow: column wrap;
     align-items: center;
+  }
+
+  .contribution h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  .contribution .explain-contribution {
+    margin-bottom: 2rem;
+    text-align: justify;
   }
 
   .contribution .manage {

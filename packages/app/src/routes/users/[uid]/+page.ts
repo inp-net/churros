@@ -43,6 +43,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
               studentAssociations: {
                 id: true,
                 name: true,
+                contributionPrice: true,
               },
             },
           },

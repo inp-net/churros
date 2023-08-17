@@ -14,6 +14,7 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
     links: t.relation('links'),
     school: t.relation('school'),
     groups: t.relation('groups'),
+    contributionPrice: t.exposeFloat('contributionPrice'),
   }),
 });
 
@@ -90,7 +91,7 @@ builder.mutationField('contribute', (t) =>
       });
 
       await sendLydiaPaymentRequest(
-        `Cotisation pour ${studentAssociation.name}`,
+        `la cotisation pour ${studentAssociation.name}`,
         studentAssociation.contributionPrice,
         phone,
         lydiaAccount.vendorToken
@@ -133,11 +134,12 @@ builder.mutationField('cancelPendingContribution', (t) =>
       if (
         contribution?.transaction?.requestId &&
         contribution.studentAssociation.lydiaAccounts[0]?.vendorToken
-      )
-        {await cancelLydiaTransaction(
+      ) {
+        await cancelLydiaTransaction(
           contribution.transaction,
           contribution.studentAssociation.lydiaAccounts[0].vendorToken
-        );}
+        );
+      }
 
       await prisma.contribution.delete({
         where: {
