@@ -20,6 +20,7 @@ import { NotificationTypeEnum } from './notifications.js';
 import { FamilyTree, getFamilyTree } from '../godchildren-tree.js';
 import { yearTier } from '../date.js';
 import { addDays } from 'date-fns';
+import { StudentAssociationType } from './student-associations.js';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -106,7 +107,40 @@ export const UserType = builder.prismaNode('User', {
     notificationSettings: t.relation('notificationSettings', {
       authScopes: { loggedIn: true, $granted: 'me' },
     }),
-    contributesTo: t.relation('contributesTo'),
+    contributesTo: t.field({
+      type: [StudentAssociationType],
+      async resolve({ id }) {
+        return prisma.studentAssociation.findMany({
+          where: {
+            contributions: {
+              some: {
+                user: {
+                  id,
+                },
+                paid: true,
+              },
+            },
+          },
+        });
+      },
+    }),
+    pendingContributions: t.field({
+      type: [StudentAssociationType],
+      async resolve({ id }) {
+        return prisma.studentAssociation.findMany({
+          where: {
+            contributions: {
+              some: {
+                user: {
+                  id,
+                },
+                paid: false,
+              },
+            },
+          },
+        });
+      },
+    }),
     godparent: t.relation('godparent', { nullable: true }),
     godchildren: t.relation('godchildren'),
     outgoingGodparentRequests: t.relation('outgoingGodparentRequests'),
@@ -377,8 +411,15 @@ builder.mutationField('updateUser', (t) =>
           godparent: godparentUid ? { connect: { uid: godparentUid } } : { disconnect: true },
           ...(contributesTo
             ? {
-                contributesTo: {
-                  set: contributesTo.map((id) => ({ id })),
+                contributions: {
+                  deleteMany: {},
+                  createMany: {
+                    data: contributesTo.map((id) => ({
+                      paid: true,
+                      studentAssociationId: id,
+                      user: { connect: { uid } },
+                    })),
+                  },
                 },
               }
             : {}),

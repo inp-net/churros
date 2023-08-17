@@ -4,7 +4,7 @@ import { type Group, PrismaClient, NotificationType, StudentAssociation } from '
 import { hash } from 'argon2';
 import { compareAsc, differenceInYears, parse, parseISO } from 'date-fns';
 import { createWriteStream, readFileSync, statSync, writeFileSync } from 'node:fs';
-import type * as Ldap from './ldap-types';
+import * as Ldap from './ldap-types.js';
 import { Readable } from 'node:stream';
 import { finished } from 'node:stream/promises';
 import type { ReadableStream } from 'node:stream/web';
@@ -195,10 +195,13 @@ async function makeUser(user: OldUser, ldapUser: Ldap.User, ae: StudentAssociati
           allow: true,
         })),
       },
-      contributesTo: ldapUser.inscritAE
+      contributions: ldapUser.inscritAE
         ? {
-            connect: {
-              id: ae.id,
+            create: {
+              paid: true,
+              studentAssociation: {
+                connect: { id: ae.id },
+              },
             },
           }
         : undefined,
@@ -256,7 +259,12 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
       schoolId: (await prisma.school.findUniqueOrThrow({ where: { uid: ldapGroup.ecole.o } })).id,
       selfJoinable: false,
       studentAssociationId: null,
-      type: ldapGroup.activite === 'liste' ? 'List' : typeClub[ldapGroup.typeClub ?? 'club'],
+      type:
+        ldapGroup.activite === Ldap.Activite.Bureaux
+          ? 'StudentAssociationSection'
+          : ldapGroup.activite === Ldap.Activite.Liste
+          ? 'List'
+          : typeClub[ldapGroup.typeClub ?? 'club'],
       uid: ldapGroup.cn,
     },
   });

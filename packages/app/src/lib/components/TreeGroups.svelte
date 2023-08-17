@@ -74,6 +74,10 @@
     font-size: 1.25rem;
   }
 
+  .description {
+    font-size: 0.9em;
+  }
+
   .highlight {
     font-weight: bold;
   }

@@ -34,7 +34,9 @@ builder.mutationField('addGroupMember', (t) =>
     async authScopes(_, { groupUid, uid }, { user }) {
       const member = await prisma.user.findUniqueOrThrow({
         where: { uid },
-        include: { contributesTo: { include: { school: true } } },
+        include: {
+          contributions: { include: { studentAssociation: { include: { school: true } } } },
+        },
       });
       const group = await prisma.group.findUniqueOrThrow({
         where: { uid: groupUid },
@@ -42,8 +44,8 @@ builder.mutationField('addGroupMember', (t) =>
       });
 
       if (
-        !member.contributesTo.some(
-          ({ school, id }) =>
+        !member.contributions.some(
+          ({ studentAssociation: { school, id } }) =>
             school.uid === group.school?.uid || id === group.studentAssociation?.id
         )
       ) {

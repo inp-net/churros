@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
+import { GraphQLError } from 'graphql';
 import { prisma } from '../prisma.js';
 import { createHash } from 'node:crypto';
+import type { LydiaTransaction } from '@prisma/client';
 
 // Get the Lydia API URL from the environment
 const { LYDIA_API_URL, LYDIA_WEBHOOK_URL } = process.env;
@@ -22,7 +24,7 @@ export async function checkLydiaAccount(vendor_token: string, vendor_id: string)
 }
 
 // Send a payment request to a number
-export async function sendLydiaPaymentRequest(
+export async function payEventRegistrationViaLydia(
   phone: string,
   registrationId?: string
 ): Promise<void> {
@@ -45,6 +47,8 @@ export async function sendLydiaPaymentRequest(
   });
   console.log(registration);
   if (!registration) throw new Error('Registration not found');
+  const beneficiaryVendorToken = registration.ticket.event.beneficiary?.vendorToken;
+  if (!beneficiaryVendorToken) throw new GraphQLError("L'évènement n'a pas de bénéficiaire");
   let transaction = registration.lydiaTransaction;
   // Check if a lydia transaction already exists
   if (!transaction) {
@@ -60,22 +64,51 @@ export async function sendLydiaPaymentRequest(
   // Cancel the previous transaction
   if (transaction.requestId && transaction.requestUuid) {
     // Cancel the previous transaction
-    await fetch(`${LYDIA_API_URL}/api/request/cancel.json`, {
-      method: 'POST',
-      body: new URLSearchParams({
-        request_id: transaction.requestId,
-        vendor_token: registration.ticket.event.beneficiary?.vendorToken || '',
-      }),
-    });
+    await cancelLydiaTransaction(transaction, beneficiaryVendorToken);
   }
 
+  const requestDetails = await sendLydiaPaymentRequest(
+    `Paiement de ${registration.ticket.event.title}`,
+    registration.ticket.price,
+    phone,
+    beneficiaryVendorToken
+  );
+
+  // Update the lydia transaction
+  await prisma.lydiaTransaction.update({
+    where: { id: transaction.id },
+    data: {
+      phoneNumber: phone,
+      ...requestDetails,
+    },
+  });
+}
+
+export async function cancelLydiaTransaction(transaction: LydiaTransaction, vendorToken: string) {
+  if (!transaction.requestId)
+    throw new GraphQLError("Aucune requête pour cette transaction, impossible de l'annuler");
+  await fetch(`${LYDIA_API_URL}/api/request/cancel.json`, {
+    method: 'POST',
+    body: new URLSearchParams({
+      request_id: transaction.requestId,
+      vendor_token: vendorToken,
+    }),
+  });
+}
+
+export async function sendLydiaPaymentRequest(
+  title: string,
+  price: number,
+  phone: string,
+  vendorToken: string
+): Promise<{ requestId: string; requestUuid: string }> {
   const formParams = {
-    message: `Paiement de ${registration.ticket.event.title}`,
-    amount: registration.ticket.price.toString(),
+    message: `Paiement de ${title}`,
+    amount: price.toString(),
     currency: 'EUR',
     type: 'phone',
     recipient: phone,
-    vendor_token: registration.ticket.event.beneficiary?.vendorToken || '',
+    vendor_token: vendorToken,
     confirm_url: LYDIA_WEBHOOK_URL || '',
   };
 
@@ -90,15 +123,7 @@ export async function sendLydiaPaymentRequest(
     request_id: string;
     request_uuid: string;
   };
-  // Update the lydia transaction
-  await prisma.lydiaTransaction.update({
-    where: { id: transaction.id },
-    data: {
-      phoneNumber: phone,
-      requestId: request_id,
-      requestUuid: request_uuid,
-    },
-  });
+  return { requestId: request_id, requestUuid: request_uuid };
 }
 
 export function lydiaSignature(
@@ -116,4 +141,50 @@ export function lydiaSignature(
         privateToken
     )
     .digest('hex');
+}
+
+export async function verifyLydiaTransaction(
+  requestId: string,
+  signatureParams: Record<string, string>,
+  signature: string
+): Promise<{ verified: boolean; transaction: typeof transaction }> {
+  const transaction = await prisma.lydiaTransaction.findFirst({
+    where: { requestId },
+    include: {
+      registration: {
+        include: {
+          ticket: {
+            include: {
+              event: {
+                include: {
+                  beneficiary: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      contribution: {
+        include: {
+          studentAssociation: {
+            include: {
+              lydiaAccounts: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!transaction) throw new Error('Transaction not found');
+  if (!transaction.registration && !transaction.contribution)
+    throw new Error('Transaction has no purpose');
+  const beneficiary =
+    transaction.registration?.ticket.event.beneficiary ??
+    transaction.contribution?.studentAssociation.lydiaAccounts[0];
+  if (!beneficiary) throw new Error('Transaction has no beneficiary');
+
+  return {
+    verified: lydiaSignature(beneficiary, signatureParams) === signature,
+    transaction,
+  };
 }

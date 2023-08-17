@@ -35,7 +35,19 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             secretary: true,
           },
           links: { name: true, value: true, computedValue: true },
-          major: { name: true, shortName: true, schools: { name: true, color: true } },
+          major: {
+            name: true,
+            shortName: true,
+            schools: {
+              name: true,
+              color: true,
+              studentAssociations: {
+                id: true,
+                name: true,
+                contributionPrice: true,
+              },
+            },
+          },
           familyTree: {
             nesting: true,
             users: {
@@ -47,7 +59,8 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
               graduationYear: true,
             },
           },
-          ...(me.canEditUsers
+          ...(me.uid === params.uid ? { pendingContributions: { name: true, id: true } } : {}),
+          ...(me.canEditUsers || me.uid === params.uid
             ? {
                 contributesTo: {
                   name: true,
