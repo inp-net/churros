@@ -472,10 +472,14 @@
   @media (min-width: 1000px) {
     .content {
       display: grid;
-      grid-template-areas: 'header header' 'groups groups' 'family articles';
+      grid-template-areas: 'header header' 'contribute contribute' 'groups groups' 'family articles';
       grid-template-columns: 50% 50%;
       max-width: 1200px;
       margin: 0 auto;
+    }
+
+    section.contribution {
+      grid-area: contribute;
     }
 
     header {
