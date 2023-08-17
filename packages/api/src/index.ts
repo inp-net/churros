@@ -199,12 +199,17 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
         sig ===
         lydiaSignature(transaction.registration.ticket.event.beneficiary, signatureParameters)
       ) {
-        await prisma.registration.update({
+        await prisma.lydiaTransaction.update({
           where: {
-            id: transaction.registration.id,
+            id: transaction.id,
           },
           data: {
-            paid: true,
+            transactionId: transaction_identifier,
+            registration: {
+              update: {
+                paid: true,
+              },
+            },
           },
         });
         return res.status(200).send('OK');
