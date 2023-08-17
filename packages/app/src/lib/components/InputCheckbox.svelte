@@ -29,7 +29,7 @@
   let checkboxElement: HTMLInputElement;
 </script>
 
-<label class="input-checkbox" class:ternary class:align-right={alignRight}>
+<label class:nolabel={!label} class="input-checkbox" class:ternary class:align-right={alignRight}>
   {#if ternary}
     <input
       type="checkbox"
@@ -59,18 +59,20 @@
         {/if}
       {/if}
     </div>
-    <div class="labels">
-      <span class="label typo-paragraph">{label}</span>
-      <span class="label-value typo-details">
-        {#if value === null}
-          {labelNull}
-        {:else if value}
-          {labelTrue}
-        {:else}
-          {labelFalse}
-        {/if}
-      </span>
-    </div>
+    {#if label}
+      <div class="labels">
+        <span class="label typo-paragraph">{label}</span>
+        <span class="label-value typo-details">
+          {#if value === null}
+            {labelNull}
+          {:else if value}
+            {labelTrue}
+          {:else}
+            {labelFalse}
+          {/if}
+        </span>
+      </div>
+    {/if}
   {:else}
     <input on:change type="checkbox" bind:checked={value} />
     <div class="checkbox" data-state={JSON.stringify(value)}>
@@ -148,8 +150,11 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
-    min-width: 120px /* XXX: based on width of input when the label is smaller than "Peu importe" */;
     cursor: pointer;
+  }
+
+  label:not(.nolabel) {
+    min-width: 120px /* XXX: based on width of input when the label is smaller than "Peu importe" */;
   }
 
   .labels {

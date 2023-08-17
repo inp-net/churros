@@ -1,13 +1,21 @@
 <script lang="ts">
-  import Button from '$lib/components/Button.svelte';
+  import IconDownload from '~icons/mdi/download-outline';
   import type { PageData } from './$types';
   import * as jsonToCsv from 'json-to-csv-in-browser';
   import IconCheck from '~icons/mdi/check';
   import IconCancel from '~icons/mdi/cancel';
+  import IconClose from '~icons/mdi/close';
   import { page } from '$app/stores';
-  import { dateTimeFormatter } from '$lib/dates';
-  import { intlFormatDistance } from 'date-fns';
-  import { type PaymentMethod, zeus } from '$lib/zeus';
+  import { dateTimeFormatter, formatDateTime } from '$lib/dates';
+  import { format, isSameDay } from 'date-fns';
+  import { zeus } from '$lib/zeus';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
+  import Badge from '$lib/components/Badge.svelte';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+
+  let compact = false;
 
   function saveAsCsv() {
     if (!registrations) return;
@@ -39,48 +47,11 @@
 
   export let data: PageData;
   const { registrationsOfEvent: registrations } = data;
-
-  const CATEGORIES = [
-    'En attente de paiement',
-    'Payées',
-    'Validées',
-    'Refusées',
-    'En attente de remboursement',
-    'Remboursées',
-  ] as const;
-
-  const registrationsByCategory = {
-    'En attente de paiement': [],
-    Payées: [],
-    Validées: [],
-    Refusées: [],
-    'En attente de remboursement': [],
-    Remboursées: [],
-  } as unknown as Record<
-    (typeof CATEGORIES)[number],
-    Array<{
-      paid: boolean;
-      createdAt: Date;
-      beneficiary: string;
-      id: string;
-      paymentMethod?: PaymentMethod | undefined;
-      author: { uid: string; firstName: string; lastName: string };
-      ticket: { id: string; name: string };
-    }>
-  >;
-
-  function updateRegistrationsByCategory(
-    registrations: (typeof registrationsByCategory)[(typeof CATEGORIES)[number]]
-  ) {
-    if (!registrations) return;
-
-    registrationsByCategory['En attente de paiement'] = registrations.filter((r) => !r.paid) ?? [];
-    registrationsByCategory['Payées'] = registrations.filter((r) => r.paid) ?? [];
-  }
+  const rowIsSelected = Object.fromEntries(registrations.edges.map(({ node }) => [node.id, false]));
 
   async function updatePaidStatus(
     markAsPaid: boolean,
-    registration: (typeof registrationsByCategory)[(typeof CATEGORIES)[number]][number]
+    registration: (typeof registrations.edges)[number]['node']
   ): Promise<void> {
     const { upsertRegistration } = await $zeus.mutate({
       upsertRegistration: [
@@ -110,46 +81,167 @@
       ].node.paid = upsertRegistration.data.paid;
     }
   }
-
-  $: updateRegistrationsByCategory(registrations?.edges.map(({ node }) => node));
 </script>
 
-<h1>{registrations?.edges.length} Réservations</h1>
+<header>
+  <h1>{registrations?.edges.length} Réservations</h1>
 
-<Button
-  on:click={() => {
-    saveAsCsv();
-  }}>Exporter en .csv</Button
->
+  <div class="actions">
+    <ButtonSecondary
+      icon={IconDownload}
+      on:click={() => {
+        saveAsCsv();
+      }}>Exporter en .csv</ButtonSecondary
+    >
+    <InputCheckbox label="Vue compacte" bind:value={compact} />
+  </div>
+</header>
 
-{#each CATEGORIES as category}
-  <h2>{category}</h2>
-
-  <ul>
-    {#each registrationsByCategory[category] as registration (registration.id)}
-      <li>
-        {dateTimeFormatter.format(registration.createdAt)} &bull; {intlFormatDistance(
-          registration.createdAt,
-          new Date()
-        )} &bull;
-        {registration.ticket.name}
-        &bull;
-        {registration.author.firstName}
-        {registration.author.lastName} pour {registration.beneficiary}
-        {#if category === 'En attente de paiement'}
-          <Button
-            on:click={async () => {
-              await updatePaidStatus(true, registration);
-            }}><IconCheck /> Payée</Button
-          >
+<table class:compact>
+  <thead>
+    <tr>
+      <th />
+      <th>Date</th>
+      <th>État</th>
+      <th>Méthode</th>
+      <th>Bénéficiaire</th>
+      <th>Cotise</th>
+      <th>Filière</th>
+      <th>Année</th>
+      <th>Payé par</th>
+      <th />
+    </tr>
+  </thead>
+  <tbody>
+    {#each registrations.edges as { node: registration, node: { paid, id, beneficiary, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod } }}
+      {@const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined)}
+      <tr class:selected={rowIsSelected[id]}>
+        <td class="actions">
+          <InputCheckbox bind:value={rowIsSelected[id]} label="" />
+        </td>
+        <td>
+          {#if isSameDay(createdAt, new Date())}
+            {format(createdAt, 'HH:MM')}
+          {:else}
+            {formatDateTime(createdAt)}
+          {/if}
+        </td>
+        <td>
+          {paid ? 'Payée' : 'Non payée'}
+        </td>
+        <td>
+          {paymentMethod ? DISPLAY_PAYMENT_METHODS[paymentMethod] : 'Inconnue'}
+        </td>
+        {#if benef}
+          <td>
+            {#if compact}
+              <a href="/users/{benef.uid}">{benef.fullName}</a>
+            {:else}
+              <AvatarPerson href="/users/{benef.uid}" {...benef} />
+            {/if}
+          </td>
+          <td class="centered">
+            {#if benef.contributesTo.length > 0}
+              {benef.contributesTo.map(({ name }) => name).join(', ')}
+            {:else}
+              <IconClose />
+            {/if}
+          </td>
+          <td class="centered">
+            {benef.major.shortName ?? ''}
+          </td>
+          <td class="centered">
+            {benef.yearTier}A
+          </td>
         {:else}
-          <Button
-            on:click={async () => {
-              await updatePaidStatus(false, registration);
-            }}><IconCancel /> Non payée</Button
-          >
+          <td colspan="4">{beneficiary} <Badge>exté</Badge> </td>
         {/if}
-      </li>
+        <td>
+          {#if !authorIsBeneficiary}
+            {#if compact}
+              <a href="/users/{author.uid}">{author.fullName}</a>
+            {:else}
+              <AvatarPerson href="/users/{author.uid}" {...author} />
+            {/if}
+          {/if}
+        </td>
+        <td class="actions">
+          <ButtonSecondary
+            danger={paid}
+            on:click={async () => updatePaidStatus(!paid, registration)}
+          >
+            {#if compact}
+              {#if paid} <IconCancel /> {:else} <IconCheck /> {/if}
+            {:else if paid}
+              <IconCancel /> Non payée{:else}
+              <IconCheck /> Payée{/if}
+          </ButtonSecondary>
+        </td>
+      </tr>
     {/each}
-  </ul>
-{/each}
+  </tbody>
+</table>
+
+<style lang="scss">
+  table {
+    --spacing: 1.5rem;
+    border-collapse: separate;
+    border-spacing: calc(max(0.5rem, var(--spacing) / 2));
+    margin: 0 auto;
+    overflow-y: scroll;
+    max-width: 100vw;
+  }
+  table.compact {
+    --spacing: 0.5rem;
+    border-spacing: var(--border-block);
+  }
+  table,
+  th,
+  td {
+    border-color: var(--bg);
+  }
+  td,
+  th {
+    padding: calc(max(0.5rem, var(--spacing) / 2));
+    text-align: left;
+  }
+  td {
+    background: var(--muted-bg);
+  }
+  table:not(.compact) td {
+    border-radius: var(--radius-inline);
+  }
+  header {
+    text-align: center;
+    margin: 0 auto;
+    margin-bottom: 2rem;
+  }
+  header h1 {
+    margin: 1rem 0;
+  }
+  header .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  tr.selected td:not(.actions) {
+    background: var(--muted-border);
+    border-left-color: var(--muted-border);
+    border-right-color: var(--muted-border);
+  }
+  tr.selected:first-child td {
+    border-top-color: transparent;
+  }
+
+  td[colspan],
+  td.centered {
+    text-align: center;
+  }
+  td.actions {
+    background: transparent;
+    padding: 0.25rem 1rem;
+  }
+</style>
