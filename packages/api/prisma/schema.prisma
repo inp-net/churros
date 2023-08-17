@@ -219,11 +219,11 @@ model StudentAssociation {
 
 model Contribution {
   id                   String             @id @default(dbgenerated("nanoid('contribution:')"))
-  studentAssociation   StudentAssociation @relation(fields: [studentAssociationId], references: [id])
+  studentAssociation   StudentAssociation @relation(fields: [studentAssociationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   studentAssociationId String
   transaction          LydiaTransaction?
   transactionId        String?
-  user                 User               @relation(fields: [userId], references: [id])
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   paid                 Boolean            @default(false)
   userId               String
 
