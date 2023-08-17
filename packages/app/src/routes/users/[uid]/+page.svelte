@@ -268,6 +268,10 @@
           <Alert theme="danger">{contributeServerError}</Alert>
         {/if}
       </div>
+
+      <p class="typo-details">
+        Tu peux aussi payer par chèque ou espèces. Renseigne-toi auprès du BDE.
+      </p>
     </section>
   {/if}
 
@@ -439,13 +443,8 @@
     align-items: center;
   }
 
-  .contribution h2 {
-    margin-bottom: 0.5rem;
-  }
-
-  .contribution .explain-contribution {
-    margin-bottom: 2rem;
-    text-align: justify;
+  .contribution > p {
+    text-align: center;
   }
 
   .contribution .manage {
@@ -454,6 +453,7 @@
     gap: 0.5rem;
     align-items: center;
     justify-content: center;
+    margin: 1rem 0;
   }
 
   .family {
