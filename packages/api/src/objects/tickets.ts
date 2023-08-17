@@ -26,6 +26,7 @@ export const placesLeft = (ticket: {
     tickets: Array<{ registrations: Array<{ paid: boolean; createdAt: Date }> }>;
   };
 }) => {
+  if (ticket.capacity === 0) return Number.POSITIVE_INFINITY;
   let placesLeftInGroup = Number.POSITIVE_INFINITY;
   if (ticket.group?.capacity) {
     placesLeftInGroup =
@@ -66,7 +67,7 @@ export const TicketType = builder.prismaNode('Ticket', {
     openToSchools: t.relation('openToSchools'),
     openToGroups: t.relation('openToGroups'),
     openToMajors: t.relation('openToMajors'),
-    openToNonAEContributors: t.exposeBoolean('openToNonAEContributors', { nullable: true }),
+    openToContributors: t.exposeBoolean('openToContributors', { nullable: true }),
     godsonLimit: t.exposeInt('godsonLimit'),
     onlyManagersCanProvide: t.exposeBoolean('onlyManagersCanProvide'),
     event: t.relation('event'),
@@ -105,7 +106,7 @@ export const TicketInput = builder.inputType('TicketInput', {
     openToAlumni: t.boolean({ required: false }),
     openToExternal: t.boolean({ required: false }),
     openToGroups: t.field({ type: ['String'] }),
-    openToNonAEContributors: t.boolean({ required: false }),
+    openToContributors: t.boolean({ required: false }),
     openToPromotions: t.field({ type: ['Int'] }),
     openToSchools: t.field({ type: ['String'] }),
     openToMajors: t.field({ type: ['String'] }),
@@ -135,10 +136,11 @@ builder.queryField('ticketByUid', (t) =>
     args: {
       uid: t.arg.string(),
       eventUid: t.arg.string(),
+      groupUid: t.arg.string(),
     },
-    async authScopes(_, { uid, eventUid }, { user }) {
+    async authScopes(_, { uid, eventUid, groupUid }, { user }) {
       const ticket = await prisma.ticket.findFirstOrThrow({
-        where: { uid, event: { uid: eventUid } },
+        where: { uid, event: { uid: eventUid, group: { uid: groupUid } } },
         include: { event: true },
       });
       return eventAccessibleByUser(ticket.event, user);
@@ -155,23 +157,40 @@ export function userCanSeeTicket(
     openToSchools,
     openToPromotions,
     openToMajors,
+    openToContributors,
   }: {
-    event: { id: string };
+    event: {
+      id: string;
+      group: { school: null | { uid: string }; studentAssociation: null | { id: string } };
+    };
     onlyManagersCanProvide: boolean;
     openToGroups: Array<{ uid: string }>;
     openToSchools: Array<{ uid: string }>;
     openToPromotions: number[];
     openToMajors: Array<{ id: string }>;
+    openToContributors: boolean | null;
   },
   user?: {
     groups: Array<{ group: { uid: string } }>;
     managedEvents: Array<{ event: { id: string } }>;
     graduationYear: number;
     major: { schools: Array<{ uid: string }>; id: string };
+    contributesTo: Array<{ id: string; school: { uid: string } }>;
   }
 ): boolean {
   // Managers can see everything
   if (user?.managedEvents.some(({ event: { id } }) => id === event.id)) return true;
+
+  // Get the user's contributor status
+  const isContributor = Boolean(
+    user?.contributesTo.some(
+      ({ school, id }) =>
+        event.group.studentAssociation?.id === id || event.group.school?.uid === school.uid
+    )
+  );
+
+  if (openToContributors === true && !isContributor) return false;
+  if (openToContributors === false && isContributor) return false;
 
   // Check that the user is in the group
   if (
@@ -218,13 +237,56 @@ builder.queryField('ticketsOfEvent', (t) =>
         where: { event: { uid: eventUid, group: { uid: groupUid } } },
         include: {
           ...query.include,
-          openToGroups: true,
+          openToGroups: {
+            include: {
+              school: true,
+              studentAssociation: true,
+            },
+          },
           openToSchools: true,
-          event: true,
+          event: {
+            include: {
+              group: {
+                include: {
+                  studentAssociation: true,
+                  school: true,
+                },
+              },
+            },
+          },
           openToMajors: true,
+          group: true,
         },
       });
-      return allTickets.filter((ticket) => userCanSeeTicket(ticket, user));
+      const userWithContributesTo = user
+        ? await prisma.user.findUniqueOrThrow({
+            where: { id: user.id },
+            include: {
+              contributesTo: {
+                include: {
+                  school: true,
+                },
+              },
+              groups: {
+                include: {
+                  group: true,
+                },
+              },
+              managedEvents: {
+                include: {
+                  event: true,
+                },
+              },
+              major: {
+                include: {
+                  schools: true,
+                },
+              },
+            },
+          })
+        : undefined;
+
+      return allTickets.filter((ticket) => userCanSeeTicket(ticket, userWithContributesTo));
     },
   })
 );
@@ -250,7 +312,7 @@ builder.mutationField('upsertTicket', (t) =>
       openToSchools: t.arg({ type: ['String'] }),
       openToGroups: t.arg({ type: ['String'] }),
       openToMajors: t.arg({ type: ['String'] }),
-      openToNonAEContributors: t.arg.boolean(),
+      openToContributors: t.arg.boolean(),
       godsonLimit: t.arg.int(),
       onlyManagersCanProvide: t.arg.boolean(),
     },
@@ -286,7 +348,7 @@ builder.mutationField('upsertTicket', (t) =>
         openToExternal,
         openToSchools,
         openToMajors,
-        openToNonAEContributors,
+        openToContributors,
         godsonLimit,
         onlyManagersCanProvide,
       }
@@ -307,7 +369,7 @@ builder.mutationField('upsertTicket', (t) =>
         openToExternal,
         godsonLimit,
         onlyManagersCanProvide,
-        openToNonAEContributors,
+        openToContributors,
       };
       return prisma.ticket.upsert({
         where: { id: id ?? undefined },

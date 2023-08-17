@@ -79,6 +79,7 @@ export const GroupType = builder.prismaNode('Group', {
       },
     }),
     school: t.relation('school', { nullable: true }),
+    studentAssociation: t.relation('studentAssociation', { nullable: true }),
     parent: t.relation('parent', { nullable: true }),
     selfJoinable: t.exposeBoolean('selfJoinable'),
     events: t.relation('events'),

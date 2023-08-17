@@ -2,7 +2,6 @@ import type { LydiaAccount } from '@prisma/client';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { checkLydiaAccount } from '../services/lydia.js';
-import slug from 'slug';
 import { userIsPresidentOf, userIsTreasurerOf } from './groups.js';
 
 export const LydiaAccountType = builder.prismaObject('LydiaAccount', {
@@ -44,7 +43,6 @@ builder.mutationField('upsertLydiaAccount', (t) =>
     async resolve(query, _, { id, groupUid, name, privateToken, vendorToken }) {
       await checkLydiaAccount(vendorToken, privateToken);
       const data = {
-        uid: slug(name),
         name,
         group: { connect: { uid: groupUid } },
         privateToken,

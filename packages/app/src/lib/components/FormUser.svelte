@@ -5,6 +5,11 @@
   import InputDate from './InputDate.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputLongText from './InputLongText.svelte';
+  import { me } from '$lib/session';
+  import InputSearchObjectList from './InputSearchObjectList.svelte';
+  import Fuse from 'fuse.js';
+  import InputField from './InputField.svelte';
+  import InputNumber from './InputNumber.svelte';
 
   const userQuery = Selector('User')({
     uid: true,
@@ -32,6 +37,10 @@
         pictureFile: true,
       },
     },
+    contributesTo: {
+      id: true,
+      name: true,
+    },
   });
 
   export let data: {
@@ -48,8 +57,14 @@
       email: string;
       birthday: Date | null;
       uid: string;
+      contributesTo: Array<{ id: string; name: string }>;
     };
   };
+
+  export let studentAssociations: Array<{
+    id: string;
+    name: string;
+  }>;
 
   // We don't want form bindings to be reactive to let them evolve separately from the data
   let {
@@ -67,8 +82,11 @@
       // See https://github.com/graphql-editor/graphql-zeus/issues/262
       // eslint-disable-next-line unicorn/no-null
       birthday = null,
+      contributesTo,
     },
   } = data;
+
+  $: canEditContributions = Boolean($me?.canEditUsers);
 
   let loading = false;
   const updateUser = async () => {
@@ -88,6 +106,7 @@
             phone,
             birthday,
             email,
+            contributesTo: canEditContributions ? contributesTo.map((c) => c.id) : undefined,
           },
           {
             __typename: true,
@@ -103,7 +122,7 @@
       }
 
       // eslint-disable-next-line unicorn/no-null
-      data.user = { ...updateUser.data, birthday: updateUser.data.birthday ?? null };
+      data.user = { ...data.user, ...updateUser.data, birthday: updateUser.data.birthday ?? null };
     } finally {
       loading = false;
     }
@@ -114,9 +133,26 @@
   <div class="side-by-side">
     <InputText required label="Prénom" bind:value={firstName} />
     <InputText required label="Nom de famille" bind:value={lastName} />
+    <InputText label="Surnom" bind:value={nickname} />
   </div>
   <InputLongText rich label="Description" bind:value={description} />
-  <InputText label="Surnom" bind:value={nickname} />
+  {#if canEditContributions}
+    <InputField label="Cotisant à">
+      <InputSearchObjectList
+        bind:objects={contributesTo}
+        values={contributesTo.map(({ id }) => id)}
+        labelKey="name"
+        valueKey="id"
+        search={(query) =>
+          new Fuse(studentAssociations, {
+            keys: ['name', 'id'],
+          })
+            .search(query)
+            .map((r) => r.item)}
+      />
+    </InputField>
+    <InputNumber label="Promo" bind:value={graduationYear} />
+  {/if}
   <div class="side-by-side">
     <InputText type="email" label="Email" bind:value={email} />
     <InputText type="tel" label="Numéro de téléphone" bind:value={phone} />

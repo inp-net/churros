@@ -12,12 +12,14 @@
   ul {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    column-gap: 1rem;
+    row-gap: 0.5rem;
     justify-content: space-around;
     max-width: 600px;
     padding-left: 0;
     margin: 0 auto;
     list-style: none;
+    padding: 0.5rem;
   }
 
   a {
@@ -25,7 +27,7 @@
   }
 
   li {
-    padding: 0.5rem;
+    /* padding: 0.5rem; */
     color: var(--text);
     text-align: center;
   }

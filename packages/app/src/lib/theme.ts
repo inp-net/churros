@@ -20,10 +20,11 @@ if (browser) {
   });
 
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
-    if ((sessionStorage.getItem('theme') ?? 'system') === 'system') {
-      document.documentElement.classList.remove('dark', 'light');
-      isDark.set(matches);
-      document.documentElement.classList.add(matches ? 'dark' : 'light');
-    }
+    if ((sessionStorage.getItem('theme') ?? 'system') === 'system') isDark.set(matches);
+  });
+
+  isDark.subscribe(($isDark) => {
+    document.documentElement.classList.remove('dark', 'light');
+    document.documentElement.classList.add($isDark ? 'dark' : 'light');
   });
 }

@@ -12,7 +12,7 @@
   export let required = false;
   export let autocomplete: string | undefined = undefined;
   export let errorMessage: string | undefined = undefined;
-  export let actionIcon: typeof SvelteComponent | undefined = undefined;
+  export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let label: string;
 </script>
 

@@ -287,7 +287,21 @@ builder.mutationField('upsertRegistration', (t) =>
       if (!user) return false;
       const ticket = await prisma.ticket.findUnique({
         where: { id: ticketId },
-        include: { event: true, openToGroups: true, openToSchools: true, openToMajors: true },
+        include: {
+          event: {
+            include: {
+              group: {
+                include: {
+                  school: true,
+                  studentAssociation: true,
+                },
+              },
+            },
+          },
+          openToGroups: true,
+          openToSchools: true,
+          openToMajors: true,
+        },
       });
       if (!ticket) return false;
 
@@ -309,8 +323,34 @@ builder.mutationField('upsertRegistration', (t) =>
         // Check that the user can access the event
         if (!(await eventAccessibleByUser(ticket.event, user))) return false;
 
+        const userWithContributesTo = await prisma.user.findUniqueOrThrow({
+          where: { id: user.id },
+          include: {
+            contributesTo: {
+              include: {
+                school: true,
+              },
+            },
+            groups: {
+              include: {
+                group: true,
+              },
+            },
+            managedEvents: {
+              include: {
+                event: true,
+              },
+            },
+            major: {
+              include: {
+                schools: true,
+              },
+            },
+          },
+        });
+
         // Check that the user can see the event
-        if (!userCanSeeTicket(ticket, user)) return false;
+        if (!userCanSeeTicket(ticket, userWithContributesTo)) return false;
 
         // Check for tickets that only managers can provide
         if (
@@ -460,7 +500,7 @@ builder.mutationField('paidRegistration', (t) =>
       // Process payment
       await pay(
         user.uid,
-        ticket.event.beneficiary?.uid ?? '(unregistered)',
+        ticket.event.beneficiary?.id ?? '(unregistered)',
         ticket.price,
         paymentMethod,
         phone,
@@ -471,7 +511,7 @@ builder.mutationField('paidRegistration', (t) =>
         ...query,
         where: { id: regId },
         data: {
-          paid: true,
+          paid: false,
           paymentMethod,
           beneficiary: beneficiary ?? '',
         },

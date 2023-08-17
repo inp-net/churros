@@ -41,6 +41,12 @@ export const sessionUserQuery = () =>
       shortName: true,
       schools: { id: true, name: true, uid: true, color: true },
     },
+    contributesTo: {
+      id: true,
+      school: {
+        uid: true,
+      },
+    },
   });
 
 export type SessionUser = PropsType<typeof sessionUserQuery, 'User'>;
@@ -56,6 +62,7 @@ export const saveSessionToken = (
     expiresAt?: Date | null;
   }
 ) => {
+  window.localStorage.removeItem('isReallyLoggedout');
   document.cookie = cookie.serialize('token', token, {
     expires: expiresAt ? new Date(expiresAt) : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     path: '/',

@@ -66,6 +66,7 @@ model User {
   passwordResets            PasswordReset[]
   emailChanges              EmailChange[]
   Announcement              Announcement[]
+  contributesTo             StudentAssociation[] // Cotisant à ces AEs
 
   @@unique([schoolServer, schoolUid])
 }
@@ -199,16 +200,19 @@ model Credential {
   user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
-/// There is one student association per school and per year
+/// There is one student association per school
 model StudentAssociation {
   id       String @id @default(dbgenerated("nanoid('ae:')"))
   schoolId String
   name     String @unique @db.VarChar(255)
-  year     Int    @db.Integer
   links    Link[]
 
-  school School  @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  groups Group[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school       School  @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  groups       Group[]
+  contributors User[]
 }
 
 /// The different kinds of groups
@@ -391,7 +395,7 @@ model Ticket {
   openToPromotions        Int[]    @default([])
   openToAlumni            Boolean? @default(false) // false means only non-alumni, true means only alumni, null means both
   openToExternal          Boolean? @default(false) // same thing
-  openToNonAEContributors Boolean? @default(false) // same thing
+  openToContributors Boolean? @default(false) // same thing
   openToSchools           School[]
   openToMajors            Major[]
   openToGroups            Group[]
@@ -447,7 +451,6 @@ model LydiaAccount {
   groupId      String
   group        Group   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   name         String  @default("") @db.VarChar(255)
-  uid          String  @unique
   privateToken String  @default("") @db.VarChar(255)
   vendorToken  String  @default("") @db.VarChar(255)
   events       Event[]
@@ -548,8 +551,8 @@ model NotificationSetting {
 /// Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 model Announcement {
   id        String   @id @default(dbgenerated("nanoid('ann:')"))
-  by        User     @relation(fields: [userId], references: [id])
-  userId    String
+  by        User?    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  userId    String?
   title     String   @db.VarChar(255)
   body      String   @db.Text
   warning   Boolean

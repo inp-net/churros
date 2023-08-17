@@ -29,9 +29,8 @@
 </script>
 
 <h1>
-  Groupes {#if $me?.admin || $me?.canEditGroups}<ButtonSecondary
-      icon={IconPlus}
-      href="/clubs/create">Créer</ButtonSecondary
+  Groupes {#if $me?.admin || $me?.canEditGroups}<ButtonSecondary icon={IconPlus} href="./create"
+      >Créer</ButtonSecondary
     >{/if}
 </h1>
 

@@ -1,10 +1,10 @@
 <script lang="ts">
   import Alert from '$lib/components/Alert.svelte';
-  import { type Visibility, zeus } from '$lib/zeus';
+  import { Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import EventSearch from './InputEvent.svelte';
   import { page } from '$app/stores';
-  import { _articleQuery } from '../../routes/club/[group]/post/[post]/edit/+page';
+  import { _articleQuery } from '../../routes/posts/[group]/[uid]/edit/+page';
   import DateInput from '$lib/components/InputDate.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
   import ButtonPrimary from './ButtonPrimary.svelte';
@@ -12,9 +12,10 @@
   import InputSelectOne from './InputSelectOne.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputLinks from '$lib/components/InputLinks.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
-  export let afterGoTo: (article: typeof data['article']) => string = (article) =>
-    `/club/${article.group.uid}/post/${article.uid}/edit`;
+  export let afterGoTo: (article: (typeof data)['article']) => string = (article) =>
+    `/posts/${article.group.uid}/${article.uid}/`;
   export let hideEvent = false;
   export let data: {
     article: {
@@ -58,6 +59,8 @@
   };
 
   let serverError = '';
+
+  let confirmingDelete = false;
 
   let { id, event, eventId, title, author, body, publishedAt, visibility, links, group } =
     data.article;
@@ -126,9 +129,43 @@
     >
   {/if}
   <section class="submit">
-    <ButtonPrimary {loading} submits
-      >{#if id === ''}Poster{:else}Enregistrer{/if}</ButtonPrimary
-    >
+    {#if id === ''}
+      <ButtonPrimary {loading} submits>Poster</ButtonPrimary>
+    {:else if confirmingDelete}
+      <h2>Es-tu sûr·e ?</h2>
+      <ButtonSecondary
+        on:click={() => {
+          confirmingDelete = false;
+        }}>Annuler</ButtonSecondary
+      >
+      <ButtonSecondary
+        on:click={async () => {
+          await $zeus.mutate({
+            deleteArticlePicture: [{ id: data.article.id }, true],
+            deleteArticle: [{ id: data.article.id }, true],
+          });
+          confirmingDelete = false;
+          await goto('/');
+        }}
+        danger>Oui</ButtonSecondary
+      >
+      <ButtonSecondary
+        on:click={() => {
+          visibility = Visibility.Private;
+          confirmingDelete = false;
+        }}>Rendre privé</ButtonSecondary
+      >
+    {:else}
+      <ButtonPrimary submits {loading}>Enregistrer</ButtonPrimary>
+      {#if data.article.id}
+        <ButtonSecondary
+          danger
+          on:click={() => {
+            confirmingDelete = true;
+          }}>Supprimer</ButtonSecondary
+        >
+      {/if}
+    {/if}
   </section>
 </form>
 
@@ -141,6 +178,9 @@
 
   .submit {
     display: flex;
+    gap: 1rem;
+    align-items: center;
     justify-content: center;
+    margin-top: 2rem;
   }
 </style>

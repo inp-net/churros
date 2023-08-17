@@ -16,7 +16,7 @@
   export let clearable = false;
 
   export let placeholder = '';
-  export let nullIcon: typeof SvelteComponent = IconNone;
+  export let nullIcon: typeof SvelteComponent<any> = IconNone;
 
   function allowed(uid: string) {
     const result =

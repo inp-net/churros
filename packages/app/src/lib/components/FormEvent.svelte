@@ -128,7 +128,7 @@
                   openToAlumni: true,
                   openToSchools: { name: true, color: true, id: true },
                   openToGroups: { name: true, uid: true, pictureFile: true },
-                  openToNonAEContributors: true,
+                  openToContributors: true,
                   godsonLimit: true,
                   onlyManagersCanProvide: true,
                 },
@@ -147,7 +147,7 @@
                 openToAlumni: true,
                 openToSchools: { name: true, color: true, id: true },
                 openToGroups: { name: true, uid: true, pictureFile: true },
-                openToNonAEContributors: true,
+                openToContributors: true,
                 godsonLimit: true,
                 onlyManagersCanProvide: true,
               },
@@ -212,7 +212,7 @@
     openToExternal: false,
     openToGroups: [],
     // eslint-disable-next-line unicorn/no-null
-    openToNonAEContributors: null,
+    openToContributors: null,
     openToPromotions: [],
     openToSchools: [],
     openToMajors: [],
@@ -235,13 +235,13 @@
     openToSchools: Array<{ name: string; color: string; uid: string }>;
     openToGroups: Array<{ name: string; uid: string; pictureFile: string }>;
     openToMajors: Array<{ name: string; shortName: string; id: string }>;
-    openToNonAEContributors?: boolean | null | undefined;
+    openToContributors?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
   };
 
   export let redirectAfterSave: (uid: string, groupUid: string) => string = (uid, groupUid) =>
-    `/club/${groupUid}/event/${uid}/edit`;
+    `/events/${groupUid}/${uid}/edit`;
 
   export let availableLydiaAccounts: Array<{
     name: string;
@@ -510,7 +510,7 @@
             >
           {:else}
             <AvatarPerson
-              href="/user/{manager.user.uid}"
+              href="/users/{manager.user.uid}"
               {...manager.user}
               role={DISPLAY_MANAGER_PERMISSION_LEVELS[levelFromPermissions(manager)]}
             />
@@ -537,7 +537,7 @@
               deleteEvent: [{ id: event.id }, true],
             });
             confirmingDelete = false;
-            await goto('/week/');
+            await goto('/');
           }}
           danger>Oui</ButtonSecondary
         >

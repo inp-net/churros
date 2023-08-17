@@ -18,17 +18,13 @@
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
   import { beforeNavigate } from '$app/navigation';
-  import { format, isMonday, previousMonday } from 'date-fns';
+  import { format } from 'date-fns';
   import { me } from '$lib/session';
   import { page } from '$app/stores';
+  import { closestMonday } from '$lib/dates';
 
   export let current: 'home' | 'search' | 'events' | 'more';
   let flyoutOpen = false;
-
-  function closestMonday(date: Date): Date {
-    if (isMonday(date)) return date;
-    return previousMonday(date);
-  }
 
   beforeNavigate(() => {
     flyoutOpen = false;
@@ -69,7 +65,7 @@
   </button>
 
   <a
-    href="/week/{format(closestMonday(new Date()), 'yyyy-MM-dd')}"
+    href="/events/week/{format(closestMonday(new Date()), 'yyyy-MM-dd')}"
     class:current={!flyoutOpen && current === 'events'}
     class:disabled={flyoutOpen}
   >
@@ -100,13 +96,15 @@
   }}
 />
 
-<!-- svelte-ignore a11y-click-events-have-key-events handled by svelte:window above -->
+<!-- eslint-disable-next-line svelte/a11y-click-events-have-key-events handled by svelte:window above -->
+<!-- eslint-disable-next-line svelte/a11y-no-noninteractive-element-interactions -->
 <div
   class="flyout-backdrop"
   on:click={() => {
     flyoutOpen = false;
   }}
   class:open={flyoutOpen}
+  role="presentation"
 >
   <section class="flyout" class:open={flyoutOpen}>
     {#if $me?.admin}
@@ -133,7 +131,7 @@
       <span>Frappe</span>
     </a>
 
-    <a href="/articles/create">
+    <a href="/posts/create">
       <IconArticle />
       <span>Article</span>
     </a>
@@ -144,7 +142,7 @@
     </a>
 
     {#if $me?.admin || $me?.canEditUsers}
-      <a href="/users">
+      <a href="/signups">
         <IconPeople />
         <span>Inscriptions</span>
       </a>
@@ -158,7 +156,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 3;
+    z-index: 101;
     display: flex;
     gap: 1rem;
     align-items: center;
@@ -205,7 +203,7 @@
   .flyout-backdrop.open {
     position: fixed;
     inset: 0;
-    z-index: 1;
+    z-index: 100;
     background: rgb(0 0 0 / 50%);
     animation: fade-in-backdrop 0.2s ease-in-out;
   }

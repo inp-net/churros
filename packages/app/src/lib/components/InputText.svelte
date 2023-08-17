@@ -13,8 +13,9 @@
   export let required = false;
   export let autocomplete: string | undefined = undefined;
   export let errorMessage: string | undefined = undefined;
-  export let actionIcon: typeof SvelteComponent | undefined = undefined;
+  export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let label: string;
+  export let readonly = false;
 </script>
 
 <InputField {hint} {errors} {label} {required}>
@@ -30,6 +31,7 @@
     {errorMessage}
     {placeholder}
     {required}
+    {readonly}
     {actionIcon}
   >
     <slot name="before" slot="before" />

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { zeus } from '$lib/zeus';
-  import type { PageData } from '../../routes/club/[group]/edit/$types';
-  import { _clubQuery as clubQuery } from '../../routes/club/[group]/edit/+page';
+  import type { PageData } from '../../routes/groups/[uid]/edit/$types';
+  import { _clubQuery as clubQuery } from '../../routes/groups/[uid]/edit/+page';
   import Alert from '$lib/components/Alert.svelte';
   import { goto } from '$app/navigation';
   import InputGroup from './InputGroup.svelte';
@@ -85,7 +85,7 @@
 
       serverError = '';
       data.group = upsertGroup.data;
-      if (data.group.uid) await goto(`/club/${data.group.uid}/edit`);
+      if (data.group.uid) await goto(`/groups/${data.group.uid}/edit`);
     } finally {
       loading = false;
     }

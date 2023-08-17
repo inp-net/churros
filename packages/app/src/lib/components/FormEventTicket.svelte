@@ -37,19 +37,24 @@
     openToMajors: Array<{ name: string; shortName: string; id: string }>;
     openToExternal?: boolean | null | undefined;
     openToAlumni?: boolean | null | undefined;
-    openToNonAEContributors?: boolean | null | undefined;
+    openToContributors?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
   };
 
   $: expanded = expandedTicketId === ticket.id;
+
+  $: displayCapacity =
+    ticket.capacity === 0
+      ? 'Places illimitées'
+      : `${ticket.capacity} place${ticket.capacity > 1 ? 's' : ''}`;
 </script>
 
 <article class="ticket" data-id={ticket.id} class:expanded>
   <header>
     <div class="properties">
       <span class="name">{ticket.name}</span>
-      <span class="capacity">{ticket.capacity} place{ticket.capacity > 1 ? 's' : ''}</span>
+      <span class="capacity">{displayCapacity}</span>
       <span class="prix">{ticket.price}€</span>
     </div>
     <div class="actions">
@@ -221,11 +226,15 @@
         labelTrue="Seulement"
         label="Cotisants"
         ternary
-        bind:value={ticket.openToNonAEContributors}
+        bind:value={ticket.openToContributors}
       />
     </div>
 
-    <InputNumber label="Limite de parrainages" bind:value={ticket.godsonLimit} />
+    <InputNumber
+      hint="0 signifie aucun parrainage autorisé"
+      label="Limite de parrainages"
+      bind:value={ticket.godsonLimit}
+    />
 
     <InputCheckbox
       label="Seul un manager peut donner ce billet"
@@ -235,7 +244,7 @@
     <footer>
       <div class="properties">
         <span class="name">{ticket.name}</span>
-        <span class="capacity">{ticket.capacity} place{ticket.capacity > 1 ? 's' : ''}</span>
+        <span class="capacity">{displayCapacity}</span>
         <span class="prix">{ticket.price}€</span>
       </div>
       <div class="actions">

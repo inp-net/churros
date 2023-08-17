@@ -1,11 +1,15 @@
 <script lang="ts">
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import IconUser from '~icons/mdi/account';
+  import IconCanEditMembers from '~icons/mdi/account-edit-outline';
+  import IconCanEditPosts from '~icons/mdi/text-box-edit-outline';
   export let fullName: string;
   export let role = '';
   export let pictureFile: string;
   export let href: string;
   export let highlighted = false;
+  export let permissions: undefined | { canEditArticles: boolean; canEditMembers: boolean } =
+    undefined;
   const src = `${PUBLIC_STORAGE_URL}${pictureFile}`;
 </script>
 
@@ -18,7 +22,23 @@
     {/if}
   </div>
   <div class="desc">
-    <p class="text name">{fullName}</p>
+    <p class="text name">
+      {fullName}
+      {#if permissions?.canEditArticles || permissions?.canEditMembers}
+        <span class="permissions">
+          <span title="Peut modifier les membres du groupe">
+            {#if permissions.canEditMembers}
+              <IconCanEditMembers />
+            {/if}
+          </span>
+          <span title="Peut modifier les articles/évènements du groupe">
+            {#if permissions.canEditArticles}
+              <IconCanEditPosts />
+            {/if}
+          </span>
+        </span>
+      {/if}
+    </p>
     {#if role}
       <p class="text role">
         {role}
@@ -36,6 +56,12 @@
     width: fit-content;
     padding: 0.5em;
     margin: 0;
+  }
+
+  .permissions {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.85em;
   }
 
   .person .img {
@@ -71,6 +97,9 @@
   }
 
   .name {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
     font-size: calc(max(1em, 1rem));
   }
 

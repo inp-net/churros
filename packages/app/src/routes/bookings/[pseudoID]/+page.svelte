@@ -46,7 +46,7 @@
     pending,
     paymentMethod,
   } = data.registration;
-  $: phone = $me?.phone ?? '';
+  let phone = $me?.phone ?? '';
   let qrcodeViewbox: string;
   let qrcodeDim: number;
   let qrcodePath: string;
@@ -122,7 +122,12 @@
     >
       <InputText initial={$me?.phone} type="tel" label="Numéro de téléphone" bind:value={phone} />
       <section class="submit">
-        <ButtonPrimary loading={paymentLoading} submits>Payer {ticket.price}€</ButtonPrimary>
+        <ButtonPrimary loading={paymentLoading} submits
+          >Payer {Intl.NumberFormat('fr-FR', {
+            style: 'currency',
+            currency: 'EUR',
+          }).format(ticket.price)}</ButtonPrimary
+        >
       </section>
     </form>
     {#if serverError}
@@ -161,7 +166,7 @@
       <dd>{DISPLAY_PAYMENT_METHODS[paymentMethod ?? 'Other']}</dd>
       <dt>Évènement</dt>
       <dd>
-        <a href="/club/{ticket.event.group.uid}/event/{ticket.event.uid}">{ticket.event.title}</a>
+        <a href="/events/{ticket.event.group.uid}/{ticket.event.uid}">{ticket.event.title}</a>
         {#if ticket.event.startsAt}({dateTimeFormatter.format(
             new Date(ticket.event.startsAt)
           )}){/if}
@@ -274,7 +279,6 @@
     flex-wrap: wrap;
     gap: 1rem;
     align-items: end;
-    max-width: 400px;
     margin: 0 auto;
   }
 

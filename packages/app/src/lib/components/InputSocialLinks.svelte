@@ -19,10 +19,12 @@
     'discord',
     'snapchat',
   ] as const;
-  export let initial: Array<{ name: typeof names[number]; value: string }> = names.map((name) => ({
-    name,
-    value: '',
-  }));
+  export let initial: Array<{ name: (typeof names)[number]; value: string }> = names.map(
+    (name) => ({
+      name,
+      value: '',
+    })
+  );
   export let value: typeof initial = initial;
   export let required = false;
   export let label: string;
@@ -31,7 +33,7 @@
     return value.findIndex(({ name: n }) => n === name);
   }
 
-  const NAME_TO_ICON: Record<typeof names[number], typeof SvelteComponent> = {
+  const NAME_TO_ICON: Record<(typeof names)[number], typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
     instagram: IconInstagram,
     twitter: IconTwitter,
@@ -41,12 +43,41 @@
     snapchat: IconSnapchat,
   };
 
+  function urlToUsername({
+    value: url,
+    name,
+  }: {
+    value: string;
+    name: (typeof names)[number];
+  }): string {
+    if (!url) return '';
+    switch (name) {
+      case 'facebook':
+      case 'instagram':
+      case 'twitter': {
+        try {
+          return decodeURIComponent(new URL(url).pathname.slice(1));
+        } catch {
+          return '';
+        }
+      }
+
+      case 'linkedin': {
+        return decodeURIComponent(new URL(url).pathname[1]) /* [0] is /in/ */;
+      }
+
+      default: {
+        return url;
+      }
+    }
+  }
+
   function usernameToURL({
     value: username,
     name,
   }: {
     value: string;
-    name: typeof names[number];
+    name: (typeof names)[number];
   }): string {
     username = username.trim();
     if (username.startsWith('@')) username = username.replace(/^@/, '');
@@ -101,7 +132,16 @@
         <BaseInputText
           {required}
           type="text"
-          bind:value={value[index(name)].value}
+          value={urlToUsername(value[index(name)])}
+          on:input={({ detail }) => {
+            value[index(name)] = {
+              ...value[index(name)],
+              value: usernameToURL({
+                name,
+                value: detail.target?.value,
+              }),
+            };
+          }}
           placeholder="@moi"
         >
           <svelte:element

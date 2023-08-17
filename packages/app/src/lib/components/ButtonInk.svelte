@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { SvelteComponent } from 'svelte';
 
-  export let icon: typeof SvelteComponent | undefined = undefined;
+  export let icon: typeof SvelteComponent<any> | undefined = undefined;
   export let href = '';
   export let insideProse = false;
   export let submits = false;
@@ -17,6 +17,8 @@
   {href}
   {...$$restProps}
   on:click
+  role="button"
+  tabindex="0"
 >
   {#if icon}
     <div class="icon">

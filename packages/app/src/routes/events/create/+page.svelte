@@ -3,7 +3,7 @@
   import { canCreateEvent } from '$lib/permissions';
   import { me } from '$lib/session';
 
-  const go = (uid: string) => `/club/${uid}/event/create`;
+  const go = (uid: string) => `/events/${uid}/create`;
 </script>
 
 <div class="content">

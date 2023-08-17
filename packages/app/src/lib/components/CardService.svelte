@@ -2,7 +2,7 @@
   import type { SvelteComponent } from 'svelte';
 
   export let href: string;
-  export let logoFile: string | typeof SvelteComponent;
+  export let logoFile: string | typeof SvelteComponent<any>;
   export let name: string;
   export let descriptionHtml = '';
   export let dashedBorder = false;
@@ -17,7 +17,10 @@
     </div>
   {/if}
   <p class="name">{name}</p>
-  <p class="description typo-details">{@html descriptionHtml}</p>
+  <p class="description typo-details">
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+    {@html descriptionHtml}
+  </p>
 </a>
 
 <style>
@@ -25,7 +28,7 @@
     --size: 10rem;
 
     display: flex;
-    flex-flow: column wrap;
+    flex-flow: column;
     align-items: center;
     justify-content: center;
     width: var(--size);

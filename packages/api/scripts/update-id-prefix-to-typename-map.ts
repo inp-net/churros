@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 const map: Record<string, string> = {};
@@ -15,6 +16,9 @@ const idPrefixUsed = (line: string) => {
   const match = /nanoid\('(\w+):'/.exec(line);
   return match ? match[1] : undefined;
 };
+
+const repoRoot = (await execSync(`git rev-parse --show-toplevel`)).toString().trim();
+
 // We loop through every line.
 // If we find a model declaration, we look for the associated id prefix in the next line.
 
@@ -46,9 +50,14 @@ function updateInFile(filename: string, exported: boolean): void {
   let insideGeneratedContent = false;
   for (const [index, line] of writeToLines.entries()) {
     if (!insideGeneratedContent && line.startsWith('/* @generated from schema')) {
-      writeToLines[index] = `/* @generated from schema by ${import.meta.url} */ ${
-        exported ? 'export ' : ''
-      }const ID_PREFIXES_TO_TYPENAMES = ${JSON.stringify(map)}\n/* end @generated from schema */`;
+      writeToLines[index] = `/* @generated from schema by /${path.relative(
+        repoRoot,
+        new URL(import.meta.url).pathname
+      )} */\n ${exported ? 'export ' : ''}const ID_PREFIXES_TO_TYPENAMES = ${JSON.stringify(
+        map,
+        null,
+        4
+      )}\n/* end @generated from schema */`;
       insideGeneratedContent = true;
     } else if (insideGeneratedContent && line.includes('/* end @generated from schema */')) {
       writeToLines[index] = '';

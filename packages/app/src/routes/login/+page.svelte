@@ -59,7 +59,10 @@
 
   onMount(async () => {
     // Client-side redirect to avoid login detection
-    if ($me) await redirect();
+    if ($me) {
+      window.localStorage.removeItem('isReallyLoggedout');
+      await redirect();
+    }
   });
 
   $: linkParams = email ? `?${new URLSearchParams({ email }).toString()}` : '';

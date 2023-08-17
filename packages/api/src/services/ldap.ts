@@ -58,10 +58,12 @@ export const findSchoolUser = async (
 
         results.on('searchReference', console.log);
 
+        /*
         results.on('searchEntry', ({ object }) => {
-          console.log(object);
-          resolve(object);
+        console.log(object);
+        resolve(object);
         });
+        */
 
         results.on('end', (a) => {
           console.log(a);
@@ -91,7 +93,7 @@ export const findSchoolUser = async (
     Object.keys(attributesMap).map((key) => {
       const attributeKey = attributesMap[key as keyof typeof attributesMap];
       if (!attributeKey) return [key, undefined];
-      const value = ldapObject[attributeKey];
+      const value = ldapObject[attributeKey as keyof typeof ldapObject];
       return [key, value ? value.toString() : undefined];
     })
   ) as unknown as LdapUser;

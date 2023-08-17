@@ -12,7 +12,7 @@
   }>;
 
   const nbGroups = groups.length;
-  export let go: (groupUid: string) => string = (uid) => `/club/${uid}`;
+  export let go: (groupUid: string) => string = (uid) => `/groups/${uid}`;
 
   let groupsWidth = 0;
   let nbVisibles = 0;

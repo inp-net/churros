@@ -79,21 +79,35 @@ builder.queryField('notification', (t) =>
 builder.mutationField('testNotification', (t) =>
   t.field({
     type: 'Boolean',
-    args: {},
-    async resolve() {
-      await notify(await prisma.user.findMany({ include: { notificationSettings: true } }), {
-        title: 'Test notification',
-        body: 'Its working!!',
-        badge: '/monochrome-icon.png',
-        icon: '/favicon.png',
-        actions: [],
-        image: undefined,
-        data: {
-          type: NotificationTypePrisma.Other,
-          group: undefined,
-          goto: 'https://www.youtube.com/watch?v=chaLRQZKi6w&t=7',
-        },
-      });
+    args: {
+      subscriptionEndpoint: t.arg.string(),
+    },
+    async resolve(_, { subscriptionEndpoint }) {
+      await notify(
+        await prisma.user.findMany({
+          where: {
+            notificationSubscriptions: {
+              some: {
+                endpoint: subscriptionEndpoint,
+              },
+            },
+          },
+          include: { notificationSettings: true },
+        }),
+        {
+          title: 'Test notification',
+          body: 'Its working!!',
+          badge: '/monochrome-icon.png',
+          icon: '/favicon.png',
+          actions: [],
+          image: undefined,
+          data: {
+            type: NotificationTypePrisma.Other,
+            group: undefined,
+            goto: 'https://www.youtube.com/watch?v=chaLRQZKi6w&t=7',
+          },
+        }
+      );
       return true;
     },
   })

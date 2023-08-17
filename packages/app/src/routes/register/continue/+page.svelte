@@ -106,7 +106,7 @@
     }
   };
 
-  const asmajor = (x: unknown) => x as typeof data['schoolGroups'][number]['majors'][number];
+  const asmajor = (x: unknown) => x as (typeof data)['schoolGroups'][number]['majors'][number];
 </script>
 
 <h1>Finaliser mon inscription</h1>

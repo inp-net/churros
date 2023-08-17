@@ -3,7 +3,7 @@
   import ArticleCard from '$lib/components/CardArticle.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
-  import { pageQuery } from './+page';
+  import { _pageQuery } from './+page';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import { me } from '$lib/session';
@@ -20,7 +20,7 @@
     try {
       loading = true;
       const { homepage } = await $zeus.query({
-        homepage: [{ after: data.homepage.pageInfo.endCursor }, pageQuery],
+        homepage: [{ after: data.homepage.pageInfo.endCursor }, _pageQuery],
       });
       data.homepage.pageInfo = homepage.pageInfo;
       data.homepage.edges = [...data.homepage.edges, ...homepage.edges];
@@ -40,7 +40,7 @@
 
 {#if data.birthdays}
   <section class="birthdays">
-    <h1>
+    <h2>
       Anniversaires
       <InputSelectOne
         bind:value={selectedBirthdaysYearTier}
@@ -48,12 +48,12 @@
         options={{ 1: '1As', 2: '2As', 3: '3As', all: 'Tous' }}
       />
       <ButtonSecondary href="/birthdays">Autres jours</ButtonSecondary>
-    </h1>
+    </h2>
     <ul class="nobullet">
-      {#each data.birthdays.filter((u) => (selectedBirthdaysYearTier === 'all' || u.yearTier === Number.parseFloat(selectedBirthdaysYearTier)) && u.major.schools.some( (s) => $me?.major.schools.some((schoolMe) => schoolMe.uid === s.uid) )) as { uid, major, birthday, ...user } (uid)}
+      {#each data.birthdays.filter((u) => selectedBirthdaysYearTier === 'all' || u.yearTier === Number.parseFloat(selectedBirthdaysYearTier)) as { uid, major, birthday, ...user } (uid)}
         <li>
           <AvatarPerson
-            href="/user/{uid}"
+            href="/users/{uid}"
             {...user}
             role="{major.shortName} · {new Date().getFullYear() -
               (birthday?.getFullYear() ?? 0)} ans"
@@ -75,7 +75,7 @@
       {group}
       {author}
       {bodyHtml}
-      href="/club/{group.uid}/post/{uid}/"
+      href="/posts/{group.uid}/{uid}/"
       img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
     />
   {/each}
@@ -101,7 +101,7 @@
     margin: 0 auto;
   }
 
-  section.birthdays h1 {
+  section.birthdays h2 {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;

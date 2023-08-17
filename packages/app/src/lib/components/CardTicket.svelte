@@ -96,6 +96,7 @@
   .title {
     font-size: 1.2rem;
     font-weight: bold;
+    line-height: 1.1;
   }
 
   .ticket-name {

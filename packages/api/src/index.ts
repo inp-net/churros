@@ -3,8 +3,8 @@ import { CredentialType } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { createFetch } from '@whatwg-node/fetch';
 import cors from 'cors';
-import { useNoBatchedQueries } from 'envelop-no-batched-queries';
-import express from 'express';
+import express, { type Request, type Response } from 'express';
+import multer from 'multer';
 import { GraphQLError } from 'graphql';
 import { createYoga } from 'graphql-yoga';
 import helmet from 'helmet';
@@ -82,7 +82,6 @@ const yoga = createYoga({
       return new GraphQLError(message, { extensions: { http: { status: 500 } } });
     },
   },
-  plugins: [useNoBatchedQueries({ allow: 4 })],
 });
 
 const api = express();
@@ -156,10 +155,10 @@ await writeSchema();
 import { lydiaSignature } from './services/lydia.js';
 
 const webhook = express();
-webhook.use(express.urlencoded({ extended: true }));
+const upload: multer.Multer = multer();
 
 // Lydia webhook
-webhook.post('/lydia-webhook', async (req, res) => {
+webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response) => {
   // Retrieve the params from the request
   const {
     request_id,

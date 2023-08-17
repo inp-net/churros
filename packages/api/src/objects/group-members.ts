@@ -1,6 +1,8 @@
+import { GraphQLError } from 'graphql';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { DateTimeScalar } from './scalars.js';
+import { fullName } from './users.js';
 
 export const GroupMemberType = builder.prismaObject('GroupMember', {
   fields: (t) => ({
@@ -29,11 +31,31 @@ builder.mutationField('addGroupMember', (t) =>
       uid: t.arg.string(),
       title: t.arg.string(),
     },
-    authScopes: (_, { groupUid }, { user }) =>
-      Boolean(
+    async authScopes(_, { groupUid, uid }, { user }) {
+      const member = await prisma.user.findUniqueOrThrow({
+        where: { uid },
+        include: { contributesTo: { include: { school: true } } },
+      });
+      const group = await prisma.group.findUniqueOrThrow({
+        where: { uid: groupUid },
+        include: { school: true, studentAssociation: true },
+      });
+
+      if (
+        !member.contributesTo.some(
+          ({ school, id }) =>
+            school.uid === group.school?.uid || id === group.studentAssociation?.id
+        )
+      ) {
+        // pas cotisant
+        throw new GraphQLError(`${fullName(member)} n'est pas cotisant·e`);
+      }
+
+      return Boolean(
         user?.canEditGroups ||
           user?.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === groupUid)
-      ),
+      );
+    },
     resolve: (query, _, { groupUid, uid, title }) =>
       prisma.groupMember.create({
         ...query,
