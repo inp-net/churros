@@ -40,6 +40,7 @@
     openToContributors?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
+    autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;
   };
 
   $: expanded = expandedTicketId === ticket.id;
@@ -239,6 +240,12 @@
     <InputCheckbox
       label="Seul un manager peut donner ce billet"
       bind:value={ticket.onlyManagersCanProvide}
+    />
+
+    <InputListOfGroups
+      label="Inscrire sur des groupes à la réservation"
+      bind:groups={ticket.autojoinGroups}
+      uids={ticket.autojoinGroups.map((g) => g.uid)}
     />
 
     <footer>
