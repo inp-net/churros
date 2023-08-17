@@ -9,6 +9,8 @@
     isPast,
     format,
   } from 'date-fns';
+  import IconLocation from '~icons/mdi/location-outline';
+  import IconWhen from '~icons/mdi/calendar-outline';
   import { formatDateTime } from '$lib/dates';
   import fr from 'date-fns/locale/fr/index.js';
   import { onDestroy, onMount } from 'svelte';
@@ -26,6 +28,7 @@
   export let descriptionHtml: string;
   export let startsAt: Date;
   export let endsAt: Date;
+  export let location: string;
   export let tickets: Array<{
     name: string;
     price: number;
@@ -74,8 +77,14 @@
       shotgunsEnd = ticket.closesAt;
   }
 
-  const totalPlacesLeft = tickets.reduce((sum, { placesLeft }) => sum + placesLeft, 0);
-  const totalCapacity = tickets.reduce((sum, { capacity }) => sum + capacity, 0);
+  const totalPlacesLeft = tickets.reduce(
+    (sum, { placesLeft }) => sum + (placesLeft === -1 ? Number.POSITIVE_INFINITY : placesLeft),
+    0
+  );
+  const totalCapacity = tickets.reduce(
+    (sum, { capacity }) => sum + (capacity === 0 ? Number.POSITIVE_INFINITY : capacity),
+    0
+  );
 
   // Est-ce que le shotgun est en cours ? Mis à jour toutes les secondes
   $: shotgunning =
@@ -119,7 +128,12 @@
 </script>
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<article class="event" on:click={gotoEventIfNotLink} on:keypress={gotoEventIfNotLink}>
+<article
+  class:collapsed
+  class="event"
+  on:click={gotoEventIfNotLink}
+  on:keypress={gotoEventIfNotLink}
+>
   <section
     class:has-picture={Boolean(pictureFile)}
     class="title"
@@ -146,6 +160,7 @@
     <section class="schedule">
       <h4 class="typo-field-label">Évènement</h4>
       <p>
+        <IconWhen />
         {Math.abs(startsAt.getTime() - now.getTime()) > 7 * 24 * 3600 * 1000
           ? formatDateTime(startsAt)
           : formatRelative(startsAt, now, {
@@ -174,6 +189,9 @@
               .replace('prochain ', '')
               .replace('à ', '')}
       </p>
+      {#if location}
+        <p><IconLocation /> {location}</p>
+      {/if}
     </section>
 
     <!-- Je vois pas pourquoi il y en aurait pas mais dans la db c'est possible -->
@@ -183,11 +201,15 @@
         <h4 class="typo-field-label">Shotgun</h4>
         {#if shotgunning}
           <p>
-            <strong>
-              <span style={totalPlacesLeft < 0.1 * totalCapacity ? 'color: var(--error)' : ''}>
-                {totalPlacesLeft}
-              </span>/ {totalCapacity}
-            </strong> places restantes
+            {#if totalPlacesLeft + totalCapacity === Number.POSITIVE_INFINITY}
+              Places illimitées
+            {:else}
+              <strong>
+                <span style={totalPlacesLeft < 0.1 * totalCapacity ? 'color: var(--error)' : ''}>
+                  {totalPlacesLeft}
+                </span>/ {totalCapacity}
+              </strong> places restantes
+            {/if}
           </p>
           <div class="places">
             {#each tickets as { uid, name, price }}
@@ -234,12 +256,12 @@
           role={author.groups.find((g) => g.group.uid === group.uid)?.title ?? ''}
           {...author}
         />
-        {#if canEdit}
-          <div class="buttonAdmin">
-            <ButtonSecondary href={href + '/edit'}><IconGear /></ButtonSecondary>
-          </div>
-        {/if}
       </section>
+    {/if}
+    {#if canEdit}
+      <div class="button-admin">
+        <ButtonSecondary href={href + '/edit'}><IconGear /></ButtonSecondary>
+      </div>
     {/if}
   </section>
 </article>
@@ -250,7 +272,6 @@
     cursor: pointer;
     border-radius: var(--radius-block);
     box-shadow: var(--primary-shadow);
-
     --alpha: 0.5;
   }
 
@@ -264,6 +285,10 @@
     min-height: 5rem;
     background-position: center;
     background-size: cover;
+  }
+
+  .collapsed .title {
+    height: 100%;
   }
 
   .title-link {
@@ -284,15 +309,10 @@
     padding: 1rem;
   }
 
-  .author {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-  }
-
   .content {
+    position: relative;
     margin: 1em;
+    overflow: hidden;
     transition: margin 0.5s cubic-bezier(0, 1, 0, 1);
   }
 
@@ -340,5 +360,11 @@
 
   .chevron-up.collapsed {
     transform: rotate(180deg);
+  }
+
+  .button-admin {
+    position: absolute;
+    right: 0;
+    bottom: 0;
   }
 </style>

@@ -89,7 +89,7 @@
           bind:inputElement
           bind:files
           on:change={updatePicture}
-          accept="image/jpeg,image/png"
+          accept="image/jpeg,image/png,image/webp"
         />
         <ButtonSecondary
           loading={updating}

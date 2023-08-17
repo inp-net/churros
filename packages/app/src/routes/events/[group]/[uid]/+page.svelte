@@ -1,32 +1,17 @@
 <script lang="ts">
   import ItemTicket from '$lib/components/ItemTicket.svelte';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
-  import { formatDate, formatDateTime } from '$lib/dates';
   import IconPlus from '~icons/mdi/plus';
   import { me } from '$lib/session';
-  import { format, isSameDay } from 'date-fns';
   import type { PageData } from './$types';
-  import BackButton from '$lib/components/ButtonBack.svelte';
   import CardArticle from '$lib/components/CardArticle.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import Header from './Header.svelte';
 
   export let data: PageData;
 
-  const {
-    id,
-    title,
-    startsAt,
-    pictureFile,
-    descriptionHtml,
-    links,
-    group,
-    contactMail,
-    articles,
-    endsAt,
-    location,
-  } = data.event;
+  const { id, descriptionHtml, links, group, contactMail, articles } = data.event;
 
   const tickets = data.ticketsOfEvent;
 
@@ -51,32 +36,9 @@
 
   const bookingURL = (registrationId: string) =>
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
-
-  function formatEventDates(startsAt: Date, endsAt: Date): string {
-    if (isSameDay(startsAt, endsAt)) {
-      return `Le ${formatDate(startsAt)}, de ${format(startsAt, 'HH:mm')} à ${format(
-        endsAt,
-        'HH:mm'
-      )}`;
-    }
-
-    return `${formatDateTime(startsAt)} — ${formatDateTime(endsAt)}`;
-  }
 </script>
 
-<header
-  style:background-image="linear-gradient(#000000aa, #000000aa), url({pictureFile
-    ? `${PUBLIC_STORAGE_URL}${pictureFile}`
-    : 'https://picsum.photos/400/400'})"
->
-  <h1>
-    <BackButton go="../.." white />
-    {title}
-    <ButtonShare white />
-  </h1>
-  <p class="when">{formatEventDates(startsAt, endsAt)}</p>
-  <p class="where">{location}</p>
-</header>
+<Header {...data.event} />
 
 <ul class="nobullet bookings">
   {#each usersRegistration as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id }}
@@ -91,6 +53,7 @@
 </ul>
 
 <section class="description">
+  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {@html descriptionHtml}
 
   {#if links.length > 0}
@@ -161,28 +124,6 @@
 </section>
 
 <style lang="scss">
-  header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 1rem;
-    background-size: cover;
-
-    > * {
-      margin: 0;
-      color: white;
-    }
-  }
-
-  h1 {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-  }
-
   section {
     max-width: 1000px;
     padding: 0 1rem;
