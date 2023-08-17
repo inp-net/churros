@@ -30,6 +30,7 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   school: 'School',
   credential: 'Credential',
   ae: 'StudentAssociation',
+  contribution: 'Contribution',
   g: 'Group',
   a: 'Article',
   e: 'Event',
