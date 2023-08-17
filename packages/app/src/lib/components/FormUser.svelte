@@ -194,6 +194,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    align-items: flex-end;
   }
 
   .submit {
