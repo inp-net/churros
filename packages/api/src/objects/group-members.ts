@@ -3,6 +3,7 @@ import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
+import { purgeUserSessions } from '../context.js';
 
 export const GroupMemberType = builder.prismaObject('GroupMember', {
   fields: (t) => ({
@@ -58,15 +59,17 @@ builder.mutationField('addGroupMember', (t) =>
           user?.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === groupUid)
       );
     },
-    resolve: (query, _, { groupUid, uid, title }) =>
-      prisma.groupMember.create({
+    async resolve(query, _, { groupUid, uid, title }) {
+      purgeUserSessions(uid);
+      return prisma.groupMember.create({
         ...query,
         data: {
           member: { connect: { uid } },
           group: { connect: { uid: groupUid } },
           title,
         },
-      }),
+      });
+    },
   })
 );
 
@@ -82,6 +85,7 @@ builder.mutationField('selfJoinGroup', (t) =>
     async resolve(query, _, { groupUid, uid }) {
       const group = await prisma.group.findUnique({ where: { uid: groupUid } });
       if (!group?.selfJoinable) throw new Error('This group is not self-joinable.');
+      purgeUserSessions(uid);
       return prisma.groupMember.create({
         ...query,
         data: {
@@ -129,6 +133,11 @@ builder.mutationField('upsertGroupMember', (t) =>
         canEditMembers,
       }
     ) {
+      const { uid } = await prisma.user.findUniqueOrThrow({
+        where: { id: memberId },
+        select: { uid: true },
+      });
+      purgeUserSessions(uid);
       if (president) {
         await prisma.groupMember.updateMany({
           where: { group: { id: groupId }, president: true },
@@ -171,6 +180,11 @@ builder.mutationField('deleteGroupMember', (t) =>
           user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id)
       ),
     async resolve(_, { memberId, groupId }) {
+      const { uid } = await prisma.user.findUniqueOrThrow({
+        where: { id: memberId },
+        select: { uid: true },
+      });
+      purgeUserSessions(uid);
       await prisma.groupMember.delete({ where: { groupId_memberId: { groupId, memberId } } });
       return true;
     },
