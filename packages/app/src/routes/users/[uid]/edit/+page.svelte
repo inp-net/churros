@@ -100,6 +100,7 @@
           // eslint-disable-next-line unicorn/no-null
           godparentUid: null,
           email: data.user.email,
+          otherEmails: data.user.otherEmails,
         },
         {
           __typename: true,
@@ -263,7 +264,7 @@
     <h3>Fillot·e·s</h3>
     {#if [...data.user.incomingGodparentRequests, ...data.user.godchildren].length > 0}
       <ul class="nobullet">
-        {#each data.user.incomingGodparentRequests as { createdAt, godchild, id }}
+        {#each data.user.incomingGodparentRequests as { godchild, id }}
           <li class="godchild-request">
             <AvatarPerson href="/users/{godchild.uid}" {...godchild} />
             <div class="actions">

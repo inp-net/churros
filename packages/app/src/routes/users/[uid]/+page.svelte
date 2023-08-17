@@ -156,9 +156,11 @@
               <dd>Non</dd>
             {/if}
           {/if}
-          <dt>Email</dt>
-          <dd>
-            <a href="mailto:{user.email}">{user.email}</a>
+          <dt>Email{user.otherEmails.length > 0 ? 's' : ''}</dt>
+          <dd class="is-list">
+            {#each [user.email, ...user.otherEmails] as email}
+              <a href="mailto:{email}">{email}</a>
+            {/each}
           </dd>
           {#if user.phone}
             <dt>Téléphone</dt>
@@ -326,9 +328,14 @@
   dd {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    column-gap: 0.5rem;
     align-items: center;
     margin-left: 0;
+  }
+
+  dd.is-list {
+    flex-direction: column;
+    align-items: start;
   }
 
   section h2 {
