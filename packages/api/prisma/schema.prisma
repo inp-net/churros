@@ -26,11 +26,12 @@ model User {
   schoolEmail  String? @unique @db.VarChar(255)
 
   // Mandatory profile details
-  email          String @unique @db.VarChar(255)
-  firstName      String @db.VarChar(255)
-  lastName       String @db.VarChar(255)
+  email          String   @unique @db.VarChar(255)
+  otherEmails    String[] @db.VarChar(255)
+  firstName      String   @db.VarChar(255)
+  lastName       String   @db.VarChar(255)
   majorId        String
-  major          Major  @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  major          Major    @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   graduationYear Int
 
   // Optional profile details
@@ -281,12 +282,14 @@ model Group {
   studentAssociation StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   events             Event[]
   lyiaAccounts       LydiaAccount[]
-  tickets            Ticket[]
+  tickets            Ticket[]            @relation("openTo")
   barWeeks           BarWeek[]
 
-  Notification        Notification[]
-  NotificationSetting NotificationSetting[]
-  groupId             String?
+  Notification                Notification[]
+  NotificationSetting         NotificationSetting[]
+  groupId                     String?
+  ticketGroupId               String?
+  joinedByBookingTickets      Ticket[]              @relation("autojoin")
 }
 
 /// The intermediate model between users and groups
@@ -385,9 +388,9 @@ model TicketGroup {
   eventId String
   name    String @db.VarChar(255)
 
-  capacity Int      @default(0) // 0 means unlimited, capacity is on the sum of sub-tickets registrations
-  tickets  Ticket[]
-  event    Event    @relation(fields: [eventId], references: [id])
+  capacity       Int      @default(0) // 0 means unlimited, capacity is on the sum of sub-tickets registrations
+  tickets        Ticket[]
+  event          Event    @relation(fields: [eventId], references: [id])
 }
 
 /// A ticket is a way to register for an event. May include a price and conditions.
@@ -413,8 +416,9 @@ model Ticket {
   openToContributors Boolean? @default(false) // same thing
   openToSchools      School[]
   openToMajors       Major[]
-  openToGroups       Group[]
+  openToGroups       Group[]  @relation("openTo")
   godsonLimit        Int      @default(0) // 0 means unlimited
+  autojoinGroups     Group[]  @relation("autojoin")
 
   onlyManagersCanProvide Boolean @default(false)
 

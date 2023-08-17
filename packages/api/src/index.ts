@@ -1,7 +1,7 @@
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
 import { CredentialType } from '@prisma/client';
 import { Prisma } from '@prisma/client';
-import { verifyLydiaTransaction } from './services/lydia.js';
+import { lydiaSignature, verifyLydiaTransaction } from './services/lydia.js';
 import { createFetch } from '@whatwg-node/fetch';
 import cors from 'cors';
 import express, { type Request, type Response } from 'express';
@@ -159,32 +159,18 @@ const upload: multer.Multer = multer();
 // Lydia webhook
 webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response) => {
   // Retrieve the params from the request
-  const {
-    request_id,
-    amount,
-    currency,
-    sig,
-    signed,
-    transaction_identifier,
-    vendor_token,
-  }: {
-    request_id: string;
-    amount: string;
-    currency: string;
-    sig: string;
-    signed: string;
-    transaction_identifier: string;
-    vendor_token: string;
-  } = req.body as {
-    request_id: string;
-    amount: string;
-    currency: string;
-    sig: string;
-    signed: string;
-    transaction_identifier: string;
-    vendor_token: string;
-  };
-  const signatureParams = {
+  const { request_id, amount, currency, sig, signed, transaction_identifier, vendor_token } =
+    req.body as {
+      request_id: string;
+      amount: string;
+      currency: string;
+      sig: string;
+      signed: string;
+      transaction_identifier: string;
+      vendor_token: string;
+    };
+
+  const signatureParameters = {
     currency,
     request_id,
     amount,
@@ -196,32 +182,51 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
   try {
     const { verified, transaction } = await verifyLydiaTransaction(
       request_id,
-      signatureParams,
+      signatureParameters,
       sig
     );
+
     if (!verified) return res.status(400).send('Transaction signature is invalid');
 
-    if (transaction.registrationId) {
-      await prisma.registration.update({
-        where: {
-          id: transaction.registrationId,
-        },
-        data: {
-          paid: true,
-        },
-      });
-    } else if (transaction.studentAssociationContributionId) {
-      await prisma.contribution.update({
-        where: {
-          id: transaction.studentAssociationContributionId,
-        },
-        data: {
-          paid: true,
-        },
-      });
+    if (!transaction) return res.status(400).send('Transaction not found');
+
+    // Check if the beneficiary exists
+    if (transaction.registration) {
+      if (!transaction.registration.ticket.event.beneficiary)
+        return res.status(400).send('Beneficiary not found');
+
+      if (
+        sig ===
+        lydiaSignature(transaction.registration.ticket.event.beneficiary, signatureParameters)
+      ) {
+        await prisma.registration.update({
+          where: {
+            id: transaction.registration.id,
+          },
+          data: {
+            paid: true,
+          },
+        });
+        return res.status(200).send('OK');
+      }
+    } else if (transaction.contribution) {
+      const beneficiary = transaction.contribution.studentAssociation.lydiaAccounts[0];
+      if (!beneficiary)
+        return res.status(400).send('No lydia accounts for this student association');
+      if (sig === lydiaSignature(beneficiary, signatureParameters)) {
+        await prisma.contribution.update({
+          where: {
+            id: transaction.contribution.studentAssociation.id,
+          },
+          data: {
+            paid: true,
+          },
+        });
+        return res.status(200).send('OK');
+      }
     }
 
-    return res.status(200).send('OK');
+    return res.status(400).send('Bad request');
   } catch {
     return res.status(400).send('Bad request');
   }

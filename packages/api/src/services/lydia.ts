@@ -147,7 +147,7 @@ export async function verifyLydiaTransaction(
   requestId: string,
   signatureParams: Record<string, string>,
   signature: string
-): Promise<{ verified: boolean; transaction: LydiaTransaction }> {
+): Promise<{ verified: boolean; transaction: typeof transaction }> {
   const transaction = await prisma.lydiaTransaction.findFirst({
     where: { requestId },
     include: {

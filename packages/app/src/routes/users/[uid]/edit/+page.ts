@@ -6,6 +6,7 @@ export const _userQuery = Selector('User')({
   id: true,
   uid: true,
   email: true,
+  otherEmails: true,
   firstName: true,
   lastName: true,
   nickname: true,

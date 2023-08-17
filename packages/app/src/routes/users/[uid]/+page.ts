@@ -23,6 +23,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           fullName: true,
           nickname: true,
           email: true,
+          otherEmails: true,
           phone: true,
           pictureFile: true,
           groups: {

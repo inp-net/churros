@@ -30,6 +30,11 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             capacity: true,
             opensAt: true,
             closesAt: true,
+            autojoinGroups: {
+              uid: true,
+              name: true,
+              pictureFile: true,
+            },
             links: {
               value: true,
               name: true,
@@ -53,6 +58,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
               name: true,
               pictureFile: true,
             },
+
             openToContributors: true,
             godsonLimit: true,
             onlyManagersCanProvide: true,
@@ -87,6 +93,11 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
                 id: true,
               },
               openToGroups: {
+                uid: true,
+                name: true,
+                pictureFile: true,
+              },
+              autojoinGroups: {
                 uid: true,
                 name: true,
                 pictureFile: true,
