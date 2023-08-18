@@ -12,7 +12,7 @@
 
 {#if label}
   <div class="field">
-    <svelte:element this={id ? 'p' : 'label'} class="label-wrapper" for={id}
+    <svelte:element this={id ? 'p' : 'label'} class="label-wrapper" {...$$restProps} for={id}
       ><p class="label typo-field-label">
         {label}{#if required}
           <span use:tooltip={'Ce champ est requis'} class="required-indicator">*</span>

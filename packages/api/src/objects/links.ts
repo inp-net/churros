@@ -47,12 +47,15 @@ export const LinkType = builder.prismaNode('Link', {
             ])
           );
 
-        for (const [humanKey, databaseKey] of Object.entries(wrapWithNonAccentedKeys(REPLACE_MAP)))
-          {value = value.replaceAll(
+        for (const [humanKey, databaseKey] of Object.entries(
+          wrapWithNonAccentedKeys(REPLACE_MAP)
+        )) {
+          value = value.replaceAll(
             `[${humanKey}]`,
             encodeURIComponent(accessKey(user ?? {}, databaseKey) ?? '') +
               (databaseKey === 'yearTier' ? 'A' : '')
-          );}
+          );
+        }
 
         return value;
       },
