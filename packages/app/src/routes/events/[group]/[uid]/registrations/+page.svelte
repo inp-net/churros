@@ -5,9 +5,11 @@
   import IconCheck from '~icons/mdi/check';
   import IconCancel from '~icons/mdi/cancel';
   import IconClose from '~icons/mdi/close';
+  import IconSortUp from '~icons/mdi/triangle-small-up';
+  import IconSortDown from '~icons/mdi/triangle-small-down';
   import { page } from '$app/stores';
   import { dateTimeFormatter, formatDateTime } from '$lib/dates';
-  import { format, isSameDay } from 'date-fns';
+  import { compareAsc, compareDesc, format, isSameDay } from 'date-fns';
   import { zeus } from '$lib/zeus';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
@@ -49,10 +51,79 @@
   const { registrationsOfEvent: registrations } = data;
   const rowIsSelected = Object.fromEntries(registrations.edges.map(({ node }) => [node.id, false]));
 
-  async function updatePaidStatus(
-    markAsPaid: boolean,
-    registration: (typeof registrations.edges)[number]['node']
-  ): Promise<void> {
+  const COLUMNS = [
+    ['date', 'Date'],
+    ['state', 'État'],
+    ['method', 'Méthode'],
+    ['beneficiary', 'Bénéficiaire'],
+    ['contributes', 'Cotise'],
+    ['major', 'Filière'],
+    ['graduationYear', 'Année'],
+    ['author', 'Payé par'],
+  ] as const;
+
+  let sortBy: (typeof COLUMNS)[number][0] = 'date';
+  let sortDirection: 'ascending' | 'descending' = 'descending';
+
+  type Registration = (typeof registrations.edges)[number]['node'];
+
+  function compareRegistrations(
+    sortBy: (typeof COLUMNS)[number][0],
+    sortDirection: 'ascending' | 'descending'
+  ): (a: Registration, b: Registration) => number {
+    const desc = sortDirection === 'descending';
+    const benefUser = (r: Registration) =>
+      r.beneficiaryUser ?? (r.authorIsBeneficiary ? r.author : undefined);
+    switch (sortBy) {
+      case 'date': {
+        return (a, b) => (desc ? compareDesc : compareAsc)(a.createdAt, b.createdAt);
+      }
+
+      case 'state': {
+        return (a, _) => (desc ? -1 : 1) * (a.paid ? 1 : -1);
+      }
+
+      case 'method': {
+        const method = (r: Registration) => r.paymentMethod?.toString() ?? '';
+        return (a, b) => (desc ? -1 : 1) * method(a).localeCompare(method(b));
+      }
+
+      case 'beneficiary': {
+        const benef = (r: Registration) => benefUser(r)?.fullName ?? r.beneficiary;
+        return (a, b) => (desc ? -1 : 1) * benef(a).localeCompare(benef(b));
+      }
+
+      case 'contributes': {
+        const contributions = (r: Registration) =>
+          benefUser(r)
+            ?.contributesTo.map((c) => c.name)
+            .join(', ') ?? '';
+        return (a, b) => (desc ? -1 : 1) * contributions(a).localeCompare(contributions(b));
+      }
+
+      case 'author': {
+        return (a, b) => (desc ? -1 : 1) * a.author.fullName.localeCompare(b.author.fullName);
+      }
+
+      case 'graduationYear': {
+        return (a, b) =>
+          (desc ? -1 : 1) *
+          ((benefUser(b)?.graduationYear ?? Number.POSITIVE_INFINITY) -
+            (benefUser(a)?.graduationYear ?? Number.POSITIVE_INFINITY));
+      }
+
+      case 'major': {
+        const major = (r: Registration) => benefUser(r)?.major.shortName ?? '';
+        return (a, b) => major(a).localeCompare(major(b));
+      }
+
+      default: {
+        return (a, b) => a.id.localeCompare(b.id);
+      }
+    }
+  }
+
+  async function updatePaidStatus(markAsPaid: boolean, registration: Registration): Promise<void> {
     const { upsertRegistration } = await $zeus.mutate({
       upsertRegistration: [
         {
@@ -81,6 +152,8 @@
       ].node.paid = upsertRegistration.data.paid;
     }
   }
+
+  $: compare = compareRegistrations(sortBy, sortDirection);
 </script>
 
 <header>
@@ -102,19 +175,35 @@
     <thead>
       <tr>
         <th />
-        <th>Date</th>
-        <th>État</th>
-        <th>Méthode</th>
-        <th>Bénéficiaire</th>
-        <th>Cotise</th>
-        <th>Filière</th>
-        <th>Année</th>
-        <th>Payé par</th>
+        {#each COLUMNS as [key, label] (key)}
+          <th
+            class:sorting={sortBy === key}
+            on:click={() => {
+              if (sortBy === key) 
+                sortDirection = sortDirection === 'ascending' ? 'descending' : 'ascending';
+               else 
+                sortBy = key;
+              
+            }}
+            ><div class="inner">
+              {label}
+              <div class="sort-icon">
+                {#if sortBy === key}
+                  {#if sortDirection === 'ascending'}
+                    <IconSortUp />
+                  {:else}
+                    <IconSortDown />
+                  {/if}
+                {/if}
+              </div>
+            </div>
+          </th>
+        {/each}
         <th />
       </tr>
     </thead>
     <tbody>
-      {#each registrations.edges as { node: registration, node: { paid, id, beneficiary, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod } }}
+      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod } } (id)}
         {@const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined)}
         <tr class:selected={rowIsSelected[id]}>
           <td class="actions">
@@ -211,6 +300,20 @@
     --spacing: 0.5rem;
 
     border-spacing: var(--border-block);
+  }
+
+  .sort-icon {
+    width: 2rem;
+    height: 2rem;
+    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  th .inner {
+    display: flex;
+    align-items: center;
   }
 
   table,
