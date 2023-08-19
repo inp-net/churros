@@ -226,3 +226,16 @@ code {
   font-weight: bold;
   color: currentcolor;
 }
+
+a.user-mention {
+  padding: 0.25rem;
+  color: var(--primary-text) !important;
+  text-decoration: none !important;
+  background-color: var(--primary-bg) !important;
+  border-radius: var(--radius-inline);
+}
+
+a.user-mention:hover, a.user-mention:focus-visible {
+  color: var(--primary-hover-text) !important;
+  background-color: var(--primary-hover-bg) !important;
+}
