@@ -37,9 +37,7 @@
 <svelte:window
   on:click={(e) => {
     if (!(e.target instanceof HTMLElement)) return;
-    if (e.target === element) 
-      element.close();
-    
+    if (e.target === element) element.close();
   }}
 />
 
@@ -60,17 +58,17 @@
         const metadata = {
           Version: PUBLIC_CURRENT_VERSION ?? 'dev',
           Build: PUBLIC_CURRENT_COMMIT,
-          ...(includeCurrentPageURL ? { 'Occured-At': $page.url.toString() } : {})
+          ...(includeCurrentPageURL ? { 'Occured-At': $page.url.toString() } : {}),
         };
         const { createGitlabIssue: number } = await $zeus.mutate({
           createGitlabIssue: [
             {
               title,
               description: description + '\n\n\n\n' + formatMetadata(metadata),
-              isBug: issueType === 'bug'
+              isBug: issueType === 'bug',
             },
-            true
-          ]
+            true,
+          ],
         });
         issueNumber = number;
         errored = !number;
@@ -84,7 +82,7 @@
           // time for <Alert> to render. Yes this is ugly hacky code, what yo gonna do bout it?
           element.scrollTo({
             top: element.scrollHeight,
-            behavior: 'smooth'
+            behavior: 'smooth',
           });
         }, 200);
       }}

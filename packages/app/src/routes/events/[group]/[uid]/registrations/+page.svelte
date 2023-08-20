@@ -179,11 +179,9 @@
           <th
             class:sorting={sortBy === key}
             on:click={() => {
-              if (sortBy === key) 
+              if (sortBy === key)
                 sortDirection = sortDirection === 'ascending' ? 'descending' : 'ascending';
-               else 
-                sortBy = key;
-              
+              else sortBy = key;
             }}
             ><div class="inner">
               {label}
@@ -303,12 +301,12 @@
   }
 
   .sort-icon {
-    width: 2rem;
-    height: 2rem;
     display: inline-block;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 2rem;
+    height: 2rem;
   }
 
   th .inner {

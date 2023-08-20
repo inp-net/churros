@@ -235,7 +235,8 @@ a.user-mention {
   border-radius: var(--radius-inline);
 }
 
-a.user-mention:hover, a.user-mention:focus-visible {
+a.user-mention:hover,
+a.user-mention:focus-visible {
   color: var(--primary-hover-text) !important;
   background-color: var(--primary-hover-bg) !important;
 }

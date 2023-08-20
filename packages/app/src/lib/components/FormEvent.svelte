@@ -326,7 +326,7 @@
     {#if event.id}
       <FormPicture objectName="Event" bind:object={event} />
     {/if}
-    <InputGroup group={event.group} label="Groupe" bind:uid={event.group.uid} />
+    <InputGroup required group={event.group} label="Groupe" bind:uid={event.group.uid} />
     <InputText required label="Titre" bind:value={event.title} />
     <InputSelectOne
       label="Visibilité"
