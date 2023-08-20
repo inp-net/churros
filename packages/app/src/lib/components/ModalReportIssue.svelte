@@ -1,0 +1,177 @@
+<script lang="ts">
+  import { zeus } from '$lib/zeus';
+  import IconClose from '~icons/mdi/close';
+  import IconArrowRight from '~icons/mdi/arrow-right';
+  import Alert from './Alert.svelte';
+  import ButtonGhost from './ButtonGhost.svelte';
+  import ButtonPrimary from './ButtonPrimary.svelte';
+  import InputLongText from './InputLongText.svelte';
+  import InputSelectOne from './InputSelectOne.svelte';
+  import InputText from './InputText.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import InputCheckbox from './InputCheckbox.svelte';
+  import { page } from '$app/stores';
+  import { PUBLIC_CURRENT_COMMIT, PUBLIC_CURRENT_VERSION } from '$env/static/public';
+  import { isDark } from '$lib/theme';
+
+  let title = "Ceci est un test d'issue";
+  let description = 'Soumise depuis un formulaire';
+  let issueType = 'bug';
+  let link = '';
+  let issueNumber = 0;
+  let loading = false;
+  let includeCurrentPageURL = true;
+  let errored = false;
+
+  export let element: HTMLDialogElement;
+
+  $: link = issueNumber ? `https://git.inpt.fr/inp-net/centraverse/-/issues/${issueNumber}` : '';
+
+  function formatMetadata(metadata: Record<string, string>): string {
+    return Object.entries(metadata)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\n\n');
+  }
+</script>
+
+<svelte:window
+  on:click={(e) => {
+    if (!(e.target instanceof HTMLElement)) return;
+    if (e.target === element) 
+      element.close();
+    
+  }}
+/>
+
+<dialog class={$isDark ? 'dark' : 'light'} bind:this={element}>
+  <div class="content">
+    <h1>
+      Signaler
+      <ButtonGhost
+        on:click={() => {
+          element.close();
+        }}><IconClose /></ButtonGhost
+      >
+    </h1>
+    <form
+      on:submit|preventDefault={async () => {
+        loading = true;
+        errored = false;
+        const metadata = {
+          Version: PUBLIC_CURRENT_VERSION ?? 'dev',
+          Build: PUBLIC_CURRENT_COMMIT,
+          ...(includeCurrentPageURL ? { 'Occured-At': $page.url.toString() } : {})
+        };
+        const { createGitlabIssue: number } = await $zeus.mutate({
+          createGitlabIssue: [
+            {
+              title,
+              description: description + '\n\n\n\n' + formatMetadata(metadata),
+              isBug: issueType === 'bug'
+            },
+            true
+          ]
+        });
+        issueNumber = number;
+        errored = !number;
+        loading = false;
+        if (!errored) {
+          title = '';
+          description = '';
+        }
+
+        setTimeout(() => {
+          // time for <Alert> to render. Yes this is ugly hacky code, what yo gonna do bout it?
+          element.scrollTo({
+            top: element.scrollHeight,
+            behavior: 'smooth'
+          });
+        }, 200);
+      }}
+    >
+      <InputSelectOne
+        label=""
+        options={{ bug: 'Signaler un bug', feature: 'Proposer une idée' }}
+        bind:value={issueType}
+      />
+      <InputText bind:value={title} label="Titre" />
+      <InputLongText
+        label={issueType === 'bug'
+          ? 'Comment reproduire ce bug?'
+          : 'Décris de manière détaillée ton idée'}
+        bind:value={description}
+      />
+      <InputCheckbox
+        label="Inclure l'adresse de la page actuelle"
+        bind:value={includeCurrentPageURL}
+      />
+      <section class="submit">
+        <ButtonPrimary {loading} submits>Envoyer</ButtonPrimary>
+      </section>
+      <section class="feedback">
+        {#if link}
+          <Alert theme="success"
+            >Ton {#if issueType === 'bug'}bug a bien été signalé{:else}idée à bien était soumise{/if}.
+            C'est <a href={link}>l'issue n°{issueNumber}</a>.
+            <ButtonSecondary href={link} icon={IconArrowRight}>Voir</ButtonSecondary>
+          </Alert>
+        {:else if errored}
+          <Alert theme="danger"
+            >Impossible de créer l'issue. <ButtonSecondary
+              href="https://git.inpt.fr/inp-net/centraverse/-/issues/new"
+              >Créer l'issue sur le site</ButtonSecondary
+            >
+          </Alert>
+        {/if}
+      </section>
+    </form>
+  </div>
+</dialog>
+
+<style>
+  dialog {
+    position: fixed;
+    z-index: 1000;
+    padding: 1.5rem;
+    color: var(--text);
+    background: var(--bg);
+    border: none;
+    border-radius: var(--radius-block);
+  }
+
+  dialog::backdrop {
+    background-color: var(--backdrop);
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  h1 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .submit {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 1000px) {
+    dialog {
+      border-radius: 0;
+    }
+  }
+</style>

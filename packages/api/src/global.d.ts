@@ -47,5 +47,10 @@ declare namespace NodeJS {
      * Contact email (used for push notifications and maybe other things)
      */
     CONTACT_EMAIL: string;
+    /**
+     * Gitlab API info, for the issue creation form
+     */
+    GITLAB_PROJECT_ID: string; // Id of the repo
+    GITLAB_SUDO_TOKEN: string; // personnal access token with sudo, read_api and api scopes. Sudo is required to impersonate a user so that we can say that he created it
   }
 }

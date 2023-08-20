@@ -29,6 +29,9 @@ import './objects/email-changes.js';
 import './objects/announcements.js';
 import './objects/student-associations.js';
 
+// Import other mutations and/or queries that are not objects
+import './services/gitlab.js';
+
 export const schema = builder.toSchema({});
 
 export const writeSchema = async () =>

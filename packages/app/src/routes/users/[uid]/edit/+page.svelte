@@ -231,16 +231,18 @@
         {#if godparentDeleteServerError}
           <Alert theme="danger">{godparentDeleteServerError}</Alert>
         {/if}
-        <ButtonSecondary
-          disabled={!godparentUid || godparentUid === data.user.godparent?.uid}
-          loading={godparentRequestSending}
-          on:click={sendGodparentRequest}>Envoyer une demande</ButtonSecondary
-        >
-        <ButtonSecondary
-          disabled={!data.user.godparent}
-          loading={godparentDeleting}
-          on:click={deleteGodparent}>Rompre le parrainage</ButtonSecondary
-        >
+        <div class="actions">
+          <ButtonSecondary
+            disabled={!godparentUid || godparentUid === data.user.godparent?.uid}
+            loading={godparentRequestSending}
+            on:click={sendGodparentRequest}>Envoyer une demande</ButtonSecondary
+          >
+          <ButtonSecondary
+            disabled={!data.user.godparent}
+            loading={godparentDeleting}
+            on:click={deleteGodparent}>Rompre le parrainage</ButtonSecondary
+          >
+        </div>
       </section>
       {#if data.user.outgoingGodparentRequests.length > 0}
         <h3>Demandes en cours</h3>
@@ -440,12 +442,21 @@
     margin-top: 1rem;
   }
 
+  .send-request .actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
   .godparent-request,
   .godchild-request,
   .godchild {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .godchildren-hint {

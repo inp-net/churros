@@ -1,40 +1,46 @@
-:root.dark {
-  --bg: #{$neutral-900};
-  --text: #{$neutral-200};
-  --link: #{$indigo-400};
-  --title: #{$neutral-100};
-  --shadow: 0 0.25rem 0.5rem #{$black};
-  --primary-bg: #{$blue-900};
-  --primary-text: #{$slate-100};
-  --primary-shadow: 0 0.25rem 0.5rem #{$black};
-  --loading-bg: linear-gradient(to right, #{$pink-800}, #{$pink-600});
-  --hover-bg: #{$neutral-700};
-  --hover-text: #{$neutral-200};
-  --muted-bg: #{$neutral-800};
-  --muted-text: #{$neutral-400};
-  --muted-border: #{$neutral-700};
-  --muted-link: #{$indigo-400};
-}
+:root,
+dialog {
+  &.dark,
+  &.dark::backdrop {
+    --bg: #{$neutral-900};
+    --text: #{$neutral-200};
+    --link: #{$indigo-400};
+    --title: #{$neutral-100};
+    --shadow: 0 0.25rem 0.5rem #{$black};
+    --primary-bg: #{$blue-900};
+    --primary-text: #{$slate-100};
+    --primary-shadow: 0 0.25rem 0.5rem #{$black};
+    --loading-bg: linear-gradient(to right, #{$pink-800}, #{$pink-600});
+    --hover-bg: #{$neutral-700};
+    --hover-text: #{$neutral-200};
+    --muted-bg: #{$neutral-800};
+    --muted-text: #{$neutral-400};
+    --muted-border: #{$neutral-700};
+    --muted-link: #{$indigo-400};
+    --backdrop: rgb(0 0 0 / 80%);
+  }
 
-:root.pride {
-  --primary-bg: linear-gradient(
-    to right,
-    #{$red-200},
-    #{$orange-200},
-    #{$yellow-200},
-    #{$green-200},
-    #{$blue-200},
-    #{$purple-200}
-  );
-  --primary-text: #{$slate-900};
-  --primary-shadow: 0 0.25rem 0.5rem #{rgba($slate-400, 50%)};
-  --loading-bg: linear-gradient(
-    to right,
-    #{$red-400},
-    #{$orange-400},
-    #{$yellow-400},
-    #{$green-400},
-    #{$blue-400},
-    #{$purple-400}
-  );
+  &.pride,
+  &.pride::backdrop {
+    --primary-bg: linear-gradient(
+      to right,
+      #{$red-200},
+      #{$orange-200},
+      #{$yellow-200},
+      #{$green-200},
+      #{$blue-200},
+      #{$purple-200}
+    );
+    --primary-text: #{$slate-900};
+    --primary-shadow: 0 0.25rem 0.5rem #{rgba($slate-400, 50%)};
+    --loading-bg: linear-gradient(
+      to right,
+      #{$red-400},
+      #{$orange-400},
+      #{$yellow-400},
+      #{$green-400},
+      #{$blue-400},
+      #{$purple-400}
+    );
+  }
 }

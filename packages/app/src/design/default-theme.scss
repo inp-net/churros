@@ -1,6 +1,9 @@
 @use 'variables.scss' as *;
 
-:root {
+// ::backdrop does not inherit from :root, see https://stackoverflow.com/a/63322762/9943464
+:root,
+dialog,
+::backdrop {
   // === Colors ===
   // Default
   --bg: #{$white};
@@ -68,6 +71,7 @@
 
   // Other colors
   --loading-bg: linear-gradient(to right, #{$orange-600}, #{$orange-200});
+  --backdrop: rgb(0 0 0 / 30%);
 
   // === Other props ===
   --border-inline: 1px;

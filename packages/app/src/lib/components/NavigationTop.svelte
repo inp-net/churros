@@ -7,13 +7,15 @@
   import IconAccount from '~icons/mdi/account-circle-outline';
 
   import ButtonSecondary from './ButtonSecondary.svelte';
-  import { onMount } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import { me } from '$lib/session';
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import { page } from '$app/stores';
   import { zeus } from '$lib/zeus';
   import ButtonBack from './ButtonBack.svelte';
   import { formatDate } from '$lib/dates';
+  import ButtonGhost from './ButtonGhost.svelte';
+  const dispatch = createEventDispatcher();
 
   onMount(() => {
     window.addEventListener('scroll', () => {
@@ -58,30 +60,32 @@
   <div class="actions">
     {#if scanningTickets}
       <img class="logo" src="/logo.png" alt="logo de l'AE" />
-    {:else if $me}
-      <a href="https://git.inpt.fr/inp-net/centraverse/-/issues/new" style="color:red"
-        ><IconIssue /></a
-      >
-      <a href="/notifications/">
-        {#if $page.url.pathname === '/notifications/'}
-          <IconNotifFilled />
-        {:else}
-          <IconNotif />{/if}</a
-      >
-      <a href="/bookings/"
-        >{#if $page.url.pathname.startsWith('/bookings')}<IconTicketFilled />{:else}
-          <IconTicket />{/if}</a
-      >
-      <a href="/users/{$me?.uid}">
-        {#if $me.pictureFile}
-          <img class="profilepic" src="{PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
-        {:else}
-          <IconAccount />
-        {/if}
-      </a>
     {:else}
-      <div><ButtonSecondary href="/register/">Inscription</ButtonSecondary></div>
-      <div><ButtonSecondary href="/login/">Connexion</ButtonSecondary></div>
+      <ButtonGhost on:click={() => dispatch('report-issue')} style="color:red"
+        ><IconIssue /></ButtonGhost
+      >
+      {#if $me}
+        <ButtonGhost href="/notifications/">
+          {#if $page.url.pathname === '/notifications/'}
+            <IconNotifFilled />
+          {:else}
+            <IconNotif />{/if}</ButtonGhost
+        >
+        <ButtonGhost href="/bookings/"
+          >{#if $page.url.pathname.startsWith('/bookings')}<IconTicketFilled />{:else}
+            <IconTicket />{/if}</ButtonGhost
+        >
+        <ButtonGhost href="/users/{$me?.uid}">
+          {#if $me.pictureFile}
+            <img class="profilepic" src="{PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
+          {:else}
+            <IconAccount />
+          {/if}
+        </ButtonGhost>
+      {:else}
+        <ButtonSecondary href="/register/">Inscription</ButtonSecondary>
+        <ButtonSecondary href="/login/">Connexion</ButtonSecondary>
+      {/if}
     {/if}
   </div>
 </nav>
@@ -117,7 +121,7 @@
 
   .actions {
     display: flex;
-    gap: 1.3rem;
+    gap: 0.5rem;
     justify-content: center;
     font-size: 1.3em;
   }
@@ -126,11 +130,6 @@
     width: 6rem;
     height: 3rem;
     object-fit: cover;
-  }
-
-  .actions a {
-    display: flex;
-    align-items: center;
   }
 
   .profilepic {
