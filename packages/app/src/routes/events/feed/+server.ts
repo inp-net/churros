@@ -4,7 +4,7 @@ const { generateIcs } = icsService;
 import type { EventAttributes } from 'ics';
 import type { RequestHandler } from './$types';
 import { loadQuery } from '$lib/zeus';
-import { htmlToText } from 'html-to-text';
+import { htmlToText } from '$lib/markdown';
 
 export const GET: RequestHandler = async ({ locals, fetch, url }) => {
   const { me } = locals;

@@ -1,4 +1,5 @@
 import rehypeSanitize from 'rehype-sanitize';
+import { htmlToText as convertHtmlToText } from 'html-to-text';
 import rehypeStringify from 'rehype-stringify';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
@@ -25,3 +26,16 @@ export const toHtml = async (body: string) =>
           `${before}<a href="/users/${uid}" class="user-mention">@${uid}</a>${after}`
       )
     );
+
+export function htmlToText(body: string): string {
+  return convertHtmlToText(body, {
+    selectors: [
+      {
+        selector: 'a',
+        options: {
+          ignoreHref: true,
+        },
+      },
+    ],
+  });
+}

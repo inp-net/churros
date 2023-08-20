@@ -10,7 +10,7 @@ import {
   type Major,
   type School,
 } from '@prisma/client';
-import * as htmlToText from 'html-to-text';
+import { htmlToText } from './markdown.js';
 import { prisma } from '../prisma.js';
 import webpush, { WebPushError } from 'web-push';
 import { Cron } from 'croner';
@@ -108,7 +108,7 @@ export async function scheduleNewArticleNotification({
 
       return {
         title: `Nouveau post de ${article.group.name}: ${article.title}`,
-        body: ellipsis(htmlToText.convert(await toHtml(article.body))),
+        body: ellipsis(htmlToText(await toHtml(article.body))),
         data: {
           group: article.group.uid,
           type: NotificationType.NewArticle,
