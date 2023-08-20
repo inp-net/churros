@@ -11,6 +11,11 @@ import type { ReadableStream } from 'node:stream/web';
 import { SingleBar } from 'cli-progress';
 const prisma = new PrismaClient();
 
+const NEW_MAJOR_SHORTNAMES: Partial<Record<Ldap.ShortName, string>> = {
+  MFEE: 'MF2E',
+  EEEA: '3EA',
+};
+
 const hashedA = await hash('a');
 type tinyIntString = '1' | '0';
 type iso8601 =
@@ -138,7 +143,7 @@ async function makeMajor(major: Ldap.Major) {
   return prisma.major.create({
     data: {
       name: major.displayName,
-      shortName: major.shortName,
+      shortName: NEW_MAJOR_SHORTNAMES[major.shortName] ?? major.shortName,
       schools: {
         connect: [
           {
