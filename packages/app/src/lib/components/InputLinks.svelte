@@ -93,9 +93,9 @@
                   <GhostButton
                     title="Terminé"
                     on:click={() => {
-                      for (const [key] of Object.entries(replacements)) 
+                      for (const [key] of Object.entries(replacements))
                         url.searchParams.delete(key);
-                      
+
                       link.value =
                         url.toString() +
                         '&' +
@@ -113,8 +113,7 @@
                     title="Modifier les remplacements"
                     on:click={() => {
                       for (const [key, value] of url.searchParams) {
-                        if (/^\[.*]$/.test(value))
-                          replacements[key] = value.replace(/^\[|]$/g, '');
+                        if (/^\[.*]$/.test(value)) replacements[key] = value.replace(/^\[|]$/g, '');
                       }
 
                       editingComputedLink = link.name;

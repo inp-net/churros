@@ -7,9 +7,19 @@
   import { compareDesc, isFuture } from 'date-fns';
   import type { PageData } from './$types';
   import IconAdd from '~icons/mdi/add';
+  import { onMount } from 'svelte';
+  import { removeInvalidUserMentions } from '$lib/markdown';
 
   export let data: PageData;
   let showPastAnnouncements = false;
+
+  onMount(async () => {
+    await Promise.all(
+      [...document.querySelectorAll('.body')].map((el) =>
+        removeInvalidUserMentions(el as HTMLElement)
+      )
+    );
+  });
 </script>
 
 <h1>
@@ -46,7 +56,7 @@
           danger
           on:click={async () => {
             await $zeus.mutate({
-              deleteAnnouncement: [{ id }, true],
+              deleteAnnouncement: [{ id }, true]
             });
           }}>Supprimer</ButtonSecondary
         >

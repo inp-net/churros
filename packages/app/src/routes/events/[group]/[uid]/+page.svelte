@@ -8,12 +8,22 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import Header from './Header.svelte';
+  import { onMount } from 'svelte';
+  import { removeInvalidUserMentions } from '$lib/markdown';
 
   export let data: PageData;
 
   const { id, descriptionHtml, links, group, contactMail, articles } = data.event;
 
   const tickets = data.ticketsOfEvent;
+
+  onMount(async () => {
+    await Promise.all(
+      [...document.querySelectorAll('.body')].map((el) =>
+        removeInvalidUserMentions(el as HTMLElement)
+      )
+    );
+  });
 
   $: usersRegistration = tickets
     .flatMap((t) => t.registrations)

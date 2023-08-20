@@ -179,11 +179,9 @@
           <th
             class:sorting={sortBy === key}
             on:click={() => {
-              if (sortBy === key) 
+              if (sortBy === key)
                 sortDirection = sortDirection === 'ascending' ? 'descending' : 'ascending';
-               else 
-                sortBy = key;
-              
+              else sortBy = key;
             }}
             ><div class="inner">
               {label}

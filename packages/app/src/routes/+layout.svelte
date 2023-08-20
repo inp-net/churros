@@ -12,6 +12,7 @@
   import { zeus } from '$lib/zeus';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { me } from '$lib/session';
+  import { removeInvalidUserMentions } from '$lib/markdown';
 
   function currentTab(url: URL): 'events' | 'search' | 'more' | 'home' {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -69,9 +70,9 @@
           title: true,
           bodyHtml: true,
           warning: true,
-          id: true,
-        },
-      ],
+          id: true
+        }
+      ]
     });
     announcements = announcementsNow;
 
@@ -88,6 +89,12 @@
 
       currentTheme = $theme;
     });
+
+    await Promise.all(
+      [...document.querySelectorAll('.body')].map((el) =>
+        removeInvalidUserMentions(el as HTMLElement)
+      )
+    );
   });
 
   function pageIsFullsize() {

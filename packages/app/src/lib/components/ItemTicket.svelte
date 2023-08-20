@@ -3,6 +3,8 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import fr from 'date-fns/locale/fr/index.js';
   import IconChevronRight from '~icons/mdi/chevron-right';
+    import { onMount } from 'svelte';
+    import { removeInvalidUserMentions } from '$lib/markdown';
 
   export let group: undefined | { name: string } = undefined;
   export let descriptionHtml: string;
@@ -14,6 +16,10 @@
   export let closesAt: Date | undefined = undefined;
   export let opensAt: Date | undefined = undefined;
   export let event: { group: { uid: string }; uid: string };
+
+  onMount(async () => {
+    await removeInvalidUserMentions(document.querySelector('.description'))
+  })
 
   $: shotgunning =
     (!closesAt && !opensAt) ||

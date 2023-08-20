@@ -18,6 +18,7 @@
   import IconGear from '~icons/mdi/gear-outline';
   import ChevronUp from '~icons/mdi/chevron-up';
   import { goto } from '$app/navigation';
+    import { removeInvalidUserMentions } from '$lib/markdown';
 
   export let collapsible = false;
   export let expandedEventId: string | undefined = undefined;
@@ -109,9 +110,10 @@
         isPast(new Date(shotgunsStart)));
   };
 
-  onMount(() => {
+  onMount(async () => {
     updateTime(); // Appel initial pour afficher le compte à rebours dès le rendu du composant
     interval = setInterval(updateTime, 1000); // Mettre à jour toutes les secondes
+    await removeInvalidUserMentions(document.querySelector('.desc'))
   });
 
   onDestroy(() => {

@@ -1,11 +1,16 @@
 <script lang="ts">
-  import type { SvelteComponent } from 'svelte';
+    import { removeInvalidUserMentions } from '$lib/markdown';
+  import { onMount, type SvelteComponent } from 'svelte';
 
   export let href: string;
   export let logoFile: string | typeof SvelteComponent<any>;
   export let name: string;
   export let descriptionHtml = '';
   export let dashedBorder = false;
+
+  onMount(async () => {
+    await removeInvalidUserMentions(document.querySelector('.description'))
+  })
 </script>
 
 <a class="card-service" {href} class:dashed-border={dashedBorder}>

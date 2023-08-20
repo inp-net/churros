@@ -10,9 +10,17 @@
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
+  import { beforeUpdate, onMount } from 'svelte';
+  import { removeInvalidUserMentions } from '$lib/markdown';
+    import { afterNavigate } from '$app/navigation';
 
   export let data: PageData;
   const { author, publishedAt, links, title, bodyHtml, group, pictureFile, event } = data.article;
+
+  beforeUpdate(async () => {
+    await removeInvalidUserMentions(document.querySelector('.description'));
+  });
+
   $: canEditArticles =
     $me?.admin ||
     $me?.groups.some(({ group: { uid }, canEditArticles }) => uid === group.uid && canEditArticles);

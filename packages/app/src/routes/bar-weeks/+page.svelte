@@ -14,8 +14,18 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputListOfGroups from '$lib/components/InputListOfGroups.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+    import { removeInvalidUserMentions } from '$lib/markdown';
+    import { onMount } from 'svelte';
 
   export let data: PageData;
+
+  onMount(async () => {
+    await Promise.all(
+      [...document.querySelectorAll('.body')].map((el) =>
+        removeInvalidUserMentions(el as HTMLElement)
+      )
+    );
+  });
 
   const EMPTY_BAR_WEEK = {
     id: undefined,

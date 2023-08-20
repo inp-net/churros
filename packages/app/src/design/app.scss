@@ -228,6 +228,11 @@ code {
 }
 
 a.user-mention {
+  text-decoration: none !important;
+  color: var(--text) !important;
+}
+
+a.user-mention.exists {
   padding: 0.25rem;
   color: var(--primary-text) !important;
   text-decoration: none !important;
@@ -235,7 +240,7 @@ a.user-mention {
   border-radius: var(--radius-inline);
 }
 
-a.user-mention:hover, a.user-mention:focus-visible {
+a.user-mention.exists:hover, a.user-mention.exists:focus-visible {
   color: var(--primary-hover-text) !important;
   background-color: var(--primary-hover-bg) !important;
 }

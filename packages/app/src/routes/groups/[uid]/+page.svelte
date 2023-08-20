@@ -10,7 +10,7 @@
   import { PUBLIC_STORAGE_URL } from '$env/static/public';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
   import IconFacebook from '~icons/mdi/facebook-box';
-  import type { SvelteComponent } from 'svelte';
+  import { onMount, type SvelteComponent } from 'svelte';
   import IconInstagram from '~icons/mdi/instagram';
   import IconTwitter from '~icons/mdi/twitter';
   import IconMatrix from '~icons/mdi/matrix';
@@ -32,6 +32,7 @@
   import { roleEmojis } from '$lib/permissions';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import { removeInvalidUserMentions } from '$lib/markdown';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
@@ -40,10 +41,14 @@
     matrix: IconMatrix,
     linkedin: IconLinkedin,
     discord: IconDiscord,
-    snapchat: IconSnapchat,
+    snapchat: IconSnapchat
   };
 
   export let data: PageData;
+
+  onMount(async () => {
+    await removeInvalidUserMentions(document.querySelector('.description'));
+  });
 
   $: clubBoard = group.members?.filter(
     ({ president, vicePresident, treasurer, secretary }) =>
@@ -73,7 +78,7 @@
     if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
     try {
       await $zeus.mutate({
-        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }],
+        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }]
       });
       window.location.reload();
     } catch (error: unknown) {
