@@ -26,6 +26,16 @@ export const load: PageLoad = async ({ fetch, parent, url, params }) => {
           pictureFile: true,
           uid: true,
           id: true,
+          members: {
+            member: {
+              uid: true,
+              firstName: true,
+              lastName: true,
+              pictureFile: true,
+              fullName: true,
+            },
+            canScanEvents: true,
+          },
         }),
       ],
       lydiaAccountsOfGroup: [

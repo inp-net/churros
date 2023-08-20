@@ -16,6 +16,7 @@ export const GroupMemberType = builder.prismaObject('GroupMember', {
     secretary: t.exposeBoolean('secretary'),
     canEditMembers: t.exposeBoolean('canEditMembers'),
     canEditArticles: t.exposeBoolean('canEditArticles'),
+    canScanEvents: t.exposeBoolean('canScanEvents'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     member: t.relation('member'),
     group: t.relation('group'),
@@ -112,6 +113,7 @@ builder.mutationField('upsertGroupMember', (t) =>
       secretary: t.arg.boolean(),
       canEditMembers: t.arg.boolean(),
       canEditArticles: t.arg.boolean(),
+      canScanEvents: t.arg.boolean(),
     },
     authScopes: (_, { groupId }, { user }) =>
       Boolean(
@@ -131,6 +133,7 @@ builder.mutationField('upsertGroupMember', (t) =>
         vicePresident,
         canEditArticles,
         canEditMembers,
+        canScanEvents,
       }
     ) {
       const { uid } = await prisma.user.findUniqueOrThrow({
@@ -153,6 +156,7 @@ builder.mutationField('upsertGroupMember', (t) =>
         memberId,
         canEditMembers: canEditMembers || president || treasurer,
         canEditArticles: canEditArticles || president || vicePresident || secretary,
+        canScanEvents: canScanEvents || president || vicePresident || secretary,
         vicePresident,
       };
 

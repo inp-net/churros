@@ -19,16 +19,27 @@
     lydiaAccountId: undefined,
     links: [],
     location: '',
-    managers: $me
-      ? [
-          {
-            user: $me,
-            canEdit: true,
-            canEditPermissions: true,
-            canVerifyRegistrations: true,
-          },
-        ]
-      : [],
+    managers: [
+      ...($me
+        ? [
+            {
+              user: $me,
+              canEdit: true,
+              canEditPermissions: true,
+              canVerifyRegistrations: true,
+            },
+          ]
+        : []),
+      ...data.group.members
+        .filter((m) => m.canScanEvents)
+        .map((m) => ({
+          user: m.member,
+          canEdit: false,
+          canEditPermissions: false,
+          canVerifyRegistrations: true,
+        })),
+    ],
+    // TODO add all group members with canScanEvents
     slug: '',
     startsAt: undefined,
     title: '',
@@ -47,11 +58,17 @@
   const redirectAfterSave = (uid: string) => $page.url.searchParams.get('back') || `../${uid}`;
 </script>
 
-<h1>Créer un évènement</h1>
+<div class="content">
+  <h1>Créer un évènement</h1>
 
-<EventForm {redirectAfterSave} bind:event availableLydiaAccounts={data.lydiaAccountsOfGroup} />
+  <EventForm {redirectAfterSave} bind:event availableLydiaAccounts={data.lydiaAccountsOfGroup} />
+</div>
 
 <style>
+  .content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
   h1 {
     margin-bottom: 3rem;
     text-align: center;

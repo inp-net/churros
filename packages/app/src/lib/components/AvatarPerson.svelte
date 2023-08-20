@@ -3,13 +3,15 @@
   import IconUser from '~icons/mdi/account';
   import IconCanEditMembers from '~icons/mdi/account-edit-outline';
   import IconCanEditPosts from '~icons/mdi/text-box-edit-outline';
+  import IconCanScanEvents from '~icons/mdi/qrcode';
   export let fullName: string;
   export let role = '';
   export let pictureFile: string;
   export let href: string;
   export let highlighted = false;
-  export let permissions: undefined | { canEditArticles: boolean; canEditMembers: boolean } =
-    undefined;
+  export let permissions:
+    | undefined
+    | { canEditArticles: boolean; canEditMembers: boolean; canScanEvents: boolean } = undefined;
   const src = `${PUBLIC_STORAGE_URL}${pictureFile}`;
 </script>
 
@@ -24,7 +26,7 @@
   <div class="desc">
     <p class="text name">
       {fullName}
-      {#if permissions?.canEditArticles || permissions?.canEditMembers}
+      {#if permissions && Object.values(permissions).some(Boolean)}
         <span class="permissions">
           <span title="Peut modifier les membres du groupe">
             {#if permissions.canEditMembers}
@@ -34,6 +36,11 @@
           <span title="Peut modifier les articles/évènements du groupe">
             {#if permissions.canEditArticles}
               <IconCanEditPosts />
+            {/if}
+          </span>
+          <span title="Peut scanner des billets sur tout les évènements du groupe">
+            {#if permissions.canScanEvents}
+              <IconCanScanEvents />
             {/if}
           </span>
         </span>

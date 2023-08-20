@@ -27,6 +27,7 @@
     title: string;
     canEditArticles: boolean;
     canEditMembers: boolean;
+    canScanEvents: boolean;
   } = {
     memberId: '',
     president: false,
@@ -36,6 +37,7 @@
     title: '',
     canEditArticles: false,
     canEditMembers: false,
+    canScanEvents: false,
   };
 
   let serverError = '';
@@ -63,6 +65,7 @@
               vicePresident: true,
               canEditMembers: true,
               canEditArticles: true,
+              canScanEvents: true,
               member: {
                 uid: true,
                 firstName: true,
@@ -114,6 +117,7 @@
             secretary: updateData.secretary,
             canEditArticles: updateData.canEditArticles,
             canEditMembers: updateData.canEditMembers,
+            canScanEvents: updateData.canScanEvents,
           },
           {
             title: true,
@@ -123,6 +127,7 @@
             secretary: true,
             canEditArticles: true,
             canEditMembers: true,
+            canScanEvents: true,
           },
         ],
       });
@@ -155,6 +160,8 @@
     if (!a.secretary && b.secretary) return 1;
     if (!a.canEditMembers && b.canEditMembers) return 1;
     if (a.canEditMembers && !b.canEditMembers) return -1;
+    if (a.canScanEvents && !b.canScanEvents) return -1;
+    if (!a.canScanEvents && b.canScanEvents) return 1;
     if (a.canEditArticles && !b.canEditArticles) return -1;
     if (!a.canEditArticles && b.canEditArticles) return 1;
     return isBefore(a.createdAt, b.createdAt) ? 1 : -1;
@@ -190,7 +197,7 @@
 </section>
 
 <ul class="nobullet members">
-  {#each shownMembers as { memberId, member, president, treasurer, vicePresident, secretary, title, canEditArticles, canEditMembers } (memberId)}
+  {#each shownMembers as { memberId, member, president, treasurer, vicePresident, secretary, title, canEditArticles, canEditMembers, canScanEvents } (memberId)}
     <li>
       <div class="item" data-id={member.uid}>
         <AvatarPerson
@@ -205,7 +212,7 @@
           role={title}
           permissions={isOnClubBoard({ president, treasurer, vicePresident, secretary })
             ? undefined
-            : { canEditArticles, canEditMembers }}
+            : { canEditArticles, canEditMembers, canScanEvents }}
         />
         <div class="actions">
           {#if updatingMember.memberId === memberId}
@@ -273,6 +280,10 @@
                 bind:value={updatingMember.canEditArticles}
               />
               <InputCheckbox label="Gère les membres" bind:value={updatingMember.canEditMembers} />
+              <InputCheckbox
+                label="Peut scanner tout les billets"
+                bind:value={updatingMember.canScanEvents}
+              />
             </div>
           </InputField>
         </div>

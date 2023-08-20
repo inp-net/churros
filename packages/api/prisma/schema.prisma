@@ -285,11 +285,11 @@ model Group {
   tickets            Ticket[]            @relation("openTo")
   barWeeks           BarWeek[]
 
-  Notification                Notification[]
-  NotificationSetting         NotificationSetting[]
-  groupId                     String?
-  ticketGroupId               String?
-  joinedByBookingTickets      Ticket[]              @relation("autojoin")
+  Notification           Notification[]
+  NotificationSetting    NotificationSetting[]
+  groupId                String?
+  ticketGroupId          String?
+  joinedByBookingTickets Ticket[]              @relation("autojoin")
 }
 
 /// The intermediate model between users and groups
@@ -303,6 +303,7 @@ model GroupMember {
   secretary       Boolean  @default(false)
   canEditMembers  Boolean  @default(false)
   canEditArticles Boolean  @default(false)
+  canScanEvents   Boolean  @default(false)
   createdAt       DateTime @default(now())
 
   group  Group @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -388,9 +389,9 @@ model TicketGroup {
   eventId String
   name    String @db.VarChar(255)
 
-  capacity       Int      @default(0) // 0 means unlimited, capacity is on the sum of sub-tickets registrations
-  tickets        Ticket[]
-  event          Event    @relation(fields: [eventId], references: [id])
+  capacity Int      @default(0) // 0 means unlimited, capacity is on the sum of sub-tickets registrations
+  tickets  Ticket[]
+  event    Event    @relation(fields: [eventId], references: [id])
 }
 
 /// A ticket is a way to register for an event. May include a price and conditions.
