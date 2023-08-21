@@ -21,11 +21,14 @@ export async function compressPhoto(
 ) {
   let operations = sharp(buf, {
     failOn: 'none',
-  }).resize({
-    width: 1000,
-    ...(square ? { height: 1000, position: 'entropy' } : {}),
-    withoutEnlargement: true,
-  });
+  })
+    .resize({
+      width: 1000,
+      ...(square ? { height: 1000, position: 'entropy' } : {}),
+      withoutEnlargement: true,
+    })
+    // auto-rotate from EXIF data
+    .rotate();
 
   switch (format) {
     case 'png': {
