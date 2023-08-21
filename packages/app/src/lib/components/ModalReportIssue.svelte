@@ -16,8 +16,8 @@
   import { me } from '$lib/session';
   import { default as parseUserAgent } from 'ua-parser-js';
 
-  let title = "Ceci est un test d'issue";
-  let description = 'Soumise depuis un formulaire';
+  let title = '';
+  let description = '';
   let issueType = 'bug';
   let link = '';
   let issueNumber = 0;
