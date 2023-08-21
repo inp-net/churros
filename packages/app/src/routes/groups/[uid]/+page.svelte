@@ -52,7 +52,7 @@
 
   $: onClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
 
-  $: myPermissions = $me?.groups.find(({ group: { uid } }) => uid === group.uid);
+  $: myPermissions = $me ? $me.groups.find(({ group: { uid } }) => uid === group.uid) : undefined;
 
   $: ({ group } = data);
 
