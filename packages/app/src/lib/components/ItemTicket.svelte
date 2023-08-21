@@ -26,7 +26,10 @@
       <h3>
         {#if group}{group.name} <IconChevronRight /> {/if}{name}
       </h3>
-      <div class="description">{@html descriptionHtml}</div>
+      <div class="description">
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+        {@html descriptionHtml}
+      </div>
     </div>
     <div class="numbers">
       <span class="places">
@@ -89,12 +92,6 @@
     .numbers {
       display: flex;
       gap: 0.5rem;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .book {
-      display: flex;
       align-items: center;
       justify-content: center;
     }

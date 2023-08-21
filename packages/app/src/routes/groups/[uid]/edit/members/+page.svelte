@@ -231,6 +231,7 @@
                   secretary,
                   canEditArticles,
                   canEditMembers,
+                  canScanEvents,
                   title,
                   memberId,
                 };

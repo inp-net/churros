@@ -93,6 +93,7 @@
 </script>
 
 <div class="slider-container">
+  <!-- eslint-disable-next-line svelte/a11y-no-static-element-interactions -->
   <div
     class="slider"
     style="
@@ -100,6 +101,8 @@
     ;transform: translateX({horizontalTranslation}px);"
     on:mousedown={handleMouseDown}
     on:touchstart={handleTouchDown}
+    role="listbox"
+    tabindex="-1"
   >
     {#each groups as { uid, ...rest }}
       <CardGroup on:click={handleClick} href={go(uid)} {...rest} />

@@ -18,6 +18,8 @@
   disabled={disabled || loading}
   on:click
   type={submits ? 'submit' : 'button'}
+  role="button"
+  tabindex="0"
 >
   {#if loading}
     <div class="loading">
