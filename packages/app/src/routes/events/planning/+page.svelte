@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { groupBy } from 'lodash';
+  import groupBy from 'lodash.groupby';
   import type { PageData } from './$types';
   import IconCalendarPlus from '~icons/mdi/calendar-plus';
   import CalendarDay from '$lib/components/CalendarDay.svelte';

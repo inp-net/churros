@@ -1,7 +1,7 @@
 <script lang="ts">
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import IconGear from '~icons/mdi/gear-outline';
-  import { groupBy } from 'lodash';
+  import groupBy from 'lodash.groupby';
   import type { PageData } from './$types';
   import { getYear, isBefore } from 'date-fns';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
@@ -54,7 +54,7 @@
       <h2>{year}</h2>
 
       <ul class="nobullet">
-        {#each membersOfYear.sort(byMemberGroupTitleImportance) as { title, member, createdAt } (member.uid)}
+        {#each membersOfYear.sort(byMemberGroupTitleImportance) as { title, member } (member.uid)}
           <li>
             <AvatarPerson href="/users/{member.uid}" {...member} role={title} />
           </li>
@@ -77,9 +77,9 @@
     display: flex;
     flex-flow: column wrap;
     gap: 1rem;
+    max-width: 1000px;
     padding: 0 1rem;
     margin: 0 auto;
-    max-width: 1000px;
   }
 
   .edit {

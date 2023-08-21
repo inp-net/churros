@@ -361,6 +361,7 @@ __metadata:
     "@types/cookie": "npm:^0.5.1"
     "@types/html-to-text": "npm:^9.0.1"
     "@types/js-cookie": "npm:^3.0.3"
+    "@types/lodash.groupby": "npm:^4.6.7"
     "@types/ua-parser-js": "npm:^0.7.36"
     arborist: "workspace:^"
     cookie: "npm:^0.5.0"
@@ -375,6 +376,7 @@ __metadata:
     is-dark-color: "npm:^1.2.0"
     json-to-csv-in-browser: "npm:^1.0.8"
     lodash: "npm:^4.17.21"
+    lodash.groupby: "npm:^4.6.0"
     nanoid: "npm:^4.0.2"
     party-js: "npm:^2.2.0"
     qr-code-generator-lib: "npm:^1.0.1"
@@ -2252,7 +2254,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.14.197":
+"@types/lodash.groupby@npm:^4.6.7":
+  version: 4.6.7
+  resolution: "@types/lodash.groupby@npm:4.6.7"
+  dependencies:
+    "@types/lodash": "npm:*"
+  checksum: 6ff6163de789fa7c4e5ecc8f5ba4249ef7c616457db7f18d662b7452922c54df532d139b081d7f1033ae5bd0df5587dc0be4ab69fa9e40c96f5aec06547b0879
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:*, @types/lodash@npm:^4.14.197":
   version: 4.14.197
   resolution: "@types/lodash@npm:4.14.197"
   checksum: 3e2b11acbb2ed88123127757bba04c193682c9cb4cfa644432cb7c4eccb7799fd2d651ca542391916fe3e87c01cee5f15e4b7772a1a92d16b95cf4bd70074e6c
@@ -6446,6 +6457,13 @@ __metadata:
   version: 4.3.0
   resolution: "lodash.camelcase@npm:4.3.0"
   checksum: 773d36b52707814ad5b6880fe8ccefa1a490a69cb5d233b9600e00a310ef64b639f56760e383743ac06901f2c073ee4c317b19896397bf1cf94d1cbcf2706923
+  languageName: node
+  linkType: hard
+
+"lodash.groupby@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "lodash.groupby@npm:4.6.0"
+  checksum: 52091d93d737682a42d6061c1f98791f7d2e13c7f059736e17b32a04ff9dde5bb330de7ae99c73dfd3bae9b6b27eb50edb208501e0d14eff5db666b7c492033d
   languageName: node
   linkType: hard
 
