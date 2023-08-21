@@ -31,8 +31,8 @@
 
   function formatMetadata(metadata: Record<string, string>): string {
     return Object.entries(metadata)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join('\n\n');
+      .map(([key, value]) => `- ${key}: ${value}`)
+      .join('\n');
   }
 
   async function submitIssue() {
@@ -57,7 +57,7 @@
         createGitlabIssue: [
           {
             title,
-            description: description + '\n\n\n\n' + formatMetadata(metadata),
+            description: description + '\n\n ---- \n\n' + formatMetadata(metadata),
             isBug: issueType === 'bug',
           },
           true,
