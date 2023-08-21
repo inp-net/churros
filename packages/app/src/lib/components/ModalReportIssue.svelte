@@ -31,7 +31,7 @@
 
   function formatMetadata(metadata: Record<string, string>): string {
     return Object.entries(metadata)
-      .map(([key, value]) => `- ${key}: ${value}`)
+      .map(([key, value]) => `- **${key}:** ${value}`)
       .join('\n');
   }
 
