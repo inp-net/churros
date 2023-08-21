@@ -102,7 +102,7 @@
           <ButtonGhost href="./edit"><IconGear /></ButtonGhost>
         {/if}
 
-        {#if group.members.find(({ member: { uid } }) => uid === $me?.uid)}
+        {#if group.members?.find(({ member: { uid } }) => uid === $me?.uid)}
           <Badge theme="success">Membre</Badge>
         {:else if group.selfJoinable}
           <ButtonSecondary icon={IconJoinGroup} on:click={async () => joinGroup(group.uid)}
