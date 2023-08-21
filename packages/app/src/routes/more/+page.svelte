@@ -7,8 +7,7 @@
   import CardService from '$lib/components/CardService.svelte';
   import { me } from '$lib/session';
   import type { SvelteComponent } from 'svelte';
-  import { browser } from '$app/environment';
-  import { PUBLIC_CURRENT_COMMIT } from '$env/static/public';
+  import { PUBLIC_CURRENT_COMMIT, PUBLIC_CURRENT_VERSION } from '$env/static/public';
 
   function Service(
     name: string,
@@ -71,15 +70,13 @@
   </ul>
 
   <footer>
-    {#if browser && window.location.hostname === 'localhost'}
-      <code
-        >{window.location.protocol}//{window.location.host} · built against {#if PUBLIC_CURRENT_COMMIT}<a
-            href="https://git.inpt.fr/inp-net/centraverse/-/commit/{PUBLIC_CURRENT_COMMIT}"
-            >{PUBLIC_CURRENT_COMMIT.slice(0, 8)}</a
-          >
-        {:else}trunk{/if}
-      </code>
-    {/if}
+    <code
+      >v{PUBLIC_CURRENT_VERSION} · built against {#if PUBLIC_CURRENT_COMMIT}<a
+          href="https://git.inpt.fr/inp-net/centraverse/-/commit/{PUBLIC_CURRENT_COMMIT}"
+          >{PUBLIC_CURRENT_COMMIT.slice(0, 8)}</a
+        >
+      {:else}trunk{/if}
+    </code>
   </footer>
 </div>
 
