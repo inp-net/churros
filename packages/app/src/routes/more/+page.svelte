@@ -60,7 +60,7 @@
         dashedBorder
         logoFile={IconAdd}
         name="Il manque…"
-        descriptionHtml="Demandes à rajouter un service ici"
+        descriptionHtml="Demande à rajouter un service ici"
         href="./submit"
       />
     </li>
