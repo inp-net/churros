@@ -56,6 +56,7 @@
     flex-shrink: 0;
     gap: 0.5em;
     align-items: center;
+    height: fit-content;
     padding: 0.25rem 0.75rem;
     color: var(--text);
     cursor: pointer;
