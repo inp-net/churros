@@ -1,6 +1,7 @@
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
 import { CredentialType } from '@prisma/client';
 import { Prisma } from '@prisma/client';
+import { lydiaSignature, verifyLydiaTransaction } from './services/lydia.js';
 import { createFetch } from '@whatwg-node/fetch';
 import cors from 'cors';
 import express, { type Request, type Response } from 'express';
@@ -152,94 +153,88 @@ api.listen(4000, () => {
 
 await writeSchema();
 
-import { lydiaSignature } from './services/lydia.js';
-
 const webhook = express();
 const upload: multer.Multer = multer();
 
 // Lydia webhook
 webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response) => {
   // Retrieve the params from the request
-  const {
+  const { request_id, amount, currency, sig, signed, transaction_identifier, vendor_token } =
+    req.body as {
+      request_id: string;
+      amount: string;
+      currency: string;
+      sig: string;
+      signed: string;
+      transaction_identifier: string;
+      vendor_token: string;
+    };
+
+  const signatureParameters = {
+    currency,
     request_id,
     amount,
-    currency,
-    sig,
     signed,
     transaction_identifier,
     vendor_token,
-  }: {
-    request_id: string;
-    amount: string;
-    currency: string;
-    sig: string;
-    signed: string;
-    transaction_identifier: string;
-    vendor_token: string;
-  } = req.body as {
-    request_id: string;
-    amount: string;
-    currency: string;
-    sig: string;
-    signed: string;
-    transaction_identifier: string;
-    vendor_token: string;
   };
 
   try {
-    // Get the lydia transaction from it's requestId
-    const transaction = await prisma.lydiaTransaction.findFirst({
-      where: {
-        requestId: request_id,
-      },
-      include: {
-        registration: {
-          include: {
-            ticket: {
-              include: {
-                event: {
-                  include: {
-                    beneficiary: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
+    const { verified, transaction } = await verifyLydiaTransaction(
+      request_id,
+      signatureParameters,
+      sig
+    );
+
+    if (!verified) return res.status(400).send('Transaction signature is invalid');
 
     if (!transaction) return res.status(400).send('Transaction not found');
 
-    const sigParams = {
-      currency,
-      request_id,
-      amount,
-      signed,
-      transaction_identifier,
-      vendor_token,
-    };
-
     // Check if the beneficiary exists
-    if (!transaction.registration.ticket.event.beneficiary)
-      return res.status(400).send('Beneficiary not found');
+    if (transaction.registration) {
+      if (!transaction.registration.ticket.event.beneficiary)
+        return res.status(400).send('Beneficiary not found');
 
-    if (sig === lydiaSignature(transaction.registration.ticket.event.beneficiary, sigParams)) {
-      await prisma.registration.update({
-        where: {
-          id: transaction.registrationId,
-        },
-        data: {
-          paid: true,
-        },
-      });
-      return res.status(200).send('OK');
+      if (
+        sig ===
+        lydiaSignature(transaction.registration.ticket.event.beneficiary, signatureParameters)
+      ) {
+        await prisma.lydiaTransaction.update({
+          where: {
+            id: transaction.id,
+          },
+          data: {
+            transactionId: transaction_identifier,
+            registration: {
+              update: {
+                paid: true,
+              },
+            },
+          },
+        });
+        return res.status(200).send('OK');
+      }
+    } else if (transaction.contribution) {
+      const beneficiary = transaction.contribution.studentAssociation.lydiaAccounts[0];
+      if (!beneficiary)
+        return res.status(400).send('No lydia accounts for this student association');
+      if (sig === lydiaSignature(beneficiary, signatureParameters)) {
+        await prisma.contribution.update({
+          where: {
+            id: transaction.contribution.studentAssociation.id,
+          },
+          data: {
+            paid: true,
+          },
+        });
+        return res.status(200).send('OK');
+      }
     }
-  } catch {
-    return res.status(500).send('Internal server error');
-  }
 
-  return res.status(400).send('Bad request');
+    return res.status(400).send('Bad request');
+  } catch {
+    return res.status(400).send('Bad request');
+  }
 });
 
 webhook.listen(4001, () => {

@@ -70,6 +70,7 @@
               openToGroups: t.openToGroups.map(({ uid }) => uid),
               openToSchools: t.openToSchools.map(({ uid }) => uid),
               openToMajors: t.openToMajors.map(({ id }) => id),
+              autojoinGroups: t.autojoinGroups.map(({ uid }) => uid),
             })),
           })),
           tickets: event.tickets.map((t) => ({
@@ -78,6 +79,7 @@
             openToGroups: t.openToGroups.map(({ uid }) => uid),
             openToSchools: t.openToSchools.map(({ uid }) => uid),
             openToMajors: t.openToMajors.map(({ id }) => id),
+            autojoinGroups: t.autojoinGroups.map(({ uid }) => uid),
           })),
           title: event.title,
           visibility: event.visibility,
@@ -150,6 +152,7 @@
                 openToContributors: true,
                 godsonLimit: true,
                 onlyManagersCanProvide: true,
+                autojoinGroups: { name: true, uid: true, pictureFile: true },
               },
               managers: {
                 user: {
@@ -196,7 +199,7 @@
     return 'tg:fake:' + nanoid(10);
   }
 
-  const defaultTicket = (id: string) => ({
+  const defaultTicket: (id: string) => Ticket = (id) => ({
     allowedPaymentMethods: ['Cash', 'Lydia'] as PaymentMethod[],
     capacity: 0,
     price: 0,
@@ -216,6 +219,7 @@
     openToPromotions: [],
     openToSchools: [],
     openToMajors: [],
+    autojoinGroups: [],
     id,
   });
 
@@ -238,6 +242,7 @@
     openToContributors?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
+    autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;
   };
 
   export let redirectAfterSave: (uid: string, groupUid: string) => string = (uid, groupUid) =>
@@ -315,14 +320,14 @@
   const aspermissionlevel = (x: any) => x as 'readonly' | 'verifyer' | 'editor' | 'fullaccess';
 </script>
 
-<form on:submit|preventDefault={async () => saveChanges()}>
-  <div class="left">
+<form class="event" on:submit|preventDefault={async () => saveChanges()}>
+  <section class="info">
     <h2>Informations</h2>
     {#if event.id}
       <FormPicture objectName="Event" bind:object={event} />
     {/if}
-    <InputGroup group={event.group} label="Groupe" bind:uid={event.group.uid} />
-    <InputText label="Titre" bind:value={event.title} />
+    <InputGroup required group={event.group} label="Groupe" bind:uid={event.group.uid} />
+    <InputText required label="Titre" bind:value={event.title} />
     <InputSelectOne
       label="Visibilité"
       hint={HELP_VISIBILITY[event.visibility]}
@@ -331,8 +336,8 @@
     />
     <InputLongText rich label="Description" bind:value={event.description} />
     <div class="side-by-side">
-      <DateInput label="Début" time bind:value={event.startsAt} />
-      <DateInput label="Fin" time bind:value={event.endsAt} />
+      <DateInput required label="Début" time bind:value={event.startsAt} />
+      <DateInput required label="Fin" time bind:value={event.endsAt} />
     </div>
     <InputText label="Lieu" bind:value={event.location} />
     <InputField label="Compte Lydia bénéficiaire">
@@ -349,8 +354,8 @@
           new Fuse(availableLydiaAccounts, { keys: ['name'] }).search(query).map((r) => r.item)}
       />
     </InputField>
-  </div>
-  <div class="right">
+  </section>
+  <section class="tickets">
     <h2>
       Billets
 
@@ -406,7 +411,7 @@
               bind:value={event.ticketGroups[i].capacity}
             />
           </div>
-          <section class="tickets">
+          <section class="tickets-of-group">
             {#each ticketGroup.tickets as ticket, j (ticket.id)}
               <FormEventTicket
                 on:delete={() => {
@@ -443,7 +448,7 @@
     </section>
 
     <section class="simple-tickets">
-      {#each event.tickets as ticket, i (ticket.id)}
+      {#each event.tickets as ticket (ticket.id)}
         {#if !ticketIsInGroup(ticket)}
           <FormEventTicket
             on:delete={() => {
@@ -455,8 +460,8 @@
         {/if}
       {/each}
     </section>
-  </div>
-  <div class="center">
+  </section>
+  <section class="managers">
     <h2>
       Managers
 
@@ -521,54 +526,54 @@
     {#if serverError}
       <Alert theme="danger">Impossible de sauvegarder l'évènement: {serverError}</Alert>
     {/if}
-
-    <section class="submit">
-      {#if confirmingDelete}
-        <h2>Es-tu sûr·e ?</h2>
+  </section>
+  <section class="submit">
+    {#if confirmingDelete}
+      <h2>Es-tu sûr·e ?</h2>
+      <ButtonSecondary
+        on:click={() => {
+          confirmingDelete = false;
+        }}>Annuler</ButtonSecondary
+      >
+      <ButtonSecondary
+        on:click={async () => {
+          await $zeus.mutate({
+            deleteEventPicture: [{ id: event.id }, true],
+            deleteEvent: [{ id: event.id }, true],
+          });
+          confirmingDelete = false;
+          await goto('/');
+        }}
+        danger>Oui</ButtonSecondary
+      >
+      <ButtonSecondary
+        on:click={() => {
+          event.visibility = Visibility.Private;
+          confirmingDelete = false;
+        }}>Rendre privé</ButtonSecondary
+      >
+    {:else}
+      <ButtonPrimary submits {loading}>Enregistrer</ButtonPrimary>
+      {#if event.id}
         <ButtonSecondary
+          danger
           on:click={() => {
-            confirmingDelete = false;
-          }}>Annuler</ButtonSecondary
+            confirmingDelete = true;
+          }}>Supprimer</ButtonSecondary
         >
-        <ButtonSecondary
-          on:click={async () => {
-            await $zeus.mutate({
-              deleteEventPicture: [{ id: event.id }, true],
-              deleteEvent: [{ id: event.id }, true],
-            });
-            confirmingDelete = false;
-            await goto('/');
-          }}
-          danger>Oui</ButtonSecondary
-        >
-        <ButtonSecondary
-          on:click={() => {
-            event.visibility = Visibility.Private;
-            confirmingDelete = false;
-          }}>Rendre privé</ButtonSecondary
-        >
-      {:else}
-        <ButtonPrimary submits {loading}>Enregistrer</ButtonPrimary>
-        {#if event.id}
-          <ButtonSecondary
-            danger
-            on:click={() => {
-              confirmingDelete = true;
-            }}>Supprimer</ButtonSecondary
-          >
-        {/if}
       {/if}
-    </section>
-  </div>
+    {/if}
+  </section>
 </form>
 
 <style lang="scss">
   form {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 2rem;
-    justify-content: center;
+    align-items: center;
     margin: 0 auto;
+    margin-top: 2rem;
   }
 
   h2 {
@@ -595,7 +600,7 @@
     column-gap: 1rem;
   }
 
-  .ticket-group .tickets,
+  .tickets-of-group,
   .simple-tickets {
     display: flex;
     flex-direction: column;
@@ -648,5 +653,30 @@
     color: var(--muted-text);
     border: var(--border-block) dashed var(--muted-border);
     border-radius: var(--radius-block);
+  }
+
+  @media (min-width: 1100px) {
+    form.event {
+      display: grid;
+      grid-template-areas: 'info tickets' 'managers managers' 'submit submit';
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+
+    section.tickets {
+      grid-area: tickets;
+    }
+
+    section.managers {
+      grid-area: managers;
+    }
+
+    section.info {
+      grid-area: info;
+    }
+
+    section.submit {
+      grid-area: submit;
+    }
   }
 </style>

@@ -6,7 +6,7 @@
   import type { Visibility } from '$lib/zeus';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import ButtonInk from './ButtonInk.svelte';
-  import { htmlToText } from 'html-to-text';
+  import { htmlToText } from '$lib/markdown';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
 
   export let visibility: Visibility | undefined = undefined;
@@ -36,6 +36,7 @@
   </header>
 
   <div class="description">
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html (
       htmlToText(bodyHtml)
         .split('\n')
@@ -121,7 +122,7 @@
   .header {
     display: grid;
     grid-template-rows: repeat(auto-fit, minmax(0, 1fr));
-    grid-template-columns: repeat(auto-fit, minmax(max(min(120px, 100%), 100%/3), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(max(min(120px, 100%), 100% / 3), 1fr));
     min-height: 10rem;
     max-height: 20rem;
     padding: 0;

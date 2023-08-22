@@ -6,14 +6,11 @@ import { toHtml } from '../services/markdown.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
 import { LinkInput } from './links.js';
 import { dichotomid } from 'dichotomid';
-import { GraphQLError } from 'graphql';
-import { mkdir, unlink } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import imageType from 'image-type';
+import { unlink } from 'node:fs/promises';
 import { VisibilityEnum } from './events.js';
 import { Visibility } from '@prisma/client';
 import { scheduleNewArticleNotification } from '../services/notifications.js';
-import { compressPhoto, supportedExtensions } from '../pictures.js';
+import { updatePicture } from '../pictures.js';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
@@ -273,24 +270,13 @@ builder.mutationField('updateArticlePicture', (t) =>
       );
     },
     async resolve(_, { id, file }) {
-      const buffer = await file.arrayBuffer().then((array) => Buffer.from(array));
-      const type = await imageType(buffer);
-      if (!type || !supportedExtensions.includes(type.ext))
-        throw new GraphQLError('File format not supported');
-
-      // Delete the existing picture
-      const { pictureFile } = await prisma.article.findUniqueOrThrow({
-        where: { id },
-        select: { pictureFile: true },
+      return updatePicture({
+        resource: 'article',
+        folder: 'articles',
+        extension: 'jpg',
+        file,
+        identifier: id,
       });
-
-      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
-
-      const path = join(`articles`, `${id}.jpeg`);
-      await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
-      await compressPhoto(buffer, new URL(path, process.env.STORAGE).pathname);
-      await prisma.article.update({ where: { id }, data: { pictureFile: path } });
-      return path;
     },
   })
 );

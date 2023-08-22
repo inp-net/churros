@@ -7,10 +7,8 @@ import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
 import { LinkInput } from './links.js';
 import { GraphQLError } from 'graphql';
-import { unlink, writeFile, mkdir } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import { unlink } from 'node:fs/promises';
 import { FileScalar } from './scalars.js';
-import imageType, { minimumBytes } from 'image-type';
 import {
   type FuzzySearchResult,
   levenshteinFilterAndSort,
@@ -18,6 +16,7 @@ import {
   levenshteinSorter,
 } from '../services/search.js';
 import type { Context } from '../context.js';
+import { updatePicture } from '../pictures.js';
 
 export function userIsInBureauOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
@@ -127,7 +126,7 @@ builder.queryField('group', (t) =>
   t.prismaField({
     type: GroupType,
     args: { uid: t.arg.string() },
-    resolve: (query, _, { uid }) => prisma.group.findUniqueOrThrow({ ...query, where: { uid } }),
+    resolve: async (query, _, { uid }) => prisma.group.findUniqueOrThrow({ ...query, where: { uid } }),
   })
 );
 builder.queryField('searchGroups', (t) =>
@@ -363,30 +362,14 @@ builder.mutationField('updateGroupPicture', (t) =>
     authScopes: (_, { uid }, { user }) =>
       Boolean(user?.canEditGroups || user?.groups.some(({ group }) => group.uid === uid)),
     async resolve(_, { uid, file, dark }) {
-      const propertyName = dark ? 'pictureFileDark' : 'pictureFile';
-      const type = await file
-        .slice(0, minimumBytes)
-        .arrayBuffer()
-        .then((array) => Buffer.from(array))
-        .then(async (buffer) => imageType(buffer));
-      if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
-        throw new GraphQLError('File format not supported');
-
-      // Delete the existing picture
-      const data = await prisma.group.findUniqueOrThrow({
-        where: { uid },
-        select: { pictureFile: true, pictureFileDark: true },
+      return updatePicture({
+        resource: 'group',
+        folder: dark ? 'groups/dark' : 'groups',
+        extension: 'png',
+        file,
+        identifier: uid,
+        propertyName: dark ? 'pictureFileDark' : 'pictureFile',
       });
-
-      const pictureFile = data[propertyName];
-
-      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
-
-      const path = join(dark ? 'groups/dark' : `groups`, `${uid}.${type.ext}`);
-      await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
-      await writeFile(new URL(path, process.env.STORAGE), file.stream());
-      await prisma.group.update({ where: { uid }, data: { [propertyName]: path } });
-      return path;
     },
   })
 );

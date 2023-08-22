@@ -1,6 +1,5 @@
 import { GraphQLError } from 'graphql';
-import imageType, { minimumBytes } from 'image-type';
-import { mkdir, unlink, writeFile } from 'node:fs/promises';
+import { unlink } from 'node:fs/promises';
 import { phone as parsePhoneNumber } from 'phone';
 import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
@@ -15,11 +14,12 @@ import {
   levenshteinFilterAndSort,
 } from '../services/search.js';
 import type { Group, User } from '@prisma/client';
-import { dirname, join } from 'node:path';
 import { NotificationTypeEnum } from './notifications.js';
 import { FamilyTree, getFamilyTree } from '../godchildren-tree.js';
 import { yearTier } from '../date.js';
 import { addDays } from 'date-fns';
+import { StudentAssociationType } from './student-associations.js';
+import { updatePicture } from '../pictures.js';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -42,6 +42,10 @@ export const UserType = builder.prismaNode('User', {
   fields: (t) => ({
     majorId: t.exposeID('majorId'),
     uid: t.exposeString('uid'),
+    otherEmails: t.expose('otherEmails', {
+      type: ['String'],
+      authScopes: { loggedIn: true, $granted: 'me' },
+    }),
     email: t.exposeString('email', { authScopes: { loggedIn: true, $granted: 'me' } }),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
@@ -102,7 +106,40 @@ export const UserType = builder.prismaNode('User', {
     notificationSettings: t.relation('notificationSettings', {
       authScopes: { loggedIn: true, $granted: 'me' },
     }),
-    contributesTo: t.relation('contributesTo'),
+    contributesTo: t.field({
+      type: [StudentAssociationType],
+      async resolve({ id }) {
+        return prisma.studentAssociation.findMany({
+          where: {
+            contributions: {
+              some: {
+                user: {
+                  id,
+                },
+                paid: true,
+              },
+            },
+          },
+        });
+      },
+    }),
+    pendingContributions: t.field({
+      type: [StudentAssociationType],
+      async resolve({ id }) {
+        return prisma.studentAssociation.findMany({
+          where: {
+            contributions: {
+              some: {
+                user: {
+                  id,
+                },
+                paid: false,
+              },
+            },
+          },
+        });
+      },
+    }),
     godparent: t.relation('godparent', { nullable: true }),
     godchildren: t.relation('godchildren'),
     outgoingGodparentRequests: t.relation('outgoingGodparentRequests'),
@@ -290,6 +327,7 @@ builder.mutationField('updateUser', (t) =>
       majorId: t.arg.id(),
       graduationYear: t.arg.int({ required: false }),
       email: t.arg.string(),
+      otherEmails: t.arg.stringList(),
       birthday: t.arg({ type: DateTimeScalar, required: false }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
       phone: t.arg.string({ validate: { maxLength: 255 } }),
@@ -310,6 +348,7 @@ builder.mutationField('updateUser', (t) =>
         uid,
         majorId,
         email,
+        otherEmails,
         graduationYear,
         nickname,
         description,
@@ -355,6 +394,24 @@ builder.mutationField('updateUser', (t) =>
       }
 
       purgeUserSessions(uid);
+      if (contributesTo) {
+        await prisma.contribution.deleteMany({
+          where: {
+            studentAssociationId: {
+              notIn: contributesTo,
+            },
+          },
+        });
+        await prisma.contribution.createMany({
+          data: contributesTo.map((id) => ({
+            studentAssociationId: id,
+            userId: user.id,
+            paid: true,
+          })),
+          skipDuplicates: true,
+        });
+      }
+
       return prisma.user.update({
         ...query,
         where: { uid },
@@ -367,14 +424,8 @@ builder.mutationField('updateUser', (t) =>
           phone,
           birthday,
           links: { deleteMany: {}, createMany: { data: links } },
+          otherEmails: { set: otherEmails },
           godparent: godparentUid ? { connect: { uid: godparentUid } } : { disconnect: true },
-          ...(contributesTo
-            ? {
-                contributesTo: {
-                  set: contributesTo.map((id) => ({ id })),
-                },
-              }
-            : {}),
         },
       });
     },
@@ -410,28 +461,13 @@ builder.mutationField('updateUserPicture', (t) =>
     },
     authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
     async resolve(_, { uid, file }) {
-      const type = await file
-        .slice(0, minimumBytes)
-        .arrayBuffer()
-        .then((array) => Buffer.from(array))
-        .then(async (buffer) => imageType(buffer));
-      if (!type || (type.ext !== 'png' && type.ext !== 'jpg'))
-        throw new GraphQLError('File format not supported');
-
-      // Delete the existing picture
-      const { pictureFile } = await prisma.user.findUniqueOrThrow({
-        where: { uid },
-        select: { pictureFile: true },
+      return updatePicture({
+        resource: 'user',
+        folder: 'users',
+        extension: 'png',
+        file,
+        identifier: uid,
       });
-
-      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
-
-      const path = join(`users`, `${uid}.${type.ext}`);
-      await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
-      purgeUserSessions(uid);
-      await writeFile(new URL(path, process.env.STORAGE), file.stream());
-      await prisma.user.update({ where: { uid }, data: { pictureFile: path } });
-      return path;
     },
   })
 );

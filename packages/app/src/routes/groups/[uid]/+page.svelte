@@ -52,7 +52,7 @@
 
   $: onClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
 
-  $: myPermissions = $me?.groups.find(({ group: { uid } }) => uid === group.uid);
+  $: myPermissions = $me ? $me.groups.find(({ group: { uid } }) => uid === group.uid) : undefined;
 
   $: ({ group } = data);
 
@@ -102,7 +102,7 @@
           <ButtonGhost href="./edit"><IconGear /></ButtonGhost>
         {/if}
 
-        {#if group.members.find(({ member: { uid } }) => uid === $me?.uid)}
+        {#if group.members?.find(({ member: { uid } }) => uid === $me?.uid)}
           <Badge theme="success">Membre</Badge>
         {:else if group.selfJoinable}
           <ButtonSecondary icon={IconJoinGroup} on:click={async () => joinGroup(group.uid)}

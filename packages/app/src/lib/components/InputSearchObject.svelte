@@ -46,6 +46,7 @@
     labelFieldName={labelKey}
     noResultsText="Aucun résultat"
     loadingText="Chargement…"
+    {...$$restProps}
   >
     <slot slot="item" name="item" let:item {item}>{item[labelKey]}</slot>
   </AutoComplete>

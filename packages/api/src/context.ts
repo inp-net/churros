@@ -12,6 +12,7 @@ import {
 import { GraphQLError } from 'graphql';
 import { prisma } from './prisma.js';
 import { fullName } from './objects/users.js';
+import { yearTier } from './date.js';
 
 const getToken = ({ headers }: Request) => {
   const auth = headers.get('Authorization');
@@ -22,7 +23,7 @@ const getToken = ({ headers }: Request) => {
 /** In memory store for sessions. */
 const sessions = new Map<
   string,
-  User & { fullName: string } & {
+  User & { fullName: string; yearTier: number } & {
     groups: Array<GroupMember & { group: Group }>;
     major: Major & { schools: School[] };
     managedEvents: Array<EventManager & { event: Event & { group: Group } }>;
@@ -49,11 +50,6 @@ const getUser = async (token: string) => {
             groups: { include: { group: true } },
             managedEvents: { include: { event: { include: { group: true } } } },
             major: { include: { schools: true } },
-            contributesTo: {
-              include: {
-                school: true,
-              },
-            },
           },
         },
       },
@@ -85,11 +81,16 @@ const getUser = async (token: string) => {
   if (sessions.size > 10_000)
     for (const [i, token] of [...sessions.keys()].entries()) if (i % 2) sessions.delete(token);
 
-  sessions.set(token, { ...user, fullName: fullName(user) });
+  sessions.set(token, {
+    ...user,
+    fullName: fullName(user),
+    yearTier: yearTier(user.graduationYear),
+  });
 
   return {
     ...user,
     fullName: fullName(user),
+    yearTier: yearTier(user.graduationYear),
   };
 };
 

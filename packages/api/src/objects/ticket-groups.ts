@@ -105,7 +105,7 @@ builder.mutationField('deleteTicketGroup', (t) =>
     async authScopes(_, { id }, { user }) {
       // Make sure that the tickets added to that group all exists and are part of events managed by the user
       const ticketGroup = await prisma.ticketGroup.findFirst({
-        where: { id: id ?? '' },
+        where: { id },
         include: { event: true },
       });
 

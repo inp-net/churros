@@ -12,6 +12,7 @@
   import { zeus } from '$lib/zeus';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { me } from '$lib/session';
+  import ModalReportIssue from '$lib/components/ModalReportIssue.svelte';
 
   function currentTab(url: URL): 'events' | 'search' | 'more' | 'home' {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -102,7 +103,11 @@
 
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
+
+  let reportIssueDialogElement: HTMLDialogElement;
 </script>
+
+<ModalReportIssue bind:element={reportIssueDialogElement} />
 
 <svelte:head>
   <title>Centraverse</title>
@@ -116,7 +121,11 @@
   <p class="typo-details">Connexion en cours…</p>
 </div>
 <div class="page">
-  <TopBar />
+  <TopBar
+    on:report-issue={() => {
+      reportIssueDialogElement.showModal();
+    }}
+  />
 
   <div class="layout">
     {#if announcements.length > 0 && !scanningTickets && !showingTicket}

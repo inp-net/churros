@@ -3,10 +3,11 @@ import { builder } from '../builder.js';
 import { DateTimeScalar } from './scalars.js';
 import { prisma } from '../prisma.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
-import { sendLydiaPaymentRequest } from '../services/lydia.js';
-import { placesIsValid, placesLeft, userCanSeeTicket } from './tickets.js';
+import { payEventRegistrationViaLydia } from '../services/lydia.js';
+import { placesLeft, placesIsValid, userCanSeeTicket } from './tickets.js';
 import { GraphQLError } from 'graphql';
 import { UserType, fullName } from './users.js';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
   name: 'PaymentMethod',
@@ -326,9 +327,13 @@ builder.mutationField('upsertRegistration', (t) =>
         const userWithContributesTo = await prisma.user.findUniqueOrThrow({
           where: { id: user.id },
           include: {
-            contributesTo: {
+            contributions: {
               include: {
-                school: true,
+                studentAssociation: {
+                  include: {
+                    school: true,
+                  },
+                },
               },
             },
             groups: {
@@ -406,8 +411,33 @@ builder.mutationField('upsertRegistration', (t) =>
 
       const ticket = await prisma.ticket.findUniqueOrThrow({
         where: { id: ticketId },
-        include: { event: { include: { beneficiary: true } } },
+        include: { event: { include: { beneficiary: true } }, autojoinGroups: true },
       });
+
+      if (paid && ticket.autojoinGroups.length > 0) {
+        try {
+          await prisma.user.update({
+            where: { uid: beneficiary || user.uid },
+            data: {
+              groups: {
+                createMany: {
+                  skipDuplicates: true,
+                  data: ticket.autojoinGroups.map((g) => ({
+                    groupId: g.id,
+                    title: `Membre par ${ticket.event.title}`,
+                  })),
+                },
+              },
+            },
+          });
+        } catch (error: unknown) {
+          if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+            // ok, the beneficiary is just not a user of the app
+          } else {
+            throw error;
+          }
+        }
+      }
 
       return prisma.registration.upsert({
         ...query,
@@ -591,7 +621,8 @@ async function pay(
   switch (by) {
     case 'Lydia': {
       if (!phone) throw new GraphQLError('Missing phone number');
-      return sendLydiaPaymentRequest(phone, registrationId);
+      await payEventRegistrationViaLydia(phone, registrationId);
+      return;
     }
 
     default: {

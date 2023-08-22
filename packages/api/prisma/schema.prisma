@@ -26,11 +26,12 @@ model User {
   schoolEmail  String? @unique @db.VarChar(255)
 
   // Mandatory profile details
-  email          String @unique @db.VarChar(255)
-  firstName      String @db.VarChar(255)
-  lastName       String @db.VarChar(255)
+  email          String   @unique @db.VarChar(255)
+  otherEmails    String[] @db.VarChar(255)
+  firstName      String   @db.VarChar(255)
+  lastName       String   @db.VarChar(255)
   majorId        String
-  major          Major  @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  major          Major    @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   graduationYear Int
 
   // Optional profile details
@@ -66,7 +67,7 @@ model User {
   passwordResets            PasswordReset[]
   emailChanges              EmailChange[]
   Announcement              Announcement[]
-  contributesTo             StudentAssociation[] // Cotisant à ces AEs
+  contributions             Contribution[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -202,17 +203,32 @@ model Credential {
 
 /// There is one student association per school
 model StudentAssociation {
-  id       String @id @default(dbgenerated("nanoid('ae:')"))
-  schoolId String
-  name     String @unique @db.VarChar(255)
-  links    Link[]
+  id                String @id @default(dbgenerated("nanoid('ae:')"))
+  schoolId          String
+  name              String @unique @db.VarChar(255)
+  links             Link[]
+  contributionPrice Float  @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  school       School  @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  groups       Group[]
-  contributors User[]
+  school        School         @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  groups        Group[]
+  contributions Contribution[]
+  lydiaAccounts LydiaAccount[]
+}
+
+model Contribution {
+  id                   String             @id @default(dbgenerated("nanoid('contribution:')"))
+  studentAssociation   StudentAssociation @relation(fields: [studentAssociationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  studentAssociationId String
+  transaction          LydiaTransaction?
+  transactionId        String?
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  paid                 Boolean            @default(false)
+  userId               String
+
+  @@unique([userId, studentAssociationId])
 }
 
 /// The different kinds of groups
@@ -266,12 +282,14 @@ model Group {
   studentAssociation StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   events             Event[]
   lyiaAccounts       LydiaAccount[]
-  tickets            Ticket[]
+  tickets            Ticket[]            @relation("openTo")
   barWeeks           BarWeek[]
 
-  Notification        Notification[]
-  NotificationSetting NotificationSetting[]
-  groupId             String?
+  Notification           Notification[]
+  NotificationSetting    NotificationSetting[]
+  groupId                String?
+  ticketGroupId          String?
+  joinedByBookingTickets Ticket[]              @relation("autojoin")
 }
 
 /// The intermediate model between users and groups
@@ -285,6 +303,7 @@ model GroupMember {
   secretary       Boolean  @default(false)
   canEditMembers  Boolean  @default(false)
   canEditArticles Boolean  @default(false)
+  canScanEvents   Boolean  @default(false)
   createdAt       DateTime @default(now())
 
   group  Group @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -392,14 +411,15 @@ model Ticket {
   allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
 
   // Conditions for that ticket.
-  openToPromotions        Int[]    @default([])
-  openToAlumni            Boolean? @default(false) // false means only non-alumni, true means only alumni, null means both
-  openToExternal          Boolean? @default(false) // same thing
+  openToPromotions   Int[]    @default([])
+  openToAlumni       Boolean? @default(false) // false means only non-alumni, true means only alumni, null means both
+  openToExternal     Boolean? @default(false) // same thing
   openToContributors Boolean? @default(false) // same thing
-  openToSchools           School[]
-  openToMajors            Major[]
-  openToGroups            Group[]
-  godsonLimit             Int      @default(0) // 0 means unlimited
+  openToSchools      School[]
+  openToMajors       Major[]
+  openToGroups       Group[]  @relation("openTo")
+  godsonLimit        Int      @default(0) // 0 means unlimited
+  autojoinGroups     Group[]  @relation("autojoin")
 
   onlyManagersCanProvide Boolean @default(false)
 
@@ -447,27 +467,32 @@ model LogEntry {
 
 /// A Lydia account
 model LydiaAccount {
-  id           String  @id @default(dbgenerated("nanoid('lydia:')"))
-  groupId      String
-  group        Group   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  name         String  @default("") @db.VarChar(255)
-  privateToken String  @default("") @db.VarChar(255)
-  vendorToken  String  @default("") @db.VarChar(255)
-  events       Event[]
+  id                   String              @id @default(dbgenerated("nanoid('lydia:')"))
+  groupId              String?
+  group                Group?              @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  name                 String              @default("") @db.VarChar(255)
+  privateToken         String              @default("") @db.VarChar(255)
+  vendorToken          String              @default("") @db.VarChar(255)
+  events               Event[]
+  studentAssociation   StudentAssociation? @relation(fields: [studentAssociationId], references: [id])
+  studentAssociationId String?
 
   @@unique([privateToken, vendorToken, groupId])
 }
 
 // Lydia payment
 model LydiaTransaction {
-  id             String       @id @default(dbgenerated("nanoid('lydiapayment:')"))
-  phoneNumber    String       @default("") @db.VarChar(255)
-  registrationId String       @unique
-  registration   Registration @relation(fields: [registrationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  requestId      String?
-  requestUuid    String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id                               String        @id @default(dbgenerated("nanoid('lydiapayment:')"))
+  phoneNumber                      String        @default("") @db.VarChar(255)
+  registrationId                   String?       @unique
+  registration                     Registration? @relation(fields: [registrationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  requestId                        String?
+  requestUuid                      String?
+  transactionId                    String?
+  createdAt                        DateTime      @default(now())
+  updatedAt                        DateTime      @updatedAt
+  contribution                     Contribution? @relation(fields: [studentAssociationContributionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  studentAssociationContributionId String?       @unique
 }
 
 /// A bar week is a week during which some groups takeover the bar staff

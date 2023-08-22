@@ -70,6 +70,7 @@ export const TicketType = builder.prismaNode('Ticket', {
     openToContributors: t.exposeBoolean('openToContributors', { nullable: true }),
     godsonLimit: t.exposeInt('godsonLimit'),
     onlyManagersCanProvide: t.exposeBoolean('onlyManagersCanProvide'),
+    autojoinGroups: t.relation('autojoinGroups'),
     event: t.relation('event'),
     group: t.relation('group', { nullable: true }),
     placesLeft: t.int({
@@ -111,6 +112,7 @@ export const TicketInput = builder.inputType('TicketInput', {
     openToSchools: t.field({ type: ['String'] }),
     openToMajors: t.field({ type: ['String'] }),
     id: t.id({ required: false }),
+    autojoinGroups: t.field({ type: ['String'] }),
   }),
 });
 
@@ -175,7 +177,7 @@ export function userCanSeeTicket(
     managedEvents: Array<{ event: { id: string } }>;
     graduationYear: number;
     major: { schools: Array<{ uid: string }>; id: string };
-    contributesTo: Array<{ id: string; school: { uid: string } }>;
+    contributions: Array<{ studentAssociation: { id: string; school: { uid: string } } }>;
   }
 ): boolean {
   // Managers can see everything
@@ -183,8 +185,8 @@ export function userCanSeeTicket(
 
   // Get the user's contributor status
   const isContributor = Boolean(
-    user?.contributesTo.some(
-      ({ school, id }) =>
+    user?.contributions.some(
+      ({ studentAssociation: { id, school } }) =>
         event.group.studentAssociation?.id === id || event.group.school?.uid === school.uid
     )
   );
@@ -262,9 +264,13 @@ builder.queryField('ticketsOfEvent', (t) =>
         ? await prisma.user.findUniqueOrThrow({
             where: { id: user.id },
             include: {
-              contributesTo: {
+              contributions: {
                 include: {
-                  school: true,
+                  studentAssociation: {
+                    include: {
+                      school: true,
+                    },
+                  },
                 },
               },
               groups: {
@@ -315,6 +321,7 @@ builder.mutationField('upsertTicket', (t) =>
       openToContributors: t.arg.boolean(),
       godsonLimit: t.arg.int(),
       onlyManagersCanProvide: t.arg.boolean(),
+      autojoinGroups: t.arg({ type: ['String'] }),
     },
     async authScopes(_, { eventId, id }, { user }) {
       const creating = !id;
@@ -351,6 +358,7 @@ builder.mutationField('upsertTicket', (t) =>
         openToContributors,
         godsonLimit,
         onlyManagersCanProvide,
+        autojoinGroups,
       }
     ) {
       const upsertData = {
@@ -378,11 +386,13 @@ builder.mutationField('upsertTicket', (t) =>
           links: { create: links },
           openToSchools: { connect: openToSchools.map((id) => ({ id })) },
           openToMajors: { connect: openToMajors.map((id) => ({ id })) },
+          autojoinGroups: { connect: autojoinGroups.map((uid) => ({ uid })) },
         },
         update: {
           ...upsertData,
           openToSchools: { set: openToSchools.map((id) => ({ id })) },
           openToMajors: { set: openToMajors.map((id) => ({ id })) },
+          autojoinGroups: { set: autojoinGroups.map((uid) => ({ uid })) },
           links: {
             deleteMany: {},
             createMany: {

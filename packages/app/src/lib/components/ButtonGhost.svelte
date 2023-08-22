@@ -6,6 +6,8 @@
 
 <svelte:element
   this={href ? 'a' : 'button'}
+  role="button"
+  tabindex="0"
   {...$$restProps}
   class:dark-shadow={darkShadow}
   {type}

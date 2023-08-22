@@ -10,6 +10,7 @@
   import Fuse from 'fuse.js';
   import InputField from './InputField.svelte';
   import InputNumber from './InputNumber.svelte';
+  import InputEmailList from './InputEmailList.svelte';
 
   const userQuery = Selector('User')({
     uid: true,
@@ -25,6 +26,7 @@
     phone: true,
     birthday: true,
     email: true,
+    otherEmails: true,
     links: { name: true, value: true },
     notificationSettings: {
       id: true,
@@ -55,6 +57,7 @@
       firstName: string;
       lastName: string;
       email: string;
+      otherEmails: string[];
       birthday: Date | null;
       uid: string;
       contributesTo: Array<{ id: string; name: string }>;
@@ -79,6 +82,7 @@
       firstName,
       lastName,
       email,
+      otherEmails,
       // See https://github.com/graphql-editor/graphql-zeus/issues/262
       // eslint-disable-next-line unicorn/no-null
       birthday = null,
@@ -105,6 +109,7 @@
             majorId,
             phone,
             birthday,
+            otherEmails,
             email,
             contributesTo: canEditContributions ? contributesTo.map((c) => c.id) : undefined,
           },
@@ -154,9 +159,15 @@
     <InputNumber label="Promo" bind:value={graduationYear} />
   {/if}
   <div class="side-by-side">
-    <InputText type="email" label="Email" bind:value={email} />
+    <InputText
+      type="email"
+      label="Email principale"
+      hint="Celle que tu utilises pour te connecter"
+      bind:value={email}
+    />
     <InputText type="tel" label="Numéro de téléphone" bind:value={phone} />
   </div>
+  <InputEmailList placeholder="moi@example.com" label="Autres emails" bind:value={otherEmails} />
   <InputDate
     actionIcon={IconClear}
     on:action={() => {
@@ -183,6 +194,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    align-items: flex-end;
   }
 
   .submit {

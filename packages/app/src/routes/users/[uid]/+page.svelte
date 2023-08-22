@@ -21,8 +21,12 @@
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import CardArticle from '$lib/components/CardArticle.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import Alert from '$lib/components/Alert.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import { goto } from '$app/navigation';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { zeus } from '$lib/zeus';
+  import InputText from '$lib/components/InputText.svelte';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
@@ -59,6 +63,52 @@
     const cookies = cookie.parse(document.cookie);
     window.localStorage.setItem('isReallyLoggedout', 'true');
     await goto(`/logout/?token=${cookies.token}`);
+  }
+
+  let contributeServerError = '';
+  let contributeLoading = false;
+  let contributePhone = $me?.phone ?? '';
+
+  async function contribute() {
+    const studentAssociation = user.major.schools[0].studentAssociations[0];
+    if (!studentAssociation) return;
+    contributeLoading = true;
+    const { contribute } = await $zeus.mutate({
+      contribute: [
+        {
+          id: studentAssociation.id,
+          phone: contributePhone,
+        },
+        {
+          __typename: true,
+          '...on Error': { message: true },
+          '...on MutationContributeSuccess': { data: true },
+        },
+      ],
+    });
+
+    contributeLoading = false;
+    if (contribute.__typename === 'Error') {
+      contributeServerError = contribute.message;
+    } else {
+      contributeServerError = '';
+      window.location.reload();
+    }
+  }
+
+  async function cancelContribution(studentAssociationId: string) {
+    contributeLoading = true;
+    try {
+      await $zeus.mutate({
+        cancelPendingContribution: [{ studentAssociationId }, true],
+      });
+    } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      contributeServerError = `${error}`;
+    }
+
+    contributeLoading = false;
+    window.location.reload();
   }
 
   function rolesBadge({
@@ -156,9 +206,11 @@
               <dd>Non</dd>
             {/if}
           {/if}
-          <dt>Email</dt>
-          <dd>
-            <a href="mailto:{user.email}">{user.email}</a>
+          <dt>Email{user.otherEmails.length > 0 ? 's' : ''}</dt>
+          <dd class="is-list">
+            {#each [user.email, ...user.otherEmails] as email}
+              <a href="mailto:{email}">{email}</a>
+            {/each}
           </dd>
           {#if user.phone}
             <dt>Téléphone</dt>
@@ -182,6 +234,46 @@
       </div>
     </div>
   </header>
+
+  {#if $me?.uid === user.uid && ((user.pendingContributions?.length ?? 0) > 0 || (user.contributesTo?.length ?? 0) <= 0)}
+    <section class="contribution">
+      <h2>Cotisation</h2>
+      <p class="explain-contribution typo-details">
+        Cotiser, c'est contribuer à l'organisation de la vie associative de ton école. Elle te
+        permet d'être membre de clubs et donne parfois droit à des places à tarif réduit.
+      </p>
+
+      <div class="manage">
+        {#if (user.pendingContributions?.length ?? 0) > 0}
+          <p class="pending-contribution">Cotisation en attente de paiement.</p>
+          <ButtonSecondary
+            loading={contributeLoading}
+            on:click={async () => {
+              await cancelContribution(user.pendingContributions?.[0]?.id ?? '');
+            }}>Annuler la demande</ButtonSecondary
+          >
+        {:else if (user.contributesTo?.length ?? 0) <= 0}
+          <InputText type="tel" label="Numéro de téléphone" bind:value={contributePhone} />
+          <ButtonSecondary loading={contributeLoading} on:click={contribute}
+            >Cotiser pour {user.major.schools[0].studentAssociations[0].name}
+            <strong class="price"
+              >{Intl.NumberFormat('fr-FR', {
+                style: 'currency',
+                currency: 'EUR',
+              }).format(user.major.schools[0].studentAssociations[0].contributionPrice)}</strong
+            >
+          </ButtonSecondary>
+        {/if}
+        {#if contributeServerError}
+          <Alert theme="danger">{contributeServerError}</Alert>
+        {/if}
+      </div>
+
+      <p class="typo-details">
+        Tu peux aussi payer par chèque ou espèces. Renseigne-toi auprès du BDE.
+      </p>
+    </section>
+  {/if}
 
   <section class="groups">
     <h2>Groupes</h2>
@@ -326,9 +418,14 @@
   dd {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    column-gap: 0.5rem;
     align-items: center;
     margin-left: 0;
+  }
+
+  dd.is-list {
+    flex-direction: column;
+    align-items: start;
   }
 
   section h2 {
@@ -344,6 +441,19 @@
     display: flex;
     flex-flow: column wrap;
     align-items: center;
+  }
+
+  .contribution > p {
+    text-align: center;
+  }
+
+  .contribution .manage {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem 0;
   }
 
   .family {
@@ -362,10 +472,14 @@
   @media (min-width: 1000px) {
     .content {
       display: grid;
-      grid-template-areas: 'header header' 'groups groups' 'family articles';
+      grid-template-areas: 'header header' 'contribute contribute' 'groups groups' 'family articles';
       grid-template-columns: 50% 50%;
       max-width: 1200px;
       margin: 0 auto;
+    }
+
+    section.contribution {
+      grid-area: contribute;
     }
 
     header {

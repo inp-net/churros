@@ -60,7 +60,13 @@
           />
         </li>
       {:else}
-        <li>Aucun·e {selectedBirthdaysYearTier}A n'est né·e aujourd'hui :/</li>
+        <li>
+          {#if selectedBirthdaysYearTier === 'all'}
+            Personne n'est né aujourd'hui :/
+          {:else}
+            Aucun·e {selectedBirthdaysYearTier}A n'est né·e aujourd'hui :/
+          {/if}
+        </li>
       {/each}
     </ul>
   </section>

@@ -48,8 +48,14 @@ declare namespace NodeJS {
      */
     CONTACT_EMAIL: string;
     /**
+
      * Consider unpaid registrations as valid for this many minutes
      */
     UNPAID_REGISTRATION_VALID_FOR_MINUTES: `${number}`;
+/**
+     * Gitlab API info, for the issue creation form
+     */
+    GITLAB_PROJECT_ID: string; // Id of the repo
+    GITLAB_SUDO_TOKEN: string; // personnal access token with sudo, read_api and api scopes. Sudo is required to impersonate a user so that we can say that he created it
   }
 }

@@ -201,11 +201,16 @@ for (const [i, data] of usersData.entries()) {
           { name: 'Twitter', value: '#' },
         ],
       },
-      contributesTo:
+      contributions:
         i % 2 === 0
           ? {
-              connect: {
-                id: randomIdOf(studentAssociations),
+              create: {
+                paid: true,
+                studentAssociation: {
+                  connect: {
+                    id: randomIdOf(studentAssociations),
+                  },
+                },
               },
             }
           : undefined,

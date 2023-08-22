@@ -26,12 +26,9 @@ import { TicketInput } from './tickets.js';
 import { TicketGroupInput } from './ticket-groups.js';
 import { ManagerOfEventInput } from './event-managers.js';
 // import imageType, { minimumBytes } from 'image-type';
-import imageType from 'image-type';
-import { GraphQLError } from 'graphql';
-import { dirname, join } from 'node:path';
-import { mkdir, unlink } from 'node:fs/promises';
+import { unlink } from 'node:fs/promises';
 import { scheduleShotgunNotifications } from '../services/notifications.js';
-import { compressPhoto, supportedExtensions } from '../pictures.js';
+import { updatePicture } from '../pictures.js';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -438,6 +435,9 @@ builder.mutationField('upsertEvent', (t) =>
                 openToMajors: {
                   set: connectFromListOfIds(ticket.openToMajors),
                 },
+                autojoinGroups: {
+                  set: connectFromListOfUids(ticket.autojoinGroups),
+                },
               },
             })
           )
@@ -454,6 +454,7 @@ builder.mutationField('upsertEvent', (t) =>
             openToGroups: { connect: connectFromListOfUids(ticket.openToGroups) },
             openToSchools: { connect: connectFromListOfUids(ticket.openToSchools) },
             openToMajors: { connect: connectFromListOfIds(ticket.openToMajors) },
+            autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
             eventId: event.id,
             uid: await createTicketUid(ticket.name),
           },
@@ -475,6 +476,7 @@ builder.mutationField('upsertEvent', (t) =>
               openToGroups: { connect: connectFromListOfUids(ticket.openToGroups) },
               openToSchools: { connect: connectFromListOfUids(ticket.openToSchools) },
               openToMajors: { connect: connectFromListOfIds(ticket.openToMajors) },
+              autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
               eventId: event.id,
               uid: await createTicketUid(ticket.name),
             },
@@ -713,27 +715,13 @@ builder.mutationField('updateEventPicture', (t) =>
       );
     },
     async resolve(_, { id, file }) {
-      const buffer = await file
-        // .slice(0, minimumBytes) ERROR Not implemented from Ponyfill.slice @whatwg-node/node-fetch…
-        .arrayBuffer()
-        .then((array) => Buffer.from(array));
-      const type = await imageType(buffer);
-      if (!type || !supportedExtensions.includes(type.ext))
-        throw new GraphQLError('File format not supported');
-
-      // Delete the existing picture
-      const { pictureFile } = await prisma.event.findUniqueOrThrow({
-        where: { id },
-        select: { pictureFile: true },
+      return updatePicture({
+        resource: 'event',
+        folder: 'events',
+        extension: 'jpg',
+        file,
+        identifier: id,
       });
-
-      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
-
-      const path = join(`events`, `${id}.jpeg`);
-      await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
-      await compressPhoto(buffer, new URL(path, process.env.STORAGE).pathname);
-      await prisma.event.update({ where: { id }, data: { pictureFile: path } });
-      return path;
     },
   })
 );

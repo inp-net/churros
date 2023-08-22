@@ -3,16 +3,31 @@
   import IconAdd from '~icons/mdi/plus';
   import IconChevronUp from '~icons/mdi/chevron-up';
   import IconChevronDown from '~icons/mdi/chevron-down';
+  import IconCheck from '~icons/mdi/check';
+  import IconDelete from '~icons/mdi/delete-outline';
   import GhostButton from './ButtonGhost.svelte';
+  import IconEditReplacements from '~icons/mdi/file-replace-outline';
   import InputField from './InputField.svelte';
+  import InputSelectOne from './InputSelectOne.svelte';
 
   export let label: string;
   export let required = false;
   export let hint = '';
   export let value: Array<{ name: string; value: string }> = [];
   export let newValue: { name: string; value: string } = { name: '', value: '' };
+  export let computed = false;
+
+  let editingComputedLink: undefined | string;
+  let replacements: Record<string, string> = {};
 
   function addLink() {
+    try {
+      // eslint-disable-next-line no-new
+      new URL(newValue.value);
+    } catch {
+      newValue = { ...newValue, value: `https://${newValue.value}` };
+    }
+
     value = [...value, newValue];
     newValue = { name: '', value: '' };
   }
@@ -33,46 +48,126 @@
 </script>
 
 <InputField {label} {required} {hint}>
-  <div class="links-input" on:keypress={handleEnter}>
-    <ul style:display={value.length > 0 ? 'block' : 'none'}>
+  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+  <div class="links-input" on:keypress={handleEnter} role="listitem">
+    <ul class="links" style:display={value.length > 0 ? 'block' : 'none'}>
       {#each value as link, i}
-        <li>
-          <div class="order">
-            {#if i > 0}
-              <GhostButton
-                title="Remonter"
-                on:click={() => {
-                  value = [...value.slice(0, i - 1), value[i], value[i - 1], ...value.slice(i + 1)];
-                }}
-              >
-                <IconChevronUp aria-label="Remonter" />
-              </GhostButton>
+        {@const url = new URL(link.value)}
+        <li class="link">
+          <div class="link-and-actions">
+            <div class="order action-button">
+              {#if i > 0}
+                <GhostButton
+                  title="Remonter"
+                  on:click={() => {
+                    value = [
+                      ...value.slice(0, i - 1),
+                      value[i],
+                      value[i - 1],
+                      ...value.slice(i + 1),
+                    ];
+                  }}
+                >
+                  <IconChevronUp aria-label="Remonter" />
+                </GhostButton>
+              {/if}
+              {#if i < value.length - 1}
+                <GhostButton
+                  title="Descendre"
+                  on:click={() => {
+                    value = [...value.slice(0, i), value[i + 1], value[i], ...value.slice(i + 2)];
+                  }}
+                >
+                  <IconChevronDown aria-label="Descendre" />
+                </GhostButton>
+              {/if}
+            </div>
+            <div class="inputs">
+              <input placeholder="Nom de l'action" bind:value={link.name} />
+              <input placeholder="Adresse du site" bind:value={link.value} />
+            </div>
+
+            {#if computed && url.hostname === 'docs.google.com' && url.pathname.startsWith('/forms')}
+              <div class="action-button manage-replacements">
+                {#if editingComputedLink === link.name}
+                  <GhostButton
+                    title="Terminé"
+                    on:click={() => {
+                      for (const [key] of Object.entries(replacements))
+                        url.searchParams.delete(key);
+
+                      link.value =
+                        url.toString() +
+                        '&' +
+                        Object.entries(replacements)
+                          .map(([key, replacement]) => `${key}=[${replacement}]`)
+                          .join('&');
+                      replacements = {};
+                      editingComputedLink = undefined;
+                    }}
+                  >
+                    <IconCheck />
+                  </GhostButton>
+                {:else}
+                  <GhostButton
+                    title="Modifier les remplacements"
+                    on:click={() => {
+                      for (const [key, value] of url.searchParams) 
+                        if (/^\[.*]$/.test(value)) replacements[key] = value.replace(/^\[|]$/g, '');
+                      
+
+                      editingComputedLink = link.name;
+                    }}
+                  >
+                    <IconEditReplacements aria-label="Modifier les remplacements" />
+                  </GhostButton>
+                {/if}
+              </div>
             {/if}
-            {#if i < value.length - 1}
-              <GhostButton
-                title="Descendre"
-                on:click={() => {
-                  value = [...value.slice(0, i), value[i + 1], value[i], ...value.slice(i + 2)];
-                }}
-              >
-                <IconChevronDown aria-label="Descendre" />
-              </GhostButton>
-            {/if}
+            <div class="action-button delete">
+              {#if editingComputedLink === link.name}
+                <GhostButton
+                  title="Annuler"
+                  on:click={() => {
+                    editingComputedLink = undefined;
+                    replacements = {};
+                  }}
+                >
+                  <IconClose aria-label="Annuler" />
+                </GhostButton>
+              {:else}
+                <GhostButton
+                  title="Supprimer"
+                  on:click={() => {
+                    value = value.filter((_, j) => i !== j);
+                  }}
+                >
+                  <IconDelete aria-label="Supprimer" />
+                </GhostButton>
+              {/if}
+            </div>
           </div>
-          <div class="inputs">
-            <input placeholder="Nom de l'action" bind:value={link.name} />
-            <input placeholder="Adresse du site" bind:value={link.value} />
-          </div>
-          <div class="delete">
-            <GhostButton
-              title="Supprimer"
-              on:click={() => {
-                value = value.filter((_, j) => i !== j);
-              }}
-            >
-              <IconClose aria-label="Supprimer" />
-            </GhostButton>
-          </div>
+          {#if editingComputedLink === link.name}
+            {@const params = [...url.searchParams]}
+            <ul class="replacements nobullet">
+              {#each params.filter(([key]) => key.startsWith('entry.')) as [key, value] (key)}
+                <li>
+                  <InputSelectOne
+                    bind:value={replacements[key]}
+                    options={{
+                      prenom: 'Prénom',
+                      nom: 'Nom de famille',
+                      filiere: 'Filière',
+                      uid: 'Identifiant',
+                      promo: 'Promo',
+                      annee: 'Année',
+                    }}
+                    label="Remplacer {value} par"
+                  />
+                </li>
+              {/each}
+            </ul>
+          {/if}
         </li>
       {/each}
     </ul>
@@ -92,7 +187,7 @@
           placeholder="Adresse du site"
         />
       </div>
-      <div class="add">
+      <div class="add action-button">
         <GhostButton title="Ajouter" on:click={addLink}>
           <IconAdd aria-label="Ajouter" />
         </GhostButton>
@@ -108,7 +203,7 @@
     gap: 0.75rem;
   }
 
-  ul {
+  ul.links {
     display: flex;
     flex-direction: column;
     align-items: start;
@@ -120,7 +215,7 @@
   }
 
   .new,
-  li {
+  li .link-and-actions {
     display: flex;
     gap: 0.5rem;
     align-items: center;
@@ -128,22 +223,27 @@
     padding: 0.25rem 0.5rem;
   }
 
+  li .replacements {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem;
+  }
+
   .order {
     display: flex;
     flex-direction: column;
   }
 
-  .order,
-  .delete,
-  .add {
+  .action-button {
     flex-shrink: 0;
   }
 
-  li {
+  li.link {
     border-bottom: var(--border-block) solid var(--border);
   }
 
-  li:last-of-type {
+  li.link:last-of-type {
     border-bottom: none;
   }
 
