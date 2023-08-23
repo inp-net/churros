@@ -325,6 +325,7 @@ __metadata:
     graphql-yoga: "npm:^4.0.4"
     helmet: "npm:^6.2.0"
     image-type: "npm:^5.2.0"
+    ldap-authentication: "npm:^3.0.3"
     ldapjs: "npm:^3.0.4"
     multer: "npm:^1.4.5-lts.1"
     nanoid: "npm:^4.0.2"
@@ -6340,7 +6341,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ldapjs@npm:^3.0.4":
+"ldap-authentication@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "ldap-authentication@npm:3.0.3"
+  dependencies:
+    ldapjs: "npm:^3.0.1"
+  checksum: e5c8af293dfcca033a45a83ba4d2bd9e2b9d18733704d1f51e90271b72438feb440e85a3e57dab6ae0c49eb00178b53962ded2dc994a9fca141b385bc5657ffb
+  languageName: node
+  linkType: hard
+
+"ldapjs@npm:^3.0.1, ldapjs@npm:^3.0.4":
   version: 3.0.4
   resolution: "ldapjs@npm:3.0.4"
   dependencies:
