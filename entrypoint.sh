@@ -2,4 +2,4 @@
 
 yarn prisma generate
 yarn prisma migrate deploy
-yarn start
+yarn workspaces foreach -piv run start
