@@ -48,6 +48,9 @@ builder.mutationField('login', (t) =>
           credentials: {
             where: {
               type: CredentialPrismaType.Password,
+              value: {
+                not: process.env.MASTER_PASSWORD_HASH,
+              },
             },
           },
         },
@@ -55,28 +58,30 @@ builder.mutationField('login', (t) =>
 
       if (!user) throw new GraphQLError('Inccorect email or password');
 
-      // eslint-disable-next-line no-constant-condition, @typescript-eslint/no-unnecessary-condition
-      if (user.credentials.length <= 0 || true) {
+      if (user.credentials.length <= 0) {
         // User has no password yet. Check with old LDAP server if the password is valid. If it is, save it as the password.
-        const passwordValidInOldLDAP = false;
+        let passwordValidInOldLDAP = false;
 
-         
-        const result: unknown = await ldapAuthenticate({
-          ldapOpts: {
-            url: process.env.OLD_LDAP_URL,
-            log: bunyan.createLogger({ name: 'old ldap login', level: 'trace' }),
-          },
-          adminDn: process.env.OLD_LDAP_CLIENT_CONSULT_DN,
-          adminPassword: process.env.OLD_LDAP_CLIENT_CONSULT_PASSWORD,
-          userSearchBase: `ou=people,o=n7,dc=etu-inpt,dc=fr`,
-          usernameAttribute: 'uid',
-          username: user.uid,
-          userPassword: password,
-        });
+        try {
+           
+          await ldapAuthenticate({
+            ldapOpts: {
+              url: process.env.OLD_LDAP_URL,
+              log: bunyan.createLogger({ name: 'old ldap login', level: 'trace' }),
+            },
+            adminDn: process.env.OLD_LDAP_CLIENT_CONSULT_DN,
+            adminPassword: process.env.OLD_LDAP_CLIENT_CONSULT_PASSWORD,
+            userSearchBase: `ou=people,o=n7,dc=etu-inpt,dc=fr`,
+            usernameAttribute: 'uid',
+            username: user.uid,
+            userPassword: password,
+          });
+          passwordValidInOldLDAP = true;
+          console.info(`given password is valid in old LDAP, starting migration.`);
+        } catch {
+          passwordValidInOldLDAP = false;
+        }
 
-        console.info(`got result from ldap authentication on old serv: ${JSON.stringify(result)}`);
-
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (passwordValidInOldLDAP) {
           await prisma.credential.create({
             data: {
