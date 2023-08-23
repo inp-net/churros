@@ -1,4 +1,3 @@
-import { env } from '$env/dynamic/private';
 import { sessionUserQuery } from '$lib/session';
 import { chain } from '$lib/zeus';
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit';
@@ -34,17 +33,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 };
 
 export const handleFetch: HandleFetch = async ({ request, fetch }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (!env.PUBLIC_API_URL) throw new Error('PUBLIC_API_URL is not set.');
-  if (!env.PRIVATE_API_URL) throw new Error('PRIVATE_API_URL is not set.');
-  // NIKE TA MERE TYPESCRIPT. NIKE TA MERE. SOIT C4EST string|undefined ET DONC as string EST UTILE, SOIT C PAS STRING|UNDEFINED MAIS STRING. FAUT ****SAVOIR***** BORDEL DE MERDE!
-   
-  const apiUrl = env.PUBLIC_API_URL as string;
+  console.info(`Running with env ${JSON.stringify(process.env)}`);
+  const apiUrl = process.env.PUBLIC_API_URL as unknown as string;
   if (request.url.startsWith(apiUrl)) {
     request = new Request(
-      // je vais t'exploser la gueule.
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      request.url.replace(apiUrl, env.PRIVATE_API_URL as string),
+      request.url.replace(apiUrl, process.env.PRIVATE_API_URL as unknown as string),
       request
     );
   }
