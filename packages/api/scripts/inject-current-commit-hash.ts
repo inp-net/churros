@@ -9,12 +9,19 @@ exec('git rev-parse HEAD').stdout?.on('data', (hash: string) => {
 
   exec('git rev-parse --show-toplevel').stdout?.on('data', (toplevel: string) => {
     if (toplevel.toString().trim() === '') return;
-    const filepath = path.join(toplevel.trim(), './packages/app/.env');
-    console.log(`Injecting PUBLIC_CURRENT_COMMIT="${hash.trim()}"`);
-    const content = readFileSync(filepath)
-      .toString()
-      .replace(/^PUBLIC_CURRENT_COMMIT=.*$/m, `PUBLIC_CURRENT_COMMIT="${hash.trim()}"`);
+    const filepath = path.join(toplevel.trim(), './packages/app/src/lib/buildinfo.ts');
 
-    writeFileSync(filepath, content);
+    exec(
+      'git for-each-ref refs/tags --sort=-taggerdate --format=%(refname:short) --count=1 --points-at=HEAD'
+    ).stdout?.on('data', (tag: string) => {
+      console.log(`Injecting CURRENT_COMMIT="${hash.trim()}"`);
+      console.log(`Injecting CURRENT_VERSION=${tag.trim() || 'alpha'}`);
+      const content = readFileSync(filepath)
+        .toString()
+        .replace(/^CURRENT_COMMIT=.*$/m, `CURRENT_COMMIT="${hash.trim()}"`)
+        .replace(/^CURRENT_VERSION=.*$/m, `CURRENT_VERSION="${tag.trim() || 'alpha'}"`);
+
+      writeFileSync(filepath, content);
+    });
   });
 });

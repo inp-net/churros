@@ -1,5 +1,5 @@
 import { page } from '$app/stores';
-import { PUBLIC_API_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import type { LayoutServerData } from '../../.svelte-kit/types/src/routes/$types';
 import { error, type LoadEvent } from '@sveltejs/kit';
 import {
@@ -70,7 +70,8 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
     }
     /* eslint-enable */
 
-    const response = await fetch(PUBLIC_API_URL, { body, method: 'POST', headers });
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const response = await fetch(env.PUBLIC_API_URL as string, { body, method: 'POST', headers });
 
     // If we received an HTTP error, propagate it
     if (!response.ok) throw error(response.status);

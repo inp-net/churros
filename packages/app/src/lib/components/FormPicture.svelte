@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import IconAdd from '~icons/mdi/add';
   import FileInput from '$lib/components/InputFile.svelte';
   import IconTrash from '~icons/mdi/delete';
@@ -81,7 +81,7 @@
         on:load={() => {
           updating = false;
         }}
-        src="{PUBLIC_STORAGE_URL}{object[pictureFilePropertyName]}"
+        src="{env.PUBLIC_STORAGE_URL}{object[pictureFilePropertyName]}"
         alt={LEGENDS[objectName]}
       />
       <div class="actions">

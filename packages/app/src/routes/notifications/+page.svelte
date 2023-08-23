@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_VAPID_KEY } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { arrayBufferToBase64 } from '$lib/base64';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
@@ -88,7 +88,7 @@
 
       const subscription = await sw.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: PUBLIC_VAPID_KEY,
+        applicationServerKey: env.PUBLIC_VAPID_KEY,
       });
       if (!subscription) {
         unsupported = true;

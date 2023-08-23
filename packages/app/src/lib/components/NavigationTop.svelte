@@ -9,7 +9,7 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import { createEventDispatcher, onMount } from 'svelte';
   import { me } from '$lib/session';
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { page } from '$app/stores';
   import { zeus } from '$lib/zeus';
   import ButtonBack from './ButtonBack.svelte';
@@ -61,8 +61,10 @@
     {#if scanningTickets}
       <img class="logo" src="/logo.png" alt="logo de l'AE" />
     {:else}
-      <ButtonGhost title="Signaler un bug ou proposer une idée" on:click={() => dispatch('report-issue')} style="color:red"
-        ><IconIssue /></ButtonGhost
+      <ButtonGhost
+        title="Signaler un bug ou proposer une idée"
+        on:click={() => dispatch('report-issue')}
+        style="color:red"><IconIssue /></ButtonGhost
       >
       {#if $me}
         <ButtonGhost href="/notifications/">
@@ -77,7 +79,7 @@
         >
         <ButtonGhost href="/users/{$me?.uid}">
           {#if $me.pictureFile}
-            <img class="profilepic" src="{PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
+            <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
           {:else}
             <IconAccount />
           {/if}

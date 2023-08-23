@@ -7,7 +7,7 @@
   import { me } from '$lib/session.js';
   import type { PageData } from './$types';
   import { zeus } from '$lib/zeus';
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
   import IconFacebook from '~icons/mdi/facebook-box';
   import type { SvelteComponent } from 'svelte';
@@ -86,7 +86,7 @@
   <header>
     <div class="picture">
       <img
-        src="{PUBLIC_STORAGE_URL}{$isDark && group.pictureFileDark
+        src="{env.PUBLIC_STORAGE_URL}{$isDark && group.pictureFileDark
           ? group.pictureFileDark
           : group.pictureFile}"
         alt={group.name}

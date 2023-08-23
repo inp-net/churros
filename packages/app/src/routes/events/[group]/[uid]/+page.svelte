@@ -1,6 +1,6 @@
 <script lang="ts">
   import ItemTicket from '$lib/components/ItemTicket.svelte';
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import IconPlus from '~icons/mdi/plus';
   import { me } from '$lib/session';
   import type { PageData } from './$types';
@@ -113,7 +113,7 @@
     <a class="organizer-name" href="/groups/{group.uid}">
       <img
         src={group.pictureFile
-          ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
+          ? `${env.PUBLIC_STORAGE_URL}${group.pictureFile}`
           : 'https://via.placeholder.com/400/400'}
         alt=""
       />

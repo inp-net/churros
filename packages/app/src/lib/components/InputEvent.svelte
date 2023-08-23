@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import IconPlus from '~icons/mdi/plus';
   import IconEdit from '~icons/mdi/edit';
   import IconNone from '~icons/mdi/help';
@@ -58,7 +58,7 @@
       <div class="avatar" slot="thumbnail" let:object>
         {#if object}
           <img
-            src="{PUBLIC_STORAGE_URL}{object.pictureFile}"
+            src="{env.PUBLIC_STORAGE_URL}{object.pictureFile}"
             alt={object.title?.toString() ?? ''}
           />
         {:else}
@@ -67,7 +67,7 @@
       </div>
       <div class="suggestion" slot="item" let:item>
         <div class="avatar">
-          <img src="{PUBLIC_STORAGE_URL}{item.pictureFile}" alt={item.title} />
+          <img src="{env.PUBLIC_STORAGE_URL}{item.pictureFile}" alt={item.title} />
         </div>
         <div class="text">
           <p class="title">{item.title}</p>

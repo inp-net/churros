@@ -15,7 +15,7 @@
   import { zeus } from '$lib/zeus';
   import { default as parseUserAgent } from 'ua-parser-js';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { PUBLIC_SUPPORT_EMAIL, PUBLIC_USER_DUMP_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import InputPerson from '$lib/components/InputPerson.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import FormNotificationSettings from '$lib/components/FormNotificationSettings.svelte';
@@ -305,13 +305,13 @@
         />
         <h2>Données personnelles</h2>
         <p>
-          <a href="{PUBLIC_USER_DUMP_URL}?token={data.token}" download="{data.me.uid}.json">
+          <a href="{env.PUBLIC_USER_DUMP_URL}?token={data.token}" download="{data.me.uid}.json">
             Télécharger mes données.
           </a>
         </p>
         <p>
           Si vous souhaitez supprimer votre compte, merci de nous contacter via
-          <a href="mailto:{PUBLIC_SUPPORT_EMAIL}">{PUBLIC_SUPPORT_EMAIL}</a>.
+          <a href="mailto:{env.PUBLIC_SUPPORT_EMAIL}">{env.PUBLIC_SUPPORT_EMAIL}</a>.
         </p>
       {/if}
     </section>
@@ -444,19 +444,19 @@
 
   .send-request .actions {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
-    justify-content: center;
     gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
   }
 
   .godparent-request,
   .godchild-request,
   .godchild {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
   }
 
   .godchildren-hint {

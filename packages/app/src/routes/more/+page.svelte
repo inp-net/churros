@@ -7,7 +7,7 @@
   import CardService from '$lib/components/CardService.svelte';
   import { me } from '$lib/session';
   import type { SvelteComponent } from 'svelte';
-  import { PUBLIC_CURRENT_COMMIT, PUBLIC_CURRENT_VERSION } from '$env/static/public';
+  import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
 
   function Service(
     name: string,
@@ -71,9 +71,9 @@
 
   <footer>
     <code
-      >v{PUBLIC_CURRENT_VERSION} · built against {#if PUBLIC_CURRENT_COMMIT}<a
-          href="https://git.inpt.fr/inp-net/centraverse/-/commit/{PUBLIC_CURRENT_COMMIT}"
-          >{PUBLIC_CURRENT_COMMIT.slice(0, 8)}</a
+      >v{CURRENT_VERSION} · built against {#if CURRENT_COMMIT}<a
+          href="https://git.inpt.fr/inp-net/centraverse/-/commit/{CURRENT_COMMIT}"
+          >{CURRENT_COMMIT.slice(0, 8)}</a
         >
       {:else}trunk{/if}
     </code>

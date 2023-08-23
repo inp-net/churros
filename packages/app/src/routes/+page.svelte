@@ -4,7 +4,7 @@
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
   import { _pageQuery } from './+page';
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import { me } from '$lib/session';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
@@ -73,7 +73,7 @@
 {/if}
 
 <section class="articles">
-  {#each data.homepage.edges as { cursor, node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile, links, body } }}
+  {#each data.homepage.edges as { node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile, links } }}
     <ArticleCard
       {title}
       {publishedAt}
@@ -82,7 +82,7 @@
       {author}
       {bodyHtml}
       href="/posts/{group.uid}/{uid}/"
-      img={pictureFile ? { src: `${PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
+      img={pictureFile ? { src: `${env.PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
     />
   {/each}
 </section>

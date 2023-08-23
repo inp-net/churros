@@ -126,7 +126,8 @@ builder.queryField('group', (t) =>
   t.prismaField({
     type: GroupType,
     args: { uid: t.arg.string() },
-    resolve: async (query, _, { uid }) => prisma.group.findUniqueOrThrow({ ...query, where: { uid } }),
+    resolve: async (query, _, { uid }) =>
+      prisma.group.findUniqueOrThrow({ ...query, where: { uid } }),
   })
 );
 builder.queryField('searchGroups', (t) =>

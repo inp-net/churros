@@ -2,7 +2,7 @@
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
 
-  import { PUBLIC_LYDIA_API_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import InputText from '$lib/components/InputText.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
@@ -20,7 +20,7 @@
     if (loading) return;
     try {
       loading = true;
-      const response = await fetch(`${PUBLIC_LYDIA_API_URL}/api/auth/login.json`, {
+      const response = await fetch(`${env.PUBLIC_LYDIA_API_URL}/api/auth/login.json`, {
         method: 'POST',
         body: new URLSearchParams({
           phone,

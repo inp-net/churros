@@ -24,3 +24,5 @@ packages/api/scripts/dump-ldap.ldif
 packages/api/scripts/ldap-dump.ldif
 packages/api/scripts/ldap-types.js
 packages/api/scripts/cas-data.json
+
+.env

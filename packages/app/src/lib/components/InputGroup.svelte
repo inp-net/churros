@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { zeus } from '$lib/zeus';
   import IconNone from '~icons/mdi/help';
   import InputField from './InputField.svelte';
@@ -52,14 +52,14 @@
   >
     <div class="avatar" slot="thumbnail" let:object>
       {#if object}
-        <img src="{PUBLIC_STORAGE_URL}{object.pictureFile}" alt={object.name?.toString()} />
+        <img src="{env.PUBLIC_STORAGE_URL}{object.pictureFile}" alt={object.name?.toString()} />
       {:else}
         <svelte:component this={nullIcon} />
       {/if}
     </div>
     <div class="suggestion" slot="item" let:item>
       <div class="avatar">
-        <img src="{PUBLIC_STORAGE_URL}{item.pictureFile}" alt={item.name} />
+        <img src="{env.PUBLIC_STORAGE_URL}{item.pictureFile}" alt={item.name} />
       </div>
       <div>{item.name}</div>
     </div>

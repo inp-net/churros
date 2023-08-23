@@ -28,7 +28,7 @@ export const register = async (email: string): Promise<boolean> => {
 
   await transporter.sendMail({
     to: email,
-    from: process.env.SUPPORT_EMAIL,
+    from: process.env.PUBLIC_SUPPORT_EMAIL,
     html: `
 <p>
   <a href="${url.toString()}">Finaliser mon inscription</a>
@@ -127,7 +127,7 @@ export const saveUser = async ({
   const url = new URL('/welcome/', process.env.FRONTEND_ORIGIN);
   await transporter.sendMail({
     to: email,
-    from: process.env.SUPPORT_EMAIL,
+    from: process.env.PUBLIC_SUPPORT_EMAIL,
     html: `
 <p>
   <a href="${url.toString()}">Bienvenue sur Centraverse !</a>

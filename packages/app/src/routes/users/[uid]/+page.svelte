@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import cookie from 'cookie';
   import IconGear from '~icons/mdi/gear-outline';
   import IconAdmin from '~icons/mdi/security';
@@ -138,7 +138,7 @@
   const formatPhoneNumber = (phone: string) =>
     phone.replace(/^\+33(\d)(\d\d)(\d\d)(\d\d)(\d\d)$/, '0$1 $2 $3 $4 $5');
 
-  $: pictureFile = user.pictureFile ? `${PUBLIC_STORAGE_URL}${user.pictureFile}` : '';
+  $: pictureFile = user.pictureFile ? `${env.PUBLIC_STORAGE_URL}${user.pictureFile}` : '';
 </script>
 
 <div class="content">

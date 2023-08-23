@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import IconGear from '~icons/mdi/gear-outline';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
@@ -25,7 +25,7 @@
 </script>
 
 {#if pictureFile}
-  <img src="{PUBLIC_STORAGE_URL}{pictureFile}" alt="" />
+  <img src="{env.PUBLIC_STORAGE_URL}{pictureFile}" alt="" />
 {/if}
 
 <div class="content">

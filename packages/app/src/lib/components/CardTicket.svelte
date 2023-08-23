@@ -1,7 +1,7 @@
 <script lang="ts">
   import Qrcode from '~icons/mdi/qrcode';
   import CashClock from '~icons/mdi/cash-clock';
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
 
   export let href: string;
   export let ticket: { name: string; event: { pictureFile: string; title: string } };
@@ -17,7 +17,7 @@
   {href}
   class:noimg={!ticket.event.pictureFile}
   style:background-image={ticket.event.pictureFile
-    ? `linear-gradient(rgba(0, 0, 0, var(--alpha)), rgba(0,0,0,var(--alpha))), url('${PUBLIC_STORAGE_URL}${ticket.event.pictureFile}')`
+    ? `linear-gradient(rgba(0, 0, 0, var(--alpha)), rgba(0,0,0,var(--alpha))), url('${env.PUBLIC_STORAGE_URL}${ticket.event.pictureFile}')`
     : undefined}
   style:--text={ticket.event.pictureFile ? 'white' : 'var(--text)'}
 >

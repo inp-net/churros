@@ -148,6 +148,7 @@ api.get('/', (_req, res) => {
 </html>`);
 });
 api.listen(4000, () => {
+  console.info(`Serving static content from ${process.env.STORAGE}`);
   console.info('API ready at http://localhost:4000');
 });
 

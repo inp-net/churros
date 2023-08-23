@@ -20,10 +20,14 @@ import { toHtml } from './markdown.js';
 import { differenceInSeconds, minutesToSeconds, subMinutes } from 'date-fns';
 import { fullName } from '../objects/users.js';
 
-if (process.env.CONTACT_EMAIL && process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+if (
+  process.env['CONTACT_EMAIL'] &&
+  process.env['VAPID_PUBLIC_KEY'] &&
+  process.env.VAPID_PRIVATE_KEY
+) {
   webpush.setVapidDetails(
-    `mailto:${process.env.CONTACT_EMAIL}`,
-    process.env.VAPID_PUBLIC_KEY,
+    `mailto:${process.env['CONTACT_EMAIL']}`,
+    process.env['VAPID_PUBLIC_KEY'],
     process.env.VAPID_PRIVATE_KEY
   );
 }

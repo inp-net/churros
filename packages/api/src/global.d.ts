@@ -27,26 +27,26 @@ declare namespace NodeJS {
      * @see https://nodemailer.com/smtp/
      */
     SMTP_URL: string;
-    /** Storage directory. */
+    /** Storage directory, relative to to working directory of the API. */
     STORAGE: string;
     /** The email from which will be sent all emails. */
-    SUPPORT_EMAIL: string;
+    PUBLIC_SUPPORT_EMAIL: string;
     /** Lydia API URL. */
-    LYDIA_API_URL: string;
+    PUBLIC_LYDIA_API_URL: string;
     /**
      * Foy groups. Only users that are part of the bureau of one of these groups can create/modify
      * bar weeks. Must be a comma-separated list of group UIDs.
      */
-    FOY_GROUPS: string;
+    PUBLIC_FOY_GROUPS: string;
     /**
      * VAPID keys
      */
-    VAPID_PUBLIC_KEY: string;
+    PUBLIC_VAPID_KEY: string;
     VAPID_PRIVATE_KEY: string;
     /**
      * Contact email (used for push notifications and maybe other things)
      */
-    CONTACT_EMAIL: string;
+    PUBLIC_CONTACT_EMAIL: string;
     /**
      * Gitlab API info, for the issue creation form
      */

@@ -11,10 +11,10 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import { page } from '$app/stores';
-  import { PUBLIC_CURRENT_COMMIT, PUBLIC_CURRENT_VERSION } from '$env/static/public';
   import { isDark } from '$lib/theme';
   import { me } from '$lib/session';
   import { default as parseUserAgent } from 'ua-parser-js';
+  import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
 
   let title = '';
   let description = '';
@@ -42,8 +42,8 @@
     const metadata = {
       ...(includeCurrentPageURL ? { Location: $page.url.toString() } : {}),
       'Logged-in': $me ? 'Yes' : 'No',
-      Version: PUBLIC_CURRENT_VERSION ?? 'dev',
-      Build: PUBLIC_CURRENT_COMMIT,
+      Version: CURRENT_VERSION,
+      Build: CURRENT_COMMIT,
       Browser: `${ua.browser.name ?? 'unknown'} v${ua.browser.version ?? '?'} (engine ${
         ua.engine.name ?? 'unknown'
       } v${ua.engine.version ?? '?'})`,

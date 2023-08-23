@@ -1,6 +1,6 @@
 <script>
   import IconMail from '~icons/mdi/email';
-  import { PUBLIC_CONTACT_EMAIL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 </script>
 
@@ -9,7 +9,7 @@
 
   <ButtonSecondary
     icon={IconMail}
-    href="mailto:{PUBLIC_CONTACT_EMAIL}?{new URLSearchParams({
+    href="mailto:{env.PUBLIC_CONTACT_EMAIL}?{new URLSearchParams({
       subject: "Proposition de service pour l'AEppli",
     }).toString()}">Envoyer un mail</ButtonSecondary
   >

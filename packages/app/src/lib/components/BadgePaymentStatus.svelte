@@ -4,6 +4,7 @@
   import Badge from './Badge.svelte';
 </script>
 
+$env/dynamic
 <Badge class="payment-status" theme={paid ? 'success' : 'warning'}
   >{#if paid}Payé{#if feminin}e{/if}{:else}Non payé{#if feminin}e{/if}{/if}</Badge
 >

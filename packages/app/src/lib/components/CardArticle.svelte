@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { intlFormatDistance } from 'date-fns';
   import Card from './Card.svelte';
   import IconDots from '~icons/mdi/dots-horizontal';
@@ -61,7 +61,7 @@
         <a href="/groups/{group.uid}">
           <img
             src={group.pictureFile
-              ? `${PUBLIC_STORAGE_URL}${group.pictureFile}`
+              ? `${env.PUBLIC_STORAGE_URL}${group.pictureFile}`
               : 'https://via.placeholder.com/400/400'}
             alt=""
           />

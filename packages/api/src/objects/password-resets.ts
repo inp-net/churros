@@ -38,7 +38,7 @@ builder.mutationField('createPasswordReset', (t) =>
 
       await transporter.sendMail({
         to: email,
-        from: process.env.SUPPORT_EMAIL,
+        from: process.env.PUBLIC_SUPPORT_EMAIL,
         html: `<p>
         <a href="${url.toString()}">Réinitialiser mon mot de passe</a>
         </p>`,

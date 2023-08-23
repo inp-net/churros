@@ -3,7 +3,7 @@
   import AutoComplete from 'simple-svelte-autocomplete';
   import IconNone from '~icons/mdi/help';
   import IconClose from '~icons/mdi/close';
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import ButtonGhost from './ButtonGhost.svelte';
   const emit = createEventDispatcher();
 
@@ -28,7 +28,7 @@
     <slot name="thumbnail" {object}>
       {#if object?.pictureFile}
         <img
-          src="{PUBLIC_STORAGE_URL}{object.pictureFile}"
+          src="{env.PUBLIC_STORAGE_URL}{object.pictureFile}"
           alt={object?.[labelKey]?.toString() ?? ''}
         />
       {:else}

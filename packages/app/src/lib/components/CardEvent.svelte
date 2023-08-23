@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import AvatarPerson from './AvatarPerson.svelte';
   import {
     formatDuration,
@@ -139,7 +139,7 @@
     class="title"
     style:color={pictureFile ? 'white' : 'var(--text)'}
     style:background-image={pictureFile
-      ? `linear-gradient(rgb(0 0 0 / var(--alpha)), rgb(0 0 0 / var(--alpha))), url('${PUBLIC_STORAGE_URL}${pictureFile}') `
+      ? `linear-gradient(rgb(0 0 0 / var(--alpha)), rgb(0 0 0 / var(--alpha))), url('${env.PUBLIC_STORAGE_URL}${pictureFile}') `
       : undefined}
   >
     <a class="title-link" {href}><h2 class="title-text">{title}</h2></a>
@@ -272,6 +272,7 @@
     cursor: pointer;
     border-radius: var(--radius-block);
     box-shadow: var(--primary-shadow);
+
     --alpha: 0.5;
   }
 

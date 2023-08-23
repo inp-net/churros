@@ -5,12 +5,12 @@ import { createHash } from 'node:crypto';
 import type { LydiaTransaction } from '@prisma/client';
 
 // Get the Lydia API URL from the environment
-const { LYDIA_API_URL, LYDIA_WEBHOOK_URL } = process.env;
+const { PUBLIC_LYDIA_API_URL, LYDIA_WEBHOOK_URL } = process.env;
 
 // Add lydia account to a group
 export async function checkLydiaAccount(vendor_token: string, vendor_id: string): Promise<void> {
   // Check if the lydia account is available
-  const response = await fetch(`${LYDIA_API_URL}/api/auth/vendortoken.json`, {
+  const response = await fetch(`${PUBLIC_LYDIA_API_URL}/api/auth/vendortoken.json`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ export async function payEventRegistrationViaLydia(
 export async function cancelLydiaTransaction(transaction: LydiaTransaction, vendorToken: string) {
   if (!transaction.requestId)
     throw new GraphQLError("Aucune requête pour cette transaction, impossible de l'annuler");
-  await fetch(`${LYDIA_API_URL}/api/request/cancel.json`, {
+  await fetch(`${PUBLIC_LYDIA_API_URL}/api/request/cancel.json`, {
     method: 'POST',
     body: new URLSearchParams({
       request_id: transaction.requestId,
@@ -113,7 +113,7 @@ export async function sendLydiaPaymentRequest(
   };
 
   // Send the lydia payment request
-  const response = await fetch(`${LYDIA_API_URL}/api/request/do.json`, {
+  const response = await fetch(`${PUBLIC_LYDIA_API_URL}/api/request/do.json`, {
     method: 'POST',
     body: new URLSearchParams(formParams),
   });

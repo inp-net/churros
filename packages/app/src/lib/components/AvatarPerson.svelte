@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import IconUser from '~icons/mdi/account';
   import IconCanEditMembers from '~icons/mdi/account-edit-outline';
   import IconCanEditPosts from '~icons/mdi/text-box-edit-outline';
@@ -12,7 +12,7 @@
   export let permissions:
     | undefined
     | { canEditArticles: boolean; canEditMembers: boolean; canScanEvents: boolean } = undefined;
-  const src = `${PUBLIC_STORAGE_URL}${pictureFile}`;
+  const src = `${env.PUBLIC_STORAGE_URL}${pictureFile}`;
 </script>
 
 <svelte:element this={href ? 'a' : 'div'} class:highlighted class="person" {href}>

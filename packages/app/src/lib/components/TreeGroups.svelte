@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
 
   type Group = {
     uid: string;
@@ -14,7 +14,9 @@
 </script>
 
 <a class:highlight={highlightUid === group.uid} href="/groups/{group.uid}/">
-  <div class="avatar"><img src="{PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} /></div>
+  <div class="avatar">
+    <img src="{env.PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} />
+  </div>
   <div class="text">
     <p class="name">{group.name}</p>
     {#if group.description}

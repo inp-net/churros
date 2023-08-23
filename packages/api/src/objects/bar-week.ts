@@ -77,7 +77,7 @@ builder.mutationField('upsertBarWeek', (t) =>
     },
     authScopes(_, {}, { user }) {
       // Only members of a certain group(s) can upsert a bar week
-      const foyGroupsUids = process.env.FOY_GROUPS.split(',');
+      const foyGroupsUids = process.env['FOY_GROUPS']?.split(',') ?? [];
       return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
     },
     async resolve(query, _, { id, startsAt, endsAt, description, groupsUids }) {
@@ -127,7 +127,7 @@ builder.mutationField('deleteBarWeek', (t) =>
     args: { id: t.arg.id() },
     authScopes(_, {}, { user }) {
       // Only members of a certain group(s) can upsert a bar week
-      const foyGroupsUids = process.env.FOY_GROUPS.split(',');
+      const foyGroupsUids = process.env['FOY_GROUPS']?.split(',') ?? [];
       return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
     },
     async resolve(_, { id }) {

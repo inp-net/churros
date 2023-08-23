@@ -8,7 +8,7 @@ import { default as parseUserAgent } from 'ua-parser-js';
 import * as $serviceWorker from '$service-worker';
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
-// can't import from $env/static/public in service worker
+// can't import from $env/dynamic/public in service worker
 const PUBLIC_STORAGE_URL = /* @generated */ 'http://localhost:4000/storage/';
 
 // Create a unique cache name for this deployment
@@ -122,6 +122,7 @@ sw.addEventListener('fetch', (event) => {
     // for everything else, try the network first, but
     // fall back to the cache if we're offline
     try {
+      await log(`fetching ${event.request.url}`);
       const response = await fetch(event.request);
 
       if (response.status === 200) await cache.put(event.request, response.clone());

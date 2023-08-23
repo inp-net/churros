@@ -7,7 +7,7 @@
   import { browser } from '$app/environment';
   import IconWhere from '~icons/mdi/location-outline';
   import IconWhen from '~icons/mdi/calendar-outline';
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
 
   export let title: string;
   export let startsAt: Date | undefined = undefined;
@@ -50,7 +50,7 @@
   style:--horizontal-padding={headerHorizontalPadding || 'unset'}
   style:background-image={pictureFile
     ? `linear-gradient(rgba(0 0 0 / var(--alpha)), rgba(0 0 0 / var(--alpha))),
-  url(${PUBLIC_STORAGE_URL}${pictureFile})`
+  url(${env.PUBLIC_STORAGE_URL}${pictureFile})`
     : undefined}
 >
   <div class="header-content">

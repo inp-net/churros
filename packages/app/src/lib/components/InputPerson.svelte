@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { zeus } from '$lib/zeus';
   import IconNone from '~icons/mdi/help';
   import InputField from './InputField.svelte';
@@ -19,7 +19,7 @@
   export let except: string[] = [];
   export let user: User | undefined = undefined;
 
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+   
   $: avatarHref = user ? `/users/${user?.uid ?? ''}` : '';
 
   function allowed(uid: string) {
@@ -63,7 +63,7 @@
     >
       {#if object}
         <img
-          src="{PUBLIC_STORAGE_URL}{object?.pictureFile ?? ''}"
+          src="{env.PUBLIC_STORAGE_URL}{object?.pictureFile ?? ''}"
           alt="{object?.firstName ?? ''} {object?.lastName ?? ''}"
         />
       {:else}
@@ -73,7 +73,7 @@
     <div class="suggestion" slot="item" let:item>
       <div class="avatar">
         <img
-          src="{PUBLIC_STORAGE_URL}{item?.pictureFile ?? ''}"
+          src="{env.PUBLIC_STORAGE_URL}{item?.pictureFile ?? ''}"
           alt="{item?.firstName ?? ''} {item?.lastName ?? ''}"
         />
       </div>

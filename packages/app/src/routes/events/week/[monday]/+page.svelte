@@ -1,6 +1,6 @@
 <script lang="ts">
   import CalendarDay from '../../../../lib/components/CalendarDay.svelte';
-  import { PUBLIC_FOY_GROUPS, PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import IconBackward from '~icons/mdi/chevron-left';
   import IconGear from '~icons/mdi/cog-outline';
   import IconForward from '~icons/mdi/chevron-right';
@@ -28,7 +28,7 @@
 
   const canChangeBarWeek = Boolean(
     $me?.admin ||
-      $me?.groups.some(({ group: { uid } }) => PUBLIC_FOY_GROUPS.split(',').includes(uid))
+      $me?.groups.some(({ group: { uid } }) => env.PUBLIC_FOY_GROUPS?.split(',').includes(uid))
   );
 </script>
 
@@ -58,7 +58,7 @@
           <li class="group">
             <a href="/groups/{group.uid}"
               ><img
-                src="{PUBLIC_STORAGE_URL}{$isDark ? group.pictureFileDark : group.pictureFile}"
+                src="{env.PUBLIC_STORAGE_URL}{$isDark ? group.pictureFileDark : group.pictureFile}"
                 alt=""
               />
               {group.name}</a
