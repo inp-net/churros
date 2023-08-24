@@ -26,36 +26,35 @@
   let scrolled = false;
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
 
-  async function getCurrentEvent(page: typeof $page) {
-    if (!page.url.pathname.endsWith('/scan/')) throw `not applicable`;
-    try {
-      const { event } = await $zeus.query({
-        event: [
-          { uid: page.params.event, groupUid: page.params.group },
-          { title: true, startsAt: true },
-        ],
-      });
-      return event;
-    } catch {
-      throw `not found`;
+  let currentEvent: undefined | { title: string; startsAt: Date } = undefined;
+
+  onMount(async () => {
+    if ($page.url.pathname.endsWith('/scan/')) {
+      try {
+        const { event } = await $zeus.query({
+          event: [
+            { uid: $page.params.uid, groupUid: $page.params.group },
+            { title: true, startsAt: true },
+          ],
+        });
+        currentEvent = event;
+      } catch {}
     }
-  }
+  });
 </script>
 
 <nav id="navigation-top" class:scrolled class:transparent={scanningTickets}>
-  {#await getCurrentEvent($page)}
-    <a href="/"><img class="logo" src="/logo.png" alt="logo de l'AE" /></a>
-  {:then currentEvent}
+  {#if scanningTickets}
     <div class="current-event">
       <ButtonBack />
       <div class="event-name">
-        <h1>{currentEvent.title}</h1>
-        <p>{formatDate(currentEvent.startsAt)}</p>
+        <h1>{currentEvent?.title ?? 'Chargement…'}</h1>
+        <p>{currentEvent ? formatDate(currentEvent.startsAt) : 'Chargement…'}</p>
       </div>
     </div>
-  {:catch}
+  {:else}
     <a href="/"><img class="logo" src="/logo.png" alt="logo de l'AE" /></a>
-  {/await}
+  {/if}
 
   <div class="actions">
     {#if scanningTickets}
