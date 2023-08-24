@@ -121,6 +121,7 @@ export async function updatePicture({
 
   const path = join(folder, `${identifier}.${extension}`);
   await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
+  console.info(`Compressing picture to ${new URL(path, process.env.STORAGE).pathname}`);
   await compressPhoto(
     buffer,
     new URL(path, process.env.STORAGE).pathname,
