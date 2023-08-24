@@ -280,7 +280,7 @@ builder.queryField('birthdays', (t) =>
         const result = [];
         for (
           let date = addDays(center, -width / 2);
-          date < addDays(center, width / 2);
+          date <= addDays(center, width / 2);
           date = addDays(date, 1)
         )
           result.push(date);
