@@ -4,7 +4,7 @@ import imageType from 'image-type';
 import sharp from 'sharp';
 import { prisma } from './prisma.js';
 import { mkdir, unlink } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 
 export const supportedExtensions = ['png', 'jpg', 'webp'] as ImageFileExtension[];
 
@@ -69,6 +69,8 @@ export async function updatePicture({
   if (!type || !supportedExtensions.includes(type.ext))
     throw new GraphQLError('File format not supported');
 
+  const root = new URL(process.env.STORAGE).pathname;
+
   // Delete the existing picture
   let pictureFile = '';
   switch (resource) {
@@ -115,37 +117,46 @@ export async function updatePicture({
 
   if (pictureFile) {
     try {
-      await unlink(new URL(pictureFile, process.env.STORAGE));
+      await unlink(join(root, pictureFile));
     } catch {}
   }
 
-  const path = join(folder, `${identifier}.${extension}`);
-  await mkdir(new URL(dirname(path), process.env.STORAGE), { recursive: true });
-  console.info(`Compressing picture to ${new URL(path, process.env.STORAGE).pathname}`);
-  await compressPhoto(
-    buffer,
-    new URL(path, process.env.STORAGE).pathname,
-    extensionToFormat[extension],
-    { square: ['user', 'group'].includes(resource) }
-  );
+  const path = join(root, folder, `${identifier}.${extension}`);
+  await mkdir(dirname(path), { recursive: true });
+  console.info(`Compressing picture to ${path}`);
+  await compressPhoto(buffer, path, extensionToFormat[extension], {
+    square: ['user', 'group'].includes(resource),
+  });
   switch (resource) {
     case 'article': {
-      await prisma.article.update({ where: { id: identifier }, data: { [propertyName]: path } });
+      await prisma.article.update({
+        where: { id: identifier },
+        data: { [propertyName]: relative(root, path) },
+      });
       break;
     }
 
     case 'event': {
-      await prisma.event.update({ where: { id: identifier }, data: { [propertyName]: path } });
+      await prisma.event.update({
+        where: { id: identifier },
+        data: { [propertyName]: relative(root, path) },
+      });
       break;
     }
 
     case 'group': {
-      await prisma.group.update({ where: { uid: identifier }, data: { [propertyName]: path } });
+      await prisma.group.update({
+        where: { uid: identifier },
+        data: { [propertyName]: relative(root, path) },
+      });
       break;
     }
 
     case 'user': {
-      await prisma.user.update({ where: { uid: identifier }, data: { [propertyName]: path } });
+      await prisma.user.update({
+        where: { uid: identifier },
+        data: { [propertyName]: relative(root, path) },
+      });
       break;
     }
 
