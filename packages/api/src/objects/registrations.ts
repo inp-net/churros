@@ -151,6 +151,9 @@ builder.queryField('registrationsOfUser', (t) =>
             { beneficiary: fullName(user) },
           ],
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       });
     },
   })
