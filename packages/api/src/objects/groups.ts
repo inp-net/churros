@@ -17,6 +17,7 @@ import {
 } from '../services/search.js';
 import type { Context } from '../context.js';
 import { updatePicture } from '../pictures.js';
+import { join } from 'node:path';
 
 export function userIsInBureauOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
@@ -387,7 +388,9 @@ builder.mutationField('deleteGroupPicture', (t) =>
         select: { pictureFile: true },
       });
 
-      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
+      const root = new URL(process.env.STORAGE).pathname;
+
+      if (pictureFile) await unlink(join(root, pictureFile));
 
       await prisma.group.update({
         where: { uid },

@@ -11,6 +11,7 @@ import { VisibilityEnum } from './events.js';
 import { Visibility } from '@prisma/client';
 import { scheduleNewArticleNotification } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
+import { join } from 'node:path';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
@@ -308,7 +309,9 @@ builder.mutationField('deleteArticlePicture', (t) =>
         select: { pictureFile: true },
       });
 
-      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
+      const root = new URL(process.env.STORAGE).pathname;
+
+      if (pictureFile) await unlink(join(root, pictureFile));
       await prisma.article.update({ where: { id }, data: { pictureFile: '' } });
       return true;
     },

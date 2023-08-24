@@ -20,6 +20,7 @@ import { yearTier } from '../date.js';
 import { addDays } from 'date-fns';
 import { StudentAssociationType } from './student-associations.js';
 import { updatePicture } from '../pictures.js';
+import { join } from 'node:path';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -278,7 +279,7 @@ builder.queryField('birthdays', (t) =>
         width = Math.ceil(width / 2) * 2;
         const result = [];
         for (
-          let date = addDays(center, -width / 2 - 1);
+          let date = addDays(center, -width / 2);
           date < addDays(center, width / 2);
           date = addDays(date, 1)
         )
@@ -483,7 +484,9 @@ builder.mutationField('deleteUserPicture', (t) =>
         select: { pictureFile: true },
       });
 
-      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
+      const root = new URL(process.env.STORAGE).pathname;
+
+      if (pictureFile) await unlink(join(root, pictureFile));
 
       await prisma.user.update({
         where: { uid },

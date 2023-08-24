@@ -29,6 +29,7 @@ import { ManagerOfEventInput } from './event-managers.js';
 import { unlink } from 'node:fs/promises';
 import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
+import { join } from 'node:path';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -753,7 +754,9 @@ builder.mutationField('deleteEventPicture', (t) =>
         select: { pictureFile: true },
       });
 
-      if (pictureFile) await unlink(new URL(pictureFile, process.env.STORAGE));
+      const root = new URL(process.env.STORAGE).pathname;
+
+      if (pictureFile) await unlink(join(root, pictureFile));
       await prisma.event.update({ where: { id }, data: { pictureFile: '' } });
       return true;
     },
