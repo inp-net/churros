@@ -203,8 +203,11 @@
     allowedPaymentMethods: ['Cash', 'Lydia'] as PaymentMethod[],
     capacity: 0,
     price: 0,
-    closesAt: event.endsAt ?? new Date(),
-    opensAt: new Date((event.startsAt ?? new Date()).valueOf() - 1 * 24 * 3600 * 1e3),
+    closesAt: event.tickets.length > 0 ? event.tickets[0].closesAt : event.endsAt ?? new Date(),
+    opensAt:
+      event.tickets.length > 0
+        ? event.tickets[0].opensAt
+        : new Date((event.startsAt ?? new Date()).valueOf() - 1 * 24 * 3600 * 1e3),
     description: '',
     godsonLimit: 0,
     links: [],
