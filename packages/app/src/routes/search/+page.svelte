@@ -5,6 +5,7 @@
   import BaseInputText from '$lib/components/BaseInputText.svelte';
   import CardGroup from '$lib/components/CardGroup.svelte';
   import CardPerson from '$lib/components/CardPerson.svelte';
+  import CardEvent from '$lib/components/CardEvent.svelte';
 
   export let data: PageData;
 
@@ -31,9 +32,9 @@
 </form>
 
 {#if data.searchUsers === undefined || data.searchGroups === undefined}
-  <p>Cherchez !</p>
+  <p class="empty">Cherchez !</p>
 {:else if results.length === 0}
-  <p>Aucun résultat</p>
+  <p class="empty">Aucun résultat</p>
 {:else}
   {#if data.searchUsers.length > 0}
     <h2>Personnes</h2>
@@ -58,8 +59,10 @@
   {#if data.searchEvents.length > 0}
     <h2>Évènements</h2>
     <ul class="nobullet">
-      {#each data.searchEvents as { group, uid, title }}
-        <li><a href="/events/{group.uid}/{uid}">{title}</a></li>
+      {#each data.searchEvents as event (event.id)}
+        <li>
+          <CardEvent href="/events/{event.group.uid}/{event.uid}" {...event} />
+        </li>
       {/each}
     </ul>
   {/if}
@@ -89,5 +92,9 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  .empty {
+    text-align: center;
   }
 </style>
