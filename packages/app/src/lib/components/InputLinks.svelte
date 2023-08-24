@@ -20,12 +20,22 @@
   let editingComputedLink: undefined | string;
   let replacements: Record<string, string> = {};
 
+  function urlOrUndefined(maybeUrl: string): URL | undefined {
+    try {
+      return new URL(maybeUrl);
+    } catch {
+      return undefined;
+    }
+  }
+
   function addLink() {
+    if (!/^https?:\/\//.test(newValue.value)) newValue.value = `https://${newValue.value}`;
+
     try {
       // eslint-disable-next-line no-new
       new URL(newValue.value);
     } catch {
-      newValue = { ...newValue, value: `https://${newValue.value}` };
+      return;
     }
 
     value = [...value, newValue];
@@ -52,7 +62,7 @@
   <div class="links-input" on:keypress={handleEnter} role="listitem">
     <ul class="links" style:display={value.length > 0 ? 'block' : 'none'}>
       {#each value as link, i}
-        {@const url = new URL(link.value)}
+        {@const url = urlOrUndefined(link.value)}
         <li class="link">
           <div class="link-and-actions">
             <div class="order action-button">
@@ -84,10 +94,10 @@
             </div>
             <div class="inputs">
               <input placeholder="Nom de l'action" bind:value={link.name} />
-              <input placeholder="Adresse du site" bind:value={link.value} />
+              <input type="url" placeholder="Adresse du site" bind:value={link.value} />
             </div>
 
-            {#if computed && url.hostname === 'docs.google.com' && url.pathname.startsWith('/forms')}
+            {#if computed && url?.hostname === 'docs.google.com' && url?.pathname.startsWith('/forms')}
               <div class="action-button manage-replacements">
                 {#if editingComputedLink === link.name}
                   <GhostButton
@@ -146,7 +156,7 @@
               {/if}
             </div>
           </div>
-          {#if editingComputedLink === link.name}
+          {#if editingComputedLink === link.name && url}
             {@const params = [...url.searchParams]}
             <ul class="replacements nobullet">
               {#each params.filter(([key]) => key.startsWith('entry.')) as [key, value] (key)}
