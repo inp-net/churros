@@ -1,8 +1,11 @@
+import { redirectToLogin } from '$lib/session';
 import { Selector, loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent, params }) =>
-  loadQuery(
+export const load: PageLoad = async ({ fetch, parent, params, url }) => {
+  const { me } = await parent();
+  if (!me) throw redirectToLogin(url.pathname);
+  return loadQuery(
     {
       groups: [{}, Selector('Group')({ uid: true, id: true, name: true, pictureFile: true })],
       event: [
@@ -137,3 +140,4 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
     },
     { fetch, parent }
   );
+};

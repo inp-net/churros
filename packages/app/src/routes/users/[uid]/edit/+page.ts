@@ -15,7 +15,6 @@ export const _userQuery = Selector('User')({
   pictureFile: true,
   address: true,
   graduationYear: true,
-  majorId: true,
   phone: true,
   birthday: true,
   links: { name: true, value: true },
@@ -63,6 +62,8 @@ export const _userQuery = Selector('User')({
     users: { uid: true },
   },
   major: {
+    id: true,
+    name: true,
     schools: {
       studentAssociations: {
         name: true,

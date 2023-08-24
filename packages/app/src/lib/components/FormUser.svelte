@@ -7,6 +7,7 @@
   import InputLongText from './InputLongText.svelte';
   import { me } from '$lib/session';
   import InputSearchObjectList from './InputSearchObjectList.svelte';
+  import InputSearchObject from './InputSearchObject.svelte';
   import Fuse from 'fuse.js';
   import InputField from './InputField.svelte';
   import InputNumber from './InputNumber.svelte';
@@ -22,9 +23,9 @@
     pictureFile: true,
     address: true,
     graduationYear: true,
-    majorId: true,
     phone: true,
     birthday: true,
+    major: { id: true, name: true },
     email: true,
     otherEmails: true,
     links: { name: true, value: true },
@@ -50,8 +51,8 @@
       address: string;
       description: string;
       graduationYear: number;
+      major: { name: string; id: string };
       links: Array<{ name: string; value: string }>;
-      majorId: string;
       nickname: string;
       phone: string;
       firstName: string;
@@ -69,6 +70,8 @@
     name: string;
   }>;
 
+  export let majors: Array<{ id: string; name: string }>;
+
   // We don't want form bindings to be reactive to let them evolve separately from the data
   let {
     user: {
@@ -76,7 +79,6 @@
       description,
       graduationYear,
       links,
-      majorId,
       nickname,
       phone,
       firstName,
@@ -87,6 +89,7 @@
       // eslint-disable-next-line unicorn/no-null
       birthday = null,
       contributesTo,
+      major,
     },
   } = data;
 
@@ -106,7 +109,7 @@
             links,
             address,
             graduationYear,
-            majorId,
+            majorId: major.id,
             phone,
             birthday,
             otherEmails,
@@ -156,7 +159,23 @@
             .map((r) => r.item)}
       />
     </InputField>
-    <InputNumber label="Promo" bind:value={graduationYear} />
+    <div class="side-by-side">
+      <InputField label="Filière">
+        <InputSearchObject
+          value={major.id}
+          valueKey="id"
+          labelKey="name"
+          bind:object={major}
+          search={(query) =>
+            new Fuse(majors, {
+              keys: ['name', 'id'],
+            })
+              .search(query)
+              .map((r) => r.item)}
+        />
+      </InputField>
+      <InputNumber label="Promo" bind:value={graduationYear} />
+    </div>
   {/if}
   <div class="side-by-side">
     <InputText

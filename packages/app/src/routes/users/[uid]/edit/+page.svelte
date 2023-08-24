@@ -92,7 +92,7 @@
           description: data.user.description,
           graduationYear: data.user.graduationYear,
           links: data.user.links,
-          majorId: data.user.majorId,
+          majorId: data.user.major.id,
           nickname: data.user.nickname,
           phone: data.user.phone,
           uid: data.user.uid,
@@ -201,6 +201,7 @@
       <FormPicture objectName="User" bind:object={data.user} />
       <FormUser
         studentAssociations={data.user.major?.schools.flatMap((s) => s.studentAssociations)}
+        majors={data.schoolGroups.flatMap((g) => g.majors)}
         bind:data
       />
     </section>
