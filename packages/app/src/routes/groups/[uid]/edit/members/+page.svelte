@@ -13,7 +13,6 @@
   import InputPerson from '$lib/components/InputPerson.svelte';
   import InputField from '$lib/components/InputField.svelte';
   import { isOnClubBoard, roleEmojis } from '$lib/permissions';
-  import { onMount } from 'svelte';
 
   export let data: PageData;
   const { group } = data;
@@ -168,24 +167,23 @@
   }
 
   let searcher: Fuse<(typeof data.group.members)[number]>;
-  onMount(() => {
-    searcher = new Fuse(data.group.members, {
-      keys: [
-        'member.fullName',
-        'member.lastName',
-        'member.firstName',
-        'member.uid',
-        'title',
-        'memberId',
-      ],
-      shouldSort: true,
-    });
+  $: searcher = new Fuse(data.group.members, {
+    keys: [
+      'member.fullName',
+      'member.lastName',
+      'member.firstName',
+      'member.uid',
+      'title',
+      'memberId',
+    ],
+    shouldSort: true,
   });
 
-  $: shownMembers =
-    search && searcher
+  function shownMembers(search: string, members: Array<(typeof data.group.members)[number]>) {
+    return search && searcher
       ? searcher.search(search).map(({ item }) => item)
-      : data.group.members.sort(membersByImportance);
+      : members.sort(membersByImportance);
+  }
 </script>
 
 <section class="search">
@@ -197,7 +195,7 @@
 </section>
 
 <ul class="nobullet members">
-  {#each shownMembers as { memberId, member, president, treasurer, vicePresident, secretary, title, canEditArticles, canEditMembers, canScanEvents } (memberId)}
+  {#each shownMembers(search, data.group.members) as { memberId, member, president, treasurer, vicePresident, secretary, title, canEditArticles, canEditMembers, canScanEvents } (memberId)}
     <li>
       <div class="item" data-id={member.uid}>
         <AvatarPerson
