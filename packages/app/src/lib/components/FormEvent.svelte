@@ -35,6 +35,7 @@
 
   $: canEditManagers =
     !event.uid ||
+    $me?.admin ||
     $me?.managedEvents?.find(
       (manager) => manager.event.uid === event.uid && manager.event.group.uid === event.group.uid
     )?.canEditPermissions;

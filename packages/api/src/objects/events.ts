@@ -398,17 +398,18 @@ builder.mutationField('upsertEvent', (t) =>
               data: links,
             },
           },
-          managers: user?.managedEvents.find((m) => m.event.id === id)?.canEditPermissions
-            ? {
-                deleteMany: {},
-                create: managers.map((m) => ({
-                  user: { connect: { uid: m.userUid } },
-                  canEdit: m.canEdit,
-                  canEditPermissions: m.canEditPermissions,
-                  canVerifyRegistrations: m.canVerifyRegistrations,
-                })),
-              }
-            : {},
+          managers:
+            user?.admin || user?.managedEvents.find((m) => m.event.id === id)?.canEditPermissions
+              ? {
+                  deleteMany: {},
+                  create: managers.map((m) => ({
+                    user: { connect: { uid: m.userUid } },
+                    canEdit: m.canEdit,
+                    canEditPermissions: m.canEditPermissions,
+                    canVerifyRegistrations: m.canVerifyRegistrations,
+                  })),
+                }
+              : {},
         },
       });
       // Update the existing tickets
