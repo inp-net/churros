@@ -1,11 +1,12 @@
 import { redirectToLogin } from '$lib/session';
 import { Selector, loadQuery } from '$lib/zeus';
+import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent, params, url }) => {
   const { me } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
-  return loadQuery(
+  const data = await loadQuery(
     {
       groups: [{}, Selector('Group')({ uid: true, id: true, name: true, pictureFile: true })],
       event: [
@@ -140,4 +141,17 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
     },
     { fetch, parent }
   );
+
+  const canEdit =
+    me.canEditGroups ||
+    Boolean(
+      me.groups.some(
+        ({ group, canEditArticles }) => canEditArticles && group.id === data.event.group.id
+      )
+    ) ||
+    Boolean(me.managedEvents.some(({ event, canEdit }) => canEdit && event.id === data.event.id));
+
+  if (!canEdit) throw redirect(307, '..');
+
+  return data;
 };
