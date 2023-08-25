@@ -122,7 +122,6 @@ sw.addEventListener('fetch', (event) => {
     // for everything else, try the network first, but
     // fall back to the cache if we're offline
     try {
-      await log(`fetching ${event.request.url}`);
       const response = await fetch(event.request);
 
       if (response.status === 200) await cache.put(event.request, response.clone());
