@@ -101,6 +101,7 @@
               author: {
                 uid: true,
               },
+              contactMail: true,
               uid: true,
               id: true,
               title: true,
@@ -109,7 +110,6 @@
               endsAt: true,
               location: true,
               visibility: true,
-              contactMail: true,
               beneficiary: {
                 id: true,
                 name: true,
@@ -358,6 +358,7 @@
           new Fuse(availableLydiaAccounts, { keys: ['name'] }).search(query).map((r) => r.item)}
       />
     </InputField>
+    <InputText label="E-mail de contact de l'orga" bind:value={event.contactMail} type="email" />
   </section>
   <section class="tickets">
     <h2>
