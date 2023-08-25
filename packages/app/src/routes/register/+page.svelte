@@ -60,8 +60,8 @@
       <strong>{(formErrors?._errors ?? []).join(' ')} </strong>
     </Alert>
     <InputText
-      label="Adresse e-mail universitaire"
-      hint="Elle finit par @etu.[ecole].fr."
+      label="Adresse e-mail"
+      hint="Si vous en avez une, utilisez votre adresse e-mail universitaire (en @etu.[ecole].fr)"
       errors={formErrors?.email?._errors}
       type="email"
       bind:value={email}
