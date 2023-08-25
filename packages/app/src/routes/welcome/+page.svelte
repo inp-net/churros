@@ -11,7 +11,7 @@
   });
 </script>
 
-<h1>Bienvenue sur Centraverse !</h1>
+<h1>Bienvenue sur l'appli de l'AEn7 !</h1>
 
 <svelte:window
   on:click={(event) => {

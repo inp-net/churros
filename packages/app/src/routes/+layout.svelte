@@ -110,7 +110,7 @@
 <ModalReportIssue bind:element={reportIssueDialogElement} />
 
 <svelte:head>
-  <title>Centraverse</title>
+  <title>AEn7</title>
 </svelte:head>
 
 <div id="loading-overlay" class:visible={showInitialSpinner}>
