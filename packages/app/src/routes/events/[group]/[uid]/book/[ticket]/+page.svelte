@@ -14,6 +14,7 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import { me } from '$lib/session';
   import Header from '../../Header.svelte';
+  import { onMount, onDestroy } from 'svelte';
 
   let done = false;
   $: done = $page.url.searchParams.has('done');
@@ -22,10 +23,16 @@
   let paid = false;
   $: paid = $page.url.searchParams.has('paid');
   let registrationId = '';
+  let registration:
+    | undefined
+    | { id: string; paid: boolean; paymentMethod?: PaymentMethod | undefined } = undefined;
 
   const paymentDetails = { phone: $me?.phone ?? '' };
 
   let serverError = '';
+
+  type Timeout = ReturnType<typeof setInterval>;
+  let pollIntervalId: Timeout;
 
   export let data: PageData;
   let beneficiary: string;
@@ -85,6 +92,44 @@
       );
     }
   }
+
+  function poll(action: () => Promise<void>, everyMs: number): Timeout {
+    return setInterval(() => {
+      void (async () => {
+        await action();
+      })();
+    }, everyMs);
+  }
+
+  onMount(() => {
+    // Check every 2 seconds if the registration was paid.
+    pollIntervalId = poll(redirectIfPaid, 2000);
+  });
+
+  onDestroy(() => {
+    if (pollIntervalId) clearInterval(pollIntervalId);
+  });
+
+  async function redirectIfPaid() {
+    const registrationId = $page.url.searchParams.get('done')?.toLowerCase();
+    if (!registrationId) return;
+    const result = await $zeus.query({
+      registration: [
+        {
+          id: registrationId,
+        },
+        {
+          __typename: true,
+          '...on QueryRegistrationSuccess': { data: { paid: true, paymentMethod: true, id: true } },
+          '...on Error': { message: true },
+        },
+      ],
+    });
+    if (result.registration.__typename === 'QueryRegistrationSuccess') {
+      registration = result.registration.data;
+      if (registration?.paid) await goto(`/bookings/${registration.id}`);
+    }
+  }
 </script>
 
 <Header
@@ -106,9 +151,6 @@
           pour l'évènement <strong>{title}</strong>
           du <strong>{dateTimeFormatter.format(startsAt)}</strong> est réservée
         </p>
-        <ButtonPrimary href="/bookings/{$page.url.searchParams.get('done')}"
-          >Mon billet</ButtonPrimary
-        >
       {:else}
         <div class="big-checkmark">
           <IconPendingPayment />
@@ -118,6 +160,18 @@
           Ta place <strong>{name}</strong> pour l'évènement <strong>{title}</strong> du
           <strong>{formatDateTime(startsAt)}</strong> est en attente de paiement.
         </p>
+        {#await redirectIfPaid() then}
+          {#if registration?.paymentMethod === PaymentMethod.Lydia}
+            <p>Rends-toi sur ton application Lydia pour régler le paiement.</p>
+            <ButtonPrimary href="/bookings/{$page.url.searchParams.get('done')}"
+              >C'est payé!</ButtonPrimary
+            >
+          {:else}
+            <ButtonPrimary href="/bookings/{$page.url.searchParams.get('done')}"
+              >Mon billet</ButtonPrimary
+            >
+          {/if}
+        {/await}
       {/if}
     </div>
   {:else}
@@ -178,8 +232,7 @@
               ],
             });
             if (paidRegistration.__typename === 'Error') serverError = paidRegistration.message;
-            else
-              await goto('?' + new URLSearchParams({ done: registrationId, paid: '' }).toString());
+            else await goto('?' + new URLSearchParams({ done: registrationId }).toString());
           }}
         >
           <InputText

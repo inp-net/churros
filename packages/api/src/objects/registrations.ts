@@ -68,7 +68,7 @@ builder.queryField('registration', (t) =>
       return prisma.registration.findFirstOrThrow({
         ...query,
         where: {
-          id,
+          id: id.toLowerCase(),
           OR: [
             {
               ticket: {
