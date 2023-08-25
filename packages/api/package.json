@@ -59,6 +59,7 @@
     "@types/web-push": "^3.3.2",
     "bunyan": "^1.8.15",
     "cli-progress": "^3.12.0",
+    "execa": "^8.0.1",
     "prisma": "5.1.1",
     "tsx": "^3.12.7",
     "typescript": "^4.9.5"
