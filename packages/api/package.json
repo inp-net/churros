@@ -71,7 +71,7 @@
     "build": "prisma generate && tsc && node ./build/scripts/update-id-prefix-to-typename-map.js && node ./build/scripts/inject-current-commit-hash.js && prisma generate && tsc && node ./build/scripts/post-build.js",
     "clean": "git clean -Xdf .",
     "dev": "NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
-    "start": "FRONTEND_ORIGIN=http://localhost:3000 node ./build/src/index.js",
+    "start": "node ./build/src/index.js",
     "migrate-old-data": "cd scripts && yarn tsc import-old-data.ts --lib es2021,DOM --module es2022 --target es2022 --moduleResolution node --allowSyntheticDefaultImports && yarn node import-old-data.js"
   },
   "type": "module",
