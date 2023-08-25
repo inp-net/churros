@@ -19,7 +19,6 @@
   export let except: string[] = [];
   export let user: User | undefined = undefined;
 
-   
   $: avatarHref = user ? `/users/${user?.uid ?? ''}` : '';
 
   function allowed(uid: string) {

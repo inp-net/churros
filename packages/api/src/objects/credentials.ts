@@ -56,14 +56,13 @@ builder.mutationField('login', (t) =>
         },
       });
 
-      if (!user) throw new GraphQLError('Inccorect email or password');
+      if (!user) throw new GraphQLError('Incorrect email or password');
 
       if (user.credentials.length <= 0) {
         // User has no password yet. Check with old LDAP server if the password is valid. If it is, save it as the password.
         let passwordValidInOldLDAP = false;
 
         try {
-           
           await ldapAuthenticate({
             ldapOpts: {
               url: process.env.OLD_LDAP_URL,
