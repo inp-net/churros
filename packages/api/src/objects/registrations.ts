@@ -284,6 +284,7 @@ builder.mutationField('upsertRegistration', (t) =>
     async authScopes(_, { ticketId, id, paid }, { user }) {
       const creating = !id;
       if (!user) return false;
+
       const ticket = await prisma.ticket.findUnique({
         where: { id: ticketId },
         include: {
@@ -369,10 +370,17 @@ builder.mutationField('upsertRegistration', (t) =>
         const ticketAndRegistrations = await prisma.ticket.findUnique({
           where: { id: ticketId },
           include: {
-            registrations: true,
+            registrations: { include: { author: true } },
             group: { include: { tickets: { include: { registrations: true } } } },
           },
         });
+
+        // Check for beneficiary limits
+        const registrationsByThisAuthor = ticketAndRegistrations!.registrations.filter(
+          ({ author, beneficiary }) => author.uid === user.uid && beneficiary !== ''
+        );
+        if (registrationsByThisAuthor.length > ticket.godsonLimit) return false;
+
         return placesLeft(ticketAndRegistrations!) > 0;
       }
 

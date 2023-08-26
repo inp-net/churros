@@ -73,6 +73,17 @@ export const TicketType = builder.prismaNode('Ticket', {
     autojoinGroups: t.relation('autojoinGroups'),
     event: t.relation('event'),
     group: t.relation('group', { nullable: true }),
+    remainingGodsons: t.int({
+	    async resolve({ godsonLimit }, _, { user }) {
+		    const registrationsOfUser = await prisma.registration.findMany({
+			    where: {
+				    author: { uid: user?.uid },
+				    beneficiary: {not: ''}
+			    }
+		    })
+		    return godsonLimit - registrationsOfUser.length
+	    }
+    }),
     placesLeft: t.int({
       async resolve({ id }) {
         const ticket = await prisma.ticket.findUnique({
