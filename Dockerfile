@@ -6,6 +6,7 @@ run npm --force install -g yarn
 copy . .
 run yarn install
 run yarn build
+RUN rm -rf .git
 
 run chmod +x /app/entrypoint.sh
 
