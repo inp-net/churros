@@ -16,6 +16,8 @@ run yarn install
 copy . .
 run yarn build
 
+run rm -rf .git
+
 RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT [ "/app/entrypoint.sh" ]
