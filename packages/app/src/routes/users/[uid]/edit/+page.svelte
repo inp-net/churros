@@ -200,6 +200,9 @@
     <section class="details">
       <FormPicture objectName="User" bind:object={data.user} />
       <FormUser
+        on:save={async () => {
+          await goto(`/users/${data.user.uid}`);
+        }}
         studentAssociations={data.user.major?.schools.flatMap((s) => s.studentAssociations)}
         majors={data.schoolGroups.flatMap((g) => g.majors)}
         bind:data
