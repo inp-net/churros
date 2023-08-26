@@ -37,7 +37,7 @@ function reverseMap<K extends string, V extends string>(obj: Record<K, V>): Reco
 }
 
 export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
-  if (params.pseudoID.startsWith(reverseMap(ID_PREFIXES_TO_TYPENAMES).Registration)) {
+  if (params.pseudoID.startsWith(reverseMap(ID_PREFIXES_TO_TYPENAMES).Registration + ':')) {
     throw redirect(
       301,
       url.pathname.replace(params.pseudoID, params.pseudoID.split(':')[1]!.toUpperCase())
