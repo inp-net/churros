@@ -12,6 +12,8 @@
   import InputField from './InputField.svelte';
   import InputNumber from './InputNumber.svelte';
   import InputEmailList from './InputEmailList.svelte';
+  import { createEventDispatcher } from 'svelte';
+  const emit = createEventDispatcher();
 
   const userQuery = Selector('User')({
     uid: true,
@@ -25,7 +27,11 @@
     graduationYear: true,
     phone: true,
     birthday: true,
-    major: { id: true, name: true },
+    major: {
+      id: true,
+      name: true,
+      schools: { id: true, name: true, studentAssociations: { id: true, name: true } },
+    },
     email: true,
     otherEmails: true,
     links: { name: true, value: true },
@@ -51,7 +57,15 @@
       address: string;
       description: string;
       graduationYear: number;
-      major: { name: string; id: string };
+      major: {
+        name: string;
+        id: string;
+        schools: Array<{
+          name: string;
+          id: string;
+          studentAssociations: Array<{ id: string; name: string }>;
+        }>;
+      };
       links: Array<{ name: string; value: string }>;
       nickname: string;
       phone: string;
@@ -106,7 +120,7 @@
             uid: data.user.uid,
             nickname,
             description,
-            links,
+            links: links.filter((l) => Boolean(l.value) && l.value.trim() !== '#'),
             address,
             graduationYear,
             majorId: major.id,
@@ -131,6 +145,7 @@
 
       // eslint-disable-next-line unicorn/no-null
       data.user = { ...data.user, ...updateUser.data, birthday: updateUser.data.birthday ?? null };
+      emit('save');
     } finally {
       loading = false;
     }

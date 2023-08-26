@@ -338,9 +338,16 @@ builder.mutationField('updateUser', (t) =>
       godparentUid: t.arg.string({ required: false }),
       contributesTo: t.arg({ type: ['ID'], required: false }),
     },
-    authScopes(_, { uid, contributesTo, graduationYear }, { user }) {
-      if (contributesTo || graduationYear) return Boolean(user?.canEditUsers);
-      return Boolean(user?.canEditUsers || uid === user?.uid);
+    authScopes(_, { uid }, { user }) {
+      const result = Boolean(user?.canEditUsers || uid === user?.uid);
+      if (!result)
+        {console.error(
+          `Cannot edit profile: ${uid} =?= ${user?.uid ?? '<none>'} OR ${JSON.stringify(
+            user?.canEditUsers
+          )}`
+        );}
+
+      return result;
     },
     async resolve(
       query,
@@ -375,8 +382,16 @@ builder.mutationField('updateUser', (t) =>
         }
       }
 
-      const { email: oldEmail } = await prisma.user.findUniqueOrThrow({ where: { uid } });
+      const {
+        email: oldEmail,
+        graduationYear: oldGraduationYear,
+        contributions: oldContributesTo,
+      } = await prisma.user.findUniqueOrThrow({ where: { uid }, include: { contributions: true } });
       const changingEmail = email !== oldEmail;
+      const changingGraduationYear = graduationYear !== oldGraduationYear;
+      const changingContributesTo =
+        JSON.stringify(oldContributesTo.map(({ id }) => id).sort()) !==
+        JSON.stringify((contributesTo ?? []).sort());
 
       if (changingEmail) {
         // Check if new email is available
@@ -393,6 +408,10 @@ builder.mutationField('updateUser', (t) =>
         // Send a validation email
         await requestEmailChange(email, user.id);
       }
+
+      if ((changingContributesTo || changingGraduationYear) && !(user.canEditUsers || user.admin)) 
+        throw new GraphQLError('Not authorized to change graduation year or contributions');
+      
 
       purgeUserSessions(uid);
       if (contributesTo) {
