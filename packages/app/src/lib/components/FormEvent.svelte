@@ -677,7 +677,10 @@
     }
 
     section.info {
+      display: flex;
+      flex-direction: column;
       grid-area: info;
+      gap: 0.5rem;
     }
 
     section.submit {
