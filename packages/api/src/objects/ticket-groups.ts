@@ -48,14 +48,25 @@ builder.mutationField('upsertTicketGroup', (t) =>
       // Make sure that the tickets added to that group all exists and are part of events managed by the user
       const ticketGroup = await prisma.ticketGroup.findFirst({
         where: { id: id ?? '' },
-        include: { event: true },
+        include: {
+          event: {
+            include: {
+              managers: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
       });
       const event = await prisma.event.findUnique({
         where: { id: eventId },
+        include: { managers: { include: { user: true } } },
       });
       const tickets = await prisma.ticket.findMany({
         where: { id: { in: ticketIDs } },
-        include: { event: true },
+        include: { event: { include: { managers: { include: { user: true } } } } },
       });
       const events = [ticketGroup, ...tickets]
         .map((tg) => tg?.event)
@@ -106,7 +117,17 @@ builder.mutationField('deleteTicketGroup', (t) =>
       // Make sure that the tickets added to that group all exists and are part of events managed by the user
       const ticketGroup = await prisma.ticketGroup.findFirst({
         where: { id },
-        include: { event: true },
+        include: {
+          event: {
+            include: {
+              managers: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
       });
 
       if (!ticketGroup) return false;

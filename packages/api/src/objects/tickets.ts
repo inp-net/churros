@@ -74,15 +74,15 @@ export const TicketType = builder.prismaNode('Ticket', {
     event: t.relation('event'),
     group: t.relation('group', { nullable: true }),
     remainingGodsons: t.int({
-	    async resolve({ godsonLimit }, _, { user }) {
-		    const registrationsOfUser = await prisma.registration.findMany({
-			    where: {
-				    author: { uid: user?.uid },
-				    beneficiary: {not: ''}
-			    }
-		    })
-		    return godsonLimit - registrationsOfUser.length
-	    }
+      async resolve({ godsonLimit }, _, { user }) {
+        const registrationsOfUser = await prisma.registration.findMany({
+          where: {
+            author: { uid: user?.uid },
+            beneficiary: { not: '' },
+          },
+        });
+        return godsonLimit - registrationsOfUser.length;
+      },
     }),
     placesLeft: t.int({
       async resolve({ id }) {
@@ -134,7 +134,20 @@ builder.queryField('ticket', (t) =>
       id: t.arg.id(),
     },
     async authScopes(_, { id }, { user }) {
-      const ticket = await prisma.ticket.findUnique({ where: { id }, include: { event: true } });
+      const ticket = await prisma.ticket.findUnique({
+        where: { id },
+        include: {
+          event: {
+            include: {
+              managers: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
+      });
       if (!ticket) return false;
       return eventAccessibleByUser(ticket.event, user);
     },
@@ -154,7 +167,17 @@ builder.queryField('ticketByUid', (t) =>
     async authScopes(_, { uid, eventUid, groupUid }, { user }) {
       const ticket = await prisma.ticket.findFirstOrThrow({
         where: { uid, event: { uid: eventUid, group: { uid: groupUid } } },
-        include: { event: true },
+        include: {
+          event: {
+            include: {
+              managers: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
       });
       return eventAccessibleByUser(ticket.event, user);
     },
@@ -241,6 +264,14 @@ builder.queryField('ticketsOfEvent', (t) =>
       const group = await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } });
       const event = await prisma.event.findUnique({
         where: { groupId_uid: { groupId: group.id, uid: eventUid } },
+
+        include: {
+          managers: {
+            include: {
+              user: true,
+            },
+          },
+        },
       });
       if (!event) return false;
       return eventAccessibleByUser(event, user);
@@ -337,7 +368,11 @@ builder.mutationField('upsertTicket', (t) =>
     async authScopes(_, { eventId, id }, { user }) {
       const creating = !id;
       if (creating) {
-        const event = await prisma.event.findUnique({ where: { id: eventId } });
+        const event = await prisma.event.findUnique({
+          where: { id: eventId },
+
+          include: { managers: { include: { user: true } } },
+        });
         if (!event) return false;
         return eventManagedByUser(event, user, { canEdit: true });
       }
@@ -423,7 +458,20 @@ builder.mutationField('deleteTicket', (t) =>
       id: t.arg.id(),
     },
     async authScopes(_, { id }, { user }) {
-      const ticket = await prisma.ticket.findUnique({ where: { id }, include: { event: true } });
+      const ticket = await prisma.ticket.findUnique({
+        where: { id },
+        include: {
+          event: {
+            include: {
+              managers: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
+      });
       if (!ticket) return false;
       return eventManagedByUser(ticket.event, user, { canEdit: true });
     },

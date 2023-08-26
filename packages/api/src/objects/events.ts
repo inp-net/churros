@@ -6,6 +6,7 @@ import {
   Visibility as VisibilityPrisma,
   Visibility,
   type Event,
+  type EventManager,
 } from '@prisma/client';
 import { toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
@@ -80,6 +81,7 @@ builder.queryField('event', (t) =>
     async authScopes(_, { uid, groupUid }, { user }) {
       const event = await prisma.event.findFirstOrThrow({
         where: { uid, group: { uid: groupUid } },
+        include: { managers: { include: { user: true } } },
       });
       return eventAccessibleByUser(event, user);
     },
@@ -558,7 +560,17 @@ builder.mutationField('upsertEvent', (t) =>
 );
 
 export async function eventAccessibleByUser(
-  event: EventPrisma | null,
+  event:
+    | (EventPrisma & {
+        managers: Array<{
+          user: { uid: string };
+
+          canEdit: boolean;
+          canEditPermissions: boolean;
+          canVerifyRegistrations: boolean;
+        }>;
+      })
+    | null,
   user: Context['user']
 ): Promise<boolean> {
   if (user?.admin) return true;
@@ -608,15 +620,23 @@ export async function eventAccessibleByUser(
 }
 
 export function eventManagedByUser(
-  event: EventPrisma,
+  event: EventPrisma & {
+    managers: Array<{
+      user: { uid: string };
+
+      canEdit: boolean;
+      canEditPermissions: boolean;
+      canVerifyRegistrations: boolean;
+    }>;
+  },
   user: Context['user'],
   { canEdit = true, canEditPermissions = false, canVerifyRegistrations = false }
 ) {
   if (!user) return false;
   return Boolean(
-    user.managedEvents.some(
-      ({ event: { id }, ...permissions }) =>
-        id === event.id &&
+    event.managers.some(
+      ({ user: { uid }, ...permissions }) =>
+        uid === user.uid &&
         ((permissions.canEdit && canEdit) ||
           (permissions.canEditPermissions && canEditPermissions) ||
           (permissions.canVerifyRegistrations && canVerifyRegistrations))
@@ -648,6 +668,13 @@ builder.queryField('searchEvents', (t) =>
           },
           ...(groupUid ? { group: { uid: groupUid } } : {}),
         },
+        include: {
+          managers: {
+            include: {
+              user: true,
+            },
+          },
+        },
       });
       const results = await prisma.event.findMany({
         ...query,
@@ -675,11 +702,20 @@ builder.queryField('searchEvents', (t) =>
             { contactMail: { search } },
           ],
         },
+        include: {
+          managers: {
+            include: {
+              user: true,
+            },
+          },
+        },
       });
 
       return [
         ...results.sort(levenshteinSorter(fuzzyIDs)),
-        ...levenshteinFilterAndSort<Event>(
+        ...levenshteinFilterAndSort<
+          Event & { managers: Array<EventManager & { user: { uid: string } }> }
+        >(
           fuzzyIDs,
           10,
           results.map(({ id }) => id)

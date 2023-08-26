@@ -340,12 +340,13 @@ builder.mutationField('updateUser', (t) =>
     },
     authScopes(_, { uid }, { user }) {
       const result = Boolean(user?.canEditUsers || uid === user?.uid);
-      if (!result)
-        {console.error(
+      if (!result) {
+        console.error(
           `Cannot edit profile: ${uid} =?= ${user?.uid ?? '<none>'} OR ${JSON.stringify(
             user?.canEditUsers
           )}`
-        );}
+        );
+      }
 
       return result;
     },
@@ -409,9 +410,8 @@ builder.mutationField('updateUser', (t) =>
         await requestEmailChange(email, user.id);
       }
 
-      if ((changingContributesTo || changingGraduationYear) && !(user.canEditUsers || user.admin)) 
+      if ((changingContributesTo || changingGraduationYear) && !(user.canEditUsers || user.admin))
         throw new GraphQLError('Not authorized to change graduation year or contributions');
-      
 
       purgeUserSessions(uid);
       if (contributesTo) {

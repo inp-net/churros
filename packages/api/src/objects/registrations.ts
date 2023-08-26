@@ -201,6 +201,13 @@ builder.queryField('registrationsOfUserForEvent', (t) =>
       if (!group) return false;
       const event = await prisma.event.findUnique({
         where: { groupId_uid: { groupId: group.id, uid: eventUid } },
+        include: {
+          managers: {
+            include: {
+              user: true,
+            },
+          },
+        },
       });
       if (!event) return false;
       return eventManagedByUser(event, user, { canVerifyRegistrations: true });
@@ -257,7 +264,15 @@ builder.queryField('verifyRegistration', (t) =>
       ticketId: t.arg.id(),
     },
     async authScopes(_, { ticketId }, { user }) {
-      const event = await prisma.ticket.findUnique({ where: { id: ticketId } }).event();
+      const event = await prisma.ticket.findUnique({ where: { id: ticketId } }).event({
+        include: {
+          managers: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      });
       if (!event) return false;
       return eventManagedByUser(event, user, { canVerifyRegistrations: true });
     },
@@ -290,6 +305,7 @@ builder.mutationField('upsertRegistration', (t) =>
         include: {
           event: {
             include: {
+              managers: { include: { user: true } },
               group: {
                 include: {
                   school: true,
@@ -309,13 +325,7 @@ builder.mutationField('upsertRegistration', (t) =>
       if (
         ticket.price > 0 &&
         paid &&
-        !(
-          user.admin ||
-          user.managedEvents.some(
-            ({ event: { id }, canVerifyRegistrations }) =>
-              id === ticket.event.id && canVerifyRegistrations
-          )
-        )
+        !(user.admin || eventManagedByUser(ticket.event, user, { canVerifyRegistrations: true }))
       )
         return false;
 
@@ -387,7 +397,21 @@ builder.mutationField('upsertRegistration', (t) =>
       // We are updating an existing registration. The permissions required are totally different.
       const registration = await prisma.registration.findUnique({
         where: { id },
-        include: { ticket: { include: { event: true } } },
+        include: {
+          ticket: {
+            include: {
+              event: {
+                include: {
+                  managers: {
+                    include: {
+                      user: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
       if (!registration) return false;
       if (
@@ -482,7 +506,17 @@ builder.mutationField('paidRegistration', (t) =>
       if (!user) return false;
       const registration = await prisma.registration.findUnique({
         where: { id: regId },
-        include: { ticket: { include: { event: true } } },
+        include: {
+          ticket: {
+            include: {
+              event: {
+                include: {
+                  managers: { include: { user: true } },
+                },
+              },
+            },
+          },
+        },
       });
       if (!registration) throw new GraphQLError("La réservation associée n'existe pas");
 
@@ -566,7 +600,22 @@ builder.mutationField('deleteRegistration', (t) =>
       if (!user) return false;
       const registration = await prisma.registration.findFirst({
         where: { id },
-        include: { ticket: { include: { event: true } }, author: true },
+        include: {
+          ticket: {
+            include: {
+              event: {
+                include: {
+                  managers: {
+                    include: {
+                      user: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          author: true,
+        },
       });
       if (!registration) return false;
 
