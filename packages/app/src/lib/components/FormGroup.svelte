@@ -61,7 +61,7 @@
             color,
             description,
             email: email || undefined,
-            links,
+            links: links.filter((l) => Boolean(l.value)),
             longDescription,
             name,
             selfJoinable,
