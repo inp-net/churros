@@ -65,6 +65,8 @@ export const _userQuery = Selector('User')({
     id: true,
     name: true,
     schools: {
+      name: true,
+      id: true,
       studentAssociations: {
         name: true,
         id: true,

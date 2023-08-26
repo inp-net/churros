@@ -20,7 +20,7 @@ builder.mutationField('createGitlabIssue', (t) =>
 
       const url = (path: string) => {
         const result = new URL('/api/v4/' + path, `https://git.inpt.fr/`);
-        result.searchParams.set('sudo', (hasGitlabAcount ? user?.uid : undefined) ?? 'issuebot');
+        result.searchParams.set('sudo', (hasGitlabAccount ? user?.uid : undefined) ?? 'issuebot');
         result.searchParams.set('private_token', process.env.GITLAB_SUDO_TOKEN);
         return result.toString();
       };
@@ -29,7 +29,7 @@ builder.mutationField('createGitlabIssue', (t) =>
         method: 'POST',
         body: JSON.stringify({
           description,
-          title: Boolean(user) && !hasGitlabAccount ? `[@${user.uid}] ${title}` : title,
+          title: Boolean(user) && !hasGitlabAccount ? `[@${user!.uid}] ${title}` : title,
           labels: ['user-submitted', isBug ? 'bug' : 'feature'].join(','),
         }),
         headers: {
