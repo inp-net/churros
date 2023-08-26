@@ -85,7 +85,9 @@
         </ButtonGhost>
       {:else}
         <ButtonSecondary href="/register/">Inscription</ButtonSecondary>
-        <ButtonSecondary href="/login/">Connexion</ButtonSecondary>
+        <ButtonSecondary href="/login/?{new URLSearchParams({ to: $page.url.pathname }).toString()}"
+          >Connexion</ButtonSecondary
+        >
       {/if}
     {/if}
   </div>
