@@ -36,47 +36,57 @@ export const findSchoolUser = async (
 
   const client = ldap.createClient({ url, log });
 
-  const ldapObject = await new Promise<ldap.SearchEntryObject | undefined>((resolve, reject) => {
-    // console.log(`Searching for ou=people,dc=n7,dc=fr with ${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}`);
-    client.bind('cn=anonymous', '', (err) => {
-      if (err) console.log(err);
-    });
-    client.search(
-      'ou=people,dc=n7,dc=fr',
-      { filter: `${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}` },
-      // {filter: `uid=elebihan`},
-      (error, results) => {
-        console.log(results);
-        if (error) {
-          reject(error);
-          return;
+  const ldapObject = await new Promise<Record<string, string | undefined> | undefined>(
+    (resolve, reject) => {
+      // console.log(`Searching for ou=people,dc=n7,dc=fr with ${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}`);
+      client.bind('', '', (err) => {
+        if (err) console.log(err);
+      });
+      client.search(
+        'ou=people,dc=n7,dc=fr',
+        {
+          scope: 'sub',
+          filter: `${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}`,
+        },
+        // {filter: `uid=elebihan`},
+        (error, results) => {
+          console.log(results);
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          results.on('connectRefused', console.log);
+
+          results.on('connectTimeout', console.log);
+
+          results.on('searchReference', console.log);
+
+          results.on('searchEntry', ({ pojo }) => {
+            console.log(pojo);
+            resolve(
+              Object.fromEntries(
+                pojo.attributes.map(({ type, values }) => [
+                  type,
+                  values.length > 0 ? values[0] : undefined,
+                ])
+              )
+            );
+          });
+
+          results.on('end', (a) => {
+            console.log(a);
+            // eslint-disable-next-line unicorn/no-useless-undefined
+            resolve(undefined);
+          });
+
+          results.on('error', (error) => {
+            reject(error);
+          });
         }
-
-        results.on('connectRefused', console.log);
-
-        results.on('connectTimeout', console.log);
-
-        results.on('searchReference', console.log);
-
-        /*
-        results.on('searchEntry', ({ object }) => {
-        console.log(object);
-        resolve(object);
-        });
-        */
-
-        results.on('end', (a) => {
-          console.log(a);
-          // eslint-disable-next-line unicorn/no-useless-undefined
-          resolve(undefined);
-        });
-
-        results.on('error', (error) => {
-          reject(error);
-        });
-      }
-    );
-  });
+      );
+    }
+  );
 
   // Wait for the client to disconnect
   await new Promise<void>((resolve, reject) => {
@@ -93,7 +103,7 @@ export const findSchoolUser = async (
     Object.keys(attributesMap).map((key) => {
       const attributeKey = attributesMap[key as keyof typeof attributesMap];
       if (!attributeKey) return [key, undefined];
-      const value = ldapObject[attributeKey as keyof typeof ldapObject];
+      const value = ldapObject[attributeKey ];
       return [key, value ? value.toString() : undefined];
     })
   ) as unknown as LdapUser;
