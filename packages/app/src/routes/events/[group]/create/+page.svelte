@@ -16,7 +16,7 @@
     endsAt: undefined,
     groupUid: $page.params.uid,
     contactMail: data.group.email,
-    lydiaAccountId: undefined,
+    beneficiary: data.lydiaAccountsOfGroup.length === 1 ? data.lydiaAccountsOfGroup[0] : undefined,
     links: [],
     location: '',
     managers: [
@@ -69,6 +69,7 @@
     max-width: 1200px;
     margin: 0 auto;
   }
+
   h1 {
     margin-bottom: 3rem;
     text-align: center;
