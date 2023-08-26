@@ -26,6 +26,7 @@ type bbcode = string;
 function bbcode2markdown(text: bbcode): string {
   return (
     text
+      .replaceAll('\u0001', '')
       .replaceAll('\0', '')
       // .replaceAll(/\r?\n/gi, '\n')
       .replaceAll(/\[b](.*?)\[\/b]/gi, (_, $1: string) => `**${$1.trim()}**`)
