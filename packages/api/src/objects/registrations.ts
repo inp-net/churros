@@ -179,6 +179,7 @@ builder.queryField('registrationsOfEvent', (t) =>
       return prisma.registration.findMany({
         ...query,
         where: { ticket: { event: { uid: eventUid, group: { uid: groupUid } } } },
+        orderBy: { createdAt: 'desc' },
       });
     },
   })

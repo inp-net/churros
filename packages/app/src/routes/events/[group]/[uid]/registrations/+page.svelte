@@ -16,8 +16,31 @@
   import Badge from '$lib/components/Badge.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import { _registrationsQuery } from './+page';
 
   let compact = false;
+  let loadingMore = false;
+
+  async function loadMore() {
+    if (loadingMore) return;
+    try {
+      loadingMore = true;
+      const result = await $zeus.query({
+        registrationsOfEvent: [
+          {
+            after: data.registrationsOfEvent.pageInfo.endCursor,
+            groupUid: $page.params.group,
+            eventUid: $page.params.uid,
+          },
+          _registrationsQuery,
+        ],
+      });
+      registrations.pageInfo = result.registrationsOfEvent.pageInfo;
+      registrations.edges = [...registrations.edges, ...result.registrationsOfEvent.edges];
+    } finally {
+      loadingMore = false;
+    }
+  }
 
   function saveAsCsv() {
     if (!registrations) return;
@@ -209,7 +232,7 @@
           </td>
           <td>
             {#if isSameDay(createdAt, new Date())}
-              {format(createdAt, 'HH:mm')}
+              {format(createdAt, 'hh:mm')}
             {:else}
               {formatDateTime(createdAt)}
             {/if}
@@ -277,6 +300,12 @@
       {/each}
     </tbody>
   </table>
+
+  {#if registrations.pageInfo.hasNextPage}
+    <section class="load-more">
+      <ButtonSecondary on:click={loadMore} loading={loadingMore}>Charger plus</ButtonSecondary>
+    </section>
+  {/if}
 </div>
 
 <style lang="scss">
@@ -370,5 +399,11 @@
   td.actions {
     padding: 0.25rem 1rem;
     background: transparent;
+  }
+
+  .load-more {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
   }
 </style>
