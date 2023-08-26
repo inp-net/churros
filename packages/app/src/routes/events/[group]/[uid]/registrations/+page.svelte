@@ -180,7 +180,7 @@
 </script>
 
 <header>
-  <h1>{registrations?.edges.length} Réservations</h1>
+  <h1>{data.event.registrationsCount} Réservations</h1>
 
   <div class="actions">
     <ButtonSecondary

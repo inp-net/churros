@@ -59,6 +59,14 @@ export const EventType = builder.prismaNode('Event', {
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
+    registrationsCount: t.int({
+      async resolve({ id }) {
+        const results = await prisma.registration.findMany({
+          where: { ticket: { event: { id } } },
+        });
+        return results.length;
+      },
+    }),
   }),
 });
 

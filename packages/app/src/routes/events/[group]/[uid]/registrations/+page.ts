@@ -47,7 +47,10 @@ export const _registrationsQuery = Selector('QueryRegistrationsOfEventConnection
 export const load: PageLoad = async ({ fetch, parent, params }) =>
   loadQuery(
     {
-      event: [{ groupUid: params.group, uid: params.uid }, Selector('Event')({ id: true })],
+      event: [
+        { groupUid: params.group, uid: params.uid },
+        Selector('Event')({ id: true, registrationsCount: true }),
+      ],
       registrationsOfEvent: [
         {
           eventUid: params.uid,
