@@ -36,6 +36,54 @@ export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
 });
 
+function visibleEventsPrismaQuery(
+  user: { uid: string } | undefined,
+  future: boolean,
+  ancestors: Array<{ uid: string }>
+) {
+  return {
+    visibility: {
+      not: VisibilityPrisma.Private,
+    },
+    startsAt: future ? { gte: new Date() } : undefined,
+    OR: [
+      // Completely public events
+      {
+        visibility: VisibilityPrisma.Public,
+      },
+      // Events in the user's groups
+      {
+        group: {
+          uid: {
+            in: ancestors.map(({ uid }) => uid),
+          },
+        },
+        visibility: { not: VisibilityPrisma.Unlisted },
+      },
+      // Unlisted events that the user booked
+      {
+        visibility: VisibilityPrisma.Unlisted,
+        tickets: {
+          some: {
+            registrations: {
+              some: {
+                OR: [
+                  {
+                    beneficiary: user?.uid,
+                  },
+                  {
+                    author: { uid: user?.uid },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    ],
+  };
+}
+
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
   fields: (t) => ({
@@ -119,26 +167,7 @@ builder.queryField('events', (t) =>
 
       return prisma.event.findMany({
         ...query,
-        where: {
-          visibility: {
-            notIn: [VisibilityPrisma.Private, VisibilityPrisma.Unlisted],
-          },
-          startsAt: future ? { gte: new Date() } : undefined,
-          OR: [
-            // Completely public events
-            {
-              visibility: VisibilityPrisma.Public,
-            },
-            // Events in the user's groups
-            {
-              group: {
-                uid: {
-                  in: ancestors.map(({ uid }) => uid),
-                },
-              },
-            },
-          ],
-        },
+        where: visibleEventsPrismaQuery(user, future, ancestors),
         orderBy: { startsAt: 'desc' },
       });
     },
@@ -178,23 +207,7 @@ builder.queryField('eventsInWeek', (t) =>
         ...query,
         where: {
           ...dateCondition,
-          visibility: {
-            notIn: [VisibilityPrisma.Private, VisibilityPrisma.Unlisted],
-          },
-          OR: [
-            // Completely public events
-            {
-              visibility: VisibilityPrisma.Public,
-            },
-            // Events in the user's groups
-            {
-              group: {
-                uid: {
-                  in: ancestors.map(({ uid }) => uid),
-                },
-              },
-            },
-          ],
+          ...visibleEventsPrismaQuery(user, false, ancestors),
         },
         orderBy: { startsAt: 'desc' },
       });
@@ -228,28 +241,7 @@ builder.queryField('eventsOfGroup', (t) =>
 
       return prisma.event.findMany({
         ...query,
-        where: {
-          visibility: {
-            notIn: [VisibilityPrisma.Private, VisibilityPrisma.Unlisted],
-          },
-          group: {
-            uid: groupUid,
-          },
-          OR: [
-            // Completely public events
-            {
-              visibility: VisibilityPrisma.Public,
-            },
-            // Events in the user's groups
-            {
-              group: {
-                uid: {
-                  in: ancestors.map(({ uid }) => uid),
-                },
-              },
-            },
-          ],
-        },
+        where: visibleEventsPrismaQuery(user, false, ancestors),
         orderBy: { startsAt: 'desc' },
       });
     },
