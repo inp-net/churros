@@ -10,9 +10,17 @@ builder.mutationField('createGitlabIssue', (t) =>
     },
     authScopes: () => true,
     async resolve(_, { title, description, isBug }, { user }) {
+      let hasGitlabAccount = false;
+      if (user) {
+        const data = (await fetch(`https://git.inpt.fr/api/v4/users?username=${user.uid}`).then(
+          async (r) => r.json()
+        )) as unknown as any[];
+        hasGitlabAccount = data.length > 0;
+      }
+
       const url = (path: string) => {
         const result = new URL('/api/v4/' + path, `https://git.inpt.fr/`);
-        result.searchParams.set('sudo', user?.uid ?? 'issuebot');
+        result.searchParams.set('sudo', (hasGitlabAcount ? user?.uid : undefined) ?? 'issuebot');
         result.searchParams.set('private_token', process.env.GITLAB_SUDO_TOKEN);
         return result.toString();
       };
@@ -21,7 +29,7 @@ builder.mutationField('createGitlabIssue', (t) =>
         method: 'POST',
         body: JSON.stringify({
           description,
-          title,
+          title: Boolean(user) && !hasGitlabAccount ? `[@${user.uid}] ${title}` : title,
           labels: ['user-submitted', isBug ? 'bug' : 'feature'].join(','),
         }),
         headers: {
