@@ -40,9 +40,10 @@ builder.mutationField('login', (t) =>
       password: t.arg.string(),
     },
     async resolve(query, _, { email, password }, { request }) {
+      const uidOrEmail = email.trim().toLowerCase();
       const user = await prisma.user.findFirst({
         where: {
-          OR: [{ email }, { uid: email.trim().toLowerCase() }],
+          OR: [{ email: uidOrEmail }, { uid: uidOrEmail }],
         },
         include: {
           credentials: {
@@ -97,7 +98,7 @@ builder.mutationField('login', (t) =>
       }
 
       const credentials = await prisma.credential.findMany({
-        where: { type: CredentialPrismaType.Password, user: { OR: [{ email }, { uid: email }] } },
+        where: { type: CredentialPrismaType.Password, user: { id: user.id } },
       });
       const userAgent = request.headers.get('User-Agent')?.slice(0, 255) ?? '';
 
