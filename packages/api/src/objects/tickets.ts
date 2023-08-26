@@ -45,7 +45,20 @@ export const TicketType = builder.prismaNode('Ticket', {
     closesAt: t.expose('closesAt', { type: DateTimeScalar, nullable: true }),
     price: t.exposeFloat('price'),
     capacity: t.exposeInt('capacity'),
-    registrations: t.relation('registrations'),
+    registrations: t.relation('registrations', {
+      query(_, { user }) {
+        if (user?.admin) return {};
+        return {
+          where: {
+            OR: [
+              { author: { uid: user?.uid } },
+              { beneficiary: user?.uid },
+              { ticket: { event: { managers: { some: { user: { uid: user?.uid } } } } } },
+            ],
+          },
+        };
+      },
+    }),
     links: t.relation('links'),
     allowedPaymentMethods: t.expose('allowedPaymentMethods', { type: [PaymentMethodEnum] }),
     openToPromotions: t.expose('openToPromotions', { type: ['Int'] }),
