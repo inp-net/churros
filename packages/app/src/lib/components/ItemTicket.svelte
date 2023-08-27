@@ -45,7 +45,10 @@
       <div class="price">
         {#if shotgunning}
           <ButtonSecondary href="/events/{event.group.uid}/{event.uid}/book/{uid}">
-            Réserver {price}€
+            <strong>
+              Réserver
+              <span class="ticket-price">{price} €</span>
+            </strong>
           </ButtonSecondary>
         {:else}
           {price}€
@@ -117,5 +120,9 @@
 
   .ticket .places .left::after {
     width: 1px;
+  }
+
+  .ticket-price {
+    color: var(--muted);
   }
 </style>
