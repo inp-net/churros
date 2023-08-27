@@ -58,7 +58,7 @@
       Shotgun intemporel
     {:else if opensAt && isFuture(new Date(opensAt))}
       Shotgun {formatRelative(new Date(opensAt), new Date(), { locale: fr })}
-    {:else if closesAt && isPast(new Date(closesAt))}
+    {:else if closesAt && isFuture(new Date(closesAt))}
       En vente jusqu'à {formatRelative(new Date(closesAt), new Date(), { locale: fr })}
     {/if}
   </p>
