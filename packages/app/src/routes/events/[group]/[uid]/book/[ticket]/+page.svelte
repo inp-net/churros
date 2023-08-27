@@ -44,7 +44,7 @@
     name,
     event: { contactMail, title, pictureFile, startsAt },
     price,
-	remainingGodsons,
+    remainingGodsons,
   } = data.ticketByUid;
 
   async function payBy(method: PaymentMethod | undefined) {
@@ -176,17 +176,20 @@
       {/if}
     </div>
   {:else}
-{#if remainingGodsons > 0}
-    <h2>Bénéficiaire</h2>
-    <p>Tu peux payer pour quelqu'un d'autre. {#if remainingGodsons <= 100}Il te reste {remainingGodsons} parrainages.{/if}</p>
+    {#if remainingGodsons > 0}
+      <h2>Bénéficiaire</h2>
+      <p>
+        Tu peux payer pour quelqu'un d'autre. {#if remainingGodsons <= 100}Il te reste {remainingGodsons}
+          parrainages.{/if}
+      </p>
 
-    <section class="beneficiary">
-      <InputCheckbox label="Je paie pour moi" bind:value={payingForThemself} />
-      {#if !payingForThemself}
-        <InputText label="Nom du bénéficiaire" bind:value={beneficiary} />
-      {/if}
-    </section>
-{/if}
+      <section class="beneficiary">
+        <InputCheckbox label="Je paie pour moi" bind:value={payingForThemself} />
+        {#if !payingForThemself}
+          <InputText label="Nom du bénéficiaire" bind:value={beneficiary} />
+        {/if}
+      </section>
+    {/if}
 
     {#if onlyManagersCanProvide}
       <h2>Seul·e un·e manager peut te fournir cette place.</h2>
@@ -289,7 +292,8 @@
     padding: 0 1rem;
 
     h2 {
-      margin-top: 2rem;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
     }
   }
 
