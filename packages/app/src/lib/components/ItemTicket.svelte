@@ -44,9 +44,9 @@
       {/if}
       <div class="price">
         {#if shotgunning}
-          <ButtonSecondary href="/events/{event.group.uid}/{event.uid}/book/{uid}"
-            >{price}€</ButtonSecondary
-          >
+          <ButtonSecondary href="/events/{event.group.uid}/{event.uid}/book/{uid}">
+            Réserver {price}€
+          </ButtonSecondary>
         {:else}
           {price}€
         {/if}
