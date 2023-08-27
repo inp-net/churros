@@ -7,6 +7,7 @@
   export let pictureFile: string;
   export let pictureFileDark: string;
   export let role = '';
+  export let school = '';
 </script>
 
 <a {href} title={name} class="group" draggable="false" on:click>
@@ -20,6 +21,9 @@
   <p class="name">{name}</p>
   {#if role}
     <p class="role">{role}</p>
+  {/if}
+  {#if school}
+    <p class="school">{school}</p>
   {/if}
 </a>
 
@@ -73,6 +77,12 @@
 
   .role {
     font-size: 0.8em;
+    text-align: center;
+  }
+
+  .school {
+    font-size: 0.7em;
+    color: var(--muted-text);
     text-align: center;
   }
 </style>

@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
       ],
       searchGroups: [
         { q: url.searchParams.get('q')! },
-        { uid: true, name: true, pictureFile: true, pictureFileDark: true },
+        { uid: true, name: true, pictureFile: true, pictureFileDark: true, school: { name: true } },
       ],
       searchEvents: [
         {
