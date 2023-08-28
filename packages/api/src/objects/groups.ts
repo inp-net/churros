@@ -92,7 +92,7 @@ export const GroupType = builder.prismaNode('Group', {
     events: t.relation('events', {
       query(_, { user }) {
         return {
-          where: visibleEventsPrismaQuery(user),
+          where: visibleEventsPrismaQuery(user, false),
           orderBy: { startsAt: 'desc' },
         };
       },
