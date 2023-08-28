@@ -36,11 +36,7 @@ export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
 });
 
-function visibleEventsPrismaQuery(
-  user: { uid: string } | undefined,
-  future: boolean,
-  ancestors: Array<{ uid: string }>
-) {
+export function visibleEventsPrismaQuery(user: { uid: string } | undefined, future: boolean) {
   return {
     visibility: {
       not: VisibilityPrisma.Private,
@@ -51,14 +47,10 @@ function visibleEventsPrismaQuery(
       {
         visibility: VisibilityPrisma.Public,
       },
-      // Events in the user's groups
+      // Restricted events in the user's groups
       {
-        group: {
-          uid: {
-            in: ancestors.map(({ uid }) => uid),
-          },
-        },
-        visibility: { not: VisibilityPrisma.Unlisted },
+        group: { members: { some: { member: { uid: user?.uid ?? '' } } } },
+        visibility: { not: VisibilityPrisma.Restricted },
       },
       // Unlisted events that the user booked
       {
@@ -69,10 +61,10 @@ function visibleEventsPrismaQuery(
               some: {
                 OR: [
                   {
-                    beneficiary: user?.uid,
+                    beneficiary: user?.uid ?? '',
                   },
                   {
-                    author: { uid: user?.uid },
+                    author: { uid: user?.uid ?? '' },
                   },
                 ],
               },
@@ -157,17 +149,9 @@ builder.queryField('events', (t) =>
         });
       }
 
-      const ancestors = await prisma.group
-        .findMany({
-          where: { familyId: { in: user.groups.map(({ group }) => group.familyId ?? group.id) } },
-          select: { id: true, parentId: true, uid: true },
-        })
-        .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
-        .then((groups) => groups.flat());
-
       return prisma.event.findMany({
         ...query,
-        where: visibleEventsPrismaQuery(user, future, ancestors),
+        where: visibleEventsPrismaQuery(user, future),
         orderBy: { startsAt: 'desc' },
       });
     },
@@ -195,19 +179,11 @@ builder.queryField('eventsInWeek', (t) =>
         });
       }
 
-      const ancestors = await prisma.group
-        .findMany({
-          where: { familyId: { in: user.groups.map(({ group }) => group.familyId ?? group.id) } },
-          select: { id: true, parentId: true, uid: true },
-        })
-        .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
-        .then((groups) => groups.flat());
-
       return prisma.event.findMany({
         ...query,
         where: {
           ...dateCondition,
-          ...visibleEventsPrismaQuery(user, false, ancestors),
+          ...visibleEventsPrismaQuery(user, false),
         },
         orderBy: { startsAt: 'desc' },
       });

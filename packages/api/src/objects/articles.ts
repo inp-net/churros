@@ -35,6 +35,54 @@ export const ArticleType = builder.prismaNode('Article', {
   }),
 });
 
+export function visibleArticlesPrismaQuery(
+  user: { uid: string; canEditGroups: boolean } | undefined
+) {
+  if (user?.canEditGroups) return {};
+  return {
+    OR: [
+      // Published articles that are
+      {
+        OR: [
+          // Public
+          { visibility: Visibility.Public },
+          // Restricted to the group and the user is a member of the group
+          {
+            visibility: Visibility.Restricted,
+            group: {
+              members: {
+                some: {
+                  member: { uid: user?.uid ?? '' },
+                },
+              },
+            },
+          },
+        ],
+        publishedAt: { lte: new Date() },
+      },
+
+      // Or the user has permission to create articles
+      {
+        group: {
+          members: {
+            some: {
+              member: { uid: user?.uid ?? '' },
+              canEditArticles: true,
+            },
+          },
+        },
+      },
+
+      // Or the user is the author
+      {
+        author: {
+          uid: user?.uid ?? '',
+        },
+      },
+    ],
+  };
+}
+
 builder.queryField('article', (t) =>
   t.prismaField({
     type: ArticleType,

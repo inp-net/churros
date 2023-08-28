@@ -18,6 +18,8 @@ import {
 import type { Context } from '../context.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
+import { visibleArticlesPrismaQuery } from './articles.js';
+import { visibleEventsPrismaQuery } from './events.js';
 
 export function userIsInBureauOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
@@ -63,7 +65,12 @@ export const GroupType = builder.prismaNode('Group', {
     pictureFile: t.exposeString('pictureFile'),
     pictureFileDark: t.exposeString('pictureFileDark'),
     articles: t.relation('articles', {
-      query: { orderBy: { publishedAt: 'desc' } },
+      query(_, { user }) {
+        return {
+          where: visibleArticlesPrismaQuery(user, []),
+          orderBy: { publishedAt: 'desc' },
+        };
+      },
     }),
     links: t.relation('links'),
     members: t.relation('members', {
@@ -82,7 +89,14 @@ export const GroupType = builder.prismaNode('Group', {
     studentAssociation: t.relation('studentAssociation', { nullable: true }),
     parent: t.relation('parent', { nullable: true }),
     selfJoinable: t.exposeBoolean('selfJoinable'),
-    events: t.relation('events'),
+    events: t.relation('events', {
+      query(_, { user }) {
+        return {
+          where: visibleEventsPrismaQuery(user, false, []),
+          orderBy: { startsAt: 'desc' },
+        };
+      },
+    }),
     children: t.relation('children'),
     root: t.relation('familyRoot', { nullable: true }),
     related: t.relation('related'),
