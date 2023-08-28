@@ -207,17 +207,9 @@ builder.queryField('eventsOfGroup', (t) =>
         });
       }
 
-      const ancestors = await prisma.group
-        .findMany({
-          where: { familyId: { in: user.groups.map(({ group }) => group.familyId ?? group.id) } },
-          select: { id: true, parentId: true, uid: true },
-        })
-        .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
-        .then((groups) => groups.flat());
-
       return prisma.event.findMany({
         ...query,
-        where: visibleEventsPrismaQuery(user, false, ancestors),
+        where: visibleEventsPrismaQuery(user, false),
         orderBy: { startsAt: 'desc' },
       });
     },

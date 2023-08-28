@@ -8,6 +8,7 @@ import { placesLeft, userCanSeeTicket } from './tickets.js';
 import { GraphQLError } from 'graphql';
 import { UserType, fullName } from './users.js';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
+import { isPast, isFuture } from 'date-fns';
 
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
   name: 'PaymentMethod',
@@ -363,6 +364,12 @@ builder.mutationField('upsertRegistration', (t) =>
           },
         });
 
+        // Check that the ticket is still open
+        if (ticket.closesAt && isPast(ticket.closesAt)) return false;
+
+        // Check that the ticket is open yet
+        if (ticket.opensAt && isFuture(ticket.opensAt)) return false;
+
         // Check that the user can see the event
         if (!userCanSeeTicket(ticket, userWithContributesTo)) return false;
 
@@ -373,10 +380,6 @@ builder.mutationField('upsertRegistration', (t) =>
         )
           return false;
 
-        // Check that the ticket is still open
-        if (ticket.closesAt && ticket.closesAt.valueOf() < Date.now()) return false;
-
-        // Check that the ticket is not full
         const ticketAndRegistrations = await prisma.ticket.findUnique({
           where: { id: ticketId },
           include: {
@@ -391,6 +394,7 @@ builder.mutationField('upsertRegistration', (t) =>
         );
         if (registrationsByThisAuthor.length > ticket.godsonLimit) return false;
 
+        // Check that the ticket is not full
         return placesLeft(ticketAndRegistrations!) > 0;
       }
 

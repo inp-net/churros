@@ -67,7 +67,7 @@ export const GroupType = builder.prismaNode('Group', {
     articles: t.relation('articles', {
       query(_, { user }) {
         return {
-          where: visibleArticlesPrismaQuery(user, []),
+          where: visibleArticlesPrismaQuery(user),
           orderBy: { publishedAt: 'desc' },
         };
       },
@@ -92,7 +92,7 @@ export const GroupType = builder.prismaNode('Group', {
     events: t.relation('events', {
       query(_, { user }) {
         return {
-          where: visibleEventsPrismaQuery(user, false, []),
+          where: visibleEventsPrismaQuery(user),
           orderBy: { startsAt: 'desc' },
         };
       },
