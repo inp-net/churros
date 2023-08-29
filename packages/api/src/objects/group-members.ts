@@ -60,9 +60,9 @@ builder.mutationField('addGroupMember', (t) =>
           user?.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === groupUid)
       );
     },
-    async resolve(query, _, { groupUid, uid, title }) {
+    async resolve(query, _, { groupUid, uid, title }, { user }) {
       purgeUserSessions(uid);
-      return prisma.groupMember.create({
+      const groupMember = await prisma.groupMember.create({
         ...query,
         data: {
           member: { connect: { uid } },
@@ -70,6 +70,16 @@ builder.mutationField('addGroupMember', (t) =>
           title,
         },
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'group-member',
+          action: 'create',
+          target: groupMember.groupId,
+          message: `${uid} a été ajouté·e à ${groupUid}`,
+          user: { connect: { id: user?.id } },
+        },
+      });
+      return groupMember;
     },
   })
 );
@@ -87,7 +97,7 @@ builder.mutationField('selfJoinGroup', (t) =>
       const group = await prisma.group.findUnique({ where: { uid: groupUid } });
       if (!group?.selfJoinable) throw new Error('This group is not self-joinable.');
       purgeUserSessions(uid);
-      return prisma.groupMember.create({
+      const groupMember = await prisma.groupMember.create({
         ...query,
         data: {
           member: { connect: { uid } },
@@ -95,6 +105,16 @@ builder.mutationField('selfJoinGroup', (t) =>
           title: 'Membre', // don't allow people to name themselves "Président", for example.
         },
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'group-member',
+          action: 'create',
+          target: groupMember.groupId,
+          message: `${uid} a rejoins ${groupUid}`,
+          user: { connect: { id: uid } },
+        },
+      });
+      return groupMember;
     },
   })
 );
@@ -146,6 +166,15 @@ builder.mutationField('upsertGroupMember', (t) =>
           where: { group: { id: groupId }, president: true },
           data: { president: false },
         });
+        await prisma.logEntry.create({
+          data: {
+            area: 'group-member',
+            action: 'update',
+            target: groupId,
+            message: `${uid} a été nommé·e président·e de ${groupId}`,
+            user: { connect: { id: memberId } },
+          },
+        });
       }
 
       const data = {
@@ -160,12 +189,22 @@ builder.mutationField('upsertGroupMember', (t) =>
         vicePresident,
       };
 
-      return prisma.groupMember.upsert({
+      const groupMember = await prisma.groupMember.upsert({
         ...query,
         where: { groupId_memberId: { groupId, memberId } },
         create: data,
         update: data,
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'group-member',
+          action: 'update',
+          target: groupId,
+          message: `${uid} a été mis·e à jour dans ${groupId}`,
+          user: { connect: { id: memberId } },
+        },
+      });
+      return groupMember;
     },
   })
 );
@@ -190,6 +229,15 @@ builder.mutationField('deleteGroupMember', (t) =>
       });
       purgeUserSessions(uid);
       await prisma.groupMember.delete({ where: { groupId_memberId: { groupId, memberId } } });
+      await prisma.logEntry.create({
+        data: {
+          area: 'group-member',
+          action: 'delete',
+          target: groupId,
+          message: `${uid} a été supprimé·e de ${groupId}`,
+          user: { connect: { id: memberId } },
+        },
+      });
       return true;
     },
   })
