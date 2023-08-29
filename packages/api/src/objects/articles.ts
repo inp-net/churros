@@ -277,8 +277,18 @@ builder.mutationField('deleteArticle', (t) =>
         )
       );
     },
-    async resolve(_, { id }) {
+    async resolve(_, { id }, { user }) {
       await prisma.article.delete({ where: { id } });
+
+      await prisma.logEntry.create({
+        data: {
+          area: 'article',
+          action: 'delete',
+          target: id,
+          message: `Article ${id ?? ''} deleted`,
+          user: { connect: { id: user?.id ?? '' } },
+        },
+      });
       return true;
     },
   })
@@ -327,7 +337,16 @@ builder.mutationField('updateArticlePicture', (t) =>
           )
       );
     },
-    async resolve(_, { id, file }) {
+    async resolve(_, { id, file }, { user }) {
+      await prisma.logEntry.create({
+        data: {
+          area: 'article',
+          action: 'update',
+          target: id,
+          message: `Article ${id ?? ''} picture updated`,
+          user: { connect: { id: user?.id ?? '' } },
+        },
+      });
       return updatePicture({
         resource: 'article',
         folder: 'articles',
@@ -360,7 +379,7 @@ builder.mutationField('deleteArticlePicture', (t) =>
           )
       );
     },
-    async resolve(_, { id }) {
+    async resolve(_, { id }, { user }) {
       const { pictureFile } = await prisma.article.findUniqueOrThrow({
         where: { id },
         select: { pictureFile: true },
@@ -370,6 +389,15 @@ builder.mutationField('deleteArticlePicture', (t) =>
 
       if (pictureFile) await unlink(join(root, pictureFile));
       await prisma.article.update({ where: { id }, data: { pictureFile: '' } });
+      await prisma.logEntry.create({
+        data: {
+          area: 'article',
+          action: 'delete',
+          target: id,
+          message: `Article ${id ?? ''} picture deleted`,
+          user: { connect: { id: user?.id ?? '' } },
+        },
+      });
       return true;
     },
   })
