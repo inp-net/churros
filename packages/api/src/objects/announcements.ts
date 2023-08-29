@@ -103,12 +103,24 @@ builder.mutationField('upsertAnnouncement', (t) =>
         warning,
         by: { connect: { uid: user?.uid } },
       };
-      return prisma.announcement.upsert({
+
+      const announcement = await prisma.announcement.upsert({
         ...query,
         where: { id: id ?? '' },
         create: upsertData,
         update: upsertData,
       });
+
+      await prisma.logEntry.create({
+        data: {
+          area: 'announcements',
+          action: id ? 'update' : 'create',
+          target: announcement.id,
+          message: `Announcement ${announcement.id} ${id ? 'updated' : 'created'}: ${title}`,
+          user: { connect: { id: user?.id ?? '' } },
+        },
+      });
+      return announcement;
     },
   })
 );
@@ -122,9 +134,18 @@ builder.mutationField('deleteAnnouncement', (t) =>
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin);
     },
-    async resolve(_, { id }) {
+    async resolve(_, { id }, { user }) {
       await prisma.announcement.delete({
         where: { id },
+      });
+      await prisma.logEntry.create({
+        data: {
+          area: 'announcements',
+          action: 'delete',
+          target: id,
+          message: `Announcement ${id} deleted`,
+          user: { connect: { id: user?.id ?? '' } },
+        },
       });
       return true;
     },
