@@ -227,9 +227,18 @@ builder.mutationField('deleteEvent', (t) =>
         user?.admin || user?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit)
       );
     },
-    async resolve(_, { id }, {}) {
+    async resolve(_, { id }, { user }) {
       await prisma.event.delete({
         where: { id },
+      });
+      await prisma.logEntry.create({
+        data: {
+          area: 'event',
+          action: 'delete',
+          target: id,
+          message: `Deleted event ${id}`,
+          user: { connect: { id: user?.id ?? '' } },
+        },
       });
       return true;
     },
@@ -382,12 +391,21 @@ builder.mutationField('upsertEvent', (t) =>
               : {},
         },
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'event',
+          action: id ? 'update' : 'create',
+          target: event.id,
+          message: `${id ? 'Updated' : 'Created'} event ${event.id}`,
+          user: { connect: { id: user?.id ?? '' } },
+        },
+      });
       // Update the existing tickets
       await Promise.all(
         tickets
           .filter((t) => Boolean(t.id))
-          .map(async (ticket) =>
-            prisma.ticket.update({
+          .map(async (ticket) => {
+            const ticketUpdated = await prisma.ticket.update({
               where: { id: ticket.id! },
               data: {
                 ...ticket,
@@ -411,9 +429,20 @@ builder.mutationField('upsertEvent', (t) =>
                   set: connectFromListOfUids(ticket.autojoinGroups),
                 },
               },
-            })
-          )
+            });
+            await prisma.logEntry.create({
+              data: {
+                area: 'ticket',
+                action: 'update',
+                target: ticket.id!,
+                message: `Updated ticket ${ticket.id!}`,
+                user: { connect: { id: user?.id ?? '' } },
+              },
+            });
+            return ticketUpdated;
+          })
       );
+
       // Create the new tickets
       for (const [i, ticket] of Object.entries(tickets.filter((t) => !t.id))) {
         const newTicket = await prisma.ticket.create({
@@ -429,6 +458,16 @@ builder.mutationField('upsertEvent', (t) =>
             autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
             eventId: event.id,
             uid: await createTicketUid(ticket.name),
+          },
+        });
+
+        await prisma.logEntry.create({
+          data: {
+            area: 'ticket',
+            action: 'create',
+            target: newTicket.id,
+            message: `Created ticket ${newTicket.id}`,
+            user: { connect: { id: user?.id ?? '' } },
           },
         });
 
@@ -454,6 +493,16 @@ builder.mutationField('upsertEvent', (t) =>
             },
           });
 
+          await prisma.logEntry.create({
+            data: {
+              area: 'ticket',
+              action: 'create',
+              target: newTicket.id,
+              message: `Created ticket ${newTicket.id}`,
+              user: { connect: { id: user?.id ?? '' } },
+            },
+          });
+
           ticketGroups[Number.parseInt(i, 10)]!.tickets[Number.parseInt(j, 10)] = {
             ...ticket,
             id: newTicket.id,
@@ -465,8 +514,8 @@ builder.mutationField('upsertEvent', (t) =>
       await Promise.all(
         ticketGroups
           .filter((t) => Boolean(t.id))
-          .map(async (ticketGroup) =>
-            prisma.ticketGroup.update({
+          .map(async (ticketGroup) => {
+            const ticketGroupUptaded = await prisma.ticketGroup.update({
               where: { id: ticketGroup.id! },
               data: {
                 capacity: ticketGroup.capacity,
@@ -475,8 +524,18 @@ builder.mutationField('upsertEvent', (t) =>
                   set: ticketGroup.tickets.map(({ id }) => ({ id: id! })),
                 },
               },
-            })
-          )
+            });
+            await prisma.logEntry.create({
+              data: {
+                area: 'ticket-group',
+                action: 'update',
+                target: ticketGroup.id!,
+                message: `Updated ticket group ${ticketGroup.id!}`,
+                user: { connect: { id: user?.id ?? '' } },
+              },
+            });
+            return ticketGroupUptaded;
+          })
       );
 
       // Create the new ticket groups
@@ -489,6 +548,15 @@ builder.mutationField('upsertEvent', (t) =>
             tickets: {
               connect: ticketGroup.tickets.map(({ id }) => ({ id: id! })),
             },
+          },
+        });
+        await prisma.logEntry.create({
+          data: {
+            area: 'ticket-group',
+            action: 'create',
+            target: newTicketGroup.id,
+            message: `Created ticket group ${newTicketGroup.id}`,
+            user: { connect: { id: user?.id ?? '' } },
           },
         });
         ticketGroups[Number.parseInt(i, 10)] = { ...ticketGroup, id: newTicketGroup.id };
