@@ -42,7 +42,7 @@ builder.mutationField('upsertLydiaAccount', (t) =>
       Boolean(
         user?.admin || userIsPresidentOf(user, groupUid) || userIsTreasurerOf(user, groupUid)
       ),
-    async resolve(query, _, { id, groupUid, name, privateToken, vendorToken }) {
+    async resolve(query, _, { id, groupUid, name, privateToken, vendorToken }, { user }) {
       await checkLydiaAccount(vendorToken, privateToken);
       const data = {
         name,
@@ -50,7 +50,7 @@ builder.mutationField('upsertLydiaAccount', (t) =>
         privateToken,
         vendorToken,
       };
-      return prisma.lydiaAccount.upsert({
+      const lydiaAccount = await prisma.lydiaAccount.upsert({
         ...query,
         create: data,
         update: data,
@@ -58,6 +58,16 @@ builder.mutationField('upsertLydiaAccount', (t) =>
           id: id ?? '',
         },
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'lydiaAccounts',
+          action: 'upsert',
+          target: lydiaAccount.id,
+          message: `Lydia account ${id ? 'updated' : 'created'}: ${name}`,
+          user: { connect: { id: user?.id ?? '' } },
+        },
+      });
+      return lydiaAccount;
     },
   })
 );
