@@ -79,6 +79,8 @@
     flex-direction: column;
     justify-content: center;
     width: 100%;
+    background-position: center;
+    background-size: cover;
 
     &.has-picture {
       padding: var(--horizontal-padding, calc(clamp(2rem, 5vw, 6rem))) 1rem;
@@ -87,8 +89,6 @@
     &:not(.has-picture) {
       padding: 2rem 1rem;
     }
-
-    background-size: cover;
 
     --alpha: 0.6;
 
