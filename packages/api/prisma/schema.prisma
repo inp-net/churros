@@ -460,6 +460,8 @@ model LogEntry {
   happenedAt DateTime @default(now())
   userId     String?
   area       String   @db.VarChar(255) // billeterie, gestion clubs, etc. à typer, mais pas dans la DB (pour être plus flexible)
+  action     String   @db.VarChar(255)
+  target     String?  @db.VarChar(255)
   message    String   @db.Text
 
   user User? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)

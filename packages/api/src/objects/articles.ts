@@ -235,6 +235,15 @@ builder.mutationField('upsertArticle', (t) =>
           event: eventId ? { connect: { id: eventId } } : { disconnect: true },
         },
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'article',
+          action: id ? 'update' : 'create',
+          target: result.id,
+          message: `Article ${id ? 'updated' : 'created'}`,
+          user: { connect: { id: authorId } },
+        },
+      });
       await scheduleNewArticleNotification({
         ...result,
         // Only post the notification immediately if the article was not already published before.
