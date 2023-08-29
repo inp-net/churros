@@ -231,6 +231,7 @@ builder.mutationField('upsertGroup', (t) =>
           )
       );
     },
+    // eslint-disable-next-line complexity
     async resolve(
       query,
       _,
@@ -249,7 +250,8 @@ builder.mutationField('upsertGroup', (t) =>
         longDescription,
         links,
         related,
-      }
+      },
+      { user }
     ) {
       // --- First, we update the group's children's familyId according to the new parent of this group. ---
       // We have 2 possible cases for updating the parent: either it is:
@@ -313,7 +315,7 @@ builder.mutationField('upsertGroup', (t) =>
         longDescription,
       };
 
-      return prisma.group.upsert({
+      const group = await prisma.group.upsert({
         ...query,
         where: { uid: uid ?? '' },
         create: {
@@ -345,6 +347,16 @@ builder.mutationField('upsertGroup', (t) =>
             : { disconnect: true },
         },
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'group',
+          action: uid ? 'update' : 'create',
+          target: group.uid,
+          message: `${uid ? 'Mise à jour' : 'Création'} de ${group.uid}`,
+          user: { connect: { id: user?.id } },
+        },
+      });
+      return group;
     },
   })
 );
@@ -359,8 +371,17 @@ builder.mutationField('deleteGroup', (t) =>
         user?.canEditGroups ||
           user?.groups.some(({ group, president }) => president && group.uid === uid)
       ),
-    async resolve(_, { uid }) {
+    async resolve(_, { uid }, { user }) {
       await prisma.group.delete({ where: { uid } });
+      await prisma.logEntry.create({
+        data: {
+          area: 'group',
+          action: 'delete',
+          target: uid,
+          message: `${uid} a été supprimé`,
+          user: { connect: { id: user?.id } },
+        },
+      });
       return true;
     },
   })
@@ -377,8 +398,8 @@ builder.mutationField('updateGroupPicture', (t) =>
     },
     authScopes: (_, { uid }, { user }) =>
       Boolean(user?.canEditGroups || user?.groups.some(({ group }) => group.uid === uid)),
-    async resolve(_, { uid, file, dark }) {
-      return updatePicture({
+    async resolve(_, { uid, file, dark }, { user }) {
+      const picture = updatePicture({
         resource: 'group',
         folder: dark ? 'groups/dark' : 'groups',
         extension: 'png',
@@ -386,6 +407,16 @@ builder.mutationField('updateGroupPicture', (t) =>
         identifier: uid,
         propertyName: dark ? 'pictureFileDark' : 'pictureFile',
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'group',
+          action: 'update',
+          target: uid,
+          message: `Mise à jour de la photo ${dark ? 'sombre' : 'claire'}`,
+          user: { connect: { id: user?.id } },
+        },
+      });
+      return picture;
     },
   })
 );
@@ -396,7 +427,7 @@ builder.mutationField('deleteGroupPicture', (t) =>
     type: 'Boolean',
     args: { uid: t.arg.string(), dark: t.arg.boolean() },
     authScopes: (_, { uid }, { user }) => Boolean(user?.canEditGroups || uid === user?.uid),
-    async resolve(_, { uid, dark }) {
+    async resolve(_, { uid, dark }, { user }) {
       const { pictureFile } = await prisma.group.findUniqueOrThrow({
         where: { uid },
         select: { pictureFile: true },
@@ -409,6 +440,15 @@ builder.mutationField('deleteGroupPicture', (t) =>
       await prisma.group.update({
         where: { uid },
         data: { [dark ? 'pictureFileDark' : 'pictureFile']: '' },
+      });
+      await prisma.logEntry.create({
+        data: {
+          area: 'group',
+          action: 'update',
+          target: uid,
+          message: `Suppression de la photo ${dark ? 'sombre' : 'claire'}`,
+          user: { connect: { id: user?.id } },
+        },
       });
       return true;
     },
