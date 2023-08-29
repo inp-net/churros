@@ -268,6 +268,10 @@
     border: none;
   }
 
+  .inputs input:first-child {
+    border-bottom: var(--border-block) solid var(--muted-border);
+  }
+
   .new {
     display: flex;
     border: var(--border-block) solid var(--border);
