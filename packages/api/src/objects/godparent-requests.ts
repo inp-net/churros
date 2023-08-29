@@ -97,12 +97,22 @@ builder.mutationField('upsertGodparentRequest', (t) =>
         });
       }
 
-      return prisma.godparentRequest.upsert({
+      const godParentRequest = await prisma.godparentRequest.upsert({
         ...query,
         where: { id: id ?? '' },
         create: upsertData,
         update: upsertData,
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'godparent-request',
+          action: id ? 'update' : 'create',
+          target: godParentRequest.id,
+          message: `Godparent request ${id ? 'updated' : 'created'}`,
+          user: { connect: { id: user.id } },
+        },
+      });
+      return godParentRequest;
     },
   })
 );
@@ -168,6 +178,15 @@ builder.mutationField('deleteGodparentRequest', (t) =>
         });
       }
 
+      await prisma.logEntry.create({
+        data: {
+          area: 'godparent-request',
+          action: 'delete',
+          target: request.id,
+          message: `Godparent request ${accept ? 'accepted' : 'rejected'}`,
+          user: { connect: { id: request.godparentId } },
+        },
+      });
       return request;
     },
   })
