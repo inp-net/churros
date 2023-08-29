@@ -80,7 +80,7 @@ builder.mutationField('upsertBarWeek', (t) =>
       const foyGroupsUids = process.env['FOY_GROUPS']?.split(',') ?? [];
       return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
     },
-    async resolve(query, _, { id, startsAt, endsAt, description, groupsUids }) {
+    async resolve(query, _, { id, startsAt, endsAt, description, groupsUids }, { user }) {
       // Check if ends at date is after starts at date
       if (endsAt < startsAt) throw new GraphQLError('Bar week ends before it starts.');
       // Check for overlaps in the bar week dates
@@ -101,7 +101,7 @@ builder.mutationField('upsertBarWeek', (t) =>
         description,
         uid: slug(`${groupsUids.join('-')}-${startsAt.getFullYear()}-${startsAt.getMonth() + 1}`),
       };
-      return prisma.barWeek.upsert({
+      const barWeek = await prisma.barWeek.upsert({
         ...query,
         where: { id: id ?? '' },
         create: {
@@ -117,6 +117,16 @@ builder.mutationField('upsertBarWeek', (t) =>
           },
         },
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'bar-week',
+          action: 'upsert',
+          target: barWeek.id,
+          message: `Bar week ${barWeek.id} upserted: ${barWeek.description}`,
+          user: { connect: { id: user?.id ?? '' } },
+        },
+      });
+      return barWeek;
     },
   })
 );
@@ -130,8 +140,17 @@ builder.mutationField('deleteBarWeek', (t) =>
       const foyGroupsUids = process.env['FOY_GROUPS']?.split(',') ?? [];
       return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
     },
-    async resolve(_, { id }) {
+    async resolve(_, { id }, { user }) {
       await prisma.barWeek.delete({ where: { id } });
+      await prisma.logEntry.create({
+        data: {
+          area: 'bar-week',
+          action: 'delete',
+          target: id,
+          message: `Bar week ${id} deleted`,
+          user: { connect: { id: user?.id ?? '' } },
+        },
+      });
       return true;
     },
   })
