@@ -1,6 +1,9 @@
 <script lang="ts">
+  import { tooltip } from '$lib/tooltip';
+
   export let type: 'button' | 'reset' | 'submit' = 'button';
   export let darkShadow = false;
+  export let help = '';
   export let href = '';
 </script>
 
@@ -8,10 +11,12 @@
   this={href ? 'a' : 'button'}
   role="button"
   tabindex="0"
+  title={help}
   {...$$restProps}
   class:dark-shadow={darkShadow}
   {type}
   {href}
+  use:tooltip={help}
   class="button-ghost {$$restProps.class}"
   on:click><slot /></svelte:element
 >

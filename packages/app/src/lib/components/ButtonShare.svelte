@@ -8,6 +8,7 @@
 </script>
 
 <GhostButton
+  help="Partager"
   on:click={async () => {
     try {
       await navigator.share({

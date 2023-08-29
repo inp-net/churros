@@ -35,7 +35,7 @@
       {title}
       <ButtonShare />
       {#if canEditArticles}
-        <ButtonGhost href="./edit"><IconGear /></ButtonGhost>
+        <ButtonGhost help="Modifier le post" href="./edit"><IconGear /></ButtonGhost>
       {/if}
     </h1>
     <p class="published-at">

@@ -138,7 +138,7 @@
       style:width={boundingBox.width}
       style:height={boundingBox.height}
       style:left={boundingBox.x}
-      style:tyop={boundingBox.y}
+      style:top={boundingBox.y}
     />
   {/if}
   <div id="reader" />
@@ -216,6 +216,7 @@
     >
       <section class="camera-settings-toggle" class:shown={showCameraSettings}>
         <ButtonGhost
+          help={(showCameraSettings ? 'Cacher' : 'Afficher') + ' les paramètres caméra'}
           on:click={() => {
             showCameraSettings = !showCameraSettings;
           }}
@@ -320,10 +321,10 @@
     text-align: center;
   }
 
-  .bounding-box {
-    border: calc(var(--border-block) * 2) solid var(--success-border);
-    border-radius: var(--radius-block);
-  }
+  // .bounding-box {
+  //   border: calc(var(--border-block) * 2) solid var(--success-border);
+  //   border-radius: var(--radius-block);
+  // }
 
   #reader {
     border: none !important;

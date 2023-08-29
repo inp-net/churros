@@ -22,6 +22,7 @@
   import { me } from '$lib/session';
   import { page } from '$app/stores';
   import { closestMonday } from '$lib/dates';
+  import { tooltip } from '$lib/tooltip';
 
   export let current: 'home' | 'search' | 'events' | 'more';
   let flyoutOpen = false;
@@ -35,7 +36,12 @@
   class:flyout-open={flyoutOpen}
   class:transparent={$page.url.pathname.endsWith('/scan/') && !flyoutOpen}
 >
-  <a href="/" class:current={!flyoutOpen && current === 'home'} class:disabled={flyoutOpen}>
+  <a
+    href="/"
+    class:current={!flyoutOpen && current === 'home'}
+    class:disabled={flyoutOpen}
+    use:tooltip={'Mon feed'}
+  >
     {#if current === 'home'}
       <IconHome />
     {:else}
@@ -43,7 +49,12 @@
     {/if}
   </a>
 
-  <a href="/search" class:current={!flyoutOpen && current === 'search'} class:disabled={flyoutOpen}>
+  <a
+    href="/search"
+    class:current={!flyoutOpen && current === 'search'}
+    class:disabled={flyoutOpen}
+    use:tooltip={'Rechercher'}
+  >
     {#if current === 'search'}
       <IconSearch />
     {:else}
@@ -56,6 +67,7 @@
     on:click={() => {
       flyoutOpen = !flyoutOpen;
     }}
+    use:tooltip={'Créer…'}
   >
     {#if flyoutOpen}
       <IconAddCircle />
@@ -68,6 +80,7 @@
     href="/events/week/{format(closestMonday(new Date()), 'yyyy-MM-dd')}"
     class:current={!flyoutOpen && current === 'events'}
     class:disabled={flyoutOpen}
+    use:tooltip={'Événements'}
   >
     {#if current === 'events'}
       <IconCalendar />
@@ -76,7 +89,12 @@
     {/if}
   </a>
 
-  <a href="/more" class:current={!flyoutOpen && current === 'more'} class:disabled={flyoutOpen}>
+  <a
+    href="/more"
+    class:current={!flyoutOpen && current === 'more'}
+    class:disabled={flyoutOpen}
+    use:tooltip={'Les autre services'}
+  >
     {#if current === 'more'}
       <IconDotsCircle />
     {:else}
