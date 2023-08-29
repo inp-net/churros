@@ -1,6 +1,6 @@
 import { builder } from '../builder.js';
 import { startOfWeek, endOfWeek } from 'date-fns';
-import { createUid as createTicketUid } from './tickets.js';
+import { TicketType, createUid as createTicketUid, userCanSeeTicket } from './tickets.js';
 import {
   type Event as EventPrisma,
   Visibility as VisibilityPrisma,
@@ -93,7 +93,67 @@ export const EventType = builder.prismaNode('Event', {
     location: t.exposeString('location'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     managers: t.relation('managers'),
-    tickets: t.relation('tickets'),
+    tickets: t.field({
+      type: [TicketType],
+      async resolve({ id }, _, { user }) {
+        const allTickets = await prisma.ticket.findMany({
+          where: { event: { id } },
+          include: {
+            openToGroups: {
+              include: {
+                school: true,
+                studentAssociation: true,
+              },
+            },
+            openToSchools: true,
+            event: {
+              include: {
+                group: {
+                  include: {
+                    studentAssociation: true,
+                    school: true,
+                  },
+                },
+              },
+            },
+            openToMajors: true,
+            group: true,
+          },
+        });
+        const userWithContributesTo = user
+          ? await prisma.user.findUniqueOrThrow({
+              where: { id: user.id },
+              include: {
+                contributions: {
+                  include: {
+                    studentAssociation: {
+                      include: {
+                        school: true,
+                      },
+                    },
+                  },
+                },
+                groups: {
+                  include: {
+                    group: true,
+                  },
+                },
+                managedEvents: {
+                  include: {
+                    event: true,
+                  },
+                },
+                major: {
+                  include: {
+                    schools: true,
+                  },
+                },
+              },
+            })
+          : undefined;
+        return allTickets.filter((ticket) => userCanSeeTicket(ticket, userWithContributesTo));
+      },
+    }),
     ticketGroups: t.relation('ticketGroups'),
     articles: t.relation('articles'),
     group: t.relation('group'),
