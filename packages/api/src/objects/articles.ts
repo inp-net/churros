@@ -286,7 +286,7 @@ builder.mutationField('deleteArticle', (t) =>
           area: 'article',
           action: 'delete',
           target: id,
-          message: `Article ${id ?? ''} deleted`,
+          message: `Article ${id} deleted`,
           user: { connect: { id: user?.id ?? '' } },
         },
       });
@@ -344,7 +344,7 @@ builder.mutationField('updateArticlePicture', (t) =>
           area: 'article',
           action: 'update',
           target: id,
-          message: `Article ${id ?? ''} picture updated`,
+          message: `Article ${id} picture updated`,
           user: { connect: { id: user?.id ?? '' } },
         },
       });
@@ -395,7 +395,7 @@ builder.mutationField('deleteArticlePicture', (t) =>
           area: 'article',
           action: 'delete',
           target: id,
-          message: `Article ${id ?? ''} picture deleted`,
+          message: `Article ${id} picture deleted`,
           user: { connect: { id: user?.id ?? '' } },
         },
       });
