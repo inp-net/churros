@@ -27,6 +27,7 @@
   import Fuse from 'fuse.js';
   import { me } from '$lib/session';
   import AvatarPerson from './AvatarPerson.svelte';
+  import InputLinks from './InputLinks.svelte';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
@@ -339,6 +340,7 @@
       options={DISPLAY_VISIBILITIES}
     />
     <InputLongText rich label="Description" bind:value={event.description} />
+    <InputLinks label="Liens" bind:value={event.links} />
     <div class="side-by-side">
       <DateInput required label="Début" time bind:value={event.startsAt} />
       <DateInput required label="Fin" time bind:value={event.endsAt} />
