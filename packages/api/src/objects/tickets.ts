@@ -207,6 +207,7 @@ export function userCanSeeTicket(
     openToContributors: boolean | null;
   },
   user?: {
+    admin: boolean;
     groups: Array<{ group: { uid: string } }>;
     managedEvents: Array<{ event: { id: string } }>;
     graduationYear: number;
@@ -214,6 +215,9 @@ export function userCanSeeTicket(
     contributions: Array<{ studentAssociation: { id: string; school: { uid: string } } }>;
   }
 ): boolean {
+  // Admins can see everything
+  if (user?.admin) return true;
+
   // Managers can see everything
   if (user?.managedEvents.some(({ event: { id } }) => id === event.id)) return true;
 
