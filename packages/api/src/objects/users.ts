@@ -434,7 +434,7 @@ builder.mutationField('updateUser', (t) =>
         });
       }
 
-      return prisma.user.update({
+      const userUpdated = await prisma.user.update({
         ...query,
         where: { uid },
         data: {
@@ -450,6 +450,16 @@ builder.mutationField('updateUser', (t) =>
           godparent: godparentUid ? { connect: { uid: godparentUid } } : { disconnect: true },
         },
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'user',
+          action: 'update',
+          target: userUpdated.id,
+          message: `Updated user ${userUpdated.uid}`,
+          user: { connect: { id: user.id } },
+        },
+      });
+      return userUpdated;
     },
   })
 );
@@ -465,11 +475,24 @@ builder.mutationField('updateUserPermissions', (t) =>
     authScopes: (_, {}, { user }) => Boolean(user?.admin),
     async resolve(query, _, { uid, canEditGroups, canEditUsers }) {
       purgeUserSessions(uid);
-      return prisma.user.update({
+      const user = await prisma.user.update({
         ...query,
         where: { uid },
         data: { canEditGroups, canEditUsers },
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'permission',
+          action: 'update',
+          target: user.id,
+          message: `Updated user ${user.uid} permissions: ${JSON.stringify({
+            canEditGroups,
+            canEditUsers,
+          })}`,
+          user: { connect: { id: user.id } },
+        },
+      });
+      return user;
     },
   })
 );
@@ -482,7 +505,16 @@ builder.mutationField('updateUserPicture', (t) =>
       file: t.arg({ type: FileScalar }),
     },
     authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
-    async resolve(_, { uid, file }) {
+    async resolve(_, { uid, file }, { user }) {
+      await prisma.logEntry.create({
+        data: {
+          area: 'user',
+          action: 'update',
+          target: user?.id ?? '',
+          message: `Updated user ${uid} picture`,
+          user: { connect: { id: user?.id ?? '' } },
+        },
+      });
       return updatePicture({
         resource: 'user',
         folder: 'users',
@@ -512,6 +544,15 @@ builder.mutationField('deleteUserPicture', (t) =>
       await prisma.user.update({
         where: { uid },
         data: { pictureFile: '' },
+      });
+      await prisma.logEntry.create({
+        data: {
+          area: 'user',
+          action: 'update',
+          target: uid,
+          message: `Deleted user ${uid} picture`,
+          user: { connect: { id: uid } },
+        },
       });
       return true;
     },
@@ -592,6 +633,15 @@ builder.mutationField('deleteGodchild', (t) =>
         },
         data: {
           godparent: { disconnect: true },
+        },
+      });
+      await prisma.logEntry.create({
+        data: {
+          area: 'godparent',
+          action: 'delete',
+          target: godchild.id,
+          message: `Deleted godchild ${godchild.uid}`,
+          user: { connect: { id: parent.id } },
         },
       });
       return true;
