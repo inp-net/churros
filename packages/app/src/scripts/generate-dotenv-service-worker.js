@@ -13,7 +13,7 @@ const filepath = path.join(here, '../service-worker.ts');
 const literal = JSON.stringify(
   process.env.NODE_ENV === 'develoment'
     ? 'http://localhost:4000/storage'
-    : 'https://centraverse.k8s.inpt.fr/storage'
+    : 'https://churros.inpt.fr/storage'
 );
 console.log(`Injecting PUBLIC_STORAGE_URL=${literal} into ${filepath}`);
 
