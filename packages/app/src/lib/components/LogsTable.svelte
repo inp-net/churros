@@ -98,6 +98,10 @@
     background: var(--muted-bg);
   }
 
+  .details td {
+    overflow-wrap: anywhere;
+  }
+
   table:not(.compact) td {
     border-radius: var(--radius-inline);
   }
