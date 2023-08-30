@@ -3,7 +3,7 @@ import dichotomid from 'dichotomid';
 import { nanoid } from 'nanoid';
 import { createTransport } from 'nodemailer';
 import { prisma } from '../prisma.js';
-import { findSchoolUser } from './ldap.js';
+import { findSchoolUser } from './ldap-school.js';
 import slug from 'slug';
 
 const transporter = createTransport(process.env.SMTP_URL);
