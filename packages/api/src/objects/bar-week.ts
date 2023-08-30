@@ -120,7 +120,7 @@ builder.mutationField('upsertBarWeek', (t) =>
       await prisma.logEntry.create({
         data: {
           area: 'bar-week',
-          action: 'upsert',
+          action: id ? 'update' : 'create',
           target: barWeek.id,
           message: `Bar week ${barWeek.id} upserted: ${barWeek.description}`,
           user: { connect: { id: user?.id ?? '' } },

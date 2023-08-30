@@ -61,7 +61,7 @@ builder.mutationField('upsertLydiaAccount', (t) =>
       await prisma.logEntry.create({
         data: {
           area: 'lydiaAccounts',
-          action: 'upsert',
+          action: id ? 'update' : 'create',
           target: lydiaAccount.id,
           message: `Lydia account ${id ? 'updated' : 'created'}: ${name}`,
           user: { connect: { id: user?.id ?? '' } },
