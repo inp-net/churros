@@ -10,5 +10,5 @@ export const load: PageLoad = async ({ parent, url }) => {
   const memberWithPermissions = me.groups.filter((m) => canCreateArticle(m, me));
 
   if (memberWithPermissions.length === 1)
-    throw redirect(301, `/groups/${memberWithPermissions[0].group.uid}/write`);
+    throw redirect(301, `/articles/${memberWithPermissions[0].group.uid}/create`);
 };
