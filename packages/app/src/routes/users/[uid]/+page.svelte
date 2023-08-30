@@ -27,6 +27,7 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { zeus } from '$lib/zeus';
   import InputText from '$lib/components/InputText.svelte';
+  import { tooltip } from '$lib/tooltip';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
@@ -174,7 +175,7 @@
       </h1>
       <p class="major">
         {yearTier(user.graduationYear)}A ({user.graduationYear}) ·
-        <abbr title={user.major.name}>{user.major.shortName}</abbr>
+        <abbr title use:tooltip={user.major.name}>{user.major.shortName}</abbr>
         · {user.major.schools.map(({ name }) => name).join(', ')}
       </p>
       <ul class="social-links nobullet">

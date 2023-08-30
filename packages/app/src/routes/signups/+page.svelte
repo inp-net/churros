@@ -5,6 +5,7 @@
   import IconTrash from '~icons/mdi/delete-outline';
   import { zeus } from '$lib/zeus';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { tooltip } from '$lib/tooltip';
 
   export let data: PageData;
 
@@ -47,7 +48,9 @@
   {#each userCandidates as { email, fullName, major, graduationYear }}
     <li>
       <strong>{fullName}</strong>
-      <span>{email} · <abbr title={major.name}>{major.shortName}</abbr> · {graduationYear}</span>
+      <span
+        >{email} · <abbr title use:tooltip={major.name}>{major.shortName}</abbr> · {graduationYear}</span
+      >
       <div class="actions">
         <ButtonSecondary icon={IconEditPen2Line} href="./edit/{encodeURIComponent(email)}"
           >Modifier</ButtonSecondary
