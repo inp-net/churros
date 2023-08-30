@@ -40,7 +40,7 @@
           <td>{formatDateTime(log.happenedAt)}</td>
           <td>{log.area}</td>
           <td>{log.action}</td>
-          <td class="code"><a href="/articles/{log.target}">{log.target}</a></td>
+          <td class="code">{log.target}</td>
           <td><a href="/users/{log.user?.uid}">{log.user?.fullName}</a></td>
         </tr>
         {#if openedLogId === log.id}
@@ -110,8 +110,7 @@
     text-align: center;
   }
 
-  td.code,
-  td.code > * {
+  td.code {
     font-family: var(--font-mono);
   }
 
