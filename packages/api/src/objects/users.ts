@@ -372,6 +372,8 @@ builder.mutationField('updateUser', (t) =>
     ) {
       if (!user) throw new GraphQLError('Not logged in');
 
+      const targetUser = await prisma.user.findUniqueOrThrow({ where: { uid } });
+
       if (phone) {
         const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
         if (isValid) {
@@ -407,14 +409,14 @@ builder.mutationField('updateUser', (t) =>
           },
         });
         // Send a validation email
-        await requestEmailChange(email, user.id);
+        await requestEmailChange(email, targetUser.id);
       }
 
       if ((changingContributesTo || changingGraduationYear) && !(user.canEditUsers || user.admin))
         throw new GraphQLError('Not authorized to change graduation year or contributions');
 
       purgeUserSessions(uid);
-      if (contributesTo) {
+      if (changingContributesTo && contributesTo) {
         await prisma.contribution.deleteMany({
           where: {
             studentAssociationId: {
@@ -425,7 +427,7 @@ builder.mutationField('updateUser', (t) =>
         await prisma.contribution.createMany({
           data: contributesTo.map((id) => ({
             studentAssociationId: id,
-            userId: user.id,
+            userId: targetUser.id,
             paid: true,
           })),
           skipDuplicates: true,
