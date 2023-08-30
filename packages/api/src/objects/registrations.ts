@@ -473,7 +473,7 @@ builder.mutationField('upsertRegistration', (t) =>
         }
       }
 
-      return prisma.registration.upsert({
+      const registration = await prisma.registration.upsert({
         ...query,
         where: { id: id ?? '' },
         update: {
@@ -491,6 +491,16 @@ builder.mutationField('upsertRegistration', (t) =>
           paid: ticket.price === 0,
         },
       });
+      await prisma.logEntry.create({
+        data: {
+          area: 'registration',
+          action: id ? 'update' : 'create',
+          target: registration.id,
+          message: `Registration ${id ? 'updated' : 'created'}: ${ticket.event.title}`,
+          user: { connect: { id: user.id } },
+        },
+      });
+      return registration;
     },
   })
 );
@@ -580,12 +590,19 @@ builder.mutationField('paidRegistration', (t) =>
         phone,
         regId
       );
-
+      await prisma.logEntry.create({
+        data: {
+          area: 'registration',
+          action: 'update',
+          target: regId,
+          message: `Registration ${regId}: payment method set to ${paymentMethod}`,
+          user: { connect: { id: user.id } },
+        },
+      });
       return prisma.registration.update({
         ...query,
         where: { id: regId },
         data: {
-          paid: false,
           paymentMethod,
           beneficiary: beneficiary ?? '',
         },
@@ -633,7 +650,7 @@ builder.mutationField('deleteRegistration', (t) =>
       // The author can delete their own registrations
       return true;
     },
-    async resolve(_, { id }, {}) {
+    async resolve(_, { id }, { user }) {
       // const registration = await prisma.registration.findFirstOrThrow({
       //   where: { id },
       //   include: {
@@ -662,6 +679,15 @@ builder.mutationField('deleteRegistration', (t) =>
 
       await prisma.registration.deleteMany({
         where: { id },
+      });
+      await prisma.logEntry.create({
+        data: {
+          area: 'registration',
+          action: 'delete',
+          target: id,
+          message: `Registration deleted`,
+          user: { connect: { id: user?.id ?? '' } },
+        },
       });
       return true;
     },
