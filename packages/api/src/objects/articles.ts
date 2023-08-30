@@ -197,7 +197,8 @@ builder.mutationField('upsertArticle', (t) =>
     async resolve(
       query,
       _,
-      { id, eventId, visibility, authorId, groupId, title, body, publishedAt, links }
+      { id, eventId, visibility, authorId, groupId, title, body, publishedAt, links },
+      { user }
     ) {
       const old = await prisma.article.findUnique({ where: { id: id ?? '' } });
       const data = {
@@ -241,7 +242,7 @@ builder.mutationField('upsertArticle', (t) =>
           action: id ? 'update' : 'create',
           target: result.id,
           message: `Article ${id ? 'updated' : 'created'}`,
-          user: { connect: { id: authorId } },
+          user: { connect: { id: user?.id ?? '' } },
         },
       });
       await scheduleNewArticleNotification({
@@ -285,7 +286,7 @@ builder.mutationField('deleteArticle', (t) =>
           area: 'article',
           action: 'delete',
           target: id,
-          message: `Article ${id ?? ''} deleted`,
+          message: `Article ${id} deleted`,
           user: { connect: { id: user?.id ?? '' } },
         },
       });
@@ -343,7 +344,7 @@ builder.mutationField('updateArticlePicture', (t) =>
           area: 'article',
           action: 'update',
           target: id,
-          message: `Article ${id ?? ''} picture updated`,
+          message: `Article ${id} picture updated`,
           user: { connect: { id: user?.id ?? '' } },
         },
       });
@@ -394,7 +395,7 @@ builder.mutationField('deleteArticlePicture', (t) =>
           area: 'article',
           action: 'delete',
           target: id,
-          message: `Article ${id ?? ''} picture deleted`,
+          message: `Article ${id} picture deleted`,
           user: { connect: { id: user?.id ?? '' } },
         },
       });

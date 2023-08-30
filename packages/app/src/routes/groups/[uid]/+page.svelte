@@ -99,7 +99,7 @@
 
         <ButtonShare />
         {#if canEditDetails}
-          <ButtonGhost href="./edit"><IconGear /></ButtonGhost>
+          <ButtonGhost help="Modifier les infos" href="./edit"><IconGear /></ButtonGhost>
         {/if}
 
         {#if group.members?.find(({ member: { uid } }) => uid === $me?.uid)}

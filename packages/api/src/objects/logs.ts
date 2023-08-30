@@ -30,6 +30,9 @@ builder.queryField('logs', (t) =>
         include: {
           user: true,
         },
+        orderBy: {
+          happenedAt: 'desc',
+        },
       });
     },
   })

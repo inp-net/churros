@@ -103,7 +103,7 @@ export const findSchoolUser = async (
     Object.keys(attributesMap).map((key) => {
       const attributeKey = attributesMap[key as keyof typeof attributesMap];
       if (!attributeKey) return [key, undefined];
-      const value = ldapObject[attributeKey ];
+      const value = ldapObject[attributeKey];
       return [key, value ? value.toString() : undefined];
     })
   ) as unknown as LdapUser;

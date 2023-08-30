@@ -232,7 +232,7 @@
           </td>
           <td>
             {#if isSameDay(createdAt, new Date())}
-              {format(createdAt, 'hh:mm')}
+              {format(createdAt, 'HH:mm')}
             {:else}
               {formatDateTime(createdAt)}
             {/if}

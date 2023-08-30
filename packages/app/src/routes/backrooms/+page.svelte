@@ -1,6 +1,6 @@
 <script lang="ts">
-  import IconUsers from '~icons/mdi/users';
+  import IconLogs from '~icons/mdi/pulse';
   import CardService from '$lib/components/CardService.svelte';
 </script>
 
-<CardService name="Users" logoFile={IconUsers} href="./users" />
+<CardService name="Logs" logoFile={IconLogs} href="/logs" />

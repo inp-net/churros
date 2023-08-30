@@ -27,6 +27,7 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { zeus } from '$lib/zeus';
   import InputText from '$lib/components/InputText.svelte';
+  import { tooltip } from '$lib/tooltip';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
@@ -165,16 +166,16 @@
         <div class="actions">
           <ButtonShare />
           {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
-            <ButtonGhost href="./edit"><IconGear /></ButtonGhost>
+            <ButtonGhost help="Modifier" href="./edit"><IconGear /></ButtonGhost>
           {/if}
           {#if $me?.uid === user.uid}
-            <ButtonGhost on:click={logout}><IconLogout /></ButtonGhost>
+            <ButtonGhost help="Se déconnecter" on:click={logout}><IconLogout /></ButtonGhost>
           {/if}
         </div>
       </h1>
       <p class="major">
         {yearTier(user.graduationYear)}A ({user.graduationYear}) ·
-        <abbr title={user.major.name}>{user.major.shortName}</abbr>
+        <abbr title use:tooltip={user.major.name}>{user.major.shortName}</abbr>
         · {user.major.schools.map(({ name }) => name).join(', ')}
       </p>
       <ul class="social-links nobullet">

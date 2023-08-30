@@ -40,29 +40,33 @@
 
 <Header {...data.event} />
 
-<ul class="nobullet bookings">
-  {#each usersRegistration as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id }}
-    <li>
-      <ButtonPrimary href={bookingURL(id)}
-        >{#if authorIsBeneficiary || author.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
-            {beneficiaryUser.lastName}{:else}{beneficiary}{/if}{/if}
-        <span class="ticket-name">{ticket.name}</span></ButtonPrimary
-      >
-    </li>
-  {/each}
-</ul>
+{#if usersRegistration.length > 0}
+  <ul class="nobullet bookings">
+    {#each usersRegistration as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id }}
+      <li>
+        <ButtonPrimary href={bookingURL(id)}
+          >{#if authorIsBeneficiary || author.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
+              {beneficiaryUser.lastName}{:else}{beneficiary}{/if}{/if}
+          <span class="ticket-name">{ticket.name}</span></ButtonPrimary
+        >
+      </li>
+    {/each}
+  </ul>
+{/if}
 
 <section class="description">
-  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-  {@html descriptionHtml}
-
   {#if links.length > 0}
-    <ul class="links">
+    <ul class="links nobullet">
       {#each links as link}
-        <li><a href={link.computedValue}>{link.name}</a></li>
+        <li>
+          <ButtonSecondary href={link.computedValue}>{link.name}</ButtonSecondary>
+        </li>
       {/each}
     </ul>
   {/if}
+
+  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+  {@html descriptionHtml}
 </section>
 
 {#if eventCapacity > 0}
@@ -145,6 +149,16 @@
 
   h2 .places {
     margin-left: auto;
+  }
+
+  ul.links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
   }
 
   .tickets ul {

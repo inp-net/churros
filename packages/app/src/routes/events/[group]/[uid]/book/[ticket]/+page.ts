@@ -19,7 +19,7 @@ export const load: PageLoad = async ({ params, fetch, parent }) =>
             pictureFile: true,
             startsAt: true,
           },
-	  remainingGodsons: true
+          remainingGodsons: true,
         }),
       ],
     },

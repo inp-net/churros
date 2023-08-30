@@ -61,22 +61,22 @@
       <img class="logo" src="/logo.png" alt="logo de l'AE" />
     {:else}
       <ButtonGhost
-        title="Signaler un bug ou proposer une idée"
+        help="Signaler un bug ou proposer une idée"
         on:click={() => dispatch('report-issue')}
         style="color:red"><IconIssue /></ButtonGhost
       >
       {#if $me}
-        <ButtonGhost href="/notifications/">
+        <ButtonGhost href="/notifications/" help="Notifications">
           {#if $page.url.pathname === '/notifications/'}
             <IconNotifFilled />
           {:else}
             <IconNotif />{/if}</ButtonGhost
         >
-        <ButtonGhost href="/bookings/"
+        <ButtonGhost href="/bookings/" help="Mes places"
           >{#if $page.url.pathname.startsWith('/bookings')}<IconTicketFilled />{:else}
             <IconTicket />{/if}</ButtonGhost
         >
-        <ButtonGhost href="/users/{$me?.uid}">
+        <ButtonGhost href="/users/{$me?.uid}" help="Mon profil">
           {#if $me.pictureFile}
             <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
           {:else}
