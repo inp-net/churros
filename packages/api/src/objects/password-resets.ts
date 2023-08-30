@@ -45,6 +45,14 @@ builder.mutationField('createPasswordReset', (t) =>
         text: `Réinitialiser mon mot de passe sur ${url.toString()}`,
       });
 
+      await prisma.logEntry.create({
+        data: {
+          area: 'password-reset',
+          action: 'create',
+          target: result.id,
+          message: `Created password reset for ${email}`,
+        },
+      });
       return true;
     },
   })
@@ -80,6 +88,14 @@ builder.mutationField('usePasswordReset', (t) =>
               value: await hash(newPassword),
             },
           },
+        },
+      });
+      await prisma.logEntry.create({
+        data: {
+          area: 'password-reset',
+          action: 'use',
+          target: reset.id,
+          message: `Used password reset for ${reset.user.email}`,
         },
       });
       return true;

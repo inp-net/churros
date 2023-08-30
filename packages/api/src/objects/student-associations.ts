@@ -97,6 +97,16 @@ builder.mutationField('contribute', (t) =>
         lydiaAccount.vendorToken
       );
 
+      await prisma.logEntry.create({
+        data: {
+          area: 'contribution',
+          action: 'create',
+          target: id,
+          message: `Created contribution for ${studentAssociation.name}`,
+          user: { connect: { id: user.id } },
+        },
+      });
+
       return true;
     },
   })
@@ -147,6 +157,16 @@ builder.mutationField('cancelPendingContribution', (t) =>
             userId: user.id,
             studentAssociationId,
           },
+        },
+      });
+
+      await prisma.logEntry.create({
+        data: {
+          area: 'contribution',
+          action: 'delete',
+          target: studentAssociationId,
+          message: `Deleted contribution for ${contribution?.studentAssociation.name ?? ''}`,
+          user: { connect: { id: user.id } },
         },
       });
       return true;
