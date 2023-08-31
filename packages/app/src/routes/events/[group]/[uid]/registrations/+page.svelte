@@ -46,7 +46,10 @@
   function saveAsCsv() {
     if (!registrations) return;
     jsonToCsv.download(
-      `reservations-${$page.params.event}.csv`,
+      `reservations-${$page.params.group}-${$page.params.uid}-${format(
+        new Date(),
+        "yyyy-MM-dd-HH'h'mm"
+      )}.csv`,
       new jsonToCsv.JsonArray(
         registrations.edges.map(
           ({
