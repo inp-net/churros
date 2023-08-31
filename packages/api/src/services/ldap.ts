@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import type { User } from '@prisma/client';
 import ldap from 'ldapjs';
 
 const LDAP_URL = process.env['LDAP_URL'] || 'ldap://localhost:389';
@@ -230,4 +231,62 @@ function queryLdapUser(username: string): Promise<LdapUser | null> {
   });
 }
 
-export { queryLdapUser };
+// create a new user in LDAP
+function createLdapUser(user: User): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const userDn = `uid=${user.uid},ou=people,${LDAP_BASE_DN}`;
+    const userAttributes = {
+      objectClass: [
+        'top',
+        'person',
+        'organizationalPerson',
+        'inetOrgPerson',
+        'posixAccount',
+        'shadowAccount',
+        'aePerson',
+      ],
+      uid: user.uid,
+      cn: user.cn,
+      displayName: user.displayName,
+      ecole: user.ecole,
+      mail: user.mail,
+      filiere: user.filiere,
+      genre: user.genre,
+      givenName: user.givenName,
+      givenNameSearch: user.givenNameSearch,
+      hasWebsite: user.hasWebsite,
+      homeDirectory: user.homeDirectory,
+      inscritAE: user.inscritAE,
+      inscritFrappe: user.inscritFrappe,
+      inscritPassVieEtudiant: user.inscritPassVieEtudiant,
+      loginShell: user.loginShell,
+      loginTP: user.loginTP,
+      mailAnnexe: user.mailAnnexe,
+      mailEcole: user.mailEcole,
+      mailForwardingAddress: user.mailForwardingAddress,
+      mobile: user.mobile,
+      userPassword: user.userPassword,
+      promo: user.promo,
+      sn: user.sn,
+      snSearch: user.snSearch,
+      uidParrain: user.uidParrain,
+    };
+
+    ldapClient.bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
+        if (bindError) {
+            console.error('LDAP Bind Error:', bindError);
+            // Handle the bind error
+        } else {
+            ldapClient.add(userDn, userAttributes, (error) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve();
+            });
+        }
+        }
+  });
+}
+
+export { queryLdapUser, createLdapUser };
