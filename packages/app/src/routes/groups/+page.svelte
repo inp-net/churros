@@ -26,6 +26,11 @@
     const result = Number.parseFloat(/\b2\d{3}\b/.exec(g.description)?.[0] ?? '0');
     return result;
   }
+
+  const hasMultipleSchools =
+    [
+      ...new Set(data.groups.map((g) => g.school?.name ?? g.studentAssociation?.school.name ?? '')),
+    ].filter(Boolean).length > 1;
 </script>
 
 <h1>
@@ -38,7 +43,7 @@
 <ul class="nobullet">
   {#each studentAssociationSections as group}
     <li>
-      <Group {group} />
+      <Group showSchool={hasMultipleSchools} {group} />
     </li>
   {/each}
 </ul>
@@ -47,7 +52,7 @@
 <ul class="nobullet">
   {#each clubsAssos as group}
     <li>
-      <Group {group} />
+      <Group showSchool={hasMultipleSchools} {group} />
     </li>
   {/each}
 </ul>
@@ -56,7 +61,7 @@
 <ul class="nobullet">
   {#each listTrees.sort((a, b) => findNumber(a) - findNumber(b)).reverse() as group}
     <li>
-      <Group {group} />
+      <Group showSchool={hasMultipleSchools} {group} />
     </li>
   {/each}
 </ul>

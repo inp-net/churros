@@ -128,10 +128,32 @@ builder.queryField('groups', (t) =>
     args: {
       types: t.arg({ type: [GroupEnumType], required: false }),
     },
-    resolve: async (query, _, { types }) =>
+    resolve: async (query, _, { types }, { user }) =>
       prisma.group.findMany({
         ...query,
-        where: types ? { type: { in: types } } : {},
+        where: {
+          ...(types ? { type: { in: types } } : {}),
+          ...(user?.admin
+            ? {}
+            : {
+                OR: [
+                  {
+                    school: {
+                      id: {
+                        in: user?.major.schools.map(({ id }) => id) ?? [],
+                      },
+                    },
+                    studentAssociation: {
+                      school: {
+                        id: {
+                          in: user?.major.schools.map(({ id }) => id) ?? [],
+                        },
+                      },
+                    },
+                  },
+                ],
+              }),
+        },
         orderBy: { name: 'asc' },
       }),
   })
