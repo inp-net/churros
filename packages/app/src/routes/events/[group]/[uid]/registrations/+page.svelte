@@ -6,6 +6,7 @@
   import IconCancel from '~icons/mdi/cancel';
   import IconClose from '~icons/mdi/close';
   import IconSortUp from '~icons/mdi/triangle-small-up';
+  import IconChevronRight from '~icons/mdi/chevron-right';
   import IconSortDown from '~icons/mdi/triangle-small-down';
   import { page } from '$app/stores';
   import { dateTimeFormatter, formatDateTime } from '$lib/dates';
@@ -78,6 +79,7 @@
     ['date', 'Date'],
     ['state', 'État'],
     ['method', 'Méthode'],
+    ['ticket', 'Billet'],
     ['beneficiary', 'Bénéficiaire'],
     ['contributes', 'Cotise'],
     ['major', 'Filière'],
@@ -224,7 +226,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod } } (id)}
+      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod } } (id)}
         {@const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined)}
         <tr class:selected={rowIsSelected[id]}>
           <td class="actions">
@@ -242,6 +244,12 @@
           </td>
           <td>
             {paymentMethod ? DISPLAY_PAYMENT_METHODS[paymentMethod] : 'Inconnue'}
+          </td>
+          <td>
+            {#if ticket.group}
+              {ticket.group.name} <IconChevronRight />
+            {/if}
+            {ticket.name}
           </td>
           {#if benef}
             <td>
