@@ -209,7 +209,7 @@
       />
     </section>
     <section class="misc">
-      {#if $me?.admin || $me?.canEditUsers}
+      {#if data.userPermissions}
         <h2>Permissions</h2>
         <Permissions bind:data />
       {/if}
