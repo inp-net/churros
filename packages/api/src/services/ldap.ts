@@ -105,118 +105,122 @@ function queryLdapUser(username: string): Promise<LdapUser | null> {
             return;
           }
 
-          let user: LdapUser = {
-            objectClass: [],
-            uid: '',
-            uidNumber: 0,
-            gidNumber: 0,
-            cn: '',
-            ecole: '',
-            mail: '',
-            filiere: '',
-            genre: 0,
-            homeDirectory: '',
-            inscritAE: false,
-            loginShell: '',
-            userPassword: [],
-            promo: 0,
-            sn: '',
-          };
+          let user: LdapUser;
 
           searchResult.on('searchEntry', (entry) => {
-            entry.pojo.attributes.forEach((attribute) => {
-              console.log(attribute.type, attribute.values[0]);
-              switch (attribute.type) {
-                case 'uid':
-                  user.uid = attribute.values[0] as string;
-                  break;
-                case 'uidNumber':
-                  user.uidNumber = parseInt(attribute.values[0] as string);
-                  break;
-                case 'gidNumber':
-                  user.gidNumber = parseInt(attribute.values[0] as string);
-                  break;
-                case 'birthDate':
-                  user.birthDate = attribute.values[0];
-                  break;
-                case 'cn':
-                  user.cn = attribute.values[0] as string;
-                  break;
-                case 'displayName':
-                  user.displayName = attribute.values[0] as string;
-                  break;
-                case 'ecole':
-                  user.ecole = attribute.values[0] as string;
-                  break;
-                case 'mail':
-                  user.mail = attribute.values[0] as string;
-                  break;
-                case 'filiere':
-                  user.filiere = attribute.values[0] as string;
-                  break;
-                case 'genre':
-                  user.genre = parseInt(attribute.values[0] as string, 404);
-                  break;
-                case 'givenName':
-                  user.givenName = attribute.values[0];
-                  break;
-                case 'givenNameSearch':
-                  user.givenNameSearch = attribute.values[0];
-                  break;
-                case 'hasWebsite':
-                  user.hasWebsite = attribute.values[0] === 'TRUE';
-                  break;
-                case 'homeDirectory':
-                  user.homeDirectory = attribute.values[0] as string;
-                  break;
-                case 'inscritAE':
-                  user.inscritAE = attribute.values[0] === 'TRUE';
-                  break;
-                case 'inscritFrappe':
-                  user.inscritFrappe = attribute.values[0] === 'TRUE';
-                  break;
-                case 'inscritPassVieEtudiant':
-                  user.inscritPassVieEtudiant = attribute.values[0] === 'TRUE';
-                  break;
-                case 'loginShell':
-                  user.loginShell = attribute.values[0] as string;
-                  break;
-                case 'loginTP':
-                  user.loginTP = attribute.values[0];
-                  break;
-                case 'mailAnnexe':
-                  user.mailAnnexe = attribute.values;
-                  break;
-                case 'mailEcole':
-                  user.mailEcole = attribute.values[0];
-                  break;
-                case 'mailForwardingAddress':
-                  user.mailForwardingAddress = attribute.values;
-                  break;
-                case 'mobile':
-                  user.mobile = attribute.values;
-                  break;
-                case 'userPassword':
-                  user.userPassword = attribute.values;
-                  break;
-                case 'promo':
-                  user.promo = parseInt(attribute.values[0] as string);
-                  break;
-                case 'sn':
-                  user.sn = attribute.values[0] as string;
-                  break;
-                case 'snSearch':
-                  user.snSearch = attribute.values[0];
-                  break;
-                case 'uidParrain':
-                  user.uidParrain = attribute.values;
-                  break;
-                default:
-                  break;
-              }
-            });
+            // If the user is found, create a user object
+            if (entry.pojo) {
+              user = {
+                objectClass: [],
+                uid: '',
+                uidNumber: 0,
+                gidNumber: 0,
+                cn: '',
+                ecole: '',
+                mail: '',
+                filiere: '',
+                genre: 0,
+                homeDirectory: '',
+                inscritAE: false,
+                loginShell: '',
+                userPassword: [],
+                promo: 0,
+                sn: '',
+              };
+              entry.pojo.attributes.forEach((attribute) => {
+                switch (attribute.type) {
+                  case 'uid':
+                    user.uid = attribute.values[0] as string;
+                    break;
+                  case 'uidNumber':
+                    user.uidNumber = parseInt(attribute.values[0] as string);
+                    break;
+                  case 'gidNumber':
+                    user.gidNumber = parseInt(attribute.values[0] as string);
+                    break;
+                  case 'birthDate':
+                    user.birthDate = attribute.values[0];
+                    break;
+                  case 'cn':
+                    user.cn = attribute.values[0] as string;
+                    break;
+                  case 'displayName':
+                    user.displayName = attribute.values[0] as string;
+                    break;
+                  case 'ecole':
+                    user.ecole = attribute.values[0] as string;
+                    break;
+                  case 'mail':
+                    user.mail = attribute.values[0] as string;
+                    break;
+                  case 'filiere':
+                    user.filiere = attribute.values[0] as string;
+                    break;
+                  case 'genre':
+                    user.genre = parseInt(attribute.values[0] as string, 404);
+                    break;
+                  case 'givenName':
+                    user.givenName = attribute.values[0];
+                    break;
+                  case 'givenNameSearch':
+                    user.givenNameSearch = attribute.values[0];
+                    break;
+                  case 'hasWebsite':
+                    user.hasWebsite = attribute.values[0] === 'TRUE';
+                    break;
+                  case 'homeDirectory':
+                    user.homeDirectory = attribute.values[0] as string;
+                    break;
+                  case 'inscritAE':
+                    user.inscritAE = attribute.values[0] === 'TRUE';
+                    break;
+                  case 'inscritFrappe':
+                    user.inscritFrappe = attribute.values[0] === 'TRUE';
+                    break;
+                  case 'inscritPassVieEtudiant':
+                    user.inscritPassVieEtudiant = attribute.values[0] === 'TRUE';
+                    break;
+                  case 'loginShell':
+                    user.loginShell = attribute.values[0] as string;
+                    break;
+                  case 'loginTP':
+                    user.loginTP = attribute.values[0];
+                    break;
+                  case 'mailAnnexe':
+                    user.mailAnnexe = attribute.values;
+                    break;
+                  case 'mailEcole':
+                    user.mailEcole = attribute.values[0];
+                    break;
+                  case 'mailForwardingAddress':
+                    user.mailForwardingAddress = attribute.values;
+                    break;
+                  case 'mobile':
+                    user.mobile = attribute.values;
+                    break;
+                  case 'userPassword':
+                    user.userPassword = attribute.values;
+                    break;
+                  case 'promo':
+                    user.promo = parseInt(attribute.values[0] as string);
+                    break;
+                  case 'sn':
+                    user.sn = attribute.values[0] as string;
+                    break;
+                  case 'snSearch':
+                    user.snSearch = attribute.values[0];
+                    break;
+                  case 'uidParrain':
+                    user.uidParrain = attribute.values;
+                    break;
+                  default:
+                    break;
+                }
+              });
+            }
           });
 
+          // Return the user object
           searchResult.on('end', () => {
             resolve(user);
           });
