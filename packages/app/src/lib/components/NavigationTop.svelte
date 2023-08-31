@@ -99,7 +99,7 @@
   </div>
 </nav>
 
-<style lang="css">
+<style lang="scss">
   nav {
     position: fixed;
     top: 0;
@@ -157,5 +157,22 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    max-width: 60%;
+
+    h1 {
+      overflow: hidden;
+      font-size: 1.2rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-clamp: 1;
+    }
+  }
+
+  .actions > * {
+    flex-shrink: 0;
+  }
+
+  .transparent .logo {
+    width: 3.5rem;
   }
 </style>
