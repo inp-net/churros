@@ -29,7 +29,7 @@ export const register = async (email: string): Promise<boolean> => {
   await transporter.sendMail({
     to: email,
     from: process.env.PUBLIC_SUPPORT_EMAIL,
-    subject: `Finaliser mon inscription sur le nouveau site de l'AE`,
+    subject: `Finaliser mon inscription sur Churros`,
     html: `
 <p>
   <a href="${url.toString()}">Finaliser mon inscription</a>
@@ -131,10 +131,10 @@ export const saveUser = async ({
     from: process.env.PUBLIC_SUPPORT_EMAIL,
     html: `
 <p>
-  <a href="${url.toString()}">Bienvenue sur l'appli de l'AEn7 !</a>
+  <a href="${url.toString()}">Bienvenue sur Churros!</a>
 </p>
 `,
-    text: `Bienvenue sur l'appli de l'AEn7 ! Ça se passe ici : ${url.toString()}`,
+    text: `Bienvenue sur Churros ! Ça se passe ici : ${url.toString()}`,
   });
 
   return true;
