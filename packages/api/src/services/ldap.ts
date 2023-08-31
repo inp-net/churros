@@ -1,4 +1,6 @@
-/* eslint-disable no-console */
+/* eslint-disable complexity */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import type { User } from '@prisma/client';
 import ldap from 'ldapjs';
 
@@ -87,7 +89,11 @@ interface LdabClub extends LdapGroup {
   typeClub?: string;
 }
 
-function queryLdapUser(username: string): Promise<LdapUser | null> {
+function hashPassword(password: string): string {
+  return password;
+}
+
+async function queryLdapUser(username: string): Promise<LdapUser | null> {
   return new Promise((resolve, reject) => {
     const searchOptions: ldap.SearchOptions = {
       scope: 'sub', // Search scope (subtree)
@@ -110,7 +116,7 @@ function queryLdapUser(username: string): Promise<LdapUser | null> {
 
           searchResult.on('searchEntry', (entry) => {
             // If the user is found, create a user object
-            if (entry.pojo) {
+            if (entry.pojo.messageID) {
               user = {
                 objectClass: [],
                 uid: '',
@@ -128,96 +134,153 @@ function queryLdapUser(username: string): Promise<LdapUser | null> {
                 promo: 0,
                 sn: '',
               };
-              entry.pojo.attributes.forEach((attribute) => {
+              for (const attribute of entry.pojo.attributes) {
                 switch (attribute.type) {
-                  case 'uid':
-                    user.uid = attribute.values[0] as string;
+                  case 'uid': {
+                    user.uid = attribute.values[0]!;
                     break;
-                  case 'uidNumber':
-                    user.uidNumber = parseInt(attribute.values[0] as string);
+                  }
+
+                  case 'uidNumber': {
+                    user.uidNumber = Number.parseInt(attribute.values[0]!, 10);
                     break;
-                  case 'gidNumber':
-                    user.gidNumber = parseInt(attribute.values[0] as string);
+                  }
+
+                  case 'gidNumber': {
+                    user.gidNumber = Number.parseInt(attribute.values[0]!, 10);
                     break;
-                  case 'birthDate':
+                  }
+
+                  case 'birthDate': {
                     user.birthDate = attribute.values[0];
                     break;
-                  case 'cn':
-                    user.cn = attribute.values[0] as string;
+                  }
+
+                  case 'cn': {
+                    user.cn = attribute.values[0]!;
                     break;
-                  case 'displayName':
-                    user.displayName = attribute.values[0] as string;
+                  }
+
+                  case 'displayName': {
+                    user.displayName = attribute.values[0]!;
                     break;
-                  case 'ecole':
-                    user.ecole = attribute.values[0] as string;
+                  }
+
+                  case 'ecole': {
+                    user.ecole = attribute.values[0]!;
                     break;
-                  case 'mail':
-                    user.mail = attribute.values[0] as string;
+                  }
+
+                  case 'mail': {
+                    user.mail = attribute.values[0]!;
                     break;
-                  case 'filiere':
-                    user.filiere = attribute.values[0] as string;
+                  }
+
+                  case 'filiere': {
+                    user.filiere = attribute.values[0]!;
                     break;
-                  case 'genre':
-                    user.genre = parseInt(attribute.values[0] as string, 404);
+                  }
+
+                  case 'genre': {
+                    user.genre = Number.parseInt(attribute.values[0]!, 10);
                     break;
-                  case 'givenName':
+                  }
+
+                  case 'givenName': {
                     user.givenName = attribute.values[0];
                     break;
-                  case 'givenNameSearch':
+                  }
+
+                  case 'givenNameSearch': {
                     user.givenNameSearch = attribute.values[0];
                     break;
-                  case 'hasWebsite':
+                  }
+
+                  case 'hasWebsite': {
                     user.hasWebsite = attribute.values[0] === 'TRUE';
                     break;
-                  case 'homeDirectory':
-                    user.homeDirectory = attribute.values[0] as string;
+                  }
+
+                  case 'homeDirectory': {
+                    user.homeDirectory = attribute.values[0]!;
                     break;
-                  case 'inscritAE':
+                  }
+
+                  case 'inscritAE': {
                     user.inscritAE = attribute.values[0] === 'TRUE';
                     break;
-                  case 'inscritFrappe':
+                  }
+
+                  case 'inscritFrappe': {
                     user.inscritFrappe = attribute.values[0] === 'TRUE';
                     break;
-                  case 'inscritPassVieEtudiant':
+                  }
+
+                  case 'inscritPassVieEtudiant': {
                     user.inscritPassVieEtudiant = attribute.values[0] === 'TRUE';
                     break;
-                  case 'loginShell':
-                    user.loginShell = attribute.values[0] as string;
+                  }
+
+                  case 'loginShell': {
+                    user.loginShell = attribute.values[0]!;
                     break;
-                  case 'loginTP':
+                  }
+
+                  case 'loginTP': {
                     user.loginTP = attribute.values[0];
                     break;
-                  case 'mailAnnexe':
+                  }
+
+                  case 'mailAnnexe': {
                     user.mailAnnexe = attribute.values;
                     break;
-                  case 'mailEcole':
+                  }
+
+                  case 'mailEcole': {
                     user.mailEcole = attribute.values[0];
                     break;
-                  case 'mailForwardingAddress':
+                  }
+
+                  case 'mailForwardingAddress': {
                     user.mailForwardingAddress = attribute.values;
                     break;
-                  case 'mobile':
+                  }
+
+                  case 'mobile': {
                     user.mobile = attribute.values;
                     break;
-                  case 'userPassword':
+                  }
+
+                  case 'userPassword': {
                     user.userPassword = attribute.values;
                     break;
-                  case 'promo':
-                    user.promo = parseInt(attribute.values[0] as string);
+                  }
+
+                  case 'promo': {
+                    user.promo = Number.parseInt(attribute.values[0]!, 10);
                     break;
-                  case 'sn':
-                    user.sn = attribute.values[0] as string;
+                  }
+
+                  case 'sn': {
+                    user.sn = attribute.values[0]!;
                     break;
-                  case 'snSearch':
+                  }
+
+                  case 'snSearch': {
                     user.snSearch = attribute.values[0];
                     break;
-                  case 'uidParrain':
+                  }
+
+                  case 'uidParrain': {
                     user.uidParrain = attribute.values;
                     break;
-                  default:
+                  }
+
+                  default: {
                     break;
+                  }
                 }
-              });
+              }
             }
           });
 
@@ -232,44 +295,46 @@ function queryLdapUser(username: string): Promise<LdapUser | null> {
 }
 
 // create a new user in LDAP
-function createLdapUser(user: User): Promise<void> {
+async function createLdapUser(user: User, password: string, loginTP: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const userDn = `uid=${user.uid},ou=people,${LDAP_BASE_DN}`;
+    const userDn = `uid=${user.uid},ou=people,o=n7,${LDAP_BASE_DN}`;
+    const filiere = user.majorId.shotName;
     const userAttributes = {
       objectClass: [
         'top',
         'person',
         'organizationalPerson',
         'inetOrgPerson',
+        'qmailUser',
         'posixAccount',
         'shadowAccount',
-        'aePerson',
+        'Eleve',
       ],
       uid: user.uid,
-      cn: user.cn,
-      displayName: user.displayName,
-      ecole: user.ecole,
-      mail: user.mail,
-      filiere: user.filiere,
-      genre: user.genre,
-      givenName: user.givenName,
-      givenNameSearch: user.givenNameSearch,
-      hasWebsite: user.hasWebsite,
-      homeDirectory: user.homeDirectory,
-      inscritAE: user.inscritAE,
-      inscritFrappe: user.inscritFrappe,
-      inscritPassVieEtudiant: user.inscritPassVieEtudiant,
-      loginShell: user.loginShell,
-      loginTP: user.loginTP,
-      mailAnnexe: user.mailAnnexe,
-      mailEcole: user.mailEcole,
-      mailForwardingAddress: user.mailForwardingAddress,
-      mobile: user.mobile,
-      userPassword: user.userPassword,
-      promo: user.promo,
-      sn: user.sn,
-      snSearch: user.snSearch,
-      uidParrain: user.uidParrain,
+      cn: `${user.firstName} ${user.lastName}`,
+      displayName: `${user.firstName} ${user.lastName}`,
+      ecole: `o=n7,${LDAP_BASE_DN}`,
+      mail: `${user.uid}@bde.enseeiht.fr`,
+      filiere: `${filiere},ou=filieres,o=n7,${LDAP_BASE_DN}`,
+      genre: 404,
+      givenName: user.firstName,
+      givenNameSearch: user.firstName.toLowerCase(),
+      hasWebsite: false,
+      homeDirectory: `/home/${user.uid}`,
+      inscritAE: false,
+      inscritFrappe: false,
+      inscritPassVieEtudiant: false,
+      loginShell: '/bin/bash',
+      loginTP,
+      mailAnnexe: user.otherEmails,
+      mailEcole: user.schoolEmail,
+      mailForwardingAddress: user.email,
+      mobile: user.phone,
+      userPassword: hashPassword(password),
+      promo: user.graduationYear,
+      sn: user.lastName,
+      snSearch: user.lastName.toLowerCase(),
+      uidParrain: user.godparent?.uid,
     };
 
     ldapClient.bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
@@ -282,10 +347,12 @@ function createLdapUser(user: User): Promise<void> {
                 reject(error);
                 return;
             }
+
             resolve();
             });
         }
         }
+    );
   });
 }
 
