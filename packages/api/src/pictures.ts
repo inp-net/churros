@@ -6,7 +6,15 @@ import { prisma } from './prisma.js';
 import { mkdir, unlink } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 
-export const supportedExtensions = ['png', 'jpg', 'webp'] as ImageFileExtension[];
+export const supportedExtensions = [
+  'png',
+  'jpg',
+  'webp',
+  'gif',
+  'svg',
+  'avif',
+  'tif',
+] as ImageFileExtension[];
 
 const extensionToFormat = {
   jpg: 'jpeg',
