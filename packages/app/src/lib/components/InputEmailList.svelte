@@ -14,8 +14,10 @@
   export let newValue = '';
 
   function addLink() {
-    value = [...value, newValue];
-    newValue = '';
+    if (fieldsAreValid) {
+      value = [...value, newValue];
+      newValue = '';
+    }
   }
 
   function handleEnter(event: KeyboardEvent) {
@@ -26,11 +28,7 @@
     }
   }
 
-  $: fieldsAreFilled = newValue.length > 0;
-
-  function newLinkHandleBlur() {
-    if (fieldsAreFilled) addLink();
-  }
+  $: fieldsAreValid = newValue.length > 0 && newValue.includes('@');
 </script>
 
 <InputField {label} {required} {hint}>
@@ -77,16 +75,16 @@
       {/each}
     </ul>
 
-    <div class="new">
+    <form class="new" on:submit|preventDefault={addLink}>
       <div class="inputs">
-        <input type="text" on:blur={newLinkHandleBlur} bind:value={newValue} {placeholder} />
+        <input required type="email" on:blur={addLink} bind:value={newValue} {placeholder} />
       </div>
       <div class="add">
-        <GhostButton title="Ajouter" on:click={addLink}>
+        <GhostButton submits title="Ajouter">
           <IconAdd aria-label="Ajouter" />
         </GhostButton>
       </div>
-    </div>
+    </form>
   </div>
 </InputField>
 

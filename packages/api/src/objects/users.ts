@@ -446,7 +446,7 @@ builder.mutationField('updateUser', (t) =>
           phone,
           birthday,
           links: { deleteMany: {}, createMany: { data: links } },
-          otherEmails: { set: otherEmails },
+          otherEmails: { set: otherEmails.filter(Boolean) },
           godparent: godparentUid ? { connect: { uid: godparentUid } } : { disconnect: true },
         },
       });
