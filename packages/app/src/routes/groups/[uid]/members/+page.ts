@@ -16,6 +16,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
               lastName: true,
               fullName: true,
               pictureFile: true,
+              graduationYear: true,
             },
             title: true,
             canEditArticles: true,
