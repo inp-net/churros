@@ -121,6 +121,14 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             pictureFile: true,
           },
           contactMail: true,
+          managers: {
+            user: {
+              uid: true,
+            },
+            canEdit: true,
+            canEditPermissions: true,
+            canVerifyRegistrations: true,
+          },
         }),
       ],
     },

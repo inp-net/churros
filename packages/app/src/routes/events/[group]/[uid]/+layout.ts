@@ -11,6 +11,14 @@ export const load: LayoutLoad = async ({ fetch, parent, params }) => {
         },
         Selector('Event')({
           id: true,
+          managers: {
+            user: {
+              uid: true,
+            },
+            canEdit: true,
+            canEditPermissions: true,
+            canVerifyRegistrations: true,
+          },
         }),
       ],
     },
