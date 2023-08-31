@@ -762,9 +762,13 @@ builder.queryField('searchEvents', (t) =>
           10,
           results.map(({ id }) => id)
         )(fuzzyEvents),
-        // what in the actual name of fuck do i need this?
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      ].filter(async (event) => eventAccessibleByUser(event, user));
+        // fucking js does not allow promises for .filter
+        // eslint-disable-next-line unicorn/no-array-reduce
+      ].reduce(async (acc, event) => {
+        if (await eventAccessibleByUser(event, user)) return [...(await acc), event];
+
+        return acc;
+      }, Promise.resolve([] as Event[]));
     },
   })
 );
