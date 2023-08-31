@@ -33,7 +33,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 };
 
 export const handleFetch: HandleFetch = async ({ request, fetch }) => {
-  console.info(`Running with env ${JSON.stringify(process.env)}`);
   const apiUrl = process.env.PUBLIC_API_URL as unknown as string;
   if (request.url.startsWith(apiUrl)) {
     request = new Request(
