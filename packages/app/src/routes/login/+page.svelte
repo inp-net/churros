@@ -78,7 +78,7 @@
   <Alert theme="danger" closed={errorMessages === undefined}>
     {errorMessages?.join(' ')}
   </Alert>
-  <InputText required label="Adresse e-mail ou nom d'utilisateur" bind:value={email} />
+  <InputText required label="Adresse e-mail ou nom d'utilisateur" bind:value={email} autofocus />
   <InputText
     required
     type={showingPassword ? 'text' : 'password'}

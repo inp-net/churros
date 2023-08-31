@@ -28,6 +28,7 @@
     type="text"
     placeholder="Personne, club, évènement, post,…"
     bind:value={q}
+    autofocus
   />
 </form>
 

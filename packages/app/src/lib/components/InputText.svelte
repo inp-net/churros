@@ -16,6 +16,7 @@
   export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let label: string;
   export let readonly = false;
+  export let autofocus = false;
 </script>
 
 <InputField {hint} {errors} {label} {required}>
@@ -32,6 +33,7 @@
     {placeholder}
     {required}
     {readonly}
+    {autofocus}
     {actionIcon}
   >
     <slot name="before" slot="before" />
