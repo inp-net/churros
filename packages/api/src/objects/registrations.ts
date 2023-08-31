@@ -389,10 +389,12 @@ builder.mutationField('upsertRegistration', (t) =>
         });
 
         // Check for beneficiary limits
-        const registrationsByThisAuthor = ticketAndRegistrations!.registrations.filter(
-          ({ author, beneficiary }) => author.uid === user.uid && beneficiary !== ''
-        );
-        if (registrationsByThisAuthor.length > ticket.godsonLimit) return false;
+        if (!eventManagedByUser(ticket.event, user, {})) {
+          const registrationsByThisAuthor = ticketAndRegistrations!.registrations.filter(
+            ({ author, beneficiary }) => author.uid === user.uid && beneficiary !== ''
+          );
+          if (registrationsByThisAuthor.length > ticket.godsonLimit) return false;
+        }
 
         // Check that the ticket is not full
         return placesLeft(ticketAndRegistrations!) > 0;

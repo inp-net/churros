@@ -74,7 +74,8 @@ export const TicketType = builder.prismaNode('Ticket', {
     event: t.relation('event'),
     group: t.relation('group', { nullable: true }),
     remainingGodsons: t.int({
-      async resolve({ godsonLimit }, _, { user }) {
+      async resolve({ godsonLimit, eventId }, _, { user }) {
+        if (user?.managedEvents.some(({ event }) => event.id === eventId)) return -1;
         const registrationsOfUser = await prisma.registration.findMany({
           where: {
             author: { uid: user?.uid },

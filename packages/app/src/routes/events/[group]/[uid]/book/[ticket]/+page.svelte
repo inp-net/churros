@@ -59,8 +59,10 @@
     name,
     event: { contactMail, title, pictureFile, startsAt },
     price,
-    remainingGodsons,
   } = data.ticketByUid;
+
+  let {remainingGodsons} = data.ticketByUid;
+  $: remainingGodsons = remainingGodsons === -1 ? Number.POSITIVE_INFINITY : remainingGodsons;
 
   async function payBy(method: PaymentMethod | undefined) {
     const { upsertRegistration } = await $zeus.mutate({
