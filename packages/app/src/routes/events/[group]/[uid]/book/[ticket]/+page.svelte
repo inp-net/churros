@@ -3,7 +3,7 @@
   import IconPendingPayment from '~icons/mdi/cash-clock';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
+  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
   import { PaymentMethod, zeus } from '$lib/zeus';
   import Alert from '$lib/components/Alert.svelte';
   import { page } from '$app/stores';
@@ -14,22 +14,7 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import { me } from '$lib/session';
   import Header from '../../Header.svelte';
-  import { onMount, onDestroy, type SvelteComponent } from 'svelte';
-  import LogoLydia from '~icons/simple-icons/lydia';
-  import IconCreditCard from '~icons/mdi/credit-card-outline';
-  import IconCash from '~icons/mdi/cash';
-  import IconPaymentCheck from '~icons/mdi/checkbook';
-  import IconQuestionMark from '~icons/mdi/dots-horizontal';
-  import IconBankTransfer from '~icons/mdi/bank';
-
-  const PAYMENT_METHODS_ICONS: Record<PaymentMethod, typeof SvelteComponent<any>> = {
-    Card: IconCreditCard,
-    Cash: IconCash,
-    Check: IconPaymentCheck,
-    Lydia: LogoLydia,
-    Other: IconQuestionMark,
-    Transfer: IconBankTransfer,
-  };
+  import { onMount, onDestroy } from 'svelte';
 
   let done = false;
   $: done = $page.url.searchParams.has('done');

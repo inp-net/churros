@@ -7,7 +7,7 @@
   import { type PaymentMethod, zeus } from '$lib/zeus';
   import { onDestroy, onMount } from 'svelte';
   import { Html5QrcodeScanner } from 'html5-qrcode';
-  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
+  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import Card from '$lib/components/Card.svelte';
   import InputText from '$lib/components/InputText.svelte';
@@ -57,6 +57,11 @@
       {
         fps: 5,
         aspectRatio,
+        videoConstraints: {
+          facingMode: {
+            exact: 'environment',
+          },
+        },
         // qrbox: { width: 300, height: 300 }
       },
       false
@@ -115,9 +120,9 @@
     if (registration.__typename !== 'Error') r = registration.data;
 
     if (resultChanged(result, r) && r !== undefined && window.navigator.vibrate) {
-        if (r === false || !r?.paid) window.navigator.vibrate([200, 100, 200]);
-        else window.navigator.vibrate(100);
-      }
+      if (r === false || !r?.paid) window.navigator.vibrate([200, 100, 200]);
+      else window.navigator.vibrate(100);
+    }
 
     result = r;
     if (controllingManualRegistrationCode) manualRegistrationCode = '';
@@ -190,7 +195,10 @@
             {/if}
             {#if result.paid}
               <p>
-                Payée par {DISPLAY_PAYMENT_METHODS[result.paymentMethod ?? 'Other']}
+                Payée via <svelte:component
+                  this={PAYMENT_METHODS_ICONS[result.paymentMethod ?? 'Other']}
+                />
+                {DISPLAY_PAYMENT_METHODS[result.paymentMethod ?? 'Other']}
               </p>
             {:else}
               <p><strong>Non payée</strong></p>
@@ -205,6 +213,9 @@
             {/if}
             {result.ticket.name}
           </span>
+        </div>
+        <div class="registration">
+          <code> {result.id.replace(/^r:/, '').toUpperCase()} </code>
         </div>
       {/if}
     </section>
