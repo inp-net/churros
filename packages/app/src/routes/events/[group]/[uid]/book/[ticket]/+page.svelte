@@ -14,7 +14,22 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import { me } from '$lib/session';
   import Header from '../../Header.svelte';
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, type SvelteComponent } from 'svelte';
+  import LogoLydia from '~icons/simple-icons/lydia';
+  import IconCreditCard from '~icons/mdi/credit-card-outline';
+  import IconCash from '~icons/mdi/cash';
+  import IconPaymentCheck from '~icons/mdi/checkbook';
+  import IconQuestionMark from '~icons/mdi/dots-horizontal';
+  import IconBankTransfer from '~icons/mdi/bank';
+
+  const PAYMENT_METHODS_ICONS: Record<PaymentMethod, typeof SvelteComponent<any>> = {
+    Card: IconCreditCard,
+    Cash: IconCash,
+    Check: IconPaymentCheck,
+    Lydia: LogoLydia,
+    Other: IconQuestionMark,
+    Transfer: IconBankTransfer,
+  };
 
   let done = false;
   $: done = $page.url.searchParams.has('done');
@@ -207,7 +222,10 @@
         <ul class="nobullet payment-methods">
           {#each allowedPaymentMethods as method}
             <li>
-              <ButtonSecondary on:click={async () => payBy(method)}>
+              <ButtonSecondary
+                icon={PAYMENT_METHODS_ICONS[method]}
+                on:click={async () => payBy(method)}
+              >
                 {DISPLAY_PAYMENT_METHODS[method]}
               </ButtonSecondary>
             </li>
