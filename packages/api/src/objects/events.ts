@@ -461,6 +461,9 @@ builder.mutationField('upsertEvent', (t) =>
               data: {
                 ...ticket,
                 id: ticket.id!,
+                allowedPaymentMethods: {
+                  set: ticket.allowedPaymentMethods,
+                },
                 links: {
                   deleteMany: {},
                   createMany: {
@@ -500,6 +503,9 @@ builder.mutationField('upsertEvent', (t) =>
             autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
             eventId: event.id,
             uid: await createTicketUid(ticket.name),
+            allowedPaymentMethods: {
+              set: ticket.allowedPaymentMethods,
+            },
           },
         });
 
@@ -522,6 +528,9 @@ builder.mutationField('upsertEvent', (t) =>
               autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
               eventId: event.id,
               uid: await createTicketUid(ticket.name),
+              allowedPaymentMethods: {
+                set: ticket.allowedPaymentMethods,
+              },
             },
           });
 
