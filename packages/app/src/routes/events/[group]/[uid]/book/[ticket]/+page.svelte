@@ -61,7 +61,7 @@
     price,
   } = data.ticketByUid;
 
-  let {remainingGodsons} = data.ticketByUid;
+  let { remainingGodsons } = data.ticketByUid;
   $: remainingGodsons = remainingGodsons === -1 ? Number.POSITIVE_INFINITY : remainingGodsons;
 
   async function payBy(method: PaymentMethod | undefined) {
@@ -231,6 +231,10 @@
                 {DISPLAY_PAYMENT_METHODS[method]}
               </ButtonSecondary>
             </li>
+          {:else}
+            <li class="no-payment-methods danger">
+              Aucun moyen de paiement disponible. Contactez les managers de l'évènement.
+            </li>
           {/each}
         </ul>
       {:else}
@@ -322,6 +326,13 @@
     flex-flow: row wrap;
     gap: 0.5rem;
     margin-top: 0.5rem;
+  }
+
+  .no-payment-methods {
+    padding: 1rem;
+    color: var(--text);
+    background: var(--bg);
+    border-radius: var(--radius-block);
   }
 
   .beneficiary {

@@ -7,6 +7,7 @@ import { DateTimeScalar } from './scalars.js';
 import { LinkInput } from './links.js';
 import slug from 'slug';
 import dichotomid from 'dichotomid';
+import { PaymentMethod } from '@prisma/client';
 
 export const placesLeft = (ticket: {
   name: string;
@@ -60,7 +61,21 @@ export const TicketType = builder.prismaNode('Ticket', {
       },
     }),
     links: t.relation('links'),
-    allowedPaymentMethods: t.expose('allowedPaymentMethods', { type: [PaymentMethodEnum] }),
+    allowedPaymentMethods: t.field({
+      type: [PaymentMethodEnum],
+      resolve: async ({ allowedPaymentMethods, eventId }) =>
+        // eslint-disable-next-line unicorn/no-array-reduce
+        allowedPaymentMethods.reduce(async (acc, p) => {
+          if (p === PaymentMethod.Lydia) {
+            const event = await prisma.event.findUniqueOrThrow({ where: { id: eventId } });
+            if (event.lydiaAccountId) return [...(await acc), p];
+
+            return acc;
+          }
+
+          return [...(await acc), p];
+        }, Promise.resolve([] as PaymentMethod[])),
+    }),
     openToPromotions: t.expose('openToPromotions', { type: ['Int'] }),
     openToAlumni: t.exposeBoolean('openToAlumni', { nullable: true }),
     openToExternal: t.exposeBoolean('openToExternal', { nullable: true }),
