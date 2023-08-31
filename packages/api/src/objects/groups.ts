@@ -150,7 +150,7 @@ builder.queryField('searchGroups', (t) =>
     type: [GroupType],
     args: { q: t.arg.string() },
     authScopes: { loggedIn: true },
-    async resolve(query, _, { q }) {
+    async resolve(query, _, { q }, { user }) {
       q = q.trim();
       const { searchString: search } = splitSearchTerms(q);
       const fuzzyResults: FuzzySearchResult = await prisma.$queryRaw`
@@ -163,17 +163,59 @@ LIMIT 20
         ...query,
         where: {
           id: { in: fuzzyResults.map(({ id }) => id) },
+          OR: [
+            {
+              school: {
+                id: {
+                  in: user?.major.schools.map(({ id }) => id) ?? [],
+                },
+              },
+            },
+            {
+              studentAssociation: {
+                school: {
+                  id: {
+                    in: user?.major.schools.map(({ id }) => id) ?? [],
+                  },
+                },
+              },
+            },
+          ],
         },
       });
       const results = await prisma.group.findMany({
         ...query,
         where: {
-          OR: [
-            { uid: { search } },
-            { name: { search } },
-            { description: { search } },
-            { longDescription: { search } },
-            { email: { search } },
+          AND: [
+            {
+              OR: [
+                { uid: { search } },
+                { name: { search } },
+                { description: { search } },
+                { longDescription: { search } },
+                { email: { search } },
+              ],
+            },
+            {
+              OR: [
+                {
+                  school: {
+                    id: {
+                      in: user?.major.schools.map(({ id }) => id) ?? [],
+                    },
+                  },
+                },
+                {
+                  studentAssociation: {
+                    school: {
+                      id: {
+                        in: user?.major.schools.map(({ id }) => id) ?? [],
+                      },
+                    },
+                  },
+                },
+              ],
+            },
           ],
         },
       });

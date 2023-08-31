@@ -49,9 +49,9 @@
   {#if data.searchGroups.length > 0}
     <h2>Groupes</h2>
     <ul class="nobullet">
-      {#each data.searchGroups as { uid, school, ...rest }}
+      {#each data.searchGroups as { uid, ...rest }}
         <li>
-          <CardGroup href="/groups/{uid}" school={school?.name} {...rest} />
+          <CardGroup href="/groups/{uid}" {...rest} />
         </li>
       {/each}
     </ul>
