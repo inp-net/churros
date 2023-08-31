@@ -361,6 +361,9 @@ builder.mutationField('upsertEvent', (t) =>
       },
       { user }
     ) {
+      // TODO send only notifications to people that have canSeeTicket(..., people)  on tickets that changed the shotgun date, and say that the shotgun date changed in the notification
+      const shotgunChanged = !id;
+
       const connectFromListOfUids = (uids: string[]) => uids.map((uid) => ({ uid }));
 
       const connectFromListOfIds = (ids: string[]) => ids.map((id) => ({ id }));
@@ -603,7 +606,7 @@ builder.mutationField('upsertEvent', (t) =>
         },
       });
 
-      await scheduleShotgunNotifications(finalEvent);
+      if (shotgunChanged) await scheduleShotgunNotifications(finalEvent);
 
       return result;
     },
