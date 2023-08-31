@@ -18,6 +18,7 @@
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import { _registrationsQuery } from './+page';
+  import { afterNavigate } from '$app/navigation';
 
   let compact = false;
   let loadingMore = false;
@@ -90,8 +91,26 @@
     ['author', 'Payé par'],
   ] as const;
 
+  function fromSortingQueryParam(sorting: string): [typeof sortBy, typeof sortDirection] {
+    // If sorting starts with "-", it's descending, if it starts with "+" (or nothing), it's ascending
+    const desc = sorting.startsWith('-');
+    const key = sorting.replace(/^-+/, '');
+    return [key as typeof sortBy, desc ? 'descending' : 'ascending'];
+  }
+
+  function toSortingQueryParam(
+    sortBy: (typeof COLUMNS)[number][0],
+    direction: typeof sortDirection
+  ) {
+    return `${direction === 'descending' ? '-' : ''}${sortBy}`;
+  }
+
   let sortBy: (typeof COLUMNS)[number][0] = 'date';
   let sortDirection: 'ascending' | 'descending' = 'descending';
+
+  afterNavigate(() => {
+    [sortBy, sortDirection] = fromSortingQueryParam($page.url.searchParams.get('sort') ?? '-date');
+  });
 
   type Registration = (typeof registrations.edges)[number]['node'];
 
@@ -207,9 +226,21 @@
           <th
             class:sorting={sortBy === key}
             on:click={() => {
-              if (sortBy === key)
-                sortDirection = sortDirection === 'ascending' ? 'descending' : 'ascending';
-              else sortBy = key;
+              $page.url.searchParams.set(
+                'sort',
+                toSortingQueryParam(
+                  key,
+                  sortBy === key
+                    ? sortDirection === 'ascending'
+                      ? 'descending'
+                      : 'ascending'
+                    : 'ascending'
+                )
+              );
+              window.history.pushState(undefined, '', $page.url.href);
+              [sortBy, sortDirection] = fromSortingQueryParam(
+                $page.url.searchParams.get('sort') ?? '-date'
+              );
             }}
             ><div class="inner">
               {label}
