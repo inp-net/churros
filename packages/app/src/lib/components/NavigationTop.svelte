@@ -58,6 +58,11 @@
 
   <div class="actions">
     {#if scanningTickets}
+      <ButtonGhost
+        help="Signaler un bug ou proposer une idée"
+        on:click={() => dispatch('report-issue')}
+        style="color:red"><IconIssue /></ButtonGhost
+      >
       <img class="logo" src="/logo.png" alt="logo de l'AE" />
     {:else}
       <ButtonGhost
