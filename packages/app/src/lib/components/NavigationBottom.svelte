@@ -151,7 +151,7 @@
 
     <a href="/posts/create">
       <IconArticle />
-      <span>Article</span>
+      <span>Post</span>
     </a>
 
     <a href="/events/create">
