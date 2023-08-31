@@ -149,6 +149,7 @@
     height: var(--size);
     overflow: hidden;
     border-radius: 50%;
+    object-fit: cover;
 
     /* border: 3px solid var(--text); */
   }
