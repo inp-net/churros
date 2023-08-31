@@ -15,6 +15,7 @@
   import ButtonBack from './ButtonBack.svelte';
   import { formatDate } from '$lib/dates';
   import ButtonGhost from './ButtonGhost.svelte';
+  import { afterNavigate } from '$app/navigation';
   const dispatch = createEventDispatcher();
 
   onMount(() => {
@@ -28,7 +29,7 @@
 
   let currentEvent: undefined | { title: string; startsAt: Date } = undefined;
 
-  onMount(async () => {
+  afterNavigate(async () => {
     if ($page.url.pathname.endsWith('/scan/')) {
       try {
         const { event } = await $zeus.query({
