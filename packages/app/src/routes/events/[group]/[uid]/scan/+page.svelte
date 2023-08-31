@@ -114,10 +114,10 @@
 
     if (registration.__typename !== 'Error') r = registration.data;
 
-    if (resultChanged(result, r) && r !== undefined) {
-      if (r === false || !r?.paid) window.navigator.vibrate([200, 100, 200]);
-      else window.navigator.vibrate(100);
-    }
+    if (resultChanged(result, r) && r !== undefined && window.navigator.vibrate) {
+        if (r === false || !r?.paid) window.navigator.vibrate([200, 100, 200]);
+        else window.navigator.vibrate(100);
+      }
 
     result = r;
     if (controllingManualRegistrationCode) manualRegistrationCode = '';
