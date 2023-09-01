@@ -1,6 +1,5 @@
 <script lang="ts">
   import IconAdd from '~icons/mdi/add';
-  import IconCloud from '~icons/mdi/cloud-outline';
   import IconCar from '~icons/mdi/car';
   import IconHand from '~icons/mdi/hand-heart';
   import IconTerminal from '~icons/mdi/terminal';
@@ -35,14 +34,17 @@
       logo: IconHand,
       href: 'https://bde.enseeiht.fr/services/frappe/',
     }),
+    Service('Photos', 'Merci Photo7 ♥', { href: 'https://photo7.inpt.fr' }),
+    Service('TVn7flix', 'Les productions de TVn7', { href: 'https://tvn7flix.fr' }),
+    Service('IPQ', "Le podcast de l'n7", {
+      href: 'https://open.spotify.com/show/77KtGDlbY7RH3BSTOsNGbA?si=48a2cbacee7440b3',
+    }),
+    Service('Loca7', 'Trouve un appart', { href: 'https://loca7.fr' }),
     Service('Covoiturages', 'Limite ton CO2e', {
       logo: IconCar,
       href: 'https://bde.enseeiht.fr/services/covoiturage/',
     }),
-    Service('Photos', 'Merci Photo7 ♥', { href: 'https://photo7.inpt.fr' }),
-    Service('TVn7flix', 'Les productions de TVn7', { href: 'https://tvn7flix.fr' }),
-    Service('Loca7', 'Trouve un appart', { href: 'https://loca7.fr' }),
-    Service('Nextcloud', 'Fichiers, etc.', { href: 'https://cloud.inpt.fr', logo: IconCloud }),
+    // Service('Nextcloud', 'Fichiers, etc.', { href: 'https://cloud.inpt.fr', logo: IconCloud }),
   ];
 </script>
 
