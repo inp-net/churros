@@ -137,7 +137,7 @@
 
         default: {
           console.warn('Unknown social network, cannot construct URL from username');
-          return url;
+          return undefined;
         }
       }
     }
