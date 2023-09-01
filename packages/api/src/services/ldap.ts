@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import type { Group, Major, School, User } from '@prisma/client';
 import ldap from 'ldapjs';
 import crypto from 'crypto';
@@ -14,7 +15,7 @@ const ldapClient = ldap.createClient({
   url: LDAP_URL,
 });
 
-interface LdapSchool {
+/*interface LdapSchool {
   objectClass: string[];
   o: string;
   displayName: string;
@@ -33,7 +34,7 @@ interface LdapAlias {
   objectClass: string[];
   cn: string;
   rfc822MailMember: string[];
-}
+}*/
 
 interface LdapUser {
   objectClass: string[];
@@ -67,7 +68,7 @@ interface LdapUser {
   uidParrain?: string[];
 }
 
-interface LdapGroup {
+/*interface LdapGroup {
   objectClass: string[];
   cn: string;
   displayName: string;
@@ -87,7 +88,7 @@ interface LdabClub extends LdapGroup {
   tresorier: string;
   vicePresident: string[];
   typeClub?: string;
-}
+}*/
 
 function hashPassword(password: string): string {
   const salt = crypto.randomBytes(4);
