@@ -169,7 +169,8 @@
           <h2>Es-tu sûr·e ?</h2>
           <p>
             Il n'est pas possible de revenir en arrière. Tu devras de nouveau prendre une place
-            (s'il en reste) si tu veux de nouveau en réserver une.
+            (s'il en reste) si tu veux de nouveau en réserver une. Le remboursement n'est pas
+            systématique, contacte l'organisation pour savoir si tu sera remboursé·e.
           </p>
           <ButtonPrimary
             on:click={async () => {
