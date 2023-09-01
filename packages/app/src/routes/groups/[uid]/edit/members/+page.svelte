@@ -170,17 +170,22 @@
   }
 
   let searcher: Fuse<(typeof data.group.members)[number]>;
-  $: searcher = new Fuse(data.group.members, {
-    keys: [
-      'member.fullName',
-      'member.lastName',
-      'member.firstName',
-      'member.uid',
-      'title',
-      'memberId',
-    ],
-    shouldSort: true,
-  });
+  $: searcher = new Fuse(
+    data.group.members.filter(({ member: { yearTier } }) =>
+      promo === 'Vieux' ? yearTier >= 5 : promo === `${yearTier}A`
+    ),
+    {
+      keys: [
+        'member.fullName',
+        'member.lastName',
+        'member.firstName',
+        'member.uid',
+        'title',
+        'memberId',
+      ],
+      shouldSort: true,
+    }
+  );
 
   function shownMembers(
     search: string,
