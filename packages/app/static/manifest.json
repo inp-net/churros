@@ -11,8 +11,36 @@
   "categories": ["events"],
   "screenshots": [
     {
-      "src": "/screen.jpeg",
-      "type": "image/jpeg"
+      "src": "/screen-feed.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-week.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-tickets.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-bookings.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-ticket.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-search.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-group.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-user.png",
+      "type": "image/png"
     }
   ],
   "icons": [
