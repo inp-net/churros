@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Group, Major, School, User } from '@prisma/client';
 import ldap from 'ldapjs';
+import crypto from 'crypto';
 
 const LDAP_URL = process.env['LDAP_URL'] || 'ldap://localhost:389';
 const LDAP_BASE_DN = process.env['LDAP_BASE_DN'] || 'dc=example,dc=com';
@@ -89,7 +90,10 @@ interface LdabClub extends LdapGroup {
 }
 
 function hashPassword(password: string): string {
-  return password;
+  const salt = crypto.randomBytes(4);
+  const sha_hash = crypto.createHash('sha1');
+  sha_hash.update(Buffer.from(password, 'utf8'));
+  return `{SSHA}${Buffer.concat([sha_hash.digest(), salt]).toString('base64')}`;
 }
 
 // check if a user exists in LDAP and return true if it does
