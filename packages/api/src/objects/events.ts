@@ -772,7 +772,7 @@ builder.queryField('searchEvents', (t) =>
           Event & { managers: Array<EventManager & { user: { uid: string } }> }
         >(
           fuzzyIDs,
-          search.length / 3,
+          10,
           results.map(({ id }) => id)
         )(fuzzyEvents),
         // fucking js does not allow promises for .filter

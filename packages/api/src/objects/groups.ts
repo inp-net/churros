@@ -249,7 +249,7 @@ LIMIT 20
         ...results.sort(levenshteinSorter(fuzzyResults)),
         ...levenshteinFilterAndSort<Group>(
           fuzzyResults,
-          search.length / 3,
+          3,
           results.map(({ id }) => id)
         )(resultsByFuzzySearch),
       ];

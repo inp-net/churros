@@ -250,7 +250,7 @@ LIMIT 10
         ...users.sort(levenshteinSorter(searchResults)),
         ...levenshteinFilterAndSort<User>(
           searchResults,
-          search.length / 2,
+          5,
           users.map(({ id }) => id)
         )(fuzzyUsers),
       ];
