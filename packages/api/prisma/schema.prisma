@@ -165,8 +165,10 @@ model Major {
   uid       String @default("") @db.VarChar(255)
   name      String @db.VarChar(255)
   shortName String @default("") @db.VarChar(255)
+  ldapSchoolUid String? @db.VarChar(255)
 
-  schools           School[]
+  schools           School[] @relation("MajorToSchool")
+  ldapSchool        School?  @relation("ldapSchool", fields: [ldapSchoolUid], references: [uid], onUpdate: Cascade, onDelete: SetNull)
   students          User[]
   userCandidates    UserCandidate[]
   accessibleTickets Ticket[]
@@ -180,7 +182,8 @@ model School {
   internalMailDomain String @default("") @db.VarChar(255)
 
   groups              Group[]
-  majors              Major[]
+  majors              Major[] @relation("MajorToSchool")
+  majorsLdapSchool    Major[] @relation("ldapSchool")
   studentAssociations StudentAssociation[]
   accessibleTickets   Ticket[]
 }
