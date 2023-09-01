@@ -12,6 +12,7 @@ import {
   splitSearchTerms,
   levenshteinSorter,
   levenshteinFilterAndSort,
+  sanitizeOperators,
 } from '../services/search.js';
 import type { Group, User } from '@prisma/client';
 import { NotificationTypeEnum } from './notifications.js';
@@ -217,9 +218,10 @@ builder.queryField('searchUsers', (t) =>
     args: { q: t.arg.string() },
     authScopes: { loggedIn: true },
     async resolve(query, _, { q }) {
+      q = sanitizeOperators(q).trim();
       const { numberTerms, searchString: search } = splitSearchTerms(q);
       const searchResults: FuzzySearchResult = await prisma.$queryRaw`
-SELECT "id", levenshtein_less_equal(LOWER(unaccent("firstName" ||' '|| "lastName")), LOWER(unaccent(${q})), 20) as changes
+SELECT "id", levenshtein_less_equal(LOWER(unaccent("firstName" ||' '|| "lastName")), LOWER(unaccent(${q})), 10) as changes
 FROM "User"
 ORDER BY changes ASC
 LIMIT 10
@@ -248,7 +250,7 @@ LIMIT 10
         ...users.sort(levenshteinSorter(searchResults)),
         ...levenshteinFilterAndSort<User>(
           searchResults,
-          5,
+          search.length / 2,
           users.map(({ id }) => id)
         )(fuzzyUsers),
       ];

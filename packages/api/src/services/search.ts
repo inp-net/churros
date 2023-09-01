@@ -38,3 +38,7 @@ export function splitSearchTerms(q: string): {
 
   return { terms, numberTerms, searchString };
 }
+
+export function sanitizeOperators(q: string): string {
+  return q.replaceAll(/[!&|]/g, ' ');
+}

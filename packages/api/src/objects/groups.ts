@@ -14,6 +14,7 @@ import {
   levenshteinFilterAndSort,
   splitSearchTerms,
   levenshteinSorter,
+  sanitizeOperators,
 } from '../services/search.js';
 import type { Context } from '../context.js';
 import { updatePicture } from '../pictures.js';
@@ -175,7 +176,7 @@ builder.queryField('searchGroups', (t) =>
     args: { q: t.arg.string() },
     authScopes: { loggedIn: true },
     async resolve(query, _, { q }, { user }) {
-      q = q.trim();
+      q = sanitizeOperators(q).trim();
       const { searchString: search } = splitSearchTerms(q);
       const fuzzyResults: FuzzySearchResult = await prisma.$queryRaw`
 SELECT "id", levenshtein_less_equal(LOWER(unaccent("name")), LOWER(unaccent(${q})), 15) as changes
@@ -248,7 +249,7 @@ LIMIT 20
         ...results.sort(levenshteinSorter(fuzzyResults)),
         ...levenshteinFilterAndSort<Group>(
           fuzzyResults,
-          3,
+          search.length / 3,
           results.map(({ id }) => id)
         )(resultsByFuzzySearch),
       ];

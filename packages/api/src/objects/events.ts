@@ -21,6 +21,7 @@ import {
   levenshteinFilterAndSort,
   levenshteinSorter,
   splitSearchTerms,
+  sanitizeOperators,
 } from '../services/search.js';
 import { dateFromNumbers } from '../date.js';
 import { TicketInput } from './tickets.js';
@@ -706,10 +707,10 @@ builder.queryField('searchEvents', (t) =>
       groupUid: t.arg.string({ required: false }),
     },
     async resolve(query, _, { q, groupUid }, { user }) {
-      q = q.trim();
+      q = sanitizeOperators(q).trim();
       const { searchString: search, numberTerms } = splitSearchTerms(q);
       const fuzzyIDs: FuzzySearchResult = await prisma.$queryRaw`
-      SELECT "id", levenshtein(LOWER(unaccent("title")), LOWER(unaccent(${search}))) as changes
+      SELECT "id", levenshtein_less_equal(LOWER(unaccent("title")), LOWER(unaccent(${search})), 20) as changes
       FROM "Event"
       ORDER BY changes ASC
       LIMIT 30
@@ -771,7 +772,7 @@ builder.queryField('searchEvents', (t) =>
           Event & { managers: Array<EventManager & { user: { uid: string } }> }
         >(
           fuzzyIDs,
-          10,
+          search.length / 3,
           results.map(({ id }) => id)
         )(fuzzyEvents),
         // fucking js does not allow promises for .filter
