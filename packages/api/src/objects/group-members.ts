@@ -187,6 +187,7 @@ builder.mutationField('upsertGroupMember', (t) =>
         canEditArticles: canEditArticles || president || vicePresident || secretary,
         canScanEvents: canScanEvents || president || vicePresident || secretary,
         vicePresident,
+        secretary,
       };
 
       const groupMember = await prisma.groupMember.upsert({
