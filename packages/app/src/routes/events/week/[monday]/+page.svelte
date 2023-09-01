@@ -4,7 +4,6 @@
   import IconBackward from '~icons/mdi/chevron-left';
   import IconGear from '~icons/mdi/cog-outline';
   import IconForward from '~icons/mdi/chevron-right';
-  import IconCalendarPlus from '~icons/mdi/calendar-plus';
   import { addDays, startOfWeek, isSameDay, previousMonday, nextMonday, formatISO } from 'date-fns';
   import type { PageData } from './$types';
   import { me } from '$lib/session';
@@ -92,11 +91,6 @@
       </section>
     {/each}
   </div>
-  <section class="add-to-calendar">
-    <ButtonSecondary href="../feed" icon={IconCalendarPlus}
-      >Ajouter à mon calendrier</ButtonSecondary
-    >
-  </section>
 </div>
 
 <style lang="scss">
@@ -104,12 +98,6 @@
     max-width: 600px;
     padding: 0 0.5rem 4rem;
     margin: 0 auto;
-  }
-
-  .add-to-calendar {
-    display: flex;
-    justify-content: center;
-    margin-top: 4rem;
   }
 
   .navigation {
