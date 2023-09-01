@@ -175,7 +175,7 @@
       </ul>
 
       <div class="more">
-        <ButtonInk icon={IconPeople} href="./members">Voir tout les membres</ButtonInk>
+        <ButtonInk icon={IconPeople} href="./members">Voir tous les membres</ButtonInk>
       </div>
     {:else if !$me}
       <Alert theme="warning"
