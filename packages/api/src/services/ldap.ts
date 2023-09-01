@@ -1,7 +1,6 @@
 /* eslint-disable complexity */
 /* eslint-disable @typescript-eslint/no-unused-vars */
- 
-import type { User } from '@prisma/client';
+import type { Group, Major, School, User } from '@prisma/client';
 import ldap from 'ldapjs';
 
 const LDAP_URL = process.env['LDAP_URL'] || 'ldap://localhost:389';
@@ -116,7 +115,7 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
 
           searchResult.on('searchEntry', (entry) => {
             // If the user is found, create a user object
-            if (entry.pojo.messageID) {
+            if (entry.pojo) {
               user = {
                 objectClass: [],
                 uid: '',
@@ -295,10 +294,13 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
 }
 
 // create a new user in LDAP
-async function createLdapUser(user: User, password: string, loginTP: string): Promise<void> {
+async function createLdapUser(
+  user: User & { major: Major & { school: School }; godparent: User | null },
+  loginTP: string,
+  password: string
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const userDn = `uid=${user.uid},ou=people,o=n7,${LDAP_BASE_DN}`;
-    const filiere = user.majorId.shotName;
     const userAttributes = {
       objectClass: [
         'top',
@@ -310,50 +312,80 @@ async function createLdapUser(user: User, password: string, loginTP: string): Pr
         'shadowAccount',
         'Eleve',
       ],
-      uid: user.uid,
+      uidNumber: '',
+      gidNumber: '1000',
       cn: `${user.firstName} ${user.lastName}`,
       displayName: `${user.firstName} ${user.lastName}`,
-      ecole: `o=n7,${LDAP_BASE_DN}`,
-      mail: `${user.uid}@bde.enseeiht.fr`,
-      filiere: `${filiere},ou=filieres,o=n7,${LDAP_BASE_DN}`,
-      genre: 404,
+      ecole: `o=${user.major.school.uid},${LDAP_BASE_DN}`,
+      mail: `${user.uid}@${user.major.school.internalMailDomain}`,
+      filiere: `${user.major.uid},ou=filieres,o=${user.major.school.uid},${LDAP_BASE_DN}`,
+      genre: '404',
       givenName: user.firstName,
       givenNameSearch: user.firstName.toLowerCase(),
-      hasWebsite: false,
+      hasWebsite: 'FALSE',
       homeDirectory: `/home/${user.uid}`,
-      inscritAE: false,
-      inscritFrappe: false,
-      inscritPassVieEtudiant: false,
+      inscritAE: 'FALSE',
+      inscritFrappe: 'FALSE',
+      inscritPassVieEtudiant: 'FALSE',
       loginShell: '/bin/bash',
       loginTP,
-      mailAnnexe: user.otherEmails,
+      //mailAnnexe: user.otherEmails,
       mailEcole: user.schoolEmail,
       mailForwardingAddress: user.email,
-      mobile: user.phone,
+      mobile: user.phone.toString(),
       userPassword: hashPassword(password),
-      promo: user.graduationYear,
+      promo: user.graduationYear.toString(),
       sn: user.lastName,
       snSearch: user.lastName.toLowerCase(),
       uidParrain: user.godparent?.uid,
     };
 
-    ldapClient.bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
-        if (bindError) {
-            console.error('LDAP Bind Error:', bindError);
-            // Handle the bind error
-        } else {
-            ldapClient.add(userDn, userAttributes, (error) => {
-            if (error) {
-                reject(error);
-                return;
-            }
+    console.log(LDAP_BIND_DN, LDAP_BIND_PASSWORD);
 
-            resolve();
-            });
-        }
-        }
-    );
+    ldapClient.bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
+      if (bindError) {
+        console.error('LDAP Bind Error:', bindError);
+        // Handle the bind error
+      } else {
+        console.log('Bind successful');
+        ldapClient.add(userDn, userAttributes, (error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve();
+        });
+      }
+    });
   });
 }
 
-export { queryLdapUser, createLdapUser };
+async function createLdapGroup(group: Group): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const groupDn = `cn=${group.uid},ou=grp-informels,ou=groups,o=n7,${LDAP_BASE_DN}`;
+    const groupAttributes = {
+      objectClass: ['top', 'posixGroup', 'Groupe'],
+      displayName: group.name,
+      gidNumber: '',
+      hasWebsite: 'FALSE',
+      memberUid: [],
+    };
+
+    ldapClient.bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
+      if (bindError) {
+        console.error('LDAP Bind Error:', bindError);
+        // Handle the bind error
+      } else {
+        ldapClient.add(groupDn, groupAttributes, (error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve();
+        });
+      }
+    });
+  });
+}
+
+export { queryLdapUser, createLdapUser, createLdapGroup };
