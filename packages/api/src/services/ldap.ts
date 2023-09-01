@@ -93,6 +93,7 @@ function hashPassword(password: string): string {
   const salt = crypto.randomBytes(4);
   const sha_hash = crypto.createHash('sha1');
   sha_hash.update(Buffer.from(password, 'utf8'));
+  sha_hash.update(salt);
   return `{SSHA}${Buffer.concat([sha_hash.digest(), salt]).toString('base64')}`;
 }
 
