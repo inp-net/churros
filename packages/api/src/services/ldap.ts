@@ -92,6 +92,58 @@ function hashPassword(password: string): string {
   return password;
 }
 
+// check if a user exists in LDAP and return true if it does
+async function checkLdapUserByUidNumber(uidNumber: number): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    const searchOptions: ldap.SearchOptions = {
+      scope: 'sub', // Search scope (subtree)
+      filter: `(uidNumber=${uidNumber})`, // Filter to search for the user by username
+    };
+
+    ldapClient.search(LDAP_BASE_DN, searchOptions, (error, searchResult) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      searchResult.on('searchEntry', (entry) => {
+        // If the user is found, return true
+        if (entry.pojo) {
+          resolve(true);
+        }
+      });
+
+      // Return false if the user is not found
+      searchResult.on('end', () => {
+        resolve(false);
+      });
+    });
+  });
+}
+
+async function find_free_uidNumber(
+  min: number = 2000,
+  max: number = 60000
+): Promise<number | null> {
+  if (max > 60000) {
+    throw new Error('max uidNumber is 60000');
+  }
+  const avg_uidNumber = (min + max) / 2;
+  const exist = await checkLdapUserByUidNumber(avg_uidNumber);
+  if (min == max) {
+    if (exist) {
+      return null;
+    } else {
+      return avg_uidNumber;
+    }
+  }
+  if (exist) {
+    return find_free_uidNumber(avg_uidNumber + 1, max);
+  } else {
+    return find_free_uidNumber(min, avg_uidNumber);
+  }
+}
+
 async function queryLdapUser(username: string): Promise<LdapUser | null> {
   return new Promise((resolve, reject) => {
     const searchOptions: ldap.SearchOptions = {
@@ -295,12 +347,16 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
 
 // create a new user in LDAP
 async function createLdapUser(
-  user: User & { major: Major & { school: School }; godparent: User | null },
-  loginTP: string,
+  user: User & { major: Major & { ldapSchool: School }; godparent: User | null },
   password: string
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const userDn = `uid=${user.uid},ou=people,o=n7,${LDAP_BASE_DN}`;
+    const uidNumber = await find_free_uidNumber();
+    if (uidNumber === null) {
+      reject(new Error('No free uidNumber'));
+      return;
+    }
     const userAttributes = {
       objectClass: [
         'top',
@@ -312,14 +368,14 @@ async function createLdapUser(
         'shadowAccount',
         'Eleve',
       ],
-      uidNumber: '',
-      gidNumber: '1000',
+      uidNumber,
+      gidNumber: 1000,
       cn: `${user.firstName} ${user.lastName}`,
       displayName: `${user.firstName} ${user.lastName}`,
-      ecole: `o=${user.major.school.uid},${LDAP_BASE_DN}`,
-      mail: `${user.uid}@${user.major.school.internalMailDomain}`,
-      filiere: `${user.major.uid},ou=filieres,o=${user.major.school.uid},${LDAP_BASE_DN}`,
-      genre: '404',
+      ecole: `o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`,
+      mail: `${user.uid}@${user.major.ldapSchool.internalMailDomain}`,
+      filiere: `${user.major.uid},ou=filieres,o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`,
+      genre: 404,
       givenName: user.firstName,
       givenNameSearch: user.firstName.toLowerCase(),
       hasWebsite: 'FALSE',
@@ -328,7 +384,7 @@ async function createLdapUser(
       inscritFrappe: 'FALSE',
       inscritPassVieEtudiant: 'FALSE',
       loginShell: '/bin/bash',
-      loginTP,
+      loginTP: user.schoolUid,
       //mailAnnexe: user.otherEmails,
       mailEcole: user.schoolEmail,
       mailForwardingAddress: user.email,
@@ -337,10 +393,8 @@ async function createLdapUser(
       promo: user.graduationYear.toString(),
       sn: user.lastName,
       snSearch: user.lastName.toLowerCase(),
-      uidParrain: user.godparent?.uid,
+      //uidParrain: user.godparent?.uid,
     };
-
-    console.log(LDAP_BIND_DN, LDAP_BIND_PASSWORD);
 
     ldapClient.bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
       if (bindError) {
@@ -353,6 +407,7 @@ async function createLdapUser(
             reject(error);
             return;
           }
+          console.log('User created');
           resolve();
         });
       }
