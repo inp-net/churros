@@ -97,8 +97,7 @@
           phone: data.user.phone,
           uid: data.user.uid,
           birthday: data.user.birthday,
-          // eslint-disable-next-line unicorn/no-null
-          godparentUid: null,
+          godparentUid: '',
           email: data.user.email,
           otherEmails: data.user.otherEmails,
         },

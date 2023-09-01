@@ -335,7 +335,11 @@ builder.mutationField('updateUser', (t) =>
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
       description: t.arg.string({ validate: { maxLength: 255 } }),
       links: t.arg({ type: [LinkInput] }),
-      godparentUid: t.arg.string({ required: false }),
+      godparentUid: t.arg.string({
+        required: false,
+        description:
+          'An empty string removes the godparent. Passing null (or undefined) does not update the godparent. An uid sets the godparent to that uid.',
+      }),
       contributesTo: t.arg({ type: ['ID'], required: false }),
     },
     authScopes(_, { uid }, { user }) {
@@ -447,7 +451,12 @@ builder.mutationField('updateUser', (t) =>
           birthday,
           links: { deleteMany: {}, createMany: { data: links } },
           otherEmails: { set: otherEmails.filter(Boolean) },
-          godparent: godparentUid ? { connect: { uid: godparentUid } } : { disconnect: true },
+          godparent:
+            godparentUid === ''
+              ? { disconnect: true }
+              : godparentUid
+              ? { connect: { uid: godparentUid } }
+              : {},
         },
       });
       await prisma.logEntry.create({
