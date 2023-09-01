@@ -13,6 +13,7 @@
   import InputNumber from './InputNumber.svelte';
   import InputEmailList from './InputEmailList.svelte';
   import { createEventDispatcher } from 'svelte';
+  import InputSocialLinks from './InputSocialLinks.svelte';
   const emit = createEventDispatcher();
 
   const userQuery = Selector('User')({
@@ -92,7 +93,6 @@
       address,
       description,
       graduationYear,
-      links,
       nickname,
       phone,
       firstName,
@@ -106,6 +106,22 @@
       major,
     },
   } = data;
+
+  const socialMediaNames = [
+    'facebook',
+    'instagram',
+    'discord',
+    'twitter',
+    'linkedin',
+    'github',
+    'hackernews',
+    'anilist',
+  ] as const;
+
+  let links = socialMediaNames.map((name) => ({
+    name,
+    value: data.user.links.find((link) => link.name === name)?.value ?? '',
+  }));
 
   $: canEditContributions = Boolean($me?.canEditUsers);
 
@@ -201,6 +217,7 @@
     />
     <InputText type="tel" label="Numéro de téléphone" bind:value={phone} />
   </div>
+  <InputSocialLinks bind:value={links} label="Réseaux sociaux" />
   <InputEmailList placeholder="moi@example.com" label="Autres emails" bind:value={otherEmails} />
   <InputDate
     actionIcon={IconClear}

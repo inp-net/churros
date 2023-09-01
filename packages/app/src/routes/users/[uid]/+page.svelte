@@ -16,6 +16,9 @@
   import IconLinkedin from '~icons/mdi/linkedin';
   import IconDiscord from '~icons/mdi/discord';
   import IconSnapchat from '~icons/mdi/snapchat';
+  import IconAnilist from '~icons/simple-icons/anilist';
+  import IconGithub from '~icons/mdi/github';
+  import IconHackernews from '~icons/mdi/hackernews';
   import TreePersons from '$lib/components/TreePersons.svelte';
   import Badge from '$lib/components/Badge.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
@@ -37,6 +40,9 @@
     linkedin: IconLinkedin,
     discord: IconDiscord,
     snapchat: IconSnapchat,
+    github: IconGithub,
+    hackernews: IconHackernews,
+    anilist: IconAnilist,
   };
 
   export let data: PageData;
