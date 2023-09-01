@@ -187,9 +187,9 @@
       <ul class="social-links nobullet">
         {#each user.links as { name, value }}
           <li>
-            <a href={value} title={name}>
+            <ButtonGhost href={value} title={name}>
               <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
-            </a>
+            </ButtonGhost>
           </li>
         {/each}
       </ul>
@@ -385,7 +385,7 @@
 
   .social-links {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.25rem;
     font-size: 1.25em;
   }
 
