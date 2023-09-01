@@ -68,7 +68,7 @@ export async function payEventRegistrationViaLydia(
   }
 
   const requestDetails = await sendLydiaPaymentRequest(
-    `Paiement de ${registration.ticket.event.title}`,
+    registration.ticket.event.title,
     registration.ticket.price,
     phone,
     beneficiaryVendorToken
@@ -103,7 +103,7 @@ export async function sendLydiaPaymentRequest(
   vendorToken: string
 ): Promise<{ requestId: string; requestUuid: string }> {
   const formParams = {
-    message: `Paiement de ${title}`,
+    message: title,
     amount: price.toString(),
     currency: 'EUR',
     type: 'phone',
