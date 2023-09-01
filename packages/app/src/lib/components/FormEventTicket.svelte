@@ -20,6 +20,7 @@
   const emit = createEventDispatcher();
 
   export let expandedTicketId = '';
+  let showNameHint = false;
 
   function promoLabel(year: number) {
     return `${yearTier(year)}A (${year})`;
@@ -84,7 +85,19 @@
     </div>
   </header>
   {#if expanded}
-    <InputText required label="Nom" bind:value={ticket.name} />
+    <InputText
+      hint={showNameHint ? "Pas besoin de mettre 'place' ou 'billet' devant le nom" : undefined}
+      on:input={(e) => {
+        if (!(e.detail.target instanceof HTMLInputElement)) return;
+        ticket.name = e.detail.target.value.replace(/^\s*(ticket|billet|place)\b\s*(\S)/i, '$2');
+        if (ticket.name !== e.detail.target.value) 
+          showNameHint = true;
+        
+      }}
+      required
+      label="Nom"
+      value={ticket.name}
+    />
 
     <div class="side-by-side">
       <InputNumber label="Prix" bind:value={ticket.price} />
