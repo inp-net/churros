@@ -62,7 +62,7 @@ builder.mutationField('login', (t) =>
         return prisma.credential.create({
           ...query,
           data: {
-            userId: user?.id,
+            userId: user?.id ?? '',
             type: CredentialPrismaType.Token,
             value: nanoid(),
             userAgent,
