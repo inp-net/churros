@@ -1,0 +1,2 @@
+- Le script python doit être sur une session sur les pc de l'école
+- Le script bash doit être sur notre ordinateur pour initier les connexions
