@@ -258,7 +258,7 @@
     {#if author}
       <section class="author">
         <AvatarPerson
-          href="/user/{author.uid}"
+          href="/users/{author.uid}"
           role={author.groups.find((g) => g.group.uid === group.uid)?.title ?? ''}
           {...author}
         />
