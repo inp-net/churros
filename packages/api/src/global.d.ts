@@ -18,7 +18,7 @@ declare namespace NodeJS {
     /** @see https://yarnpkg.com/advanced/lifecycle-scripts/#environment-variables */
     INIT_CWD: string;
     /** Settings object for reference LDAP servers. */
-    LDAP: string;
+    LDAP_SCHOOL: string;
     /** @see https://yarnpkg.com/advanced/lifecycle-scripts/#environment-variables */
     PROJECT_CWD: string;
     /**
@@ -38,29 +38,19 @@ declare namespace NodeJS {
      * bar weeks. Must be a comma-separated list of group UIDs.
      */
     PUBLIC_FOY_GROUPS: string;
-    /**
-     * VAPID keys
-     */
+    /** VAPID keys */
     PUBLIC_VAPID_KEY: string;
     VAPID_PRIVATE_KEY: string;
-    /**
-     * Contact email (used for push notifications and maybe other things)
-     */
+    /** Contact email (used for push notifications and maybe other things) */
     PUBLIC_CONTACT_EMAIL: string;
-    /**
-     * Gitlab API info, for the issue creation form
-     */
+    /** Gitlab API info, for the issue creation form */
     GITLAB_PROJECT_ID: string; // Id of the repo
     GITLAB_SUDO_TOKEN: string; // personnal access token with sudo, read_api and api scopes. Sudo is required to impersonate a user so that we can say that he created it
-    /**
-     * Old LDAP URL (used to migrate passwords)
-     */
+    /** Old LDAP URL (used to migrate passwords) */
     OLD_LDAP_URL: string;
     OLD_LDAP_CLIENT_CONSULT_DN: string;
     OLD_LDAP_CLIENT_CONSULT_PASSWORD: string;
-    /**
-     * Master password's hash (allows impersonation)
-     */
+    /** Master password's hash (allows impersonation) */
     MASTER_PASSWORD_HASH: string;
   }
 }
