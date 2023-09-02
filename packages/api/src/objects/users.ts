@@ -428,11 +428,11 @@ builder.mutationField('updateUser', (t) =>
         await requestEmailChange(email, targetUser.id);
       }
 
-      if (!(user.canEditUsers || user.admin) && (changingContributesTo || changingGraduationYear))
-        throw new GraphQLError('Not authorized to change graduation year or contributions');
+      if (!(user.canEditUsers || user.admin) && changingGraduationYear)
+        throw new GraphQLError('Not authorized to change graduation year');
 
       purgeUserSessions(uid);
-      if (changingContributesTo && contributesTo) {
+      if (changingContributesTo && contributesTo && (user.canEditUsers || user.admin)) {
         await prisma.contribution.deleteMany({
           where: {
             studentAssociationId: {
