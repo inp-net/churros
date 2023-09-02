@@ -1,4 +1,4 @@
-import { PaymentMethod as PaymentMethodPrisma } from '@prisma/client';
+import { PaymentMethod as PaymentMethodPrisma, type Registration, type User } from '@prisma/client';
 import { builder } from '../builder.js';
 import { DateTimeScalar } from './scalars.js';
 import { prisma } from '../prisma.js';
@@ -31,6 +31,8 @@ export const RegistrationType = builder.prismaNode('Registration', {
     }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
+    verifiedAt: t.expose('verifiedAt', { type: DateTimeScalar, nullable: true }),
+    verifiedBy: t.relation('verifiedBy', { nullable: true }),
     paymentMethod: t.expose('paymentMethod', { type: PaymentMethodEnum, nullable: true }),
     paid: t.exposeBoolean('paid'),
     ticket: t.relation('ticket'),
@@ -257,15 +259,60 @@ builder.queryField('registrationsOfTicket', (t) =>
   })
 );
 
-builder.queryField('verifyRegistration', (t) =>
-  t.prismaField({
-    type: RegistrationType,
+enum RegistrationVerificationState {
+  Ok,
+  NotPaid,
+  AlreadyVerified,
+  NotFound,
+}
+
+const RegistrationVerificationStateType = builder.enumType(RegistrationVerificationState, {
+  name: 'RegistrationVerificationState',
+});
+
+class RegistrationVerificationResult {
+  // eslint-disable-next-line @typescript-eslint/parameter-properties
+  state: RegistrationVerificationState;
+  // eslint-disable-next-line @typescript-eslint/parameter-properties
+  registration?: Registration & { verifiedBy?: User | null };
+
+  constructor(
+    state: RegistrationVerificationState,
+    registration?: Registration & { verifiedBy?: User | null }
+  ) {
+    this.state = state;
+    this.registration = registration;
+  }
+}
+
+const RegistrationVerificationResultType = builder
+  .objectRef<RegistrationVerificationResult>('RegistrationVerificationResult')
+  .implement({
+    fields: (t) => ({
+      state: t.field({
+        type: RegistrationVerificationStateType,
+        resolve: (r) => r.state,
+      }),
+      registration: t.field({
+        type: RegistrationType,
+        nullable: true,
+        resolve: (r) => r.registration,
+      }),
+    }),
+  });
+
+builder.mutationField('verifyRegistration', (t) =>
+  t.field({
+    type: RegistrationVerificationResultType,
+    errors: {},
     args: {
-      beneficiary: t.arg.string(),
-      ticketId: t.arg.id(),
+      id: t.arg.id(),
+      groupUid: t.arg.string(),
+      eventUid: t.arg.string(),
     },
-    async authScopes(_, { ticketId }, { user }) {
-      const event = await prisma.ticket.findUnique({ where: { id: ticketId } }).event({
+    async authScopes(_, { groupUid, eventUid }, { user }) {
+      const event = await prisma.event.findFirst({
+        where: { uid: eventUid, group: { uid: groupUid } },
         include: {
           managers: {
             include: {
@@ -277,11 +324,67 @@ builder.queryField('verifyRegistration', (t) =>
       if (!event) return false;
       return eventManagedByUser(event, user, { canVerifyRegistrations: true });
     },
-    async resolve(query, {}, { beneficiary, ticketId }, {}) {
-      return prisma.registration.findFirstOrThrow({
-        ...query,
-        where: { ticketId, beneficiary },
+    async resolve(query, { id }, { user }) {
+      async function log(message: string, target?: string) {
+        await prisma.logEntry.create({
+          data: {
+            action: 'scan',
+            area: 'scans',
+            message,
+            user: { connect: { id: user?.id ?? '' } },
+            target,
+          },
+        });
+      }
+
+      if (!user) throw new GraphQLError('Must be logged in to verify a registration');
+
+      let registration = await prisma.registration.findUnique({
+        where: { id },
+        include: {
+          verifiedBy: true,
+        },
       });
+
+      if (!registration) {
+        await log('Scan failed: registration not found');
+        return {
+          state: RegistrationVerificationState.NotFound,
+        };
+      }
+
+      // we check verifiedAt instead of verifiedBy in case the verifier deleted their account after verifying
+      if (registration.verifiedAt) {
+        await log('Scan failed: registration already verified', registration.id);
+        return {
+          state: RegistrationVerificationState.AlreadyVerified,
+          registration,
+        };
+      }
+
+      if (registration.paid) {
+        registration = await prisma.registration.update({
+          ...query,
+          where: { id },
+          data: {
+            verifiedAt: new Date(),
+            verifiedBy: { connect: { id: user.id } },
+          },
+          include: {
+            verifiedBy: true,
+          },
+        });
+        await log('Scan successful', registration.id);
+      } else {
+        await log('Scan failed: registration not paid', registration.id);
+      }
+
+      return {
+        state: registration.paid
+          ? RegistrationVerificationState.Ok
+          : RegistrationVerificationState.NotPaid,
+        registration,
+      };
     },
   })
 );
