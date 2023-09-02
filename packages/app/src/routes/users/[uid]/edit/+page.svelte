@@ -97,10 +97,10 @@
           phone: data.user.phone,
           uid: data.user.uid,
           birthday: data.user.birthday,
-          // eslint-disable-next-line unicorn/no-null
-          godparentUid: null,
+          godparentUid: '',
           email: data.user.email,
           otherEmails: data.user.otherEmails,
+          cededImageRightsToTVn7: data.user.cededImageRightsToTVn7,
         },
         {
           __typename: true,
@@ -209,7 +209,7 @@
       />
     </section>
     <section class="misc">
-      {#if $me?.admin || $me?.canEditUsers}
+      {#if data.userPermissions}
         <h2>Permissions</h2>
         <Permissions bind:data />
       {/if}

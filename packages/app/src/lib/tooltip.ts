@@ -5,10 +5,13 @@
 import tippy from 'sveltejs-tippy';
 import xss from 'xss';
 
-export const tooltip = (node: HTMLElement, parameters: string | [string, number] | object) => {
+export const tooltip = (
+  node: HTMLElement,
+  parameters: string | [string, number] | object | undefined
+) => {
   let content: string;
   let delay = 50;
-  if (parameters === '') return;
+  if (!parameters) return;
 
   if (typeof parameters === 'string') {
     content = parameters;

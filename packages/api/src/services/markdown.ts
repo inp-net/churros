@@ -18,14 +18,14 @@ export const toHtml = async (body: string) =>
     .use(rehypeSanitize)
     .use(rehypeStringify)
     .process(body)
-    .then(String)
-    .then((s) =>
-      s.replaceAll(
-        /(^|\b|\s)@(\w+)(\b|\s|$)/g,
-        (_, before: string, uid: string, after: string) =>
-          `${before}<a href="/users/${uid}" class="user-mention">@${uid}</a>${after}`
-      )
-    );
+    .then(String);
+// .then((s) =>
+//   s.replaceAll(
+//     /(^|\b|\s)@(\w+)(\b|\s|$)/g,
+//     (_, before: string, uid: string, after: string) =>
+//       `${before}<a href="/users/${uid}" class="user-mention">@${uid}</a>${after}`
+//   )
+// );
 
 export function htmlToText(body: string): string {
   return convertHtmlToText(body, {

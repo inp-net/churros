@@ -12,12 +12,15 @@
   import IconChevronUp from '~icons/mdi/chevron-up';
   import InputListOfGroups from './InputListOfGroups.svelte';
   import InputSearchObjectList from './InputSearchObjectList.svelte';
-  import { zeus } from '$lib/zeus';
+  import { type PaymentMethod, zeus } from '$lib/zeus';
   import Fuse from 'fuse.js';
   import { fromYearTier, schoolYearStart, yearRangeUpTo, yearTier } from '$lib/dates';
+  import InputSelectMultiple from './InputSelectMultiple.svelte';
+  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   const emit = createEventDispatcher();
 
   export let expandedTicketId = '';
+  let showNameHint = false;
 
   function promoLabel(year: number) {
     return `${yearTier(year)}A (${year})`;
@@ -41,6 +44,7 @@
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
     autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;
+    allowedPaymentMethods: PaymentMethod[];
   };
 
   $: expanded = expandedTicketId === ticket.id;
@@ -81,7 +85,17 @@
     </div>
   </header>
   {#if expanded}
-    <InputText required label="Nom" bind:value={ticket.name} />
+    <InputText
+      hint={showNameHint ? "Pas besoin de mettre 'place' ou 'billet' devant le nom" : undefined}
+      on:input={(e) => {
+        if (!(e.detail.target instanceof HTMLInputElement)) return;
+        ticket.name = e.detail.target.value.replace(/^\s*(ticket|billet|place)\b\s*(\S)/i, '$2');
+        if (ticket.name !== e.detail.target.value) showNameHint = true;
+      }}
+      required
+      label="Nom"
+      value={ticket.name}
+    />
 
     <div class="side-by-side">
       <InputNumber label="Prix" bind:value={ticket.price} />
@@ -247,6 +261,13 @@
       bind:groups={ticket.autojoinGroups}
       uids={ticket.autojoinGroups.map((g) => g.uid)}
     />
+
+    <InputField label="Méthodes de paiement">
+      <InputSelectMultiple
+        bind:selection={ticket.allowedPaymentMethods}
+        options={DISPLAY_PAYMENT_METHODS}
+      />
+    </InputField>
 
     <footer>
       <div class="properties">

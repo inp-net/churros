@@ -35,14 +35,15 @@ model User {
   graduationYear Int
 
   // Optional profile details
-  address     String    @default("") @db.VarChar(255)
-  birthday    DateTime?
-  description String    @default("") @db.VarChar(255)
-  nickname    String    @default("") @db.VarChar(255)
-  phone       String    @default("") @db.VarChar(255)
-  pictureFile String    @default("") @db.VarChar(255)
-  links       Link[]
-  godparentId String?
+  address                String    @default("") @db.VarChar(255)
+  birthday               DateTime?
+  description            String    @default("") @db.VarChar(255)
+  nickname               String    @default("") @db.VarChar(255)
+  phone                  String    @default("") @db.VarChar(255)
+  pictureFile            String    @default("") @db.VarChar(255)
+  links                  Link[]
+  godparentId            String?
+  cededImageRightsToTVn7 Boolean   @default(false)
 
   // Permissions
   admin         Boolean @default(false)
@@ -53,7 +54,7 @@ model User {
   articles                  Article[]
   groups                    GroupMember[]
   credentials               Credential[]
-  Reservation               Registration[]
+  Reservation               Registration[]             @relation("author")
   managedEvents             EventManager[]
   logs                      LogEntry[]
   events                    Event[]
@@ -68,6 +69,7 @@ model User {
   emailChanges              EmailChange[]
   Announcement              Announcement[]
   contributions             Contribution[]
+  verifications             Registration[]             @relation("verifiedBy")
 
   @@unique([schoolServer, schoolUid])
 }
@@ -109,6 +111,8 @@ model UserCandidate {
   address  String    @default("") @db.VarChar(255)
   birthday DateTime?
   phone    String    @default("") @db.VarChar(255)
+
+  cededImageRightsToTVn7 Boolean @default(false)
 
   @@unique([schoolServer, schoolUid])
 }
@@ -440,6 +444,7 @@ model Registration {
   ticketId      String
   beneficiary   String
   authorId      String
+  verifiedById  String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   paymentMethod PaymentMethod?
@@ -447,7 +452,9 @@ model Registration {
 
   lydiaTransaction LydiaTransaction?
   ticket           Ticket            @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  author           User              @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  author           User              @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  verifiedBy       User?             @relation(name: "verifiedBy", fields: [verifiedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  verifiedAt       DateTime?
 }
 
 enum PaymentMethod {

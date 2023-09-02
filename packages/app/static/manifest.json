@@ -1,6 +1,6 @@
 {
-  "name": "Association des Etudiants de l'n7",
-  "short_name": "AEn7",
+  "name": "Churros",
+  "short_name": "Churros",
   "start_url": "/",
   "lang": "fr",
   "display": "standalone",
@@ -11,20 +11,74 @@
   "categories": ["events"],
   "screenshots": [
     {
-      "src": "/screen.jpeg",
-      "type": "image/jpeg"
+      "src": "/screen-feed.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-week.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-tickets.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-bookings.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-ticket.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-search.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-group.png",
+      "type": "image/png"
+    },
+    {
+      "src": "/screen-user.png",
+      "type": "image/png"
     }
   ],
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/maskable_android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/monochrome_android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "monochrome"
     },
     {
       "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/maskable_android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/monochrome_android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "monochrome"
     }
   ],
   "theme_color": "#1b6f7c",

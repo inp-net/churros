@@ -5,12 +5,15 @@
     uid: string;
     groupId: string;
     name: string;
+    school?: { name: string } | undefined;
+    studentAssociation?: { school: { name: string } } | undefined;
     children: Group[];
     pictureFile: string;
     description: string;
   };
   export let group: Group;
   export let highlightUid = '';
+  export let showSchool = false;
 </script>
 
 <a class:highlight={highlightUid === group.uid} href="/groups/{group.uid}/">
@@ -18,7 +21,15 @@
     <img src="{env.PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} />
   </div>
   <div class="text">
-    <p class="name">{group.name}</p>
+    <p class="name">
+      {group.name}
+
+      {#if (group.school || group.studentAssociation) && showSchool}
+        <span class="school">
+          {(group.school ?? group.studentAssociation?.school)?.name}
+        </span>
+      {/if}
+    </p>
     {#if group.description}
       <p class="description">{group.description}</p>
     {/if}
@@ -82,5 +93,16 @@
 
   .highlight {
     font-weight: bold;
+  }
+
+  .school {
+    font-size: 0.75em;
+    font-weight: bold;
+    color: var(--muted-text);
+  }
+
+  .school::before {
+    margin-right: 0.25em;
+    content: '·';
   }
 </style>

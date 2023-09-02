@@ -13,10 +13,11 @@
   import type { SvelteComponent } from 'svelte';
   import IconInstagram from '~icons/mdi/instagram';
   import IconTwitter from '~icons/mdi/twitter';
-  import IconMatrix from '~icons/mdi/matrix';
+  import IconAnilist from '~icons/simple-icons/anilist';
   import IconLinkedin from '~icons/mdi/linkedin';
+  import IconGithub from '~icons/mdi/github';
+  import IconHackernews from '~icons/mdi/hackernews';
   import IconDiscord from '~icons/mdi/discord';
-  import IconSnapchat from '~icons/mdi/snapchat';
   import IconWebsite from '~icons/mdi/earth';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
@@ -32,15 +33,28 @@
   import { roleEmojis } from '$lib/permissions';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import { tooltip } from '$lib/tooltip';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
     instagram: IconInstagram,
-    twitter: IconTwitter,
-    matrix: IconMatrix,
-    linkedin: IconLinkedin,
     discord: IconDiscord,
-    snapchat: IconSnapchat,
+    twitter: IconTwitter,
+    linkedin: IconLinkedin,
+    github: IconGithub,
+    hackernews: IconHackernews,
+    anilist: IconAnilist,
+  };
+
+  const DISPLAY_SOCIAL_NETWORK: Record<string, string> = {
+    facebook: 'Facebook',
+    instagram: 'Instagram',
+    twitter: 'Twitter',
+    linkedin: 'LinkedIn',
+    github: 'GitHub',
+    hackernews: 'Hacker News',
+    anilist: 'AniList',
+    discord: 'Discord',
   };
 
   export let data: PageData;
@@ -130,7 +144,7 @@
       <ul class="social-links nobullet">
         {#each group.links.filter(({ value }) => Boolean(value)) as { name, value }}
           <li>
-            <a href={value} title={name}>
+            <a href={value} use:tooltip={DISPLAY_SOCIAL_NETWORK[name]}>
               <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
             </a>
           </li>
@@ -161,7 +175,7 @@
       </ul>
 
       <div class="more">
-        <ButtonInk icon={IconPeople} href="./members">Voir tout les membres</ButtonInk>
+        <ButtonInk icon={IconPeople} href="./members">Voir tous les membres</ButtonInk>
       </div>
     {:else if !$me}
       <Alert theme="warning"

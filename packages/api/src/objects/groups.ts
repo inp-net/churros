@@ -14,6 +14,7 @@ import {
   levenshteinFilterAndSort,
   splitSearchTerms,
   levenshteinSorter,
+  sanitizeOperators,
 } from '../services/search.js';
 import type { Context } from '../context.js';
 import { updatePicture } from '../pictures.js';
@@ -128,10 +129,34 @@ builder.queryField('groups', (t) =>
     args: {
       types: t.arg({ type: [GroupEnumType], required: false }),
     },
-    resolve: async (query, _, { types }) =>
+    resolve: async (query, _, { types }, { user }) =>
       prisma.group.findMany({
         ...query,
-        where: types ? { type: { in: types } } : {},
+        where: {
+          ...(types ? { type: { in: types } } : {}),
+          ...(user?.admin
+            ? {}
+            : {
+                OR: [
+                  {
+                    school: {
+                      id: {
+                        in: user?.major.schools.map(({ id }) => id) ?? [],
+                      },
+                    },
+                  },
+                  {
+                    studentAssociation: {
+                      school: {
+                        id: {
+                          in: user?.major.schools.map(({ id }) => id) ?? [],
+                        },
+                      },
+                    },
+                  },
+                ],
+              }),
+        },
         orderBy: { name: 'asc' },
       }),
   })
@@ -150,8 +175,8 @@ builder.queryField('searchGroups', (t) =>
     type: [GroupType],
     args: { q: t.arg.string() },
     authScopes: { loggedIn: true },
-    async resolve(query, _, { q }) {
-      q = q.trim();
+    async resolve(query, _, { q }, { user }) {
+      q = sanitizeOperators(q).trim();
       const { searchString: search } = splitSearchTerms(q);
       const fuzzyResults: FuzzySearchResult = await prisma.$queryRaw`
 SELECT "id", levenshtein_less_equal(LOWER(unaccent("name")), LOWER(unaccent(${q})), 15) as changes
@@ -163,17 +188,59 @@ LIMIT 20
         ...query,
         where: {
           id: { in: fuzzyResults.map(({ id }) => id) },
+          OR: [
+            {
+              school: {
+                id: {
+                  in: user?.major.schools.map(({ id }) => id) ?? [],
+                },
+              },
+            },
+            {
+              studentAssociation: {
+                school: {
+                  id: {
+                    in: user?.major.schools.map(({ id }) => id) ?? [],
+                  },
+                },
+              },
+            },
+          ],
         },
       });
       const results = await prisma.group.findMany({
         ...query,
         where: {
-          OR: [
-            { uid: { search } },
-            { name: { search } },
-            { description: { search } },
-            { longDescription: { search } },
-            { email: { search } },
+          AND: [
+            {
+              OR: [
+                { uid: { search } },
+                { name: { search } },
+                { description: { search } },
+                { longDescription: { search } },
+                { email: { search } },
+              ],
+            },
+            {
+              OR: [
+                {
+                  school: {
+                    id: {
+                      in: user?.major.schools.map(({ id }) => id) ?? [],
+                    },
+                  },
+                },
+                {
+                  studentAssociation: {
+                    school: {
+                      id: {
+                        in: user?.major.schools.map(({ id }) => id) ?? [],
+                      },
+                    },
+                  },
+                },
+              ],
+            },
           ],
         },
       });

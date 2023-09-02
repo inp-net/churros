@@ -3,21 +3,24 @@
   import type { SvelteComponent } from 'svelte';
   import IconInstagram from '~icons/mdi/instagram';
   import IconTwitter from '~icons/mdi/twitter';
-  import IconMatrix from '~icons/mdi/matrix';
   import IconLinkedin from '~icons/mdi/linkedin';
+  import IconAnilist from '~icons/simple-icons/anilist';
+  import IconGithub from '~icons/mdi/github';
+  import IconHackernews from '~icons/mdi/hackernews';
   import IconDiscord from '~icons/mdi/discord';
-  import IconSnapchat from '~icons/mdi/snapchat';
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
+  import { tooltip } from '$lib/tooltip';
 
   export let names = [
     'facebook',
     'instagram',
-    'twitter',
-    'matrix',
-    'linkedin',
     'discord',
-    'snapchat',
+    'twitter',
+    'linkedin',
+    'github',
+    'hackernews',
+    'anilist',
   ] as const;
   export let initial: Array<{ name: (typeof names)[number]; value: string }> = names.map(
     (name) => ({
@@ -36,11 +39,23 @@
   const NAME_TO_ICON: Record<(typeof names)[number], typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
     instagram: IconInstagram,
-    twitter: IconTwitter,
-    matrix: IconMatrix,
-    linkedin: IconLinkedin,
     discord: IconDiscord,
-    snapchat: IconSnapchat,
+    twitter: IconTwitter,
+    linkedin: IconLinkedin,
+    github: IconGithub,
+    hackernews: IconHackernews,
+    anilist: IconAnilist,
+  };
+
+  const DISPLAY_NAME: Record<(typeof names)[number], string> = {
+    facebook: 'Facebook',
+    instagram: 'Instagram',
+    twitter: 'Twitter',
+    linkedin: 'LinkedIn',
+    github: 'GitHub',
+    hackernews: 'Hacker News',
+    anilist: 'AniList',
+    discord: 'Discord',
   };
 
   function urlToUsername({
@@ -52,8 +67,8 @@
   }): string {
     if (!url) return '';
     switch (name) {
-      case 'facebook':
       case 'instagram':
+      case 'github':
       case 'twitter': {
         try {
           return decodeURIComponent(new URL(url).pathname.slice(1));
@@ -62,8 +77,13 @@
         }
       }
 
+      case 'anilist':
       case 'linkedin': {
-        return decodeURIComponent(new URL(url).pathname[1]) /* [0] is /in/ */;
+        return decodeURIComponent(new URL(url).pathname.split('/')[2]) /* [1] is in/ */;
+      }
+
+      case 'hackernews': {
+        return decodeURIComponent(new URL(url).searchParams.get('id') ?? '');
       }
 
       default: {
@@ -86,10 +106,6 @@
       if (!username) return undefined;
 
       switch (name) {
-        case 'facebook': {
-          return new URL('/' + username, 'https://facebook.com');
-        }
-
         case 'instagram': {
           return new URL('/' + username, 'https://instagram.com');
         }
@@ -98,20 +114,25 @@
           return new URL(`/in/${username}`, 'https://linkedin.com');
         }
 
-        case 'matrix': {
-          return undefined;
-        }
-
-        case 'discord': {
-          return undefined;
-        }
-
-        case 'snapchat': {
-          return undefined;
-        }
-
         case 'twitter': {
           return new URL(`/${username}`, 'https://twitter.com');
+        }
+
+        case 'anilist': {
+          return new URL(`/user/${username}`, 'https://anilist.co');
+        }
+
+        case 'github': {
+          return new URL(`/${username}`, 'https://github.com');
+        }
+
+        case 'hackernews': {
+          return new URL(`/user?id=${username}`, 'https://news.ycombinator.com');
+        }
+
+        case 'facebook':
+        case 'discord': {
+          return new URL(username);
         }
 
         default: {
@@ -132,7 +153,7 @@
         <BaseInputText
           {required}
           type="text"
-          value={urlToUsername(value[index(name)])}
+          value={urlToUsername(value[index(name)] ?? { name, value: '' })}
           on:input={({ detail }) => {
             value[index(name)] = {
               ...value[index(name)],
@@ -142,11 +163,13 @@
               }),
             };
           }}
-          placeholder="@moi"
+          placeholder={['discord', 'facebook'].includes(name)
+            ? `Le lien vers la page ${DISPLAY_NAME[name]}`
+            : `Ton @ sur ${DISPLAY_NAME[name]}`}
         >
           <svelte:element
-            this={usernameToURL(value[index(name)]) ? 'a' : 'div'}
-            title={name}
+            this={usernameToURL(value[index(name)] ?? { name, value: '' }) ? 'a' : 'div'}
+            use:tooltip={DISPLAY_NAME[name]}
             class="icon"
             slot="before"><svelte:component this={NAME_TO_ICON[name]} /></svelte:element
           >
@@ -158,13 +181,13 @@
 
 <style lang="scss">
   ul {
-    list-style: none;
-    padding-left: 0;
     display: flex;
     flex-flow: column wrap;
-    border-radius: var(--radius-block);
-    border: var(--border-block) solid var(--border);
+    padding-left: 0;
     overflow: hidden;
+    list-style: none;
+    border: var(--border-block) solid var(--border);
+    border-radius: var(--radius-block);
   }
 
   ul > li:not(:last-child) {
@@ -172,7 +195,7 @@
   }
 
   ul > li > :global(.base-input) {
-    border-radius: 0;
     border: none;
+    border-radius: 0;
   }
 </style>

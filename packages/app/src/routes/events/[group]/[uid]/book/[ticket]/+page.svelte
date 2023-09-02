@@ -3,7 +3,7 @@
   import IconPendingPayment from '~icons/mdi/cash-clock';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
+  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
   import { PaymentMethod, zeus } from '$lib/zeus';
   import Alert from '$lib/components/Alert.svelte';
   import { page } from '$app/stores';
@@ -44,8 +44,10 @@
     name,
     event: { contactMail, title, pictureFile, startsAt },
     price,
-    remainingGodsons,
   } = data.ticketByUid;
+
+  let { remainingGodsons } = data.ticketByUid;
+  $: remainingGodsons = remainingGodsons === -1 ? Number.POSITIVE_INFINITY : remainingGodsons;
 
   async function payBy(method: PaymentMethod | undefined) {
     const { upsertRegistration } = await $zeus.mutate({
@@ -207,9 +209,16 @@
         <ul class="nobullet payment-methods">
           {#each allowedPaymentMethods as method}
             <li>
-              <ButtonSecondary on:click={async () => payBy(method)}>
+              <ButtonSecondary
+                icon={PAYMENT_METHODS_ICONS[method]}
+                on:click={async () => payBy(method)}
+              >
                 {DISPLAY_PAYMENT_METHODS[method]}
               </ButtonSecondary>
+            </li>
+          {:else}
+            <li class="no-payment-methods danger">
+              Aucun moyen de paiement disponible. Contactez les managers de l'évènement.
             </li>
           {/each}
         </ul>
@@ -302,6 +311,13 @@
     flex-flow: row wrap;
     gap: 0.5rem;
     margin-top: 0.5rem;
+  }
+
+  .no-payment-methods {
+    padding: 1rem;
+    color: var(--text);
+    background: var(--bg);
+    border-radius: var(--radius-block);
   }
 
   .beneficiary {

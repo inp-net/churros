@@ -1,4 +1,11 @@
-import type { GroupType } from './zeus';
+import type { GroupType, PaymentMethod } from './zeus';
+import LogoLydia from '~icons/simple-icons/lydia';
+import IconCreditCard from '~icons/mdi/credit-card-outline';
+import IconCash from '~icons/mdi/cash';
+import IconPaymentCheck from '~icons/mdi/checkbook';
+import IconQuestionMark from '~icons/mdi/dots-horizontal';
+import IconBankTransfer from '~icons/mdi/bank';
+import type { SvelteComponent } from 'svelte';
 
 export const DISPLAY_PAYMENT_METHODS = {
   Cash: 'Espèces',
@@ -63,3 +70,12 @@ export const DISPLAY_MANAGER_PERMISSION_LEVELS = {
   editor: 'Modification',
   fullaccess: 'Gestion totale',
 } as const;
+
+export const PAYMENT_METHODS_ICONS: Record<PaymentMethod, typeof SvelteComponent<any>> = {
+  Card: IconCreditCard,
+  Cash: IconCash,
+  Check: IconPaymentCheck,
+  Lydia: LogoLydia,
+  Other: IconQuestionMark,
+  Transfer: IconBankTransfer,
+};

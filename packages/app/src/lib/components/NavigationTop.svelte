@@ -15,6 +15,7 @@
   import ButtonBack from './ButtonBack.svelte';
   import { formatDate } from '$lib/dates';
   import ButtonGhost from './ButtonGhost.svelte';
+  import { afterNavigate } from '$app/navigation';
   const dispatch = createEventDispatcher();
 
   onMount(() => {
@@ -28,7 +29,7 @@
 
   let currentEvent: undefined | { title: string; startsAt: Date } = undefined;
 
-  onMount(async () => {
+  afterNavigate(async () => {
     if ($page.url.pathname.endsWith('/scan/')) {
       try {
         const { event } = await $zeus.query({
@@ -58,6 +59,11 @@
 
   <div class="actions">
     {#if scanningTickets}
+      <ButtonGhost
+        help="Signaler un bug ou proposer une idée"
+        on:click={() => dispatch('report-issue')}
+        style="color:red"><IconIssue /></ButtonGhost
+      >
       <img class="logo" src="/logo.png" alt="logo de l'AE" />
     {:else}
       <ButtonGhost
@@ -93,7 +99,7 @@
   </div>
 </nav>
 
-<style lang="css">
+<style lang="scss">
   nav {
     position: fixed;
     top: 0;
@@ -143,6 +149,7 @@
     height: var(--size);
     overflow: hidden;
     border-radius: 50%;
+    object-fit: cover;
 
     /* border: 3px solid var(--text); */
   }
@@ -151,5 +158,22 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    max-width: 60%;
+
+    h1 {
+      overflow: hidden;
+      font-size: 1.2rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-clamp: 1;
+    }
+  }
+
+  .actions > * {
+    flex-shrink: 0;
+  }
+
+  .transparent .logo {
+    width: 3.5rem;
   }
 </style>

@@ -13,6 +13,7 @@
   import InputPerson from '$lib/components/InputPerson.svelte';
   import InputField from '$lib/components/InputField.svelte';
   import { isOnClubBoard, roleEmojis } from '$lib/permissions';
+  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
 
   export let data: PageData;
   const { group } = data;
@@ -41,6 +42,7 @@
 
   let serverError = '';
   let search = '';
+  let promo = '1A';
   let newMemberUid = '';
   let newMemberTitle = '';
 
@@ -71,6 +73,7 @@
                 lastName: true,
                 pictureFile: true,
                 fullName: true,
+                yearTier: true,
               },
             },
           },
@@ -167,26 +170,40 @@
   }
 
   let searcher: Fuse<(typeof data.group.members)[number]>;
-  $: searcher = new Fuse(data.group.members, {
-    keys: [
-      'member.fullName',
-      'member.lastName',
-      'member.firstName',
-      'member.uid',
-      'title',
-      'memberId',
-    ],
-    shouldSort: true,
-  });
+  $: searcher = new Fuse(
+    data.group.members.filter(({ member: { yearTier } }) =>
+      promo === 'Vieux' ? yearTier >= 5 : promo === `${yearTier}A`
+    ),
+    {
+      keys: [
+        'member.fullName',
+        'member.lastName',
+        'member.firstName',
+        'member.uid',
+        'title',
+        'memberId',
+      ],
+      shouldSort: true,
+    }
+  );
 
-  function shownMembers(search: string, members: Array<(typeof data.group.members)[number]>) {
+  function shownMembers(
+    search: string,
+    promo: string,
+    members: Array<(typeof data.group.members)[number]>
+  ) {
     return search && searcher
       ? searcher.search(search).map(({ item }) => item)
-      : members.sort(membersByImportance);
+      : members
+          .filter(({ member: { yearTier } }) =>
+            promo === 'Vieux' ? yearTier >= 5 : `${yearTier}A` === promo
+          )
+          .sort(membersByImportance);
   }
 </script>
 
 <section class="search">
+  <InputSelectOne options={['1A', '2A', '3A', '4A', 'Vieux']} label="Promo" bind:value={promo} />
   <InputText bind:value={search} label="Rechercher">
     <svelte:fragment slot="before">
       <IconSearch />
@@ -195,7 +212,7 @@
 </section>
 
 <ul class="nobullet members">
-  {#each shownMembers(search, data.group.members) as { memberId, member, president, treasurer, vicePresident, secretary, title, canEditArticles, canEditMembers, canScanEvents } (memberId)}
+  {#each shownMembers(search, promo, data.group.members) as { memberId, member, president, treasurer, vicePresident, secretary, title, canEditArticles, canEditMembers, canScanEvents } (memberId)}
     <li>
       <div class="item" data-id={member.uid}>
         <AvatarPerson

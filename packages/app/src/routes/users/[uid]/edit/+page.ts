@@ -17,6 +17,7 @@ export const _userQuery = Selector('User')({
   graduationYear: true,
   phone: true,
   birthday: true,
+  cededImageRightsToTVn7: true,
   links: { name: true, value: true },
   godparent: {
     uid: true,
@@ -112,6 +113,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
           createdAt: true,
           active: true,
         },
+        cededImageRightsToTVn7: true,
         groups: {
           group: {
             uid: true,

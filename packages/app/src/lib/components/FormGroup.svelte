@@ -36,11 +36,12 @@
   const socialMediaNames = [
     'facebook',
     'instagram',
-    'twitter',
-    'matrix',
-    'linkedin',
     'discord',
-    'snapchat',
+    'twitter',
+    'linkedin',
+    'github',
+    'hackernews',
+    'anilist',
   ] as const;
 
   let links = socialMediaNames.map((name) => ({

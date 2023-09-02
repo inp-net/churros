@@ -6,6 +6,7 @@
   import IconCancel from '~icons/mdi/cancel';
   import IconClose from '~icons/mdi/close';
   import IconSortUp from '~icons/mdi/triangle-small-up';
+  import IconChevronRight from '~icons/mdi/chevron-right';
   import IconSortDown from '~icons/mdi/triangle-small-down';
   import { page } from '$app/stores';
   import { dateTimeFormatter, formatDateTime } from '$lib/dates';
@@ -17,6 +18,7 @@
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import { _registrationsQuery } from './+page';
+  import { afterNavigate } from '$app/navigation';
 
   let compact = false;
   let loadingMore = false;
@@ -45,7 +47,10 @@
   function saveAsCsv() {
     if (!registrations) return;
     jsonToCsv.download(
-      `reservations-${$page.params.event}.csv`,
+      `reservations-${$page.params.group}-${$page.params.uid}-${format(
+        new Date(),
+        "yyyy-MM-dd-HH'h'mm"
+      )}.csv`,
       new jsonToCsv.JsonArray(
         registrations.edges.map(
           ({
@@ -78,6 +83,7 @@
     ['date', 'Date'],
     ['state', 'État'],
     ['method', 'Méthode'],
+    ['ticket', 'Billet'],
     ['beneficiary', 'Bénéficiaire'],
     ['contributes', 'Cotise'],
     ['major', 'Filière'],
@@ -85,8 +91,26 @@
     ['author', 'Payé par'],
   ] as const;
 
+  function fromSortingQueryParam(sorting: string): [typeof sortBy, typeof sortDirection] {
+    // If sorting starts with "-", it's descending, if it starts with "+" (or nothing), it's ascending
+    const desc = sorting.startsWith('-');
+    const key = sorting.replace(/^-+/, '');
+    return [key as typeof sortBy, desc ? 'descending' : 'ascending'];
+  }
+
+  function toSortingQueryParam(
+    sortBy: (typeof COLUMNS)[number][0],
+    direction: typeof sortDirection
+  ) {
+    return `${direction === 'descending' ? '-' : ''}${sortBy}`;
+  }
+
   let sortBy: (typeof COLUMNS)[number][0] = 'date';
   let sortDirection: 'ascending' | 'descending' = 'descending';
+
+  afterNavigate(() => {
+    [sortBy, sortDirection] = fromSortingQueryParam($page.url.searchParams.get('sort') ?? '-date');
+  });
 
   type Registration = (typeof registrations.edges)[number]['node'];
 
@@ -202,9 +226,21 @@
           <th
             class:sorting={sortBy === key}
             on:click={() => {
-              if (sortBy === key)
-                sortDirection = sortDirection === 'ascending' ? 'descending' : 'ascending';
-              else sortBy = key;
+              $page.url.searchParams.set(
+                'sort',
+                toSortingQueryParam(
+                  key,
+                  sortBy === key
+                    ? sortDirection === 'ascending'
+                      ? 'descending'
+                      : 'ascending'
+                    : 'ascending'
+                )
+              );
+              window.history.pushState(undefined, '', $page.url.href);
+              [sortBy, sortDirection] = fromSortingQueryParam(
+                $page.url.searchParams.get('sort') ?? '-date'
+              );
             }}
             ><div class="inner">
               {label}
@@ -224,7 +260,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod } } (id)}
+      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod } } (id)}
         {@const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined)}
         <tr class:selected={rowIsSelected[id]}>
           <td class="actions">
@@ -242,6 +278,12 @@
           </td>
           <td>
             {paymentMethod ? DISPLAY_PAYMENT_METHODS[paymentMethod] : 'Inconnue'}
+          </td>
+          <td>
+            {#if ticket.group}
+              {ticket.group.name} <IconChevronRight />
+            {/if}
+            {ticket.name}
           </td>
           {#if benef}
             <td>

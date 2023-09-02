@@ -50,16 +50,16 @@
   {#if data.searchGroups.length > 0}
     <h2>Groupes</h2>
     <ul class="nobullet">
-      {#each data.searchGroups as { uid, school, ...rest }}
+      {#each data.searchGroups as { uid, ...rest }}
         <li>
-          <CardGroup href="/groups/{uid}" school={school?.name} {...rest} />
+          <CardGroup href="/groups/{uid}" {...rest} />
         </li>
       {/each}
     </ul>
   {/if}
   {#if data.searchEvents.length > 0}
     <h2>Évènements</h2>
-    <ul class="nobullet">
+    <ul class="nobullet events">
       {#each data.searchEvents as event (event.id)}
         <li>
           <CardEvent href="/events/{event.group.uid}/{event.uid}" {...event} />
@@ -92,7 +92,12 @@
   ul {
     display: flex;
     flex-wrap: wrap;
+    gap: 1rem;
     justify-content: center;
+  }
+
+  ul.events li {
+    max-width: 300px;
   }
 
   .empty {

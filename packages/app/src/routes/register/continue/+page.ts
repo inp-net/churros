@@ -23,6 +23,7 @@ export const load: PageLoad = async ({ fetch, url }) => {
           graduationYear: true,
           phone: true,
           schoolUid: true,
+          cededImageRightsToTVn7: true,
         },
       ],
       schoolGroups: { names: true, majors: { id: true, name: true, schools: { name: true } } },

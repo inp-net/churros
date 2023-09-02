@@ -17,7 +17,7 @@
   function manager():
     | undefined
     | { canEdit: boolean; canEditPermissions: boolean; canVerifyRegistrations: boolean } {
-    return $me?.managedEvents.find((m) => m.event.id === data.event.id);
+    return data.event.managers.find((m) => m.user.uid === $me?.uid);
   }
 
   const shownTabs = ['', 'edit', 'registrations', 'scan'].filter((tab) => {
@@ -52,7 +52,7 @@
     currentTab = pathLeaf in TABS ? (pathLeaf as keyof typeof TABS) : '';
   }
 
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+   
   const tabHref = (tab: string) => `/events/${group}/${uid}/${tab}`;
 </script>
 

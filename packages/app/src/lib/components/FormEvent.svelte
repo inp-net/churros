@@ -346,7 +346,7 @@
       <DateInput required label="Fin" time bind:value={event.endsAt} />
     </div>
     <InputText label="Lieu" bind:value={event.location} />
-    <InputField label="Compte Lydia bénéficiaire">
+    <InputField label="Compte Lydia bénéficiaire" hint="Commences à taper le nom du compte lydia">
       <InputSearchObject
         clearable
         bind:object={event.beneficiary}

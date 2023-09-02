@@ -21,6 +21,7 @@ import {
   levenshteinFilterAndSort,
   levenshteinSorter,
   splitSearchTerms,
+  sanitizeOperators,
 } from '../services/search.js';
 import { dateFromNumbers } from '../date.js';
 import { TicketInput } from './tickets.js';
@@ -361,6 +362,9 @@ builder.mutationField('upsertEvent', (t) =>
       },
       { user }
     ) {
+      // TODO send only notifications to people that have canSeeTicket(..., people)  on tickets that changed the shotgun date, and say that the shotgun date changed in the notification
+      const shotgunChanged = !id;
+
       const connectFromListOfUids = (uids: string[]) => uids.map((uid) => ({ uid }));
 
       const connectFromListOfIds = (ids: string[]) => ids.map((id) => ({ id }));
@@ -461,6 +465,9 @@ builder.mutationField('upsertEvent', (t) =>
               data: {
                 ...ticket,
                 id: ticket.id!,
+                allowedPaymentMethods: {
+                  set: ticket.allowedPaymentMethods,
+                },
                 links: {
                   deleteMany: {},
                   createMany: {
@@ -500,6 +507,9 @@ builder.mutationField('upsertEvent', (t) =>
             autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
             eventId: event.id,
             uid: await createTicketUid(ticket.name),
+            allowedPaymentMethods: {
+              set: ticket.allowedPaymentMethods,
+            },
           },
         });
 
@@ -522,6 +532,9 @@ builder.mutationField('upsertEvent', (t) =>
               autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
               eventId: event.id,
               uid: await createTicketUid(ticket.name),
+              allowedPaymentMethods: {
+                set: ticket.allowedPaymentMethods,
+              },
             },
           });
 
@@ -594,7 +607,7 @@ builder.mutationField('upsertEvent', (t) =>
         },
       });
 
-      await scheduleShotgunNotifications(finalEvent);
+      if (shotgunChanged) await scheduleShotgunNotifications(finalEvent);
 
       return result;
     },
@@ -694,10 +707,10 @@ builder.queryField('searchEvents', (t) =>
       groupUid: t.arg.string({ required: false }),
     },
     async resolve(query, _, { q, groupUid }, { user }) {
-      q = q.trim();
+      q = sanitizeOperators(q).trim();
       const { searchString: search, numberTerms } = splitSearchTerms(q);
       const fuzzyIDs: FuzzySearchResult = await prisma.$queryRaw`
-      SELECT "id", levenshtein(LOWER(unaccent("title")), LOWER(unaccent(${search}))) as changes
+      SELECT "id", levenshtein_less_equal(LOWER(unaccent("title")), LOWER(unaccent(${search})), 20) as changes
       FROM "Event"
       ORDER BY changes ASC
       LIMIT 30
@@ -762,9 +775,13 @@ builder.queryField('searchEvents', (t) =>
           10,
           results.map(({ id }) => id)
         )(fuzzyEvents),
-        // what in the actual name of fuck do i need this?
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      ].filter(async (event) => eventAccessibleByUser(event, user));
+        // fucking js does not allow promises for .filter
+        // eslint-disable-next-line unicorn/no-array-reduce
+      ].reduce(async (acc, event) => {
+        if (await eventAccessibleByUser(event, user)) return [...(await acc), event];
+
+        return acc;
+      }, Promise.resolve([] as Event[]));
     },
   })
 );

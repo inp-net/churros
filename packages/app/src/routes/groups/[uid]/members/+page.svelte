@@ -3,7 +3,6 @@
   import IconGear from '~icons/mdi/gear-outline';
   import groupBy from 'lodash.groupby';
   import type { PageData } from './$types';
-  import { getYear, isBefore } from 'date-fns';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import { me } from '$lib/session';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
@@ -28,14 +27,6 @@
     group: { name, members },
     group,
   } = data);
-
-  function schoolYear(date: Date): [number, number] {
-    let startYear = getYear(date);
-    // if we are before september, we are in the previous school year (startYear = currentYear - 1)
-    if (isBefore(date, new Date(startYear, 9, 1))) startYear--;
-
-    return [startYear, startYear + 1];
-  }
 </script>
 
 <div class="content">
@@ -49,7 +40,7 @@
     {/if}
   </h1>
 
-  {#each Object.entries(groupBy( members, ({ createdAt }) => schoolYear(createdAt).join('-') )).sort( ([a, _], [b, _2]) => b.localeCompare(a) ) as [year, membersOfYear]}
+  {#each Object.entries(groupBy(members, ({ member: { graduationYear } }) => `Promo ${graduationYear}`)).sort( ([a, _], [b, _2]) => b.localeCompare(a) ) as [year, membersOfYear]}
     <section class="year">
       <h2>{year}</h2>
 

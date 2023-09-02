@@ -114,6 +114,8 @@
       class:danger={errored}
       class:primary={focused}
       on:change
+      on:blur
+      on:focus
       on:keyup
       on:keypress={(e) => {
         if (!(e.target instanceof HTMLInputElement)) return;

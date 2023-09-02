@@ -23,10 +23,10 @@ export const dateFromNumbers = (numbers: number[]) => {
 
 export function schoolYearStart(): Date {
   const now = new Date();
-  const thisYearSeptemberFirst = new Date(now.getFullYear(), 9, 1);
+  const thisYearSeptemberFirst = new Date(now.getFullYear(), 8, 1);
   if (now > thisYearSeptemberFirst) return thisYearSeptemberFirst;
 
-  return new Date(now.getFullYear() - 1, 9, 1);
+  return new Date(now.getFullYear() - 1, 8, 1);
 }
 
 export function yearTier(graduationYear: number): number {

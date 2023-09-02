@@ -14,6 +14,7 @@
   import InputNumber from '$lib/components/InputNumber.svelte';
   import InputDate from '$lib/components/InputDate.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
 
   export let data: PageData;
 
@@ -25,6 +26,7 @@
     graduationYear = new Date().getFullYear() + 3,
     lastName,
     majorId,
+    cededImageRightsToTVn7,
   } = data.userCandidate;
   let password = '';
   let passwordConfirmation = '';
@@ -44,6 +46,7 @@
     phone,
     password,
     passwordConfirmation,
+    cededImageRightsToTVn7,
   };
 
   let result: boolean | undefined;
@@ -217,6 +220,10 @@
         }}
       />
     </div>
+    <InputCheckbox bind:value={cededImageRightsToTVn7} label="Je cède mon doit à l'image à TVn7" />
+    <p class="typo-details">
+      Cela revient à remplir et signer <a href="/cessation-droit-image-tvn7.pdf">ce document</a>
+    </p>
     <section class="submit">
       <ButtonPrimary submits>S'inscrire</ButtonPrimary>
     </section>

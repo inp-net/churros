@@ -12,6 +12,7 @@ import {
   splitSearchTerms,
   levenshteinSorter,
   levenshteinFilterAndSort,
+  sanitizeOperators,
 } from '../services/search.js';
 import type { Group, User } from '@prisma/client';
 import { NotificationTypeEnum } from './notifications.js';
@@ -76,6 +77,7 @@ export const UserType = builder.prismaNode('User', {
     nickname: t.exposeString('nickname', { authScopes: { loggedIn: true, $granted: 'me' } }),
     phone: t.exposeString('phone', { authScopes: { loggedIn: true, $granted: 'me' } }),
     pictureFile: t.exposeString('pictureFile'),
+    cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
 
     // Permissions are only visible to admins
     admin: t.exposeBoolean('admin', {
@@ -217,9 +219,10 @@ builder.queryField('searchUsers', (t) =>
     args: { q: t.arg.string() },
     authScopes: { loggedIn: true },
     async resolve(query, _, { q }) {
+      q = sanitizeOperators(q).trim();
       const { numberTerms, searchString: search } = splitSearchTerms(q);
       const searchResults: FuzzySearchResult = await prisma.$queryRaw`
-SELECT "id", levenshtein_less_equal(LOWER(unaccent("firstName" ||' '|| "lastName")), LOWER(unaccent(${q})), 20) as changes
+SELECT "id", levenshtein_less_equal(LOWER(unaccent("firstName" ||' '|| "lastName")), LOWER(unaccent(${q})), 10) as changes
 FROM "User"
 ORDER BY changes ASC
 LIMIT 10
@@ -335,7 +338,12 @@ builder.mutationField('updateUser', (t) =>
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
       description: t.arg.string({ validate: { maxLength: 255 } }),
       links: t.arg({ type: [LinkInput] }),
-      godparentUid: t.arg.string({ required: false }),
+      cededImageRightsToTVn7: t.arg.boolean(),
+      godparentUid: t.arg.string({
+        required: false,
+        description:
+          'An empty string removes the godparent. Passing null (or undefined) does not update the godparent. An uid sets the godparent to that uid.',
+      }),
       contributesTo: t.arg({ type: ['ID'], required: false }),
     },
     authScopes(_, { uid }, { user }) {
@@ -367,6 +375,7 @@ builder.mutationField('updateUser', (t) =>
         birthday,
         godparentUid,
         contributesTo,
+        cededImageRightsToTVn7,
       },
       { user }
     ) {
@@ -445,9 +454,15 @@ builder.mutationField('updateUser', (t) =>
           address,
           phone,
           birthday,
+          cededImageRightsToTVn7,
           links: { deleteMany: {}, createMany: { data: links } },
-          otherEmails: { set: otherEmails },
-          godparent: godparentUid ? { connect: { uid: godparentUid } } : { disconnect: true },
+          otherEmails: { set: otherEmails.filter(Boolean) },
+          godparent:
+            godparentUid === ''
+              ? { disconnect: true }
+              : godparentUid
+              ? { connect: { uid: godparentUid } }
+              : {},
         },
       });
       await prisma.logEntry.create({

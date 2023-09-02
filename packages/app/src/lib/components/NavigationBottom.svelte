@@ -18,10 +18,8 @@
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
   import { beforeNavigate } from '$app/navigation';
-  import { format } from 'date-fns';
   import { me } from '$lib/session';
   import { page } from '$app/stores';
-  import { closestMonday } from '$lib/dates';
   import { tooltip } from '$lib/tooltip';
 
   export let current: 'home' | 'search' | 'events' | 'more';
@@ -77,7 +75,7 @@
   </button>
 
   <a
-    href="/events/week/{format(closestMonday(new Date()), 'yyyy-MM-dd')}"
+    href="/events/"
     class:current={!flyoutOpen && current === 'events'}
     class:disabled={flyoutOpen}
     use:tooltip={'Événements'}
@@ -151,7 +149,7 @@
 
     <a href="/posts/create">
       <IconArticle />
-      <span>Article</span>
+      <span>Post</span>
     </a>
 
     <a href="/events/create">

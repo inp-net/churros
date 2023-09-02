@@ -51,27 +51,25 @@
   }
 
   function getTimingText() {
-    if (!opensAt && !closesAt) 
-      return `Shotgun intemporel`;
-     if (opensAt && isFuture(new Date(opensAt))) 
+    if (!opensAt && !closesAt) return `Shotgun intemporel`;
+    if (opensAt && isFuture(new Date(opensAt)))
       return `Shotgun ${formatRelative(new Date(opensAt), new Date(), { locale: fr })}`;
-     if (closesAt) {
-      if (isPast(new Date(closesAt))) 
+    if (closesAt) {
+      if (isPast(new Date(closesAt)))
         return `En vente jusqu'à ${formatRelative(new Date(closesAt), new Date(), { locale: fr })}`;
-       
-        if (differenceInMinutes(new Date(closesAt), new Date()) < 1) {
-          return `Plus que ${formatDuration(
-            { seconds: differenceInSeconds(new Date(closesAt), new Date()) },
-            { locale: fr }
-          )} pour shotgun !!!!`;
-        }
 
-        return `Plus que ${formatDistanceToNow(new Date(closesAt), {
-          locale: fr,
-          includeSeconds: true,
-        })} pour
+      if (differenceInMinutes(new Date(closesAt), new Date()) < 1) {
+        return `Plus que ${formatDuration(
+          { seconds: differenceInSeconds(new Date(closesAt), new Date()) },
+          { locale: fr }
+        )} pour shotgun !!!!`;
+      }
+
+      return `Plus que ${formatDistanceToNow(new Date(closesAt), {
+        locale: fr,
+        includeSeconds: true,
+      })} pour
           shotgun`;
-      
     }
   }
 
@@ -85,9 +83,7 @@
   });
 
   onDestroy(() => {
-    if (stateUpdateInterval) 
-      clearInterval(stateUpdateInterval);
-    
+    if (stateUpdateInterval) clearInterval(stateUpdateInterval);
   });
 </script>
 
@@ -143,9 +139,11 @@
     column-gap: 1rem;
     align-items: center;
     padding: 1rem;
-    &:not(.soon):not(.very-soon) {
+
+    &:not(.soon, .very-soon) {
       background: var(--muted-bg);
     }
+
     border-radius: var(--radius-block);
 
     h3 {
@@ -211,9 +209,11 @@
     0% {
       color: var(--text);
     }
+
     25% {
       color: var(--danger-link);
     }
+
     75% {
       color: var(--text);
     }

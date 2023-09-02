@@ -10,11 +10,11 @@ dotenv.config({
 
 const filepath = path.join(here, '../service-worker.ts');
 
-const literal = JSON.stringify(
+const literal =
   process.env.NODE_ENV === 'develoment'
-    ? 'http://localhost:4000/storage'
-    : 'https://churros.inpt.fr/storage'
-);
+    ? JSON.stringify('http://localhost:4000/storage')
+    : // eslint-disable-next-line no-template-curly-in-string
+      '`https://${sw.location.hostname}/storage`';
 console.log(`Injecting PUBLIC_STORAGE_URL=${literal} into ${filepath}`);
 
 writeFileSync(

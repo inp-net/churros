@@ -1,10 +1,8 @@
 <script lang="ts">
   import groupBy from 'lodash.groupby';
   import type { PageData } from './$types';
-  import IconCalendarPlus from '~icons/mdi/calendar-plus';
   import CalendarDay from '$lib/components/CalendarDay.svelte';
   import { compareAsc, format, parseISO } from 'date-fns';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { closestMonday } from '$lib/dates';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
@@ -51,11 +49,6 @@
       </section>
     {/each}
   </div>
-  <section class="add-to-calendar">
-    <ButtonSecondary href="../feed" icon={IconCalendarPlus}
-      >Ajouter à mon calendrier</ButtonSecondary
-    >
-  </section>
 </div>
 
 <style>
@@ -83,11 +76,5 @@
     flex-direction: column;
     flex-grow: 1;
     gap: 1rem;
-  }
-
-  .add-to-calendar {
-    display: flex;
-    justify-content: center;
-    margin-top: 4rem;
   }
 </style>

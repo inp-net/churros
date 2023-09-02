@@ -7,7 +7,7 @@
   export let pictureFile: string;
   export let pictureFileDark: string;
   export let role = '';
-  export let school = '';
+  export let school: { name: string } | undefined = undefined;
 </script>
 
 <a {href} title={name} class="group" draggable="false" on:click>
@@ -23,7 +23,7 @@
     <p class="role">{role}</p>
   {/if}
   {#if school}
-    <p class="school">{school}</p>
+    <p class="school">{school.name}</p>
   {/if}
 </a>
 

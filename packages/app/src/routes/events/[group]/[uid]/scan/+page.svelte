@@ -4,51 +4,68 @@
   import IconGear from '~icons/mdi/gear-outline';
   import IconGearCancel from '~icons/mdi/cog-off-outline';
   import IconCheck from '~icons/mdi/check';
-  import { type PaymentMethod, zeus } from '$lib/zeus';
-  import { onDestroy, onMount } from 'svelte';
+  import IconRepeatOff from '~icons/mdi/repeat-off';
+  import IconNotPaid from '~icons/mdi/credit-card-off-outline';
+  import { type PaymentMethod, zeus, RegistrationVerificationState } from '$lib/zeus';
+  import { type SvelteComponent, onDestroy, onMount } from 'svelte';
   import { Html5QrcodeScanner } from 'html5-qrcode';
-  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
+  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import Card from '$lib/components/Card.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import { browser } from '$app/environment';
   import type { QrBounds } from 'html5-qrcode/esm/core';
+  import { page } from '$app/stores';
+  import { formatDateTime } from '$lib/dates';
+  import { format, isToday } from 'date-fns';
+
+  const VIBRATION_PATTERNS: Record<RegistrationVerificationState, number[]> = {
+    [RegistrationVerificationState.Ok]: [100],
+    [RegistrationVerificationState.AlreadyVerified]: [50, 25, 50, 25, 50, 25, 50],
+    [RegistrationVerificationState.NotFound]: [400],
+    [RegistrationVerificationState.NotPaid]: [200, 100, 200],
+  };
+
+  const STATE_TO_ICON: Record<RegistrationVerificationState, typeof SvelteComponent<any>> = {
+    [RegistrationVerificationState.Ok]: IconCheck,
+    [RegistrationVerificationState.AlreadyVerified]: IconRepeatOff,
+    [RegistrationVerificationState.NotFound]: IconClose,
+    [RegistrationVerificationState.NotPaid]: IconNotPaid,
+  };
 
   let manualRegistrationCode = '';
   let code = '';
   let boundingBox: QrBounds | undefined;
+  let errorWhileVerifying = '';
   let result:
     | {
-        beneficiary: string;
-        authorIsBeneficiary: boolean;
-        author: { firstName: string; lastName: string };
-        paid: boolean;
-        id: string;
-        ticket: { name: string; group?: { name: string } };
-        paymentMethod?: PaymentMethod | undefined;
+        state: RegistrationVerificationState;
+        registration?: {
+          beneficiary: string;
+          authorIsBeneficiary: boolean;
+          author: { firstName: string; lastName: string };
+          paid: boolean;
+          id: string;
+          ticket: { name: string; group?: { name: string } };
+          paymentMethod?: PaymentMethod | undefined;
+          verifiedAt?: Date | null | undefined;
+          verifiedBy?:
+            | undefined
+            | {
+                uid: string;
+                fullName: string;
+                pictureFile: string;
+              };
+        };
       }
-    | false
-    | undefined = undefined;
-
-  function resultChanged(old: typeof result, now: typeof result): boolean {
-    if (old === undefined) return now !== undefined;
-
-    if (old === false) return true;
-
-    if (now === undefined || now === false) return true;
-
-    return JSON.stringify(old) !== JSON.stringify(now);
-  }
-
-  $: check(code).catch((error) => {
-    console.error(error);
-  });
+    | undefined;
 
   let closeTimeoutHandle: undefined | NodeJS.Timeout = undefined;
   let showCameraSettings = true;
   let aspectRatio = 16 / 9;
   let scanner: Html5QrcodeScanner | undefined;
+  let enteringManualCode = false;
 
   onMount(() => {
     aspectRatio = window.innerHeight / window.innerWidth;
@@ -57,14 +74,26 @@
       {
         fps: 5,
         aspectRatio,
+        videoConstraints: {
+          facingMode: {
+            exact: 'environment',
+          },
+        },
         // qrbox: { width: 300, height: 300 }
       },
       false
     );
     scanner.render(
-      (text, { result: { bounds } }) => {
+      async (text, { result: { bounds } }) => {
         boundingBox = bounds;
-        code = text;
+        showCameraSettings = false;
+        if (!result || (code !== text && !enteringManualCode)) {
+          code = text;
+          await check(code).catch((error) => {
+            console.error(error);
+          });
+          manualRegistrationCode = code.replace(/^r:/, '').toUpperCase();
+        }
       },
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       () => {}
@@ -83,49 +112,67 @@
   async function check(decodedContents: string): Promise<typeof result> {
     if (!decodedContents.startsWith('r:')) return undefined;
 
-    const controllingManualRegistrationCode = manualRegistrationCode === '';
-    if (controllingManualRegistrationCode)
-      manualRegistrationCode = decodedContents.replace(/^r:/, '');
+    // const controllingManualRegistrationCode = manualRegistrationCode === '';
+    // if (controllingManualRegistrationCode)
+    //   manualRegistrationCode = decodedContents.replace(/^r:/, '');
 
-    const { registration } = await $zeus.query({
-      registration: [
-        { id: decodedContents },
+    const { verifyRegistration } = await $zeus.mutate({
+      verifyRegistration: [
+        { id: decodedContents, groupUid: $page.params.group, eventUid: $page.params.uid },
         {
           __typename: true,
           '...on Error': {
             message: true,
           },
-          '...on QueryRegistrationSuccess': {
+          '...on MutationVerifyRegistrationSuccess': {
             data: {
-              beneficiary: true,
-              authorIsBeneficiary: true,
-              author: { firstName: true, lastName: true, fullName: true },
-              paid: true,
-              id: true,
-              ticket: { name: true, group: { name: true } },
-              paymentMethod: true,
+              state: true,
+              registration: {
+                beneficiary: true,
+                authorIsBeneficiary: true,
+                author: { firstName: true, lastName: true, fullName: true },
+                paid: true,
+                id: true,
+                ticket: { name: true, group: { name: true } },
+                paymentMethod: true,
+                verifiedAt: true,
+                verifiedBy: {
+                  fullName: true,
+                  uid: true,
+                  pictureFile: true,
+                },
+              },
             },
           },
         },
       ],
     });
 
-    let r: typeof result = false;
+    let r: typeof result = {
+      state: RegistrationVerificationState.NotFound,
+    };
 
-    if (registration.__typename !== 'Error') r = registration.data;
+    if (verifyRegistration.__typename === 'Error') {
+      errorWhileVerifying = verifyRegistration.message;
+    } else {
+      errorWhileVerifying = '';
+      r = verifyRegistration.data;
+    }
 
-    if (resultChanged(result, r) && r !== undefined) {
-      if (r === false || !r?.paid) window.navigator.vibrate([200, 100, 200]);
-      else window.navigator.vibrate(100);
+    if (window.navigator.vibrate) {
+      window.navigator.vibrate(
+        VIBRATION_PATTERNS[r?.state ?? RegistrationVerificationState.NotFound]
+      );
     }
 
     result = r;
-    if (controllingManualRegistrationCode) manualRegistrationCode = '';
+    // if (controllingManualRegistrationCode) manualRegistrationCode = '';
 
-    if (result === false) {
+    if (result?.state === RegistrationVerificationState.NotFound) {
       if (closeTimeoutHandle) clearTimeout(closeTimeoutHandle);
       closeTimeoutHandle = setTimeout(() => {
         result = undefined;
+        manualRegistrationCode = '';
       }, 5000);
     }
   }
@@ -156,62 +203,87 @@
             }
 
             result = undefined;
+            manualRegistrationCode = '';
           }}><IconClose /></ButtonGhost
         >
       </section>
     {/if}
     <section class="result">
-      {#if result === undefined}
-        <p class="idle">Prêt à scanner</p>
-      {:else if result === false}
+      {#if errorWhileVerifying !== ''}
         <div class="icon">
           <div class="circle danger">
-            <IconClose />
+            <svelte:component this={STATE_TO_ICON[RegistrationVerificationState.NotFound]} />
+          </div>
+        </div>
+        <h2 class="invalid">Impossible de scanner cet évènement</h2>
+        <p class="typo-details">Assure-toi d'être manager de l'évènement</p>
+      {:else if result === undefined}
+        <p class="idle">Prêt à scanner</p>
+      {:else if result.state === RegistrationVerificationState.NotFound}
+        <div class="icon">
+          <div class="circle danger">
+            <svelte:component this={STATE_TO_ICON[result.state]} />
           </div>
         </div>
         <h2 class="invalid">Billet invalide</h2>
-      {:else}
+      {:else if result.registration}
+        {@const { authorIsBeneficiary, author, beneficiary, paymentMethod, ticket } =
+          result.registration}
+        {@const ok = result.state === RegistrationVerificationState.Ok}
         <div class="header">
-          <div class="circle" class:danger={!result.paid} class:success={result.paid}>
-            {#if result.paid}
-              <IconCheck />
-            {:else}
-              <IconClose />
-            {/if}
+          <div class="circle" class:danger={!ok} class:success={ok}>
+            <svelte:component this={STATE_TO_ICON[result.state]} />
           </div>
           <div class="text">
-            {#if result.authorIsBeneficiary}
-              <h3>{result.author.firstName} {result.author.lastName}</h3>
+            {#if authorIsBeneficiary}
+              <h3>{author.firstName} {author.lastName}</h3>
             {:else}
-              <h3>{result.beneficiary}</h3>
-              {#if result.paid}
-                <p>Achetée par {result.author.firstName} {result.author.lastName}</p>
+              <h3>{beneficiary}</h3>
+              {#if ok}
+                <p>Achetée par {author.firstName} {author.lastName}</p>
               {/if}
             {/if}
-            {#if result.paid}
+            {#if ok}
               <p>
-                Payée par {DISPLAY_PAYMENT_METHODS[result.paymentMethod ?? 'Other']}
+                Payée via <svelte:component
+                  this={PAYMENT_METHODS_ICONS[paymentMethod ?? 'Other']}
+                />
+                {DISPLAY_PAYMENT_METHODS[paymentMethod ?? 'Other']}
               </p>
-            {:else}
+            {:else if result.state === RegistrationVerificationState.NotPaid}
               <p><strong>Non payée</strong></p>
+            {:else if result.state === RegistrationVerificationState.AlreadyVerified}
+              <p>
+                <strong>Déjà vérifiée</strong>
+              </p>
+              {#if result.registration?.verifiedAt && result.registration?.verifiedBy}
+                {@const { verifiedAt, verifiedBy } = result.registration}
+                <p class="typo-details">
+                  par <a href="/users/{verifiedBy.uid}">{verifiedBy.fullName}</a>
+                  {#if isToday(verifiedAt)}à {format(verifiedAt, 'HH:mm')}{:else}le {formatDateTime(
+                      verifiedAt
+                    )}{/if}
+                </p>
+              {/if}
             {/if}
           </div>
         </div>
         <div class="ticket">
           <span class="label">Billet</span>
           <span class="name">
-            {#if result.ticket.group}
-              {result.ticket.group.name} <IconChevronRight />
+            {#if ticket.group}
+              {ticket.group.name} <IconChevronRight />
             {/if}
-            {result.ticket.name}
+            {ticket.name}
           </span>
         </div>
       {/if}
     </section>
     <form
       class="manual"
-      on:submit|preventDefault={() => {
+      on:submit|preventDefault={async () => {
         code = 'r:' + manualRegistrationCode.replace(/^r:/, '').trim().toLowerCase();
+        await check(code);
       }}
     >
       <section class="camera-settings-toggle" class:shown={showCameraSettings}>
@@ -227,7 +299,17 @@
           {/if}</ButtonGhost
         >
       </section>
-      <InputText label="" placeholder="Code de réservation" bind:value={manualRegistrationCode} />
+      <InputText
+        on:focus={() => {
+          enteringManualCode = true;
+        }}
+        on:blur={() => {
+          enteringManualCode = false;
+        }}
+        label=""
+        placeholder="Code de réservation"
+        bind:value={manualRegistrationCode}
+      />
       <ButtonSecondary submits>Vérifier</ButtonSecondary>
     </form>
   </Card>
@@ -305,6 +387,7 @@
 
   .circle {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
     width: 3rem;

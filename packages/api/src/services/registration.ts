@@ -37,7 +37,7 @@ export const register = async (email: string): Promise<boolean> => {
   await transporter.sendMail({
     to: email,
     from: process.env.PUBLIC_SUPPORT_EMAIL,
-    subject: `Finaliser mon inscription sur le nouveau site de l'AE`,
+    subject: `Finaliser mon inscription sur Churros`,
     html: `
 <p>
   <a href="${url.toString()}">Finaliser mon inscription</a>
@@ -109,7 +109,8 @@ export const saveUser = async ({
   schoolEmail,
   schoolServer,
   schoolUid,
-}: UserCandidate): Promise<User & { major?: Major & { ldapSchool?: School } }> => {
+  cededImageRightsToTVn7,
+  }: UserCandidate): Promise<User & { major?: Major & { ldapSchool?: School } }> => {
   // Create a user profile
   const user = await prisma.user.create({
     data: {
@@ -125,6 +126,7 @@ export const saveUser = async ({
       schoolEmail,
       schoolServer,
       schoolUid,
+      cededImageRightsToTVn7,
       credentials: { create: { type: CredentialType.Password, value: password } },
       links: { create: [] },
       // enable all notifications by default.
@@ -146,10 +148,10 @@ export const saveUser = async ({
     from: process.env.PUBLIC_SUPPORT_EMAIL,
     html: `
 <p>
-  <a href="${url.toString()}">Bienvenue sur l'appli de l'AEn7 !</a>
+  <a href="${url.toString()}">Bienvenue sur Churros!</a>
 </p>
 `,
-    text: `Bienvenue sur l'appli de l'AEn7 ! Ça se passe ici : ${url.toString()}`,
+    text: `Bienvenue sur Churros ! Ça se passe ici : ${url.toString()}`,
   });
 
   return user;

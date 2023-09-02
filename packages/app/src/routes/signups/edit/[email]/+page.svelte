@@ -42,6 +42,7 @@
     lastName,
     majorId: majorId!,
     phone,
+    cededImageRightsToTVn7: data.userCandidateByEmail.cededImageRightsToTVn7,
   };
 
   let loading = false;
