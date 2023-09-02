@@ -50,7 +50,7 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
       // Restricted events in the user's groups
       {
         group: { members: { some: { member: { uid: user?.uid ?? '' } } } },
-        visibility: { not: VisibilityPrisma.Restricted },
+        visibility: VisibilityPrisma.Restricted,
       },
       // Unlisted events that the user booked
       {
