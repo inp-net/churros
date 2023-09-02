@@ -394,40 +394,23 @@ builder.mutationField('updateUser', (t) =>
         }
       }
 
-      const tempUser = await prisma.user.findUniqueOrThrow({
-        where: { uid },
-        include: { contributions: true },
-      });
-
-      console.info(`tempUser: ${JSON.stringify(tempUser)}`);
-
-      console.info(`contributesTo: ${JSON.stringify(contributesTo)}`);
-
-      console.info(`graduationYear: ${JSON.stringify(graduationYear)}`);
-
       const {
         email: oldEmail,
         graduationYear: oldGraduationYear,
         contributions: oldContributesTo,
-      } = tempUser;
+      } = await prisma.user.findUniqueOrThrow({
+        where: { uid },
+        include: { contributions: true },
+      });
 
       const changingEmail = email !== oldEmail;
       const changingGraduationYear = graduationYear !== oldGraduationYear;
-      const changingContributesTo =
-        JSON.stringify(oldContributesTo.map(({ id }) => id).sort()) !==
-        JSON.stringify((contributesTo ?? []).sort());
-
-      console.info(
-        `JSON.stringify(oldContributesTo.map(({ id }) => id).sort()): ${JSON.stringify(
-          oldContributesTo.map(({ id }) => id).sort()
-        )}`
-      );
-
-      console.info(
-        `JSON.stringify((contributesTo ?? []).sort()): ${JSON.stringify(
-          (contributesTo ?? []).sort()
-        )}`
-      );
+      let changingContributesTo = false;
+      if (contributesTo) {
+        changingContributesTo =
+          JSON.stringify(oldContributesTo.map(({ id }) => id).sort()) !==
+          JSON.stringify(contributesTo.sort());
+      }
 
       if (changingEmail) {
         // Check if new email is available
@@ -445,12 +428,7 @@ builder.mutationField('updateUser', (t) =>
         await requestEmailChange(email, targetUser.id);
       }
 
-      console.info(
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        `changingContributesTo: ${changingContributesTo}, changingGraduationYear: ${changingGraduationYear}, user.canEditUsers: ${user.canEditUsers}, user.admin: ${user.admin}`
-      );
-
-      if ((changingContributesTo || changingGraduationYear) && !(user.canEditUsers || user.admin))
+      if (!(user.canEditUsers || user.admin) && (changingContributesTo || changingGraduationYear))
         throw new GraphQLError('Not authorized to change graduation year or contributions');
 
       purgeUserSessions(uid);
