@@ -185,8 +185,8 @@ builder.queryField('event', (t) =>
       });
       return eventAccessibleByUser(event, user);
     },
-    resolve: async (query, _, { uid }) =>
-      prisma.event.findFirstOrThrow({ ...query, where: { uid } }),
+    resolve: async (query, _, { uid, groupUid }) =>
+      prisma.event.findFirstOrThrow({ ...query, where: { uid, group: { uid: groupUid } } }),
   })
 );
 
