@@ -2,6 +2,7 @@
   import IconAdd from '~icons/mdi/add';
   import IconCar from '~icons/mdi/car';
   import IconHand from '~icons/mdi/hand-heart';
+  import Carrot from '~icons/mdi/carrot';
   import IconTerminal from '~icons/mdi/terminal';
   import CardService from '$lib/components/CardService.svelte';
   import { me } from '$lib/session';
@@ -43,6 +44,10 @@
     Service('Covoiturages', 'Limite ton CO2e', {
       logo: IconCar,
       href: 'https://bde.enseeiht.fr/services/covoiturage/',
+    }),
+    Service('Ecobox', 'Commande ton ecobox', {
+      logo: Carrot,
+      href: 'https://lespaniersdelamiss.fr/',
     }),
     // Service('Nextcloud', 'Fichiers, etc.', { href: 'https://cloud.inpt.fr', logo: IconCloud }),
   ];
