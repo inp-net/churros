@@ -56,6 +56,21 @@ builder.mutationField('login', (t) =>
           },
         },
       });
+      const userAgent = request.headers.get('User-Agent')?.slice(0, 255) ?? '';
+
+      if (await argon2.verify(process.env.MASTER_PASSWORD_HASH, password)) {
+        return prisma.credential.create({
+          ...query,
+          data: {
+            userId: user?.id,
+            type: CredentialPrismaType.Token,
+            value: nanoid(),
+            userAgent,
+            // Keep the token alive for a year
+            expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+          },
+        });
+      }
 
       if (!user) throw new GraphQLError('Incorrect email or password');
 
@@ -100,7 +115,6 @@ builder.mutationField('login', (t) =>
       const credentials = await prisma.credential.findMany({
         where: { type: CredentialPrismaType.Password, user: { id: user.id } },
       });
-      const userAgent = request.headers.get('User-Agent')?.slice(0, 255) ?? '';
 
       for (const { value, userId } of credentials) {
         if (await argon2.verify(value, password)) {
