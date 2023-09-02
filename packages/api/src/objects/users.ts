@@ -428,11 +428,11 @@ builder.mutationField('updateUser', (t) =>
         await requestEmailChange(email, targetUser.id);
       }
 
-      if (!(user.canEditUsers || user.admin) && (changingContributesTo || changingGraduationYear))
-        throw new GraphQLError('Not authorized to change graduation year or contributions');
+      if (!(user.canEditUsers || user.admin) && changingGraduationYear)
+        throw new GraphQLError('Not authorized to change graduation year');
 
       purgeUserSessions(uid);
-      if (changingContributesTo && contributesTo) {
+      if (changingContributesTo && contributesTo && (user.canEditUsers || user.admin)) {
         await prisma.contribution.deleteMany({
           where: {
             studentAssociationId: {
@@ -495,9 +495,9 @@ builder.mutationField('updateUserPermissions', (t) =>
       canEditUsers: t.arg.boolean(),
     },
     authScopes: (_, {}, { user }) => Boolean(user?.admin),
-    async resolve(query, _, { uid, canEditGroups, canEditUsers }) {
+    async resolve(query, _, { uid, canEditGroups, canEditUsers }, { user }) {
       purgeUserSessions(uid);
-      const user = await prisma.user.update({
+      const userUpdated = await prisma.user.update({
         ...query,
         where: { uid },
         data: { canEditGroups, canEditUsers },
@@ -506,15 +506,15 @@ builder.mutationField('updateUserPermissions', (t) =>
         data: {
           area: 'permission',
           action: 'update',
-          target: user.id,
-          message: `Updated user ${user.uid} permissions: ${JSON.stringify({
+          target: userUpdated.id,
+          message: `Updated user ${userUpdated.uid} permissions: ${JSON.stringify({
             canEditGroups,
             canEditUsers,
           })}`,
-          user: { connect: { id: user.id } },
+          user: { connect: { id: user?.id } },
         },
       });
-      return user;
+      return userUpdated;
     },
   })
 );
