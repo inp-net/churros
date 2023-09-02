@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tooltip } from '$lib/tooltip';
   import type { SvelteComponent } from 'svelte';
   import IconSpinner from '~icons/mdi/loading';
 
@@ -16,12 +17,14 @@
   export let disabled = false;
   export let newTab = false;
   export let tabindex = 0;
+  export let help = '';
 </script>
 
 <svelte:element
   this={href ? 'a' : 'button'}
   target={newTab ? '_blank' : undefined}
   type={submits ? 'submit' : 'button'}
+  use:tooltip={help || undefined}
   class="button-secondary typo-paragraph"
   class:danger
   class:success

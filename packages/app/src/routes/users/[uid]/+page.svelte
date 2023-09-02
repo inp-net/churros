@@ -172,7 +172,7 @@
         <div class="actions">
           <ButtonShare />
           {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
-            <ButtonGhost help="Modifier" href="./edit"><IconGear /></ButtonGhost>
+            <ButtonGhost help="Modifier" href="/users/{user.uid}/edit/"><IconGear /></ButtonGhost>
           {/if}
           {#if $me?.uid === user.uid}
             <ButtonGhost help="Se déconnecter" on:click={logout}><IconLogout /></ButtonGhost>
