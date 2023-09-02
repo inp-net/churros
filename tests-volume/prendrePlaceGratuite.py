@@ -8,22 +8,41 @@ from helium import *
 from datetime import datetime
 import pause
 import sys
+import time
 
 url_centraverse = "https://staging-churros.inpt.fr/"
 
-def connection(id):
+def connection(id, retry = 0):
     global url_centraverse
     go_to(url_centraverse.rstrip("/") + "/login")
-    wait_until(Button("Se connecter").exists, timeout_secs=60)
-    write(id, into="Adresse e-mail ou nom d'utilisateur")
-    write("changes freinage ouverts coin apprécié incertain", into="Mot de passe")
-    click(Button("Se connecter"))
-    wait_until(Button("Autres jours").exists, timeout_secs=60)
+    time.sleep(5)
+    try:
+        write(id, into="Adresse e-mail ou nom d'utilisateur")
+        write("changes freinage ouverts coin apprécié incertain", into="Mot de passe")
+        click(Button("Se connecter"))
+        wait_until(Link("Autres jours").exists)
+    except:
+        if retry < 3:
+            print("==================== RELOAD PAGE CONNEXION =====================")
+            connection(id, retry + 1)
+        else:
+            print("===== ECHEC DE LOGIN ======")
+            sys.exit()
 
-def prendrePlaceGratuite(url_billet):
+def prendrePlaceGratuite(url_billet, retry = 0):
     go_to(url_billet)
-    wait_until(Button("Réserver").exists, timeout_secs=60)
-    click("Réserver")
+    try:
+        time.sleep(3)
+        click("Réserver")
+        wait_until(Text("C'est tout bon!").exists)
+        print("======= " + sys.argv[3] + " ==========")
+    except:
+        if retry < 3:
+            print("==================== RELOAD PAGE BILLET =====================")
+            prendrePlaceGratuite(url_billet, retry + 1)
+        else:
+            print("===== ECHEC DE PRISE DE BILLET ======")
+            sys.exit()
 
 
 tps_actuel = datetime.now()
