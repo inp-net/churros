@@ -5,6 +5,7 @@ import { prisma } from '../prisma.js';
 import { completeRegistration, register, saveUser } from '../services/registration.js';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
+import { createLdapUser } from '../services/ldap.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserCandidateType = builder.prismaNode('UserCandidate', {
@@ -105,8 +106,8 @@ builder.mutationField('completeRegistration', (t) =>
     resolve: async (
       _,
       { token, firstName, lastName, majorId, graduationYear, address, birthday, phone, password }
-    ) =>
-      completeRegistration(
+    ) => {
+      const user = await completeRegistration(
         await prisma.userCandidate.update({
           where: { token },
           data: {
@@ -121,7 +122,16 @@ builder.mutationField('completeRegistration', (t) =>
             password: await hash(password),
           },
         })
-      ),
+      );
+      if (user?.major && user.major.ldapSchool) {
+        try {
+          await createLdapUser(user, password);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      return user !== undefined;
+    },
   })
 );
 
@@ -141,7 +151,7 @@ builder.mutationField('acceptRegistration', (t) =>
     type: 'Boolean',
     args: { email: t.arg.string() },
     resolve: async (_, { email }) =>
-      saveUser(await prisma.userCandidate.findUniqueOrThrow({ where: { email } })),
+      saveUser(await prisma.userCandidate.findUniqueOrThrow({ where: { email } })) !== undefined,
   })
 );
 

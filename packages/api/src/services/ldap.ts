@@ -353,7 +353,10 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
 
 // create a new user in LDAP
 async function createLdapUser(
-  user: User & { major: Major & { ldapSchool: School }; godparent: User | null },
+  user: User & {
+    major?: undefined | (Major & { ldapSchool?: School | undefined });
+    godparent?: User | null;
+  },
   password: string
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
@@ -361,6 +364,9 @@ async function createLdapUser(
     const uidNumber = await find_free_uidNumber();
     if (uidNumber === null) {
       reject(new Error('No free uidNumber'));
+      return;
+    } else if (user.major === undefined || user.major.ldapSchool === undefined) {
+      reject(new Error('No major or school'));
       return;
     }
     const userAttributes = {
