@@ -1,5 +1,4 @@
 /* eslint-disable complexity */
- 
 
 import type { Group, Major, School, User } from '@prisma/client';
 import ldap from 'ldapjs';
@@ -122,9 +121,7 @@ async function checkLdapUserByUidNumber(uidNumber: number): Promise<boolean> {
 
       searchResult.on('searchEntry', (entry) => {
         // If the user is found, return true
-        if (entry.pojo) 
-          resolve(true);
-        
+        if (entry.pojo) resolve(true);
       });
 
       // Return false if the user is not found
@@ -135,28 +132,20 @@ async function checkLdapUserByUidNumber(uidNumber: number): Promise<boolean> {
   });
 }
 
-async function findFreeUidNumber(
-  min = 2000,
-  max = 60_000
-): Promise<number | undefined> {
-  if (max > 60_000) 
-    throw new Error('max uidNumber is 60000');
-  
-  const avg_uidNumber = (min + max) / 2;
-  const exist = await checkLdapUserByUidNumber(avg_uidNumber);
+async function findFreeUidNumber(min = 2000, max = 60_000): Promise<number | undefined> {
+  if (max > 60_000) throw new Error('max uidNumber is 60000');
+
+  const avgUidNumber = (min + max) / 2;
+  const exist = await checkLdapUserByUidNumber(avgUidNumber);
   if (min === max) {
-    if (exist) 
-      return undefined;
-     
-      return avg_uidNumber;
-    
+    if (exist) return undefined;
+
+    return avgUidNumber;
   }
 
-  if (exist) 
-    return findFreeUidNumber(avg_uidNumber + 1, max);
-   
-    return findFreeUidNumber(min, avg_uidNumber);
-  
+  if (exist) return findFreeUidNumber(avgUidNumber + 1, max);
+
+  return findFreeUidNumber(min, avgUidNumber);
 }
 
 async function queryLdapUser(username: string): Promise<LdapUser | null> {
@@ -376,7 +365,7 @@ async function createLdapUser(
       return;
     }
 
- if (user.major === undefined || user.major.ldapSchool === undefined) {
+    if (user.major === undefined || user.major.ldapSchool === undefined) {
       reject(new Error('No major or school'));
       return;
     }
