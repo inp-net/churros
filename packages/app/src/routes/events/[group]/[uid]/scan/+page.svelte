@@ -49,8 +49,8 @@
           id: string;
           ticket: { name: string; group?: { name: string } };
           paymentMethod?: PaymentMethod | undefined;
-          verifiedAt: Date | null;
-          verifiedBy:
+          verifiedAt?: Date | null | undefined;
+          verifiedBy?:
             | undefined
             | {
                 uid: string;
