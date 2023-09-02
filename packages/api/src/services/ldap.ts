@@ -11,9 +11,16 @@ const LDAP_BIND_DN = process.env['LDAP_BIND_DN'] || 'cn=admin,dc=example,dc=com'
 const LDAP_BIND_PASSWORD = process.env['LDAP_BIND_PASSWORD'] || 'admin';
 
 // Configuration de la connexion LDAP
-const ldapClient = ldap.createClient({
-  url: LDAP_URL,
-});
+let ldapClient: ldap.Client | undefined = undefined;
+
+function connectLdap(): ldap.Client {
+  if (ldapClient === undefined) {
+    ldapClient = ldap.createClient({
+      url: LDAP_URL,
+    });
+  }
+  return ldapClient;
+}
 
 /*interface LdapSchool {
   objectClass: string[];
@@ -106,7 +113,7 @@ async function checkLdapUserByUidNumber(uidNumber: number): Promise<boolean> {
       filter: `(uidNumber=${uidNumber})`, // Filter to search for the user by username
     };
 
-    ldapClient.search(LDAP_BASE_DN, searchOptions, (error, searchResult) => {
+    connectLdap().search(LDAP_BASE_DN, searchOptions, (error, searchResult) => {
       if (error) {
         reject(error);
         return;
@@ -127,10 +134,7 @@ async function checkLdapUserByUidNumber(uidNumber: number): Promise<boolean> {
   });
 }
 
-async function find_free_uidNumber(
-  min: number = 2000,
-  max: number = 60000
-): Promise<number | null> {
+async function findFreeUidNumber(min: number = 2000, max: number = 60000): Promise<number | null> {
   if (max > 60000) {
     throw new Error('max uidNumber is 60000');
   }
@@ -144,9 +148,9 @@ async function find_free_uidNumber(
     }
   }
   if (exist) {
-    return find_free_uidNumber(avg_uidNumber + 1, max);
+    return findFreeUidNumber(avg_uidNumber + 1, max);
   } else {
-    return find_free_uidNumber(min, avg_uidNumber);
+    return findFreeUidNumber(min, avg_uidNumber);
   }
 }
 
@@ -157,13 +161,13 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
       filter: `(uid=${username})`, // Filter to search for the user by username
     };
 
-    ldapClient.bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
+    connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
       if (bindError) {
         console.error('LDAP Bind Error:', bindError);
         // Handle the bind error
       } else {
         // Perform the search after successful bind
-        ldapClient.search(LDAP_BASE_DN, searchOptions, (error, searchResult) => {
+        connectLdap().search(LDAP_BASE_DN, searchOptions, (error, searchResult) => {
           if (error) {
             reject(error);
             return;
@@ -361,7 +365,7 @@ async function createLdapUser(
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     const userDn = `uid=${user.uid},ou=people,o=n7,${LDAP_BASE_DN}`;
-    const uidNumber = await find_free_uidNumber();
+    const uidNumber = await findFreeUidNumber();
     if (uidNumber === null) {
       reject(new Error('No free uidNumber'));
       return;
@@ -409,13 +413,13 @@ async function createLdapUser(
       //uidParrain: user.godparent?.uid,
     };
 
-    ldapClient.bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
+    connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
       if (bindError) {
         console.error('LDAP Bind Error:', bindError);
         // Handle the bind error
       } else {
         console.log('Bind successful');
-        ldapClient.add(userDn, userAttributes, (error) => {
+        connectLdap().add(userDn, userAttributes, (error) => {
           if (error) {
             reject(error);
             return;
@@ -439,12 +443,12 @@ async function createLdapGroup(group: Group): Promise<void> {
       memberUid: [],
     };
 
-    ldapClient.bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
+    connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
       if (bindError) {
         console.error('LDAP Bind Error:', bindError);
         // Handle the bind error
       } else {
-        ldapClient.add(groupDn, groupAttributes, (error) => {
+        connectLdap().add(groupDn, groupAttributes, (error) => {
           if (error) {
             reject(error);
             return;
