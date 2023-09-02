@@ -94,6 +94,7 @@ export const saveUser = async ({
   schoolEmail,
   schoolServer,
   schoolUid,
+  cededImageRightsToTVn7,
 }: UserCandidate): Promise<boolean> => {
   // Create a user profile
   await prisma.user.create({
@@ -110,6 +111,7 @@ export const saveUser = async ({
       schoolEmail,
       schoolServer,
       schoolUid,
+      cededImageRightsToTVn7,
       credentials: { create: { type: CredentialType.Password, value: password } },
       links: { create: [] },
       // enable all notifications by default.

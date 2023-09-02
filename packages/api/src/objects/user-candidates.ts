@@ -36,6 +36,7 @@ export const UserCandidateType = builder.prismaNode('UserCandidate', {
       nullable: true,
     }),
     phone: t.exposeString('phone'),
+    cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
 
     major: t.relation('major'),
   }),
@@ -45,7 +46,7 @@ builder.queryField('userCandidate', (t) =>
   t.prismaField({
     type: UserCandidateType,
     args: { token: t.arg.string() },
-    resolve: (query, _, { token }) =>
+    resolve: async (query, _, { token }) =>
       prisma.userCandidate.findUniqueOrThrow({ ...query, where: { token } }),
   })
 );
@@ -97,6 +98,7 @@ builder.mutationField('completeRegistration', (t) =>
       address: t.arg.string({ validate: { maxLength: 255 } }),
       password: t.arg.string({ validate: { minLength: 8, maxLength: 255 } }),
       passwordConfirmation: t.arg.string({ validate: {} }),
+      cededImageRightsToTVn7: t.arg.boolean(),
     },
     validate: [
       ({ password, passwordConfirmation }) => password === passwordConfirmation,
@@ -104,7 +106,18 @@ builder.mutationField('completeRegistration', (t) =>
     ],
     resolve: async (
       _,
-      { token, firstName, lastName, majorId, graduationYear, address, birthday, phone, password }
+      {
+        token,
+        firstName,
+        lastName,
+        majorId,
+        graduationYear,
+        address,
+        birthday,
+        phone,
+        password,
+        cededImageRightsToTVn7,
+      }
     ) =>
       completeRegistration(
         await prisma.userCandidate.update({
@@ -119,6 +132,7 @@ builder.mutationField('completeRegistration', (t) =>
             lastName,
             phone,
             password: await hash(password),
+            cededImageRightsToTVn7,
           },
         })
       ),
@@ -130,7 +144,7 @@ builder.queryField('userCandidateByEmail', (t) =>
     type: UserCandidateType,
     authScopes: { canEditUsers: true },
     args: { email: t.arg.string() },
-    resolve: (query, _, { email }) =>
+    resolve: async (query, _, { email }) =>
       prisma.userCandidate.findUniqueOrThrow({ ...query, where: { email } }),
   })
 );
@@ -160,10 +174,22 @@ builder.mutationField('updateUserCandidate', (t) =>
       birthday: t.arg({ type: DateTimeScalar, required: false }),
       phone: t.arg.string({ validate: { maxLength: 255 } }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
+      cededImageRightsToTVn7: t.arg.boolean(),
     },
     async resolve(
       _,
-      { register, email, firstName, lastName, majorId, graduationYear, address, birthday, phone }
+      {
+        register,
+        email,
+        firstName,
+        lastName,
+        majorId,
+        graduationYear,
+        address,
+        birthday,
+        phone,
+        cededImageRightsToTVn7,
+      }
     ) {
       const candidate = await prisma.userCandidate.update({
         where: { email },
@@ -175,6 +201,7 @@ builder.mutationField('updateUserCandidate', (t) =>
           graduationYear,
           lastName,
           phone,
+          cededImageRightsToTVn7,
         },
       });
       if (register) await saveUser(candidate);

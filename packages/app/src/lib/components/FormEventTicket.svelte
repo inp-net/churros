@@ -90,9 +90,7 @@
       on:input={(e) => {
         if (!(e.detail.target instanceof HTMLInputElement)) return;
         ticket.name = e.detail.target.value.replace(/^\s*(ticket|billet|place)\b\s*(\S)/i, '$2');
-        if (ticket.name !== e.detail.target.value) 
-          showNameHint = true;
-        
+        if (ticket.name !== e.detail.target.value) showNameHint = true;
       }}
       required
       label="Nom"

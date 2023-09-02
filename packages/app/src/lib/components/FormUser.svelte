@@ -14,6 +14,7 @@
   import InputEmailList from './InputEmailList.svelte';
   import { createEventDispatcher } from 'svelte';
   import InputSocialLinks from './InputSocialLinks.svelte';
+  import InputCheckbox from './InputCheckbox.svelte';
   const emit = createEventDispatcher();
 
   const userQuery = Selector('User')({
@@ -47,6 +48,7 @@
         pictureFile: true,
       },
     },
+    cededImageRightsToTVn7: true,
     contributesTo: {
       id: true,
       name: true,
@@ -77,6 +79,7 @@
       birthday: Date | null;
       uid: string;
       contributesTo: Array<{ id: string; name: string }>;
+      cededImageRightsToTVn7: boolean;
     };
   };
 
@@ -104,6 +107,7 @@
       birthday = null,
       contributesTo,
       major,
+      cededImageRightsToTVn7,
     },
   } = data;
 
@@ -145,6 +149,7 @@
             otherEmails,
             email,
             contributesTo: canEditContributions ? contributesTo.map((c) => c.id) : undefined,
+            cededImageRightsToTVn7,
           },
           {
             __typename: true,
@@ -229,6 +234,12 @@
     bind:value={birthday}
   />
   <InputText label="Adresse postale" bind:value={address} />
+  {#if canEditContributions}
+    <InputCheckbox bind:value={cededImageRightsToTVn7} label="Je cède mon doit à l'image à TVn7" />
+    <p class="typo-details">
+      Cela revient à remplir et signer <a href="/cessation-droit-image-tvn7.pdf">ce document</a>
+    </p>
+  {/if}
   <section class="submit">
     <ButtonSecondary submits {loading}>Sauvegarder</ButtonSecondary>
   </section>

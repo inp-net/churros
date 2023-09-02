@@ -77,6 +77,7 @@ export const UserType = builder.prismaNode('User', {
     nickname: t.exposeString('nickname', { authScopes: { loggedIn: true, $granted: 'me' } }),
     phone: t.exposeString('phone', { authScopes: { loggedIn: true, $granted: 'me' } }),
     pictureFile: t.exposeString('pictureFile'),
+    cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
 
     // Permissions are only visible to admins
     admin: t.exposeBoolean('admin', {
@@ -337,6 +338,7 @@ builder.mutationField('updateUser', (t) =>
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
       description: t.arg.string({ validate: { maxLength: 255 } }),
       links: t.arg({ type: [LinkInput] }),
+      cededImageRightsToTVn7: t.arg.boolean(),
       godparentUid: t.arg.string({
         required: false,
         description:
@@ -373,6 +375,7 @@ builder.mutationField('updateUser', (t) =>
         birthday,
         godparentUid,
         contributesTo,
+        cededImageRightsToTVn7,
       },
       { user }
     ) {
@@ -451,6 +454,7 @@ builder.mutationField('updateUser', (t) =>
           address,
           phone,
           birthday,
+          cededImageRightsToTVn7,
           links: { deleteMany: {}, createMany: { data: links } },
           otherEmails: { set: otherEmails.filter(Boolean) },
           godparent:
