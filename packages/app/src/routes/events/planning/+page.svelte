@@ -6,6 +6,7 @@
   import { closestMonday } from '$lib/dates';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
+  import { Gif } from 'svelte-tenor';
 
   export let data: PageData;
 
@@ -25,6 +26,20 @@
   />
 
   <div class="days">
+    {#if events.length === 0}
+      <div class="empty">
+        <Gif
+          gif={{
+            id: '27616552',
+            description: 'John Travolta confused',
+            width: 220,
+            height: 220,
+            gif: 'https://media.tenor.com/EbyOKpncujQAAAAi/john-travolta-tra-jt-transparent.gif',
+          }}
+        />
+        <p>Aucun événement à venir</p>
+      </div>
+    {/if}
     {#each Object.keys(groupedByDate)
       .filter((day) => groupedByDate[day]?.length > 0)
       .sort() as day}
@@ -76,5 +91,20 @@
     flex-direction: column;
     flex-grow: 1;
     gap: 1rem;
+  }
+
+  .empty {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+    text-align: center;
+  }
+
+  :global(.gif) {
+    width: 50% !important;
+    background: none !important;
   }
 </style>
