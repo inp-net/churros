@@ -31,6 +31,12 @@ export const _registrationsQuery = Selector('QueryRegistrationsOfEventConnection
       authorIsBeneficiary: true,
       beneficiary: true,
       createdAt: true,
+      verifiedAt: true,
+      verifiedBy: {
+        uid: true,
+        pictureFile: true,
+        fullName: true,
+      },
       paymentMethod: true,
       ticket: {
         id: true,

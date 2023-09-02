@@ -19,6 +19,7 @@
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import { _registrationsQuery } from './+page';
   import { afterNavigate } from '$app/navigation';
+  import { tooltip } from '$lib/tooltip';
 
   let compact = false;
   let loadingMore = false;
@@ -44,6 +45,10 @@
     }
   }
 
+  function humanBoolean(value: boolean): string {
+    return value ? 'Oui' : 'Non';
+  }
+
   function saveAsCsv() {
     if (!registrations) return;
     jsonToCsv.download(
@@ -61,12 +66,14 @@
               paid,
               paymentMethod,
               ticket,
+              verifiedAt,
             },
           }) => ({
             'Date de réservation': dateTimeFormatter.format(createdAt),
             Bénéficiaire: beneficiary,
             'Achat par': fullName,
-            Payée: paid ? 'Oui' : 'Non',
+            Payée: humanBoolean(paid),
+            Scannée: humanBoolean(Boolean(verifiedAt)),
             'Méthode de paiement': paymentMethod,
             Billet: ticket.name,
           })
@@ -127,7 +134,8 @@
       }
 
       case 'state': {
-        return (a, _) => (desc ? -1 : 1) * (a.paid ? 1 : -1);
+        const sortingIndex = (a: Registration) => (a.verifiedAt ? 0 : a.paid ? 1 : 2);
+        return (a, b) => (desc ? -1 : 1) * (sortingIndex(a) - sortingIndex(b));
       }
 
       case 'method': {
@@ -209,6 +217,7 @@
   <div class="actions">
     <ButtonSecondary
       icon={IconDownload}
+      help="Attention, charge toutes les réservations sinon l'export sera incomplet"
       on:click={() => {
         saveAsCsv();
       }}>Exporter en .csv</ButtonSecondary
@@ -260,7 +269,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod } } (id)}
+      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod, verifiedAt, verifiedBy } } (id)}
         {@const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined)}
         <tr class:selected={rowIsSelected[id]}>
           <td class="actions">
@@ -273,8 +282,12 @@
               {formatDateTime(createdAt)}
             {/if}
           </td>
-          <td>
-            {paid ? 'Payée' : 'Non payée'}
+          <td
+            use:tooltip={verifiedAt
+              ? `Scannée le ${formatDateTime(verifiedAt)} par ${verifiedBy?.fullName ?? '?'}`
+              : undefined}
+          >
+            {verifiedAt ? 'Scannée' : paid ? 'Payée' : 'Non payée'}
           </td>
           <td>
             {paymentMethod ? DISPLAY_PAYMENT_METHODS[paymentMethod] : 'Inconnue'}
