@@ -37,12 +37,11 @@ export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
 });
 
-export function visibleEventsPrismaQuery(user: { uid: string } | undefined, future: boolean) {
+export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
   return {
     visibility: {
       not: VisibilityPrisma.Private,
     },
-    startsAt: future ? { gte: new Date() } : undefined,
     OR: [
       // Completely public events
       {
@@ -212,7 +211,10 @@ builder.queryField('events', (t) =>
 
       return prisma.event.findMany({
         ...query,
-        where: visibleEventsPrismaQuery(user, future),
+        where: {
+          startsAt: future ? { gte: new Date() } : undefined,
+          ...visibleEventsPrismaQuery(user),
+        },
         orderBy: { startsAt: 'desc' },
       });
     },
@@ -226,25 +228,29 @@ builder.queryField('eventsInWeek', (t) =>
       today: t.arg({ type: DateTimeScalar }),
     },
     async resolve(query, _, { today }, { user }) {
-      const dateCondition = {
-        startsAt: {
-          gte: startOfWeek(today, { weekStartsOn: 1 }),
-          lte: endOfWeek(today, { weekStartsOn: 1 }),
-        },
-      };
+      // dateCondition is used to filter events that start in the week or end in the week
 
       if (!user) {
         return prisma.event.findMany({
           ...query,
-          where: { ...dateCondition, visibility: VisibilityPrisma.Public },
+          where: {
+            startsAt: {
+              lte: endOfWeek(today),
+              gte: startOfWeek(today),
+            },
+            visibility: VisibilityPrisma.Public,
+          },
         });
       }
 
       return prisma.event.findMany({
         ...query,
         where: {
-          ...dateCondition,
-          ...visibleEventsPrismaQuery(user, false),
+          startsAt: {
+            lte: endOfWeek(today),
+            gte: startOfWeek(today),
+          },
+          ...visibleEventsPrismaQuery(user),
         },
         orderBy: { startsAt: 'desc' },
       });
@@ -270,7 +276,7 @@ builder.queryField('eventsOfGroup', (t) =>
 
       return prisma.event.findMany({
         ...query,
-        where: visibleEventsPrismaQuery(user, false),
+        where: visibleEventsPrismaQuery(user),
         orderBy: { startsAt: 'desc' },
       });
     },

@@ -11,6 +11,7 @@
   import { isDark } from '$lib/theme';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
+  import { Gif } from 'svelte-tenor';
 
   export let data: PageData;
 
@@ -72,24 +73,39 @@
   {/if}
 
   <div class="days">
-    {#each daysOfWeek as day}
-      <section class="day">
-        <CalendarDay
-          showMonth={[...new Set(daysOfWeek.map((d) => d.getMonth()))].length > 1}
-          {day}
+    {#if events.length === 0}
+      <div class="empty">
+        <Gif
+          gif={{
+            id: '27616552',
+            description: 'John Travolta confused',
+            width: 220,
+            height: 220,
+            gif: 'https://media.tenor.com/EbyOKpncujQAAAAi/john-travolta-tra-jt-transparent.gif',
+          }}
         />
-        <div class="events-of-day">
-          {#each events.filter((e) => isSameDay(e.startsAt, day)) as event}
-            <CardEvent
-              collapsible
-              bind:expandedEventId
-              href="/events/{event.group.uid}/{event.uid}"
-              {...event}
-            />
-          {/each}
-        </div>
-      </section>
-    {/each}
+        <p>Aucun événement cette semaine</p>
+      </div>
+    {:else}
+      {#each daysOfWeek as day}
+        <section class="day">
+          <CalendarDay
+            showMonth={[...new Set(daysOfWeek.map((d) => d.getMonth()))].length > 1}
+            {day}
+          />
+          <div class="events-of-day">
+            {#each events.filter((e) => isSameDay(e.startsAt, day)) as event}
+              <CardEvent
+                collapsible
+                bind:expandedEventId
+                href="/events/{event.group.uid}/{event.uid}"
+                {...event}
+              />
+            {/each}
+          </div>
+        </section>
+      {/each}
+    {/if}
   </div>
 </div>
 
@@ -167,5 +183,20 @@
       flex-grow: 1;
       gap: 2rem;
     }
+  }
+
+  .empty {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+    text-align: center;
+  }
+
+  :global(.gif) {
+    width: 50% !important;
+    background: none !important;
   }
 </style>
