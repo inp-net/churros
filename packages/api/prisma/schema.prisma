@@ -23,7 +23,7 @@ model User {
   // School details
   schoolServer String? @db.VarChar(255)
   schoolUid    String? @db.VarChar(255)
-  schoolEmail  String? @unique @db.VarChar(255)
+  schoolEmail  String? @db.VarChar(255)
 
   // Mandatory profile details
   email          String   @unique @db.VarChar(255)
