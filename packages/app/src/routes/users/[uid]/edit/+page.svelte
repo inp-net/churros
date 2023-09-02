@@ -100,6 +100,7 @@
           godparentUid: '',
           email: data.user.email,
           otherEmails: data.user.otherEmails,
+          cededImageRightsToTVn7: data.user.cededImageRightsToTVn7,
         },
         {
           __typename: true,
