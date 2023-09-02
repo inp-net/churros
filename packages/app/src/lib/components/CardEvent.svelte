@@ -18,6 +18,7 @@
   import IconGear from '~icons/mdi/gear-outline';
   import ChevronUp from '~icons/mdi/chevron-up';
   import { goto } from '$app/navigation';
+  import { htmlToText } from 'html-to-text';
 
   export let collapsible = false;
   export let expandedEventId: string | undefined = undefined;
@@ -153,9 +154,14 @@
     {/if}
   </section>
   <section class="content {collapsed ? 'collapsed' : ''}">
+    exp
     <section class="desc">
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html descriptionHtml}
+      {@html (
+        htmlToText(descriptionHtml)
+          .split('\n')
+          .find((line) => line.trim() !== '') ?? ''
+      ).slice(0, 255)}
     </section>
     <section class="schedule">
       <h4 class="typo-field-label">Évènement</h4>

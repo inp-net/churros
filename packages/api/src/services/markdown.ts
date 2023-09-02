@@ -17,7 +17,7 @@ export const toHtml = async (body: string) =>
     .use(remarkRehype)
     .use(rehypeSanitize)
     .use(rehypeStringify)
-    .process(body)
+    .process(body.replace(/\n/g, '\n\n'))
     .then(String);
 // .then((s) =>
 //   s.replaceAll(
