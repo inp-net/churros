@@ -96,17 +96,17 @@
     }
   }
 
-  function poll(action: () => Promise<void>, everyMs: number): Timeout {
-    return setInterval(() => {
-      void (async () => {
-        await action();
-      })();
-    }, everyMs);
-  }
+  // function poll(action: () => Promise<void>, everyMs: number): Timeout {
+  //   return setInterval(() => {
+  //     void (async () => {
+  //       await action();
+  //     })();
+  //   }, everyMs);
+  // }
 
   onMount(() => {
     // Check every 2 seconds if the registration was paid.
-    pollIntervalId = poll(redirectIfPaid, 2000);
+    // pollIntervalId = poll(redirectIfPaid, 2000);
   });
 
   onDestroy(() => {
