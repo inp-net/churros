@@ -1,9 +1,9 @@
 /* eslint-disable complexity */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+ 
 
 import type { Group, Major, School, User } from '@prisma/client';
 import ldap from 'ldapjs';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 const LDAP_URL = process.env['LDAP_URL'] || 'ldap://localhost:389';
 const LDAP_BASE_DN = process.env['LDAP_BASE_DN'] || 'dc=example,dc=com';
@@ -11,7 +11,7 @@ const LDAP_BIND_DN = process.env['LDAP_BIND_DN'] || 'cn=admin,dc=example,dc=com'
 const LDAP_BIND_PASSWORD = process.env['LDAP_BIND_PASSWORD'] || 'admin';
 
 // Configuration de la connexion LDAP
-let ldapClient: ldap.Client | undefined = undefined;
+let ldapClient: ldap.Client | undefined;
 
 function connectLdap(): ldap.Client {
   if (ldapClient === undefined) {
@@ -19,10 +19,11 @@ function connectLdap(): ldap.Client {
       url: LDAP_URL,
     });
   }
+
   return ldapClient;
 }
 
-/*interface LdapSchool {
+/* interface LdapSchool {
   objectClass: string[];
   o: string;
   displayName: string;
@@ -41,7 +42,7 @@ interface LdapAlias {
   objectClass: string[];
   cn: string;
   rfc822MailMember: string[];
-}*/
+} */
 
 interface LdapUser {
   objectClass: string[];
@@ -75,7 +76,7 @@ interface LdapUser {
   uidParrain?: string[];
 }
 
-/*interface LdapGroup {
+/* interface LdapGroup {
   objectClass: string[];
   cn: string;
   displayName: string;
@@ -95,7 +96,7 @@ interface LdabClub extends LdapGroup {
   tresorier: string;
   vicePresident: string[];
   typeClub?: string;
-}*/
+} */
 
 function hashPassword(password: string): string {
   const salt = crypto.randomBytes(4);
@@ -121,9 +122,9 @@ async function checkLdapUserByUidNumber(uidNumber: number): Promise<boolean> {
 
       searchResult.on('searchEntry', (entry) => {
         // If the user is found, return true
-        if (entry.pojo) {
+        if (entry.pojo) 
           resolve(true);
-        }
+        
       });
 
       // Return false if the user is not found
@@ -134,24 +135,28 @@ async function checkLdapUserByUidNumber(uidNumber: number): Promise<boolean> {
   });
 }
 
-async function findFreeUidNumber(min: number = 2000, max: number = 60000): Promise<number | null> {
-  if (max > 60000) {
+async function findFreeUidNumber(
+  min = 2000,
+  max = 60_000
+): Promise<number | undefined> {
+  if (max > 60_000) 
     throw new Error('max uidNumber is 60000');
-  }
+  
   const avg_uidNumber = (min + max) / 2;
   const exist = await checkLdapUserByUidNumber(avg_uidNumber);
-  if (min == max) {
-    if (exist) {
-      return null;
-    } else {
+  if (min === max) {
+    if (exist) 
+      return undefined;
+     
       return avg_uidNumber;
-    }
+    
   }
-  if (exist) {
+
+  if (exist) 
     return findFreeUidNumber(avg_uidNumber + 1, max);
-  } else {
+   
     return findFreeUidNumber(min, avg_uidNumber);
-  }
+  
 }
 
 async function queryLdapUser(username: string): Promise<LdapUser | null> {
@@ -363,16 +368,19 @@ async function createLdapUser(
   },
   password: string
 ): Promise<void> {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const userDn = `uid=${user.uid},ou=people,o=n7,${LDAP_BASE_DN}`;
-    const uidNumber = await findFreeUidNumber();
-    if (uidNumber === null) {
+    const uidNumber = findFreeUidNumber();
+    if (uidNumber === undefined) {
       reject(new Error('No free uidNumber'));
       return;
-    } else if (user.major === undefined || user.major.ldapSchool === undefined) {
+    }
+
+ if (user.major === undefined || user.major.ldapSchool === undefined) {
       reject(new Error('No major or school'));
       return;
     }
+
     const userAttributes = {
       objectClass: [
         'top',
@@ -402,7 +410,6 @@ async function createLdapUser(
       inscritPassVieEtudiant: 'FALSE',
       loginShell: '/bin/bash',
       loginTP: user.schoolUid,
-      //mailAnnexe: user.otherEmails,
       mailEcole: user.schoolEmail,
       mailForwardingAddress: user.email,
       mobile: user.phone.toString(),
@@ -410,7 +417,6 @@ async function createLdapUser(
       promo: user.graduationYear.toString(),
       sn: user.lastName,
       snSearch: user.lastName.toLowerCase(),
-      //uidParrain: user.godparent?.uid,
     };
 
     connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
@@ -418,13 +424,48 @@ async function createLdapUser(
         console.error('LDAP Bind Error:', bindError);
         // Handle the bind error
       } else {
-        console.log('Bind successful');
         connectLdap().add(userDn, userAttributes, (error) => {
           if (error) {
             reject(error);
             return;
           }
-          console.log('User created');
+
+          resolve();
+        });
+      }
+    });
+  });
+}
+
+async function resetLdapUserPassword(
+  user: User & { major?: undefined | (Major & { ldapSchool?: School | undefined }) },
+  password: string
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (user.major === undefined || user.major.ldapSchool === undefined) {
+      reject(new Error('No major or school'));
+      return;
+    }
+
+    const userDn = `uid=${user.uid},ou=people,o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`;
+    const userChange = new ldap.Change({
+      operation: 'replace',
+      modification: {
+        userPassword: hashPassword(password),
+      },
+    });
+
+    connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
+      if (bindError) {
+        console.error('LDAP Bind Error:', bindError);
+        // Handle the bind error
+      } else {
+        connectLdap().modify(userDn, userChange, (error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
           resolve();
         });
       }
@@ -453,6 +494,7 @@ async function createLdapGroup(group: Group): Promise<void> {
             reject(error);
             return;
           }
+
           resolve();
         });
       }
@@ -460,4 +502,4 @@ async function createLdapGroup(group: Group): Promise<void> {
   });
 }
 
-export { queryLdapUser, createLdapUser, createLdapGroup };
+export { queryLdapUser, createLdapUser, resetLdapUserPassword, createLdapGroup };
