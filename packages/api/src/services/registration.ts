@@ -1,10 +1,18 @@
-import { CredentialType, NotificationType, type UserCandidate } from '@prisma/client';
+import {
+  CredentialType,
+  Major,
+  NotificationType,
+  School,
+  User,
+  type UserCandidate,
+} from '@prisma/client';
 import dichotomid from 'dichotomid';
 import { nanoid } from 'nanoid';
 import { createTransport } from 'nodemailer';
 import { prisma } from '../prisma.js';
 import { findSchoolUser } from './ldap-school.js';
 import slug from 'slug';
+import { queryLdapUser } from './ldap.js';
 
 const transporter = createTransport(process.env.SMTP_URL);
 
@@ -67,15 +75,22 @@ export const createUid = async ({
       },
     }).replaceAll('-', '');
   const base = toAscii(lastName).slice(0, 16) + toAscii(firstName).charAt(0);
-  const n = await dichotomid(
-    async (n) => !(await prisma.user.findFirst({ where: { uid: `${base}${n > 1 ? n : ''}` } }))
-  );
+  const n = await dichotomid(async (n) => {
+    let exist = !(await prisma.user.findFirst({ where: { uid: `${base}${n > 1 ? n : ''}` } }));
+    if (!exist) {
+      const ldapUser = await queryLdapUser(`${base}${n > 1 ? n : ''}`);
+      exist = Boolean(ldapUser);
+    }
+    return exist;
+  });
   return `${base}${n > 1 ? n : ''}`;
 };
 
-export const completeRegistration = async (candidate: UserCandidate): Promise<boolean> => {
+export const completeRegistration = async (
+  candidate: UserCandidate
+): Promise<(User & { major?: Major & { ldapSchool?: School } }) | undefined> => {
   // If the user has no school email, it must be manually accepted.
-  if (!candidate.schoolEmail) return false;
+  if (!candidate.schoolEmail) return undefined;
 
   return saveUser(candidate);
 };
@@ -95,9 +110,9 @@ export const saveUser = async ({
   schoolServer,
   schoolUid,
   cededImageRightsToTVn7,
-}: UserCandidate): Promise<boolean> => {
+  }: UserCandidate): Promise<User & { major?: Major & { ldapSchool?: School } }> => {
   // Create a user profile
-  await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       uid: await createUid({ firstName, lastName }),
       email,
@@ -139,5 +154,5 @@ export const saveUser = async ({
     text: `Bienvenue sur Churros ! Ça se passe ici : ${url.toString()}`,
   });
 
-  return true;
+  return user;
 };
