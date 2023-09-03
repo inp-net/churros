@@ -93,7 +93,7 @@ builder.mutationField('selfJoinGroup', (t) =>
       uid: t.arg.string(),
     },
     authScopes: { loggedIn: true },
-    async resolve(query, _, { groupUid, uid }) {
+    async resolve(query, _, { groupUid, uid }, { user: me }) {
       const group = await prisma.group.findUnique({ where: { uid: groupUid } });
       if (!group?.selfJoinable) throw new Error('This group is not self-joinable.');
       purgeUserSessions(uid);
@@ -111,7 +111,7 @@ builder.mutationField('selfJoinGroup', (t) =>
           action: 'create',
           target: groupMember.groupId,
           message: `${uid} a rejoins ${groupUid}`,
-          user: { connect: { id: uid } },
+          user: me ? { connect: { uid: me.uid } } : undefined,
         },
       });
       return groupMember;
@@ -154,7 +154,8 @@ builder.mutationField('upsertGroupMember', (t) =>
         canEditArticles,
         canEditMembers,
         canScanEvents,
-      }
+      },
+      { user: me }
     ) {
       const { uid } = await prisma.user.findUniqueOrThrow({
         where: { id: memberId },
@@ -172,7 +173,7 @@ builder.mutationField('upsertGroupMember', (t) =>
             action: 'update',
             target: groupId,
             message: `${uid} a été nommé·e président·e de ${groupId}`,
-            user: { connect: { id: memberId } },
+            user: me ? { connect: { id: me.id } } : undefined,
           },
         });
       }
@@ -202,7 +203,7 @@ builder.mutationField('upsertGroupMember', (t) =>
           action: 'update',
           target: groupId,
           message: `${uid} a été mis·e à jour dans ${groupId}`,
-          user: { connect: { id: memberId } },
+          user: me ? { connect: { id: me.id } } : undefined,
         },
       });
       return groupMember;
@@ -223,7 +224,7 @@ builder.mutationField('deleteGroupMember', (t) =>
         user?.canEditGroups ||
           user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id)
       ),
-    async resolve(_, { memberId, groupId }) {
+    async resolve(_, { memberId, groupId }, { user: me }) {
       const { uid } = await prisma.user.findUniqueOrThrow({
         where: { id: memberId },
         select: { uid: true },
@@ -236,7 +237,7 @@ builder.mutationField('deleteGroupMember', (t) =>
           action: 'delete',
           target: groupId,
           message: `${uid} a été supprimé·e de ${groupId}`,
-          user: { connect: { id: memberId } },
+          user: me ? { connect: { id: me.id } } : undefined,
         },
       });
       return true;
