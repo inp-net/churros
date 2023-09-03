@@ -13,7 +13,7 @@
   import IconChevronRight from '~icons/mdi/chevron-right';
   import { onDestroy, onMount } from 'svelte';
   import { tooltip } from '$lib/tooltip';
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { isDark } from '$lib/theme';
 
   export let group: undefined | { name: string } = undefined;
@@ -106,7 +106,7 @@
               <li>
                 <a class="group" use:tooltip={name} href="/groups/{uid}">
                   <img
-                    src="{PUBLIC_STORAGE_URL}{$isDark ? pictureFileDark : pictureFile}"
+                    src="{env.PUBLIC_STORAGE_URL}{$isDark ? pictureFileDark : pictureFile}"
                     alt={name}
                   />
                 </a>
@@ -199,10 +199,10 @@
       margin-right: 0.5rem;
 
       .group img {
-        height: 2rem;
         width: 2rem;
-        object-fit: contain;
+        height: 2rem;
         font-size: 0.5em;
+        object-fit: contain;
       }
     }
 
