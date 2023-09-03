@@ -10,7 +10,7 @@ async function git(args: string): Promise<string> {
 const hash = await git('rev-parse HEAD').then((hash) => hash.trim());
 const toplevel = await git('rev-parse --show-toplevel');
 const tag = await git(
-  'for-each-ref refs/tags --sort=-refname --format=%(refname:short) --count=1'
+  'for-each-ref refs/tags --sort=-v:refname --format=%(refname:short) --count=1'
 ).then((tag) => tag.trim().replace(/^v/, ''));
 const filepath = path.join(toplevel.trim(), './packages/app/src/lib/buildinfo.ts');
 console.log(`Injecting CURRENT_COMMIT="${hash}" into ${filepath}`);
