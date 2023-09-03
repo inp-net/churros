@@ -55,6 +55,8 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           openToGroups: {
             uid: true,
             name: true,
+            pictureFile: true,
+            pictureFileDark: true,
           },
           openToContributors: true,
           openToSchools: {

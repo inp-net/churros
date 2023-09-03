@@ -12,6 +12,9 @@
   import fr from 'date-fns/locale/fr/index.js';
   import IconChevronRight from '~icons/mdi/chevron-right';
   import { onDestroy, onMount } from 'svelte';
+  import { tooltip } from '$lib/tooltip';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { isDark } from '$lib/theme';
 
   export let group: undefined | { name: string } = undefined;
   export let descriptionHtml: string;
@@ -23,6 +26,12 @@
   export let closesAt: Date | undefined = undefined;
   export let opensAt: Date | undefined = undefined;
   export let event: { group: { uid: string }; uid: string };
+  export let openToGroups: Array<{
+    uid: string;
+    name: string;
+    pictureFile: string;
+    pictureFileDark: string;
+  }>;
 
   let stateUpdateInterval: NodeJS.Timeout | undefined = undefined;
 
@@ -91,6 +100,20 @@
   <div class="text-and-numbers">
     <div class="text">
       <h3>
+        {#if openToGroups.length}
+          <ul class="groups nobullet">
+            {#each openToGroups as { name, uid, pictureFile, pictureFileDark }}
+              <li>
+                <a class="group" use:tooltip={name} href="/groups/{uid}">
+                  <img
+                    src="{PUBLIC_STORAGE_URL}{$isDark ? pictureFileDark : pictureFile}"
+                    alt={name}
+                  />
+                </a>
+              </li>
+            {/each}
+          </ul>
+        {/if}
         {#if group}{group.name} <IconChevronRight /> {/if}{name}
       </h3>
       <div class="description">
@@ -166,6 +189,21 @@
       gap: 0.5rem;
       align-items: center;
       justify-content: center;
+    }
+
+    .groups {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      align-items: center;
+      margin-right: 0.5rem;
+
+      .group img {
+        height: 2rem;
+        width: 2rem;
+        object-fit: contain;
+        font-size: 0.5em;
+      }
     }
 
     .timing {
