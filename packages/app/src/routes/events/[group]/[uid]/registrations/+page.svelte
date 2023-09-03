@@ -83,7 +83,10 @@
   }
 
   export let data: PageData;
-  const { registrationsOfEvent: registrations } = data;
+  const {
+    registrationsOfEvent: registrations,
+    event: { registrationsCounts },
+  } = data;
   const rowIsSelected = Object.fromEntries(registrations.edges.map(({ node }) => [node.id, false]));
 
   const COLUMNS = [
@@ -212,7 +215,10 @@
 </script>
 
 <header>
-  <h1>{data.event.registrationsCount} Réservations</h1>
+  <h1>{registrationsCounts.total} Réservations</h1>
+  <section class="counts">
+    {registrationsCounts.paid} payées · {registrationsCounts.verified} scannées
+  </section>
 
   <div class="actions">
     <ButtonSecondary

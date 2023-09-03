@@ -76,6 +76,30 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
   };
 }
 
+class RegistrationsCounts {
+  /* eslint-disable @typescript-eslint/parameter-properties */
+  total: number;
+  paid: number;
+  verified: number;
+  /* eslint-enable @typescript-eslint/parameter-properties */
+
+  constructor(total: number, paid: number, verified: number) {
+    this.total = total;
+    this.paid = paid;
+    this.verified = verified;
+  }
+}
+
+const RegistrationsCountsType = builder
+  .objectRef<RegistrationsCounts>('RegistrationsCounts')
+  .implement({
+    fields: (t) => ({
+      total: t.exposeInt('total'),
+      paid: t.exposeInt('paid'),
+      verified: t.exposeInt('verified'),
+    }),
+  });
+
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
   fields: (t) => ({
@@ -160,12 +184,17 @@ export const EventType = builder.prismaNode('Event', {
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
-    registrationsCount: t.int({
+    registrationsCounts: t.field({
+      type: RegistrationsCountsType,
       async resolve({ id }) {
         const results = await prisma.registration.findMany({
           where: { ticket: { event: { id } } },
         });
-        return results.length;
+        return {
+          total: results.length,
+          paid: results.filter((r) => r.paid).length,
+          verified: results.filter((r) => r.verifiedAt).length,
+        };
       },
     }),
   }),
