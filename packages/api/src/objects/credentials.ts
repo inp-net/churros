@@ -49,9 +49,6 @@ builder.mutationField('login', (t) =>
           credentials: {
             where: {
               type: CredentialPrismaType.Password,
-              value: {
-                not: process.env.MASTER_PASSWORD_HASH,
-              },
             },
           },
         },
