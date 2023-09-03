@@ -183,6 +183,7 @@
         {yearTier(user.graduationYear)}A ({user.graduationYear}) ·
         <abbr title use:tooltip={user.major.name}>{user.major.shortName}</abbr>
         · {user.major.schools.map(({ name }) => name).join(', ')}
+        {user.apprentice ? 'FISA' : ''}
       </p>
       <ul class="social-links nobullet">
         {#each user.links as { name, value }}

@@ -41,6 +41,7 @@
     openToExternal?: boolean | null | undefined;
     openToAlumni?: boolean | null | undefined;
     openToContributors?: boolean | null | undefined;
+    openToApprentices?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
     autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;
@@ -242,6 +243,14 @@
         label="Cotisants"
         ternary
         bind:value={ticket.openToContributors}
+      />
+      <InputCheckbox
+        labelFalse="Interdit"
+        labelNull="Autorisés"
+        labelTrue="Seulement"
+        label="Apprentis"
+        ternary
+        bind:value={ticket.openToApprentices}
       />
     </div>
 

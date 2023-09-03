@@ -83,6 +83,7 @@ export const TicketType = builder.prismaNode('Ticket', {
     openToGroups: t.relation('openToGroups'),
     openToMajors: t.relation('openToMajors'),
     openToContributors: t.exposeBoolean('openToContributors', { nullable: true }),
+    openToApprentices: t.exposeBoolean('openToApprentices', { nullable: true }),
     godsonLimit: t.exposeInt('godsonLimit'),
     onlyManagersCanProvide: t.exposeBoolean('onlyManagersCanProvide'),
     autojoinGroups: t.relation('autojoinGroups'),
@@ -138,6 +139,7 @@ export const TicketInput = builder.inputType('TicketInput', {
     openToPromotions: t.field({ type: ['Int'] }),
     openToSchools: t.field({ type: ['String'] }),
     openToMajors: t.field({ type: ['String'] }),
+    openToApprentices: t.boolean({ required: false }),
     id: t.id({ required: false }),
     autojoinGroups: t.field({ type: ['String'] }),
   }),
@@ -210,6 +212,7 @@ export function userCanSeeTicket(
     openToPromotions,
     openToMajors,
     openToContributors,
+    openToApprentices,
   }: {
     event: {
       id: string;
@@ -221,6 +224,7 @@ export function userCanSeeTicket(
     openToPromotions: number[];
     openToMajors: Array<{ id: string }>;
     openToContributors: boolean | null;
+    openToApprentices: boolean | null;
   },
   user?: {
     admin: boolean;
@@ -229,6 +233,7 @@ export function userCanSeeTicket(
     graduationYear: number;
     major: { schools: Array<{ uid: string }>; id: string };
     contributions: Array<{ studentAssociation: { id: string; school: { uid: string } } }>;
+    apprentice: boolean;
   }
 ): boolean {
   // Admins can see everything
@@ -236,6 +241,10 @@ export function userCanSeeTicket(
 
   // Managers can see everything
   if (user?.managedEvents.some(({ event: { id } }) => id === event.id)) return true;
+
+  // Check if user is an apprentice
+  if (openToApprentices === true && !user?.apprentice) return false;
+  if (openToApprentices === false && user?.apprentice) return false;
 
   // Get the user's contributor status
   const isContributor = Boolean(
@@ -380,7 +389,8 @@ builder.mutationField('upsertTicket', (t) =>
       openToSchools: t.arg({ type: ['String'] }),
       openToGroups: t.arg({ type: ['String'] }),
       openToMajors: t.arg({ type: ['String'] }),
-      openToContributors: t.arg.boolean(),
+      openToApprentices: t.arg.boolean({ required: false }),
+      openToContributors: t.arg.boolean({ required: false }),
       godsonLimit: t.arg.int(),
       onlyManagersCanProvide: t.arg.boolean(),
       autojoinGroups: t.arg({ type: ['String'] }),
@@ -422,6 +432,7 @@ builder.mutationField('upsertTicket', (t) =>
         openToSchools,
         openToMajors,
         openToContributors,
+        openToApprentices,
         godsonLimit,
         onlyManagersCanProvide,
         autojoinGroups,
@@ -444,6 +455,7 @@ builder.mutationField('upsertTicket', (t) =>
         godsonLimit,
         onlyManagersCanProvide,
         openToContributors,
+        openToApprentices,
       };
       return prisma.ticket.upsert({
         where: { id: id ?? undefined },

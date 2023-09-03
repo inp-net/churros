@@ -27,6 +27,7 @@
     lastName,
     majorId,
     cededImageRightsToTVn7,
+    apprentice,
   } = data.userCandidate;
   let password = '';
   let passwordConfirmation = '';
@@ -47,6 +48,7 @@
     password,
     passwordConfirmation,
     cededImageRightsToTVn7,
+    apprentice,
   };
 
   let result: boolean | undefined;

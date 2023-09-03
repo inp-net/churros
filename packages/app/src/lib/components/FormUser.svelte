@@ -78,6 +78,7 @@
       otherEmails: string[];
       birthday: Date | null;
       uid: string;
+      apprentice: boolean;
       contributesTo: Array<{ id: string; name: string }>;
       cededImageRightsToTVn7: boolean;
     };
@@ -102,6 +103,7 @@
       lastName,
       email,
       otherEmails,
+      apprentice,
       // See https://github.com/graphql-editor/graphql-zeus/issues/262
       // eslint-disable-next-line unicorn/no-null
       birthday = null,
@@ -145,6 +147,7 @@
             graduationYear,
             majorId: major.id,
             phone,
+            apprentice,
             birthday,
             otherEmails,
             email,
@@ -212,6 +215,7 @@
         />
       </InputField>
       <InputNumber label="Promo" bind:value={graduationYear} />
+      <InputCheckbox label="Apprenti" bind:value={apprentice} />
     </div>
   {/if}
   <div class="side-by-side">

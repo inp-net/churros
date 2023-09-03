@@ -42,6 +42,7 @@ export const UserCandidateType = builder.prismaNode('UserCandidate', {
     }),
     phone: t.exposeString('phone'),
     cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
+    apprentice: t.exposeBoolean('apprentice'),
 
     major: t.relation('major'),
   }),
@@ -104,6 +105,7 @@ builder.mutationField('completeRegistration', (t) =>
       password: t.arg.string({ validate: { minLength: 8, maxLength: 255 } }),
       passwordConfirmation: t.arg.string({ validate: {} }),
       cededImageRightsToTVn7: t.arg.boolean(),
+      apprentice: t.arg.boolean(),
     },
     validate: [
       ({ password, passwordConfirmation }) => password === passwordConfirmation,
@@ -122,13 +124,14 @@ builder.mutationField('completeRegistration', (t) =>
         phone,
         password,
         cededImageRightsToTVn7,
+        apprentice,
       }
     ) {
       await prisma.logEntry.create({
         data: {
           action: 'complete',
           area: 'signups',
-           
+
           message: `Complétion de l'inscription de ${firstName} ${lastName} ${yearTier(
             graduationYear
           ).toString()}A ${phone}`,
@@ -150,6 +153,7 @@ builder.mutationField('completeRegistration', (t) =>
             phone,
             password: await hash(password),
             cededImageRightsToTVn7,
+            apprentice,
           },
         })
       );

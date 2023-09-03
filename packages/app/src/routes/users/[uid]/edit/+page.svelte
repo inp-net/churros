@@ -101,6 +101,7 @@
           email: data.user.email,
           otherEmails: data.user.otherEmails,
           cededImageRightsToTVn7: data.user.cededImageRightsToTVn7,
+          apprentice: data.user.apprentice,
         },
         {
           __typename: true,

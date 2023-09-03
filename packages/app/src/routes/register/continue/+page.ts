@@ -24,6 +24,7 @@ export const load: PageLoad = async ({ fetch, url }) => {
           phone: true,
           schoolUid: true,
           cededImageRightsToTVn7: true,
+          apprentice: true,
         },
       ],
       schoolGroups: { names: true, majors: { id: true, name: true, schools: { name: true } } },

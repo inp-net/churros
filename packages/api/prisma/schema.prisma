@@ -33,6 +33,7 @@ model User {
   majorId        String
   major          Major    @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   graduationYear Int
+  apprentice     Boolean  @default(false)
 
   // Optional profile details
   address                String    @default("") @db.VarChar(255)
@@ -107,6 +108,7 @@ model UserCandidate {
   major          Major?  @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   graduationYear Int?
   password       String  @default("") @db.VarChar(255)
+  apprentice     Boolean @default(false)
 
   address  String    @default("") @db.VarChar(255)
   birthday DateTime?
@@ -165,29 +167,29 @@ model Link {
 
 /// A school syllabus
 model Major {
-  id        String @id @default(dbgenerated("nanoid('major:')"))
-  uid       String @default("") @db.VarChar(255)
-  name      String @db.VarChar(255)
-  shortName String @default("") @db.VarChar(255)
+  id            String  @id @default(dbgenerated("nanoid('major:')"))
+  uid           String  @default("") @db.VarChar(255)
+  name          String  @db.VarChar(255)
+  shortName     String  @default("") @db.VarChar(255)
   ldapSchoolUid String? @db.VarChar(255)
 
-  schools           School[] @relation("MajorToSchool")
-  ldapSchool        School?  @relation("ldapSchool", fields: [ldapSchoolUid], references: [uid], onUpdate: Cascade, onDelete: SetNull)
+  schools           School[]        @relation("MajorToSchool")
+  ldapSchool        School?         @relation("ldapSchool", fields: [ldapSchoolUid], references: [uid], onUpdate: Cascade, onDelete: SetNull)
   students          User[]
   userCandidates    UserCandidate[]
   accessibleTickets Ticket[]
 }
 
 model School {
-  id    String @id @default(dbgenerated("nanoid('school:')"))
-  uid   String @unique @db.VarChar(255)
-  name  String @db.VarChar(255)
-  color String @db.VarChar(7)
+  id                 String @id @default(dbgenerated("nanoid('school:')"))
+  uid                String @unique @db.VarChar(255)
+  name               String @db.VarChar(255)
+  color              String @db.VarChar(7)
   internalMailDomain String @default("") @db.VarChar(255)
 
   groups              Group[]
-  majors              Major[] @relation("MajorToSchool")
-  majorsLdapSchool    Major[] @relation("ldapSchool")
+  majors              Major[]              @relation("MajorToSchool")
+  majorsLdapSchool    Major[]              @relation("ldapSchool")
   studentAssociations StudentAssociation[]
   accessibleTickets   Ticket[]
 }
@@ -424,6 +426,7 @@ model Ticket {
   openToAlumni       Boolean? @default(false) // false means only non-alumni, true means only alumni, null means both
   openToExternal     Boolean? @default(false) // same thing
   openToContributors Boolean? @default(false) // same thing
+  openToApprentices  Boolean? // same thing
   openToSchools      School[]
   openToMajors       Major[]
   openToGroups       Group[]  @relation("openTo")

@@ -47,6 +47,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             openToPromotions: true,
             openToExternal: true,
             openToAlumni: true,
+            openToApprentices: true,
             openToSchools: {
               uid: true,
               name: true,
@@ -86,6 +87,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
               allowedPaymentMethods: true,
               openToPromotions: true,
               openToAlumni: true,
+              openToApprentices: true,
               openToSchools: {
                 name: true,
                 uid: true,

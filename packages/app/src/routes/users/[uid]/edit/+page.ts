@@ -14,6 +14,7 @@ export const _userQuery = Selector('User')({
   description: true,
   pictureFile: true,
   address: true,
+  apprentice: true,
   graduationYear: true,
   phone: true,
   birthday: true,

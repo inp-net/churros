@@ -132,6 +132,7 @@
                   openToAlumni: true,
                   openToSchools: { name: true, color: true, id: true },
                   openToGroups: { name: true, uid: true, pictureFile: true },
+                  openToApprentices: true,
                   openToContributors: true,
                   godsonLimit: true,
                   onlyManagersCanProvide: true,
@@ -152,6 +153,7 @@
                 openToSchools: { name: true, color: true, id: true },
                 openToGroups: { name: true, uid: true, pictureFile: true },
                 openToContributors: true,
+                openToApprentices: true,
                 godsonLimit: true,
                 onlyManagersCanProvide: true,
                 autojoinGroups: { name: true, uid: true, pictureFile: true },
@@ -225,6 +227,8 @@
     openToSchools: [],
     openToMajors: [],
     autojoinGroups: [],
+    // eslint-disable-next-line unicorn/no-null
+    openToApprentices: null,
     id,
   });
 
@@ -245,6 +249,7 @@
     openToGroups: Array<{ name: string; uid: string; pictureFile: string }>;
     openToMajors: Array<{ name: string; shortName: string; id: string }>;
     openToContributors?: boolean | null | undefined;
+    openToApprentices?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
     autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;

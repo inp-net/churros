@@ -19,11 +19,22 @@ const transporter = createTransport(process.env.SMTP_URL);
 export const register = async (email: string): Promise<boolean> => {
   const schoolUser = await findSchoolUser(email);
 
+  const major = await prisma.major.findFirst({
+    where: {
+      shortName: schoolUser?.promo,
+    },
+  });
+
   const { token } = schoolUser
     ? await prisma.userCandidate.upsert({
         where: { email },
-        create: { ...schoolUser, email, token: nanoid() },
-        update: { ...schoolUser },
+        create: {
+          ...schoolUser,
+          email,
+          token: nanoid(),
+          major: major ? { connect: { id: major.id } } : undefined,
+        },
+        update: { ...schoolUser, major: major ? { connect: { id: major.id } } : undefined },
       })
     : await prisma.userCandidate.upsert({
         where: { email },
@@ -117,6 +128,7 @@ export const saveUser = async ({
   birthday,
   phone,
   schoolEmail,
+  apprentice,
   schoolServer,
   schoolUid,
   cededImageRightsToTVn7,
@@ -139,6 +151,7 @@ export const saveUser = async ({
       schoolServer,
       schoolUid,
       cededImageRightsToTVn7,
+      apprentice,
       credentials: { create: { type: CredentialType.Password, value: password } },
       links: { create: [] },
       // enable all notifications by default.

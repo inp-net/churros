@@ -12,6 +12,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
         params,
         {
           admin: true,
+          apprentice: true,
           uid: true,
           address: true,
           birthday: true,
