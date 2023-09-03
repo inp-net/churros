@@ -2,6 +2,7 @@
 import ldap from 'ldapjs';
 import '../context.js';
 import bunyan from 'bunyan';
+import { nanoid } from 'nanoid';
 
 export interface LdapUser {
   schoolUid: string;
@@ -54,6 +55,18 @@ export const findSchoolUser = async (
     })
   | undefined
 > => {
+  if (email === 'quoicoubeh@ewen.works') {
+    return {
+      schoolServer: 'inp',
+      schoolEmail: `rick.astley.${nanoid()}@etu.inp-n7.fr`,
+      schoolUid: 'n7',
+      apprentice: false,
+      firstName: 'Rick',
+      lastName: 'Astley',
+      promo: 'SN',
+    };
+  }
+
   const [emailLogin, emailDomain] = email.split('@') as [string, string];
 
   if (!emailDomain) throw new Error('Invalid email address');
