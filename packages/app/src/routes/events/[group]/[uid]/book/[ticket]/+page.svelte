@@ -163,19 +163,19 @@
           Ta place <strong>{name}</strong> pour l'évènement <strong>{title}</strong> du
           <strong>{formatDateTime(startsAt)}</strong> est en attente de paiement.
         </p>
-        {#await redirectIfPaid() then}
-          {#if registration?.paymentMethod === PaymentMethod.Lydia}
-            <p>Rends-toi sur ton application Lydia pour régler le paiement.</p>
-            <ButtonPrimary href="/bookings/{$page.url.searchParams.get('done')}"
-              >C'est payé!</ButtonPrimary
-            >
-          {:else}
-            <ButtonPrimary href="/bookings/{$page.url.searchParams.get('done')}"
-              >Mon billet</ButtonPrimary
-            >
-          {/if}
-        {/await}
       {/if}
+      {#await redirectIfPaid() then}
+        {#if registration?.paymentMethod === PaymentMethod.Lydia}
+          <p>Rends-toi sur ton application Lydia pour régler le paiement.</p>
+          <ButtonPrimary href="/bookings/{$page.url.searchParams.get('done')}"
+            >C'est payé!</ButtonPrimary
+          >
+        {:else}
+          <ButtonPrimary href="/bookings/{$page.url.searchParams.get('done')}"
+            >Mon billet</ButtonPrimary
+          >
+        {/if}
+      {/await}
     </div>
   {:else}
     {#if remainingGodsons > 0}

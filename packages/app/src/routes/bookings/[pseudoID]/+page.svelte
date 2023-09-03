@@ -56,7 +56,7 @@
 
 <div class="content">
   <h1>
-    <BackButton />
+    <BackButton go=".." />
     Ma place
     <div class="payment-status">
       <BadgePaymentStatus feminin {paid} />
