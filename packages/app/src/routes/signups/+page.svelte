@@ -20,7 +20,7 @@
     );
   };
 
-  async function decide(email: string, accept: boolean): Promise<void> {
+  async function decide(email: string, accept: boolean, why = ''): Promise<void> {
     if (loadingRegistrations.includes(email)) return;
 
     try {
@@ -32,7 +32,7 @@
         }));
       } else {
         ({ refuseRegistration: result } = await $zeus.mutate({
-          refuseRegistration: [{ email }, true],
+          refuseRegistration: [{ email, reason: why }, true],
         }));
       }
 
@@ -65,7 +65,8 @@
         </ButtonSecondary>
         <ButtonSecondary
           on:click={async () => {
-            await decide(email, false);
+            // eslint-disable-next-line no-alert
+            await decide(email, false, prompt('pk ?') ?? '');
           }}
           icon={IconTrash}
           danger
