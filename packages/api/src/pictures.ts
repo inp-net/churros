@@ -173,5 +173,5 @@ export async function updatePicture({
     }
   }
 
-  return path;
+  return relative(root, path);
 }
