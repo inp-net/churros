@@ -5,7 +5,7 @@
   import BaseInputText from '$lib/components/BaseInputText.svelte';
   import CardGroup from '$lib/components/CardGroup.svelte';
   import CardPerson from '$lib/components/CardPerson.svelte';
-  import CardEvent from '$lib/components/CardEvent.svelte';
+  // import CardEvent from '$lib/components/CardEvent.svelte';
 
   export let data: PageData;
 
@@ -57,7 +57,7 @@
       {/each}
     </ul>
   {/if}
-  {#if data.searchEvents.length > 0}
+  <!-- {#if data.searchEvents.length > 0}
     <h2>Évènements</h2>
     <ul class="nobullet events">
       {#each data.searchEvents as event (event.id)}
@@ -66,7 +66,7 @@
         </li>
       {/each}
     </ul>
-  {/if}
+  {/if} -->
 {/if}
 
 <style lang="scss">
@@ -96,9 +96,9 @@
     justify-content: center;
   }
 
-  ul.events li {
-    max-width: 300px;
-  }
+  // ul.events li {
+  //   max-width: 300px;
+  // }
 
   .empty {
     text-align: center;
