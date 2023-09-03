@@ -1,7 +1,6 @@
 /* eslint-disable complexity */
 
 import type { Group, Major, School, User } from '@prisma/client';
-import bunyan from 'bunyan';
 import ldap from 'ldapjs';
 import crypto from 'node:crypto';
 
@@ -16,7 +15,6 @@ let ldapClient: ldap.Client | undefined;
 function connectLdap(): ldap.Client {
   if (ldapClient === undefined) {
     ldapClient = ldap.createClient({
-      log: bunyan.createLogger({ name: 'DNEPR @centraverse/api ldap client', level: 'trace' }),
       url: LDAP_URL,
     });
   }
@@ -405,9 +403,30 @@ async function createLdapUser(
     snSearch: user.lastName.toLowerCase(),
   };
 
+  console.info(`Attributes ${JSON.stringify(userAttributes, undefined, 2)}} for ${userDn}`);
   const userAttributesStringable = Object.fromEntries(
-    Object.entries(userAttributes).filter(([_, v]) => v !== null)
+    Object.entries(userAttributes).filter(([_, v]) => v !== null && v !== '')
   ) as Partial<typeof userAttributes>;
+
+  console.info(
+    `The following attrs are not stringable and were stripped from the request: ${JSON.stringify(
+      Object.fromEntries(
+        Object.entries(userAttributes).filter(
+          ([k, _]) => !Object.keys(userAttributesStringable).includes(k)
+        )
+      ),
+      undefined,
+      2
+    )}`
+  );
+
+  console.info(
+    `Sending LDAP add request for ${userDn} with attributes: ${JSON.stringify(
+      userAttributesStringable
+    )}`
+  );
+
+  console.info(userAttributesStringable);
 
   connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
     if (bindError) {
