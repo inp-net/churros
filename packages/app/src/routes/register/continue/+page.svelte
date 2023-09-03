@@ -186,6 +186,7 @@
     <InputDate
       label="Date de naissance"
       errors={formErrors?.birthday?._errors}
+      required
       bind:value={birthday}
     />
     <InputText
