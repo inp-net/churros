@@ -7,8 +7,8 @@ import crypto from 'node:crypto';
 
 const LDAP_URL = process.env.OLD_LDAP_URL || 'ldap://localhost:389';
 const LDAP_BASE_DN = process.env.LDAP_BASE_DN || 'dc=example,dc=com';
-const LDAP_BIND_DN = process.env.OLD_LDAP_CLIENT_CONSULT_DN || 'cn=admin,dc=example,dc=com';
-const LDAP_BIND_PASSWORD = process.env.OLD_LDAP_CLIENT_CONSULT_PASSWORD || 'admin';
+const LDAP_BIND_DN = process.env.LDAP_BIND_DN || 'cn=admin,dc=example,dc=com';
+const LDAP_BIND_PASSWORD = process.env.LDAP_BIND_PASSWORD || 'admin';
 
 // Configuration de la connexion LDAP
 let ldapClient: ldap.Client | undefined;
@@ -382,9 +382,9 @@ async function createLdapUser(
     cn: `${user.firstName} ${user.lastName}`,
     displayName: `${user.firstName} ${user.lastName}`,
     ecole: `o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`,
-     
+
     mail: `${user.uid}@${user.major.ldapSchool.internalMailDomain}`,
-     
+
     filiere: `ou=${user.major.uid},ou=filieres,o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`,
     genre: 404,
     givenName: user.firstName,
