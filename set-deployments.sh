@@ -22,3 +22,5 @@ git push
 kubectl apply -f .
 
 cd $realwd
+
+git push --tags
