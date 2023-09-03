@@ -82,7 +82,9 @@
               'Méthode de paiement': paymentMethod,
               Billet: ticket.name,
               Cotisant: benef
-                ? humanBoolean(benef.contributesTo.includes((c) => c.name === 'AEn7'))
+                ? humanBoolean(
+                    benef.contributesTo.includes((c: { name: string }) => c.name === 'AEn7')
+                  )
                 : '',
               Filière: benef?.major.shortName ?? '',
               Année: benef ? benef.yearTier.toString() + 'A' : '',

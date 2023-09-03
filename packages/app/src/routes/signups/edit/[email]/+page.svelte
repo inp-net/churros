@@ -68,7 +68,12 @@
       } else {
         loadingRefuse = true;
         await $zeus.mutate({
-          refuseRegistration: [{ email: data.userCandidateByEmail.email }, true],
+          /* eslint-disable no-alert */
+          refuseRegistration: [
+            { email: data.userCandidateByEmail.email, reason: prompt('pk ?') ?? '' },
+            true,
+          ],
+          /* eslint-enable no-alert */
         });
       }
     } finally {
