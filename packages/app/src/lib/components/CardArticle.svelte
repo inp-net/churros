@@ -60,10 +60,8 @@
       {#if !hideGroup}
         <a href="/groups/{group.uid}">
           <img
-            src={group.pictureFile
-              ? `${env.PUBLIC_STORAGE_URL}${group.pictureFile}`
-              : 'https://via.placeholder.com/400/400'}
-            alt=""
+            src={group.pictureFile ? `${env.PUBLIC_STORAGE_URL}${group.pictureFile}` : ''}
+            alt={group.name}
           />
         </a>
         <div class="names">
