@@ -289,15 +289,8 @@ const RegistrationVerificationResultType = builder
   .objectRef<RegistrationVerificationResult>('RegistrationVerificationResult')
   .implement({
     fields: (t) => ({
-      state: t.field({
-        type: RegistrationVerificationStateType,
-        resolve: (r) => r.state,
-      }),
-      registration: t.field({
-        type: RegistrationType,
-        nullable: true,
-        resolve: (r) => r.registration,
-      }),
+      state: t.expose('state', { type: RegistrationVerificationStateType }),
+      registration: t.expose('registration', { nullable: true, type: RegistrationType }),
     }),
   });
 
