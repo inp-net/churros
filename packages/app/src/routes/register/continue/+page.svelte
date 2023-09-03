@@ -192,7 +192,7 @@
       errors={formErrors?.phone?._errors}
       bind:value={phone}
     />
-    <InputText label="Adresse" errors={formErrors?.address?._errors} bind:value={address} />
+    <InputText label="Adresse postale" errors={formErrors?.address?._errors} bind:value={address} />
     <div class="side-by-side">
       <InputText
         label="Mot de passe"

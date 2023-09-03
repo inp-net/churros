@@ -52,7 +52,6 @@
     currentTab = pathLeaf in TABS ? (pathLeaf as keyof typeof TABS) : '';
   }
 
-   
   const tabHref = (tab: string) => `/events/${group}/${uid}/${tab}`;
 </script>
 

@@ -130,6 +130,7 @@
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <article
+  data-href={href}
   class:collapsed
   class="event"
   on:click={gotoEventIfNotLink}

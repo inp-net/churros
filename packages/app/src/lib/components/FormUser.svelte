@@ -196,8 +196,9 @@
       />
     </InputField>
     <div class="side-by-side">
-      <InputField label="Filière">
+      <InputField required label="Filière">
         <InputSearchObject
+          required
           value={major.id}
           valueKey="id"
           labelKey="name"

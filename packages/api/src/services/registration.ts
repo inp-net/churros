@@ -98,7 +98,7 @@ export const createUid = async ({
 
 export const completeRegistration = async (
   candidate: UserCandidate
-): Promise<(User & { major?: Major & { ldapSchool?: School } }) | undefined> => {
+): Promise<(User & { major?: null | (Major & { ldapSchool?: School | null }) }) | undefined> => {
   // If the user has no school email, it must be manually accepted.
   if (!candidate.schoolEmail) return undefined;
 
@@ -120,7 +120,9 @@ export const saveUser = async ({
   schoolServer,
   schoolUid,
   cededImageRightsToTVn7,
-}: UserCandidate): Promise<User & { major?: Major & { ldapSchool?: School } }> => {
+}: UserCandidate): Promise<
+  undefined | (User & { major?: null | (Major & { ldapSchool?: School | null }) })
+> => {
   // Create a user profile
   const user = await prisma.user.create({
     data: {
@@ -148,12 +150,20 @@ export const saveUser = async ({
         })),
       },
     },
+    include: {
+      major: {
+        include: {
+          ldapSchool: true,
+        },
+      },
+    },
   });
 
   await prisma.userCandidate.delete({ where: { id } });
 
   const url = new URL('/welcome/', process.env.FRONTEND_ORIGIN);
   await transporter.sendMail({
+    subject: `Bienvenue sur Churros!`,
     to: email,
     from: process.env.PUBLIC_SUPPORT_EMAIL,
     html: `

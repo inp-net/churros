@@ -18,7 +18,7 @@ const settings = JSON.parse(process.env.LDAP_SCHOOL) as {
   emailDomains: Record<string, string>;
 };
 
-const log = bunyan.createLogger({ name: '@centraverse/api ldap client', level: 'trace' });
+const log = bunyan.createLogger({ name: 'CRI INP @centraverse/api ldap client', level: 'trace' });
 
 /** Finds a user in a school database or returns `undefined`. */
 export const findSchoolUser = async (

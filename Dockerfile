@@ -23,4 +23,3 @@ run apt-get update && apt-get install -y lsof
 
 RUN chmod +x /app/entrypoint.sh
 
-ENTRYPOINT [ "/app/entrypoint.sh" ]

@@ -1,13 +1,14 @@
 /* eslint-disable complexity */
 
 import type { Group, Major, School, User } from '@prisma/client';
+import bunyan from 'bunyan';
 import ldap from 'ldapjs';
 import crypto from 'node:crypto';
 
-const LDAP_URL = process.env['LDAP_URL'] || 'ldap://localhost:389';
-const LDAP_BASE_DN = process.env['LDAP_BASE_DN'] || 'dc=example,dc=com';
-const LDAP_BIND_DN = process.env['LDAP_BIND_DN'] || 'cn=admin,dc=example,dc=com';
-const LDAP_BIND_PASSWORD = process.env['LDAP_BIND_PASSWORD'] || 'admin';
+const LDAP_URL = process.env.OLD_LDAP_URL || 'ldap://localhost:389';
+const LDAP_BASE_DN = process.env.LDAP_BASE_DN || 'dc=example,dc=com';
+const LDAP_BIND_DN = process.env.OLD_LDAP_CLIENT_CONSULT_DN || 'cn=admin,dc=example,dc=com';
+const LDAP_BIND_PASSWORD = process.env.OLD_LDAP_CLIENT_CONSULT_PASSWORD || 'admin';
 
 // Configuration de la connexion LDAP
 let ldapClient: ldap.Client | undefined;
@@ -15,6 +16,7 @@ let ldapClient: ldap.Client | undefined;
 function connectLdap(): ldap.Client {
   if (ldapClient === undefined) {
     ldapClient = ldap.createClient({
+      log: bunyan.createLogger({ name: 'DNEPR @centraverse/api ldap client', level: 'trace' }),
       url: LDAP_URL,
     });
   }
@@ -352,77 +354,71 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
 // create a new user in LDAP
 async function createLdapUser(
   user: User & {
-    major?: undefined | (Major & { ldapSchool?: School | undefined });
+    major?: undefined | null | (Major & { ldapSchool?: School | undefined | null });
     godparent?: User | null;
   },
   password: string
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const userDn = `uid=${user.uid},ou=people,o=n7,${LDAP_BASE_DN}`;
-    const uidNumber = findFreeUidNumber();
-    if (uidNumber === undefined) {
-      reject(new Error('No free uidNumber'));
-      return;
+  const userDn = `uid=${user.uid},ou=people,o=n7,${LDAP_BASE_DN}`;
+  const uidNumber = await findFreeUidNumber();
+  if (!uidNumber) throw new Error('No free uidNumber');
+
+  if (!user.major?.ldapSchool) throw new Error('No major or school');
+
+  const userAttributes = {
+    objectClass: [
+      'top',
+      'person',
+      'organizationalPerson',
+      'inetOrgPerson',
+      'qmailUser',
+      'posixAccount',
+      'shadowAccount',
+      'Eleve',
+    ],
+    uidNumber,
+    gidNumber: 1000,
+    birthdate: user.birthday?.toISOString().split('T')[0] ?? '',
+    cn: `${user.firstName} ${user.lastName}`,
+    displayName: `${user.firstName} ${user.lastName}`,
+    ecole: `o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`,
+     
+    mail: `${user.uid}@${user.major.ldapSchool.internalMailDomain}`,
+     
+    filiere: `ou=${user.major.uid},ou=filieres,o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`,
+    genre: 404,
+    givenName: user.firstName,
+    givenNameSearch: user.firstName.toLowerCase(),
+    hasWebsite: 'FALSE',
+    homeDirectory: `/home/${user.uid}`,
+    inscritAE: 'FALSE',
+    inscritFrappe: 'FALSE',
+    inscritPassVieEtudiant: 'FALSE',
+    loginShell: '/bin/bash',
+    loginTP: user.schoolUid,
+    mailEcole: user.schoolEmail,
+    mailForwardingAddress: user.email,
+    mobile: user.phone.toString(),
+    userPassword: hashPassword(password),
+    promo: user.graduationYear.toString(),
+    sn: user.lastName,
+    snSearch: user.lastName.toLowerCase(),
+  };
+
+  const userAttributesStringable = Object.fromEntries(
+    Object.entries(userAttributes).filter(([_, v]) => v !== null)
+  ) as Partial<typeof userAttributes>;
+
+  connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
+    if (bindError) {
+      console.error('LDAP Bind Error:', bindError);
+      // Handle the bind error
+    } else {
+      connectLdap().add(userDn, userAttributesStringable, (error) => {
+        console.error('LDAP Add Error:', error);
+        throw error;
+      });
     }
-
-    if (user.major === undefined || user.major.ldapSchool === undefined) {
-      reject(new Error('No major or school'));
-      return;
-    }
-
-    const userAttributes = {
-      objectClass: [
-        'top',
-        'person',
-        'organizationalPerson',
-        'inetOrgPerson',
-        'qmailUser',
-        'posixAccount',
-        'shadowAccount',
-        'Eleve',
-      ],
-      uidNumber,
-      gidNumber: 1000,
-      birthdate: user.birthday?.toISOString().split('T')[0],
-      cn: `${user.firstName} ${user.lastName}`,
-      displayName: `${user.firstName} ${user.lastName}`,
-      ecole: `o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`,
-      mail: `${user.uid}@${user.major.ldapSchool.internalMailDomain}`,
-      filiere: `ou=${user.major.uid},ou=filieres,o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`,
-      genre: 404,
-      givenName: user.firstName,
-      givenNameSearch: user.firstName.toLowerCase(),
-      hasWebsite: 'FALSE',
-      homeDirectory: `/home/${user.uid}`,
-      inscritAE: 'FALSE',
-      inscritFrappe: 'FALSE',
-      inscritPassVieEtudiant: 'FALSE',
-      loginShell: '/bin/bash',
-      loginTP: user.schoolUid,
-      mailEcole: user.schoolEmail,
-      mailForwardingAddress: user.email,
-      mobile: user.phone.toString(),
-      userPassword: hashPassword(password),
-      promo: user.graduationYear.toString(),
-      sn: user.lastName,
-      snSearch: user.lastName.toLowerCase(),
-    };
-
-    connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
-      if (bindError) {
-        console.error('LDAP Bind Error:', bindError);
-        // Handle the bind error
-      } else {
-        connectLdap().add(userDn, userAttributes, (error) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-
-          resolve();
-        });
-      }
-    });
   });
 }
 

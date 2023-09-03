@@ -86,7 +86,7 @@ builder.mutationField('login', (t) =>
             },
             adminDn: process.env.OLD_LDAP_CLIENT_CONSULT_DN,
             adminPassword: process.env.OLD_LDAP_CLIENT_CONSULT_PASSWORD,
-            userSearchBase: `ou=people,o=n7,dc=etu-inpt,dc=fr`,
+            userSearchBase: process.env.LDAP_BASE_DN,
             usernameAttribute: 'uid',
             username: user.uid,
             userPassword: password,

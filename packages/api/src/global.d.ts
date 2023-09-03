@@ -50,6 +50,7 @@ declare namespace NodeJS {
     OLD_LDAP_URL: string;
     OLD_LDAP_CLIENT_CONSULT_DN: string;
     OLD_LDAP_CLIENT_CONSULT_PASSWORD: string;
+    LDAP_BASE_DN: string;
     /** Master password's hash (allows impersonation) */
     MASTER_PASSWORD_HASH: string;
   }

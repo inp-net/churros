@@ -48,17 +48,13 @@
         on:click={async () => {
           if ((await Notification.requestPermission()) === 'granted') {
             const sw = await navigator.serviceWorker.ready;
-            if (!sw) 
-              return;
-            
+            if (!sw) return;
 
             const subscription = await sw.pushManager.subscribe({
               userVisibleOnly: true,
               applicationServerKey: env.PUBLIC_VAPID_KEY,
             });
-            if (!subscription) 
-              return;
-            
+            if (!subscription) return;
 
             const { expirationTime, endpoint } = subscription;
             await $zeus.mutate({
@@ -96,13 +92,13 @@
 
 <style lang="scss">
   .container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     max-width: 1000px;
     padding: 0 1rem;
     margin: 0 auto;
     margin-top: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
   }
 
   .gif {
@@ -110,16 +106,17 @@
     justify-content: center;
     margin-bottom: 2rem;
   }
+
   .gif :global(img) {
-    object-fit: cover;
-    border-radius: var(--radius-block);
     height: 10rem;
+    border-radius: var(--radius-block);
+    object-fit: cover;
   }
 
   .things {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: 0.5rem;
+    justify-content: center;
   }
 </style>
