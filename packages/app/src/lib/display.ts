@@ -1,7 +1,7 @@
 import type { GroupType, PaymentMethod } from './zeus';
 import LogoLydia from '~icons/simple-icons/lydia';
 import IconCreditCard from '~icons/mdi/credit-card-outline';
-import IconCash from '~icons/mdi/cash';
+import IconCash from '~icons/mdi/hand-coin-outline';
 import IconPaymentCheck from '~icons/mdi/checkbook';
 import IconQuestionMark from '~icons/mdi/dots-horizontal';
 import IconBankTransfer from '~icons/mdi/bank';
