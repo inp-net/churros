@@ -49,6 +49,29 @@ export async function payEventRegistrationViaLydia(
   if (!registration) throw new Error('Registration not found');
   const beneficiaryVendorToken = registration.ticket.event.beneficiary?.vendorToken;
   if (!beneficiaryVendorToken) throw new GraphQLError("L'évènement n'a pas de bénéficiaire");
+
+  // Check if transaction was already paid for, in that case mark registration as paid
+  if (registration.lydiaTransaction) {
+    const state = await checkLydiaTransaction(registration.lydiaTransaction);
+    if (state === LydiaTransactionState.Paid) {
+      await prisma.logEntry.create({
+        data: {
+          action: 'fallback mark as paid',
+          area: 'lydia',
+          message: 'Transaction was already paid for, marking registration as paid',
+          target: registration.id,
+        },
+      });
+      await prisma.registration.update({
+        where: { id: registrationId },
+        data: {
+          paid: true,
+        },
+      });
+      return;
+    }
+  }
+
   let transaction = registration.lydiaTransaction;
   // Check if a lydia transaction already exists
   if (!transaction) {
@@ -94,6 +117,37 @@ export async function cancelLydiaTransaction(transaction: LydiaTransaction, vend
       vendor_token: vendorToken,
     }),
   });
+}
+
+export enum LydiaTransactionState {
+  Paid,
+  Pending,
+  Refused,
+  OwnerCancelled,
+  Error,
+}
+
+export async function checkLydiaTransaction(transaction: LydiaTransaction) {
+  if (!transaction.requestId)
+    throw new GraphQLError('Aucune requête pour cette transaction, impossible de checker');
+  const res = await fetch(`${PUBLIC_LYDIA_API_URL}/api/request/state.json`, {
+    method: 'POST',
+    body: new URLSearchParams({
+      request_id: transaction.requestId,
+    }),
+  });
+
+  const response = (await res.json()) as {
+    state: '0' | '1' | '5' | '6' | '-1';
+  };
+
+  return {
+    '0': LydiaTransactionState.Pending,
+    '1': LydiaTransactionState.Paid,
+    '5': LydiaTransactionState.Refused,
+    '6': LydiaTransactionState.OwnerCancelled,
+    '-1': LydiaTransactionState.Error,
+  }[response.state];
 }
 
 export async function sendLydiaPaymentRequest(
