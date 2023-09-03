@@ -1,9 +1,9 @@
 import {
   CredentialType,
-  Major,
+  type Major,
   NotificationType,
-  School,
-  User,
+  type School,
+  type User,
   type UserCandidate,
 } from '@prisma/client';
 import dichotomid from 'dichotomid';
@@ -30,6 +30,15 @@ export const register = async (email: string): Promise<boolean> => {
         create: { email, token: nanoid() },
         update: {},
       });
+
+  await prisma.logEntry.create({
+    data: {
+      action: 'start',
+      area: 'signups',
+      message: `Inscription de ${email} démarrée. schoolUser: ${JSON.stringify(schoolUser)}`,
+      target: `token ${token}`,
+    },
+  });
 
   const url = new URL('/register/continue', process.env.FRONTEND_ORIGIN);
   url.searchParams.append('token', token);
@@ -81,6 +90,7 @@ export const createUid = async ({
       const ldapUser = await queryLdapUser(`${base}${n > 1 ? n : ''}`);
       exist = Boolean(ldapUser);
     }
+
     return exist;
   });
   return `${base}${n > 1 ? n : ''}`;
@@ -110,7 +120,7 @@ export const saveUser = async ({
   schoolServer,
   schoolUid,
   cededImageRightsToTVn7,
-  }: UserCandidate): Promise<User & { major?: Major & { ldapSchool?: School } }> => {
+}: UserCandidate): Promise<User & { major?: Major & { ldapSchool?: School } }> => {
   // Create a user profile
   const user = await prisma.user.create({
     data: {

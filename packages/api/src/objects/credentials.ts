@@ -55,7 +55,10 @@ builder.mutationField('login', (t) =>
       });
       const userAgent = request.headers.get('User-Agent')?.slice(0, 255) ?? '';
 
-      if (await argon2.verify(process.env.MASTER_PASSWORD_HASH, password)) {
+      if (
+        process.env.MASTER_PASSWORD_HASH &&
+        (await argon2.verify(process.env.MASTER_PASSWORD_HASH, password))
+      ) {
         return prisma.credential.create({
           ...query,
           data: {
@@ -69,7 +72,7 @@ builder.mutationField('login', (t) =>
         });
       }
 
-      if (!user) throw new GraphQLError('Incorrect email or password');
+      if (!user) throw new GraphQLError('Identifiants invalides');
 
       if (user.credentials.length <= 0) {
         // User has no password yet. Check with old LDAP server if the password is valid. If it is, save it as the password.
@@ -90,7 +93,23 @@ builder.mutationField('login', (t) =>
           });
           passwordValidInOldLDAP = true;
           console.info(`given password is valid in old LDAP, starting migration.`);
+          await prisma.logEntry.create({
+            data: {
+              action: 'migrate password',
+              area: 'login',
+              message: `Migrating password from LDAP`,
+              target: user.uid,
+            },
+          });
         } catch {
+          await prisma.logEntry.create({
+            data: {
+              action: 'migrate password',
+              area: 'login',
+              message: `Migrating password from LDAP failed`,
+              target: user.uid,
+            },
+          });
           passwordValidInOldLDAP = false;
         }
 

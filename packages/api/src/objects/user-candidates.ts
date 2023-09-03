@@ -105,7 +105,7 @@ builder.mutationField('completeRegistration', (t) =>
       ({ password, passwordConfirmation }) => password === passwordConfirmation,
       { path: ['passwordConfirmation'], message: 'Les mots de passe ne correspondent pas.' },
     ],
-    resolve: async (
+    async resolve(
       _,
       {
         token,
@@ -119,7 +119,19 @@ builder.mutationField('completeRegistration', (t) =>
         password,
         cededImageRightsToTVn7,
       }
-    ) => {
+    ) {
+      await prisma.logEntry.create({
+        data: {
+          action: 'complete',
+          area: 'signups',
+          /* eslint-disable */
+          message: `Complétion de l'inscription de ${firstName} ${lastName} ${yearTier(
+            graduationYear
+          ).toString()}A ${phone}`,
+          /* eslint-enable */
+          target: `token ${token}`,
+        },
+      });
       const user = await completeRegistration(
         await prisma.userCandidate.update({
           where: { token },
@@ -140,10 +152,11 @@ builder.mutationField('completeRegistration', (t) =>
       if (user?.major && user.major.ldapSchool) {
         try {
           await createLdapUser(user, password);
-        } catch (e) {
-          console.error(e);
+        } catch (error) {
+          console.error(error);
         }
       }
+
       return user !== undefined;
     },
   })
@@ -164,8 +177,20 @@ builder.mutationField('acceptRegistration', (t) =>
     authScopes: { canEditUsers: true },
     type: 'Boolean',
     args: { email: t.arg.string() },
-    resolve: async (_, { email }) =>
-      saveUser(await prisma.userCandidate.findUniqueOrThrow({ where: { email } })) !== undefined,
+    async resolve(_, { email }, { user }) {
+      const candidate = await prisma.userCandidate.findUniqueOrThrow({ where: { email } });
+      await prisma.logEntry.create({
+        data: {
+          action: 'accept',
+          area: 'signups',
+          message: `Acceptation de l'inscription de ${email}`,
+          user: { connect: { id: user!.id } },
+          target: `token ${candidate.token}`,
+        },
+      });
+      await saveUser(candidate);
+      return true;
+    },
   })
 );
 
