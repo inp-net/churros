@@ -13,7 +13,7 @@
   import { compareAsc, compareDesc, format, isSameDay } from 'date-fns';
   import { zeus } from '$lib/zeus';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
+  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
   import Badge from '$lib/components/Badge.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
@@ -62,21 +62,38 @@
             node: {
               createdAt,
               beneficiary,
-              author: { fullName },
+              authorIsBeneficiary,
+              beneficiaryUser,
+              author,
               paid,
               paymentMethod,
               ticket,
+              id,
               verifiedAt,
             },
-          }) => ({
-            'Date de réservation': dateTimeFormatter.format(createdAt),
-            Bénéficiaire: beneficiary,
-            'Achat par': fullName,
-            Payée: humanBoolean(paid),
-            Scannée: humanBoolean(Boolean(verifiedAt)),
-            'Méthode de paiement': paymentMethod,
-            Billet: ticket.name,
-          })
+          }) => {
+            const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined);
+            return {
+              'Date de réservation': dateTimeFormatter.format(createdAt),
+              Bénéficiaire: benef?.fullName ?? beneficiary,
+              'Achat par': author.fullName,
+              Payée: humanBoolean(paid),
+              Scannée: humanBoolean(Boolean(verifiedAt)),
+              'Méthode de paiement': paymentMethod,
+              Billet: ticket.name,
+              Cotisant: benef
+                ? humanBoolean(benef.contributesTo.includes((c) => c.name === 'AEn7'))
+                : '',
+              Filière: benef?.major.shortName ?? '',
+              Année: benef ? benef.yearTier.toString() + 'A' : '',
+              Promo: benef?.graduationYear ?? '',
+              'Code de réservation': id.replace(/^r:/, '').toUpperCase(),
+              'Lien vers la place': `https://${window.location.host}/bookings/${id.replace(
+                /^r:/,
+                ''
+              )}/`,
+            };
+          }
         )
       ).convertToCSVstring()
     );
@@ -92,13 +109,14 @@
   const COLUMNS = [
     ['date', 'Date'],
     ['state', 'État'],
-    ['method', 'Méthode'],
+    ['method', 'Via'],
     ['ticket', 'Billet'],
     ['beneficiary', 'Bénéficiaire'],
     ['contributes', 'Cotise'],
     ['major', 'Filière'],
     ['graduationYear', 'Année'],
     ['author', 'Payé par'],
+    ['code', 'Code de réservation'],
   ] as const;
 
   function fromSortingQueryParam(sorting: string): [typeof sortBy, typeof sortDirection] {
@@ -223,12 +241,21 @@
   <div class="actions">
     <ButtonSecondary
       icon={IconDownload}
-      help="Attention, charge toutes les réservations sinon l'export sera incomplet"
+      help={registrations.pageInfo.hasNextPage
+        ? "Attention, charge toutes les réservations sinon l'export sera incomplet"
+        : ''}
       on:click={() => {
         saveAsCsv();
       }}>Exporter en .csv</ButtonSecondary
     >
     <InputCheckbox label="Vue compacte" bind:value={compact} />
+    {#if registrations.pageInfo.hasNextPage}
+      <ButtonSecondary
+        help={`${registrations.edges.length}/${registrationsCounts.total} chargées`}
+        on:click={loadMore}
+        loading={loadingMore}>Charger plus</ButtonSecondary
+      >
+    {/if}
   </div>
 </header>
 
@@ -277,6 +304,7 @@
     <tbody>
       {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod, verifiedAt, verifiedBy } } (id)}
         {@const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined)}
+        {@const code = id.replace(/^r:/, '').toUpperCase()}
         <tr class:selected={rowIsSelected[id]}>
           <td class="actions">
             <InputCheckbox bind:value={rowIsSelected[id]} label="" />
@@ -295,8 +323,11 @@
           >
             {verifiedAt ? 'Scannée' : paid ? 'Payée' : 'Non payée'}
           </td>
-          <td>
-            {paymentMethod ? DISPLAY_PAYMENT_METHODS[paymentMethod] : 'Inconnue'}
+          <td
+            class="centered"
+            use:tooltip={paymentMethod ? DISPLAY_PAYMENT_METHODS[paymentMethod] : 'Inconnue'}
+          >
+            <svelte:component this={PAYMENT_METHODS_ICONS[paymentMethod ?? 'Other']} />
           </td>
           <td>
             {#if ticket.group}
@@ -341,16 +372,16 @@
               {/if}
             {/if}
           </td>
+          <td class="centered">
+            <a href="/bookings/{code}/"><code>{code}</code></a>
+          </td>
           <td class="actions">
             <ButtonSecondary
               danger={paid}
+              help={'Marquer comme ' + (paid ? 'non payée' : 'payée')}
               on:click={async () => updatePaidStatus(!paid, registration)}
             >
-              {#if compact}
-                {#if paid} <IconCancel /> {:else} <IconCheck /> {/if}
-              {:else if paid}
-                <IconCancel /> Non payée{:else}
-                <IconCheck /> Payée{/if}
+              {#if paid} <IconCancel /> {:else} <IconCheck /> {/if}
             </ButtonSecondary>
           </td>
         </tr>
@@ -364,12 +395,38 @@
 
   {#if registrations.pageInfo.hasNextPage}
     <section class="load-more">
-      <ButtonSecondary on:click={loadMore} loading={loadingMore}>Charger plus</ButtonSecondary>
+      <ButtonSecondary
+        help={`${registrations.edges.length}/${registrationsCounts.total} chargées`}
+        on:click={loadMore}
+        loading={loadingMore}>Charger plus</ButtonSecondary
+      >
     </section>
   {/if}
 </div>
 
 <style lang="scss">
+  header {
+    margin: 0 auto;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  header .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  header h1 {
+    margin-top: 2rem;
+    margin-bottom: 0.25rem;
+    padding-bottom: 0;
+  }
+  section.counts {
+    margin-bottom: 2rem;
+  }
   .table-scroller {
     overflow-x: auto;
   }
@@ -416,6 +473,11 @@
     text-align: left;
   }
 
+  th {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
   td {
     background: var(--muted-bg);
   }
@@ -423,25 +485,6 @@
   table:not(.compact) td {
     border-radius: var(--radius-inline);
   }
-
-  header {
-    margin: 0 auto;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-
-  header h1 {
-    margin: 1rem 0;
-  }
-
-  header .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    align-items: center;
-    justify-content: center;
-  }
-
   tr.selected td:not(.actions) {
     background: var(--muted-border);
     border-right-color: var(--muted-border);
