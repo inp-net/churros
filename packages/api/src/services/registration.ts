@@ -25,6 +25,8 @@ export const register = async (email: string): Promise<boolean> => {
     },
   });
 
+  delete schoolUser?.promo;
+
   const { token } = schoolUser
     ? await prisma.userCandidate.upsert({
         where: { email },
