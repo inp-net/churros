@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Button from '$lib/components/Button.svelte';
   import ArticleCard from '$lib/components/CardArticle.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
@@ -88,7 +87,9 @@
 </section>
 
 {#if data.homepage.pageInfo.hasNextPage}
-  <p class="text-center"><Button on:click={loadMore} {loading}>Voir plus</Button></p>
+  <section class="see-more">
+    <ButtonSecondary on:click={loadMore} {loading}>Voir plus</ButtonSecondary>
+  </section>
 {/if}
 
 <style>
@@ -129,5 +130,10 @@
     align-items: center;
     max-width: 600px;
     margin: 0 auto;
+  }
+
+  .see-more {
+    display: flex;
+    justify-content: center;
   }
 </style>
