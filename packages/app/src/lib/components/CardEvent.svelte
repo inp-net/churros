@@ -154,7 +154,6 @@
     {/if}
   </section>
   <section class="content {collapsed ? 'collapsed' : ''}">
-    exp
     <section class="desc">
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html (
