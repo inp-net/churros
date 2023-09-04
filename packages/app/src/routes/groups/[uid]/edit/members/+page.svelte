@@ -297,7 +297,7 @@
               />
               <InputCheckbox label="Gère les membres" bind:value={updatingMember.canEditMembers} />
               <InputCheckbox
-                label="Peut scanner tout les billets"
+                label="Peut scanner tous les billets"
                 bind:value={updatingMember.canScanEvents}
               />
             </div>
@@ -366,7 +366,7 @@
   }
 
   .members .edit.open {
-    max-height: 20rem;
+    max-height: 30rem;
     padding: 1rem;
     border: var(--border-block) solid var(--border);
   }
