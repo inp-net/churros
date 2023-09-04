@@ -223,7 +223,7 @@
         }}
       />
     </div>
-    <InputCheckbox bind:value={cededImageRightsToTVn7} label="Je cède mon doit à l'image à TVn7" />
+    <InputCheckbox bind:value={cededImageRightsToTVn7} label="Je cède mon droit à l'image à TVn7" />
     <p class="typo-details">
       Cela revient à remplir et signer <a href="/cessation-droit-image-tvn7.pdf">ce document</a>
     </p>
