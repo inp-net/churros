@@ -228,7 +228,7 @@
       Cela revient à remplir et signer <a href="/cessation-droit-image-tvn7.pdf">ce document</a>
     </p>
     <section class="submit">
-      <ButtonPrimary submits>S'inscrire</ButtonPrimary>
+      <ButtonPrimary {loading} submits>S'inscrire</ButtonPrimary>
     </section>
   </form>
 {:else}
