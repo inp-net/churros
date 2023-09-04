@@ -15,6 +15,7 @@
   let loading = false;
   let formErrors: ZodFormattedError<typeof args> | undefined;
   const register = async () => {
+    if (wrongDomain) return;
     if (loading) return;
 
     try {
@@ -50,6 +51,8 @@
       loading = false;
     }
   };
+
+  let wrongDomain = false;
 </script>
 
 <h1>Inscription</h1>
@@ -59,12 +62,22 @@
     <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
       <strong>{(formErrors?._errors ?? []).join(' ')} </strong>
     </Alert>
+
+    {#if wrongDomain}
+      <Alert theme="danger">Vérifiez l'adresse mail: elle doît terminer par @etu.inp-n7.fr</Alert>
+    {/if}
+
     <InputText
       label="Adresse e-mail"
-      hint="Si vous en avez une, utilisez votre adresse e-mail universitaire (en @etu.inp-n7.fr)"
+      hint="Si vous en avez une, et que vous y avez accès, utilisez votre adresse e-mail universitaire (en @etu.inp-n7.fr)"
       errors={formErrors?.email?._errors}
       type="email"
       bind:value={email}
+      on:blur={() => {
+        email = email.toLowerCase();
+        const [_, domain] = email.split('@');
+        wrongDomain = domain.includes('n7') && domain.trim() !== 'etu.inp-n7.fr';
+      }}
       required
     />
 
