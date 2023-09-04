@@ -350,7 +350,7 @@ builder.mutationField('upsertEvent', (t) =>
       ticketGroups: t.arg({ type: [TicketGroupInput] }),
       tickets: t.arg({ type: [TicketInput] }),
       description: t.arg.string(),
-      groupId: t.arg.string(),
+      groupUid: t.arg.string(),
       contactMail: t.arg.string(),
       links: t.arg({ type: [LinkInput] }),
       lydiaAccountId: t.arg.string({ required: false }),
@@ -361,7 +361,7 @@ builder.mutationField('upsertEvent', (t) =>
       endsAt: t.arg({ type: DateTimeScalar }),
       managers: t.arg({ type: [ManagerOfEventInput] }),
     },
-    authScopes(_, { id, groupId }, { user }) {
+    authScopes(_, { id, groupUid }, { user }) {
       const creating = !id;
       if (user?.admin) return true;
 
@@ -369,7 +369,7 @@ builder.mutationField('upsertEvent', (t) =>
         return Boolean(
           user?.canEditGroups ||
             user?.groups.some(
-              ({ group, canEditArticles }) => canEditArticles && group.id === groupId
+              ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid
             )
         );
       }
@@ -388,7 +388,7 @@ builder.mutationField('upsertEvent', (t) =>
         endsAt,
         tickets,
         description,
-        groupId,
+        groupUid,
         contactMail,
         links,
         location,
@@ -425,11 +425,15 @@ builder.mutationField('upsertEvent', (t) =>
         });
       }
 
+      const group = await prisma.group.findUniqueOrThrow({
+        where: { uid: groupUid },
+      });
+
       // First, create or update the event without any tickets
       const upsertData = {
         group: {
           connect: {
-            id: groupId,
+            uid: groupUid,
           },
         },
         author: {
@@ -457,7 +461,7 @@ builder.mutationField('upsertEvent', (t) =>
         where: { id: id ?? '' },
         create: {
           ...upsertData,
-          uid: await createUid({ title, groupId }),
+          uid: await createUid({ title, groupId: group.id }),
           links: { create: links },
           managers: {
             create: managers.map((m) => ({

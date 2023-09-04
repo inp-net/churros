@@ -56,7 +56,7 @@
     const { upsertEvent } = await $zeus.mutate({
       upsertEvent: [
         {
-          groupId: event.group.id,
+          groupUid: event.group.uid,
           contactMail: event.contactMail,
           description: event.description,
           endsAt: event.endsAt,
@@ -100,6 +100,9 @@
           '...on MutationUpsertEventSuccess': {
             data: {
               author: {
+                uid: true,
+              },
+              group: {
                 uid: true,
               },
               contactMail: true,
@@ -186,7 +189,7 @@
     serverError = '';
 
     dispatch('save');
-    await goto(redirectAfterSave(upsertEvent.data.uid, event.group.uid));
+    await goto(redirectAfterSave(upsertEvent.data.uid, upsertEvent.data.group.uid));
   }
 
   let expandedTicketId = '';
