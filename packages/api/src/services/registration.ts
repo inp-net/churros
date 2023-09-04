@@ -98,11 +98,13 @@ export const createUid = async ({
     }).replaceAll('-', '');
   const base = toAscii(lastName).slice(0, 16) + toAscii(firstName).charAt(0);
   const n = await dichotomid(async (n) => {
-    const existsInDb = Boolean(
-      await prisma.user.findFirst({ where: { uid: `${base}${n > 1 ? n : ''}` } })
-    );
-    const existsInLdap = Boolean(await queryLdapUser(`${base}${n > 1 ? n : ''}`));
-    return existsInDb || existsInLdap;
+    let exist = !(await prisma.user.findFirst({ where: { uid: `${base}${n > 1 ? n : ''}` } }));
+    if (!exist) {
+      const ldapUser = await queryLdapUser(`${base}${n > 1 ? n : ''}`);
+      exist = Boolean(ldapUser);
+    }
+
+    return exist;
   });
   return `${base}${n > 1 ? n : ''}`;
 };
