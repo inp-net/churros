@@ -307,6 +307,7 @@ builder.queryField('birthdays', (t) =>
                     some: {
                       uid: {
                         in: user.major.schools.map((s) => s.uid),
+                        not: 'inp',
                       },
                     },
                   },
