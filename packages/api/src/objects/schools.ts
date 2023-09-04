@@ -21,6 +21,20 @@ export const SchoolInput = builder.inputType('SchoolInput', {
   }),
 });
 
+builder.queryField('school', (t) =>
+  t.prismaField({
+    type: SchoolType,
+    args: {
+      uid: t.arg.string(),
+    },
+    resolve: async (query, _, { uid }) => {
+      const school = await prisma.school.findUnique({ ...query, where: { uid } });
+      if (!school) throw new Error('School not found');
+      return school;
+    },
+  })
+);
+
 builder.queryField('schools', (t) =>
   t.prismaField({
     type: [SchoolType],
