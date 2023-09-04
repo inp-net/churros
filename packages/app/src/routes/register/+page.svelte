@@ -61,7 +61,7 @@
     </Alert>
     <InputText
       label="Adresse e-mail"
-      hint="Si vous en avez une, utilisez votre adresse e-mail universitaire (en @etu.[ecole].fr)"
+      hint="Si vous en avez une, utilisez votre adresse e-mail universitaire (en @etu.inp-n7.fr)"
       errors={formErrors?.email?._errors}
       type="email"
       bind:value={email}
