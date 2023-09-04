@@ -435,7 +435,6 @@ async function createLdapUser(
     } else {
       connectLdap().add(userDn, userAttributesStringable, (error) => {
         console.error('LDAP Add Error:', error);
-        throw error;
       });
     }
   });
