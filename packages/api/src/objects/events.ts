@@ -361,20 +361,30 @@ builder.mutationField('upsertEvent', (t) =>
       endsAt: t.arg({ type: DateTimeScalar }),
       managers: t.arg({ type: [ManagerOfEventInput] }),
     },
-    authScopes(_, { id, groupUid }, { user }) {
+    async authScopes(_, { id, groupUid }, { user }) {
       const creating = !id;
-      if (user?.admin) return true;
+      if (!user) return false;
+      if (user.admin) return true;
 
       if (creating) {
         return Boolean(
-          user?.canEditGroups ||
-            user?.groups.some(
+          user.canEditGroups ||
+            user.groups.some(
               ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid
             )
         );
       }
 
-      return Boolean(user?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit));
+      const event = await prisma.event.findUnique({
+        where: { id },
+        include: { managers: { include: { user: true } } },
+      });
+
+      if (!event) return false;
+
+      return Boolean(
+        event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit)
+      );
     },
     async resolve(
       query,
