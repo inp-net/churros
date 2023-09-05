@@ -13,6 +13,7 @@ import { prisma } from '../prisma.js';
 import { findSchoolUser } from './ldap-school.js';
 import slug from 'slug';
 import { queryLdapUser } from './ldap.js';
+import { fromYearTier } from '../date.js';
 
 const transporter = createTransport(process.env.SMTP_URL);
 
@@ -21,11 +22,11 @@ export const register = async (email: string): Promise<boolean> => {
 
   const major = await prisma.major.findFirst({
     where: {
-      shortName: schoolUser?.promo,
+      shortName: schoolUser?.major,
     },
   });
 
-  delete schoolUser?.promo;
+  delete schoolUser?.major;
 
   const { token } = schoolUser
     ? await prisma.userCandidate.upsert({
@@ -35,6 +36,7 @@ export const register = async (email: string): Promise<boolean> => {
           email,
           token: nanoid(),
           major: major ? { connect: { id: major.id } } : undefined,
+          graduationYear: schoolUser.graduationYear ?? fromYearTier(0),
         },
         update: { ...schoolUser, major: major ? { connect: { id: major.id } } : undefined },
       })

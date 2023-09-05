@@ -32,3 +32,7 @@ export function schoolYearStart(): Date {
 export function yearTier(graduationYear: number): number {
   return schoolYearStart().getFullYear() - graduationYear + 4;
 }
+
+export function fromYearTier(tier: number): number {
+  return schoolYearStart().getFullYear() - tier + 4;
+}

@@ -3,6 +3,7 @@ import ldap from 'ldapjs';
 import '../context.js';
 import bunyan from 'bunyan';
 import { nanoid } from 'nanoid';
+import { fromYearTier } from '../date.js';
 
 export interface LdapUser {
   schoolUid: string;
@@ -24,19 +25,21 @@ const log = bunyan.createLogger({ name: 'CRI INP @centraverse/api ldap client', 
 function parseN7ApprenticeAndMajor(groups: string[] | undefined):
   | undefined
   | {
-      promo?: 'SN' | '3EA' | 'MF2E' | undefined;
+      major?: 'SN' | '3EA' | 'MF2E' | undefined;
       apprentice?: boolean;
+      graduationYear?: number;
     } {
   if (!groups) return undefined;
   for (const group of groups) {
     if (group.startsWith('cn=n7etu_')) {
       const fragment = group.split(',')[0];
       if (!fragment) return undefined;
-      const parts = /n7etu_(?<promo>SN|MF2E|3EA)_(\dA)(_APP)?/.exec(fragment);
+      const parts = /n7etu_(?<major>SN|MF2E|3EA)_(?<yearTier>\d)A(_APP)?/.exec(fragment);
       if (!parts) return;
       return {
-        promo: parts.groups?.['promo'] as 'MF2E' | 'SN' | '3EA' | undefined,
+        major: parts.groups?.['major'] as 'MF2E' | 'SN' | '3EA' | undefined,
         apprentice: fragment.includes('_APP'),
+        graduationYear: fromYearTier(Number.parseInt(parts.groups?.['yearTier'] ?? '0', 10)),
       };
     }
   }
@@ -50,7 +53,8 @@ export const findSchoolUser = async (
 ): Promise<
   | (LdapUser & {
       schoolServer: string;
-      promo?: 'SN' | '3EA' | 'MF2E' | undefined;
+      major?: 'SN' | '3EA' | 'MF2E' | undefined;
+      graduationYear?: number;
       apprentice?: boolean;
     })
   | undefined
@@ -63,7 +67,8 @@ export const findSchoolUser = async (
       apprentice: false,
       firstName: 'Rick',
       lastName: 'Astley',
-      promo: 'SN',
+      graduationYear: 2026,
+      major: 'SN',
     };
   }
 
