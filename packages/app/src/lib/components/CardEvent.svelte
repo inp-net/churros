@@ -266,7 +266,7 @@
     {/if}
     {#if canEdit}
       <div class="button-admin">
-        <ButtonSecondary href={href + '/edit'}><IconGear /></ButtonSecondary>
+        <ButtonSecondary href={href + '/edit/'}><IconGear /></ButtonSecondary>
       </div>
     {/if}
   </section>
