@@ -269,6 +269,7 @@ builder.queryField('eventsInWeek', (t) =>
             },
             visibility: VisibilityPrisma.Public,
           },
+          orderBy: { startsAt: 'desc' },
         });
       }
 
