@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { readFileSync } from 'fs';
 
 const p = new PrismaClient();
+// @ts-ignore
 const { users } = JSON.stringify(readFileSync('./dump-ldap.json'));
 
 const aen7 = await p.studentAssociation.findFirst({ where: { name: 'AEn7' } });
@@ -14,23 +15,22 @@ for (const { uid, inscritAE } of users) {
     continue;
   }
   if (inscritAE) {
-    const id = '';
-    // const {id}= await p.contribution.upsert({
-    //   where: {
-    //     userId_studentAssociationId: {
-    //       userId: user.id,
-    //       studentAssociationId: aen7.id,
-    //     },
-    //   },
-    //   create: {
-    //     userId: user.id,
-    //     studentAssociationId: aen7.id,
-    //     paid: true,
-    //   },
-    //   update: {
-    //     paid: true,
-    //   },
-    // });
+    const { id } = await p.contribution.upsert({
+      where: {
+        userId_studentAssociationId: {
+          userId: user.id,
+          studentAssociationId: aen7.id,
+        },
+      },
+      create: {
+        userId: user.id,
+        studentAssociationId: aen7.id,
+        paid: true,
+      },
+      update: {
+        paid: true,
+      },
+    });
     console.log(`- @${uid} created contribution ${id}`);
   }
 }
