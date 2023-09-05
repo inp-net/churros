@@ -19,6 +19,10 @@ export const load: PageLoad = async ({ params, fetch, parent }) =>
             pictureFile: true,
             startsAt: true,
           },
+          links: {
+            name: true,
+            computedValue: true,
+          },
           remainingGodsons: true,
         }),
       ],

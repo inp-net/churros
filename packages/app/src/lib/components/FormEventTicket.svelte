@@ -17,6 +17,7 @@
   import { fromYearTier, schoolYearStart, yearRangeUpTo, yearTier } from '$lib/dates';
   import InputSelectMultiple from './InputSelectMultiple.svelte';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
+  import InputLinks from './InputLinks.svelte';
   const emit = createEventDispatcher();
 
   export let expandedTicketId = '';
@@ -254,6 +255,12 @@
         bind:value={ticket.openToApprentices}
       />
     </div>
+
+    <InputLinks
+      label="Liens"
+      hint="Visibles une fois la place réservée"
+      bind:value={ticket.links}
+    />
 
     <InputNumber
       hint="0 signifie aucun parrainage autorisé"

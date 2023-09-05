@@ -83,6 +83,10 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
                 group: {
                   name: true,
                 },
+                links: {
+                  computedValue: true,
+                  name: true,
+                },
                 event: {
                   uid: true,
                   title: true,

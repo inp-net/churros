@@ -39,6 +39,7 @@
     paid,
     author,
     ticket,
+    ticket: { links },
     id,
     createdAt,
     paymentMethod,
@@ -113,6 +114,14 @@
       {id.split(':', 2)[1].toUpperCase()}
     </p>
   </section>
+
+  {#if links}
+    <section class="links">
+      {#each links as { computedValue, name }}
+        <ButtonSecondary href={computedValue}>{name}</ButtonSecondary>
+      {/each}
+    </section>
+  {/if}
 
   <section class="info">
     <dl>
@@ -233,6 +242,14 @@
     justify-content: center;
   }
 
+  section.links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+
   section.info {
     margin: 0 auto;
   }
@@ -270,8 +287,12 @@
   @media (min-width: 1000px) {
     .content {
       display: grid;
-      grid-template-areas: 'header header' 'pay pay' 'qrcode details' 'qrcode cancel' 'fineprint fineprint';
+      grid-template-areas: 'header header' 'pay pay' 'links links' 'qrcode details' 'qrcode cancel' 'fineprint fineprint';
       max-width: 1000px;
+    }
+
+    section.links {
+      grid-area: links;
     }
 
     section.explainer {
@@ -281,7 +302,10 @@
     }
 
     section.cancel {
+      display: flex;
+      flex-direction: column;
       grid-area: cancel;
+      align-items: center;
     }
 
     section.info {
