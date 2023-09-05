@@ -446,11 +446,13 @@ builder.mutationField('upsertEvent', (t) =>
             uid: groupUid,
           },
         },
-        author: {
-          connect: {
-            id: user!.id,
-          },
-        },
+        author: id
+          ? undefined
+          : {
+              connect: {
+                id: user!.id,
+              },
+            },
         description,
         contactMail,
         location,
