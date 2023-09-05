@@ -26,3 +26,6 @@ packages/api/scripts/ldap-types.js
 packages/api/scripts/cas-data.json
 
 .env
+
+# Ignore jetbrains ide files
+.idea
