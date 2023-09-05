@@ -88,20 +88,10 @@
     const { updateUser } = await $zeus.mutate({
       updateUser: [
         {
-          address: data.user.address,
-          description: data.user.description,
-          graduationYear: data.user.graduationYear,
-          links: data.user.links,
+          ...data.user,
           majorId: data.user.major.id,
-          nickname: data.user.nickname,
-          phone: data.user.phone,
-          uid: data.user.uid,
-          birthday: data.user.birthday,
           godparentUid: '',
-          email: data.user.email,
-          otherEmails: data.user.otherEmails,
-          cededImageRightsToTVn7: data.user.cededImageRightsToTVn7,
-          apprentice: data.user.apprentice,
+          contributesTo: undefined,
         },
         {
           __typename: true,
