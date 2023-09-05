@@ -72,7 +72,7 @@
 
 <form title="Se connecter" on:submit|preventDefault={login}>
   {#if $page.url.searchParams.has('to')}
-    <Alert theme="warning">Cette page nécéssite une connexion.</Alert>
+    <Alert theme="warning">Cette page nécessite une connexion.</Alert>
   {/if}
 
   <Alert theme="danger" closed={errorMessages === undefined}>
