@@ -28,8 +28,14 @@ builder.mutationField('createGitlabIssue', (t) =>
       const response = await fetch(url(`/projects/${process.env.GITLAB_PROJECT_ID}/issues`), {
         method: 'POST',
         body: JSON.stringify({
-          description,
-          title: Boolean(user) && !hasGitlabAccount ? `[@${user!.uid}] ${title}` : title,
+          description:
+            description +
+            (hasGitlabAccount
+              ? ''
+              : `\n\n\n -- ${
+                  user ? `[@${user.uid}](https://churros.inpt.fr/users/${user.uid})` : 'Anonymous'
+                }`),
+          title,
           labels: ['user-submitted', isBug ? 'bug' : 'feature'].join(','),
         }),
         headers: {
