@@ -327,11 +327,14 @@ builder.mutationField('updateArticlePicture', (t) =>
       const article = await prisma.article.findUniqueOrThrow({
         where: { id },
       });
+      if (user?.canEditGroups) return true;
 
       return Boolean(
         // Who can edit this article?
-        // The author
-        user?.id === article.authorId ||
+        // Admins
+        user?.admin ||
+          // The author
+          user?.id === article.authorId ||
           // Other authors of the group
           user?.groups.some(
             ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
@@ -369,11 +372,14 @@ builder.mutationField('deleteArticlePicture', (t) =>
       const article = await prisma.article.findUniqueOrThrow({
         where: { id },
       });
+      if (user?.canEditGroups) return true;
 
       return Boolean(
         // Who can edit this article?
-        // The author
-        user?.id === article.authorId ||
+        // Admins
+        user?.admin ||
+          // The author
+          user?.id === article.authorId ||
           // Other authors of the group
           user?.groups.some(
             ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
