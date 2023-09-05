@@ -110,6 +110,8 @@ const majors = [MécaniqueDesFluides, Vapeur, Boue, Roche, Vent];
 for (const [i, name] of ['AE EAU 2022', 'AE FEU 2022', 'AE TERRE 2022', 'AE AIR 2022'].entries()) {
   await prisma.studentAssociation.create({
     data: {
+      uid: slug(name),
+      description: 'Une association étudiante',
       name,
       school: { connect: { id: schools[i]!.id } },
       links: { create: [] },

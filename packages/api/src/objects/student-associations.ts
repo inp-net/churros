@@ -7,6 +7,8 @@ import { cancelLydiaTransaction, sendLydiaPaymentRequest } from '../services/lyd
 export const StudentAssociationType = builder.prismaObject('StudentAssociation', {
   fields: (t) => ({
     id: t.exposeID('id'),
+    uid: t.exposeString('uid', { nullable: true }),
+    description: t.exposeString('description'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     schoolId: t.exposeID('schoolId'),
@@ -37,15 +39,25 @@ builder.queryField('studentAssociation', (t) =>
   t.prismaField({
     type: StudentAssociationType,
     args: {
-      id: t.arg.id(),
+      uid: t.arg.string(),
     },
-    authScopes(_, {}, { user }) {
-      return Boolean(user);
-    },
-    async resolve(query, _, { id }) {
+    async resolve(query, _, { uid }) {
       return prisma.studentAssociation.findUniqueOrThrow({
         ...query,
-        where: { id },
+        where: { uid },
+        include: {
+          school: true,
+          groups: {
+            where: {
+              // Type Club or Association
+              type: { in: ['Association', 'Club', 'StudentAssociationSection'] },
+            },
+            orderBy: {
+              name: 'asc',
+            },
+          },
+          links: true,
+        },
       });
     },
   })
