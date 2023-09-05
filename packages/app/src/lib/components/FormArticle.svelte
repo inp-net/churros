@@ -122,7 +122,7 @@
     hint={HELP_VISIBILITY[visibility]}
   />
   <InputLongText label="Description" bind:value={body} rich />
-  <InputLinks computed label="Liens" bind:value={links} />
+  <InputLinks label="Liens" bind:value={links} />
   {#if serverError}
     <Alert theme="danger"
       >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert

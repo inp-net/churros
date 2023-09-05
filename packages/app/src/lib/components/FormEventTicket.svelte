@@ -35,6 +35,7 @@
     price: number;
     capacity: number;
     openToPromotions: number[];
+    links: Array<{ value: string; name: string }>;
     openToSchools: Array<{ name: string; color: string; uid: string }>;
     openToGroups: Array<{ name: string; uid: string; pictureFile: string }>;
     openToMajors: Array<{ name: string; shortName: string; id: string }>;
@@ -310,7 +311,7 @@
     display: flex;
     flex-flow: column wrap;
     gap: 1rem;
-    width: 500px;
+    width: 550px;
     max-width: 100%;
     padding: 1em;
     border-radius: var(--radius-block);

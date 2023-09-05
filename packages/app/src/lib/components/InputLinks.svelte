@@ -15,7 +15,7 @@
   export let hint = '';
   export let value: Array<{ name: string; value: string }> = [];
   export let newValue: { name: string; value: string } = { name: '', value: '' };
-  export let computed = false;
+  export let computed = true;
 
   let editingComputedLink: undefined | string;
   let replacements: Record<string, string> = {};
