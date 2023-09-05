@@ -203,7 +203,7 @@
       <h2>
         {#if paying}Paiement par Lydia{:else}Mode de paiement{/if}
       </h2>
-      <p>Ta place n'est pas réservée tant que le paiement n'est pas terminé.</p>
+      <!-- <p>Ta place n'est pas réservée tant que le paiement n'est pas terminé.</p> -->
 
       {#if !paying}
         <ul class="nobullet payment-methods">
