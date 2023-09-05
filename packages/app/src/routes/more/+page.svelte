@@ -1,6 +1,7 @@
 <script lang="ts">
   import IconAdd from '~icons/mdi/add';
   import IconCar from '~icons/mdi/car';
+  import IconDefisInte from '~icons/mdi/sword-cross';
   import IconHand from '~icons/mdi/hand-heart';
   import Carrot from '~icons/mdi/carrot';
   import IconTerminal from '~icons/mdi/terminal';
@@ -31,6 +32,10 @@
   }
 
   const services = [
+    Service("Défis d'inté", "Valide tes défis d'inté", {
+      href: 'https://defis-inte.inpt.fr',
+      logo: IconDefisInte,
+    }),
     Service('Ecobox', 'Commande ton ecobox', {
       logo: Carrot,
       href: 'https://lespaniersdelamiss.fr/',
