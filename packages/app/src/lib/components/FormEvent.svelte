@@ -37,9 +37,7 @@
   $: canEditManagers =
     !event.uid ||
     $me?.admin ||
-    $me?.managedEvents?.find(
-      (manager) => manager.event.uid === event.uid && manager.event.group.uid === event.group.uid
-    )?.canEditPermissions;
+    event.managers?.find(({ user }) => user.uid === $me?.uid)?.canEditPermissions;
 
   function eraseFakeIds(id: string): string {
     if (id.includes(':fake:')) return '';

@@ -691,14 +691,7 @@ export async function eventAccessibleByUser(
     case Visibility.Restricted: {
       if (!user) return false;
       // All managers can see the event, no matter their permissions
-      if (
-        eventManagedByUser(event, user, {
-          canEdit: false,
-          canEditPermissions: false,
-          canVerifyRegistrations: false,
-        })
-      )
-        return true;
+      if (eventManagedByUser(event, user, {})) return true;
 
       const ancestors = await prisma.group
         .findMany({
@@ -713,11 +706,7 @@ export async function eventAccessibleByUser(
 
     case Visibility.Private: {
       // All managers can see the event, no matter their permissions
-      return eventManagedByUser(event, user, {
-        canEdit: false,
-        canEditPermissions: false,
-        canVerifyRegistrations: false,
-      });
+      return eventManagedByUser(event, user, {});
     }
 
     default: {
@@ -737,18 +726,18 @@ export function eventManagedByUser(
     }>;
   },
   user: Context['user'],
-  { canEdit = true, canEditPermissions = false, canVerifyRegistrations = false }
+  required: { canEdit?: boolean; canEditPermissions?: boolean; canVerifyRegistrations?: boolean }
 ) {
   if (!user) return false;
   return Boolean(
     user.groups.some(({ groupId, canScanEvents }) => groupId === event.groupId && canScanEvents) ||
-      event.managers.some(
-        ({ user: { uid }, ...permissions }) =>
-          uid === user.uid &&
-          ((permissions.canEdit && canEdit) ||
-            (permissions.canEditPermissions && canEditPermissions) ||
-            (permissions.canVerifyRegistrations && canVerifyRegistrations))
-      )
+      event.managers.some(({ user: { uid }, ...permissions }) => {
+        if (uid !== user.uid) return false;
+        if (required.canEdit && !permissions.canEdit) return false;
+        if (required.canEditPermissions && !permissions.canEditPermissions) return false;
+        if (required.canVerifyRegistrations && !permissions.canVerifyRegistrations) return false;
+        return true;
+      })
   );
 }
 

@@ -11,7 +11,7 @@
 
   export let data: PageData;
 
-  const { id, descriptionHtml, links, group, contactMail, articles } = data.event;
+  const { descriptionHtml, links, group, contactMail, articles } = data.event;
 
   const tickets = data.ticketsOfEvent;
 
@@ -96,7 +96,7 @@
   <h2>
     Actualités
 
-    {#if $me?.admin || $me?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit)}
+    {#if $me?.admin || data.event.managers.some(({ user, canEdit }) => user.uid === $me?.uid && canEdit)}
       <ButtonSecondary icon={IconPlus} href="./write">Post</ButtonSecondary>
     {/if}
   </h2>

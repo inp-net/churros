@@ -151,7 +151,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
         ({ group, canEditArticles }) => canEditArticles && group.id === data.event.group.id
       )
     ) ||
-    Boolean(me.managedEvents.some(({ event, canEdit }) => canEdit && event.id === data.event.id));
+    Boolean(data.event.managers.some(({ user, canEdit }) => canEdit && user.uid === me.uid));
 
   if (!canEdit) throw redirect(307, '..');
 
