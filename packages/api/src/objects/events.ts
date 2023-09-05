@@ -738,13 +738,14 @@ export function eventManagedByUser(
 ) {
   if (!user) return false;
   return Boolean(
-    event.managers.some(
-      ({ user: { uid }, ...permissions }) =>
-        uid === user.uid &&
-        ((permissions.canEdit && canEdit) ||
-          (permissions.canEditPermissions && canEditPermissions) ||
-          (permissions.canVerifyRegistrations && canVerifyRegistrations))
-    )
+    user.groups.some(({ groupId, canScanEvents }) => groupId === event.groupId && canScanEvents) ||
+      event.managers.some(
+        ({ user: { uid }, ...permissions }) =>
+          uid === user.uid &&
+          ((permissions.canEdit && canEdit) ||
+            (permissions.canEditPermissions && canEditPermissions) ||
+            (permissions.canVerifyRegistrations && canVerifyRegistrations))
+      )
   );
 }
 
