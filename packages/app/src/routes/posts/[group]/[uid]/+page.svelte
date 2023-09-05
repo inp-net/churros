@@ -18,10 +18,11 @@
     $me?.groups.some(({ group: { uid }, canEditArticles }) => uid === group.uid && canEditArticles);
 
   $: canEditEvent =
-    $me?.admin ||
-    $me?.managedEvents?.some(
-      ({ canEdit, event }) => canEdit && event.uid === event?.uid && event.group === event?.group
-    );
+    $me?.canEditGroups ||
+    (Boolean(author?.id === $me?.id) &&
+      $me?.groups.some(
+        ({ canEditArticles, group }) => group.id === data.article.group.id && canEditArticles
+      ));
 </script>
 
 {#if pictureFile}

@@ -7,11 +7,13 @@ export const _articleQuery = Selector('Article')({
   bodyHtml: true,
   publishedAt: true,
   group: {
+    id: true,
     uid: true,
     name: true,
   },
   pictureFile: true,
   author: {
+    id: true,
     firstName: true,
     fullName: true,
     lastName: true,
