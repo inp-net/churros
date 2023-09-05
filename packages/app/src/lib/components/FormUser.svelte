@@ -139,6 +139,8 @@
       const { updateUser } = await $zeus.mutate({
         updateUser: [
           {
+            lastName,
+            firstName,
             uid: data.user.uid,
             nickname,
             description,
