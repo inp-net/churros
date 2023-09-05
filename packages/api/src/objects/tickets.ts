@@ -21,14 +21,15 @@ export const placesLeft = (ticket: {
     placesLeftInGroup =
       ticket.group.capacity -
       ticket.group.tickets.reduce(
-        (sum, { registrations }) => sum + registrations.filter(({ paid }) => paid).length,
+        (sum, { registrations }) => sum + registrations /* .filter(({ paid }) => paid) */.length,
         0
       );
   }
 
   let placesLeftInTicket = Number.POSITIVE_INFINITY;
   if (ticket.capacity)
-    placesLeftInTicket = ticket.capacity - ticket.registrations.filter(({ paid }) => paid).length;
+    {placesLeftInTicket =
+      ticket.capacity - ticket.registrations /* .filter(({ paid }) => paid) */.length;}
 
   return Math.min(placesLeftInGroup, placesLeftInTicket);
 };
