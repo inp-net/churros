@@ -297,6 +297,7 @@
           availableGroups={$me?.groups?.map((g) => g.group) ?? []}
           userUid={data.user.uid}
           bind:settings={data.user.notificationSettings}
+          bind:notificationEmail={data.user.notificationEmail}
         />
         <h2>Données personnelles</h2>
         <p>

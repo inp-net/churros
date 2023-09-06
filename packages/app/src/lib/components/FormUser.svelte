@@ -184,7 +184,7 @@
     <InputText required label="Nom de famille" bind:value={lastName} />
     <InputText label="Surnom" bind:value={nickname} />
   </div>
-  <InputLongText rich label="Description" bind:value={description} />
+  <InputLongText label="Description" bind:value={description} />
   {#if canEditContributions}
     <InputField label="Cotisant à">
       <InputSearchObjectList

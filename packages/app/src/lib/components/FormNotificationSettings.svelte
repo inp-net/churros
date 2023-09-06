@@ -6,11 +6,14 @@
   import InputCheckbox from './InputCheckbox.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputGroup from './InputGroup.svelte';
+    import { me } from '$lib/session';
+    import InputText from './InputText.svelte';
 
   const asBooleanOrNull = (v: unknown) => v as boolean | null;
 
   let loading = false;
   export let availableGroups: Array<{ uid: string; name: string; id: string; pictureFile: string }>;
+  export let notificationEmail: string;
   export let userUid: string;
   export let settings: Array<{
     type: NotificationType;
@@ -29,8 +32,9 @@
             type,
             allow,
             // eslint-disable-next-line unicorn/no-null
-            groupUid: group?.uid ?? null,
+            groupUid: group?.uid ?? null
           })),
+          notificationEmail
         },
         Selector('NotificationSetting')({
           type: true,
@@ -40,10 +44,10 @@
             uid: true,
             name: true,
             id: true,
-            pictureFile: true,
-          },
-        }),
-      ],
+            pictureFile: true
+          }
+        })
+      ]
     });
     loading = false;
 
@@ -63,14 +67,14 @@
       notifSettings.some(predicate(t, seldGroup))
         ? {
             ...notifSettings.find(predicate(t, seldGroup))!,
-            index: notifSettings.findIndex(predicate(t, seldGroup)),
+            index: notifSettings.findIndex(predicate(t, seldGroup))
           }
         : {
             type: t,
             allow: true,
             group: seldGroup ? availableGroups.find(({ uid }) => uid === seldGroup) : undefined,
             id: 'notifsetting:fake:' + nanoid(10),
-            index: notifSettings.findIndex(predicate(t, seldGroup)),
+            index: notifSettings.findIndex(predicate(t, seldGroup))
           }
     );
   }
@@ -88,6 +92,24 @@
 </script>
 
 <form on:submit|preventDefault={updateNotificationSettings}>
+  <div class="mail">
+    <InputCheckbox
+      label="Recevoir les notifications par mail"
+      value={Boolean(notificationEmail)}
+      on:change={({target}) => {
+        if (!(target instanceof HTMLInputElement)) return
+        notificationEmail = target.checked ? ($me?.email ?? '') : '';
+      }}
+    />
+    {#if notificationEmail}
+      <InputText
+        label="Adresse mail"
+        bind:value={notificationEmail}
+        type="email"
+        required
+      />
+    {/if}
+  </div>
   <div class="select-group">
     <InputGroup
       nullIcon={IconEarth}
@@ -124,8 +146,8 @@
                     type,
                     allow: detail,
                     group,
-                    id: 'notifsetting:fake:' + nanoid(10),
-                  },
+                    id: 'notifsetting:fake:' + nanoid(10)
+                  }
                 ];
               } else if (detail !== null && detail !== undefined) {
                 settings[index].allow = detail;

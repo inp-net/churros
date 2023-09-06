@@ -62,7 +62,8 @@ for (const line of readFileSync('./integration-1as.tsv').toString().split('\n'))
 
 for (const [index, group] of Object.entries(integrationGroups)) {
   const number = Number.parseInt(index, 10)! + 1;
-  if (number > 10) {
+  if (number < 11) {continue}
+  if (number > 22) {
     break;
   }
   console.log(`Création du groupe d'inté ${number}...`);

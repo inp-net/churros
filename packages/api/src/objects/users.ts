@@ -49,6 +49,7 @@ export const UserType = builder.prismaNode('User', {
       authScopes: { loggedIn: true, $granted: 'me' },
     }),
     email: t.exposeString('email', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    notificationEmail: t.exposeString('notificationEmail', {authScopes:{loggedIn: true, $granted: 'me'}}),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
     fullName: t.field({
@@ -336,6 +337,7 @@ builder.mutationField('updateUser', (t) =>
       graduationYear: t.arg.int({ required: false }),
       email: t.arg.string(),
       otherEmails: t.arg.stringList(),
+      notificationEmail: t.arg.string(),
       birthday: t.arg({ type: DateTimeScalar, required: false }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
       phone: t.arg.string({ validate: { maxLength: 255 } }),
@@ -371,6 +373,7 @@ builder.mutationField('updateUser', (t) =>
         majorId,
         email,
         otherEmails,
+        notificationEmail,
         graduationYear,
         nickname,
         description,
@@ -466,6 +469,7 @@ builder.mutationField('updateUser', (t) =>
           graduationYear: graduationYear ?? undefined,
           nickname,
           description,
+          notificationEmail,
           address,
           phone,
           birthday,
@@ -598,12 +602,20 @@ builder.mutationField('updateNotificationSettings', (t) =>
     args: {
       uid: t.arg.string(),
       notificationSettings: t.arg({ type: [NotificationSettingInput] }),
+      notificationEmail: t.arg.string()
     },
     authScopes(_, { uid }, { user }) {
       return Boolean(user?.canEditUsers || uid === user?.uid);
     },
-    async resolve(query, _, { uid, notificationSettings }) {
+    async resolve(query, _, { uid, notificationSettings, notificationEmail }) {
       const user = await prisma.user.findUniqueOrThrow({ where: { uid } });
+
+      await prisma.user.update({
+        where: { uid },
+        data: {
+          notificationEmail,
+        }
+      })
 
       for (const { groupUid, type, allow } of notificationSettings) {
         let group: Group | undefined;

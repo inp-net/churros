@@ -19,6 +19,7 @@ import { Prisma } from '@prisma/client';
 import { toHtml } from './markdown.js';
 import { differenceInSeconds, minutesToSeconds, subMinutes } from 'date-fns';
 import { fullName } from '../objects/users.js';
+import { createTransport } from 'nodemailer';
 
 if (
   process.env['CONTACT_EMAIL'] &&
@@ -31,6 +32,8 @@ if (
     process.env.VAPID_PRIVATE_KEY
   );
 }
+
+const mailer = createTransport(process.env.SMTP_URL);
 
 export type PushNotification = {
   title: string;
@@ -459,6 +462,13 @@ export async function notify<U extends User>(
         },
         JSON.stringify(notif)
       );
+      const httpActions = (notif.actions ?? []).filter(({ action }) => /^https?:\/\//.test(action));
+      await mailer.sendMail({
+        to: owner.email,
+        subject: `[Churros] ${notif.title}`,
+        html: `Tu as une nouvelle notif sur Churros:\n\n${notif.body}\n\n${httpActions.map(({action, title}) => `<a href="${action}">${title}</a>`).join('\n')}`,
+        text: `Tu as une nouvelle notif sur Churros:\n\n${notif.body}\n\n${httpActions.map(({action, title}) => `${title}: ${action}`).join('\n')}`,
+      })
       await prisma.notification.create({
         data: {
           subscription: {
@@ -470,9 +480,7 @@ export async function notify<U extends User>(
           actions: {
             createMany: {
               data: [
-                ...(notif.actions ?? [])
-                  .filter(({ action }) => /^https?:\/\//.test(action))
-                  .map(({ action, title }) => ({
+                ...httpActions .map(({ action, title }) => ({
                     value: action,
                     name: title,
                   })),

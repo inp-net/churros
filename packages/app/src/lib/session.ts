@@ -10,6 +10,7 @@ export const sessionUserQuery = () =>
     id: true,
     uid: true,
     firstName: true,
+    email: true,
     pictureFile: true,
     phone: true,
     lastName: true,

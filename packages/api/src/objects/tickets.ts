@@ -27,9 +27,10 @@ export const placesLeft = (ticket: {
   }
 
   let placesLeftInTicket = Number.POSITIVE_INFINITY;
-  if (ticket.capacity)
-    {placesLeftInTicket =
-      ticket.capacity - ticket.registrations /* .filter(({ paid }) => paid) */.length;}
+  if (ticket.capacity) {
+    placesLeftInTicket =
+      ticket.capacity - ticket.registrations /* .filter(({ paid }) => paid) */.length;
+  }
 
   return Math.min(placesLeftInGroup, placesLeftInTicket);
 };
