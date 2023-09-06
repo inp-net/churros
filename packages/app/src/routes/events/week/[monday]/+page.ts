@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
     ...(await loadQuery(
       {
         eventsInWeek: [
-          { today: shownWeek.toISOString() },
+          { today: shownWeek },
           Selector('Event')({
             id: true,
             startsAt: true,
