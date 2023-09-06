@@ -4,6 +4,7 @@ import { prisma } from '../prisma.js';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
 import { purgeUserSessions } from '../context.js';
+import { GroupType } from '@prisma/client';
 
 export const GroupMemberType = builder.prismaObject('GroupMember', {
   fields: (t) => ({
@@ -46,6 +47,7 @@ builder.mutationField('addGroupMember', (t) =>
       });
 
       if (
+        (group.type === GroupType.Club || group.type === GroupType.List) &&
         !member.contributions.some(
           ({ studentAssociation: { school, id } }) =>
             school.uid === group.school?.uid || id === group.studentAssociation?.id
