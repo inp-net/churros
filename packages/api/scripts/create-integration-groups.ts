@@ -72,6 +72,11 @@ for (const [index, group] of Object.entries(integrationGroups)) {
       type: 'Integration',
       uid: `inte-2023-${number}`,
       color: '#000000',
+      school: {
+        connect: {
+          uid: 'n7',
+        },
+      },
     },
   });
   console.log(`\tgroupe d'inté ${number} créé -> https://churros.inpt.fr/groups/${uid}`);
