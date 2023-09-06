@@ -187,19 +187,65 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
       sig
     );
 
-    if (!verified) return res.status(400).send('Transaction signature is invalid');
+    await prisma.logEntry.create({
+      data: {
+        action: 'receive',
+        area: 'lydia webhook',
+        message: JSON.stringify({ verified, transaction }),
+        target: transaction_identifier,
+      },
+    });
 
-    if (!transaction) return res.status(400).send('Transaction not found');
+    if (!verified) {
+      await prisma.logEntry.create({
+        data: {
+          area: 'lydia webhook',
+          action: 'fail',
+          message: 'transaction signature invalid',
+          target: transaction_identifier,
+        },
+      });
+      return res.status(400).send('Transaction signature is invalid');
+    }
+
+    if (!transaction) {
+      await prisma.logEntry.create({
+        data: {
+          area: 'lydia webhook',
+          action: 'fail',
+          message: 'transaction not found',
+          target: transaction_identifier,
+        },
+      });
+      return res.status(400).send('Transaction not found');
+    }
 
     // Check if the beneficiary exists
     if (transaction.registration) {
-      if (!transaction.registration.ticket.event.beneficiary)
+      if (!transaction.registration.ticket.event.beneficiary) {
+        await prisma.logEntry.create({
+          data: {
+            area: 'lydia webhook',
+            action: 'fail',
+            message: 'beneficiary not found',
+            target: transaction_identifier,
+          },
+        });
         return res.status(400).send('Beneficiary not found');
+      }
 
       if (
         sig ===
         lydiaSignature(transaction.registration.ticket.event.beneficiary, signatureParameters)
       ) {
+        await prisma.logEntry.create({
+          data: {
+            area: 'lydia webhook',
+            action: 'success',
+            message: `booking transaction marked as paid`,
+            target: transaction_identifier,
+          },
+        });
         await prisma.lydiaTransaction.update({
           where: {
             id: transaction.id,
@@ -217,9 +263,30 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
       }
     } else if (transaction.contribution) {
       const beneficiary = transaction.contribution.studentAssociation.lydiaAccounts[0];
-      if (!beneficiary)
+      if (!beneficiary) {
+        await prisma.logEntry.create({
+          data: {
+            area: 'lydia webhook',
+            action: 'fail',
+            message: 'no lydia account linked',
+          },
+        });
         return res.status(400).send('No lydia accounts for this student association');
+      }
+
       if (sig === lydiaSignature(beneficiary, signatureParameters)) {
+        await prisma.logEntry.create({
+          data: {
+            area: 'lydia webhook',
+            action: 'success',
+            message: `contribution transaction marked as paid: ${JSON.stringify(
+              { beneficiary },
+              undefined,
+              2
+            )}`,
+            target: transaction_identifier,
+          },
+        });
         await prisma.contribution.update({
           where: {
             id: transaction.contribution.studentAssociation.id,
