@@ -11,28 +11,13 @@
 
   export let data: PageData;
 
-  const { descriptionHtml, links, group, contactMail, articles } = data.event;
+  const { descriptionHtml, links, group, contactMail, articles, placesLeft, capacity } = data.event;
 
   const tickets = data.ticketsOfEvent;
 
   $: usersRegistration = tickets
     .flatMap((t) => t.registrations)
     .filter(({ beneficiary, author }) => author.uid === $me?.uid || beneficiary === $me?.uid);
-
-  $: eventCapacity = tickets.reduce(
-    (sum, { capacity, group }) =>
-      sum +
-      Math.min(
-        capacity === 0 ? Number.POSITIVE_INFINITY : capacity,
-        group?.capacity ?? Number.POSITIVE_INFINITY
-      ),
-    0
-  );
-
-  $: eventPlacesLeft = tickets.reduce(
-    (sum, { placesLeft }) => sum + (placesLeft === -1 ? Number.POSITIVE_INFINITY : placesLeft),
-    0
-  );
 
   const bookingURL = (registrationId: string) =>
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
@@ -69,16 +54,14 @@
   {@html descriptionHtml}
 </section>
 
-{#if eventCapacity > 0}
+{#if tickets.length > 0}
   <section class="tickets">
     <h2>
       Places <span class="places">
-        {#if eventPlacesLeft === Number.POSITIVE_INFINITY}
+        {#if placesLeft === Number.POSITIVE_INFINITY}
           illimitées
         {:else}
-          <span class="left">{eventPlacesLeft} restantes</span><span class="capacity"
-            >{eventCapacity}</span
-          >
+          <span class="left">{placesLeft} restantes</span><span class="capacity">{capacity}</span>
         {/if}
       </span>
     </h2>

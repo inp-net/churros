@@ -7,6 +7,8 @@ import {
   Visibility,
   type Event,
   type EventManager,
+  type Ticket,
+  type TicketGroup,
 } from '@prisma/client';
 import { toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
@@ -100,6 +102,31 @@ const RegistrationsCountsType = builder
     }),
   });
 
+export function eventCapacity(
+  tickets: Array<Ticket & { group: TicketGroup | null }>,
+  ticketGroups: Array<TicketGroup & { tickets: Ticket[] }>
+) {
+  // Places left is capacity - number of registrations
+  // Capacity is the sum of
+  // - ticket's capacity, for tickets outside of groups
+  // - min(group capacity, sum of tickets' capacity)  for ticket groups
+  const ungroupedTickets = tickets.filter((t) => !t.group);
+  const handleUnlimited = (capacity: number) =>
+    capacity === -1 ? Number.POSITIVE_INFINITY : capacity;
+  return (
+    ungroupedTickets.reduce((acc, t) => acc + handleUnlimited(t.capacity), 0) +
+    ticketGroups.reduce(
+      (acc, tg) =>
+        acc +
+        Math.min(
+          handleUnlimited(tg.capacity),
+          tg.tickets.reduce((acc, t) => acc + handleUnlimited(t.capacity), 0)
+        ),
+      0
+    )
+  );
+}
+
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
   fields: (t) => ({
@@ -184,6 +211,46 @@ export const EventType = builder.prismaNode('Event', {
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
+    capacity: t.int({
+      async resolve({ id }) {
+        const tickets = await prisma.ticket.findMany({
+          where: { event: { id } },
+          include: {
+            group: true,
+          },
+        });
+        const ticketGroups = await prisma.ticketGroup.findMany({
+          where: { event: { id } },
+          include: {
+            tickets: true,
+          },
+        });
+
+        return eventCapacity(tickets, ticketGroups);
+      },
+    }),
+    placesLeft: t.int({
+      async resolve({ id }) {
+        const registrations = await prisma.registration.findMany({
+          where: { ticket: { event: { id } } },
+        });
+
+        const tickets = await prisma.ticket.findMany({
+          where: { event: { id } },
+          include: {
+            group: true,
+          },
+        });
+        const ticketGroups = await prisma.ticketGroup.findMany({
+          where: { event: { id } },
+          include: {
+            tickets: true,
+          },
+        });
+
+        return eventCapacity(tickets, ticketGroups) - registrations.length;
+      },
+    }),
     registrationsCounts: t.field({
       type: RegistrationsCountsType,
       async resolve({ id }) {
