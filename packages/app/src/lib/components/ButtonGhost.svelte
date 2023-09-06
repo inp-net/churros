@@ -4,6 +4,8 @@
   export let type: 'button' | 'reset' | 'submit' = 'button';
   export let darkShadow = false;
   export let help = '';
+  export let danger = false;
+  export let success = false;
   export let href = '';
 </script>
 
@@ -17,16 +19,21 @@
   {type}
   {href}
   use:tooltip={help}
-  class="button-ghost {$$restProps.class}"
+  class="button-ghost {danger ? 'danger' : ''} {success ? 'success' : ''} {$$restProps.class}"
   on:click><slot /></svelte:element
 >
 
 <style lang="scss">
+  .button-ghost.danger,
+  .button-ghost.success {
+    color: var(--link);
+  }
   .button-ghost {
     --bg: transparent;
 
     all: unset;
     flex-shrink: 0;
+    width: max-content;
     padding: 0.25em;
     color: var(--text);
     cursor: pointer;
