@@ -275,6 +275,14 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
       }
 
       if (sig === lydiaSignature(beneficiary, signatureParameters)) {
+        await prisma.contribution.update({
+          where: {
+            id: transaction.contribution.id,
+          },
+          data: {
+            paid: true,
+          },
+        });
         await prisma.logEntry.create({
           data: {
             area: 'lydia webhook',
@@ -285,14 +293,6 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
               2
             )}`,
             target: transaction_identifier,
-          },
-        });
-        await prisma.contribution.update({
-          where: {
-            id: transaction.contribution.studentAssociation.id,
-          },
-          data: {
-            paid: true,
           },
         });
         return res.status(200).send('OK');
