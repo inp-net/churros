@@ -154,8 +154,12 @@
   </header>
 
   <section class="description">
-    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-    {@html group.longDescriptionHtml}
+    {#if group.longDescriptionHtml.trim().length}
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+      {@html group.longDescriptionHtml}
+    {:else}
+      {group.description}
+    {/if}
   </section>
 
   <section class="board">
