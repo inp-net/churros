@@ -74,7 +74,7 @@ builder.mutationField('contribute', (t) =>
       const lydiaAccount = studentAssociation.lydiaAccounts[0];
       if (!lydiaAccount) throw new GraphQLError("Cette AE n'a pas de compte Lydia");
 
-      await prisma.contribution.upsert({
+      let { transaction, ...contribution } = await prisma.contribution.upsert({
         where: {
           userId_studentAssociationId: { userId: user.id, studentAssociationId: id },
         },
@@ -88,14 +88,37 @@ builder.mutationField('contribute', (t) =>
           },
         },
         update: {},
+        include: {
+          transaction: true,
+        },
       });
 
-      await sendLydiaPaymentRequest(
+      if (!transaction) {
+        transaction = await prisma.lydiaTransaction.create({
+          data: {
+            contribution: { connect: { id: contribution.id } },
+            phoneNumber: phone,
+          },
+        });
+      }
+
+      if (transaction.requestId && transaction.requestUuid)
+        await cancelLydiaTransaction(transaction, lydiaAccount.vendorToken);
+
+      const details = await sendLydiaPaymentRequest(
         `Cotisation pour ${studentAssociation.name}`,
         studentAssociation.contributionPrice,
         phone,
         lydiaAccount.vendorToken
       );
+
+      await prisma.lydiaTransaction.update({
+        where: { id: transaction.id },
+        data: {
+          phoneNumber: phone,
+          ...details,
+        },
+      });
 
       await prisma.logEntry.create({
         data: {
