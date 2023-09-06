@@ -1,5 +1,5 @@
 import { builder } from '../builder.js';
-import { startOfWeek, endOfWeek } from 'date-fns';
+import { startOfWeek, endOfWeek, setMinutes } from 'date-fns';
 import { TicketType, createUid as createTicketUid, userCanSeeTicket } from './tickets.js';
 import {
   type Event as EventPrisma,
@@ -34,6 +34,7 @@ import { unlink } from 'node:fs/promises';
 import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
+import { setHours } from 'date-fns';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -302,6 +303,7 @@ builder.queryField('events', (t) =>
             visibility: VisibilityPrisma.Public,
             startsAt: future ? { gte: new Date() } : undefined,
           },
+          orderBy: { startsAt: 'asc' },
         });
       }
 
@@ -311,7 +313,7 @@ builder.queryField('events', (t) =>
           startsAt: future ? { gte: new Date() } : undefined,
           ...visibleEventsPrismaQuery(user),
         },
-        orderBy: { startsAt: 'desc' },
+        orderBy: { startsAt: 'asc' },
       });
     },
   })
@@ -325,31 +327,29 @@ builder.queryField('eventsInWeek', (t) =>
     },
     async resolve(query, _, { today }, { user }) {
       // dateCondition is used to filter events that start in the week or end in the week
+      const dateCondition = {
+        gte: setMinutes(setHours(startOfWeek(today, { weekStartsOn: 1 }), 0), 0),
+        lte: setMinutes(setHours(endOfWeek(today, { weekStartsOn: 1 }), 23), 59),
+      };
 
       if (!user) {
         return prisma.event.findMany({
           ...query,
           where: {
-            startsAt: {
-              lte: endOfWeek(today),
-              gte: startOfWeek(today),
-            },
+            startsAt: dateCondition,
             visibility: VisibilityPrisma.Public,
           },
-          orderBy: { startsAt: 'desc' },
+          orderBy: { startsAt: 'asc' },
         });
       }
 
       return prisma.event.findMany({
         ...query,
         where: {
-          startsAt: {
-            lte: endOfWeek(today),
-            gte: startOfWeek(today),
-          },
+          startsAt: dateCondition,
           ...visibleEventsPrismaQuery(user),
         },
-        orderBy: { startsAt: 'desc' },
+        orderBy: { startsAt: 'asc' },
       });
     },
   })

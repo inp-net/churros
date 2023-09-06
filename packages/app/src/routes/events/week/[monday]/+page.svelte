@@ -181,7 +181,7 @@
       display: flex;
       flex-flow: column wrap;
       flex-grow: 1;
-      gap: 2rem;
+      gap: 1rem;
     }
   }
 
