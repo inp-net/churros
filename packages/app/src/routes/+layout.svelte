@@ -53,16 +53,14 @@
   beforeNavigate(() => {
     (window as unknown as Window & { NProgress: NProgress }).NProgress.start();
   });
-  afterNavigate(() => {
+  afterNavigate(async () => {
     const { NProgress } = window as unknown as Window & { NProgress: NProgress };
 
     NProgress.done();
     setTimeout(() => {
       NProgress.remove();
     }, 1000);
-  });
 
-  onMount(async () => {
     const { announcementsNow } = await $zeus.query({
       announcementsNow: [
         { now: new Date() },
@@ -75,7 +73,9 @@
       ],
     });
     announcements = announcementsNow;
+  });
 
+  onMount(() => {
     let currentTheme = $theme;
     theme.subscribe(($theme) => {
       if (currentTheme) document.documentElement.classList.remove(currentTheme);
