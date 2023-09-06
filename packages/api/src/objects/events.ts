@@ -9,6 +9,7 @@ import {
   type EventManager,
   type Ticket,
   type TicketGroup,
+  PaymentMethod,
 } from '@prisma/client';
 import { toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
@@ -84,12 +85,14 @@ class RegistrationsCounts {
   total: number;
   paid: number;
   verified: number;
+  unpaidLydia: number;
   /* eslint-enable @typescript-eslint/parameter-properties */
 
-  constructor(total: number, paid: number, verified: number) {
+  constructor(total: number, paid: number, verified: number, unpaidLydia: number) {
     this.total = total;
     this.paid = paid;
     this.verified = verified;
+    this.unpaidLydia = unpaidLydia;
   }
 }
 
@@ -100,6 +103,7 @@ const RegistrationsCountsType = builder
       total: t.exposeInt('total'),
       paid: t.exposeInt('paid'),
       verified: t.exposeInt('verified'),
+      unpaidLydia: t.exposeInt('unpaidLydia'),
     }),
   });
 
@@ -262,6 +266,8 @@ export const EventType = builder.prismaNode('Event', {
           total: results.length,
           paid: results.filter((r) => r.paid).length,
           verified: results.filter((r) => r.verifiedAt).length,
+          unpaidLydia: results.filter((r) => !r.paid && r.paymentMethod === PaymentMethod.Lydia)
+            .length,
         };
       },
     }),

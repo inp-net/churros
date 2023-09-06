@@ -57,7 +57,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
         { groupUid: params.group, uid: params.uid },
         Selector('Event')({
           id: true,
-          registrationsCounts: { total: true, paid: true, verified: true },
+          registrationsCounts: { total: true, paid: true, verified: true, unpaidLydia: true },
         }),
       ],
       registrationsOfEvent: [

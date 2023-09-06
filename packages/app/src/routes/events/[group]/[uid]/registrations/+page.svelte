@@ -239,7 +239,8 @@
 <header>
   <h1>{registrationsCounts.total} Réservations</h1>
   <section class="counts">
-    {registrationsCounts.paid} payées · {registrationsCounts.verified} scannées
+    {registrationsCounts.paid} payées · {registrationsCounts.verified} scannées · {registrationsCounts.unpaidLydia}
+    Lydias non payées
   </section>
 
   <div class="actions">
@@ -479,13 +480,15 @@
   }
 
   header h1 {
+    padding-bottom: 0;
     margin-top: 2rem;
     margin-bottom: 0.25rem;
-    padding-bottom: 0;
   }
+
   section.counts {
     margin-bottom: 2rem;
   }
+
   .table-scroller {
     overflow-x: auto;
   }
@@ -544,6 +547,7 @@
   table:not(.compact) td {
     border-radius: var(--radius-inline);
   }
+
   tr.selected td:not(.actions) {
     background: var(--muted-border);
     border-right-color: var(--muted-border);
@@ -560,9 +564,9 @@
   }
 
   td.actions {
+    width: max-content;
     padding: 0.25rem 1rem;
     background: transparent;
-    width: max-content;
   }
 
   .load-more {
