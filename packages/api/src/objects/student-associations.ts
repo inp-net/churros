@@ -91,7 +91,7 @@ builder.mutationField('contribute', (t) =>
       });
 
       await sendLydiaPaymentRequest(
-        `la cotisation pour ${studentAssociation.name}`,
+        `Cotisation pour ${studentAssociation.name}`,
         studentAssociation.contributionPrice,
         phone,
         lydiaAccount.vendorToken
