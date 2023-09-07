@@ -19,6 +19,8 @@
   import ChevronUp from '~icons/mdi/chevron-up';
   import { goto } from '$app/navigation';
   import { htmlToText } from 'html-to-text';
+  import ButtonInk from './ButtonInk.svelte';
+  import IconDots from '~icons/mdi/dots-horizontal';
 
   export let collapsible = false;
   export let expandedEventId: string | undefined = undefined;
@@ -162,6 +164,7 @@
           .split('\n')
           .find((line) => line.trim() !== '') ?? ''
       ).slice(0, 255)}
+      <ButtonInk insideProse {href} icon={IconDots}>Voir plus</ButtonInk>
     </section>
     <section class="schedule">
       <h4 class="typo-field-label">Évènement</h4>
