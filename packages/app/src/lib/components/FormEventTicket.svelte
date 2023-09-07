@@ -3,7 +3,6 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputDate from './InputDate.svelte';
-  import InputLongText from './InputLongText.svelte';
   import InputField from './InputField.svelte';
   import InputNumber from './InputNumber.svelte';
   import InputText from './InputText.svelte';
@@ -105,7 +104,7 @@
       <InputNumber label="Nombre de places" bind:value={ticket.capacity} />
     </div>
 
-    <InputLongText rich label="Description" bind:value={ticket.description} />
+    <InputText label="Description" bind:value={ticket.description} />
 
     <div class="side-by-side">
       <InputDate time label="Date du shotgun" bind:value={ticket.opensAt} />
