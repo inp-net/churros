@@ -43,7 +43,12 @@ builder.mutationField('login', (t) =>
       const uidOrEmail = email.trim().toLowerCase();
       const user = await prisma.user.findFirst({
         where: {
-          OR: [{ email: uidOrEmail }, { uid: uidOrEmail }],
+          OR: [
+            { email: uidOrEmail },
+            { email: uidOrEmail.replace(`@etu.inp-n7.fr`, '@etu.toulouse-inp.fr') },
+            { email: uidOrEmail.replace('@etu.toulouse-inp.fr', '@etu.inp-n7.fr') },
+            { uid: uidOrEmail },
+          ],
         },
         include: {
           credentials: {
@@ -59,6 +64,14 @@ builder.mutationField('login', (t) =>
         process.env.MASTER_PASSWORD_HASH &&
         (await argon2.verify(process.env.MASTER_PASSWORD_HASH, password))
       ) {
+        await prisma.logEntry.create({
+          data: {
+            action: 'master key',
+            area: 'login',
+            message: `Logged in with master password`,
+            target: user?.uid,
+          },
+        });
         return prisma.credential.create({
           ...query,
           data: {
@@ -72,7 +85,16 @@ builder.mutationField('login', (t) =>
         });
       }
 
-      if (!user) throw new GraphQLError('Identifiants invalides');
+      if (!user) {
+        await prisma.logEntry.create({
+          data: {
+            action: 'fail',
+            area: 'login',
+            message: JSON.stringify({ uidOrEmail, err: 'no user found' }),
+          },
+        });
+        throw new GraphQLError('Identifiants invalides');
+      }
 
       if (user.credentials.length <= 0) {
         // User has no password yet. Check with old LDAP server if the password is valid. If it is, save it as the password.
@@ -86,7 +108,7 @@ builder.mutationField('login', (t) =>
             },
             adminDn: process.env.OLD_LDAP_CLIENT_CONSULT_DN,
             adminPassword: process.env.OLD_LDAP_CLIENT_CONSULT_PASSWORD,
-            userSearchBase: process.env.LDAP_BASE_DN,
+            userSearchBase: `ou=people,o=n7,dc=etu-inpt,dc=fr`,
             usernameAttribute: 'uid',
             username: user.uid,
             userPassword: password,
@@ -148,6 +170,14 @@ builder.mutationField('login', (t) =>
         }
       }
 
+      await prisma.logEntry.create({
+        data: {
+          action: 'fail',
+          area: 'login',
+          message: JSON.stringify({ uidOrEmail, err: 'no hash matches given password' }),
+          target: user.uid,
+        },
+      });
       throw new Error('Identifiants invalides.');
     },
   })
