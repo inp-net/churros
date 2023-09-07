@@ -493,6 +493,10 @@
         >
       {/if}
     </h2>
+    <p class="typo-details">
+      Les membres de {event.group.name} avec la permission "Peut scanner tout les évènements" n'ont pas
+      besoin d'être rajoutés avec la permission "Scanner des billets"
+    </p>
     {#if event.managers.length <= 0}
       <p class="empty">Aucun manager</p>
     {/if}
