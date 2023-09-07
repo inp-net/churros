@@ -182,9 +182,14 @@ export const EventType = builder.prismaNode('Event', {
               include: {
                 contributions: {
                   include: {
-                    studentAssociation: {
+                    option: {
                       include: {
-                        school: true,
+                        offeredIn: true,
+                        paysFor: {
+                          include: {
+                            school: true,
+                          },
+                        },
                       },
                     },
                   },

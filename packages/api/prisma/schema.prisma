@@ -192,6 +192,7 @@ model School {
   majorsLdapSchool    Major[]              @relation("ldapSchool")
   studentAssociations StudentAssociation[]
   accessibleTickets   Ticket[]
+  contributionOptions ContributionOption[]
 }
 
 enum CredentialType {
@@ -218,28 +219,39 @@ model StudentAssociation {
   schoolId          String
   name              String @unique @db.VarChar(255)
   links             Link[]
-  contributionPrice Float  @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  school        School         @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  groups        Group[]
-  contributions Contribution[]
-  lydiaAccounts LydiaAccount[]
+  school              School               @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  groups              Group[]
+  lydiaAccounts       LydiaAccount[]
+  contributionOptions ContributionOption[]
 }
 
 model Contribution {
-  id                   String             @id @default(dbgenerated("nanoid('contribution:')"))
-  studentAssociation   StudentAssociation @relation(fields: [studentAssociationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  studentAssociationId String
-  transaction          LydiaTransaction?
-  transactionId        String?
-  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  paid                 Boolean            @default(false)
-  userId               String
+  id            String             @id @default(dbgenerated("nanoid('contribution:')"))
+  option        ContributionOption @relation(fields: [optionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  optionId      String
+  transaction   LydiaTransaction?
+  transactionId String?
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  paid          Boolean            @default(false)
+  userId        String
 
-  @@unique([userId, studentAssociationId])
+  @@unique([optionId, userId])
+}
+
+model ContributionOption {
+  id             String               @id @default(dbgenerated("nanoid('contributionoption:')"))
+  offeredIn      School               @relation(fields: [offeredInId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  offeredInId    String
+  paysFor        StudentAssociation[]
+  beneficiary    LydiaAccount?        @relation(fields: [lydiaAccountId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  lydiaAccountId String?
+  name           String
+  price          Float
+  contributions  Contribution[]
 }
 
 /// The different kinds of groups
@@ -484,15 +496,16 @@ model LogEntry {
 
 /// A Lydia account
 model LydiaAccount {
-  id                   String              @id @default(dbgenerated("nanoid('lydia:')"))
+  id                   String               @id @default(dbgenerated("nanoid('lydia:')"))
   groupId              String?
-  group                Group?              @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  name                 String              @default("") @db.VarChar(255)
-  privateToken         String              @default("") @db.VarChar(255)
-  vendorToken          String              @default("") @db.VarChar(255)
+  group                Group?               @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  name                 String               @default("") @db.VarChar(255)
+  privateToken         String               @default("") @db.VarChar(255)
+  vendorToken          String               @default("") @db.VarChar(255)
   events               Event[]
-  studentAssociation   StudentAssociation? @relation(fields: [studentAssociationId], references: [id])
+  studentAssociation   StudentAssociation?  @relation(fields: [studentAssociationId], references: [id])
   studentAssociationId String?
+  ContributionOption   ContributionOption[]
 
   @@unique([privateToken, vendorToken, groupId])
 }

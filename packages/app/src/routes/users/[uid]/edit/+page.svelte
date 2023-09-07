@@ -91,7 +91,7 @@
           ...data.user,
           majorId: data.user.major.id,
           godparentUid: '',
-          contributesTo: undefined,
+          contributesWith: undefined,
         },
         {
           __typename: true,
@@ -194,7 +194,7 @@
         on:save={async () => {
           await goto(`/users/${data.user.uid}`);
         }}
-        studentAssociations={data.user.major?.schools.flatMap((s) => s.studentAssociations)}
+        contributionOptions={data.contributionOptions}
         majors={data.schoolGroups.flatMap((g) => g.majors)}
         bind:data
       />

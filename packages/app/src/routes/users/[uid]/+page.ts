@@ -8,6 +8,12 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   if (!me) throw redirectToLogin(url.pathname);
   const data = await loadQuery(
     {
+      contributionOptions: {
+        name: true,
+        price: true,
+        id: true,
+        paysFor: { name: true, id: true },
+      },
       user: [
         params,
         {
@@ -45,7 +51,6 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
               studentAssociations: {
                 id: true,
                 name: true,
-                contributionPrice: true,
               },
             },
           },

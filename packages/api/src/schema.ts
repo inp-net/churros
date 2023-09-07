@@ -29,6 +29,7 @@ import './objects/email-changes.js';
 import './objects/announcements.js';
 import './objects/student-associations.js';
 import './objects/logs.js';
+import './objects/contribution-options.js';
 
 // Import other mutations and/or queries that are not objects
 import './services/gitlab.js';

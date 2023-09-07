@@ -435,9 +435,13 @@ builder.mutationField('upsertRegistration', (t) =>
           include: {
             contributions: {
               include: {
-                studentAssociation: {
+                option: {
                   include: {
-                    school: true,
+                    paysFor: {
+                      include: {
+                        school: true,
+                      },
+                    },
                   },
                 },
               },

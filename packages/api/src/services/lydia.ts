@@ -220,9 +220,9 @@ export async function verifyLydiaTransaction(
       },
       contribution: {
         include: {
-          studentAssociation: {
+          option: {
             include: {
-              lydiaAccounts: true,
+              beneficiary: true,
             },
           },
         },
@@ -234,7 +234,7 @@ export async function verifyLydiaTransaction(
     throw new Error('Transaction has no purpose');
   const beneficiary =
     transaction.registration?.ticket.event.beneficiary ??
-    transaction.contribution?.studentAssociation.lydiaAccounts[0];
+    transaction.contribution?.option.beneficiary;
   if (!beneficiary) throw new Error('Transaction has no beneficiary');
 
   return {

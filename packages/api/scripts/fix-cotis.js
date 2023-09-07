@@ -5,7 +5,7 @@ const p = new PrismaClient();
 // @ts-ignore
 const { users } = JSON.stringify(readFileSync('./dump-ldap.json'));
 
-const aen7 = await p.studentAssociation.findFirst({ where: { name: 'AEn7' } });
+const aen7 = await p.contributionOption.findFirst({ where: { name: 'AEn7' } });
 if (!aen7) throw new Error('AEn7 not found');
 
 for (const { uid, inscritAE } of users) {
@@ -17,14 +17,14 @@ for (const { uid, inscritAE } of users) {
   if (inscritAE) {
     const { id } = await p.contribution.upsert({
       where: {
-        userId_studentAssociationId: {
+        optionId_userId: {
           userId: user.id,
-          studentAssociationId: aen7.id,
+          optionId: aen7.id,
         },
       },
       create: {
         userId: user.id,
-        studentAssociationId: aen7.id,
+        optionId: aen7.id,
         paid: true,
       },
       update: {

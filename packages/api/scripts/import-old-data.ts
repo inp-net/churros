@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-await-expression-member */
 /* eslint-disable unicorn/no-null */
-import { type Group, PrismaClient, NotificationType, StudentAssociation } from '@prisma/client';
+import { type Group, PrismaClient, NotificationType, ContributionOption } from '@prisma/client';
 import { hash } from 'argon2';
 import { compareAsc, differenceInYears, parse, parseISO } from 'date-fns';
 import { createWriteStream, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -156,7 +156,7 @@ async function makeMajor(major: Ldap.Major) {
   });
 }
 
-async function makeUser(user: OldUser, ldapUser: Ldap.User, ae: StudentAssociation) {
+async function makeUser(user: OldUser, ldapUser: Ldap.User, aeOption: ContributionOption) {
   const major = await prisma.major.findFirstOrThrow({
     where: {
       name: ldapUser.filiere.displayName,
@@ -205,8 +205,8 @@ async function makeUser(user: OldUser, ldapUser: Ldap.User, ae: StudentAssociati
         ? {
             create: {
               paid: true,
-              studentAssociation: {
-                connect: { id: ae.id },
+              option: {
+                connect: { id: aeOption.id },
               },
             },
           }
@@ -555,6 +555,20 @@ const AEn7 = await prisma.studentAssociation.create({
     },
   },
 });
+const cotisationAEn7 = await prisma.contributionOption.create({
+  data: {
+    name: 'AEn7',
+    paysFor: {
+      connect: { id: AEn7.id },
+    },
+    price: 150,
+    offeredIn: {
+      connect: {
+        id: (await prisma.school.findFirstOrThrow({ where: { name: 'ENSEEIHT' } })).id,
+      },
+    },
+  },
+});
 bar.increment();
 bar.stop();
 
@@ -586,7 +600,7 @@ for (const oldUser of LDAP_DATA.users) {
     date_joined: '2023-01-01 00:00:00',
   };
   try {
-    await makeUser(oldUserPortail, oldUser, AEn7);
+    await makeUser(oldUserPortail, oldUser, cotisationAEn7);
     bar.increment();
   } catch (error: unknown) {
     errors.users.push({ user: oldUser, error });

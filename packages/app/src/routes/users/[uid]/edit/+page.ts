@@ -60,6 +60,10 @@ export const _userQuery = Selector('User')({
     name: true,
     id: true,
   },
+  contributesWith: {
+    name: true,
+    id: true,
+  },
   familyTree: {
     users: { uid: true },
   },
@@ -102,6 +106,10 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
           : {},
       },
       schoolGroups: { names: true, majors: { id: true, name: true } },
+      contributionOptions: {
+        name: true,
+        id: true,
+      },
       me: {
         uid: true,
         admin: true,

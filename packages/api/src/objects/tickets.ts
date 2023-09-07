@@ -27,9 +27,10 @@ export const placesLeft = (ticket: {
   }
 
   let placesLeftInTicket = Number.POSITIVE_INFINITY;
-  if (ticket.capacity)
-    {placesLeftInTicket =
-      ticket.capacity - ticket.registrations /* .filter(({ paid }) => paid) */.length;}
+  if (ticket.capacity) {
+    placesLeftInTicket =
+      ticket.capacity - ticket.registrations /* .filter(({ paid }) => paid) */.length;
+  }
 
   return Math.min(placesLeftInGroup, placesLeftInTicket);
 };
@@ -233,7 +234,9 @@ export function userCanSeeTicket(
     managedEvents: Array<{ event: { id: string } }>;
     graduationYear: number;
     major: { schools: Array<{ uid: string }>; id: string };
-    contributions: Array<{ studentAssociation: { id: string; school: { uid: string } } }>;
+    contributions: Array<{
+      option: { id: string; paysFor: Array<{ id: string; school: { uid: string } }> };
+    }>;
     apprentice: boolean;
   }
 ): boolean {
@@ -249,9 +252,11 @@ export function userCanSeeTicket(
 
   // Get the user's contributor status
   const isContributor = Boolean(
-    user?.contributions.some(
-      ({ studentAssociation: { id, school } }) =>
-        event.group.studentAssociation?.id === id || event.group.school?.uid === school.uid
+    user?.contributions.some(({ option: { paysFor } }) =>
+      paysFor.some(
+        ({ id, school }) =>
+          id === event.group.studentAssociation?.id || event.group.school?.uid === school.uid
+      )
     )
   );
 
@@ -338,9 +343,13 @@ builder.queryField('ticketsOfEvent', (t) =>
             include: {
               contributions: {
                 include: {
-                  studentAssociation: {
+                  option: {
                     include: {
-                      school: true,
+                      paysFor: {
+                        include: {
+                          school: true,
+                        },
+                      },
                     },
                   },
                 },
