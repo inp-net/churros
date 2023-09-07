@@ -251,7 +251,8 @@
       <h2>Cotisation</h2>
       <p class="explain-contribution typo-details">
         Cotiser, c'est contribuer à l'organisation de la vie associative de ton école. Elle te
-        permet d'être membre de clubs et donne parfois droit à des places à tarif réduit.
+        permet d'être membre de clubs, de lister, d'économiser 60€ pour le WEI, et donne droit à des
+        places à tarif réduit sur tout les évènements de l'AE.
       </p>
 
       <div class="manage">
