@@ -104,12 +104,16 @@
           <ul class="groups nobullet">
             {#each openToGroups as { name, uid, pictureFile, pictureFileDark }}
               <li>
-                <a class="group" use:tooltip={name} href="/groups/{uid}">
-                  <img
-                    src="{env.PUBLIC_STORAGE_URL}{$isDark ? pictureFileDark : pictureFile}"
-                    alt={name}
-                  />
-                </a>
+                {#if pictureFile || pictureFileDark}
+                  <a class="group" use:tooltip={name} href="/groups/{uid}">
+                    <img
+                      src="{env.PUBLIC_STORAGE_URL}{$isDark
+                        ? pictureFileDark || pictureFile
+                        : pictureFile || pictureFileDark}"
+                      alt={name}
+                    />
+                  </a>
+                {/if}
               </li>
             {/each}
           </ul>
