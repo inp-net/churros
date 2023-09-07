@@ -614,7 +614,7 @@ builder.mutationField('deleteUserPicture', (t) =>
           action: 'update',
           target: uid,
           message: `Deleted user ${uid} picture`,
-          user: { connect: { id: uid } },
+          user: { connect: { uid } },
         },
       });
       return true;
