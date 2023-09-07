@@ -471,6 +471,7 @@ builder.mutationField('updateUser', (t) =>
       if (changingContributesWith && contributesWith && (user.canEditUsers || user.admin)) {
         await prisma.contribution.deleteMany({
           where: {
+            user: { uid: user.uid },
             option: {
               id: {
                 notIn: contributesWith,
