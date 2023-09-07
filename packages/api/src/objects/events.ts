@@ -808,7 +808,11 @@ export function eventManagedByUser(
 ) {
   if (!user) return false;
   return Boolean(
-    user.groups.some(({ groupId, canScanEvents }) => groupId === event.groupId && canScanEvents) ||
+    user.groups.some(({ groupId, canScanEvents }) => {
+      if (groupId === event.groupId) return false;
+      if (required.canVerifyRegistrations && !canScanEvents) return false;
+      return true;
+    }) ||
       event.managers.some(({ user: { uid }, ...permissions }) => {
         if (uid !== user.uid) return false;
         if (required.canEdit && !permissions.canEdit) return false;

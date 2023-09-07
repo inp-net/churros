@@ -19,27 +19,16 @@
     beneficiary: data.lydiaAccountsOfGroup.length === 1 ? data.lydiaAccountsOfGroup[0] : undefined,
     links: [],
     location: '',
-    managers: [
-      ...($me
-        ? [
-            {
-              user: $me,
-              canEdit: true,
-              canEditPermissions: true,
-              canVerifyRegistrations: true,
-            },
-          ]
-        : []),
-      ...data.group.members
-        .filter((m) => m.canScanEvents)
-        .map((m) => ({
-          user: m.member,
-          canEdit: false,
-          canEditPermissions: false,
-          canVerifyRegistrations: true,
-        })),
-    ],
-    // TODO add all group members with canScanEvents
+    managers: $me
+      ? [
+          {
+            user: $me,
+            canEdit: true,
+            canEditPermissions: true,
+            canVerifyRegistrations: true,
+          },
+        ]
+      : [],
     slug: '',
     startsAt: undefined,
     title: '',
