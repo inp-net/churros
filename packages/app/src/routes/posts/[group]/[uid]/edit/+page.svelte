@@ -16,7 +16,7 @@
     Édition du post {title}
   </h1>
 
-  <FormPicture objectName="Article" bind:object={data.article} />
+  <FormPicture rectangular objectName="Article" bind:object={data.article} />
   <PostDetails bind:data />
 </div>
 

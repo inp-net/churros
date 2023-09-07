@@ -335,7 +335,7 @@
   <section class="info">
     <h2>Informations</h2>
     {#if event.id}
-      <FormPicture objectName="Event" bind:object={event} />
+      <FormPicture rectangular objectName="Event" bind:object={event} />
     {/if}
     <InputGroup required group={event.group} label="Groupe" bind:uid={event.group.uid} />
     <InputText required label="Titre" bind:value={event.title} />

@@ -15,6 +15,7 @@
     Event: 'Photo de l’événement',
   };
 
+  export let rectangular = false;
   export let objectName: 'Group' | 'User' | 'Article' | 'Event';
   export let dark = false;
   export let object: { pictureFile: string; uid: string; id: string; pictureFileDark?: string };
@@ -77,6 +78,7 @@
   <InputField label="{LEGENDS[objectName]}{dark ? ' (Thème sombre)' : ''}">
     <div class="wrapper">
       <img
+        class:rectangular
         style:object-fit={objectName === 'Group' ? 'contain' : 'cover'}
         on:load={() => {
           updating = false;
@@ -128,7 +130,12 @@
     height: var(--size);
     color: var(--muted-text);
     background: var(--muted-bg);
-    border-radius: var(--border-block);
+
+    // border-radius: var(--border-block);
+  }
+
+  img.rectangular {
+    width: calc(var(--size) * 1.5);
   }
 
   [data-object='user'] img {
