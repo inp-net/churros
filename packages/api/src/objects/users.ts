@@ -23,6 +23,7 @@ import { StudentAssociationType } from './student-associations.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { ContributionOptionType } from './contribution-options.js';
+import { toHtml } from '../services/markdown.js';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -67,6 +68,11 @@ export const UserType = builder.prismaNode('User', {
     // Profile details
     address: t.exposeString('address', { authScopes: { loggedIn: true, $granted: 'me' } }),
     description: t.exposeString('description', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    descriptionHtml: t.string({
+      async resolve({ description }) {
+        return toHtml(description);
+      },
+    }),
     birthday: t.expose('birthday', {
       type: DateTimeScalar,
       nullable: true,

@@ -24,6 +24,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           birthday: true,
           createdAt: true,
           description: true,
+          descriptionHtml: true,
           firstName: true,
           graduationYear: true,
           lastName: true,

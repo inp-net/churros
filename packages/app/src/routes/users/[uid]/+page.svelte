@@ -194,7 +194,10 @@
           </li>
         {/each}
       </ul>
-      <p class="bio">{user.description}</p>
+      <p class="bio">
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+        {@html user.descriptionHtml}
+      </p>
       <div class="info">
         <dl>
           {#if user.nickname}
