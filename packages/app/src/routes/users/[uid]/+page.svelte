@@ -270,15 +270,15 @@
                 }}
               >
                 {#if pendingContribution}
-                  Annuler la demande pour
+                  Annuler la demande pour {name}
+                {:else}
+                  {name}
+                  <strong class="price"
+                    >{new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
+                      price
+                    )}</strong
+                  >
                 {/if}
-                {name}
-                <strong class="price"
-                  >{Intl.NumberFormat('fr-FR', {
-                    style: 'currency',
-                    currency: 'EUR',
-                  }).format(price)}</strong
-                >
               </ButtonSecondary>
             </li>
           {/each}
