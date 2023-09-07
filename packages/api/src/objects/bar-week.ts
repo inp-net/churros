@@ -123,7 +123,7 @@ builder.mutationField('upsertBarWeek', (t) =>
           action: id ? 'update' : 'create',
           target: barWeek.id,
           message: `Bar week ${barWeek.id} upserted: ${barWeek.description}`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
       return barWeek;
@@ -148,7 +148,7 @@ builder.mutationField('deleteBarWeek', (t) =>
           action: 'delete',
           target: id,
           message: `Bar week ${id} deleted`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
       return true;

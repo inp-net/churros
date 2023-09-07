@@ -575,7 +575,7 @@ builder.mutationField('updateUserPicture', (t) =>
           action: 'update',
           target: user?.id ?? '',
           message: `Updated user ${uid} picture`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
       return updatePicture({

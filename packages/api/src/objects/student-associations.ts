@@ -70,10 +70,11 @@ builder.mutationField('contribute', (t) =>
       });
 
       if (!contributionOption) throw new GraphQLError('Option de cotisation introuvable');
-      if (!contributionOption.beneficiary)
-        {throw new GraphQLError(
+      if (!contributionOption.beneficiary) {
+        throw new GraphQLError(
           "Aucun compte Lydia bénéficiare n'est associé à cette option de cotisation"
-        );}
+        );
+      }
 
       if (!contributionOption.offeredIn.majors.some((major) => user.major.id === major.id))
         throw new GraphQLError("Cette option de cotisation n'est pas offerte à votre école");

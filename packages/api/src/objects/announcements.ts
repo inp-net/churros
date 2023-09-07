@@ -117,7 +117,7 @@ builder.mutationField('upsertAnnouncement', (t) =>
           action: id ? 'update' : 'create',
           target: announcement.id,
           message: `Announcement ${announcement.id} ${id ? 'updated' : 'created'}: ${title}`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
       return announcement;
@@ -144,7 +144,7 @@ builder.mutationField('deleteAnnouncement', (t) =>
           action: 'delete',
           target: id,
           message: `Announcement ${id} deleted`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
       return true;

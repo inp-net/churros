@@ -242,7 +242,7 @@ builder.mutationField('upsertArticle', (t) =>
           action: id ? 'update' : 'create',
           target: result.id,
           message: `Article ${id ? 'updated' : 'created'}`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
       await scheduleNewArticleNotification({
@@ -287,7 +287,7 @@ builder.mutationField('deleteArticle', (t) =>
           action: 'delete',
           target: id,
           message: `Article ${id} deleted`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
       return true;
@@ -348,7 +348,7 @@ builder.mutationField('updateArticlePicture', (t) =>
           action: 'update',
           target: id,
           message: `Article ${id} picture updated`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
       return updatePicture({
@@ -402,7 +402,7 @@ builder.mutationField('deleteArticlePicture', (t) =>
           action: 'delete',
           target: id,
           message: `Article ${id} picture deleted`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
       return true;

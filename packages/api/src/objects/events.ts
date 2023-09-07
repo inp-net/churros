@@ -412,7 +412,7 @@ builder.mutationField('deleteEvent', (t) =>
           action: 'delete',
           target: id,
           message: `Deleted event ${id}`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
       return true;
@@ -733,7 +733,7 @@ builder.mutationField('upsertEvent', (t) =>
           action: id ? 'update' : 'create',
           target: event.id,
           message: `${id ? 'Updated' : 'Created'} event ${event.id}: ${JSON.stringify(finalEvent)}`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
 

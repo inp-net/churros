@@ -64,7 +64,7 @@ builder.mutationField('upsertLydiaAccount', (t) =>
           action: id ? 'update' : 'create',
           target: lydiaAccount.id,
           message: `Lydia account ${id ? 'updated' : 'created'}: ${name}`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
       return lydiaAccount;

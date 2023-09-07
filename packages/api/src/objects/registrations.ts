@@ -324,7 +324,7 @@ builder.mutationField('verifyRegistration', (t) =>
             action: 'scan',
             area: 'scans',
             message,
-            user: { connect: { id: user?.id ?? '' } },
+            user: user ? { connect: { id: user.id } } : undefined,
             target,
           },
         });
@@ -788,7 +788,7 @@ builder.mutationField('deleteRegistration', (t) =>
           action: 'delete',
           target: id,
           message: `Registration deleted`,
-          user: { connect: { id: user?.id ?? '' } },
+          user: user ? { connect: { id: user.id } } : undefined,
         },
       });
       return true;
