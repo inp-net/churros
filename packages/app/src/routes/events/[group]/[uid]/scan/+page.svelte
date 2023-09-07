@@ -47,7 +47,7 @@
           author: { firstName: string; lastName: string };
           paid: boolean;
           id: string;
-          ticket: { name: string; group?: { name: string } };
+          ticket: { id: string; name: string; group?: { name: string } };
           paymentMethod?: PaymentMethod | undefined;
           verifiedAt?: Date | null | undefined;
           verifiedBy?:
@@ -74,11 +74,11 @@
       {
         fps: 5,
         aspectRatio,
-        videoConstraints: {
-          facingMode: {
-            exact: 'environment',
-          },
-        },
+        // videoConstraints: {
+        //   facingMode: {
+        //     exact: 'environment',
+        //   },
+        // },
         // qrbox: { width: 300, height: 300 }
       },
       false
@@ -133,7 +133,7 @@
                 author: { firstName: true, lastName: true, fullName: true },
                 paid: true,
                 id: true,
-                ticket: { name: true, group: { name: true } },
+                ticket: { id: true, name: true, group: { name: true } },
                 paymentMethod: true,
                 verifiedAt: true,
                 verifiedBy: {
@@ -268,14 +268,49 @@
             {/if}
           </div>
         </div>
-        <div class="ticket">
-          <span class="label">Billet</span>
-          <span class="name">
-            {#if ticket.group}
-              {ticket.group.name} <IconChevronRight />
-            {/if}
-            {ticket.name}
-          </span>
+        <div class="ticket-and-action">
+          <div class="ticket">
+            <span class="label">Billet</span>
+            <span class="name">
+              {#if ticket.group}
+                {ticket.group.name} <IconChevronRight />
+              {/if}
+              {ticket.name}
+            </span>
+          </div>
+          {#if result?.registration && result.state === RegistrationVerificationState.NotPaid}
+            <div class="action">
+              <ButtonSecondary
+                icon={IconCheck}
+                on:click={async () => {
+                  const registration = result?.registration;
+                  if (!registration) return;
+                  await $zeus.mutate({
+                    upsertRegistration: [
+                      {
+                        id: result?.registration?.id,
+                        ticketId: registration.ticket.id,
+                        paid: true,
+                        beneficiary: result?.registration?.beneficiary,
+                        paymentMethod: result?.registration?.paymentMethod,
+                      },
+                      {
+                        '...on Error': {
+                          message: true,
+                        },
+                        '...on MutationUpsertRegistrationSuccess': {
+                          data: {
+                            paid: true,
+                          },
+                        },
+                      },
+                    ],
+                  });
+                  await check(registration.id);
+                }}>Payée</ButtonSecondary
+              >
+            </div>
+          {/if}
         </div>
       {/if}
     </section>
@@ -352,6 +387,12 @@
     position: absolute;
     top: 1.5rem;
     right: 0.95rem;
+  }
+
+  .ticket-and-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .ticket {
