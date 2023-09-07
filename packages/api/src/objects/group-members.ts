@@ -38,7 +38,9 @@ builder.mutationField('addGroupMember', (t) =>
       const member = await prisma.user.findUniqueOrThrow({
         where: { uid },
         include: {
-          contributions: { include: { studentAssociation: { include: { school: true } } } },
+          contributions: {
+            include: { option: { include: { paysFor: { include: { school: true } } } } },
+          },
         },
       });
       const group = await prisma.group.findUniqueOrThrow({
@@ -48,9 +50,11 @@ builder.mutationField('addGroupMember', (t) =>
 
       if (
         (group.type === GroupType.Club || group.type === GroupType.List) &&
-        !member.contributions.some(
-          ({ studentAssociation: { school, id } }) =>
-            school.uid === group.school?.uid || id === group.studentAssociation?.id
+        !member.contributions.some(({ option: { paysFor } }) =>
+          paysFor.some(
+            ({ id, school }) =>
+              school.uid === group.school?.uid || id === group.studentAssociation?.id
+          )
         )
       ) {
         // pas cotisant

@@ -113,6 +113,13 @@ for (const [i, name] of ['AE EAU 2022', 'AE FEU 2022', 'AE TERRE 2022', 'AE AIR 
       name,
       school: { connect: { id: schools[i]!.id } },
       links: { create: [] },
+      lydiaAccounts: {
+        create: {
+          name,
+          vendorToken: 'b',
+          privateToken: 'b',
+        },
+      },
     },
   });
 }
@@ -145,6 +152,28 @@ for (const asso of studentAssociations) {
   }
 }
 
+const studentAssociationsWithLydiaAccounts = await prisma.studentAssociation.findMany({
+  include: { school: true, lydiaAccounts: true },
+});
+
+for (const ae of studentAssociationsWithLydiaAccounts) {
+  await prisma.contributionOption.create({
+    data: {
+      paysFor: { connect: { id: ae.id } },
+      name: ae.name,
+      offeredIn: { connect: { id: ae.school.id } },
+      price: Math.floor(Math.random() * 100),
+      beneficiary: ae.lydiaAccounts.length > 0
+        ? { connect: { id: ae.lydiaAccounts[0]?.id } }
+        : undefined,
+    },
+  });
+}
+
+const contributionOptions = await prisma.contributionOption.findMany({
+  include: { offeredIn: true },
+});
+
 const usersData = [
   { firstName: 'Annie', lastName: 'Versaire', admin: true },
   { firstName: 'Bernard', lastName: 'Tichaut', canEditGroups: true },
@@ -175,6 +204,10 @@ const usersData = [
 ]; // satisfies Array<Partial<Prisma.UserCreateInput>>;
 
 for (const [i, data] of usersData.entries()) {
+  const major = await prisma.major.findUniqueOrThrow({
+    where: { id: randomIdOf(majors) },
+    include: { schools: true },
+  });
   await prisma.user.create({
     data: {
       ...data,
@@ -206,9 +239,11 @@ for (const [i, data] of usersData.entries()) {
           ? {
               create: {
                 paid: true,
-                studentAssociation: {
+                option: {
                   connect: {
-                    id: randomIdOf(studentAssociations),
+                    id: contributionOptions.find((option) =>
+                      major.schools.some((school) => school.id === option.offeredInId)
+                    )!.id,
                   },
                 },
               },
@@ -218,7 +253,7 @@ for (const [i, data] of usersData.entries()) {
       address: '2 rue Charles Camichel, 31000 Toulouse',
       birthday: new Date(Date.UTC(2000, (i * 37) % 12, (i * 55) % 28)),
       graduationYear: 2020 + (i % 6),
-      major: { connect: { id: randomIdOf(majors) } },
+      major: { connect: { id: major.id } },
       credentials: { create: { type: CredentialType.Password, value: await hash('a') } },
       notificationSettings: {
         create: Object.values(NotificationType).map((type) => ({

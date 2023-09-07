@@ -79,12 +79,12 @@
       birthday: Date | null;
       uid: string;
       apprentice: boolean;
-      contributesTo: Array<{ id: string; name: string }>;
+      contributesWith: Array<{ id: string; name: string }>;
       cededImageRightsToTVn7: boolean;
     };
   };
 
-  export let studentAssociations: Array<{
+  export let contributionOptions: Array<{
     id: string;
     name: string;
   }>;
@@ -107,7 +107,7 @@
       // See https://github.com/graphql-editor/graphql-zeus/issues/262
       // eslint-disable-next-line unicorn/no-null
       birthday = null,
-      contributesTo,
+      contributesWith,
       major,
       cededImageRightsToTVn7,
     },
@@ -153,7 +153,7 @@
             birthday,
             otherEmails,
             email,
-            contributesTo: canEditContributions ? contributesTo.map((c) => c.id) : undefined,
+            contributesWith: canEditContributions ? contributesWith.map((c) => c.id) : undefined,
             cededImageRightsToTVn7,
           },
           {
@@ -188,12 +188,12 @@
   {#if canEditContributions}
     <InputField label="Cotisant à">
       <InputSearchObjectList
-        bind:objects={contributesTo}
-        values={contributesTo.map(({ id }) => id)}
+        bind:objects={contributesWith}
+        values={contributesWith.map(({ id }) => id)}
         labelKey="name"
         valueKey="id"
         search={(query) =>
-          new Fuse(studentAssociations, {
+          new Fuse(contributionOptions, {
             keys: ['name', 'id'],
           })
             .search(query)

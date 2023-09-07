@@ -14,7 +14,6 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
     links: t.relation('links'),
     school: t.relation('school'),
     groups: t.relation('groups'),
-    contributionPrice: t.exposeFloat('contributionPrice'),
   }),
 });
 
@@ -56,32 +55,38 @@ builder.mutationField('contribute', (t) =>
     type: 'Boolean',
     errors: {},
     args: {
-      id: t.arg.id(),
+      optionId: t.arg.id(),
       phone: t.arg.string(),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user);
     },
-    async resolve(_, { id, phone }, { user }) {
+    async resolve(_, { optionId, phone }, { user }) {
       if (!user) return false;
 
-      const studentAssociation = await prisma.studentAssociation.findUnique({
-        where: { id },
-        include: { lydiaAccounts: true },
+      const contributionOption = await prisma.contributionOption.findUnique({
+        where: { id: optionId },
+        include: { beneficiary: true, offeredIn: { include: { majors: true } } },
       });
-      if (!studentAssociation) throw new GraphQLError('No student associaion found');
 
-      const lydiaAccount = studentAssociation.lydiaAccounts[0];
-      if (!lydiaAccount) throw new GraphQLError("Cette AE n'a pas de compte Lydia");
+      if (!contributionOption) throw new GraphQLError('Option de cotisation introuvable');
+      if (!contributionOption.beneficiary)
+        {throw new GraphQLError(
+          "Aucun compte Lydia bénéficiare n'est associé à cette option de cotisation"
+        );}
+
+      if (!contributionOption.offeredIn.majors.some((major) => user.major.id === major.id))
+        throw new GraphQLError("Cette option de cotisation n'est pas offerte à votre école");
 
       let { transaction, ...contribution } = await prisma.contribution.upsert({
         where: {
-          userId_studentAssociationId: { userId: user.id, studentAssociationId: id },
+          optionId_userId: {
+            userId: user.id,
+            optionId: contributionOption.id,
+          },
         },
         create: {
-          studentAssociation: {
-            connect: { id },
-          },
+          option: { connect: { id: contributionOption.id } },
           paid: false,
           user: {
             connect: { id: user.id },
@@ -103,13 +108,13 @@ builder.mutationField('contribute', (t) =>
       }
 
       if (transaction.requestId && transaction.requestUuid)
-        await cancelLydiaTransaction(transaction, lydiaAccount.vendorToken);
+        await cancelLydiaTransaction(transaction, contributionOption.beneficiary.vendorToken);
 
       const details = await sendLydiaPaymentRequest(
-        `Cotisation pour ${studentAssociation.name}`,
-        studentAssociation.contributionPrice,
+        `Cotisation pour ${contributionOption.name}`,
+        contributionOption.price,
         phone,
-        lydiaAccount.vendorToken
+        contributionOption.beneficiary.vendorToken
       );
 
       await prisma.lydiaTransaction.update({
@@ -124,8 +129,8 @@ builder.mutationField('contribute', (t) =>
         data: {
           area: 'contribution',
           action: 'create',
-          target: id,
-          message: `Created contribution for ${studentAssociation.name}`,
+          target: optionId,
+          message: JSON.stringify(contributionOption),
           user: { connect: { id: user.id } },
         },
       });
@@ -139,46 +144,43 @@ builder.mutationField('cancelPendingContribution', (t) =>
   t.field({
     type: 'Boolean',
     args: {
-      studentAssociationId: t.arg.id(),
+      optionId: t.arg.id(),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user);
     },
-    async resolve(_, { studentAssociationId }, { user }) {
+    async resolve(_, { optionId }, { user }) {
       if (!user) return false;
 
       const contribution = await prisma.contribution.findUnique({
         where: {
-          userId_studentAssociationId: {
+          optionId_userId: {
             userId: user.id,
-            studentAssociationId,
+            optionId,
           },
         },
         include: {
           transaction: true,
-          studentAssociation: {
+          option: {
             include: {
-              lydiaAccounts: true,
+              beneficiary: true,
             },
           },
         },
       });
 
-      if (
-        contribution?.transaction?.requestId &&
-        contribution.studentAssociation.lydiaAccounts[0]?.vendorToken
-      ) {
+      if (contribution?.transaction?.requestId && contribution.option.beneficiary?.vendorToken) {
         await cancelLydiaTransaction(
           contribution.transaction,
-          contribution.studentAssociation.lydiaAccounts[0].vendorToken
+          contribution.option.beneficiary.vendorToken
         );
       }
 
       await prisma.contribution.delete({
         where: {
-          userId_studentAssociationId: {
+          optionId_userId: {
             userId: user.id,
-            studentAssociationId,
+            optionId,
           },
         },
       });
@@ -187,8 +189,8 @@ builder.mutationField('cancelPendingContribution', (t) =>
         data: {
           area: 'contribution',
           action: 'delete',
-          target: studentAssociationId,
-          message: `Deleted contribution for ${contribution?.studentAssociation.name ?? ''}`,
+          target: optionId,
+          message: `Deleted contribution ${optionId}`,
           user: { connect: { id: user.id } },
         },
       });

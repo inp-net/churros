@@ -22,6 +22,7 @@ import { addDays } from 'date-fns';
 import { StudentAssociationType } from './student-associations.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
+import { ContributionOptionType } from './contribution-options.js';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -110,10 +111,10 @@ export const UserType = builder.prismaNode('User', {
     notificationSettings: t.relation('notificationSettings', {
       authScopes: { loggedIn: true, $granted: 'me' },
     }),
-    contributesTo: t.field({
-      type: [StudentAssociationType],
+    contributesWith: t.field({
+      type: [ContributionOptionType],
       async resolve({ id }) {
-        return prisma.studentAssociation.findMany({
+        return prisma.contributionOption.findMany({
           where: {
             contributions: {
               some: {
@@ -127,10 +128,31 @@ export const UserType = builder.prismaNode('User', {
         });
       },
     }),
-    pendingContributions: t.field({
+    contributesTo: t.field({
       type: [StudentAssociationType],
       async resolve({ id }) {
         return prisma.studentAssociation.findMany({
+          where: {
+            contributionOptions: {
+              some: {
+                contributions: {
+                  some: {
+                    user: {
+                      id,
+                    },
+                    paid: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+      },
+    }),
+    pendingContributions: t.field({
+      type: [ContributionOptionType],
+      async resolve({ id }) {
+        return prisma.contributionOption.findMany({
           where: {
             contributions: {
               some: {
@@ -349,7 +371,7 @@ builder.mutationField('updateUser', (t) =>
         description:
           'An empty string removes the godparent. Passing null (or undefined) does not update the godparent. An uid sets the godparent to that uid.',
       }),
-      contributesTo: t.arg({ type: ['ID'], required: false }),
+      contributesWith: t.arg({ type: ['ID'], required: false }),
     },
     authScopes(_, { uid }, { user }) {
       const result = Boolean(user?.canEditUsers || uid === user?.uid);
@@ -379,7 +401,7 @@ builder.mutationField('updateUser', (t) =>
         phone,
         birthday,
         godparentUid,
-        contributesTo,
+        contributesWith,
         cededImageRightsToTVn7,
         apprentice,
         firstName,
@@ -405,7 +427,7 @@ builder.mutationField('updateUser', (t) =>
       const {
         email: oldEmail,
         graduationYear: oldGraduationYear,
-        contributions: oldContributesTo,
+        contributions: oldContributions,
       } = await prisma.user.findUniqueOrThrow({
         where: { uid },
         include: { contributions: true },
@@ -413,11 +435,11 @@ builder.mutationField('updateUser', (t) =>
 
       const changingEmail = email !== oldEmail;
       const changingGraduationYear = graduationYear !== oldGraduationYear;
-      let changingContributesTo = false;
-      if (contributesTo) {
-        changingContributesTo =
-          JSON.stringify(oldContributesTo.map(({ id }) => id).sort()) !==
-          JSON.stringify(contributesTo.sort());
+      let changingContributesWith = false;
+      if (contributesWith) {
+        changingContributesWith =
+          JSON.stringify(oldContributions.map(({ optionId }) => optionId).sort()) !==
+          JSON.stringify(contributesWith.sort());
       }
 
       if (changingEmail) {
@@ -440,17 +462,19 @@ builder.mutationField('updateUser', (t) =>
         throw new GraphQLError('Not authorized to change graduation year');
 
       purgeUserSessions(uid);
-      if (changingContributesTo && contributesTo && (user.canEditUsers || user.admin)) {
+      if (changingContributesWith && contributesWith && (user.canEditUsers || user.admin)) {
         await prisma.contribution.deleteMany({
           where: {
-            studentAssociationId: {
-              notIn: contributesTo,
+            option: {
+              id: {
+                notIn: contributesWith,
+              },
             },
           },
         });
         await prisma.contribution.createMany({
-          data: contributesTo.map((id) => ({
-            studentAssociationId: id,
+          data: contributesWith.map((id) => ({
+            optionId: id,
             userId: targetUser.id,
             paid: true,
           })),

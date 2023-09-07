@@ -64,7 +64,9 @@
 
   $: familyTree = makeFamilyTree(familyNesting);
 
-  $: ({ user } = data);
+  $: ({ user, contributionOptions } = data);
+
+  // $: contributesToEverything = contributionOptions
 
   async function logout() {
     const cookies = cookie.parse(document.cookie);
@@ -73,17 +75,15 @@
   }
 
   let contributeServerError = '';
-  let contributeLoading = false;
+  let contributeLoading: string | undefined = undefined;
   let contributePhone = $me?.phone ?? '';
 
-  async function contribute() {
-    const studentAssociation = user.major.schools[0].studentAssociations[0];
-    if (!studentAssociation) return;
-    contributeLoading = true;
+  async function contribute(optionId: string) {
+    contributeLoading = optionId;
     const { contribute } = await $zeus.mutate({
       contribute: [
         {
-          id: studentAssociation.id,
+          optionId,
           phone: contributePhone,
         },
         {
@@ -94,7 +94,7 @@
       ],
     });
 
-    contributeLoading = false;
+    contributeLoading = undefined;
     if (contribute.__typename === 'Error') {
       contributeServerError = contribute.message;
     } else {
@@ -103,18 +103,18 @@
     }
   }
 
-  async function cancelContribution(studentAssociationId: string) {
-    contributeLoading = true;
+  async function cancelContribution(optionId: string) {
+    contributeLoading = optionId;
     try {
       await $zeus.mutate({
-        cancelPendingContribution: [{ studentAssociationId }, true],
+        cancelPendingContribution: [{ optionId }, true],
       });
     } catch (error: unknown) {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       contributeServerError = `${error}`;
     }
 
-    contributeLoading = false;
+    contributeLoading = undefined;
     window.location.reload();
   }
 
@@ -252,26 +252,34 @@
       </p>
 
       <div class="manage">
-        {#if (user.pendingContributions?.length ?? 0) > 0}
-          <p class="pending-contribution">Cotisation en attente de paiement.</p>
-          <ButtonSecondary
-            loading={contributeLoading}
-            on:click={async () => {
-              await cancelContribution(user.pendingContributions?.[0]?.id ?? '');
-            }}>Annuler la demande</ButtonSecondary
-          >
-        {:else if (user.contributesTo?.length ?? 0) <= 0}
-          <InputText type="tel" label="Numéro de téléphone" bind:value={contributePhone} />
-          <ButtonSecondary loading={contributeLoading} on:click={contribute}
-            >Cotiser pour {user.major.schools[0].studentAssociations[0].name}
-            <strong class="price"
-              >{Intl.NumberFormat('fr-FR', {
-                style: 'currency',
-                currency: 'EUR',
-              }).format(user.major.schools[0].studentAssociations[0].contributionPrice)}</strong
-            >
-          </ButtonSecondary>
-        {/if}
+        <InputText type="tel" label="Numéro de téléphone" bind:value={contributePhone} />
+        <ul class="nobullet options">
+          {#each contributionOptions as { name, price, id }}
+            {@const pendingContribution = user.pendingContributions.find((c) => c?.id === id)}
+            <li>
+              <ButtonSecondary
+                danger={Boolean(pendingContribution)}
+                loading={contributeLoading === id}
+                on:click={async () => {
+                  await (pendingContribution
+                    ? cancelContribution(pendingContribution.id)
+                    : contribute(id));
+                }}
+              >
+                {#if pendingContribution}
+                  Annuler la demande pour
+                {/if}
+                {name}
+                <strong class="price"
+                  >{Intl.NumberFormat('fr-FR', {
+                    style: 'currency',
+                    currency: 'EUR',
+                  }).format(price)}</strong
+                >
+              </ButtonSecondary>
+            </li>
+          {/each}
+        </ul>
         {#if contributeServerError}
           <Alert theme="danger">{contributeServerError}</Alert>
         {/if}
@@ -449,6 +457,12 @@
     display: flex;
     flex-flow: column wrap;
     align-items: center;
+  }
+
+  ul.options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
   .contribution > p {

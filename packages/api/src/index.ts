@@ -262,7 +262,7 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
         return res.status(200).send('OK');
       }
     } else if (transaction.contribution) {
-      const beneficiary = transaction.contribution.studentAssociation.lydiaAccounts[0];
+      const {beneficiary} = transaction.contribution.option;
       if (!beneficiary) {
         await prisma.logEntry.create({
           data: {
