@@ -170,13 +170,12 @@ builder.queryField('registrationsOfEvent', (t) =>
       groupUid: t.arg.string(),
       eventUid: t.arg.string(),
     },
-    authScopes(_, { eventUid, groupUid }, { user }) {
-      return Boolean(
-        user?.admin ||
-          user?.managedEvents.some(
-            ({ event: { uid, group } }) => uid === eventUid && group.uid === groupUid
-          )
-      );
+    async authScopes(_, { eventUid, groupUid }, { user }) {
+      const { managers } = await prisma.event.findFirstOrThrow({
+        where: { uid: eventUid, group: { uid: groupUid } },
+        include: { managers: true },
+      });
+      return Boolean(user?.admin || managers.some(({ userId }) => user?.id === userId));
     },
     async resolve(query, _, { eventUid, groupUid }) {
       return prisma.registration.findMany({

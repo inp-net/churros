@@ -39,10 +39,14 @@ builder.mutationField('upsertManagersOfEvent', (t) =>
       eventId: t.arg.id(),
       managers: t.arg({ type: [ManagerOfEventInput] }),
     },
-    authScopes(_, { eventId }, { user }) {
+    async authScopes(_, { eventId }, { user }) {
+      const event = await prisma.event.findUniqueOrThrow({
+        where: { id: eventId },
+        include: { managers: true },
+      });
       return Boolean(
-        user?.managedEvents.some(
-          ({ event, canEditPermissions }) => event.id === eventId && canEditPermissions
+        event.managers.some(
+          ({ userId, canEditPermissions }) => user?.id === userId && canEditPermissions
         )
       );
     },
@@ -77,7 +81,7 @@ builder.mutationField('deleteEventManager', (t) =>
     async authScopes(_, { eventId, user }, { user: currentUser }) {
       const event = await prisma.event.findUnique({
         where: { id: eventId },
-        include: { author: true },
+        include: { author: true, managers: true },
       });
 
       // Admins can delete managers if the upstream event does not exist anymore
@@ -89,8 +93,8 @@ builder.mutationField('deleteEventManager', (t) =>
       // Other managers that have the canEditPermissions permission, or admins, can delete managers
       return Boolean(
         currentUser?.admin ||
-          currentUser?.managedEvents.some(
-            ({ event, canEditPermissions }) => event.id === eventId && canEditPermissions
+          event.managers.some(
+            ({ userId, canEditPermissions }) => currentUser?.id === userId && canEditPermissions
           )
       );
     },
