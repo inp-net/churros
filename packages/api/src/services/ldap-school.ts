@@ -1,9 +1,13 @@
 /* eslint-disable no-console */
 import ldap from 'ldapjs';
 import '../context.js';
-import bunyan from 'bunyan';
 import { nanoid } from 'nanoid';
 import { fromYearTier } from '../date.js';
+import { log } from '../objects/logs.js';
+import { builder } from '../builder.js';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export interface LdapUser {
   schoolUid: string;
@@ -19,8 +23,6 @@ const settings = JSON.parse(process.env.LDAP_SCHOOL) as {
   >;
   emailDomains: Record<string, string>;
 };
-
-const log = bunyan.createLogger({ name: 'CRI INP @centraverse/api ldap client', level: 'trace' });
 
 function parseN7ApprenticeAndMajor(groups: string[] | undefined):
   | undefined
@@ -159,3 +161,77 @@ export const findSchoolUser = async (
 
   return { ...user, schoolServer, ...parseN7ApprenticeAndMajor(ldapObject.groups) };
 };
+
+export async function getSupannAliasLogin(
+  personalEmail: string
+): Promise<{ supannAliasLogin: string; schoolUid: string } | undefined> {
+  const user = await prisma.user.findFirst({
+    where: {
+      email: personalEmail,
+    },
+    include: { major: true },
+  });
+  await log('ldap', 'existance check fail', { err: 'no user found' }, personalEmail);
+  if (!user) return undefined;
+
+  const transform = (s: string) =>
+    s
+      .normalize('NFD')
+      .replace(/[\u0300-\u036F]/g, '')
+      .toLowerCase()
+      .replaceAll(' ', '')
+      .replaceAll('-', '');
+
+  const supannAliasLogin = `${transform(user.firstName)}.${transform(user.lastName)}`;
+  const schoolEmail = `${supannAliasLogin}@etu.inp-n7.fr`;
+  await log('ldap', 'existance check', { personalEmail, schoolEmail }, personalEmail);
+
+  const schoolUser = await findSchoolUser(schoolEmail);
+
+  if (!schoolUser) {
+    await log('ldap', 'existance check fail', { err: 'no user found in school' }, personalEmail);
+    return undefined;
+  }
+
+  if (schoolUser.graduationYear !== user.graduationYear) {
+    await log(
+      'ldap',
+      'existance check fail',
+      {
+        err: 'promo does not match',
+        schoolUser: schoolUser.graduationYear,
+        user: user.graduationYear,
+      },
+      personalEmail
+    );
+    return undefined;
+  }
+
+  if (schoolUser.major !== user.major.shortName) {
+    await log(
+      'ldap',
+      'existance check fail',
+      { err: 'major does not match', schoolUser: schoolUser.major, user: user.major.shortName },
+      personalEmail
+    );
+    return undefined;
+  }
+
+  await log('ldap', 'exinstance check OK', { schoolUser, user }, personalEmail);
+  return { supannAliasLogin, schoolUid: schoolUser.schoolUid };
+}
+
+builder.queryField('existsInSchoolLdap', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: {
+      email: t.arg.string(),
+    },
+    authScopes(_, {}, { user }) {
+      return Boolean(user?.admin);
+    },
+    async resolve(_, { email }) {
+      return Boolean(await getSupannAliasLogin(email));
+    },
+  })
+);

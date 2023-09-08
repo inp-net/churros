@@ -93,7 +93,13 @@ export const TicketType = builder.prismaNode('Ticket', {
     group: t.relation('group', { nullable: true }),
     remainingGodsons: t.int({
       async resolve({ godsonLimit, eventId }, _, { user }) {
-        if (user?.managedEvents.some(({ event }) => event.id === eventId)) return -1;
+        const { managers } = await prisma.event.findUniqueOrThrow({
+          where: { id: eventId },
+          include: {
+            managers: true,
+          },
+        });
+        if (managers.some(({ userId }) => user?.id === userId)) return -1;
         const registrationsOfUser = await prisma.registration.findMany({
           where: {
             author: { uid: user?.uid },
@@ -219,6 +225,7 @@ export function userCanSeeTicket(
     event: {
       id: string;
       group: { school: null | { uid: string }; studentAssociation: null | { id: string } };
+      managers: Array<{ userId: string }>;
     };
     onlyManagersCanProvide: boolean;
     openToGroups: Array<{ uid: string }>;
@@ -229,9 +236,9 @@ export function userCanSeeTicket(
     openToApprentices: boolean | null;
   },
   user?: {
+    id: string;
     admin: boolean;
     groups: Array<{ group: { uid: string } }>;
-    managedEvents: Array<{ event: { id: string } }>;
     graduationYear: number;
     major: { schools: Array<{ uid: string }>; id: string };
     contributions: Array<{
@@ -244,7 +251,7 @@ export function userCanSeeTicket(
   if (user?.admin) return true;
 
   // Managers can see everything
-  if (user?.managedEvents.some(({ event: { id } }) => id === event.id)) return true;
+  if (event.managers.some(({ userId }) => userId === user?.id)) return true;
 
   // Check if user is an apprentice
   if (openToApprentices === true && !user?.apprentice) return false;
@@ -325,6 +332,7 @@ builder.queryField('ticketsOfEvent', (t) =>
           openToSchools: true,
           event: {
             include: {
+              managers: true,
               group: {
                 include: {
                   studentAssociation: true,
@@ -407,12 +415,11 @@ builder.mutationField('upsertTicket', (t) =>
     },
     async authScopes(_, { eventId, id }, { user }) {
       const creating = !id;
+      const event = await prisma.event.findUnique({
+        where: { id: eventId },
+        include: { managers: { include: { user: true } } },
+      });
       if (creating) {
-        const event = await prisma.event.findUnique({
-          where: { id: eventId },
-
-          include: { managers: { include: { user: true } } },
-        });
         if (!event) return false;
         return eventManagedByUser(event, user, { canEdit: true });
       }

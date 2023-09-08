@@ -164,6 +164,7 @@ export const EventType = builder.prismaNode('Event', {
             openToSchools: true,
             event: {
               include: {
+                managers: { include: { user: true, event: true } },
                 group: {
                   include: {
                     studentAssociation: true,
@@ -197,11 +198,6 @@ export const EventType = builder.prismaNode('Event', {
                 groups: {
                   include: {
                     group: true,
-                  },
-                },
-                managedEvents: {
-                  include: {
-                    event: true,
                   },
                 },
                 major: {
@@ -397,9 +393,13 @@ builder.mutationField('deleteEvent', (t) =>
     args: {
       id: t.arg.id(),
     },
-    authScopes(_, { id }, { user }) {
+    async authScopes(_, { id }, { user }) {
+      const event = await prisma.event.findUniqueOrThrow({
+        where: { id },
+        include: { managers: true },
+      });
       return Boolean(
-        user?.admin || user?.managedEvents.some(({ event, canEdit }) => event.id === id && canEdit)
+        user?.admin || event.managers.some(({ userId, canEdit }) => userId === user?.id && canEdit)
       );
     },
     async resolve(_, { id }, { user }) {

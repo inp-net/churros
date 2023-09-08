@@ -1,5 +1,4 @@
 /* eslint-disable complexity */
-
 import type { Group, Major, School, User } from '@prisma/client';
 import ldap from 'ldapjs';
 import crypto from 'node:crypto';
@@ -158,6 +157,7 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
     connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
       if (bindError) {
         console.error('LDAP Bind Error:', bindError);
+        reject(bindError);
         // Handle the bind error
       } else {
         // Perform the search after successful bind
@@ -351,7 +351,17 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
 
 // create a new user in LDAP
 async function createLdapUser(
-  user: User & {
+  user: {
+    birthday: Date | null;
+    firstName: string;
+    lastName: string;
+    uid: string;
+    schoolUid: string | null;
+    schoolEmail: string | null;
+    email: string;
+    otherEmails: string[];
+    phone: string;
+    graduationYear: number;
     major?: undefined | null | (Major & { ldapSchool?: School | undefined | null });
     godparent?: User | null;
   },
@@ -396,6 +406,7 @@ async function createLdapUser(
     loginTP: user.schoolUid,
     mailEcole: user.schoolEmail,
     mailForwardingAddress: user.email,
+    mailAnnexe: user.otherEmails,
     mobile: user.phone.toString(),
     userPassword: hashPassword(password),
     promo: user.graduationYear.toString(),
@@ -405,7 +416,9 @@ async function createLdapUser(
 
   console.info(`Attributes ${JSON.stringify(userAttributes, undefined, 2)}} for ${userDn}`);
   const userAttributesStringable = Object.fromEntries(
-    Object.entries(userAttributes).filter(([_, v]) => v !== null && v !== '')
+    Object.entries(userAttributes).filter(
+      ([_, v]) => v !== null && v !== '' && (Array.isArray(v) ? v.length <= 0 : true)
+    )
   ) as Partial<typeof userAttributes>;
 
   console.info(
