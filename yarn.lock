@@ -333,6 +333,7 @@ __metadata:
     nodemailer: "npm:^6.9.4"
     phone: "npm:^3.1.39"
     prisma: "npm:5.1.1"
+    qr-code-generator-lib: "npm:^1.0.1"
     rehype-sanitize: "npm:^5.0.1"
     rehype-stringify: "npm:^9.0.3"
     remark-parse: "npm:^10.0.2"

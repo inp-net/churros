@@ -1,6 +1,5 @@
 <script lang="ts">
   import { dateTimeFormatter, formatDateTime } from '$lib/dates';
-  import * as qrcode from 'qr-code-generator-lib';
   import type { PageData } from './$types';
   import BackButton from '$lib/components/ButtonBack.svelte';
   import { onMount } from 'svelte';
@@ -45,14 +44,7 @@
     paymentMethod,
   } = data.registration;
   let phone = $me?.phone ?? '';
-  let qrcodeViewbox: string;
-  let qrcodeDim: number;
-  let qrcodePath: string;
-  $: ({ d: qrcodePath, dim: qrcodeDim } = qrcode.renderPath(qrcode.getMatrix(id)));
-  const qrcodeBuiltinPadding = 4;
-  $: qrcodeViewbox = `${qrcodeBuiltinPadding} ${qrcodeBuiltinPadding} ${
-    qrcodeDim - 2 * qrcodeBuiltinPadding
-  } ${qrcodeDim - 2 * qrcodeBuiltinPadding}`;
+  const { viewbox: qrcodeViewbox, path: qrcodePath } = data.registrationQRCode;
 </script>
 
 <div class="content">

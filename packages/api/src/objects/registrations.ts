@@ -9,6 +9,7 @@ import { GraphQLError } from 'graphql';
 import { UserType, fullName } from './users.js';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { isPast, isFuture } from 'date-fns';
+import * as qrcodeGeneratorLib from 'qr-code-generator-lib';
 
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
   name: 'PaymentMethod',
@@ -528,8 +529,9 @@ builder.mutationField('upsertRegistration', (t) =>
     },
     async resolve(query, _, { id, ticketId, beneficiary, paymentMethod, paid }, { user }) {
       if (!user) throw new GraphQLError('User not found');
+      const creating = !id;
 
-      if (!id) {
+      if (creating) {
         const event = await prisma.event.findFirstOrThrow({
           where: { tickets: { some: { id: ticketId } } },
         });
@@ -708,6 +710,34 @@ builder.mutationField('paidRegistration', (t) =>
           beneficiary: beneficiary ?? '',
         },
       });
+    },
+  })
+);
+
+const QRCodeType = builder.objectRef<{ path: string; viewbox: string }>('QRCode').implement({
+  fields: (t) => ({
+    path: t.exposeString('path'),
+    viewbox: t.exposeString('viewbox'),
+  }),
+});
+
+builder.queryField('registrationQRCode', (t) =>
+  t.field({
+    type: QRCodeType,
+    description: 'Returns an SVG path of the QR Code for the given registration',
+    args: {
+      id: t.arg.id(),
+    },
+    authScopes() {
+      return true;
+    },
+    resolve(_, { id }) {
+      const { d: path, dim } = qrcodeGeneratorLib.renderPath(qrcodeGeneratorLib.getMatrix(id));
+      const builtinPadding = 4;
+      const viewbox = `${builtinPadding} ${builtinPadding} ${dim - 2 * builtinPadding} ${
+        dim - 2 * builtinPadding
+      }`;
+      return { path, viewbox };
     },
   })
 );

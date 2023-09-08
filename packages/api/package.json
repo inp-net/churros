@@ -33,6 +33,7 @@
     "nanoid": "^4.0.2",
     "nodemailer": "^6.9.4",
     "phone": "^3.1.39",
+    "qr-code-generator-lib": "^1.0.1",
     "rehype-sanitize": "^5.0.1",
     "rehype-stringify": "^9.0.3",
     "remark-parse": "^10.0.2",

@@ -44,13 +44,16 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
     );
   }
 
-  const { registration } = await loadQuery(
+  const id = `${
+    reverseMap(ID_PREFIXES_TO_TYPENAMES).Registration
+  }:${params.pseudoID.toLowerCase()}`;
+
+  const { registration, registrationQRCode } = await loadQuery(
     {
+      registrationQRCode: [{ id }, { path: true, viewbox: true }],
       registration: [
         {
-          id: `${
-            reverseMap(ID_PREFIXES_TO_TYPENAMES).Registration
-          }:${params.pseudoID.toLowerCase()}`,
+          id,
         },
         Selector('Registration')({
           __typename: true,
@@ -104,5 +107,5 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
 
   if (registration.__typename === 'Error') throw error(400, registration.message);
 
-  return { registration: registration.data };
+  return { registration: registration.data, registrationQRCode };
 };
