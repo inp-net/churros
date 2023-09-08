@@ -10,6 +10,10 @@ import { UserType, fullName } from './users.js';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { isPast, isFuture } from 'date-fns';
 import * as qrcodeGeneratorLib from 'qr-code-generator-lib';
+import qrcode from 'qrcode'
+import { createTransport } from 'nodemailer';
+
+const mailer = createTransport(process.env.SMTP_URL)
 
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
   name: 'PaymentMethod',
@@ -603,6 +607,31 @@ builder.mutationField('upsertRegistration', (t) =>
           user: { connect: { id: user.id } },
         },
       });
+      if (creating) {
+        await log('registration', 'send mail', {registration, to: user.email}, registration.id, user)
+
+        const pseudoID = registration.id.replace(/^r:/, '').toUpperCase()
+        const qrcodeBuffer = await qrcode.toBuffer(pseudoID, {errorCorrectionLevel: 'H'})        
+
+        await mailer.sendMail({
+          to: user.email,
+          from: process.env.PUBLIC_SUPPORT_EMAIL,
+          attachments: [{
+            filename: `qrcode-${pseudoID.toLowerCase()}.png`,
+            content: qrcodeBuffer,
+            cid: 'qrcode'
+          }],
+          subject: beneficiary ? `Place pour ${beneficiary} à ${ticket.event.title}` : `Ta place pour ${ticket.event.title}`,
+          html: `<p>Ta place pour ${ticket.event.title} a bien été réservée.</p>
+          <p>Montre le QR code pour rentrer.</p>
+          <img src="cid:qrcode" alt="${pseudoID}" />
+          <p>En cas de problème, ton code de réservation est le:</p>
+          <p style="font-size: 32px; text-align: center;" align="center" size="32px"><code>${pseudoID}</code></p>
+          `,
+          text: `Ton code de réservation est le ${pseudoID}`
+        })
+      }
+
       return registration;
     },
   })
