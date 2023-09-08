@@ -13,8 +13,8 @@
   import IconChevronRight from '~icons/mdi/chevron-right';
   import { onDestroy, onMount } from 'svelte';
   import { tooltip } from '$lib/tooltip';
-  import { env } from '$env/dynamic/public';
   import { isDark } from '$lib/theme';
+  import { groupLogoSrc } from '$lib/logos';
 
   export let group: undefined | { name: string } = undefined;
   export let descriptionHtml: string;
@@ -102,16 +102,12 @@
       <h3>
         {#if openToGroups.length}
           <ul class="groups nobullet">
-            {#each openToGroups as { name, uid, pictureFile, pictureFileDark }}
+            {#each openToGroups as { name, uid, ...pictures }}
+              {@const logoSrc = groupLogoSrc($isDark, pictures)}
               <li>
-                {#if pictureFile || pictureFileDark}
+                {#if logoSrc}
                   <a class="group" use:tooltip={name} href="/groups/{uid}">
-                    <img
-                      src="{env.PUBLIC_STORAGE_URL}{$isDark
-                        ? pictureFileDark || pictureFile
-                        : pictureFile || pictureFileDark}"
-                      alt={name}
-                    />
+                    <img src={logoSrc} alt={name} />
                   </a>
                 {/if}
               </li>

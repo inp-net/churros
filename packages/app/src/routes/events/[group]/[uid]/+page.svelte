@@ -1,6 +1,5 @@
 <script lang="ts">
   import ItemTicket from '$lib/components/ItemTicket.svelte';
-  import { env } from '$env/dynamic/public';
   import IconPlus from '~icons/mdi/plus';
   import { me } from '$lib/session';
   import type { PageData } from './$types';
@@ -8,6 +7,8 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import Header from './Header.svelte';
+  import { groupLogoSrc } from '$lib/logos';
+  import { isDark } from '$lib/theme';
 
   export let data: PageData;
 
@@ -98,12 +99,7 @@
   <h2>Organisé par</h2>
   <div class="organizer-name-and-contact">
     <a class="organizer-name" href="/groups/{group.uid}">
-      <img
-        src={group.pictureFile
-          ? `${env.PUBLIC_STORAGE_URL}${group.pictureFile}`
-          : 'https://via.placeholder.com/400/400'}
-        alt=""
-      />
+      <img src={groupLogoSrc($isDark, group)} alt="" />
       {group.name}
     </a>
     <ButtonSecondary href="mailto:{contactMail}">Contact</ButtonSecondary>

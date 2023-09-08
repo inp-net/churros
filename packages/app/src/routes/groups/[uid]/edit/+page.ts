@@ -30,12 +30,14 @@ export const _clubQuery = Selector('Group')({
     uid: true,
     name: true,
     pictureFile: true,
+    pictureFileDark: true,
   },
   selfJoinable: true,
   related: {
     uid: true,
     name: true,
     pictureFile: true,
+    pictureFileDark: true,
   },
 });
 

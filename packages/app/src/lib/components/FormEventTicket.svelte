@@ -37,7 +37,12 @@
     openToPromotions: number[];
     links: Array<{ value: string; name: string }>;
     openToSchools: Array<{ name: string; color: string; uid: string }>;
-    openToGroups: Array<{ name: string; uid: string; pictureFile: string }>;
+    openToGroups: Array<{
+      name: string;
+      uid: string;
+      pictureFile: string;
+      pictureFileDark: string;
+    }>;
     openToMajors: Array<{ name: string; shortName: string; id: string }>;
     openToExternal?: boolean | null | undefined;
     openToAlumni?: boolean | null | undefined;
@@ -45,7 +50,12 @@
     openToApprentices?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
-    autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;
+    autojoinGroups: Array<{
+      name: string;
+      uid: string;
+      pictureFile: string;
+      pictureFileDark: string;
+    }>;
     allowedPaymentMethods: PaymentMethod[];
   };
 

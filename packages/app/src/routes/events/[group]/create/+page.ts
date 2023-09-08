@@ -24,6 +24,7 @@ export const load: PageLoad = async ({ fetch, parent, url, params }) => {
           email: true,
           name: true,
           pictureFile: true,
+          pictureFileDark: true,
           uid: true,
           id: true,
           members: {

@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
   import { zeus } from '$lib/zeus';
   import IconNone from '~icons/mdi/help';
   import InputField from './InputField.svelte';
   import InputSearchObject from './InputSearchObject.svelte';
   import type { SvelteComponent } from 'svelte';
+  import { groupLogoSrc } from '$lib/logos';
+  import { isDark } from '$lib/theme';
 
-  type Group = { uid: string; name: string; pictureFile: string };
+  type Group = { uid: string; name: string; pictureFile: string; pictureFileDark: string };
   export let label: string;
   export let uid: string | undefined = undefined;
   export let required = false;
@@ -33,6 +34,7 @@
           uid: true,
           name: true,
           pictureFile: true,
+          pictureFileDark: true,
         },
       ],
     });
@@ -52,14 +54,14 @@
   >
     <div class="avatar" slot="thumbnail" let:object>
       {#if object}
-        <img src="{env.PUBLIC_STORAGE_URL}{object.pictureFile}" alt={object.name?.toString()} />
+        <img src={groupLogoSrc($isDark, object)} alt={object.name?.toString()} />
       {:else}
         <svelte:component this={nullIcon} />
       {/if}
     </div>
     <div class="suggestion" slot="item" let:item>
       <div class="avatar">
-        <img src="{env.PUBLIC_STORAGE_URL}{item.pictureFile}" alt={item.name} />
+        <img src={groupLogoSrc($isDark, item)} alt={item.name} />
       </div>
       <div>{item.name}</div>
     </div>

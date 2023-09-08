@@ -95,6 +95,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
               uid: true,
               name: true,
               pictureFile: true,
+              pictureFileDark: true,
             },
             author: {
               uid: true,
@@ -123,6 +124,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             uid: true,
             name: true,
             pictureFile: true,
+            pictureFileDark: true,
           },
           contactMail: true,
           managers: {

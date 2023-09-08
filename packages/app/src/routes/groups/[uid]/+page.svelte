@@ -7,7 +7,6 @@
   import { me } from '$lib/session.js';
   import type { PageData } from './$types';
   import { zeus } from '$lib/zeus';
-  import { env } from '$env/dynamic/public';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
   import IconFacebook from '~icons/mdi/facebook-box';
   import type { SvelteComponent } from 'svelte';
@@ -34,6 +33,7 @@
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import { tooltip } from '$lib/tooltip';
+  import { groupLogoSrc } from '$lib/logos';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
@@ -99,12 +99,7 @@
 <div class="content">
   <header>
     <div class="picture">
-      <img
-        src="{env.PUBLIC_STORAGE_URL}{$isDark && group.pictureFileDark
-          ? group.pictureFileDark
-          : group.pictureFile}"
-        alt={group.name}
-      />
+      <img src={groupLogoSrc($isDark, group)} alt={group.name} />
     </div>
 
     <div class="identity">

@@ -20,7 +20,12 @@
   const EMPTY_BAR_WEEK = {
     id: undefined,
     description: '',
-    groups: [] as Array<{ uid: string; pictureFile: string; name: string }>,
+    groups: [] as Array<{
+      uid: string;
+      pictureFile: string;
+      pictureFileDark: string;
+      name: string;
+    }>,
     startsAt: startOfWeek(new Date()),
     endsAt: endOfWeek(new Date()),
   };
@@ -70,6 +75,7 @@
                 uid: true,
                 name: true,
                 pictureFile: true,
+                pictureFileDark: true,
               },
               uid: true,
             },
@@ -148,6 +154,7 @@
             </section>
           {:else}
             <div class="description">
+              <!-- eslint-disable-next-line svelte/no-at-html-tags -->
               {@html barWeek.descriptionHtml}
             </div>
             <section class="actions">

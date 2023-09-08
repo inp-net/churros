@@ -25,6 +25,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             uid: true,
             name: true,
             pictureFile: true,
+            pictureFileDark: true,
           },
           tickets: {
             id: true,
@@ -38,6 +39,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
               uid: true,
               name: true,
               pictureFile: true,
+              pictureFileDark: true,
             },
             links: {
               value: true,
@@ -62,6 +64,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
               uid: true,
               name: true,
               pictureFile: true,
+              pictureFileDark: true,
             },
 
             openToContributors: true,
@@ -102,10 +105,12 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
                 uid: true,
                 name: true,
                 pictureFile: true,
+                pictureFileDark: true,
               },
               autojoinGroups: {
                 uid: true,
                 name: true,
+                pictureFileDark: true,
                 pictureFile: true,
               },
               openToContributors: true,

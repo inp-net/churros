@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
+  import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
 
   export let href: string;
@@ -13,7 +13,7 @@
 <a {href} title={name} class="group" draggable="false" on:click>
   <div class="img">
     <img
-      src={`${env.PUBLIC_STORAGE_URL}${$isDark && pictureFileDark ? pictureFileDark : pictureFile}`}
+      src={groupLogoSrc($isDark, { pictureFile, pictureFileDark })}
       alt={name}
       draggable="false"
     />

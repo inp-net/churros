@@ -152,12 +152,12 @@
                 openToExternal: true,
                 openToAlumni: true,
                 openToSchools: { name: true, color: true, id: true },
-                openToGroups: { name: true, uid: true, pictureFile: true },
+                openToGroups: { name: true, uid: true, pictureFile: true, pictureFileDark: true },
                 openToContributors: true,
                 openToApprentices: true,
                 godsonLimit: true,
                 onlyManagersCanProvide: true,
-                autojoinGroups: { name: true, uid: true, pictureFile: true },
+                autojoinGroups: { name: true, uid: true, pictureFile: true, pictureFileDark: true },
               },
               managers: {
                 user: {
@@ -247,13 +247,23 @@
     openToExternal?: boolean | null | undefined;
     openToAlumni?: boolean | null | undefined;
     openToSchools: Array<{ name: string; color: string; uid: string }>;
-    openToGroups: Array<{ name: string; uid: string; pictureFile: string }>;
+    openToGroups: Array<{
+      name: string;
+      uid: string;
+      pictureFile: string;
+      pictureFileDark: string;
+    }>;
     openToMajors: Array<{ name: string; shortName: string; id: string }>;
     openToContributors?: boolean | null | undefined;
     openToApprentices?: boolean | null | undefined;
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
-    autojoinGroups: Array<{ name: string; uid: string; pictureFile: string }>;
+    autojoinGroups: Array<{
+      name: string;
+      uid: string;
+      pictureFile: string;
+      pictureFileDark: string;
+    }>;
   };
 
   export let redirectAfterSave: (uid: string, groupUid: string) => string = (uid, groupUid) =>
@@ -289,6 +299,7 @@
       uid: string;
       name: string;
       pictureFile: string;
+      pictureFileDark: string;
     };
     managers: Array<{
       user: {

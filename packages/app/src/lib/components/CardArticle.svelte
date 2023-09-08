@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
   import { intlFormatDistance } from 'date-fns';
   import Card from './Card.svelte';
   import IconDots from '~icons/mdi/dots-horizontal';
@@ -8,6 +7,8 @@
   import ButtonInk from './ButtonInk.svelte';
   import { htmlToText } from '$lib/markdown';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
+  import { groupLogoSrc } from '$lib/logos';
+  import { isDark } from '$lib/theme';
 
   export let visibility: Visibility | undefined = undefined;
   export let title: string;
@@ -15,7 +16,7 @@
   export let bodyHtml: string;
   export let publishedAt: Date;
   export let links: Array<{ value: string; name: string; computedValue: string }> = [];
-  export let group: { uid: string; name: string; pictureFile: string };
+  export let group: { uid: string; name: string; pictureFile: string; pictureFileDark: string };
   export let author: { uid: string; firstName: string; lastName: string } | undefined = undefined;
   export let img: { src: string; alt?: string; width?: number; height?: number } | undefined =
     undefined;
@@ -59,10 +60,7 @@
     <div class="author">
       {#if !hideGroup}
         <a href="/groups/{group.uid}">
-          <img
-            src={group.pictureFile ? `${env.PUBLIC_STORAGE_URL}${group.pictureFile}` : ''}
-            alt={group.name}
-          />
+          <img src={groupLogoSrc($isDark, group)} alt={group.name} />
         </a>
         <div class="names">
           <a href="/groups/{group.uid}" class="name">{group.name}</a>

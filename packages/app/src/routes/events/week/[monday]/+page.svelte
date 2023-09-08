@@ -1,6 +1,5 @@
 <script lang="ts">
   import CalendarDay from '../../../../lib/components/CalendarDay.svelte';
-  import { env } from '$env/dynamic/public';
   import IconBackward from '~icons/mdi/chevron-left';
   import IconGear from '~icons/mdi/cog-outline';
   import IconForward from '~icons/mdi/chevron-right';
@@ -12,6 +11,8 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
   import { Gif } from 'svelte-tenor';
+  import { groupLogoSrc } from '$lib/logos';
+  import { env } from '$env/dynamic/public';
 
   export let data: PageData;
 
@@ -57,10 +58,7 @@
         {#each barWeek.groups as group}
           <li class="group">
             <a href="/groups/{group.uid}"
-              ><img
-                src="{env.PUBLIC_STORAGE_URL}{$isDark ? group.pictureFileDark : group.pictureFile}"
-                alt=""
-              />
+              ><img src={groupLogoSrc($isDark, group)} alt="" />
               {group.name}</a
             >
           </li>

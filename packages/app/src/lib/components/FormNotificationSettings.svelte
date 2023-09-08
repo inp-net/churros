@@ -10,7 +10,13 @@
   const asBooleanOrNull = (v: unknown) => v as boolean | null;
 
   let loading = false;
-  export let availableGroups: Array<{ uid: string; name: string; id: string; pictureFile: string }>;
+  export let availableGroups: Array<{
+    uid: string;
+    name: string;
+    id: string;
+    pictureFile: string;
+    pictureFileDark: string;
+  }>;
   export let userUid: string;
   export let settings: Array<{
     type: NotificationType;
@@ -83,8 +89,6 @@
     // eslint-disable-next-line unicorn/no-null
     return index === -1 ? null : allow;
   }
-
-  export const bang = <T>(x: T) => x;
 </script>
 
 <form on:submit|preventDefault={updateNotificationSettings}>
@@ -101,7 +105,7 @@
   </div>
   <ul class="nobullet">
     {#if selectedGroup}
-      {#each displayedSettings as { type, allow, id, group, index }}
+      {#each displayedSettings as { type, allow, group, index }}
         <li>
           <InputCheckbox
             ternary
@@ -135,7 +139,7 @@
         </li>
       {/each}
     {:else}
-      {#each displayedSettings as { type, id, index }}
+      {#each displayedSettings as { type, index }}
         <li>
           <InputCheckbox
             label={DISPLAY_NOTIFICATION_TYPES[type]}

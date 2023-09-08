@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
+  import { groupLogoSrc } from '$lib/logos';
+  import { isDark } from '$lib/theme';
   import { zeus } from '$lib/zeus';
   import InputField from './InputField.svelte';
   import InputSearchObjectList from './InputSearchObjectList.svelte';
 
-  type Group = { uid: string; name: string; pictureFile: string };
+  type Group = { uid: string; name: string; pictureFile: string; pictureFileDark: string };
   export let label: string;
   export let uids: string[];
   export let required = false;
@@ -27,6 +28,7 @@
           uid: true,
           name: true,
           pictureFile: true,
+          pictureFileDark: true,
         },
       ],
     });
@@ -45,14 +47,14 @@
     <svelte:fragment slot="tag" let:tag>
       {#if tag.pictureFile !== ''}
         <div class="avatar">
-          <img src="{env.PUBLIC_STORAGE_URL}{tag.pictureFile}" alt={tag.name?.toString()} />
+          <img src={groupLogoSrc($isDark, tag)} alt={tag.name?.toString()} />
         </div>
       {/if}
       {tag.name}
     </svelte:fragment>
     <div class="suggestion" slot="item" let:item>
       <div class="avatar">
-        <img src="{env.PUBLIC_STORAGE_URL}{item.pictureFile}" alt={item.name} />
+        <img src={groupLogoSrc($isDark, item)} alt={item.name} />
       </div>
       <div>{item.name}</div>
     </div>

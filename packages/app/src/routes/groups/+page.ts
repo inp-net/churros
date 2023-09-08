@@ -12,6 +12,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
           groupId: true,
           parentId: true,
           pictureFile: true,
+          pictureFileDark: true,
           description: true,
           type: true,
           school: {

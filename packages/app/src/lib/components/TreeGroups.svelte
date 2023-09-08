@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
+  import { groupLogoSrc } from '$lib/logos';
+  import { isDark } from '$lib/theme';
 
   type Group = {
     uid: string;
@@ -9,6 +10,7 @@
     studentAssociation?: { school: { name: string } } | undefined;
     children: Group[];
     pictureFile: string;
+    pictureFileDark: string;
     description: string;
   };
   export let group: Group;
@@ -18,7 +20,7 @@
 
 <a class:highlight={highlightUid === group.uid} href="/groups/{group.uid}/">
   <div class="avatar">
-    <img src="{env.PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} />
+    <img src={groupLogoSrc($isDark, group)} alt={group.name} />
   </div>
   <div class="text">
     <p class="name">

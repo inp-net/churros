@@ -10,7 +10,7 @@
   import type { SvelteComponent } from 'svelte';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
   import { isDark } from '$lib/theme';
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { groupLogoSrc } from '$lib/logos';
 
   function Service(
     name: string,
@@ -44,18 +44,27 @@
     }),
     Service('Photos', 'Merci Photo7 ♥', {
       href: 'https://photo7.inpt.fr',
-      logo: `${PUBLIC_STORAGE_URL}groups/${$isDark ? 'dark/' : ''}photo-n7.png`,
+      logo: groupLogoSrc($isDark, {
+        pictureFile: '7fault-n7.png',
+        pictureFileDark: 'dark/7fault-n7.png',
+      }),
     }),
     Service('TVn7flix', 'Les productions de TVn7', {
       href: 'https://tvn7flix.fr',
-      logo: `${PUBLIC_STORAGE_URL}groups/${$isDark ? 'dark/' : ''}tvn7-n7.png`,
+      logo: groupLogoSrc($isDark, {
+        pictureFileDark: 'dark/tvn7-n7.png',
+        pictureFile: 'tvn7-n7.png',
+      }),
     }),
     Service('IPQ', "Le podcast de l'n7", {
       href: 'https://open.spotify.com/show/77KtGDlbY7RH3BSTOsNGbA?si=48a2cbacee7440b3',
     }),
     Service('Jeux', 'Merci à 7Fault', {
       href: 'https://7fault.itch.io',
-      logo: `${PUBLIC_STORAGE_URL}groups/${$isDark ? 'dark/' : ''}7fault-n7.png`,
+      logo: groupLogoSrc($isDark, {
+        pictureFile: '7fault-n7.png',
+        pictureFileDark: 'dark/7fault-n7.png',
+      }),
     }),
     Service('La Frappe', 'Sauve tes partiels', {
       logo: IconHand,

@@ -13,7 +13,7 @@ export const _pageQuery = Selector('QueryHomepageConnection')({
       visibility: true,
       publishedAt: true,
       pictureFile: true,
-      group: { uid: true, name: true, pictureFile: true },
+      group: { uid: true, name: true, pictureFile: true, pictureFileDark: true },
       author: { uid: true, firstName: true, lastName: true, fullName: true },
       links: { value: true, computedValue: true, name: true },
     },
