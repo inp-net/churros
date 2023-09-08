@@ -18,6 +18,10 @@ import slug from 'slug';
 import { prisma } from './prisma.js';
 import { createUid } from './services/registration.js';
 
+function* range(start: number, end: number): Generator<number> {
+  for (let i = start; i < end; i++) yield i;
+}
+
 type SizedArray<T, N extends number> = N extends N
   ? number extends N
     ? T[]
@@ -163,9 +167,8 @@ for (const ae of studentAssociationsWithLydiaAccounts) {
       name: ae.name,
       offeredIn: { connect: { id: ae.school.id } },
       price: Math.floor(Math.random() * 100),
-      beneficiary: ae.lydiaAccounts.length > 0
-        ? { connect: { id: ae.lydiaAccounts[0]?.id } }
-        : undefined,
+      beneficiary:
+        ae.lydiaAccounts.length > 0 ? { connect: { id: ae.lydiaAccounts[0]?.id } } : undefined,
     },
   });
 }
@@ -563,7 +566,7 @@ const event1 = await prisma.event.create({
             name: 'Staff TVn7',
             description: 'Staffeurs :sparkles: TVn7 :sparkles:, par ici!',
             price: 0,
-            capacity: 12,
+            capacity: 200,
             opensAt: new Date(),
             closesAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
             allowedPaymentMethods: ['Cash', 'Lydia', 'Card'],
@@ -659,15 +662,17 @@ const registration = await prisma.registration.create({
   },
 });
 
-await prisma.registration.create({
-  data: {
-    ticketId: randomIdOf(event1.tickets),
-    authorId: randomIdOf(users.filter((u) => u.id !== registration.authorId)),
-    paymentMethod: 'Lydia',
-    paid: true,
-    beneficiary: 'quentin',
-  },
-});
+for (const i of range(0, 100)) {
+  await prisma.registration.create({
+    data: {
+      ticketId: randomIdOf(event1.tickets),
+      authorId: randomIdOf(users.filter((u) => u.id !== registration.authorId)),
+      paymentMethod: i % 2 === 0 ? 'Lydia' : 'Cash',
+      paid: true,
+      beneficiary: 'quentin',
+    },
+  });
+}
 
 await prisma.barWeek.create({
   data: {
