@@ -39,6 +39,9 @@
 {:else}
   {#if data.searchUsers.length > 0}
     <h2>Personnes</h2>
+    <p class="typo-details results-count">
+      {data.searchUsers.length} résultat{data.searchUsers.length > 1 ? 's' : ''}
+    </p>
     <ul class="nobullet">
       {#each data.searchUsers as { uid, ...rest }}
         <li>
@@ -49,6 +52,9 @@
   {/if}
   {#if data.searchGroups.length > 0}
     <h2>Groupes</h2>
+    <p class="typo-details results-count">
+      {data.searchGroups.length} résultat{data.searchGroups.length > 1 ? 's' : ''}
+    </p>
     <ul class="nobullet">
       {#each data.searchGroups as { uid, ...rest }}
         <li>
@@ -87,6 +93,13 @@
   h2 {
     margin: 1rem;
     text-align: center;
+    margin-bottom: 0rem;
+  }
+
+  h2 + .results-count {
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: normal;
   }
 
   ul {
