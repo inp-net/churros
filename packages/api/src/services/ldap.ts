@@ -157,6 +157,7 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
     connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
       if (bindError) {
         console.error('LDAP Bind Error:', bindError);
+        reject(bindError);
         // Handle the bind error
       } else {
         // Perform the search after successful bind
