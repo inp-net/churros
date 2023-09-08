@@ -105,9 +105,9 @@
         showCameraSettings = false;
         if (!result || (code !== text && !enteringManualCode)) {
           code = text;
-          if (code === previousDecodedContents && Date.now() - lastScanTimestamp < SCAN_COOLDOWN) 
+          if (code === previousDecodedContents && Date.now() - lastScanTimestamp < SCAN_COOLDOWN)
             return;
-          
+
           previousDecodedContents = code;
           lastScanTimestamp = Date.now();
           await check(code).catch((error) => {

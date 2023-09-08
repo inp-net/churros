@@ -221,9 +221,8 @@
         },
       ],
     });
-    if (opposeRegistration.__typename === 'Error') 
-      return;
-    
+    if (opposeRegistration.__typename === 'Error') return;
+
     if (opposeRegistration.data) {
       const idx = registrations.edges.findIndex((r) => r.node.id === registration.id);
       registrations.edges[idx].node.opposed = true;
