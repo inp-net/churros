@@ -543,7 +543,8 @@ builder.queryField('existsInSchoolLdap', (t) =>
           .normalize('NFD')
           .replace(/[\u0300-\u036F]/g, '')
           .toLowerCase()
-          .replaceAll(' ', '');
+          .replaceAll(' ', '')
+          .replaceAll('-', '');
 
       const schoolEmail = `${transform(user.firstName)}.${transform(user.lastName)}@etu.inp-n7.fr`;
       await log('ldap', 'existance check', { email, schoolEmail }, email);
