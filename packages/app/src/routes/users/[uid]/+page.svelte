@@ -179,6 +179,9 @@
           {/if}
         </div>
       </h1>
+      <p class="username">
+        @{user.uid}
+      </p>
       <p class="major">
         {yearTier(user.graduationYear)}A ({user.graduationYear}) ·
         <abbr title use:tooltip={user.major.name}>{user.major.shortName}</abbr>
@@ -349,6 +352,13 @@
     flex-wrap: wrap;
     column-gap: 2rem;
     align-items: center;
+    margin-bottom: 0;
+  }
+
+  h1 + .username {
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+    font-size: 1.1em;
   }
 
   h1 .actions {
