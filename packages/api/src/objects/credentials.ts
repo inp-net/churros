@@ -171,43 +171,35 @@ builder.mutationField('login', (t) =>
                 user.uid
               );
               if (!ldapUser) {
-                try {
-                  // Try to find them in the school's LDAP
-                  const schoolUser = await getSupannAliasLogin(user.email);
-                  // eslint-disable-next-line max-depth, no-negated-condition
-                  if (!schoolUser) {
-                    await log(
-                      'login/ldap-sync',
-                      'skip',
-                      { why: 'does not exist in school ldap', tried: schoolUser },
-                      user.uid
-                    );
-                  } else {
-                    // Create the LDAP entry
-                    await log('login/ldap-sync', 'start', { user }, user.uid);
-                    const schoolEmail = `${schoolUser.supannAliasLogin}@etu.inp-n7.fr`;
-                    try {
-                      await createLdapUser(
-                        {
-                          ...user,
-                          email: schoolEmail,
-                          otherEmails: [user.email, ...user.otherEmails],
-                        },
-                        password
-                      );
-                      // Update the users's school uid
-                      await prisma.user.update({
-                        where: { uid: user.uid },
-                        data: {
-                          schoolUid: schoolUser.schoolUid,
-                        },
-                      });
-                    } catch (error) {
-                      await log('login/ldap-sync', 'error', { err: error }, user.uid);
-                    }
-                  }
-                } catch (error) {
-                  await log('login/ldap-sync', 'error', { err: error }, user.uid);
+                // Try to find them in the school's LDAP
+                const schoolUser = await getSupannAliasLogin(user.email);
+                // eslint-disable-next-line max-depth, no-negated-condition
+                if (!schoolUser) {
+                  await log(
+                    'login/ldap-sync',
+                    'skip',
+                    { why: 'does not exist in school ldap', tried: schoolUser },
+                    user.uid
+                  );
+                } else {
+                  // Create the LDAP entry
+                  await log('login/ldap-sync', 'start', { user }, user.uid);
+                  const schoolEmail = `${schoolUser.supannAliasLogin}@etu.inp-n7.fr`;
+                  await createLdapUser(
+                    {
+                      ...user,
+                      email: schoolEmail,
+                      otherEmails: [user.email, ...user.otherEmails],
+                    },
+                    password
+                  );
+                  // Update the users's school uid
+                  await prisma.user.update({
+                    where: { uid: user.uid },
+                    data: {
+                      schoolUid: schoolUser.schoolUid,
+                    },
+                  });
                 }
               }
             } catch (error) {
