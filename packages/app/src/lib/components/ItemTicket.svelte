@@ -138,7 +138,11 @@
       {/if}
       <div class="price">
         {#if shotgunning}
-          <ButtonSecondary href="/events/{event.group.uid}/{event.uid}/book/{uid}">
+          <ButtonSecondary
+            help={placesLeft <= 0 ? 'Plus de places :/' : ''}
+            disabled={placesLeft <= 0}
+            href="/events/{event.group.uid}/{event.uid}/book/{uid}"
+          >
             Réserver
             <strong>
               <span class="ticket-price">{price} €</span>

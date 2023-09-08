@@ -30,12 +30,13 @@
   class:success
   class:circle
   class:inside-prose={insideProse}
-  {href}
+  href={disabled ? undefined : href}
   {download}
   {formaction}
   {id}
   {...$$restProps}
-  disabled={loading || disabled}
+  disabled={loading || disabled || undefined}
+  class:muted={loading || disabled}
   on:click
   role="button"
   {tabindex}
@@ -68,9 +69,9 @@
     border-radius: 1000px;
   }
 
-  .button-secondary:disabled {
+  .button-secondary:disabled,
+  .button-secondary[disabled] {
     cursor: not-allowed;
-    opacity: 0.5;
   }
 
   .button-secondary.circle {
@@ -109,7 +110,7 @@
     background: var(--bg);
     border-radius: 50%;
     opacity: 0;
-    transition: opacity 500ms ease;
+    transition: all 500ms ease;
   }
 
   .loading.visible {
