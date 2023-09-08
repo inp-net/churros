@@ -53,6 +53,10 @@
     Service('IPQ', "Le podcast de l'n7", {
       href: 'https://open.spotify.com/show/77KtGDlbY7RH3BSTOsNGbA?si=48a2cbacee7440b3',
     }),
+    Service('Jeux', 'Merci à 7Fault', {
+      href: 'https://7fault.itch.io',
+      logo: `${PUBLIC_STORAGE_URL}groups/${$isDark ? 'dark/' : ''}7fault-n7.png`,
+    }),
     Service('La Frappe', 'Sauve tes partiels', {
       logo: IconHand,
       href: 'https://bde.enseeiht.fr/services/frappe/',
