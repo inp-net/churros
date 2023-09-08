@@ -1,8 +1,11 @@
 /* eslint-disable complexity */
 
-import type { Group, Major, School, User } from '@prisma/client';
+import { PrismaClient, type Group, type Major, type School, type User } from '@prisma/client';
 import ldap from 'ldapjs';
 import crypto from 'node:crypto';
+import { builder } from '../builder.js';
+import { findSchoolUser } from './ldap-school.js';
+import { log } from '../objects/logs.js';
 
 const LDAP_URL = process.env.OLD_LDAP_URL || 'ldap://localhost:389';
 const LDAP_BASE_DN = process.env.LDAP_BASE_DN || 'dc=example,dc=com';
@@ -21,6 +24,8 @@ function connectLdap(): ldap.Client {
 
   return ldapClient;
 }
+
+const prisma = new PrismaClient();
 
 /* interface LdapSchool {
   objectClass: string[];
@@ -351,7 +356,16 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
 
 // create a new user in LDAP
 async function createLdapUser(
-  user: User & {
+  user: {
+    birthday: Date | null;
+    firstName: string;
+    lastName: string;
+    uid: string;
+    schoolUid: string | null;
+    schoolEmail: string | null;
+    email: string;
+    phone: string;
+    graduationYear: number;
     major?: undefined | null | (Major & { ldapSchool?: School | undefined | null });
     godparent?: User | null;
   },
@@ -504,5 +518,71 @@ async function createLdapGroup(group: Group): Promise<void> {
     });
   });
 }
+
+builder.queryField('existsInSchoolLdap', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: {
+      email: t.arg.string(),
+    },
+    authScopes(_, {}, { user }) {
+      return Boolean(user?.admin);
+    },
+    async resolve(_, { email }) {
+      const user = await prisma.user.findFirst({
+        where: {
+          email,
+        },
+        include: { major: true },
+      });
+      await log('ldap', 'existance check fail', { err: 'no user found' }, email);
+      if (!user) return false;
+
+      const transform = (s: string) =>
+        s
+          .normalize('NFD')
+          .replace(/[\u0300-\u036F]/g, '')
+          .toLowerCase()
+          .replaceAll(' ', '');
+
+      const schoolEmail = `${transform(user.firstName)}.${transform(user.lastName)}@etu.inp-n7.fr`;
+      await log('ldap', 'existance check', { email, schoolEmail }, email);
+
+      const schoolUser = await findSchoolUser(schoolEmail);
+
+      if (!schoolUser) {
+        await log('ldap', 'existance check fail', { err: 'no user found in school' }, email);
+        return false;
+      }
+
+      if (schoolUser.graduationYear !== user.graduationYear) {
+        await log(
+          'ldap',
+          'existance check fail',
+          {
+            err: 'promo does not match',
+            schoolUser: schoolUser.graduationYear,
+            user: user.graduationYear,
+          },
+          email
+        );
+        return false;
+      }
+
+      if (schoolUser.major !== user.major.shortName) {
+        await log(
+          'ldap',
+          'existance check fail',
+          { err: 'major does not match', schoolUser: schoolUser.major, user: user.major.shortName },
+          email
+        );
+        return false;
+      }
+
+      await log('ldap', 'exinstance check OK', { schoolUser, user }, email);
+      return true;
+    },
+  })
+);
 
 export { queryLdapUser, createLdapUser, resetLdapUserPassword, createLdapGroup };

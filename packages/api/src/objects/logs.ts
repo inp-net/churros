@@ -15,6 +15,22 @@ export const LogType = builder.prismaNode('LogEntry', {
   }),
 });
 
+export async function log(
+  area: string,
+  action: string,
+  message: Record<string, unknown>,
+  target?: string
+) {
+  await prisma.logEntry.create({
+    data: {
+      area,
+      action,
+      message: JSON.stringify(message),
+      target,
+    },
+  });
+}
+
 builder.queryField('logs', (t) =>
   t.prismaConnection({
     type: LogType,
