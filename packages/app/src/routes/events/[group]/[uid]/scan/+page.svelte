@@ -20,6 +20,10 @@
   import { formatDateTime } from '$lib/dates';
   import { format, isToday } from 'date-fns';
 
+  const SCAN_COOLDOWN = 300; /* ms */
+  let lastScanTimestamp = 0;
+  let previousDecodedContents: undefined | string = undefined;
+
   const VIBRATION_PATTERNS: Record<RegistrationVerificationState, number[]> = {
     [RegistrationVerificationState.Ok]: [100],
     [RegistrationVerificationState.AlreadyVerified]: [50, 25, 50, 25, 50, 25, 50],
@@ -89,6 +93,11 @@
         showCameraSettings = false;
         if (!result || (code !== text && !enteringManualCode)) {
           code = text;
+          if (code === previousDecodedContents && Date.now() - lastScanTimestamp < SCAN_COOLDOWN) 
+            return;
+          
+          previousDecodedContents = code;
+          lastScanTimestamp = Date.now();
           await check(code).catch((error) => {
             console.error(error);
           });
@@ -111,10 +120,6 @@
 
   async function check(decodedContents: string): Promise<typeof result> {
     if (!decodedContents.startsWith('r:')) return undefined;
-
-    // const controllingManualRegistrationCode = manualRegistrationCode === '';
-    // if (controllingManualRegistrationCode)
-    //   manualRegistrationCode = decodedContents.replace(/^r:/, '');
 
     const { verifyRegistration } = await $zeus.mutate({
       verifyRegistration: [
