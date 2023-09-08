@@ -10,7 +10,7 @@
 
 <a class="card-service" {href} class:dashed-border={dashedBorder}>
   {#if typeof logoFile === 'string'}
-    <img class="logo" src="/{logoFile}" alt={name} />
+    <img class="logo" src={logoFile} alt={name} />
   {:else}
     <div class="logo">
       <svelte:component this={logoFile} />

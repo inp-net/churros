@@ -9,6 +9,8 @@
   import { me } from '$lib/session';
   import type { SvelteComponent } from 'svelte';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
+  import { isDark } from '$lib/theme';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
 
   function Service(
     name: string,
@@ -25,13 +27,13 @@
   } {
     return {
       name,
-      logoFile: logo ?? `logos/${name.toLowerCase().replaceAll(' ', '-')}.png`,
+      logoFile: logo ?? `/logos/${name.toLowerCase().replaceAll(' ', '-')}.png`,
       descriptionHtml: description,
       href: href || `/${name.toLowerCase().replaceAll(' ', '-')}`,
     };
   }
 
-  const services = [
+  $: services = [
     Service("Défis d'inté", "Valide tes défis d'inté", {
       href: 'https://defis-inte.inpt.fr',
       logo: IconDefisInte,
@@ -40,8 +42,14 @@
       logo: Carrot,
       href: 'https://lespaniersdelamiss.fr/',
     }),
-    Service('Photos', 'Merci Photo7 ♥', { href: 'https://photo7.inpt.fr' }),
-    Service('TVn7flix', 'Les productions de TVn7', { href: 'https://tvn7flix.fr' }),
+    Service('Photos', 'Merci Photo7 ♥', {
+      href: 'https://photo7.inpt.fr',
+      logo: `${PUBLIC_STORAGE_URL}groups/${$isDark ? 'dark/' : ''}photo-n7.png`,
+    }),
+    Service('TVn7flix', 'Les productions de TVn7', {
+      href: 'https://tvn7flix.fr',
+      logo: `${PUBLIC_STORAGE_URL}groups/${$isDark ? 'dark/' : ''}tvn7-n7.png`,
+    }),
     Service('IPQ', "Le podcast de l'n7", {
       href: 'https://open.spotify.com/show/77KtGDlbY7RH3BSTOsNGbA?si=48a2cbacee7440b3',
     }),
