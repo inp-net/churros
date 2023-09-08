@@ -254,7 +254,9 @@ export const EventType = builder.prismaNode('Event', {
           },
         });
 
-        return eventCapacity(tickets, ticketGroups) - registrations.length;
+        return (
+          eventCapacity(tickets, ticketGroups) - registrations.filter((r) => !r.opposedAt).length
+        );
       },
     }),
     registrationsCounts: t.field({

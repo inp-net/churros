@@ -8,6 +8,13 @@ export const _registrationsQuery = Selector('QueryRegistrationsOfEventConnection
     node: {
       id: true,
       paid: true,
+      opposed: true,
+      opposedAt: true,
+      opposedBy: {
+        uid: true,
+        fullName: true,
+        pictureFile: true,
+      },
       author: {
         uid: true,
         pictureFile: true,

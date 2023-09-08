@@ -1,7 +1,8 @@
 <script lang="ts">
   import IconDownload from '~icons/mdi/download-outline';
-  import IconMarkAsPaid from '~icons/mdi/currency-usd';
-  import IconMarkAsUnpaid from '~icons/mdi/currency-usd-off';
+  import IconCash from '~icons/mdi/currency-usd';
+  import IconCashOff from '~icons/mdi/currency-usd-off';
+  import IconCancel from '~icons/mdi/cancel';
   import type { PageData } from './$types';
   import * as jsonToCsv from 'json-to-csv-in-browser';
   import IconCheck from '~icons/mdi/check';
@@ -22,6 +23,7 @@
   import { afterNavigate } from '$app/navigation';
   import { tooltip } from '$lib/tooltip';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import { me } from '$lib/session';
 
   let compact = false;
   let loadingMore = false;
@@ -159,7 +161,8 @@
       }
 
       case 'state': {
-        const sortingIndex = (a: Registration) => (a.verifiedAt && a.paid ? 0 : a.paid ? 1 : 2);
+        const sortingIndex = (a: Registration) =>
+          a.opposed ? 0 : a.verifiedAt && a.paid ? 1 : a.paid ? 2 : 3;
         return (a, b) => (desc ? -1 : 1) * (sortingIndex(a) - sortingIndex(b));
       }
 
@@ -200,6 +203,32 @@
       default: {
         return (a, b) => a.id.localeCompare(b.id);
       }
+    }
+  }
+
+  async function oppose(registration: Registration) {
+    const { opposeRegistration } = await $zeus.mutate({
+      opposeRegistration: [
+        { id: registration.id },
+        {
+          __typename: true,
+          '...on Error': {
+            message: true,
+          },
+          '...on MutationOpposeRegistrationSuccess': {
+            data: true,
+          },
+        },
+      ],
+    });
+    if (opposeRegistration.__typename === 'Error') 
+      return;
+    
+    if (opposeRegistration.data) {
+      const idx = registrations.edges.findIndex((r) => r.node.id === registration.id);
+      registrations.edges[idx].node.opposed = true;
+      registrations.edges[idx].node.opposedAt = new Date();
+      registrations.edges[idx].node.opposedBy = $me;
     }
   }
 
@@ -307,7 +336,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod, verifiedAt, verifiedBy } } (id)}
+      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod, verifiedAt, verifiedBy, opposed, opposedAt, opposedBy } } (id)}
         {@const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined)}
         {@const code = id.replace(/^r:/, '').toUpperCase()}
         <tr class:selected={rowIsSelected[id]}>
@@ -322,11 +351,30 @@
             {/if}
           </td>
           <td
-            use:tooltip={verifiedAt
-              ? `Scannée le ${formatDateTime(verifiedAt)} par ${verifiedBy?.fullName ?? '?'}`
-              : undefined}
+            class:danger={opposed}
+            class:success={paid && verifiedAt}
+            class:warning={!paid}
+            use:tooltip={opposedAt || verifiedAt
+              ? (opposedAt
+                  ? `Opposée le ${formatDateTime(opposedAt)} par ${opposedBy?.fullName ?? '?'}`
+                  : '') +
+                (verifiedAt ? ', ' : '') +
+                (verifiedAt
+                  ? `Scannée le ${formatDateTime(verifiedAt)} par ${verifiedBy?.fullName ?? '?'}`
+                  : '')
+              : paid
+              ? 'Payée'
+              : 'Non payée'}
           >
-            {verifiedAt && paid ? 'Scannée' : paid ? 'Payée' : 'Non payée'}
+            {#if opposed}
+              <IconCancel />
+            {:else if verifiedAt && paid}
+              <IconCheck />
+            {:else if paid}
+              <IconCash />
+            {:else}
+              <IconCashOff />
+            {/if}
           </td>
           <td
             class="centered"
@@ -387,7 +435,7 @@
               help={'Marquer comme ' + (paid ? 'non payée' : 'payée')}
               on:click={async () => updatePaidStatus(!paid, registration)}
             >
-              {#if paid} <IconMarkAsUnpaid /> {:else} <IconMarkAsPaid /> {/if}
+              {#if paid} <IconCashOff /> {:else} <IconCash /> {/if}
             </ButtonGhost>
             {#if !verifiedAt}
               <ButtonGhost
@@ -441,6 +489,17 @@
                 }}
               >
                 <IconCheck />
+              </ButtonGhost>
+            {/if}
+            {#if !opposed}
+              <ButtonGhost
+                danger
+                help={'Opposer la réservation'}
+                on:click={async () => {
+                  await oppose(registration);
+                }}
+              >
+                <IconCancel />
               </ButtonGhost>
             {/if}
           </td>
@@ -542,6 +601,12 @@
 
   td {
     background: var(--muted-bg);
+  }
+
+  td.danger,
+  td.success {
+    color: var(--text);
+    background: var(--bg);
   }
 
   table:not(.compact) td {

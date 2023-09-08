@@ -3,6 +3,7 @@
   import IconClose from '~icons/mdi/close';
   import IconGear from '~icons/mdi/gear-outline';
   import IconGearCancel from '~icons/mdi/cog-off-outline';
+  import IconCancel from '~icons/mdi/cancel';
   import IconCheck from '~icons/mdi/check';
   import IconRepeatOff from '~icons/mdi/repeat-off';
   import IconNotPaid from '~icons/mdi/credit-card-off-outline';
@@ -29,6 +30,7 @@
     [RegistrationVerificationState.AlreadyVerified]: [50, 25, 50, 25, 50, 25, 50],
     [RegistrationVerificationState.NotFound]: [400],
     [RegistrationVerificationState.NotPaid]: [200, 100, 200],
+    [RegistrationVerificationState.Opposed]: [300, 50, 300, 50, 300],
   };
 
   const STATE_TO_ICON: Record<RegistrationVerificationState, typeof SvelteComponent<any>> = {
@@ -36,6 +38,7 @@
     [RegistrationVerificationState.AlreadyVerified]: IconRepeatOff,
     [RegistrationVerificationState.NotFound]: IconClose,
     [RegistrationVerificationState.NotPaid]: IconNotPaid,
+    [RegistrationVerificationState.Opposed]: IconCancel,
   };
 
   let manualRegistrationCode = '';
@@ -50,6 +53,15 @@
           authorIsBeneficiary: boolean;
           author: { firstName: string; lastName: string };
           paid: boolean;
+          opposed: boolean;
+          opposedAt?: Date | null | undefined;
+          opposedBy?:
+            | {
+                fullName: string;
+                uid: string;
+                pictureFile: string;
+              }
+            | undefined;
           id: string;
           ticket: { id: string; name: string; group?: { name: string } };
           paymentMethod?: PaymentMethod | undefined;
@@ -137,6 +149,13 @@
                 authorIsBeneficiary: true,
                 author: { firstName: true, lastName: true, fullName: true },
                 paid: true,
+                opposed: true,
+                opposedAt: true,
+                opposedBy: {
+                  fullName: true,
+                  uid: true,
+                  pictureFile: true,
+                },
                 id: true,
                 ticket: { id: true, name: true, group: { name: true } },
                 paymentMethod: true,
@@ -255,6 +274,19 @@
                 />
                 {DISPLAY_PAYMENT_METHODS[paymentMethod ?? 'Other']}
               </p>
+            {:else if result.state === RegistrationVerificationState.Opposed}
+              <p>
+                <strong>En opposition</strong>
+              </p>
+              {#if result.registration?.opposedAt && result.registration?.opposedBy}
+                {@const { opposedAt, opposedBy } = result.registration}
+                <p class="typo-details details">
+                  Opposée par <a href="/users/{opposedBy.uid}">{opposedBy.fullName}</a>
+                  {#if isToday(opposedAt)}à {format(opposedAt, 'HH:mm')}{:else}le {formatDateTime(
+                      opposedAt
+                    )}{/if}
+                </p>
+              {/if}
             {:else if result.state === RegistrationVerificationState.NotPaid}
               <p><strong>Non payée</strong></p>
             {:else if result.state === RegistrationVerificationState.AlreadyVerified}
@@ -263,7 +295,7 @@
               </p>
               {#if result.registration?.verifiedAt && result.registration?.verifiedBy}
                 {@const { verifiedAt, verifiedBy } = result.registration}
-                <p class="typo-details">
+                <p class="typo-details details">
                   par <a href="/users/{verifiedBy.uid}">{verifiedBy.fullName}</a>
                   {#if isToday(verifiedAt)}à {format(verifiedAt, 'HH:mm')}{:else}le {formatDateTime(
                       verifiedAt
@@ -416,6 +448,10 @@
   .ticket .name {
     margin-top: -0.4em;
     font-size: 1.5rem;
+  }
+
+  .result .details {
+    font-weight: normal;
   }
 
   .icon {

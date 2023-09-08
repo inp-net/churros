@@ -36,6 +36,7 @@
     beneficiaryUser,
     authorIsBeneficiary,
     paid,
+    opposed,
     author,
     ticket,
     ticket: { links },
@@ -52,7 +53,7 @@
     <BackButton go=".." />
     Ma place
     <div class="payment-status">
-      <BadgePaymentStatus feminin {paid} />
+      <BadgePaymentStatus feminin {paid} {opposed} />
     </div>
   </h1>
 

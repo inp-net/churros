@@ -41,6 +41,13 @@ export const RegistrationType = builder.prismaNode('Registration', {
     verifiedBy: t.relation('verifiedBy', { nullable: true }),
     paymentMethod: t.expose('paymentMethod', { type: PaymentMethodEnum, nullable: true }),
     paid: t.exposeBoolean('paid'),
+    opposedAt: t.expose('opposedAt', { type: DateTimeScalar, nullable: true }),
+    opposedBy: t.relation('opposedBy', { nullable: true }),
+    opposed: t.boolean({
+      resolve({ opposedAt, opposedById }) {
+        return Boolean(opposedAt && opposedById);
+      },
+    }),
     ticket: t.relation('ticket'),
     author: t.relation('author'),
     authorIsBeneficiary: t.boolean({
@@ -269,6 +276,7 @@ enum RegistrationVerificationState {
   NotPaid,
   AlreadyVerified,
   NotFound,
+  Opposed,
 }
 
 const RegistrationVerificationStateType = builder.enumType(RegistrationVerificationState, {
@@ -348,6 +356,15 @@ builder.mutationField('verifyRegistration', (t) =>
         await log('Scan failed: registration not found');
         return {
           state: RegistrationVerificationState.NotFound,
+        };
+      }
+
+      // we check opposedAt instead of opposedBy in case the verifier deleted their account after verifying
+      if (registration.opposedAt) {
+        await log('Scan failed: registration opposed', registration.id);
+        return {
+          state: RegistrationVerificationState.Opposed,
+          registration,
         };
       }
 
@@ -748,6 +765,48 @@ builder.mutationField('paidRegistration', (t) =>
           beneficiary: beneficiary ?? '',
         },
       });
+    },
+  })
+);
+
+builder.mutationField('opposeRegistration', (t) =>
+  t.field({
+    type: 'Boolean',
+    errors: {},
+    args: {
+      id: t.arg.id(),
+    },
+    async authScopes(_, { id }, { user }) {
+      if (!user) return false;
+      if (user.admin) return true;
+      const registration = await prisma.registration.findUnique({
+        where: { id },
+        include: {
+          ticket: {
+            include: {
+              event: {
+                include: {
+                  managers: { include: { user: true } },
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!registration) return false;
+      if (!eventManagedByUser(registration.ticket.event, user, { canVerifyRegistrations: true }))
+        return false;
+      return true;
+    },
+    async resolve(_, { id }, { user }) {
+      await prisma.registration.update({
+        where: { id },
+        data: {
+          opposedAt: new Date(),
+          opposedBy: { connect: { id: user?.id } },
+        },
+      });
+      return true;
     },
   })
 );
