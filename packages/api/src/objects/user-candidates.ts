@@ -159,7 +159,7 @@ builder.mutationField('completeRegistration', (t) =>
       );
       if (user?.major && user.major.ldapSchool) {
         try {
-          await createLdapUser(user, password);
+          await createLdapUser({ ...user, otherEmails: [] }, password);
         } catch (error) {
           console.error(error);
         }
