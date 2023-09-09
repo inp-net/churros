@@ -59,6 +59,11 @@ builder.mutationField('login', (t) =>
               type: CredentialPrismaType.Password,
             },
           },
+          major: {
+            include: {
+              ldapSchool: true,
+            },
+          },
           contributions: {
             include: {
               option: {
