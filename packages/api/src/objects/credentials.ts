@@ -203,6 +203,7 @@ builder.mutationField('login', (t) =>
                   await createLdapUser(
                     {
                       ...user,
+                      schoolUid: schoolUser.schoolUid,
                       contributesToAEn7: user.contributions.some(({ option: { paysFor } }) =>
                         paysFor.some(({ name }) => name === 'AEn7')
                       ),
