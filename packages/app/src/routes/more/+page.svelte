@@ -45,15 +45,15 @@
     Service('Photos', 'Merci Photo7 ♥', {
       href: 'https://photo7.inpt.fr',
       logo: groupLogoSrc($isDark, {
-        pictureFile: '7fault-n7.png',
-        pictureFileDark: 'dark/7fault-n7.png',
+        pictureFile: 'groups/photo-n7.png',
+        pictureFileDark: 'groups/dark/photo-n7.png',
       }),
     }),
     Service('TVn7flix', 'Les productions de TVn7', {
       href: 'https://tvn7flix.fr',
       logo: groupLogoSrc($isDark, {
-        pictureFileDark: 'dark/tvn7-n7.png',
-        pictureFile: 'tvn7-n7.png',
+        pictureFileDark: 'groups/dark/tvn7-n7.png',
+        pictureFile: 'groups/tvn7-n7.png',
       }),
     }),
     Service('IPQ', "Le podcast de l'n7", {
@@ -62,8 +62,8 @@
     Service('Jeux', 'Merci à 7Fault', {
       href: 'https://7fault.itch.io',
       logo: groupLogoSrc($isDark, {
-        pictureFile: '7fault-n7.png',
-        pictureFileDark: 'dark/7fault-n7.png',
+        pictureFile: 'groups/7fault-n7.png',
+        pictureFileDark: 'groups/dark/7fault-n7.png',
       }),
     }),
     Service('La Frappe', 'Sauve tes partiels', {
