@@ -158,7 +158,7 @@
             new Fuse(
               data.schoolGroups.flatMap(({ majors }) => majors),
               {
-                keys: ['name'],
+                keys: ['name', 'shortName'],
                 threshold: 0.3,
               }
             )
@@ -168,10 +168,10 @@
           object={data.schoolGroups
             .flatMap(({ majors }) => majors)
             .find((major) => major.id === majorId)}
-          labelKey="name"
+          labelKey="shortName"
         >
           <svelte:fragment slot="item" let:item>
-            {asmajor(item).name} · {asmajor(item)
+            {asmajor(item).shortName} · {asmajor(item)
               .schools.map(({ name }) => name)
               .join(', ')}
           </svelte:fragment>

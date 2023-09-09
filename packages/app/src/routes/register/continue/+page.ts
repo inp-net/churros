@@ -27,7 +27,10 @@ export const load: PageLoad = async ({ fetch, url }) => {
           apprentice: true,
         },
       ],
-      schoolGroups: { names: true, majors: { id: true, name: true, schools: { name: true } } },
+      schoolGroups: {
+        names: true,
+        majors: { id: true, name: true, shortName: true, schools: { name: true } },
+      },
     },
     { fetch }
   );
