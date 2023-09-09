@@ -49,7 +49,7 @@
         pictureFileDark: 'groups/dark/photo-n7.png',
       }),
     }),
-    Service('TVn7flix', 'Les productions de TVn7', {
+    Service('TVn7FLiX', 'Les productions de TVn7', {
       href: 'https://tvn7flix.fr',
       logo: groupLogoSrc($isDark, {
         pictureFileDark: 'groups/dark/tvn7-n7.png',
