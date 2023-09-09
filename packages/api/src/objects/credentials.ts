@@ -204,6 +204,7 @@ builder.mutationField('login', (t) =>
                     {
                       ...user,
                       schoolUid: schoolUser.schoolUid,
+                      schoolEmail,
                       contributesToAEn7: user.contributions.some(({ option: { paysFor } }) =>
                         paysFor.some(({ name }) => name === 'AEn7')
                       ),
