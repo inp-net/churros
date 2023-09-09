@@ -418,7 +418,7 @@ async function createLdapUser(
   console.info(`Attributes ${JSON.stringify(userAttributes, undefined, 2)}} for ${userDn}`);
   const userAttributesStringable = Object.fromEntries(
     Object.entries(userAttributes).filter(
-      ([_, v]) => v !== null && v !== '' && (Array.isArray(v) ? v.length <= 0 : true)
+      ([_, v]) => v !== null && v !== '' && (Array.isArray(v) ? v.length > 0 : true)
     )
   ) as Partial<typeof userAttributes>;
 
