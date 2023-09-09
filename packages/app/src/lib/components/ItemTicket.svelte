@@ -135,8 +135,8 @@
       <div class="price">
         {#if shotgunning}
           <ButtonSecondary
-            help={placesLeft <= 0 ? 'Plus de places :/' : ''}
-            disabled={placesLeft <= 0}
+            help={placesLeft !== -1 && placesLeft <= 0 ? 'Plus de places :/' : ''}
+            disabled={placesLeft !== -1 && placesLeft <= 0}
             href="/events/{event.group.uid}/{event.uid}/book/{uid}"
           >
             Réserver

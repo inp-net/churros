@@ -71,8 +71,8 @@
   <header>
     <div class="properties">
       <span class="name">{ticket.name}</span>
-      <span class="capacity">{displayCapacity}</span>
       <span class="prix">{ticket.price}€</span>
+      <span class="capacity">{displayCapacity}</span>
     </div>
     <div class="actions">
       <ButtonSecondary

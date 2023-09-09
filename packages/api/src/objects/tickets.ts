@@ -18,24 +18,29 @@ export const placesLeft = (ticket: {
     tickets: Array<{ registrations: Array<{ paid: boolean; opposedAt: Date | null }> }>;
   };
 }) => {
-  if (ticket.capacity === 0) return Number.POSITIVE_INFINITY;
+  const handleUnlimited = (capacity: number) =>
+    capacity === -1 ? Number.POSITIVE_INFINITY : capacity;
   let placesLeftInGroup = Number.POSITIVE_INFINITY;
   if (ticket.group?.capacity) {
-    placesLeftInGroup =
-      ticket.group.capacity -
-      ticket.group.tickets.reduce(
-        (sum, { registrations }) =>
-          sum +
-          registrations.filter(({ opposedAt /* , paid */ }) => !opposedAt /* && paid */).length,
-        0
-      );
+    placesLeftInGroup = Math.max(
+      0,
+      handleUnlimited(ticket.group.capacity) -
+        ticket.group.tickets.reduce(
+          (sum, { registrations }) =>
+            sum +
+            registrations.filter(({ opposedAt /* , paid */ }) => !opposedAt /* && paid */).length,
+          0
+        )
+    );
   }
 
   let placesLeftInTicket = Number.POSITIVE_INFINITY;
   if (ticket.capacity) {
-    placesLeftInTicket =
-      ticket.capacity -
-      ticket.registrations.filter(({ opposedAt /* , paid */ }) => !opposedAt /* && paid */).length;
+    placesLeftInTicket = Math.max(
+      0,
+      handleUnlimited(ticket.capacity) -
+        ticket.registrations.filter(({ opposedAt /* , paid */ }) => !opposedAt /* && paid */).length
+    );
   }
 
   return Math.min(placesLeftInGroup, placesLeftInTicket);
@@ -108,6 +113,7 @@ export const TicketType = builder.prismaNode('Ticket', {
         if (managers.some(({ userId }) => user?.id === userId)) return -1;
         const registrationsOfUser = await prisma.registration.findMany({
           where: {
+            ticket: { event: { id: eventId } },
             author: { uid: user?.uid },
             beneficiary: { not: '' },
           },
@@ -156,6 +162,7 @@ export const TicketInput = builder.inputType('TicketInput', {
     openToApprentices: t.boolean({ required: false }),
     id: t.id({ required: false }),
     autojoinGroups: t.field({ type: ['String'] }),
+    groupName: t.string({ required: false }),
   }),
 });
 
@@ -392,120 +399,6 @@ builder.queryField('ticketsOfEvent', (t) =>
   })
 );
 
-builder.mutationField('upsertTicket', (t) =>
-  t.prismaField({
-    type: TicketType,
-    args: {
-      id: t.arg.id({ required: false }),
-      eventId: t.arg.id(),
-      ticketGroupId: t.arg.id({ required: false }),
-      name: t.arg.string(),
-      description: t.arg.string(),
-      opensAt: t.arg({ type: DateTimeScalar, required: false }),
-      closesAt: t.arg({ type: DateTimeScalar, required: false }),
-      price: t.arg.float(),
-      capacity: t.arg.int(),
-      links: t.arg({ type: [LinkInput] }),
-      allowedPaymentMethods: t.arg({ type: [PaymentMethodEnum] }),
-      openToPromotions: t.arg({ type: ['Int'] }),
-      openToAlumni: t.arg.boolean({ required: false }),
-      openToExternal: t.arg.boolean({ required: false }),
-      openToSchools: t.arg({ type: ['String'] }),
-      openToGroups: t.arg({ type: ['String'] }),
-      openToMajors: t.arg({ type: ['String'] }),
-      openToApprentices: t.arg.boolean({ required: false }),
-      openToContributors: t.arg.boolean({ required: false }),
-      godsonLimit: t.arg.int(),
-      onlyManagersCanProvide: t.arg.boolean(),
-      autojoinGroups: t.arg({ type: ['String'] }),
-    },
-    async authScopes(_, { eventId, id }, { user }) {
-      const creating = !id;
-      const event = await prisma.event.findUnique({
-        where: { id: eventId },
-        include: { managers: { include: { user: true } } },
-      });
-      if (creating) {
-        if (!event) return false;
-        return eventManagedByUser(event, user, { canEdit: true });
-      }
-
-      return Boolean(
-        user?.managedEvents.some(({ event, canEdit }) => event.id === eventId && canEdit)
-      );
-    },
-    async resolve(
-      _,
-      {},
-      {
-        id,
-        eventId,
-        ticketGroupId,
-        name,
-        description,
-        opensAt,
-        closesAt,
-        price,
-        capacity,
-        links,
-        allowedPaymentMethods,
-        openToPromotions,
-        openToAlumni,
-        openToExternal,
-        openToSchools,
-        openToMajors,
-        openToContributors,
-        openToApprentices,
-        godsonLimit,
-        onlyManagersCanProvide,
-        autojoinGroups,
-      }
-    ) {
-      const upsertData = {
-        uid: await createUid(name),
-        event: { connect: { id: eventId } },
-        groupId: ticketGroupId,
-        name,
-        description,
-        opensAt,
-        closesAt,
-        price,
-        capacity,
-        allowedPaymentMethods: { set: allowedPaymentMethods },
-        openToPromotions: { set: openToPromotions },
-        openToAlumni,
-        openToExternal,
-        godsonLimit,
-        onlyManagersCanProvide,
-        openToContributors,
-        openToApprentices,
-      };
-      return prisma.ticket.upsert({
-        where: { id: id ?? undefined },
-        create: {
-          ...upsertData,
-          links: { create: links },
-          openToSchools: { connect: openToSchools.map((id) => ({ id })) },
-          openToMajors: { connect: openToMajors.map((id) => ({ id })) },
-          autojoinGroups: { connect: autojoinGroups.map((uid) => ({ uid })) },
-        },
-        update: {
-          ...upsertData,
-          openToSchools: { set: openToSchools.map((id) => ({ id })) },
-          openToMajors: { set: openToMajors.map((id) => ({ id })) },
-          autojoinGroups: { set: autojoinGroups.map((uid) => ({ uid })) },
-          links: {
-            deleteMany: {},
-            createMany: {
-              data: links,
-            },
-          },
-        },
-      });
-    },
-  })
-);
-
 builder.mutationField('deleteTicket', (t) =>
   t.field({
     type: 'Boolean',
@@ -537,12 +430,26 @@ builder.mutationField('deleteTicket', (t) =>
   })
 );
 
-export async function createUid(name: string) {
-  const base = slug(name);
+export async function createUid({
+  name,
+  eventId,
+  ticketGroupId,
+  ticketGroupName,
+}: {
+  name: string;
+  eventId: string;
+  ticketGroupId: null | undefined | string;
+  ticketGroupName: null | undefined | string;
+}) {
+  const base = ticketGroupName ? `${slug(ticketGroupName)}--${slug(name)}` : slug(name);
   const n = await dichotomid(
     async (n) =>
       !(await prisma.ticket.findFirst({
-        where: { name: `${base}${n > 1 ? `-${n}` : ''}` },
+        where: {
+          eventId,
+          ticketGroupId,
+          name: `${base}${n > 1 ? `-${n}` : ''}`,
+        },
       }))
   );
   return `${base}${n > 1 ? `-${n}` : ''}`;

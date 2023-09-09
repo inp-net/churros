@@ -254,9 +254,11 @@ export const EventType = builder.prismaNode('Event', {
           },
         });
 
-        return (
+        const placesLeft = Math.max(
+          0,
           eventCapacity(tickets, ticketGroups) - registrations.filter((r) => !r.opposedAt).length
         );
+        return placesLeft === Number.POSITIVE_INFINITY ? -1 : placesLeft;
       },
     }),
     registrationsCounts: t.field({
@@ -492,223 +494,197 @@ builder.mutationField('upsertEvent', (t) =>
       const shotgunChanged = !id;
 
       const connectFromListOfUids = (uids: string[]) => uids.map((uid) => ({ uid }));
-
       const connectFromListOfIds = (ids: string[]) => ids.map((id) => ({ id }));
-      // First, delete all the tickets and ticket groups that are not in the new list
 
-      if (id) {
-        await prisma.ticketGroup.deleteMany({
-          where: {
-            eventId: id,
-            id: {
-              notIn: ticketGroups.map(({ id }) => id ?? ''),
-            },
-          },
-        });
+      const managersWithUserId = await Promise.all(
+        managers.map(async (manager) => ({
+          ...manager,
+          userId: await prisma.user
+            .findUnique({ where: { uid: manager.userUid } })
+            .then((user) => user?.id ?? ''),
+        }))
+      );
 
-        await prisma.ticket.deleteMany({
-          where: {
-            eventId: id,
-            id: {
-              notIn: tickets.map(({ id }) => id ?? ''),
-            },
-          },
-        });
-      }
+      const oldEvent = id
+        ? await prisma.event.findUnique({ where: { id }, include: { managers: true } })
+        : undefined;
 
-      const group = await prisma.group.findUniqueOrThrow({
-        where: { uid: groupUid },
-      });
+      if (id && !oldEvent) throw new Error(`Event ${id} does not exist`);
 
-      // First, create or update the event without any tickets
-      const upsertData = {
-        group: {
-          connect: {
-            uid: groupUid,
-          },
-        },
-        author: id
-          ? undefined
-          : {
-              connect: {
-                id: user!.id,
-              },
-            },
-        description,
-        contactMail,
-        location,
-        title,
-        visibility,
-        startsAt,
-        endsAt,
-        beneficiary: lydiaAccountId
-          ? {
-              connect: {
-                id: lydiaAccountId,
-              },
-            }
-          : undefined,
-      };
+      const group = await prisma.group.findUnique({ where: { uid: groupUid } });
+      if (!group) throw new Error(`Group ${groupUid} does not exist`);
+
+      // 1. Update regular event information
       const event = await prisma.event.upsert({
         ...query,
         where: { id: id ?? '' },
         create: {
-          ...upsertData,
           uid: await createUid({ title, groupId: group.id }),
+          description,
+          group: { connect: { uid: groupUid } },
+          contactMail,
           links: { create: links },
+          beneficiary: lydiaAccountId ? { connect: { id: lydiaAccountId } } : undefined,
+          location,
+          title,
+          visibility,
+          startsAt,
+          endsAt,
           managers: {
-            create: managers.map((m) => ({
-              user: { connect: { uid: m.userUid } },
-              canEdit: m.canEdit,
-              canEditPermissions: m.canEditPermissions,
-              canVerifyRegistrations: m.canVerifyRegistrations,
+            create: managers.map((manager) => ({
+              user: { connect: { uid: manager.userUid } },
+              canEdit: manager.canEdit,
+              canEditPermissions: manager.canEditPermissions,
+              canVerifyRegistrations: manager.canVerifyRegistrations,
             })),
           },
         },
         update: {
-          ...upsertData,
-          links: {
-            deleteMany: {},
-            createMany: {
-              data: links,
-            },
-          },
+          description,
+          contactMail,
+          links: { create: links },
+          beneficiary: lydiaAccountId ? { connect: { id: lydiaAccountId } } : { disconnect: true },
+          location,
+          title,
+          visibility,
+          startsAt,
+          endsAt,
           managers:
-            user?.admin || user?.managedEvents.find((m) => m.event.id === id)?.canEditPermissions
+            user?.admin ||
+            oldEvent!.managers.some((m) => m.userId === user?.id && m.canEditPermissions)
               ? {
-                  deleteMany: {},
-                  create: managers.map((m) => ({
-                    user: { connect: { uid: m.userUid } },
-                    canEdit: m.canEdit,
-                    canEditPermissions: m.canEditPermissions,
-                    canVerifyRegistrations: m.canVerifyRegistrations,
-                  })),
+                  deleteMany: { userId: { notIn: managersWithUserId.map((m) => m.userId) } },
+                  upsert: managersWithUserId.map(
+                    ({
+                      userUid: uid,
+                      userId,
+                      canEdit,
+                      canEditPermissions,
+                      canVerifyRegistrations,
+                    }) => ({
+                      where: { eventId_userId: { eventId: id!, userId } },
+                      create: {
+                        user: { connect: { uid } },
+                        canEdit,
+                        canEditPermissions,
+                        canVerifyRegistrations,
+                      },
+                      update: {
+                        canEdit,
+                        canEditPermissions,
+                        canVerifyRegistrations,
+                      },
+                    })
+                  ),
                 }
-              : {},
+              : undefined,
         },
       });
-      // Update the existing tickets
-      await Promise.all(
-        tickets
-          .filter((t) => Boolean(t.id))
-          .map(async (ticket) => {
-            const ticketUpdated = await prisma.ticket.update({
-              where: { id: ticket.id! },
-              data: {
-                ...ticket,
-                id: ticket.id!,
-                allowedPaymentMethods: {
-                  set: ticket.allowedPaymentMethods,
-                },
-                links: {
-                  deleteMany: {},
-                  createMany: {
-                    data: ticket.links,
-                  },
-                },
-                openToGroups: {
-                  set: connectFromListOfUids(ticket.openToGroups),
-                },
-                openToSchools: {
-                  set: connectFromListOfUids(ticket.openToSchools),
-                },
-                openToMajors: {
-                  set: connectFromListOfIds(ticket.openToMajors),
-                },
-                autojoinGroups: {
-                  set: connectFromListOfUids(ticket.autojoinGroups),
-                },
-              },
-            });
-            return ticketUpdated;
-          })
-      );
 
-      // Create the new tickets
-      for (const [i, ticket] of Object.entries(tickets.filter((t) => !t.id))) {
-        const newTicket = await prisma.ticket.create({
-          data: {
-            ...ticket,
-            links: {
-              create: ticket.links,
-            },
+      // 2. Delete tickets that are not in the list
+      await prisma.ticket.deleteMany({
+        where: {
+          event: { id: event.id },
+          id: {
+            notIn: tickets.map(({ id }) => id).filter(Boolean) as string[],
+          },
+        },
+      });
+
+      // 3. Delete ticket groups that are not in the list
+      await prisma.ticketGroup.deleteMany({
+        where: {
+          event: { id: event.id },
+          id: {
+            notIn: ticketGroups.map(({ id }) => id).filter(Boolean) as string[],
+          },
+        },
+      });
+
+      // 4. Upsert ticket groups, without setting tickets yet
+      for (const ticketGroup of ticketGroups) {
+        const newTicketGroup = await prisma.ticketGroup.upsert({
+          where: { id: ticketGroup.id ?? '' },
+          create: {
+            ...ticketGroup,
             id: undefined,
+            tickets: undefined,
+            event: { connect: { id: event.id } },
+          },
+          update: {
+            ...ticketGroup,
+            id: undefined,
+            tickets: undefined,
+          },
+        });
+        ticketGroup.id = newTicketGroup.id;
+      }
+
+      // 5. Upsert tickets, setting their group
+      for (const ticket of tickets) {
+        const ticketLinksWithId = await Promise.all(
+          ticket.links.map(async (link) => ({
+            ...link,
+            // Can't do a findUnique on name_userId_studentAssociationId_..., see https://github.com/prisma/prisma/issues/3197
+            id: await prisma.link
+              .findFirst({
+                where: {
+                  /* eslint-disable unicorn/no-null */
+                  articleId: null,
+                  eventId: event.id,
+                  groupId: null,
+                  name: link.name,
+                  notificationId: null,
+                  studentAssociationId: null,
+                  /* eslint-enable unicorn/no-null */
+                },
+              })
+              .then((link) => link?.id ?? ''),
+          }))
+        );
+        const ticketGroupId = ticket.groupName
+          ? ticketGroups.find((tg) => tg.name === ticket.groupName)!.id
+          : undefined;
+        delete ticket.groupName;
+        await prisma.ticket.upsert({
+          where: { id: ticket.id ?? '' },
+          create: {
+            ...ticket,
+            uid: await createTicketUid({
+              ...ticket,
+              eventId: event.id,
+              ticketGroupId,
+              ticketGroupName: ticket.groupName,
+            }),
+            id: undefined,
+            group: ticketGroupId ? { connect: { id: ticketGroupId } } : undefined,
+            event: { connect: { id: event.id } },
+            links: { create: ticket.links },
+            // connections
             openToGroups: { connect: connectFromListOfUids(ticket.openToGroups) },
             openToSchools: { connect: connectFromListOfUids(ticket.openToSchools) },
             openToMajors: { connect: connectFromListOfIds(ticket.openToMajors) },
             autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
-            eventId: event.id,
-            uid: await createTicketUid(ticket.name),
-            allowedPaymentMethods: {
-              set: ticket.allowedPaymentMethods,
-            },
           },
-        });
-
-        tickets[Number.parseInt(i, 10)] = { ...ticket, id: newTicket.id };
-      }
-
-      // Create the group's new tickets
-      for (const [i, ticketGroup] of Object.entries(ticketGroups)) {
-        for (const [j, ticket] of Object.entries(ticketGroup.tickets.filter((t) => !t.id))) {
-          const newTicket = await prisma.ticket.create({
-            data: {
-              ...ticket,
-              links: {
-                create: ticket.links,
-              },
-              id: undefined,
-              openToGroups: { connect: connectFromListOfUids(ticket.openToGroups) },
-              openToSchools: { connect: connectFromListOfUids(ticket.openToSchools) },
-              openToMajors: { connect: connectFromListOfIds(ticket.openToMajors) },
-              autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
-              eventId: event.id,
-              uid: await createTicketUid(ticket.name),
-              allowedPaymentMethods: {
-                set: ticket.allowedPaymentMethods,
-              },
-            },
-          });
-
-          ticketGroups[Number.parseInt(i, 10)]!.tickets[Number.parseInt(j, 10)] = {
+          update: {
             ...ticket,
-            id: newTicket.id,
-          };
-        }
-      }
-
-      // Update the existing ticket groups
-      await Promise.all(
-        ticketGroups
-          .filter((t) => Boolean(t.id))
-          .map(async (ticketGroup) => {
-            const ticketGroupUptaded = await prisma.ticketGroup.update({
-              where: { id: ticketGroup.id! },
-              data: {
-                capacity: ticketGroup.capacity,
-                name: ticketGroup.name,
-                tickets: {
-                  set: ticketGroup.tickets.map(({ id }) => ({ id: id! })),
-                },
-              },
-            });
-            return ticketGroupUptaded;
-          })
-      );
-
-      // Create the new ticket groups
-      for (const [i, ticketGroup] of Object.entries(ticketGroups.filter((t) => !t.id))) {
-        const newTicketGroup = await prisma.ticketGroup.create({
-          data: {
-            ...ticketGroup,
             id: undefined,
-            eventId: event.id,
-            tickets: {
-              connect: ticketGroup.tickets.map(({ id }) => ({ id: id! })),
+            group: ticketGroupId ? { connect: { id: ticketGroupId } } : { disconnect: true },
+            links: {
+              deleteMany: { name: { notIn: ticket.links.map(({ name }) => name) } },
+              upsert: ticket.links.map((link) => ({
+                where: { id: ticketLinksWithId.find(({ name }) => name === link.name)!.id },
+                create: link,
+                update: link,
+              })),
             },
+            // connections
+            openToGroups: { set: connectFromListOfUids(ticket.openToGroups) },
+            openToSchools: { set: connectFromListOfUids(ticket.openToSchools) },
+            openToMajors: { set: connectFromListOfIds(ticket.openToMajors) },
+            autojoinGroups: { set: connectFromListOfUids(ticket.autojoinGroups) },
           },
         });
-        ticketGroups[Number.parseInt(i, 10)] = { ...ticketGroup, id: newTicketGroup.id };
       }
 
       const result = await prisma.event.findUniqueOrThrow({

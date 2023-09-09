@@ -45,6 +45,9 @@
     return id;
   }
 
+  // also includes tickets that are in ticket groups
+  $: allTickets = [...event.tickets, ...event.ticketGroups.flatMap((tg) => tg.tickets)];
+
   function ticketIsInGroup(ticket: { id: string }): boolean {
     return event.ticketGroups.flatMap((g) => g.tickets.map((t) => t.id)).includes(ticket.id);
   }
@@ -63,23 +66,18 @@
           startsAt: event.startsAt,
           ticketGroups: event.ticketGroups.map((tg) => ({
             ...tg,
+            tickets: undefined,
             id: eraseFakeIds(tg.id),
-            tickets: tg.tickets.map((t) => ({
-              ...t,
-              id: eraseFakeIds(t.id),
-              openToGroups: t.openToGroups.map(({ uid }) => uid),
-              openToSchools: t.openToSchools.map(({ uid }) => uid),
-              openToMajors: t.openToMajors.map(({ id }) => id),
-              autojoinGroups: t.autojoinGroups.map(({ uid }) => uid),
-            })),
           })),
-          tickets: event.tickets.map((t) => ({
+          tickets: allTickets.map((t) => ({
             ...t,
             id: eraseFakeIds(t.id),
             openToGroups: t.openToGroups.map(({ uid }) => uid),
             openToSchools: t.openToSchools.map(({ uid }) => uid),
             openToMajors: t.openToMajors.map(({ id }) => id),
             autojoinGroups: t.autojoinGroups.map(({ uid }) => uid),
+            groupName: event.ticketGroups.find((tg) => tg.tickets.map((t) => t.id).includes(t.id))
+              ?.name,
           })),
           title: event.title,
           visibility: event.visibility,
@@ -645,6 +643,9 @@
   }
 
   .ticket-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     margin-bottom: 2rem;
   }
 

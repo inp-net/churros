@@ -1,7 +1,6 @@
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { eventManagedByUser } from './events.js';
-import { TicketInput } from './tickets.js';
 
 export const TicketGroupType = builder.prismaNode('TicketGroup', {
   id: { field: 'id' },
@@ -19,7 +18,6 @@ export const TicketGroupInput = builder.inputType('TicketGroupInput', {
     id: t.id({ required: false }),
     name: t.string(),
     capacity: t.int({ validate: { min: 0 } }),
-    tickets: t.field({ type: [TicketInput] }),
   }),
 });
 
