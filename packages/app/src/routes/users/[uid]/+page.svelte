@@ -298,17 +298,24 @@
     </section>
   {/if}
 
-  <section class="groups">
-    <h2>Groupes</h2>
+  {#if user.groups.length}
+    <section class="groups">
+      <h2>{user.groups.length === 1 ? 'Groupe' : 'Groupes'}</h2>
+      <CarouselGroups
+        groups={user.groups.map(({ group, title, ...roles }) => ({
+          ...group,
 
-    <CarouselGroups
-      groups={user.groups.map(({ group, title, ...roles }) => ({
-        ...group,
-
-        role: `${rolesBadge(roles)} ${title}`,
-      }))}
-    />
-  </section>
+          role: `${rolesBadge(roles)} ${title}`,
+        }))}
+      />
+    </section>
+  {:else if $me?.uid === user.uid}
+    <section class="groups">
+      <h2>Groupes</h2>
+      <p class="typo-details">Tu n'es dans aucun groupe... 😢</p>
+      <ButtonSecondary href="/groups">Découvre les clubs de l'n7 !</ButtonSecondary>
+    </section>
+  {/if}
 
   {#if data.user.familyTree.users.length >= 2}
     <section class="family">
@@ -473,6 +480,9 @@
     align-items: center;
   }
 
+  .groups .typo-details {
+    margin-bottom: 1rem;
+  }
   ul.options {
     display: flex;
     flex-wrap: wrap;
