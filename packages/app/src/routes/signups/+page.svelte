@@ -49,7 +49,7 @@
     <li>
       <strong>{fullName}</strong>
       <span
-        >{email} · <abbr title use:tooltip={major.name}>{major.shortName}</abbr> · {graduationYear}</span
+        >{email} · <abbr title="" use:tooltip={major.name}>{major.shortName}</abbr> · {graduationYear}</span
       >
       <div class="actions">
         <ButtonSecondary icon={IconEditPen2Line} href="./edit/{encodeURIComponent(email)}"

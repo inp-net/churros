@@ -184,7 +184,7 @@
       </p>
       <p class="major">
         {yearTier(user.graduationYear)}A ({user.graduationYear}) ·
-        <abbr title use:tooltip={user.major.name}>{user.major.shortName}</abbr>
+        <abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr>
         · {user.major.schools.map(({ name }) => name).join(', ')}
         {user.apprentice ? 'FISA' : ''}
       </p>
