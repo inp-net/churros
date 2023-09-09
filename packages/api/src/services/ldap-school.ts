@@ -151,7 +151,10 @@ export const findSchoolUser = async (
     });
   });
 
-  if (!ldapObject) throw new Error(`Utilisateur introuvable dans le domaine ${emailDomain}.`);
+  if (!ldapObject) {
+    console.error(`Utilisateur introuvable dans le domaine ${emailDomain}.`);
+    return undefined;
+  }
 
   const user = Object.fromEntries(
     Object.keys(attributesMap).map((key) => {
