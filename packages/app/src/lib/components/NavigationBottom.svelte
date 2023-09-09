@@ -142,7 +142,7 @@
       </a>
     {/if}
 
-    <a href="/frappe/upload">
+    <a href="https://www.bde.enseeiht.fr/services/frappe/documents/add">
       <IconDocument />
       <span>Frappe</span>
     </a>
