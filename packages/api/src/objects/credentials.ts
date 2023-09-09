@@ -9,7 +9,7 @@ import { authenticate as ldapAuthenticate } from 'ldap-authentication';
 import { GraphQLError } from 'graphql';
 import bunyan from 'bunyan';
 import { createLdapUser, queryLdapUser } from '../services/ldap.js';
-import { getSupannAliasLogin } from '../services/ldap-school.js';
+import { findSchoolUser } from '../services/ldap-school.js';
 import { log } from './logs.js';
 
 export const CredentialEnumType = builder.enumType(CredentialPrismaType, {
@@ -187,7 +187,13 @@ builder.mutationField('login', (t) =>
                 );
               } else {
                 // Try to find them in the school's LDAP
-                const schoolUser = await getSupannAliasLogin(user.email);
+                const schoolUser = await findSchoolUser({
+                  firstName: user.firstName,
+                  lastName: user.lastName,
+                  graduationYear: user.graduationYear,
+                  major: user.major,
+                  schoolServer: 'inp',
+                });
                 // eslint-disable-next-line max-depth, no-negated-condition
                 if (!schoolUser) {
                   await log(
@@ -199,17 +205,14 @@ builder.mutationField('login', (t) =>
                 } else {
                   // Create the LDAP entry
                   await log('login/ldap-sync', 'start', { user }, user.uid);
-                  const schoolEmail = `${schoolUser.supannAliasLogin}@etu.inp-n7.fr`;
                   await createLdapUser(
                     {
                       ...user,
                       schoolUid: schoolUser.schoolUid,
-                      schoolEmail,
+                      schoolEmail: schoolUser.schoolEmail,
                       contributesToAEn7: user.contributions.some(({ option: { paysFor } }) =>
                         paysFor.some(({ name }) => name === 'AEn7')
                       ),
-                      email: schoolEmail,
-                      otherEmails: [user.email, ...user.otherEmails],
                     },
                     password
                   );

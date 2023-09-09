@@ -3,12 +3,8 @@ import ldap from 'ldapjs';
 import '../context.js';
 import { nanoid } from 'nanoid';
 import { fromYearTier } from '../date.js';
-import { log } from '../objects/logs.js';
 import { builder } from '../builder.js';
-import { PrismaClient } from '@prisma/client';
 import bunyan from 'bunyan';
-
-const prisma = new PrismaClient();
 
 const logger = bunyan.createLogger({ name: 'CRI INP ldap', level: 'debug' });
 
@@ -54,7 +50,15 @@ function parseN7ApprenticeAndMajor(groups: string[] | undefined):
 
 /** Finds a user in a school database or returns `undefined`. */
 export const findSchoolUser = async (
-  email: string
+  searchBy:
+    | { email: string }
+    | {
+        firstName: string;
+        lastName: string;
+        graduationYear: number;
+        major: { shortName: string };
+        schoolServer: string;
+      }
 ): Promise<
   | (LdapUser & {
       schoolServer: string;
@@ -64,28 +68,36 @@ export const findSchoolUser = async (
     })
   | undefined
 > => {
-  if (email === 'quoicoubeh@ewen.works') {
-    return {
-      schoolServer: 'inp',
-      schoolEmail: `rick.astley.${nanoid()}@etu.inp-n7.fr`,
-      schoolUid: 'n7',
-      apprentice: false,
-      firstName: 'Rick',
-      lastName: 'Astley',
-      graduationYear: 2026,
-      major: 'SN',
-    };
+  let ldapFilter = '';
+  let schoolServer: string | undefined;
+  if ('email' in searchBy) {
+    if (searchBy.email === 'quoicoubeh@ewen.works') {
+      return {
+        schoolServer: 'inp',
+        schoolEmail: `rick.astley.${nanoid()}@etu.inp-n7.fr`,
+        schoolUid: 'n7',
+        apprentice: false,
+        firstName: 'Rick',
+        lastName: 'Astley',
+        graduationYear: 2026,
+        major: 'SN',
+      };
+    }
+
+    const [emailLogin, emailDomain] = searchBy.email.split('@') as [string, string];
+
+    if (!emailDomain) throw new Error('Invalid email address');
+    console.log(emailDomain);
+    schoolServer = settings.emailDomains[emailDomain];
+    if (!schoolServer || !settings.servers[schoolServer]) return;
+    const { filterAttribute, wholeEmail } = settings.servers[schoolServer]!;
+    ldapFilter = `${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}`;
+  } else {
+    schoolServer = searchBy.schoolServer;
+    ldapFilter = `sn=${searchBy.lastName},givenName=${searchBy.firstName}`;
   }
 
-  const [emailLogin, emailDomain] = email.split('@') as [string, string];
-
-  if (!emailDomain) throw new Error('Invalid email address');
-  console.log(emailDomain);
-  const schoolServer = settings.emailDomains[emailDomain];
-  console.log(schoolServer);
-  if (!schoolServer || !settings.servers[schoolServer]) return;
-
-  const { url, filterAttribute, wholeEmail, attributesMap } = settings.servers[schoolServer]!;
+  const { url, attributesMap } = settings.servers[schoolServer]!;
 
   const client = ldap.createClient({ url, log: logger });
 
@@ -100,7 +112,7 @@ export const findSchoolUser = async (
       'ou=people,dc=n7,dc=fr',
       {
         scope: 'sub',
-        filter: `${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}`,
+        filter: ldapFilter,
       },
       // {filter: `uid=elebihan`},
       (error, results) => {
@@ -118,8 +130,41 @@ export const findSchoolUser = async (
 
         results.on('searchEntry', ({ pojo }) => {
           console.log(pojo);
+          const groups = pojo.attributes.find((a) => a.type === 'groups')?.values;
+          const parsed = parseN7ApprenticeAndMajor(groups);
+
+          if (!parsed) {
+            console.info('ldap sync', 'continue search in school ldap', {
+              why: 'could not parse groups from pojo',
+              searchBy,
+              groups,
+              pojo,
+            });
+            return;
+          }
+
+          if ('graduationYear' in searchBy && parsed.graduationYear !== searchBy.graduationYear) {
+            console.info('ldap sync', 'continue search in school ldap', {
+              why: 'graduation year does not match',
+              searchBy,
+              parsed,
+              pojo,
+            });
+            return;
+          }
+
+          if ('major' in searchBy && parsed.major !== searchBy.major.shortName) {
+            console.info('ldap sync', 'continue search in school ldap', {
+              why: 'major does not match',
+              searchBy,
+              parsed,
+              pojo,
+            });
+            return;
+          }
+
           resolve({
-            groups: pojo.attributes.find((a) => a.type === 'groups')?.values,
+            groups,
             attrs: Object.fromEntries(
               pojo.attributes.map(({ type, values }) => [
                 type,
@@ -152,7 +197,7 @@ export const findSchoolUser = async (
   });
 
   if (!ldapObject) {
-    console.error(`Utilisateur introuvable dans le domaine ${emailDomain}.`);
+    console.error(`Utilisateur introuvable.`);
     return undefined;
   }
 
@@ -165,67 +210,10 @@ export const findSchoolUser = async (
     })
   ) as unknown as LdapUser;
 
-  return { ...user, schoolServer, ...parseN7ApprenticeAndMajor(ldapObject.groups) };
+  const result = { ...user, schoolServer, ...parseN7ApprenticeAndMajor(ldapObject.groups) };
+
+  return result;
 };
-
-export async function getSupannAliasLogin(
-  personalEmail: string
-): Promise<{ supannAliasLogin: string; schoolUid: string } | undefined> {
-  const user = await prisma.user.findFirst({
-    where: {
-      email: personalEmail,
-    },
-    include: { major: true },
-  });
-  await log('ldap', 'existance check fail', { err: 'no user found' }, personalEmail);
-  if (!user) return undefined;
-
-  const transform = (s: string) =>
-    s
-      .normalize('NFD')
-      .replace(/[\u0300-\u036F]/g, '')
-      .toLowerCase()
-      .replaceAll(' ', '')
-      .replaceAll('-', '');
-
-  const supannAliasLogin = `${transform(user.firstName)}.${transform(user.lastName)}`;
-  const schoolEmail = `${supannAliasLogin}@etu.inp-n7.fr`;
-  await log('ldap', 'existance check', { personalEmail, schoolEmail }, personalEmail);
-
-  const schoolUser = await findSchoolUser(schoolEmail);
-
-  if (!schoolUser) {
-    await log('ldap', 'existance check fail', { err: 'no user found in school' }, personalEmail);
-    return undefined;
-  }
-
-  if (schoolUser.graduationYear !== user.graduationYear) {
-    await log(
-      'ldap',
-      'existance check fail',
-      {
-        err: 'promo does not match',
-        schoolUser: schoolUser.graduationYear,
-        user: user.graduationYear,
-      },
-      personalEmail
-    );
-    return undefined;
-  }
-
-  if (schoolUser.major !== user.major.shortName) {
-    await log(
-      'ldap',
-      'existance check fail',
-      { err: 'major does not match', schoolUser: schoolUser.major, user: user.major.shortName },
-      personalEmail
-    );
-    return undefined;
-  }
-
-  await log('ldap', 'exinstance check OK', { schoolUser, user }, personalEmail);
-  return { supannAliasLogin, schoolUid: schoolUser.schoolUid };
-}
 
 builder.queryField('existsInSchoolLdap', (t) =>
   t.field({
@@ -237,7 +225,7 @@ builder.queryField('existsInSchoolLdap', (t) =>
       return Boolean(user?.admin);
     },
     async resolve(_, { email }) {
-      return Boolean(await getSupannAliasLogin(email));
+      return Boolean(await findSchoolUser({ email }));
     },
   })
 );

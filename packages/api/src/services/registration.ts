@@ -18,7 +18,7 @@ import { fromYearTier } from '../date.js';
 const transporter = createTransport(process.env.SMTP_URL);
 
 export const register = async (email: string): Promise<boolean> => {
-  const schoolUser = await findSchoolUser(email);
+  const schoolUser = await findSchoolUser({ email });
 
   const major = await prisma.major.findFirst({
     where: {
