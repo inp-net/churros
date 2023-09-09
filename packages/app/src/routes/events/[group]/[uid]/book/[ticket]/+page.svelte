@@ -20,6 +20,7 @@
   $: done = $page.url.searchParams.has('done');
   let paying = false;
   let paymentLoading = false;
+  let choosingPaymentMethodLoading: PaymentMethod | undefined = undefined;
   let paid = false;
   $: paid = $page.url.searchParams.has('paid');
   let registrationId = '';
@@ -51,6 +52,7 @@
   $: remainingGodsons = remainingGodsons === -1 ? Number.POSITIVE_INFINITY : remainingGodsons;
 
   async function payBy(method: PaymentMethod | undefined) {
+    choosingPaymentMethodLoading = method ?? PaymentMethod.Other;
     const { upsertRegistration } = await $zeus.mutate({
       upsertRegistration: [
         {
@@ -74,6 +76,7 @@
         },
       ],
     });
+    choosingPaymentMethodLoading = undefined;
 
     if (upsertRegistration.__typename === 'Error') {
       serverError = upsertRegistration.message;
@@ -224,6 +227,8 @@
           {#each allowedPaymentMethods as method}
             <li>
               <ButtonSecondary
+                loading={choosingPaymentMethodLoading === method}
+                disabled={Boolean(choosingPaymentMethodLoading)}
                 icon={PAYMENT_METHODS_ICONS[method]}
                 on:click={async () => payBy(method)}
               >
