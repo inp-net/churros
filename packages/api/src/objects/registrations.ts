@@ -277,6 +277,7 @@ enum RegistrationVerificationState {
   AlreadyVerified,
   NotFound,
   Opposed,
+  OtherEvent,
 }
 
 const RegistrationVerificationStateType = builder.enumType(RegistrationVerificationState, {
@@ -330,7 +331,7 @@ builder.mutationField('verifyRegistration', (t) =>
       if (!event) return false;
       return eventManagedByUser(event, user, { canVerifyRegistrations: true });
     },
-    async resolve(query, { id }, { user }) {
+    async resolve(query, { id, eventUid, groupUid }, { user }) {
       async function log(message: string, target?: string) {
         await prisma.logEntry.create({
           data: {
@@ -349,6 +350,9 @@ builder.mutationField('verifyRegistration', (t) =>
         where: { id },
         include: {
           verifiedBy: true,
+          ticket: {
+            include: { event: { include: { group: true } } },
+          },
         },
       });
 
@@ -356,6 +360,17 @@ builder.mutationField('verifyRegistration', (t) =>
         await log('Scan failed: registration not found');
         return {
           state: RegistrationVerificationState.NotFound,
+        };
+      }
+
+      if (
+        registration.ticket.event.uid !== eventUid ||
+        registration.ticket.event.group.uid !== groupUid
+      ) {
+        await log('Scan failed: registration is for another event');
+        return {
+          state: RegistrationVerificationState.OtherEvent,
+          registration,
         };
       }
 
@@ -387,6 +402,15 @@ builder.mutationField('verifyRegistration', (t) =>
           },
           include: {
             verifiedBy: true,
+            ticket: {
+              include: {
+                event: {
+                  include: {
+                    group: true,
+                  },
+                },
+              },
+            },
           },
         });
         await log('Scan successful', registration.id);

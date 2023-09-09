@@ -3,9 +3,10 @@
   import IconClose from '~icons/mdi/close';
   import IconGear from '~icons/mdi/gear-outline';
   import IconGearCancel from '~icons/mdi/cog-off-outline';
-  import IconCancel from '~icons/mdi/cancel';
+  import IconOpposed from '~icons/mdi/hand-back-right-off-outline';
   import IconCheck from '~icons/mdi/check';
   import IconRepeatOff from '~icons/mdi/repeat-off';
+  import IconOtherEvent from '~icons/mdi/circle-off-outline';
   import IconNotPaid from '~icons/mdi/credit-card-off-outline';
   import { type PaymentMethod, zeus, RegistrationVerificationState } from '$lib/zeus';
   import { type SvelteComponent, onDestroy, onMount } from 'svelte';
@@ -31,6 +32,7 @@
     [RegistrationVerificationState.NotFound]: [400],
     [RegistrationVerificationState.NotPaid]: [200, 100, 200],
     [RegistrationVerificationState.Opposed]: [300, 50, 300, 50, 300],
+    [RegistrationVerificationState.OtherEvent]: [50, 50, 50, 50],
   };
 
   const STATE_TO_ICON: Record<RegistrationVerificationState, typeof SvelteComponent<any>> = {
@@ -38,7 +40,8 @@
     [RegistrationVerificationState.AlreadyVerified]: IconRepeatOff,
     [RegistrationVerificationState.NotFound]: IconClose,
     [RegistrationVerificationState.NotPaid]: IconNotPaid,
-    [RegistrationVerificationState.Opposed]: IconCancel,
+    [RegistrationVerificationState.Opposed]: IconOpposed,
+    [RegistrationVerificationState.OtherEvent]: IconOtherEvent,
   };
 
   let manualRegistrationCode = '';
@@ -63,7 +66,12 @@
               }
             | undefined;
           id: string;
-          ticket: { id: string; name: string; group?: { name: string } };
+          ticket: {
+            id: string;
+            name: string;
+            group?: { name: string };
+            event: { uid: string; title: string; group: { uid: string } };
+          };
           paymentMethod?: PaymentMethod | undefined;
           verifiedAt?: Date | null | undefined;
           verifiedBy?:
@@ -157,7 +165,12 @@
                   pictureFile: true,
                 },
                 id: true,
-                ticket: { id: true, name: true, group: { name: true } },
+                ticket: {
+                  id: true,
+                  name: true,
+                  group: { name: true },
+                  event: { uid: true, title: true, group: { uid: true } },
+                },
                 paymentMethod: true,
                 verifiedAt: true,
                 verifiedBy: {
@@ -289,6 +302,14 @@
               {/if}
             {:else if result.state === RegistrationVerificationState.NotPaid}
               <p><strong>Non payée</strong></p>
+            {:else if result.state === RegistrationVerificationState.OtherEvent}
+              <p><strong>Mauvais évènement</strong></p>
+              <p class="typo-details details">
+                Cette réservation est pour l'évènement <a
+                  href="/events/{result.registration.ticket.event.group.uid}/{result.registration
+                    .ticket.event.uid}">{result.registration.ticket.event.title}</a
+                >
+              </p>
             {:else if result.state === RegistrationVerificationState.AlreadyVerified}
               <p>
                 <strong>Déjà vérifiée</strong>
