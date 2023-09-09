@@ -168,10 +168,19 @@ builder.mutationField('upsertGroupMember', (t) =>
         select: { uid: true },
       });
       purgeUserSessions(uid);
+      const oldMember = await prisma.groupMember.findUnique({
+        where: { groupId_memberId: { groupId, memberId } },
+      });
+
       if (president) {
         await prisma.groupMember.updateMany({
           where: { group: { id: groupId }, president: true },
-          data: { president: false },
+          data: {
+            president: false,
+            canEditMembers: false,
+            canEditArticles: false,
+            canScanEvents: false,
+          },
         });
         await prisma.logEntry.create({
           data: {
@@ -184,15 +193,26 @@ builder.mutationField('upsertGroupMember', (t) =>
         });
       }
 
+      const quittingBoard =
+        (oldMember?.president ||
+          oldMember?.treasurer ||
+          oldMember?.vicePresident ||
+          oldMember?.secretary) &&
+        !(president || treasurer || vicePresident || secretary);
+
       const data = {
         title,
         president,
         treasurer,
         groupId,
         memberId,
-        canEditMembers: canEditMembers || president || treasurer,
-        canEditArticles: canEditArticles || president || vicePresident || secretary,
-        canScanEvents: canScanEvents || president || vicePresident || secretary,
+        canEditMembers: quittingBoard ? false : canEditMembers || president || treasurer,
+        canEditArticles: quittingBoard
+          ? false
+          : canEditArticles || president || vicePresident || secretary,
+        canScanEvents: quittingBoard
+          ? false
+          : canScanEvents || president || vicePresident || secretary,
         vicePresident,
         secretary,
       };
