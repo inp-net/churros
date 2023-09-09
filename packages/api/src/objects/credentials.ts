@@ -173,13 +173,14 @@ builder.mutationField('login', (t) =>
             // Check if they are not already in our LDAP
             try {
               const ldapUser = await queryLdapUser(user.uid);
-              await log(
-                'login/ldap-sync',
-                'skip',
-                { why: 'uid already exists in our ldap', user, ldapUser },
-                user.uid
-              );
-              if (!ldapUser) {
+              if (ldapUser) {
+                await log(
+                  'login/ldap-sync',
+                  'skip',
+                  { why: 'uid already exists in our ldap', user, ldapUser },
+                  user.uid
+                );
+              } else {
                 // Try to find them in the school's LDAP
                 const schoolUser = await getSupannAliasLogin(user.email);
                 // eslint-disable-next-line max-depth, no-negated-condition
@@ -214,8 +215,9 @@ builder.mutationField('login', (t) =>
                   });
                 }
               }
-            } catch (error) {
-              await log('login/ldap-sync', 'error', { err: error }, user.uid);
+            } catch (error: unknown) {
+              console.error(error);
+              await log('login/ldap-sync', 'error', { err: error?.toString() }, user.uid);
             }
           }
 
