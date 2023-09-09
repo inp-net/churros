@@ -350,6 +350,7 @@
             {/if}
           </td>
           <td
+            class="centered"
             class:danger={opposed}
             class:success={paid && verifiedAt}
             class:warning={!paid}
