@@ -542,7 +542,7 @@ builder.mutationField('upsertEvent', (t) =>
         update: {
           description,
           contactMail,
-          links: { create: links },
+          links: { deleteMany: {}, create: links },
           beneficiary: lydiaAccountId ? { connect: { id: lydiaAccountId } } : { disconnect: true },
           location,
           title,
@@ -622,26 +622,6 @@ builder.mutationField('upsertEvent', (t) =>
 
       // 5. Upsert tickets, setting their group
       for (const ticket of tickets) {
-        const ticketLinksWithId = await Promise.all(
-          ticket.links.map(async (link) => ({
-            ...link,
-            // Can't do a findUnique on name_userId_studentAssociationId_..., see https://github.com/prisma/prisma/issues/3197
-            id: await prisma.link
-              .findFirst({
-                where: {
-                  /* eslint-disable unicorn/no-null */
-                  articleId: null,
-                  eventId: event.id,
-                  groupId: null,
-                  name: link.name,
-                  notificationId: null,
-                  studentAssociationId: null,
-                  /* eslint-enable unicorn/no-null */
-                },
-              })
-              .then((link) => link?.id ?? ''),
-          }))
-        );
         const ticketGroupId = ticket.groupName
           ? ticketGroups.find((tg) => tg.name === ticket.groupName)!.id
           : undefined;
@@ -671,12 +651,8 @@ builder.mutationField('upsertEvent', (t) =>
             id: undefined,
             group: ticketGroupId ? { connect: { id: ticketGroupId } } : { disconnect: true },
             links: {
-              deleteMany: { name: { notIn: ticket.links.map(({ name }) => name) } },
-              upsert: ticket.links.map((link) => ({
-                where: { id: ticketLinksWithId.find(({ name }) => name === link.name)!.id },
-                create: link,
-                update: link,
-              })),
+              deleteMany: {},
+              create: ticket.links,
             },
             // connections
             openToGroups: { set: connectFromListOfUids(ticket.openToGroups) },
