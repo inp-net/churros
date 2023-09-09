@@ -59,6 +59,15 @@ builder.mutationField('login', (t) =>
               type: CredentialPrismaType.Password,
             },
           },
+          contributions: {
+            include: {
+              option: {
+                include: {
+                  paysFor: true,
+                },
+              },
+            },
+          },
         },
       });
       const userAgent = request.headers.get('User-Agent')?.slice(0, 255) ?? '';
@@ -188,6 +197,9 @@ builder.mutationField('login', (t) =>
                   await createLdapUser(
                     {
                       ...user,
+                      contributesToAEn7: user.contributions.some(({ option: { paysFor } }) =>
+                        paysFor.some(({ name }) => name === 'AEn7')
+                      ),
                       email: schoolEmail,
                       otherEmails: [user.email, ...user.otherEmails],
                     },

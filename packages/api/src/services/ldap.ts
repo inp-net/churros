@@ -364,6 +364,7 @@ async function createLdapUser(
     graduationYear: number;
     major?: undefined | null | (Major & { ldapSchool?: School | undefined | null });
     godparent?: User | null;
+    contributesToAEn7?: boolean;
   },
   password: string
 ): Promise<void> {
@@ -399,8 +400,8 @@ async function createLdapUser(
     givenNameSearch: user.firstName.toLowerCase(),
     hasWebsite: 'FALSE',
     homeDirectory: `/home/${user.uid}`,
-    inscritAE: 'FALSE',
-    inscritFrappe: 'FALSE',
+    inscritAE: user.contributesToAEn7 ? 'TRUE' : 'FALSE',
+    inscritFrappe: user.contributesToAEn7 ? 'TRUE' : 'FALSE',
     inscritPassVieEtudiant: 'FALSE',
     loginShell: '/bin/bash',
     loginTP: user.schoolUid,
