@@ -19,6 +19,14 @@ export const load: LayoutLoad = async ({ fetch, parent, params }) => {
             canEditPermissions: true,
             canVerifyRegistrations: true,
           },
+          group: {
+            members: {
+              member: {
+                uid: true,
+              },
+              canScanEvents: true,
+            },
+          },
         }),
       ],
     },

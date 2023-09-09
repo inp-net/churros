@@ -59,7 +59,7 @@
   <section class="tickets">
     <h2>
       Places <span class="places">
-        {#if placesLeft === Number.POSITIVE_INFINITY}
+        {#if placesLeft === Number.POSITIVE_INFINITY || placesLeft === -1}
           illimitées
         {:else}
           <span class="left">{placesLeft} restantes</span><span class="capacity">{capacity}</span>

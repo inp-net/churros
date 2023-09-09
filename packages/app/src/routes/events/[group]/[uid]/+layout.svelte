@@ -31,7 +31,11 @@
       }
 
       case 'scan': {
-        return Boolean($me?.admin || manager()?.canVerifyRegistrations);
+        return Boolean(
+          $me?.admin ||
+            manager()?.canVerifyRegistrations ||
+            data.event.group.members.some((m) => m.member.uid === $me?.uid && m.canScanEvents)
+        );
       }
 
       case 'registrations': {

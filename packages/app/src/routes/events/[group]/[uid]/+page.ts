@@ -125,6 +125,10 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             name: true,
             pictureFile: true,
             pictureFileDark: true,
+            members: {
+              member: { uid: true },
+              canScanEvents: true,
+            },
           },
           contactMail: true,
           managers: {
