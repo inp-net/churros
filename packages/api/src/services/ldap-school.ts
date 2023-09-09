@@ -6,8 +6,11 @@ import { fromYearTier } from '../date.js';
 import { log } from '../objects/logs.js';
 import { builder } from '../builder.js';
 import { PrismaClient } from '@prisma/client';
+import bunyan from 'bunyan';
 
 const prisma = new PrismaClient();
+
+const logger = bunyan.createLogger({ name: 'CRI INP ldap', level: 'debug' });
 
 export interface LdapUser {
   schoolUid: string;
@@ -84,7 +87,7 @@ export const findSchoolUser = async (
 
   const { url, filterAttribute, wholeEmail, attributesMap } = settings.servers[schoolServer]!;
 
-  const client = ldap.createClient({ url, log });
+  const client = ldap.createClient({ url, log: logger });
 
   const ldapObject = await new Promise<
     { groups: string[] | undefined; attrs: Record<string, string | undefined> } | undefined
