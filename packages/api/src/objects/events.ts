@@ -551,7 +551,7 @@ builder.mutationField('upsertEvent', (t) =>
           endsAt,
           managers:
             user?.admin ||
-            oldEvent!.managers.some((m) => m.userId === user?.id && m.canEditPermissions)
+            oldEvent?.managers.some((m) => m.userId === user?.id && m.canEditPermissions)
               ? {
                   deleteMany: { userId: { notIn: managersWithUserId.map((m) => m.userId) } },
                   upsert: managersWithUserId.map(
