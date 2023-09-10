@@ -469,7 +469,7 @@ async function resetLdapUserPassword(
       operation: 'replace',
       modification: {
         type: 'userPassword',
-        values: hashPassword(password),
+        values: [hashPassword(password)],
       },
     });
 
