@@ -94,7 +94,7 @@ export const findSchoolUser = async (
     ldapFilter = `${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}`;
   } else {
     schoolServer = searchBy.schoolServer;
-    ldapFilter = `sn=${searchBy.lastName},givenName=${searchBy.firstName}`;
+    ldapFilter = `(&(sn=${searchBy.lastName})(givenName=${searchBy.firstName}))`;
   }
 
   const { url, attributesMap } = settings.servers[schoolServer]!;

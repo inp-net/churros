@@ -24,6 +24,8 @@ import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { ContributionOptionType } from './contribution-options.js';
 import { toHtml } from '../services/markdown.js';
+import { queryLdapUser } from '../services/ldap.js';
+import { createUid } from '../services/registration.js';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -524,6 +526,37 @@ builder.mutationField('updateUser', (t) =>
         },
       });
       return userUpdated;
+    },
+  })
+);
+
+builder.mutationField('syncUserLdap', (t) =>
+  t.boolean({
+    args: {
+      uid: t.arg.string(),
+    },
+    authScopes(_, {}, { user }) {
+      return Boolean(user?.admin);
+    },
+    async resolve(_, { uid }) {
+      const userDb = await prisma.user.findUnique({
+        where: { uid },
+        include: { major: true },
+      });
+      if (!userDb) return false;
+      const userLdap = await queryLdapUser(userDb.uid);
+      if (!userLdap) return false;
+      if (userDb.graduationYear === userLdap.promo) return false;
+      if (userLdap.genre !== 404) {
+        const newUid = await createUid(userDb);
+        await prisma.user.update({
+          where: { uid },
+          data: { uid: newUid },
+        });
+        console.info(`Updated uid: ${uid} -> ${newUid}`);
+      }
+
+      return true;
     },
   })
 );
