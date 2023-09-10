@@ -86,6 +86,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-top-left-radius: var(--radius-block);
+    border-top-right-radius: var(--radius-block);
   }
 
   .author-and-date {
@@ -125,6 +127,8 @@
     color: #fff;
     text-decoration: unset;
     background: linear-gradient(160deg, tomato, purple);
+    border-top-left-radius: var(--radius-block);
+    border-top-right-radius: var(--radius-block);
   }
 
   header {
