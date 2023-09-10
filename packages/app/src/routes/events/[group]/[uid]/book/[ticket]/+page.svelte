@@ -43,7 +43,7 @@
     allowedPaymentMethods,
     onlyManagersCanProvide,
     name,
-    event: { contactMail, title, pictureFile, startsAt },
+    event: { contactMail, title, pictureFile, startsAt, managers },
     links,
     price,
   } = data.ticketByUid;
@@ -214,7 +214,7 @@
       </section>
     {/if}
 
-    {#if onlyManagersCanProvide}
+    {#if onlyManagersCanProvide && !managers?.some((m) => m.user.uid === $me?.uid)}
       <h2>Seul·e un·e manager peut te fournir cette place.</h2>
       <ButtonPrimary href="mailto:{contactMail}">Contacter un·e manager</ButtonPrimary>
     {:else if price <= 0}

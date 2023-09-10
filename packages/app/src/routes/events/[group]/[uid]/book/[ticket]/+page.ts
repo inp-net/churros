@@ -18,6 +18,9 @@ export const load: PageLoad = async ({ params, fetch, parent }) =>
             contactMail: true,
             pictureFile: true,
             startsAt: true,
+            managers: {
+              user: { uid: true },
+            },
           },
           links: {
             name: true,
