@@ -539,21 +539,22 @@ builder.mutationField('syncUserLdap', (t) =>
       return Boolean(user?.admin);
     },
     async resolve(_, { uid }) {
-      const userDb = await prisma.user.findUnique({
-        where: { uid },
+      const usersDb = await prisma.user.findMany({
         include: { major: true },
       });
-      if (!userDb) return false;
-      const userLdap = await queryLdapUser(userDb.uid);
-      if (!userLdap) return false;
-      if (userDb.graduationYear === userLdap.promo) return false;
-      if (userLdap.genre !== 404) {
-        const newUid = await createUid(userDb);
-        await prisma.user.update({
-          where: { uid },
-          data: { uid: newUid },
-        });
-        console.info(`Updated uid: ${uid} -> ${newUid}`);
+      for (const userDb of usersDb) {
+        if (!userDb) continue;
+        const userLdap = await queryLdapUser(userDb.uid);
+        if (!userLdap) continue;
+        if (userDb.graduationYear === userLdap.promo) continue;
+        if (userLdap.genre !== 404) {
+          const newUid = await createUid(userDb);
+          await prisma.user.update({
+            where: { uid },
+            data: { uid: newUid },
+          });
+          console.info(`Updated uid: ${uid} -> ${newUid}`);
+        }
       }
 
       return true;
