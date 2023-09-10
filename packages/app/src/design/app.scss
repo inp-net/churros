@@ -240,3 +240,7 @@ a.user-mention:focus-visible {
   color: var(--primary-hover-text) !important;
   background-color: var(--primary-hover-bg) !important;
 }
+
+.user-html > p {
+  margin: 1rem 0;
+}

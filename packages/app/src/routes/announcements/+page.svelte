@@ -27,7 +27,8 @@
     .sort( (a, b) => compareDesc(a.startsAt, b.startsAt) ) as { id, title, bodyHtml, by, startsAt, endsAt }}
     <li>
       <h2>{title}</h2>
-      <div class="body">
+      <div class="body user-html">
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
         {@html bodyHtml}
       </div>
       <div class="date-range">

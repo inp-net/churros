@@ -116,7 +116,7 @@
         {/if}
         {#if group}{group.name} <IconChevronRight /> {/if}{name}
       </h3>
-      <div class="description">
+      <div class="description user-html">
         <!-- eslint-disable-next-line svelte/no-at-html-tags -->
         {@html descriptionHtml}
       </div>

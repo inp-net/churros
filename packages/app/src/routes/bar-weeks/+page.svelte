@@ -153,7 +153,7 @@
               >
             </section>
           {:else}
-            <div class="description">
+            <div class="description user-html">
               <!-- eslint-disable-next-line svelte/no-at-html-tags -->
               {@html barWeek.descriptionHtml}
             </div>

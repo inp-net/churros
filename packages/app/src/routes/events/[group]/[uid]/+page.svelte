@@ -40,7 +40,7 @@
   </ul>
 {/if}
 
-<section class="description">
+<section class="description user-html">
   {#if links.length > 0}
     <ul class="links nobullet">
       {#each links as link}

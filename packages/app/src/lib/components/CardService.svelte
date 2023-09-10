@@ -17,7 +17,7 @@
     </div>
   {/if}
   <p class="name">{name}</p>
-  <p class="description typo-details">
+  <p class="description typo-details user-html">
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html descriptionHtml}
   </p>

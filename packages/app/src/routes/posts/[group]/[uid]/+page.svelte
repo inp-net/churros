@@ -45,7 +45,7 @@
     </p>
   </header>
 
-  <section class="body">
+  <section class="body user-html">
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html bodyHtml}
   </section>

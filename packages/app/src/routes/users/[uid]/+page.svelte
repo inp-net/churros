@@ -197,7 +197,7 @@
           </li>
         {/each}
       </ul>
-      <p class="bio">
+      <p class="bio user-html">
         <!-- eslint-disable-next-line svelte/no-at-html-tags -->
         {@html user.descriptionHtml}
       </p>
@@ -483,6 +483,7 @@
   .groups .typo-details {
     margin-bottom: 1rem;
   }
+
   ul.options {
     display: flex;
     flex-wrap: wrap;
