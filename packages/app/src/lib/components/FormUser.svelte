@@ -180,8 +180,13 @@
 
 <form on:submit|preventDefault={updateUser}>
   <div class="side-by-side">
-    <InputText required label="Prénom" bind:value={firstName} />
-    <InputText required label="Nom de famille" bind:value={lastName} />
+    <InputText required label="Prénom" bind:value={firstName} readonly={!$me?.canEditUsers} />
+    <InputText
+      required
+      label="Nom de famille"
+      bind:value={lastName}
+      readonly={!$me?.canEditUsers}
+    />
     <InputText label="Surnom" bind:value={nickname} />
   </div>
   <InputLongText rich label="Description" bind:value={description} />
