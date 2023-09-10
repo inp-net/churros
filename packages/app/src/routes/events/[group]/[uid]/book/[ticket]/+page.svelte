@@ -205,7 +205,11 @@
       <section class="beneficiary">
         <InputCheckbox label="Je paie pour moi" bind:value={payingForThemself} />
         {#if !payingForThemself}
-          <InputText label="Nom du bénéficiaire" bind:value={beneficiary} />
+          <InputText
+            hint="Si tu paies pour quelqu'un qui a un compte Churros, mets son @"
+            label="Nom du bénéficiaire"
+            bind:value={beneficiary}
+          />
         {/if}
       </section>
     {/if}

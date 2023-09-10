@@ -576,6 +576,7 @@ builder.mutationField('upsertRegistration', (t) =>
     async resolve(query, _, { id, ticketId, beneficiary, paymentMethod, paid }, { user }) {
       if (!user) throw new GraphQLError('User not found');
       const creating = !id;
+      beneficiary = beneficiary?.replace(/^@/, '').trim();
 
       if (creating) {
         const event = await prisma.event.findFirstOrThrow({
