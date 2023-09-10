@@ -550,7 +550,7 @@ builder.mutationField('syncUserLdap', (t) =>
         if (userLdap.genre !== 404) {
           const newUid = await createUid(userDb);
           await prisma.user.update({
-            where: { uid },
+            where: { uid: userDb.uid },
             data: { uid: newUid },
           });
           console.info(`Updated uid: ${uid} -> ${newUid}`);
