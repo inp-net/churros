@@ -51,7 +51,7 @@ export async function payEventRegistrationViaLydia(
   if (!beneficiaryVendorToken) throw new GraphQLError("L'évènement n'a pas de bénéficiaire");
 
   // Check if transaction was already paid for, in that case mark registration as paid
-  if (registration.lydiaTransaction) {
+  if (registration.lydiaTransaction?.requestId && registration.lydiaTransaction.requestUuid) {
     const state = await checkLydiaTransaction(registration.lydiaTransaction);
     if (state === LydiaTransactionState.Paid) {
       await prisma.logEntry.create({
