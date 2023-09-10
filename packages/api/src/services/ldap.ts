@@ -468,7 +468,8 @@ async function resetLdapUserPassword(
     const userChange = new ldap.Change({
       operation: 'replace',
       modification: {
-        userPassword: hashPassword(password),
+        type: 'userPassword',
+        values: hashPassword(password),
       },
     });
 
