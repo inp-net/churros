@@ -455,11 +455,11 @@ async function createLdapUser(
 }
 
 async function resetLdapUserPassword(
-  user: User & { major?: undefined | (Major & { ldapSchool?: School | undefined }) },
+  user: User & { major?: undefined | null | (Major & { ldapSchool?: School | undefined | null }) },
   password: string
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    if (user.major === undefined || user.major.ldapSchool === undefined) {
+    if (!user.major?.ldapSchool) {
       reject(new Error('No major or school'));
       return;
     }

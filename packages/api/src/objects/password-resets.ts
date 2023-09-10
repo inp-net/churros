@@ -4,6 +4,7 @@ import { addSeconds } from 'date-fns';
 import { hash } from 'argon2';
 import { createTransport } from 'nodemailer';
 import { ID_PREFIXES_TO_TYPENAMES, builder } from '../builder.js';
+import { resetLdapUserPassword } from '../services/ldap.js';
 
 const TYPENAMES_TO_ID_PREFIXES = Object.fromEntries(
   Object.entries(ID_PREFIXES_TO_TYPENAMES).map(([k, v]) => [v, k])
@@ -70,7 +71,17 @@ builder.mutationField('usePasswordReset', (t) =>
       const id = `${TYPENAMES_TO_ID_PREFIXES['PasswordReset']!}:${token.toLowerCase()}`;
       const reset = await prisma.passwordReset.findUniqueOrThrow({
         where: { id },
-        include: { user: true },
+        include: {
+          user: {
+            include: {
+              major: {
+                include: {
+                  ldapSchool: true,
+                },
+              },
+            },
+          },
+        },
       });
 
       if (reset.expiresAt && reset.expiresAt.valueOf() < Date.now())
@@ -90,6 +101,14 @@ builder.mutationField('usePasswordReset', (t) =>
           },
         },
       });
+      if (reset.user.major.ldapSchool) {
+        try {
+          await resetLdapUserPassword(reset.user, newPassword);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
       await prisma.logEntry.create({
         data: {
           area: 'password-reset',
