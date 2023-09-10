@@ -1,6 +1,7 @@
 <script lang="ts">
   import Alert from '$lib/components/Alert.svelte';
   import IconClose from '~icons/mdi/close';
+  import IconSynchronize from '~icons/mdi/database-sync-outline';
   import IconCheck from '~icons/mdi/check';
   import IconActive from '~icons/mdi/adjust';
   import type { PageData } from './$types';
@@ -27,6 +28,7 @@
   let godparentRequestSending = false;
   let godparentDeleting = false;
   let godparentDeleteServerError = '';
+  let ldapSyncResult: undefined | boolean = undefined;
 
   const deleteToken = async (id: string, active: boolean) => {
     if (active) {
@@ -200,6 +202,22 @@
       />
     </section>
     <section class="misc">
+      {#if $me?.admin}
+        <h2>LDAP</h2>
+        {#if ldapSyncResult !== undefined}
+          <Alert theme={ldapSyncResult ? 'success' : 'danger'}>
+            {#if ldapSyncResult}Utilisateur synchronisé{:else}Erreur lors de la synchronisation{/if}
+          </Alert>
+        {/if}
+        <ButtonSecondary
+          icon={IconSynchronize}
+          on:click={async () => {
+            ldapSyncResult = await $zeus.mutate({
+              syncUserLdap: [{ uid: data.user.uid }, true],
+            });
+          }}>Synchroniser</ButtonSecondary
+        >
+      {/if}
       {#if data.userPermissions}
         <h2>Permissions</h2>
         <Permissions bind:data />
