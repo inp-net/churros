@@ -17,9 +17,6 @@ ALTER TABLE "BarWeek" ALTER COLUMN "id" SET DEFAULT nanoid('barweek:');
 ALTER TABLE "Contribution" ALTER COLUMN "id" SET DEFAULT nanoid('contribution:');
 
 -- AlterTable
-ALTER TABLE "ContributionOption" ALTER COLUMN "id" SET DEFAULT nanoid('contributionoption:');
-
--- AlterTable
 ALTER TABLE "Credential" ALTER COLUMN "id" SET DEFAULT nanoid('credential:');
 
 -- AlterTable
