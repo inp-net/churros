@@ -349,6 +349,35 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
   });
 }
 
+export async function markAsContributor(uid: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const change = new ldap.Change({
+      operation: 'replace',
+      modification: {
+        type: 'inscritAE',
+        values: ['TRUE'],
+      },
+    });
+
+    connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
+      if (bindError) {
+        console.error('LDAP Bind Error:', bindError);
+        reject(bindError);
+        // Handle the bind error
+      } else {
+        connectLdap().modify(`uid=${uid},ou=people,o=n7,${LDAP_BASE_DN}`, change, (error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolve();
+        });
+      }
+    });
+  });
+}
+
 // create a new user in LDAP
 async function createLdapUser(
   user: {
@@ -401,7 +430,7 @@ async function createLdapUser(
     hasWebsite: 'FALSE',
     homeDirectory: `/home/${user.uid}`,
     inscritAE: user.contributesToAEn7 ? 'TRUE' : 'FALSE',
-    inscritFrappe: user.contributesToAEn7 ? 'TRUE' : 'FALSE',
+    inscritFrappe: 'TRUE',
     inscritPassVieEtudiant: 'FALSE',
     loginShell: '/bin/bash',
     loginTP: user.schoolUid,

@@ -24,7 +24,7 @@ import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { ContributionOptionType } from './contribution-options.js';
 import { toHtml } from '../services/markdown.js';
-import { queryLdapUser } from '../services/ldap.js';
+import { markAsContributor, queryLdapUser } from '../services/ldap.js';
 import { createUid } from '../services/registration.js';
 
 builder.objectType(FamilyTree, {
@@ -539,23 +539,40 @@ builder.mutationField('syncUserLdap', (t) =>
       return Boolean(user?.admin);
     },
     async resolve(_, { uid }) {
-      const usersDb = await prisma.user.findMany({
-        include: { major: true },
+      const userDb = await prisma.user.findUnique({
+        where: { uid },
+        include: {
+          contributions: {
+            include: {
+              option: {
+                include: {
+                  paysFor: true,
+                },
+              },
+            },
+          },
+        },
       });
-      for (const userDb of usersDb) {
-        if (!userDb) continue;
-        const userLdap = await queryLdapUser(userDb.uid);
-        if (!userLdap) continue;
-        if (userDb.graduationYear === userLdap.promo) continue;
-        if (userLdap.genre !== 404) {
-          const newUid = await createUid(userDb);
-          await prisma.user.update({
-            where: { uid: userDb.uid },
-            data: { uid: newUid },
-          });
-          console.info(`Updated uid: ${uid} -> ${newUid}`);
-        }
+      if (!userDb) return false;
+      const userLdap = await queryLdapUser(userDb.uid);
+      if (!userLdap) return false;
+      if (userDb.graduationYear === userLdap.promo) return false;
+      if (userLdap.genre !== 404) {
+        const newUid = await createUid(userDb);
+        await prisma.user.update({
+          where: { uid: userDb.uid },
+          data: { uid: newUid },
+        });
+        console.info(`Updated uid: ${uid} -> ${newUid}`);
       }
+
+      const { uid: finalUid } = await prisma.user.findUniqueOrThrow({ where: { id: userDb.id } });
+      if (
+        userDb.contributions.some(({ option: { paysFor } }) =>
+          paysFor.some(({ name }) => name === 'AEn7')
+        )
+      )
+        await markAsContributor(finalUid);
 
       return true;
     },

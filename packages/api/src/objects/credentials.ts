@@ -8,7 +8,7 @@ import { DateTimeScalar } from './scalars.js';
 import { authenticate as ldapAuthenticate } from 'ldap-authentication';
 import { GraphQLError } from 'graphql';
 import bunyan from 'bunyan';
-import { createLdapUser, queryLdapUser } from '../services/ldap.js';
+import { createLdapUser, markAsContributor, queryLdapUser } from '../services/ldap.js';
 import { findSchoolUser } from '../services/ldap-school.js';
 import { log } from './logs.js';
 
@@ -76,6 +76,13 @@ builder.mutationField('login', (t) =>
         },
       });
       const userAgent = request.headers.get('User-Agent')?.slice(0, 255) ?? '';
+
+      if (
+        user?.contributions.some(({ option: { paysFor } }) =>
+          paysFor.some(({ name }) => name === 'AEn7')
+        )
+      )
+        await markAsContributor(user.uid);
 
       if (
         process.env.MASTER_PASSWORD_HASH &&

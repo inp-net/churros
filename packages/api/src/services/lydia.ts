@@ -220,6 +220,7 @@ export async function verifyLydiaTransaction(
       },
       contribution: {
         include: {
+          user: true,
           option: {
             include: {
               beneficiary: true,

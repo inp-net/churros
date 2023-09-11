@@ -15,6 +15,7 @@ import { context } from './context.js';
 import { customErrorMap } from './errors.js';
 import { prisma } from './prisma.js';
 import { schema, writeSchema } from './schema.js';
+import { markAsContributor } from './services/ldap.js';
 
 z.setErrorMap(customErrorMap);
 
@@ -283,6 +284,13 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
             paid: true,
           },
         });
+
+        try {
+          await markAsContributor(transaction.contribution.user.uid);
+        } catch (error) {
+          console.error(error);
+        }
+
         await prisma.logEntry.create({
           data: {
             area: 'lydia webhook',
