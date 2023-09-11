@@ -45,7 +45,11 @@ builder.queryField('studentAssociation', (t) =>
         ...query,
         where: { uid },
         include: {
-          school: true,
+          school: {
+            include: {
+              groups: true,
+            },
+          },
           groups: {
             where: {
               // Type Club or Association

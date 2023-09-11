@@ -38,7 +38,11 @@
 
   export let data: PageData;
 
-  $: ({ studentAssociation } = data);
+  const { studentAssociation } = data;
+
+  const groups = [
+    ...new Set([...studentAssociation.groups, ...studentAssociation.school.groups]),
+  ].sort((a, b) => a.name.localeCompare(b.name));
 </script>
 
 <div class="content">
@@ -77,7 +81,7 @@
 
   <section class="StudentAssociationSections">
     <h2>Bureaux de l'association</h2>
-    {#each studentAssociation.groups.filter((group) => group.type === 'StudentAssociationSection') as studentAssociationSection}
+    {#each groups.filter((group) => group.type === 'StudentAssociationSection') as studentAssociationSection}
       <a href="/groups/{studentAssociationSection.uid}/" class="group">
         <div class="avatar">
           <img
@@ -100,7 +104,7 @@
   <section class="clubs">
     <h2>Associations et Clubs</h2>
     <div class="groups">
-      {#each studentAssociation.groups.filter((group) => group.type === 'Club' || group.type === 'Association') as group}
+      {#each groups.filter((group) => group.type === 'Club' || group.type === 'Association') as group}
         <a href="/groups/{group.uid}/" class="group">
           <div class="avatar">
             <img src="{env.PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} />

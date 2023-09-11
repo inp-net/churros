@@ -159,9 +159,8 @@ builder.mutationField('resetPassword', (t) =>
         },
       });
 
-      if (newPassword.length < 8) 
+      if (newPassword.length < 8)
         throw new GraphQLError('Le mot de passe doit faire au moins 8 caractères');
-      
 
       for (const credential of userEdited.credentials.filter(
         (c) => c.type === CredentialType.Password
@@ -198,9 +197,7 @@ builder.mutationField('resetPassword', (t) =>
             },
           });
 
-          if (disconnectAll) 
-            purgeUserSessions(userEdited.uid);
-          
+          if (disconnectAll) purgeUserSessions(userEdited.uid);
 
           return true;
         }
