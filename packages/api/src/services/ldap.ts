@@ -358,6 +358,7 @@ export async function markAsContributor(uid: string): Promise<void> {
         values: ['TRUE'],
       },
     });
+    console.info(`Marking ${uid} as contributor`);
 
     connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
       if (bindError) {
