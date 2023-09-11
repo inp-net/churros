@@ -220,7 +220,7 @@ model Credential {
 model StudentAssociation {
   id                String @id @default(dbgenerated("nanoid('ae:')"))
   uid               String? @unique @db.VarChar(255)
-  description       String @default("") @db.VarChar(255) 
+  description       String @default("") @db.Text
   schoolId          String
   name              String @unique @db.VarChar(255)
   links             Link[]
