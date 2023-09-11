@@ -41,7 +41,6 @@
       });
       if (resetPassword.__typename === 'Error') {
         resetPasswordError = resetPassword.message;
-        
       } else {
         resetPasswordError = '';
         oldPassword = '';
@@ -77,5 +76,23 @@
     required
   />
   <InputCheckbox label="Se deconnecter de tous les appareils" bind:value={disconnectAll} />
-  <ButtonSecondary submits loading={resetPasswordLoading}>Changer de mot de passe</ButtonSecondary>
+  <section class="submit">
+    <ButtonSecondary submits loading={resetPasswordLoading}>
+      Changer de mot de passe
+    </ButtonSecondary>
+  </section>
 </form>
+
+<style>
+  form {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 0.5rem;
+  }
+
+  .submit {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+</style>
