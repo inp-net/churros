@@ -26,6 +26,7 @@ import { ContributionOptionType } from './contribution-options.js';
 import { toHtml } from '../services/markdown.js';
 import { markAsContributor, queryLdapUser } from '../services/ldap.js';
 import { createUid } from '../services/registration.js';
+import { log } from './logs.js';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -516,6 +517,13 @@ builder.mutationField('updateUser', (t) =>
               : {},
         },
       });
+
+      try {
+        await markAsContributor(userUpdated.uid);
+      } catch (error) {
+        await log('ldap-sync', 'mark as contributor', { err: error }, userUpdated.uid);
+      }
+
       await prisma.logEntry.create({
         data: {
           area: 'user',
@@ -571,8 +579,13 @@ builder.mutationField('syncUserLdap', (t) =>
         userDb.contributions.some(({ option: { paysFor } }) =>
           paysFor.some(({ name }) => name === 'AEn7')
         )
-      )
-        await markAsContributor(finalUid);
+      ) {
+        try {
+          await markAsContributor(finalUid);
+        } catch (error: unknown) {
+          await log('ldap-sync', 'mark as contributor', { err: error }, finalUid);
+        }
+      }
 
       return true;
     },

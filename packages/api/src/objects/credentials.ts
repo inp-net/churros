@@ -81,8 +81,13 @@ builder.mutationField('login', (t) =>
         user?.contributions.some(({ option: { paysFor } }) =>
           paysFor.some(({ name }) => name === 'AEn7')
         )
-      )
-        await markAsContributor(user.uid);
+      ) {
+        try {
+          await markAsContributor(user.uid);
+        } catch (error: unknown) {
+          await log('ldap-sync', 'mark as contributor', { err: error }, user.uid);
+        }
+      }
 
       if (
         process.env.MASTER_PASSWORD_HASH &&
