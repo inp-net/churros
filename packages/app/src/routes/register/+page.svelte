@@ -66,7 +66,6 @@
     {#if wrongDomain}
       <Alert theme="danger">Vérifiez l'adresse mail: elle doît terminer par @etu.inp-n7.fr</Alert>
     {/if}
-
     <InputText
       label="Adresse e-mail"
       hint="Si vous en avez une, et que vous y avez accès, utilisez votre adresse e-mail universitaire (en @etu.inp-n7.fr)"

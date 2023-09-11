@@ -11,7 +11,7 @@
   import IconChevronRight from '~icons/mdi/chevron-right';
   import IconSortDown from '~icons/mdi/triangle-small-down';
   import { page } from '$app/stores';
-  import { dateTimeFormatter, formatDateTime } from '$lib/dates';
+  import { formatDateTime } from '$lib/dates';
   import { compareAsc, compareDesc, format, isSameDay } from 'date-fns';
   import { zeus } from '$lib/zeus';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
@@ -78,7 +78,7 @@
           }) => {
             const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined);
             return {
-              'Date de réservation': dateTimeFormatter.format(createdAt),
+              'Date de réservation': createdAt.toISOString(),
               Bénéficiaire: benef?.fullName ?? beneficiary,
               'Achat par': author.fullName,
               Payée: humanBoolean(paid),
