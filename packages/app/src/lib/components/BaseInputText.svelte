@@ -131,6 +131,7 @@
       {placeholder}
       {readonly}
       {autofocus}
+      {...$$restProps}
       on:input={(e) => {
         if (!(e.target instanceof HTMLInputElement)) return;
         valueString = e.target?.value;

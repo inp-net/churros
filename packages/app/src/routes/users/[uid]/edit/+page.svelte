@@ -23,6 +23,7 @@
   import { theme } from '$lib/theme';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
+  import FormPassword from '$lib/components/FormPassword.svelte';
 
   let godparentRequestSendServerError = '';
   let godparentRequestSending = false;
@@ -200,6 +201,7 @@
         majors={data.schoolGroups.flatMap((g) => g.majors)}
         bind:data
       />
+      <FormPassword user={data.user} />
     </section>
     <section class="misc">
       {#if $me?.admin}

@@ -37,6 +37,7 @@
     {readonly}
     {autofocus}
     {actionIcon}
+    {...$$restProps}
   >
     <slot name="before" slot="before" />
   </BaseInputText>

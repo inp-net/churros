@@ -1,0 +1,81 @@
+<script lang="ts">
+  import { zeus } from '$lib/zeus';
+  import InputText from '$lib/components/InputText.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import InputCheckbox from './InputCheckbox.svelte';
+
+  export let user: {
+    uid: string;
+  };
+  let resetPasswordLoading = false;
+  let oldPassword = '';
+  let newPassword = '';
+  let newPassword2 = '';
+  let resetPasswordError: string | undefined = undefined;
+  let disconnectAll = false;
+
+  const resetPassword = async () => {
+    if (resetPasswordLoading) return;
+    if (newPassword !== newPassword2) {
+      resetPasswordError = 'Les mots de passe ne correspondent pas';
+      return;
+    }
+
+    try {
+      resetPasswordLoading = true;
+      const { resetPassword } = await $zeus.mutate({
+        resetPassword: [
+          {
+            uid: user.uid,
+            oldPassword,
+            newPassword,
+            disconnectAll,
+          },
+          {
+            __typename: true,
+            '...on Error': { message: true },
+            '...on MutationResetPasswordSuccess': { data: true },
+          },
+        ],
+      });
+      if (resetPassword.__typename === 'Error') {
+        resetPasswordError = resetPassword.message;
+        
+      } else {
+        resetPasswordError = '';
+        oldPassword = '';
+        newPassword = '';
+        newPassword2 = '';
+      }
+    } finally {
+      resetPasswordLoading = false;
+    }
+  };
+</script>
+
+<form on:submit|preventDefault={resetPassword}>
+  <h2>Changer de mot de passe</h2>
+  {#if resetPasswordError}
+    <Alert theme="danger">{resetPasswordError}</Alert>
+  {:else if resetPasswordError === ''}
+    <Alert theme="success">Mot de passe changé avec succès</Alert>
+  {/if}
+  <InputText type="password" label="Mot de passe actuel" bind:value={oldPassword} required />
+  <InputText
+    type="password"
+    label="Nouveau mot de passe"
+    bind:value={newPassword}
+    required
+    minLength={8}
+  />
+  <InputText
+    type="password"
+    label="Confirmer le nouveau mot de passe"
+    bind:value={newPassword2}
+    minLength={8}
+    required
+  />
+  <InputCheckbox label="Se deconnecter de tous les appareils" bind:value={disconnectAll} />
+  <ButtonSecondary submits loading={resetPasswordLoading}>Changer de mot de passe</ButtonSecondary>
+</form>
