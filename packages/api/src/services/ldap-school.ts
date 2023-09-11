@@ -48,6 +48,10 @@ function parseN7ApprenticeAndMajor(groups: string[] | undefined):
   return undefined;
 }
 
+function unaccent(str: string): string {
+  return str.normalize('NFD').replace(/[\u0300-\u036F]/g, '');
+}
+
 /** Finds a user in a school database or returns `undefined`. */
 export const findSchoolUser = async (
   searchBy:
@@ -94,7 +98,9 @@ export const findSchoolUser = async (
     ldapFilter = `${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}`;
   } else {
     schoolServer = searchBy.schoolServer;
-    ldapFilter = `(&(sn=${searchBy.lastName})(givenName=${searchBy.firstName}))`;
+    ldapFilter = `(&(sn=${unaccent(searchBy.lastName)})(givenName=${unaccent(
+      searchBy.firstName
+    )}))`;
   }
 
   const { url, attributesMap } = settings.servers[schoolServer]!;
