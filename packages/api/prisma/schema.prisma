@@ -218,10 +218,12 @@ model Credential {
 
 /// There is one student association per school
 model StudentAssociation {
-  id       String @id @default(dbgenerated("nanoid('ae:')"))
-  schoolId String
-  name     String @unique @db.VarChar(255)
-  links    Link[]
+  id                String @id @default(dbgenerated("nanoid('ae:')"))
+  uid               String? @unique @db.VarChar(255)
+  description       String @default("") @db.VarChar(255) 
+  schoolId          String
+  name              String @unique @db.VarChar(255)
+  links             Link[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
