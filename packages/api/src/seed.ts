@@ -12,6 +12,7 @@ import {
   GroupType,
   type Prisma,
   NotificationType,
+  LogoSourceType,
 } from '@prisma/client';
 import { hash } from 'argon2';
 import slug from 'slug';
@@ -70,14 +71,66 @@ function randomIdsOf<Count extends number>(
   return result as SizedArray<string, Count>;
 }
 
-await prisma.school.createMany({
-  data: [
-    { name: 'EAU', uid: 'o', color: '#00ffff' },
-    { name: 'FEU', uid: 'feu', color: '#b22222' },
-    { name: 'TERRE', uid: '3', color: '#5e3f13' },
-    { name: 'AIR', uid: 'air', color: '#d9eaff' },
-  ],
-});
+const schoolsData = [
+  {
+    name: 'EAU',
+    uid: 'o',
+    color: '#00ffff',
+    description: 'École de l’Eau',
+    address: '2 rue Charles Camichel, 31000 Toulouse',
+  },
+  {
+    name: 'FEU',
+    uid: 'feu',
+    color: '#b22222',
+    description: 'École de Feu',
+    address: '2 rue Charles Camichel, 31000 Toulouse',
+  },
+  {
+    name: 'TERRE',
+    uid: '3',
+    color: '#5e3f13',
+    description: 'École de Terre',
+    address: '2 rue Charles Camichel, 31000 Toulouse',
+  },
+  {
+    name: 'AIR',
+    uid: 'air',
+    color: '#d9eaff',
+    description: 'École de l’Air',
+    address: '2 rue Charles Camichel, 31000 Toulouse',
+  },
+];
+
+const servicesData = [
+  {
+    name: 'Moodle',
+    description: 'Plateforme de cours',
+    url: 'https://moodle-n7.inp-toulouse.fr/',
+    logo: 'https://copyleaks.com/wp-content/uploads/2022/08/moodle-m-with-grid-1024x1024.png',
+    logoSourceType: LogoSourceType.ExternalLink,
+  },
+  {
+    name: 'EDT',
+    description: 'Emploi du temps',
+    url: 'https://edt-n7.inp-toulouse.fr/',
+    logo: 'Calendar',
+    logoSourceType: LogoSourceType.Icon,
+  },
+];
+
+for (const school of schoolsData) {
+  await prisma.school.create({
+    data: {
+      ...school,
+      services: {
+        createMany: {
+          data: servicesData,
+        },
+      },
+    },
+  });
+}
 
 const schools = await prisma.school.findMany();
 

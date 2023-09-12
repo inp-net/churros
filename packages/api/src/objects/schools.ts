@@ -10,6 +10,9 @@ export const SchoolType = builder.prismaObject('School', {
     name: t.exposeString('name'),
     color: t.exposeString('color'),
     studentAssociations: t.relation('studentAssociations'),
+    description: t.exposeString('description'),
+    address: t.exposeString('address'),
+    services: t.relation('services'),
     groups: t.relation('groups'),
   }),
 });
@@ -29,7 +32,18 @@ builder.queryField('school', (t) =>
       uid: t.arg.string(),
     },
     async resolve(query, _, { uid }) {
-      const school = await prisma.school.findUnique({ ...query, where: { uid } });
+      const school = await prisma.school.findUnique({
+        ...query,
+        where: { uid },
+        include: {
+          studentAssociations: true,
+          services: {
+            include: {
+              group: true,
+            },
+          },
+        },
+      });
       if (!school) throw new Error('School not found');
       return school;
     },

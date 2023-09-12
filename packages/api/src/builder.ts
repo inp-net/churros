@@ -25,6 +25,7 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   candidate: 'UserCandidate',
   passreset: 'PasswordReset',
   emailchange: 'EmailChange',
+  service: 'Service',
   link: 'Link',
   major: 'Major',
   school: 'School',
