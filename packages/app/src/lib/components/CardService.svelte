@@ -67,7 +67,6 @@
 
 <style>
   .card-service {
-    /* If small, then the card is 6rem wide, else 10rem */
     --size: 10rem;
 
     display: flex;

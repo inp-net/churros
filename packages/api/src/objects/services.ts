@@ -1,5 +1,7 @@
 import { builder } from '../builder.js';
 import { LogoSourceType } from '@prisma/client';
+import { prisma } from '../prisma.js';
+import { GraphQLError } from 'graphql';
 
 export const LogoSourceTypeEnum = builder.enumType(LogoSourceType, { name: 'LogoSourceType' });
 
@@ -14,7 +16,151 @@ export const ServiceType = builder.prismaObject('Service', {
       type: LogoSourceTypeEnum,
     }),
     group: t.relation('group', { nullable: true }),
-    school: t.relation('school'),
-    studentAssociations: t.relation('studentAssociation'),
+    school: t.relation('school', { nullable: true }),
+    studentAssociation: t.relation('studentAssociation', { nullable: true }),
   }),
 });
+
+builder.queryField('userServices', (t) =>
+  t.prismaField({
+    type: [ServiceType],
+    async resolve(_query, _, {}, { user: me }) {
+      if (!me) return [];
+      const user = await prisma.user.findUnique({
+        where: { id: me.id },
+        include: {
+          major: {
+            include: {
+              schools: {
+                include: {
+                  studentAssociations: {
+                    include: {
+                      services: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!user?.major?.schools) return [];
+
+      const services = [];
+
+      for (const school of user.major.schools) {
+        if (school.studentAssociations) {
+          for (const studentAssociation of school.studentAssociations) {
+            if (studentAssociation.services) {
+              services.push(...studentAssociation.services);
+            }
+          }
+        }
+      }
+
+      return services;
+    },
+  })
+);
+
+builder.queryField('services', (t) =>
+  t.prismaField({
+    type: [ServiceType],
+    args: {
+      schoolUid: t.arg.string({ required: false }),
+      groupUid: t.arg.string({ required: false }),
+      studentAssociationUid: t.arg.string({ required: false }),
+    },
+    async resolve(query, _, { schoolUid, groupUid, studentAssociationUid }) {
+      const services = await prisma.service.findMany({
+        ...query,
+        where: {
+          school: { uid: schoolUid ?? undefined },
+          group: { uid: groupUid ?? undefined },
+          studentAssociation: { uid: studentAssociationUid },
+        },
+      });
+      return services;
+    },
+  })
+);
+
+builder.mutationField('upsertService', (t) =>
+  t.prismaField({
+    type: ServiceType,
+    errors: {},
+    args: {
+      id: t.arg.id({ required: false }),
+      name: t.arg.string(),
+      url: t.arg.string(),
+      description: t.arg.string(),
+      logo: t.arg.string(),
+      logoSourceType: t.arg({ type: LogoSourceTypeEnum }),
+      schoolUid: t.arg.string({ required: false }),
+      groupUid: t.arg.string({ required: false }),
+      studentAssociationUid: t.arg.string({ required: false }),
+    },
+    authScopes(_, {}, { user }) {
+      return Boolean(user?.admin);
+    },
+    async resolve(
+      query,
+      _,
+      {
+        id,
+        name,
+        url,
+        description,
+        logo,
+        logoSourceType,
+        schoolUid,
+        groupUid,
+        studentAssociationUid,
+      },
+      { user }
+    ) {
+      if (!user?.admin) throw new GraphQLError('Unauthorized');
+      const service = await prisma.service.upsert({
+        ...query,
+        where: { id: id ?? '' },
+        create: {
+          name,
+          url,
+          description,
+          logo,
+          logoSourceType,
+          school: schoolUid ? { connect: { uid: schoolUid } } : undefined,
+          group: groupUid ? { connect: { uid: groupUid } } : undefined,
+          studentAssociation: studentAssociationUid
+            ? { connect: { uid: studentAssociationUid } }
+            : undefined,
+        },
+        update: {
+          name,
+          url,
+          description,
+          logo,
+          logoSourceType,
+          school: schoolUid ? { connect: { uid: schoolUid } } : { disconnect: true },
+          group: groupUid ? { connect: { uid: groupUid } } : { disconnect: true },
+          studentAssociation: studentAssociationUid
+            ? { connect: { uid: studentAssociationUid } }
+            : { disconnect: true },
+        },
+      });
+
+      await prisma.logEntry.create({
+        data: {
+          area: 'service',
+          action: 'create',
+          target: service.id,
+          message: `Service ${service.id} created: ${service.name}`,
+          user: user ? { connect: { id: user.id } } : undefined,
+        },
+      });
+
+      return service;
+    },
+  })
+);

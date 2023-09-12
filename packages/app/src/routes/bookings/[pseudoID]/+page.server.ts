@@ -3,36 +3,396 @@ import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 
 /* @generated from schema by /packages/api/build/scripts/update-id-prefix-to-typename-map.js */
-const ID_PREFIXES_TO_TYPENAMES = {
-  u: 'User',
-  godparentreq: 'GodparentRequest',
-  candidate: 'UserCandidate',
-  passreset: 'PasswordReset',
-  emailchange: 'EmailChange',
-  service: 'Service',
-  link: 'Link',
-  major: 'Major',
-  school: 'School',
-  credential: 'Credential',
-  ae: 'StudentAssociation',
-  contribution: 'Contribution',
-  contributionoption: 'ContributionOption',
-  g: 'Group',
-  a: 'Article',
-  e: 'Event',
-  tg: 'TicketGroup',
-  t: 'Ticket',
-  r: 'Registration',
-  log: 'LogEntry',
-  lydia: 'LydiaAccount',
-  lydiapayment: 'LydiaTransaction',
-  barweek: 'BarWeek',
-  notifsub: 'NotificationSubscription',
-  notif: 'Notification',
-  notifsetting: 'NotificationSetting',
-  ann: 'Announcement',
-};
+ const ID_PREFIXES_TO_TYPENAMES = {
+    "u": "User",
+    "godparentreq": "GodparentRequest",
+    "candidate": "UserCandidate",
+    "passreset": "PasswordReset",
+    "emailchange": "EmailChange",
+    "service": "Service",
+    "link": "Link",
+    "major": "Major",
+    "school": "School",
+    "credential": "Credential",
+    "ae": "StudentAssociation",
+    "contribution": "Contribution",
+    "contributionoption": "ContributionOption",
+    "g": "Group",
+    "a": "Article",
+    "e": "Event",
+    "tg": "TicketGroup",
+    "t": "Ticket",
+    "r": "Registration",
+    "log": "LogEntry",
+    "lydia": "LydiaAccount",
+    "lydiapayment": "LydiaTransaction",
+    "barweek": "BarWeek",
+    "notifsub": "NotificationSubscription",
+    "notif": "Notification",
+    "notifsetting": "NotificationSetting",
+    "ann": "Announcement"
+}
 /* end @generated from schema */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function reverseMap<K extends string, V extends string>(obj: Record<K, V>): Record<V, K> {
   return Object.fromEntries(Object.entries(obj).map(([k, v]) => [v, k])) as unknown as Record<V, K>;
