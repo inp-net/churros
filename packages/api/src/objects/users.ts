@@ -447,8 +447,12 @@ builder.mutationField('updateUser', (t) =>
       let changingContributesWith = false;
       if (contributesWith) {
         changingContributesWith =
-          JSON.stringify(oldContributions.map(({ optionId }) => optionId).sort()) !==
-          JSON.stringify(contributesWith.sort());
+          JSON.stringify(
+            oldContributions
+              .filter((c) => c.paid)
+              .map(({ optionId }) => optionId)
+              .sort()
+          ) !== JSON.stringify(contributesWith.sort());
       }
 
       if (changingEmail) {
@@ -482,14 +486,19 @@ builder.mutationField('updateUser', (t) =>
             },
           },
         });
-        await prisma.contribution.createMany({
-          data: contributesWith.map((id) => ({
-            optionId: id,
-            userId: targetUser.id,
-            paid: true,
-          })),
-          skipDuplicates: true,
-        });
+        for (const optionId of contributesWith) {
+          await prisma.contribution.upsert({
+            where: { optionId_userId: { optionId, userId: targetUser.id } },
+            update: {
+              paid: true,
+            },
+            create: {
+              option: { connect: { id: optionId } },
+              user: { connect: { id: targetUser.id } },
+              paid: true,
+            },
+          });
+        }
       }
 
       const userUpdated = await prisma.user.update({
