@@ -12,10 +12,12 @@ import { PaymentMethod } from '@prisma/client';
 export const placesLeft = (ticket: {
   name: string;
   capacity: number;
-  registrations: Array<{ paid: boolean; opposedAt: Date | null }>;
+  registrations: Array<{ paid: boolean; opposedAt: Date | null; cancelledAt: Date | null }>;
   group: null | {
     capacity: number;
-    tickets: Array<{ registrations: Array<{ paid: boolean; opposedAt: Date | null }> }>;
+    tickets: Array<{
+      registrations: Array<{ paid: boolean; opposedAt: Date | null; cancelledAt: Date | null }>;
+    }>;
   };
 }) => {
   const handleUnlimited = (capacity: number) =>
@@ -28,7 +30,9 @@ export const placesLeft = (ticket: {
         ticket.group.tickets.reduce(
           (sum, { registrations }) =>
             sum +
-            registrations.filter(({ opposedAt /* , paid */ }) => !opposedAt /* && paid */).length,
+            registrations.filter(
+              ({ opposedAt, cancelledAt /* , paid */ }) => !cancelledAt && !opposedAt /* && paid */
+            ).length,
           0
         )
     );
@@ -39,7 +43,9 @@ export const placesLeft = (ticket: {
     placesLeftInTicket = Math.max(
       0,
       handleUnlimited(ticket.capacity) -
-        ticket.registrations.filter(({ opposedAt /* , paid */ }) => !opposedAt /* && paid */).length
+        ticket.registrations.filter(
+          ({ opposedAt, cancelledAt /* , paid */ }) => !cancelledAt && !opposedAt /* && paid */
+        ).length
     );
   }
 
