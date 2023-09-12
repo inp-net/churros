@@ -12,14 +12,14 @@
   ul {
     display: flex;
     flex-wrap: wrap;
-    column-gap: 1rem;
     row-gap: 0.5rem;
+    column-gap: 1rem;
     justify-content: space-around;
     max-width: 600px;
+    padding: 0.5rem;
     padding-left: 0;
     margin: 0 auto;
     list-style: none;
-    padding: 0.5rem;
   }
 
   a {
@@ -33,7 +33,7 @@
   }
 
   li.active {
-    color: var(--primary-bg);
+    color: var(--primary-link);
   }
 
   li.active::after {
@@ -41,7 +41,7 @@
     width: calc(100% + 2rem);
     height: calc(2 * var(--border-block));
     content: '';
-    background-color: var(--primary-bg);
+    background-color: var(--primary-link);
     border-top-left-radius: var(--radius-block);
     border-top-right-radius: var(--radius-block);
     transform: translateX(-1rem);

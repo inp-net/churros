@@ -213,7 +213,7 @@
   }
 
   .current {
-    color: var(--primary-bg);
+    color: var(--primary-link);
   }
 
   .flyout-backdrop.open {

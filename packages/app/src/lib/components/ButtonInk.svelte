@@ -35,7 +35,7 @@
     align-items: center;
     padding: 0.25em 0.5em;
     font-weight: bold;
-    color: var(--primary-bg);
+    color: var(--primary-link);
     text-transform: uppercase;
     letter-spacing: 0.07em;
     cursor: pointer;
