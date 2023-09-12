@@ -15,6 +15,13 @@ export const _registrationsQuery = Selector('QueryRegistrationsOfEventConnection
         fullName: true,
         pictureFile: true,
       },
+      cancelled: true,
+      cancelledAt: true,
+      cancelledBy: {
+        uid: true,
+        fullName: true,
+        pictureFile: true,
+      },
       author: {
         uid: true,
         pictureFile: true,

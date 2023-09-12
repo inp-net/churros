@@ -72,6 +72,7 @@ model User {
   contributions             Contribution[]
   verifications             Registration[]             @relation("verifiedBy")
   oppositions               Registration[]             @relation("opposedBy")
+  cancellations             Registration[]             @relation("cancelledBy")
 
   @@unique([schoolServer, schoolUid])
 }
@@ -218,12 +219,12 @@ model Credential {
 
 /// There is one student association per school
 model StudentAssociation {
-  id                String @id @default(dbgenerated("nanoid('ae:')"))
-  uid               String? @unique @db.VarChar(255)
-  description       String @default("") @db.Text
-  schoolId          String
-  name              String @unique @db.VarChar(255)
-  links             Link[]
+  id          String  @id @default(dbgenerated("nanoid('ae:')"))
+  uid         String? @unique @db.VarChar(255)
+  description String  @default("") @db.Text
+  schoolId    String
+  name        String  @unique @db.VarChar(255)
+  links       Link[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -468,6 +469,7 @@ model Registration {
   authorId      String
   verifiedById  String?
   opposedById   String?
+  cancelledById String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   paymentMethod PaymentMethod?
@@ -480,6 +482,8 @@ model Registration {
   verifiedAt       DateTime?
   opposedBy        User?             @relation(name: "opposedBy", fields: [opposedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   opposedAt        DateTime?
+  cancelledBy      User?             @relation(name: "cancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  cancelledAt      DateTime?
 }
 
 enum PaymentMethod {

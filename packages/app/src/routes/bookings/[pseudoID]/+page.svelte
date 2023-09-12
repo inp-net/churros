@@ -37,6 +37,7 @@
     authorIsBeneficiary,
     paid,
     opposed,
+    cancelled,
     author,
     ticket,
     ticket: { links },
@@ -53,7 +54,7 @@
     <BackButton go=".." />
     Ma place
     <div class="payment-status">
-      <BadgePaymentStatus feminin {paid} {opposed} />
+      <BadgePaymentStatus feminin {cancelled} {paid} {opposed} />
     </div>
   </h1>
 
@@ -100,12 +101,16 @@
   {/if}
 
   <section class="code">
-    <svg class="qrcode" viewBox={qrcodeViewbox} stroke="var(--text)" stroke-width="1.05">
-      <path d={qrcodePath} fill="black" />
-    </svg>
-    <p class="registration-code">
-      {id.split(':', 2)[1].toUpperCase()}
-    </p>
+    {#if cancelled}
+      <div class="qrcode cancelled">Place<br />annulée</div>
+    {:else}
+      <svg class="qrcode" viewBox={qrcodeViewbox} stroke="var(--text)" stroke-width="1.05">
+        <path d={qrcodePath} fill="black" />
+      </svg>
+      <p class="registration-code">
+        {id.split(':', 2)[1].toUpperCase()}
+      </p>
+    {/if}
   </section>
 
   {#if links}
@@ -148,44 +153,59 @@
     </dl>
   </section>
 
-  <section class="cancel">
-    {#if !confirmingCancellation}
-      <ButtonSecondary
-        danger
-        on:click={async () => {
-          if (paid) {
-            confirmingCancellation = true;
-          } else {
-            await $zeus.mutate({
-              deleteRegistration: [{ id }, true],
-            });
-            await goto('..');
-          }
-        }}
-        ><IconCancel />
-        {#if paid}Libérer{:else}Annuler{/if} ma place</ButtonSecondary
-      >
-    {:else}
-      <Alert theme="danger">
-        <div class="confirm-cancellation">
-          <h2>Es-tu sûr·e ?</h2>
-          <p>
-            Il n'est pas possible de revenir en arrière. Tu devras de nouveau prendre une place
-            (s'il en reste) si tu veux de nouveau en réserver une. Le remboursement n'est pas
-            systématique, contacte l'organisation pour savoir si tu sera remboursé·e.
-          </p>
-          <ButtonPrimary
-            on:click={async () => {
+  {#if !cancelled}
+    <section class="cancel">
+      {#if !confirmingCancellation}
+        <ButtonSecondary
+          danger
+          on:click={async () => {
+            if (paid) {
+              confirmingCancellation = true;
+            } else {
               await $zeus.mutate({
                 deleteRegistration: [{ id }, true],
               });
               await goto('..');
-            }}>Oui, je confirme</ButtonPrimary
-          >
-        </div>
-      </Alert>
-    {/if}
-  </section>
+            }
+          }}
+          ><IconCancel />
+          {#if paid}Libérer{:else}Annuler{/if} ma place</ButtonSecondary
+        >
+      {:else}
+        <Alert theme="danger">
+          <div class="confirm-cancellation">
+            <h2>Es-tu sûr·e ?</h2>
+            <p>
+              Il n'est pas possible de revenir en arrière. Tu devras de nouveau prendre une place
+              (s'il en reste) si tu veux de nouveau en réserver une. Le remboursement n'est pas
+              systématique, contacte l'organisation pour savoir si tu sera remboursé·e.
+            </p>
+            <ButtonPrimary
+              on:click={async () => {
+                const { cancelRegistration } = await $zeus.mutate({
+                  cancelRegistration: [
+                    { id },
+                    {
+                      __typename: true,
+                      '...on Error': { message: true },
+                      '...on MutationCancelRegistrationSuccess': {
+                        data: true,
+                      },
+                    },
+                  ],
+                });
+                if (cancelRegistration.__typename === 'Error') 
+                  console.error(cancelRegistration.message);
+                 else 
+                  await goto('..');
+                
+              }}>Oui, je confirme</ButtonPrimary
+            >
+          </div>
+        </Alert>
+      {/if}
+    </section>
+  {/if}
 
   <section class="explainer">
     <p class="typo-details">
@@ -216,6 +236,23 @@
   .qrcode {
     width: 100%;
     max-height: 40vh;
+  }
+
+  .qrcode.cancelled {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: 40vh;
+    height: 40vh;
+    margin: 0 auto;
+    font-size: 2rem;
+    font-weight: bold;
+    line-height: 1;
+    color: var(--danger-link);
+    text-align: center;
+    text-transform: uppercase;
+    border: var(--border-block) solid var(--danger-border);
   }
 
   .registration-code {

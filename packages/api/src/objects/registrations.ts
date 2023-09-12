@@ -48,6 +48,13 @@ export const RegistrationType = builder.prismaNode('Registration', {
         return Boolean(opposedAt && opposedById);
       },
     }),
+    cancelledAt: t.expose('cancelledAt', { type: DateTimeScalar, nullable: true }),
+    cancelledBy: t.relation('cancelledBy', { nullable: true }),
+    cancelled: t.boolean({
+      resolve({ cancelledAt, cancelledById }) {
+        return Boolean(cancelledAt && cancelledById);
+      },
+    }),
     ticket: t.relation('ticket'),
     author: t.relation('author'),
     authorIsBeneficiary: t.boolean({
@@ -356,7 +363,7 @@ builder.mutationField('verifyRegistration', (t) =>
         },
       });
 
-      if (!registration) {
+      if (!registration || Boolean(registration.cancelledAt)) {
         await log('Scan failed: registration not found');
         return {
           state: RegistrationVerificationState.NotFound,
@@ -794,6 +801,51 @@ builder.mutationField('paidRegistration', (t) =>
   })
 );
 
+builder.mutationField('cancelRegistration', (t) =>
+  t.field({
+    type: 'Boolean',
+    errors: {},
+    args: {
+      id: t.arg.id(),
+    },
+    async authScopes(_, { id }, { user }) {
+      if (!user) return false;
+      const registration = await prisma.registration.findFirst({
+        where: { id },
+        include: {
+          author: true,
+          ticket: {
+            include: {
+              event: {
+                include: {
+                  managers: {
+                    include: {
+                      user: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!registration) return false;
+      if (!user.admin && user.uid !== registration.author.uid) return false;
+      return true;
+    },
+    async resolve(_, { id }, { user }) {
+      await prisma.registration.update({
+        where: { id },
+        data: {
+          cancelledAt: new Date(),
+          cancelledBy: { connect: { id: user?.id } },
+        },
+      });
+      return true;
+    },
+  })
+);
+
 builder.mutationField('opposeRegistration', (t) =>
   t.field({
     type: 'Boolean',
@@ -870,38 +922,8 @@ builder.mutationField('deleteRegistration', (t) =>
     args: {
       id: t.arg.id(),
     },
-    async authScopes(_, { id }, { user }) {
-      if (!user) return false;
-      const registration = await prisma.registration.findFirst({
-        where: { id },
-        include: {
-          ticket: {
-            include: {
-              event: {
-                include: {
-                  managers: {
-                    include: {
-                      user: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-          author: true,
-        },
-      });
-      if (!registration) return false;
-
-      // Only managers can delete other's registrations
-      if (registration.author.uid !== user.uid) {
-        return eventManagedByUser(registration.ticket.event, user, {
-          canVerifyRegistrations: true,
-        });
-      }
-
-      // The author can delete their own registrations
-      return true;
+    authScopes(_, {}, { user }) {
+      return Boolean(user?.admin);
     },
     async resolve(_, { id }, { user }) {
       // const registration = await prisma.registration.findFirstOrThrow({

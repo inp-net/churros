@@ -15,6 +15,7 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
             cursor: true,
             node: {
               paid: true,
+              cancelled: true,
               author: {
                 firstName: true,
                 fullName: true,

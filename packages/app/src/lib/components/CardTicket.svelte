@@ -1,5 +1,6 @@
 <script lang="ts">
   import Qrcode from '~icons/mdi/qrcode';
+  import IconCancelled from '~icons/mdi/cancel';
   import CashClock from '~icons/mdi/cash-clock';
   import { env } from '$env/dynamic/public';
 
@@ -10,11 +11,13 @@
   export let authorIsBeneficiary: boolean;
   export let author: { fullName: string };
   export let paid: boolean;
+  export let cancelled: boolean;
 </script>
 
 <a
   class="billet"
   {href}
+  class:danger={cancelled}
   class:noimg={!ticket.event.pictureFile}
   style:background-image={ticket.event.pictureFile
     ? `linear-gradient(rgba(0, 0, 0, var(--alpha)), rgba(0,0,0,var(--alpha))), url('${env.PUBLIC_STORAGE_URL}${ticket.event.pictureFile}')`
@@ -32,10 +35,18 @@
       </div>
     {/if}
     <div class="title">{ticket.event.title}</div>
-    <div class="ticket-name">{ticket.name}</div>
+    <div class="ticket-name">
+      {#if cancelled}
+        <em>Place annulée</em>
+      {:else}
+        {ticket.name}
+      {/if}
+    </div>
   </div>
   <div class="qrcode" class:paid>
-    {#if paid}
+    {#if cancelled}
+      <IconCancelled />
+    {:else if paid}
       <Qrcode />
     {:else}
       <CashClock />

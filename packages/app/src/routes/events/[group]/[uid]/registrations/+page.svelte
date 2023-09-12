@@ -3,6 +3,7 @@
   import IconCash from '~icons/mdi/currency-usd';
   import IconCashOff from '~icons/mdi/currency-usd-off';
   import IconCancel from '~icons/mdi/cancel';
+  import IconOpposed from '~icons/mdi/hand-back-right-off-outline';
   import type { PageData } from './$types';
   import * as jsonToCsv from 'json-to-csv-in-browser';
   import IconCheck from '~icons/mdi/check';
@@ -74,6 +75,8 @@
               ticket,
               id,
               verifiedAt,
+              opposed,
+              cancelled,
             },
           }) => {
             const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined);
@@ -83,6 +86,8 @@
               'Achat par': author.fullName,
               Payée: humanBoolean(paid),
               Scannée: humanBoolean(Boolean(verifiedAt) && paid),
+              'En opposition': humanBoolean(Boolean(opposed)),
+              Annulée: humanBoolean(Boolean(cancelled)),
               'Méthode de paiement': paymentMethod,
               Billet: ticket.name,
               Cotisant: benef
@@ -162,7 +167,7 @@
 
       case 'state': {
         const sortingIndex = (a: Registration) =>
-          a.opposed ? 0 : a.verifiedAt && a.paid ? 1 : a.paid ? 2 : 3;
+          a.opposed ? 0 : a.cancelled ? 1 : a.verifiedAt && a.paid ? 2 : a.paid ? 3 : 4;
         return (a, b) => (desc ? -1 : 1) * (sortingIndex(a) - sortingIndex(b));
       }
 
@@ -336,7 +341,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod, verifiedAt, verifiedBy, opposed, opposedAt, opposedBy } } (id)}
+      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod, verifiedAt, verifiedBy, opposed, opposedAt, opposedBy, cancelled, cancelledAt, cancelledBy } } (id)}
         {@const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined)}
         {@const code = id.replace(/^r:/, '').toUpperCase()}
         <tr class:selected={rowIsSelected[id]}>
@@ -352,22 +357,28 @@
           </td>
           <td
             class="centered"
-            class:danger={opposed}
+            class:danger={opposed || cancelled}
             class:success={paid && verifiedAt}
             class:warning={!paid}
-            use:tooltip={opposedAt || verifiedAt
+            use:tooltip={opposedAt || verifiedAt || cancelledAt
               ? (opposedAt
                   ? `Opposée le ${formatDateTime(opposedAt)} par ${opposedBy?.fullName ?? '?'}`
                   : '') +
                 (verifiedAt ? ', ' : '') +
                 (verifiedAt
                   ? `Scannée le ${formatDateTime(verifiedAt)} par ${verifiedBy?.fullName ?? '?'}`
+                  : '') +
+                (cancelledAt ? ', ' : '') +
+                (cancelledAt
+                  ? `Annulée le ${formatDateTime(cancelledAt)} par ${cancelledBy?.fullName ?? '?'}`
                   : '')
               : paid
               ? 'Payée'
               : 'Non payée'}
           >
             {#if opposed}
+              <IconOpposed />
+            {:else if cancelledAt}
               <IconCancel />
             {:else if verifiedAt && paid}
               <IconCheck />
@@ -500,7 +511,7 @@
                   await oppose(registration);
                 }}
               >
-                <IconCancel />
+                <IconOpposed />
               </ButtonGhost>
             {/if}
           </td>
