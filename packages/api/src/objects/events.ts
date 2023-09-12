@@ -107,6 +107,48 @@ const RegistrationsCountsType = builder
     }),
   });
 
+class ProfitsBreakdown {
+  /* eslint-disable @typescript-eslint/parameter-properties */
+  total: number;
+  byPaymentMethod: Record<PaymentMethod, number>;
+  byTicket: Array<{ id: string; amount: number }>;
+  /* eslint-enable @typescript-eslint/parameter-properties */
+
+  constructor(
+    total: number,
+    byPaymentMethod: Record<PaymentMethod, number>,
+    byTicket: Array<{ id: string; amount: number }>
+  ) {
+    this.total = total;
+    this.byPaymentMethod = byPaymentMethod;
+    this.byTicket = byTicket;
+  }
+}
+
+const ProfitsBreakdownType = builder.objectRef<ProfitsBreakdown>('ProfitsBreakdown').implement({
+  fields: (t) => ({
+    total: t.exposeInt('total'),
+    byPaymentMethod: t.expose('byPaymentMethod', {
+      type: builder
+        .objectRef<Record<PaymentMethod, number>>('ProfitsBreakdownByPaymentMethod')
+        .implement({
+          fields: (t) =>
+            Object.fromEntries(Object.entries(PaymentMethod).map(([_, p]) => [p, t.exposeInt(p)])),
+        }),
+    }),
+    byTicket: t.expose('byTicket', {
+      type: [
+        builder.objectRef<{ id: string; amount: number }>('ProfitsBreakdownByTicket').implement({
+          fields: (t) => ({
+            id: t.exposeID('id'),
+            amount: t.exposeInt('amount'),
+          }),
+        }),
+      ],
+    }),
+  }),
+});
+
 export function eventCapacity(
   tickets: Array<Ticket & { group: TicketGroup | null }>,
   ticketGroups: Array<TicketGroup & { tickets: Ticket[] }>
@@ -273,6 +315,34 @@ export const EventType = builder.prismaNode('Event', {
           verified: results.filter((r) => r.verifiedAt).length,
           unpaidLydia: results.filter((r) => !r.paid && r.paymentMethod === PaymentMethod.Lydia)
             .length,
+        };
+      },
+    }),
+    profitsBreakdown: t.field({
+      type: ProfitsBreakdownType,
+      async resolve({ id }) {
+        const tickets = await prisma.ticket.findMany({
+          where: { event: { id } },
+        });
+        const registrations = await prisma.registration.findMany({
+          where: { ticket: { event: { id } } },
+          include: { ticket: true },
+        });
+        const sumUp = (regs: typeof registrations) =>
+          regs.reduce((acc, r) => acc + (r.paid ? r.ticket.price : 0), 0);
+
+        return {
+          total: sumUp(registrations),
+          byPaymentMethod: Object.fromEntries(
+            Object.entries(PaymentMethod).map(([_, value]) => [
+              value,
+              sumUp(registrations.filter((r) => r.paymentMethod === value)),
+            ])
+          ) as Record<PaymentMethod, number>,
+          byTicket: tickets.map(({ id }) => ({
+            id,
+            amount: sumUp(registrations.filter((r) => r.ticket.id === id)),
+          })),
         };
       },
     }),

@@ -108,7 +108,7 @@
   export let data: PageData;
   const {
     registrationsOfEvent: registrations,
-    event: { registrationsCounts },
+    event: { registrationsCounts, profitsBreakdown },
   } = data;
   const rowIsSelected = Object.fromEntries(registrations.edges.map(({ node }) => [node.id, false]));
 
@@ -268,7 +268,8 @@
   <h1>{registrationsCounts.total} Réservations</h1>
   <section class="counts">
     {registrationsCounts.paid} payées · {registrationsCounts.verified} scannées · {registrationsCounts.unpaidLydia}
-    Lydias non payées
+    Lydias non payées <br />
+    {profitsBreakdown.total}€ de bénéfices
   </section>
 
   <div class="actions">

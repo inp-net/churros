@@ -65,6 +65,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
         Selector('Event')({
           id: true,
           registrationsCounts: { total: true, paid: true, verified: true, unpaidLydia: true },
+          profitsBreakdown: { total: true },
         }),
       ],
       registrationsOfEvent: [
