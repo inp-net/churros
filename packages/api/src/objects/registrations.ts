@@ -595,6 +595,8 @@ builder.mutationField('upsertRegistration', (t) =>
             ticket: { event: { id: event.id } },
             authorId: user.id,
             beneficiary: beneficiary ?? '',
+            // eslint-disable-next-line unicorn/no-null
+            cancelledAt: null,
           },
         });
         if (existingRegistration) throw new GraphQLError('Vous êtes déjà inscrit à cet événement');
