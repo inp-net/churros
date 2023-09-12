@@ -1,81 +1,87 @@
 <script lang="ts">
-  import IconAdd from '~icons/mdi/add';
-  import IconCar from '~icons/mdi/car';
-  import IconDefisInte from '~icons/mdi/sword-cross';
-  import IconHand from '~icons/mdi/hand-heart';
-  import Carrot from '~icons/mdi/carrot';
-  import IconTerminal from '~icons/mdi/terminal';
   import CardService from '$lib/components/CardService.svelte';
   import { me } from '$lib/session';
-  import type { SvelteComponent } from 'svelte';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
   import { isDark } from '$lib/theme';
   import { groupLogoSrc } from '$lib/logos';
 
   function Service(
     name: string,
-    description: string,
+    description = '',
     {
-      href = '',
+      url = '',
       logo = undefined,
-    }: { href?: string; logo?: undefined | typeof SvelteComponent<any> | string }
+      logoSourceType = undefined,
+    }: {
+      url?: string;
+      logo?: undefined | string;
+      logoSourceType?: undefined | 'ExternalLink' | 'InternalLink' | 'Icon' | 'GroupLogo';
+    } = {}
   ): {
     name: string;
-    logoFile: string | typeof SvelteComponent<any>;
-    descriptionHtml: string;
-    href: string;
+    logo: string;
+    logoSourceType: 'ExternalLink' | 'InternalLink' | 'Icon' | 'GroupLogo';
+    description: string;
+    url: string;
   } {
     return {
       name,
-      logoFile: logo ?? `/logos/${name.toLowerCase().replaceAll(' ', '-')}.png`,
-      descriptionHtml: description,
-      href: href || `/${name.toLowerCase().replaceAll(' ', '-')}`,
+      logo: logo ?? name,
+      logoSourceType: logoSourceType ?? 'InternalLink',
+      description,
+      url: url || `/${name.toLowerCase().replaceAll(' ', '-')}`,
     };
   }
 
   $: services = [
     Service("Défis d'inté", "Valide tes défis d'inté", {
-      href: 'https://defis-inte.inpt.fr',
-      logo: IconDefisInte,
+      url: 'https://defis-inte.inpt.fr',
+      logo: 'defis',
+      logoSourceType: 'Icon',
     }),
     Service('Ecobox', 'Commande ton ecobox', {
-      logo: Carrot,
-      href: 'https://lespaniersdelamiss.fr/',
+      logo: 'Carrot',
+      url: 'https://lespaniersdelamiss.fr/',
+      logoSourceType: 'Icon',
     }),
     Service('Photos', 'Merci Photo7 ♥', {
-      href: 'https://photo7.inpt.fr',
+      url: 'https://photo7.inpt.fr',
       logo: groupLogoSrc($isDark, {
         pictureFile: 'groups/photo-n7.png',
         pictureFileDark: 'groups/dark/photo-n7.png',
       }),
+      logoSourceType: 'GroupLogo',
     }),
     Service('TVn7FLiX', 'Les productions de TVn7', {
-      href: 'https://tvn7flix.fr',
+      url: 'https://tvn7flix.fr',
       logo: groupLogoSrc($isDark, {
         pictureFileDark: 'groups/dark/tvn7-n7.png',
         pictureFile: 'groups/tvn7-n7.png',
       }),
+      logoSourceType: 'GroupLogo',
     }),
     Service('IPQ', "Le podcast de l'n7", {
-      href: 'https://open.spotify.com/show/77KtGDlbY7RH3BSTOsNGbA?si=48a2cbacee7440b3',
+      url: 'https://open.spotify.com/show/77KtGDlbY7RH3BSTOsNGbA?si=48a2cbacee7440b3',
     }),
     Service('Jeux', 'Merci à 7Fault', {
-      href: 'https://7fault.itch.io',
+      url: 'https://7fault.itch.io',
       logo: groupLogoSrc($isDark, {
         pictureFile: 'groups/7fault-n7.png',
         pictureFileDark: 'groups/dark/7fault-n7.png',
       }),
+      logoSourceType: 'GroupLogo',
     }),
     Service('La Frappe', 'Sauve tes partiels', {
-      logo: IconHand,
-      href: 'https://bde.enseeiht.fr/services/frappe/',
+      logo: 'hand',
+      logoSourceType: 'Icon',
+      url: 'https://bde.enseeiht.fr/services/frappe/',
     }),
-    Service('Loca7', 'Trouve un appart', { href: 'https://loca7.fr' }),
+    Service('Loca7', 'Trouve un appart', { url: 'https://loca7.fr' }),
     Service('Covoiturages', 'Limite ton CO2e', {
-      logo: IconCar,
-      href: 'https://bde.enseeiht.fr/services/covoiturage/',
+      logo: 'car',
+      logoSourceType: 'Icon',
+      url: 'https://bde.enseeiht.fr/services/covoiturage/',
     }),
-    // Service('Nextcloud', 'Fichiers, etc.', { href: 'https://cloud.inpt.fr', logo: IconCloud }),
   ];
 </script>
 
@@ -85,20 +91,24 @@
   <ul class="nobullet">
     {#each services as service}
       <li>
-        <CardService {...service} />
+        <CardService {service} />
       </li>
     {/each}
     <li class="suggest">
       <CardService
-        dashedBorder
-        logoFile={IconAdd}
-        name="Il manque…"
-        descriptionHtml="Demande à rajouter un service ici"
-        href="./submit"
+        service={{
+          name: 'Il manque…',
+          logo: 'add',
+          logoSourceType: 'Icon',
+          description: 'Demande à rajouter un service ici',
+          url: '/submit',
+        }}
       />
     </li>
     {#if $me?.admin}
-      <CardService logoFile={IconTerminal} name="Backrooms" href="/backrooms" />
+      <CardService
+        service={{ name: 'Backrooms', logo: 'terminal', logoSourceType: 'Icon', url: '/backrooms' }}
+      />
     {/if}
   </ul>
 

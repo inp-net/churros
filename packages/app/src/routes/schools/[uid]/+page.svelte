@@ -1,9 +1,6 @@
 <script lang="ts">
-  import { LogoSourceType } from '../../../zeus';
   import type { PageData } from './$types';
-  import { env } from '$env/dynamic/public';
-  import { groupLogoSrc } from '$lib/logos';
-  import { isDark } from '$lib/theme';
+  import CardService from '$lib/components/CardService.svelte';
 
   export let data: PageData;
 
@@ -49,24 +46,11 @@
     </div>
   </section>
 
-  <section class="services">
+  <section>
     <h2>Services</h2>
-    <div class="groups">
+    <div class="services">
       {#each school.services as service}
-        <a href={service.url}>
-          <div class="avatar">
-            {#if service.logoSourceType === LogoSourceType.ExternalLink}
-              <img src={service.logo} alt={service.name} />
-            {:else if service.logoSourceType === LogoSourceType.InternalLink}
-              <img src={env.PUBLIC_STORAGE_URL + service.logo} alt={service.name} />
-            {:else if service.logoSourceType === LogoSourceType.GroupLogo}
-              <img src={groupLogoSrc($isDark, service.group)} alt={service.name} />
-            {:else}
-              <span>{service.logo}</span>
-            {/if}
-          </div>
-          <div class="name">{service.name}</div>
-        </a>
+        <CardService {service} small />
       {/each}
     </div>
   </section>
@@ -148,6 +132,13 @@
 
   .description {
     font-size: 0.9em;
+  }
+
+  .services {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
   }
 
   @media (min-width: 1000px) {
