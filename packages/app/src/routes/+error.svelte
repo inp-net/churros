@@ -33,7 +33,7 @@
   <p>Accès interdit.</p>
 {:else if status === 404}
   <div class="err-404">
-    <img src="/404.png" alt="404" />
+    <img src="/404.svg" alt="404" />
     <p>Cette page n'existe pas.</p>
   </div>
 {:else if error}
