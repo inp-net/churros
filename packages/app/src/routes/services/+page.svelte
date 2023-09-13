@@ -6,14 +6,14 @@
 
   export let data: PageData;
 
-  const { userServices: services } = data;
+  const { userServices } = data;
 </script>
 
 <div class="content">
   <h1>Les autres services</h1>
 
   <ul class="nobullet">
-    {#each services as service}
+    {#each userServices as service}
       <li>
         <CardService {service} />
       </li>

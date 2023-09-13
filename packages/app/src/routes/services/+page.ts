@@ -1,8 +1,8 @@
 import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent }) => {
-  const data = await loadQuery(
+export const load: PageLoad = async ({ fetch, parent }) =>
+  loadQuery(
     {
       userServices: {
         name: true,
@@ -18,10 +18,3 @@ export const load: PageLoad = async ({ fetch, parent }) => {
     },
     { fetch, parent }
   );
-  return {
-    ...data,
-    userServices: {
-      ...data.userServices,
-    },
-  };
-};
