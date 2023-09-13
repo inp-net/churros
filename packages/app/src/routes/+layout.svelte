@@ -114,12 +114,13 @@
 </svelte:head>
 
 <div id="loading-overlay" class:visible={showInitialSpinner}>
-  <img src="/logo.png" alt="AEn7" />
+  <img src="/splash-screen.png" alt="AEn7" />
   <div class="spinner">
     <IconLoading />
   </div>
   <p class="typo-details">Connexion en cours…</p>
 </div>
+
 <div class="page">
   <TopBar
     on:report-issue={() => {
@@ -165,7 +166,7 @@
     z-index: 1000000000000000;
     display: flex;
     flex-flow: column wrap;
-    gap: 0.5rem;
+    gap: 1.5rem;
     align-items: center;
     justify-content: center;
     color: var(--primary-text);
