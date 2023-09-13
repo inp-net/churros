@@ -11,13 +11,13 @@
   let resetPasswordLoading = false;
   let oldPassword = '';
   let newPassword = '';
-  let newPassword2 = '';
+  let newPasswordConfirmation = '';
   let resetPasswordError: string | undefined = undefined;
   let disconnectAll = false;
 
   const resetPassword = async () => {
     if (resetPasswordLoading) return;
-    if (newPassword !== newPassword2) {
+    if (newPassword !== newPasswordConfirmation) {
       resetPasswordError = 'Les mots de passe ne correspondent pas';
       return;
     }
@@ -45,7 +45,7 @@
         resetPasswordError = '';
         oldPassword = '';
         newPassword = '';
-        newPassword2 = '';
+        newPasswordConfirmation = '';
       }
     } finally {
       resetPasswordLoading = false;
@@ -71,7 +71,7 @@
   <InputText
     type="password"
     label="Confirmer le nouveau mot de passe"
-    bind:value={newPassword2}
+    bind:value={newPasswordConfirmation}
     minLength={8}
     required
   />
