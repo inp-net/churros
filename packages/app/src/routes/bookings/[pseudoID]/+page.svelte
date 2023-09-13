@@ -194,11 +194,9 @@
                     },
                   ],
                 });
-                if (cancelRegistration.__typename === 'Error') 
+                if (cancelRegistration.__typename === 'Error')
                   console.error(cancelRegistration.message);
-                 else 
-                  await goto('..');
-                
+                else await goto('..');
               }}>Oui, je confirme</ButtonPrimary
             >
           </div>

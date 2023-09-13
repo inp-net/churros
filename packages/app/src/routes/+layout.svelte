@@ -14,12 +14,12 @@
   import { me } from '$lib/session';
   import ModalReportIssue from '$lib/components/ModalReportIssue.svelte';
 
-  function currentTab(url: URL): 'events' | 'search' | 'more' | 'home' {
+  function currentTab(url: URL): 'events' | 'search' | 'services' | 'home' {
     const starts = (segment: string) => url.pathname.startsWith(segment);
 
     if (starts('/search')) return 'search';
     if (starts('/week') || starts('/bookings') || starts('/events')) return 'events';
-    if (starts('/more')) return 'more';
+    if (starts('/services')) return 'services';
     return 'home';
   }
 

@@ -22,7 +22,7 @@
   import { page } from '$app/stores';
   import { tooltip } from '$lib/tooltip';
 
-  export let current: 'home' | 'search' | 'events' | 'more';
+  export let current: 'home' | 'search' | 'events' | 'services';
   let flyoutOpen = false;
 
   beforeNavigate(() => {
@@ -88,12 +88,12 @@
   </a>
 
   <a
-    href="/more"
-    class:current={!flyoutOpen && current === 'more'}
+    href="/services"
+    class:current={!flyoutOpen && current === 'services'}
     class:disabled={flyoutOpen}
     use:tooltip={'Les autre services'}
   >
-    {#if current === 'more'}
+    {#if current === 'services'}
       <IconDotsCircle />
     {:else}
       <IconDotsCircleOutline />
