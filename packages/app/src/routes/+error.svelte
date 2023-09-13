@@ -1,17 +1,25 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { onMount } from 'svelte';
 
   let error: App.Error | null;
   let status: number;
 
   $: ({ error, status } = $page);
+
+  onMount(() => {
+    if (status === 404) 
+      document.documentElement.classList.add('error-404');
+    
+  });
 </script>
 
 {#if status === 404}
   <style>
-    :root {
+    :root.error-404 {
       --bg: #000;
       --text: #25bf22;
+      --border: #25bf22;
       --primary-link: #54fe54;
     }
 
