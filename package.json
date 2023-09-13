@@ -39,7 +39,7 @@
     "lintfix": "eslint --fix . & stylelint --fix '**/*.{css,scss,svelte}' &",
     "postinstall": "husky install",
     "prisma": "yarn workspace @centraverse/api run prisma",
-    "reset": "docker compose up -d && yarn prisma migrate reset --force",
+    "reset": "docker compose up -d && NODE_ENV=development yarn prisma migrate reset --force",
     "start": "docker compose up -d && yarn workspaces foreach -piv run start"
   },
   "volta": {
