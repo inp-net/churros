@@ -78,6 +78,7 @@ builder.mutationField('login', (t) =>
       const userAgent = request.headers.get('User-Agent')?.slice(0, 255) ?? '';
 
       if (
+        process.env['NODE_ENV'] !== 'development' &&
         user?.contributions.some(({ option: { paysFor } }) =>
           paysFor.some(({ name }) => name === 'AEn7')
         )

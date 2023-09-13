@@ -102,7 +102,9 @@ export const createUid = async ({
   const n = await dichotomid(async (n) => {
     const uid = `${base}${n > 1 ? n : ''}`;
     const existDB = Boolean(await prisma.user.findFirst({ where: { uid } }));
-    const existLdap = Boolean(await queryLdapUser(uid));
+    const existLdap = Boolean(
+      process.env['NODE_ENV'] !== 'development' && (await queryLdapUser(uid))
+    );
     console.info(`${uid} exists in ldap? : ${existLdap.toString()}`);
     console.info(`${uid} exists in DB? : ${existDB.toString()}`);
 
