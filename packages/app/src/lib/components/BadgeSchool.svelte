@@ -2,14 +2,18 @@
   // @ts-expect-error Untyped lib
   import isDarkColor from 'is-dark-color';
 
-  export let schools: Array<{ name: string; color: string }>;
+  export let schools: Array<{ name: string; color: string; uid: string }>;
 </script>
 
 <span class="badge">
-  {#each schools as { name, color }}
-    <span style:--bg={color} style:--text={isDarkColor(color) ? 'white' : 'black'}>
+  {#each schools as { name, color, uid }}
+    <a
+      href={`/schools/${uid}`}
+      style:--bg={color}
+      style:--text={isDarkColor(color) ? 'white' : 'black'}
+    >
       {name}
-    </span>
+    </a>
   {/each}
 </span>
 

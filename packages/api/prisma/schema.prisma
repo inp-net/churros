@@ -143,6 +143,33 @@ model EmailChange {
   pending   Boolean   @default(true)
 }
 
+// Enum for the different kinds of logos
+enum LogoSourceType {
+  InternalLink
+  ExternalLink
+  GroupLogo
+  Icon
+}
+
+/// A service
+model Service {
+  id          String   @id @default(dbgenerated("nanoid('service:')"))
+  name        String   @db.VarChar(255)
+  url         String   @default("") @db.VarChar(255)
+  description String   @default("") @db.VarChar(255)
+  logo        String   @db.VarChar(255)
+  logoSourceType   LogoSourceType
+  schoolId    String?
+  school      School?  @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  studentAssociationId String?
+  studentAssociation   StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  groupId     String?
+  group       Group?   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+
+  @@unique([schoolId, studentAssociationId, groupId, url])
+  @@unique([schoolId, studentAssociationId, groupId, name])
+}
+
 /// A single external link
 model Link {
   id        String   @id @default(dbgenerated("nanoid('link:')"))
@@ -190,6 +217,8 @@ model School {
   name               String @db.VarChar(255)
   color              String @db.VarChar(7)
   internalMailDomain String @default("") @db.VarChar(255)
+  description        String @default("") @db.Text
+  address            String @default("") @db.VarChar(255)
 
   groups              Group[]
   majors              Major[]              @relation("MajorToSchool")
@@ -197,6 +226,7 @@ model School {
   studentAssociations StudentAssociation[]
   accessibleTickets   Ticket[]
   contributionOptions ContributionOption[]
+  services            Service[]
 }
 
 enum CredentialType {
@@ -233,6 +263,7 @@ model StudentAssociation {
   groups              Group[]
   lydiaAccounts       LydiaAccount[]
   contributionOptions ContributionOption[]
+  services            Service[]
 }
 
 model Contribution {
@@ -313,6 +344,7 @@ model Group {
   lyiaAccounts       LydiaAccount[]
   tickets            Ticket[]            @relation("openTo")
   barWeeks           BarWeek[]
+  services           Service[]
 
   Notification           Notification[]
   NotificationSetting    NotificationSetting[]

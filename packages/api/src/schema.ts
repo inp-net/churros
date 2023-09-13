@@ -27,6 +27,7 @@ import './objects/godparent-requests.js';
 import './objects/password-resets.js';
 import './objects/email-changes.js';
 import './objects/announcements.js';
+import './objects/services.js';
 import './objects/student-associations.js';
 import './objects/logs.js';
 import './objects/contribution-options.js';
