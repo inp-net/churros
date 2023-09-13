@@ -21,49 +21,6 @@ export const ServiceType = builder.prismaObject('Service', {
   }),
 });
 
-builder.queryField('userServices', (t) =>
-  t.prismaField({
-    type: [ServiceType],
-    async resolve(_query, _, {}, { user: me }) {
-      if (!me) return [];
-      const user = await prisma.user.findUnique({
-        where: { id: me.id },
-        include: {
-          major: {
-            include: {
-              schools: {
-                include: {
-                  studentAssociations: {
-                    include: {
-                      services: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
-
-      if (!user?.major?.schools) return [];
-
-      const services = [];
-
-      for (const school of user.major.schools) {
-        if (school.studentAssociations) {
-          for (const studentAssociation of school.studentAssociations) {
-            if (studentAssociation.services) {
-              services.push(...studentAssociation.services);
-            }
-          }
-        }
-      }
-
-      return services;
-    },
-  })
-);
-
 builder.queryField('services', (t) =>
   t.prismaField({
     type: [ServiceType],
@@ -79,6 +36,38 @@ builder.queryField('services', (t) =>
           school: { uid: schoolUid ?? undefined },
           group: { uid: groupUid ?? undefined },
           studentAssociation: { uid: studentAssociationUid },
+        },
+      });
+      return services;
+    },
+  })
+);
+
+builder.queryField('userServices', (t) =>
+  t.prismaField({
+    type: [ServiceType],
+    async resolve(query, _, {}, { user: me }) {
+      if (!me) throw new GraphQLError('Unauthorized');
+
+      const services = await prisma.service.findMany({
+        ...query,
+        where: {
+          studentAssociation: {
+            contributionOptions: {
+              some: {
+                contributions: {
+                  some: {
+                    user: {
+                      id: me.id,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        include: {
+          group: true,
         },
       });
       return services;
