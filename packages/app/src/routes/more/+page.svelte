@@ -60,7 +60,7 @@
       href: 'https://open.spotify.com/show/77KtGDlbY7RH3BSTOsNGbA?si=48a2cbacee7440b3',
     }),
     Service('Jeux', 'Merci à 7Fault', {
-      href: 'https://7fault.itch.io',
+      href: 'https://www.bde.enseeiht.fr/clubs/7fault/',
       logo: groupLogoSrc($isDark, {
         pictureFile: 'groups/7fault-n7.png',
         pictureFileDark: 'groups/dark/7fault-n7.png',
