@@ -32,6 +32,8 @@
   export let startsAt: Date;
   export let endsAt: Date;
   export let location: string;
+  export let capacity: number;
+  export let placesLeft: number;
   export let tickets: Array<{
     name: string;
     price: number;
@@ -79,15 +81,6 @@
     if (ticket.closesAt && (shotgunsEnd === undefined || ticket.closesAt > shotgunsEnd))
       shotgunsEnd = ticket.closesAt;
   }
-
-  const totalPlacesLeft = tickets.reduce(
-    (sum, { placesLeft }) => sum + (placesLeft === -1 ? Number.POSITIVE_INFINITY : placesLeft),
-    0
-  );
-  const totalCapacity = tickets.reduce(
-    (sum, { capacity }) => sum + (capacity === 0 ? Number.POSITIVE_INFINITY : capacity),
-    0
-  );
 
   // Est-ce que le shotgun est en cours ? Mis à jour toutes les secondes
   $: shotgunning =
@@ -210,13 +203,13 @@
         <h4 class="typo-field-label">Shotgun</h4>
         {#if shotgunning}
           <p>
-            {#if totalPlacesLeft + totalCapacity === Number.POSITIVE_INFINITY}
+            {#if placesLeft + capacity === Number.POSITIVE_INFINITY}
               Places illimitées
             {:else}
               <strong>
-                <span style={totalPlacesLeft < 0.1 * totalCapacity ? 'color: var(--error)' : ''}>
-                  {totalPlacesLeft}
-                </span>/ {totalCapacity}
+                <span style={placesLeft < 0.1 * capacity ? 'color: var(--error)' : ''}>
+                  {placesLeft}
+                </span>/ {capacity}
               </strong> places restantes
             {/if}
           </p>

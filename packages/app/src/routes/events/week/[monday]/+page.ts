@@ -27,6 +27,8 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
               pictureFileDark: true,
             },
             uid: true,
+            placesLeft: true,
+            capacity: true,
             tickets: {
               name: true,
               opensAt: true,

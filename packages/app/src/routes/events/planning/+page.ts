@@ -19,6 +19,8 @@ export const load: PageLoad = async ({ fetch, parent }) =>
               startsAt: true,
               endsAt: true,
               descriptionHtml: true,
+              placesLeft: true,
+              capacity: true,
               tickets: {
                 name: true,
                 opensAt: true,

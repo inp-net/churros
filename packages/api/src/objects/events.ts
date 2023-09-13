@@ -298,7 +298,8 @@ export const EventType = builder.prismaNode('Event', {
 
         const placesLeft = Math.max(
           0,
-          eventCapacity(tickets, ticketGroups) - registrations.filter((r) => !r.opposedAt).length
+          eventCapacity(tickets, ticketGroups) -
+            registrations.filter((r) => !r.cancelledAt && !r.opposedAt).length
         );
         return placesLeft === Number.POSITIVE_INFINITY ? -1 : placesLeft;
       },

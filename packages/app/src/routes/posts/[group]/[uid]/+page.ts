@@ -28,6 +28,8 @@ export const _articleQuery = Selector('Article')({
     startsAt: true,
     endsAt: true,
     location: true,
+    placesLeft: true,
+    capacity: true,
     descriptionHtml: true,
     pictureFile: true,
     links: {
