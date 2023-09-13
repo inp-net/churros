@@ -47,7 +47,7 @@ builder.queryField('userServices', (t) =>
   t.prismaField({
     type: [ServiceType],
     async resolve(query, _, {}, { user: me }) {
-      if (!me) throw new GraphQLError('Unauthorized');
+      if (!me) return [];
 
       const services = await prisma.service.findMany({
         ...query,
