@@ -121,7 +121,7 @@
         options={{ bug: 'Signaler un bug', feature: 'Proposer une idée' }}
         bind:value={issueType}
       />
-      <InputText bind:value={title} label="Titre" />
+      <InputText required bind:value={title} label="Titre" />
       <InputLongText
         label={issueType === 'bug' ? 'Comment reproduire ce bug?' : 'Décris précisément ton idée'}
         bind:value={description}

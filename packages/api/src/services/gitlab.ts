@@ -35,7 +35,7 @@ builder.mutationField('createGitlabIssue', (t) =>
               : `\n\n\n -- ${
                   user ? `[@${user.uid}](https://churros.inpt.fr/users/${user.uid})` : 'Anonymous'
                 }`),
-          title,
+          title: title || description.split('. ')[0],
           labels: ['user-submitted', isBug ? 'bug' : 'feature'].join(','),
         }),
         headers: {
