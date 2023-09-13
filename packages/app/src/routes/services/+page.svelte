@@ -21,11 +21,11 @@
     <li class="suggest">
       <CardService
         service={{
-          name: 'Il manque…',
+          name: $me?.admin ? 'Ajouter un service' : 'Il manque ...',
           logo: 'add',
           logoSourceType: 'Icon',
-          description: 'Demande à rajouter un service ici',
-          url: '/submit',
+          description: $me?.admin ? 'Ajouter un service' : 'Proposer un service à ajouter',
+          url: $me?.admin ? '/services/create' : '/submit',
         }}
       />
     </li>
