@@ -7,6 +7,7 @@
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputSchool from './InputSchool.svelte';
   import InputStudentAssociation from './InputStudentAssociation.svelte';
+  import InputSelectOne from './InputSelectOne.svelte';
 
   export let service: {
     id?: string;
@@ -17,7 +18,7 @@
     logoSourceType: LogoSourceType;
     school?: { uid: string; name: string; color: string };
     studentAssociation?: { uid?: string; name: string };
-    group?: { uid: string };
+    group?: { uid: string; name: string; pictureFile: string; pictureFileDark: string };
   } = { name: '', description: '', url: '', logo: '', logoSourceType: LogoSourceType.Icon };
 
   let serverError = '';
@@ -51,7 +52,7 @@
                 description: true,
                 logo: true,
                 logoSourceType: true,
-                group: { uid: true },
+                group: { uid: true, name: true, pictureFile: true, pictureFileDark: true },
                 school: { uid: true, name: true, color: true },
                 studentAssociation: { uid: true, name: true },
               },
@@ -78,13 +79,25 @@
   <InputText required label="Nom" bind:value={service.name} maxlength={255} />
   <InputText required label="URL" bind:value={service.url} maxlength={255} />
   <InputText label="Description" bind:value={service.description} />
-  <InputSchool label="École" uid={service.school?.uid} bind:object={service.school} />
+  <InputSelectOne
+    label="Type de logo"
+    bind:value={service.logoSourceType}
+    options={{
+      Icon: 'Icon',
+      InternalLink: 'Lien interne',
+      ExternalLink: 'Lien externe',
+      GroupLogo: 'Groupe',
+    }}
+  />
+  <InputText label="Logo" bind:value={service.logo} maxlength={255} />
+  <InputSchool label="École" clearable uid={service.school?.uid} bind:object={service.school} />
   <InputStudentAssociation
     label="Association Etudiante"
+    clearable
     uid={service.studentAssociation?.uid}
     bind:object={service.studentAssociation}
   />
-  <InputGroup clearable label="Groupe" uid={service.group?.uid} />
+  <InputGroup clearable label="Groupe" bind:group={service.group} uid={service.group?.uid} />
   {#if serverError}
     <Alert theme="danger"
       >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert
