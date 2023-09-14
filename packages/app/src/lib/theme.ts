@@ -1,6 +1,8 @@
 import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 
+const DARK_THEMES = new Set(['dark', 'hacker']);
+
 /** Current theme, as a writable store. */
 export const theme = writable('system', (set) => {
   // It's not possible to load the theme on the server
@@ -16,7 +18,7 @@ if (browser) {
   theme.subscribe(($theme) => {
     sessionStorage.setItem('theme', $theme);
     if ($theme === 'system') isDark.set(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    else isDark.set($theme === 'dark');
+    else isDark.set(DARK_THEMES.has($theme));
   });
 
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
