@@ -50,7 +50,7 @@
     <div class="picture">
       <img
         src="/student-associations/{studentAssociation.uid}.png"
-        alt="${studentAssociation.name} logo"
+        alt="{studentAssociation.name} logo"
       />
     </div>
 
