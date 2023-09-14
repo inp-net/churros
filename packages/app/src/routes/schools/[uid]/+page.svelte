@@ -10,10 +10,7 @@
 <div class="content">
   <header>
     <div class="picture">
-      <img
-        src="https://media.licdn.com/dms/image/C560BAQHbjq1254-umA/company-logo_200_200/0/1641388671224?e=2147483647&v=beta&t=VxpkH-LODGlGvt4huuphQ2UFMVQeBW14mj0YaUZF488"
-        alt="{school.name} logo"
-      />
+      <img src="/schools/{school.uid}.png" alt="{school.name} logo" />
     </div>
 
     <div class="identity">

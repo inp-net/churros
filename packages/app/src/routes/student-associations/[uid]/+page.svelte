@@ -49,7 +49,7 @@
   <header>
     <div class="picture">
       <img
-        src="https://www.bde.enseeiht.fr/static/assets/n7/logo.png"
+        src="/student-associations/{studentAssociation.uid}.png"
         alt="${studentAssociation.name} logo"
       />
     </div>
