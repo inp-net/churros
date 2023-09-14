@@ -25,6 +25,7 @@
     description,
     email,
     longDescription,
+    website,
     name,
     selfJoinable,
     type,
@@ -64,6 +65,7 @@
             email: email || undefined,
             links: links.filter((l) => Boolean(l.value)),
             longDescription,
+            website,
             name,
             selfJoinable,
             parentUid: parent?.uid,
@@ -106,6 +108,7 @@
   <!-- TODO colors ? -->
   <InputText label="Salle" bind:value={address} />
   <InputText label="Email" type="email" bind:value={email} />
+  <InputText label="Site web" type="url" bind:value={website} />
   <InputSocialLinks label="Réseaux sociaux" bind:value={links} />
   <InputGroup clearable label="Groupe parent" bind:group={parent} uid={parent?.uid} />
   <InputListOfGroups

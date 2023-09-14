@@ -8,9 +8,7 @@
   $: ({ error, status } = $page);
 
   onMount(() => {
-    if (status === 404) 
-      document.documentElement.classList.add('error-404');
-    
+    if (status === 404) document.documentElement.classList.add('error-404');
   });
 </script>
 

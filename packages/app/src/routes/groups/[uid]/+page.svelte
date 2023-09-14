@@ -134,6 +134,10 @@
           <dt>Salle</dt>
           <dd>{group.address}</dd>
         {/if}
+        {#if group.website}
+          <dt>Site web</dt>
+          <dd><a href={group.website} target="_blank" rel="noopener">{group.website}</a></dd>
+        {/if}
         {#if group.email}
           <dt>Email</dt>
           <dd><a href="mailto:{group.email}">{group.email}</a></dd>

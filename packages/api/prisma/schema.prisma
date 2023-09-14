@@ -322,6 +322,7 @@ model Group {
   description     String @default("") @db.VarChar(255)
   email           String @default("") @db.VarChar(255)
   longDescription String @default("")
+  website         String @default("") @db.VarChar(255)
   links           Link[]
 
   /// Parent group, from which this group inherits its permissions

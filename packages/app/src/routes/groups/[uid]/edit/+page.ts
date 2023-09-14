@@ -13,6 +13,7 @@ export const _clubQuery = Selector('Group')({
   color: true,
   address: true,
   description: true,
+  website: true,
   email: true,
   pictureFile: true,
   pictureFileDark: true,
