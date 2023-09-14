@@ -11,7 +11,7 @@
 <div class="content">
   <ul class="nobullet">
     <li>
-      <CardService service={{ name: 'Logs', logo: 'log', logoSourceType: 'Icon', url: '/logs' }} />
+      <CardService service={{ name: 'Logs', logo: 'logs', logoSourceType: 'Icon', url: '/logs' }} />
     </li>
     <li>
       <CardService
