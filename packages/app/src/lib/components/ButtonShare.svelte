@@ -5,6 +5,17 @@
 
   export let white = false;
   export let href = '';
+
+  function rewriteUrl(url: URL): string {
+    const segments = url.pathname.split('/').filter(Boolean);
+    if (['users', 'groups'].includes(segments[0]) && segments.length === 2) {
+      return new URL(url.pathname.replace(`/${segments[0]}/`, '/@'), url.origin)
+        .toString()
+        .replace(/\/$/, '');
+    }
+
+    return url.toString();
+  }
 </script>
 
 <GhostButton
@@ -12,12 +23,12 @@
   on:click={async () => {
     try {
       await navigator.share({
-        url: href || $page.url.toString(),
+        url: href || rewriteUrl($page.url),
         title: document.title,
         text: document.querySelector('meta[name=description]')?.getAttribute('content') ?? '',
       });
     } catch {
-      await navigator.clipboard.writeText(href || $page.url.toString());
+      await navigator.clipboard.writeText(href || rewriteUrl($page.url));
     }
   }}
   darkShadow={white}
