@@ -47,6 +47,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             name: true,
             shortName: true,
             schools: {
+              uid: true,
               name: true,
               color: true,
               studentAssociations: {

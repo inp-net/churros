@@ -185,7 +185,9 @@
       <p class="major">
         {yearTier(user.graduationYear)}A ({user.graduationYear}) ·
         <abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr>
-        · {user.major.schools.map(({ name }) => name).join(', ')}
+        · {#each user.major.schools as school}
+          <a class="school" href="/schools/{school.uid}">{school.name}</a>
+        {/each}
         {user.apprentice ? 'FISA' : ''}
       </p>
       <ul class="social-links nobullet">
@@ -342,7 +344,7 @@
   </section>
 </div>
 
-<style>
+<style lang="scss">
   section {
     margin-bottom: 5rem;
   }
@@ -411,6 +413,10 @@
     background: var(--bg);
     border: var(--border-block) solid var(--border);
     border-radius: 50%;
+  }
+
+  .major .school:not(:last-child) {
+    margin-right: 0.25rem;
   }
 
   .social-links {
