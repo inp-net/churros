@@ -1,5 +1,16 @@
 #!/bin/bash
 
+help() {
+    echo "Usage: $0 <prod> <staging>"
+    echo "       $0 <both>"
+    echo "       $0"
+    echo "           (uses latest tag as both prod and staging)"
+    exit 1
+}
+
+if [ $# -eq 1 ] && [ $1 == "--help" ]; then help; fi
+    
+
 case $# in
     0)
         lastTag=`git for-each-ref refs/tags --sort=-v:refname --format='%(refname:short)' --count=1`
@@ -16,8 +27,7 @@ case $# in
         staging=$2
         ;;
     *)
-        echo "Usage: $0 <prod> <staging>"
-        exit 1
+        help;
         ;;
 esac
 
