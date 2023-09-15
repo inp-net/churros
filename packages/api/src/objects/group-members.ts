@@ -5,6 +5,9 @@ import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
 import { purgeUserSessions } from '../context.js';
 import { GroupType } from '@prisma/client';
+import { createTransport } from 'nodemailer';
+
+const mailer = createTransport(process.env.SMTP_URL);
 
 export const GroupMemberType = builder.prismaObject('GroupMember', {
   fields: (t) => ({
@@ -163,6 +166,7 @@ builder.mutationField('upsertGroupMember', (t) =>
       },
       { user: me }
     ) {
+      const group = await prisma.group.findUniqueOrThrow({ where: { id: groupId } });
       const { uid } = await prisma.user.findUniqueOrThrow({
         where: { id: memberId },
         select: { uid: true },
@@ -222,6 +226,7 @@ builder.mutationField('upsertGroupMember', (t) =>
         where: { groupId_memberId: { groupId, memberId } },
         create: data,
         update: data,
+        include: { member: true },
       });
       await prisma.logEntry.create({
         data: {
@@ -232,6 +237,31 @@ builder.mutationField('upsertGroupMember', (t) =>
           user: me ? { connect: { id: me.id } } : undefined,
         },
       });
+
+      const boardKeys = ['president', 'vicePresident', 'treasurer', 'secretary'] as const;
+
+      const rolesText = (member: Record<(typeof boardKeys)[number], boolean>) =>
+        (boardKeys.some((k) => member[k]) ? boardKeys.filter((k) => member[k]) : ['(aucun)']).join(
+          ', '
+        );
+
+      if (oldMember && boardKeys.some((k) => groupMember[k] !== oldMember[k])) {
+        // TODO send notification too
+        await mailer.sendMail({
+          from: process.env.PUBLIC_CONTACT_EMAIL,
+          to: 'respos-clubs@bde.enseeiht.fr',
+          subject: `Bureau de ${group.name} modifié`,
+          text: `${groupMember.member.firstName} ${groupMember.member.lastName} (@${
+            groupMember.member.uid
+          }) a maintenant les rôles ${rolesText(groupMember)} (avant: ${rolesText(oldMember)})`,
+          html: `<a href="${process.env.FRONTEND_ORIGIN}/@${groupMember.member.uid}">${
+            groupMember.member.firstName
+          } ${groupMember.member.lastName} (@${
+            groupMember.member.uid
+          })</a> a maintenant les rôles ${rolesText(groupMember)} (avant: ${rolesText(oldMember)})`,
+        });
+      }
+
       return groupMember;
     },
   })
