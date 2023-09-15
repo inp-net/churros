@@ -76,6 +76,7 @@ export const GroupType = builder.prismaNode('Group', {
     }),
     services: t.relation('services'),
     links: t.relation('links'),
+    tags: t.relation('tags'),
     members: t.relation('members', {
       // Seeing group members requires being logged in
       // authScopes: { loggedIn: true },

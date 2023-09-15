@@ -1,6 +1,6 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
-  import BadgeSchool from '$lib/components/BadgeSchool.svelte';
+  import Tag from '$lib/components/Tag.svelte';
   import type { PageData } from './$types';
   import { tooltip } from '$lib/tooltip';
   import IconFacebook from '~icons/mdi/facebook-box';
@@ -59,7 +59,11 @@
         {studentAssociation.name}
       </h1>
 
-      <BadgeSchool schools={[studentAssociation.school]} />
+      <Tag
+        name="{studentAssociation.school.name}"
+        color="{studentAssociation.school.color}"
+        href="/schools/{studentAssociation.school.uid}/"
+      />
 
       <ul class="social-links nobullet">
         {#each studentAssociation.links.filter(({ value }) => Boolean(value)) as { name, value }}

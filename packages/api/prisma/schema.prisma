@@ -346,6 +346,7 @@ model Group {
   tickets            Ticket[]            @relation("openTo")
   barWeeks           BarWeek[]
   services           Service[]
+  tags               Tag[]
 
   Notification           Notification[]
   NotificationSetting    NotificationSetting[]
@@ -662,4 +663,13 @@ model Announcement {
   updatedAt DateTime @updatedAt
   startsAt  DateTime
   endsAt    DateTime
+}
+
+model Tag {
+  id        String   @id @default(dbgenerated("nanoid('tag:')"))
+  uid       String   @unique @db.VarChar(255)
+  name      String   @unique @db.VarChar(255)
+  color     String   @default("") @db.VarChar(7)
+  description String  @default("") @db.VarChar(255)
+  groups    Group[]
 }

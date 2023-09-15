@@ -47,6 +47,7 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   notif: 'Notification',
   notifsetting: 'NotificationSetting',
   ann: 'Announcement',
+  tag: 'Tag',
 };
 /* end @generated from schema */
 

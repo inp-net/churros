@@ -31,6 +31,7 @@ import './objects/services.js';
 import './objects/student-associations.js';
 import './objects/logs.js';
 import './objects/contribution-options.js';
+import './objects/tags.js';
 
 // Import other mutations and/or queries that are not objects
 import './services/gitlab.js';
