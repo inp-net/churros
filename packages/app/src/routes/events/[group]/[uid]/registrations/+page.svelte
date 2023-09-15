@@ -5,7 +5,6 @@
   import IconCancel from '~icons/mdi/cancel';
   import IconOpposed from '~icons/mdi/hand-back-right-off-outline';
   import type { PageData } from './$types';
-  import * as jsonToCsv from 'json-to-csv-in-browser';
   import IconCheck from '~icons/mdi/check';
   import IconClose from '~icons/mdi/close';
   import IconSortUp from '~icons/mdi/triangle-small-up';
@@ -50,64 +49,25 @@
     }
   }
 
-  function humanBoolean(value: boolean): string {
-    return value ? 'Oui' : 'Non';
-  }
-
-  function saveAsCsv() {
+  async function csv() {
     if (!registrations) return;
-    jsonToCsv.download(
-      `reservations-${$page.params.group}-${$page.params.uid}-${format(
-        new Date(),
-        "yyyy-MM-dd-HH'h'mm"
-      )}.csv`,
-      new jsonToCsv.JsonArray(
-        registrations.edges.map(
-          ({
-            node: {
-              createdAt,
-              beneficiary,
-              authorIsBeneficiary,
-              beneficiaryUser,
-              author,
-              paid,
-              paymentMethod,
-              ticket,
-              id,
-              verifiedAt,
-              opposed,
-              cancelled,
-            },
-          }) => {
-            const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined);
-            return {
-              'Date de réservation': createdAt.toISOString(),
-              Bénéficiaire: benef?.fullName ?? beneficiary,
-              'Achat par': author.fullName,
-              Payée: humanBoolean(paid),
-              Scannée: humanBoolean(Boolean(verifiedAt) && paid),
-              'En opposition': humanBoolean(Boolean(opposed)),
-              Annulée: humanBoolean(Boolean(cancelled)),
-              'Méthode de paiement': paymentMethod,
-              Billet: ticket.name,
-              Cotisant: benef
-                ? humanBoolean(
-                    benef.contributesTo.includes((c: { name: string }) => c.name === 'AEn7')
-                  )
-                : '',
-              Filière: benef?.major.shortName ?? '',
-              Année: benef ? benef.yearTier.toString() + 'A' : '',
-              Promo: benef?.graduationYear ?? '',
-              'Code de réservation': id.replace(/^r:/, '').toUpperCase(),
-              'Lien vers la place': `https://${window.location.host}/bookings/${id.replace(
-                /^r:/,
-                ''
-              )}/`,
-            };
-          }
-        )
-      ).convertToCSVstring()
-    );
+    const { registrationsCsv } = await $zeus.query({
+      registrationsCsv: [
+        { eventUid: $page.params.uid, groupUid: $page.params.group },
+        {
+          __typename: true,
+          '...on Error': { message: true },
+          '...on QueryRegistrationsCsvSuccess': { data: true },
+        },
+      ],
+    });
+
+    if (registrationsCsv.__typename === 'Error') {
+      console.error(registrationsCsv.message);
+      return;
+    }
+
+    return registrationsCsv.data;
   }
 
   export let data: PageData;
@@ -277,16 +237,23 @@
     {profitsBreakdown.total}€ de bénéfices
   </section>
 
+  <section class="new">
+    <Badge>NEW</Badge> Plus besoin de tout charger pour télécharger le .csv ;)
+  </section>
+
   <div class="actions">
-    <ButtonSecondary
-      icon={IconDownload}
-      help={registrations.pageInfo.hasNextPage
-        ? "Attention, charge toutes les réservations sinon l'export sera incomplet"
-        : ''}
-      on:click={() => {
-        saveAsCsv();
-      }}>Exporter en .csv</ButtonSecondary
-    >
+    {#await csv()}
+      <ButtonSecondary icon={IconDownload} loading>Exporter en .csv</ButtonSecondary>
+    {:then csvContents}
+      <ButtonSecondary
+        icon={IconDownload}
+        href="data:application/octet-stream;charset=utf-8,{encodeURIComponent(csvContents ?? '')}"
+        download={`reservations-${$page.params.group}-${$page.params.uid}-${format(
+          new Date(),
+          "yyyy-MM-dd-HH'h'mm"
+        )}.csv`}>Exporter en .csv</ButtonSecondary
+      >
+    {/await}
     <InputCheckbox label="Vue compacte" bind:value={compact} />
     {#if registrations.pageInfo.hasNextPage}
       <ButtonSecondary
@@ -540,6 +507,10 @@
     margin: 0 auto;
     margin-bottom: 2rem;
     text-align: center;
+  }
+
+  header .new {
+    margin-bottom: 1rem;
   }
 
   header .actions {
