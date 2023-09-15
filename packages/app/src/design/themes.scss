@@ -46,6 +46,13 @@ dialog {
     --danger-bg: #f00;
     --danger-text: #fff;
     --danger-border: #f00;
+    --logo-highlight-fill: black;
+    --logo-base-fill: black;
+    --logo-shadows-fill: black;
+    --logo-highlight-stroke: var(--text);
+    --logo-base-stroke: var(--text);
+    --logo-shadows-stroke: var(--text);
+    --logo-stroke-width: 20;
   }
 
   &.pride,

@@ -73,6 +73,18 @@ dialog,
   --loading-bg: linear-gradient(to right, #{$orange-600}, #{$orange-200});
   --backdrop: rgb(0 0 0 / 30%);
 
+  // Logo colors
+  --logo-stroke-width: 7.606;
+  --logo-highlight: #fbbe1f;
+  --logo-base: #ca7e17;
+  --logo-shadows: #843e2a;
+  --logo-highlight-fill: var(--logo-highlight);
+  --logo-highlight-stroke: var(--logo-highlight);
+  --logo-base-fill: var(--logo-base);
+  --logo-base-stroke: var(--logo-base);
+  --logo-shadows-fill: var(--logo-shadows);
+  --logo-shadows-stroke: var(--logo-shadows);
+
   // === Other props ===
   --border-inline: 1px;
   --border-block: 2px;
