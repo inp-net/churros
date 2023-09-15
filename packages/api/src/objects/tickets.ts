@@ -278,11 +278,13 @@ export function userCanSeeTicket(
 
   // Get the user's contributor status
   const isContributor = Boolean(
-    user?.contributions.some(({ option: { paysFor } }) =>
-      paysFor.some(
-        ({ id, school }) =>
-          id === event.group.studentAssociation?.id || event.group.school?.uid === school.uid
-      )
+    user?.contributions.some(
+      ({ option: { paysFor }, paid }) =>
+        paid &&
+        paysFor.some(
+          ({ id, school }) =>
+            id === event.group.studentAssociation?.id || event.group.school?.uid === school.uid
+        )
     )
   );
 
