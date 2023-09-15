@@ -126,10 +126,10 @@
       pattern={type === 'number' ? '[0-9.,]*' : undefined}
       {name}
       value={stringifyValue(value, type)}
-      {required}
+      required={required || undefined}
       {autocomplete}
       {placeholder}
-      {readonly}
+      readonly={readonly || undefined}
       {autofocus}
       {...$$restProps}
       on:input={(e) => {

@@ -180,12 +180,18 @@
 
 <form on:submit|preventDefault={updateUser}>
   <div class="side-by-side">
-    <InputText required label="Prénom" bind:value={firstName} readonly={!$me?.canEditUsers} />
+    <InputText
+      required
+      label="Prénom"
+      bind:value={firstName}
+      hint={$me?.canEditUsers ? '' : "Pour modifier votre nom d'usage, contactez un administrateur"}
+      disabled={!$me?.canEditUsers || undefined}
+    />
     <InputText
       required
       label="Nom de famille"
       bind:value={lastName}
-      readonly={!$me?.canEditUsers}
+      disabled={!$me?.canEditUsers || undefined}
     />
     <InputText label="Surnom" bind:value={nickname} />
   </div>
