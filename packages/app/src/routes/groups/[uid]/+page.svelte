@@ -1,9 +1,11 @@
 <script lang="ts">
   import Alert from '$lib/components/Alert.svelte';
   import IconAdd from '~icons/mdi/plus';
+  import IconCheck from '~icons/mdi/check';
   import IconPeople from '~icons/mdi/account-group';
   import IconGear from '~icons/mdi/gear-outline';
   import IconJoinGroup from '~icons/mdi/account-plus';
+  import IconQuitGroup from '~icons/mdi/account-cancel-outline';
   import { me } from '$lib/session.js';
   import type { PageData } from './$types';
   import { zeus } from '$lib/zeus';
@@ -59,6 +61,8 @@
 
   export let data: PageData;
 
+  let confirmingGroupQuit = false;
+
   $: clubBoard = group.members?.filter(
     ({ president, vicePresident, treasurer, secretary }) =>
       president || vicePresident || treasurer || secretary
@@ -94,6 +98,19 @@
       console.error(error);
     }
   };
+
+  const quitGroup = async () => {
+    if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
+    try {
+      confirmingGroupQuit = false;
+      await $zeus.mutate({
+        deleteGroupMember: [{ groupId: data.group.id, memberId: $me.id }, true],
+      });
+      window.location.reload();
+    } catch (error: unknown) {
+      console.error(error);
+    }
+  };
 </script>
 
 <div class="content">
@@ -113,6 +130,19 @@
 
         {#if group.members?.find(({ member: { uid } }) => uid === $me?.uid)}
           <Badge theme="success">Membre</Badge>
+          {#if confirmingGroupQuit}
+            <p>Sur de toi?</p>
+            <ButtonSecondary icon={IconCheck} on:click={async () => quitGroup()}
+              >Oui</ButtonSecondary
+            >
+          {:else}
+            <ButtonSecondary
+              icon={IconQuitGroup}
+              on:click={() => {
+                confirmingGroupQuit = true;
+              }}>Quitter</ButtonSecondary
+            >
+          {/if}
         {:else if group.selfJoinable}
           <ButtonSecondary icon={IconJoinGroup} on:click={async () => joinGroup(group.uid)}
             >Rejoindre</ButtonSecondary
