@@ -20,6 +20,34 @@ dialog {
     --backdrop: rgb(0 0 0 / 80%);
   }
 
+  &.hacker,
+  &.hacker::backdrop {
+    --bg: black;
+    --text: #37e06c;
+    --border: #37e06c;
+    --link: #8dedab;
+    --title: #8dedab;
+    --shadow: 0 0.25rem 0.5rem #{$black};
+    --primary-bg: #0d6e2c;
+    --primary-hover-bg: var(--text);
+    --primary-hover-text: var(--primary-text);
+    --primary-link: var(--link);
+    --primary-text: #fff;
+    --primary-shadow: 0 0.25rem 0.5rem #{$black};
+    --loading-bg: linear-gradient(to right, #{$pink-800}, #{$pink-600});
+    --hover-bg: #010703;
+    --hover-text: #{$neutral-200};
+    --muted-bg: var(--card-bg);
+    --muted-text: #c6f6d5;
+    --muted-border: #c6f6d5;
+    --muted-link: #8dedab;
+    --backdrop: rgb(0 0 0 / 80%);
+    --card-bg: #020e06;
+    --danger-bg: #f00;
+    --danger-text: #fff;
+    --danger-border: #f00;
+  }
+
   &.pride,
   &.pride::backdrop {
     --primary-bg: linear-gradient(

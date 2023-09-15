@@ -35,7 +35,10 @@
       {#each school.studentAssociations as studentAssociation}
         <a href={`/student-associations/${studentAssociation.uid ?? ''}/`}>
           <div class="avatar">
-            <img src="https://churros.inpt.fr/logo.png" alt={studentAssociation.name} />
+            <img
+              src="/student-associations/${studentAssociation.uid}.png"
+              alt={studentAssociation.name}
+            />
           </div>
           <div class="name">{studentAssociation.name}</div>
         </a>

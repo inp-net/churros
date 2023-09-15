@@ -32,8 +32,8 @@
   "packageManager": "yarn@4.0.0-rc.30",
   "private": true,
   "scripts": {
-    "build": "test -f .env || cp .env.example .env && cp .env packages/app/ && yarn workspaces foreach --topological-dev -pv run build && yarn format",
-    "dev": "test -f .env || cp .env.example .env && cp .env packages/app/ && docker compose up -d && yarn dotenv -- yarn workspaces foreach -piv run dev",
+    "build": "test -f .env || cp .env.example .env && cp .env packages/api/ && yarn workspaces foreach --topological-dev -pv run build && yarn format",
+    "dev": "test -f .env || cp .env.example .env && cp .env packages/api/ && docker compose up -d && yarn dotenv -- yarn workspaces foreach -piv run dev",
     "format": "prettier . --write --ignore-unknown",
     "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
     "lintfix": "eslint --fix . & stylelint --fix '**/*.{css,scss,svelte}' &",

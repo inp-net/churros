@@ -15,8 +15,6 @@
   export let validate: (value: string) => string = () => '';
   export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let required = false;
-  export let readonly = false;
-  export let autofocus = false;
   export let closeKeyboardOnEnter = false;
 
   // TODO use (HTMLInputElement).valueAsDate instead
@@ -109,7 +107,6 @@
         <slot name="before" />
       </div>
     {/if}
-    <!-- svelte-ignore a11y-autofocus -->
     <input
       class:danger={errored}
       class:primary={focused}
@@ -129,8 +126,6 @@
       required={required || undefined}
       {autocomplete}
       {placeholder}
-      readonly={readonly || undefined}
-      {autofocus}
       {...$$restProps}
       on:input={(e) => {
         if (!(e.target instanceof HTMLInputElement)) return;

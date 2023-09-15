@@ -24,9 +24,11 @@
           name: $me?.admin ? 'Ajouter un service' : 'Il manque ...',
           logo: 'add',
           logoSourceType: 'Icon',
+
           description: $me?.admin ? 'Ajouter un service' : 'Proposer un service à ajouter',
-          url: $me?.admin ? '/services/create' : '/submit',
+          url: $me?.admin ? '/services/create' : '/services/submit',
         }}
+        dashedBorder
       />
     </li>
     {#if $me?.admin}

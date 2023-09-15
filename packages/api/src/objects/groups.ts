@@ -63,6 +63,7 @@ export const GroupType = builder.prismaNode('Group', {
     longDescriptionHtml: t.string({
       resolve: async ({ longDescription }) => toHtml(longDescription),
     }),
+    website: t.exposeString('website'),
     pictureFile: t.exposeString('pictureFile'),
     pictureFileDark: t.exposeString('pictureFileDark'),
     articles: t.relation('articles', {
@@ -282,6 +283,7 @@ builder.mutationField('upsertGroup', (t) =>
       color: t.arg.string({ validate: { regex: /#[\dA-Fa-f]{6}/ } }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
       description: t.arg.string({ validate: { maxLength: 255 } }),
+      website: t.arg.string({ validate: { maxLength: 255 } }),
       email: t.arg.string({ validate: { email: true }, required: false }),
       longDescription: t.arg.string(),
       links: t.arg({ type: [LinkInput] }),
@@ -312,6 +314,7 @@ builder.mutationField('upsertGroup', (t) =>
         color,
         address,
         description,
+        website,
         schoolUid,
         studentAssociationId,
         email,
@@ -379,6 +382,7 @@ builder.mutationField('upsertGroup', (t) =>
         familyRoot: familyId ? { connect: { id: familyId } } : undefined,
         address,
         description,
+        website,
         email: email ?? undefined,
         longDescription,
       };

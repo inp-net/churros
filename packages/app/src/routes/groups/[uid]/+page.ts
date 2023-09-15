@@ -21,6 +21,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               color: true,
               description: true,
               longDescriptionHtml: true,
+              website: true,
               email: true,
               groupId: true,
               related: {

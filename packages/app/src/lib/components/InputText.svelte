@@ -10,16 +10,13 @@
   export let initial: string | undefined = undefined;
   export let placeholder: string | undefined = undefined;
   export let value: string;
-  export let required = false;
   export let autocomplete: string | undefined = undefined;
   export let errorMessage: string | undefined = undefined;
   export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let label: string;
-  export let readonly = false;
-  export let autofocus = false;
 </script>
 
-<InputField {hint} {errors} {label} {required}>
+<InputField {hint} {errors} {label} {...$$restProps}>
   <BaseInputText
     {type}
     bind:value
@@ -33,9 +30,6 @@
     {initial}
     {errorMessage}
     {placeholder}
-    {required}
-    {readonly}
-    {autofocus}
     {actionIcon}
     {...$$restProps}
   >

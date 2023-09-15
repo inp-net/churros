@@ -365,6 +365,7 @@ for (const [_, group] of clubsData.entries()) {
       color: color(group.name),
       address: 'D202',
       email: `${slug(group.name)}@list.example.com`,
+      website: `https://${slug(group.name)}.example.com`,
       description: `Club ${group.name} de l'école`,
       longDescription: `# Caeco ambrosia defendite simplicitas aequore caelestibus auro
 
