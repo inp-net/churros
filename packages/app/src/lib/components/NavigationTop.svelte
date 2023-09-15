@@ -16,6 +16,8 @@
   import { formatDate } from '$lib/dates';
   import ButtonGhost from './ButtonGhost.svelte';
   import { afterNavigate } from '$app/navigation';
+  import LogoChurros from './LogoChurros.svelte';
+  import { browser } from '$app/environment';
   const dispatch = createEventDispatcher();
 
   onMount(() => {
@@ -26,6 +28,8 @@
 
   let scrolled = false;
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
+
+  let deviceWidth = browser ? window.innerWidth : 500;
 
   let currentEvent: undefined | { title: string; startsAt: Date } = undefined;
 
@@ -44,6 +48,12 @@
   });
 </script>
 
+<svelte:window
+  on:resize={() => {
+    deviceWidth = window.innerWidth;
+  }}
+/>
+
 <nav id="navigation-top" class:scrolled class:transparent={scanningTickets}>
   {#if scanningTickets}
     <div class="current-event">
@@ -54,7 +64,9 @@
       </div>
     </div>
   {:else}
-    <a href="/"><img class="logo" src="/logo.png" alt="logo de l'AE" /></a>
+    <a href="/" class="wordmark">
+      <LogoChurros wordmark={deviceWidth > 400} />
+    </a>
   {/if}
 
   <div class="actions">
@@ -64,7 +76,9 @@
         on:click={() => dispatch('report-issue')}
         style="color:red"><IconIssue /></ButtonGhost
       >
-      <img class="logo" src="/logo.png" alt="logo de l'AE" />
+      <div class="wordmark">
+        <LogoChurros />
+      </div>
     {:else}
       <ButtonGhost
         help="Signaler un bug ou proposer une idée"
@@ -136,10 +150,12 @@
     font-size: 1.3em;
   }
 
-  img.logo {
-    width: 6rem;
+  .wordmark {
+    width: 10rem;
     height: 3rem;
     object-fit: cover;
+    display: flex;
+    align-items: start;
   }
 
   .profilepic {
@@ -173,7 +189,7 @@
     flex-shrink: 0;
   }
 
-  .transparent .logo {
+  .transparent .wordmark {
     width: 3.5rem;
   }
 </style>
