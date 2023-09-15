@@ -245,9 +245,10 @@ builder.mutationField('deleteGroupMember', (t) =>
       memberId: t.arg.id(),
       groupId: t.arg.id(),
     },
-    authScopes: (_, { groupId }, { user }) =>
+    authScopes: (_, { memberId, groupId }, { user }) =>
       Boolean(
-        user?.canEditGroups ||
+        memberId === user?.id ||
+          user?.canEditGroups ||
           user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id)
       ),
     async resolve(_, { memberId, groupId }, { user: me }) {
