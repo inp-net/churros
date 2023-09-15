@@ -9,7 +9,7 @@ function closestMonday(date: Date) {
 
 export const GET: RequestHandler = () => {
   throw redirect(
-    301,
+    302,
     `/events/week/${formatISO(closestMonday(new Date()), {
       representation: 'date',
     })}`
