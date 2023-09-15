@@ -165,6 +165,12 @@
         return (a, b) => major(a).localeCompare(major(b));
       }
 
+      case 'ticket': {
+        const ticketFullName = (r: Registration) =>
+          r.ticket.group ? `${r.ticket.group.name}/${r.ticket.name}` : r.ticket.name;
+        return (a, b) => (desc ? -1 : 1) * ticketFullName(a).localeCompare(ticketFullName(b));
+      }
+
       default: {
         return (a, b) => a.id.localeCompare(b.id);
       }
