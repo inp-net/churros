@@ -199,14 +199,22 @@ builder.mutationField('login', (t) =>
                   user.uid
                 );
               } else {
-                // Try to find them in the school's LDAP
-                const schoolUser = await findSchoolUser({
-                  firstName: user.firstName,
-                  lastName: user.lastName,
-                  graduationYear: user.graduationYear,
-                  major: user.major,
-                  schoolServer: 'inp',
+                // First, try to find in school LDAP by email address
+                // As the school does not keep old accounts (it appears as so), this might pose a problem, but since we only do this when the uid is not taken in our LDAP, it's fine.
+                let schoolUser = await findSchoolUser({
+                  email: user.email,
                 });
+                if (!schoolUser) {
+                  // Try to find them in the school's LDAP
+                  schoolUser = await findSchoolUser({
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    graduationYear: user.graduationYear,
+                    major: user.major,
+                    schoolServer: 'inp',
+                  });
+                }
+
                 // eslint-disable-next-line max-depth, no-negated-condition
                 if (!schoolUser) {
                   await log(
