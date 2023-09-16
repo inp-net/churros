@@ -1,5 +1,5 @@
 import { builder } from '../builder.js';
-import { startOfWeek, endOfWeek, setMinutes } from 'date-fns';
+import { startOfWeek, endOfWeek, setMinutes, startOfDay } from 'date-fns';
 import { TicketType, createUid as createTicketUid, userCanSeeTicket } from './tickets.js';
 import {
   type Event as EventPrisma,
@@ -383,7 +383,7 @@ builder.queryField('events', (t) =>
           ...query,
           where: {
             visibility: VisibilityPrisma.Public,
-            startsAt: future ? { gte: new Date() } : undefined,
+            startsAt: future ? { gte: startOfDay(new Date()) } : undefined,
           },
           orderBy: { startsAt: 'asc' },
         });

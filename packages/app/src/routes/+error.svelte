@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
 
   let error: App.Error | null;
   let status: number;
@@ -9,6 +9,10 @@
 
   onMount(() => {
     if (status === 404) document.documentElement.classList.add('error-404');
+  });
+
+  onDestroy(() => {
+    if (status === 404) document.documentElement.classList.remove('error-404');
   });
 </script>
 

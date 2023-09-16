@@ -32,6 +32,8 @@ model User {
   lastName       String   @db.VarChar(255)
   majorId        String
   major          Major    @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  minor          Minor?   @relation(fields: [minorId], references: [id])
+  minorId        String?
   graduationYear Int
   apprentice     Boolean  @default(false)
 
@@ -73,6 +75,8 @@ model User {
   verifications             Registration[]             @relation("verifiedBy")
   oppositions               Registration[]             @relation("opposedBy")
   cancellations             Registration[]             @relation("cancelledBy")
+  documents                 Document[]
+  comments                  Comment[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -153,18 +157,18 @@ enum LogoSourceType {
 
 /// A service
 model Service {
-  id          String   @id @default(dbgenerated("nanoid('service:')"))
-  name        String   @db.VarChar(255)
-  url         String   @default("") @db.VarChar(255)
-  description String   @default("") @db.VarChar(255)
-  logo        String   @db.VarChar(255)
-  logoSourceType   LogoSourceType
-  schoolId    String?
-  school      School?  @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  id                   String              @id @default(dbgenerated("nanoid('service:')"))
+  name                 String              @db.VarChar(255)
+  url                  String              @default("") @db.VarChar(255)
+  description          String              @default("") @db.VarChar(255)
+  logo                 String              @db.VarChar(255)
+  logoSourceType       LogoSourceType
+  schoolId             String?
+  school               School?             @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   studentAssociationId String?
   studentAssociation   StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  groupId     String?
-  group       Group?   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  groupId              String?
+  group                Group?              @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: SetNull)
 
   @@unique([schoolId, studentAssociationId, groupId, url])
   @@unique([schoolId, studentAssociationId, groupId, name])
@@ -192,8 +196,10 @@ model Link {
   ticketId             String?
   Notification         Notification?       @relation(fields: [notificationId], references: [id])
   notificationId       String?
+  Subject              Subject?            @relation(fields: [subjectId], references: [id])
+  subjectId            String?
 
-  @@unique([name, userId, studentAssociationId, groupId, articleId, eventId, ticketId, notificationId])
+  @@unique([name, userId, studentAssociationId, groupId, articleId, eventId, ticketId, notificationId, subjectId])
 }
 
 /// A school syllabus
@@ -209,6 +215,18 @@ model Major {
   students          User[]
   userCandidates    UserCandidate[]
   accessibleTickets Ticket[]
+  subjects          Subject[]
+  minors            Minor[]
+}
+
+model Minor {
+  id       String    @id @default(dbgenerated("nanoid('minor:')"))
+  name     String
+  uid      String    @unique
+  majors   Major[]
+  yearTier Int
+  subjects Subject[]
+  User     User[]
 }
 
 model School {
@@ -662,4 +680,69 @@ model Announcement {
   updatedAt DateTime @updatedAt
   startsAt  DateTime
   endsAt    DateTime
+}
+
+model Subject {
+  id         String     @id @default(dbgenerated("nanoid('subj:')"))
+  name       String
+  uid        String     @unique
+  links      Link[]
+  nextExamAt DateTime?
+  majors     Major[]
+  minors     Minor[]
+  Document   Document[]
+}
+
+enum DocumentType {
+  // Ungraded
+  Exercises // TD
+  Practical // TP
+  CourseNotes // CM
+  CourseSlides // Diapos
+  Summary // Fiche de rev, Fiche
+
+  // Graded
+  PracticalExam // BE
+  GradedExercises // DM
+  Exam // Partiel
+
+  Miscellaneous // Divers
+}
+
+model Document {
+  id         String   @id @default(dbgenerated("nanoid('doc:')"))
+  uid        String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  schoolYear Int // stored using the school year start's year
+
+  title         String
+  description   String       @db.Text
+  subject       Subject      @relation(fields: [subjectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subjectId     String
+  type          DocumentType
+  paperPaths    String[] // le sujet 
+  solutionPaths String[] // la correction
+
+  uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  uploaderId String?
+
+  comments Comment[]
+
+  @@unique([subjectId, uid])
+}
+
+model Comment {
+  id          String    @id @default(dbgenerated("nanoid('comment:')"))
+  authorId    String
+  body        String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  // For now, only documents can be commented
+  document    Document  @relation(fields: [documentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  documentId  String
+  inReplyTo   Comment?  @relation(name: "reply", fields: [inReplyToId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  inReplyToId String?
+  replies     Comment[] @relation(name: "reply")
 }
