@@ -196,7 +196,6 @@ export const findSchoolUser = async (
   // Wait for the client to disconnect
   await new Promise<void>((resolve, reject) => {
     client.unbind((error) => {
-       
       if (error) reject(error);
       else resolve();
     });

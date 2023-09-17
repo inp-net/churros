@@ -43,7 +43,7 @@
     "start": "docker compose up -d && yarn workspaces foreach -piv run start"
   },
   "volta": {
-    "node": "19.0.0",
+    "node": "20.6.1",
     "yarn": "1.22.19"
   },
   "workspaces": [

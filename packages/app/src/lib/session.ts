@@ -72,7 +72,6 @@ export const saveSessionToken = (
 
 /** Returns a temporary redirect object. */
 export const redirectToLogin = (to: string) =>
-   
   redirect(307, `/login?${new URLSearchParams({ to }).toString()}`);
 
 export const me = derived(page, ($page) => $page.data.me);

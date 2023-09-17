@@ -1,4 +1,4 @@
-from node:19
+from node:20
 
 WORKDIR /app
 

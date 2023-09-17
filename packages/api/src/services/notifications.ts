@@ -469,14 +469,12 @@ export async function notify<U extends User>(
           timestamp: notif.timestamp ? new Date(notif.timestamp) : new Date(),
           actions: {
             createMany: {
-              data: 
-                (notif.actions ?? [])
-                  .filter(({ action }) => /^https?:\/\//.test(action))
-                  .map(({ action, title }) => ({
-                    value: action,
-                    name: title,
-                  }))
-              ,
+              data: (notif.actions ?? [])
+                .filter(({ action }) => /^https?:\/\//.test(action))
+                .map(({ action, title }) => ({
+                  value: action,
+                  name: title,
+                })),
             },
           },
           title: notif.title,

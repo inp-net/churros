@@ -174,7 +174,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     group: {
       ...data.group,
       // typescript infers data.group.members as ... | never[] when it's actually ... | undefined
-       
+
       members: data.group.members?.sort(byMemberGroupTitleImportance),
     },
   };

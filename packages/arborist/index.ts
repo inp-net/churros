@@ -46,7 +46,6 @@ export const createForest = <
     // Store the new node in the map
     map.set(item[idKey], node);
 
-     
     const parentId = item[parentIdKey] ?? root;
     if (!map.has(parentId)) map.set(parentId, { children: [] } as unknown as Tree<T>);
 
