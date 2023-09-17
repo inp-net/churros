@@ -398,7 +398,7 @@ async function createLdapUser(
     godparent?: User | null;
     contributesToAEn7?: boolean;
   },
-  password: string
+  password: string,
 ): Promise<void> {
   if (!user.major?.ldapSchool) throw new Error('No major or school');
 
@@ -450,26 +450,26 @@ async function createLdapUser(
   console.info(`Attributes ${JSON.stringify(userAttributes, undefined, 2)}} for ${userDn}`);
   const userAttributesStringable = Object.fromEntries(
     Object.entries(userAttributes).filter(
-      ([_, v]) => v !== null && v !== '' && (Array.isArray(v) ? v.length > 0 : true)
-    )
+      ([_, v]) => v !== null && v !== '' && (Array.isArray(v) ? v.length > 0 : true),
+    ),
   ) as Partial<typeof userAttributes>;
 
   console.info(
     `The following attrs are not stringable and were stripped from the request: ${JSON.stringify(
       Object.fromEntries(
         Object.entries(userAttributes).filter(
-          ([k, _]) => !Object.keys(userAttributesStringable).includes(k)
-        )
+          ([k, _]) => !Object.keys(userAttributesStringable).includes(k),
+        ),
       ),
       undefined,
-      2
-    )}`
+      2,
+    )}`,
   );
 
   console.info(
     `Sending LDAP add request for ${userDn} with attributes: ${JSON.stringify(
-      userAttributesStringable
-    )}`
+      userAttributesStringable,
+    )}`,
   );
 
   console.info(userAttributesStringable);
@@ -488,7 +488,7 @@ async function createLdapUser(
 
 async function resetLdapUserPassword(
   user: User & { major?: undefined | null | (Major & { ldapSchool?: School | undefined | null }) },
-  password: string
+  password: string,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     if (!user.major?.ldapSchool) {

@@ -20,6 +20,6 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
         },
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );
 };

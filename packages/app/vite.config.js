@@ -15,7 +15,7 @@ export const commonConfig = defineConfig({
     preprocessorOptions: {
       scss: {
         additionalData: `@use "${fileURLToPath(
-          new URL('src/design/variables.scss', import.meta.url)
+          new URL('src/design/variables.scss', import.meta.url),
         )}" as *;`,
       },
     },
@@ -27,5 +27,5 @@ export default mergeConfig(
   commonConfig,
   defineConfig({
     plugins: [sveltekit()],
-  })
+  }),
 );

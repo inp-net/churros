@@ -31,7 +31,7 @@ builder.queryField('studentAssociations', (t) =>
         orderBy: { updatedAt: 'desc' },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('studentAssociation', (t) =>
@@ -63,7 +63,7 @@ builder.queryField('studentAssociation', (t) =>
         },
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('contribute', (t) =>
@@ -88,7 +88,7 @@ builder.mutationField('contribute', (t) =>
       if (!contributionOption) throw new GraphQLError('Option de cotisation introuvable');
       if (!contributionOption.beneficiary) {
         throw new GraphQLError(
-          "Aucun compte Lydia bénéficiare n'est associé à cette option de cotisation"
+          "Aucun compte Lydia bénéficiare n'est associé à cette option de cotisation",
         );
       }
 
@@ -131,7 +131,7 @@ builder.mutationField('contribute', (t) =>
         `Cotisation pour ${contributionOption.name}`,
         contributionOption.price,
         phone,
-        contributionOption.beneficiary.vendorToken
+        contributionOption.beneficiary.vendorToken,
       );
 
       await prisma.lydiaTransaction.update({
@@ -154,7 +154,7 @@ builder.mutationField('contribute', (t) =>
 
       return true;
     },
-  })
+  }),
 );
 
 builder.mutationField('cancelPendingContribution', (t) =>
@@ -189,7 +189,7 @@ builder.mutationField('cancelPendingContribution', (t) =>
       if (contribution?.transaction?.requestId && contribution.option.beneficiary?.vendorToken) {
         await cancelLydiaTransaction(
           contribution.transaction,
-          contribution.option.beneficiary.vendorToken
+          contribution.option.beneficiary.vendorToken,
         );
       }
 
@@ -213,7 +213,7 @@ builder.mutationField('cancelPendingContribution', (t) =>
       });
       return true;
     },
-  })
+  }),
 );
 
 // TODO maybe query to get list of all contributors of a student association

@@ -12,5 +12,5 @@ export const load: LayoutLoad = async ({ parent, fetch, params }) =>
         }),
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );

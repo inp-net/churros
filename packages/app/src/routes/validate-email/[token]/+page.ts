@@ -16,7 +16,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
         },
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );
 
   if (validateEmail.__typename === 'MutationValidateEmailSuccess')

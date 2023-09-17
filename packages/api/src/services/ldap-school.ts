@@ -49,7 +49,7 @@ function parseN7ApprenticeAndMajor(groups: string[] | undefined):
 }
 
 function unaccent(str: string): string {
-  return str.normalize('NFD').replace(/[\u0300-\u036F]/g, '');
+  return str.normalize('NFD').replaceAll(/[\u0300-\u036F]/g, '');
 }
 
 /** Finds a user in a school database or returns `undefined`. */
@@ -62,7 +62,7 @@ export const findSchoolUser = async (
         graduationYear: number;
         major: { shortName: string };
         schoolServer: string;
-      }
+      },
 ): Promise<
   | (LdapUser & {
       schoolServer: string;
@@ -99,7 +99,7 @@ export const findSchoolUser = async (
   } else {
     schoolServer = searchBy.schoolServer;
     ldapFilter = `(&(sn=${unaccent(searchBy.lastName)})(givenName=${unaccent(
-      searchBy.firstName
+      searchBy.firstName,
     )}))`;
   }
 
@@ -175,7 +175,7 @@ export const findSchoolUser = async (
               pojo.attributes.map(({ type, values }) => [
                 type,
                 values.length > 0 ? values[0] : undefined,
-              ])
+              ]),
             ),
           });
         });
@@ -189,14 +189,14 @@ export const findSchoolUser = async (
         results.on('error', (error) => {
           reject(error);
         });
-      }
+      },
     );
   });
 
   // Wait for the client to disconnect
   await new Promise<void>((resolve, reject) => {
     client.unbind((error) => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+       
       if (error) reject(error);
       else resolve();
     });
@@ -213,7 +213,7 @@ export const findSchoolUser = async (
       if (!attributeKey) return [key, undefined];
       const value = ldapObject.attrs[attributeKey];
       return [key, value ? value.toString() : undefined];
-    })
+    }),
   ) as unknown as LdapUser;
 
   const result = { ...user, schoolServer, ...parseN7ApprenticeAndMajor(ldapObject.groups) };
@@ -233,5 +233,5 @@ builder.queryField('existsInSchoolLdap', (t) =>
     async resolve(_, { email }) {
       return Boolean(await findSchoolUser({ email }));
     },
-  })
+  }),
 );

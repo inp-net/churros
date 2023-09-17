@@ -27,7 +27,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
         }),
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );
   return {
     groups: groups
@@ -36,7 +36,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
         ...group,
         members: members.filter(
           ({ president, vicePresident, treasurer, secretary }) =>
-            president || vicePresident || treasurer || secretary
+            president || vicePresident || treasurer || secretary,
         ),
       })),
   };

@@ -11,7 +11,7 @@ export const levenshteinSorter =
 export function levenshteinFilterAndSort<T extends { id: string }>(
   fuzzySearchResults: FuzzySearchResult,
   maxChanges: number,
-  excludeIDs: string[] = []
+  excludeIDs: string[] = [],
 ): (results: T[]) => T[] {
   return (results: T[]) => {
     const changesCountMap = new Map<string, number>();
@@ -22,7 +22,7 @@ export function levenshteinFilterAndSort<T extends { id: string }>(
     return results
       .filter(({ id }) => !excludeIDs.includes(id) && changesCountMap.get(id)! <= maxChanges)
       .sort((a: T, b: T) =>
-        changes(a) !== undefined && changes(b) !== undefined ? changes(a)! - changes(b)! : 0
+        changes(a) !== undefined && changes(b) !== undefined ? changes(a)! - changes(b)! : 0,
       );
   };
 }

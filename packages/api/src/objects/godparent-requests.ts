@@ -29,7 +29,7 @@ builder.queryField('godparentRequests', (t) =>
         orderBy: { updatedAt: 'desc' },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('godparentRequest', (t) =>
@@ -47,7 +47,7 @@ builder.queryField('godparentRequest', (t) =>
       return Boolean(
         user.admin ||
           user.canEditUsers ||
-          [request.godchildId, request.godparentId].includes(user.id)
+          [request.godchildId, request.godparentId].includes(user.id),
       );
     },
     async resolve(query, _, { id }) {
@@ -56,7 +56,7 @@ builder.queryField('godparentRequest', (t) =>
         where: { id },
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('upsertGodparentRequest', (t) =>
@@ -114,7 +114,7 @@ builder.mutationField('upsertGodparentRequest', (t) =>
       });
       return godParentRequest;
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteGodparentRequest', (t) =>
@@ -189,5 +189,5 @@ builder.mutationField('deleteGodparentRequest', (t) =>
       });
       return request;
     },
-  })
+  }),
 );

@@ -47,14 +47,14 @@ builder.queryField('school', (t) =>
       if (!school) throw new Error('School not found');
       return school;
     },
-  })
+  }),
 );
 
 builder.queryField('schools', (t) =>
   t.prismaField({
     type: [SchoolType],
     resolve: async (query) => prisma.school.findMany({ ...query, orderBy: { name: 'asc' } }),
-  })
+  }),
 );
 
 /**
@@ -108,5 +108,5 @@ builder.queryField('schoolGroups', (t) =>
 
       return [...majorGroups.values()];
     },
-  })
+  }),
 );

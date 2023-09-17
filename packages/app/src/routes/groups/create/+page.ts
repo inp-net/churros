@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
         schools: { id: true, name: true },
         schoolGroups: { majors: { id: true, name: true }, names: true },
       },
-      { fetch, parent }
+      { fetch, parent },
     )),
     lydiaAccountsOfGroup: [],
     group: {

@@ -26,7 +26,7 @@ builder.queryField('barWeek', (t) =>
     args: { uid: t.arg.string() },
     resolve: async (query, {}, { uid }) =>
       prisma.barWeek.findFirstOrThrow({ ...query, where: { uid }, orderBy: { startsAt: 'desc' } }),
-  })
+  }),
 );
 
 builder.queryField('barWeekNow', (t) =>
@@ -54,14 +54,14 @@ builder.queryField('barWeekNow', (t) =>
         }
       );
     },
-  })
+  }),
 );
 
 builder.queryField('barWeeks', (t) =>
   t.prismaField({
     type: [BarWeekType],
     resolve: async (query) => prisma.barWeek.findMany(query),
-  })
+  }),
 );
 
 builder.mutationField('upsertBarWeek', (t) =>
@@ -128,7 +128,7 @@ builder.mutationField('upsertBarWeek', (t) =>
       });
       return barWeek;
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteBarWeek', (t) =>
@@ -153,5 +153,5 @@ builder.mutationField('deleteBarWeek', (t) =>
       });
       return true;
     },
-  })
+  }),
 );

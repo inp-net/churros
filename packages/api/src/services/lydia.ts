@@ -26,7 +26,7 @@ export async function checkLydiaAccount(vendor_token: string, vendor_id: string)
 // Send a payment request to a number
 export async function payEventRegistrationViaLydia(
   phone: string,
-  registrationId?: string
+  registrationId?: string,
 ): Promise<void> {
   // Get the lydia tokens from the registration
   console.log(registrationId);
@@ -94,7 +94,7 @@ export async function payEventRegistrationViaLydia(
     registration.ticket.event.title,
     registration.ticket.price,
     phone,
-    beneficiaryVendorToken
+    beneficiaryVendorToken,
   );
 
   // Update the lydia transaction
@@ -154,7 +154,7 @@ export async function sendLydiaPaymentRequest(
   title: string,
   price: number,
   phone: string,
-  vendorToken: string
+  vendorToken: string,
 ): Promise<{ requestId: string; requestUuid: string }> {
   const formParams = {
     message: title,
@@ -182,17 +182,17 @@ export async function sendLydiaPaymentRequest(
 
 export function lydiaSignature(
   { privateToken }: { privateToken: string },
-  params: Record<string, string>
+  params: Record<string, string>,
 ): string {
   return createHash('md5')
     .update(
       new URLSearchParams(
         Object.keys(params)
           .sort()
-          .map((key) => [key, params[key]!])
+          .map((key) => [key, params[key]!]),
       ).toString() +
         '&' +
-        privateToken
+        privateToken,
     )
     .digest('hex');
 }
@@ -200,7 +200,7 @@ export function lydiaSignature(
 export async function verifyLydiaTransaction(
   requestId: string,
   signatureParams: Record<string, string>,
-  signature: string
+  signature: string,
 ): Promise<{ verified: boolean; transaction: typeof transaction }> {
   const transaction = await prisma.lydiaTransaction.findFirst({
     where: { requestId },

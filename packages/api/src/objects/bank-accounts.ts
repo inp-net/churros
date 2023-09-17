@@ -25,7 +25,7 @@ builder.queryField('lydiaAccount', (t) =>
     },
     resolve: async (query, _, { id }) =>
       prisma.lydiaAccount.findFirstOrThrow({ ...query, where: { id } }),
-  })
+  }),
 );
 
 builder.mutationField('upsertLydiaAccount', (t) =>
@@ -40,7 +40,7 @@ builder.mutationField('upsertLydiaAccount', (t) =>
     },
     authScopes: (_, { groupUid }, { user }) =>
       Boolean(
-        user?.admin || userIsPresidentOf(user, groupUid) || userIsTreasurerOf(user, groupUid)
+        user?.admin || userIsPresidentOf(user, groupUid) || userIsTreasurerOf(user, groupUid),
       ),
     async resolve(query, _, { id, groupUid, name, privateToken, vendorToken }, { user }) {
       await checkLydiaAccount(vendorToken, privateToken);
@@ -69,7 +69,7 @@ builder.mutationField('upsertLydiaAccount', (t) =>
       });
       return lydiaAccount;
     },
-  })
+  }),
 );
 
 builder.queryField('lydiaAccounts', (t) =>
@@ -83,11 +83,11 @@ builder.queryField('lydiaAccounts', (t) =>
           Object.entries(result).map(([key, value]) => [
             key,
             ['privateToken', 'vendorToken'].includes(key) ? '*****************' : value,
-          ])
-        )
+          ]),
+        ),
       ) as LydiaAccount[];
     },
-  })
+  }),
 );
 
 builder.queryField('lydiaAccountsOfGroup', (t) =>
@@ -101,5 +101,5 @@ builder.queryField('lydiaAccountsOfGroup', (t) =>
     async resolve(query, _, { uid }) {
       return prisma.lydiaAccount.findMany({ ...query, where: { group: { uid } } });
     },
-  })
+  }),
 );

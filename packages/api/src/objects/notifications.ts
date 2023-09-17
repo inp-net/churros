@@ -57,7 +57,7 @@ builder.queryField('notifications', (t) =>
         orderBy: { createdAt: 'desc' },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('notification', (t) =>
@@ -73,7 +73,7 @@ builder.queryField('notification', (t) =>
         where: { id, subscription: { ownerId: user?.id } },
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('testNotification', (t) =>
@@ -106,9 +106,9 @@ builder.mutationField('testNotification', (t) =>
             group: undefined,
             goto: 'https://www.youtube.com/watch?v=chaLRQZKi6w&t=7',
           },
-        }
+        },
       );
       return true;
     },
-  })
+  }),
 );

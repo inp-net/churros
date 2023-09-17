@@ -20,7 +20,7 @@ builder.queryField('eventManager', (t) =>
     },
     resolve: async (query, _, { user, eventId }) =>
       prisma.eventManager.findFirstOrThrow({ ...query, where: { user: { uid: user }, eventId } }),
-  })
+  }),
 );
 
 export const ManagerOfEventInput = builder.inputType('ManagerOfEventInput', {
@@ -46,8 +46,8 @@ builder.mutationField('upsertManagersOfEvent', (t) =>
       });
       return Boolean(
         event.managers.some(
-          ({ userId, canEditPermissions }) => user?.id === userId && canEditPermissions
-        )
+          ({ userId, canEditPermissions }) => user?.id === userId && canEditPermissions,
+        ),
       );
     },
     async resolve(query, _, { eventId, managers }) {
@@ -71,7 +71,7 @@ builder.mutationField('upsertManagersOfEvent', (t) =>
         })
         .managers();
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteEventManager', (t) =>
@@ -94,13 +94,13 @@ builder.mutationField('deleteEventManager', (t) =>
       return Boolean(
         currentUser?.admin ||
           event.managers.some(
-            ({ userId, canEditPermissions }) => currentUser?.id === userId && canEditPermissions
-          )
+            ({ userId, canEditPermissions }) => currentUser?.id === userId && canEditPermissions,
+          ),
       );
     },
     async resolve(_, { eventId, user }) {
       await prisma.eventManager.deleteMany({ where: { eventId, user: { uid: user } } });
       return true;
     },
-  })
+  }),
 );

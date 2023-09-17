@@ -54,7 +54,7 @@ builder.queryField('userCandidate', (t) =>
     args: { token: t.arg.string() },
     resolve: async (query, _, { token }) =>
       prisma.userCandidate.findUniqueOrThrow({ ...query, where: { token } }),
-  })
+  }),
 );
 
 builder.queryField('userCandidates', (t) =>
@@ -64,7 +64,7 @@ builder.queryField('userCandidates', (t) =>
     cursor: 'id',
     resolve: async (query) =>
       prisma.userCandidate.findMany({ ...query, where: { emailValidated: true } }),
-  })
+  }),
 );
 
 /** Registers a new user. */
@@ -86,7 +86,7 @@ builder.mutationField('startRegistration', (t) =>
       }),
     },
     resolve: async (_, { email }) => register(email),
-  })
+  }),
 );
 
 builder.mutationField('completeRegistration', (t) =>
@@ -125,7 +125,7 @@ builder.mutationField('completeRegistration', (t) =>
         password,
         cededImageRightsToTVn7,
         apprentice,
-      }
+      },
     ) {
       await prisma.logEntry.create({
         data: {
@@ -133,7 +133,7 @@ builder.mutationField('completeRegistration', (t) =>
           area: 'signups',
 
           message: `Complétion de l'inscription de ${firstName} ${lastName} ${yearTier(
-            graduationYear
+            graduationYear,
           ).toString()}A ${phone}`,
           /* eslint-enable */
           target: `token ${token}`,
@@ -155,7 +155,7 @@ builder.mutationField('completeRegistration', (t) =>
             cededImageRightsToTVn7,
             apprentice,
           },
-        })
+        }),
       );
       if (user?.major && user.major.ldapSchool) {
         try {
@@ -167,7 +167,7 @@ builder.mutationField('completeRegistration', (t) =>
 
       return user !== undefined;
     },
-  })
+  }),
 );
 
 builder.queryField('userCandidateByEmail', (t) =>
@@ -177,7 +177,7 @@ builder.queryField('userCandidateByEmail', (t) =>
     args: { email: t.arg.string() },
     resolve: async (query, _, { email }) =>
       prisma.userCandidate.findUniqueOrThrow({ ...query, where: { email } }),
-  })
+  }),
 );
 
 builder.mutationField('acceptRegistration', (t) =>
@@ -199,7 +199,7 @@ builder.mutationField('acceptRegistration', (t) =>
       await saveUser(candidate);
       return true;
     },
-  })
+  }),
 );
 
 builder.mutationField('updateUserCandidate', (t) =>
@@ -232,7 +232,7 @@ builder.mutationField('updateUserCandidate', (t) =>
         birthday,
         phone,
         cededImageRightsToTVn7,
-      }
+      },
     ) {
       const candidate = await prisma.userCandidate.update({
         where: { email },
@@ -250,7 +250,7 @@ builder.mutationField('updateUserCandidate', (t) =>
       if (register) await saveUser(candidate);
       return true;
     },
-  })
+  }),
 );
 
 builder.mutationField('refuseRegistration', (t) =>
@@ -278,5 +278,5 @@ builder.mutationField('refuseRegistration', (t) =>
       });
       return true;
     },
-  })
+  }),
 );

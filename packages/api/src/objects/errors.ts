@@ -18,7 +18,7 @@ builder.objectType(Error, {
 /** Flattens nested-object ZodFormattedError into a list of path and message pairs. */
 const flattenErrors = (
   error: ZodFormattedError<unknown>,
-  path: string[]
+  path: string[],
 ): Array<{ path: string[]; message: string }> => {
   // Take errors from the root of the object and add them to the list
   let errors = error._errors.map((message) => ({

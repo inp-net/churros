@@ -31,10 +31,10 @@ export const placesLeft = (ticket: {
           (sum, { registrations }) =>
             sum +
             registrations.filter(
-              ({ opposedAt, cancelledAt /* , paid */ }) => !cancelledAt && !opposedAt /* && paid */
+              ({ opposedAt, cancelledAt /* , paid */ }) => !cancelledAt && !opposedAt /* && paid */,
             ).length,
-          0
-        )
+          0,
+        ),
     );
   }
 
@@ -44,8 +44,8 @@ export const placesLeft = (ticket: {
       0,
       handleUnlimited(ticket.capacity) -
         ticket.registrations.filter(
-          ({ opposedAt, cancelledAt /* , paid */ }) => !cancelledAt && !opposedAt /* && paid */
-        ).length
+          ({ opposedAt, cancelledAt /* , paid */ }) => !cancelledAt && !opposedAt /* && paid */,
+        ).length,
     );
   }
 
@@ -84,16 +84,19 @@ export const TicketType = builder.prismaNode('Ticket', {
       type: [PaymentMethodEnum],
       resolve: async ({ allowedPaymentMethods, eventId }) =>
         // eslint-disable-next-line unicorn/no-array-reduce
-        allowedPaymentMethods.reduce(async (acc, p) => {
-          if (p === PaymentMethod.Lydia) {
-            const event = await prisma.event.findUniqueOrThrow({ where: { id: eventId } });
-            if (event.lydiaAccountId) return [...(await acc), p];
+        allowedPaymentMethods.reduce(
+          async (acc, p) => {
+            if (p === PaymentMethod.Lydia) {
+              const event = await prisma.event.findUniqueOrThrow({ where: { id: eventId } });
+              if (event.lydiaAccountId) return [...(await acc), p];
 
-            return acc;
-          }
+              return acc;
+            }
 
-          return [...(await acc), p];
-        }, Promise.resolve([] as PaymentMethod[])),
+            return [...(await acc), p];
+          },
+          Promise.resolve([] as PaymentMethod[]),
+        ),
     }),
     openToPromotions: t.expose('openToPromotions', { type: ['Int'] }),
     openToAlumni: t.exposeBoolean('openToAlumni', { nullable: true }),
@@ -198,7 +201,7 @@ builder.queryField('ticket', (t) =>
     },
     resolve: async (query, _, { id }) =>
       prisma.ticket.findFirstOrThrow({ ...query, where: { id } }),
-  })
+  }),
 );
 
 builder.queryField('ticketByUid', (t) =>
@@ -228,7 +231,7 @@ builder.queryField('ticketByUid', (t) =>
     },
     resolve: async (query, _, { uid, eventUid }) =>
       prisma.ticket.findFirstOrThrow({ ...query, where: { uid, event: { uid: eventUid } } }),
-  })
+  }),
 );
 
 export function userCanSeeTicket(
@@ -265,7 +268,7 @@ export function userCanSeeTicket(
       option: { id: string; paysFor: Array<{ id: string; school: { uid: string } }> };
     }>;
     apprentice: boolean;
-  }
+  },
 ): boolean {
   // Admins can see everything
   if (user?.admin) return true;
@@ -284,9 +287,9 @@ export function userCanSeeTicket(
         paid &&
         paysFor.some(
           ({ id, school }) =>
-            id === event.group.studentAssociation?.id || event.group.school?.uid === school.uid
-        )
-    )
+            id === event.group.studentAssociation?.id || event.group.school?.uid === school.uid,
+        ),
+    ),
   );
 
   if (openToContributors === true && !isContributor) return false;
@@ -405,7 +408,7 @@ builder.queryField('ticketsOfEvent', (t) =>
 
       return allTickets.filter((ticket) => userCanSeeTicket(ticket, userWithContributesTo));
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteTicket', (t) =>
@@ -436,7 +439,7 @@ builder.mutationField('deleteTicket', (t) =>
       await prisma.ticket.delete({ where: { id } });
       return true;
     },
-  })
+  }),
 );
 
 export async function createUid({
@@ -459,7 +462,7 @@ export async function createUid({
           ticketGroupId,
           name: `${base}${n > 1 ? `-${n}` : ''}`,
         },
-      }))
+      })),
   );
   return `${base}${n > 1 ? `-${n}` : ''}`;
 }

@@ -41,7 +41,7 @@ function bbcode2markdown(text: bbcode): string {
         ($1 as string)
           .split('\n')
           .map((line: string) => `> ${line}`)
-          .join('\n')
+          .join('\n'),
       )
       .replaceAll(/\[list]/gi, '\n')
       .replaceAll(/\[\/list]/gi, '\n')
@@ -52,7 +52,7 @@ function bbcode2markdown(text: bbcode): string {
       .replaceAll(
         /\[h([1-6])](.+?)\[\/h([1-6])]/gi,
         (_, level, text) =>
-          `${'#'.repeat(Number.parseFloat(level as `${number}`))} ${text as string}\n`
+          `${'#'.repeat(Number.parseFloat(level as `${number}`))} ${text as string}\n`,
       )
   );
 }
@@ -329,7 +329,7 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
       } catch {
         // console.error(`  Could not make ${uid} member of ${ldapGroup.cn}: ${error}`);
       }
-    })
+    }),
   );
 
   return prisma.group.findUniqueOrThrow({
@@ -371,10 +371,10 @@ const oldClubsPortail = DATA.find(({ type, name }) => type === 'table' && name =
 ] as OldGroup[];
 
 const logsPortail = DATA.find(
-  ({ type, name }) => type === 'table' && name === 'portailuser_logentry'
+  ({ type, name }) => type === 'table' && name === 'portailuser_logentry',
 )!['data'] as PortailLog[];
 console.log(
-  `  Loaded portail dump (${oldUsersPortail.length} users, ${oldClubsPortail.length} clubs, ${logsPortail.length} logs)`
+  `  Loaded portail dump (${oldUsersPortail.length} users, ${oldClubsPortail.length} clubs, ${logsPortail.length} logs)`,
 );
 
 const LOG_USER_ADD_TO_GROUP_PATTERN =
@@ -385,7 +385,7 @@ const logsAddUserToGroup: Array<{ date: Date; userUid: string; groupUid: string 
       PORTAIL_LOG_APPLICATION[application_id] === 'gestion_clubs' &&
       operation.startsWith('A ajouté') &&
       (operation.includes('au club') || operation.includes('au groupe')) &&
-      LOG_USER_ADD_TO_GROUP_PATTERN.test(operation)
+      LOG_USER_ADD_TO_GROUP_PATTERN.test(operation),
   )
   .map(({ operation, date }) => {
     const match = operation.trim().match(LOG_USER_ADD_TO_GROUP_PATTERN)!;
@@ -403,7 +403,7 @@ function userJoinedGroupAt(userUid: string, groupUid: string): Date | undefined 
     if (dateGroupeInformel) return dateGroupeInformel;
   }
   const allAdds = logsAddUserToGroup.filter(
-    (log) => log.userUid === userUid && log.groupUid === groupUid
+    (log) => log.userUid === userUid && log.groupUid === groupUid,
   );
   if (allAdds.length === 0) {
     // console.log(`${userUid} @ ${groupUid}: No logs found to get join date`)
@@ -424,11 +424,11 @@ const oldUsersCAS = CAS_DATA.find(({ type, name }) => type === 'table' && name =
 console.log(`  Loaded CAS dump (${oldUsersCAS.length} users)`);
 
 let LDAP_DATA = JSON.parse(
-  readFileSync('./dump-ldap.json').toString()
+  readFileSync('./dump-ldap.json').toString(),
 ) as unknown as Ldap.LDAPTypes;
 
 console.log(
-  `  Loaded LDAP dump (${LDAP_DATA.users.length} users, ${LDAP_DATA.clubs.length} clubs, ${LDAP_DATA.majors.length} majors, ${LDAP_DATA.schools.length} schools)`
+  `  Loaded LDAP dump (${LDAP_DATA.users.length} users, ${LDAP_DATA.clubs.length} clubs, ${LDAP_DATA.majors.length} majors, ${LDAP_DATA.schools.length} schools)`,
 );
 console.log('');
 
@@ -458,7 +458,7 @@ console.log(`  ${count} majors`);
 console.log('');
 
 console.log(
-  `· Removing inactive users (where last login was more than 3 years ago) from loaded LDAP dump`
+  `· Removing inactive users (where last login was more than 3 years ago) from loaded LDAP dump`,
 );
 const oldCount = LDAP_DATA.users.length;
 LDAP_DATA = {
@@ -618,7 +618,7 @@ bar.stop();
 bar = progressbar('groups', LDAP_DATA.clubs.length);
 for (const oldGroup of LDAP_DATA.clubs) {
   const portailClub = oldClubsPortail.find(
-    ({ ident, ecole_id }) => `${ident}-${SCHOOLS[ecole_id].uid}` === oldGroup.cn
+    ({ ident, ecole_id }) => `${ident}-${SCHOOLS[ecole_id].uid}` === oldGroup.cn,
   );
   try {
     await makeGroup(portailClub!, oldGroup);
@@ -635,7 +635,7 @@ if (errors.clubs.length + errors.users.length > 0) {
   console.log(
     `Failed to create ${errors.clubs.length} clubs and ${errors.users.length} users (including ${
       errors.users.filter((u) => u.user.ecole.o === 'n7').length
-    } at n7)`
+    } at n7)`,
   );
   writeFileSync('./import-errors.json', JSON.stringify(errors));
 }

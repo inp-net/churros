@@ -25,7 +25,7 @@ export async function compressPhoto(
   buf: Buffer,
   filename: string,
   format: 'png' | 'jpeg',
-  { square = false }: { square?: boolean }
+  { square = false }: { square?: boolean },
 ) {
   let operations = sharp(buf, {
     failOn: 'none',

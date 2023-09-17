@@ -8,8 +8,8 @@ import {
   hasCycle,
 } from './index.js';
 
-describe('arborist', () => {
-  it('should create a simple forest', () => {
+await describe('arborist', async () => {
+  await it('should create a simple forest', () => {
     const forest = createForest([
       { id: 1 },
       { id: 2, parentId: 1 },
@@ -31,7 +31,7 @@ describe('arborist', () => {
     ]);
   });
 
-  it('should still work when entries are shuffled', () => {
+  await it('should still work when entries are shuffled', () => {
     const forest = createForest([{ id: 3, parentId: 2 }, { id: 2, parentId: 1 }, { id: 1 }]);
 
     assert.deepStrictEqual(forest, [
@@ -42,12 +42,12 @@ describe('arborist', () => {
     ]);
   });
 
-  it('should return an empty array if no roots can be found', () => {
+  await it('should return an empty array if no roots can be found', () => {
     const forest = createForest([{ id: 3, parentId: 2 }]);
     assert.deepStrictEqual(forest, []);
   });
 
-  it('should retrieve ancestors', () => {
+  await it('should retrieve ancestors', () => {
     const ancestors = getAncestors(
       [
         { id: 2, parentId: 1 },
@@ -55,7 +55,7 @@ describe('arborist', () => {
         { id: 1, parentId: undefined },
         { id: 3, parentId: 2 },
       ],
-      2 as number
+      2 as number,
     );
 
     assert.deepStrictEqual(ancestors, [
@@ -64,7 +64,7 @@ describe('arborist', () => {
     ]);
   });
 
-  it('should retrieve descendants', () => {
+  await it('should retrieve descendants', () => {
     const descendants = getDescendants(
       [
         { id: 2, parentId: 1 },
@@ -72,7 +72,7 @@ describe('arborist', () => {
         { id: 1, parentId: undefined },
         { id: 3, parentId: 2 },
       ],
-      1 as number
+      1 as number,
     );
     assert.deepStrictEqual(descendants, [
       { id: 1, parentId: undefined },
@@ -82,12 +82,12 @@ describe('arborist', () => {
     ]);
   });
 
-  it('should return an empty array if the id is not found', () => {
+  await it('should return an empty array if the id is not found', () => {
     const ancestors = getAncestors([{ id: 1 }], 2 as number);
     assert.deepStrictEqual(ancestors, []);
   });
 
-  it('should retrieve mapped ancestors', () => {
+  await it('should retrieve mapped ancestors', () => {
     const nodes = [
       { id: 2, parentId: 1 },
       { id: 4, parentId: 3 },
@@ -102,7 +102,7 @@ describe('arborist', () => {
     ]);
   });
 
-  it('should remap keys correctly', () => {
+  await it('should remap keys correctly', () => {
     const nodes = [{ x: 2, y: 1 }, { x: 4, y: 3 }, { x: 1 }, { x: 3, y: 2 }];
     const ancestors = mappedGetAncestors(nodes, [{ z: 4 as number }], {
       idKey: 'x',
@@ -113,20 +113,20 @@ describe('arborist', () => {
     assert.deepStrictEqual(ancestors, [[{ x: 4, y: 3 }, { x: 3, y: 2 }, { x: 2, y: 1 }, { x: 1 }]]);
   });
 
-  it('should work with custom key', () => {
+  await it('should work with custom key', () => {
     const tree = createForest(
       [
         { id: 3, x: 1 },
         { id: 1, x: undefined },
       ],
-      { parentIdKey: 'x' }
+      { parentIdKey: 'x' },
     );
     assert.deepStrictEqual(tree, [
       { id: 1, x: undefined, children: [{ id: 3, x: 1, children: [] }] },
     ]);
   });
 
-  it('has working examples', () => {
+  await it('has working examples', () => {
     // Make sure that the examples are working
     const forest = createForest([{ id: 1 }, { id: 2, parentId: 1 }, { id: 3 }]);
     assert.deepStrictEqual(forest, [
@@ -138,7 +138,7 @@ describe('arborist', () => {
     assert.deepStrictEqual(ancestors, [{ id: 2, parentId: 1 }, { id: 1 }]);
   });
 
-  it('can detect cycles', () => {
+  await it('can detect cycles', () => {
     const actual = hasCycle([
       { id: 1, parentId: 2 },
       { id: 2, parentId: 1 },
@@ -146,7 +146,7 @@ describe('arborist', () => {
     assert.equal(actual, true);
   });
 
-  it('does not detect cycles when there are none', () => {
+  void it('does not detect cycles when there are none', () => {
     const actual = hasCycle([
       { id: 1, parentId: 2 },
       { id: 2, parentId: undefined },

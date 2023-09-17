@@ -19,7 +19,7 @@ export const GET: RequestHandler = async ({ params, locals, fetch }) => {
             token: undefined,
           };
         },
-      }
+      },
     );
     isGroup = true;
   } catch {}

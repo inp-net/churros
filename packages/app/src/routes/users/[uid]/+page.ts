@@ -95,7 +95,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
         },
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );
 
   return {

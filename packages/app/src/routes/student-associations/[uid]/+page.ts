@@ -70,7 +70,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
             },
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );
   return {
     ...data,

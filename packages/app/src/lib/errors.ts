@@ -4,7 +4,7 @@ export const fieldErrorsToFormattedError = <T extends {}>(
   fieldErrors: Array<{
     path: string[];
     message: string;
-  }>
+  }>,
 ) => {
   const formattedError = { _errors: [] } as unknown as ZodFormattedError<T>;
 

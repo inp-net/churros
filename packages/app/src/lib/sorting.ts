@@ -12,7 +12,7 @@ export const byMemberGroupTitleImportance = (
     treasurer: boolean;
     vicePresident: boolean;
     secretary: boolean;
-  }
+  },
 ) => {
   if (a.president !== b.president) return b.president ? 1 : -1;
   if (a.treasurer !== b.treasurer) return b.treasurer ? 1 : -1;

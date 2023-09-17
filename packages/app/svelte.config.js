@@ -8,7 +8,7 @@ const config = {
     preprocess({
       scss: {
         prependData: `@use "${fileURLToPath(
-          new URL('src/design/variables.scss', import.meta.url)
+          new URL('src/design/variables.scss', import.meta.url),
         )}" as *;`,
       },
     }),

@@ -56,8 +56,8 @@ builder.mutationField('addGroupMember', (t) =>
         !member.contributions.some(({ option: { paysFor } }) =>
           paysFor.some(
             ({ id, school }) =>
-              school.uid === group.school?.uid || id === group.studentAssociation?.id
-          )
+              school.uid === group.school?.uid || id === group.studentAssociation?.id,
+          ),
         )
       ) {
         // pas cotisant
@@ -66,7 +66,9 @@ builder.mutationField('addGroupMember', (t) =>
 
       return Boolean(
         user?.canEditGroups ||
-          user?.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === groupUid)
+          user?.groups.some(
+            ({ group, canEditMembers }) => canEditMembers && group.uid === groupUid,
+          ),
       );
     },
     async resolve(query, _, { groupUid, uid, title }, { user }) {
@@ -90,7 +92,7 @@ builder.mutationField('addGroupMember', (t) =>
       });
       return groupMember;
     },
-  })
+  }),
 );
 
 /** Adds a member to a group that is self-joinable. Does not require the same auth scopes. */
@@ -125,7 +127,7 @@ builder.mutationField('selfJoinGroup', (t) =>
       });
       return groupMember;
     },
-  })
+  }),
 );
 
 /** Updates a group member. */
@@ -147,7 +149,7 @@ builder.mutationField('upsertGroupMember', (t) =>
     authScopes: (_, { groupId }, { user }) =>
       Boolean(
         user?.canEditGroups ||
-          user?.groups.some(({ group, canEditMembers }) => canEditMembers && group.id === groupId)
+          user?.groups.some(({ group, canEditMembers }) => canEditMembers && group.id === groupId),
       ),
     async resolve(
       query,
@@ -164,7 +166,7 @@ builder.mutationField('upsertGroupMember', (t) =>
         canEditMembers,
         canScanEvents,
       },
-      { user: me }
+      { user: me },
     ) {
       const group = await prisma.group.findUniqueOrThrow({ where: { id: groupId } });
       const { uid } = await prisma.user.findUniqueOrThrow({
@@ -242,7 +244,7 @@ builder.mutationField('upsertGroupMember', (t) =>
 
       const rolesText = (member: Record<(typeof boardKeys)[number], boolean>) =>
         (boardKeys.some((k) => member[k]) ? boardKeys.filter((k) => member[k]) : ['(aucun)']).join(
-          ', '
+          ', ',
         );
 
       if (oldMember && boardKeys.some((k) => groupMember[k] !== oldMember[k])) {
@@ -264,7 +266,7 @@ builder.mutationField('upsertGroupMember', (t) =>
 
       return groupMember;
     },
-  })
+  }),
 );
 
 /** Removes a member from a group. */
@@ -279,7 +281,7 @@ builder.mutationField('deleteGroupMember', (t) =>
       Boolean(
         memberId === user?.id ||
           user?.canEditGroups ||
-          user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id)
+          user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id),
       ),
     async resolve(_, { memberId, groupId }, { user: me }) {
       const { uid } = await prisma.user.findUniqueOrThrow({
@@ -299,5 +301,5 @@ builder.mutationField('deleteGroupMember', (t) =>
       });
       return true;
     },
-  })
+  }),
 );

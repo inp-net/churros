@@ -49,7 +49,7 @@ for (const line of readFileSync('./integration-1as.tsv').toString().split('\n'))
     string,
     string,
     string,
-    string
+    string,
   ];
   currentGroup = Number.parseInt(group!, 10);
   integrationGroups[currentGroup - 1]?.members.push({
@@ -130,7 +130,7 @@ for (const [index, group] of Object.entries(integrationGroups)) {
       });
       if (!user) {
         console.log(
-          `\t❌ 1A ${firstName} ${lastName} (${promo} ${apprentice ? 'FISA' : ''}): non trouvé`
+          `\t❌ 1A ${firstName} ${lastName} (${promo} ${apprentice ? 'FISA' : ''}): non trouvé`,
         );
         continue;
       }
@@ -146,11 +146,11 @@ for (const [index, group] of Object.entries(integrationGroups)) {
         },
       });
       console.log(
-        `\t✅ 1A @${user.uid} ${firstName} ${lastName} (${promo}${apprentice ? ' FISA' : ''})`
+        `\t✅ 1A @${user.uid} ${firstName} ${lastName} (${promo}${apprentice ? ' FISA' : ''})`,
       );
     } catch (error) {
       console.log(
-        `\t❌ 1A ${firstName} ${lastName} (${promo} ${apprentice ? 'FISA' : ''}): erreur`
+        `\t❌ 1A ${firstName} ${lastName} (${promo} ${apprentice ? 'FISA' : ''}): erreur`,
       );
     }
   }

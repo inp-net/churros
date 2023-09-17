@@ -26,7 +26,7 @@ const users = new Map(
         attributes: { supannAliasLogin, uid, givenName: firstName, sn: lastName, mail },
       },
     ];
-  })
+  }),
 );
 
 console.log('Available users:', [...users.keys()].join(', '));

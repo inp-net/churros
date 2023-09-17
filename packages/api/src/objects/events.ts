@@ -117,7 +117,7 @@ class ProfitsBreakdown {
   constructor(
     total: number,
     byPaymentMethod: Record<PaymentMethod, number>,
-    byTicket: Array<{ id: string; amount: number }>
+    byTicket: Array<{ id: string; amount: number }>,
   ) {
     this.total = total;
     this.byPaymentMethod = byPaymentMethod;
@@ -151,7 +151,7 @@ const ProfitsBreakdownType = builder.objectRef<ProfitsBreakdown>('ProfitsBreakdo
 
 export function eventCapacity(
   tickets: Array<Ticket & { group: TicketGroup | null }>,
-  ticketGroups: Array<TicketGroup & { tickets: Ticket[] }>
+  ticketGroups: Array<TicketGroup & { tickets: Ticket[] }>,
 ) {
   // Places left is capacity - number of registrations
   // Capacity is the sum of
@@ -167,9 +167,9 @@ export function eventCapacity(
         acc +
         Math.min(
           handleUnlimited(tg.capacity),
-          tg.tickets.reduce((acc, t) => acc + handleUnlimited(t.capacity), 0)
+          tg.tickets.reduce((acc, t) => acc + handleUnlimited(t.capacity), 0),
         ),
-      0
+      0,
     )
   );
 }
@@ -299,7 +299,7 @@ export const EventType = builder.prismaNode('Event', {
         const placesLeft = Math.max(
           0,
           eventCapacity(tickets, ticketGroups) -
-            registrations.filter((r) => !r.cancelledAt && !r.opposedAt).length
+            registrations.filter((r) => !r.cancelledAt && !r.opposedAt).length,
         );
         return placesLeft === Number.POSITIVE_INFINITY ? -1 : placesLeft;
       },
@@ -338,7 +338,7 @@ export const EventType = builder.prismaNode('Event', {
             Object.entries(PaymentMethod).map(([_, value]) => [
               value,
               sumUp(registrations.filter((r) => r.paymentMethod === value)),
-            ])
+            ]),
           ) as Record<PaymentMethod, number>,
           byTicket: tickets.map(({ id }) => ({
             id,
@@ -366,7 +366,7 @@ builder.queryField('event', (t) =>
     },
     resolve: async (query, _, { uid, groupUid }) =>
       prisma.event.findFirstOrThrow({ ...query, where: { uid, group: { uid: groupUid } } }),
-  })
+  }),
 );
 
 builder.queryField('events', (t) =>
@@ -398,7 +398,7 @@ builder.queryField('events', (t) =>
         orderBy: { startsAt: 'asc' },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('eventsInWeek', (t) =>
@@ -434,7 +434,7 @@ builder.queryField('eventsInWeek', (t) =>
         orderBy: { startsAt: 'asc' },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('eventsOfGroup', (t) =>
@@ -459,7 +459,7 @@ builder.queryField('eventsOfGroup', (t) =>
         orderBy: { startsAt: 'desc' },
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteEvent', (t) =>
@@ -474,7 +474,7 @@ builder.mutationField('deleteEvent', (t) =>
         include: { managers: true },
       });
       return Boolean(
-        user?.admin || event.managers.some(({ userId, canEdit }) => userId === user?.id && canEdit)
+        user?.admin || event.managers.some(({ userId, canEdit }) => userId === user?.id && canEdit),
       );
     },
     async resolve(_, { id }, { user }) {
@@ -492,7 +492,7 @@ builder.mutationField('deleteEvent', (t) =>
       });
       return true;
     },
-  })
+  }),
 );
 
 builder.mutationField('upsertEvent', (t) =>
@@ -524,8 +524,8 @@ builder.mutationField('upsertEvent', (t) =>
         return Boolean(
           user.canEditGroups ||
             user.groups.some(
-              ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid
-            )
+              ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
+            ),
         );
       }
 
@@ -537,7 +537,7 @@ builder.mutationField('upsertEvent', (t) =>
       if (!event) return false;
 
       return Boolean(
-        event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit)
+        event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit),
       );
     },
     async resolve(
@@ -559,7 +559,7 @@ builder.mutationField('upsertEvent', (t) =>
         title,
         visibility,
       },
-      { user }
+      { user },
     ) {
       // TODO send only notifications to people that have canSeeTicket(..., people)  on tickets that changed the shotgun date, and say that the shotgun date changed in the notification
       const shotgunChanged = !id;
@@ -573,7 +573,7 @@ builder.mutationField('upsertEvent', (t) =>
           userId: await prisma.user
             .findUnique({ where: { uid: manager.userUid } })
             .then((user) => user?.id ?? ''),
-        }))
+        })),
       );
 
       const oldEvent = id
@@ -645,7 +645,7 @@ builder.mutationField('upsertEvent', (t) =>
                         canEditPermissions,
                         canVerifyRegistrations,
                       },
-                    })
+                    }),
                   ),
                 }
               : undefined,
@@ -766,7 +766,7 @@ builder.mutationField('upsertEvent', (t) =>
 
       return result;
     },
-  })
+  }),
 );
 
 export async function eventAccessibleByUser(
@@ -781,7 +781,7 @@ export async function eventAccessibleByUser(
         }>;
       })
     | null,
-  user: Context['user']
+  user: Context['user'],
 ): Promise<boolean> {
   if (user?.admin) return true;
 
@@ -829,7 +829,7 @@ export function eventManagedByUser(
     }>;
   },
   user: Context['user'],
-  required: { canEdit?: boolean; canEditPermissions?: boolean; canVerifyRegistrations?: boolean }
+  required: { canEdit?: boolean; canEditPermissions?: boolean; canVerifyRegistrations?: boolean },
 ) {
   if (!user) return false;
   return Boolean(
@@ -844,7 +844,7 @@ export function eventManagedByUser(
         if (required.canEditPermissions && !permissions.canEditPermissions) return false;
         if (required.canVerifyRegistrations && !permissions.canVerifyRegistrations) return false;
         return true;
-      })
+      }),
   );
 }
 
@@ -922,17 +922,20 @@ builder.queryField('searchEvents', (t) =>
         >(
           fuzzyIDs,
           10,
-          results.map(({ id }) => id)
+          results.map(({ id }) => id),
         )(fuzzyEvents),
         // fucking js does not allow promises for .filter
         // eslint-disable-next-line unicorn/no-array-reduce
-      ].reduce(async (acc, event) => {
-        if (await eventAccessibleByUser(event, user)) return [...(await acc), event];
+      ].reduce(
+        async (acc, event) => {
+          if (await eventAccessibleByUser(event, user)) return [...(await acc), event];
 
-        return acc;
-      }, Promise.resolve([] as Event[]));
+          return acc;
+        },
+        Promise.resolve([] as Event[]),
+      );
     },
-  })
+  }),
 );
 
 export async function createUid({ title, groupId }: { title: string; groupId: string }) {
@@ -941,7 +944,7 @@ export async function createUid({ title, groupId }: { title: string; groupId: st
     async (n) =>
       !(await prisma.event.findUnique({
         where: { groupId_uid: { groupId, uid: `${base}${n > 1 ? `-${n}` : ''}` } },
-      }))
+      })),
   );
   return `${base}${n > 1 ? `-${n}` : ''}`;
 }
@@ -964,8 +967,8 @@ builder.mutationField('updateEventPicture', (t) =>
         user?.id === event.authorId ||
           // Other authors of the group
           user?.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId
-          )
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId,
+          ),
       );
     },
     async resolve(_, { id, file }) {
@@ -977,7 +980,7 @@ builder.mutationField('updateEventPicture', (t) =>
         identifier: id,
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteEventPicture', (t) =>
@@ -997,8 +1000,8 @@ builder.mutationField('deleteEventPicture', (t) =>
         user?.id === event.authorId ||
           // Other authors of the group
           user?.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId
-          )
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId,
+          ),
       );
     },
     async resolve(_, { id }) {
@@ -1013,5 +1016,5 @@ builder.mutationField('deleteEventPicture', (t) =>
       await prisma.event.update({ where: { id }, data: { pictureFile: '' } });
       return true;
     },
-  })
+  }),
 );
