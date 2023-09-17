@@ -400,11 +400,11 @@ async function createLdapUser(
   },
   password: string
 ): Promise<void> {
-  const userDn = `uid=${user.uid},ou=people,o=n7,${LDAP_BASE_DN}`;
+  if (!user.major?.ldapSchool) throw new Error('No major or school');
+
+  const userDn = `uid=${user.uid},ou=people,o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`;
   const uidNumber = await findFreeUidNumber();
   if (!uidNumber) throw new Error('No free uidNumber');
-
-  if (!user.major?.ldapSchool) throw new Error('No major or school');
 
   const userAttributes = {
     objectClass: [

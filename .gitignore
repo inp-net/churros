@@ -31,3 +31,6 @@ packages/api/scripts/fisas.json
 packages/api/scripts/fisas.tsv
 packages/api/scripts/integration-1as.tsv
 packages/api/scripts/integration-2as.tsv
+
+# Ignore jetbrains ide files
+.idea
