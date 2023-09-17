@@ -8,14 +8,30 @@
 // match the expected interface, even if the JSON is valid.
 
 export interface FrappeTypes {
-    frappe_annee:           Frappe[];
-    frappe_commentaire:     FrappeCommentaire[];
-    frappe_document:        FrappeDocument[];
-    frappe_documentfichier: FrappeDocumentfichier[];
-    frappe_document_tags:   FrappeDocumentTag[];
-    frappe_filiere:         FrappeFiliere[];
-    frappe_matiere:         FrappeMatiere[];
-    frappe_tag:             Frappe[];
+    auth_user:               AuthUser[];
+    frappe_annee:            Frappe[];
+    frappe_commentaire:      FrappeCommentaire[];
+    frappe_document:         FrappeDocument[];
+    frappe_documentfichier:  FrappeDocumentfichier[];
+    frappe_document_tags:    FrappeDocumentTag[];
+    frappe_filiere:          FrappeFiliere[];
+    frappe_matiere:          FrappeMatiere[];
+    frappe_tag:              Frappe[];
+    portailuser_portailuser: PortailuserPortailuser[];
+}
+
+export interface AuthUser {
+    id:           string;
+    password:     string;
+    last_login:   Date | null;
+    is_superuser: string;
+    username:     string;
+    first_name:   string;
+    last_name:    string;
+    email:        string;
+    is_staff:     string;
+    is_active:    string;
+    date_joined:  Date;
 }
 
 export interface Frappe {
@@ -68,6 +84,13 @@ export interface FrappeMatiere {
     id:         string;
     nom:        string;
     filiere_id: string;
+}
+
+export interface PortailuserPortailuser {
+    user_ptr_id:         string;
+    edt_club_events:     null | string;
+    ecole_id:            string;
+    force_change_passwd: string;
 }
 
 // Converts JSON strings to/from your types
@@ -236,6 +259,7 @@ function r(name: string) {
 
 const typeMap: any = {
     "FrappeTypes": o([
+        { json: "auth_user", js: "auth_user", typ: a(r("AuthUser")) },
         { json: "frappe_annee", js: "frappe_annee", typ: a(r("Frappe")) },
         { json: "frappe_commentaire", js: "frappe_commentaire", typ: a(r("FrappeCommentaire")) },
         { json: "frappe_document", js: "frappe_document", typ: a(r("FrappeDocument")) },
@@ -244,6 +268,20 @@ const typeMap: any = {
         { json: "frappe_filiere", js: "frappe_filiere", typ: a(r("FrappeFiliere")) },
         { json: "frappe_matiere", js: "frappe_matiere", typ: a(r("FrappeMatiere")) },
         { json: "frappe_tag", js: "frappe_tag", typ: a(r("Frappe")) },
+        { json: "portailuser_portailuser", js: "portailuser_portailuser", typ: a(r("PortailuserPortailuser")) },
+    ], false),
+    "AuthUser": o([
+        { json: "id", js: "id", typ: "" },
+        { json: "password", js: "password", typ: "" },
+        { json: "last_login", js: "last_login", typ: u(Date, null) },
+        { json: "is_superuser", js: "is_superuser", typ: "" },
+        { json: "username", js: "username", typ: "" },
+        { json: "first_name", js: "first_name", typ: "" },
+        { json: "last_name", js: "last_name", typ: "" },
+        { json: "email", js: "email", typ: "" },
+        { json: "is_staff", js: "is_staff", typ: "" },
+        { json: "is_active", js: "is_active", typ: "" },
+        { json: "date_joined", js: "date_joined", typ: Date },
     ], false),
     "Frappe": o([
         { json: "id", js: "id", typ: "" },
@@ -289,5 +327,11 @@ const typeMap: any = {
         { json: "id", js: "id", typ: "" },
         { json: "nom", js: "nom", typ: "" },
         { json: "filiere_id", js: "filiere_id", typ: "" },
+    ], false),
+    "PortailuserPortailuser": o([
+        { json: "user_ptr_id", js: "user_ptr_id", typ: "" },
+        { json: "edt_club_events", js: "edt_club_events", typ: u(null, "") },
+        { json: "ecole_id", js: "ecole_id", typ: "" },
+        { json: "force_change_passwd", js: "force_change_passwd", typ: "" },
     ], false),
 };

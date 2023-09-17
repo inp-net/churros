@@ -1,5 +1,14 @@
+/*
+  Warnings:
+
+  - A unique constraint covering the columns `[name,userId,studentAssociationId,groupId,articleId,eventId,ticketId,notificationId,subjectId]` on the table `Link` will be added. If there are existing duplicate values, this will fail.
+
+*/
 -- CreateEnum
 CREATE TYPE "DocumentType" AS ENUM ('Exercises', 'Practical', 'CourseNotes', 'CourseSlides', 'Summary', 'PracticalExam', 'GradedExercises', 'Exam', 'Miscellaneous');
+
+-- DropIndex
+DROP INDEX "Link_name_userId_studentAssociationId_groupId_articleId_eve_key";
 
 -- AlterTable
 ALTER TABLE "Announcement" ALTER COLUMN "id" SET DEFAULT nanoid('ann:');
@@ -32,7 +41,8 @@ ALTER TABLE "GodparentRequest" ALTER COLUMN "id" SET DEFAULT nanoid('godparentre
 ALTER TABLE "Group" ALTER COLUMN "id" SET DEFAULT nanoid('g:');
 
 -- AlterTable
-ALTER TABLE "Link" ALTER COLUMN "id" SET DEFAULT nanoid('link:');
+ALTER TABLE "Link" ADD COLUMN     "subjectId" TEXT,
+ALTER COLUMN "id" SET DEFAULT nanoid('link:');
 
 -- AlterTable
 ALTER TABLE "LogEntry" ALTER COLUMN "id" SET DEFAULT nanoid('log:');
@@ -124,7 +134,7 @@ CREATE TABLE "Document" (
 -- CreateTable
 CREATE TABLE "Comment" (
     "id" TEXT NOT NULL DEFAULT nanoid('comment:'),
-    "authorId" TEXT NOT NULL,
+    "authorId" TEXT,
     "body" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -179,8 +189,14 @@ CREATE UNIQUE INDEX "_MinorToSubject_AB_unique" ON "_MinorToSubject"("A", "B");
 -- CreateIndex
 CREATE INDEX "_MinorToSubject_B_index" ON "_MinorToSubject"("B");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Link_name_userId_studentAssociationId_groupId_articleId_eve_key" ON "Link"("name", "userId", "studentAssociationId", "groupId", "articleId", "eventId", "ticketId", "notificationId", "subjectId");
+
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_minorId_fkey" FOREIGN KEY ("minorId") REFERENCES "Minor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Link" ADD CONSTRAINT "Link_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "Subject"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Document" ADD CONSTRAINT "Document_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "Subject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
