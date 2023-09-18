@@ -77,6 +77,7 @@
         const [_, domain] = email.split('@');
         wrongDomain = domain.includes('n7') && domain.trim() !== 'etu.inp-n7.fr';
       }}
+      maxlength={255}
       required
     />
 

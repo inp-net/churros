@@ -347,7 +347,7 @@
       <FormPicture rectangular objectName="Event" bind:object={event} />
     {/if}
     <InputGroup required group={event.group} label="Groupe" bind:uid={event.group.uid} />
-    <InputText required label="Titre" bind:value={event.title} />
+    <InputText required label="Titre" maxlength={255} bind:value={event.title} />
     <InputSelectOne
       label="Visibilité"
       hint={HELP_VISIBILITY[event.visibility]}
@@ -360,7 +360,7 @@
       <DateInput required label="Début" time bind:value={event.startsAt} />
       <DateInput required label="Fin" time bind:value={event.endsAt} />
     </div>
-    <InputText label="Lieu" bind:value={event.location} />
+    <InputText label="Lieu" maxlength={255} bind:value={event.location} />
     <InputField label="Compte Lydia bénéficiaire" hint="Commences à taper le nom du compte lydia">
       <InputSearchObject
         clearable
@@ -375,7 +375,7 @@
           new Fuse(availableLydiaAccounts, { keys: ['name'] }).search(query).map((r) => r.item)}
       />
     </InputField>
-    <InputText label="E-mail de contact de l'orga" bind:value={event.contactMail} type="email" />
+    <InputText label="E-mail de contact de l'orga" bind:value={event.contactMail} maxlength={255} type="email" />
   </section>
   <section class="tickets">
     <h2>
@@ -425,6 +425,7 @@
             <InputText
               label="Nom du groupe"
               required
+              maxlength={255}
               placeholder={ticketGroup.name}
               bind:value={event.ticketGroups[i].name}
             />
@@ -684,7 +685,7 @@
     border-radius: var(--radius-block);
   }
 
-  @media (min-width: 1100px) {
+  @media (width >= 1100px) {
     form.event {
       display: grid;
       grid-template-areas: 'info tickets' 'managers managers' 'submit submit';

@@ -66,13 +66,13 @@
     label="Nouveau mot de passe"
     bind:value={newPassword}
     required
-    minLength={8}
+    minlength={8}
   />
   <InputText
     type="password"
     label="Confirmer le nouveau mot de passe"
     bind:value={newPasswordConfirmation}
-    minLength={8}
+    minlength={8}
     required
   />
   <InputCheckbox label="Se deconnecter de tous les appareils" bind:value={disconnectAll} />

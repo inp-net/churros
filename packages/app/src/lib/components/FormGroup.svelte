@@ -102,13 +102,13 @@
 
   <InputCheckbox label="Auto-joignable" bind:value={selfJoinable} />
 
-  <InputText required label="Nom" bind:value={name} />
-  <InputText label="Description courte" bind:value={description} />
+  <InputText required label="Nom" maxlength={255} bind:value={name} />
+  <InputText label="Description courte" maxlength={255} bind:value={description} />
   <InputLongText rich label="Description" bind:value={longDescription} />
   <!-- TODO colors ? -->
-  <InputText label="Salle" bind:value={address} />
-  <InputText label="Email" type="email" bind:value={email} />
-  <InputText label="Site web" type="url" bind:value={website} />
+  <InputText label="Salle" maxlength={255} bind:value={address} />
+  <InputText label="Email" type="email" maxlength={255} bind:value={email} />
+  <InputText label="Site web" type="url" maxlength={255} bind:value={website} />
   <InputSocialLinks label="Réseaux sociaux" bind:value={links} />
   <InputGroup clearable label="Groupe parent" bind:group={parent} uid={parent?.uid} />
   <InputListOfGroups

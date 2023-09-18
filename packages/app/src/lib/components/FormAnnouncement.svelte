@@ -47,7 +47,7 @@
 </script>
 
 <form on:submit|preventDefault={saveChanges}>
-  <InputText label="Titre" bind:value={data.title} />
+  <InputText label="Titre" maxlength={255} bind:value={data.title} />
   <InputLongText rich label="Message" bind:value={data.body} />
   <div class="side-by-side">
     <InputDate time label="Début" bind:value={data.startsAt} />
