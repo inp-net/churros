@@ -13,6 +13,7 @@
   export let unit = '';
   export let placeholder = '';
   export let validate: (value: string) => string = () => '';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let required = false;
   export let closeKeyboardOnEnter = false;
@@ -74,7 +75,9 @@
       // Validate string conversion first
       _errorMessage = 'Ce champ doit être un nombre';
     } else if (type === 'date' && value === null) {
-      _errorMessage = '';
+        _errorMessage = '';
+    } else if ($$restProps.minlength && valueString.length < $$restProps.minlength) {
+        _errorMessage = `Ce champ doit comporter au moins ${$$restProps.minlength} caractère${$$restProps.minlength>1 ? 's' : ''}`;
     } else {
       _errorMessage = validate(valueString);
     }
@@ -84,7 +87,7 @@
   $: errored = _errorMessage !== '';
 
   let resettable = false;
-  $: resettable = typeof initial !== 'undefined' && value !== initial;
+  $: resettable = initial !== undefined && value !== initial;
 
   let focused = false;
 
@@ -189,10 +192,10 @@
   input {
     width: 100%;
     color: var(--text);
+    appearance: textfield;
     background: none;
     border: none;
     outline: none;
-    appearance: textfield;
   }
 
   .wrapper:hover,
@@ -216,8 +219,8 @@
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
-    appearance: none;
     margin: 0;
+    appearance: none;
   }
 
   button.reset,
