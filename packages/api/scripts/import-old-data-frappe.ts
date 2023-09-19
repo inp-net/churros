@@ -124,7 +124,7 @@ const TAG_TO_SUBJECT_AND_IS_SOLUTION = {
 "Enoncé Exam": [DocumentType.Exam, false],
 } as const
 
-let documentsResidual: Record<string, {subjectUid: string; subjectId_uid: {subjectId: string; uid: string}; isSolution:boolean; tags: Array<typeof TAG_TO_SUBJECT_AND_IS_SOLUTION[keyof typeof TAG_TO_SUBJECT_AND_IS_SOLUTION]>}> = {} // Maps id to { subjectId_uid,  }
+let documentsResidual: Record<string, {uid: string; subjectUid: string; subjectId_uid: {subjectId: string; uid: string}; isSolution:boolean; tags: Array<typeof TAG_TO_SUBJECT_AND_IS_SOLUTION[keyof typeof TAG_TO_SUBJECT_AND_IS_SOLUTION]>}> = {} // Maps id to { subjectId_uid,  }
 
 bar = progressbar('documents', frappe_document.length);
 for (const { annee, auteur_id, creation, derniere_modif, description, matiere_id, nom, id } of frappe_document) {
@@ -149,6 +149,7 @@ for (const { annee, auteur_id, creation, derniere_modif, description, matiere_id
     const uid = `${uidBase}${uidNumber ? `-${uidNumber}` : ''}`
 
     documentsResidual[id] = {
+        uid,
         subjectId_uid: {subjectId: subject.id, uid },
         subjectUid: subject.uid,
         isSolution,
@@ -192,12 +193,12 @@ async function downloadFile(from: string, dest: string, schoolUid: string) {
       const url = `https://www.bde.${
       schoolUid
       }.fr/media/${from}`;
-      // console.log(`  Downloading ${url} -> ${dest}`);
+      console.info(`  Downloading ${url} -> ${dest}`);
       try {
         const { body } = await fetch(url);
         if (body === null) throw new Error('No body');
-        mkdirSync(path.dirname(dest), { recursive: true });
-        await finished(Readable.fromWeb(body as ReadableStream).pipe(filestream));
+        // mkdirSync(path.dirname(dest), { recursive: true });
+        // await finished(Readable.fromWeb(body as ReadableStream).pipe(filestream));
       } catch (error: unknown) {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         console.error(`  Failed to download ${url}: ${error}`);
@@ -207,7 +208,7 @@ async function downloadFile(from: string, dest: string, schoolUid: string) {
 
 
 bar = progressbar('fichiers', frappe_documentfichier.length);
-for (const { document_id, fichier } of frappe_documentfichier) {
+for (const { document_id, fichier, ordre } of frappe_documentfichier) {
     // console.info(`* Creating file ${fichier} (${document_id})`)
     const document = documentsResidual[document_id]
     if (!document) {
@@ -217,7 +218,7 @@ for (const { document_id, fichier } of frappe_documentfichier) {
     }
     const extension = path.extname(fichier)
     const basename = path.basename(fichier, extension)
-    const filePath = `/documents/${document.subjectUid}/${slug(basename)}${extension}`
+    const filePath = `documents/${document.subjectUid}/${document.uid}/${ordre}-${slug(basename)}${extension}`
 
     await downloadFile(fichier, `../storage/${filePath}`, 'n7')
 
@@ -242,16 +243,14 @@ for (const { auteur_id, creation, derniere_modif, document_id, message } of frap
         uid: auth_user.find(u => u.id === portailuser_portailuser.find(pu => pu.user_ptr_id === auteur_id)!.user_ptr_id )!.username
     }})
     const documentConnection = documentsResidual[document_id]
-    if (!documentConnection) {
+    if (!documentConnection || !author) {
         bar.increment()
         continue
     }
     await p.comment.create({
         data: {
             body: message,
-            author: author ? {
-                connect: { id: author.id }
-            } : null,
+            author: {connect: { id: author.id }},
             document: {
                 connect: documentConnection,
             },

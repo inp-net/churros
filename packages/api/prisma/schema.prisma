@@ -49,9 +49,10 @@ model User {
   cededImageRightsToTVn7 Boolean   @default(false)
 
   // Permissions
-  admin         Boolean @default(false)
-  canEditUsers  Boolean @default(false)
-  canEditGroups Boolean @default(false)
+  admin              Boolean @default(false)
+  canEditUsers       Boolean @default(false)
+  canEditGroups      Boolean @default(false)
+  canAccessDocuments Boolean @default(false)
 
   // Relationships
   articles                  Article[]
@@ -738,7 +739,7 @@ model Comment {
   body        String    @db.Text
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  author      User?      @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  author      User?     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   // For now, only documents can be commented
   document    Document  @relation(fields: [documentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   documentId  String

@@ -87,7 +87,8 @@ ALTER TABLE "Ticket" ALTER COLUMN "id" SET DEFAULT nanoid('t:');
 ALTER TABLE "TicketGroup" ALTER COLUMN "id" SET DEFAULT nanoid('tg:');
 
 -- AlterTable
-ALTER TABLE "User" ADD COLUMN     "minorId" TEXT,
+ALTER TABLE "User" ADD COLUMN     "canAccessDocuments" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "minorId" TEXT,
 ALTER COLUMN "id" SET DEFAULT nanoid('u:');
 
 -- AlterTable

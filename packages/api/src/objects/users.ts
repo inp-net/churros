@@ -102,6 +102,10 @@ export const UserType = builder.prismaNode('User', {
       resolve: ({ admin, canEditUsers }) => admin || canEditUsers,
       authScopes: { admin: true, $granted: 'me' },
     }),
+    canAccessDocuments: t.boolean({
+      resolve: ({ admin, canAccessDocuments }) => admin || canAccessDocuments,
+      authScopes: { admin: true, $granted: 'me' },
+    }),
     articles: t.relatedConnection('articles', {
       cursor: 'id',
       authScopes: { loggedIn: true, $granted: 'me' },
