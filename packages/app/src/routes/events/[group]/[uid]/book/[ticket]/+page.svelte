@@ -208,6 +208,7 @@
           <InputText
             hint="Si tu paies pour quelqu'un qui a un compte Churros, mets son @"
             label="Nom du bénéficiaire"
+            maxlength={255}
             bind:value={beneficiary}
           />
         {/if}
@@ -277,6 +278,7 @@
             type="tel"
             label="Numéro de téléphone"
             initial={$me?.phone}
+            maxlength={255}
             bind:value={paymentDetails.phone}
           />
           <section class="submit">

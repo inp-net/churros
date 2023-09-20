@@ -78,7 +78,7 @@
 <form on:submit|preventDefault={updateService}>
   <InputText required label="Nom" bind:value={service.name} maxlength={255} />
   <InputText required label="URL" bind:value={service.url} maxlength={255} />
-  <InputText label="Description" bind:value={service.description} />
+  <InputText label="Description" bind:value={service.description} maxlength={255} />
   <InputSelectOne
     label="Type de logo"
     bind:value={service.logoSourceType}

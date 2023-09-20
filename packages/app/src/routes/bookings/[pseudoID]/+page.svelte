@@ -85,7 +85,7 @@
         }
       }}
     >
-      <InputText initial={$me?.phone} type="tel" label="Numéro de téléphone" bind:value={phone} />
+      <InputText initial={$me?.phone} type="tel" label="Numéro de téléphone" maxlength={255} bind:value={phone} />
       <section class="submit">
         <ButtonPrimary loading={paymentLoading} submits
           >Payer {Intl.NumberFormat('fr-FR', {
@@ -312,7 +312,7 @@
     margin: 0 auto;
   }
 
-  @media (min-width: 1000px) {
+  @media (width >= 1000px) {
     .content {
       display: grid;
       grid-template-areas: 'header header' 'pay pay' 'links links' 'qrcode details' 'qrcode cancel' 'fineprint fineprint';
