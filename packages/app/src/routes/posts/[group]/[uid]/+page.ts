@@ -27,6 +27,8 @@ export const _articleQuery = Selector('Article')({
     title: true,
     startsAt: true,
     endsAt: true,
+    frequency: true,
+    recurringUntil: true,
     location: true,
     placesLeft: true,
     capacity: true,

@@ -1,4 +1,4 @@
-import type { GroupType, PaymentMethod } from './zeus';
+import type { EventFrequency, GroupType, PaymentMethod } from './zeus';
 import LogoLydia from '~icons/simple-icons/lydia';
 import IconCreditCard from '~icons/mdi/credit-card-outline';
 import IconCash from '~icons/mdi/hand-coin-outline';
@@ -71,6 +71,7 @@ export const DISPLAY_MANAGER_PERMISSION_LEVELS = {
   fullaccess: 'Gestion totale',
 } as const;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const PAYMENT_METHODS_ICONS: Record<PaymentMethod, typeof SvelteComponent<any>> = {
   Card: IconCreditCard,
   Cash: IconCash,
@@ -78,4 +79,11 @@ export const PAYMENT_METHODS_ICONS: Record<PaymentMethod, typeof SvelteComponent
   Lydia: LogoLydia,
   Other: IconQuestionMark,
   Transfer: IconBankTransfer,
+};
+
+export const DISPLAY_EVENT_FREQUENCY: Record<EventFrequency, string> = {
+  Biweekly: 'Bihebdomadaire',
+  Monthly: 'Mensuel',
+  Weekly: 'Hebdomadaire',
+  Once: 'Une seule fois',
 };

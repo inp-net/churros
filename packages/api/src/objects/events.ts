@@ -1,5 +1,18 @@
 import { builder } from '../builder.js';
-import { startOfWeek, endOfWeek, setMinutes } from 'date-fns';
+import {
+  startOfWeek,
+  endOfWeek,
+  differenceInDays,
+  startOfDay,
+  endOfDay,
+  getDay,
+  setYear,
+  getYear,
+  setMonth,
+  getMonth,
+  setDay,
+  addDays,
+} from 'date-fns';
 import { TicketType, createUid as createTicketUid, userCanSeeTicket } from './tickets.js';
 import {
   type Event as EventPrisma,
@@ -10,6 +23,7 @@ import {
   type Ticket,
   type TicketGroup,
   PaymentMethod,
+  EventFrequency,
 } from '@prisma/client';
 import { toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
@@ -35,10 +49,14 @@ import { unlink } from 'node:fs/promises';
 import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
-import { setHours } from 'date-fns';
+import { GraphQLError } from 'graphql';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
+});
+
+export const EventFrequencyType = builder.enumType(EventFrequency, {
+  name: 'EventFrequency',
 });
 
 export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
@@ -187,6 +205,8 @@ export const EventType = builder.prismaNode('Event', {
     uid: t.exposeString('uid'),
     title: t.exposeString('title'),
     startsAt: t.expose('startsAt', { type: DateTimeScalar }),
+    frequency: t.expose('frequency', { type: EventFrequencyType }),
+    recurringUntil: t.expose('recurringUntil', { type: DateTimeScalar, nullable: true }),
     endsAt: t.expose('endsAt', { type: DateTimeScalar }),
     location: t.exposeString('location'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
@@ -410,29 +430,109 @@ builder.queryField('eventsInWeek', (t) =>
     async resolve(query, _, { today }, { user }) {
       // dateCondition is used to filter events that start in the week or end in the week
       const dateCondition = {
-        gte: setMinutes(setHours(startOfWeek(today, { weekStartsOn: 1 }), 0), 0),
-        lte: setMinutes(setHours(endOfWeek(today, { weekStartsOn: 1 }), 23), 59),
+        OR: [
+          {
+            startsAt: {
+              gte: startOfDay(startOfWeek(today, { weekStartsOn: 1 })),
+              lte: endOfDay(endOfWeek(today, { weekStartsOn: 1 })),
+            },
+          },
+          {
+            frequency: { not: EventFrequency.Once },
+            recurringUntil: {
+              gte: startOfDay(startOfWeek(today, { weekStartsOn: 1 })),
+            },
+          },
+        ],
       };
 
-      if (!user) {
-        return prisma.event.findMany({
-          ...query,
-          where: {
-            startsAt: dateCondition,
-            visibility: VisibilityPrisma.Public,
-          },
-          orderBy: { startsAt: 'asc' },
-        });
+      function isRecurrentEventVisible(event: EventPrisma): boolean {
+        // if the event's (original) startsAt is after today's week's start, it is not visible
+        if (
+          startOfWeek(event.startsAt, { weekStartsOn: 1 }) > startOfWeek(today, { weekStartsOn: 1 })
+        )
+          return false;
+
+        switch (event.frequency) {
+          case EventFrequency.Weekly: {
+            // a weekly event is visible each week
+            return true;
+          }
+
+          case EventFrequency.Monthly: {
+            return event.startsAt.getDate() === today.getDate();
+          }
+
+          case EventFrequency.Biweekly: {
+            return differenceInDays(event.startsAt, today) % 14 === 0;
+          }
+
+          default: {
+            return true;
+          }
+        }
       }
 
-      return prisma.event.findMany({
-        ...query,
-        where: {
-          startsAt: dateCondition,
-          ...visibleEventsPrismaQuery(user),
-        },
-        orderBy: { startsAt: 'asc' },
-      });
+      function fixRecurrentEventDates(event: EventPrisma): EventPrisma {
+        let { startsAt, endsAt, frequency } = event;
+        switch (frequency) {
+          case EventFrequency.Weekly:
+          case EventFrequency.Biweekly: {
+            // move event from its original startsAt to today's week.
+            const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
+            const dayDelta = differenceInDays(todayWeek, startsAt);
+            startsAt = addDays(startsAt, dayDelta);
+            endsAt = addDays(endsAt, dayDelta);
+            break;
+          }
+
+          case EventFrequency.Monthly: {
+            startsAt = setYear(startsAt, getYear(today));
+            startsAt = setMonth(startsAt, getMonth(today));
+            endsAt = setYear(endsAt, getYear(today));
+            endsAt = setMonth(endsAt, getMonth(today));
+            break;
+          }
+
+          default: {
+            break;
+          }
+        }
+
+        return { ...event, startsAt, endsAt };
+      }
+
+      if (!user) {
+        return prisma.event
+          .findMany({
+            ...query,
+            where: {
+              ...dateCondition,
+              visibility: VisibilityPrisma.Public,
+            },
+            orderBy: { startsAt: 'asc' },
+          })
+          .then((events) =>
+            events
+              .filter((element) => isRecurrentEventVisible(element))
+              .map((e) => fixRecurrentEventDates(e)),
+          );
+      }
+
+      return prisma.event
+        .findMany({
+          ...query,
+          where: {
+            ...dateCondition,
+            ...visibleEventsPrismaQuery(user),
+          },
+          orderBy: { startsAt: 'asc' },
+        })
+        .then((events) =>
+          events
+            .filter((element) => isRecurrentEventVisible(element))
+            .map((e) => fixRecurrentEventDates(e)),
+        );
     },
   }),
 );
@@ -511,6 +611,8 @@ builder.mutationField('upsertEvent', (t) =>
       location: t.arg.string(),
       title: t.arg.string(),
       visibility: t.arg({ type: VisibilityEnum }),
+      frequency: t.arg({ type: EventFrequencyType }),
+      recurringUntil: t.arg({ type: DateTimeScalar, required: false }),
       startsAt: t.arg({ type: DateTimeScalar }),
       endsAt: t.arg({ type: DateTimeScalar }),
       managers: t.arg({ type: [ManagerOfEventInput] }),
@@ -558,9 +660,14 @@ builder.mutationField('upsertEvent', (t) =>
         location,
         title,
         visibility,
+        frequency,
+        recurringUntil,
       },
       { user },
     ) {
+      if (frequency !== EventFrequency.Once && tickets.length > 0)
+        throw new GraphQLError('Events with a frequency cannot have tickets');
+
       // TODO send only notifications to people that have canSeeTicket(..., people)  on tickets that changed the shotgun date, and say that the shotgun date changed in the notification
       const shotgunChanged = !id;
 
@@ -599,6 +706,8 @@ builder.mutationField('upsertEvent', (t) =>
           location,
           title,
           visibility,
+          frequency,
+          recurringUntil,
           startsAt,
           endsAt,
           managers: {
@@ -618,6 +727,8 @@ builder.mutationField('upsertEvent', (t) =>
           location,
           title,
           visibility,
+          frequency,
+          recurringUntil,
           startsAt,
           endsAt,
           managers:

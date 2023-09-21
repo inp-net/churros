@@ -397,6 +397,13 @@ model Article {
   @@unique([groupId, uid])
 }
 
+enum EventFrequency {
+  Once
+  Weekly
+  Monthly
+  Biweekly
+}
+
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
   id             String         @id @default(dbgenerated("nanoid('e:')"))
@@ -411,6 +418,8 @@ model Event {
   endsAt         DateTime
   location       String         @default("") @db.VarChar(255)
   visibility     Visibility
+  frequency      EventFrequency @default(Once)
+  recurringUntil DateTime?
   pictureFile    String         @default("") @db.VarChar(255)
   managers       EventManager[]
   author         User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)

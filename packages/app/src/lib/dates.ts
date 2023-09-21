@@ -1,4 +1,6 @@
-import { isMonday, previousMonday } from 'date-fns';
+import { format, isMonday, isSameDay, previousMonday } from 'date-fns';
+import fr from 'date-fns/locale/fr';
+import { EventFrequency } from '../zeus';
 
 export const dateTimeFormatter = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'medium',
@@ -52,4 +54,58 @@ export function yearRangeUpTo(end: number, length: number): number[] {
 export function closestMonday(date: Date): Date {
   if (isMonday(date)) return date;
   return previousMonday(date);
+}
+
+export function formatEventDates(
+  frequency: EventFrequency,
+  startsAt: Date,
+  endsAt: Date,
+  recurringUntil: Date | undefined,
+): string {
+  switch (frequency) {
+    case EventFrequency.Once: {
+      if (isSameDay(startsAt, endsAt)) {
+        return `${formatDate(startsAt)}, de ${format(startsAt, 'HH:mm')} à ${format(
+          endsAt,
+          'HH:mm',
+        )}`;
+      }
+
+      return `${formatDateTime(startsAt)} — ${formatDateTime(endsAt)}`;
+    }
+
+    default: {
+      if (recurringUntil) return `Du ${formatDate(startsAt)} au ${formatDate(recurringUntil)}`;
+      return `À partir du ${formatDate(startsAt)}`;
+    }
+  }
+}
+
+export function formatRecurrence(frequency: EventFrequency, startsAt: Date, endsAt: Date): string {
+  switch (frequency) {
+    case EventFrequency.Biweekly: {
+      return `Toutes les deux semaines de ${format(startsAt, 'HH:mm')} à ${format(
+        endsAt,
+        'HH:mm',
+      )}`;
+    }
+
+    case EventFrequency.Monthly: {
+      return `Tout les mois le ${format(startsAt, 'DD')}, de ${format(
+        startsAt,
+        'HH:mm',
+      )} à ${format(endsAt, 'HH:mm')}`;
+    }
+
+    case EventFrequency.Weekly: {
+      return `Chaque ${format(startsAt, 'EEEE', { locale: fr })} de ${format(
+        startsAt,
+        'HH:mm',
+      )} à ${format(endsAt, 'HH:mm')}`;
+    }
+
+    default: {
+      return '';
+    }
+  }
 }

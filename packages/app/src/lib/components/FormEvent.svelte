@@ -4,10 +4,11 @@
   import InputField from './InputField.svelte';
   import DateInput from './InputDate.svelte';
   import IconClose from '~icons/mdi/close';
-  import { type PaymentMethod, Visibility, zeus } from '$lib/zeus';
+  import { type PaymentMethod, Visibility, zeus, EventFrequency } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
   import {
+    DISPLAY_EVENT_FREQUENCY,
     DISPLAY_MANAGER_PERMISSION_LEVELS,
     DISPLAY_VISIBILITIES,
     HELP_VISIBILITY,
@@ -28,6 +29,8 @@
   import { me } from '$lib/session';
   import AvatarPerson from './AvatarPerson.svelte';
   import InputLinks from './InputLinks.svelte';
+  import InputCheckbox from './InputCheckbox.svelte';
+    import InputDate from './InputDate.svelte';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
@@ -81,6 +84,9 @@
           })),
           title: event.title,
           visibility: event.visibility,
+          frequency: event.frequency,
+          // eslint-disable-next-line unicorn/no-null
+          recurringUntil: event.recurringUntil ?? null,
           managers: event.managers.map(({ user, ...permissions }) => ({
             ...permissions,
             userUid: user.uid,
@@ -110,6 +116,8 @@
               endsAt: true,
               location: true,
               visibility: true,
+              frequency: true,
+              recurringUntil: true,
               beneficiary: {
                 id: true,
                 name: true,
@@ -292,6 +300,8 @@
     startsAt?: Date | undefined;
     title: string;
     visibility: Visibility;
+    frequency: EventFrequency;
+    recurringUntil: Date | undefined;
     group: {
       id: string;
       uid: string;
@@ -378,6 +388,14 @@
     <InputText label="E-mail de contact de l'orga" bind:value={event.contactMail} maxlength={255} type="email" />
   </section>
   <section class="tickets">
+    <h2>Récurrence</h2>
+    <InputCheckbox on:change={() => {
+      event.frequency = event.frequency === EventFrequency.Once ? EventFrequency.Weekly : EventFrequency.Once
+    }} label="L'évènement se répète" value={event.frequency !== EventFrequency.Once}></InputCheckbox>
+    {#if event.frequency !== EventFrequency.Once}
+    <InputSelectOne label="Répétition" options={DISPLAY_EVENT_FREQUENCY} bind:value={event.frequency}></InputSelectOne>
+    <InputDate bind:value={event.recurringUntil} label="Jusqu'à"></InputDate>
+    {:else}
     <h2>
       Billets
 
@@ -483,6 +501,7 @@
         {/if}
       {/each}
     </section>
+      {/if}
   </section>
   <section class="managers">
     <h2>
@@ -613,6 +632,10 @@
   h2 .actions {
     display: flex;
     gap: 0.5rem;
+  }
+  
+  .tickets h2:not(:first-child) {
+    margin-top: 2rem;
   }
 
   .ticket-group {

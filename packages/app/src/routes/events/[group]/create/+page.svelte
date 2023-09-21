@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import EventForm from '$lib/components/FormEvent.svelte';
   import { me } from '$lib/session';
-  import { Visibility } from '$lib/zeus';
+  import { EventFrequency, Visibility } from '$lib/zeus';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -33,6 +33,7 @@
     startsAt: undefined,
     title: '',
     visibility: Visibility.Private,
+    frequency: EventFrequency.Once,
     pictureFile: '',
   };
   // export const snapshot: Snapshot = {

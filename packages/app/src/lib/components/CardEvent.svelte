@@ -7,11 +7,10 @@
     intervalToDuration,
     isFuture,
     isPast,
-    format,
   } from 'date-fns';
   import IconLocation from '~icons/mdi/location-outline';
   import IconWhen from '~icons/mdi/calendar-outline';
-  import { formatDateTime } from '$lib/dates';
+  import { formatDateTime, formatEventDates, formatRecurrence } from '$lib/dates';
   import fr from 'date-fns/locale/fr/index.js';
   import { onDestroy, onMount } from 'svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
@@ -21,6 +20,7 @@
   import { htmlToText } from 'html-to-text';
   import ButtonInk from './ButtonInk.svelte';
   import IconDots from '~icons/mdi/dots-horizontal';
+    import { EventFrequency } from '../../zeus';
 
   export let collapsible = false;
   export let expandedEventId: string | undefined = undefined;
@@ -34,6 +34,8 @@
   export let location: string;
   export let capacity: number;
   export let placesLeft: number;
+  export let frequency: EventFrequency;
+  export let recurringUntil: Date | undefined = undefined;
   export let tickets: Array<{
     name: string;
     price: number;
@@ -163,33 +165,11 @@
       <h4 class="typo-field-label">Évènement</h4>
       <p>
         <IconWhen />
-        {Math.abs(startsAt.getTime() - now.getTime()) > 7 * 24 * 3600 * 1000
-          ? formatDateTime(startsAt)
-          : formatRelative(startsAt, now, {
-              locale: fr,
-              weekStartsOn: 1,
-            })
-              .replace('prochain ', '')
-              .replace('à ', '')}
-        —
-        {Math.abs(endsAt.getTime() - now.getTime()) > 7 * 24 * 3600 * 1000
-          ? startsAt.getDate() === endsAt.getDate()
-            ? format(endsAt, 'p', {
-                locale: fr,
-                weekStartsOn: 1,
-              })
-            : formatDateTime(endsAt)
-          : startsAt.getDate() === endsAt.getDate()
-          ? format(endsAt, 'p', {
-              locale: fr,
-              weekStartsOn: 1,
-            })
-          : formatRelative(endsAt, now, {
-              locale: fr,
-              weekStartsOn: 1,
-            })
-              .replace('prochain ', '')
-              .replace('à ', '')}
+        {#if frequency === EventFrequency.Once }
+        {formatEventDates(frequency, startsAt, endsAt, recurringUntil)}
+        {:else}
+        {formatRecurrence(frequency, startsAt, endsAt)}
+        {/if}
       </p>
       {#if location}
         <p><IconLocation /> {location}</p>
@@ -352,13 +332,13 @@
     color: inherit;
     text-align: inherit;
     text-decoration: none;
+    appearance: none;
     cursor: pointer;
     background: none;
 
     /* Reset button properties */
     border: none;
     transition: transform 0.1s ease-in-out;
-    appearance: none;
   }
 
   .chevron-up.collapsed {

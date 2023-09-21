@@ -12,6 +12,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
         {
           title: true,
           visibility: true,
+          frequency: true,
           id: true,
           uid: true,
           startsAt: true,
