@@ -33,7 +33,7 @@
   <h1>
     <ButtonBack />
 
-    Membres de {name}
+      {members.length} membre{members.length > 2 ? 's' : ''} de {name}
 
     {#if canEditMembers}
       <a class="edit" href="../edit/members"><IconGear /></a>
@@ -42,7 +42,10 @@
 
   {#each Object.entries(groupBy(members, ({ member: { graduationYear } }) => `Promo ${graduationYear}`)).sort( ([a, _], [b, _2]) => b.localeCompare(a) ) as [year, membersOfYear]}
     <section class="year">
-      <h2>{year}</h2>
+      <h2>
+          {year}
+          <span class="count">({membersOfYear.length})</span>
+      </h2>
 
       <ul class="nobullet">
         {#each membersOfYear.sort(byMemberGroupTitleImportance) as { title, member } (member.uid)}
@@ -75,5 +78,12 @@
 
   .edit {
     margin-left: auto;
+  }
+
+  .count {
+      position: relative;
+      bottom: 2px;
+      font-size: 0.8em;
+      font-weight: 400;
   }
 </style>
