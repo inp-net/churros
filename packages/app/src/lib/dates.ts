@@ -1,5 +1,5 @@
 import { format, isMonday, isSameDay, previousMonday } from 'date-fns';
-import fr from 'date-fns/locale/fr';
+import fr from 'date-fns/locale/fr/index.js';
 import { EventFrequency } from '../zeus';
 
 export const dateTimeFormatter = new Intl.DateTimeFormat('fr-FR', {

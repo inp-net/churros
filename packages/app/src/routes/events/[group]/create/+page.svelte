@@ -34,6 +34,7 @@
     title: '',
     visibility: Visibility.Private,
     frequency: EventFrequency.Once,
+    recurringUntil: undefined,
     pictureFile: '',
   };
   // export const snapshot: Snapshot = {

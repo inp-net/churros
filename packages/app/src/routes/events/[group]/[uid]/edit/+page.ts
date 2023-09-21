@@ -21,6 +21,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           pictureFile: true,
           description: true,
           frequency: true,
+          recurringUntil: true,
           group: {
             id: true,
             uid: true,

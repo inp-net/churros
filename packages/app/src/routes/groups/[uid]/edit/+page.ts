@@ -27,6 +27,10 @@ export const _clubQuery = Selector('Group')({
     color: true,
     name: true,
   },
+  studentAssociation: {
+    uid: true,
+    name: true,
+  },
   parent: {
     uid: true,
     name: true,

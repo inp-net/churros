@@ -301,7 +301,7 @@
     title: string;
     visibility: Visibility;
     frequency: EventFrequency;
-    recurringUntil: Date | undefined;
+    recurringUntil?: Date | undefined;
     group: {
       id: string;
       uid: string;

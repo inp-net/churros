@@ -277,8 +277,8 @@ builder.mutationField('upsertGroup', (t) =>
       uid: t.arg.string({ required: false }),
       type: t.arg({ type: GroupEnumType }),
       parentUid: t.arg.string({ required: false }),
-      schoolUid: t.arg.id({ required: false }),
-      studentAssociationId: t.arg.id({ required: false }),
+      schoolUid: t.arg.string({ required: false }),
+      studentAssociationUid: t.arg.string({ required: false }),
       name: t.arg.string({ validate: { maxLength: 255 } }),
       color: t.arg.string({ validate: { regex: /#[\dA-Fa-f]{6}/ } }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
@@ -316,7 +316,7 @@ builder.mutationField('upsertGroup', (t) =>
         description,
         website,
         schoolUid,
-        studentAssociationId,
+        studentAssociationUid,
         email,
         longDescription,
         links,
@@ -398,7 +398,9 @@ builder.mutationField('upsertGroup', (t) =>
           parent:
             parentUid === null || parentUid === undefined ? {} : { connect: { uid: parentUid } },
           school: schoolUid ? { connect: { uid: schoolUid } } : {},
-          studentAssociation: studentAssociationId ? { connect: { id: studentAssociationId } } : {},
+          studentAssociation: studentAssociationUid
+            ? { connect: { uid: studentAssociationUid } }
+            : {},
         },
         update: {
           ...data,
@@ -414,8 +416,8 @@ builder.mutationField('upsertGroup', (t) =>
               ? { disconnect: true }
               : { connect: { uid: parentUid } },
           school: schoolUid ? { connect: { uid: schoolUid } } : { disconnect: true },
-          studentAssociation: studentAssociationId
-            ? { connect: { id: studentAssociationId } }
+          studentAssociation: studentAssociationUid
+            ? { connect: { uid: studentAssociationUid } }
             : { disconnect: true },
         },
       });
