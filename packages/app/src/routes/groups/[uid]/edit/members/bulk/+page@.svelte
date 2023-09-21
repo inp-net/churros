@@ -12,7 +12,7 @@
         Adding, Errored, Success
     }
 
-    let membersToAdd    = "@versairea\nrick.astley@etu.inp-n7.fr\nInès Alamaternite"
+    let membersToAdd    = ""
     let adding = false
     // [line, state, message to show, uid of user]
     const result: Array<[string, State, string, string|undefined]> = []
