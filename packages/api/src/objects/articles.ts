@@ -131,7 +131,7 @@ builder.queryField('homepage', (t) =>
             // Show articles from the same school as the user
             {
               visibility: Visibility.Public,
-              group: { school: { id: { in: user.major.schools.map(({ id }) => id) } } },
+              // group: { school: { id: { in: user.major.schools.map(({ id }) => id) } } },
             },
             // Show articles from groups whose user is a member
             {
