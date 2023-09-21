@@ -347,7 +347,9 @@
 </ul>
 
 <form class="add-member" on:submit|preventDefault={addGroupMember}>
-  <h2>Ajouter un membre</h2>
+  <h2>Ajouter un membre
+    <ButtonSecondary insideProse href="./bulk">Ajouter en masse</ButtonSecondary>
+  </h2>
   <InputPerson
     except={data.group.members.map(({ member: { uid } }) => uid)}
     required

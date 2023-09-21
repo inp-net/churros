@@ -226,8 +226,24 @@ builder.queryField('user', (t) =>
     type: UserType,
     args: { uid: t.arg.string() },
     authScopes: { loggedIn: true },
-    resolve: async (query, _, { uid }) =>
-      prisma.user.findUniqueOrThrow({ ...query, where: { uid } }),
+    async resolve(query, _, { uid }) {
+      const user = await prisma.user.findUnique({ ...query, where: { uid } });
+      if (!user) throw new GraphQLError('Utilisateur·ice introuvable');
+      return user;
+    },
+  }),
+);
+
+builder.queryField('userByEmail', (t) =>
+  t.prismaField({
+    type: UserType,
+    args: { email: t.arg.string() },
+    authScopes: { loggedIn: true },
+    async resolve(query, _, { email }) {
+      const user = await prisma.user.findUnique({ ...query, where: { email } });
+      if (!user) throw new GraphQLError('Utilisateur·ice introuvable');
+      return user;
+    },
   }),
 );
 

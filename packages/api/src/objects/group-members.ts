@@ -6,6 +6,7 @@ import { fullName } from './users.js';
 import { purgeUserSessions } from '../context.js';
 import { GroupType } from '@prisma/client';
 import { createTransport } from 'nodemailer';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 
 const mailer = createTransport(process.env.SMTP_URL);
 
@@ -73,24 +74,30 @@ builder.mutationField('addGroupMember', (t) =>
     },
     async resolve(query, _, { groupUid, uid, title }, { user }) {
       purgeUserSessions(uid);
-      const groupMember = await prisma.groupMember.create({
-        ...query,
-        data: {
-          member: { connect: { uid } },
-          group: { connect: { uid: groupUid } },
-          title,
-        },
-      });
-      await prisma.logEntry.create({
-        data: {
-          area: 'group-member',
-          action: 'create',
-          target: groupMember.groupId,
-          message: `${uid} a été ajouté·e à ${groupUid}`,
-          user: { connect: { id: user?.id } },
-        },
-      });
-      return groupMember;
+      try {
+        const groupMember = await prisma.groupMember.create({
+          ...query,
+          data: {
+            member: { connect: { uid } },
+            group: { connect: { uid: groupUid } },
+            title,
+          },
+        });
+
+        await prisma.logEntry.create({
+          data: {
+            area: 'group-member',
+            action: 'create',
+            target: groupMember.groupId,
+            message: `${uid} a été ajouté·e à ${groupUid}`,
+            user: { connect: { id: user?.id } },
+          },
+        });
+        return groupMember;
+      } catch (error: unknown) {
+        if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002')
+          throw new GraphQLError(`@${uid} est déjà dans ${groupUid}`);
+      }
     },
   }),
 );
