@@ -5,6 +5,7 @@ export const MajorType = builder.prismaObject('Major', {
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
+    uid: t.exposeString('uid'),
     shortName: t.exposeString('shortName'),
     schools: t.relation('schools', { query: { orderBy: { name: 'asc' } } }),
   }),
