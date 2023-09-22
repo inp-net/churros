@@ -5,7 +5,7 @@
 export let data: PageData;
 </script>
 <Breadcrumbs root="/documents">
-    <Breadcrumb>{data.major.name}</Breadcrumb>
+    <Breadcrumb>{data.major.shortName}</Breadcrumb>
 </Breadcrumbs>
 
 <ul>

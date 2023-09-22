@@ -9,9 +9,9 @@
 </script>
 
 <Breadcrumbs root="/documents">
-    <Breadcrumb href="../../..">{data.major.name}</Breadcrumb>
+    <Breadcrumb href="../../..">{data.major.shortName}</Breadcrumb>
     <Breadcrumb href="../..">{$page.params.yearTier.toUpperCase()}</Breadcrumb>
-    <Breadcrumb href="..">{data.subject.name}</Breadcrumb>
+    <Breadcrumb href="..">{data.subject.shortName || data.subject.name}</Breadcrumb>
     <Breadcrumb>{data.document.title} ({data.document.schoolYear})</Breadcrumb>
 </Breadcrumbs>
 

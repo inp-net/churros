@@ -9,7 +9,7 @@
 </script>
 
 <Breadcrumbs root="/documents">
-    <Breadcrumb href="..">{data.major.name}</Breadcrumb>
+    <Breadcrumb href="..">{data.major.shortName}</Breadcrumb>
     <Breadcrumb>{$page.params.yearTier.toUpperCase()}</Breadcrumb>
 </Breadcrumbs>
 

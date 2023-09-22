@@ -1,6 +1,6 @@
 // Load dump
 import { DocumentType, PrismaClient } from '@prisma/client';
-import { createWriteStream, mkdirSync, readFileSync, statSync } from 'fs';
+import { copyFileSync, createWriteStream, mkdirSync, readFileSync, statSync } from 'fs';
 import { Convert } from './frappe-types';
 import slug from 'slug';
 import dichotomid from 'dichotomid';
@@ -247,17 +247,12 @@ async function downloadFile(from: string, dest: string, schoolUid: string) {
   if (fileExists(dest)) {
     // console.log(`  Logo of ${ldapGroup.cn} already exists, skipping…`);
   } else {
-    const url = `https://www.bde.${schoolUid}.fr/media/${from}`;
-    console.info(`  Downloading ${url} -> ${dest}`);
     try {
-      const { body } = await fetch(url);
-      if (body === null) throw new Error('No body');
       mkdirSync(path.dirname(dest), { recursive: true });
-      const filestream = createWriteStream(dest);
-      await finished(Readable.fromWeb(body as ReadableStream).pipe(filestream));
+      copyFileSync(path.join('.', 'frappe-documents', from), dest);
     } catch (error: unknown) {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      console.error(`  Failed to download ${url}: ${error}`);
+      console.error(`  Failed to copy ${from} -> ${dest}: ${error}`);
     }
   }
 }

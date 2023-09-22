@@ -1,15 +1,12 @@
 <script lang="ts">
   import IconChevronRight from "~icons/mdi/chevron-right"
+    import ButtonGhost from "./ButtonGhost.svelte";
   export let href = ""
 </script>
 
-{#if href}
-  <a {...$$restProps} {href}>
+  <ButtonGhost {...$$restProps} {href} disabled={!href}>
     <slot />
-  </a>
-  {:else}
-  <slot></slot>
-{/if}
+  </ButtonGhost>
 <span class="separator" aria-hidden="true">
   <IconChevronRight></IconChevronRight>
 </span>

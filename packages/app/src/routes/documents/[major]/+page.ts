@@ -8,6 +8,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
         { uid: params.major },
         {
           name: true,
+          shortName: true,
           uid: true,
         },
       ],

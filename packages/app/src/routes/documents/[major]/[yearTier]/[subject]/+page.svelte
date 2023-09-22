@@ -26,9 +26,9 @@
 </script>
 
     <Breadcrumbs root="/documents">
-        <Breadcrumb href="../..">{data.major.name}</Breadcrumb>
+        <Breadcrumb href="../..">{data.major.shortName}</Breadcrumb>
         <Breadcrumb href="..">{$page.params.yearTier.toUpperCase()}</Breadcrumb>
-        <Breadcrumb>{data.subject.name}</Breadcrumb>
+        <Breadcrumb>{data.subject.shortName || data.subject.name}</Breadcrumb>
     </Breadcrumbs>
 
     {#each groupByType(data.documentsOfSubject.edges).entries() as [type, documents] }

@@ -109,6 +109,7 @@ CREATE TABLE "Subject" (
     "id" TEXT NOT NULL DEFAULT nanoid('subj:'),
     "name" TEXT NOT NULL,
     "uid" TEXT NOT NULL,
+    "shortName" VARCHAR(255) NOT NULL DEFAULT '',
     "nextExamAt" TIMESTAMP(3),
 
     CONSTRAINT "Subject_pkey" PRIMARY KEY ("id")
