@@ -7,7 +7,8 @@ import { DateTimeScalar, FileScalar } from './scalars.js';
 import { DocumentType as DocumentTypePrisma } from '@prisma/client';
 import slug from 'slug';
 import { GraphQLError } from 'graphql';
-import { join } from 'path';
+import { join, relative } from 'node:path';
+import { unlinkSync, writeFileSync } from 'node:fs';
 
 export const DocumentEnumType = builder.enumType(DocumentTypePrisma, {
     name: 'DocumentType',
@@ -140,22 +141,62 @@ builder.mutationField('uploadDocumentFile', t => t.field({
         file: t.arg({type: FileScalar, required: true}),
         solution: t.arg.boolean(),
     },
-    authScopes(_, {documentUid}, {user}) {
+    async authScopes(_, {documentUid, subjectUid}, {user}) {
         const subject = await prisma.subject.findUniqueOrThrow({where:{uid: subjectUid}})
         const document = await prisma.document.findUniqueOrThrow({where: {subjectId_uid: {subjectId: subject.id, uid: documentUid}}})
         return Boolean(user?.admin || document.uploaderId === user?.uid)
     },
-    async resolve(_, {subjectUid, documentUid, file, solution}, {user}) {
+    async resolve(_, {subjectUid, documentUid, file, solution}) {
         const subject = await prisma.subject.findUniqueOrThrow({where:{uid: subjectUid}})
         const document = await prisma.document.findUniqueOrThrow({where:{subjectId_uid: {subjectId: subject.id, uid: documentUid}}})
         const buffer = await file.arrayBuffer().then((array) => Buffer.from(array));
         const root = new URL(process.env.STORAGE).pathname;
         const path = join(root, 'documents', subject.uid, document.uid, `${document[solution ? 'solutionPaths' : 'paperPaths'].length}-${file.name}`)
+        writeFileSync(path, buffer)
+
         await prisma.document.update({
             where: {subjectId_uid: {subjectId: subject.id, uid: documentUid}},
             data: {
                 [solution ? 'solutionPaths' : 'paperPaths']: {
-                    push: 
+                    push: relative(root, path)
+                }
+            }
+        })
 
+        return relative(root, path)
     }
 }))
+
+builder.mutationField('deleteDocumentFile', t => t.field({
+    type: 'Boolean',
+    args: {
+        subjectUid: t.arg.string({required: true}),
+        documentUid: t.arg.string({required: true}),
+        filename: t.arg.string({required: true}),
+    },
+    async authScopes(_, {documentUid, subjectUid}, {user}) {
+        const subject = await prisma.subject.findUniqueOrThrow({where:{uid: subjectUid}})
+        const document = await prisma.document.findUniqueOrThrow({where: {subjectId_uid: {subjectId: subject.id, uid: documentUid}}})
+        return Boolean(user?.admin || document.uploaderId === user?.uid)
+    },
+    async resolve(_, { documentUid, subjectUid, filename }) {
+        const subject = await prisma.subject.findUniqueOrThrow({where:{uid: subjectUid}})
+        const document = await prisma.document.findUniqueOrThrow({where:{subjectId_uid: {subjectId: subject.id, uid: documentUid}}})
+        const root = new URL(process.env.STORAGE).pathname;
+        const path = join(root, 'documents', subject.uid, document.uid, filename)
+        try {
+            unlinkSync(path)
+        } catch {}
+
+        const isSolution = document.solutionPaths.includes(filename)
+        await prisma.document.update({
+            where: {id: document.id},
+            data: {
+                [isSolution ? 'solutionPaths' : 'paperPaths']: {
+                    set: document[isSolution ? 'solutionPaths' : 'paperPaths'].filter(p => p !== filename)
+                }
+            }
+        })
+        return true
+    }
+}));

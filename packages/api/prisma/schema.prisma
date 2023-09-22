@@ -227,7 +227,7 @@ model Minor {
   majors   Major[]
   yearTier Int
   subjects Subject[]
-  User     User[]
+  users    User[]
 }
 
 model School {
@@ -700,7 +700,7 @@ model Subject {
   nextExamAt DateTime?
   majors     Major[]
   minors     Minor[]
-  Document   Document[]
+  documents   Document[]
 }
 
 enum DocumentType {
