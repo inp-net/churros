@@ -1,13 +1,21 @@
-<slot />
-<span class="separator" aria-hidden="true" />
+<script lang="ts">
+  import IconChevronRight from "~icons/mdi/chevron-right"
+  export let href = ""
+</script>
+
+{#if href}
+  <a {...$$restProps} {href}>
+    <slot />
+  </a>
+  {:else}
+  <slot></slot>
+{/if}
+<span class="separator" aria-hidden="true">
+  <IconChevronRight></IconChevronRight>
+</span>
 
 <style lang="scss">
   .separator {
-    width: 0.1em;
-    height: 1em;
-    background-color: currentcolor;
-    transform: translateY(0.1em) skewX(-20deg);
-
     &:last-of-type {
       display: none;
     }

@@ -4,6 +4,7 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ fetch, parent, params }) =>
   loadQuery(
     {
+      major: [{ uid: params.major }, { name: true, uid: true }],
       subjectsOfMajor: [
         { uid: params.major, yearTier: Number.parseInt(params.yearTier.replace('a', ''), 10) },
         {

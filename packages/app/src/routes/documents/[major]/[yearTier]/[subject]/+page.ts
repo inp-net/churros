@@ -4,6 +4,8 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ fetch, parent, params }) =>
   loadQuery(
     {
+      major: [{ uid: params.major }, { name: true, uid: true }],
+      subject: [{ uid: params.subject }, { name: true, uid: true, id: true }],
       documentsOfSubject: [
         {
           subjectUid: params.subject,
