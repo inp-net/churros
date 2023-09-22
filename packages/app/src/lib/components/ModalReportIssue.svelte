@@ -27,7 +27,7 @@
 
   export let element: HTMLDialogElement;
 
-  $: link = issueNumber ? `https://git.inpt.fr/inp-net/centraverse/-/issues/${issueNumber}` : '';
+  $: link = issueNumber ? `https://git.inpt.fr/inp-net/churros/-/issues/${issueNumber}` : '';
 
   function formatMetadata(metadata: Record<string, string>): string {
     return Object.entries(metadata)
@@ -134,7 +134,7 @@
         <ButtonPrimary {loading} submits>Envoyer</ButtonPrimary>
         <p class="typo-details">
           Envoyer ce rapport créera une issue Gitlab {#if $me}en ton nom {/if}sur le dépot
-          <a href="https://git.inpt.fr/inp-net/centraverse">git.inpt.fr/inp-net/centraverse</a>
+          <a href="https://git.inpt.fr/inp-net/churros">git.inpt.fr/inp-net/churros</a>
         </p>
       </section>
       <section class="feedback">
@@ -147,7 +147,7 @@
         {:else if errored}
           <Alert theme="danger"
             >Impossible de créer l'issue. <ButtonSecondary
-              href="https://git.inpt.fr/inp-net/centraverse/-/issues/new"
+              href="https://git.inpt.fr/inp-net/churros/-/issues/new"
               >Créer l'issue sur le site</ButtonSecondary
             >
           </Alert>
