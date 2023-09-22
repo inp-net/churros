@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
           subjectUid: params.subject,
         },
         {
-            pageInfo: { hasNextPage: true, endCursor: true },
+          pageInfo: { hasNextPage: true, endCursor: true },
           edges: {
             node: {
               id: true,

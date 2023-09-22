@@ -56,42 +56,48 @@ builder.queryField('subjectsOfMinor', (t) =>
   }),
 );
 
-builder.queryField('subjectsOfMajor', t => t.prismaConnection({
+builder.queryField('subjectsOfMajor', (t) =>
+  t.prismaConnection({
     type: SubjectType,
     cursor: 'id',
     args: {
-        uid: t.arg.string({ required: true }),
+      uid: t.arg.string({ required: true }),
+      yearTier: t.arg.int({ required: false }),
     },
     authScopes: () => true,
-    async resolve(query, _, { uid }) {
-        // XXX should become uniqueOrThrow at some point when all majors have uids
-        const major = await prisma.major.findFirstOrThrow({ where: { uid } });
-        return prisma.subject.findMany({
-            ...query,
-            where: {
-                OR: [
-            {    majors: {
-                    some: {
-                        id: major.id,
-                    },
+    async resolve(query, _, { uid, yearTier }) {
+      // XXX should become uniqueOrThrow at some point when all majors have uids
+      const major = await prisma.major.findFirstOrThrow({ where: { uid } });
+      return prisma.subject.findMany({
+        ...query,
+        where: {
+          OR: [
+            {
+              majors: {
+                some: {
+                  id: major.id,
                 },
-            }, {
-                minors: {
-                    some: {
-                        majors: {
-                            some: {
-                                id: major.id,
-                            },
-                        },
-                    },
-                },
-            }
-            ]
+              },
             },
-            orderBy: { name: 'asc' },
-        });
-    }
-}))
+            {
+              minors: {
+                some: {
+                  ...(yearTier ? { yearTier } : {}),
+                  majors: {
+                    some: {
+                      id: major.id,
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+        orderBy: { name: 'asc' },
+      });
+    },
+  }),
+);
 
 builder.queryField('subject', (t) =>
   t.prismaField({

@@ -5,9 +5,9 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
   loadQuery(
     {
       subjectsOfMajor: [
-        { uid: params.major },
-    {
-        pageInfo: { hasNextPage: true, endCursor: true },
+        { uid: params.major, yearTier: Number.parseInt(params.yearTier.replace('a', ''), 10) },
+        {
+          pageInfo: { hasNextPage: true, endCursor: true },
           edges: {
             node: {
               id: true,
@@ -17,7 +17,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
                 name: true,
                 uid: true,
                 id: true,
-              }
+              },
             },
           },
         },

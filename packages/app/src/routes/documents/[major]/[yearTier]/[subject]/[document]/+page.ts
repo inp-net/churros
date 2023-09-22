@@ -12,6 +12,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
         {
           title: true,
           id: true,
+          type: true,
           schoolYear: true,
           descriptionHtml: true,
           solutionPaths: true,

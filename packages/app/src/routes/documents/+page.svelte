@@ -9,7 +9,7 @@
     {#each data.majors as major }
     <li>
         <a href="./{major.uid}">{major.uid}</a>
-        {JSON.stringify(major, null, 2)}
+        {JSON.stringify(major, undefined, 2)}
     </li>
     {/each}
 </ul>

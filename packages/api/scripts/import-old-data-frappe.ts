@@ -30,10 +30,10 @@ const allMajors = await p.major.findMany({ where: { schools: { some: { uid: 'n7'
 // Clear data
 let deletionCounts: Record<string, number> = {};
 console.info('* Clearing data');
-deletionCounts.comment = await p.comment.deleteMany({}).then((r) => r.count);
-deletionCounts.document = await p.document.deleteMany({}).then((r) => r.count);
-deletionCounts.subject = await p.subject.deleteMany({}).then((r) => r.count);
-deletionCounts.minor = await p.minor.deleteMany({}).then((r) => r.count);
+deletionCounts['comment'] = await p.comment.deleteMany({}).then((r) => r.count);
+deletionCounts['document'] = await p.document.deleteMany({}).then((r) => r.count);
+deletionCounts['subject'] = await p.subject.deleteMany({}).then((r) => r.count);
+deletionCounts['minor'] = await p.minor.deleteMany({}).then((r) => r.count);
 console.info(
   `- Deleted ${Object.entries(deletionCounts)
     .map(([k, v]) => `${v} ${k}s`)
@@ -87,7 +87,7 @@ for (const { nom, filiere_id } of frappe_matiere) {
     bar.increment();
     continue;
   }
-  const result = await p.subject.create({
+  await p.subject.create({
     data: {
       name: nom,
       uid: slug(nom),
@@ -100,6 +100,7 @@ for (const { nom, filiere_id } of frappe_matiere) {
             name: filiere.nom,
             uid: filiereSlug(filiere.nom, filiere_annee.nom),
             yearTier: Number.parseInt(filiere_annee.nom.replace(/A/, '')),
+            majors: { connect: { id: (await p.major.findMany())[0]!.id } },
           },
         },
       },
@@ -112,7 +113,6 @@ for (const { nom, filiere_id } of frappe_matiere) {
       },
     },
   });
-  // console.info(`- Created ${result.uid} (${result.minors.map(minor => `${minor.uid} (${minor.majors.map(m => m.uid).join(", ")})`).join(", ")})`)
   bar.increment();
 }
 
@@ -247,14 +247,14 @@ async function downloadFile(from: string, dest: string, schoolUid: string) {
   if (fileExists(dest)) {
     // console.log(`  Logo of ${ldapGroup.cn} already exists, skipping…`);
   } else {
-    const filestream = createWriteStream(dest);
     const url = `https://www.bde.${schoolUid}.fr/media/${from}`;
     console.info(`  Downloading ${url} -> ${dest}`);
     try {
       const { body } = await fetch(url);
       if (body === null) throw new Error('No body');
-      // mkdirSync(path.dirname(dest), { recursive: true });
-      // await finished(Readable.fromWeb(body as ReadableStream).pipe(filestream));
+      mkdirSync(path.dirname(dest), { recursive: true });
+      const filestream = createWriteStream(dest);
+      await finished(Readable.fromWeb(body as ReadableStream).pipe(filestream));
     } catch (error: unknown) {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       console.error(`  Failed to download ${url}: ${error}`);

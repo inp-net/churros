@@ -6,5 +6,5 @@
 </script>
 
 <pre>
-    {JSON.stringify(data.document, null, 2)}
+    {JSON.stringify(data.document, undefined, 2)}
 </pre>

@@ -9,7 +9,7 @@
     {#each data.documentsOfSubject.edges as {node} }
     <li>
         <a href="./{node.uid}">{node.uid}</a>
-        {JSON.stringify(node, null, 2)}
+        {JSON.stringify(node, undefined, 2)}
     </li>
     {/each}
 </ul>
