@@ -80,7 +80,7 @@ builder.mutationField('login', (t) =>
       if (
         process.env['NODE_ENV'] !== 'development' &&
         user?.contributions.some(({ option: { paysFor } }) =>
-          paysFor.some(({ name }) => name === 'AEn7')
+          paysFor.some(({ name }) => name === 'AEn7'),
         )
       ) {
         try {
@@ -196,26 +196,27 @@ builder.mutationField('login', (t) =>
                   'login/ldap-sync',
                   'skip',
                   { why: 'uid already exists in our ldap', user, ldapUser },
-                  user.uid
+                  user.uid,
                 );
               } else {
-                // Try to find them in the school's LDAP
-                const schoolUser = await findSchoolUser({
-                  firstName: user.firstName,
-                  lastName: user.lastName,
-                  graduationYear: user.graduationYear,
-                  major: user.major,
-                  schoolServer: 'inp',
+                // First, try to find in school LDAP by email address
+                // As the school does not keep old accounts (it appears as so), this might pose a problem, but since we only do this when the uid is not taken in our LDAP, it's fine.
+                let schoolUser = await findSchoolUser({
+                  email: user.email,
                 });
-                // eslint-disable-next-line max-depth, no-negated-condition
                 if (!schoolUser) {
-                  await log(
-                    'login/ldap-sync',
-                    'skip',
-                    { why: 'does not exist in school ldap', tried: schoolUser },
-                    user.uid
-                  );
-                } else {
+                  // Try to find them in the school's LDAP
+                  schoolUser = await findSchoolUser({
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    graduationYear: user.graduationYear,
+                    major: user.major,
+                    schoolServer: 'inp',
+                  });
+                }
+
+                // eslint-disable-next-line max-depth
+                if (schoolUser) {
                   // Create the LDAP entry
                   await log('login/ldap-sync', 'start', { user }, user.uid);
                   await createLdapUser(
@@ -224,10 +225,10 @@ builder.mutationField('login', (t) =>
                       schoolUid: schoolUser.schoolUid,
                       schoolEmail: schoolUser.schoolEmail,
                       contributesToAEn7: user.contributions.some(({ option: { paysFor } }) =>
-                        paysFor.some(({ name }) => name === 'AEn7')
+                        paysFor.some(({ name }) => name === 'AEn7'),
                       ),
                     },
-                    password
+                    password,
                   );
                   // Update the users's school uid
                   await prisma.user.update({
@@ -236,6 +237,13 @@ builder.mutationField('login', (t) =>
                       schoolUid: schoolUser.schoolUid,
                     },
                   });
+                } else {
+                  await log(
+                    'login/ldap-sync',
+                    'skip',
+                    { why: 'does not exist in school ldap', tried: schoolUser },
+                    user.uid,
+                  );
                 }
               }
             } catch (error: unknown) {
@@ -268,7 +276,7 @@ builder.mutationField('login', (t) =>
       });
       throw new Error('Identifiants invalides.');
     },
-  })
+  }),
 );
 
 builder.mutationField('logout', (t) =>
@@ -283,7 +291,7 @@ builder.mutationField('logout', (t) =>
       purgeUserSessions(user.uid);
       return true;
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteToken', (t) =>
@@ -302,5 +310,5 @@ builder.mutationField('deleteToken', (t) =>
       purgeUserSessions(user!.uid);
       return true;
     },
-  })
+  }),
 );

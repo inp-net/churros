@@ -35,5 +35,5 @@ builder.queryField('contributionOptions', (t) =>
         },
       });
     },
-  })
+  }),
 );

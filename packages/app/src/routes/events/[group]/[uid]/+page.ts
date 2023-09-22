@@ -86,6 +86,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           pictureFile: true,
           placesLeft: true,
           capacity: true,
+          frequency: true,
           articles: {
             uid: true,
             bodyHtml: true,
@@ -142,6 +143,6 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
         }),
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );
 };

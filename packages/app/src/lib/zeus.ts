@@ -21,7 +21,7 @@ export * from '../zeus/index.js';
 
 export type PropsType<
   T extends (...args: never[]) => unknown,
-  U extends keyof GraphQLTypes = 'Query'
+  U extends keyof GraphQLTypes = 'Query',
 > = InputType<GraphQLTypes[U], ReturnType<T>>;
 
 export interface Options {
@@ -36,12 +36,12 @@ export class ZeusError extends Error {
       super('the response does not contain any errors');
     } else {
       const errors = response.errors.map(
-        ({ message, ...options }) => new GraphQLError(message, options)
+        ({ message, ...options }) => new GraphQLError(message, options),
       );
       super(
         `${response.errors.length} GraphQL error${response.errors.length === 1 ? '' : 's'}\n${errors
           .map((error) => `\t${error.message} ${JSON.stringify(error.extensions)}`)
-          .join('\n')}`
+          .join('\n')}`,
       );
       this.errors = errors;
     }
@@ -105,7 +105,7 @@ export const zeus = derived(page, ({ data }) => {
 
 export const loadQuery = async <Query extends ValueTypes['Query']>(
   query: Query,
-  { fetch, parent }: { fetch: LoadEvent['fetch']; parent?: () => Promise<LayoutServerData> }
+  { fetch, parent }: { fetch: LoadEvent['fetch']; parent?: () => Promise<LayoutServerData> },
 ) => {
   const { token } = parent ? await parent() : { token: undefined };
   return chain(fetch, { token })('query', { scalars })(query);
@@ -113,7 +113,7 @@ export const loadQuery = async <Query extends ValueTypes['Query']>(
 
 export const makeMutation = async <Mutation extends ValueTypes['Mutation']>(
   mutation: Mutation,
-  { fetch, parent }: { fetch: LoadEvent['fetch']; parent?: () => Promise<LayoutServerData> }
+  { fetch, parent }: { fetch: LoadEvent['fetch']; parent?: () => Promise<LayoutServerData> },
 ) => {
   const { token } = parent ? await parent() : { token: undefined };
   return chain(fetch, { token })('mutation', { scalars })(mutation);

@@ -27,6 +27,8 @@ export const _articleQuery = Selector('Article')({
     title: true,
     startsAt: true,
     endsAt: true,
+    frequency: true,
+    recurringUntil: true,
     location: true,
     placesLeft: true,
     capacity: true,
@@ -82,5 +84,5 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
     {
       article: [{ uid: params.uid, groupUid: params.group }, _articleQuery],
     },
-    { fetch, parent }
+    { fetch, parent },
   );

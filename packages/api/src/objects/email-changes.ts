@@ -6,7 +6,7 @@ import { DateTimeScalar } from './scalars.js';
 import { purgeUserSessions } from '../context.js';
 
 const TYPENAMES_TO_ID_PREFIX = Object.fromEntries(
-  Object.entries(ID_PREFIXES_TO_TYPENAMES).map(([k, v]) => [v, k])
+  Object.entries(ID_PREFIXES_TO_TYPENAMES).map(([k, v]) => [v, k]),
 ) as Record<string, keyof typeof ID_PREFIXES_TO_TYPENAMES>;
 
 export const EmailChangeType = builder.prismaObject('EmailChange', {
@@ -32,7 +32,7 @@ export async function requestEmailChange(email: string, userId: string): Promise
 
   const url = new URL(
     `/validate-email/${request.id.split(':', 2)[1]!.toUpperCase()}`,
-    process.env.FRONTEND_ORIGIN
+    process.env.FRONTEND_ORIGIN,
   );
 
   await transporter.sendMail({
@@ -58,7 +58,7 @@ builder.mutationField('requestEmailChange', (t) =>
       await requestEmailChange(email, user.id);
       return true;
     },
-  })
+  }),
 );
 
 builder.mutationField('validateEmail', (t) =>
@@ -93,5 +93,5 @@ builder.mutationField('validateEmail', (t) =>
       });
       return true;
     },
-  })
+  }),
 );

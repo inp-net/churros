@@ -16,7 +16,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
 
   event.locals.mobile = Boolean(
-    event.request.headers.get('User-Agent')?.toLowerCase().includes('mobile')
+    event.request.headers.get('User-Agent')?.toLowerCase().includes('mobile'),
   );
 
   const response = await resolve(event);
@@ -25,7 +25,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (token && !event.locals.me) {
     response.headers.append(
       'Set-Cookie',
-      cookie.serialize('token', '', { expires: new Date(0), path: '/', sameSite: 'strict' })
+      cookie.serialize('token', '', { expires: new Date(0), path: '/', sameSite: 'strict' }),
     );
   }
 
@@ -37,7 +37,7 @@ export const handleFetch: HandleFetch = async ({ request, fetch }) => {
   if (request.url.startsWith(apiUrl)) {
     request = new Request(
       request.url.replace(apiUrl, process.env.PRIVATE_API_URL as unknown as string),
-      request
+      request,
     );
   }
 

@@ -28,7 +28,7 @@ if (
   webpush.setVapidDetails(
     `mailto:${process.env['CONTACT_EMAIL']}`,
     process.env['VAPID_PUBLIC_KEY'],
-    process.env.VAPID_PRIVATE_KEY
+    process.env.VAPID_PRIVATE_KEY,
   );
 }
 
@@ -68,7 +68,7 @@ export async function scheduleNewArticleNotification({
   const ellipsis = (text: string) =>
     `${text
       .split(
-        '\n'
+        '\n',
       )[0]! /* the separator is not the empty string so there's no way to get an empty array of of String#split */
       .slice(0, 100)}…`;
 
@@ -99,7 +99,7 @@ export async function scheduleNewArticleNotification({
       if (
         !user.major.schools.some(
           (school) =>
-            school.id === (article.group.school?.id ?? article.group.studentAssociation?.school.id)
+            school.id === (article.group.school?.id ?? article.group.studentAssociation?.school.id),
         )
       )
         return;
@@ -125,7 +125,7 @@ export async function scheduleNewArticleNotification({
       at: publishedAt,
       objectId: id,
       eager,
-    }
+    },
   );
 }
 
@@ -140,11 +140,11 @@ export async function scheduleShotgunNotifications({
   const soonDate = (date: Date) => subMinutes(date, 10);
 
   const opensAt = new Date(
-    Math.min(...tickets.map(({ opensAt }) => opensAt?.valueOf() ?? Number.POSITIVE_INFINITY))
+    Math.min(...tickets.map(({ opensAt }) => opensAt?.valueOf() ?? Number.POSITIVE_INFINITY)),
   );
 
   const closesAt = new Date(
-    Math.min(...tickets.map(({ closesAt }) => closesAt?.valueOf() ?? Number.POSITIVE_INFINITY))
+    Math.min(...tickets.map(({ closesAt }) => closesAt?.valueOf() ?? Number.POSITIVE_INFINITY)),
   );
 
   // All 4 notifications are sensibly the same
@@ -154,7 +154,7 @@ export async function scheduleShotgunNotifications({
       user: User & {
         major: Major & { schools: School[] };
         groups: Array<GroupMember & { group: Group }>;
-      }
+      },
     ) => {
       const event = await prisma.event.findUnique({
         where: {
@@ -320,7 +320,7 @@ export async function scheduleNotification(
     user: User & {
       major: Major & { schools: School[] };
       groups: Array<GroupMember & { group: Group }>;
-    }
+    },
   ) => MaybePromise<PushNotification | undefined>,
   {
     at,
@@ -332,7 +332,7 @@ export async function scheduleNotification(
     type: NotificationType;
     objectId: string;
     eager?: boolean;
-  }
+  },
 ): Promise<Cron | boolean> {
   const id = scheduledNotificationID(type, objectId);
   if (at.valueOf() <= Date.now() && !eager) {
@@ -351,7 +351,7 @@ export async function scheduleNotification(
 
   if (at.valueOf() <= Date.now()) {
     console.info(
-      `[cron ${id}] Sending notification immediately (time is ${at.toISOString()} and now is ${new Date().toISOString()})`
+      `[cron ${id}] Sending notification immediately (time is ${at.toISOString()} and now is ${new Date().toISOString()})`,
     );
     // Start the promise in the background, don't wait for all notifications to be sent out, it takes approx 30 secondes in a real scenario to notify all users for e.g. a public article
     void notifyInBulk(id, users, notification);
@@ -367,12 +367,12 @@ export async function scheduleNotification(
     async () => {
       for (const user of users) {
         console.info(
-          `[cron ${id} @ ${user.uid}] Sending notification (time is ${at.toISOString()})`
+          `[cron ${id} @ ${user.uid}] Sending notification (time is ${at.toISOString()})`,
         );
         const notificationToSend = await notification(user);
         if (notificationToSend) await notify([user], { tag: id, ...notificationToSend });
       }
-    }
+    },
   );
   return job;
 }
@@ -380,13 +380,13 @@ export async function scheduleNotification(
 export async function notifyInBulk<U extends User>(
   jobId: string,
   users: U[],
-  notification: (user: U) => MaybePromise<PushNotification | undefined>
+  notification: (user: U) => MaybePromise<PushNotification | undefined>,
 ) {
   for (const user of users) {
     const notificationToSend = await notification(user);
     if (notificationToSend) {
       console.info(
-        `[cron ${jobId} @ ${user.uid}] Sending notification ${JSON.stringify(notificationToSend)}`
+        `[cron ${jobId} @ ${user.uid}] Sending notification ${JSON.stringify(notificationToSend)}`,
       );
       await notify([user], notificationToSend);
     }
@@ -395,7 +395,7 @@ export async function notifyInBulk<U extends User>(
 
 export async function notify<U extends User>(
   users: U[],
-  notification: PushNotification | ((user: U) => MaybePromise<PushNotification>)
+  notification: PushNotification | ((user: U) => MaybePromise<PushNotification>),
 ): Promise<NotificationSubscription[]> {
   const subscriptions = await prisma.notificationSubscription.findMany({
     where: {
@@ -435,7 +435,7 @@ export async function notify<U extends User>(
       !canSendNotificationToUser(
         subscription.owner.notificationSettings,
         notif.data.type,
-        notif.data.group
+        notif.data.group,
       )
     ) {
       console.info(
@@ -443,7 +443,7 @@ export async function notify<U extends User>(
           owner.id
         }] Skipping since user has disabled ${notif.data.type} on ${
           notif.data.group ?? 'global'
-        } notifications`
+        } notifications`,
       );
       continue;
     }
@@ -457,7 +457,7 @@ export async function notify<U extends User>(
             p256dh: p256dhKey,
           },
         },
-        JSON.stringify(notif)
+        JSON.stringify(notif),
       );
       await prisma.notification.create({
         data: {
@@ -469,14 +469,12 @@ export async function notify<U extends User>(
           timestamp: notif.timestamp ? new Date(notif.timestamp) : new Date(),
           actions: {
             createMany: {
-              data: [
-                ...(notif.actions ?? [])
-                  .filter(({ action }) => /^https?:\/\//.test(action))
-                  .map(({ action, title }) => ({
-                    value: action,
-                    name: title,
-                  })),
-              ],
+              data: (notif.actions ?? [])
+                .filter(({ action }) => /^https?:\/\//.test(action))
+                .map(({ action, title }) => ({
+                  value: action,
+                  name: title,
+                })),
             },
           },
           title: notif.title,
@@ -494,7 +492,7 @@ export async function notify<U extends User>(
         console.error(
           `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
             owner.id
-          }] ${error.body.trim()}`
+          }] ${error.body.trim()}`,
         );
       }
 
@@ -521,7 +519,7 @@ export async function notify<U extends User>(
     console.info(
       `[${notif.tag ?? '(untagged)'}] notification sent to ${
         subscription.owner.uid
-      } with data ${JSON.stringify(notif)} (sub ${id} @ ${endpoint})`
+      } with data ${JSON.stringify(notif)} (sub ${id} @ ${endpoint})`,
     );
   }
 
@@ -531,11 +529,11 @@ export async function notify<U extends User>(
 export function canSendNotificationToUser(
   notificationSettings: Array<NotificationSetting & { group: Group | null }>,
   type: NotificationType,
-  groupUid: string | undefined
+  groupUid: string | undefined,
 ): boolean {
   if (groupUid) {
     const groupSetting = notificationSettings.find(
-      ({ type: t, group }) => t === type && group?.uid === groupUid
+      ({ type: t, group }) => t === type && group?.uid === groupUid,
     );
     if (groupSetting) return groupSetting.allow;
   }

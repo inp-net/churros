@@ -22,7 +22,7 @@ export const LinkType = builder.prismaNode('Link', {
     computedValue: t.string({
       resolve({ value }, _, { user }) {
         const removeAccents = (text: string) =>
-          text.normalize('NFKD').replace(/[\u0300-\u036F]/g, '');
+          text.normalize('NFKD').replaceAll(/[\u0300-\u036F]/g, '');
         const accessKey = (obj: Record<string, unknown>, dotstring: string) => {
           let searchingIn: string | Record<string, unknown> | undefined = obj;
 
@@ -44,16 +44,16 @@ export const LinkType = builder.prismaNode('Link', {
             Object.entries(o).flatMap(([k, v]) => [
               [k, v],
               [removeAccents(k), v],
-            ])
+            ]),
           );
 
         for (const [humanKey, databaseKey] of Object.entries(
-          wrapWithNonAccentedKeys(REPLACE_MAP)
+          wrapWithNonAccentedKeys(REPLACE_MAP),
         )) {
           value = value.replaceAll(
             `[${humanKey}]`,
             encodeURIComponent(accessKey(user ?? {}, databaseKey) ?? '') +
-              (databaseKey === 'yearTier' ? 'A' : '')
+              (databaseKey === 'yearTier' ? 'A' : ''),
           );
         }
 

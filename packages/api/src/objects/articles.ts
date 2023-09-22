@@ -36,7 +36,7 @@ export const ArticleType = builder.prismaNode('Article', {
 });
 
 export function visibleArticlesPrismaQuery(
-  user: { uid: string; canEditGroups: boolean } | undefined
+  user: { uid: string; canEditGroups: boolean } | undefined,
 ) {
   if (user?.canEditGroups) return {};
   return {
@@ -92,7 +92,7 @@ builder.queryField('article', (t) =>
     },
     resolve: async (query, _, { uid, groupUid }) =>
       prisma.article.findFirstOrThrow({ ...query, where: { uid, group: { uid: groupUid } } }),
-  })
+  }),
 );
 
 builder.queryField('homepage', (t) =>
@@ -131,7 +131,7 @@ builder.queryField('homepage', (t) =>
             // Show articles from the same school as the user
             {
               visibility: Visibility.Public,
-              group: { school: { id: { in: user.major.schools.map(({ id }) => id) } } },
+              // group: { school: { id: { in: user.major.schools.map(({ id }) => id) } } },
             },
             // Show articles from groups whose user is a member
             {
@@ -143,7 +143,7 @@ builder.queryField('homepage', (t) =>
         orderBy: { publishedAt: 'desc' },
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('upsertArticle', (t) =>
@@ -170,8 +170,8 @@ builder.mutationField('upsertArticle', (t) =>
         if (!groupId) return false;
         return Boolean(
           user.groups.some(
-            ({ group: { id }, canEditArticles }) => canEditArticles && groupId === id
-          )
+            ({ group: { id }, canEditArticles }) => canEditArticles && groupId === id,
+          ),
         );
       }
 
@@ -183,14 +183,14 @@ builder.mutationField('upsertArticle', (t) =>
           // To set their-self or remove the author, the user must be allowed to write articles
           authorId === article.authorId) ||
           user.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
           )) &&
         // Who can edit this article?
         // The author
         (user.id === article.authorId ||
           // Other authors of the group
           user.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
           ))
       );
     },
@@ -198,7 +198,7 @@ builder.mutationField('upsertArticle', (t) =>
       query,
       _,
       { id, eventId, visibility, authorId, groupId, title, body, publishedAt, links },
-      { user }
+      { user },
     ) {
       const old = await prisma.article.findUnique({ where: { id: id ?? '' } });
       const data = {
@@ -253,7 +253,7 @@ builder.mutationField('upsertArticle', (t) =>
       });
       return result;
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteArticle', (t) =>
@@ -274,7 +274,7 @@ builder.mutationField('deleteArticle', (t) =>
         user.id === article.authorId ||
         // Other authors of the group
         user.groups.some(
-          ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
+          ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
         )
       );
     },
@@ -292,7 +292,7 @@ builder.mutationField('deleteArticle', (t) =>
       });
       return true;
     },
-  })
+  }),
 );
 
 // builder.queryField('searchArticles', t => t.prismaField({
@@ -311,7 +311,7 @@ export async function createUid({ title, groupId }: { title: string; groupId: st
     async (n) =>
       !(await prisma.article.findUnique({
         where: { groupId_uid: { groupId, uid: `${base}${n > 1 ? `-${n}` : ''}` } },
-      }))
+      })),
   );
   return `${base}${n > 1 ? `-${n}` : ''}`;
 }
@@ -337,8 +337,8 @@ builder.mutationField('updateArticlePicture', (t) =>
           user?.id === article.authorId ||
           // Other authors of the group
           user?.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
-          )
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
+          ),
       );
     },
     async resolve(_, { id, file }, { user }) {
@@ -359,7 +359,7 @@ builder.mutationField('updateArticlePicture', (t) =>
         identifier: id,
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteArticlePicture', (t) =>
@@ -382,8 +382,8 @@ builder.mutationField('deleteArticlePicture', (t) =>
           user?.id === article.authorId ||
           // Other authors of the group
           user?.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId
-          )
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
+          ),
       );
     },
     async resolve(_, { id }, { user }) {
@@ -407,5 +407,5 @@ builder.mutationField('deleteArticlePicture', (t) =>
       });
       return true;
     },
-  })
+  }),
 );

@@ -60,7 +60,7 @@ export const saveSessionToken = (
   }: {
     token: string;
     expiresAt?: Date | null;
-  }
+  },
 ) => {
   window.localStorage.removeItem('isReallyLoggedout');
   document.cookie = cookie.serialize('token', token, {
@@ -72,7 +72,6 @@ export const saveSessionToken = (
 
 /** Returns a temporary redirect object. */
 export const redirectToLogin = (to: string) =>
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   redirect(307, `/login?${new URLSearchParams({ to }).toString()}`);
 
 export const me = derived(page, ($page) => $page.data.me);

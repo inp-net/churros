@@ -54,6 +54,6 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             token: undefined,
           });
         }),
-    }
+    },
   );
 };

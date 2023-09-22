@@ -30,5 +30,5 @@ export const load: PageLoad = async ({ params, fetch, parent }) =>
         }),
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );

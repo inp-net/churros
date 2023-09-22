@@ -29,7 +29,7 @@ export const tooltip = (
       setProps: (props: unknown) => void;
     };
   },
-  parameters: string | [string, number] | object | undefined
+  parameters: string | [string, number] | object | undefined,
 ) => {
   const properties = props(parameters);
   tippy(node, properties);

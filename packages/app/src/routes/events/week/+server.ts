@@ -12,6 +12,6 @@ export const GET: RequestHandler = () => {
     302,
     `/events/week/${formatISO(closestMonday(new Date()), {
       representation: 'date',
-    })}`
+    })}`,
   );
 };

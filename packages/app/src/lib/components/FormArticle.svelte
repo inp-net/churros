@@ -112,7 +112,7 @@
   {#if !hideEvent}
     <EventSearch {event} label="Évènement lié" groupUid={$page.params.group} bind:id={eventId} />
   {/if}
-  <InputText required label="Titre" bind:value={title} />
+  <InputText required label="Titre" maxlength={255} bind:value={title} />
   <DateInput required time label="Publier le" bind:value={publishedAt} />
   <InputSelectOne
     required

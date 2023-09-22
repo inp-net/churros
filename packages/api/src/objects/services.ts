@@ -45,7 +45,7 @@ builder.queryField('service', (t) =>
       if (!service) throw new GraphQLError('Service not found');
       return service;
     },
-  })
+  }),
 );
 
 builder.queryField('services', (t) =>
@@ -67,7 +67,7 @@ builder.queryField('services', (t) =>
       });
       return services;
     },
-  })
+  }),
 );
 
 builder.queryField('userServices', (t) =>
@@ -99,7 +99,7 @@ builder.queryField('userServices', (t) =>
       });
       return services;
     },
-  })
+  }),
 );
 
 builder.mutationField('upsertService', (t) =>
@@ -134,7 +134,7 @@ builder.mutationField('upsertService', (t) =>
         groupUid,
         studentAssociationUid,
       },
-      { user }
+      { user },
     ) {
       if (!user?.admin) throw new GraphQLError('Unauthorized');
       const service = await prisma.service.upsert({
@@ -178,5 +178,5 @@ builder.mutationField('upsertService', (t) =>
 
       return service;
     },
-  })
+  }),
 );

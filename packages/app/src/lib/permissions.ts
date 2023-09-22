@@ -23,7 +23,7 @@ export function canCreateArticle(
     treasurer: boolean;
     canEditArticles: boolean;
   },
-  user: undefined | { admin: boolean }
+  user: undefined | { admin: boolean },
 ): boolean {
   return user?.admin || isOnClubBoard(role) || canEditArticles;
 }
@@ -36,7 +36,7 @@ export function canCreateEvent(
     treasurer: boolean;
     canEditArticles: boolean;
   },
-  user: undefined | { admin: boolean }
+  user: undefined | { admin: boolean },
 ): boolean {
   return canCreateArticle(member, user);
 }

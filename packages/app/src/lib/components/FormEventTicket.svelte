@@ -105,6 +105,7 @@
         if (ticket.name !== e.detail.target.value) showNameHint = true;
       }}
       required
+      maxlength={255}
       label="Nom"
       value={ticket.name}
     />
@@ -114,7 +115,7 @@
       <InputNumber label="Nombre de places" bind:value={ticket.capacity} />
     </div>
 
-    <InputText label="Description" bind:value={ticket.description} />
+    <InputText label="Description" maxlength={255} bind:value={ticket.description} />
 
     <div class="side-by-side">
       <InputDate time label="Date du shotgun" bind:value={ticket.opensAt} />

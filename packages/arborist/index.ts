@@ -29,10 +29,10 @@ export const createForest = <
   T extends { [P in V]: U } & { [P in W]?: U | undefined | null },
   U extends PropertyKey = PropertyKey,
   V extends PropertyKey = 'id',
-  W extends PropertyKey = 'parentId'
+  W extends PropertyKey = 'parentId',
 >(
   list: T[],
-  { idKey = 'id' as V, parentIdKey = 'parentId' as W }: { idKey?: V; parentIdKey?: W } = {}
+  { idKey = 'id' as V, parentIdKey = 'parentId' as W }: { idKey?: V; parentIdKey?: W } = {},
 ): Array<Tree<T>> => {
   const map = new Map<U | typeof root, Tree<T>>();
 
@@ -46,7 +46,6 @@ export const createForest = <
     // Store the new node in the map
     map.set(item[idKey], node);
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const parentId = item[parentIdKey] ?? root;
     if (!map.has(parentId)) map.set(parentId, { children: [] } as unknown as Tree<T>);
 
@@ -69,11 +68,11 @@ export const getAncestors = <
   T extends { [K in V]: U } & { [K in W]?: U | null | undefined },
   U extends PropertyKey = PropertyKey,
   V extends PropertyKey = 'id',
-  W extends PropertyKey = 'parentId'
+  W extends PropertyKey = 'parentId',
 >(
   list: T[],
   id: U,
-  { idKey = 'id' as V, parentIdKey = 'parentId' as W }: { idKey?: V; parentIdKey?: W } = {}
+  { idKey = 'id' as V, parentIdKey = 'parentId' as W }: { idKey?: V; parentIdKey?: W } = {},
 ) => {
   const map = new Map<U, T>();
 
@@ -101,7 +100,7 @@ export const mappedGetAncestors = <
   U extends PropertyKey = PropertyKey,
   V extends PropertyKey = 'id',
   W extends PropertyKey = 'parentId',
-  X extends PropertyKey = 'id'
+  X extends PropertyKey = 'id',
 >(
   list: T[],
   children: Array<{ [K in X]: U }>,
@@ -109,7 +108,7 @@ export const mappedGetAncestors = <
     idKey = 'id' as V,
     parentIdKey = 'parentId' as W,
     mappedKey = idKey as unknown as X,
-  }: { idKey?: V; parentIdKey?: W; mappedKey?: X } = {}
+  }: { idKey?: V; parentIdKey?: W; mappedKey?: X } = {},
 ) => {
   const map = new Map<U, T>();
 
@@ -138,11 +137,11 @@ export const getDescendants = <
   T extends { [K in V]: U } & { [K in W]?: U | null | undefined },
   U extends PropertyKey = PropertyKey,
   V extends PropertyKey = 'id',
-  W extends PropertyKey = 'parentId'
+  W extends PropertyKey = 'parentId',
 >(
   list: T[],
   id: U,
-  { idKey = 'id' as V, parentIdKey = 'parentId' as W }: { idKey?: V; parentIdKey?: W } = {}
+  { idKey = 'id' as V, parentIdKey = 'parentId' as W }: { idKey?: V; parentIdKey?: W } = {},
 ) => {
   const map = new Map<U, T>();
 
@@ -179,10 +178,10 @@ export const hasCycle = <
   T extends { [K in V]: U } & { [K in W]?: U | null | undefined },
   U extends PropertyKey = PropertyKey,
   V extends PropertyKey = 'id',
-  W extends PropertyKey = 'parentId'
+  W extends PropertyKey = 'parentId',
 >(
   list: T[],
-  { idKey = 'id' as V, parentIdKey = 'parentId' as W }: { idKey?: V; parentIdKey?: W } = {}
+  { idKey = 'id' as V, parentIdKey = 'parentId' as W }: { idKey?: V; parentIdKey?: W } = {},
 ) => {
   const map = new Map<U, T>();
 

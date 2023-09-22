@@ -42,7 +42,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
   if (params.pseudoID.startsWith(reverseMap(ID_PREFIXES_TO_TYPENAMES).Registration + ':')) {
     throw redirect(
       301,
-      url.pathname.replace(params.pseudoID, params.pseudoID.split(':')[1]!.toUpperCase())
+      url.pathname.replace(params.pseudoID, params.pseudoID.split(':')[1]!.toUpperCase()),
     );
   }
 
@@ -106,7 +106,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
         }),
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );
 
   if (registration.__typename === 'Error') throw error(400, registration.message);

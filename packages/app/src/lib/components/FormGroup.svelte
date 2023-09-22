@@ -14,6 +14,7 @@
   import InputCheckbox from './InputCheckbox.svelte';
   import InputListOfGroups from './InputListOfGroups.svelte';
   import InputSchool from './InputSchool.svelte';
+    import InputStudentAssociation from './InputStudentAssociation.svelte';
 
   export let data: PageData;
 
@@ -32,6 +33,7 @@
     parent,
     related,
     school,
+    studentAssociation,
   } = data.group;
 
   const socialMediaNames = [
@@ -72,6 +74,7 @@
             type,
             related: related.map(({ uid }) => uid),
             schoolUid: school?.uid,
+            studentAssociationUid: studentAssociation?.uid
           },
           {
             __typename: true,
@@ -98,17 +101,20 @@
 <form on:submit|preventDefault={updateClub}>
   <InputSelectOne label="Type de groupe" required options={DISPLAY_GROUP_TYPES} bind:value={type} />
 
-  <InputSchool label="École de rattachement" bind:object={school} uid={school?.uid} />
+  <div class="side-by-side">
+    <InputSchool clearable label="École de rattachement" bind:object={school} uid={school?.uid} />
+    <InputStudentAssociation clearable label="AE de rattachement" bind:object={studentAssociation} uid={studentAssociation?.uid}></InputStudentAssociation>
+  </div>
 
   <InputCheckbox label="Auto-joignable" bind:value={selfJoinable} />
 
-  <InputText required label="Nom" bind:value={name} />
-  <InputText label="Description courte" bind:value={description} />
+  <InputText required label="Nom" maxlength={255} bind:value={name} />
+  <InputText label="Description courte" maxlength={255} bind:value={description} />
   <InputLongText rich label="Description" bind:value={longDescription} />
   <!-- TODO colors ? -->
-  <InputText label="Salle" bind:value={address} />
-  <InputText label="Email" type="email" bind:value={email} />
-  <InputText label="Site web" type="url" bind:value={website} />
+  <InputText label="Salle" maxlength={255} bind:value={address} />
+  <InputText label="Email" type="email" maxlength={255} bind:value={email} />
+  <InputText label="Site web" type="url" maxlength={255} bind:value={website} />
   <InputSocialLinks label="Réseaux sociaux" bind:value={links} />
   <InputGroup clearable label="Groupe parent" bind:group={parent} uid={parent?.uid} />
   <InputListOfGroups
@@ -136,5 +142,12 @@
   section.submit {
     display: flex;
     justify-content: center;
+  }
+
+  .side-by-side {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1rem;
+    align-items: center;
   }
 </style>

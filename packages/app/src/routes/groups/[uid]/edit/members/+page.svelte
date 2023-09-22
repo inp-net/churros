@@ -14,6 +14,9 @@
   import InputField from '$lib/components/InputField.svelte';
   import { isOnClubBoard, roleEmojis } from '$lib/permissions';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
+  import IconDownload from '~icons/mdi/download-outline';
+    import { page } from '$app/stores';
+    import { format } from 'date-fns';
 
   export let data: PageData;
   const { group } = data;
@@ -45,6 +48,26 @@
   let promo = '1A';
   let newMemberUid = '';
   let newMemberTitle = '';
+
+  async function csv() {
+    const { groupMembersCsv } = await $zeus.query({
+      groupMembersCsv: [
+        { groupUid: $page.params.uid },
+        {
+          __typename: true,
+          '...on Error': { message: true },
+          '...on QueryGroupMembersCsvSuccess': { data: true },
+        },
+      ],
+    });
+
+    if (groupMembersCsv.__typename === 'Error') {
+      console.error(groupMembersCsv.message);
+      return;
+    }
+
+    return groupMembersCsv.data;
+  }
 
   const addGroupMember = async () => {
     const { addGroupMember } = await $zeus.mutate({
@@ -203,6 +226,21 @@
 </script>
 
 <section class="search">
+
+    <div class="actions">
+    {#await csv()}
+      <ButtonSecondary icon={IconDownload} loading>Exporter en .csv</ButtonSecondary>
+    {:then csvContents}
+      <ButtonSecondary
+        icon={IconDownload}
+        href="data:application/octet-stream;charset=utf-8,{encodeURIComponent(csvContents ?? '')}"
+        download={`membres-${$page.params.uid}-${format(
+          new Date(),
+          "yyyy-MM-dd-HH'h'mm"
+        )}.csv`}>Exporter en .csv</ButtonSecondary
+      >
+    {/await}
+    </div>
   <InputSelectOne options={['1A', '2A', '3A', '4A', 'Vieux']} label="Promo" bind:value={promo} />
   <InputText bind:value={search} label="Rechercher">
     <svelte:fragment slot="before">
@@ -309,7 +347,9 @@
 </ul>
 
 <form class="add-member" on:submit|preventDefault={addGroupMember}>
-  <h2>Ajouter un membre</h2>
+  <h2>Ajouter un membre
+    <ButtonSecondary insideProse href="./bulk">Ajouter en masse</ButtonSecondary>
+  </h2>
   <InputPerson
     except={data.group.members.map(({ member: { uid } }) => uid)}
     required
@@ -326,6 +366,13 @@
 </form>
 
 <style>
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem 0 1rem;
+  }
+  
   form.add-member {
     display: flex;
     flex-flow: column wrap;
@@ -387,7 +434,7 @@
     margin-bottom: 1rem;
   }
 
-  @media (max-width: 500px) {
+  @media (width <= 500px) {
     .members .item {
       flex-direction: column;
     }

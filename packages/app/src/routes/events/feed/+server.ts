@@ -36,7 +36,7 @@ export const GET: RequestHandler = async ({ locals, fetch, url }) => {
           resolve({ me, token: '', mobile: true });
         });
       },
-    }
+    },
   );
 
   const toDatetimeAray = (date: Date): [number, number, number, number, number] => [
@@ -62,7 +62,7 @@ export const GET: RequestHandler = async ({ locals, fetch, url }) => {
     uid: node.id,
     url: new URL(
       `/events/${node.group.uid}/${node.uid}/`,
-      `${url.protocol}//${url.host}`
+      `${url.protocol}//${url.host}`,
     ).toString(),
     productId: 'bde.enseeiht.fr',
   }));
@@ -71,7 +71,7 @@ export const GET: RequestHandler = async ({ locals, fetch, url }) => {
   const feedContent = (generateIcs as GenerateICSType)(
     'AEn7',
     icsEvents,
-    new URL(`/events/feed`, `${url.protocol}//${url.host}`).toString()
+    new URL(`/events/feed`, `${url.protocol}//${url.host}`).toString(),
   );
 
   return new Response(feedContent, {

@@ -37,7 +37,7 @@ builder.queryField('announcements', (t) =>
         orderBy: { startsAt: 'desc' },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('announcementsNow', (t) =>
@@ -59,7 +59,7 @@ builder.queryField('announcementsNow', (t) =>
         orderBy: { startsAt: 'desc' },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('announcement', (t) =>
@@ -77,7 +77,7 @@ builder.queryField('announcement', (t) =>
         where: { id },
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('upsertAnnouncement', (t) =>
@@ -122,7 +122,7 @@ builder.mutationField('upsertAnnouncement', (t) =>
       });
       return announcement;
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteAnnouncement', (t) =>
@@ -149,5 +149,5 @@ builder.mutationField('deleteAnnouncement', (t) =>
       });
       return true;
     },
-  })
+  }),
 );

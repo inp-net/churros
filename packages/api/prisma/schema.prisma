@@ -40,7 +40,7 @@ model User {
   // Optional profile details
   address                String    @default("") @db.VarChar(255)
   birthday               DateTime?
-  description            String    @default("") @db.VarChar(255)
+  description            String    @default("") @db.Text
   nickname               String    @default("") @db.VarChar(255)
   phone                  String    @default("") @db.VarChar(255)
   pictureFile            String    @default("") @db.VarChar(255)
@@ -416,6 +416,13 @@ model Article {
   @@unique([groupId, uid])
 }
 
+enum EventFrequency {
+  Once
+  Weekly
+  Monthly
+  Biweekly
+}
+
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
   id             String         @id @default(dbgenerated("nanoid('e:')"))
@@ -430,6 +437,8 @@ model Event {
   endsAt         DateTime
   location       String         @default("") @db.VarChar(255)
   visibility     Visibility
+  frequency      EventFrequency @default(Once)
+  recurringUntil DateTime?
   pictureFile    String         @default("") @db.VarChar(255)
   managers       EventManager[]
   author         User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)

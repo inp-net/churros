@@ -70,7 +70,7 @@ export const RegistrationType = builder.prismaNode('Registration', {
 
 export function authorIsBeneficiary(
   author: { uid: string; fullName: string; firstName: string; lastName: string },
-  beneficiary: string
+  beneficiary: string,
 ) {
   return (
     !beneficiary.trim() ||
@@ -118,7 +118,7 @@ builder.queryField('registration', (t) =>
         },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('registrationOfUser', (t) =>
@@ -142,13 +142,13 @@ builder.queryField('registrationOfUser', (t) =>
         ({ author, beneficiary }) =>
           author.uid === user.uid &&
           (authorIsBeneficiary({ ...author, fullName: fullName(author) }, beneficiary) ||
-            beneficiary === argBeneficiary)
+            beneficiary === argBeneficiary),
       );
 
       if (!registration) throw new GraphQLError('Registration not found');
       return registration;
     },
-  })
+  }),
 );
 
 builder.queryField('registrationsOfUser', (t) =>
@@ -180,7 +180,7 @@ builder.queryField('registrationsOfUser', (t) =>
         },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('registrationsOfEvent', (t) =>
@@ -205,7 +205,7 @@ builder.queryField('registrationsOfEvent', (t) =>
         orderBy: { createdAt: 'desc' },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('registrationsOfUserForEvent', (t) =>
@@ -260,7 +260,7 @@ builder.queryField('registrationsOfUserForEvent', (t) =>
         },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('registrationsOfTicket', (t) =>
@@ -276,7 +276,7 @@ builder.queryField('registrationsOfTicket', (t) =>
         where: { ticket: { id: ticket } },
       });
     },
-  })
+  }),
 );
 
 enum RegistrationVerificationState {
@@ -300,7 +300,7 @@ class RegistrationVerificationResult {
 
   constructor(
     state: RegistrationVerificationState,
-    registration?: Registration & { verifiedBy?: User | null }
+    registration?: Registration & { verifiedBy?: User | null },
   ) {
     this.state = state;
     this.registration = registration;
@@ -433,7 +433,7 @@ builder.mutationField('verifyRegistration', (t) =>
         registration,
       };
     },
-  })
+  }),
 );
 
 builder.mutationField('upsertRegistration', (t) =>
@@ -545,7 +545,7 @@ builder.mutationField('upsertRegistration', (t) =>
         // Check for beneficiary limits
         if (!eventManagedByUser(ticket.event, user, {})) {
           const registrationsByThisAuthor = ticketAndRegistrations!.registrations.filter(
-            ({ author, beneficiary }) => author.uid === user.uid && beneficiary !== ''
+            ({ author, beneficiary }) => author.uid === user.uid && beneficiary !== '',
           );
           if (registrationsByThisAuthor.length > ticket.godsonLimit) return false;
         }
@@ -656,7 +656,7 @@ builder.mutationField('upsertRegistration', (t) =>
         creating ? 'create' : 'update',
         { registration, ticket, user },
         registration.id,
-        user
+        user,
       );
       if (creating) {
         await log(
@@ -664,7 +664,7 @@ builder.mutationField('upsertRegistration', (t) =>
           'send mail',
           { registration, to: user.email },
           registration.id,
-          user
+          user,
         );
 
         const pseudoID = registration.id.replace(/^r:/, '').toUpperCase();
@@ -695,7 +695,7 @@ builder.mutationField('upsertRegistration', (t) =>
 
       return registration;
     },
-  })
+  }),
 );
 
 builder.mutationField('paidRegistration', (t) =>
@@ -781,7 +781,7 @@ builder.mutationField('paidRegistration', (t) =>
         ticket.price,
         paymentMethod,
         phone,
-        regId
+        regId,
       );
       await prisma.logEntry.create({
         data: {
@@ -801,7 +801,7 @@ builder.mutationField('paidRegistration', (t) =>
         },
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('cancelRegistration', (t) =>
@@ -846,7 +846,7 @@ builder.mutationField('cancelRegistration', (t) =>
       });
       return true;
     },
-  })
+  }),
 );
 
 builder.mutationField('opposeRegistration', (t) =>
@@ -888,7 +888,7 @@ builder.mutationField('opposeRegistration', (t) =>
       });
       return true;
     },
-  })
+  }),
 );
 
 const QRCodeType = builder.objectRef<{ path: string; viewbox: string }>('QRCode').implement({
@@ -916,7 +916,7 @@ builder.queryField('registrationQRCode', (t) =>
       }`;
       return { path, viewbox };
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteRegistration', (t) =>
@@ -969,7 +969,7 @@ builder.mutationField('deleteRegistration', (t) =>
       });
       return true;
     },
-  })
+  }),
 );
 
 builder.queryField('registrationsCsv', (t) =>
@@ -1063,7 +1063,7 @@ builder.queryField('registrationsCsv', (t) =>
               graduationYear: number;
               lastName: string;
               contributions: Array<{ option: { paysFor: Array<{ uid: string | null }> } }>;
-            }
+            },
       ) =>
         ({
           'Date de réservation': createdAt.toISOString(),
@@ -1078,8 +1078,8 @@ builder.queryField('registrationsCsv', (t) =>
           Cotisant: benef
             ? humanBoolean(
                 benef.contributions.some(({ option: { paysFor } }) =>
-                  paysFor.some(({ uid }) => uid === 'aen7')
-                )
+                  paysFor.some(({ uid }) => uid === 'aen7'),
+                ),
               )
             : '',
           Filière: benef?.major.shortName ?? '',
@@ -1087,7 +1087,7 @@ builder.queryField('registrationsCsv', (t) =>
           Promo: benef?.graduationYear.toString() ?? '',
           'Code de réservation': id.replace(/^r:/, '').toUpperCase(),
           'Lien vers la place': `${process.env.FRONTEND_ORIGIN}/bookings/${id.replace(/^r:/, '')}/`,
-        } satisfies Record<(typeof columns)[number], string>);
+        }) satisfies Record<(typeof columns)[number], string>;
 
       result = columns.join(',') + '\n';
 
@@ -1107,7 +1107,7 @@ builder.queryField('registrationsCsv', (t) =>
 
       return result;
     },
-  })
+  }),
 );
 
 // eslint-disable-next-line max-params
@@ -1117,7 +1117,7 @@ async function pay(
   amount: number,
   by: PaymentMethodPrisma,
   phone?: string,
-  registrationId?: string
+  registrationId?: string,
 ) {
   switch (by) {
     case 'Lydia': {
@@ -1129,7 +1129,7 @@ async function pay(
     default: {
       return new Promise((_resolve, reject) => {
         reject(
-          new GraphQLError(`Attempt to pay ${to} ${amount} from ${from} by ${by}: not implemented`)
+          new GraphQLError(`Attempt to pay ${to} ${amount} from ${from} by ${by}: not implemented`),
         );
       });
     }

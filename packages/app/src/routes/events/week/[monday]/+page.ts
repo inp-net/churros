@@ -16,6 +16,8 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
             id: true,
             startsAt: true,
             endsAt: true,
+            frequency: true,
+            recurringUntil: true,
             location: true,
             title: true,
             pictureFile: true,
@@ -53,7 +55,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
           },
         ],
       },
-      { fetch, parent }
+      { fetch, parent },
     )),
   };
 };

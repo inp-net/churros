@@ -4,7 +4,7 @@
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
-  import { PaymentMethod, zeus } from '$lib/zeus';
+  import { EventFrequency, PaymentMethod, zeus } from '$lib/zeus';
   import Alert from '$lib/components/Alert.svelte';
   import { page } from '$app/stores';
   import { dateTimeFormatter, formatDate, formatDateTime } from '$lib/dates';
@@ -141,6 +141,7 @@
 
 <Header
   {pictureFile}
+  frequency={EventFrequency.Once}
   title="Réservation d'une place {name}"
   subtitle="Pour l'évènement {title} du {formatDate(startsAt)}"
 />
@@ -208,6 +209,7 @@
           <InputText
             hint="Si tu paies pour quelqu'un qui a un compte Churros, mets son @"
             label="Nom du bénéficiaire"
+            maxlength={255}
             bind:value={beneficiary}
           />
         {/if}
@@ -277,6 +279,7 @@
             type="tel"
             label="Numéro de téléphone"
             initial={$me?.phone}
+            maxlength={255}
             bind:value={paymentDetails.phone}
           />
           <section class="submit">

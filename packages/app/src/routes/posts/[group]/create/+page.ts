@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
 
   const { group } = await loadQuery(
     { group: [{ uid: params.group }, { uid: true, id: true, name: true }] },
-    { fetch, parent }
+    { fetch, parent },
   );
   return {
     article: {

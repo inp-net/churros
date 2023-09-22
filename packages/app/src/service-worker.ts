@@ -32,10 +32,10 @@ async function log(message: string) {
             : 'unknown device'
         } ${ua.browser.name ?? 'unknown'}/${ua.browser.version ?? '?'} ${
           ua.os.name ?? 'unkown OS'
-        }/${ua.os.version ?? '?'}] ${message}`
+        }/${ua.os.version ?? '?'}] ${message}`,
       )}`,
-      PUBLIC_STORAGE_URL
-    )
+      PUBLIC_STORAGE_URL,
+    ),
   );
 }
 
@@ -73,14 +73,14 @@ sw.addEventListener('push', (event) => {
       const { image, ...notificationData } = event.data.json() as unknown as PushNotification;
       await log(
         `push data on ${notificationData.data.subscriptionName ?? '(unknown)'} is ${JSON.stringify(
-          notificationData
-        )}`
+          notificationData,
+        )}`,
       );
       return sw.registration.showNotification(notificationData.title, {
         ...notificationData,
         image: image ? `${PUBLIC_STORAGE_URL}${image}` : undefined,
       });
-    })()
+    })(),
   );
 });
 
@@ -92,7 +92,7 @@ sw.addEventListener('notificationclick', (clickEvent) => {
       if (action.startsWith('https://')) await openURL(action);
       const data = notification.data as PushNotification['data'];
       if (data.goto) await openURL(data.goto);
-    })()
+    })(),
   );
 });
 

@@ -31,7 +31,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     !me?.canEditGroups &&
     !me?.groups.some(
       ({ group, president, secretary, treasurer, vicePresident }) =>
-        group.uid === params.uid && (president || secretary || treasurer || vicePresident)
+        group.uid === params.uid && (president || secretary || treasurer || vicePresident),
     )
   )
     throw redirect(307, '..');
@@ -57,6 +57,6 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
             token: undefined,
           });
         }),
-    }
+    },
   );
 };

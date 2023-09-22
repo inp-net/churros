@@ -2,13 +2,14 @@
   import InputField from './InputField.svelte';
 
   export let value: string;
+  export let hint = "";
   export let label: string;
   export let required = false;
   export let rich = false;
 </script>
 
-<InputField {label} {required} hint={rich ? 'Syntaxe Markdown supportée' : undefined}>
-  <textarea bind:value on:input cols="30" rows="10" />
+<InputField {label} {required} hint={hint || (rich ? 'Syntaxe Markdown supportée' : undefined)}>
+  <textarea {...$$restProps} bind:value on:input cols="30" rows="10" />
 </InputField>
 
 <style>

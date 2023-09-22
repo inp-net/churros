@@ -103,7 +103,7 @@ export const createUid = async ({
     const uid = `${base}${n > 1 ? n : ''}`;
     const existDB = Boolean(await prisma.user.findFirst({ where: { uid } }));
     const existLdap = Boolean(
-      process.env['NODE_ENV'] !== 'development' && (await queryLdapUser(uid))
+      process.env['NODE_ENV'] !== 'development' && (await queryLdapUser(uid)),
     );
     console.info(`${uid} exists in ldap? : ${existLdap.toString()}`);
     console.info(`${uid} exists in DB? : ${existDB.toString()}`);
@@ -114,7 +114,7 @@ export const createUid = async ({
 };
 
 export const completeRegistration = async (
-  candidate: UserCandidate
+  candidate: UserCandidate,
 ): Promise<(User & { major?: null | (Major & { ldapSchool?: School | null }) }) | undefined> => {
   // If the user has no school email, it must be manually accepted.
   if (!candidate.schoolEmail) return undefined;

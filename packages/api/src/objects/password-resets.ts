@@ -9,7 +9,7 @@ import { GraphQLError } from 'graphql';
 import { purgeUserSessions } from '../context.js';
 
 const TYPENAMES_TO_ID_PREFIXES = Object.fromEntries(
-  Object.entries(ID_PREFIXES_TO_TYPENAMES).map(([k, v]) => [v, k])
+  Object.entries(ID_PREFIXES_TO_TYPENAMES).map(([k, v]) => [v, k]),
 ) as Record<
   (typeof ID_PREFIXES_TO_TYPENAMES)[keyof typeof ID_PREFIXES_TO_TYPENAMES],
   keyof typeof ID_PREFIXES_TO_TYPENAMES
@@ -36,7 +36,7 @@ builder.mutationField('createPasswordReset', (t) =>
 
       const url = new URL(
         `login/reset/${result.id.split(':', 2)[1]!.toUpperCase()}`,
-        process.env.FRONTEND_ORIGIN
+        process.env.FRONTEND_ORIGIN,
       );
 
       await transporter.sendMail({
@@ -59,7 +59,7 @@ builder.mutationField('createPasswordReset', (t) =>
       });
       return true;
     },
-  })
+  }),
 );
 
 builder.mutationField('usePasswordReset', (t) =>
@@ -122,7 +122,7 @@ builder.mutationField('usePasswordReset', (t) =>
       });
       return true;
     },
-  })
+  }),
 );
 
 builder.mutationField('resetPassword', (t) =>
@@ -140,8 +140,8 @@ builder.mutationField('resetPassword', (t) =>
       if (!result) {
         console.error(
           `Cannot edit password: ${uid} =?= ${user?.uid ?? '<none>'} OR ${JSON.stringify(
-            user?.admin
-          )}`
+            user?.admin,
+          )}`,
         );
       }
 
@@ -164,7 +164,7 @@ builder.mutationField('resetPassword', (t) =>
         throw new GraphQLError('Le mot de passe doit faire au moins 8 caractères');
 
       for (const credential of userEdited.credentials.filter(
-        (c) => c.type === CredentialType.Password
+        (c) => c.type === CredentialType.Password,
       )) {
         if (await verify(credential.value, oldPassword)) {
           await prisma.user.update({
@@ -206,5 +206,5 @@ builder.mutationField('resetPassword', (t) =>
 
       throw new GraphQLError('Mot de passe incorrect');
     },
-  })
+  }),
 );

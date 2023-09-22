@@ -1,31 +1,24 @@
 <script lang="ts">
-  import { formatDate, formatDateTime } from '$lib/dates';
-  import { format, isSameDay } from 'date-fns';
+  import { formatEventDates, formatRecurrence } from '$lib/dates';
   import BackButton from '$lib/components/ButtonBack.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import { onDestroy, onMount } from 'svelte';
   import { browser } from '$app/environment';
   import IconWhere from '~icons/mdi/location-outline';
   import IconWhen from '~icons/mdi/calendar-outline';
+  import IconRepeat from '~icons/mdi/repeat'
   import { env } from '$env/dynamic/public';
+    import { EventFrequency } from '../../../../zeus';
+    import { DISPLAY_EVENT_FREQUENCY } from '$lib/display';
 
   export let title: string;
   export let startsAt: Date | undefined = undefined;
   export let pictureFile: string;
   export let endsAt: Date | undefined = undefined;
   export let location = '';
+  export let frequency: EventFrequency;
+  export let recurringUntil: Date | undefined = undefined;
   export let subtitle = '';
-
-  function formatEventDates(startsAt: Date, endsAt: Date): string {
-    if (isSameDay(startsAt, endsAt)) {
-      return `Le ${formatDate(startsAt)}, de ${format(startsAt, 'HH:mm')} à ${format(
-        endsAt,
-        'HH:mm'
-      )}`;
-    }
-
-    return `${formatDateTime(startsAt)} — ${formatDateTime(endsAt)}`;
-  }
 
   onMount(() => {
     if (browser) document.querySelector('main')?.classList.add('fullsize');
@@ -59,8 +52,13 @@
       {title}
       <ButtonShare white={Boolean(pictureFile)} />
     </h1>
+    {#if frequency !== EventFrequency.Once}
+    <p class="recurrence">
+      <IconRepeat></IconRepeat> {#if startsAt && endsAt} {formatRecurrence(frequency, startsAt, endsAt)} {:else} {DISPLAY_EVENT_FREQUENCY[frequency]} {/if}
+    </p>
+    {/if}
     {#if startsAt && endsAt}
-      <p class="when"><IconWhen /> {formatEventDates(startsAt, endsAt)}</p>
+      <p class="when"><IconWhen /> {formatEventDates(frequency, startsAt, endsAt, recurringUntil)}</p>
     {/if}
     {#if location}
       <p class="where"><IconWhere /> {location}</p>

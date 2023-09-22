@@ -16,13 +16,13 @@ export const load: PageLoad = async ({ fetch, parent }) => {
         },
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );
 
   throw redirect(
     302,
     eventsInWeek.some((event) => isFuture(new Date(event.endsAt)))
       ? '/events/week/'
-      : '/events/planning'
+      : '/events/planning',
   );
 };

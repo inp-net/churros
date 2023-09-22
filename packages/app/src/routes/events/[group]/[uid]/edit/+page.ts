@@ -20,6 +20,8 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           endsAt: true,
           pictureFile: true,
           description: true,
+          frequency: true,
+          recurringUntil: true,
           group: {
             id: true,
             uid: true,
@@ -146,15 +148,15 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
         }),
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );
 
   const canEdit =
     me.canEditGroups ||
     Boolean(
       me.groups.some(
-        ({ group, canEditArticles }) => canEditArticles && group.id === data.event.group.id
-      )
+        ({ group, canEditArticles }) => canEditArticles && group.id === data.event.group.id,
+      ),
     ) ||
     Boolean(data.event.managers.some(({ user, canEdit }) => canEdit && user.uid === me.uid));
 

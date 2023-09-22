@@ -26,20 +26,20 @@ export function userIsInBureauOf(user: Context['user'], groupUid: string): boole
   return Boolean(
     user?.groups.some(
       ({ group: { uid }, president, secretary, treasurer, vicePresident }) =>
-        uid === groupUid && (president || secretary || treasurer || vicePresident)
-    )
+        uid === groupUid && (president || secretary || treasurer || vicePresident),
+    ),
   );
 }
 
 export function userIsPresidentOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
-    user?.groups.some(({ group: { uid }, president }) => uid === groupUid && president)
+    user?.groups.some(({ group: { uid }, president }) => uid === groupUid && president),
   );
 }
 
 export function userIsTreasurerOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
-    user?.groups.some(({ group: { uid }, treasurer }) => uid === groupUid && treasurer)
+    user?.groups.some(({ group: { uid }, treasurer }) => uid === groupUid && treasurer),
   );
 }
 
@@ -122,7 +122,7 @@ builder.objectField(GroupType, 'ancestors', (t) =>
         .findMany({ where: { familyId: { in: ids.map(({ familyId }) => familyId) } } })
         // Get the ancestors of each group
         .then((groups) => mappedGetAncestors(groups, ids)),
-  })
+  }),
 );
 
 builder.queryField('groups', (t) =>
@@ -161,7 +161,7 @@ builder.queryField('groups', (t) =>
         },
         orderBy: { name: 'asc' },
       }),
-  })
+  }),
 );
 
 builder.queryField('group', (t) =>
@@ -170,7 +170,7 @@ builder.queryField('group', (t) =>
     args: { uid: t.arg.string() },
     resolve: async (query, _, { uid }) =>
       prisma.group.findUniqueOrThrow({ ...query, where: { uid } }),
-  })
+  }),
 );
 builder.queryField('searchGroups', (t) =>
   t.prismaField({
@@ -252,18 +252,18 @@ LIMIT 20
         ...levenshteinFilterAndSort<Group>(
           fuzzyResults,
           3,
-          results.map(({ id }) => id)
+          results.map(({ id }) => id),
         )(resultsByFuzzySearch),
       ];
     },
-  })
+  }),
 );
 
 const createGroupUid = async (name: string) => {
   const groupSlug = slug(name);
   const createUid = (i: number) => (i === 1 ? groupSlug : `${groupSlug}-${i}`);
   const i = await dichotomid(
-    async (i) => !(await prisma.group.findFirst({ where: { uid: createUid(i) } }))
+    async (i) => !(await prisma.group.findFirst({ where: { uid: createUid(i) } })),
   );
   return createUid(i);
 };
@@ -277,8 +277,8 @@ builder.mutationField('upsertGroup', (t) =>
       uid: t.arg.string({ required: false }),
       type: t.arg({ type: GroupEnumType }),
       parentUid: t.arg.string({ required: false }),
-      schoolUid: t.arg.id({ required: false }),
-      studentAssociationId: t.arg.id({ required: false }),
+      schoolUid: t.arg.string({ required: false }),
+      studentAssociationUid: t.arg.string({ required: false }),
       name: t.arg.string({ validate: { maxLength: 255 } }),
       color: t.arg.string({ validate: { regex: /#[\dA-Fa-f]{6}/ } }),
       address: t.arg.string({ validate: { maxLength: 255 } }),
@@ -297,8 +297,8 @@ builder.mutationField('upsertGroup', (t) =>
         user?.canEditGroups ||
           (user?.groups ?? []).some(
             ({ president, secretary, treasurer, vicePresident, group }) =>
-              group.uid === uid && (president || secretary || treasurer || vicePresident)
-          )
+              group.uid === uid && (president || secretary || treasurer || vicePresident),
+          ),
       );
     },
     // eslint-disable-next-line complexity
@@ -316,13 +316,13 @@ builder.mutationField('upsertGroup', (t) =>
         description,
         website,
         schoolUid,
-        studentAssociationId,
+        studentAssociationUid,
         email,
         longDescription,
         links,
         related,
       },
-      { user }
+      { user },
     ) {
       // --- First, we update the group's children's familyId according to the new parent of this group. ---
       // We have 2 possible cases for updating the parent: either it is:
@@ -354,8 +354,8 @@ builder.mutationField('upsertGroup', (t) =>
           if (
             hasCycle(
               allGroups.map((g) =>
-                g.id === oldGroup.id ? { ...oldGroup, parentId: newParent.id } : g
-              )
+                g.id === oldGroup.id ? { ...oldGroup, parentId: newParent.id } : g,
+              ),
             )
           )
             throw new GraphQLError('La modification créerait un cycle dans les groupes');
@@ -398,7 +398,9 @@ builder.mutationField('upsertGroup', (t) =>
           parent:
             parentUid === null || parentUid === undefined ? {} : { connect: { uid: parentUid } },
           school: schoolUid ? { connect: { uid: schoolUid } } : {},
-          studentAssociation: studentAssociationId ? { connect: { id: studentAssociationId } } : {},
+          studentAssociation: studentAssociationUid
+            ? { connect: { uid: studentAssociationUid } }
+            : {},
         },
         update: {
           ...data,
@@ -414,8 +416,8 @@ builder.mutationField('upsertGroup', (t) =>
               ? { disconnect: true }
               : { connect: { uid: parentUid } },
           school: schoolUid ? { connect: { uid: schoolUid } } : { disconnect: true },
-          studentAssociation: studentAssociationId
-            ? { connect: { id: studentAssociationId } }
+          studentAssociation: studentAssociationUid
+            ? { connect: { uid: studentAssociationUid } }
             : { disconnect: true },
         },
       });
@@ -430,7 +432,7 @@ builder.mutationField('upsertGroup', (t) =>
       });
       return group;
     },
-  })
+  }),
 );
 
 /** Deletes a group. */
@@ -441,7 +443,7 @@ builder.mutationField('deleteGroup', (t) =>
     authScopes: (_, { uid }, { user }) =>
       Boolean(
         user?.canEditGroups ||
-          user?.groups.some(({ group, president }) => president && group.uid === uid)
+          user?.groups.some(({ group, president }) => president && group.uid === uid),
       ),
     async resolve(_, { uid }, { user }) {
       await prisma.group.delete({ where: { uid } });
@@ -456,7 +458,7 @@ builder.mutationField('deleteGroup', (t) =>
       });
       return true;
     },
-  })
+  }),
 );
 
 /** Update the club's picture */
@@ -490,7 +492,7 @@ builder.mutationField('updateGroupPicture', (t) =>
       });
       return picture;
     },
-  })
+  }),
 );
 
 /** Delete the club's picture */
@@ -524,5 +526,5 @@ builder.mutationField('deleteGroupPicture', (t) =>
       });
       return true;
     },
-  })
+  }),
 );

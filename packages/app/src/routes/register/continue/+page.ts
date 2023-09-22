@@ -32,6 +32,6 @@ export const load: PageLoad = async ({ fetch, url }) => {
         majors: { id: true, name: true, shortName: true, schools: { name: true } },
       },
     },
-    { fetch }
+    { fetch },
   );
 };

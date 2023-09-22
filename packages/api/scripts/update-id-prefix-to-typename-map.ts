@@ -24,7 +24,7 @@ const repoRoot = (await execSync(`git rev-parse --show-toplevel`)).toString().tr
 
 const readFrom = path.join(
   path.dirname(import.meta.url.replace(/^file:/, '')).replace('build/', ''),
-  '../prisma/schema.prisma'
+  '../prisma/schema.prisma',
 );
 const lines = readFileSync(readFrom, 'utf8').split('\n');
 
@@ -41,7 +41,7 @@ function updateInFile(filename: string, exported: boolean): void {
 
   const writeTo = path.join(
     path.dirname(import.meta.url.replace(/^file:/, '')).replace('build/', ''),
-    filename
+    filename,
   );
   console.log(`Injecting ID_PREFIXES_TO_TYPENAMES in ${writeTo}`);
 
@@ -52,11 +52,11 @@ function updateInFile(filename: string, exported: boolean): void {
     if (!insideGeneratedContent && line.startsWith('/* @generated from schema')) {
       writeToLines[index] = `/* @generated from schema by /${path.relative(
         repoRoot,
-        new URL(import.meta.url).pathname
+        new URL(import.meta.url).pathname,
       )} */\n ${exported ? 'export ' : ''}const ID_PREFIXES_TO_TYPENAMES = ${JSON.stringify(
         map,
         null,
-        4
+        4,
       )}\n/* end @generated from schema */`;
       insideGeneratedContent = true;
     } else if (insideGeneratedContent && line.includes('/* end @generated from schema */')) {

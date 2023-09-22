@@ -46,6 +46,6 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
         _notificationsQuery,
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );
 };

@@ -35,7 +35,7 @@ builder.queryField('notificationSubscription', (t) =>
         },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('notificationSubscriptions', (t) =>
@@ -54,7 +54,7 @@ builder.queryField('notificationSubscriptions', (t) =>
         },
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('upsertNotificationSubscription', (t) =>
@@ -103,7 +103,7 @@ builder.mutationField('upsertNotificationSubscription', (t) =>
         update: upsertData,
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteNotificationSubscription', (t) =>
@@ -124,5 +124,5 @@ builder.mutationField('deleteNotificationSubscription', (t) =>
       });
       return true;
     },
-  })
+  }),
 );

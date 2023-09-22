@@ -135,7 +135,7 @@ builder.queryField('article', (t) =>
     // `resolve` produces the API response:
     resolve: async (query, _, { id }) =>
       prisma.article.findUniqueOrThrow({ ...query, where: { id } }),
-  })
+  }),
 );
 ```
 

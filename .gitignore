@@ -33,3 +33,6 @@ packages/api/scripts/integration-1as.tsv
 packages/api/scripts/integration-2as.tsv
 packages/api/scripts/frappe-dump.json
 packages/api/scripts/frappe-dump-raw.json
+
+# Ignore jetbrains ide files
+.idea

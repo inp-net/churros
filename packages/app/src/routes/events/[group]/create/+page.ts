@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ fetch, parent, url, params }) => {
     !me.admin &&
     !me.groups.some(
       ({ canEditArticles, president, treasurer, secretary, vicePresident }) =>
-        canEditArticles || president || treasurer || secretary || vicePresident
+        canEditArticles || president || treasurer || secretary || vicePresident,
     )
   )
     throw redirect(307, '..');
@@ -47,6 +47,6 @@ export const load: PageLoad = async ({ fetch, parent, url, params }) => {
         }),
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );
 };

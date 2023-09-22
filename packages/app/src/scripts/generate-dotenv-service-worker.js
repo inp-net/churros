@@ -21,8 +21,8 @@ writeFileSync(
   filepath,
   readFileSync(filepath)
     .toString('utf8')
-    .replace(
+    .replaceAll(
       /^const\s+PUBLIC_STORAGE_URL\s+=.+$/gm,
-      `const PUBLIC_STORAGE_URL = /* @generated */ ${literal}`
-    )
+      `const PUBLIC_STORAGE_URL = /* @generated */ ${literal}`,
+    ),
 );

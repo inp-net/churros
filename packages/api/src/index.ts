@@ -97,14 +97,14 @@ api.use(
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
     crossOriginResourcePolicy: { policy: 'cross-origin' },
-  })
+  }),
 );
 api.use('/graphql', async (req, res) => yoga(req, res));
 api.use(
   '/storage',
   // Another layer of protection against malicious uploads
   helmet.contentSecurityPolicy({ directives: { 'script-src': "'none'" } }),
-  express.static(fileURLToPath(new URL(process.env.STORAGE)))
+  express.static(fileURLToPath(new URL(process.env.STORAGE))),
 );
 
 // Poor man's GDPR data download
@@ -186,7 +186,7 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
     const { verified, transaction } = await verifyLydiaTransaction(
       request_id,
       signatureParameters,
-      sig
+      sig,
     );
 
     await prisma.logEntry.create({
@@ -293,7 +293,7 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
             'ldap-sync',
             'mark as contributor',
             { err: error },
-            transaction.contribution.user.uid
+            transaction.contribution.user.uid,
           );
         }
 
@@ -304,7 +304,7 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
             message: `contribution transaction marked as paid: ${JSON.stringify(
               { beneficiary },
               undefined,
-              2
+              2,
             )}`,
             target: transaction_identifier,
           },

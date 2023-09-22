@@ -30,7 +30,7 @@ export const load: LayoutLoad = async ({ fetch, parent, params }) => {
         }),
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );
   return { ...(await parent()), ...queryData };
 };

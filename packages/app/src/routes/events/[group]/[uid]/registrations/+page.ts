@@ -83,5 +83,5 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
         _registrationsQuery,
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );

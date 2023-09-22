@@ -142,12 +142,14 @@
         label="Prénom"
         errors={formErrors?.firstName?._errors}
         required
+        maxlength={255}
         bind:value={firstName}
       />
       <InputText
         label="Nom de famille"
         errors={formErrors?.lastName?._errors}
         required
+        maxlength={255}
         bind:value={lastName}
       />
     </div>
@@ -193,9 +195,10 @@
       label="Numéro de téléphone"
       type="tel"
       errors={formErrors?.phone?._errors}
+      maxlength={255}
       bind:value={phone}
     />
-    <InputText label="Adresse postale" errors={formErrors?.address?._errors} bind:value={address} />
+    <InputText label="Adresse postale" errors={formErrors?.address?._errors} maxlength={255} bind:value={address} />
     <div class="side-by-side">
       <InputText
         label="Mot de passe"
@@ -203,6 +206,7 @@
         errors={formErrors?.password?._errors}
         type="password"
         required
+        minlength={8}
         bind:value={password}
       />
       <InputText

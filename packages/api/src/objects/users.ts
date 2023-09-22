@@ -221,7 +221,7 @@ builder.queryField('me', (t) =>
     type: UserType,
     authScopes: { loggedIn: true },
     resolve: (_query, _, {}, { user }) => user!,
-  })
+  }),
 );
 
 /** Gets a user from its id. */
@@ -230,9 +230,25 @@ builder.queryField('user', (t) =>
     type: UserType,
     args: { uid: t.arg.string() },
     authScopes: { loggedIn: true },
-    resolve: async (query, _, { uid }) =>
-      prisma.user.findUniqueOrThrow({ ...query, where: { uid } }),
-  })
+    async resolve(query, _, { uid }) {
+      const user = await prisma.user.findUnique({ ...query, where: { uid } });
+      if (!user) throw new GraphQLError('Utilisateur·ice introuvable');
+      return user;
+    },
+  }),
+);
+
+builder.queryField('userByEmail', (t) =>
+  t.prismaField({
+    type: UserType,
+    args: { email: t.arg.string() },
+    authScopes: { loggedIn: true },
+    async resolve(query, _, { email }) {
+      const user = await prisma.user.findUnique({ ...query, where: { email } });
+      if (!user) throw new GraphQLError('Utilisateur·ice introuvable');
+      return user;
+    },
+  }),
 );
 
 builder.queryField('allUsers', (t) =>
@@ -245,7 +261,7 @@ builder.queryField('allUsers', (t) =>
       });
     },
     cursor: 'id',
-  })
+  }),
 );
 
 /** Searches for user on all text fields. */
@@ -288,11 +304,11 @@ LIMIT 10
         ...levenshteinFilterAndSort<User>(
           searchResults,
           5,
-          users.map(({ id }) => id)
+          users.map(({ id }) => id),
         )(fuzzyUsers),
       ];
     },
-  })
+  }),
 );
 
 /** Gets the people that were born today */
@@ -328,7 +344,7 @@ builder.queryField('birthdays', (t) =>
       }
 
       const usersNonflat = await Promise.all(
-        dateRangeAround(now, width).flatMap(async (d) => usersBornOn(d))
+        dateRangeAround(now, width).flatMap(async (d) => usersBornOn(d)),
       );
 
       const users = await prisma.user.findMany({
@@ -355,7 +371,7 @@ builder.queryField('birthdays', (t) =>
         return users.filter(({ graduationYear }) => [1, 2, 3].includes(yearTier(graduationYear)));
       return users;
     },
-  })
+  }),
 );
 
 /** Updates a user. */
@@ -391,8 +407,8 @@ builder.mutationField('updateUser', (t) =>
       if (!result) {
         console.error(
           `Cannot edit profile: ${uid} =?= ${user?.uid ?? '<none>'} OR ${JSON.stringify(
-            user?.canEditUsers
-          )}`
+            user?.canEditUsers,
+          )}`,
         );
       }
 
@@ -420,7 +436,7 @@ builder.mutationField('updateUser', (t) =>
         firstName,
         lastName,
       },
-      { user }
+      { user },
     ) {
       if (!user) throw new GraphQLError('Not logged in');
 
@@ -455,7 +471,7 @@ builder.mutationField('updateUser', (t) =>
             oldContributions
               .filter((c) => c.paid)
               .map(({ optionId }) => optionId)
-              .sort()
+              .sort(),
           ) !== JSON.stringify(contributesWith.sort());
       }
 
@@ -548,7 +564,7 @@ builder.mutationField('updateUser', (t) =>
       });
       return userUpdated;
     },
-  })
+  }),
 );
 
 builder.mutationField('syncUserLdap', (t) =>
@@ -590,7 +606,7 @@ builder.mutationField('syncUserLdap', (t) =>
       const { uid: finalUid } = await prisma.user.findUniqueOrThrow({ where: { id: userDb.id } });
       if (
         userDb.contributions.some(({ option: { paysFor } }) =>
-          paysFor.some(({ name }) => name === 'AEn7')
+          paysFor.some(({ name }) => name === 'AEn7'),
         )
       ) {
         try {
@@ -602,7 +618,7 @@ builder.mutationField('syncUserLdap', (t) =>
 
       return true;
     },
-  })
+  }),
 );
 
 builder.mutationField('updateUserPermissions', (t) =>
@@ -635,7 +651,7 @@ builder.mutationField('updateUserPermissions', (t) =>
       });
       return userUpdated;
     },
-  })
+  }),
 );
 
 builder.mutationField('updateUserPicture', (t) =>
@@ -664,7 +680,7 @@ builder.mutationField('updateUserPicture', (t) =>
         identifier: uid,
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteUserPicture', (t) =>
@@ -697,7 +713,7 @@ builder.mutationField('deleteUserPicture', (t) =>
       });
       return true;
     },
-  })
+  }),
 );
 
 builder.mutationField('updateNotificationSettings', (t) =>
@@ -754,7 +770,7 @@ builder.mutationField('updateNotificationSettings', (t) =>
         where: { userId: user.id },
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteGodchild', (t) =>
@@ -787,5 +803,5 @@ builder.mutationField('deleteGodchild', (t) =>
       });
       return true;
     },
-  })
+  }),
 );

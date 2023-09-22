@@ -127,7 +127,7 @@
             {barWeek.groups.map(({ name }) => name).join(', ')}
           </h3>
           {#if expandedBarWeekId === barWeek.id}
-            <InputText label="Description" bind:value={barWeek.description} />
+            <InputText label="Description" maxlength={255} bind:value={barWeek.description} />
 
             <InputListOfGroups
               label="Groupes"
@@ -187,7 +187,7 @@
         bind:groups={newBarWeek.groups}
         uids={newBarWeek.groups.map((g) => g.uid)}
       />
-      <InputText label="Description" bind:value={newBarWeek.description} />
+      <InputText label="Description" maxlength={255} bind:value={newBarWeek.description} />
       <div class="side-by-side">
         <DateInput label="Début" bind:value={newBarWeek.startsAt} />
         <DateInput label="Fin" bind:value={newBarWeek.endsAt} />

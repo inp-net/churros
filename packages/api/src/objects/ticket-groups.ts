@@ -29,7 +29,7 @@ builder.queryField('ticketGroup', (t) =>
     },
     resolve: async (query, _, { id }) =>
       prisma.ticketGroup.findFirstOrThrow({ ...query, where: { id } }),
-  })
+  }),
 );
 
 builder.mutationField('upsertTicketGroup', (t) =>
@@ -80,7 +80,7 @@ builder.mutationField('upsertTicketGroup', (t) =>
         events.every((event) =>
           eventManagedByUser(event! /* legal since we removed potential nulls */, user, {
             canEdit: true,
-          })
+          }),
         ) && eventManagedByUser(event!, user, { canEdit: true })
       );
     },
@@ -102,7 +102,7 @@ builder.mutationField('upsertTicketGroup', (t) =>
         },
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteTicketGroup', (t) =>
@@ -138,5 +138,5 @@ builder.mutationField('deleteTicketGroup', (t) =>
       await prisma.ticketGroup.delete({ where: { id } });
       return true;
     },
-  })
+  }),
 );

@@ -1,5 +1,18 @@
 import { builder } from '../builder.js';
-import { startOfWeek, endOfWeek, setMinutes, startOfDay } from 'date-fns';
+import {
+  startOfWeek,
+  endOfWeek,
+  differenceInDays,
+  startOfDay,
+  endOfDay,
+  getDay,
+  setYear,
+  getYear,
+  setMonth,
+  getMonth,
+  setDay,
+  addDays,
+} from 'date-fns';
 import { TicketType, createUid as createTicketUid, userCanSeeTicket } from './tickets.js';
 import {
   type Event as EventPrisma,
@@ -10,6 +23,7 @@ import {
   type Ticket,
   type TicketGroup,
   PaymentMethod,
+  EventFrequency,
 } from '@prisma/client';
 import { toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
@@ -35,10 +49,14 @@ import { unlink } from 'node:fs/promises';
 import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
-import { setHours } from 'date-fns';
+import { GraphQLError } from 'graphql';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
+});
+
+export const EventFrequencyType = builder.enumType(EventFrequency, {
+  name: 'EventFrequency',
 });
 
 export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
@@ -117,7 +135,7 @@ class ProfitsBreakdown {
   constructor(
     total: number,
     byPaymentMethod: Record<PaymentMethod, number>,
-    byTicket: Array<{ id: string; amount: number }>
+    byTicket: Array<{ id: string; amount: number }>,
   ) {
     this.total = total;
     this.byPaymentMethod = byPaymentMethod;
@@ -151,7 +169,7 @@ const ProfitsBreakdownType = builder.objectRef<ProfitsBreakdown>('ProfitsBreakdo
 
 export function eventCapacity(
   tickets: Array<Ticket & { group: TicketGroup | null }>,
-  ticketGroups: Array<TicketGroup & { tickets: Ticket[] }>
+  ticketGroups: Array<TicketGroup & { tickets: Ticket[] }>,
 ) {
   // Places left is capacity - number of registrations
   // Capacity is the sum of
@@ -167,9 +185,9 @@ export function eventCapacity(
         acc +
         Math.min(
           handleUnlimited(tg.capacity),
-          tg.tickets.reduce((acc, t) => acc + handleUnlimited(t.capacity), 0)
+          tg.tickets.reduce((acc, t) => acc + handleUnlimited(t.capacity), 0),
         ),
-      0
+      0,
     )
   );
 }
@@ -187,6 +205,8 @@ export const EventType = builder.prismaNode('Event', {
     uid: t.exposeString('uid'),
     title: t.exposeString('title'),
     startsAt: t.expose('startsAt', { type: DateTimeScalar }),
+    frequency: t.expose('frequency', { type: EventFrequencyType }),
+    recurringUntil: t.expose('recurringUntil', { type: DateTimeScalar, nullable: true }),
     endsAt: t.expose('endsAt', { type: DateTimeScalar }),
     location: t.exposeString('location'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
@@ -299,7 +319,7 @@ export const EventType = builder.prismaNode('Event', {
         const placesLeft = Math.max(
           0,
           eventCapacity(tickets, ticketGroups) -
-            registrations.filter((r) => !r.cancelledAt && !r.opposedAt).length
+            registrations.filter((r) => !r.cancelledAt && !r.opposedAt).length,
         );
         return placesLeft === Number.POSITIVE_INFINITY ? -1 : placesLeft;
       },
@@ -338,7 +358,7 @@ export const EventType = builder.prismaNode('Event', {
             Object.entries(PaymentMethod).map(([_, value]) => [
               value,
               sumUp(registrations.filter((r) => r.paymentMethod === value)),
-            ])
+            ]),
           ) as Record<PaymentMethod, number>,
           byTicket: tickets.map(({ id }) => ({
             id,
@@ -366,7 +386,7 @@ builder.queryField('event', (t) =>
     },
     resolve: async (query, _, { uid, groupUid }) =>
       prisma.event.findFirstOrThrow({ ...query, where: { uid, group: { uid: groupUid } } }),
-  })
+  }),
 );
 
 builder.queryField('events', (t) =>
@@ -398,7 +418,7 @@ builder.queryField('events', (t) =>
         orderBy: { startsAt: 'asc' },
       });
     },
-  })
+  }),
 );
 
 builder.queryField('eventsInWeek', (t) =>
@@ -410,31 +430,111 @@ builder.queryField('eventsInWeek', (t) =>
     async resolve(query, _, { today }, { user }) {
       // dateCondition is used to filter events that start in the week or end in the week
       const dateCondition = {
-        gte: setMinutes(setHours(startOfWeek(today, { weekStartsOn: 1 }), 0), 0),
-        lte: setMinutes(setHours(endOfWeek(today, { weekStartsOn: 1 }), 23), 59),
+        OR: [
+          {
+            startsAt: {
+              gte: startOfDay(startOfWeek(today, { weekStartsOn: 1 })),
+              lte: endOfDay(endOfWeek(today, { weekStartsOn: 1 })),
+            },
+          },
+          {
+            frequency: { not: EventFrequency.Once },
+            recurringUntil: {
+              gte: startOfDay(startOfWeek(today, { weekStartsOn: 1 })),
+            },
+          },
+        ],
       };
 
-      if (!user) {
-        return prisma.event.findMany({
-          ...query,
-          where: {
-            startsAt: dateCondition,
-            visibility: VisibilityPrisma.Public,
-          },
-          orderBy: { startsAt: 'asc' },
-        });
+      function isRecurrentEventVisible(event: EventPrisma): boolean {
+        // if the event's (original) startsAt is after today's week's start, it is not visible
+        if (
+          startOfWeek(event.startsAt, { weekStartsOn: 1 }) > startOfWeek(today, { weekStartsOn: 1 })
+        )
+          return false;
+
+        switch (event.frequency) {
+          case EventFrequency.Weekly: {
+            // a weekly event is visible each week
+            return true;
+          }
+
+          case EventFrequency.Monthly: {
+            return event.startsAt.getDate() === today.getDate();
+          }
+
+          case EventFrequency.Biweekly: {
+            return differenceInDays(event.startsAt, today) % 14 === 0;
+          }
+
+          default: {
+            return true;
+          }
+        }
       }
 
-      return prisma.event.findMany({
-        ...query,
-        where: {
-          startsAt: dateCondition,
-          ...visibleEventsPrismaQuery(user),
-        },
-        orderBy: { startsAt: 'asc' },
-      });
+      function fixRecurrentEventDates(event: EventPrisma): EventPrisma {
+        let { startsAt, endsAt, frequency } = event;
+        switch (frequency) {
+          case EventFrequency.Weekly:
+          case EventFrequency.Biweekly: {
+            // move event from its original startsAt to today's week.
+            const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
+            const dayDelta = differenceInDays(todayWeek, startsAt);
+            startsAt = addDays(startsAt, dayDelta);
+            endsAt = addDays(endsAt, dayDelta);
+            break;
+          }
+
+          case EventFrequency.Monthly: {
+            startsAt = setYear(startsAt, getYear(today));
+            startsAt = setMonth(startsAt, getMonth(today));
+            endsAt = setYear(endsAt, getYear(today));
+            endsAt = setMonth(endsAt, getMonth(today));
+            break;
+          }
+
+          default: {
+            break;
+          }
+        }
+
+        return { ...event, startsAt, endsAt };
+      }
+
+      if (!user) {
+        return prisma.event
+          .findMany({
+            ...query,
+            where: {
+              ...dateCondition,
+              visibility: VisibilityPrisma.Public,
+            },
+            orderBy: { startsAt: 'asc' },
+          })
+          .then((events) =>
+            events
+              .filter((element) => isRecurrentEventVisible(element))
+              .map((e) => fixRecurrentEventDates(e)),
+          );
+      }
+
+      return prisma.event
+        .findMany({
+          ...query,
+          where: {
+            ...dateCondition,
+            ...visibleEventsPrismaQuery(user),
+          },
+          orderBy: { startsAt: 'asc' },
+        })
+        .then((events) =>
+          events
+            .filter((element) => isRecurrentEventVisible(element))
+            .map((e) => fixRecurrentEventDates(e)),
+        );
     },
-  })
+  }),
 );
 
 builder.queryField('eventsOfGroup', (t) =>
@@ -459,7 +559,7 @@ builder.queryField('eventsOfGroup', (t) =>
         orderBy: { startsAt: 'desc' },
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteEvent', (t) =>
@@ -474,7 +574,7 @@ builder.mutationField('deleteEvent', (t) =>
         include: { managers: true },
       });
       return Boolean(
-        user?.admin || event.managers.some(({ userId, canEdit }) => userId === user?.id && canEdit)
+        user?.admin || event.managers.some(({ userId, canEdit }) => userId === user?.id && canEdit),
       );
     },
     async resolve(_, { id }, { user }) {
@@ -492,7 +592,7 @@ builder.mutationField('deleteEvent', (t) =>
       });
       return true;
     },
-  })
+  }),
 );
 
 builder.mutationField('upsertEvent', (t) =>
@@ -511,6 +611,8 @@ builder.mutationField('upsertEvent', (t) =>
       location: t.arg.string(),
       title: t.arg.string(),
       visibility: t.arg({ type: VisibilityEnum }),
+      frequency: t.arg({ type: EventFrequencyType }),
+      recurringUntil: t.arg({ type: DateTimeScalar, required: false }),
       startsAt: t.arg({ type: DateTimeScalar }),
       endsAt: t.arg({ type: DateTimeScalar }),
       managers: t.arg({ type: [ManagerOfEventInput] }),
@@ -524,8 +626,8 @@ builder.mutationField('upsertEvent', (t) =>
         return Boolean(
           user.canEditGroups ||
             user.groups.some(
-              ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid
-            )
+              ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
+            ),
         );
       }
 
@@ -537,7 +639,7 @@ builder.mutationField('upsertEvent', (t) =>
       if (!event) return false;
 
       return Boolean(
-        event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit)
+        event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit),
       );
     },
     async resolve(
@@ -558,9 +660,14 @@ builder.mutationField('upsertEvent', (t) =>
         location,
         title,
         visibility,
+        frequency,
+        recurringUntil,
       },
-      { user }
+      { user },
     ) {
+      if (frequency !== EventFrequency.Once && tickets.length > 0)
+        throw new GraphQLError('Events with a frequency cannot have tickets');
+
       // TODO send only notifications to people that have canSeeTicket(..., people)  on tickets that changed the shotgun date, and say that the shotgun date changed in the notification
       const shotgunChanged = !id;
 
@@ -573,7 +680,7 @@ builder.mutationField('upsertEvent', (t) =>
           userId: await prisma.user
             .findUnique({ where: { uid: manager.userUid } })
             .then((user) => user?.id ?? ''),
-        }))
+        })),
       );
 
       const oldEvent = id
@@ -599,6 +706,8 @@ builder.mutationField('upsertEvent', (t) =>
           location,
           title,
           visibility,
+          frequency,
+          recurringUntil,
           startsAt,
           endsAt,
           managers: {
@@ -618,6 +727,8 @@ builder.mutationField('upsertEvent', (t) =>
           location,
           title,
           visibility,
+          frequency,
+          recurringUntil,
           startsAt,
           endsAt,
           managers:
@@ -645,7 +756,7 @@ builder.mutationField('upsertEvent', (t) =>
                         canEditPermissions,
                         canVerifyRegistrations,
                       },
-                    })
+                    }),
                   ),
                 }
               : undefined,
@@ -766,7 +877,7 @@ builder.mutationField('upsertEvent', (t) =>
 
       return result;
     },
-  })
+  }),
 );
 
 export async function eventAccessibleByUser(
@@ -781,7 +892,7 @@ export async function eventAccessibleByUser(
         }>;
       })
     | null,
-  user: Context['user']
+  user: Context['user'],
 ): Promise<boolean> {
   if (user?.admin) return true;
 
@@ -829,7 +940,7 @@ export function eventManagedByUser(
     }>;
   },
   user: Context['user'],
-  required: { canEdit?: boolean; canEditPermissions?: boolean; canVerifyRegistrations?: boolean }
+  required: { canEdit?: boolean; canEditPermissions?: boolean; canVerifyRegistrations?: boolean },
 ) {
   if (!user) return false;
   return Boolean(
@@ -844,7 +955,7 @@ export function eventManagedByUser(
         if (required.canEditPermissions && !permissions.canEditPermissions) return false;
         if (required.canVerifyRegistrations && !permissions.canVerifyRegistrations) return false;
         return true;
-      })
+      }),
   );
 }
 
@@ -922,17 +1033,20 @@ builder.queryField('searchEvents', (t) =>
         >(
           fuzzyIDs,
           10,
-          results.map(({ id }) => id)
+          results.map(({ id }) => id),
         )(fuzzyEvents),
         // fucking js does not allow promises for .filter
         // eslint-disable-next-line unicorn/no-array-reduce
-      ].reduce(async (acc, event) => {
-        if (await eventAccessibleByUser(event, user)) return [...(await acc), event];
+      ].reduce(
+        async (acc, event) => {
+          if (await eventAccessibleByUser(event, user)) return [...(await acc), event];
 
-        return acc;
-      }, Promise.resolve([] as Event[]));
+          return acc;
+        },
+        Promise.resolve([] as Event[]),
+      );
     },
-  })
+  }),
 );
 
 export async function createUid({ title, groupId }: { title: string; groupId: string }) {
@@ -941,7 +1055,7 @@ export async function createUid({ title, groupId }: { title: string; groupId: st
     async (n) =>
       !(await prisma.event.findUnique({
         where: { groupId_uid: { groupId, uid: `${base}${n > 1 ? `-${n}` : ''}` } },
-      }))
+      })),
   );
   return `${base}${n > 1 ? `-${n}` : ''}`;
 }
@@ -964,8 +1078,8 @@ builder.mutationField('updateEventPicture', (t) =>
         user?.id === event.authorId ||
           // Other authors of the group
           user?.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId
-          )
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId,
+          ),
       );
     },
     async resolve(_, { id, file }) {
@@ -977,7 +1091,7 @@ builder.mutationField('updateEventPicture', (t) =>
         identifier: id,
       });
     },
-  })
+  }),
 );
 
 builder.mutationField('deleteEventPicture', (t) =>
@@ -997,8 +1111,8 @@ builder.mutationField('deleteEventPicture', (t) =>
         user?.id === event.authorId ||
           // Other authors of the group
           user?.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId
-          )
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId,
+          ),
       );
     },
     async resolve(_, { id }) {
@@ -1013,5 +1127,5 @@ builder.mutationField('deleteEventPicture', (t) =>
       await prisma.event.update({ where: { id }, data: { pictureFile: '' } });
       return true;
     },
-  })
+  }),
 );

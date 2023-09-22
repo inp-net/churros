@@ -18,6 +18,8 @@ export const load: PageLoad = async ({ fetch, parent }) =>
               pictureFile: true,
               startsAt: true,
               endsAt: true,
+              frequency: true,
+              recurringUntil: true,
               descriptionHtml: true,
               placesLeft: true,
               capacity: true,
@@ -35,5 +37,5 @@ export const load: PageLoad = async ({ fetch, parent }) =>
         },
       ],
     },
-    { fetch, parent }
+    { fetch, parent },
   );

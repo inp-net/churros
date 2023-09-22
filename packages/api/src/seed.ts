@@ -58,7 +58,7 @@ function randomIdOf(objects: Array<{ id: string }>): string {
 
 function randomIdsOf<Count extends number>(
   objects: Array<{ id: string }>,
-  count: Count
+  count: Count,
 ): SizedArray<string, Count> {
   const result = [] as string[];
   let pool = objects;
@@ -270,9 +270,9 @@ for (const [i, data] of usersData.entries()) {
     data: {
       ...data,
       uid: await createUid(data),
-      email: `${data.firstName.toLowerCase().replace(/[^a-z]/g, '-')}.${data.lastName
+      email: `${data.firstName.toLowerCase().replaceAll(/[^a-z]/g, '-')}.${data.lastName
         .toLowerCase()
-        .replace(/[^a-z]/g, '-')}@${randomChoice([
+        .replaceAll(/[^a-z]/g, '-')}@${randomChoice([
         'gmail.com',
         'outlook.com',
         'hotmail.fr',
@@ -300,7 +300,7 @@ for (const [i, data] of usersData.entries()) {
                 option: {
                   connect: {
                     id: contributionOptions.find((option) =>
-                      major.schools.some((school) => school.id === option.offeredInId)
+                      major.schools.some((school) => school.id === option.offeredInId),
                     )!.id,
                   },
                 },
@@ -494,7 +494,7 @@ for (const group of groups) {
     {
       groupId: group.id,
       memberId: randomUserIDs[6],
-    }
+    },
   );
 }
 
@@ -544,7 +544,7 @@ for (let i = 0; i < end; i++) {
     published: i % 7 > 1,
     createdAt: new Date(startDate * (1 - i / end) + endDate * (i / end)),
     publishedAt: new Date(
-      startDate * (1 - i / end) + endDate * (i / end) + (i % 7) * 24 * 60 * 60 * 1000
+      startDate * (1 - i / end) + endDate * (i / end) + (i % 7) * 24 * 60 * 60 * 1000,
     ),
     links: {
       create: [

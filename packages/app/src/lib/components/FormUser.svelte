@@ -183,6 +183,7 @@
     <InputText
       required
       label="Prénom"
+      maxlength={255}
       bind:value={firstName}
       hint={$me?.canEditUsers ? '' : "Pour modifier votre nom d'usage, contactez un administrateur"}
       disabled={!$me?.canEditUsers || undefined}
@@ -190,10 +191,11 @@
     <InputText
       required
       label="Nom de famille"
+      maxlength={255}
       bind:value={lastName}
       disabled={!$me?.canEditUsers || undefined}
     />
-    <InputText label="Surnom" bind:value={nickname} />
+    <InputText label="Surnom" maxlength={255} bind:value={nickname} />
   </div>
   <InputLongText rich label="Description" bind:value={description} />
   {#if canEditContributions}
@@ -236,9 +238,10 @@
       type="email"
       label="Email principale"
       hint="Celle que tu utilises pour te connecter"
+      maxlength={255}
       bind:value={email}
     />
-    <InputText type="tel" label="Numéro de téléphone" bind:value={phone} />
+    <InputText type="tel" label="Numéro de téléphone" maxlength={255} bind:value={phone} />
   </div>
   <InputSocialLinks bind:value={links} label="Réseaux sociaux" />
   <InputEmailList placeholder="moi@example.com" label="Autres emails" bind:value={otherEmails} />
@@ -251,7 +254,7 @@
     label="Date de naissance"
     bind:value={birthday}
   />
-  <InputText label="Adresse postale" bind:value={address} />
+  <InputText label="Adresse postale" maxlength={255} bind:value={address} />
   {#if canEditContributions}
     <InputCheckbox bind:value={cededImageRightsToTVn7} label="Je cède mon droit à l'image à TVn7" />
     <p class="typo-details">

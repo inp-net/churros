@@ -13,8 +13,8 @@ builder.mutationField('createGitlabIssue', (t) =>
       let hasGitlabAccount = false;
       if (user) {
         const data = (await fetch(`https://git.inpt.fr/api/v4/users?username=${user.uid}`).then(
-          async (r) => r.json()
-        )) as unknown as any[];
+          async (r) => r.json(),
+        )) as unknown as unknown[];
         hasGitlabAccount = data.length > 0;
       }
 
@@ -49,5 +49,5 @@ builder.mutationField('createGitlabIssue', (t) =>
 
       return 0;
     },
-  })
+  }),
 );
