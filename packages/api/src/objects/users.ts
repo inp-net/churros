@@ -628,14 +628,15 @@ builder.mutationField('updateUserPermissions', (t) =>
       uid: t.arg.string(),
       canEditGroups: t.arg.boolean(),
       canEditUsers: t.arg.boolean(),
+      canAccessDocuments: t.arg.boolean(),
     },
     authScopes: (_, {}, { user }) => Boolean(user?.admin),
-    async resolve(query, _, { uid, canEditGroups, canEditUsers }, { user }) {
+    async resolve(query, _, { uid, canEditGroups, canEditUsers, canAccessDocuments }, { user }) {
       purgeUserSessions(uid);
       const userUpdated = await prisma.user.update({
         ...query,
         where: { uid },
-        data: { canEditGroups, canEditUsers },
+        data: { canEditGroups, canEditUsers, canAccessDocuments },
       });
       await prisma.logEntry.create({
         data: {
@@ -645,6 +646,7 @@ builder.mutationField('updateUserPermissions', (t) =>
           message: `Updated user ${userUpdated.uid} permissions: ${JSON.stringify({
             canEditGroups,
             canEditUsers,
+            canAccessDocuments,
           })}`,
           user: { connect: { id: user?.id } },
         },

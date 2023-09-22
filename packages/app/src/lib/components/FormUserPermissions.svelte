@@ -7,24 +7,27 @@
 
   export let data: PageData;
 
-  let { canEditGroups, canEditUsers } = data.userPermissions;
+  let { canEditGroups, canEditUsers, canAccessDocuments } = data.userPermissions;
 
   function getSelectedPermissions({
     canEditGroups,
     canEditUsers,
+    canAccessDocuments
   }: {
     canEditGroups: boolean;
     canEditUsers: boolean;
-  }): Array<'canEditGroups' | 'canEditUsers'> {
-    return ['canEditGroups', 'canEditUsers'].filter(
-      (p) => ({ canEditGroups, canEditUsers }?.[p] ?? false)
-    ) as Array<'canEditGroups' | 'canEditUsers'>;
+    canAccessDocuments: boolean;
+  }): Array<'canEditGroups' | 'canEditUsers' | 'canAccessDocuments'> {
+    return ['canEditGroups', 'canEditUsers', 'canAccessDocuments'].filter(
+      (p) => ({ canEditGroups, canEditUsers, canAccessDocuments }?.[p] ?? false)
+    ) as Array<'canEditGroups' | 'canEditUsers' | 'canAccessPDocuments'>;
   }
 
-  let selectedPermissions = getSelectedPermissions({ canEditGroups, canEditUsers });
+  let selectedPermissions = getSelectedPermissions({ canEditGroups, canEditUsers, canAccessDocuments });
   $: {
     canEditGroups = selectedPermissions.includes('canEditGroups');
     canEditUsers = selectedPermissions.includes('canEditUsers');
+    canAccessDocuments = selectedPermissions.includes('canAccessDocuments');
   }
 
   let loading = false;
@@ -33,8 +36,8 @@
     try {
       const { updateUserPermissions } = await $zeus.mutate({
         updateUserPermissions: [
-          { uid: data.user.uid, canEditGroups, canEditUsers },
-          { canEditGroups: true, canEditUsers: true },
+          { uid: data.user.uid, canEditGroups, canEditUsers, canAccessDocuments },
+          { canEditGroups: true, canEditUsers: true, canAccessDocuments: true },
         ],
       });
 
@@ -54,6 +57,7 @@
     options={{
       canEditGroups: 'Édition des groupes',
       canEditUsers: 'Édition des utilisateurs',
+      canAccessDocuments: 'Accès à La Frappe',
     }}
     bind:selection={selectedPermissions}
   />
