@@ -1,4 +1,4 @@
-import type { EventFrequency, GroupType, PaymentMethod } from './zeus';
+import type { DocumentType, EventFrequency, GroupType, PaymentMethod } from './zeus';
 import LogoLydia from '~icons/simple-icons/lydia';
 import IconCreditCard from '~icons/mdi/credit-card-outline';
 import IconCash from '~icons/mdi/hand-coin-outline';
@@ -86,4 +86,16 @@ export const DISPLAY_EVENT_FREQUENCY: Record<EventFrequency, string> = {
   Monthly: 'Mensuel',
   Weekly: 'Hebdomadaire',
   Once: 'Une seule fois',
+};
+
+export const DISPLAY_DOCUMENT_TYPES: Record<DocumentType, string> = {
+  CourseNotes: 'Notes de cours',
+  CourseSlides: 'Diapositives du cours',
+  Exam: 'Partiel',
+  Exercises: 'TD',
+  GradedExercises: 'DM',
+  Miscellaneous: 'Autres',
+  Practical: 'TP',
+  PracticalExam: 'BE',
+  Summary: 'Fiche',
 };

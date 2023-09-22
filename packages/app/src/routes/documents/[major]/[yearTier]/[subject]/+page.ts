@@ -20,6 +20,8 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
               schoolYear: true,
               solutionPaths: true,
               paperPaths: true,
+              type: true,
+              createdAt: true,
             },
           },
         },
