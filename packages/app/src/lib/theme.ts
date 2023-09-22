@@ -9,20 +9,20 @@ export const theme = writable('system', (set) => {
   if (!browser) return;
 
   // Try to load the theme from sessionStorage or fallback to a media query
-  set(sessionStorage.getItem('theme') ?? 'system');
+  set(localStorage.getItem('theme') ?? 'system');
 });
 
 export const isDark = writable(false);
 
 if (browser) {
   theme.subscribe(($theme) => {
-    sessionStorage.setItem('theme', $theme);
+    localStorage.setItem('theme', $theme);
     if ($theme === 'system') isDark.set(window.matchMedia('(prefers-color-scheme: dark)').matches);
     else isDark.set(DARK_THEMES.has($theme));
   });
 
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
-    if ((sessionStorage.getItem('theme') ?? 'system') === 'system') isDark.set(matches);
+    if ((localStorage.getItem('theme') ?? 'system') === 'system') isDark.set(matches);
   });
 
   isDark.subscribe(($isDark) => {
