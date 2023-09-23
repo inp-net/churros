@@ -18,13 +18,13 @@
     let editing = false
     export let canReply = true
     export let id: string
-    export let  bodyHtml:string
-    export let  author: null|undefined|{uid: string; fullName: string; pictureFile: string}
-    export let   createdAt: Date
-    export let    updatedAt: Date|undefined|null 
+    export let bodyHtml:string
+    export let author: null|undefined|{uid: string; fullName: string; pictureFile: string} = undefined
+    export let createdAt: Date
+    export let updatedAt: Date|undefined|null 
     export let body: string;
     export let replyingTo = {body: "", inReplyToId: ""};
-    export let replies: Array<{ id: string; bodyHtml:string; author: {uid: string; fullName: string; pictureFile: string}; createdAt: Date; updatedAt: Date|undefined|null }> = []
+    export let replies: Array<{ id: string; bodyHtml:string; author?: undefined|null|{uid: string; fullName: string; pictureFile: string}; createdAt: Date; updatedAt: Date|undefined|null }> = []
 </script>
 <article class="comment">
     <div class="body-and-actions">

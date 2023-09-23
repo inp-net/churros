@@ -29,6 +29,8 @@ import IconDelete from "~icons/mdi/delete-outline"
             uid: string;
             name: string;
             shortName: string;
+            minors: Array<{name: string}>;
+            majors: Array<{name: string}>;
         };
         type: DocumentType;
         paperPaths: string[];

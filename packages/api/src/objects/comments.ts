@@ -1,8 +1,8 @@
-import { builder } from '../builder';
-import { prisma } from '../prisma';
-import { toHtml } from '../services/markdown';
-import { log } from './logs';
-import { DateTimeScalar } from './scalars';
+import { builder } from '../builder.js';
+import { prisma } from '../prisma.js';
+import { toHtml } from '../services/markdown.js';
+import { log } from './logs.js';
+import { DateTimeScalar } from './scalars.js';
 
 export const CommentType = builder.prismaNode('Comment', {
   id: { field: 'id' },

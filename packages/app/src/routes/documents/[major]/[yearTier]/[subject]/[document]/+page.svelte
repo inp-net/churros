@@ -13,9 +13,12 @@
     import ButtonSecondary from "$lib/components/ButtonSecondary.svelte";
     import CardComment from '$lib/components/CardComment.svelte';
     import InputLongText from "$lib/components/InputLongText.svelte";
-    import { PUBLIC_STORAGE_URL } from "$env/static/public";
+    import { env} from "$env/dynamic/public";
     import ButtonInk from "$lib/components/ButtonInk.svelte";
     import { me } from '$lib/session';
+
+    const{PUBLIC_STORAGE_URL} = env
+
 
     export let data: PageData;
 
@@ -149,10 +152,12 @@
 <ul class="nobullet comments">
     {#each comments.edges.filter(({node:{inReplyToId}}) => !inReplyToId)  as {node }}
     <li class="comment">
-       <CardComment replies={comments.edges.filter(({node:{inReplyToId}}) => inReplyToId === node.id).map(c => c.node)} bind:replyingTo on:reply={reply}
+       <CardComment bind:replyingTo on:reply={reply}
         on:edit={async ({detail}) => {await editComment(node.id, detail)}}
         on:delete={async ({detail: id}) => {await removeComment(id)}}
-        {...node}></CardComment>
+        {...node}
+        replies={comments.edges.filter(({node:{inReplyToId}}) => inReplyToId === node.id).map(c => c.node)} 
+        ></CardComment>
         </li>
         {/each}
 </ul>

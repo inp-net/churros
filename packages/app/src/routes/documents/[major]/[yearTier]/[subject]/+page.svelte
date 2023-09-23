@@ -20,7 +20,7 @@
     ])
 
     function groupByType(documents: typeof data.documentsOfSubject.edges) {
-        const groups = new Map<DocumentType, typeof documents>();
+        const groups = new Map<DocumentType, Array<typeof documents[number]["node"]>>();
         for (const { node, node: { type } } of documents) {
             const group = groups.get(type);
             if (group) 

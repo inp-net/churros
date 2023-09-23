@@ -26,12 +26,15 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           updatedAt: true,
           subject: {
             name: true,
+            shortName: true,
             uid: true,
             minors: {
               uid: true,
+              name: true,
             },
             majors: {
               uid: true,
+              name: true,
             },
           },
           uploader: {

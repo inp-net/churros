@@ -240,7 +240,7 @@ function fileExists(filename: string): boolean {
   }
 }
 
-async function downloadFile(from: string, dest: string, schoolUid: string) {
+async function downloadFile(from: string, dest: string) {
   if (fileExists(dest)) {
     // console.log(`  Logo of ${ldapGroup.cn} already exists, skipping…`);
   } else {
@@ -270,7 +270,7 @@ for (const { document_id, fichier, ordre } of frappe_documentfichier) {
     basename,
   )}${extension}`;
 
-  await downloadFile(fichier, `../storage/${filePath}`, 'n7');
+  await downloadFile(fichier, `../storage/${filePath}`);
 
   await p.document.update({
     where: {

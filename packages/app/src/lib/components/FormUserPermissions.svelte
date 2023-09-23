@@ -20,7 +20,7 @@
   }): Array<'canEditGroups' | 'canEditUsers' | 'canAccessDocuments'> {
     return ['canEditGroups', 'canEditUsers', 'canAccessDocuments'].filter(
       (p) => ({ canEditGroups, canEditUsers, canAccessDocuments }?.[p] ?? false)
-    ) as Array<'canEditGroups' | 'canEditUsers' | 'canAccessPDocuments'>;
+    ) as Array<'canEditGroups' | 'canEditUsers' | 'canAccessDocuments'>;
   }
 
   let selectedPermissions = getSelectedPermissions({ canEditGroups, canEditUsers, canAccessDocuments });

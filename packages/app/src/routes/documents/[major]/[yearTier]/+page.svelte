@@ -3,7 +3,7 @@
     import { page } from "$app/stores";
     import Breadcrumb from "$lib/components/Breadcrumb.svelte";
     import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
-    import type { PageData } from "../$types";
+    import type { PageData } from "./$types";
 
     export let data: PageData;
 </script>
