@@ -19,7 +19,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           id: true,
           type: true,
           schoolYear: true,
-          descriptionHtml: true,
+          description: true,
           solutionPaths: true,
           paperPaths: true,
           createdAt: true,
@@ -39,24 +39,6 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             pictureFile: true,
             fullName: true,
           },
-          comments: [
-            {
-              first: 100,
-            },
-            {
-              edges: {
-                node: {
-                  id: true,
-                  author: { uid: true, fullName: true, pictureFile: true },
-                  bodyHtml: true,
-                  body: true,
-                  inReplyToId: true,
-                  createdAt: true,
-                  updatedAt: true,
-                },
-              },
-            },
-          ],
         },
       ],
     },

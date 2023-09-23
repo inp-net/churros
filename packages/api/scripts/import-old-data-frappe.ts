@@ -249,10 +249,11 @@ async function downloadFile(from: string, dest: string, schoolUid: string) {
   } else {
     try {
       mkdirSync(path.dirname(dest), { recursive: true });
-      copyFileSync(path.join('.', 'frappe-documents', from), dest);
+      copyFileSync(path.join('.', 'frappe-documents', path.basename(from)), dest);
     } catch (error: unknown) {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      console.error(`  Failed to copy ${from} -> ${dest}: ${error}`);
+      console.error(`  Failed to copy ${from} -> ${dest}:`);
+      console.error(error);
     }
   }
 }

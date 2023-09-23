@@ -94,7 +94,7 @@ export const DISPLAY_DOCUMENT_TYPES: Record<DocumentType, string> = {
   Exam: 'Partiel',
   Exercises: 'TD',
   GradedExercises: 'DM',
-  Miscellaneous: 'Autres',
+  Miscellaneous: 'Autre',
   Practical: 'TP',
   PracticalExam: 'BE',
   Summary: 'Fiche',

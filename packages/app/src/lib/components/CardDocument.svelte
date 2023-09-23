@@ -4,7 +4,7 @@
     import { formatDate } from "$lib/dates";
 
     export let href: string
-    export let hasSolution = false;
+    export let hasSolution: boolean|undefined = undefined;
     export let title: string
     export let createdAt: Date;
     export let schoolYear: number|undefined|null;
@@ -21,10 +21,12 @@
 {:else}
                 <span class="date">{formatDate(createdAt)}</span>
 {/if}
-            <span class="separator">·</span>
-             <span class:warning={!hasSolution} class:success={hasSolution} class="has-solution">
-                {#if hasSolution}<IconCheck></IconCheck> {:else} <IconWarning></IconWarning> {/if}
-             {hasSolution ? "Corrigé" : "Pas de corrigé"}</span>
+{#if hasSolution !== undefined}
+                <span class="separator">·</span>
+                 <span class:warning={!hasSolution} class:success={hasSolution} class="has-solution">
+                    {#if hasSolution}<IconCheck></IconCheck> {:else} <IconWarning></IconWarning> {/if}
+                 {hasSolution ? "Corrigé" : "Pas de corrigé"}</span>
+{/if}
         </p>
 </article>
     </a>

@@ -227,6 +227,10 @@ code {
   color: currentcolor;
 }
 
+code.hljs {
+  border-radius: var(--radius-block);
+}
+
 a.user-mention {
   padding: 0.25rem;
   color: var(--primary-text) !important;

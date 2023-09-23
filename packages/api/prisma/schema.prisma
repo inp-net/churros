@@ -705,17 +705,17 @@ model Subject {
 }
 
 enum DocumentType {
+  // Graded
+  Exam // Partiel
+  PracticalExam // BE
+  GradedExercises // DM
+
   // Ungraded
   Exercises // TD
   Practical // TP
   CourseNotes // CM
   CourseSlides // Diapos
   Summary // Fiche de rev, Fiche
-
-  // Graded
-  PracticalExam // BE
-  GradedExercises // DM
-  Exam // Partiel
 
   Miscellaneous // Divers
 }

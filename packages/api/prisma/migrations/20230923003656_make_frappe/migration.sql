@@ -5,7 +5,7 @@
 
 */
 -- CreateEnum
-CREATE TYPE "DocumentType" AS ENUM ('Exercises', 'Practical', 'CourseNotes', 'CourseSlides', 'Summary', 'PracticalExam', 'GradedExercises', 'Exam', 'Miscellaneous');
+CREATE TYPE "DocumentType" AS ENUM ('Exam', 'PracticalExam', 'GradedExercises', 'Exercises', 'Practical', 'CourseNotes', 'CourseSlides', 'Summary', 'Miscellaneous');
 
 -- DropIndex
 DROP INDEX "Link_name_userId_studentAssociationId_groupId_articleId_eve_key";

@@ -1,6 +1,7 @@
 import { builder } from '../builder';
 import { prisma } from '../prisma';
 import { toHtml } from '../services/markdown';
+import { log } from './logs';
 import { DateTimeScalar } from './scalars';
 
 export const CommentType = builder.prismaNode('Comment', {
@@ -66,7 +67,7 @@ builder.mutationField('upsertComment', (t) =>
       inReplyToId: t.arg.id({ required: false }),
     },
     authScopes(_, {}, { user }) {
-      return Boolean(user?.canAccessDocuments);
+      return Boolean(user?.admin || user?.canAccessDocuments);
     },
     async resolve(query, _, { id, body, documentId, inReplyToId }, { user }) {
       const upsertData = {
@@ -74,6 +75,13 @@ builder.mutationField('upsertComment', (t) =>
         document: { connect: { id: documentId } },
         inReplyTo: inReplyToId ? { connect: { id: inReplyToId } } : undefined,
       };
+      await log(
+        'comments',
+        id ? 'edit' : inReplyToId ? 'reply' : 'comment',
+        upsertData,
+        id || inReplyToId || documentId,
+        user,
+      );
       return prisma.comment.upsert({
         ...query,
         where: { id: id ?? '' },
@@ -95,9 +103,20 @@ builder.mutationField('deleteComment', (t) =>
       return Boolean(user?.admin || comment?.authorId === user?.id);
     },
     async resolve(_query, { id }) {
-      await prisma.comment.delete({
-        where: { id },
-      });
+      const repliesCount = await prisma.comment.count({ where: { inReplyToId: id } });
+      await log('comments', 'delete', { repliesCount }, id);
+      // eslint-disable-next-line unicorn/prefer-ternary
+      if (repliesCount > 0) {
+        await prisma.comment.update({
+          where: { id },
+          data: { body: '_Commentaire supprimé_', author: { disconnect: true } },
+        });
+      } else {
+        await prisma.comment.delete({
+          where: { id },
+        });
+      }
+
       return true;
     },
   }),

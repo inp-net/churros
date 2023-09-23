@@ -17,6 +17,7 @@
     flex-wrap: wrap;
     gap: 0 0.5em;
     align-items: center;
+    overflow: hidden;
   }
 
   span  :global(.root .icon) {

@@ -3,15 +3,16 @@ import { prisma } from '../prisma.js';
 import { DocumentType } from './documents.js';
 import { DateTimeScalar } from './scalars.js';
 
-export const SubjectType = builder.prismaNode('Subject', {
-  id: { field: 'id' },
+export const SubjectType = builder.prismaObject('Subject', {
   fields: (t) => ({
+    id: t.exposeID('id'),
     name: t.exposeString('name'),
     shortName: t.exposeString('shortName'),
     uid: t.exposeString('uid'),
     nextExamAt: t.expose('nextExamAt', { type: DateTimeScalar, nullable: true }),
     majors: t.relation('majors'),
     minors: t.relation('minors'),
+    links: t.relation('links'),
     documents: t.relatedConnection('documents', {
       type: DocumentType,
       cursor: 'id',
@@ -20,9 +21,8 @@ export const SubjectType = builder.prismaNode('Subject', {
 });
 
 builder.queryField('subjects', (t) =>
-  t.prismaConnection({
-    type: SubjectType,
-    cursor: 'id',
+  t.prismaField({
+    type: [SubjectType],
     authScopes: () => true,
     async resolve(query) {
       return prisma.subject.findMany({

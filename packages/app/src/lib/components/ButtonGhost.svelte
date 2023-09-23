@@ -39,6 +39,8 @@
     width: max-content;
     padding: 0.25em;
     color: var(--text);
+    word-wrap: break-word;
+    white-space: normal;
     background: var(--bg);
     border: var(--border-inline) solid transparent;
     border-radius: var(--radius-inline);

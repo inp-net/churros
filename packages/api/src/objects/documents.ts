@@ -7,8 +7,10 @@ import { DateTimeScalar, FileScalar } from './scalars.js';
 import { DocumentType as DocumentTypePrisma } from '@prisma/client';
 import slug from 'slug';
 import { GraphQLError } from 'graphql';
-import { join, relative } from 'node:path';
-import { unlinkSync, writeFileSync } from 'node:fs';
+import { basename, dirname, join, relative } from 'node:path';
+import { mkdirSync, unlinkSync, writeFileSync } from 'node:fs';
+import { rename, rm, rmdir } from 'node:fs/promises';
+import { log } from './logs.js';
 
 export const DocumentEnumType = builder.enumType(DocumentTypePrisma, {
   name: 'DocumentType',
@@ -41,9 +43,75 @@ export const DocumentType = builder.prismaNode('Document', {
     comments: t.relatedConnection('comments', {
       cursor: 'id',
       type: CommentType,
+      query: {
+        orderBy: { updatedAt: 'desc' },
+      },
     }),
   }),
 });
+
+builder.mutationField('mergeDocuments', (t) =>
+  t.field({
+    type: DocumentType,
+    args: {
+      from: t.arg.idList({ required: true }),
+      into: t.arg.id({ required: true }),
+    },
+    authScopes(_, {}, { user }) {
+      return Boolean(user?.admin);
+    },
+    async resolve(query, { from, into }, { user }) {
+      await log('documents', 'merge', { from }, into, user);
+      let sources = await prisma.document.findMany({
+        where: { id: { in: from } },
+        include: { subject: true },
+      });
+      const target = await prisma.document.findUnique({
+        where: { id: into },
+        include: { subject: true },
+      });
+      if (!target) throw new GraphQLError('Document cible introuvable');
+      // Move all files to target
+      for (const source of sources) {
+        for (const filePath of [...source.paperPaths, ...source.solutionPaths]) {
+          const root = new URL(process.env.STORAGE).pathname;
+          const oldPath = join(root, filePath);
+          const newPath = documentFilePath(
+            root,
+            target.subject,
+            {
+              ...target,
+              paperPaths: [...target.paperPaths, ...sources.flatMap((s) => s.paperPaths)],
+              solutionPaths: [...target.solutionPaths, ...sources.flatMap((s) => s.solutionPaths)],
+            },
+            filePath in source.solutionPaths,
+            { name: basename(filePath).replace(/^\d+-/, '') },
+          );
+          await rename(oldPath, newPath);
+          sources = sources.map((s) => ({
+            ...s,
+            paperPaths: s.paperPaths.map((p) => (p === filePath ? relative(root, newPath) : p)),
+            solutionPaths: s.solutionPaths.map((p) =>
+              p === filePath ? relative(root, newPath) : p,
+            ),
+          }));
+        }
+      }
+
+      await prisma.document.deleteMany({
+        where: { id: { in: from } },
+      });
+      return prisma.document.update({
+        ...query,
+        where: { id: target.id },
+        data: {
+          paperPaths: [...target.paperPaths, ...sources.flatMap((s) => s.paperPaths)],
+          solutionPaths: [...target.solutionPaths, ...sources.flatMap((s) => s.solutionPaths)],
+        },
+      });
+    },
+  }),
+);
 
 builder.queryField('documents', (t) =>
   t.prismaConnection({
@@ -78,7 +146,7 @@ builder.queryField('documentsOfSubject', (t) =>
         where: {
           subjectId: subject.id,
         },
-        orderBy: { updatedAt: 'desc' },
+        orderBy: [{ type: 'asc' }, { schoolYear: 'desc' }, { title: 'asc' }],
       });
     },
   }),
@@ -137,7 +205,6 @@ builder.mutationField('upsertDocument', (t) =>
       const upsertData = {
         title,
         schoolYear,
-        uid,
         ...data,
         subject: {
           connect: { id: subject.id },
@@ -166,7 +233,22 @@ builder.mutationField('deleteDocument', (t) =>
       });
       return Boolean(user?.admin || user?.uid === author?.uploaderId);
     },
-    async resolve(_, { id }) {
+    async resolve(_, { id }, { user }) {
+      const document = await prisma.document.findUniqueOrThrow({ where: { id } });
+      await log('documents', 'delete', document, id, user);
+      const { paperPaths, solutionPaths } = document;
+      const paths = [...paperPaths, ...solutionPaths];
+      // Delete all comments
+      await prisma.comment.deleteMany({ where: { documentId: id } });
+      // Delete all files on disk
+      await Promise.all(
+        paths.map(async (path) => rm(join(new URL(process.env.STORAGE).pathname, path))),
+      );
+      try {
+        if (paths.length > 0)
+          await rmdir(dirname(join(new URL(process.env.STORAGE).pathname, paths[0]!)));
+      } catch {}
+
       await prisma.document.delete({
         where: { id },
       });
@@ -179,36 +261,30 @@ builder.mutationField('uploadDocumentFile', (t) =>
   t.field({
     type: 'String',
     args: {
-      subjectUid: t.arg.string({ required: true }),
-      documentUid: t.arg.string({ required: true }),
+      documentId: t.arg.id({ required: true }),
       file: t.arg({ type: FileScalar, required: true }),
       solution: t.arg.boolean(),
     },
-    async authScopes(_, { documentUid, subjectUid }, { user }) {
-      const subject = await prisma.subject.findUniqueOrThrow({ where: { uid: subjectUid } });
+    async authScopes(_, { documentId }, { user }) {
       const document = await prisma.document.findUniqueOrThrow({
-        where: { subjectId_uid: { subjectId: subject.id, uid: documentUid } },
+        where: { id: documentId },
       });
       return Boolean(user?.admin || document.uploaderId === user?.uid);
     },
-    async resolve(_, { subjectUid, documentUid, file, solution }) {
-      const subject = await prisma.subject.findUniqueOrThrow({ where: { uid: subjectUid } });
+    async resolve(_, { documentId, file, solution }) {
       const document = await prisma.document.findUniqueOrThrow({
-        where: { subjectId_uid: { subjectId: subject.id, uid: documentUid } },
+        where: { id: documentId },
+        include: { subject: true },
       });
+      const { subject } = document;
       const buffer = await file.arrayBuffer().then((array) => Buffer.from(array));
       const root = new URL(process.env.STORAGE).pathname;
-      const path = join(
-        root,
-        'documents',
-        subject.uid,
-        document.uid,
-        `${document[solution ? 'solutionPaths' : 'paperPaths'].length}-${file.name}`,
-      );
+      const path = documentFilePath(root, subject, document, solution, file);
+      mkdirSync(dirname(path), { recursive: true });
       writeFileSync(path, buffer);
 
       await prisma.document.update({
-        where: { subjectId_uid: { subjectId: subject.id, uid: documentUid } },
+        where: { id: documentId },
         data: {
           [solution ? 'solutionPaths' : 'paperPaths']: {
             push: relative(root, path),
@@ -221,35 +297,91 @@ builder.mutationField('uploadDocumentFile', (t) =>
   }),
 );
 
+builder.mutationField('setDocumentFileIsSolution', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: {
+      documentId: t.arg.id({ required: true }),
+      filename: t.arg.string({ required: true }),
+      isSolution: t.arg.boolean({ required: true }),
+    },
+    async authScopes(_, { documentId }, { user }) {
+      const document = await prisma.document.findUniqueOrThrow({
+        where: { id: documentId },
+      });
+      return Boolean(user?.admin || document.uploaderId === user?.uid);
+    },
+    async resolve(_, { documentId, filename, isSolution }) {
+      const document = await prisma.document.findUniqueOrThrow({
+        where: { id: documentId },
+      });
+      await prisma.document.update({
+        where: { id: documentId },
+        data: {
+          // If marking as solution, remove from paperPaths and add to solutionPaths
+          ...(isSolution
+            ? {
+                paperPaths: {
+                  set: document.paperPaths.filter((p) => p !== filename),
+                },
+                // Don't create duplicates
+                ...(document.solutionPaths.includes(filename)
+                  ? {}
+                  : {
+                      solutionPaths: {
+                        push: filename,
+                      },
+                    }),
+                // The other way around
+              }
+            : {
+                // Don't create duplicates
+                ...(document.paperPaths.includes(filename)
+                  ? {}
+                  : {
+                      paperPaths: {
+                        push: filename,
+                      },
+                    }),
+                solutionPaths: {
+                  set: document.solutionPaths.filter((p) => p !== filename),
+                },
+              }),
+        },
+      });
+      return true;
+    },
+  }),
+);
+
 builder.mutationField('deleteDocumentFile', (t) =>
   t.field({
     type: 'Boolean',
     args: {
-      subjectUid: t.arg.string({ required: true }),
-      documentUid: t.arg.string({ required: true }),
+      documentId: t.arg.id({ required: true }),
       filename: t.arg.string({ required: true }),
     },
-    async authScopes(_, { documentUid, subjectUid }, { user }) {
-      const subject = await prisma.subject.findUniqueOrThrow({ where: { uid: subjectUid } });
+    async authScopes(_, { documentId }, { user }) {
       const document = await prisma.document.findUniqueOrThrow({
-        where: { subjectId_uid: { subjectId: subject.id, uid: documentUid } },
+        where: { id: documentId },
       });
       return Boolean(user?.admin || document.uploaderId === user?.uid);
     },
-    async resolve(_, { documentUid, subjectUid, filename }) {
-      const subject = await prisma.subject.findUniqueOrThrow({ where: { uid: subjectUid } });
+    async resolve(_, { documentId, filename }) {
       const document = await prisma.document.findUniqueOrThrow({
-        where: { subjectId_uid: { subjectId: subject.id, uid: documentUid } },
+        where: { id: documentId },
+        include: { subject: true },
       });
+      const { subject, uid, solutionPaths, id } = document;
       const root = new URL(process.env.STORAGE).pathname;
-      const path = join(root, 'documents', subject.uid, document.uid, filename);
+      const path = join(root, 'documents', subject.uid, uid, filename);
       try {
         unlinkSync(path);
       } catch {}
 
-      const isSolution = document.solutionPaths.includes(filename);
+      const isSolution = solutionPaths.includes(filename);
       await prisma.document.update({
-        where: { id: document.id },
+        where: { id },
         data: {
           [isSolution ? 'solutionPaths' : 'paperPaths']: {
             set: document[isSolution ? 'solutionPaths' : 'paperPaths'].filter(
@@ -262,3 +394,19 @@ builder.mutationField('deleteDocumentFile', (t) =>
     },
   }),
 );
+
+function documentFilePath(
+  root: string,
+  subject: { id: string; name: string; uid: string; shortName: string; nextExamAt: Date | null },
+  document: { uid: string; solutionPaths: string[]; paperPaths: string[] },
+  solution: boolean,
+  file: { name: string },
+) {
+  return join(
+    root,
+    'documents',
+    subject.uid,
+    document.uid,
+    `${document[solution ? 'solutionPaths' : 'paperPaths'].length}-${file.name}`,
+  );
+}
