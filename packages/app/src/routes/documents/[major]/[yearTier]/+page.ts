@@ -13,12 +13,15 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
             node: {
               id: true,
               name: true,
+              shortName: true,
               uid: true,
+              nextExamAt: true,
               minors: {
                 name: true,
                 uid: true,
                 id: true,
               },
+              documentsCount: true,
             },
           },
         },

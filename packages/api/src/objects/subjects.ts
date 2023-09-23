@@ -17,6 +17,17 @@ export const SubjectType = builder.prismaObject('Subject', {
       type: DocumentType,
       cursor: 'id',
     }),
+    documentsCount: t.int({
+      async resolve({ id }) {
+        return prisma.document.count({
+          where: {
+            subject: {
+              id,
+            },
+          },
+        });
+      },
+    }),
   }),
 });
 

@@ -17,8 +17,7 @@
     import ButtonInk from "$lib/components/ButtonInk.svelte";
     import { me } from '$lib/session';
 
-    const{PUBLIC_STORAGE_URL} = env
-
+    const {PUBLIC_STORAGE_URL} = env
 
     export let data: PageData;
 
