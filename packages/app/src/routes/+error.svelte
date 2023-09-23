@@ -45,13 +45,10 @@
     <img src="/404.svg" alt="404" />
     <p>Cette page n'existe pas.</p>
   </div>
-{:else if status === 500}
-  <h1>Erreur 500</h1>
-  <p>Une erreur est survenue.</p>
-  <ButtonSecondary on:click={() => window.location.reload()}>Actualiser la page</ButtonSecondary>
 {:else if error}
   <h1>Erreur {status}</h1>
   <p>{error.message}</p>
+  <ButtonSecondary on:click={() => window.location.reload()}>Recharger</ButtonSecondary>
 {:else}
   <h1>Erreur {status}</h1>
   <p>C'est tout cassé.</p>
