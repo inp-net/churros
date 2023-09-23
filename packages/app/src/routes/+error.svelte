@@ -1,15 +1,18 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   let error: App.Error | null;
   let status: number;
+  
 
   $: ({ error, status } = $page);
 
   onMount(() => {
     if (status === 404) document.documentElement.classList.add('error-404');
   });
+  
 </script>
 
 {#if status === 404}
@@ -42,6 +45,10 @@
     <img src="/404.svg" alt="404" />
     <p>Cette page n'existe pas.</p>
   </div>
+{:else if status === 500}
+  <h1>Erreur 500</h1>
+  <p>Une erreur est survenue.</p>
+  <ButtonSecondary on:click={() => window.location.reload()}>Actualiser la page</ButtonSecondary>
 {:else if error}
   <h1>Erreur {status}</h1>
   <p>{error.message}</p>

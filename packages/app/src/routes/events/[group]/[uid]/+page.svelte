@@ -61,8 +61,10 @@
       Places <span class="places">
         {#if placesLeft === Number.POSITIVE_INFINITY || placesLeft === -1}
           illimitées
-        {:else}
+        {:else if placesLeft !== 1}
           <span class="left">{placesLeft} restantes</span><span class="capacity">{capacity}</span>
+        {:else}
+          <span class="left">1 restante</span><span class="capacity">{capacity}</span>
         {/if}
       </span>
     </h2>
