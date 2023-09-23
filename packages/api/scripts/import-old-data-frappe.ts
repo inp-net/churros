@@ -1,14 +1,11 @@
 // Load dump
 import { DocumentType, PrismaClient } from '@prisma/client';
-import { copyFileSync, createWriteStream, mkdirSync, readFileSync, statSync } from 'fs';
+import { copyFileSync, mkdirSync, readFileSync, statSync } from 'fs';
 import { Convert } from './frappe-types';
 import slug from 'slug';
 import dichotomid from 'dichotomid';
 import path from 'path';
 import { SingleBar } from 'cli-progress';
-import { finished } from 'stream/promises';
-import { Readable } from 'stream';
-import type { ReadableStream } from 'node:stream/web';
 
 const p = new PrismaClient();
 
