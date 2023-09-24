@@ -23,9 +23,8 @@
     <img src={groupLogoSrc($isDark, group)} alt={group.name} />
   </div>
   <div class="text">
-    <p class="name">
+    <p class="name" style={(highlightUid === group.uid ? 'font-weight: bold;' : '' )}>
       {group.name}
-
       {#if (group.school || group.studentAssociation) && showSchool}
         <span class="school">
           {(group.school ?? group.studentAssociation?.school)?.name}
@@ -42,13 +41,14 @@
   <ul class="nobullet children">
     {#each group.children as child}
       <li>
-        <svelte:self group={child} />
+        <svelte:self group={child} highlightUid={highlightUid}/>
       </li>
     {/each}
   </ul>
 {/if}
 
 <style>
+
   .children {
     display: flex;
     flex-flow: column wrap;
@@ -95,6 +95,7 @@
 
   .highlight {
     font-weight: bold;
+    color: var(--primary-link);
   }
 
   .school {
