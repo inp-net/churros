@@ -22,7 +22,7 @@
 <ul class="nobullet">
     {#each data.subjectsOfMajor.edges.filter(({node}) => node.minors.some(m => m.uid === minor.uid)) as {node}}
     <li>
-        <CardSubject href="./{node.uid}" majors={[]}  {...node}></CardSubject>
+        <CardSubject href="./{node.uid}" majors={[]} {...node}></CardSubject>
     </li>
     {/each}
 </ul>

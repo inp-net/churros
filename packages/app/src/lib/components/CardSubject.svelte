@@ -5,7 +5,6 @@
   type Minor = {
     uid: string;
     name: string;
-    shortName: string;
   };
   export let href: string;
   export let documentsCount: number;
