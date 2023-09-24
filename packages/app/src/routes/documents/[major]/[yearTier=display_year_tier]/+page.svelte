@@ -1,6 +1,7 @@
 
 <script lang="ts">
-    import { page } from "$app/stores";
+    import { browser } from "$app/environment";
+import { page } from "$app/stores";
     import Breadcrumb from "$lib/components/Breadcrumb.svelte";
     import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
     import ButtonSecondary from "$lib/components/ButtonSecondary.svelte";
@@ -41,7 +42,7 @@ return data.subjectsOfMajor.edges.filter(({node}) => minor === undefined ? node.
     <li class="empty muted">Aucune matière dans ta filière??? Contactes net7.</li>
     {/each}
 </ul>
-{:else if localStorage.getItem('ignoreDefineYourMinor') !== "true"}
+{:else if browser && localStorage.getItem('ignoreDefineYourMinor') !== "true"}
 <div class="define-your-minor">
     <p class="muted">Marre de scroll pour avoir sa filière? Définis ta filière mineure dans <a href="/me">ton&nbsp;profil</a></p>
     <ButtonSecondary on:click={() => {
@@ -54,7 +55,7 @@ return data.subjectsOfMajor.edges.filter(({node}) => minor === undefined ? node.
 
 {#if subjectsOfMinor(undefined).length > 0}
     <ul class="nobullet minorless-subjects">
-        {#each subjectsOfMinor(undefined) as {node} (node.uid)}
+        {#each subjectsOfMinor(undefined) as {node} (node.id)}
         <li>
             <CardSubject href="./{node.uid}" majors={[]} {...node}></CardSubject>
         </li>
@@ -68,7 +69,7 @@ return data.subjectsOfMajor.edges.filter(({node}) => minor === undefined ? node.
 {/if}
 
 <ul class="nobullet">
-    {#each subjectsOfMinor(minor) as {node} (node.uid)}
+    {#each subjectsOfMinor(minor) as {node} (node.id)}
     <li>
         <CardSubject href="./{node.uid}" majors={[]} {...node}></CardSubject>
     </li>

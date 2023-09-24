@@ -35,10 +35,6 @@
         >{#if documentsCount}{documentsCount} document{documentsCount > 1 ? 's' : ''}{:else}Aucun
           document{/if}</span
       >
-      ·
-      <span class="majors-and-minors">
-        {[...minors, ...majors].map((m) => m.name).join(', ')}
-      </span>
     </p>
   </article>
 </a>

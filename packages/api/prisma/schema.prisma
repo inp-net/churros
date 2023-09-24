@@ -206,7 +206,7 @@ model Link {
 /// A school syllabus
 model Major {
   id            String  @id @default(dbgenerated("nanoid('major:')"))
-  uid           String  @default("") @db.VarChar(255)
+  uid           String  @unique @db.VarChar(255)
   name          String  @db.VarChar(255)
   shortName     String  @default("") @db.VarChar(255)
   ldapSchoolUid String? @db.VarChar(255)
@@ -221,13 +221,16 @@ model Major {
 }
 
 model Minor {
-  id       String    @id @default(dbgenerated("nanoid('minor:')"))
-  name     String
-  uid      String    @unique
-  majors   Major[]
-  yearTier Int
-  subjects Subject[]
-  users    User[]
+  id        String    @id @default(dbgenerated("nanoid('minor:')"))
+  name      String
+  shortName String    @default("")
+  uid       String
+  majors    Major[]
+  yearTier  Int
+  subjects  Subject[]
+  users     User[]
+
+  @@unique([uid, yearTier])
 }
 
 model School {
@@ -693,18 +696,21 @@ model Announcement {
 }
 
 model Subject {
-  id         String     @id @default(dbgenerated("nanoid('subj:')"))
-  name       String
-  uid        String    
-  shortName  String     @default("") @db.VarChar(255)
-  yearTier   Int?
-  links      Link[]
-  nextExamAt DateTime?
-  majors     Major[]
-  minors     Minor[]
-  documents  Document[]
+  id             String     @id @default(dbgenerated("nanoid('subj:')"))
+  name           String
+  uid            String
+  shortName      String     @default("") @db.VarChar(255)
+  yearTier       Int?
+  forApprentices Boolean    @default(false)
+  links          Link[]
+  nextExamAt     DateTime?
+  majors         Major[]
+  minors         Minor[]
+  documents      Document[]
+  // 1 for the first semester, 2 for the second one. Null means both
+  semester       Int?
 
-  @@unique([uid, yearTier])
+  @@unique([uid, yearTier, forApprentices, semester])
 }
 
 enum DocumentType {
@@ -732,8 +738,9 @@ model Document {
 
   title         String
   description   String       @db.Text
-  subject       Subject      @relation(fields: [subjectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  subjectId     String
+  // Null subject means the document needs to be sorted
+  subject       Subject?      @relation(fields: [subjectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subjectId     String?
   type          DocumentType
   paperPaths    String[] // le sujet 
   solutionPaths String[] // la correction
