@@ -42,6 +42,10 @@ export const sessionUserQuery = () =>
       shortName: true,
       schools: { id: true, name: true, uid: true, color: true },
     },
+    minor: {
+      uid: true,
+      name: true,
+    },
     contributesTo: {
       id: true,
       school: {

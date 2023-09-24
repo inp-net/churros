@@ -3,7 +3,6 @@
 import { $ as Zvar, zeus, type DocumentType } from "$lib/zeus";
 import ButtonGhost from "./ButtonGhost.svelte";
 import IconDelete from "~icons/mdi/delete-outline"
-    import ButtonBack from "./ButtonBack.svelte";
     import ButtonPrimary from "./ButtonPrimary.svelte";
     import InputCheckbox from "./InputCheckbox.svelte";
     import InputFile from "./InputFile.svelte";
@@ -112,8 +111,7 @@ import IconDelete from "~icons/mdi/delete-outline"
     let fileInputElement: HTMLInputElement
 </script>
 
-<div class="content">
-    <h1><ButtonBack></ButtonBack>{data.id ? 'Modifier' : 'Ajouter'} un document</h1>
+
     
     <form on:submit|preventDefault={submit}>
         <div class="side-by-side">
@@ -127,7 +125,7 @@ import IconDelete from "~icons/mdi/delete-outline"
             </section>
                 <section class="files">
             <h2>Fichiers</h2>
-                <InputFile bind:inputElement={fileInputElement} label="Ajouter des fichiers" multiple bind:files={files}>
+                <InputFile dropzone bind:inputElement={fileInputElement} label="Ajouter des fichiers" multiple bind:files={files}>
                     <ul class="new-files nobullet">
                         {#each files ? [...files] : [] as file}
                             <li class="existing-file">
@@ -168,19 +166,8 @@ import IconDelete from "~icons/mdi/delete-outline"
             {/if}
         </section>
     </form>
-</div>
 
 <style>
-    .content {
-        max-width: 1200px;
-        padding: 0 1rem;
-        margin: 0 auto;
-    }
-
-    h1 {
-        margin-bottom: 1rem;
-    }
-
     .side-by-side {
         display: flex;
         flex-wrap: wrap;

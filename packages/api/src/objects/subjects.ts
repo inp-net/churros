@@ -85,6 +85,7 @@ builder.queryField('subjectsOfMajor', (t) =>
         where: {
           OR: [
             {
+              yearTier,
               majors: {
                 some: {
                   id: major.id,
@@ -116,12 +117,20 @@ builder.queryField('subject', (t) =>
     type: SubjectType,
     args: {
       uid: t.arg.string(),
+      yearTier: t.arg.int(),
     },
     authScopes: () => true,
-    async resolve(query, _, { uid }) {
-      return prisma.subject.findUniqueOrThrow({
+    async resolve(query, _, { uid, yearTier }) {
+      return prisma.subject.findFirstOrThrow({
         ...query,
-        where: { uid },
+        /* eslint-disable unicorn/no-null */
+        where: {
+          OR: [
+            { uid, yearTier },
+            { uid, yearTier: null },
+          ],
+        },
+        /* eslint-enable unicorn/no-null */
       });
     },
   }),

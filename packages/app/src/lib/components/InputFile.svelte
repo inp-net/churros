@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
 
   export let files: FileList | undefined = undefined;
+  export let dropzone = false
   export let multiple = false
   export let hint = "Déposer des fichiers ici"
   let dragging = false;
@@ -21,6 +22,7 @@
 </script>
 
 <label
+class:dropzone
 class:dragging
   on:drop|preventDefault={({ dataTransfer }) => {
     dragging = false
@@ -37,7 +39,9 @@ class:dragging
     dispatch('dragleave', e)
   }}
 >
-<span class="hint muted">{hint}</span>
+{#if dropzone}
+  <span class="hint muted">{hint}</span>
+{/if}
   <input bind:this={inputElement} type="file" bind:files={files} {...$$restProps} />
   <slot />
 </label>
@@ -46,13 +50,16 @@ class:dragging
   label {
     position: relative;
     display: inline-block;
-    width: 100%;
-    padding: 1rem;
     text-align: center;
-    border: var(--border-block) dashed var(--border);
-    border-radius: var(--radius-block);
     outline: 0 solid var(--ring);
     transition: all 80ms ease-in;
+
+    &.dropzone{
+    width: 100%;
+    padding: 1rem;
+    border: var(--border-block) dashed var(--border);
+    border-radius: var(--radius-block);
+    }
 
     &:focus-within, &:hover, &.dragging {
       cursor: pointer;

@@ -21,6 +21,8 @@
   export let clearable = false;
 
   export let placeholder = '';
+
+  let query: string;
 </script>
 
 <div class="input-container">
@@ -42,6 +44,7 @@
     localFiltering={false}
     bind:selectedItem={object}
     bind:value
+    bind:text={query}
     valueFieldName={valueKey}
     labelFieldName={labelKey}
     noResultsText="Aucun résultat"
@@ -55,6 +58,7 @@
       on:click={() => {
         object = undefined;
         value = undefined;
+        query = ""
         emit('clear');
       }}><IconClose /></ButtonGhost
     >

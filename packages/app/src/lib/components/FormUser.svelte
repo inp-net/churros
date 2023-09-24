@@ -15,6 +15,7 @@
   import { createEventDispatcher } from 'svelte';
   import InputSocialLinks from './InputSocialLinks.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
+    import { yearTier } from '$lib/dates';
   const emit = createEventDispatcher();
 
   const userQuery = Selector('User')({
@@ -29,9 +30,11 @@
     graduationYear: true,
     phone: true,
     birthday: true,
+    minor: {id: true, name: true,yearTier: true},
     major: {
       id: true,
       name: true,
+      minors: {id: true, name: true, yearTier :true},
       schools: { id: true, name: true, studentAssociations: { id: true, name: true } },
     },
     email: true,
@@ -60,9 +63,15 @@
       address: string;
       description: string;
       graduationYear: number;
+      minor?: {
+        id: string;
+        name: string;
+        yearTier: number;
+      },
       major: {
         name: string;
         id: string;
+        minors: Array<{id: string; name: string; yearTier: number}>;
         schools: Array<{
           name: string;
           id: string;
@@ -89,7 +98,7 @@
     name: string;
   }>;
 
-  export let majors: Array<{ id: string; name: string }>;
+  export let majors: Array<{ id: string; name: string; minors: Array<{id: string; name: string; yearTier: number}> }>;
 
   // We don't want form bindings to be reactive to let them evolve separately from the data
   let {
@@ -109,6 +118,7 @@
       birthday = null,
       contributesWith,
       major,
+      minor,
       cededImageRightsToTVn7,
     },
   } = data;
@@ -148,6 +158,8 @@
             address,
             graduationYear,
             majorId: major.id,
+            // eslint-disable-next-line unicorn/no-null
+            minorId: minor?.id ?? null,
             phone,
             apprentice,
             birthday,
@@ -176,6 +188,7 @@
       loading = false;
     }
   };
+
 </script>
 
 <form on:submit|preventDefault={updateUser}>
@@ -233,6 +246,23 @@
       <InputCheckbox label="Apprenti" bind:value={apprentice} />
     </div>
   {/if}
+  <InputField label="Filière mineure">
+    <InputSearchObject 
+    clearable
+      value={minor?.id}
+      valueKey="id"
+      labelKey="name"
+      bind:object={minor}
+      search={(query) =>
+        new Fuse(major.minors.filter(m => m.yearTier === yearTier(graduationYear)), {
+          keys: ['name', 'id'],
+        })
+          .search(query)
+          .map((r) => r.item)}
+          >
+          </InputSearchObject>
+          
+  </InputField>
   <div class="side-by-side">
     <InputText
       type="email"

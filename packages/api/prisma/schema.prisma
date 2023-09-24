@@ -695,13 +695,16 @@ model Announcement {
 model Subject {
   id         String     @id @default(dbgenerated("nanoid('subj:')"))
   name       String
-  uid        String     @unique
+  uid        String    
   shortName  String     @default("") @db.VarChar(255)
+  yearTier   Int?
   links      Link[]
   nextExamAt DateTime?
   majors     Major[]
   minors     Minor[]
   documents  Document[]
+
+  @@unique([uid, yearTier])
 }
 
 enum DocumentType {

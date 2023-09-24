@@ -33,7 +33,7 @@ builder.queryField('comments', (t) =>
     async resolve(query) {
       return prisma.comment.findMany({
         ...query,
-        orderBy: { updatedAt: 'desc' },
+        orderBy: { createdAt: 'asc' },
       });
     },
   }),

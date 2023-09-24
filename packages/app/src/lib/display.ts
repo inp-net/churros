@@ -1,4 +1,4 @@
-import type { DocumentType, EventFrequency, GroupType, PaymentMethod } from './zeus';
+import { DocumentType, type EventFrequency, type GroupType, type PaymentMethod } from './zeus';
 import LogoLydia from '~icons/simple-icons/lydia';
 import IconCreditCard from '~icons/mdi/credit-card-outline';
 import IconCash from '~icons/mdi/hand-coin-outline';
@@ -88,14 +88,26 @@ export const DISPLAY_EVENT_FREQUENCY: Record<EventFrequency, string> = {
   Once: 'Une seule fois',
 };
 
-export const DISPLAY_DOCUMENT_TYPES: Record<DocumentType, string> = {
-  CourseNotes: 'Notes de cours',
-  CourseSlides: 'Diapositives du cours',
-  Exam: 'Partiel',
-  Exercises: 'TD',
-  GradedExercises: 'DM',
-  Miscellaneous: 'Autre',
-  Practical: 'TP',
-  PracticalExam: 'BE',
-  Summary: 'Fiche',
-};
+export const DISPLAY_DOCUMENT_TYPES = new Map<DocumentType, string>([
+  [DocumentType.CourseNotes, 'Notes de cours'],
+  [DocumentType.CourseSlides, 'Diapositives du cours'],
+  [DocumentType.Exam, 'Partiel'],
+  [DocumentType.Exercises, 'TD'],
+  [DocumentType.GradedExercises, 'DM'],
+  [DocumentType.Miscellaneous, 'Autre'],
+  [DocumentType.Practical, 'TP'],
+  [DocumentType.PracticalExam, 'BE'],
+  [DocumentType.Summary, 'Fiche'],
+]);
+
+export const ORDER_DOCUMENT_TYPES: DocumentType[] = [
+  DocumentType.Exam,
+  DocumentType.Summary,
+  DocumentType.CourseNotes,
+  DocumentType.Exercises,
+  DocumentType.GradedExercises,
+  DocumentType.Practical,
+  DocumentType.PracticalExam,
+  DocumentType.CourseSlides,
+  DocumentType.Miscellaneous,
+];

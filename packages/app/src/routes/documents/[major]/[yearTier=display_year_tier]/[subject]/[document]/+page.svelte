@@ -2,6 +2,7 @@
 <script lang="ts">
     import IconDelete from '~icons/mdi/delete-outline'
     import IconEdit from '~icons/mdi/edit-outline'
+    import IconBack from '~icons/mdi/undo-variant'
     import type { PageData } from "./$types";
     import Breadcrumb from "$lib/components/Breadcrumb.svelte";
     import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
@@ -17,6 +18,7 @@
     import ButtonInk from "$lib/components/ButtonInk.svelte";
     import { me } from '$lib/session';
     import ButtonShare from '$lib/components/ButtonShare.svelte';
+    import { goto } from '$app/navigation';
 
     const {PUBLIC_STORAGE_URL} = env
 
@@ -26,6 +28,7 @@
         body: "",
     }
     let replyingTo: {body: string; inReplyToId: string} = {body: "", inReplyToId: ""}
+    let confirmingDelete = false
 
     const documentTypesWithSolutions = new Set<DocumentType>([
         DocumentType.Exam,
@@ -42,7 +45,7 @@
                 ...(comment ?? newComment)
             }, { id: true ,bodyHtml: true, body: true, createdAt: true, updatedAt: true, inReplyToId: true, author: { uid: true, fullName: true, pictureFile: true } }]
         })
-        data.document.comments.edges = [{node:upsertComment}, ...data.document.comments.edges]
+        data.document.comments.edges = [...data.document.comments.edges, {node:upsertComment}]
         if (!comment)
         {newComment = {
             body: "",
@@ -89,10 +92,24 @@
         Mis en ligne le {formatDate(createdAt)}
             {/if}</p>
             <div class="actions">
-                <ButtonShare text></ButtonShare>
-{#if $me?.admin || uploader?.uid === $me?.uid}
-                <ButtonInk icon={IconEdit} href="./edit">Modifier</ButtonInk>
-                <ButtonInk danger icon={IconDelete} >Supprimer</ButtonInk>
+{#if confirmingDelete}
+<p><strong>Sûr·e ?</strong></p>
+                    <ButtonInk on:click={async () => {
+                        await $zeus.mutate({
+                            deleteDocument: [{id: document.id}, true]
+                        })
+                        confirmingDelete = false
+                        await goto('..')
+                    }} danger icon={IconDelete} >Confirmer</ButtonInk>
+                    <ButtonInk on:click={() => {
+                        confirmingDelete = false
+                    }} icon={IconBack} >Annuler</ButtonInk>
+{:else}
+                    <ButtonShare text></ButtonShare>
+    {#if $me?.admin || uploader?.uid === $me?.uid}
+                    <ButtonInk icon={IconEdit} href="./edit">Modifier</ButtonInk>
+                    <ButtonInk on:click={() => {confirmingDelete = true}} danger icon={IconDelete} >Supprimer</ButtonInk>
+{/if}
 {/if}
             </div>
     </section>
@@ -142,26 +159,28 @@
     <code>{document.id.replace(/^doc:/, '')}</code>
 </div>
 </article>
-
-<h2>Commentaires</h2>
-
-<form on:submit={async () => {await addComment()}} class="new-comment">
-<InputLongText submitShortcut label="" rows="2" rich bind:value={newComment.body} placeholder="Ajouter un commentaire"></InputLongText>
-<ButtonSecondary submits>Commenter</ButtonSecondary>
-</form>
-
-<ul class="nobullet comments">
-    {#each comments.edges.filter(({node:{inReplyToId}}) => !inReplyToId)  as {node }}
-    <li class="comment">
-       <CardComment bind:replyingTo on:reply={reply}
-        on:edit={async ({detail}) => {await editComment(node.id, detail)}}
-        on:delete={async ({detail: id}) => {await removeComment(id)}}
-        {...node}
-        replies={comments.edges.filter(({node:{inReplyToId}}) => inReplyToId === node.id).map(c => c.node)} 
-        ></CardComment>
-        </li>
-        {/each}
-</ul>
+<section class="comments">
+    
+    <h2>Commentaires</h2>
+    
+    <form on:submit={async () => {await addComment()}} class="new-comment">
+    <InputLongText submitShortcut label="" rows="2" rich bind:value={newComment.body} placeholder="Ajouter un commentaire"></InputLongText>
+    <ButtonSecondary submits>Commenter</ButtonSecondary>
+    </form>
+    
+    <ul class="nobullet comments">
+        {#each comments.edges.filter(({node:{inReplyToId}}) => !inReplyToId)  as {node }}
+        <li class="comment">
+           <CardComment bind:replyingTo on:reply={reply}
+            on:edit={async ({detail}) => {await editComment(node.id, detail)}}
+            on:delete={async ({detail: id}) => {await removeComment(id)}}
+            {...node}
+            replies={comments.edges.filter(({node:{inReplyToId}}) => inReplyToId === node.id).map(c => c.node)}
+            ></CardComment>
+            </li>
+            {/each}
+    </ul>
+</section>
 
 <style lang="scss">
     .document {
@@ -229,7 +248,7 @@
     }
     }
 
-    .comments {
+    ul.comments {
         display: flex;
         flex-direction: column;
         gap: 1rem;

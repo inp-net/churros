@@ -4,23 +4,23 @@
 
   export let root = ""
 </script>
-<span>
+<div class="breadcrumbs">
 {#if root}
       <Breadcrumb class="root" href={root}><IconHome></IconHome></Breadcrumb>
 {/if}
   <slot />
-</span>
+</div>
 
 <style lang="scss">
-  span {
-    display: inline-flex;
+  .breadcrumbs {
+    display: flex;
     flex-wrap: wrap;
     gap: 0 0.5em;
     align-items: center;
     overflow: hidden;
   }
 
-  span  :global(.root .icon) {
+  .breadcrumbs  :global(.root .icon) {
     height: 1.3em;
     margin-bottom: 0.1em;
   }

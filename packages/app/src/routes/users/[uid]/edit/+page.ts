@@ -67,9 +67,11 @@ export const _userQuery = Selector('User')({
   familyTree: {
     users: { uid: true },
   },
+  minor: { id: true, name: true, yearTier: true },
   major: {
     id: true,
     name: true,
+    minors: { id: true, name: true, yearTier: true },
     schools: {
       name: true,
       id: true,
@@ -110,7 +112,10 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
             }
           : {},
       },
-      schoolGroups: { names: true, majors: { id: true, name: true } },
+      schoolGroups: {
+        names: true,
+        majors: { id: true, name: true, minors: { id: true, name: true, yearTier: true } },
+      },
       contributionOptions: {
         name: true,
         id: true,

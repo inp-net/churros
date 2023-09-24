@@ -5,7 +5,7 @@
     import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
     import { page } from "$app/stores";
     import CardDocument from "$lib/components/CardDocument.svelte";
-    import { DISPLAY_DOCUMENT_TYPES } from "$lib/display";
+    import { DISPLAY_DOCUMENT_TYPES, ORDER_DOCUMENT_TYPES } from "$lib/display";
     import { DocumentType } from "$lib/zeus";
     import ButtonSecondary from "$lib/components/ButtonSecondary.svelte";
 
@@ -18,20 +18,6 @@
         DocumentType.Practical,
         DocumentType.PracticalExam,
     ])
-
-    function groupByType(documents: typeof data.documentsOfSubject.edges) {
-        const groups = new Map<DocumentType, Array<typeof documents[number]["node"]>>();
-        for (const { node, node: { type } } of documents) {
-            const group = groups.get(type);
-            if (group) 
-                group.push(node);
-             else 
-                groups.set(type, [node]);
-            
-        }
-
-        return groups;
-    }
 </script>
 
     <Breadcrumbs root="/documents">
@@ -52,9 +38,11 @@
         </section>
 {/if}
 
-    {#each groupByType(data.documentsOfSubject.edges).entries() as [type, documents] }
+{#if data.documentsOfSubject.edges.length > 0 }
+    {#each ORDER_DOCUMENT_TYPES as type }
+    {@const documents = data.documentsOfSubject.edges.filter(({node}) => node.type === type).map(e => e.node)}
 
-    <h2 class="typo-field-label">{DISPLAY_DOCUMENT_TYPES[type]}</h2>
+    <h2 class="typo-field-label">{DISPLAY_DOCUMENT_TYPES.get(type)}</h2>
     
     <ul class="nobullet">
         {#each documents as { solutionPaths, uid, ...rest } }
@@ -62,14 +50,34 @@
             <CardDocument href="./{uid}" hasSolution={ documentTypesWithSolutions.has(type) ? solutionPaths.length > 0 : undefined} {...rest}></CardDocument>
         </li>
         {/each}
+        <li class="new">
+            <CardDocument createdAt={new Date()} add href="./create?type={type}" title="Ajouter" ></CardDocument>
+        </li>
     </ul>
     {/each}
+        {:else}
+        <div class="no-docs">
+            Aucun document… <br><ButtonSecondary href="./create">Ajouter un document ❤️</ButtonSecondary>
+        </div>
+        {/if}
 
 <style lang="scss">
     ul {
         display: flex;
         flex-direction: column;
         gap: 1rem;
+    }
+
+    .no-docs {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+        height: 20rem;
+        max-height: 100%;
+        margin-top: 2rem;
+        text-align: center;
     }
 
     section.links {

@@ -71,7 +71,15 @@
                 </div>
             </div>
        
-    </article>    {#if canReply}
+    </article>   
+    <ul class="replies nobullet">
+        {#each replies  as comment}
+        <div class="reply">
+            <svelte:self on:edit on:delete canReply={false} {...comment} ></svelte:self>
+        </div>
+        {/each}
+    </ul>
+     {#if canReply}
          <div class="reply-area" class:has-replies={replies.length > 0}>
  {#if replyingTo.inReplyToId !== id }
                  <ButtonInk on:click={() => {
@@ -89,13 +97,6 @@
  {/if}
          </div>
        {/if}
-    <ul class="replies nobullet">
-        {#each replies  as comment}
-        <div class="reply">
-            <svelte:self on:edit on:delete canReply={false} {...comment} ></svelte:self>
-        </div>
-        {/each}
-    </ul>
 
 
     <style>
@@ -157,10 +158,7 @@
     }
 
     .reply-area {
-        margin-top: 1rem;
-    }
-
-    .reply-area.has-replies {
         padding-left: 2rem;
+        margin-top: 1rem;
     }
     </style>

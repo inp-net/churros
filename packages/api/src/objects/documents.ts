@@ -44,7 +44,7 @@ export const DocumentType = builder.prismaNode('Document', {
       cursor: 'id',
       type: CommentType,
       query: {
-        orderBy: { updatedAt: 'desc' },
+        orderBy: { createdAt: 'asc' },
       },
     }),
   }),
@@ -135,12 +135,22 @@ builder.queryField('documentsOfSubject', (t) =>
     cursor: 'id',
     args: {
       subjectUid: t.arg.string({ required: true }),
+      yearTier: t.arg.int({ required: true }),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin || user?.canAccessDocuments);
     },
-    async resolve(query, _, { subjectUid }) {
-      const subject = await prisma.subject.findUniqueOrThrow({ where: { uid: subjectUid } });
+    async resolve(query, _, { subjectUid, yearTier }) {
+      /* eslint-disable unicorn/no-null */
+      const subject = await prisma.subject.findFirstOrThrow({
+        where: {
+          OR: [
+            { uid: subjectUid, yearTier },
+            { uid: subjectUid, yearTier: null },
+          ],
+        },
+      });
+      /* eslint-enable unicorn/no-null */
       return prisma.document.findMany({
         ...query,
         where: {
@@ -157,13 +167,23 @@ builder.queryField('document', (t) =>
     type: DocumentType,
     args: {
       subjectUid: t.arg.string(),
+      subjectYearTier: t.arg.int({ required: true }),
       documentUid: t.arg.string(),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin || user?.canAccessDocuments);
     },
-    async resolve(query, _, { subjectUid, documentUid }) {
-      const subject = await prisma.subject.findUniqueOrThrow({ where: { uid: subjectUid } });
+    async resolve(query, _, { subjectUid, documentUid, subjectYearTier }) {
+      /* eslint-disable unicorn/no-null */
+      const subject = await prisma.subject.findFirstOrThrow({
+        where: {
+          OR: [
+            { uid: subjectUid, yearTier: subjectYearTier },
+            { uid: subjectUid, yearTier: null },
+          ],
+        },
+      });
+      /* eslint-enable unicorn/no-null */
       return prisma.document.findUniqueOrThrow({
         ...query,
         where: {
@@ -184,13 +204,16 @@ builder.mutationField('upsertDocument', (t) =>
       title: t.arg.string({ required: true }),
       description: t.arg.string({ required: true }),
       subjectUid: t.arg.string({ required: true }),
+      subjectYearTier: t.arg.int({ required: true }),
       type: t.arg({ type: DocumentEnumType, required: true }),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin || user?.canAccessDocuments);
     },
-    async resolve(query, _, { id, subjectUid, title, schoolYear, ...data }) {
-      const subject = await prisma.subject.findUnique({ where: { uid: subjectUid } });
+    async resolve(query, _, { id, subjectUid, title, schoolYear, subjectYearTier, ...data }) {
+      const subject = await prisma.subject.findUnique({
+        where: { uid_yearTier: { uid: subjectUid, yearTier: subjectYearTier } },
+      });
       if (!subject) throw new GraphQLError('Matière introuvable');
       const uidBase = `${slug(title)}${schoolYear ? `-${schoolYear}` : ''}`;
       const uidNumber = await dichotomid(

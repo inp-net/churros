@@ -7,15 +7,20 @@
     export let hasSolution: boolean|undefined = undefined;
     export let title: string
     export let createdAt: Date;
-    export let schoolYear: number|undefined|null;
+    export let schoolYear: number|undefined|null=undefined;
+    export let add = false;
 </script>
 
     <a {href}>
-<article class="document">
+<article class="document" class:add>
         <header>
             <h3>{title}</h3>
         </header>
         <p class="infos">
+        
+        {#if add}
+        <span class="muted">Contribues à la Frappe :)</span>
+        {:else}
 {#if schoolYear}
 <span class="date">{schoolYear}–{schoolYear+1}</span>
 {:else}
@@ -26,6 +31,7 @@
                  <span class:warning={!hasSolution} class:success={hasSolution} class="has-solution">
                     {#if hasSolution}<IconCheck></IconCheck> {:else} <IconWarning></IconWarning> {/if}
                  {hasSolution ? "Corrigé" : "Pas de corrigé"}</span>
+{/if}
 {/if}
         </p>
 </article>
@@ -42,6 +48,10 @@
             background-color: var(--hover-bg);
             border-color: var(--border);
         }
+    }
+
+    a:not(:hover, :focus-visible) article.add {
+        border-style: dashed;
     }
 
     .infos {

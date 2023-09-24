@@ -5,7 +5,7 @@
   import IconAdmin from '~icons/mdi/security';
   import IconLogout from '~icons/mdi/logout-variant';
   import IconWebsite from '~icons/mdi/earth';
-  import { dateFormatter, yearTier } from '$lib/dates.js';
+  import { dateFormatter } from '$lib/dates.js';
   import { me } from '$lib/session.js';
   import type { PageData } from './$types';
   import IconFacebook from '~icons/mdi/facebook-box';
@@ -32,6 +32,7 @@
   import InputText from '$lib/components/InputText.svelte';
   import { tooltip } from '$lib/tooltip';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
     instagram: IconInstagram,
@@ -183,8 +184,9 @@
         @{user.uid}
       </p>
       <p class="major">
-        {yearTier(user.graduationYear)}A ({user.graduationYear}) ·
-        <abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr>
+        {user.yearTier}A ({user.graduationYear}) ·
+        <a href="/documents/{user.major.uid}/{user.yearTier}a/"><abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr></a>
+        {#if user.minor} · {user.minor.name} {/if}
         · {#each user.major.schools as school}
           <a class="school" href="/schools/{school.uid}">{school.name}</a>
         {/each}
@@ -444,7 +446,7 @@
     column-gap: 0.5rem;
   }
 
-  @media (max-width: 600px) {
+  @media (width <= 600px) {
     dl {
       grid-template-columns: 1fr;
     }
@@ -522,7 +524,7 @@
     margin: 0 auto;
   }
 
-  @media (min-width: 1000px) {
+  @media (width >= 1000px) {
     .content {
       display: grid;
       grid-template-areas: 'header header' 'contribute contribute' 'groups groups' 'family articles';

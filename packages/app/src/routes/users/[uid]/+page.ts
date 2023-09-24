@@ -27,6 +27,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           descriptionHtml: true,
           firstName: true,
           graduationYear: true,
+          yearTier: true,
           lastName: true,
           fullName: true,
           nickname: true,
@@ -43,7 +44,12 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             secretary: true,
           },
           links: { name: true, value: true, computedValue: true },
+          minor: {
+            name: true,
+            uid: true,
+          },
           major: {
+            uid: true,
             name: true,
             shortName: true,
             schools: {
