@@ -10,7 +10,7 @@ zeus/
 packages/api/src/godchildren-tree.ts
 packages/api/scripts/*
 
-packages/app/static/vendor/*.js  
+packages/app/static/vendor/
 
 # TODO find a way to include it, linting this would be nice
 # svelte-kit's generated .tsconfig explicitly excludes it now, so we need to create another tsconfig just for this, apparently

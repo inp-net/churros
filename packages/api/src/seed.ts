@@ -137,6 +137,7 @@ const schools = await prisma.school.findMany();
 const MécaniqueDesFluides = await prisma.major.create({
   data: {
     shortName: 'MFEE',
+    uid: 'mfee',
     name: 'Mécanique des fluides',
     schools: { connect: { id: schools[0]!.id } },
   },
@@ -144,6 +145,7 @@ const MécaniqueDesFluides = await prisma.major.create({
 const Vapeur = await prisma.major.create({
   data: {
     shortName: 'Va',
+    uid: 'va',
     name: 'Vapeur',
     schools: { connect: [{ id: schools[0]!.id }, { id: schools[1]!.id }] },
   },
@@ -151,18 +153,37 @@ const Vapeur = await prisma.major.create({
 const Boue = await prisma.major.create({
   data: {
     shortName: 'B',
+    uid: 'b',
     name: 'Boue',
     schools: { connect: [{ id: schools[1 - 1]!.id }, { id: schools[3 - 1]!.id }] },
   },
 });
 const Roche = await prisma.major.create({
-  data: { shortName: 'R', name: 'Roche', schools: { connect: [{ id: schools[3 - 1]!.id }] } },
+  data: {
+    shortName: 'R',
+    uid: 'r',
+    name: 'Roche',
+    schools: { connect: [{ id: schools[3 - 1]!.id }] },
+  },
 });
 const Vent = await prisma.major.create({
-  data: { shortName: 'Ve', name: 'Vent', schools: { connect: [{ id: schools[4 - 1]!.id }] } },
+  data: {
+    shortName: 'Ve',
+    uid: 've',
+    name: 'Vent',
+    schools: { connect: [{ id: schools[4 - 1]!.id }] },
+  },
 });
 
 const majors = [MécaniqueDesFluides, Vapeur, Boue, Roche, Vent];
+
+const GouttesDeau = await prisma.subject.create({
+  data: {
+    name: "Gouttes d'eau",
+    uid: 'gouttes-deau',
+    majors: { connect: [{ id: MécaniqueDesFluides.id }] },
+  },
+});
 
 for (const [i, name] of ['AE EAU 2022', 'AE FEU 2022', 'AE TERRE 2022', 'AE AIR 2022'].entries()) {
   await prisma.studentAssociation.create({
@@ -324,6 +345,18 @@ for (const [i, data] of usersData.entries()) {
     },
   });
 }
+
+await prisma.document.create({
+  data: {
+    description: 'Un document',
+    title: 'Un document',
+    uid: 'un-document',
+    schoolYear: 2021,
+    subject: { connect: { id: GouttesDeau.id } },
+    type: 'Exam',
+    uploader: { connect: { uid: 'versairea' } },
+  },
+});
 
 const users = await prisma.user.findMany();
 

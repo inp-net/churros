@@ -2,21 +2,43 @@
   import { createEventDispatcher } from 'svelte';
 
   export let files: FileList | undefined = undefined;
+  export let multiple = false
+  export let hint = "Déposer des fichiers ici"
+  let dragging = false;
 
-  const dispatch = createEventDispatcher<{ change: FileList }>();
+  const dispatch = createEventDispatcher();
 
   $: if (files) dispatch('change', files);
+
+  	function fileListOf(files: File[]): FileList {
+		const filelist = new DataTransfer();
+		for (const file of files) filelist.items.add(file);
+		return filelist.files;
+	}
+
 
   export let inputElement: HTMLInputElement;
 </script>
 
 <label
+class:dragging
   on:drop|preventDefault={({ dataTransfer }) => {
-    if (dataTransfer) files = dataTransfer.files;
+    dragging = false
+    if (dataTransfer) 
+      files = multiple ? fileListOf([...files ?? [], ...dataTransfer.files]) : dataTransfer.files;
+    
   }}
-  on:dragover|preventDefault
+  on:dragover|preventDefault={(e) => {
+    dragging = true;
+    dispatch('dragover', e)
+  }}
+  on:dragleave|preventDefault={(e) => {
+    dragging = false;
+    dispatch('dragleave', e)
+  }}
 >
-  <input bind:this={inputElement} type="file" bind:files {...$$restProps} />
+<span class="hint muted">{hint}</span>
+  <input bind:this={inputElement} type="file" bind:files={files} {...$$restProps} />
   <slot />
 </label>
 
@@ -24,12 +46,23 @@
   label {
     position: relative;
     display: inline-block;
-    border-radius: var(--radius-inline);
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+    border: var(--border-block) dashed var(--border);
+    border-radius: var(--radius-block);
     outline: 0 solid var(--ring);
-    transition: outline 80ms ease-in;
+    transition: all 80ms ease-in;
 
-    &:focus-within {
-      outline-width: 0.25rem;
+    &:focus-within, &:hover, &.dragging {
+      cursor: pointer;
+      background-color: var(--muted-bg);
+      border-color: var(--hover-border);
+      border-style: solid;
+
+      .hint {
+        color: var(--hover-text);
+      }
     }
 
     > * {

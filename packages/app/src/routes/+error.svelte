@@ -1,6 +1,7 @@
 <script lang="ts">
+    import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
 
   let error: App.Error | null;
   let status: number;
@@ -8,29 +9,21 @@
   $: ({ error, status } = $page);
 
   onMount(() => {
+    if (browser) {
     if (status === 404) document.documentElement.classList.add('error-404');
+    document.documentElement.classList.add('errored')
+    }
+  });
+
+  onDestroy(() => {
+    if (browser) {
+    if (status === 404) document.documentElement.classList.remove('error-404');
+    document.documentElement.classList.remove('errored')
+    }
   });
 </script>
 
-{#if status === 404}
-  <style>
-    :root.error-404 {
-      --bg: #000;
-      --text: #25bf22;
-      --border: #25bf22;
-      --primary-link: #54fe54;
-    }
-
-    .page {
-      display: flex;
-    }
-
-    .layout {
-      flex: 1;
-    }
-  </style>
-{/if}
-
+  <div class="err-{status}">
 {#if status === 401}
   <h1>Erreur 401</h1>
   <p>Vous n'avez pas les droits requis pour accéder à cette page.</p>
@@ -38,10 +31,8 @@
   <h1>Erreur 403</h1>
   <p>Accès interdit.</p>
 {:else if status === 404}
-  <div class="err-404">
     <img src="/404.svg" alt="404" />
     <p>Cette page n'existe pas.</p>
-  </div>
 {:else if error}
   <h1>Erreur {status}</h1>
   <p>{error.message}</p>
@@ -49,8 +40,33 @@
   <h1>Erreur {status}</h1>
   <p>C'est tout cassé.</p>
 {/if}
+  </div>
 
 <style lang="scss">
+    :root.error-404 {
+      --bg: #000;
+      --text: #25bf22;
+      --border: #25bf22;
+      --primary-link: #54fe54;
+    }
+
+    :global(.errored .page) {
+      display: flex;
+    }
+
+    :global(.errored .layout) {
+      flex: 1;
+    }
+
+  [class^=err]:not(.err-404) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
   .err-404 {
     display: flex;
     flex: 1;

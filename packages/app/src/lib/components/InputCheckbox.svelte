@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { tooltip } from '$lib/tooltip';
   import Check from '~icons/mdi/check';
   import Close from '~icons/mdi/close';
 
@@ -9,6 +10,7 @@
   export let labelFalse = 'Non';
   export let labelNull = 'Inconnu';
   export let alignRight = false;
+  export let help = ""
   let previousValue: boolean | null | undefined = value;
 
   const getTriState = (target: HTMLInputElement) =>
@@ -29,7 +31,7 @@
   let checkboxElement: HTMLInputElement;
 </script>
 
-<label class:nolabel={!label} class="input-checkbox" class:ternary class:align-right={alignRight}>
+<label use:tooltip={help} class:nolabel={!label} class="input-checkbox" class:ternary class:align-right={alignRight}>
   {#if ternary}
     <input
       type="checkbox"
