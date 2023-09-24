@@ -35,6 +35,7 @@
     gap: 0.5em;
     align-items: center;
     padding: 0.25em 0.5em;
+    font-size: inherit;
     font-weight: bold;
     color: var(--link);
     text-transform: uppercase;

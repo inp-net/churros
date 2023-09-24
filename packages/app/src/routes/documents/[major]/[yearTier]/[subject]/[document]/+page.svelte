@@ -16,6 +16,7 @@
     import { env} from "$env/dynamic/public";
     import ButtonInk from "$lib/components/ButtonInk.svelte";
     import { me } from '$lib/session';
+    import ButtonShare from '$lib/components/ButtonShare.svelte';
 
     const {PUBLIC_STORAGE_URL} = env
 
@@ -87,12 +88,13 @@
             {#if !isSameDay(createdAt, updatedAt) } Modifié le {formatDate(updatedAt)}{:else}
         Mis en ligne le {formatDate(createdAt)}
             {/if}</p>
-{#if $me?.admin || uploader?.uid === $me?.uid}
             <div class="actions">
+                <ButtonShare text></ButtonShare>
+{#if $me?.admin || uploader?.uid === $me?.uid}
                 <ButtonInk icon={IconEdit} href="./edit">Modifier</ButtonInk>
                 <ButtonInk danger icon={IconDelete} >Supprimer</ButtonInk>
-            </div>
 {/if}
+            </div>
     </section>
     <h2>{title}</h2>
     <div class="description">
@@ -171,8 +173,18 @@
 
     .dates-and-actions {
         display: flex;
+        flex-grow: 0;
         flex-wrap: wrap;
+        gap: 1rem;
         justify-content: space-between;
+    }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 0.5rem;
+        align-items: start;
+        justify-content: center;
     }
 
     h2 {
