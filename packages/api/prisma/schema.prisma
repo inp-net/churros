@@ -407,6 +407,7 @@ model Article {
   publishedAt DateTime   @default(now())
   pictureFile String     @default("") @db.VarChar(255)
   links       Link[]
+  comments    Comment[]
 
   author  User?   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   group   Group   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -744,15 +745,18 @@ model Document {
 }
 
 model Comment {
-  id          String    @id @default(dbgenerated("nanoid('comment:')"))
-  authorId    String?
-  body        String    @db.Text
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  author      User?     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  // For now, only documents can be commented
-  document    Document  @relation(fields: [documentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  documentId  String
+  id        String   @id @default(dbgenerated("nanoid('comment:')"))
+  authorId  String?
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User?    @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  document   Document? @relation(fields: [documentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  documentId String?
+  article    Article?  @relation(fields: [articleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  articleId  String?
+
   inReplyTo   Comment?  @relation(name: "reply", fields: [inReplyToId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   inReplyToId String?
   replies     Comment[] @relation(name: "reply")

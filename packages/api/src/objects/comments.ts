@@ -33,7 +33,7 @@ builder.queryField('comments', (t) =>
     async resolve(query) {
       return prisma.comment.findMany({
         ...query,
-        orderBy: { updatedAt: 'desc' },
+        orderBy: { createdAt: 'asc' },
       });
     },
   }),
@@ -63,23 +63,25 @@ builder.mutationField('upsertComment', (t) =>
     args: {
       id: t.arg.id({ required: false }),
       body: t.arg.string(),
-      documentId: t.arg.id(),
+      documentId: t.arg.id({ required: false }),
+      articleId: t.arg.id({ required: false }),
       inReplyToId: t.arg.id({ required: false }),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin || user?.canAccessDocuments);
     },
-    async resolve(query, _, { id, body, documentId, inReplyToId }, { user }) {
+    async resolve(query, _, { id, body, documentId, articleId, inReplyToId }, { user }) {
       const upsertData = {
         body,
-        document: { connect: { id: documentId } },
+        document: documentId ? { connect: { id: documentId } } : undefined,
+        article: articleId ? { connect: { id: articleId } } : undefined,
         inReplyTo: inReplyToId ? { connect: { id: inReplyToId } } : undefined,
       };
       await log(
         'comments',
         id ? 'edit' : inReplyToId ? 'reply' : 'comment',
         upsertData,
-        id || inReplyToId || documentId,
+        id || inReplyToId || documentId || articleId || '<nothing>',
         user,
       );
       return prisma.comment.upsert({
