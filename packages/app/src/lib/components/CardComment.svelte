@@ -39,6 +39,19 @@
 <div class="comment-jump-to-anchor" id="comment-{removeIdPrefix('Comment', id)}" />
 
 <article class="comment">
+  <div class="metadata">
+    {#if author}
+      <AvatarPerson small href="/users/{author.uid}" {...author} />
+    {:else}
+      <AvatarPerson small pictureFile="" href="" fullName="???" />
+    {/if}
+    <div class="date muted">
+      {#if !isSameSecond(createdAt, updatedAt ?? createdAt)}
+        Modifié le {formatDateTime(updatedAt)}{:else}
+        Ajouté le {formatDateTime(createdAt)}
+      {/if}
+    </div>
+  </div>
   <div class="body-and-actions">
     <div class="body">
       {#if editing}
@@ -95,19 +108,7 @@
       </div>
     {/if}
   </div>
-  <div class="metadata">
-    {#if author}
-      <AvatarPerson href="/users/{author.uid}" {...author} />
-    {:else}
-      <AvatarPerson pictureFile="" href="" fullName="???" />
-    {/if}
-    <div class="date muted">
-      {#if !isSameSecond(createdAt, updatedAt ?? createdAt)}
-        Modifié le {formatDateTime(updatedAt)}{:else}
-        Ajouté le {formatDateTime(createdAt)}
-      {/if}
-    </div>
-  </div>
+
 </article>
 <ul class="replies nobullet">
   {#each replies as comment}
@@ -190,7 +191,7 @@
     flex-wrap: wrap;
     align-items: end;
     justify-content: space-between;
-    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 
   .comment .metadata :global(.person) {
