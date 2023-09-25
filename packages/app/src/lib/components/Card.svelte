@@ -2,7 +2,7 @@
   export let element = 'div';
 </script>
 
-<svelte:element this={element} class="card">
+<svelte:element this={element} {...$$restProps} class="card">
   <slot name="header" />
   <div class="card-content"><slot /></div>
   <slot name="footer" />
@@ -11,7 +11,7 @@
 <style lang="scss">
   .card {
     margin: 1rem 0;
-    background-color: var(--card-bg, transparent);
+    background-color: var(--card-bg, var(--bg));
     border-radius: var(--radius-block);
     box-shadow: var(--shadow);
   }

@@ -28,6 +28,7 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   service: 'Service',
   link: 'Link',
   major: 'Major',
+  minor: 'Minor',
   school: 'School',
   credential: 'Credential',
   ae: 'StudentAssociation',
@@ -47,6 +48,9 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   notif: 'Notification',
   notifsetting: 'NotificationSetting',
   ann: 'Announcement',
+  subj: 'Subject',
+  doc: 'Document',
+  comment: 'Comment',
 };
 /* end @generated from schema */
 

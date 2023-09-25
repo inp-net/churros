@@ -6,6 +6,7 @@
   export let help = '';
   export let danger = false;
   export let success = false;
+  export let disabled = false;
   export let href = '';
 </script>
 
@@ -16,6 +17,7 @@
   title={help}
   {...$$restProps}
   class:dark-shadow={darkShadow}
+  class:disabled
   {type}
   {href}
   use:tooltip={help}
@@ -28,6 +30,7 @@
   .button-ghost.success {
     color: var(--link);
   }
+
   .button-ghost {
     --bg: transparent;
 
@@ -36,11 +39,15 @@
     width: max-content;
     padding: 0.25em;
     color: var(--text);
-    cursor: pointer;
+    word-wrap: break-word;
+    white-space: normal;
     background: var(--bg);
     border: var(--border-inline) solid transparent;
     border-radius: var(--radius-inline);
     outline: 0 solid var(--ring);
+
+    &:not(.disabled) {
+    cursor: pointer;
 
     &:focus-visible {
       outline-width: 0.25rem;
@@ -58,5 +65,6 @@
         background: rgba($color: #fff, $alpha: 50%);
       }
     }
+  }
   }
 </style>

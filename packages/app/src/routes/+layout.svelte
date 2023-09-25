@@ -68,9 +68,9 @@
           title: true,
           bodyHtml: true,
           warning: true,
-          id: true,
-        },
-      ],
+          id: true
+        }
+      ]
     });
     announcements = announcementsNow;
   });
@@ -79,13 +79,13 @@
     let currentTheme = $theme;
     theme.subscribe(($theme) => {
       if (currentTheme) document.documentElement.classList.remove(currentTheme);
-      if ($theme === 'system') {
-        document.documentElement.classList.add(
-          window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-        );
-      } else {
-        document.documentElement.classList.add($theme);
-      }
+      const selectedTheme =
+        $theme === 'system'
+          ? window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light'
+          : $theme;
+      document.documentElement.classList.add(selectedTheme);
 
       currentTheme = $theme;
     });

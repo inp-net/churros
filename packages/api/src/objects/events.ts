@@ -403,7 +403,7 @@ builder.queryField('events', (t) =>
           ...query,
           where: {
             visibility: VisibilityPrisma.Public,
-            startsAt: future ? { gte: new Date() } : undefined,
+            startsAt: future ? { gte: startOfDay(new Date()) } : undefined,
           },
           orderBy: { startsAt: 'asc' },
         });

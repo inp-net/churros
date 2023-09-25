@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { SvelteComponent } from 'svelte';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let icon: typeof SvelteComponent<any> | undefined = undefined;
   export let href = '';
   export let insideProse = false;
@@ -35,7 +36,7 @@
     align-items: center;
     padding: 0.25em 0.5em;
     font-weight: bold;
-    color: var(--primary-link);
+    color: var(--link);
     text-transform: uppercase;
     letter-spacing: 0.07em;
     cursor: pointer;

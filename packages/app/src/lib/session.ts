@@ -37,6 +37,7 @@ export const sessionUserQuery = () =>
     },
     major: {
       id: true,
+      uid: true,
       name: true,
       shortName: true,
       schools: { id: true, name: true, uid: true, color: true },
