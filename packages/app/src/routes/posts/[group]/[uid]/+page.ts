@@ -2,6 +2,7 @@ import { Selector, loadQuery } from '$lib/zeus.js';
 import type { PageLoad } from './$types';
 
 export const _articleQuery = Selector('Article')({
+  id: true,
   uid: true,
   title: true,
   bodyHtml: true,
@@ -21,6 +22,24 @@ export const _articleQuery = Selector('Article')({
     uid: true,
     groups: { group: { name: true, uid: true }, title: true },
   },
+  comments: [
+    {
+      first: 100,
+    },
+    {
+      edges: {
+        node: {
+          id: true,
+          author: { uid: true, fullName: true, pictureFile: true },
+          bodyHtml: true,
+          body: true,
+          inReplyToId: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+    },
+  ],
   event: {
     id: true,
     uid: true,

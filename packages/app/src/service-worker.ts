@@ -21,22 +21,22 @@ const ASSETS = [
 
 async function log(message: string) {
   const ua = parseUserAgent(sw.navigator.userAgent);
-  await fetch(
-    new URL(
-      `../log?message=${encodeURIComponent(
-        `[${new Date(Number.parseInt($serviceWorker.version, 10)).toISOString()} on ${
-          ua.device.type ?? 'unknown device type'
-        } ${
-          ua.device.model && ua.device.vendor
-            ? `${ua.device.vendor} ${ua.device.model}`
-            : 'unknown device'
-        } ${ua.browser.name ?? 'unknown'}/${ua.browser.version ?? '?'} ${
-          ua.os.name ?? 'unkown OS'
-        }/${ua.os.version ?? '?'}] ${message}`,
-      )}`,
-      PUBLIC_STORAGE_URL,
-    ),
-  );
+  const messageWithMetadata = `[${new Date(
+    Number.parseInt($serviceWorker.version, 10),
+  ).toISOString()} on ${ua.device.type ?? 'unknown device type'} ${
+    ua.device.model && ua.device.vendor
+      ? `${ua.device.vendor} ${ua.device.model}`
+      : 'unknown device'
+  } ${ua.browser.name ?? 'unknown'}/${ua.browser.version ?? '?'} ${ua.os.name ?? 'unkown OS'}/${
+    ua.os.version ?? '?'
+  }] ${message}`;
+  try {
+    await fetch(
+      new URL(`../log?message=${encodeURIComponent(messageWithMetadata)}`, PUBLIC_STORAGE_URL),
+    );
+  } catch (error) {
+    console.info(messageWithMetadata);
+  }
 }
 
 sw.addEventListener('install', async (event) => {

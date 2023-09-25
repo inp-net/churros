@@ -66,6 +66,7 @@ export const GroupType = builder.prismaNode('Group', {
     website: t.exposeString('website'),
     pictureFile: t.exposeString('pictureFile'),
     pictureFileDark: t.exposeString('pictureFileDark'),
+    ldapUid: t.exposeString('ldapUid'),
     articles: t.relation('articles', {
       query(_, { user }) {
         return {
