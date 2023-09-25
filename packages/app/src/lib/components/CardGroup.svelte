@@ -66,7 +66,7 @@
 
   .name {
     max-width: 100%;
-    margin: 0;
+    margin: 0.25em 0 0;
     overflow: hidden;
     font-size: 1em;
     font-weight: 600;
