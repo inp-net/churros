@@ -3,6 +3,9 @@
   import CardComment from '$lib/components/CardComment.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputLongText from './InputLongText.svelte';
+  import { me } from '$lib/session';
+  import Alert from './Alert.svelte';
+  import { page } from '$app/stores';
 
   export let comments: {
     edges: Array<{
@@ -87,43 +90,52 @@
   }
 </script>
 
-<form
-  on:submit|preventDefault={async () => {
-    await addComment();
-  }}
-  class="new-comment"
->
-  <InputLongText
-    submitShortcut
-    label=""
-    rows="2"
-    rich
-    bind:value={newComment.body}
-    placeholder="Ajouter un commentaire"
-  />
-  <ButtonSecondary submits>Commenter</ButtonSecondary>
-</form>
+{#if $me}
+  <form
+    on:submit|preventDefault={async () => {
+      await addComment();
+    }}
+    class="new-comment"
+  >
+    <InputLongText
+      submitShortcut
+      label=""
+      rows="2"
+      rich
+      bind:value={newComment.body}
+      placeholder="Ajouter un commentaire"
+    />
+    <ButtonSecondary submits>Commenter</ButtonSecondary>
+  </form>
 
-<ul class="nobullet comments">
-  {#each comments.edges.filter(({ node: { inReplyToId } }) => !inReplyToId) as { node }}
-    <li class="comment">
-      <CardComment
-        bind:replyingTo
-        on:reply={reply}
-        on:edit={async ({ detail: [id, body] }) => {
-          await editComment(id, body);
-        }}
-        on:delete={async ({ detail: id }) => {
-          await removeComment(id);
-        }}
-        {...node}
-        replies={comments.edges
-          .filter(({ node: { inReplyToId } }) => inReplyToId === node.id)
-          .map((c) => c.node)}
-      />
-    </li>
-  {/each}
-</ul>
+  <ul class="nobullet comments">
+    {#each comments.edges.filter(({ node: { inReplyToId } }) => !inReplyToId) as { node }}
+      <li class="comment">
+        <CardComment
+          bind:replyingTo
+          on:reply={reply}
+          on:edit={async ({ detail: [id, body] }) => {
+            await editComment(id, body);
+          }}
+          on:delete={async ({ detail: id }) => {
+            await removeComment(id);
+          }}
+          {...node}
+          replies={comments.edges
+            .filter(({ node: { inReplyToId } }) => inReplyToId === node.id)
+            .map((c) => c.node)}
+        />
+      </li>
+    {/each}
+  </ul>
+{:else}
+  <Alert theme="warning">
+    <ButtonSecondary
+      href="/login?{new URLSearchParams({ to: $page.url.pathname }).toString()}"
+      insideProse>Connectez-vous</ButtonSecondary
+    > pour commenter.
+  </Alert>
+{/if}
 
 <style lang="scss">
   .new-comment {
