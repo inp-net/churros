@@ -1,4 +1,10 @@
-import type { DocumentType, EventFrequency, GroupType, PaymentMethod } from './zeus';
+import {
+  NotificationType,
+  type DocumentType,
+  type EventFrequency,
+  type GroupType,
+  type PaymentMethod,
+} from './zeus';
 import LogoLydia from '~icons/simple-icons/lydia';
 import IconCreditCard from '~icons/mdi/credit-card-outline';
 import IconCash from '~icons/mdi/hand-coin-outline';
@@ -30,7 +36,7 @@ export const HELP_VISIBILITY = {
   Private: 'Visible par personne (excepté les administrateurs et organisateurs)',
 };
 
-export const DISPLAY_NOTIFICATION_TYPES = {
+export const DISPLAY_NOTIFICATION_TYPES: Record<NotificationType, string> = {
   NewArticle: 'Nouveau post',
   ShotgunOpeningSoon: "Ouverture imminente d'un shotgun",
   ShotgunOpened: "Ouverture d'un shotgun",
@@ -40,19 +46,21 @@ export const DISPLAY_NOTIFICATION_TYPES = {
   GodparentRequestAccepted: 'Approbation de demandes de parrainage',
   GodparentRequestRefused: 'Refus de demandes de parrainage',
   PermissionsChanged: 'Modification de mes permissions',
+  CommentRepliedTo: 'Réponse à un commentaire',
   Other: 'Autres',
 };
 
-export const ORDER_NOTIFICATION_TYPES: Array<keyof typeof DISPLAY_NOTIFICATION_TYPES> = [
-  'NewArticle',
-  'ShotgunOpeningSoon',
-  'ShotgunOpened',
-  'ShotgunClosingSoon',
-  'ShotgunClosed',
-  'GodparentRequestReceived',
-  'GodparentRequestAccepted',
-  'GodparentRequestRefused',
-  'PermissionsChanged',
+export const ORDER_NOTIFICATION_TYPES: NotificationType[] = [
+  NotificationType.NewArticle,
+  NotificationType.ShotgunOpeningSoon,
+  NotificationType.ShotgunOpened,
+  NotificationType.ShotgunClosingSoon,
+  NotificationType.ShotgunClosed,
+  NotificationType.GodparentRequestReceived,
+  NotificationType.GodparentRequestAccepted,
+  NotificationType.GodparentRequestRefused,
+  NotificationType.PermissionsChanged,
+  NotificationType.CommentRepliedTo,
 ];
 
 export const DISPLAY_GROUP_TYPES: Record<GroupType, string> = {

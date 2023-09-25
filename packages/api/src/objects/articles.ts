@@ -31,6 +31,12 @@ export const ArticleType = builder.prismaNode('Article', {
     author: t.relation('author', { nullable: true }),
     group: t.relation('group'),
     links: t.relation('links'),
+    comments: t.relatedConnection('comments', {
+      cursor: 'id',
+      query: {
+        orderBy: { createdAt: 'asc' },
+      },
+    }),
     event: t.relation('event', { nullable: true }),
   }),
 });

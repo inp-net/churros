@@ -51,8 +51,15 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   subj: 'Subject',
   doc: 'Document',
   comment: 'Comment',
-};
+} as const;
 /* end @generated from schema */
+
+export const TYPENAMES_TO_ID_PREFIXES = Object.fromEntries(
+  Object.entries(ID_PREFIXES_TO_TYPENAMES).map(([prefix, typename]) => [typename, prefix]),
+) as Record<
+  (typeof ID_PREFIXES_TO_TYPENAMES)[keyof typeof ID_PREFIXES_TO_TYPENAMES],
+  keyof typeof ID_PREFIXES_TO_TYPENAMES
+>;
 
 export const builder = new SchemaBuilder<{
   AuthContexts: AuthContexts;
