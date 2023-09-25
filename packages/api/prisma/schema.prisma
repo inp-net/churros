@@ -327,7 +327,7 @@ model Group {
   parentId             String?
   /// Helper field to get a whole tree without processing all groups
   /// To be set to the group's id itself for root groups.
-  familyId             String?
+  familyId             String?  
   schoolId             String?
   studentAssociationId String?
   pictureFile          String    @default("") @db.VarChar(255)
@@ -342,6 +342,7 @@ model Group {
   email           String @default("") @db.VarChar(255)
   longDescription String @default("")
   website         String @default("") @db.VarChar(255)
+  ldapUid         String @default("") @db.VarChar(255)
   links           Link[]
 
   /// Parent group, from which this group inherits its permissions
