@@ -57,7 +57,7 @@ function updateInFile(filename: string, exported: boolean): void {
         map,
         null,
         4,
-      )}\n/* end @generated from schema */`;
+      )} as const\n/* end @generated from schema */`;
       insideGeneratedContent = true;
     } else if (insideGeneratedContent && line.includes('/* end @generated from schema */')) {
       writeToLines[index] = '';
@@ -74,3 +74,4 @@ function updateInFile(filename: string, exported: boolean): void {
 
 updateInFile('../src/builder.ts', true);
 updateInFile('../../app/src/routes/bookings/[pseudoID]/+page.server.ts', false);
+updateInFile('../../app/src/lib/typenames.ts', false);

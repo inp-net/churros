@@ -13,6 +13,7 @@
   import InputLongText from './InputLongText.svelte';
   import { me } from '$lib/session';
   import ButtonGhost from './ButtonGhost.svelte';
+  import { removeIdPrefix } from '$lib/typenames';
 
   const dispatch = createEventDispatcher();
 
@@ -34,6 +35,8 @@
     updatedAt: Date | undefined | null;
   }> = [];
 </script>
+
+<div class="comment-jump-to-anchor" id="comment-{removeIdPrefix('Comment', id)}" />
 
 <article class="comment">
   <div class="body-and-actions">
@@ -63,15 +66,15 @@
       <div class="actions">
         {#if editing}
           <ButtonGhost
-          class="success"
+            class="success"
             on:click={() => {
               dispatch('edit', [id, body]);
               editing = false;
             }}><IconFinishEditing /></ButtonGhost
           >
           <ButtonGhost
-          help="Annuler les modifications"
-          class="danger"
+            help="Annuler les modifications"
+            class="danger"
             on:click={() => {
               editing = false;
             }}><IconCancelEditing /></ButtonGhost
@@ -82,12 +85,12 @@
               editing = true;
             }}><IconEdit /></ButtonGhost
           >
-        <ButtonGhost
-          class="danger"
-          on:click={() => {
-            dispatch('delete', id);
-          }}><IconDelete /></ButtonGhost
-        >
+          <ButtonGhost
+            class="danger"
+            on:click={() => {
+              dispatch('delete', id);
+            }}><IconDelete /></ButtonGhost
+          >
         {/if}
       </div>
     {/if}
@@ -123,6 +126,12 @@
         icon={IconReply}>Répondre</ButtonInk
       >
     {:else}
+      <ButtonInk
+        on:click={() => {
+          replyingTo = { body: '', inReplyToId: '' };
+        }}
+        icon={IconCancelEditing}>Annuler</ButtonInk
+      >
       <form
         class="new-reply"
         on:submit|preventDefault={() => {
@@ -145,6 +154,13 @@
 {/if}
 
 <style>
+  .comment-jump-to-anchor {
+    position: relative;
+    top: -120px;
+    display: block;
+    visibility: hidden;
+  }
+
   .comment {
     display: flex;
     flex-direction: column;
@@ -185,6 +201,7 @@
     display: flex;
     gap: 1rem;
     align-items: center;
+    margin-top: 0.5rem;
   }
 
   .new-reply :global(> :first-child),

@@ -659,6 +659,7 @@ enum NotificationType {
   GodparentRequestReceived
   GodparentRequestAccepted
   GodparentRequestRefused
+  CommentRepliedTo
   Other // should't be used too much
 }
 
