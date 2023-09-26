@@ -84,8 +84,12 @@
     distance = 0;
   }
 
-  // eslint-disable-next-line no-sequences, @typescript-eslint/no-unused-expressions
-  $: (nbGroups = groups.length), (offset = 0);
+  const resetScroll = (newNbGroups: number) => {
+    nbGroups = newNbGroups;
+    offset = 0;
+  };
+
+  $: resetScroll(groups.length);
   $: groupsWidth = group ? group.offsetWidth : 0;
   $: nbVisibles = sliderWidth && groupsWidth ? sliderWidth / groupsWidth : 0;
   $: slideNeeded = sliderWidth ? nbGroups * groupsWidth > sliderWidth : false;
