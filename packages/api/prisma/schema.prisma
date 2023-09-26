@@ -259,6 +259,7 @@ enum CredentialType {
 model Credential {
   id        String         @id @default(dbgenerated("nanoid('credential:')"))
   userId    String
+  name      String         @db.VarChar(255) @default("")
   type      CredentialType
   value     String         @db.VarChar(255)
   userAgent String         @default("") @db.VarChar(255)
