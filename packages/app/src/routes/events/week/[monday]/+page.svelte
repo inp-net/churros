@@ -29,7 +29,7 @@
 
   const canChangeBarWeek = Boolean(
     $me?.admin ||
-      $me?.groups.some(({ group: { uid } }) => env.PUBLIC_FOY_GROUPS?.split(',').includes(uid))
+      $me?.groups.some(({ group: { uid } }) => env.PUBLIC_FOY_GROUPS?.split(',').includes(uid)),
   );
 </script>
 
@@ -88,7 +88,7 @@
       {#each daysOfWeek as day}
         <section class="day">
           <CalendarDay
-            showMonth={[...new Set(daysOfWeek.map((d) => d.getMonth()))].length > 1}
+            showMonth={new Set(daysOfWeek.map((d) => d.getMonth())).size > 1}
             {day}
           />
           <div class="events-of-day">

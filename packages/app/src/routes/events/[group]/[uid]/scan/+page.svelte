@@ -35,6 +35,7 @@
     [RegistrationVerificationState.OtherEvent]: [50, 50, 50, 50],
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const STATE_TO_ICON: Record<RegistrationVerificationState, typeof SvelteComponent<any>> = {
     [RegistrationVerificationState.Ok]: IconCheck,
     [RegistrationVerificationState.AlreadyVerified]: IconRepeatOff,
@@ -105,7 +106,7 @@
         // },
         // qrbox: { width: 300, height: 300 }
       },
-      false
+      false,
     );
     scanner.render(
       async (text, { result: { bounds } }) => {
@@ -125,7 +126,7 @@
         }
       },
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      () => {}
+      () => {},
     );
   });
 
@@ -198,7 +199,7 @@
 
     if (window.navigator.vibrate) {
       window.navigator.vibrate(
-        VIBRATION_PATTERNS[r?.state ?? RegistrationVerificationState.NotFound]
+        VIBRATION_PATTERNS[r?.state ?? RegistrationVerificationState.NotFound],
       );
     }
 
@@ -296,7 +297,7 @@
                 <p class="typo-details details">
                   Opposée par <a href="/users/{opposedBy.uid}">{opposedBy.fullName}</a>
                   {#if isToday(opposedAt)}à {format(opposedAt, 'HH:mm')}{:else}le {formatDateTime(
-                      opposedAt
+                      opposedAt,
                     )}{/if}
                 </p>
               {/if}
@@ -319,7 +320,7 @@
                 <p class="typo-details details">
                   par <a href="/users/{verifiedBy.uid}">{verifiedBy.fullName}</a>
                   {#if isToday(verifiedAt)}à {format(verifiedAt, 'HH:mm')}{:else}le {formatDateTime(
-                      verifiedAt
+                      verifiedAt,
                     )}{/if}
                 </p>
               {/if}
@@ -519,10 +520,7 @@
   /* stylelint-disable selector-id-pattern */
   #reader :global(#reader__scan_region) {
     position: fixed !important;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    inset: 0;
     z-index: -1;
     width: 100vw;
     height: 100vh;

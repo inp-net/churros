@@ -133,7 +133,8 @@
       <section class="submit">
         <ButtonPrimary {loading} submits>Envoyer</ButtonPrimary>
         <p class="typo-details">
-          Envoyer ce rapport créera une issue Gitlab {#if $me}en ton nom {/if}sur le dépot
+          Envoyer ce rapport créera une issue Gitlab {#if $me}en ton nom
+          {/if}sur le dépot
           <a href="https://git.inpt.fr/inp-net/churros">git.inpt.fr/inp-net/churros</a>
         </p>
       </section>
@@ -220,7 +221,7 @@
     text-align: justify;
   }
 
-  @media (max-width: 1000px) {
+  @media (width <= 1000px) {
     dialog {
       border-radius: 0;
     }

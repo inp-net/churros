@@ -70,7 +70,7 @@
       if (differenceInMinutes(new Date(closesAt), new Date()) < 1) {
         return `Plus que ${formatDuration(
           { seconds: differenceInSeconds(new Date(closesAt), new Date()) },
-          { locale: fr }
+          { locale: fr },
         )} pour shotgun !!!!`;
       }
 
@@ -114,7 +114,8 @@
             {/each}
           </ul>
         {/if}
-        {#if group}{group.name} <IconChevronRight /> {/if}{name}
+        {#if group}{group.name} <IconChevronRight />
+        {/if}{name}
       </h3>
       <div class="description user-html">
         <!-- eslint-disable-next-line svelte/no-at-html-tags -->

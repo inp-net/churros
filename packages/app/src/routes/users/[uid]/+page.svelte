@@ -32,6 +32,7 @@
   import InputText from '$lib/components/InputText.svelte';
   import { tooltip } from '$lib/tooltip';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
     instagram: IconInstagram,
@@ -57,7 +58,7 @@
     return {
       ...findUser(rootUid)!,
       children: children.map((child) =>
-        typeof child === 'string' ? { ...findUser(child)!, children: [] } : makeFamilyTree(child)
+        typeof child === 'string' ? { ...findUser(child)!, children: [] } : makeFamilyTree(child),
       ),
     };
   }
@@ -281,7 +282,7 @@
                   {name}
                   <strong class="price"
                     >{new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
-                      price
+                      price,
                     )}</strong
                   >
                 {/if}
@@ -444,7 +445,7 @@
     column-gap: 0.5rem;
   }
 
-  @media (max-width: 600px) {
+  @media (width <= 600px) {
     dl {
       grid-template-columns: 1fr;
     }
@@ -522,7 +523,7 @@
     margin: 0 auto;
   }
 
-  @media (min-width: 1000px) {
+  @media (width >= 1000px) {
     .content {
       display: grid;
       grid-template-areas: 'header header' 'contribute contribute' 'groups groups' 'family articles';

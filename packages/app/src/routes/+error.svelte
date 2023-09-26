@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { browser } from '$app/environment';
+  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { onDestroy, onMount } from 'svelte';
 
@@ -10,55 +10,55 @@
 
   onMount(() => {
     if (browser) {
-    if (status === 404) document.documentElement.classList.add('error-404');
-    document.documentElement.classList.add('errored')
+      if (status === 404) document.documentElement.classList.add('error-404');
+      document.documentElement.classList.add('errored');
     }
   });
 
   onDestroy(() => {
     if (browser) {
-    if (status === 404) document.documentElement.classList.remove('error-404');
-    document.documentElement.classList.remove('errored')
+      if (status === 404) document.documentElement.classList.remove('error-404');
+      document.documentElement.classList.remove('errored');
     }
   });
 </script>
 
-  <div class="err-{status}">
-{#if status === 401}
-  <h1>Erreur 401</h1>
-  <p>Vous n'avez pas les droits requis pour accéder à cette page.</p>
-{:else if status === 403}
-  <h1>Erreur 403</h1>
-  <p>Accès interdit.</p>
-{:else if status === 404}
+<div class="err-{status}">
+  {#if status === 401}
+    <h1>Erreur 401</h1>
+    <p>Vous n'avez pas les droits requis pour accéder à cette page.</p>
+  {:else if status === 403}
+    <h1>Erreur 403</h1>
+    <p>Accès interdit.</p>
+  {:else if status === 404}
     <img src="/404.svg" alt="404" />
     <p>Cette page n'existe pas.</p>
-{:else if error}
-  <h1>Erreur {status}</h1>
-  <p>{error.message}</p>
-{:else}
-  <h1>Erreur {status}</h1>
-  <p>C'est tout cassé.</p>
-{/if}
-  </div>
+  {:else if error}
+    <h1>Erreur {status}</h1>
+    <p>{error.message}</p>
+  {:else}
+    <h1>Erreur {status}</h1>
+    <p>C'est tout cassé.</p>
+  {/if}
+</div>
 
 <style lang="scss">
-    :root.error-404 {
-      --bg: #000;
-      --text: #25bf22;
-      --border: #25bf22;
-      --primary-link: #54fe54;
-    }
+  :root.error-404 {
+    --bg: #000;
+    --text: #25bf22;
+    --border: #25bf22;
+    --primary-link: #54fe54;
+  }
 
-    :global(.errored .page) {
-      display: flex;
-    }
+  :global(.errored .page) {
+    display: flex;
+  }
 
-    :global(.errored .layout) {
-      flex: 1;
-    }
+  :global(.errored .layout) {
+    flex: 1;
+  }
 
-  [class^=err]:not(.err-404) {
+  [class^='err']:not(.err-404) {
     display: flex;
     flex: 1;
     flex-direction: column;

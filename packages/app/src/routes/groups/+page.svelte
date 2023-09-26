@@ -11,15 +11,15 @@
 
   const listTrees = createForest(
     data.groups.filter((g) => g.type === GroupType.List),
-    { idKey: 'groupId' }
+    { idKey: 'groupId' },
   );
   const studentAssociationSections = createForest(
     data.groups.filter((g) => g.type === GroupType.StudentAssociationSection),
-    { idKey: 'groupId' }
+    { idKey: 'groupId' },
   );
   const clubsAssos = createForest(
     data.groups.filter((g) => [GroupType.Association, GroupType.Club].includes(g.type)),
-    { idKey: 'groupId' }
+    { idKey: 'groupId' },
   );
 
   function findNumber(g: { description: string }): number {

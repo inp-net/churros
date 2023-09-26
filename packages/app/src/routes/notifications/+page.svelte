@@ -49,7 +49,7 @@
     const sw = await navigator.serviceWorker.ready;
     const subscription = await sw.pushManager.getSubscription();
     subscribed = data.notificationSubscriptions.some(
-      ({ endpoint }) => endpoint === subscription?.endpoint
+      ({ endpoint }) => endpoint === subscription?.endpoint,
     );
   }
 
@@ -107,7 +107,7 @@
             keys: {
               auth: await arrayBufferToBase64(subscription.getKey('auth') ?? new ArrayBuffer(0)),
               p256dh: await arrayBufferToBase64(
-                subscription.getKey('p256dh') ?? new ArrayBuffer(0)
+                subscription.getKey('p256dh') ?? new ArrayBuffer(0),
               ),
             },
           },

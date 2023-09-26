@@ -5,7 +5,13 @@
   import Fuse from 'fuse.js';
   import InputField from './InputField.svelte';
 
-type Subject = { uid?: string; name: string; shortName: string; minors: Array<{ name: string }>; majors: Array<{name: string}> };
+  type Subject = {
+    uid?: string;
+    name: string;
+    shortName: string;
+    minors: Array<{ name: string }>;
+    majors: Array<{ name: string }>;
+  };
   export let object: Subject | undefined;
   export let uid: string | undefined;
 
@@ -20,11 +26,11 @@ type Subject = { uid?: string; name: string; shortName: string; minors: Array<{ 
         name: true,
         shortName: true,
         majors: {
-          name: true
+          name: true,
         },
         minors: {
-          name: true
-        }
+          name: true,
+        },
       },
     }));
   });
@@ -34,18 +40,25 @@ type Subject = { uid?: string; name: string; shortName: string; minors: Array<{ 
   <InputSearchObject
     {clearable}
     search={(q) =>
-      new Fuse(subjects.map(s => ({
-        ...s,
-      })), {
-        keys: ['name', 'uid', 'shortName'],
-      })
+      new Fuse(
+        subjects.map((s) => ({
+          ...s,
+        })),
+        {
+          keys: ['name', 'uid', 'shortName'],
+        },
+      )
         .search(q)
         .map((r) => r.item)}
     bind:object
     bind:value={uid}
     valueKey="uid"
     labelKey="name"
+  >
+    <span class="label" slot="item" let:item
+      >{item.shortName || item.name} · {[...item.majors, ...item.minors]
+        .map((s) => s.name)
+        .join(', ')}</span
     >
-<span class="label" slot="item" let:item>{item.shortName || item.name} · {[...item.majors, ...item.minors].map(s => s.name).join(', ')}</span>
-</InputSearchObject>
+  </InputSearchObject>
 </InputField>

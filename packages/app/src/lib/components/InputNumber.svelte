@@ -8,7 +8,7 @@
   export let errors: string[] | undefined = [];
   export let initial: string | undefined = undefined;
   export let placeholder: string | undefined = undefined;
-  export let unit = ""
+  export let unit = '';
   export let value: number;
   export let required = false;
   export let autocomplete: string | undefined = undefined;

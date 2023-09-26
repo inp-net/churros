@@ -99,7 +99,7 @@
 
   function toSortingQueryParam(
     sortBy: (typeof COLUMNS)[number][0],
-    direction: typeof sortDirection
+    direction: typeof sortDirection,
   ) {
     return `${direction === 'descending' ? '-' : ''}${sortBy}`;
   }
@@ -115,7 +115,7 @@
 
   function compareRegistrations(
     sortBy: (typeof COLUMNS)[number][0],
-    sortDirection: 'ascending' | 'descending'
+    sortDirection: 'ascending' | 'descending',
   ): (a: Registration, b: Registration) => number {
     const desc = sortDirection === 'descending';
     const benefUser = (r: Registration) =>
@@ -256,7 +256,7 @@
         href="data:application/octet-stream;charset=utf-8,{encodeURIComponent(csvContents ?? '')}"
         download={`reservations-${$page.params.group}-${$page.params.uid}-${format(
           new Date(),
-          "yyyy-MM-dd-HH'h'mm"
+          "yyyy-MM-dd-HH'h'mm",
         )}.csv`}>Exporter en .csv</ButtonSecondary
       >
     {/await}
@@ -288,12 +288,12 @@
                     ? sortDirection === 'ascending'
                       ? 'descending'
                       : 'ascending'
-                    : 'ascending'
-                )
+                    : 'ascending',
+                ),
               );
               window.history.pushState(undefined, '', $page.url.href);
               [sortBy, sortDirection] = fromSortingQueryParam(
-                $page.url.searchParams.get('sort') ?? '-date'
+                $page.url.searchParams.get('sort') ?? '-date',
               );
             }}
             ><div class="inner">
@@ -420,7 +420,11 @@
               help={'Marquer comme ' + (paid ? 'non payée' : 'payée')}
               on:click={async () => updatePaidStatus(!paid, registration)}
             >
-              {#if paid} <IconCashOff /> {:else} <IconCash /> {/if}
+              {#if paid}
+                <IconCashOff />
+              {:else}
+                <IconCash />
+              {/if}
             </ButtonGhost>
             {#if !verifiedAt}
               <ButtonGhost

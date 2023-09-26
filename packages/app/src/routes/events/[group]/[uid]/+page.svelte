@@ -68,7 +68,7 @@
     </h2>
 
     <ul class="nobullet">
-      {#each tickets.sort( (a, b) => (a.group?.name ?? '').localeCompare(b.group?.name ?? '') ) as { id, ...ticket } (id)}
+      {#each tickets.sort( (a, b) => (a.group?.name ?? '').localeCompare(b.group?.name ?? ''), ) as { id, ...ticket } (id)}
         <li>
           <ItemTicket {...ticket} event={data.event} />
         </li>

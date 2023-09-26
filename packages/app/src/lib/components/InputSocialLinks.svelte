@@ -26,7 +26,7 @@
     (name) => ({
       name,
       value: '',
-    })
+    }),
   );
   export let value: typeof initial = initial;
   export let required = false;
@@ -36,6 +36,7 @@
     return value.findIndex(({ name: n }) => n === name);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<(typeof names)[number], typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
     instagram: IconInstagram,

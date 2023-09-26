@@ -28,7 +28,7 @@
         description: 'Hello There Private From Penguins Of Madagascar GIF',
         width: 220,
         height: 220,
-        gif: 'https://media.tenor.com/pvFJwncehzIAAAAM/hello-there-private-from-penguins-of-madagascar.gif'
+        gif: 'https://media.tenor.com/pvFJwncehzIAAAAM/hello-there-private-from-penguins-of-madagascar.gif',
       }}
     />
   </div>
@@ -52,7 +52,7 @@
 
             const subscription = await sw.pushManager.subscribe({
               userVisibleOnly: true,
-              applicationServerKey: env.PUBLIC_VAPID_KEY
+              applicationServerKey: env.PUBLIC_VAPID_KEY,
             });
             if (!subscription) return;
 
@@ -66,19 +66,19 @@
                   endpoint,
                   keys: {
                     auth: await arrayBufferToBase64(
-                      subscription.getKey('auth') ?? new ArrayBuffer(0)
+                      subscription.getKey('auth') ?? new ArrayBuffer(0),
                     ),
                     p256dh: await arrayBufferToBase64(
-                      subscription.getKey('p256dh') ?? new ArrayBuffer(0)
-                    )
-                  }
+                      subscription.getKey('p256dh') ?? new ArrayBuffer(0),
+                    ),
+                  },
                 },
                 {
                   id: true,
                   expiresAt: true,
-                  endpoint: true
-                }
-              ]
+                  endpoint: true,
+                },
+              ],
             });
           }
         }}>Activer les notifs</ButtonSecondary

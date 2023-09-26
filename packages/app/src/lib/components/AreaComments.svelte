@@ -28,7 +28,7 @@
   let replyingTo: { body: string; inReplyToId: string } = { body: '', inReplyToId: '' };
 
   async function addComment(
-    comment: { body: string; inReplyToId: string } | undefined = undefined
+    comment: { body: string; inReplyToId: string } | undefined = undefined,
   ) {
     const { upsertComment } = await $zeus.mutate({
       upsertComment: [
@@ -80,7 +80,7 @@
       ],
     });
     comments.edges = comments.edges.map(({ node }) =>
-      node.id === upsertComment.id ? { node: upsertComment } : { node }
+      node.id === upsertComment.id ? { node: upsertComment } : { node },
     );
   }
   async function reply() {

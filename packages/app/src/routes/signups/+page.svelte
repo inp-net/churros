@@ -16,7 +16,7 @@
 
   const removeRow = (email: string) => {
     data.userCandidates.edges = data.userCandidates.edges.filter(
-      ({ node }) => node.email !== email
+      ({ node }) => node.email !== email,
     );
   };
 

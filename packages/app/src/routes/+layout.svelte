@@ -68,9 +68,9 @@
           title: true,
           bodyHtml: true,
           warning: true,
-          id: true
-        }
-      ]
+          id: true,
+        },
+      ],
     });
     announcements = announcementsNow;
   });

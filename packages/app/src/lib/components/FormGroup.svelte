@@ -14,7 +14,7 @@
   import InputCheckbox from './InputCheckbox.svelte';
   import InputListOfGroups from './InputListOfGroups.svelte';
   import InputSchool from './InputSchool.svelte';
-    import InputStudentAssociation from './InputStudentAssociation.svelte';
+  import InputStudentAssociation from './InputStudentAssociation.svelte';
 
   export let data: PageData;
 
@@ -74,7 +74,7 @@
             type,
             related: related.map(({ uid }) => uid),
             schoolUid: school?.uid,
-            studentAssociationUid: studentAssociation?.uid
+            studentAssociationUid: studentAssociation?.uid,
           },
           {
             __typename: true,
@@ -103,7 +103,12 @@
 
   <div class="side-by-side">
     <InputSchool clearable label="École de rattachement" bind:object={school} uid={school?.uid} />
-    <InputStudentAssociation clearable label="AE de rattachement" bind:object={studentAssociation} uid={studentAssociation?.uid}></InputStudentAssociation>
+    <InputStudentAssociation
+      clearable
+      label="AE de rattachement"
+      bind:object={studentAssociation}
+      uid={studentAssociation?.uid}
+    ></InputStudentAssociation>
   </div>
 
   <InputCheckbox label="Auto-joignable" bind:value={selfJoinable} />

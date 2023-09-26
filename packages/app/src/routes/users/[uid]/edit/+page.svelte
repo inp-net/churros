@@ -135,7 +135,7 @@
 
     if (deleteGodchild) {
       data.user.godchildren = data.user.godchildren.filter(
-        (godchild) => godchild.uid !== godchildUid
+        (godchild) => godchild.uid !== godchildUid,
       );
     }
   };
@@ -155,7 +155,7 @@
 
     if (data.user.outgoingGodparentRequests.some((req) => req.id === id)) {
       data.user.outgoingGodparentRequests = data.user.outgoingGodparentRequests.filter(
-        (req) => req.id !== id
+        (req) => req.id !== id,
       );
       return;
     }
@@ -163,7 +163,7 @@
     const { godchild } = data.user.incomingGodparentRequests.find((req) => req.id === id)!;
 
     data.user.incomingGodparentRequests = data.user.incomingGodparentRequests.filter(
-      (req) => req.id !== id
+      (req) => req.id !== id,
     );
     if (accept) data.user.godchildren = [...data.user.godchildren, godchild];
   };
@@ -343,10 +343,10 @@
               await Promise.all(
                 data.me.credentials
                   .filter(({ type, active }) => type === CredentialType.Token && !active)
-                  .map(async ({ id }) => deleteToken(id, false))
+                  .map(async ({ id }) => deleteToken(id, false)),
               );
               const activeSession = data.me.credentials.find(
-                ({ type, active }) => type === CredentialType.Token && active
+                ({ type, active }) => type === CredentialType.Token && active,
               );
               if (activeSession) await deleteToken(activeSession.id, true);
             }}>Tout déconnecter</ButtonSecondary

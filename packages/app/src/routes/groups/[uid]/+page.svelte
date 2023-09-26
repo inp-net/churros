@@ -37,6 +37,7 @@
   import { tooltip } from '$lib/tooltip';
   import { groupLogoSrc } from '$lib/logos';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
     instagram: IconInstagram,
@@ -65,7 +66,7 @@
 
   $: clubBoard = group.members?.filter(
     ({ president, vicePresident, treasurer, secretary }) =>
-      president || vicePresident || treasurer || secretary
+      president || vicePresident || treasurer || secretary,
   );
 
   $: onClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
@@ -75,7 +76,7 @@
   $: ({ group } = data);
 
   $: canEditDetails = Boolean(
-    $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups
+    $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups,
   );
   $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || onClubBoard);
   $: canEditEvents = canEditArticles;
@@ -84,7 +85,7 @@
       myPermissions?.canEditMembers ||
       onClubBoard ||
       $me?.canEditGroups ||
-      $me?.canEditUsers
+      $me?.canEditUsers,
   );
 
   const joinGroup = async (groupUid: string) => {
@@ -367,7 +368,7 @@
     margin-top: 1rem;
   }
 
-  @media (min-width: 1000px) {
+  @media (width >= 1000px) {
     section h2 {
       justify-content: start;
       text-align: left;

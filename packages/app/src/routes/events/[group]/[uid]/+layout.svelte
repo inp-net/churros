@@ -34,7 +34,7 @@
         return Boolean(
           $me?.admin ||
             manager()?.canVerifyRegistrations ||
-            data.event.group.members.some((m) => m.member.uid === $me?.uid && m.canScanEvents)
+            data.event.group.members.some((m) => m.member.uid === $me?.uid && m.canScanEvents),
         );
       }
 

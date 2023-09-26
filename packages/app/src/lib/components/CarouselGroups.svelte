@@ -87,7 +87,7 @@
   $: horizontalTranslation = slideNeeded
     ? Math.max(
         -(nbGroups - nbVisibles) * groupsWidth,
-        Math.min(-groupsWidth * offset + distance, 0)
+        Math.min(-groupsWidth * offset + distance, 0),
       )
     : 0;
 </script>
@@ -164,7 +164,7 @@
     left: 0.5em;
   }
 
-  @media only screen and (max-width: 600px) {
+  @media only screen and (width <= 600px) {
     .arrow {
       width: 2em;
       height: 2em;

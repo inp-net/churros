@@ -10,10 +10,11 @@
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
-    import AreaComments from '$lib/components/AreaComments.svelte';
+  import AreaComments from '$lib/components/AreaComments.svelte';
 
   export let data: PageData;
-  let { author, publishedAt, links, title, bodyHtml, group, pictureFile, event, comments } = data.article;
+  let { author, publishedAt, links, title, bodyHtml, group, pictureFile, event, comments } =
+    data.article;
   $: canEditArticles =
     $me?.admin ||
     $me?.groups.some(({ group: { uid }, canEditArticles }) => uid === group.uid && canEditArticles);
@@ -22,7 +23,7 @@
     $me?.canEditGroups ||
     (Boolean(author?.id === $me?.id) &&
       $me?.groups.some(
-        ({ canEditArticles, group }) => group.id === data.article.group.id && canEditArticles
+        ({ canEditArticles, group }) => group.id === data.article.group.id && canEditArticles,
       ));
 </script>
 
@@ -80,7 +81,7 @@
 
   <section class="comments">
     <h2>Commentaires</h2>
-    <AreaComments bind:comments connection={{articleId: data.article.id}}></AreaComments>
+    <AreaComments bind:comments connection={{ articleId: data.article.id }}></AreaComments>
   </section>
 </div>
 
@@ -118,7 +119,8 @@
     gap: 1rem;
   }
 
-  .event h2, .comments h2 {
+  .event h2,
+  .comments h2 {
     margin-bottom: 1rem;
   }
 
