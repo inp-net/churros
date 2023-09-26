@@ -4,6 +4,7 @@
   import IconCanEditMembers from '~icons/mdi/account-edit-outline';
   import IconCanEditPosts from '~icons/mdi/text-box-edit-outline';
   import IconCanScanEvents from '~icons/mdi/qrcode';
+  export let small = false;
   export let fullName: string;
   export let role = '';
   export let pictureFile: string;
@@ -15,7 +16,7 @@
   const src = `${env.PUBLIC_STORAGE_URL}${pictureFile}`;
 </script>
 
-<svelte:element this={href ? 'a' : 'div'} class:highlighted class="person" {href}>
+<svelte:element this={href ? 'a' : 'div'} class:small class:highlighted class="person" {href}>
   <div class="img">
     {#if pictureFile}
       <img {src} alt={fullName} />
@@ -86,6 +87,10 @@
     text-align: center;
     background-color: var(--muted-bg);
     border-radius: 50%;
+  }
+
+  .person.small .img {
+    --size: 1.75em;
   }
 
   .person .img img {

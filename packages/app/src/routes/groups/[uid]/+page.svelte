@@ -37,6 +37,7 @@
   import { tooltip } from '$lib/tooltip';
   import { groupLogoSrc } from '$lib/logos';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
     instagram: IconInstagram,
@@ -367,7 +368,7 @@
     margin-top: 1rem;
   }
 
-  @media (min-width: 1000px) {
+  @media (width >= 1000px) {
     section h2 {
       justify-content: start;
       text-align: left;

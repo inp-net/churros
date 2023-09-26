@@ -35,7 +35,7 @@ const ID_PREFIXES_TO_TYPENAMES = {
   subj: 'Subject',
   doc: 'Document',
   comment: 'Comment',
-};
+} as const;
 /* end @generated from schema */
 
 function reverseMap<K extends string, V extends string>(obj: Record<K, V>): Record<V, K> {

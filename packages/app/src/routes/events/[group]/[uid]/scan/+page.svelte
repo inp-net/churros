@@ -35,6 +35,7 @@
     [RegistrationVerificationState.OtherEvent]: [50, 50, 50, 50],
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const STATE_TO_ICON: Record<RegistrationVerificationState, typeof SvelteComponent<any>> = {
     [RegistrationVerificationState.Ok]: IconCheck,
     [RegistrationVerificationState.AlreadyVerified]: IconRepeatOff,
@@ -519,10 +520,7 @@
   /* stylelint-disable selector-id-pattern */
   #reader :global(#reader__scan_region) {
     position: fixed !important;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    inset: 0;
     z-index: -1;
     width: 100vw;
     height: 100vh;

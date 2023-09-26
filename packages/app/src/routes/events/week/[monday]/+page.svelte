@@ -87,10 +87,7 @@
     {:else}
       {#each daysOfWeek as day}
         <section class="day">
-          <CalendarDay
-            showMonth={[...new Set(daysOfWeek.map((d) => d.getMonth()))].length > 1}
-            {day}
-          />
+          <CalendarDay showMonth={new Set(daysOfWeek.map((d) => d.getMonth())).size > 1} {day} />
           <div class="events-of-day">
             {#each events.filter((e) => isSameDay(e.startsAt, day)) as event}
               <CardEvent

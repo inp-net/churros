@@ -221,7 +221,7 @@
     text-align: justify;
   }
 
-  @media (max-width: 1000px) {
+  @media (width <= 1000px) {
     dialog {
       border-radius: 0;
     }

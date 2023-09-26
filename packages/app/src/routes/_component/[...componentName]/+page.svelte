@@ -56,7 +56,7 @@
       {/if}
     </main>
     <section class="props">
-      {#each Object.entries(props) as [key, value] (key)}
+      {#each Object.keys(props) as key (key)}
         <label for={`prop-${key}`}
           >{key}
           <input id={`prop-${key}`} type="text" bind:value={props[key]} />

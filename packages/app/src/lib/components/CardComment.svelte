@@ -2,6 +2,7 @@
   import IconReply from '~icons/mdi/reply';
   import IconDelete from '~icons/mdi/delete-outline';
   import IconEdit from '~icons/mdi/edit-outline';
+  import IconCancelEditing from '~icons/mdi/close';
   import IconFinishEditing from '~icons/mdi/check';
   import { isSameSecond } from 'date-fns';
   import AvatarPerson from './AvatarPerson.svelte';
@@ -12,6 +13,7 @@
   import InputLongText from './InputLongText.svelte';
   import { me } from '$lib/session';
   import ButtonGhost from './ButtonGhost.svelte';
+  import { removeIdPrefix } from '$lib/typenames';
 
   const dispatch = createEventDispatcher();
 
@@ -34,13 +36,28 @@
   }> = [];
 </script>
 
+<div class="comment-jump-to-anchor" id="comment-{removeIdPrefix('Comment', id)}" />
+
 <article class="comment">
+  <div class="metadata">
+    {#if author}
+      <AvatarPerson small href="/users/{author.uid}" {...author} />
+    {:else}
+      <AvatarPerson small pictureFile="" href="" fullName="???" />
+    {/if}
+    <div class="date muted">
+      {#if !isSameSecond(createdAt, updatedAt ?? createdAt)}
+        Modifié le {formatDateTime(updatedAt)}{:else}
+        Ajouté le {formatDateTime(createdAt)}
+      {/if}
+    </div>
+  </div>
   <div class="body-and-actions">
     <div class="body">
       {#if editing}
         <form
           on:submit|preventDefault={() => {
-            dispatch('edit', body);
+            dispatch('edit', [id, body]);
             editing = false;
           }}
         >
@@ -51,7 +68,7 @@
             label=""
             rich
             bind:value={body}
-          ></InputLongText>
+          />
         </form>
       {:else}
         <!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -62,45 +79,40 @@
       <div class="actions">
         {#if editing}
           <ButtonGhost
+            class="success"
             on:click={() => {
-              dispatch('edit', body);
+              dispatch('edit', [id, body]);
               editing = false;
             }}><IconFinishEditing /></ButtonGhost
+          >
+          <ButtonGhost
+            help="Annuler les modifications"
+            class="danger"
+            on:click={() => {
+              editing = false;
+            }}><IconCancelEditing /></ButtonGhost
           >
         {:else}
           <ButtonGhost
             on:click={() => {
               editing = true;
-            }}><IconEdit></IconEdit></ButtonGhost
+            }}><IconEdit /></ButtonGhost
+          >
+          <ButtonGhost
+            class="danger"
+            on:click={() => {
+              dispatch('delete', id);
+            }}><IconDelete /></ButtonGhost
           >
         {/if}
-        <ButtonGhost
-          class="danger"
-          on:click={() => {
-            dispatch('delete', id);
-          }}><IconDelete></IconDelete></ButtonGhost
-        >
       </div>
     {/if}
-  </div>
-  <div class="metadata">
-    {#if author}
-      <AvatarPerson href="/users/{author.uid}" {...author}></AvatarPerson>
-    {:else}
-      <AvatarPerson pictureFile="" href="" fullName="???"></AvatarPerson>
-    {/if}
-    <div class="date muted">
-      {#if !isSameSecond(createdAt, updatedAt ?? createdAt)}
-        Modifié le {formatDateTime(updatedAt)}{:else}
-        Ajouté le {formatDateTime(createdAt)}
-      {/if}
-    </div>
   </div>
 </article>
 <ul class="replies nobullet">
   {#each replies as comment}
     <div class="reply">
-      <svelte:self on:edit on:delete canReply={false} {...comment}></svelte:self>
+      <svelte:self on:edit on:delete canReply={false} {...comment} />
     </div>
   {/each}
 </ul>
@@ -114,6 +126,12 @@
         icon={IconReply}>Répondre</ButtonInk
       >
     {:else}
+      <ButtonInk
+        on:click={() => {
+          replyingTo = { body: '', inReplyToId: '' };
+        }}
+        icon={IconCancelEditing}>Annuler</ButtonInk
+      >
       <form
         class="new-reply"
         on:submit|preventDefault={() => {
@@ -128,7 +146,7 @@
           rich
           bind:value={replyingTo.body}
           placeholder={'Ajouter une réponse'}
-        ></InputLongText>
+        />
         <ButtonSecondary submits>Répondre</ButtonSecondary>
       </form>
     {/if}
@@ -136,6 +154,13 @@
 {/if}
 
 <style>
+  .comment-jump-to-anchor {
+    position: relative;
+    top: -120px;
+    display: block;
+    visibility: hidden;
+  }
+
   .comment {
     display: flex;
     flex-direction: column;
@@ -165,7 +190,7 @@
     flex-wrap: wrap;
     align-items: end;
     justify-content: space-between;
-    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 
   .comment .metadata :global(.person) {
@@ -176,6 +201,7 @@
     display: flex;
     gap: 1rem;
     align-items: center;
+    margin-top: 0.5rem;
   }
 
   .new-reply :global(> :first-child),
@@ -195,7 +221,10 @@
   }
 
   .reply-area {
-    padding-left: 2rem;
     margin-top: 1rem;
+  }
+
+  .reply-area.has-replies {
+    padding-left: 2rem;
   }
 </style>

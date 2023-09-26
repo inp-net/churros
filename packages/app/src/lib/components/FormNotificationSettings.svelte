@@ -65,7 +65,7 @@
       ({ type, group }: { type: NotificationType; group?: undefined | { uid: string } }) =>
         type === t && (seldGroup ? seldGroup === group?.uid : !group);
 
-    return (ORDER_NOTIFICATION_TYPES as NotificationType[]).map((t) =>
+    return ORDER_NOTIFICATION_TYPES.map((t) =>
       notifSettings.some(predicate(t, seldGroup))
         ? {
             ...notifSettings.find(predicate(t, seldGroup))!,

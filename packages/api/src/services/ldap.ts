@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import type { Group, Major, School, User } from '@prisma/client';
+import type { Group, Major, School, User, StudentAssociation, GroupMember } from '@prisma/client';
 import ldap from 'ldapjs';
 import crypto from 'node:crypto';
 import { log } from '../objects/logs.js';
@@ -132,6 +132,32 @@ async function checkLdapUserByUidNumber(uidNumber: number): Promise<boolean> {
   });
 }
 
+async function checkGroupByGidNumber(gidNumber: number): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    const searchOptions: ldap.SearchOptions = {
+      scope: 'sub', // Search scope (subtree)
+      filter: `(gidNumber=${gidNumber})`, // Filter to search for the user by username
+    };
+
+    connectLdap().search(LDAP_BASE_DN, searchOptions, (error, searchResult) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      searchResult.on('searchEntry', (entry) => {
+        // If the user is found, return true
+        if (entry.pojo) resolve(true);
+      });
+
+      // Return false if the user is not found
+      searchResult.on('end', () => {
+        resolve(false);
+      });
+    });
+  });
+}
+
 async function findFreeUidNumber(min = 2000, max = 60_000): Promise<number | undefined> {
   if (max > 60_000) throw new Error('max uidNumber is 60000');
 
@@ -146,6 +172,22 @@ async function findFreeUidNumber(min = 2000, max = 60_000): Promise<number | und
   if (exist) return findFreeUidNumber(avgUidNumber + 1, max);
 
   return findFreeUidNumber(min, avgUidNumber);
+}
+
+async function findFreeGidNumber(min = 2000, max = 60_000): Promise<number | undefined> {
+  if (max > 60_000) throw new Error('max uidNumber is 60000');
+
+  const avgGidNumber = (min + max) / 2;
+  const exist = await checkGroupByGidNumber(avgGidNumber);
+  if (min === max) {
+    if (exist) return undefined;
+
+    return avgGidNumber;
+  }
+
+  if (exist) return findFreeGidNumber(avgGidNumber + 1, max);
+
+  return findFreeGidNumber(min, avgGidNumber);
 }
 
 async function queryLdapUser(username: string): Promise<LdapUser | null> {
@@ -524,15 +566,19 @@ async function resetLdapUserPassword(
   });
 }
 
-async function createLdapGroup(group: Group): Promise<void> {
+async function createLdapGroup(
+  group: Group & { studentAssociation: StudentAssociation & { school: School } } & {
+    members: Array<GroupMember & { user: User }>;
+  },
+): Promise<void> {
   return new Promise((resolve, reject) => {
-    const groupDn = `cn=${group.uid},ou=grp-informels,ou=groups,o=n7,${LDAP_BASE_DN}`;
+    const groupDn = `cn=${group.ldapUid},ou=grp-informels,ou=groups,o=${group.studentAssociation.school.uid},${LDAP_BASE_DN}`;
     const groupAttributes = {
       objectClass: ['top', 'posixGroup', 'Groupe'],
       displayName: group.name,
-      gidNumber: '',
+      gidNumber: findFreeGidNumber(),
       hasWebsite: 'FALSE',
-      memberUid: [],
+      memberUid: group.members.map((m) => m.user.uid),
     };
 
     connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
@@ -553,4 +599,46 @@ async function createLdapGroup(group: Group): Promise<void> {
   });
 }
 
-export { queryLdapUser, createLdapUser, resetLdapUserPassword, createLdapGroup };
+async function createLdapClub(
+  club: Group & { studentAssociation: StudentAssociation & { school: School } } & {
+    members: Array<GroupMember & { user: User }>;
+  },
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const clubDn = `cn=${club.ldapUid},ou=clubs,ou=groups,o=${club.studentAssociation.school.uid},${LDAP_BASE_DN}`;
+    const clubAttributes = {
+      objectClass: ['top', 'posixGroup', 'Groupe', 'Club'],
+      displayName: club.name,
+      gidNumber: findFreeGidNumber(),
+      hasWebsite: 'FALSE',
+      memberUid: club.members.map((m) => m.user.uid),
+      activite: 'club',
+      anneePassation: club.members.find((m) => m.president)?.user.graduationYear ?? 0,
+      ecole: `o=${club.studentAssociation.school.uid},${LDAP_BASE_DN}`,
+      local: club.address,
+      president: club.members.find((m) => m.president)?.user.uid,
+      secretaire: club.members.filter((m) => m.secretary).map((m) => m.user.uid),
+      tresorier: club.members.find((m) => m.treasurer)?.user.uid,
+      vicePresident: club.members.filter((m) => m.vicePresident).map((m) => m.user.uid),
+      typeClub: 'club',
+    };
+
+    connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
+      if (bindError) {
+        console.error('LDAP Bind Error:', bindError);
+        // Handle the bind error
+      } else {
+        connectLdap().add(clubDn, clubAttributes, (error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolve();
+        });
+      }
+    });
+  });
+}
+
+export { queryLdapUser, createLdapUser, resetLdapUserPassword, createLdapGroup, createLdapClub };

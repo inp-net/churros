@@ -21,13 +21,13 @@ import { differenceInSeconds, minutesToSeconds, subMinutes } from 'date-fns';
 import { fullName } from '../objects/users.js';
 
 if (
-  process.env['CONTACT_EMAIL'] &&
-  process.env['VAPID_PUBLIC_KEY'] &&
+  process.env.PUBLIC_CONTACT_EMAIL &&
+  process.env.PUBLIC_VAPID_KEY &&
   process.env.VAPID_PRIVATE_KEY
 ) {
   webpush.setVapidDetails(
-    `mailto:${process.env['CONTACT_EMAIL']}`,
-    process.env['VAPID_PUBLIC_KEY'],
+    `mailto:${process.env.PUBLIC_CONTACT_EMAIL}`,
+    process.env.PUBLIC_VAPID_KEY,
     process.env.VAPID_PRIVATE_KEY,
   );
 }
@@ -431,22 +431,23 @@ export async function notify<U extends User>(
       ...notif,
     };
     notif.data.subscriptionName = subscription.name;
-    if (
-      !canSendNotificationToUser(
-        subscription.owner.notificationSettings,
-        notif.data.type,
-        notif.data.group,
-      )
-    ) {
-      console.info(
-        `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
-          owner.id
-        }] Skipping since user has disabled ${notif.data.type} on ${
-          notif.data.group ?? 'global'
-        } notifications`,
-      );
-      continue;
-    }
+    // FIXME: waiting on <FormNotificationSetting> to not be broken anymore
+    // if (
+    //   !canSendNotificationToUser(
+    //     subscription.owner.notificationSettings,
+    //     notif.data.type,
+    //     notif.data.group,
+    //   )
+    // ) {
+    //   console.info(
+    //     `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
+    //       owner.id
+    //     }] Skipping since user has disabled ${notif.data.type} on ${
+    //       notif.data.group ?? 'global'
+    //     } notifications`,
+    //   );
+    //   continue;
+    // }
 
     try {
       await webpush.sendNotification(
@@ -458,6 +459,13 @@ export async function notify<U extends User>(
           },
         },
         JSON.stringify(notif),
+        {
+          vapidDetails: {
+            subject: `mailto:${process.env.PUBLIC_CONTACT_EMAIL}`,
+            publicKey: process.env.PUBLIC_VAPID_KEY,
+            privateKey: process.env.VAPID_PRIVATE_KEY,
+          },
+        },
       );
       await prisma.notification.create({
         data: {
