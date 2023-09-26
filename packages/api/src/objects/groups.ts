@@ -101,6 +101,14 @@ export const GroupType = builder.prismaNode('Group', {
         };
       },
     }),
+    coOrganizedEvents: t.relation('coOrganizedEvents', {
+      query(_, { user }) {
+        return {
+          where: visibleEventsPrismaQuery(user),
+          orderBy: { startsAt: 'desc' },
+        };
+      },
+    }),
     children: t.relation('children'),
     root: t.relation('familyRoot', { nullable: true }),
     related: t.relation('related'),

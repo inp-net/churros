@@ -362,6 +362,7 @@ model Group {
   school             School?             @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   studentAssociation StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   events             Event[]
+  coOrganizedEvents  Event[]             @relation("coOrganizer")
   lyiaAccounts       LydiaAccount[]
   tickets            Ticket[]            @relation("openTo")
   barWeeks           BarWeek[]
@@ -445,6 +446,7 @@ model Event {
   managers       EventManager[]
   author         User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   group          Group          @relation(fields: [groupId], references: [id])
+  coOrganizers   Group[]        @relation("coOrganizer")
   tickets        Ticket[]
   ticketGroups   TicketGroup[]
   articles       Article[]

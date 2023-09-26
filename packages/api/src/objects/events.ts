@@ -276,6 +276,7 @@ export const EventType = builder.prismaNode('Event', {
     ticketGroups: t.relation('ticketGroups'),
     articles: t.relation('articles'),
     group: t.relation('group'),
+    coOrganizers: t.relation('coOrganizers'),
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
@@ -616,6 +617,7 @@ builder.mutationField('upsertEvent', (t) =>
       startsAt: t.arg({ type: DateTimeScalar }),
       endsAt: t.arg({ type: DateTimeScalar }),
       managers: t.arg({ type: [ManagerOfEventInput] }),
+      coOrganizers: t.arg.stringList(),
     },
     async authScopes(_, { id, groupUid }, { user }) {
       const creating = !id;
@@ -661,6 +663,7 @@ builder.mutationField('upsertEvent', (t) =>
         title,
         visibility,
         frequency,
+        coOrganizers,
         recurringUntil,
       },
       { user },
@@ -718,6 +721,9 @@ builder.mutationField('upsertEvent', (t) =>
               canVerifyRegistrations: manager.canVerifyRegistrations,
             })),
           },
+          coOrganizers: {
+            connect: connectFromListOfUids(coOrganizers),
+          },
         },
         update: {
           description,
@@ -731,6 +737,9 @@ builder.mutationField('upsertEvent', (t) =>
           recurringUntil,
           startsAt,
           endsAt,
+          coOrganizers: {
+            connect: connectFromListOfUids(coOrganizers),
+          },
           managers:
             user?.admin ||
             oldEvent?.managers.some((m) => m.userId === user?.id && m.canEditPermissions)
@@ -981,7 +990,9 @@ builder.queryField('searchEvents', (t) =>
           id: {
             in: fuzzyIDs.map(({ id }) => id),
           },
-          ...(groupUid ? { group: { uid: groupUid } } : {}),
+          ...(groupUid
+            ? { OR: [{ group: { uid: groupUid } }, { coOrganizers: { some: { uid: groupUid } } }] }
+            : {}),
         },
         include: {
           managers: {

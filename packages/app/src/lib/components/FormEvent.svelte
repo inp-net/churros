@@ -31,6 +31,7 @@
   import InputLinks from './InputLinks.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputDate from './InputDate.svelte';
+  import InputListOfGroups from './InputListOfGroups.svelte';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
@@ -61,6 +62,7 @@
       upsertEvent: [
         {
           groupUid: event.group.uid,
+          coOrganizers: event.coOrganizers.map((g) => g.uid),
           contactMail: event.contactMail,
           description: event.description,
           endsAt: event.endsAt,
@@ -105,6 +107,9 @@
                 uid: true,
               },
               group: {
+                uid: true,
+              },
+              coOrganizers: {
                 uid: true,
               },
               contactMail: true,
@@ -309,6 +314,13 @@
       pictureFile: string;
       pictureFileDark: string;
     };
+    coOrganizers: Array<{
+      id: string;
+      uid: string;
+      name: string;
+      pictureFile: string;
+      pictureFileDark: string;
+    }>;
     managers: Array<{
       user: {
         uid: string;
@@ -357,6 +369,11 @@
       <FormPicture rectangular objectName="Event" bind:object={event} />
     {/if}
     <InputGroup required group={event.group} label="Groupe" bind:uid={event.group.uid} />
+    <InputListOfGroups
+      uids={event.coOrganizers.map((g) => g.uid)}
+      label="Co-organisé par"
+      bind:groups={event.coOrganizers}
+    ></InputListOfGroups>
     <InputText required label="Titre" maxlength={255} bind:value={event.title} />
     <InputSelectOne
       label="Visibilité"

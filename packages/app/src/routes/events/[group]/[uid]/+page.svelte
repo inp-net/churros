@@ -12,7 +12,16 @@
 
   export let data: PageData;
 
-  const { descriptionHtml, links, group, contactMail, articles, placesLeft, capacity } = data.event;
+  const {
+    descriptionHtml,
+    links,
+    group,
+    coOrganizers,
+    contactMail,
+    articles,
+    placesLeft,
+    capacity,
+  } = data.event;
 
   const tickets = data.ticketsOfEvent;
 
@@ -97,13 +106,17 @@
 
 <section class="organizer">
   <h2>Organisé par</h2>
-  <div class="organizer-name-and-contact">
-    <a class="organizer-name" href="/groups/{group.uid}">
-      <img src={groupLogoSrc($isDark, group)} alt="" />
-      {group.name}
-    </a>
-    <ButtonSecondary href="mailto:{contactMail}">Contact</ButtonSecondary>
-  </div>
+  <ul class="nobullet organizers">
+    {#each [group, ...coOrganizers] as g}
+      <li class="organizer-name-and-contact">
+        <a class="organizer-name" href="/groups/{g.uid}">
+          <img src={groupLogoSrc($isDark, g)} alt="" />
+          {g.name}
+        </a>
+        <ButtonSecondary href="mailto:{contactMail}">Contact</ButtonSecondary>
+      </li>
+    {/each}
+  </ul>
 </section>
 
 <style lang="scss">
@@ -163,6 +176,13 @@
 
   .ticket .places .left::after {
     width: 1px;
+  }
+
+  .organizers {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 0.5rem;
   }
 
   .organizer-name-and-contact {
