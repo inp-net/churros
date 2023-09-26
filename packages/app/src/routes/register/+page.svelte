@@ -98,6 +98,11 @@
   </Alert>
 {/if}
 
+<Alert theme="danger">
+  Attention, si vous avez déjà un compte sur l'ancien portail, il n'est pas nécessaire de vous
+  réinscrire. Utilisez simplement vos identifiants de l'ancien portail.
+</Alert>
+
 <style>
   h1 {
     margin-bottom: 2rem;
