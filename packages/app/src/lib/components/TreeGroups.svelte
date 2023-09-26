@@ -23,7 +23,7 @@
     <img src={groupLogoSrc($isDark, group)} alt={group.name} />
   </div>
   <div class="text">
-    <p class="name" style={(highlightUid === group.uid ? 'font-weight: bold;' : '' )}>
+    <p class="name">
       {group.name}
       {#if (group.school || group.studentAssociation) && showSchool}
         <span class="school">
@@ -48,7 +48,6 @@
 {/if}
 
 <style>
-
   .children {
     display: flex;
     flex-flow: column wrap;
@@ -97,7 +96,7 @@
     font-weight: bold;
     color: var(--primary-link);
   }
-
+  
   .school {
     font-size: 0.75em;
     font-weight: bold;
@@ -108,4 +107,13 @@
     margin-right: 0.25em;
     content: '·';
   }
+
+  .highlight .name{
+    font-weight: bold;
+  }
+
+  .highlight .description{
+    font-weight: bold;
+  }
+
 </style>
