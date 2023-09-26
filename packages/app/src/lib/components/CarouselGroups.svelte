@@ -11,7 +11,7 @@
     role?: string;
   }>;
 
-  const nbGroups = groups.length;
+  let nbGroups: number;
   export let go: (groupUid: string) => string = (uid) => `/groups/${uid}`;
 
   let groupsWidth = 0;
@@ -24,14 +24,14 @@
   let offset = 0;
 
   let slideNeeded = false;
+  let sliderContainer: HTMLElement | null;
+  let sliderWidth: number | undefined;
+  let group: HTMLElement | null | undefined;
 
   onMount(() => {
-    const sliderContainer = document.querySelector<HTMLElement>('.slider-container');
-    const sliderWidth = sliderContainer?.offsetWidth;
-    const group = sliderContainer?.querySelector<HTMLElement>('.group');
-    groupsWidth = group ? group.offsetWidth : 0;
-    nbVisibles = sliderWidth && groupsWidth ? sliderWidth / groupsWidth : 0;
-    slideNeeded = sliderWidth ? nbGroups * groupsWidth > sliderWidth : false;
+    sliderContainer = document.querySelector<HTMLElement>('.slider-container');
+    sliderWidth = sliderContainer?.offsetWidth;
+    group = sliderContainer?.querySelector<HTMLElement>('.group');
   });
 
   function decreaseOffset() {
@@ -83,6 +83,12 @@
     if (Math.abs(distance) >= 5) e.preventDefault();
     distance = 0;
   }
+
+  // eslint-disable-next-line no-sequences, @typescript-eslint/no-unused-expressions
+  $: (nbGroups = groups.length), (offset = 0);
+  $: groupsWidth = group ? group.offsetWidth : 0;
+  $: nbVisibles = sliderWidth && groupsWidth ? sliderWidth / groupsWidth : 0;
+  $: slideNeeded = sliderWidth ? nbGroups * groupsWidth > sliderWidth : false;
 
   $: horizontalTranslation = slideNeeded
     ? Math.max(
