@@ -892,6 +892,7 @@ builder.mutationField('upsertEvent', (t) =>
 export async function eventAccessibleByUser(
   event:
     | (EventPrisma & {
+        coOrganizers: Array<{ id: string; uid: string }>;
         managers: Array<{
           user: { uid: string };
 
@@ -924,7 +925,11 @@ export async function eventAccessibleByUser(
         .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
         .then((groups) => groups.flat());
 
-      return Boolean(ancestors.some(({ id }) => id === event.groupId));
+      return Boolean(
+        ancestors.some(({ id }) =>
+          [event.groupId, ...event.coOrganizers.map((g) => g.id)].includes(id),
+        ),
+      );
     }
 
     case Visibility.Private: {
