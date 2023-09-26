@@ -19,6 +19,7 @@ import { Prisma } from '@prisma/client';
 import { toHtml } from './markdown.js';
 import { differenceInSeconds, minutesToSeconds, subMinutes } from 'date-fns';
 import { fullName } from '../objects/users.js';
+import { mappedGetAncestors } from 'arborist';
 
 if (
   process.env.PUBLIC_CONTACT_EMAIL &&
@@ -104,11 +105,21 @@ export async function scheduleNewArticleNotification({
       )
         return;
       // If the article was set to restricted and/or the user is not in the group anymore
-      if (
-        article.visibility === Visibility.Restricted &&
-        !user.groups.some(({ group }) => group.id === article.groupId)
-      )
-        return;
+      if (article.visibility === Visibility.Restricted) {
+        // Get the user's groups and their ancestors
+        const ancestors = await prisma.group
+          // Get all groups in the same family as the user's groups
+          .findMany({
+            where: { familyId: { in: user.groups.map(({ group }) => group.familyId ?? group.id) } },
+            select: { id: true, parentId: true, uid: true },
+          })
+          // Get all ancestors of the groups
+          .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
+          // Flatten the ancestors into a single array
+          .then((groups) => groups.flat());
+
+        if (!ancestors.some(({ uid }) => uid === article.group.uid)) return;
+      }
 
       return {
         title: `Nouveau post de ${article.group.name}: ${article.title}`,
