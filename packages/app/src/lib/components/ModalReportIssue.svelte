@@ -121,9 +121,17 @@
         options={{ bug: 'Signaler un bug', feature: 'Proposer une idée' }}
         bind:value={issueType}
       />
-      <InputText required bind:value={title} label="Titre" />
+      <InputText
+        required
+        bind:value={title}
+        label={issueType === 'bug' ? 'Description précise' : 'Titre'}
+      />
       <InputLongText
+        required={issueType === 'bug'}
         label={issueType === 'bug' ? 'Comment reproduire ce bug?' : 'Décris précisément ton idée'}
+        placeholder={issueType === 'bug'
+          ? "Un bug non reproductible n'existe pas!"
+          : "Hésites pas même si tu pense que c'est “pas important”,\nc'est à nous de décider de l'importance d'une nouvelle fonctionnalité ;)"}
         bind:value={description}
       />
       <InputCheckbox
@@ -143,11 +151,15 @@
           <Alert theme="success"
             >Ton {#if issueType === 'bug'}bug a bien été signalé{:else}idée à bien était soumise{/if}.
             C'est <a href={link}>l'issue n°{issueNumber}</a>.
-            <ButtonSecondary href={link} icon={IconArrowRight}>Voir</ButtonSecondary>
+            <ButtonSecondary newTab insideProse href={link} icon={IconArrowRight}
+              >Voir</ButtonSecondary
+            >
           </Alert>
         {:else if errored}
           <Alert theme="danger"
             >Impossible de créer l'issue. <ButtonSecondary
+              insideProse
+              newTab
               href="https://git.inpt.fr/inp-net/churros/-/issues/new"
               >Créer l'issue sur le site</ButtonSecondary
             >
