@@ -41,7 +41,7 @@
   <ul class="nobullet children">
     {#each group.children as child}
       <li>
-        <svelte:self group={child} highlightUid={highlightUid}/>
+        <svelte:self group={child} {highlightUid}/>
       </li>
     {/each}
   </ul>

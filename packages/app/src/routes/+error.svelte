@@ -37,7 +37,7 @@
     <p>Cette page n'existe pas.</p>
 {:else if error}
   <h1>Erreur {status}</h1>
-  <p>{error.message}</p>
+  <p class = "errortext">{error.message}</p>
   <ButtonSecondary on:click={() => { window.location.reload(); }}>Recharger</ButtonSecondary>
 {:else}
   <h1>Erreur {status}</h1>
@@ -68,6 +68,10 @@
     align-items: center;
     justify-content: center;
     height: 100%;
+  }
+
+  .errortext{
+    margin-bottom: 1rem;
   }
 
   .err-404 {
