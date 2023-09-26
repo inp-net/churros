@@ -3,27 +3,34 @@
 
   export let submitShortcut = false;
   export let value: string;
-  export let hint = "";
+  export let hint = '';
   export let label: string;
   export let required = false;
   export let rich = false;
-  export let placeholder = ""
+  export let placeholder = '';
 
-  let element: HTMLTextAreaElement
+  let element: HTMLTextAreaElement;
 
   function handleControlEnter(event: KeyboardEvent) {
     if (submitShortcut && event.ctrlKey && event.key === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
-      element.closest('form')?.requestSubmit()
+      element.closest('form')?.requestSubmit();
     }
   }
 </script>
 
-<InputField  {label} {required} hint={hint || (rich ? 'Syntaxe Markdown supportée' : undefined)}>
+<InputField {label} {required} hint={hint || (rich ? 'Syntaxe Markdown supportée' : undefined)}>
   <textarea
-  on:keypress={handleControlEnter}
-  bind:this={element}  bind:value on:input cols="30" rows="10" {...$$restProps} placeholder={placeholder + (submitShortcut ? '\nCtrl-Entrer pour envoyer' :'')} />
+    on:keypress={handleControlEnter}
+    bind:this={element}
+    bind:value
+    on:input
+    cols="30"
+    rows="10"
+    {...$$restProps}
+    placeholder={placeholder + (submitShortcut ? '\nCtrl-Entrer pour envoyer' : '')}
+  />
 </InputField>
 
 <style>

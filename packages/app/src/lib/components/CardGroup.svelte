@@ -49,7 +49,9 @@
     text-align: center;
     background-color: var(--muted-bg);
     border-radius: var(--radius-block);
-    transition: transform 0.25s ease, box-shadow 0.25s ease 0.1s;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease 0.1s;
   }
 
   .group:hover .img,

@@ -65,7 +65,7 @@
 
   $: clubBoard = group.members?.filter(
     ({ president, vicePresident, treasurer, secretary }) =>
-      president || vicePresident || treasurer || secretary
+      president || vicePresident || treasurer || secretary,
   );
 
   $: onClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
@@ -75,7 +75,7 @@
   $: ({ group } = data);
 
   $: canEditDetails = Boolean(
-    $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups
+    $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups,
   );
   $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || onClubBoard);
   $: canEditEvents = canEditArticles;
@@ -84,7 +84,7 @@
       myPermissions?.canEditMembers ||
       onClubBoard ||
       $me?.canEditGroups ||
-      $me?.canEditUsers
+      $me?.canEditUsers,
   );
 
   const joinGroup = async (groupUid: string) => {

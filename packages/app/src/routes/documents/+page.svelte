@@ -1,28 +1,26 @@
-
 <script lang="ts">
-    import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
-    import CardMajor from "$lib/components/CardMajor.svelte";
-import type { PageData } from "./$types";
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import CardMajor from '$lib/components/CardMajor.svelte';
+  import type { PageData } from './$types';
 
-    export let data: PageData;
+  export let data: PageData;
 </script>
 
-<Breadcrumbs root="/documents">
-</Breadcrumbs>
+<Breadcrumbs root="/documents"></Breadcrumbs>
 
 <ul class="nobullet">
-    {#each data.majors as major }
+  {#each data.majors as major}
     <li>
-        <CardMajor href="./{major.uid}" {...major}></CardMajor>
+      <CardMajor href="./{major.uid}" {...major}></CardMajor>
     </li>
-    {/each}
+  {/each}
 </ul>
 
 <style>
-    ul {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        margin-top: 2rem;
-    }
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
 </style>

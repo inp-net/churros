@@ -29,7 +29,9 @@
 <style lang="scss">
   a {
     color: var(--muted);
-    transition: outline 80ms ease-in, color 80ms ease-in;
+    transition:
+      outline 80ms ease-in,
+      color 80ms ease-in;
 
     &:hover,
     &:focus-visible {

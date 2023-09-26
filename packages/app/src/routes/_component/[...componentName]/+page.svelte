@@ -17,7 +17,7 @@
       }
 
       return [k, value];
-    })
+    }),
   );
 
   let title: string;

@@ -87,7 +87,7 @@
   $: horizontalTranslation = slideNeeded
     ? Math.max(
         -(nbGroups - nbVisibles) * groupsWidth,
-        Math.min(-groupsWidth * offset + distance, 0)
+        Math.min(-groupsWidth * offset + distance, 0),
       )
     : 0;
 </script>

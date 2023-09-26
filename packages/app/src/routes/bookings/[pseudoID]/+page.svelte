@@ -85,7 +85,13 @@
         }
       }}
     >
-      <InputText initial={$me?.phone} type="tel" label="Numéro de téléphone" maxlength={255} bind:value={phone} />
+      <InputText
+        initial={$me?.phone}
+        type="tel"
+        label="Numéro de téléphone"
+        maxlength={255}
+        bind:value={phone}
+      />
       <section class="submit">
         <ButtonPrimary loading={paymentLoading} submits
           >Payer {Intl.NumberFormat('fr-FR', {
@@ -145,7 +151,7 @@
       <dd>
         <a href="/events/{ticket.event.group.uid}/{ticket.event.uid}">{ticket.event.title}</a>
         {#if ticket.event.startsAt}({dateTimeFormatter.format(
-            new Date(ticket.event.startsAt)
+            new Date(ticket.event.startsAt),
           )}){/if}
       </dd>
       <dt>Date de réservation</dt>

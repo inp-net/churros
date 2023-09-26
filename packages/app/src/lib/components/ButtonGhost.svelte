@@ -47,24 +47,24 @@
     outline: 0 solid var(--ring);
 
     &:not(.disabled) {
-    cursor: pointer;
+      cursor: pointer;
 
-    &:focus-visible {
-      outline-width: 0.25rem;
-    }
-
-    &:hover,
-    &:focus-visible {
-      --text: var(--hover-text);
-
-      &:not(.dark-shadow) {
-        background: var(--hover-bg);
+      &:focus-visible {
+        outline-width: 0.25rem;
       }
 
-      &.dark-shadow {
-        background: rgba($color: #fff, $alpha: 50%);
+      &:hover,
+      &:focus-visible {
+        --text: var(--hover-text);
+
+        &:not(.dark-shadow) {
+          background: var(--hover-bg);
+        }
+
+        &.dark-shadow {
+          background: rgba($color: #fff, $alpha: 50%);
+        }
       }
     }
-  }
   }
 </style>

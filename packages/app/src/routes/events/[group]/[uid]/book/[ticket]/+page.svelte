@@ -95,7 +95,7 @@
           new URLSearchParams({
             done: upsertRegistration.data.id,
             ...(upsertRegistration.data.paid ? { paid: '' } : {}),
-          }).toString()
+          }).toString(),
       );
     }
   }

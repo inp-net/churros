@@ -58,7 +58,7 @@
 
   function computeDisplayedSettings(
     notifSettings: typeof settings,
-    seldGroup: typeof selectedGroup
+    seldGroup: typeof selectedGroup,
   ) {
     const predicate =
       (t: NotificationType, seldGroup: typeof selectedGroup) =>
@@ -77,7 +77,7 @@
             group: seldGroup ? availableGroups.find(({ uid }) => uid === seldGroup) : undefined,
             id: 'notifsetting:fake:' + nanoid(10),
             index: notifSettings.findIndex(predicate(t, seldGroup)),
-          }
+          },
     );
   }
 
@@ -110,7 +110,7 @@
           <InputCheckbox
             ternary
             labelNull="Réglage global ({settings.find(
-              (setting) => setting.type === type && setting.group === undefined
+              (setting) => setting.type === type && setting.group === undefined,
             )?.allow
               ? 'Oui'
               : 'Non'})"

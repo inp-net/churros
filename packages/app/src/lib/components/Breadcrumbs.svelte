@@ -1,13 +1,14 @@
 <script lang="ts">
-    import IconHome from "~icons/mdi/home";
-    import Breadcrumb from "./Breadcrumb.svelte";
+  import IconHome from '~icons/mdi/home';
+  import Breadcrumb from './Breadcrumb.svelte';
 
-  export let root = ""
+  export let root = '';
 </script>
+
 <div class="breadcrumbs">
-{#if root}
-      <Breadcrumb class="root" href={root}><IconHome></IconHome></Breadcrumb>
-{/if}
+  {#if root}
+    <Breadcrumb class="root" href={root}><IconHome></IconHome></Breadcrumb>
+  {/if}
   <slot />
 </div>
 
@@ -20,7 +21,7 @@
     overflow: hidden;
   }
 
-  .breadcrumbs  :global(.root .icon) {
+  .breadcrumbs :global(.root .icon) {
     height: 1.3em;
     margin-bottom: 0.1em;
   }

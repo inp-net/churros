@@ -15,8 +15,8 @@
   import { isOnClubBoard, roleEmojis } from '$lib/permissions';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import IconDownload from '~icons/mdi/download-outline';
-    import { page } from '$app/stores';
-    import { format } from 'date-fns';
+  import { page } from '$app/stores';
+  import { format } from 'date-fns';
 
   export let data: PageData;
   const { group } = data;
@@ -162,7 +162,7 @@
           : {
               ...member,
               president: upsertGroupMember.president ? false : member.president,
-            }
+            },
       );
       updatingMember.memberId = '';
     } catch (error: unknown) {
@@ -172,7 +172,7 @@
 
   function membersByImportance(
     a: (typeof data.group.members)[number],
-    b: (typeof data.group.members)[number]
+    b: (typeof data.group.members)[number],
   ): 1 | -1 | 0 {
     // President first, then treasurer, then vice-president, then secretary, then the rest, by date added
     if (a.president && !b.president) return -1;
@@ -195,7 +195,7 @@
   let searcher: Fuse<(typeof data.group.members)[number]>;
   $: searcher = new Fuse(
     data.group.members.filter(({ member: { yearTier } }) =>
-      promo === 'Vieux' ? yearTier >= 5 : promo === `${yearTier}A`
+      promo === 'Vieux' ? yearTier >= 5 : promo === `${yearTier}A`,
     ),
     {
       keys: [
@@ -207,40 +207,37 @@
         'memberId',
       ],
       shouldSort: true,
-    }
+    },
   );
 
   function shownMembers(
     search: string,
     promo: string,
-    members: Array<(typeof data.group.members)[number]>
+    members: Array<(typeof data.group.members)[number]>,
   ) {
     return search && searcher
       ? searcher.search(search).map(({ item }) => item)
       : members
           .filter(({ member: { yearTier } }) =>
-            promo === 'Vieux' ? yearTier >= 5 : `${yearTier}A` === promo
+            promo === 'Vieux' ? yearTier >= 5 : `${yearTier}A` === promo,
           )
           .sort(membersByImportance);
   }
 </script>
 
 <section class="search">
-
-    <div class="actions">
+  <div class="actions">
     {#await csv()}
       <ButtonSecondary icon={IconDownload} loading>Exporter en .csv</ButtonSecondary>
     {:then csvContents}
       <ButtonSecondary
         icon={IconDownload}
         href="data:application/octet-stream;charset=utf-8,{encodeURIComponent(csvContents ?? '')}"
-        download={`membres-${$page.params.uid}-${format(
-          new Date(),
-          "yyyy-MM-dd-HH'h'mm"
-        )}.csv`}>Exporter en .csv</ButtonSecondary
+        download={`membres-${$page.params.uid}-${format(new Date(), "yyyy-MM-dd-HH'h'mm")}.csv`}
+        >Exporter en .csv</ButtonSecondary
       >
     {/await}
-    </div>
+  </div>
   <InputSelectOne options={['1A', '2A', '3A', '4A', 'Vieux']} label="Promo" bind:value={promo} />
   <InputText bind:value={search} label="Rechercher">
     <svelte:fragment slot="before">
@@ -347,7 +344,8 @@
 </ul>
 
 <form class="add-member" on:submit|preventDefault={addGroupMember}>
-  <h2>Ajouter un membre
+  <h2>
+    Ajouter un membre
     <ButtonSecondary insideProse href="./bulk">Ajouter en masse</ButtonSecondary>
   </h2>
   <InputPerson
@@ -372,7 +370,7 @@
     justify-content: center;
     margin: 2rem 0 1rem;
   }
-  
+
   form.add-member {
     display: flex;
     flex-flow: column wrap;

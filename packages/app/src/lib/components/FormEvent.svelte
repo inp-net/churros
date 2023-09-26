@@ -30,7 +30,7 @@
   import AvatarPerson from './AvatarPerson.svelte';
   import InputLinks from './InputLinks.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
-    import InputDate from './InputDate.svelte';
+  import InputDate from './InputDate.svelte';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
@@ -385,123 +385,137 @@
           new Fuse(availableLydiaAccounts, { keys: ['name'] }).search(query).map((r) => r.item)}
       />
     </InputField>
-    <InputText label="E-mail de contact de l'orga" bind:value={event.contactMail} maxlength={255} type="email" />
+    <InputText
+      label="E-mail de contact de l'orga"
+      bind:value={event.contactMail}
+      maxlength={255}
+      type="email"
+    />
   </section>
   <section class="tickets">
     <h2>Récurrence</h2>
-    <InputCheckbox on:change={() => {
-      event.frequency = event.frequency === EventFrequency.Once ? EventFrequency.Weekly : EventFrequency.Once
-    }} label="L'évènement se répète" value={event.frequency !== EventFrequency.Once}></InputCheckbox>
+    <InputCheckbox
+      on:change={() => {
+        event.frequency =
+          event.frequency === EventFrequency.Once ? EventFrequency.Weekly : EventFrequency.Once;
+      }}
+      label="L'évènement se répète"
+      value={event.frequency !== EventFrequency.Once}
+    ></InputCheckbox>
     {#if event.frequency !== EventFrequency.Once}
-    <InputSelectOne label="Répétition" options={DISPLAY_EVENT_FREQUENCY} bind:value={event.frequency}></InputSelectOne>
-    <InputDate bind:value={event.recurringUntil} label="Jusqu'à"></InputDate>
+      <InputSelectOne
+        label="Répétition"
+        options={DISPLAY_EVENT_FREQUENCY}
+        bind:value={event.frequency}
+      ></InputSelectOne>
+      <InputDate bind:value={event.recurringUntil} label="Jusqu'à"></InputDate>
     {:else}
-    <h2>
-      Billets
+      <h2>
+        Billets
 
-      <div class="actions">
-        <ButtonSecondary
-          on:click={() => {
-            event.ticketGroups = [
-              ...event.ticketGroups,
-              {
-                id: nextTicketGroupId(),
-                name: '',
-                capacity: 0,
-                tickets: [],
-              },
-            ];
-          }}
-        >
-          <slot name="before">
-            <IconPlus aria-hidden="true" />
-          </slot>
-          Groupe
-        </ButtonSecondary>
-        <ButtonSecondary
-          on:click={() => {
-            const id = nextTicketId();
-            event.tickets = [...event.tickets, defaultTicket(id)];
-            expandedTicketId = id;
-          }}
-        >
-          <slot name="before">
-            <IconPlus aria-hidden="true" />
-          </slot>
-          Billet
-        </ButtonSecondary>
-      </div>
-    </h2>
-    <!-- Tickets inside of groups -->
-    {#if event.tickets.length + event.ticketGroups.length <= 0}
-      <p class="empty">Aucun billet</p>
-    {/if}
-    <section class="ticket-groups">
-      {#each event.ticketGroups as ticketGroup, i}
-        <article class="ticket-group">
-          <div class="side-by-side">
-            <InputText
-              label="Nom du groupe"
-              required
-              maxlength={255}
-              placeholder={ticketGroup.name}
-              bind:value={event.ticketGroups[i].name}
-            />
-            <InputNumber
-              label="Places dans le groupe"
-              bind:value={event.ticketGroups[i].capacity}
-            />
-          </div>
-          <section class="tickets-of-group">
-            {#each ticketGroup.tickets as ticket, j (ticket.id)}
-              <FormEventTicket
-                on:delete={() => {
-                  ticketGroup.tickets = ticketGroup.tickets.filter(({ id }) => id !== ticket.id);
-                }}
-                bind:expandedTicketId
-                bind:ticket={event.ticketGroups[i].tickets[j]}
-              />
-            {/each}
-          </section>
-          <section class="actions">
-            <ButtonSecondary
-              icon={IconPlus}
-              on:click={() => {
-                const id = nextTicketId();
-                event.ticketGroups[i].tickets = [
-                  ...event.ticketGroups[i].tickets,
-                  defaultTicket(id),
-                ];
-                expandedTicketId = id;
-              }}>Billet</ButtonSecondary
-            >
-            <ButtonSecondary
-              danger
-              on:click={() => {
-                if (ticketGroup.tickets.some((t) => expanded(t, expandedTicketId)))
-                  expandedTicketId = '';
-                event.ticketGroups = event.ticketGroups.filter((tg) => tg.id !== ticketGroup.id);
-              }}>Supprimer le groupe</ButtonSecondary
-            >
-          </section>
-        </article>
-      {/each}
-    </section>
-
-    <section class="simple-tickets">
-      {#each event.tickets as ticket (ticket.id)}
-        {#if !ticketIsInGroup(ticket)}
-          <FormEventTicket
-            on:delete={() => {
-              event.tickets = event.tickets.filter(({ id }) => id !== ticket.id);
+        <div class="actions">
+          <ButtonSecondary
+            on:click={() => {
+              event.ticketGroups = [
+                ...event.ticketGroups,
+                {
+                  id: nextTicketGroupId(),
+                  name: '',
+                  capacity: 0,
+                  tickets: [],
+                },
+              ];
             }}
-            bind:expandedTicketId
-            bind:ticket
-          />
-        {/if}
-      {/each}
-    </section>
+          >
+            <slot name="before">
+              <IconPlus aria-hidden="true" />
+            </slot>
+            Groupe
+          </ButtonSecondary>
+          <ButtonSecondary
+            on:click={() => {
+              const id = nextTicketId();
+              event.tickets = [...event.tickets, defaultTicket(id)];
+              expandedTicketId = id;
+            }}
+          >
+            <slot name="before">
+              <IconPlus aria-hidden="true" />
+            </slot>
+            Billet
+          </ButtonSecondary>
+        </div>
+      </h2>
+      <!-- Tickets inside of groups -->
+      {#if event.tickets.length + event.ticketGroups.length <= 0}
+        <p class="empty">Aucun billet</p>
       {/if}
+      <section class="ticket-groups">
+        {#each event.ticketGroups as ticketGroup, i}
+          <article class="ticket-group">
+            <div class="side-by-side">
+              <InputText
+                label="Nom du groupe"
+                required
+                maxlength={255}
+                placeholder={ticketGroup.name}
+                bind:value={event.ticketGroups[i].name}
+              />
+              <InputNumber
+                label="Places dans le groupe"
+                bind:value={event.ticketGroups[i].capacity}
+              />
+            </div>
+            <section class="tickets-of-group">
+              {#each ticketGroup.tickets as ticket, j (ticket.id)}
+                <FormEventTicket
+                  on:delete={() => {
+                    ticketGroup.tickets = ticketGroup.tickets.filter(({ id }) => id !== ticket.id);
+                  }}
+                  bind:expandedTicketId
+                  bind:ticket={event.ticketGroups[i].tickets[j]}
+                />
+              {/each}
+            </section>
+            <section class="actions">
+              <ButtonSecondary
+                icon={IconPlus}
+                on:click={() => {
+                  const id = nextTicketId();
+                  event.ticketGroups[i].tickets = [
+                    ...event.ticketGroups[i].tickets,
+                    defaultTicket(id),
+                  ];
+                  expandedTicketId = id;
+                }}>Billet</ButtonSecondary
+              >
+              <ButtonSecondary
+                danger
+                on:click={() => {
+                  if (ticketGroup.tickets.some((t) => expanded(t, expandedTicketId)))
+                    expandedTicketId = '';
+                  event.ticketGroups = event.ticketGroups.filter((tg) => tg.id !== ticketGroup.id);
+                }}>Supprimer le groupe</ButtonSecondary
+              >
+            </section>
+          </article>
+        {/each}
+      </section>
+
+      <section class="simple-tickets">
+        {#each event.tickets as ticket (ticket.id)}
+          {#if !ticketIsInGroup(ticket)}
+            <FormEventTicket
+              on:delete={() => {
+                event.tickets = event.tickets.filter(({ id }) => id !== ticket.id);
+              }}
+              bind:expandedTicketId
+              bind:ticket
+            />
+          {/if}
+        {/each}
+      </section>
+    {/if}
   </section>
   <section class="managers">
     <h2>
@@ -553,7 +567,7 @@
             <ButtonSecondary
               on:click={() => {
                 event.managers = event.managers.filter(
-                  ({ user }) => user?.uid !== manager.user?.uid
+                  ({ user }) => user?.uid !== manager.user?.uid,
                 );
               }}
               danger
@@ -633,7 +647,7 @@
     display: flex;
     gap: 0.5rem;
   }
-  
+
   .tickets h2:not(:first-child) {
     margin-top: 2rem;
   }

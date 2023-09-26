@@ -141,7 +141,7 @@
               value: year,
               label: promoLabel(year),
             })),
-            { keys: ['label'] }
+            { keys: ['label'] },
           )
             .search(q)
             .map(({ item }) => item);

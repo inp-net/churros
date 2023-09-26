@@ -42,7 +42,9 @@
     text-align: center;
     background-color: var(--muted-bg);
     border-radius: 50%;
-    transition: transform 0.25s ease, box-shadow 0.25s ease 0.1s;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease 0.1s;
   }
 
   .person:hover .img,

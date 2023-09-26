@@ -51,7 +51,7 @@ function progressbar(objectName: string, total: number): SingleBar {
 }
 
 // Create PPP subjet
-if (!(await p.subject.findUnique({ where: { uid_yearTier:{uid: 'ppp', yearTier: 2} } })))
+if (!(await p.subject.findUnique({ where: { uid_yearTier: { uid: 'ppp', yearTier: 2 } } })))
   await p.subject.create({
     data: {
       name: 'Projet Professionnel Personnel',
@@ -79,7 +79,7 @@ for (const { nom, filiere_id } of frappe_matiere) {
   const filiereSlug = (filiere: string, annee: string) =>
     slug(`${filiere.trim()} ${annee.trim().replace(/A$/, '')}`, { lower: true });
   // console.info(`* Creating subject ${nom}`)
-  const existing = await p.subject.findFirst({ where: { uid: slug(nom), yearTier: null  } });
+  const existing = await p.subject.findFirst({ where: { uid: slug(nom), yearTier: null } });
   if (existing) {
     // console.info(`- Subject ${nom} already exists as ${slug(nom)}`)
     bar.increment();

@@ -58,7 +58,7 @@
     return {
       ...findUser(rootUid)!,
       children: children.map((child) =>
-        typeof child === 'string' ? { ...findUser(child)!, children: [] } : makeFamilyTree(child)
+        typeof child === 'string' ? { ...findUser(child)!, children: [] } : makeFamilyTree(child),
       ),
     };
   }
@@ -185,8 +185,12 @@
       </p>
       <p class="major">
         {user.yearTier}A ({user.graduationYear}) ·
-        <a href="/documents/{user.major.uid}/{user.yearTier}a/"><abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr></a>
-        {#if user.minor} · {user.minor.name} {/if}
+        <a href="/documents/{user.major.uid}/{user.yearTier}a/"
+          ><abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr></a
+        >
+        {#if user.minor}
+          · {user.minor.name}
+        {/if}
         · {#each user.major.schools as school}
           <a class="school" href="/schools/{school.uid}">{school.name}</a>
         {/each}
@@ -283,7 +287,7 @@
                   {name}
                   <strong class="price"
                     >{new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
-                      price
+                      price,
                     )}</strong
                   >
                 {/if}

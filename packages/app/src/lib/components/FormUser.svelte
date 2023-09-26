@@ -15,7 +15,7 @@
   import { createEventDispatcher } from 'svelte';
   import InputSocialLinks from './InputSocialLinks.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
-    import { yearTier } from '$lib/dates';
+  import { yearTier } from '$lib/dates';
   const emit = createEventDispatcher();
 
   const userQuery = Selector('User')({
@@ -30,11 +30,11 @@
     graduationYear: true,
     phone: true,
     birthday: true,
-    minor: {id: true, name: true,yearTier: true},
+    minor: { id: true, name: true, yearTier: true },
     major: {
       id: true,
       name: true,
-      minors: {id: true, name: true, yearTier :true},
+      minors: { id: true, name: true, yearTier: true },
       schools: { id: true, name: true, studentAssociations: { id: true, name: true } },
     },
     email: true,
@@ -67,11 +67,11 @@
         id: string;
         name: string;
         yearTier: number;
-      },
+      };
       major: {
         name: string;
         id: string;
-        minors: Array<{id: string; name: string; yearTier: number}>;
+        minors: Array<{ id: string; name: string; yearTier: number }>;
         schools: Array<{
           name: string;
           id: string;
@@ -98,7 +98,11 @@
     name: string;
   }>;
 
-  export let majors: Array<{ id: string; name: string; minors: Array<{id: string; name: string; yearTier: number}> }>;
+  export let majors: Array<{
+    id: string;
+    name: string;
+    minors: Array<{ id: string; name: string; yearTier: number }>;
+  }>;
 
   // We don't want form bindings to be reactive to let them evolve separately from the data
   let {
@@ -188,7 +192,6 @@
       loading = false;
     }
   };
-
 </script>
 
 <form on:submit|preventDefault={updateUser}>
@@ -247,21 +250,22 @@
     </div>
   {/if}
   <InputField label="Filière mineure">
-    <InputSearchObject 
-    clearable
+    <InputSearchObject
+      clearable
       value={minor?.id}
       valueKey="id"
       labelKey="name"
       bind:object={minor}
       search={(query) =>
-        new Fuse(major.minors.filter(m => m.yearTier === yearTier(graduationYear)), {
-          keys: ['name', 'id'],
-        })
+        new Fuse(
+          major.minors.filter((m) => m.yearTier === yearTier(graduationYear)),
+          {
+            keys: ['name', 'id'],
+          },
+        )
           .search(query)
           .map((r) => r.item)}
-          >
-          </InputSearchObject>
-          
+    ></InputSearchObject>
   </InputField>
   <div class="side-by-side">
     <InputText

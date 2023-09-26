@@ -58,7 +58,7 @@
       on:click={() => {
         object = undefined;
         value = undefined;
-        query = ""
+        query = '';
         emit('clear');
       }}><IconClose /></ButtonGhost
     >

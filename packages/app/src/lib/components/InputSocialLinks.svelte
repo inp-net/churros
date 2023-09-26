@@ -26,7 +26,7 @@
     (name) => ({
       name,
       value: '',
-    })
+    }),
   );
   export let value: typeof initial = initial;
   export let required = false;

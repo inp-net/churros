@@ -1,20 +1,20 @@
 <script lang="ts">
-    import FormDocument from "$lib/components/FormDocument.svelte";
-    import { schoolYearStart } from "$lib/dates";
-    import { DocumentType } from "$lib/zeus";
+  import FormDocument from '$lib/components/FormDocument.svelte';
+  import { schoolYearStart } from '$lib/dates';
+  import { DocumentType } from '$lib/zeus';
 
-    const data= {
-        id: "",
-        title: "",
-        description: "",
-        type: DocumentType.Exam,
-        subject: undefined,
-        schoolYear: schoolYearStart().getFullYear(),
-        paperPaths: [],
-        solutionPaths: []
-    };
+  const data = {
+    id: '',
+    title: '',
+    description: '',
+    type: DocumentType.Exam,
+    subject: undefined,
+    schoolYear: schoolYearStart().getFullYear(),
+    paperPaths: [],
+    solutionPaths: [],
+  };
 </script>
 
-    <h1><ButtonBack></ButtonBack>Ajouter un document</h1>
+<h1><ButtonBack></ButtonBack>Ajouter un document</h1>
 
 <FormDocument {data}></FormDocument>
