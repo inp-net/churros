@@ -119,6 +119,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
         canEditUsers: true,
         credentials: {
           id: true,
+          name: true,
           type: true,
           userAgent: true,
           createdAt: true,
