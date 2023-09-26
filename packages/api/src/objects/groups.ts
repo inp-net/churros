@@ -101,6 +101,14 @@ export const GroupType = builder.prismaNode('Group', {
         };
       },
     }),
+    coOrganizedEvents: t.relation('coOrganizedEvents', {
+      query(_, { user }) {
+        return {
+          where: visibleEventsPrismaQuery(user),
+          orderBy: { startsAt: 'desc' },
+        };
+      },
+    }),
     children: t.relation('children'),
     root: t.relation('familyRoot', { nullable: true }),
     related: t.relation('related'),
@@ -291,9 +299,25 @@ builder.mutationField('upsertGroup', (t) =>
       selfJoinable: t.arg.boolean(),
       related: t.arg({ type: ['String'] }),
     },
-    authScopes(_, { uid }, { user }) {
+    async authScopes(_, { uid, type }, { user }) {
+      if (!user) return false;
       const creating = !uid;
-      if (creating) return Boolean(user?.canEditGroups);
+      const parentGroup = await prisma.group.findUnique({
+        where: { uid: uid ?? '' },
+        include: { members: true },
+      });
+      // allow board of parent group to create subgroups
+      if (creating) {
+        return Boolean(
+          user?.canEditGroups ||
+            (type === GroupPrismaType.Group &&
+              parentGroup?.members.some(
+                ({ memberId, president, secretary, treasurer, vicePresident }) =>
+                  memberId === user?.id && (president || secretary || treasurer || vicePresident),
+              )),
+        );
+      }
+
       return Boolean(
         user?.canEditGroups ||
           (user?.groups ?? []).some(

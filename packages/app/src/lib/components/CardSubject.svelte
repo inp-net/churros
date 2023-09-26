@@ -8,7 +8,7 @@
   };
   export let href: string;
   export let documentsCount: number;
-  export let nextExamAt: Date | undefined=undefined;
+  export let nextExamAt: Date | undefined = undefined;
   export let name: string;
   export let shortName: string;
   export let majors: Array<{ uid: string; name: string }>;

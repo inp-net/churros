@@ -24,7 +24,7 @@
   {#each data.announcements.edges
     .map((e) => e.node)
     .filter((a) => showPastAnnouncements || isFuture(a.endsAt))
-    .sort( (a, b) => compareDesc(a.startsAt, b.startsAt) ) as { id, title, bodyHtml, by, startsAt, endsAt }}
+    .sort( (a, b) => compareDesc(a.startsAt, b.startsAt), ) as { id, title, bodyHtml, by, startsAt, endsAt }}
     <li>
       <h2>{title}</h2>
       <div class="body user-html">

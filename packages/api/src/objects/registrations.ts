@@ -456,6 +456,7 @@ builder.mutationField('upsertRegistration', (t) =>
         include: {
           event: {
             include: {
+              coOrganizers: true,
               managers: { include: { user: true } },
               group: {
                 include: {
@@ -718,6 +719,7 @@ builder.mutationField('paidRegistration', (t) =>
             include: {
               event: {
                 include: {
+                  coOrganizers: true,
                   managers: { include: { user: true } },
                 },
               },

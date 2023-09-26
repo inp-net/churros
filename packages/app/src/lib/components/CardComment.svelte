@@ -108,7 +108,6 @@
       </div>
     {/if}
   </div>
-
 </article>
 <ul class="replies nobullet">
   {#each replies as comment}

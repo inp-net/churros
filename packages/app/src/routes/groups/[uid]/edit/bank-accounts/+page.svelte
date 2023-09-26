@@ -33,7 +33,7 @@
       business_list = business_list.filter(
         (business: { name: string; api_token_id: string; api_token: string }) =>
           // If the lydia account is already linked to the group, don't show it
-          !lydiaAccountsOfGroup.some((lydiaAccount) => lydiaAccount.name === business.name)
+          !lydiaAccountsOfGroup.some((lydiaAccount) => lydiaAccount.name === business.name),
       );
       lydiaAccounts = business_list;
     } finally {

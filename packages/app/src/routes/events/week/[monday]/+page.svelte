@@ -30,15 +30,15 @@
 
   const canChangeBarWeek = Boolean(
     $me?.admin ||
-      $me?.groups.some(({ group: { uid } }) => env.PUBLIC_FOY_GROUPS?.split(',').includes(uid))
+      $me?.groups.some(({ group: { uid } }) => env.PUBLIC_FOY_GROUPS?.split(',').includes(uid)),
   );
-  
+
   afterNavigate(() => {
     const cDay = new Date();
-    const daySection = document.querySelector(`section.day[id="${formatISO(cDay, { representation: 'date' })}"]`);
-    if (daySection) 
-      daySection.scrollIntoView( {behavior: "smooth"});
-    
+    const daySection = document.querySelector(
+      `section.day[id="${formatISO(cDay, { representation: 'date' })}"]`,
+    );
+    if (daySection) daySection.scrollIntoView({ behavior: 'smooth' });
   });
 </script>
 
@@ -95,11 +95,8 @@
       </div>
     {:else}
       {#each daysOfWeek as day}
-        <section class="day" id={formatISO((day),{ representation: 'date'})}>
-          <CalendarDay
-            showMonth={new Set(daysOfWeek.map((d) => d.getMonth())).size > 1}
-            {day}
-          />
+        <section class="day" id={formatISO(day, { representation: 'date' })}>
+          <CalendarDay showMonth={new Set(daysOfWeek.map((d) => d.getMonth())).size > 1} {day} />
           <div class="events-of-day">
             {#each events.filter((e) => isSameDay(e.startsAt, day)) as event}
               <CardEvent

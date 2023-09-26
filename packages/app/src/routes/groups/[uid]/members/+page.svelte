@@ -11,7 +11,7 @@
 
   $: clubBoard = group.members?.filter(
     ({ president, vicePresident, treasurer, secretary }) =>
-      president || vicePresident || treasurer || secretary
+      president || vicePresident || treasurer || secretary,
   );
   $: onClubBoard = clubBoard.some(({ member }) => member.uid === $me?.uid);
   $: canEditMembers = Boolean(
@@ -19,7 +19,7 @@
       myPermissions?.canEditMembers ||
       onClubBoard ||
       $me?.canEditGroups ||
-      $me?.canEditUsers
+      $me?.canEditUsers,
   );
   $: myPermissions = $me?.groups.find(({ group: { uid } }) => uid === group.uid);
 
@@ -33,18 +33,18 @@
   <h1>
     <ButtonBack />
 
-      {members.length} membre{members.length > 2 ? 's' : ''} de {name}
+    {members.length} membre{members.length > 2 ? 's' : ''} de {name}
 
     {#if canEditMembers}
       <a class="edit" href="../edit/members"><IconGear /></a>
     {/if}
   </h1>
 
-  {#each Object.entries(groupBy(members, ({ member: { graduationYear } }) => `Promo ${graduationYear}`)).sort( ([a, _], [b, _2]) => b.localeCompare(a) ) as [year, membersOfYear]}
+  {#each Object.entries(groupBy(members, ({ member: { graduationYear } }) => `Promo ${graduationYear}`)).sort( ([a, _], [b, _2]) => b.localeCompare(a), ) as [year, membersOfYear]}
     <section class="year">
       <h2>
-          {year}
-          <span class="count">({membersOfYear.length})</span>
+        {year}
+        <span class="count">({membersOfYear.length})</span>
       </h2>
 
       <ul class="nobullet">
@@ -81,9 +81,9 @@
   }
 
   .count {
-      position: relative;
-      bottom: 2px;
-      font-size: 0.8em;
-      font-weight: 400;
+    position: relative;
+    bottom: 2px;
+    font-size: 0.8em;
+    font-weight: 400;
   }
 </style>

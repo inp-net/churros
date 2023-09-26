@@ -162,7 +162,7 @@
               {
                 keys: ['name', 'shortName'],
                 threshold: 0.3,
-              }
+              },
             )
               .search(q)
               .map(({ item }) => item)}
@@ -198,7 +198,12 @@
       maxlength={255}
       bind:value={phone}
     />
-    <InputText label="Adresse postale" errors={formErrors?.address?._errors} maxlength={255} bind:value={address} />
+    <InputText
+      label="Adresse postale"
+      errors={formErrors?.address?._errors}
+      maxlength={255}
+      bind:value={address}
+    />
     <div class="side-by-side">
       <InputText
         label="Mot de passe"

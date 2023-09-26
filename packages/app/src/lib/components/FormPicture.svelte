@@ -43,7 +43,7 @@
             true,
           ],
         },
-        { variables: { file: files[0] } }
+        { variables: { file: files[0] } },
       );
       // Add a timestamp to the URL to force the browser to reload the image
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions

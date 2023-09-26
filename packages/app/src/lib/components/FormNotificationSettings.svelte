@@ -58,14 +58,14 @@
 
   function computeDisplayedSettings(
     notifSettings: typeof settings,
-    seldGroup: typeof selectedGroup
+    seldGroup: typeof selectedGroup,
   ) {
     const predicate =
       (t: NotificationType, seldGroup: typeof selectedGroup) =>
       ({ type, group }: { type: NotificationType; group?: undefined | { uid: string } }) =>
         type === t && (seldGroup ? seldGroup === group?.uid : !group);
 
-    return (ORDER_NOTIFICATION_TYPES as NotificationType[]).map((t) =>
+    return ORDER_NOTIFICATION_TYPES.map((t) =>
       notifSettings.some(predicate(t, seldGroup))
         ? {
             ...notifSettings.find(predicate(t, seldGroup))!,
@@ -77,7 +77,7 @@
             group: seldGroup ? availableGroups.find(({ uid }) => uid === seldGroup) : undefined,
             id: 'notifsetting:fake:' + nanoid(10),
             index: notifSettings.findIndex(predicate(t, seldGroup)),
-          }
+          },
     );
   }
 
@@ -110,7 +110,7 @@
           <InputCheckbox
             ternary
             labelNull="Réglage global ({settings.find(
-              (setting) => setting.type === type && setting.group === undefined
+              (setting) => setting.type === type && setting.group === undefined,
             )?.allow
               ? 'Oui'
               : 'Non'})"

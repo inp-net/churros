@@ -121,9 +121,17 @@
         options={{ bug: 'Signaler un bug', feature: 'Proposer une idée' }}
         bind:value={issueType}
       />
-      <InputText required bind:value={title} label="Titre" />
+      <InputText
+        required
+        bind:value={title}
+        label={issueType === 'bug' ? 'Description précise' : 'Titre'}
+      />
       <InputLongText
+        required={issueType === 'bug'}
         label={issueType === 'bug' ? 'Comment reproduire ce bug?' : 'Décris précisément ton idée'}
+        placeholder={issueType === 'bug'
+          ? "Un bug non reproductible n'existe pas!"
+          : "Hésites pas même si tu pense que c'est “pas important”,\nc'est à nous de décider de l'importance d'une nouvelle fonctionnalité ;)"}
         bind:value={description}
       />
       <InputCheckbox
@@ -133,7 +141,8 @@
       <section class="submit">
         <ButtonPrimary {loading} submits>Envoyer</ButtonPrimary>
         <p class="typo-details">
-          Envoyer ce rapport créera une issue Gitlab {#if $me}en ton nom {/if}sur le dépot
+          Envoyer ce rapport créera une issue Gitlab {#if $me}en ton nom
+          {/if}sur le dépot
           <a href="https://git.inpt.fr/inp-net/churros">git.inpt.fr/inp-net/churros</a>
         </p>
       </section>
@@ -142,11 +151,15 @@
           <Alert theme="success"
             >Ton {#if issueType === 'bug'}bug a bien été signalé{:else}idée à bien était soumise{/if}.
             C'est <a href={link}>l'issue n°{issueNumber}</a>.
-            <ButtonSecondary href={link} icon={IconArrowRight}>Voir</ButtonSecondary>
+            <ButtonSecondary newTab insideProse href={link} icon={IconArrowRight}
+              >Voir</ButtonSecondary
+            >
           </Alert>
         {:else if errored}
           <Alert theme="danger"
             >Impossible de créer l'issue. <ButtonSecondary
+              insideProse
+              newTab
               href="https://git.inpt.fr/inp-net/churros/-/issues/new"
               >Créer l'issue sur le site</ButtonSecondary
             >
@@ -220,7 +233,7 @@
     text-align: justify;
   }
 
-  @media (max-width: 1000px) {
+  @media (width <= 1000px) {
     dialog {
       border-radius: 0;
     }

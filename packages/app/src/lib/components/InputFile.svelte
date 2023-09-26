@@ -2,43 +2,41 @@
   import { createEventDispatcher } from 'svelte';
 
   export let files: FileList | undefined = undefined;
-  export let multiple = false
-  export let hint = "Déposer des fichiers ici"
+  export let multiple = false;
+  export let hint = 'Déposer des fichiers ici';
   let dragging = false;
 
   const dispatch = createEventDispatcher();
 
   $: if (files) dispatch('change', files);
 
-  	function fileListOf(files: File[]): FileList {
-		const filelist = new DataTransfer();
-		for (const file of files) filelist.items.add(file);
-		return filelist.files;
-	}
-
+  function fileListOf(files: File[]): FileList {
+    const filelist = new DataTransfer();
+    for (const file of files) filelist.items.add(file);
+    return filelist.files;
+  }
 
   export let inputElement: HTMLInputElement;
 </script>
 
 <label
-class:dragging
+  class:dragging
   on:drop|preventDefault={({ dataTransfer }) => {
-    dragging = false
-    if (dataTransfer) 
-      files = multiple ? fileListOf([...files ?? [], ...dataTransfer.files]) : dataTransfer.files;
-    
+    dragging = false;
+    if (dataTransfer)
+      files = multiple ? fileListOf([...(files ?? []), ...dataTransfer.files]) : dataTransfer.files;
   }}
   on:dragover|preventDefault={(e) => {
     dragging = true;
-    dispatch('dragover', e)
+    dispatch('dragover', e);
   }}
   on:dragleave|preventDefault={(e) => {
     dragging = false;
-    dispatch('dragleave', e)
+    dispatch('dragleave', e);
   }}
 >
-<span class="hint muted">{hint}</span>
-  <input bind:this={inputElement} type="file" bind:files={files} {...$$restProps} />
+  <span class="hint muted">{hint}</span>
+  <input bind:this={inputElement} type="file" bind:files {...$$restProps} />
   <slot />
 </label>
 
@@ -54,7 +52,9 @@ class:dragging
     outline: 0 solid var(--ring);
     transition: all 80ms ease-in;
 
-    &:focus-within, &:hover, &.dragging {
+    &:focus-within,
+    &:hover,
+    &.dragging {
       cursor: pointer;
       background-color: var(--muted-bg);
       border-color: var(--hover-border);

@@ -1,13 +1,7 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
   import AvatarPerson from './AvatarPerson.svelte';
-  import {
-    formatDuration,
-    formatRelative,
-    intervalToDuration,
-    isFuture,
-    isPast,
-  } from 'date-fns';
+  import { formatDuration, formatRelative, intervalToDuration, isFuture, isPast } from 'date-fns';
   import IconLocation from '~icons/mdi/location-outline';
   import IconWhen from '~icons/mdi/calendar-outline';
   import { formatDateTime, formatEventDates, formatRecurrence } from '$lib/dates';
@@ -20,7 +14,7 @@
   import { htmlToText } from 'html-to-text';
   import ButtonInk from './ButtonInk.svelte';
   import IconDots from '~icons/mdi/dots-horizontal';
-    import { EventFrequency } from '../../zeus';
+  import { EventFrequency } from '../../zeus';
 
   export let collapsible = false;
   export let expandedEventId: string | undefined = undefined;
@@ -165,10 +159,10 @@
       <h4 class="typo-field-label">Évènement</h4>
       <p>
         <IconWhen />
-        {#if frequency === EventFrequency.Once }
-        {formatEventDates(frequency, startsAt, endsAt, recurringUntil)}
+        {#if frequency === EventFrequency.Once}
+          {formatEventDates(frequency, startsAt, endsAt, recurringUntil)}
         {:else}
-        {formatRecurrence(frequency, startsAt, endsAt)}
+          {formatRecurrence(frequency, startsAt, endsAt)}
         {/if}
       </p>
       {#if location}
@@ -223,7 +217,7 @@
                   }),
                   {
                     locale: fr,
-                  }
+                  },
                 )}
           </p>
         {/if}

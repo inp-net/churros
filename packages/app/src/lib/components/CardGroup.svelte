@@ -44,12 +44,18 @@
     height: 6em;
     overflow: hidden;
     font-weight: bold;
-    line-height: 6em; /* to vertically center alt text */
     color: var(--muted-text);
     text-align: center;
     background-color: var(--muted-bg);
     border-radius: var(--radius-block);
-    transition: transform 0.25s ease, box-shadow 0.25s ease 0.1s;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease 0.1s;
+
+    &::before {
+      /* only target text to avoid small gaps in top of images */
+      line-height: 6em; /* to vertically center alt text */
+    }
   }
 
   .group:hover .img,

@@ -75,9 +75,11 @@
       // Validate string conversion first
       _errorMessage = 'Ce champ doit être un nombre';
     } else if (type === 'date' && value === null) {
-        _errorMessage = '';
+      _errorMessage = '';
     } else if ($$restProps.minlength && valueString.length < $$restProps.minlength) {
-        _errorMessage = `Ce champ doit comporter au moins ${$$restProps.minlength} caractère${$$restProps.minlength>1 ? 's' : ''}`;
+      _errorMessage = `Ce champ doit comporter au moins ${$$restProps.minlength} caractère${
+        $$restProps.minlength > 1 ? 's' : ''
+      }`;
     } else {
       _errorMessage = validate(valueString);
     }

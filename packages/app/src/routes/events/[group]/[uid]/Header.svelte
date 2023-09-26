@@ -6,10 +6,10 @@
   import { browser } from '$app/environment';
   import IconWhere from '~icons/mdi/location-outline';
   import IconWhen from '~icons/mdi/calendar-outline';
-  import IconRepeat from '~icons/mdi/repeat'
+  import IconRepeat from '~icons/mdi/repeat';
   import { env } from '$env/dynamic/public';
-    import { EventFrequency } from '../../../../zeus';
-    import { DISPLAY_EVENT_FREQUENCY } from '$lib/display';
+  import { EventFrequency } from '../../../../zeus';
+  import { DISPLAY_EVENT_FREQUENCY } from '$lib/display';
 
   export let title: string;
   export let startsAt: Date | undefined = undefined;
@@ -53,12 +53,20 @@
       <ButtonShare white={Boolean(pictureFile)} />
     </h1>
     {#if frequency !== EventFrequency.Once}
-    <p class="recurrence">
-      <IconRepeat></IconRepeat> {#if startsAt && endsAt} {formatRecurrence(frequency, startsAt, endsAt)} {:else} {DISPLAY_EVENT_FREQUENCY[frequency]} {/if}
-    </p>
+      <p class="recurrence">
+        <IconRepeat></IconRepeat>
+        {#if startsAt && endsAt}
+          {formatRecurrence(frequency, startsAt, endsAt)}
+        {:else}
+          {DISPLAY_EVENT_FREQUENCY[frequency]}
+        {/if}
+      </p>
     {/if}
     {#if startsAt && endsAt}
-      <p class="when"><IconWhen /> {formatEventDates(frequency, startsAt, endsAt, recurringUntil)}</p>
+      <p class="when">
+        <IconWhen />
+        {formatEventDates(frequency, startsAt, endsAt, recurringUntil)}
+      </p>
     {/if}
     {#if location}
       <p class="where"><IconWhere /> {location}</p>

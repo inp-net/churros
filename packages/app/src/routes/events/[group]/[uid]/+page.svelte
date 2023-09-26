@@ -12,7 +12,16 @@
 
   export let data: PageData;
 
-  const { descriptionHtml, links, group, contactMail, articles, placesLeft, capacity } = data.event;
+  const {
+    descriptionHtml,
+    links,
+    group,
+    coOrganizers,
+    contactMail,
+    articles,
+    placesLeft,
+    capacity,
+  } = data.event;
 
   const tickets = data.ticketsOfEvent;
 
@@ -62,13 +71,15 @@
         {#if placesLeft === Number.POSITIVE_INFINITY || placesLeft === -1}
           illimitées
         {:else}
-          <span class="left">{placesLeft} restante{placesLeft > 1 ? 's':''}</span><span class="capacity">{capacity}</span>
+          <span class="left">{placesLeft} restante{placesLeft > 1 ? 's' : ''}</span><span
+            class="capacity">{capacity}</span
+          >
         {/if}
       </span>
     </h2>
 
     <ul class="nobullet">
-      {#each tickets.sort( (a, b) => (a.group?.name ?? '').localeCompare(b.group?.name ?? '') ) as { id, ...ticket } (id)}
+      {#each tickets.sort( (a, b) => (a.group?.name ?? '').localeCompare(b.group?.name ?? ''), ) as { id, ...ticket } (id)}
         <li>
           <ItemTicket {...ticket} event={data.event} />
         </li>
@@ -97,13 +108,17 @@
 
 <section class="organizer">
   <h2>Organisé par</h2>
-  <div class="organizer-name-and-contact">
-    <a class="organizer-name" href="/groups/{group.uid}">
-      <img src={groupLogoSrc($isDark, group)} alt="" />
-      {group.name}
-    </a>
-    <ButtonSecondary href="mailto:{contactMail}">Contact</ButtonSecondary>
-  </div>
+  <ul class="nobullet organizers">
+    {#each [group, ...coOrganizers] as g}
+      <li class="organizer-name-and-contact">
+        <a class="organizer-name" href="/groups/{g.uid}">
+          <img src={groupLogoSrc($isDark, g)} alt="" />
+          {g.name}
+        </a>
+        <ButtonSecondary href="mailto:{contactMail}">Contact</ButtonSecondary>
+      </li>
+    {/each}
+  </ul>
 </section>
 
 <style lang="scss">
@@ -163,6 +178,13 @@
 
   .ticket .places .left::after {
     width: 1px;
+  }
+
+  .organizers {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 0.5rem;
   }
 
   .organizer-name-and-contact {

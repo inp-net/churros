@@ -19,6 +19,7 @@ import { Prisma } from '@prisma/client';
 import { toHtml } from './markdown.js';
 import { differenceInSeconds, minutesToSeconds, subMinutes } from 'date-fns';
 import { fullName } from '../objects/users.js';
+import { mappedGetAncestors } from 'arborist';
 
 if (
   process.env.PUBLIC_CONTACT_EMAIL &&
@@ -104,11 +105,21 @@ export async function scheduleNewArticleNotification({
       )
         return;
       // If the article was set to restricted and/or the user is not in the group anymore
-      if (
-        article.visibility === Visibility.Restricted &&
-        !user.groups.some(({ group }) => group.id === article.groupId)
-      )
-        return;
+      if (article.visibility === Visibility.Restricted) {
+        // Get the user's groups and their ancestors
+        const ancestors = await prisma.group
+          // Get all groups in the same family as the user's groups
+          .findMany({
+            where: { familyId: { in: user.groups.map(({ group }) => group.familyId ?? group.id) } },
+            select: { id: true, parentId: true, uid: true },
+          })
+          // Get all ancestors of the groups
+          .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
+          // Flatten the ancestors into a single array
+          .then((groups) => groups.flat());
+
+        if (!ancestors.some(({ uid }) => uid === article.group.uid)) return;
+      }
 
       return {
         title: `Nouveau post de ${article.group.name}: ${article.title}`,
@@ -418,118 +429,120 @@ export async function notify<U extends User>(
     },
   });
 
-  const sentSubscriptions = [];
+  const sentSubscriptions: typeof subscriptions = [];
 
-  for (const subscription of subscriptions) {
-    const { endpoint, authKey, p256dhKey, id } = subscription;
-    const owner = users.find(({ id }) => id === subscription.owner.id);
-    if (!owner) continue;
-    let notif = typeof notification === 'function' ? await notification(owner) : notification;
-    notif = {
-      badge: '/monochrome-icon.png',
-      icon: '/favicon.png',
-      ...notif,
-    };
-    notif.data.subscriptionName = subscription.name;
-    // FIXME: waiting on <FormNotificationSetting> to not be broken anymore
-    // if (
-    //   !canSendNotificationToUser(
-    //     subscription.owner.notificationSettings,
-    //     notif.data.type,
-    //     notif.data.group,
-    //   )
-    // ) {
-    //   console.info(
-    //     `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
-    //       owner.id
-    //     }] Skipping since user has disabled ${notif.data.type} on ${
-    //       notif.data.group ?? 'global'
-    //     } notifications`,
-    //   );
-    //   continue;
-    // }
+  await Promise.all(
+    subscriptions.map(async (subscription) => {
+      const { endpoint, authKey, p256dhKey, id } = subscription;
+      const owner = users.find(({ id }) => id === subscription.owner.id);
+      if (!owner) return;
+      let notif = typeof notification === 'function' ? await notification(owner) : notification;
+      notif = {
+        badge: '/monochrome-icon.png',
+        icon: '/favicon.png',
+        ...notif,
+      };
+      notif.data.subscriptionName = subscription.name;
+      // FIXME: waiting on <FormNotificationSetting> to not be broken anymore
+      // if (
+      //   !canSendNotificationToUser(
+      //     subscription.owner.notificationSettings,
+      //     notif.data.type,
+      //     notif.data.group,
+      //   )
+      // ) {
+      //   console.info(
+      //     `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
+      //       owner.id
+      //     }] Skipping since user has disabled ${notif.data.type} on ${
+      //       notif.data.group ?? 'global'
+      //     } notifications`,
+      //   );
+      //   continue;
+      // }
 
-    try {
-      await webpush.sendNotification(
-        {
-          endpoint,
-          keys: {
-            auth: authKey,
-            p256dh: p256dhKey,
-          },
-        },
-        JSON.stringify(notif),
-        {
-          vapidDetails: {
-            subject: `mailto:${process.env.PUBLIC_CONTACT_EMAIL}`,
-            publicKey: process.env.PUBLIC_VAPID_KEY,
-            privateKey: process.env.VAPID_PRIVATE_KEY,
-          },
-        },
-      );
-      await prisma.notification.create({
-        data: {
-          subscription: {
-            connect: {
-              id,
+      try {
+        await webpush.sendNotification(
+          {
+            endpoint,
+            keys: {
+              auth: authKey,
+              p256dh: p256dhKey,
             },
           },
-          timestamp: notif.timestamp ? new Date(notif.timestamp) : new Date(),
-          actions: {
-            createMany: {
-              data: (notif.actions ?? [])
-                .filter(({ action }) => /^https?:\/\//.test(action))
-                .map(({ action, title }) => ({
-                  value: action,
-                  name: title,
-                })),
+          JSON.stringify(notif),
+          {
+            vapidDetails: {
+              subject: `mailto:${process.env.PUBLIC_CONTACT_EMAIL}`,
+              publicKey: process.env.PUBLIC_VAPID_KEY,
+              privateKey: process.env.VAPID_PRIVATE_KEY,
             },
           },
-          title: notif.title,
-          body: notif.body,
-          imageFile: notif.image,
-          vibrate: notif.vibrate,
-          goto: notif.data.goto,
-          type: notif.data.type,
-          ...(notif.data.group ? { group: { connect: { uid: notif.data.group } } } : {}),
-        },
-      });
-      sentSubscriptions.push(subscription);
-    } catch (error: unknown) {
-      if (error instanceof WebPushError) {
-        console.error(
-          `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
-            owner.id
-          }] ${error.body.trim()}`,
         );
-      }
-
-      if (
-        error instanceof WebPushError &&
-        error.body.trim() === 'push subscription has unsubscribed or expired.'
-      ) {
-        await prisma.notificationSubscription
-          .delete({
-            where: {
-              endpoint,
+        await prisma.notification.create({
+          data: {
+            subscription: {
+              connect: {
+                id,
+              },
             },
-          })
-          .catch((error) => {
-            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
-              // Subscription was deleted in the meantime, nothing to worry about
-            } else {
-              throw error;
-            }
-          });
-      }
-    }
+            timestamp: notif.timestamp ? new Date(notif.timestamp) : new Date(),
+            actions: {
+              createMany: {
+                data: (notif.actions ?? [])
+                  .filter(({ action }) => /^https?:\/\//.test(action))
+                  .map(({ action, title }) => ({
+                    value: action,
+                    name: title,
+                  })),
+              },
+            },
+            title: notif.title,
+            body: notif.body,
+            imageFile: notif.image,
+            vibrate: notif.vibrate,
+            goto: notif.data.goto,
+            type: notif.data.type,
+            ...(notif.data.group ? { group: { connect: { uid: notif.data.group } } } : {}),
+          },
+        });
+        sentSubscriptions.push(subscription);
+      } catch (error: unknown) {
+        if (error instanceof WebPushError) {
+          console.error(
+            `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
+              owner.id
+            }] ${error.body.trim()}`,
+          );
+        }
 
-    console.info(
-      `[${notif.tag ?? '(untagged)'}] notification sent to ${
-        subscription.owner.uid
-      } with data ${JSON.stringify(notif)} (sub ${id} @ ${endpoint})`,
-    );
-  }
+        if (
+          error instanceof WebPushError &&
+          error.body.trim() === 'push subscription has unsubscribed or expired.'
+        ) {
+          await prisma.notificationSubscription
+            .delete({
+              where: {
+                endpoint,
+              },
+            })
+            .catch((error) => {
+              if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
+                // Subscription was deleted in the meantime, nothing to worry about
+              } else {
+                throw error;
+              }
+            });
+        }
+      }
+
+      console.info(
+        `[${notif.tag ?? '(untagged)'}] notification sent to ${
+          subscription.owner.uid
+        } with data ${JSON.stringify(notif)} (sub ${id} @ ${endpoint})`,
+      );
+    }),
+  );
 
   return sentSubscriptions;
 }

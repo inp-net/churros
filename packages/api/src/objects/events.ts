@@ -24,6 +24,7 @@ import {
   type TicketGroup,
   PaymentMethod,
   EventFrequency,
+  type Group,
 } from '@prisma/client';
 import { toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
@@ -71,7 +72,14 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
       },
       // Restricted events in the user's groups
       {
-        group: { members: { some: { member: { uid: user?.uid ?? '' } } } },
+        OR: [
+          {
+            group: { members: { some: { member: { uid: user?.uid ?? '' } } } },
+          },
+          {
+            coOrganizers: { some: { members: { some: { member: { uid: user?.uid ?? '' } } } } },
+          },
+        ],
         visibility: VisibilityPrisma.Restricted,
       },
       // Unlisted events that the user booked
@@ -276,6 +284,7 @@ export const EventType = builder.prismaNode('Event', {
     ticketGroups: t.relation('ticketGroups'),
     articles: t.relation('articles'),
     group: t.relation('group'),
+    coOrganizers: t.relation('coOrganizers'),
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
@@ -380,7 +389,10 @@ builder.queryField('event', (t) =>
     async authScopes(_, { uid, groupUid }, { user }) {
       const event = await prisma.event.findFirstOrThrow({
         where: { uid, group: { uid: groupUid } },
-        include: { managers: { include: { user: true } } },
+        include: {
+          coOrganizers: true,
+          managers: { include: { user: true } },
+        },
       });
       return eventAccessibleByUser(event, user);
     },
@@ -616,6 +628,7 @@ builder.mutationField('upsertEvent', (t) =>
       startsAt: t.arg({ type: DateTimeScalar }),
       endsAt: t.arg({ type: DateTimeScalar }),
       managers: t.arg({ type: [ManagerOfEventInput] }),
+      coOrganizers: t.arg.stringList(),
     },
     async authScopes(_, { id, groupUid }, { user }) {
       const creating = !id;
@@ -661,6 +674,7 @@ builder.mutationField('upsertEvent', (t) =>
         title,
         visibility,
         frequency,
+        coOrganizers,
         recurringUntil,
       },
       { user },
@@ -718,6 +732,9 @@ builder.mutationField('upsertEvent', (t) =>
               canVerifyRegistrations: manager.canVerifyRegistrations,
             })),
           },
+          coOrganizers: {
+            connect: connectFromListOfUids(coOrganizers),
+          },
         },
         update: {
           description,
@@ -731,6 +748,9 @@ builder.mutationField('upsertEvent', (t) =>
           recurringUntil,
           startsAt,
           endsAt,
+          coOrganizers: {
+            connect: connectFromListOfUids(coOrganizers),
+          },
           managers:
             user?.admin ||
             oldEvent?.managers.some((m) => m.userId === user?.id && m.canEditPermissions)
@@ -883,6 +903,7 @@ builder.mutationField('upsertEvent', (t) =>
 export async function eventAccessibleByUser(
   event:
     | (EventPrisma & {
+        coOrganizers: Array<{ id: string; uid: string }>;
         managers: Array<{
           user: { uid: string };
 
@@ -915,7 +936,11 @@ export async function eventAccessibleByUser(
         .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
         .then((groups) => groups.flat());
 
-      return Boolean(ancestors.some(({ id }) => id === event.groupId));
+      return Boolean(
+        ancestors.some(({ id }) =>
+          [event.groupId, ...event.coOrganizers.map((g) => g.id)].includes(id),
+        ),
+      );
     }
 
     case Visibility.Private: {
@@ -981,9 +1006,12 @@ builder.queryField('searchEvents', (t) =>
           id: {
             in: fuzzyIDs.map(({ id }) => id),
           },
-          ...(groupUid ? { group: { uid: groupUid } } : {}),
+          ...(groupUid
+            ? { OR: [{ group: { uid: groupUid } }, { coOrganizers: { some: { uid: groupUid } } }] }
+            : {}),
         },
         include: {
+          coOrganizers: true,
           managers: {
             include: {
               user: true,
@@ -1018,6 +1046,7 @@ builder.queryField('searchEvents', (t) =>
           ],
         },
         include: {
+          coOrganizers: true,
           managers: {
             include: {
               user: true,
@@ -1029,7 +1058,10 @@ builder.queryField('searchEvents', (t) =>
       return [
         ...results.sort(levenshteinSorter(fuzzyIDs)),
         ...levenshteinFilterAndSort<
-          Event & { managers: Array<EventManager & { user: { uid: string } }> }
+          Event & {
+            coOrganizers: Group[];
+            managers: Array<EventManager & { user: { uid: string } }>;
+          }
         >(
           fuzzyIDs,
           10,

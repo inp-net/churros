@@ -12,18 +12,22 @@
   function getSelectedPermissions({
     canEditGroups,
     canEditUsers,
-    canAccessDocuments
+    canAccessDocuments,
   }: {
     canEditGroups: boolean;
     canEditUsers: boolean;
     canAccessDocuments: boolean;
   }): Array<'canEditGroups' | 'canEditUsers' | 'canAccessDocuments'> {
     return ['canEditGroups', 'canEditUsers', 'canAccessDocuments'].filter(
-      (p) => ({ canEditGroups, canEditUsers, canAccessDocuments }?.[p] ?? false)
+      (p) => ({ canEditGroups, canEditUsers, canAccessDocuments })?.[p] ?? false,
     ) as Array<'canEditGroups' | 'canEditUsers' | 'canAccessDocuments'>;
   }
 
-  let selectedPermissions = getSelectedPermissions({ canEditGroups, canEditUsers, canAccessDocuments });
+  let selectedPermissions = getSelectedPermissions({
+    canEditGroups,
+    canEditUsers,
+    canAccessDocuments,
+  });
   $: {
     canEditGroups = selectedPermissions.includes('canEditGroups');
     canEditUsers = selectedPermissions.includes('canEditUsers');
