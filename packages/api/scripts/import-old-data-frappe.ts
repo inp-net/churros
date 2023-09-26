@@ -1,3 +1,4 @@
+/* eslint-ignore */
 // Load dump
 import { DocumentType, PrismaClient } from '@prisma/client';
 import { copyFileSync, mkdirSync, readFileSync, statSync } from 'fs';
@@ -51,7 +52,11 @@ function progressbar(objectName: string, total: number): SingleBar {
 }
 
 // Create PPP subjet
-if (!(await p.subject.findUnique({ where: { uid_yearTier: { uid: 'ppp', yearTier: 2 } } })))
+if (
+  !(await p.subject.findUnique({
+    where: { uid_yearTier_forApprentices: { uid: 'ppp', yearTier: 2, forApprentices: false } },
+  }))
+)
   await p.subject.create({
     data: {
       name: 'Projet Professionnel Personnel',
@@ -85,6 +90,7 @@ for (const { nom, filiere_id } of frappe_matiere) {
     bar.increment();
     continue;
   }
+  const subjectYearTier = Number.parseInt(filiere_annee.nom.replace(/A/, ''));
   await p.subject.create({
     data: {
       name: nom,
@@ -92,12 +98,15 @@ for (const { nom, filiere_id } of frappe_matiere) {
       minors: {
         connectOrCreate: {
           where: {
-            uid: filiereSlug(filiere.nom, filiere_annee.nom),
+            uid_yearTier: {
+              uid: filiereSlug(filiere.nom, filiere_annee.nom),
+              yearTier: subjectYearTier,
+            },
           },
           create: {
             name: filiere.nom,
             uid: filiereSlug(filiere.nom, filiere_annee.nom),
-            yearTier: Number.parseInt(filiere_annee.nom.replace(/A/, '')),
+            yearTier: subjectYearTier,
             majors: { connect: { id: (await p.major.findMany())[0]!.id } },
           },
         },

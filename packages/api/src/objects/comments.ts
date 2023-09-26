@@ -119,8 +119,8 @@ builder.mutationField('upsertComment', (t) =>
         (comment.document || comment.article)
       ) {
         const documentMajor =
-          comment.document?.subject.majors[0]?.uid ??
-          comment.document?.subject.minors[0]?.majors[0]?.uid ??
+          comment.document?.subject?.majors[0]?.uid ??
+          comment.document?.subject?.minors[0]?.majors[0]?.uid ??
           'unknown';
         await notify([comment.inReplyTo.author], {
           title: `@${comment.author.uid} a répondu à votre commentaire sur ${
@@ -134,9 +134,9 @@ builder.mutationField('upsertComment', (t) =>
               process.env.FRONTEND_ORIGIN +
               (comment.document
                 ? `/documents/${documentMajor}/${
-                    comment.document.subject.minors[0]?.yearTier ??
+                    comment.document.subject?.minors[0]?.yearTier ??
                     yearTier(comment.author.graduationYear)
-                  }a/${comment.document.subject.uid}/${comment.document.uid}/`
+                  }a/${comment.document.subject?.uid}/${comment.document.uid}/`
                 : `/posts/${comment.article!.group.uid}/${comment.article!.uid}`) +
               `#comment-${comment.id.replace(TYPENAMES_TO_ID_PREFIXES.Comment + ':', '')}`,
           },

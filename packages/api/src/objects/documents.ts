@@ -28,8 +28,8 @@ export const DocumentType = builder.prismaNode('Document', {
     descriptionHtml: t.string({
       resolve: async ({ description }) => toHtml(description),
     }),
-    subject: t.relation('subject'),
-    subjectId: t.exposeID('subjectId'),
+    subject: t.relation('subject', { nullable: true }),
+    subjectId: t.exposeID('subjectId', { nullable: true }),
     type: t.expose('type', { type: DocumentEnumType }),
     paperPaths: t.exposeStringList('paperPaths', {
       description:
@@ -205,14 +205,25 @@ builder.mutationField('upsertDocument', (t) =>
       description: t.arg.string({ required: true }),
       subjectUid: t.arg.string({ required: true }),
       subjectYearTier: t.arg.int({ required: true }),
+      subjectForApprentices: t.arg.boolean({ required: true }),
       type: t.arg({ type: DocumentEnumType, required: true }),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin || user?.canAccessDocuments);
     },
-    async resolve(query, _, { id, subjectUid, title, schoolYear, subjectYearTier, ...data }) {
+    async resolve(
+      query,
+      _,
+      { id, subjectUid, title, schoolYear, subjectYearTier, subjectForApprentices, ...data },
+    ) {
       const subject = await prisma.subject.findUnique({
-        where: { uid_yearTier: { uid: subjectUid, yearTier: subjectYearTier } },
+        where: {
+          uid_yearTier_forApprentices: {
+            uid: subjectUid,
+            yearTier: subjectYearTier,
+            forApprentices: subjectForApprentices,
+          },
+        },
       });
       if (!subject) throw new GraphQLError('Matière introuvable');
       const uidBase = `${slug(title)}${schoolYear ? `-${schoolYear}` : ''}`;
@@ -397,7 +408,7 @@ builder.mutationField('deleteDocumentFile', (t) =>
       });
       const { subject, uid, solutionPaths, id } = document;
       const root = new URL(process.env.STORAGE).pathname;
-      const path = join(root, 'documents', subject.uid, uid, filename);
+      const path = join(root, 'documents', subject?.uid ?? 'unknown', uid, filename);
       try {
         unlinkSync(path);
       } catch {}
@@ -420,7 +431,10 @@ builder.mutationField('deleteDocumentFile', (t) =>
 
 function documentFilePath(
   root: string,
-  subject: { id: string; name: string; uid: string; shortName: string; nextExamAt: Date | null },
+  subject:
+    | { id: string; name: string; uid: string; shortName: string; nextExamAt: Date | null }
+    | undefined
+    | null,
   document: { uid: string; solutionPaths: string[]; paperPaths: string[] },
   solution: boolean,
   file: { name: string },
@@ -428,7 +442,7 @@ function documentFilePath(
   return join(
     root,
     'documents',
-    subject.uid,
+    subject?.uid ?? 'unknown',
     document.uid,
     `${document[solution ? 'solutionPaths' : 'paperPaths'].length}-${file.name}`,
   );

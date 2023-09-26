@@ -698,6 +698,7 @@ model Announcement {
   endsAt    DateTime
 }
 
+
 model Subject {
   id             String     @id @default(dbgenerated("nanoid('subj:')"))
   name           String
@@ -713,7 +714,7 @@ model Subject {
   // 1 for the first semester, 2 for the second one. Null means both
   semester       Int?
 
-  @@unique([uid, yearTier, forApprentices, semester])
+  @@unique([uid, yearTier, forApprentices])
 }
 
 enum DocumentType {
