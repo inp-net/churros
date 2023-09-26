@@ -1000,6 +1000,10 @@ builder.queryField('searchEvents', (t) =>
       ORDER BY changes ASC
       LIMIT 30
       `;
+      const group = await prisma.group.findUnique({
+        where: { uid: groupUid ?? '' },
+        include: { familyRoot: true },
+      });
       const fuzzyEvents = await prisma.event.findMany({
         ...query,
         where: {
@@ -1007,7 +1011,19 @@ builder.queryField('searchEvents', (t) =>
             in: fuzzyIDs.map(({ id }) => id),
           },
           ...(groupUid
-            ? { OR: [{ group: { uid: groupUid } }, { coOrganizers: { some: { uid: groupUid } } }] }
+            ? {
+                OR: [
+                  {
+                    group: {
+                      OR: [
+                        { uid: groupUid },
+                        ...(group?.familyId ? [{ familyId: group.familyId }] : []),
+                      ],
+                    },
+                  },
+                  { coOrganizers: { some: { uid: groupUid } } },
+                ],
+              }
             : {}),
         },
         include: {
