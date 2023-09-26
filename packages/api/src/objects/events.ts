@@ -72,7 +72,14 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
       },
       // Restricted events in the user's groups
       {
-        group: { members: { some: { member: { uid: user?.uid ?? '' } } } },
+        OR: [
+          {
+            group: { members: { some: { member: { uid: user?.uid ?? '' } } } },
+          },
+          {
+            coOrganizers: { some: { members: { some: { member: { uid: user?.uid ?? '' } } } } },
+          },
+        ],
         visibility: VisibilityPrisma.Restricted,
       },
       // Unlisted events that the user booked
