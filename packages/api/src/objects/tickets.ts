@@ -187,6 +187,7 @@ builder.queryField('ticket', (t) =>
         include: {
           event: {
             include: {
+              coOrganizers: true,
               managers: {
                 include: {
                   user: true,
@@ -218,6 +219,7 @@ builder.queryField('ticketByUid', (t) =>
         include: {
           event: {
             include: {
+              coOrganizers: true,
               managers: {
                 include: {
                   user: true,
@@ -333,6 +335,7 @@ builder.queryField('ticketsOfEvent', (t) =>
         where: { groupId_uid: { groupId: group.id, uid: eventUid } },
 
         include: {
+          coOrganizers: true,
           managers: {
             include: {
               user: true,

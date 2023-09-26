@@ -24,6 +24,7 @@ import {
   type TicketGroup,
   PaymentMethod,
   EventFrequency,
+  type Group,
 } from '@prisma/client';
 import { toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
@@ -381,7 +382,10 @@ builder.queryField('event', (t) =>
     async authScopes(_, { uid, groupUid }, { user }) {
       const event = await prisma.event.findFirstOrThrow({
         where: { uid, group: { uid: groupUid } },
-        include: { managers: { include: { user: true } } },
+        include: {
+          coOrganizers: true,
+          managers: { include: { user: true } },
+        },
       });
       return eventAccessibleByUser(event, user);
     },
@@ -1000,6 +1004,7 @@ builder.queryField('searchEvents', (t) =>
             : {}),
         },
         include: {
+          coOrganizers: true,
           managers: {
             include: {
               user: true,
@@ -1034,6 +1039,7 @@ builder.queryField('searchEvents', (t) =>
           ],
         },
         include: {
+          coOrganizers: true,
           managers: {
             include: {
               user: true,
@@ -1045,7 +1051,10 @@ builder.queryField('searchEvents', (t) =>
       return [
         ...results.sort(levenshteinSorter(fuzzyIDs)),
         ...levenshteinFilterAndSort<
-          Event & { managers: Array<EventManager & { user: { uid: string } }> }
+          Event & {
+            coOrganizers: Group[];
+            managers: Array<EventManager & { user: { uid: string } }>;
+          }
         >(
           fuzzyIDs,
           10,
