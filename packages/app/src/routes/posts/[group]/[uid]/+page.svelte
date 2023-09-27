@@ -11,7 +11,7 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
   import AreaComments from '$lib/components/AreaComments.svelte';
-
+  import { DISPLAY_VISIBILITIES } from '$lib/display';
   import Badge from '$lib/components/Badge.svelte';
 
   export let data: PageData;
@@ -37,33 +37,6 @@
       $me?.groups.some(
         ({ canEditArticles, group }) => group.id === data.article.group.id && canEditArticles,
       ));
-  let vistext = '';
-  switch (visibility) {
-    case 'Public': {
-      vistext = 'Public';
-      break;
-    }
-
-    case 'Restricted': {
-      vistext = 'Restreint au groupe';
-      break;
-    }
-
-    case 'Private': {
-      vistext = 'Privé';
-      break;
-    }
-
-    case 'Unlisted': {
-      vistext = 'Non répertorié';
-      break;
-    }
-
-    default: {
-      vistext = 'Public';
-      break;
-    }
-  }
 </script>
 
 <div class="content">
@@ -83,7 +56,7 @@
     <p class="published-at">
       Publié le {dateTimeFormatter.format(publishedAt)} par
       <a href="/groups/{group.uid}">{group.name}</a>
-      <Badge>{vistext}</Badge>
+      <Badge>{DISPLAY_VISIBILITIES[visibility]}</Badge>
     </p>
   </header>
 
