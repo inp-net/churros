@@ -80,15 +80,9 @@ builder.queryField('userServices', (t) =>
         ...query,
         where: {
           studentAssociation: {
-            contributionOptions: {
-              some: {
-                contributions: {
-                  some: {
-                    user: {
-                      id: me.id,
-                    },
-                  },
-                },
+            school: {
+              uid: {
+                in: me.major.schools.map((school) => school.uid),
               },
             },
           },
