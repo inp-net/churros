@@ -12,9 +12,21 @@
   import CardEvent from '$lib/components/CardEvent.svelte';
   import AreaComments from '$lib/components/AreaComments.svelte';
 
+  import Badge from '$lib/components/Badge.svelte';
+
   export let data: PageData;
-  let { author, publishedAt, links, title, bodyHtml, group, pictureFile, event, comments } =
-    data.article;
+  let {
+    author,
+    publishedAt,
+    links,
+    title,
+    bodyHtml,
+    visibility,
+    group,
+    pictureFile,
+    event,
+    comments,
+  } = data.article;
   $: canEditArticles =
     $me?.admin ||
     $me?.groups.some(({ group: { uid }, canEditArticles }) => uid === group.uid && canEditArticles);
@@ -25,6 +37,33 @@
       $me?.groups.some(
         ({ canEditArticles, group }) => group.id === data.article.group.id && canEditArticles,
       ));
+  let vistext = '';
+  switch (visibility) {
+    case 'Public': {
+      vistext = 'Public';
+      break;
+    }
+
+    case 'Restricted': {
+      vistext = 'Restreint au groupe';
+      break;
+    }
+
+    case 'Private': {
+      vistext = 'Privé';
+      break;
+    }
+
+    case 'Unlisted': {
+      vistext = 'Non répertorié';
+      break;
+    }
+
+    default: {
+      vistext = 'Public';
+      break;
+    }
+  }
 </script>
 
 <div class="content">
@@ -44,6 +83,7 @@
     <p class="published-at">
       Publié le {dateTimeFormatter.format(publishedAt)} par
       <a href="/groups/{group.uid}">{group.name}</a>
+      <Badge>{vistext}</Badge>
     </p>
   </header>
 
