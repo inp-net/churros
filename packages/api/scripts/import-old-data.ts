@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-await-expression-member */
 /* eslint-disable unicorn/no-null */
-import { type Group, PrismaClient, NotificationType, ContributionOption } from '@prisma/client';
+import { type Group, PrismaClient, ContributionOption } from '@prisma/client';
 import { hash } from 'argon2';
 import { compareAsc, differenceInYears, parse, parseISO } from 'date-fns';
 import { createWriteStream, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -195,12 +195,6 @@ async function makeUser(user: OldUser, ldapUser: Ldap.User, aeOption: Contributi
         },
       },
       links: { create: [] },
-      notificationSettings: {
-        create: Object.values(NotificationType).map((type) => ({
-          type,
-          allow: true,
-        })),
-      },
       contributions: ldapUser.inscritAE
         ? {
             create: {

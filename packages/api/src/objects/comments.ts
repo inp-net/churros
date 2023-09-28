@@ -1,4 +1,4 @@
-import { NotificationType } from '@prisma/client';
+import { NotificationChannel } from '@prisma/client';
 import { TYPENAMES_TO_ID_PREFIXES, builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
@@ -129,7 +129,7 @@ builder.mutationField('upsertComment', (t) =>
           body: comment.body,
           data: {
             group: comment.article?.group.uid ?? undefined,
-            type: NotificationType.CommentRepliedTo,
+            channel: NotificationChannel.Comments,
             goto:
               process.env.FRONTEND_ORIGIN +
               (comment.document

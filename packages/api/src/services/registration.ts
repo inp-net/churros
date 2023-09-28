@@ -1,7 +1,6 @@
 import {
   CredentialType,
   type Major,
-  NotificationType,
   type School,
   type User,
   type UserCandidate,
@@ -160,14 +159,6 @@ export const saveUser = async ({
       apprentice,
       credentials: { create: { type: CredentialType.Password, value: password } },
       links: { create: [] },
-      // enable all notifications by default.
-      // the consent is still given per-device by the user on the frontend (see notification subscriptions).
-      notificationSettings: {
-        create: Object.values(NotificationType).map((type) => ({
-          type,
-          allow: true,
-        })),
-      },
     },
     include: {
       major: {

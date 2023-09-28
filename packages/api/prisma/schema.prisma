@@ -26,27 +26,26 @@ model User {
   schoolEmail  String? @db.VarChar(255)
 
   // Mandatory profile details
-  email          String   @unique @db.VarChar(255)
-  otherEmails    String[] @db.VarChar(255)
-  firstName      String   @db.VarChar(255)
-  lastName       String   @db.VarChar(255)
-  majorId        String
-  major          Major    @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  minor          Minor?   @relation(fields: [minorId], references: [id])
-  minorId        String?
-  graduationYear Int
-  apprentice     Boolean  @default(false)
-
-  // Optional profile details
-  address                String    @default("") @db.VarChar(255)
-  birthday               DateTime?
-  description            String    @default("") @db.Text
-  nickname               String    @default("") @db.VarChar(255)
-  phone                  String    @default("") @db.VarChar(255)
-  pictureFile            String    @default("") @db.VarChar(255)
-  links                  Link[]
-  godparentId            String?
-  cededImageRightsToTVn7 Boolean   @default(false)
+  email                       String                @unique @db.VarChar(255)
+  otherEmails                 String[]              @db.VarChar(255)
+  firstName                   String                @db.VarChar(255)
+  lastName                    String                @db.VarChar(255)
+  majorId                     String
+  major                       Major                 @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  minor                       Minor?                @relation(fields: [minorId], references: [id])
+  minorId                     String?
+  graduationYear              Int
+  apprentice                  Boolean               @default(false)
+  address                     String                @default("") @db.VarChar(255)
+  birthday                    DateTime?
+  description                 String                @default("") @db.Text
+  nickname                    String                @default("") @db.VarChar(255)
+  phone                       String                @default("") @db.VarChar(255)
+  pictureFile                 String                @default("") @db.VarChar(255)
+  links                       Link[]
+  godparentId                 String?
+  cededImageRightsToTVn7      Boolean               @default(false)
+  enabledNotificationChannels NotificationChannel[] @default([Articles, Shotguns, Permissions, GroupBoard, GodparentRequests, Comments, Other])
 
   // Permissions
   admin              Boolean @default(false)
@@ -64,7 +63,6 @@ model User {
   events                    Event[]
   notificationSubscriptions NotificationSubscription[]
   notifications             Notification[]
-  notificationSettings      NotificationSetting[]
   godparent                 User?                      @relation("mentorship", fields: [godparentId], references: [id]) // Le parrain ou la marraine
   godchildren               User[]                     @relation("mentorship") // Les filleul(e)s
   incomingGodparentRequests GodparentRequest[]         @relation("godparent")
@@ -327,7 +325,7 @@ model Group {
   parentId             String?
   /// Helper field to get a whole tree without processing all groups
   /// To be set to the group's id itself for root groups.
-  familyId             String?  
+  familyId             String?
   schoolId             String?
   studentAssociationId String?
   pictureFile          String    @default("") @db.VarChar(255)
@@ -368,11 +366,10 @@ model Group {
   barWeeks           BarWeek[]
   services           Service[]
 
-  Notification           Notification[]
-  NotificationSetting    NotificationSetting[]
+  notifications          Notification[]
   groupId                String?
   ticketGroupId          String?
-  joinedByBookingTickets Ticket[]              @relation("autojoin")
+  joinedByBookingTickets Ticket[]       @relation("autojoin")
 }
 
 /// The intermediate model between users and groups
@@ -645,42 +642,21 @@ model Notification {
   vibrate        Int[]                    @default([])
   group          Group?                   @relation(fields: [groupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   groupId        String?
-  type           NotificationType
+  channel        NotificationChannel      @default(Other)
   user           User?                    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   userId         String?
   goto           String                   @default("")
 }
 
-/// A NotificationType represents the different kinds of reasons why you might receive a notification: a shotgun just opened, etc.
-enum NotificationType {
-  NewArticle
-  ShotgunOpeningSoon
-  ShotgunOpened
-  ShotgunClosingSoon
-  ShotgunClosed
-  PermissionsChanged
-  GodparentRequestReceived
-  GodparentRequestAccepted
-  GodparentRequestRefused
-  CommentRepliedTo
+/// A NotificationChannel represents the different kinds of reasons why you might receive a notification: a shotgun just opened, etc.
+enum NotificationChannel {
+  Articles
+  Shotguns
+  Permissions
+  GroupBoard
+  GodparentRequests
+  Comments
   Other // should't be used too much
-}
-
-/// NotificationSetting is a user-specific (and maybe group-specific) setting to allow or disallow a type of notification
-/// If the group is not set, the setting applies to all groups, except those that have an override. NotificationSettings that have a group set are overrides.
-model NotificationSetting {
-  id      String           @id @default(dbgenerated("nanoid('notifsetting:')"))
-  user    User             @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  userId  String
-  group   Group?           @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  groupId String?
-  type    NotificationType
-  allow   Boolean
-
-  // See https://github.com/prisma/prisma/issues/3387
-  // Another way would be to create a "Null group", which is a special group with a uid of "", and use that instead of null. This is REALLY messy, and I don't want that.
-  // This would remove the need for an id.
-  // @@unique([userId, groupId, type], distinctNulls: false)
 }
 
 /// Announcement is a way to get a message accross the entire site, such as for maintenance announcements.

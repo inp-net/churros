@@ -88,7 +88,9 @@
         <Check />
       {/if}
     </div>
-    <div class="labels">{label}</div>
+    <div class="labels">
+      {#if $$slots.default}<slot />{:else}{label}{/if}
+    </div>
   {/if}
 </label>
 

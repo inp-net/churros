@@ -25,7 +25,7 @@
   }
 </script>
 
-{#if rich}
+{#if rich && label}
   <ModalMarkdownHelp bind:element={markdownHelpDialogElement}></ModalMarkdownHelp>
 {/if}
 
@@ -40,7 +40,7 @@
     {...$$restProps}
     placeholder={placeholder + (submitShortcut ? '\nCtrl-Entrer pour envoyer' : '')}
   />
-  {#if rich}
+  {#if rich && label}
     <ButtonInk
       on:click={() => {
         markdownHelpDialogElement.showModal();

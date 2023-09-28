@@ -1,21 +1,11 @@
 <script lang="ts">
-  import type { NotificationType } from '$lib/zeus';
+  import type { NotificationChannel } from '$lib/zeus';
   import { formatDistanceToNow } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
-
-  import IconShotgunOpened from '~icons/mdi/lock-open-outline';
-  import IconShotgunOpeningSoon from '~icons/mdi/clock-alert-outline';
-  import IconShotgunClosingSoon from '~icons/mdi/clock-alert-outline';
-  import IconShotgunClosed from '~icons/mdi/lock-outline';
-  import IconGodsonRequestReceived from '~icons/mdi/account-multiple-plus-outline';
-  import IconGodsonRequestAccepted from '~icons/mdi/account-check-outline';
-  import IconGodsonRequestRefused from '~icons/mdi/account-cancel-outline';
-  import IconNewArticle from '~icons/mdi/newspaper-variant-outline';
-  import IconPermissionsChanged from '~icons/mdi/key-change';
-  import IconOther from '~icons/mdi/bell-outline';
+  import { ICONS_NOTIFICATION_CHANNELS } from '$lib/display';
 
   export let href: string;
-  export let type: NotificationType;
+  export let channel: NotificationChannel;
   export let title: string;
   export let body: string;
   export let timestamp: Date | undefined = undefined;
@@ -28,27 +18,9 @@
 <article class="card-notification" class:has-actions={actions.length > 0}>
   <a {href} class="content">
     <div class="icon">
-      {#if type === 'ShotgunOpened'}
-        <IconShotgunOpened />
-      {:else if type === 'ShotgunOpeningSoon'}
-        <IconShotgunOpeningSoon />
-      {:else if type === 'ShotgunClosingSoon'}
-        <IconShotgunClosingSoon />
-      {:else if type === 'ShotgunClosed'}
-        <IconShotgunClosed />
-      {:else if type === 'GodparentRequestReceived'}
-        <IconGodsonRequestReceived />
-      {:else if type === 'GodparentRequestAccepted'}
-        <IconGodsonRequestAccepted />
-      {:else if type === 'GodparentRequestRefused'}
-        <IconGodsonRequestRefused />
-      {:else if type === 'NewArticle'}
-        <IconNewArticle />
-      {:else if type === 'PermissionsChanged'}
-        <IconPermissionsChanged />
-      {:else}
-        <IconOther />
-      {/if}
+      <svelte:component
+        this={ICONS_NOTIFICATION_CHANNELS[channel] || ICONS_NOTIFICATION_CHANNELS.Other}
+      ></svelte:component>
     </div>
     <div class="body">
       <div class="body-title">{title}</div>

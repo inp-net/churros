@@ -1,4 +1,4 @@
-import { NotificationType } from '@prisma/client';
+import { NotificationChannel } from '@prisma/client';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { notify } from '../services/notifications.js';
@@ -92,7 +92,7 @@ builder.mutationField('upsertGodparentRequest', (t) =>
           data: {
             goto: `/users/${godparentUid}/edit`,
             group: undefined,
-            type: NotificationType.GodparentRequestReceived,
+            channel: NotificationChannel.GodparentRequests,
           },
         });
       }
@@ -162,7 +162,7 @@ builder.mutationField('deleteGodparentRequest', (t) =>
           title: `Demande de parrainage acceptée!`,
           data: {
             goto: `/me`,
-            type: NotificationType.GodparentRequestAccepted,
+            channel: NotificationChannel.GodparentRequests,
             group: undefined,
           },
         });
@@ -172,7 +172,7 @@ builder.mutationField('deleteGodparentRequest', (t) =>
           title: `Demande de parrainage refusée :/`,
           data: {
             goto: `/me`,
-            type: NotificationType.GodparentRequestRefused,
+            channel: NotificationChannel.GodparentRequests,
             group: undefined,
           },
         });
