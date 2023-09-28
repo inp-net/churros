@@ -73,6 +73,14 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
       // Restricted events in the user's groups
       {
         OR: [
+          // TODO does not work for sub-sub groups
+          {
+            group: {
+              familyRoot: {
+                children: { some: { members: { some: { member: { uid: user?.uid ?? '' } } } } },
+              },
+            },
+          },
           {
             group: { members: { some: { member: { uid: user?.uid ?? '' } } } },
           },
