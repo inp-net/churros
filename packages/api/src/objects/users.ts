@@ -702,7 +702,7 @@ builder.mutationField('deleteUserPicture', (t) =>
 );
 
 builder.mutationField('updateNotificationSettings', (t) =>
-  t.prismaField({
+  t.field({
     type: [NotificationChannel],
     args: {
       uid: t.arg.string(),
@@ -711,7 +711,7 @@ builder.mutationField('updateNotificationSettings', (t) =>
     authScopes(_, { uid }, { user }) {
       return Boolean(user?.canEditUsers || uid === user?.uid);
     },
-    async resolve(_query, _, { uid, enabledChannels }) {
+    async resolve(_query, { uid, enabledChannels }) {
       const { enabledNotificationChannels } = await prisma.user.update({
         where: { uid },
         data: {
