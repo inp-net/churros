@@ -123,7 +123,7 @@ export const UserType = builder.prismaNode('User', {
     managedEvents: t.relation('managedEvents'),
     enabledNotificationChannels: t.expose('enabledNotificationChannels', {
       type: [NotificationChannel],
-      authScopes: { admin: true, $granted: 'me' },
+      authScopes: { loggedIn: true, $granted: 'me' },
     }),
     contributesWith: t.field({
       type: [ContributionOptionType],
