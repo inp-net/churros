@@ -45,8 +45,8 @@
       on:click={() => {
         markdownHelpDialogElement.showModal();
       }}
-      icon={IconHelp}
-    ></ButtonInk>
+      icon={IconHelp}>Aide sur markdown</ButtonInk
+    >
   {/if}
 </InputField>
 
