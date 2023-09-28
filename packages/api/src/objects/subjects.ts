@@ -49,10 +49,13 @@ builder.queryField('subjectsOfMinor', (t) =>
     cursor: 'id',
     args: {
       uid: t.arg.string({ required: true }),
+      yearTier: t.arg.int({ required: true }),
     },
     authScopes: () => true,
-    async resolve(query, _, { uid }) {
-      const minor = await prisma.minor.findUniqueOrThrow({ where: { uid } });
+    async resolve(query, _, { uid, yearTier }) {
+      const minor = await prisma.minor.findUniqueOrThrow({
+        where: { uid_yearTier: { uid, yearTier } },
+      });
       return prisma.subject.findMany({
         ...query,
         where: {

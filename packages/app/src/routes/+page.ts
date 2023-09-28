@@ -6,6 +6,7 @@ export const _pageQuery = Selector('QueryHomepageConnection')({
   edges: {
     cursor: true,
     node: {
+      id: true,
       uid: true,
       title: true,
       bodyHtml: true,

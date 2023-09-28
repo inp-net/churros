@@ -9,6 +9,7 @@ import { Readable } from 'node:stream';
 import { finished } from 'node:stream/promises';
 import type { ReadableStream } from 'node:stream/web';
 import { SingleBar } from 'cli-progress';
+import slug from 'slug';
 const prisma = new PrismaClient();
 
 const NEW_MAJOR_SHORTNAMES: Partial<Record<Ldap.ShortName, string>> = {
@@ -141,10 +142,12 @@ async function makeSchool(school: Ldap.School) {
 }
 
 async function makeMajor(major: Ldap.Major) {
+  const shortName = NEW_MAJOR_SHORTNAMES[major.shortName] ?? major.shortName;
   return prisma.major.create({
     data: {
       name: major.displayName,
-      shortName: NEW_MAJOR_SHORTNAMES[major.shortName] ?? major.shortName,
+      shortName,
+      uid: slug(shortName),
       schools: {
         connect: [
           {

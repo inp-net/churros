@@ -72,7 +72,7 @@
 {/if}
 
 <section class="articles">
-  {#each data.homepage.edges as { node: { uid, title, bodyHtml, publishedAt, group, author, pictureFile, links } }}
+  {#each data.homepage.edges as { node: { id, uid, title, bodyHtml, publishedAt, group, author, pictureFile, links } } (id)}
     <ArticleCard
       {title}
       {publishedAt}

@@ -17,7 +17,7 @@
   let membersToAdd = '';
   let adding = false;
   // [line, state, message to show, uid of user]
-  const result: Array<[string, State, string, string | undefined]> = [];
+  let result: Array<[string, State, string, string | undefined]> = [];
 
   function unaccent(str: string): string {
     return str.normalize('NFD').replaceAll(/[\u0300-\u036F]/g, '');
@@ -65,15 +65,17 @@
             { uid: true, firstName: true, lastName: true },
           ],
         });
-        const compare = (s: string) => unaccent(s).trim().toLowerCase();
+        const compare = (s: string) => unaccent(s).trim().toLowerCase().replaceAll(/\s+/g, ' ');
         searchUsers = searchUsers.filter(
           (u) => compare(`${u.firstName} ${u.lastName}`) === compare(line),
         );
-        if (searchUsers.length === 0) throw new Error(`Utilisateur·ice introuvable`);
-        else if (searchUsers.length > 1)
+        if (searchUsers.length === 0) {
+          throw new Error(`Utilisateur·ice introuvable`);
+        } else if (searchUsers.length > 1) {
           throw new Error(
             `Plusieurs utilisateur·ice·s trouvé·e·s, utilise plutôt l'adresse e-mail ou l'@`,
           );
+        }
 
         uid = searchUsers[0].uid;
       }
@@ -104,6 +106,8 @@
     adding = true;
     const lines = membersToAdd.split('\n').filter((l) => l.trim());
     try {
+      // Empty the results
+      result = [];
       await Promise.all(lines.map(async (line) => addMember(line)));
       membersToAdd = lines
         .filter((l) => result.some(([line, status]) => l === line && status === State.Errored))

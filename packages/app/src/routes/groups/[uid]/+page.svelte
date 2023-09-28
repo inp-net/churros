@@ -226,11 +226,22 @@
     {/if}
   </section>
 
-  {#if group.root && (group.root.children.length ?? 0) > 0}
+  {#if (group.root && (group.root.children.length ?? 0) > 0) || canEditDetails}
+    {@const hasSubgroups = (group.root?.children.length ?? 0) > 0}
     <section class="subgroups">
-      <h2>Sous-groupes</h2>
+      <h2>
+        Sous-groupes {#if hasSubgroups}<ButtonSecondary icon={IconAdd} href="./subgroups/create"
+            >Créer</ButtonSecondary
+          >{/if}
+      </h2>
 
-      <TreeGroups highlightUid={group.uid} group={group.root} />
+      {#if group.root && hasSubgroups}
+        <TreeGroups highlightUid={group.uid} group={group.root} />
+      {:else}
+        <ButtonSecondary icon={IconAdd} href="./subgroups/create"
+          >Créer un sous-groupe</ButtonSecondary
+        >
+      {/if}
     </section>
   {/if}
 

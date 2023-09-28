@@ -36,6 +36,7 @@
     frequency: EventFrequency.Once,
     recurringUntil: undefined,
     pictureFile: '',
+    coOrganizers: [],
   };
   // export const snapshot: Snapshot = {
   //   capture: () => ({ event }),

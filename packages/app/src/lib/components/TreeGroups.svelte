@@ -25,7 +25,6 @@
   <div class="text">
     <p class="name">
       {group.name}
-
       {#if (group.school || group.studentAssociation) && showSchool}
         <span class="school">
           {(group.school ?? group.studentAssociation?.school)?.name}
@@ -42,7 +41,7 @@
   <ul class="nobullet children">
     {#each group.children as child}
       <li>
-        <svelte:self group={child} />
+        <svelte:self group={child} {highlightUid} />
       </li>
     {/each}
   </ul>
@@ -95,6 +94,7 @@
 
   .highlight {
     font-weight: bold;
+    color: var(--primary-link);
   }
 
   .school {
@@ -106,5 +106,13 @@
   .school::before {
     margin-right: 0.25em;
     content: '·';
+  }
+
+  .highlight .name {
+    font-weight: bold;
+  }
+
+  .highlight .description {
+    font-weight: bold;
   }
 </style>

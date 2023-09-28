@@ -131,6 +131,12 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
               canScanEvents: true,
             },
           },
+          coOrganizers: {
+            uid: true,
+            name: true,
+            pictureFile: true,
+            pictureFileDark: true,
+          },
           contactMail: true,
           managers: {
             user: {

@@ -88,8 +88,12 @@ sw.addEventListener('notificationclick', (clickEvent) => {
   clickEvent.waitUntil(
     (async () => {
       await log('clicked notification');
+
       const { action, notification } = clickEvent;
+      notification.close();
+
       if (action.startsWith('https://')) await openURL(action);
+
       const data = notification.data as PushNotification['data'];
       if (data.goto) await openURL(data.goto);
     })(),
