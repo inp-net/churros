@@ -3,12 +3,12 @@ import fr from 'date-fns/locale/fr/index.js';
 import { EventFrequency } from '$lib/zeus';
 
 export const dateTimeFormatter = new Intl.DateTimeFormat('fr-FR', {
-  dateStyle: 'medium',
+  dateStyle: 'full',
   timeStyle: 'short',
 });
 
 export const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
-  dateStyle: 'long',
+  dateStyle: 'full',
 });
 
 export const formatDateTime = (date: unknown) => dateTimeFormatter.format(new Date(date as Date));
