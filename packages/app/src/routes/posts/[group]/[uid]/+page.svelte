@@ -13,6 +13,7 @@
   import AreaComments from '$lib/components/AreaComments.svelte';
   import { DISPLAY_VISIBILITIES } from '$lib/display';
   import Badge from '$lib/components/Badge.svelte';
+  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
 
   export let data: PageData;
   let {
@@ -56,6 +57,7 @@
     <p class="published-at">
       Publié le {dateTimeFormatter.format(publishedAt)} par
       <a href="/groups/{group.uid}">{group.name}</a>
+      <IndicatorVisibility {visibility} />
       <Badge>{DISPLAY_VISIBILITIES[visibility]}</Badge>
     </p>
   </header>
@@ -139,5 +141,11 @@
 
   .event > :global(article) {
     max-width: 600px;
+  }
+
+  .published-at {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
   }
 </style>
