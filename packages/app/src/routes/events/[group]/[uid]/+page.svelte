@@ -107,8 +107,10 @@
 </section>
 
 <section class="organizer">
-  <h2>Organisé par</h2>
-  <ButtonSecondary href="mailto:{contactMail}">Contacter l'orga</ButtonSecondary>
+  <h2>
+    Organisé par
+    <ButtonSecondary href="mailto:{contactMail}">Contacter l'orga</ButtonSecondary>
+  </h2>
   <ul class="nobullet organizers">
     {#each [group, ...coOrganizers] as g}
       <li class="organizer-name-and-contact">
@@ -116,9 +118,6 @@
           <img src={groupLogoSrc($isDark, g)} alt="" />
           {g.name}
         </a>
-        {#if g.email}
-          <ButtonSecondary href="mailto:{g.email}">Contact</ButtonSecondary>
-        {/if}
       </li>
     {/each}
   </ul>
@@ -185,8 +184,7 @@
 
   .organizers {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    gap: 4rem;
     margin-top: 0.5rem;
   }
 
