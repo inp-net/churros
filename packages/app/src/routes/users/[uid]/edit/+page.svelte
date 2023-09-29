@@ -1,9 +1,11 @@
 <script lang="ts">
   import Alert from '$lib/components/Alert.svelte';
   import IconClose from '~icons/mdi/close';
+  import IconCancelEditing from '~icons/mdi/close';
   import IconPencil from '~icons/mdi/pencil';
   import IconSynchronize from '~icons/mdi/database-sync-outline';
   import IconCheck from '~icons/mdi/check';
+  import IconFinishEditing from '~icons/mdi/check';
   import IconActive from '~icons/mdi/adjust';
   import type { PageData } from './$types';
   import Permissions from '../../../../lib/components/FormUserPermissions.svelte';
@@ -32,7 +34,7 @@
   let godparentDeleting = false;
   let godparentDeleteServerError = '';
   let ldapSyncResult: undefined | boolean = undefined;
-  const sessionEdit: Record<string, boolean> = {};
+  let editingSession: [string, string] | [] = [];
 
   const deleteToken = async (id: string, active: boolean) => {
     if (active) {
@@ -48,7 +50,7 @@
     await $zeus.mutate({ renameSession: [{ id, name }, true] });
     const idx = data.me.credentials.findIndex((credential) => credential.id === id);
     data.me.credentials[idx].name = name;
-    sessionEdit[id] = false;
+    editingSession = [];
   };
 
   const sendGodparentRequest = async () => {
@@ -374,7 +376,7 @@
                 <p class="date">Ouverte le {formatDateTime(createdAt)}</p>
                 <p class="name">
                   <!--                  -->
-                  {#if sessionEdit[id]}
+                  {#if editingSession[0] === id}
                     <InputText label="" maxlength={255} bind:value={name} />
                   {:else}
                     {name.length > 0 ? name : humanizeUserAgent(userAgent)}
@@ -386,19 +388,29 @@
                 </p>
               </div>
               <div class="actions">
-                {#if !sessionEdit[id]}
+                {#if editingSession[0] === id}
+                  <ButtonGhost class="success" on:click={async () => renameSession(id, name)}>
+                    <IconFinishEditing />
+                  </ButtonGhost>
+                  <ButtonGhost
+                    help="Annuler les modifications"
+                    class="danger"
+                    on:click={() => {
+                      name = editingSession[1] ?? '';
+                      editingSession = [];
+                    }}
+                  >
+                    <IconCancelEditing />
+                  </ButtonGhost>
+                {:else}
                   <ButtonGhost
                     help="Renommer"
                     on:click={() => {
-                      sessionEdit[id] = true;
+                      editingSession = [id, name];
                     }}
                   >
                     <IconPencil />
                   </ButtonGhost>
-                {:else}
-                  <ButtonSecondary on:click={async () => renameSession(id, name)}>
-                    Renommer
-                  </ButtonSecondary>
                 {/if}
                 <ButtonSecondary danger on:click={async () => deleteToken(id, active)}>
                   Déconnecter
