@@ -46,7 +46,6 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   barweek: 'BarWeek',
   notifsub: 'NotificationSubscription',
   notif: 'Notification',
-  notifsetting: 'NotificationSetting',
   ann: 'Announcement',
   subj: 'Subject',
   doc: 'Document',

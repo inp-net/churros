@@ -13,7 +13,6 @@
   import InputLongText from './InputLongText.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputListOfGroups from './InputListOfGroups.svelte';
-  import InputSchool from './InputSchool.svelte';
   import InputStudentAssociation from './InputStudentAssociation.svelte';
 
   export let data: PageData;
@@ -33,7 +32,6 @@
     type,
     parent,
     related,
-    school,
     studentAssociation,
   } = data.group;
 
@@ -74,7 +72,6 @@
             parentUid: parent?.uid,
             type,
             related: related.map(({ uid }) => uid),
-            schoolUid: school?.uid,
             studentAssociationUid: studentAssociation?.uid,
           },
           {
@@ -109,7 +106,6 @@
     />
 
     <div class="side-by-side">
-      <InputSchool clearable label="École de rattachement" bind:object={school} uid={school?.uid} />
       <InputStudentAssociation
         clearable
         label="AE de rattachement"

@@ -77,7 +77,6 @@ export async function scheduleNewArticleNotification({
         include: {
           group: {
             include: {
-              school: true,
               studentAssociation: {
                 include: {
                   school: true,
@@ -96,8 +95,7 @@ export async function scheduleNewArticleNotification({
       // If the article's group is not in a school the user is in
       if (
         !user.major.schools.some(
-          (school) =>
-            school.id === (article.group.school?.id ?? article.group.studentAssociation?.school.id),
+          (school) => school.id === article.group.studentAssociation?.school.id,
         )
       )
         return;
@@ -175,7 +173,6 @@ export async function scheduleShotgunNotifications({
                   school: true,
                 },
               },
-              school: true,
             },
           },
         },
@@ -185,7 +182,7 @@ export async function scheduleShotgunNotifications({
       if (!event) return;
 
       // Don't send if the event is not open to any school the user is in
-      const schoolOfEvent = event.group.school ?? event.group.studentAssociation?.school;
+      const schoolOfEvent = event.group.studentAssociation?.school;
       if (!user.major.schools.some((school) => school.id === schoolOfEvent?.id)) return;
 
       // Don't send notifications for unlisted or private events
