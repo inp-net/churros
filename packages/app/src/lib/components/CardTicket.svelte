@@ -12,10 +12,13 @@
   export let author: { fullName: string };
   export let paid: boolean;
   export let cancelled: boolean;
+
+  export let floating = false;
 </script>
 
 <a
   class="billet"
+  class:floating
   {href}
   class:danger={cancelled}
   class:noimg={!ticket.event.pictureFile}
@@ -69,7 +72,11 @@
     --alpha: 0.5;
   }
 
-  .billet.noimg {
+  .billet.floating {
+    box-shadow: var(--shadow-big);
+  }
+
+  .billet.noimg:not(.floating) {
     border: var(--border-block) solid var(--border);
   }
 

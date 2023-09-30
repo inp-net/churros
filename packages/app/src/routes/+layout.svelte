@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import TopBar from '$lib/components/NavigationTop.svelte';
+  import { persisted } from 'svelte-local-storage-store';
   import { theme } from '$lib/theme.js';
   import { onMount } from 'svelte';
   import '../design/app.scss';
@@ -15,17 +16,25 @@
   import ModalReportIssue from '$lib/components/ModalReportIssue.svelte';
   import { toasts } from '$lib/toasts';
   import Toast from '$lib/components/Toast.svelte';
+  import CardTicket from '$lib/components/CardTicket.svelte';
+  import type { PageData } from './$types';
+  import { differenceInMinutes, formatDistanceToNow } from 'date-fns';
+  import fr from 'date-fns/locale/fr/index.js';
+  import { slide } from 'svelte/transition';
 
-  function currentTab(url: URL): 'events' | 'search' | 'services' | 'home' {
+  function currentTab(url: URL): 'events' | 'groups' | 'services' | 'home' {
     const starts = (segment: string) => url.pathname.startsWith(segment);
 
-    if (starts('/search')) return 'search';
+    if (starts('/groups')) return 'groups';
     if (starts('/week') || starts('/bookings') || starts('/events')) return 'events';
     if (starts('/services')) return 'services';
     return 'home';
   }
 
+  export let data: PageData;
   let showInitialSpinner = true;
+
+  const hiddenQuickBookings = persisted('hiddenQuickBookings', [] as string[]);
 
   onMount(() => {
     if (!$me && !localStorage.getItem('isReallyLoggedout')) {
@@ -55,6 +64,7 @@
   beforeNavigate(() => {
     (window as unknown as Window & { NProgress: NProgress }).NProgress.start();
   });
+
   afterNavigate(async () => {
     const { NProgress } = window as unknown as Window & { NProgress: NProgress };
 
@@ -184,6 +194,31 @@
         {/each}
       </section>
     {/if}
+    {#if data.registrationsOfUser?.edges.length > 0 && !$page.url.pathname.startsWith('/bookings')}
+      {@const registration = data.registrationsOfUser.edges[0].node}
+      {#if !$hiddenQuickBookings.includes(registration.id) && differenceInMinutes(new Date(), registration.ticket.event.startsAt) <= 30}
+        <!-- TODO make it swipable to dismis -->
+        <section transition:slide={{ axis: 'y' }} class="quick-booking">
+          <p class="hint">
+            <strong>
+              C'est dans {formatDistanceToNow(registration.ticket.event.startsAt, {
+                locale: fr,
+              }).replace('environ ', '')}! Voici ta place
+            </strong>
+            <span class="dismiss">
+              <ButtonGhost
+                on:click={() => {
+                  $hiddenQuickBookings = [...$hiddenQuickBookings, registration.id];
+                }}
+              >
+                <IconClose></IconClose>
+              </ButtonGhost>
+            </span>
+          </p>
+          <CardTicket floating href="/bookings/{registration.code}" {...registration}></CardTicket>
+        </section>
+      {/if}
+    {/if}
 
     <main class:fullsize={pageIsFullsize()}>
       <slot />
@@ -285,6 +320,34 @@
     flex-wrap: wrap;
     column-gap: 1rem;
     align-items: center;
+  }
+
+  .quick-booking {
+    position: fixed;
+    right: 0;
+    bottom: 5rem;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+
+    @media (width>=600px) {
+      right: 1rem;
+      left: unset;
+      max-width: 400px;
+    }
+
+    .hint {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 0.5rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem;
+      text-align: center;
+
+      // fade from transparent to var(--bg)
+      background: linear-gradient(to bottom, transparent 0%, var(--bg) 100%);
+    }
   }
 
   @keyframes spinner {
