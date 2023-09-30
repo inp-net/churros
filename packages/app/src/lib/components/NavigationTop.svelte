@@ -2,8 +2,8 @@
   import IconIssue from '~icons/mdi/chat-alert-outline';
   import IconNotif from '~icons/mdi/bell-outline';
   import IconNotifFilled from '~icons/mdi/bell';
-  import IconSearch from '~icons/mdi/card-search';
-  import IconSearchOutline from '~icons/mdi/card-search-outline';
+  import IconTicket from '~icons/mdi/ticket-outline';
+  import IconTicketFilled from '~icons/mdi/ticket-confirmation';
   import IconAccount from '~icons/mdi/account-circle-outline';
 
   import ButtonSecondary from './ButtonSecondary.svelte';
@@ -92,9 +92,9 @@
           {:else}
             <IconNotif />{/if}</ButtonGhost
         >
-        <ButtonGhost href="/search/" help="Rechercher"
-          >{#if $page.url.pathname.startsWith('/search')}<IconSearch />{:else}
-            <IconSearchOutline />{/if}</ButtonGhost
+        <ButtonGhost href="/bookings/" help="Mes places"
+          >{#if $page.url.pathname.startsWith('/bookings')}<IconTicketFilled />{:else}
+            <IconTicket />{/if}</ButtonGhost
         >
         <ButtonGhost href="/users/{$me?.uid}" help="Mon profil">
           {#if $me.pictureFile}
