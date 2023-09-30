@@ -402,7 +402,6 @@ suos auras atra!
 > diversa. Placuit omnia; flammas Hoc ventis nobis primordia flammis Mavors
 > dabat horrida conplecti cremantur. A mundus, metu Anius gestare caelatus,
 > Alpheos est, lecti et?`,
-      school: { connect: { id: randomIdOf(schools) } },
       studentAssociation: { connect: { id: randomIdOf(studentAssociations) } },
       links: {
         createMany: {

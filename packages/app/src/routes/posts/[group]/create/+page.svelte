@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import PostDetails from '$lib/components/FormArticle.svelte';
+  import FormArticle from '$lib/components/FormArticle.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
 
   export let data: PageData;
@@ -8,7 +8,7 @@
 
 <div class="content">
   <h1><ButtonBack /> Écrire un post en tant que {data.article.group.name}</h1>
-  <PostDetails bind:data />
+  <FormArticle bind:data />
 </div>
 
 <style>

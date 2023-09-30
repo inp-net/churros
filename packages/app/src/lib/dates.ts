@@ -1,4 +1,4 @@
-import { format, isMonday, isSameDay, previousMonday } from 'date-fns';
+import { format, isMonday, previousMonday } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
 import { EventFrequency } from '$lib/zeus';
 
@@ -64,14 +64,10 @@ export function formatEventDates(
 ): string {
   switch (frequency) {
     case EventFrequency.Once: {
-      if (isSameDay(startsAt, endsAt)) {
-        return `${formatDate(startsAt)}, de ${format(startsAt, 'HH:mm')} à ${format(
-          endsAt,
-          'HH:mm',
-        )}`;
-      }
-
-      return `${formatDateTime(startsAt)} — ${formatDateTime(endsAt)}`;
+      return new Intl.DateTimeFormat('fr-FR', {
+        dateStyle: 'full',
+        timeStyle: 'short',
+      }).formatRange(startsAt, endsAt);
     }
 
     default: {

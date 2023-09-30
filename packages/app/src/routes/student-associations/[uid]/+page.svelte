@@ -13,6 +13,7 @@
   import IconHackernews from '~icons/mdi/hackernews';
   import IconDiscord from '~icons/mdi/discord';
   import IconWebsite from '~icons/mdi/earth';
+  import { GroupType } from '$lib/zeus';
 
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
@@ -39,10 +40,6 @@
   export let data: PageData;
 
   const { studentAssociation } = data;
-
-  const groups = [
-    ...new Set([...studentAssociation.groups, ...studentAssociation.school.groups]),
-  ].sort((a, b) => a.name.localeCompare(b.name));
 </script>
 
 <div class="content">
@@ -81,7 +78,7 @@
 
   <section class="StudentAssociationSections">
     <h2>Bureaux de l'association</h2>
-    {#each groups.filter((group) => group.type === 'StudentAssociationSection') as studentAssociationSection}
+    {#each studentAssociation.groups.filter((group) => group.type === GroupType.StudentAssociationSection) as studentAssociationSection}
       <a href="/groups/{studentAssociationSection.uid}/" class="group">
         <div class="avatar">
           <img
@@ -104,7 +101,7 @@
   <section class="clubs">
     <h2>Associations et Clubs</h2>
     <div class="groups">
-      {#each groups.filter((group) => group.type === 'Club' || group.type === 'Association') as group}
+      {#each studentAssociation.groups.filter((group) => group.type === GroupType.Club || group.type === GroupType.Association) as group}
         <a href="/groups/{group.uid}/" class="group">
           <div class="avatar">
             <img src="{env.PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} />

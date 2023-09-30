@@ -460,7 +460,6 @@ builder.mutationField('upsertRegistration', (t) =>
               managers: { include: { user: true } },
               group: {
                 include: {
-                  school: true,
                   studentAssociation: true,
                 },
               },

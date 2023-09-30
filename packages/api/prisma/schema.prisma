@@ -237,7 +237,6 @@ model School {
   description        String @default("") @db.Text
   address            String @default("") @db.VarChar(255)
 
-  groups              Group[]
   majors              Major[]              @relation("MajorToSchool")
   majorsLdapSchool    Major[]              @relation("ldapSchool")
   studentAssociations StudentAssociation[]
@@ -357,7 +356,6 @@ model Group {
 
   articles           Article[]
   members            GroupMember[]
-  school             School?             @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   studentAssociation StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   events             Event[]
   coOrganizedEvents  Event[]             @relation("coOrganizer")

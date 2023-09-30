@@ -22,14 +22,14 @@ export const _clubQuery = Selector('Group')({
     name: true,
     value: true,
   },
-  school: {
-    uid: true,
-    color: true,
-    name: true,
-  },
   studentAssociation: {
     uid: true,
     name: true,
+    school: {
+      uid: true,
+      color: true,
+      name: true,
+    },
   },
   parent: {
     uid: true,

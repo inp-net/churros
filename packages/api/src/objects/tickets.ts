@@ -248,7 +248,7 @@ export function userCanSeeTicket(
   }: {
     event: {
       id: string;
-      group: { school: null | { uid: string }; studentAssociation: null | { id: string } };
+      group: { studentAssociation: null | { id: string } };
       managers: Array<{ userId: string }>;
     };
     onlyManagersCanProvide: boolean;
@@ -286,11 +286,7 @@ export function userCanSeeTicket(
   const isContributor = Boolean(
     user?.contributions.some(
       ({ option: { paysFor }, paid }) =>
-        paid &&
-        paysFor.some(
-          ({ id, school }) =>
-            id === event.group.studentAssociation?.id || event.group.school?.uid === school.uid,
-        ),
+        paid && paysFor.some(({ id }) => id === event.group.studentAssociation?.id),
     ),
   );
 
@@ -353,7 +349,6 @@ builder.queryField('ticketsOfEvent', (t) =>
           ...query.include,
           openToGroups: {
             include: {
-              school: true,
               studentAssociation: true,
             },
           },
@@ -364,7 +359,6 @@ builder.queryField('ticketsOfEvent', (t) =>
               group: {
                 include: {
                   studentAssociation: true,
-                  school: true,
                 },
               },
             },

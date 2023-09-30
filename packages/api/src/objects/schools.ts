@@ -13,7 +13,6 @@ export const SchoolType = builder.prismaObject('School', {
     description: t.exposeString('description'),
     address: t.exposeString('address'),
     services: t.relation('services'),
-    groups: t.relation('groups'),
   }),
 });
 

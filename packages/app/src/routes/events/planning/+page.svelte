@@ -68,7 +68,9 @@
 
 <style>
   .content {
+    max-width: 600px;
     padding: 0 0.5rem 4rem;
+    margin: 0 auto;
   }
 
   .days {

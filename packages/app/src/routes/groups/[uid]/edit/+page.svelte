@@ -5,7 +5,7 @@
 
   export let data: PageData;
 
-  $: ({ group, lydiaAccountsOfGroup } = data);
+  $: ({ group } = data);
 </script>
 
 <div class="forms">

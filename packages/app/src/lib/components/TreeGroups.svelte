@@ -6,7 +6,6 @@
     uid: string;
     groupId: string;
     name: string;
-    school?: { name: string } | undefined;
     studentAssociation?: { school: { name: string } } | undefined;
     children: Group[];
     pictureFile: string;
@@ -25,9 +24,9 @@
   <div class="text">
     <p class="name">
       {group.name}
-      {#if (group.school || group.studentAssociation) && showSchool}
+      {#if group.studentAssociation && showSchool}
         <span class="school">
-          {(group.school ?? group.studentAssociation?.school)?.name}
+          {group.studentAssociation?.school?.name}
         </span>
       {/if}
     </p>
@@ -41,7 +40,7 @@
   <ul class="nobullet children">
     {#each group.children as child}
       <li>
-        <svelte:self group={child} {highlightUid}/>
+        <svelte:self group={child} {highlightUid} />
       </li>
     {/each}
   </ul>
@@ -96,7 +95,7 @@
     font-weight: bold;
     color: var(--primary-link);
   }
-  
+
   .school {
     font-size: 0.75em;
     font-weight: bold;
@@ -108,12 +107,11 @@
     content: '·';
   }
 
-  .highlight .name{
+  .highlight .name {
     font-weight: bold;
   }
 
-  .highlight .description{
+  .highlight .description {
     font-weight: bold;
   }
-
 </style>
