@@ -456,6 +456,7 @@ __metadata:
     svelte: "npm:^4.2.0"
     svelte-check: "npm:^3.5.1"
     svelte-loader: "npm:^3.1.9"
+    svelte-local-storage-store: "npm:^0.6.0"
     svelte-preprocess: "npm:^5.0.4"
     svelte-tenor: "npm:^0.2.0"
     sveltejs-tippy: "npm:^3.0.0"
@@ -10632,6 +10633,15 @@ __metadata:
   peerDependencies:
     svelte: ^3.0.0 || ^4.0.0-next.0
   checksum: 8dff6c9d7ad88dfff46a422cab1caadcb8b23cd822bcf086a378ae0f65f2faaacce061668e2d30841c64293591145a72d5597ac9d42315ba63f23469e018a790
+  languageName: node
+  linkType: hard
+
+"svelte-local-storage-store@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "svelte-local-storage-store@npm:0.6.0"
+  peerDependencies:
+    svelte: ^3.48.0 || ^4.0.0
+  checksum: eba37146c873e010fdc3ff107a420cfa72eb0a2df8fe85cd5b2badefc0431958d28edf30a46034014a8c29702d8cf8bf5f83769b7614670825b57215aaf8a8a4
   languageName: node
   linkType: hard
 
