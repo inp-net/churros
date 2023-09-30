@@ -3,17 +3,20 @@
   import IconBackward from '~icons/mdi/chevron-left';
   import IconGear from '~icons/mdi/cog-outline';
   import IconForward from '~icons/mdi/chevron-right';
+  import IconTicketFilled from '~icons/mdi/ticket-confirmation';
   import { addDays, startOfWeek, isSameDay, previousMonday, nextMonday, formatISO } from 'date-fns';
   import type { PageData } from './$types';
   import { me } from '$lib/session';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { isDark } from '$lib/theme';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import Card from '$lib/components/Card.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
   import { Gif } from 'svelte-tenor';
   import { groupLogoSrc } from '$lib/logos';
   import { env } from '$env/dynamic/public';
   import { afterNavigate } from '$app/navigation';
+  import { formatDate } from '$lib/dates';
 
   export let data: PageData;
 
@@ -43,6 +46,9 @@
 </script>
 
 <div class="content">
+  <Card>
+    <a href="/bookings/" class="booking">Mes places<IconTicketFilled /></a>
+  </Card>
   <NavigationTabs
     tabs={[
       { name: 'Semaine', href: '.' },
@@ -52,6 +58,9 @@
   <div class="navigation">
     <a href="/events/week/{formatISO(previousMonday(data.shownWeek), { representation: 'date' })}"
       ><IconBackward /> Précédente</a
+    >
+    <a href="/events/week/{formatISO(previousMonday(new Date()), { representation: 'date' })}">
+      Aujourd'hui</a
     >
     <a href="/events/week/{formatISO(nextMonday(data.shownWeek), { representation: 'date' })}">
       Suivante <IconForward />
@@ -91,7 +100,15 @@
             gif: 'https://media.tenor.com/EbyOKpncujQAAAAi/john-travolta-tra-jt-transparent.gif',
           }}
         />
-        <p>Aucun événement cette semaine</p>
+        <p>
+          {#if isSameDay(data.shownWeek, previousMonday(new Date()))}
+            Aucun évènement pour <br /><strong>cette semaine</strong>
+          {:else}
+            Aucun événement pour la semaine du
+            <br />
+            <strong>{formatDate(data.shownWeek)}</strong>
+          {/if}
+        </p>
       </div>
     {:else}
       {#each daysOfWeek as day}
@@ -197,6 +214,13 @@
     margin-top: 2rem;
     margin-bottom: 4rem;
     text-align: center;
+  }
+
+  .booking {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2em;
+    font-weight: bold;
   }
 
   :global(.gif) {

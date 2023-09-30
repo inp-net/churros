@@ -6,14 +6,7 @@
  * @module
  */
 
-import {
-  CredentialType,
-  Visibility,
-  GroupType,
-  type Prisma,
-  NotificationType,
-  LogoSourceType,
-} from '@prisma/client';
+import { CredentialType, Visibility, GroupType, type Prisma, LogoSourceType } from '@prisma/client';
 import { hash } from 'argon2';
 import slug from 'slug';
 import { prisma } from './prisma.js';
@@ -334,14 +327,6 @@ for (const [i, data] of usersData.entries()) {
       graduationYear: 2020 + (i % 6),
       major: { connect: { id: major.id } },
       credentials: { create: { type: CredentialType.Password, value: await hash('a') } },
-      notificationSettings: {
-        create: Object.values(NotificationType).map((type) => ({
-          type,
-          allow: true,
-          // eslint-disable-next-line unicorn/no-null
-          groupId: null,
-        })),
-      },
     },
   });
 }
@@ -417,7 +402,6 @@ suos auras atra!
 > diversa. Placuit omnia; flammas Hoc ventis nobis primordia flammis Mavors
 > dabat horrida conplecti cremantur. A mundus, metu Anius gestare caelatus,
 > Alpheos est, lecti et?`,
-      school: { connect: { id: randomIdOf(schools) } },
       studentAssociation: { connect: { id: randomIdOf(studentAssociations) } },
       links: {
         createMany: {

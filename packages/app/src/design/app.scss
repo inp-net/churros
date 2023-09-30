@@ -189,12 +189,14 @@ h5,
 h6,
 p,
 ul,
+ol,
 body {
   padding: 0;
   margin: 0;
 }
 
-ul {
+ul,
+ol {
   padding-left: 1em;
 }
 

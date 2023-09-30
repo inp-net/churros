@@ -20,6 +20,10 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
         {
           id: true,
           uid: true,
+          studentAssociation: {
+            uid: true,
+            name: true,
+          },
           members: {
             memberId: true,
             createdAt: true,
@@ -30,6 +34,9 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
               pictureFile: true,
               fullName: true,
               yearTier: true,
+              contributesTo: {
+                uid: true,
+              },
             },
             title: true,
             president: true,

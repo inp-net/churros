@@ -13,7 +13,7 @@ export const _notificationsQuery = Selector('Notification')({
       goto: true,
       imageFile: true,
       timestamp: true,
-      type: true,
+      channel: true,
       group: {
         uid: true,
         name: true,

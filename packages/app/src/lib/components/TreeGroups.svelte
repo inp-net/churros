@@ -6,7 +6,6 @@
     uid: string;
     groupId: string;
     name: string;
-    school?: { name: string } | undefined;
     studentAssociation?: { school: { name: string } } | undefined;
     children: Group[];
     pictureFile: string;
@@ -25,9 +24,9 @@
   <div class="text">
     <p class="name">
       {group.name}
-      {#if (group.school || group.studentAssociation) && showSchool}
+      {#if group.studentAssociation && showSchool}
         <span class="school">
-          {(group.school ?? group.studentAssociation?.school)?.name}
+          {group.studentAssociation?.school?.name}
         </span>
       {/if}
     </p>

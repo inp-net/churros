@@ -153,7 +153,10 @@
 
       <p>
         {DISPLAY_GROUP_TYPES[group.type]}
-        {#if group.school}· <a href="/schools/{group.school?.uid}">{group.school?.name}</a>{/if}
+        {#if group.studentAssociation?.school}· <a
+            href="/schools/{group.studentAssociation.school.uid}"
+            >{group.studentAssociation.school.name}</a
+          >{/if}
         {#if group.studentAssociation}· <a
             href="/student-associations/{group.studentAssociation?.uid}"
             >{group.studentAssociation?.name}</a

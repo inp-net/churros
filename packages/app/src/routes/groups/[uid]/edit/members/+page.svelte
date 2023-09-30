@@ -97,6 +97,9 @@
                 pictureFile: true,
                 fullName: true,
                 yearTier: true,
+                contributesTo: {
+                  uid: true,
+                },
               },
             },
           },
@@ -263,7 +266,14 @@
           permissions={isOnClubBoard({ president, treasurer, vicePresident, secretary })
             ? undefined
             : { canEditArticles, canEditMembers, canScanEvents }}
-        />
+        >
+          {title}
+          {#if data.group.studentAssociation && !member.contributesTo.some((c) => c.uid === data.group.studentAssociation?.uid)}
+            <strong class="not-contributor">
+              &bull; non cotisant à {data.group.studentAssociation?.name}</strong
+            >
+          {/if}
+        </AvatarPerson>
         <div class="actions">
           {#if updatingMember.memberId === memberId}
             <ButtonSecondary
@@ -426,6 +436,10 @@
     display: flex;
     flex-flow: row wrap;
     gap: 1rem;
+  }
+
+  .not-contributor {
+    color: var(--danger-link);
   }
 
   .search {

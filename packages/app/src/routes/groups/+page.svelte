@@ -28,9 +28,8 @@
   }
 
   const hasMultipleSchools =
-    [
-      ...new Set(data.groups.map((g) => g.school?.name ?? g.studentAssociation?.school.name ?? '')),
-    ].filter(Boolean).length > 1;
+    [...new Set(data.groups.map((g) => g.studentAssociation?.school.name ?? ''))].filter(Boolean)
+      .length > 1;
 </script>
 
 <h1>

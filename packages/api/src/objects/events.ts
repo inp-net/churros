@@ -73,6 +73,14 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
       // Restricted events in the user's groups
       {
         OR: [
+          // TODO does not work for sub-sub groups
+          {
+            group: {
+              familyRoot: {
+                children: { some: { members: { some: { member: { uid: user?.uid ?? '' } } } } },
+              },
+            },
+          },
           {
             group: { members: { some: { member: { uid: user?.uid ?? '' } } } },
           },
@@ -227,7 +235,6 @@ export const EventType = builder.prismaNode('Event', {
           include: {
             openToGroups: {
               include: {
-                school: true,
                 studentAssociation: true,
               },
             },
@@ -238,7 +245,6 @@ export const EventType = builder.prismaNode('Event', {
                 group: {
                   include: {
                     studentAssociation: true,
-                    school: true,
                   },
                 },
               },

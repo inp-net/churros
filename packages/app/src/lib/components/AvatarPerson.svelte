@@ -47,11 +47,13 @@
         </span>
       {/if}
     </p>
-    {#if role}
-      <p class="text role">
+    <p class="text role">
+      {#if $$slots.default}
+        <slot />
+      {:else if role}
         {role}
-      </p>
-    {/if}
+      {/if}
+    </p>
   </div>
 </svelte:element>
 

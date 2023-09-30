@@ -49,16 +49,13 @@ builder.mutationField('addGroupMember', (t) =>
       });
       const group = await prisma.group.findUniqueOrThrow({
         where: { uid: groupUid },
-        include: { school: true, studentAssociation: true },
+        include: { studentAssociation: true },
       });
 
       if (
         (group.type === GroupType.Club || group.type === GroupType.List) &&
         !member.contributions.some(({ option: { paysFor } }) =>
-          paysFor.some(
-            ({ id, school }) =>
-              school.uid === group.school?.uid || id === group.studentAssociation?.id,
-          ),
+          paysFor.some(({ id }) => id === group.studentAssociation?.id),
         )
       ) {
         // pas cotisant
@@ -329,12 +326,11 @@ builder.queryField('groupMembersCsv', (t) =>
     async resolve(_query, { groupUid }) {
       const group = await prisma.group.findUniqueOrThrow({
         where: { uid: groupUid },
-        include: { school: true, studentAssociation: true },
+        include: { studentAssociation: true },
       });
       const members = await prisma.groupMember.findMany({
         where: { group: { uid: groupUid } },
         include: {
-          group: { include: { school: true } },
           member: {
             include: {
               major: true,

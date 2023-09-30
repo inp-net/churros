@@ -2,17 +2,17 @@
   import IconCheck from '~icons/mdi/check';
   import IconMinus from '~icons/mdi/minus';
   export let name = '';
-  export let options: string[] | Record<string, string>;
+  export let options: string[] | Record<string, string> | string[][];
   export let selection: string[] = [];
 
-  let optionsWithDisplay: Record<string, string> = {};
+  let optionsWithDisplay: Array<[string, string]> = [];
   $: optionsWithDisplay = Array.isArray(options)
-    ? Object.fromEntries(options.map((option) => [option, option]))
-    : options;
+    ? options.map((o) => (Array.isArray(o) ? (o.slice(0, 2) as [string, string]) : [o, o]))
+    : Object.entries(options);
 </script>
 
 <fieldset>
-  {#each Object.entries(optionsWithDisplay) as [value, display] (value)}
+  {#each optionsWithDisplay as [value, display] (value)}
     <label aria-checked={selection.includes(value)}>
       <div class="icon">
         {#if selection.includes(value)}
