@@ -2,8 +2,7 @@
   import IconIssue from '~icons/mdi/chat-alert-outline';
   import IconNotif from '~icons/mdi/bell-outline';
   import IconNotifFilled from '~icons/mdi/bell';
-  import IconSearch from '~icons/mdi/card-search';
-  import IconSearchOutline from '~icons/mdi/card-search-outline';
+  import IconSearch from '~icons/mdi/search';
   import IconAccount from '~icons/mdi/account-circle-outline';
 
   import ButtonSecondary from './ButtonSecondary.svelte';
@@ -92,10 +91,7 @@
           {:else}
             <IconNotif />{/if}</ButtonGhost
         >
-        <ButtonGhost href="/search/" help="Rechercher"
-          >{#if $page.url.pathname.startsWith('/search')}<IconSearch />{:else}
-            <IconSearchOutline />{/if}</ButtonGhost
-        >
+        <ButtonGhost href="/search/" help="Rechercher"><IconSearch /></ButtonGhost>
         <ButtonGhost href="/users/{$me?.uid}" help="Mon profil">
           {#if $me.pictureFile}
             <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
@@ -151,11 +147,11 @@
   }
 
   .wordmark {
+    display: flex;
+    align-items: start;
     width: 10rem;
     height: 3rem;
     object-fit: cover;
-    display: flex;
-    align-items: start;
   }
 
   .profilepic {
@@ -181,6 +177,7 @@
       font-size: 1.2rem;
       text-overflow: ellipsis;
       white-space: nowrap;
+      /* stylelint-disable-next-line property-no-unknown */
       line-clamp: 1;
     }
   }
