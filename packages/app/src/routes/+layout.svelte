@@ -91,6 +91,13 @@
 
       currentTheme = $theme;
     });
+
+    if (browser && document.location.hostname === 'staging-churros.inpt.fr') {
+      toasts.warn(
+        'Tu es en staging',
+        'Si tu ne sais pas ce que ça veut dire, reviens sur churros.inpt.fr.',
+      );
+    }
   });
 
   function pageIsFullsize() {
