@@ -46,11 +46,12 @@
     {/if}
   </a>
 
-  <a href="/groups"
+  <a
+    href="/groups"
     class:current={!flyoutOpen && current === 'groups'}
     class:disabled={flyoutOpen}
     use:tooltip={'Clubs'}
-    >
+  >
     {#if current === 'groups'}
       <IconGroup />
     {:else}
@@ -127,7 +128,7 @@
         <span>Semaine de bar</span>
       </a>
     {/if}
-    
+
     {#if $me?.admin || $me?.canEditGroups}
       <a href="/groups/create">
         <IconGroup />

@@ -3,7 +3,15 @@ import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ fetch, data }) => {
   const { me, mobile, token } = data;
-  if (!me) return data;
+  if (!me) {
+    return {
+      ...data,
+      registrationsOfUser: {
+        edges: [],
+      },
+    };
+  }
+
   const additionalData = await loadQuery(
     {
       registrationsOfUser: [
