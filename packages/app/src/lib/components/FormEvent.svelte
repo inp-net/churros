@@ -32,6 +32,7 @@
   import InputCheckbox from './InputCheckbox.svelte';
   import InputDate from './InputDate.svelte';
   import InputListOfGroups from './InputListOfGroups.svelte';
+  import { toasts } from '$lib/toasts';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
@@ -198,6 +199,11 @@
     serverError = '';
 
     dispatch('save');
+    toasts.success(
+      `Ton évènement ${DISPLAY_VISIBILITIES[
+        upsertEvent.data.visibility
+      ].toLowerCase()} a bien été ${event.uid ? 'modifié' : 'créé'}`,
+    );
     await goto(redirectAfterSave(upsertEvent.data.uid, upsertEvent.data.group.uid));
   }
 
@@ -614,11 +620,33 @@
       >
       <ButtonSecondary
         on:click={async () => {
-          await $zeus.mutate({
-            deleteEventPicture: [{ id: event.id }, true],
-            deleteEvent: [{ id: event.id }, true],
-          });
           confirmingDelete = false;
+          toasts.success('Évènement supprimé', `L'évènement ${event.title} a bien été supprimé`, {
+            lifetime: 5000,
+            showLifetime: true,
+            data: {
+              confirm: true,
+              id: event.id,
+              gotoOnCancel: `/events/${event.group.uid}/${event.uid}/edit/`,
+            },
+            labels: {
+              action: 'Annuler',
+              close: 'OK',
+            },
+            async action(toast) {
+              toast.data.confirm = false;
+              await toasts.remove(toast.id);
+              await goto(toast.data.gotoOnCancel);
+            },
+            async closed({ data: { id, confirm } }) {
+              if (confirm) {
+                await $zeus.mutate({
+                  deleteEventPicture: [{ id }, true],
+                  deleteEvent: [{ id }, true],
+                });
+              }
+            },
+          });
           await goto('/');
         }}
         danger>Oui</ButtonSecondary
@@ -726,6 +754,7 @@
 
   .submit {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     align-items: center;
     justify-content: center;

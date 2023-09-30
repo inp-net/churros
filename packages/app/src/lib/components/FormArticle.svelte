@@ -13,6 +13,7 @@
   import InputLongText from './InputLongText.svelte';
   import InputLinks from '$lib/components/InputLinks.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
+  import { toasts } from '$lib/toasts';
 
   export let afterGoTo: (article: (typeof data)['article']) => string = (article) =>
     `/posts/${article.group.uid}/${article.uid}/`;
@@ -100,8 +101,16 @@
 
       serverError = '';
       data.article = upsertArticle.data;
-      ({ id, event, eventId, title, author, body, publishedAt, links, group } = data.article);
-      if (data.article.uid) await goto(afterGoTo(data.article));
+      ({ id, event, eventId, title, author, body, publishedAt, links, group, visibility } =
+        data.article);
+      if (data.article.uid) {
+        toasts.success(
+          `Ton article ${DISPLAY_VISIBILITIES[visibility].toLowerCase()} a bien été ${
+            id ? 'modifié' : 'créé'
+          }`,
+        );
+        await goto(afterGoTo(data.article));
+      }
     } finally {
       loading = false;
     }
@@ -140,10 +149,35 @@
       >
       <ButtonSecondary
         on:click={async () => {
-          await $zeus.mutate({
-            deleteArticlePicture: [{ id: data.article.id }, true],
-            deleteArticle: [{ id: data.article.id }, true],
-          });
+          toasts.success(
+            `Post ${title.slice(0, 20)}${title.length >= 20 ? '…' : ''} supprimé`,
+            '',
+            {
+              lifetime: 5000,
+              showLifetime: true,
+              data: {
+                id: data.article.id,
+                confirm: true,
+                gotoOnCancel: `${afterGoTo(data.article)}/edit/`.replaceAll('//', '/'),
+              },
+              labels: {
+                action: 'Annuler',
+                close: 'OK',
+              },
+              async action({ data, id }) {
+                data.confirm = false;
+                await toasts.remove(id);
+                await goto(data.gotoOnCancel);
+              },
+              async closed({ data: { id, confirm } }) {
+                if (confirm)
+                  {await $zeus.mutate({
+                    deleteArticlePicture: [{ id }, true],
+                    deleteArticle: [{ id }, true],
+                  });}
+              },
+            },
+          );
           confirmingDelete = false;
           await goto('/');
         }}
