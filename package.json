@@ -34,7 +34,7 @@
   "scripts": {
     "build": "test -f .env || cp .env.example .env && cp .env packages/api/ && yarn workspaces foreach --topological-dev -pv run build && yarn format",
     "dev": "test -f .env || cp .env.example .env && cp .env packages/api/ && docker compose up -d && yarn dotenv -- yarn workspaces foreach -piv run dev",
-    "format": "prettier . --write --ignore-unknown --plugin prettier-plugin-svelte && cd cli && poetry run black .",
+    "format": "prettier . --write --ignore-unknown --plugin prettier-plugin-svelte",
     "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
     "lintfix": "eslint --fix . & stylelint --fix '**/*.{css,scss,svelte}' &",
     "postinstall": "husky install",
