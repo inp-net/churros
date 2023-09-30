@@ -36,7 +36,7 @@
         <a href={`/student-associations/${studentAssociation.uid ?? ''}/`}>
           <div class="avatar">
             <img
-              src="/student-associations/${studentAssociation.uid}.png"
+              src="/student-associations/{studentAssociation.uid}.png"
               alt={studentAssociation.name}
             />
           </div>
@@ -141,7 +141,7 @@
     justify-content: center;
   }
 
-  @media (min-width: 1000px) {
+  @media (width >= 1000px) {
     section h2 {
       justify-content: start;
       text-align: left;
