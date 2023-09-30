@@ -16,10 +16,10 @@
   import { toasts } from '$lib/toasts';
   import Toast from '$lib/components/Toast.svelte';
 
-  function currentTab(url: URL): 'events' | 'groups' | 'services' | 'home' {
+  function currentTab(url: URL): 'events' | 'search' | 'services' | 'home' {
     const starts = (segment: string) => url.pathname.startsWith(segment);
 
-    if (starts('/groups')) return 'groups';
+    if (starts('/search')) return 'search';
     if (starts('/week') || starts('/bookings') || starts('/events')) return 'events';
     if (starts('/services')) return 'services';
     return 'home';

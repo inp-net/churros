@@ -18,9 +18,6 @@
 </script>
 
 <div class="content">
-  <Card>
-    <a href="/bookings/" class="booking">Mes places<IconTicketFilled /></a>
-  </Card>
   <NavigationTabs
     tabs={[
       { name: 'Semaine', href: `../week/${format(closestMonday(new Date()), 'yyyy-MM-dd')}` },
