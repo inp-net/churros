@@ -19,11 +19,10 @@
   $: groupedByDate = groupBy(events, (e) => (e?.startsAt ? format(e?.startsAt, 'yyyy-MM-dd') : ''));
 </script>
 
-<Card>
-<a href="/bookings/" class="booking">Mes places<IconTicketFilled /></a>
-</Card>
-
 <div class="content">
+  <Card>
+    <a href="/bookings/" class="booking">Mes places<IconTicketFilled /></a>
+  </Card>
   <NavigationTabs
     tabs={[
       { name: 'Semaine', href: `../week/${format(closestMonday(new Date()), 'yyyy-MM-dd')}` },
@@ -74,7 +73,9 @@
 
 <style>
   .content {
+    max-width: 600px;
     padding: 0 0.5rem 4rem;
+    margin: 0 auto;
   }
 
   .days {
