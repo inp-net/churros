@@ -92,11 +92,23 @@
       currentTheme = $theme;
     });
 
-    if (browser && document.location.hostname === 'staging-churros.inpt.fr') {
+    if (browser && window.location.hostname === 'staging-churros.inpt.fr') {
       toasts.warn(
-        'Tu es en staging',
-        'Si tu ne sais pas ce que ça veut dire, reviens sur churros.inpt.fr.',
+        "T'es en staging",
+        'Tu sais pas ce que ça veut dire? reviens sur churros.inpt.fr.',
+        {
+          data: {},
+          lifetime: Number.POSITIVE_INFINITY,
+          showLifetime: true,
+        },
       );
+    }
+
+    if (browser && window.location.hostname === 'localhost') {
+      toasts.debug("T'es en dev", '', {
+        data: {},
+        lifetime: 2000,
+      });
     }
   });
 
