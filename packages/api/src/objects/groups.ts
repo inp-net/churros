@@ -89,7 +89,6 @@ export const GroupType = builder.prismaNode('Group', {
         ],
       },
     }),
-    school: t.relation('school', { nullable: true }),
     studentAssociation: t.relation('studentAssociation', { nullable: true }),
     parent: t.relation('parent', { nullable: true }),
     selfJoinable: t.exposeBoolean('selfJoinable'),
@@ -148,24 +147,13 @@ builder.queryField('groups', (t) =>
           ...(user?.admin
             ? {}
             : {
-                OR: [
-                  {
-                    school: {
-                      id: {
-                        in: user?.major.schools.map(({ id }) => id) ?? [],
-                      },
+                studentAssociation: {
+                  school: {
+                    id: {
+                      in: user?.major.schools.map(({ id }) => id) ?? [],
                     },
                   },
-                  {
-                    studentAssociation: {
-                      school: {
-                        id: {
-                          in: user?.major.schools.map(({ id }) => id) ?? [],
-                        },
-                      },
-                    },
-                  },
-                ],
+                },
               }),
         },
         orderBy: { name: 'asc' },
@@ -199,24 +187,13 @@ LIMIT 20
         ...query,
         where: {
           id: { in: fuzzyResults.map(({ id }) => id) },
-          OR: [
-            {
-              school: {
-                id: {
-                  in: user?.major.schools.map(({ id }) => id) ?? [],
-                },
+          studentAssociation: {
+            school: {
+              id: {
+                in: user?.major.schools.map(({ id }) => id) ?? [],
               },
             },
-            {
-              studentAssociation: {
-                school: {
-                  id: {
-                    in: user?.major.schools.map(({ id }) => id) ?? [],
-                  },
-                },
-              },
-            },
-          ],
+          },
         },
       });
       const results = await prisma.group.findMany({
@@ -233,24 +210,13 @@ LIMIT 20
               ],
             },
             {
-              OR: [
-                {
-                  school: {
-                    id: {
-                      in: user?.major.schools.map(({ id }) => id) ?? [],
-                    },
+              studentAssociation: {
+                school: {
+                  id: {
+                    in: user?.major.schools.map(({ id }) => id) ?? [],
                   },
                 },
-                {
-                  studentAssociation: {
-                    school: {
-                      id: {
-                        in: user?.major.schools.map(({ id }) => id) ?? [],
-                      },
-                    },
-                  },
-                },
-              ],
+              },
             },
           ],
         },
@@ -340,7 +306,6 @@ builder.mutationField('upsertGroup', (t) =>
         address,
         description,
         website,
-        schoolUid,
         studentAssociationUid,
         email,
         longDescription,
@@ -422,7 +387,6 @@ builder.mutationField('upsertGroup', (t) =>
           related: { connect: related.map((uid) => ({ uid })) },
           parent:
             parentUid === null || parentUid === undefined ? {} : { connect: { uid: parentUid } },
-          school: schoolUid ? { connect: { uid: schoolUid } } : {},
           studentAssociation: studentAssociationUid
             ? { connect: { uid: studentAssociationUid } }
             : {},
@@ -440,7 +404,6 @@ builder.mutationField('upsertGroup', (t) =>
             parentUid === null || parentUid === undefined
               ? { disconnect: true }
               : { connect: { uid: parentUid } },
-          school: schoolUid ? { connect: { uid: schoolUid } } : { disconnect: true },
           studentAssociation: studentAssociationUid
             ? { connect: { uid: studentAssociationUid } }
             : { disconnect: true },

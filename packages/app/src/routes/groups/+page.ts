@@ -15,9 +15,6 @@ export const load: PageLoad = async ({ fetch, parent }) =>
           pictureFileDark: true,
           description: true,
           type: true,
-          school: {
-            name: true,
-          },
           studentAssociation: {
             school: {
               name: true,

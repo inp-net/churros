@@ -235,7 +235,6 @@ export const EventType = builder.prismaNode('Event', {
           include: {
             openToGroups: {
               include: {
-                school: true,
                 studentAssociation: true,
               },
             },
@@ -246,7 +245,6 @@ export const EventType = builder.prismaNode('Event', {
                 group: {
                   include: {
                     studentAssociation: true,
-                    school: true,
                   },
                 },
               },
