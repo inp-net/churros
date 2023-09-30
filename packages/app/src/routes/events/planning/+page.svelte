@@ -7,6 +7,8 @@
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
   import { Gif } from 'svelte-tenor';
+  import Card from '$lib/components/Card.svelte';
+  import IconTicketFilled from '~icons/mdi/ticket-confirmation';
 
   export let data: PageData;
 
@@ -106,6 +108,13 @@
     margin-top: 2rem;
     margin-bottom: 4rem;
     text-align: center;
+  }
+
+  .booking {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2em;
+    font-weight: bold;
   }
 
   :global(.gif) {
