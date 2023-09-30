@@ -15,6 +15,9 @@ rich = "^13.5.3"
 [tool.poetry.scripts]
 churros = "churros.cli:run"
 
+[tool.poetry.group.dev.dependencies]
+black = {version = "^23.9.1", allow-prereleases = true}
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
