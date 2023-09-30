@@ -14,6 +14,7 @@
   import { groupLogoSrc } from '$lib/logos';
   import { env } from '$env/dynamic/public';
   import { afterNavigate } from '$app/navigation';
+  import { formatDate } from '$lib/dates';
 
   export let data: PageData;
 
@@ -53,6 +54,9 @@
     <a href="/events/week/{formatISO(previousMonday(data.shownWeek), { representation: 'date' })}"
       ><IconBackward /> Précédente</a
     >
+    <a href="/events/week/{formatISO(previousMonday(new Date()), { representation: 'date' })}">
+      Aujourd'hui</a
+    >
     <a href="/events/week/{formatISO(nextMonday(data.shownWeek), { representation: 'date' })}">
       Suivante <IconForward />
     </a>
@@ -91,7 +95,15 @@
             gif: 'https://media.tenor.com/EbyOKpncujQAAAAi/john-travolta-tra-jt-transparent.gif',
           }}
         />
-        <p>Aucun événement cette semaine</p>
+        <p>
+          {#if isSameDay(data.shownWeek, previousMonday(new Date()))}
+            Aucun évènement pour <br /><strong>cette semaine</strong>
+          {:else}
+            Aucun événement pour la semaine du
+            <br />
+            <strong>{formatDate(data.shownWeek)}</strong>
+          {/if}
+        </p>
       </div>
     {:else}
       {#each daysOfWeek as day}
