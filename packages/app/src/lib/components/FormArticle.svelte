@@ -170,11 +170,12 @@
                 await goto(data.gotoOnCancel);
               },
               async closed({ data: { id, confirm } }) {
-                if (confirm)
-                  {await $zeus.mutate({
+                if (confirm) {
+                  await $zeus.mutate({
                     deleteArticlePicture: [{ id }, true],
                     deleteArticle: [{ id }, true],
-                  });}
+                  });
+                }
               },
             },
           );

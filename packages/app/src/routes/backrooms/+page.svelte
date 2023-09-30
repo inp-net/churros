@@ -54,7 +54,11 @@
   <div class="toast">
     <h2>Toasts</h2>
     {#each ['error', 'success', 'info', 'warning', 'debug'] as type}
-      <ButtonSecondary on:click={() => { showToast(type); }}>{type}</ButtonSecondary>
+      <ButtonSecondary
+        on:click={() => {
+          showToast(type);
+        }}>{type}</ButtonSecondary
+      >
     {/each}
     <InputCheckbox bind:value={showToastsLifetime} label="Show time left"></InputCheckbox>
     <InputCheckbox bind:value={addToastsAction} label="Show an action"></InputCheckbox>
