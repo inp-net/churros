@@ -231,7 +231,7 @@
     gap: 0.5rem;
     width: 100%;
     max-width: 600px;
-    padding: 0 1rem 0 0;
+    padding: 0 1rem;
     transform: translateX(-50%);
     @media (width >= 1000px) {
       right: 0;
