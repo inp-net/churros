@@ -102,7 +102,7 @@ export const PAYMENT_METHODS_ICONS: Record<PaymentMethod, typeof SvelteComponent
 };
 
 export const DISPLAY_EVENT_FREQUENCY: Record<EventFrequency, string> = {
-  Biweekly: 'Bihebdomadaire',
+  Biweekly: 'Bimensuel',
   Monthly: 'Mensuel',
   Weekly: 'Hebdomadaire',
   Once: 'Une seule fois',
