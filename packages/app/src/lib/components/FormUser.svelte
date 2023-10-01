@@ -37,17 +37,6 @@
     email: true,
     otherEmails: true,
     links: { name: true, value: true },
-    notificationSettings: {
-      id: true,
-      type: true,
-      allow: true,
-      group: {
-        id: true,
-        uid: true,
-        name: true,
-        pictureFile: true,
-      },
-    },
     cededImageRightsToTVn7: true,
     contributesTo: {
       id: true,
