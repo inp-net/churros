@@ -33,9 +33,8 @@
       .length > 1;
 
   const assertNoUndefineds = <T,>(arr: Array<T | undefined>): T[] => {
-    if (arr.includes(undefined)) 
-      throw new Error('Undefined found');
-    
+    if (arr.includes(undefined)) throw new Error('Undefined found');
+
     return arr as T[];
   };
 </script>
@@ -54,7 +53,7 @@
         <CardGroup
           href="/student-associations/{uid}"
           {name}
-          pictureFile="//student-asociations/{uid}.png"
+          pictureFile="//student-associations/{uid}.png"
           pictureFileDark=""
         ></CardGroup>
       </li>
