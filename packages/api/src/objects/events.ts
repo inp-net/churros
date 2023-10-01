@@ -3,6 +3,7 @@ import {
   startOfWeek,
   endOfWeek,
   differenceInDays,
+  differenceInWeeks,
   startOfDay,
   endOfDay,
   getDay,
@@ -51,6 +52,7 @@ import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { GraphQLError } from 'graphql';
+import { compareAsc } from 'date-fns';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -471,36 +473,30 @@ builder.queryField('eventsInWeek', (t) =>
         )
           return false;
 
-        switch (event.frequency) {
-          case EventFrequency.Weekly: {
-            // a weekly event is visible each week
-            return true;
-          }
-
-          case EventFrequency.Monthly: {
-            return event.startsAt.getDate() === today.getDate();
-          }
-
-          case EventFrequency.Biweekly: {
-            return differenceInDays(event.startsAt, today) % 14 === 0;
-          }
-
-          default: {
-            return true;
-          }
-        }
+        if (event.recurringUntil) return compareAsc(today, event.recurringUntil) === -1;
+        return true;
       }
 
       function fixRecurrentEventDates(event: EventPrisma): EventPrisma {
         let { startsAt, endsAt, frequency } = event;
         switch (frequency) {
-          case EventFrequency.Weekly:
-          case EventFrequency.Biweekly: {
-            // move event from its original startsAt to today's week.
+          case EventFrequency.Weekly: {
             const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
             const dayDelta = differenceInDays(todayWeek, startsAt);
             startsAt = addDays(startsAt, dayDelta);
             endsAt = addDays(endsAt, dayDelta);
+            break;
+          }
+
+          case EventFrequency.Biweekly: {
+            // move event from its original startsAt to today's week.
+            const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
+            const weekDelta = differenceInWeeks(todayWeek, startsAt);
+            if (weekDelta % 2 === 0) {
+              startsAt = addDays(startsAt, weekDelta * 7);
+              endsAt = addDays(endsAt, weekDelta * 7);
+            }
+
             break;
           }
 

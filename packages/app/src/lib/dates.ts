@@ -87,7 +87,7 @@ export function formatRecurrence(frequency: EventFrequency, startsAt: Date, ends
     }
 
     case EventFrequency.Monthly: {
-      return `Tout les mois le ${format(startsAt, 'DD')}, de ${format(
+      return `Tout les mois le ${format(startsAt, 'dd')}, de ${format(
         startsAt,
         'HH:mm',
       )} à ${format(endsAt, 'HH:mm')}`;
