@@ -1,9 +1,18 @@
 import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent }) =>
-  loadQuery(
+export const load: PageLoad = async ({ fetch, parent }) => {
+  const { me } = await parent();
+  return loadQuery(
     {
+      ...(me
+        ? {
+            studentAssociations: [
+              { canContributeOnly: true },
+              { uid: true, name: true, description: true, id: true },
+            ],
+          }
+        : {}),
       groups: [
         {},
         {
@@ -16,6 +25,12 @@ export const load: PageLoad = async ({ fetch, parent }) =>
           description: true,
           type: true,
           studentAssociation: {
+            uid: true,
+            contributionOptions: {
+              offeredIn: {
+                uid: true,
+              },
+            },
             school: {
               name: true,
             },
@@ -25,3 +40,4 @@ export const load: PageLoad = async ({ fetch, parent }) =>
     },
     { fetch, parent },
   );
+};

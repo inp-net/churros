@@ -15,10 +15,13 @@
   let studentAssociations: StudentAsociation[] = [];
   onMount(async () => {
     ({ studentAssociations } = await $zeus.query({
-      studentAssociations: {
-        uid: true,
-        name: true,
-      },
+      studentAssociations: [
+        {},
+        {
+          uid: true,
+          name: true,
+        },
+      ],
     }));
   });
 </script>
