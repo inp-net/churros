@@ -98,7 +98,7 @@
   <ul class="nobullet">
     {#each articles as { uid, ...article } (uid)}
       <li>
-        <CardArticle href="/posts/{group.uid}/{uid}/" {...article} />
+        <CardArticle href="/posts/{article.group.uid}/{uid}/" {...article} />
       </li>
     {:else}
       <li class="empty muted">Aucun post pour le moment.</li>
