@@ -236,6 +236,7 @@ export const EventType = builder.prismaNode('Event', {
     location: t.exposeString('location'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     managers: t.relation('managers'),
+    bannedUsers: t.relation('bannedUsers'),
     tickets: t.field({
       type: [TicketType],
       async resolve({ id }, _, { user }) {
@@ -250,6 +251,7 @@ export const EventType = builder.prismaNode('Event', {
             openToSchools: true,
             event: {
               include: {
+                bannedUsers: true,
                 managers: { include: { user: true, event: true } },
                 group: {
                   include: {
@@ -644,7 +646,8 @@ builder.mutationField('upsertEvent', (t) =>
       startsAt: t.arg({ type: DateTimeScalar }),
       endsAt: t.arg({ type: DateTimeScalar }),
       managers: t.arg({ type: [ManagerOfEventInput] }),
-      coOrganizers: t.arg.stringList(),
+      bannedUsers: t.arg.stringList({ description: 'List of user uids' }),
+      coOrganizers: t.arg.stringList({ description: 'List of group uids' }),
     },
     async authScopes(_, { id, groupUid }, { user }) {
       const creating = !id;
@@ -691,6 +694,7 @@ builder.mutationField('upsertEvent', (t) =>
         visibility,
         frequency,
         coOrganizers,
+        bannedUsers,
         recurringUntil,
       },
       { user },
@@ -751,6 +755,9 @@ builder.mutationField('upsertEvent', (t) =>
           coOrganizers: {
             connect: connectFromListOfUids(coOrganizers),
           },
+          bannedUsers: {
+            connect: connectFromListOfUids(bannedUsers),
+          },
         },
         update: {
           description,
@@ -766,6 +773,9 @@ builder.mutationField('upsertEvent', (t) =>
           endsAt,
           coOrganizers: {
             connect: connectFromListOfUids(coOrganizers),
+          },
+          bannedUsers: {
+            connect: connectFromListOfUids(bannedUsers),
           },
           managers:
             user?.admin ||

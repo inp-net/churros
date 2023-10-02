@@ -76,6 +76,7 @@ model User {
   cancellations             Registration[]             @relation("cancelledBy")
   documents                 Document[]
   comments                  Comment[]
+  bannedFromEvents          Event[]                    @relation("bannedFromEvents")
 
   @@unique([schoolServer, schoolUid])
 }
@@ -447,6 +448,7 @@ model Event {
   articles       Article[]
   lydiaAccountId String?
   links          Link[]
+  bannedUsers    User[]         @relation("bannedFromEvents")
 
   @@unique([groupId, uid])
 }

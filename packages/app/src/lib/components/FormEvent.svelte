@@ -38,6 +38,7 @@
   let serverError = '';
   let loading = false;
   let confirmingDelete = false;
+  let newBannedUser: (typeof event)['bannedUsers'][number] | undefined;
 
   $: canEditManagers =
     !event.uid ||
@@ -94,6 +95,7 @@
             ...permissions,
             userUid: user.uid,
           })),
+          bannedUsers: event.bannedUsers.map(({ uid }) => uid),
           id: event.id,
           lydiaAccountId: event.beneficiary?.id,
         },
@@ -182,6 +184,13 @@
                 canEdit: true,
                 canEditPermissions: true,
                 canVerifyRegistrations: true,
+              },
+              bannedUsers: {
+                uid: true,
+                firstName: true,
+                lastName: true,
+                fullName: true,
+                pictureFile: true,
               },
             },
           },
@@ -338,6 +347,13 @@
       canEdit: boolean;
       canEditPermissions: boolean;
       canVerifyRegistrations: boolean;
+    }>;
+    bannedUsers: Array<{
+      uid: string;
+      firstName: string;
+      lastName: string;
+      pictureFile: string;
+      fullName: string;
     }>;
   };
 
@@ -610,6 +626,33 @@
       <Alert theme="danger">Impossible de sauvegarder l'évènement: {serverError}</Alert>
     {/if}
   </section>
+  <section class="banned-users">
+    <h2>Bannis</h2>
+    <p class="typo-details">Pour interdire à des personnes de réserver une place sur cet évènement</p>
+    <form
+      on:submit|preventDefault={() => {
+        if (!newBannedUser) return;
+        event.bannedUsers = [...event.bannedUsers, newBannedUser];
+        newBannedUser = undefined;
+      }}
+      class="new-ban"
+    >
+      <InputPerson label="" bind:user={newBannedUser} uid={newBannedUser?.uid} />
+      <ButtonSecondary disabled={!newBannedUser} type="submit">Bannir</ButtonSecondary>
+    </form>
+    <ul class="nobullet bans">
+      {#each event.bannedUsers as user}
+       <li>
+        <AvatarPerson href="/users/{user.uid}" {...user} />
+        <ButtonSecondary 
+          on:click={() => {
+            event.bannedUsers = event.bannedUsers.filter(({ uid }) => uid !== user.uid);
+          }}
+          icon={IconClose}>Autoriser</ButtonSecondary>
+       </li> 
+      {/each}
+    </ul>
+  </section>
   <section class="submit">
     {#if confirmingDelete}
       <h2>Es-tu sûr·e ?</h2>
@@ -752,6 +795,31 @@
     justify-content: center;
   }
 
+  section.banned-users {
+    max-width: 600px;
+  }
+
+  .new-ban {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+
+  .bans {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bans li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   .submit {
     display: flex;
     flex-wrap: wrap;
@@ -771,7 +839,7 @@
   @media (width >= 1100px) {
     form.event {
       display: grid;
-      grid-template-areas: 'info tickets' 'managers managers' 'submit submit';
+      grid-template-areas: 'info tickets' 'managers managers' 'bans bans' 'submit submit';
       grid-template-columns: 1fr 1fr;
       align-items: start;
     }
@@ -782,6 +850,10 @@
 
     section.managers {
       grid-area: managers;
+    }
+
+    section.banned-users {
+      grid-area: bans;
     }
 
     section.info {
