@@ -120,13 +120,21 @@ class RegistrationsCounts {
   paid: number;
   verified: number;
   unpaidLydia: number;
+  cancelled: number;
   /* eslint-enable @typescript-eslint/parameter-properties */
 
-  constructor(total: number, paid: number, verified: number, unpaidLydia: number) {
+  constructor(
+    total: number,
+    paid: number,
+    verified: number,
+    unpaidLydia: number,
+    cancelled: number,
+  ) {
     this.total = total;
     this.paid = paid;
     this.verified = verified;
     this.unpaidLydia = unpaidLydia;
+    this.cancelled = cancelled;
   }
 }
 
@@ -138,6 +146,7 @@ const RegistrationsCountsType = builder
       paid: t.exposeInt('paid'),
       verified: t.exposeInt('verified'),
       unpaidLydia: t.exposeInt('unpaidLydia'),
+      cancelled: t.exposeInt('cancelled'),
     }),
   });
 
@@ -346,11 +355,12 @@ export const EventType = builder.prismaNode('Event', {
           where: { ticket: { event: { id } } },
         });
         return {
-          total: results.length,
+          total: results.filter((r) => !r.cancelledAt).length,
           paid: results.filter((r) => r.paid).length,
           verified: results.filter((r) => r.verifiedAt).length,
           unpaidLydia: results.filter((r) => !r.paid && r.paymentMethod === PaymentMethod.Lydia)
             .length,
+          cancelled: results.filter((r) => r.cancelledAt).length,
         };
       },
     }),
