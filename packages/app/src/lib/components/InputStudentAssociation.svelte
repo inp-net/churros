@@ -5,14 +5,14 @@
   import Fuse from 'fuse.js';
   import InputField from './InputField.svelte';
 
-  type StudentAsociation = { uid?: string; name: string };
-  export let object: StudentAsociation | undefined;
+  type StudentAssociation = { uid?: string; name: string };
+  export let object: StudentAssociation | undefined;
   export let uid: string | undefined;
 
   export let label: string;
   export let clearable = false;
 
-  let studentAssociations: StudentAsociation[] = [];
+  let studentAssociations: StudentAssociation[] = [];
   onMount(async () => {
     ({ studentAssociations } = await $zeus.query({
       studentAssociations: [

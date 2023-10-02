@@ -24,6 +24,7 @@
   import { tooltip } from '$lib/tooltip';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import { me } from '$lib/session';
+  import { toasts } from '$lib/toasts';
 
   let compact = false;
   let loadingMore = false;
@@ -63,7 +64,7 @@
     });
 
     if (registrationsCsv.__typename === 'Error') {
-      console.error(registrationsCsv.message);
+      toasts.error("Erreur lors de l'export CSV", registrationsCsv.message);
       return;
     }
 
@@ -465,7 +466,7 @@
                   });
 
                   if (verifyRegistration.__typename === 'Error') {
-                    console.error(verifyRegistration.message);
+                    toasts.error(`Impossible de vérifier ${id}`, verifyRegistration.message);
                     return;
                   }
 

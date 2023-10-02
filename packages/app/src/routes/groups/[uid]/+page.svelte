@@ -36,6 +36,7 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import { tooltip } from '$lib/tooltip';
   import { groupLogoSrc } from '$lib/logos';
+  import { toasts } from '$lib/toasts';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -96,7 +97,7 @@
       });
       window.location.reload();
     } catch (error: unknown) {
-      console.error(error);
+      toasts.error(`Impossible de rejoindre ${group.name}`, error?.toString());
     }
   };
 
@@ -109,7 +110,7 @@
       });
       window.location.reload();
     } catch (error: unknown) {
-      console.error(error);
+      toasts.error(`Impossible de quitter ${group.name}`, error?.toString());
     }
   };
 </script>

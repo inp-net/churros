@@ -10,6 +10,7 @@
   import Alert from '$lib/components/Alert.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import { toasts } from '$lib/toasts';
 
   export let data: PageData;
   let subscriptionName = '';
@@ -68,7 +69,10 @@
       });
 
       if (!deleteNotificationSubscription) {
-        console.error('subscription does not exist on the server');
+        toasts.error(
+          'Impossible de désactiver les notifications',
+          "L'appareil n'est pas abonné aux notifications",
+        );
         return;
       }
 

@@ -15,6 +15,7 @@
   import { createEventDispatcher } from 'svelte';
   import InputSocialLinks from './InputSocialLinks.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
+  import { toasts } from '$lib/toasts';
   const emit = createEventDispatcher();
 
   const userQuery = Selector('User')({
@@ -154,8 +155,18 @@
       });
 
       if (updateUser.__typename === 'Error') {
-        console.error(updateUser.message);
+        toasts.error('Impossible de sauvegarder le profil', updateUser.message);
         return;
+      }
+
+      if (updateUser.data.email === email) {
+        toasts.success('Profil sauvegardé');
+      } else {
+        toasts.info(
+          `Les changements d'email doivent être validés.`,
+          `Regarde ta boîte mail pour ${email}`,
+          { lifetime: 10_000 },
+        );
       }
 
       // eslint-disable-next-line unicorn/no-null

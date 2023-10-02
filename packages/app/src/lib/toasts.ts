@@ -1,3 +1,4 @@
+import { minutesToMilliseconds } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { get, writable } from 'svelte/store';
 
@@ -78,6 +79,13 @@ export const toasts = {
     return toasts.add<T>('success', title, body, options);
   },
   error<T>(title: string, body = '', options?: ToastOptions<T>): string {
+    const wordsCount = body.split(' ').length + title.split(' ').length;
+    options = {
+      lifetime:
+        // assuming reading speed of 300 words per minute
+        3000 + minutesToMilliseconds(wordsCount / 300),
+      ...options,
+    };
     return toasts.add<T>('error', title, body, options);
   },
   debug<T>(title: string, body = '', options?: ToastOptions<T>): string {
