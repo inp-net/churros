@@ -88,6 +88,9 @@ export const builder = new SchemaBuilder<{
   defaultInputFieldRequiredness: true,
   errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma, exposeDescriptions: true },
+  scopeAuthOptions: {
+    unauthorizedError: () => new GraphQLError("Tu n'es pas autorisé à effectuer cette action."),
+  },
   relayOptions: {
     clientMutationId: 'omit',
     cursorType: 'String',
