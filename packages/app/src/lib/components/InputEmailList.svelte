@@ -142,6 +142,7 @@
 
   .inputs input {
     padding: 0.25rem 0;
+    color: var(--text);
     background: transparent;
     border: none;
   }
