@@ -240,7 +240,9 @@
   <section class="counts">
     {registrationsCounts.paid} payées · {registrationsCounts.verified} scannées · {registrationsCounts.unpaidLydia}
     Lydias non payées <br />
-    {profitsBreakdown.total}€ de bénéfices
+    {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
+      profitsBreakdown.total,
+    )} de ventes
   </section>
 
   <section class="new">
