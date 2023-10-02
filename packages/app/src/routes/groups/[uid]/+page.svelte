@@ -71,7 +71,7 @@
 
   $: onClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
 
-  $: myPermissions = $me ? $me.groups.find(({ group: { uid } }) => uid === group.uid) : undefined;
+  $: myPermissions = $me?.groups?.find(({ group: { uid } }) => uid === group.uid);
 
   $: ({ group } = data);
 
@@ -129,7 +129,7 @@
           <ButtonGhost help="Modifier les infos" href="./edit"><IconGear /></ButtonGhost>
         {/if}
 
-        {#if group.members?.find(({ member: { uid } }) => uid === $me?.uid)}
+        {#if group?.members?.find(({ member: { uid } }) => uid === $me?.uid)}
           <Badge theme="success">Membre</Badge>
           {#if confirmingGroupQuit}
             <p>Sur de toi?</p>
@@ -179,7 +179,7 @@
       </dl>
 
       <ul class="social-links nobullet">
-        {#each group.links.filter(({ value }) => Boolean(value)) as { name, value }}
+        {#each group?.links.filter(({ value }) => Boolean(value)) as { name, value }}
           <li>
             <a href={value} use:tooltip={DISPLAY_SOCIAL_NETWORK[name]}>
               <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
@@ -191,11 +191,11 @@
   </header>
 
   <section class="description user-html">
-    {#if group.longDescriptionHtml.trim().length}
+    {#if group?.longDescriptionHtml.trim().length}
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html group.longDescriptionHtml}
+      {@html group?.longDescriptionHtml}
     {:else}
-      {group.description}
+      {group?.description}
     {/if}
   </section>
 
