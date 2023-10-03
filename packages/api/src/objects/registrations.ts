@@ -464,6 +464,7 @@ builder.mutationField('upsertRegistration', (t) =>
             include: {
               coOrganizers: true,
               managers: { include: { user: true } },
+              bannedUsers: true,
               group: {
                 include: {
                   studentAssociation: true,

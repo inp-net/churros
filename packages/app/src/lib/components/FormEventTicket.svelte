@@ -17,6 +17,7 @@
   import InputSelectMultiple from './InputSelectMultiple.svelte';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import InputLinks from './InputLinks.svelte';
+  import { me } from '$lib/session';
   const emit = createEventDispatcher();
 
   export let expandedTicketId = '';
@@ -163,34 +164,13 @@
     />
 
     <InputField label="Écoles">
-      <ButtonSecondary
-        on:click={() => {
-          ticket.openToSchools = [
-            {
-              name: 'ENSEEIHT',
-              uid: 'n7',
-              color: '#0000ff',
-            },
-          ];
-        }}>n7</ButtonSecondary
-      >
-      <ButtonSecondary
-        on:click={() => {
-          ticket.openToSchools = [
-            {
-              name: 'ENSEEIHT',
-              uid: 'n7',
-              color: '#0000ff',
-            },
-            {
-              name: 'ENSIACET',
-              uid: 'A7',
-              color: '#ff0000',
-            },
-            { name: 'ENSAT', uid: 'ensat', color: '#00ff00' },
-          ];
-        }}>INP</ButtonSecondary
-      >
+      {#each $me?.major.schools ?? [] as school}
+        <ButtonSecondary
+          on:click={() => {
+            ticket.openToSchools = [school];
+          }}>{school.name}</ButtonSecondary
+        >
+      {/each}
       <InputSearchObjectList
         search={async (query) => {
           const { schools } = await $zeus.query({

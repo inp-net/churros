@@ -21,6 +21,7 @@
   import { page } from '$app/stores';
   import { formatDateTime } from '$lib/dates';
   import { format, isToday } from 'date-fns';
+  import { toasts } from '$lib/toasts';
 
   const SCAN_COOLDOWN = 300; /* ms */
   let lastScanTimestamp = 0;
@@ -120,7 +121,7 @@
           previousDecodedContents = code;
           lastScanTimestamp = Date.now();
           await check(code).catch((error) => {
-            console.error(error);
+            toasts.error(`Impossible de vérifier la réservation ${code}`, error.message);
           });
           manualRegistrationCode = code.replace(/^r:/, '').toUpperCase();
         }

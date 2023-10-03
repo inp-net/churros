@@ -14,6 +14,7 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputListOfGroups from '$lib/components/InputListOfGroups.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import { toasts } from '$lib/toasts';
 
   export let data: PageData;
 
@@ -86,7 +87,7 @@
 
     if (upsertBarWeek.__typename === 'Error') {
       serverErrors[barWeek.id ?? 'new'] = upsertBarWeek.message;
-      console.error(upsertBarWeek.message);
+      toasts.error('Impossible de mettre à jour cette semaine de bar', upsertBarWeek.message);
       return;
     }
 

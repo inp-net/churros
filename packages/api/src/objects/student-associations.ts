@@ -16,6 +16,7 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
     links: t.relation('links'),
     school: t.relation('school'),
     groups: t.relation('groups'),
+    contributionOptions: t.relation('contributionOptions'),
   }),
 });
 
@@ -25,9 +26,28 @@ builder.queryField('studentAssociations', (t) =>
     authScopes(_, {}, { user }) {
       return Boolean(user);
     },
-    async resolve(query) {
+    args: {
+      canContributeOnly: t.arg.boolean({ required: false }),
+    },
+    async resolve(query, _, { canContributeOnly }, { user }) {
       return prisma.studentAssociation.findMany({
         ...query,
+        where:
+          canContributeOnly && user
+            ? {
+                contributionOptions: {
+                  some: {
+                    offeredIn: {
+                      majors: {
+                        some: {
+                          id: user.major.id,
+                        },
+                      },
+                    },
+                  },
+                },
+              }
+            : {},
         orderBy: { updatedAt: 'desc' },
       });
     },

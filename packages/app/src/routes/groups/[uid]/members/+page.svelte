@@ -6,13 +6,11 @@
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import { me } from '$lib/session';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
+  import { isOnClubBoard } from '$lib/permissions';
 
   export let data: PageData;
 
-  $: clubBoard = group.members?.filter(
-    ({ president, vicePresident, treasurer, secretary }) =>
-      president || vicePresident || treasurer || secretary,
-  );
+  $: clubBoard = group.members?.filter((m) => isOnClubBoard(m));
   $: onClubBoard = clubBoard.some(({ member }) => member.uid === $me?.uid);
   $: canEditMembers = Boolean(
     $me?.admin ||

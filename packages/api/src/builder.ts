@@ -84,10 +84,13 @@ export const builder = new SchemaBuilder<{
     ValidationPlugin,
   ],
   authScopes,
-  complexity: { limit: { complexity: 20_000, depth: 7, breadth: 150 } },
+  complexity: { limit: { complexity: 20_100, depth: 7, breadth: 150 } },
   defaultInputFieldRequiredness: true,
   errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma, exposeDescriptions: true },
+  scopeAuthOptions: {
+    unauthorizedError: () => new GraphQLError("Tu n'es pas autorisé à effectuer cette action."),
+  },
   relayOptions: {
     clientMutationId: 'omit',
     cursorType: 'String',

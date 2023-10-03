@@ -51,6 +51,7 @@ import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { GraphQLError } from 'graphql';
+import { onBoard } from '../auth.js';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -120,13 +121,21 @@ class RegistrationsCounts {
   paid: number;
   verified: number;
   unpaidLydia: number;
+  cancelled: number;
   /* eslint-enable @typescript-eslint/parameter-properties */
 
-  constructor(total: number, paid: number, verified: number, unpaidLydia: number) {
+  constructor(
+    total: number,
+    paid: number,
+    verified: number,
+    unpaidLydia: number,
+    cancelled: number,
+  ) {
     this.total = total;
     this.paid = paid;
     this.verified = verified;
     this.unpaidLydia = unpaidLydia;
+    this.cancelled = cancelled;
   }
 }
 
@@ -138,6 +147,7 @@ const RegistrationsCountsType = builder
       paid: t.exposeInt('paid'),
       verified: t.exposeInt('verified'),
       unpaidLydia: t.exposeInt('unpaidLydia'),
+      cancelled: t.exposeInt('cancelled'),
     }),
   });
 
@@ -227,6 +237,7 @@ export const EventType = builder.prismaNode('Event', {
     location: t.exposeString('location'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     managers: t.relation('managers'),
+    bannedUsers: t.relation('bannedUsers'),
     tickets: t.field({
       type: [TicketType],
       async resolve({ id }, _, { user }) {
@@ -241,6 +252,7 @@ export const EventType = builder.prismaNode('Event', {
             openToSchools: true,
             event: {
               include: {
+                bannedUsers: true,
                 managers: { include: { user: true, event: true } },
                 group: {
                   include: {
@@ -344,13 +356,15 @@ export const EventType = builder.prismaNode('Event', {
       async resolve({ id }) {
         const results = await prisma.registration.findMany({
           where: { ticket: { event: { id } } },
+          include: { ticket: true },
         });
         return {
-          total: results.length,
-          paid: results.filter((r) => r.paid).length,
+          total: results.filter((r) => !r.cancelledAt).length,
+          paid: results.filter((r) => r.ticket.price !== 0 && r.paid && !r.cancelledAt).length,
           verified: results.filter((r) => r.verifiedAt).length,
           unpaidLydia: results.filter((r) => !r.paid && r.paymentMethod === PaymentMethod.Lydia)
             .length,
+          cancelled: results.filter((r) => r.cancelledAt).length,
         };
       },
     }),
@@ -634,21 +648,23 @@ builder.mutationField('upsertEvent', (t) =>
       startsAt: t.arg({ type: DateTimeScalar }),
       endsAt: t.arg({ type: DateTimeScalar }),
       managers: t.arg({ type: [ManagerOfEventInput] }),
-      coOrganizers: t.arg.stringList(),
+      bannedUsers: t.arg.stringList({ description: 'List of user uids' }),
+      coOrganizers: t.arg.stringList({ description: 'List of group uids' }),
     },
     async authScopes(_, { id, groupUid }, { user }) {
       const creating = !id;
       if (!user) return false;
       if (user.admin) return true;
 
-      if (creating) {
-        return Boolean(
-          user.canEditGroups ||
-            user.groups.some(
-              ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
-            ),
-        );
-      }
+      const canCreate = Boolean(
+        user.canEditGroups ||
+          onBoard(user.groups.find(({ group }) => group.uid === groupUid)) ||
+          user.groups.some(
+            ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
+          ),
+      );
+
+      if (creating) return canCreate;
 
       const event = await prisma.event.findUnique({
         where: { id },
@@ -658,7 +674,8 @@ builder.mutationField('upsertEvent', (t) =>
       if (!event) return false;
 
       return Boolean(
-        event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit),
+        canCreate ||
+          event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit),
       );
     },
     async resolve(
@@ -681,6 +698,7 @@ builder.mutationField('upsertEvent', (t) =>
         visibility,
         frequency,
         coOrganizers,
+        bannedUsers,
         recurringUntil,
       },
       { user },
@@ -741,6 +759,9 @@ builder.mutationField('upsertEvent', (t) =>
           coOrganizers: {
             connect: connectFromListOfUids(coOrganizers),
           },
+          bannedUsers: {
+            connect: connectFromListOfUids(bannedUsers),
+          },
         },
         update: {
           description,
@@ -756,6 +777,9 @@ builder.mutationField('upsertEvent', (t) =>
           endsAt,
           coOrganizers: {
             connect: connectFromListOfUids(coOrganizers),
+          },
+          bannedUsers: {
+            connect: connectFromListOfUids(bannedUsers),
           },
           managers:
             user?.admin ||

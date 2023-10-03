@@ -14,6 +14,7 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { me } from '$lib/session';
+  import { toasts } from '$lib/toasts';
 
   let actualTheme: string;
   let confirmingCancellation = false;
@@ -201,7 +202,7 @@
                   ],
                 });
                 if (cancelRegistration.__typename === 'Error')
-                  console.error(cancelRegistration.message);
+                  toasts.error("Impossible d'annuler cette place", cancelRegistration.message);
                 else await goto('..');
               }}>Oui, je confirme</ButtonPrimary
             >

@@ -47,6 +47,7 @@
     "svelte-loader": "^3.1.9",
     "svelte-local-storage-store": "^0.6.0",
     "svelte-preprocess": "^5.0.4",
+    "svelte-store2storage": "^1.0.0",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "unplugin-icons": "^0.17.0",
