@@ -226,7 +226,7 @@
     {/if}
   </section>
 
-  {#if (group.root && (group.root.children.length ?? 0) > 0) || canEditDetails}
+  {#if (group.root && (group.root.children.length ?? 0) > 0) || meOnClubBoard}
     {@const hasSubgroups = (group.root?.children.length ?? 0) > 0}
     <section class="subgroups">
       <h2>
