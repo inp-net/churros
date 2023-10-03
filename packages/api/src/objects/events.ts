@@ -13,6 +13,8 @@ import {
   getMonth,
   setDay,
   addDays,
+  isBefore,
+  weeksToDays,
 } from 'date-fns';
 import { TicketType, createUid as createTicketUid, userCanSeeTicket } from './tickets.js';
 import {
@@ -52,7 +54,6 @@ import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { GraphQLError } from 'graphql';
-import { compareAsc } from 'date-fns';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -473,7 +474,7 @@ builder.queryField('eventsInWeek', (t) =>
         )
           return false;
 
-        if (event.recurringUntil) return compareAsc(today, event.recurringUntil) === -1;
+        if (event.recurringUntil) return isBefore(today, event.recurringUntil);
         return true;
       }
 
@@ -493,8 +494,8 @@ builder.queryField('eventsInWeek', (t) =>
             const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
             const weekDelta = differenceInWeeks(todayWeek, startsAt);
             if (weekDelta % 2 === 0) {
-              startsAt = addDays(startsAt, weekDelta * 7);
-              endsAt = addDays(endsAt, weekDelta * 7);
+              startsAt = addDays(startsAt, weeksToDays(weekDelta));
+              endsAt = addDays(endsAt, weeksToDays(weekDelta));
             }
 
             break;
