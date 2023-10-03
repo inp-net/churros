@@ -31,7 +31,7 @@
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import { isDark } from '$lib/theme';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import { roleEmojis } from '$lib/permissions';
+  import { isOnClubBoard, roleEmojis } from '$lib/permissions';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import { tooltip } from '$lib/tooltip';
@@ -65,12 +65,8 @@
 
   let confirmingGroupQuit = false;
 
-  $: clubBoard = group.members?.filter(
-    ({ president, vicePresident, treasurer, secretary }) =>
-      president || vicePresident || treasurer || secretary,
-  );
-
-  $: onClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
+  $: clubBoard = group.members?.filter((m) => isOnClubBoard(m));
+  $: meOnClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
 
   $: myPermissions = $me?.groups?.find(({ group: { uid } }) => uid === group.uid);
 
@@ -79,12 +75,12 @@
   $: canEditDetails = Boolean(
     $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups,
   );
-  $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || onClubBoard);
+  $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || meOnClubBoard);
   $: canEditEvents = canEditArticles;
   $: canEditMembers = Boolean(
     $me?.admin ||
       myPermissions?.canEditMembers ||
-      onClubBoard ||
+      meOnClubBoard ||
       $me?.canEditGroups ||
       $me?.canEditUsers,
   );
