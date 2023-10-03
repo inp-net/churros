@@ -251,7 +251,7 @@
     // eslint-disable-next-line unicorn/no-null
     openToContributors: null,
     openToPromotions: [],
-    openToSchools: [],
+    openToSchools: $me?.major.schools?.filter((s) => s.uid !== 'inp') ?? [],
     openToMajors: [],
     autojoinGroups: [],
     // eslint-disable-next-line unicorn/no-null
@@ -628,7 +628,9 @@
   </section>
   <section class="banned-users">
     <h2>Bannis</h2>
-    <p class="typo-details">Pour interdire à des personnes de réserver une place sur cet évènement</p>
+    <p class="typo-details">
+      Pour interdire à des personnes de réserver une place sur cet évènement
+    </p>
     <form
       on:submit|preventDefault={() => {
         if (!newBannedUser) return;
@@ -642,14 +644,15 @@
     </form>
     <ul class="nobullet bans">
       {#each event.bannedUsers as user}
-       <li>
-        <AvatarPerson href="/users/{user.uid}" {...user} />
-        <ButtonSecondary 
-          on:click={() => {
-            event.bannedUsers = event.bannedUsers.filter(({ uid }) => uid !== user.uid);
-          }}
-          icon={IconClose}>Autoriser</ButtonSecondary>
-       </li> 
+        <li>
+          <AvatarPerson href="/users/{user.uid}" {...user} />
+          <ButtonSecondary
+            on:click={() => {
+              event.bannedUsers = event.bannedUsers.filter(({ uid }) => uid !== user.uid);
+            }}
+            icon={IconClose}>Autoriser</ButtonSecondary
+          >
+        </li>
       {/each}
     </ul>
   </section>
