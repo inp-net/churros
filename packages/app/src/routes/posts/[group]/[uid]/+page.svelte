@@ -16,7 +16,7 @@
   let { author, publishedAt, links, title, bodyHtml, group, pictureFile, event, comments } =
     data.article;
   $: canEditArticles =
-    $me?.admin ||
+    $me?.canEditGroups ||
     $me?.groups.some(({ group: { uid }, canEditArticles }) => uid === group.uid && canEditArticles);
 
   $: canEditEvent =
