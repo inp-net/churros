@@ -51,6 +51,7 @@ import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { GraphQLError } from 'graphql';
+import { onBoard } from '../auth.js';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -655,14 +656,15 @@ builder.mutationField('upsertEvent', (t) =>
       if (!user) return false;
       if (user.admin) return true;
 
-      if (creating) {
-        return Boolean(
-          user.canEditGroups ||
-            user.groups.some(
-              ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
-            ),
-        );
-      }
+      const canCreate = Boolean(
+        user.canEditGroups ||
+          onBoard(user.groups.find(({ group }) => group.uid === groupUid)) ||
+          user.groups.some(
+            ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
+          ),
+      );
+
+      if (creating) return canCreate;
 
       const event = await prisma.event.findUnique({
         where: { id },
@@ -672,7 +674,8 @@ builder.mutationField('upsertEvent', (t) =>
       if (!event) return false;
 
       return Boolean(
-        event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit),
+        canCreate ||
+          event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit),
       );
     },
     async resolve(
