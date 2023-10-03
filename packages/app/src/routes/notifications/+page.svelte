@@ -82,13 +82,23 @@
 
   async function subscribeToNotifications(): Promise<void> {
     loading = true;
-    if ((await Notification.requestPermission()) === 'granted') {
+    try {
+      const status = await Notification.requestPermission();
+      toasts.debug('got permission status', status);
+      if (status === 'default') throw "T'a refusé les notifications";
+      if (status === 'denied')
+        throw 'Ton navigateur a refusé les notifications. Réinitialise les permissions de churros.inpt.fr dans Chrome ou Safari';
+
+      toasts.debug('permission granted. aqcuiring sw');
       const sw = await navigator.serviceWorker.ready;
+      toasts.debug('checking if browser supports sw');
       if (!sw) {
         unsupported = true;
         loading = false;
         return;
       }
+
+      toasts.debug('support OK. subscribing');
 
       const subscription = await sw.pushManager.subscribe({
         userVisibleOnly: true,
@@ -100,7 +110,10 @@
         return;
       }
 
+      toasts.debug(`got sub`, JSON.stringify(subscription));
+
       const { expirationTime, endpoint } = subscription;
+      toasts.debug('start mutation', JSON.stringify({ expirationTime, endpoint }));
       await $zeus.mutate({
         upsertNotificationSubscription: [
           {
@@ -122,10 +135,14 @@
           },
         ],
       });
+      toasts.debug('mutation OK. marking as subscribed');
       subscribed = true;
+    } catch (error) {
+      toasts.debug('caught', error?.toString());
+      throw error?.toString();
+    } finally {
+      loading = false;
     }
-
-    loading = false;
   }
 </script>
 
@@ -142,8 +159,15 @@
     {:else if !subscribed}
       <h1>Les notifications sont désactivées</h1>
       <input type="hidden" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
-      <ButtonPrimary {loading} on:click={async () => subscribeToNotifications()}
-        >Activer</ButtonPrimary
+      <ButtonPrimary
+        {loading}
+        on:click={async () => {
+          try {
+            await subscribeToNotifications();
+          } catch (error) {
+            toasts.error("Impossible d'activer les notifications", error?.toString());
+          }
+        }}>Activer</ButtonPrimary
       >
     {:else}
       <h1>

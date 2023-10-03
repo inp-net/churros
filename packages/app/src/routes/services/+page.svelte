@@ -3,6 +3,8 @@
   import { me } from '$lib/session';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
   import type { PageData } from './$types';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import { debugging } from '$lib/debugging';
 
   export let data: PageData;
 
@@ -49,6 +51,7 @@
         >
       {:else}trunk{/if}
     </code>
+    <InputCheckbox bind:value={$debugging} label="Mode debug"></InputCheckbox>
   </footer>
 </div>
 

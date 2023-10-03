@@ -1,6 +1,7 @@
 import { minutesToMilliseconds } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { get, writable } from 'svelte/store';
+import { debugging } from './debugging';
 
 type MaybePromise<T> = T | Promise<T>;
 
@@ -88,7 +89,8 @@ export const toasts = {
     };
     return toasts.add<T>('error', title, body, options);
   },
-  debug<T>(title: string, body = '', options?: ToastOptions<T>): string {
+  debug<T>(title: string, body = '', options?: ToastOptions<T>): string | undefined {
+    if (!get(debugging)) return undefined;
     return toasts.add<T>('debug', title, body, options);
   },
   async remove(id: string) {
