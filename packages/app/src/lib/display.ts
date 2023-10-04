@@ -119,3 +119,5 @@ export const DISPLAY_DOCUMENT_TYPES: Record<DocumentType, string> = {
   PracticalExam: 'BE',
   Summary: 'Fiche',
 };
+
+export const ORDER_REACTIONS: string[] = ['👍', '👎', '👏', '😂', '😮', '😡', '❤️', '💀', '🎉'];

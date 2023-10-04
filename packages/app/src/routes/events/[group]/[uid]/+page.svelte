@@ -9,10 +9,11 @@
   import Header from './Header.svelte';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
+  import AreaReactions from './AreaReactions.svelte';
 
   export let data: PageData;
 
-  const {
+  let {
     descriptionHtml,
     links,
     group,
@@ -21,6 +22,8 @@
     articles,
     placesLeft,
     capacity,
+    reactionCounts,
+    myReactions,
   } = data.event;
 
   const tickets = data.ticketsOfEvent;
@@ -62,6 +65,10 @@
 
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {@html descriptionHtml}
+</section>
+
+<section class="reactions">
+  <AreaReactions bind:myReactions bind:reactionCounts connection={{ eventId: data.event.id }} />
 </section>
 
 {#if tickets.length > 0}

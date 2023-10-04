@@ -50,6 +50,7 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   subj: 'Subject',
   doc: 'Document',
   comment: 'Comment',
+  reac: 'Reaction',
 } as const;
 /* end @generated from schema */
 
@@ -70,6 +71,8 @@ export const builder = new SchemaBuilder<{
     DateTime: { Input: Date; Output: Date };
     File: { Input: never; Output: File };
     ID: { Input: string; Output: string };
+    Counts: { Input: Record<string, number>; Output: Record<string, number> };
+    BooleanMap: { Input: Record<string, boolean>; Output: Record<string, boolean> };
   };
 }>({
   plugins: [

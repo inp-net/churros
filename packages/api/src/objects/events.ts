@@ -28,7 +28,7 @@ import {
 } from '@prisma/client';
 import { toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
-import { DateTimeScalar, FileScalar } from './scalars.js';
+import { DateTimeScalar, FileScalar, CountsScalar, BooleanMapScalar } from './scalars.js';
 import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { LinkInput } from './links.js';
@@ -116,26 +116,24 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
 }
 
 class RegistrationsCounts {
-  /* eslint-disable @typescript-eslint/parameter-properties */
   total: number;
   paid: number;
   verified: number;
   unpaidLydia: number;
   cancelled: number;
-  /* eslint-enable @typescript-eslint/parameter-properties */
 
-  constructor(
-    total: number,
-    paid: number,
-    verified: number,
-    unpaidLydia: number,
-    cancelled: number,
-  ) {
-    this.total = total;
-    this.paid = paid;
-    this.verified = verified;
-    this.unpaidLydia = unpaidLydia;
-    this.cancelled = cancelled;
+  constructor(data: {
+    total: number;
+    paid: number;
+    verified: number;
+    unpaidLydia: number;
+    cancelled: number;
+  }) {
+    this.total = data.total;
+    this.paid = data.paid;
+    this.verified = data.verified;
+    this.unpaidLydia = data.unpaidLydia;
+    this.cancelled = data.cancelled;
   }
 }
 
@@ -306,6 +304,38 @@ export const EventType = builder.prismaNode('Event', {
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
+    reactions: t.relation('reactions'),
+    myReactions: t.field({
+      type: BooleanMapScalar,
+      async resolve({ id }, _, { user }) {
+        const reactions = await prisma.reaction.findMany({
+          where: { eventId: id },
+        });
+        const emojis = new Set(reactions.map((r) => r.emoji));
+        return Object.fromEntries(
+          [...emojis].map((emoji) => [
+            emoji,
+            user ? reactions.some((r) => r.emoji === emoji && r.authorId === user.id) : false,
+          ]),
+        );
+      },
+    }),
+    reactionCounts: t.field({
+      type: CountsScalar,
+      async resolve({ id }) {
+        const reactions = await prisma.reaction.findMany({
+          where: { eventId: id },
+        });
+        // eslint-disable-next-line unicorn/no-array-reduce
+        return reactions.reduce<Record<string, number>>(
+          (counts, reaction) => ({
+            ...counts,
+            [reaction.emoji]: (counts[reaction.emoji] ?? 0) + 1,
+          }),
+          {},
+        );
+      },
+    }),
     capacity: t.int({
       async resolve({ id }) {
         const tickets = await prisma.ticket.findMany({

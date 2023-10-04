@@ -18,11 +18,13 @@
     offeredIn: { uid: string; name: string };
   }>;
 
-  export let pendingContributions: Array<| {
+  export let pendingContributions: Array<
+    | {
         id: string;
         name: string;
       }
-    | undefined>;
+    | undefined
+  >;
 
   let contributeServerError = '';
   let contributeLoading: string | undefined = undefined;

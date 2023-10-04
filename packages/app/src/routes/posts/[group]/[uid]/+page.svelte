@@ -11,10 +11,23 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
   import AreaComments from '$lib/components/AreaComments.svelte';
+  import AreaReactions from '../../../events/[group]/[uid]/AreaReactions.svelte';
 
   export let data: PageData;
-  let { author, publishedAt, links, title, bodyHtml, group, pictureFile, event, comments } =
-    data.article;
+  let {
+    author,
+    publishedAt,
+    links,
+    title,
+    bodyHtml,
+    group,
+    pictureFile,
+    event,
+    comments,
+    myReactions,
+    reactionCounts,
+  } = data.article;
+
   $: canEditArticles =
     $me?.canEditGroups ||
     $me?.groups.some(({ group: { uid }, canEditArticles }) => uid === group.uid && canEditArticles);
@@ -50,6 +63,14 @@
   <section class="body user-html">
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html bodyHtml}
+  </section>
+
+  <section class="reactions">
+    <AreaReactions
+      bind:myReactions
+      bind:reactionCounts
+      connection={{ articleId: data.article.id }}
+    />
   </section>
 
   {#if links.length > 0}
