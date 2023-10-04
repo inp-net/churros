@@ -31,6 +31,7 @@ export const load: LayoutLoad = async ({ fetch, data }) => {
                   pictureFile: true,
                   title: true,
                   startsAt: true,
+                  endsAt: true,
                 },
               },
               beneficiary: true,

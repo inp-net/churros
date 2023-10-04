@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import TopBar from '$lib/components/NavigationTop.svelte';
-  import { persisted } from 'svelte-local-storage-store';
+  import { syncToLocalStorage } from 'svelte-store2storage';
   import { theme } from '$lib/theme.js';
   import { onMount } from 'svelte';
   import '../design/app.scss';
@@ -18,9 +18,10 @@
   import Toast from '$lib/components/Toast.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
   import type { PageData } from './$types';
-  import { differenceInMinutes, formatDistanceToNow } from 'date-fns';
+  import { differenceInHours, differenceInMinutes, formatDistanceToNow, isFuture } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
   import { slide } from 'svelte/transition';
+  import { writable } from 'svelte/store';
 
   function currentTab(url: URL): 'events' | 'groups' | 'services' | 'home' {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -34,7 +35,8 @@
   export let data: PageData;
   let showInitialSpinner = true;
 
-  const hiddenQuickBookings = persisted('hiddenQuickBookings', [] as string[]);
+  const hiddenQuickBookings = writable([] as string[]);
+  if (browser) syncToLocalStorage(hiddenQuickBookings, 'hidden_quick_bookings');
 
   onMount(() => {
     if (!$me && !localStorage.getItem('isReallyLoggedout')) {
@@ -46,6 +48,10 @@
     } else {
       showInitialSpinner = false;
     }
+
+    setInterval(() => {
+      now = new Date();
+    }, 5000);
   });
 
   let announcements = [] as Array<{
@@ -54,6 +60,8 @@
     warning: boolean;
     id: string;
   }>;
+
+  let now = new Date();
 
   type NProgress = {
     start: () => void;
@@ -196,14 +204,15 @@
     {/if}
     {#if data.registrationsOfUser?.edges.length > 0 && !$page.url.pathname.startsWith('/bookings')}
       {@const registration = data.registrationsOfUser.edges[0].node}
-      {#if !$hiddenQuickBookings.includes(registration.id) && differenceInMinutes(new Date(), registration.ticket.event.startsAt) <= 30}
+      {#if !$hiddenQuickBookings.includes(registration.id) && differenceInMinutes(registration.ticket.event.startsAt, now) <= 30 && differenceInHours(now, registration.ticket.event.endsAt) <= 2}
         <!-- TODO make it swipable to dismis -->
-        <section transition:slide={{ axis: 'y' }} class="quick-booking">
+        <section transition:slide={{ axis: 'y', duration: 100 }} class="quick-booking">
           <p class="hint">
             <strong>
-              C'est dans {formatDistanceToNow(registration.ticket.event.startsAt, {
-                locale: fr,
-              }).replace('environ ', '')}! Voici ta place
+              C'est {#if isFuture(registration.ticket.event.startsAt)}
+                dans {formatDistanceToNow(registration.ticket.event.startsAt, {
+                  locale: fr,
+                }).replace('environ ', '')}{:else}maintenant{/if}! Voici ta place
             </strong>
             <span class="dismiss">
               <ButtonGhost
@@ -325,7 +334,7 @@
   .quick-booking {
     position: fixed;
     right: 0;
-    bottom: 5rem;
+    bottom: 4.5rem;
     left: 0;
     z-index: 1000;
     width: 100%;
@@ -346,7 +355,7 @@
       text-align: center;
 
       // fade from transparent to var(--bg)
-      background: linear-gradient(to bottom, transparent 0%, var(--bg) 100%);
+      background: linear-gradient(to bottom, transparent 0%, var(--bg) 60%);
     }
   }
 
