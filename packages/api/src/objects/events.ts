@@ -63,10 +63,18 @@ export const EventFrequencyType = builder.enumType(EventFrequency, {
 
 export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
   return {
-    visibility: {
-      not: VisibilityPrisma.Private,
-    },
     OR: [
+      {
+        visibility: VisibilityPrisma.Private,
+        OR: [
+          {
+            author: { uid: user?.uid ?? '' },
+          },
+          {
+            managers: { some: { user: { uid: user?.uid ?? '' } } },
+          },
+        ],
+      },
       // Completely public events
       {
         visibility: VisibilityPrisma.Public,
