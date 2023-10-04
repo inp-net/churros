@@ -502,10 +502,15 @@ builder.queryField('eventsInWeek', (t) =>
           }
 
           case EventFrequency.Monthly: {
-            startsAt = setYear(startsAt, getYear(today));
-            startsAt = setMonth(startsAt, getMonth(today));
-            endsAt = setYear(endsAt, getYear(today));
-            endsAt = setMonth(endsAt, getMonth(today));
+            const monthCorrect =
+              getMonth(today) === getMonth(endOfWeek(today, { weekStartsOn: 1 })) ? 0 : 1;
+            const yearCorrect =
+              getYear(today) === getYear(endOfWeek(today, { weekStartsOn: 1 })) ? 0 : 1;
+
+            startsAt = setMonth(startsAt, getMonth(today) + monthCorrect);
+            endsAt = setMonth(endsAt, getMonth(today) + monthCorrect);
+            startsAt = setYear(startsAt, getYear(today) + yearCorrect);
+            endsAt = setYear(endsAt, getYear(today) + yearCorrect);
             break;
           }
 
