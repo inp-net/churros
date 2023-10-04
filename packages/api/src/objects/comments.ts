@@ -1,4 +1,4 @@
-import { NotificationChannel } from '@prisma/client';
+import { NotificationChannel, type User } from '@prisma/client';
 import { TYPENAMES_TO_ID_PREFIXES, builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
@@ -105,40 +105,64 @@ builder.mutationField('upsertComment', (t) =>
           document: {
             include: {
               subject: { include: { majors: true, minors: { include: { majors: true } } } },
+              uploader: true,
             },
           },
-          article: { include: { group: true } },
+          article: { include: { group: true, author: true } },
         },
       });
+
+      const commentedOn: { title: string; author: User | null } | undefined = comment.document
+        ? { title: comment.document.title, author: comment.document.uploader }
+        : comment.article
+        ? { title: comment.article.title, author: comment.article.author }
+        : undefined;
+
+      const documentMajor =
+        comment.document?.subject.majors[0]?.uid ??
+        comment.document?.subject.minors[0]?.majors[0]?.uid ??
+        'unknown';
+      const commentUrl =
+        process.env.FRONTEND_ORIGIN +
+        (comment.document
+          ? `/documents/${documentMajor}/${
+              comment.document.subject.minors[0]?.yearTier ??
+              yearTier(comment.author?.graduationYear ?? 1)
+            }a/${comment.document.subject.uid}/${comment.document.uid}/`
+          : `/posts/${comment.article!.group.uid}/${comment.article!.uid}`) +
+        `#comment-${comment.id.replace(TYPENAMES_TO_ID_PREFIXES.Comment + ':', '')}`;
 
       if (
         !id &&
         comment.author &&
         comment.inReplyTo?.author &&
         comment.inReplyTo.author.id !== comment.author.id &&
-        (comment.document || comment.article)
+        commentedOn
       ) {
-        const documentMajor =
-          comment.document?.subject.majors[0]?.uid ??
-          comment.document?.subject.minors[0]?.majors[0]?.uid ??
-          'unknown';
         await notify([comment.inReplyTo.author], {
           title: `@${comment.author.uid} a répondu à votre commentaire sur ${
-            comment.document?.title ?? comment.article?.title ?? '???'
+            commentedOn?.title ?? '???'
           }`,
           body: comment.body,
           data: {
             group: comment.article?.group.uid ?? undefined,
             channel: NotificationChannel.Comments,
-            goto:
-              process.env.FRONTEND_ORIGIN +
-              (comment.document
-                ? `/documents/${documentMajor}/${
-                    comment.document.subject.minors[0]?.yearTier ??
-                    yearTier(comment.author.graduationYear)
-                  }a/${comment.document.subject.uid}/${comment.document.uid}/`
-                : `/posts/${comment.article!.group.uid}/${comment.article!.uid}`) +
-              `#comment-${comment.id.replace(TYPENAMES_TO_ID_PREFIXES.Comment + ':', '')}`,
+            goto: commentUrl,
+          },
+        });
+      } else if (
+        !id &&
+        !comment.inReplyTo &&
+        commentedOn?.author &&
+        commentedOn?.author !== comment.author
+      ) {
+        await notify([commentedOn.author], {
+          title: `@${comment.author?.uid ?? '???'} a commenté sur ${commentedOn.title ?? '???'}`,
+          body: comment.body,
+          data: {
+            group: comment.article?.group.uid ?? undefined,
+            channel: NotificationChannel.Comments,
+            goto: commentUrl,
           },
         });
       }
