@@ -131,7 +131,7 @@
 
     {#if $me?.admin || $me?.canEditGroups}
       <a href="/groups/create">
-        <IconGroup />
+        <IconGroupOutline />
         <span>Groupes</span>
       </a>
     {/if}
