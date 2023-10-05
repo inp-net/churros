@@ -57,8 +57,11 @@
     <p class="published-at">
       Publié le {dateTimeFormatter.format(publishedAt)} par
       <a href="/groups/{group.uid}">{group.name}</a>
-      <IndicatorVisibility {visibility} />
-      <Badge>{DISPLAY_VISIBILITIES[visibility]}</Badge>
+
+      <Badge>
+        <IndicatorVisibility {visibility} />
+        {DISPLAY_VISIBILITIES[visibility]}
+      </Badge>
     </p>
   </header>
 
@@ -141,11 +144,5 @@
 
   .event > :global(article) {
     max-width: 600px;
-  }
-
-  .published-at {
-    display: flex;
-    gap: 0.5em;
-    align-items: center;
   }
 </style>
