@@ -482,7 +482,7 @@ builder.queryField('events', (t) =>
       return prisma.event.findMany({
         ...query,
         where: {
-          startsAt: future ? { gte: new Date() } : undefined,
+          startsAt: future ? { gte: startOfDay(new Date()) } : undefined,
           ...visibleEventsPrismaQuery(user),
         },
         orderBy: { startsAt: 'asc' },
