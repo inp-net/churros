@@ -123,6 +123,17 @@ const SN_MINORS_3A: { name: string; shortName: string }[] = [
 
 await createMinors(SN, 3, SN_MINORS_3A);
 
+await createMinors(EEEA, 1, [
+  {
+    name: 'Électronique Numérique',
+    shortName: 'EN',
+  },
+  {
+    name: 'Génie Électrique et Automatique',
+    shortName: 'GEA',
+  },
+]);
+
 const EEEA_MINORS_2A: { name: string; shortName: string }[] = [
   {
     name: 'Électronique numérique',
@@ -162,7 +173,7 @@ const EEEA_MINORS_2A: { name: string; shortName: string }[] = [
     shortName: 'SEF',
   },
   {
-    name: '7Robot',
+    name: 'Systèmes Mécatroniques (7Robot)',
     shortName: 'SM',
   },
 ];
@@ -611,16 +622,217 @@ const SUBJECTS: Record<
         };
       }),
     },
-    '3': [],
+    '3': [
+      // TLS-SEC
+      ...[
+        '491-Rappels assembleur',
+        '497-Attaques et sécurisation des couches OSI',
+        '504-Attaques matérielles et sécurisation',
+        "503-Composants fondamentaux d'une architecture sécurisée",
+        '490-Cryptographie',
+        '495-Définitions sécurité/safety',
+        '506-Intrusion systèmes et réseaux',
+        '877-Master Secu',
+        '974-Preuves Formelles',
+        "501-Protection des systèmes d'exploitation",
+        '493-Rappels langage C',
+        '492-Rappels réseaux',
+        "494-Rappels système d'exploitation",
+        '508-Reverse engineering',
+        '502-Sécurisation des protocoles',
+        "507-Sécurité dans l'aérospatiale",
+        '498-Sécurité des réseaux non filiaires',
+        '876-SHS-Conférences',
+        '500-Virus et techniques virales',
+        '893-Vulnérabilité Web',
+        '499-Vulnérabilités logicielles',
+      ].map((m) => {
+        const [code, name] = m.split('-', 2) as [string, string];
+        return {
+          name,
+          oldFrappeCodes: Number.parseInt(code!, 10),
+          minors: ['tls-sec'],
+        };
+      }),
+    ],
   },
   EEEA: {
     '1': {
       FISA: [],
-      FISE: [],
+      FISE: [
+        '823-HABILITATION ELECTRIQUE',
+        '802-S1 - Algorithmique et programmation impérative',
+        '799-S1 - Approche théoq de la logique combinatoire et séquentielle',
+        '803-S1 - Architecture et programmation en assembleur',
+        "800-S1 - Conception d'unités logiques séquentielles et combinatoires",
+        '795-S1 - Electromagnétisme',
+        '801-S1 - Fonctions logiques et technologie',
+        '806-S1 - Intégration',
+        "796-S1 - Méthodes d'analyse des circuits électriques",
+        '797-S1 - Métrologie et circuits de puissance',
+        '794-S1 - Physique des matériaux',
+        '804-S1 - Probabilités',
+        '824-S1 - Propagation dans les lignes',
+        '798-S1 - TP Circuits (Courants faibles/forts)',
+        '805-S1 - Variable complexe',
+        '811-S2 - Amplificateur opérationnel et compensation',
+        '821-S2 - Automatique des systèmes linéaires continus',
+        '809-S2 - Calcul Différentiel & Optimisation',
+        '814-S2 - Circuits magnétiques & modélisation réluctance (GEA)',
+        '817-S2 - Introduction à la conversion statique (GEA)',
+        '812-S2 - Modélisation par analogies physiques & analyse',
+        '818-S2 - Montages amplificateurs à transistors (EN)',
+        '813-S2 - Montages amplificateurs avancés (EN)',
+        '815-S2 - Physique du semiconducteur et jonction PN',
+        '822-S2 - Projet Objets connectés (EN)',
+        '810-S2 - Projet Avion plus électrique (GEA)',
+        "807-S2 - Résolution EDP par différences finies et algorithmes d'EDO",
+        '791-S2 - Statistiques',
+        '820-S2 - Traitement du signal',
+        '819-S2 - Traitement numérique du signal',
+        '816-S2 - Transistors de signal et composants de puissance',
+      ].map((m) => {
+        let [code, semester, name] = m.split('-', 3).map((c) => c.trim()) as [
+          string,
+          string,
+          string,
+        ];
+        let minor = undefined;
+        if (/.+ \([A-Z]+\)$/.test(name)) {
+          const [n, min] = name.split(' (', 2) as [string, string];
+          name = n;
+          minor = min.replace(')', '').toLowerCase();
+        }
+
+        return {
+          name,
+          oldFrappeCodes: Number.parseInt(code!, 10),
+          semester: semester === 'S2' ? 2 : 1,
+          minors: minor ? [minor.toLowerCase()] : ['gea', 'en'],
+        };
+      }),
     },
     '2': {
       FISA: [],
-      FISE: [],
+      FISE: [
+        // EN
+        ...[
+          '637-Analyse Numérique',
+          '52-Antenne 2',
+          "785-Chaine d'instrumentation",
+          '53-Circuit Actifs RF',
+          "56-Classe d'amplification",
+          '548-Électronique Numérique',
+          '50-Fourier 2',
+          '640-Management',
+          '784-Microprocesseurs',
+          '792-Optoélectronique',
+          '57-Oscillateurs et PLL',
+          '641-Programmation Orientée Objet C++',
+          '642-Projet Analogique',
+          '643-Sport',
+          '644-TP ADS',
+          '645-TP Numérique',
+          '54-Traitement du signal — Signaux aléatoires',
+          '55-Traitement numérique du signal',
+          '646-VHDL',
+        ].map((m) => {
+          const [code, name] = m.split('-', 2).map((c) => c.trim()) as [string, string];
+          return {
+            name,
+            oldFrappeCodes: Number.parseInt(code!, 10),
+            minors: ['en'],
+          };
+        }),
+        // IATI
+        ...[
+          '1059-S8 - Algèbre linéaire avancée',
+          '1060-S8 - Analyse hilbertienne',
+          '1070-S8 - Analyse multivariée',
+          '1062-S8 - Conception synchrone des systèmes numériques',
+          '1076-S8 - Cours introduction IA et cognition',
+          '1064-S8 - DSP',
+          '1069-S8 - Filtrage optimal',
+          '1073-S8 - Introduction au deep learning',
+          '1077-S8 - Logique des propositions et des prédicats',
+          '1067-S8 - Modélisation',
+          '1061-S8 - Optimisation sous contraintes',
+          '1071-S8 - Problèmes inverses',
+          '1066-S8 - Projet image',
+          '1068-S8 - Représentation et analyse des signaux',
+          '1074-S8 - Statistique - méthodes avancées',
+          '1075-S8 - Statistiques computationnelles',
+          '1063-S8 - Technologie FPGA',
+          "1072-S8 - Théorie de l'information",
+          "1065-S8 - Traitement de l'image",
+        ].map((m) => {
+          const [code, semester, name] = m.split('-', 3).map((c) => c.trim()) as [
+            string,
+            string,
+            string,
+          ];
+          return {
+            name,
+            oldFrappeCodes: Number.parseInt(code!, 10),
+            semester: semester === 'S8' ? 2 : 1,
+            minors: ['iati'],
+          };
+        }),
+        // PN
+        ...[
+          '1024-Algèbre linéaire avancée',
+          '1025-Analyse hilbertienne',
+          '1023-Analyse physique de structures guidantes',
+          "1020-Complément d'analyse numérique",
+          "1014-Conception optimale d'un actionneur pour tuyère de fusée",
+          "1026-Eléments finis pour l'électromagnétisme",
+          '1018-Matériaux',
+          '1015-Modélisation des systèmes électromagnétiques par calcul',
+          '1016-Modélisations analytiques alternatives du champ',
+          '1021-Optimisation',
+          '1013-Optimisation et conception optimale des systèmes',
+          '1027-Programmation pour le calcul scientifique',
+          '1022-Rayonnement électromagnétique et antennes',
+          '1019-Simulation numérique en optique',
+          '1017-Thermique et mécanique des fluides',
+        ].map((m) => {
+          const [code, name] = m.split('-', 2).map((c) => c.trim()) as [string, string];
+          return {
+            name,
+            oldFrappeCodes: Number.parseInt(code!, 10),
+            minors: ['pn'],
+          };
+        }),
+        // Autres (ex-GEA)
+        ...[
+          '268-AII _ Automatique et systèmes AII',
+          '266-AII _ Développement logiciel de systèmes temps réel',
+          '267-AII _ Traitement du signal et identification',
+          '483-Association CVS - Machine',
+          '479-Automatisme',
+          '485-Commande discrète polynomiale',
+          '474-CVS',
+          '265-EnP _ Automatique et systèmes EnP',
+          '263-EnP _ Mise en oeuvre des cellules de commutations',
+          '264-EnP _ Systèmes et réseaux électriques',
+          "484-Espace d'état",
+          '253-Machines 2',
+          '540-Mecatronique',
+          '482-MLI',
+          '480-Optimisation',
+          '478-POO',
+          '481-Proba_Stat',
+          '475-SLC3',
+          '477-SLE',
+          '476-SNL',
+        ].map((m) => {
+          const [code, name] = m.split('-', 2).map((c) => c.trim()) as [string, string];
+          return {
+            name,
+            oldFrappeCodes: Number.parseInt(code!, 10),
+          };
+        }),
+      ],
     },
     '3': [],
   },
@@ -660,8 +872,8 @@ async function createSubjects(
 
   const OLD_FRAPPE_MAPPING: Record<string, number[]> = {};
 
-  for (let subject of subjects) {
-    subject.shortName = subject.shortName ?? subject.name;
+  for (const subject of subjects) {
+    subject.shortName ??= subject.name;
     const oldFrappeCodes = subject.oldFrappeCodes ?? [];
     delete subject.oldFrappeCodes;
     try {
@@ -690,7 +902,93 @@ async function createSubjects(
       );
       OLD_FRAPPE_MAPPING[id] = Array.isArray(oldFrappeCodes) ? oldFrappeCodes : [oldFrappeCodes];
     } catch (error) {
-      console.error(`\t× Fail while creating ${subject.shortName}`);
+      const triplet = {
+        uid: slug(subject.shortName || subject.name || ''),
+        yearTier: subject.yearTier,
+        forApprentices: (subject as typeof subject & { forApprentices?: boolean }).forApprentices,
+      };
+
+      const duplicates = await p.subject.findMany({
+        where: {
+          ...triplet,
+        },
+        select: {
+          name: true,
+          id: true,
+          uid: true,
+          shortName: true,
+          yearTier: true,
+          forApprentices: true,
+          semester: true,
+          majors: {
+            select: {
+              uid: true,
+            },
+          },
+          minors: {
+            select: { uid: true },
+          },
+        },
+      });
+
+      if (duplicates.length > 0) {
+        const { id, name, minors } = duplicates[0]!;
+        console.warn(
+          `\t! Subject ${JSON.stringify(
+            Object.values(triplet),
+          )} already exists; adding another old frappe subject (${JSON.stringify(
+            oldFrappeCodes,
+          )}) to this subject (${name}, #${id})`,
+        );
+        if ((subject.minors ?? []).length === 0 || minors.length === 0) {
+          console.log('\t\tSetting to all minors');
+          await p.subject.update({
+            where: { id },
+            data: {
+              minors: { set: [] },
+            },
+          });
+        } else {
+          console.log(
+            `\t\tMerging minors to ${JSON.stringify([
+              ...subject.minors!,
+              ...minors.map((m) => m.uid),
+            ])}`,
+          );
+          await p.subject.update({
+            where: { id },
+            data: {
+              minors: {
+                set: [
+                  ...subject.minors!.map((uid) => ({
+                    uid_yearTier: { uid, yearTier: subject.yearTier },
+                  })),
+                  ...minors.map(({ uid }) => ({
+                    uid_yearTier: { uid, yearTier: subject.yearTier },
+                  })),
+                ],
+              },
+            },
+          });
+        }
+        if (id in OLD_FRAPPE_MAPPING) {
+          OLD_FRAPPE_MAPPING[id]!.push(
+            ...(Array.isArray(oldFrappeCodes) ? oldFrappeCodes : [oldFrappeCodes]),
+          );
+        } else {
+          OLD_FRAPPE_MAPPING[id] = Array.isArray(oldFrappeCodes)
+            ? oldFrappeCodes
+            : [oldFrappeCodes];
+        }
+        continue;
+      }
+
+      console.error(
+        `\t× Fail while creating ${subject.shortName} on minors ${
+          subject.minors ?? []
+        } ${JSON.stringify(triplet)}`,
+      );
+      console.info(`Duplicates: ${JSON.stringify(duplicates, undefined, 2)}`);
       console.error(error);
     }
   }
