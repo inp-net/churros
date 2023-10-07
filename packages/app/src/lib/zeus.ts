@@ -93,6 +93,16 @@ const scalars = ZeusScalars({
     decode: (value: unknown): Date => new Date(value as string),
     encode: (value: unknown): string => JSON.stringify(value),
   },
+  Counts: {
+    decode: (value: unknown): Record<string, number> =>
+      JSON.parse(value as string) as Record<string, number>,
+    encode: (value: unknown): string => JSON.stringify(value as Record<string, number>),
+  },
+  BooleanMap: {
+    decode: (value: unknown): Record<string, boolean> =>
+      JSON.parse(value as string) as Record<string, boolean>,
+    encode: (value: unknown): string => JSON.stringify(value as Record<string, boolean>),
+  },
 });
 
 export const zeus = derived(page, ({ data }) => {

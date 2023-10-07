@@ -395,6 +395,11 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
 export async function markAsContributor(uid: string): Promise<void> {
   if (process.env['NODE_ENV'] === 'development') return;
   await new Promise<void>((resolve, reject) => {
+    if (process.env['NODE_ENV'] === 'development') {
+      resolve();
+      return;
+    }
+
     const change = new ldap.Change({
       operation: 'replace',
       modification: {

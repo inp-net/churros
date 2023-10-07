@@ -18,3 +18,18 @@ export const authScopes = ({ user }: Context) => ({
   canEditGroups: Boolean(user?.admin || user?.canEditGroups),
   canEditUsers: Boolean(user?.admin || user?.canEditUsers),
 });
+
+export function onBoard(
+  permissions:
+    | { president: boolean; treasurer: boolean; vicePresident: boolean; secretary: boolean }
+    | undefined
+    | null,
+): boolean {
+  if (!permissions) return false;
+  return (
+    permissions.president ||
+    permissions.treasurer ||
+    permissions.vicePresident ||
+    permissions.secretary
+  );
+}

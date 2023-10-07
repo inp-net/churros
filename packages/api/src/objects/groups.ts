@@ -21,12 +21,12 @@ import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { visibleArticlesPrismaQuery } from './articles.js';
 import { visibleEventsPrismaQuery } from './events.js';
+import { onBoard } from '../auth.js';
 
 export function userIsInBureauOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
     user?.groups.some(
-      ({ group: { uid }, president, secretary, treasurer, vicePresident }) =>
-        uid === groupUid && (president || secretary || treasurer || vicePresident),
+      ({ group: { uid }, ...permissions }) => uid === groupUid && onBoard(permissions),
     ),
   );
 }
@@ -278,8 +278,7 @@ builder.mutationField('upsertGroup', (t) =>
           user?.canEditGroups ||
             (type === GroupPrismaType.Group &&
               parentGroup?.members.some(
-                ({ memberId, president, secretary, treasurer, vicePresident }) =>
-                  memberId === user?.id && (president || secretary || treasurer || vicePresident),
+                ({ memberId, ...permissions }) => memberId === user?.id && onBoard(permissions),
               )),
         );
       }
@@ -287,8 +286,7 @@ builder.mutationField('upsertGroup', (t) =>
       return Boolean(
         user?.canEditGroups ||
           (user?.groups ?? []).some(
-            ({ president, secretary, treasurer, vicePresident, group }) =>
-              group.uid === uid && (president || secretary || treasurer || vicePresident),
+            ({ group, ...permissions }) => group.uid === uid && onBoard(permissions),
           ),
       );
     },

@@ -12,7 +12,8 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
         name: true,
         price: true,
         id: true,
-        paysFor: { name: true, id: true },
+        paysFor: { name: true, id: true, uid: true },
+        offeredIn: { name: true, id: true, uid: true },
       },
       user: [
         params,

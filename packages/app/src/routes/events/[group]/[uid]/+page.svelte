@@ -9,10 +9,11 @@
   import Header from './Header.svelte';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
+  import AreaReactions from './AreaReactions.svelte';
 
   export let data: PageData;
 
-  const {
+  let {
     descriptionHtml,
     links,
     group,
@@ -21,6 +22,8 @@
     articles,
     placesLeft,
     capacity,
+    reactionCounts,
+    myReactions,
   } = data.event;
 
   const tickets = data.ticketsOfEvent;
@@ -64,6 +67,10 @@
   {@html descriptionHtml}
 </section>
 
+<section class="reactions">
+  <AreaReactions bind:myReactions bind:reactionCounts connection={{ eventId: data.event.id }} />
+</section>
+
 {#if tickets.length > 0}
   <section class="tickets">
     <h2>
@@ -98,7 +105,7 @@
   <ul class="nobullet">
     {#each articles as { uid, ...article } (uid)}
       <li>
-        <CardArticle href="/posts/{group.uid}/{uid}/" {...article} />
+        <CardArticle href="/posts/{article.group.uid}/{uid}/" {...article} />
       </li>
     {:else}
       <li class="empty muted">Aucun post pour le moment.</li>

@@ -128,7 +128,7 @@
       <section class="feedback">
         {#if link}
           <Alert theme="success"
-            >Ton {#if issueType === 'bug'}bug a bien été signalé{:else}idée à bien était soumise{/if}.
+            >Ton {#if issueType === 'bug'}bug a bien été signalé{:else}idée a bien été soumise{/if}.
             C'est <a href={link}>l'issue n°{issueNumber}</a>.
             <ButtonSecondary newTab insideProse href={link} icon={IconArrowRight}
               >Voir</ButtonSecondary

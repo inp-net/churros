@@ -250,6 +250,7 @@ export function userCanSeeTicket(
       id: string;
       group: { studentAssociation: null | { id: string } };
       managers: Array<{ userId: string }>;
+      bannedUsers: Array<{ id: string }>;
     };
     onlyManagersCanProvide: boolean;
     openToGroups: Array<{ uid: string }>;
@@ -277,6 +278,9 @@ export function userCanSeeTicket(
 
   // Managers can see everything
   if (event.managers.some(({ userId }) => userId === user?.id)) return true;
+
+  // Banned users cannot see any ticket
+  if (event.bannedUsers.some(({ id }) => id === user?.id)) return false;
 
   // Check if user is an apprentice
   if (openToApprentices === true && !user?.apprentice) return false;
@@ -356,6 +360,7 @@ builder.queryField('ticketsOfEvent', (t) =>
           event: {
             include: {
               managers: true,
+              bannedUsers: true,
               group: {
                 include: {
                   studentAssociation: true,

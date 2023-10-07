@@ -51,6 +51,12 @@ export function htmlToText(body: string): string {
           ignoreHref: true,
         },
       },
+      ...[1, 2, 3, 4, 5, 6].map((i) => ({
+        selector: `h${i}`,
+        options: {
+          uppercase: false,
+        },
+      })),
     ],
   });
 }

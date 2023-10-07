@@ -7,6 +7,7 @@ import { purgeUserSessions } from '../context.js';
 import { GroupType } from '@prisma/client';
 import { createTransport } from 'nodemailer';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
+import { onBoard } from '../auth.js';
 
 const mailer = createTransport(process.env.SMTP_URL);
 
@@ -205,11 +206,7 @@ builder.mutationField('upsertGroupMember', (t) =>
       }
 
       const quittingBoard =
-        (oldMember?.president ||
-          oldMember?.treasurer ||
-          oldMember?.vicePresident ||
-          oldMember?.secretary) &&
-        !(president || treasurer || vicePresident || secretary);
+        onBoard(oldMember) && !onBoard({ president, treasurer, vicePresident, secretary });
 
       const data = {
         title,
@@ -220,10 +217,10 @@ builder.mutationField('upsertGroupMember', (t) =>
         canEditMembers: quittingBoard ? false : canEditMembers || president || treasurer,
         canEditArticles: quittingBoard
           ? false
-          : canEditArticles || president || vicePresident || secretary,
+          : canEditArticles || onBoard({ president, treasurer, vicePresident, secretary }),
         canScanEvents: quittingBoard
           ? false
-          : canScanEvents || president || vicePresident || secretary,
+          : canScanEvents || onBoard({ president, treasurer, vicePresident, secretary }),
         vicePresident,
         secretary,
       };

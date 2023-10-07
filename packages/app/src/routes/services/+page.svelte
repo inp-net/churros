@@ -3,6 +3,8 @@
   import { me } from '$lib/session';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
   import type { PageData } from './$types';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import { debugging } from '$lib/debugging';
 
   export let data: PageData;
 
@@ -47,7 +49,7 @@
           href="https://git.inpt.fr/inp-net/churros/-/commit/{CURRENT_COMMIT}"
           >{CURRENT_COMMIT.slice(0, 8)}</a
         >
-      {:else}trunk{/if}
+      {:else}trunk{/if} · <InputCheckbox bind:value={$debugging} label="Mode debug"></InputCheckbox>
     </code>
   </footer>
 </div>
@@ -84,5 +86,13 @@
 
   footer a {
     text-decoration: underline;
+  }
+
+  footer code {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1ch;
+    align-items: center;
+    justify-content: center;
   }
 </style>

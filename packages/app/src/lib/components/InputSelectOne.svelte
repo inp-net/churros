@@ -64,6 +64,7 @@
 
     /* using a border creates a weird gap with the overflow-hidden rectangle of selected item if it hits the corner. for some reason the outline is thicker than the border at the same width, so we multiply by 2/3 to roughly get the same appearance */
     outline: calc(2 / 3 * var(--border-block)) solid var(--border);
+    outline-offset: calc(-1 * var(--border-block));
   }
 
   input {

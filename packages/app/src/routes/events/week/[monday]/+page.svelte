@@ -3,14 +3,12 @@
   import IconBackward from '~icons/mdi/chevron-left';
   import IconGear from '~icons/mdi/cog-outline';
   import IconForward from '~icons/mdi/chevron-right';
-  import IconTicketFilled from '~icons/mdi/ticket-confirmation';
   import { addDays, startOfWeek, isSameDay, previousMonday, nextMonday, formatISO } from 'date-fns';
   import type { PageData } from './$types';
   import { me } from '$lib/session';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { isDark } from '$lib/theme';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import Card from '$lib/components/Card.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
   import { Gif } from 'svelte-tenor';
   import { groupLogoSrc } from '$lib/logos';
@@ -46,9 +44,6 @@
 </script>
 
 <div class="content">
-  <Card>
-    <a href="/bookings/" class="booking">Mes places<IconTicketFilled /></a>
-  </Card>
   <NavigationTabs
     tabs={[
       { name: 'Semaine', href: '.' },
@@ -214,13 +209,6 @@
     margin-top: 2rem;
     margin-bottom: 4rem;
     text-align: center;
-  }
-
-  .booking {
-    display: flex;
-    justify-content: space-between;
-    font-size: 1.2em;
-    font-weight: bold;
   }
 
   :global(.gif) {

@@ -6,6 +6,7 @@
   import IconPlus from '~icons/mdi/plus';
   import { me } from '$lib/session';
   import { GroupType } from '$lib/zeus';
+  import CardGroup from '$lib/components/CardGroup.svelte';
 
   export let data: PageData;
 
@@ -30,6 +31,12 @@
   const hasMultipleSchools =
     [...new Set(data.groups.map((g) => g.studentAssociation?.school.name ?? ''))].filter(Boolean)
       .length > 1;
+
+  const assertNoUndefineds = <T,>(arr: Array<T | undefined>): T[] => {
+    if (arr.includes(undefined)) throw new Error('Undefined found');
+
+    return arr as T[];
+  };
 </script>
 
 <h1>
@@ -38,7 +45,23 @@
     >{/if}
 </h1>
 
-<h2>L'AE</h2>
+{#if data.studentAssociations}
+  <h2>Tes AEs</h2>
+  <ul class="nobullet student-associations">
+    {#each assertNoUndefineds(data.studentAssociations) as { name, uid, id } (id)}
+      <li>
+        <CardGroup
+          href="/student-associations/{uid}"
+          {name}
+          pictureFile="//student-associations/{uid}.png"
+          pictureFileDark=""
+        ></CardGroup>
+      </li>
+    {/each}
+  </ul>
+{/if}
+
+<h2>Les bureaux de tes AEs</h2>
 <ul class="nobullet">
   {#each studentAssociationSections as group}
     <li>
@@ -78,6 +101,11 @@
     gap: 1rem;
     max-width: 600px;
     margin: 0 auto;
+  }
+
+  .student-associations {
+    flex-flow: row wrap;
+    justify-content: center;
   }
 
   h1 {

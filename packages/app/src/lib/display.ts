@@ -1,6 +1,6 @@
 import {
   NotificationChannel,
-  type DocumentType,
+  DocumentType,
   type EventFrequency,
   type GroupType,
   type PaymentMethod,
@@ -131,3 +131,5 @@ export const ORDER_DOCUMENT_TYPES: DocumentType[] = [
   DocumentType.CourseSlides,
   DocumentType.Miscellaneous,
 ];
+
+export const ORDER_REACTIONS: string[] = ['👍', '👎', '👏', '😂', '😮', '😡', '❤️', '💀', '🎉'];

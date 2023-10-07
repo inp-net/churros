@@ -21,6 +21,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
               frequency: true,
               recurringUntil: true,
               descriptionHtml: true,
+              descriptionPreview: true,
               placesLeft: true,
               capacity: true,
               tickets: {
