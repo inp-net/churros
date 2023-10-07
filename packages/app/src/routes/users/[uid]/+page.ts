@@ -86,6 +86,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
                   uid: true,
                   group: { uid: true, name: true, pictureFile: true, pictureFileDark: true },
                   bodyHtml: true,
+                  bodyPreview: true,
                   publishedAt: true,
                   links: { value: true, name: true, computedValue: true },
                   visibility: true,

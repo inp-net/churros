@@ -275,7 +275,7 @@
           href="/events/{group.uid}/{uid}"
           {...event}
           publishedAt={event.startsAt}
-          bodyHtml={event.descriptionHtml}
+          bodyPreview={event.descriptionPreview}
         />
       {/each}
     </ul>

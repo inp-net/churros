@@ -26,7 +26,7 @@ import {
   EventFrequency,
   type Group,
 } from '@prisma/client';
-import { toHtml } from '../services/markdown.js';
+import { htmlToText, toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
 import { DateTimeScalar, FileScalar, CountsScalar, BooleanMapScalar } from './scalars.js';
 import { mappedGetAncestors } from 'arborist';
@@ -234,6 +234,14 @@ export const EventType = builder.prismaNode('Event', {
     lydiaAccountId: t.exposeID('lydiaAccountId', { nullable: true }),
     description: t.exposeString('description'),
     descriptionHtml: t.string({ resolve: async ({ description }) => toHtml(description) }),
+    descriptionPreview: t.string({
+      resolve: async ({ description }) =>
+        (
+          htmlToText(await toHtml(description))
+            .split('\n')
+            .find((line) => line.trim() !== '') ?? ''
+        ).slice(0, 255),
+    }),
     uid: t.exposeString('uid'),
     title: t.exposeString('title'),
     startsAt: t.expose('startsAt', { type: DateTimeScalar }),
