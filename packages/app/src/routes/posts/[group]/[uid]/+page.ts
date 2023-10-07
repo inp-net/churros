@@ -54,6 +54,7 @@ export const _articleQuery = Selector('Article')({
     placesLeft: true,
     capacity: true,
     descriptionHtml: true,
+    descriptionPreview: true,
     pictureFile: true,
     links: {
       name: true,

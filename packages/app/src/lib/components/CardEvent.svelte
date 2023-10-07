@@ -11,7 +11,6 @@
   import IconGear from '~icons/mdi/gear-outline';
   import ChevronUp from '~icons/mdi/chevron-up';
   import { goto } from '$app/navigation';
-  import { htmlToText } from 'html-to-text';
   import ButtonInk from './ButtonInk.svelte';
   import IconDots from '~icons/mdi/dots-horizontal';
   import { EventFrequency } from '../../zeus';
@@ -22,7 +21,7 @@
   $: collapsed = collapsible && expandedEventId !== id;
   export let pictureFile: string;
   export let title: string;
-  export let descriptionHtml: string;
+  export let descriptionPreview: string;
   export let startsAt: Date;
   export let endsAt: Date;
   export let location: string;
@@ -147,12 +146,7 @@
   </section>
   <section class="content {collapsed ? 'collapsed' : ''}">
     <section class="desc">
-      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html (
-        htmlToText(descriptionHtml)
-          .split('\n')
-          .find((line) => line.trim() !== '') ?? ''
-      ).slice(0, 255)}
+      {descriptionPreview}
       <ButtonInk insideProse {href} icon={IconDots}>Voir plus</ButtonInk>
     </section>
     <section class="schedule">

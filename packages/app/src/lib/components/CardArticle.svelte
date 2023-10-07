@@ -5,7 +5,6 @@
   import type { Visibility } from '$lib/zeus';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import ButtonInk from './ButtonInk.svelte';
-  import { htmlToText } from '$lib/markdown';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
@@ -13,7 +12,7 @@
   export let visibility: Visibility | undefined = undefined;
   export let title: string;
   export let href: string;
-  export let bodyHtml: string;
+  export let bodyPreview: string;
   export let publishedAt: Date;
   export let links: Array<{ value: string; name: string; computedValue: string }> = [];
   export let group: { uid: string; name: string; pictureFile: string; pictureFileDark: string };
@@ -37,12 +36,7 @@
   </header>
 
   <div class="description">
-    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-    {@html (
-      htmlToText(bodyHtml)
-        .split('\n')
-        .find((line) => line.trim() !== '') ?? ''
-    ).slice(0, 255)}
+    {bodyPreview}
     <ButtonInk insideProse {href} icon={IconDots}>Voir plus</ButtonInk>
   </div>
 

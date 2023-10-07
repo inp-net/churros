@@ -2,7 +2,7 @@ import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
-import { toHtml } from '../services/markdown.js';
+import { htmlToText, toHtml } from '../services/markdown.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
 import { LinkInput } from './links.js';
 import { dichotomid } from 'dichotomid';
@@ -23,6 +23,14 @@ export const ArticleType = builder.prismaNode('Article', {
     title: t.exposeString('title'),
     body: t.exposeString('body'),
     bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),
+    bodyPreview: t.string({
+      resolve: async ({ body }) =>
+        (
+          htmlToText(await toHtml(body))
+            .split('\n')
+            .find((line) => line.trim() !== '') ?? ''
+        ).slice(0, 255),
+    }),
     published: t.exposeBoolean('published'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),

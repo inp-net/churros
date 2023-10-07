@@ -10,6 +10,7 @@ export const _pageQuery = Selector('QueryHomepageConnection')({
       uid: true,
       title: true,
       bodyHtml: true,
+      bodyPreview: true,
       body: true,
       visibility: true,
       publishedAt: true,
