@@ -677,7 +677,7 @@ model Announcement {
   updatedAt DateTime @updatedAt
   startsAt  DateTime
   endsAt    DateTime
-}
+} 
 
 
 model Subject {

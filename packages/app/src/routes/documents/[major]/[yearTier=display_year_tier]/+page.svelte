@@ -2,6 +2,7 @@
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+  import IconLink from '~icons/mdi/link';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import CardSubject from '$lib/components/CardSubject.svelte';
@@ -11,70 +12,61 @@
   export let data: PageData;
 
   const minors = Object.values(
-    Object.fromEntries(
-      data.subjectsOfMajor.edges.flatMap(({ node }) => node.minors).map((m) => [m.uid, m]),
-    ),
+    Object.fromEntries(data.subjectsOfMajor.flatMap(({ minors }) => minors).map((m) => [m.uid, m])),
   );
 
-  function subjectsSorter(
-    a: { nextExamAt?: Date | undefined },
-    b: { nextExamAt?: Date | undefined },
-  ) {
-    if (!a.nextExamAt) return -1;
-    if (!b.nextExamAt) return 1;
-    return a.nextExamAt.getTime() - b.nextExamAt.getTime();
+  function subjectsOfMinor(minor: undefined | { uid: string }) {
+    return data.subjectsOfMajor.filter(({ minors }) =>
+      minor === undefined ? minors.length === 0 : minors.some((m) => m.uid === minor.uid),
+    );
   }
 
-  function subjectsOfMinor(minor: undefined | { uid: string }) {
-    return data.subjectsOfMajor.edges
-      .filter(({ node }) =>
-        minor === undefined
-          ? node.minors.length === 0
-          : node.minors.some((m) => m.uid === minor.uid),
-      )
-      .sort(subjectsSorter);
-  }
+  $: displayPreferredMinor =
+    minors.length > 1 && $me?.minor && minors.some((m) => m.uid === $me?.minor?.uid);
 </script>
 
 <Breadcrumbs root="/documents">
   <Breadcrumb href="..">{data.major.shortName}</Breadcrumb>
-  <Breadcrumb>{$page.params.yearTier.toUpperCase()}</Breadcrumb>
+  <Breadcrumb>{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
 </Breadcrumbs>
 
-{#if minors.length > 1}
-  {#if $me?.minor}
-    <h2>{$me.minor.name}</h2>
-    <ul class="nobullet">
-      {#each subjectsOfMinor($me.minor) as { node } (node.uid)}
-        <li>
-          <CardSubject href="./{node.uid}" majors={[]} {...node}></CardSubject>
-        </li>
-      {:else}
-        <li class="empty muted">Aucune matière dans ta filière??? Contactes net7.</li>
-      {/each}
-    </ul>
-  {:else if browser && localStorage.getItem('ignoreDefineYourMinor') !== 'true'}
-    <div class="define-your-minor">
-      <p class="muted">
-        Marre de scroll pour avoir sa filière? Définis ta filière mineure dans <a href="/me"
-          >ton&nbsp;profil</a
-        >
-      </p>
-      <ButtonSecondary
-        on:click={() => {
-          localStorage.setItem('ignoreDefineYourMinor', 'true');
-        }}>Ignorer</ButtonSecondary
+{#if displayPreferredMinor}
+  <div class="minor-anchor" id={$me.minor.uid}></div>
+  <h2>
+    {$me.minor.name}
+    <a href="#{$me.minor.uid}" class="jump-to-anchor"><IconLink></IconLink></a>
+  </h2>
+  <ul class="nobullet">
+    {#each subjectsOfMinor($me.minor) as { node } (node.uid)}
+      <li>
+        <CardSubject href="./{node.uid}" majors={[]} {...node}></CardSubject>
+      </li>
+    {:else}
+      <li class="empty muted">Aucune matière dans ta filière??? Contactes net7.</li>
+    {/each}
+  </ul>
+  <hr />
+{:else if !$me?.minor && browser && localStorage.getItem('ignoreDefineYourMinor') !== 'true'}
+  <div class="define-your-minor">
+    <p class="muted">
+      Marre de scroll pour avoir son parcours? Définis ton parcours dans <a href="/me"
+        >ton&nbsp;profil</a
       >
-    </div>
-    <hr />
-  {/if}
+    </p>
+    <ButtonSecondary
+      on:click={() => {
+        localStorage.setItem('ignoreDefineYourMinor', 'true');
+      }}>Ignorer</ButtonSecondary
+    >
+  </div>
+  <hr />
 {/if}
 
 {#if subjectsOfMinor(undefined).length > 0}
   <ul class="nobullet minorless-subjects">
-    {#each subjectsOfMinor(undefined) as { node } (node.id)}
+    {#each subjectsOfMinor(undefined) as subject (subject.id)}
       <li>
-        <CardSubject href="./{node.uid}" majors={[]} {...node}></CardSubject>
+        <CardSubject href="./{subject.uid}" majors={[]} {...subject}></CardSubject>
       </li>
     {/each}
   </ul>
@@ -82,13 +74,14 @@
 
 {#each minors.filter((m) => m.uid !== $me?.minor?.uid) as minor}
   {#if minors.length > 1}
-    <h2>{minor.name}</h2>
+    <div class="minor-anchor" id={minor.uid}></div>
+    <h2>{minor.name} <a href="#{minor.uid}" class="jump-to-anchor"><IconLink></IconLink></a></h2>
   {/if}
 
   <ul class="nobullet">
-    {#each subjectsOfMinor(minor) as { node } (node.id)}
+    {#each subjectsOfMinor(minor) as subject (subject.id)}
       <li>
-        <CardSubject href="./{node.uid}" majors={[]} {...node}></CardSubject>
+        <CardSubject href="./{subject.uid}" majors={[]} {...subject}></CardSubject>
       </li>
     {/each}
   </ul>
@@ -96,8 +89,15 @@
 
 <style lang="scss">
   h2 {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
     margin-top: 2rem;
     margin-bottom: 0.5rem;
+
+    * {
+      flex-shrink: 0;
+    }
   }
 
   ul {
@@ -123,11 +123,14 @@
     margin-top: 2rem;
   }
 
-  hr {
-    margin: 3rem auto;
+  .minor-anchor {
+    position: relative;
+    top: -120px;
+    display: block;
+    visibility: hidden;
   }
 
-  hr + h2 {
-    margin-top: 0;
+  hr {
+    margin: 3rem auto;
   }
 </style>

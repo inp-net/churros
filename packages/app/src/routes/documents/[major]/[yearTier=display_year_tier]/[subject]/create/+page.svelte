@@ -26,9 +26,10 @@
     };
 
     if (articles[type])
-      return `Ajouter ${articles[type]} ${properCasing(
+      {return `Ajouter ${articles[type]} ${properCasing(
         DISPLAY_DOCUMENT_TYPES.get(type)!,
-      )} de ${properCasing(subject)}`;
+      )} de ${properCasing(subject)}`;}
+
     return `Ajouter un document de ${properCasing(subject)}`;
   }
 
@@ -48,7 +49,7 @@
 
 <Breadcrumbs root="/documents">
   <Breadcrumb href="../../..">{data.major.shortName}</Breadcrumb>
-  <Breadcrumb href="../..">{$page.params.yearTier.toUpperCase()}</Breadcrumb>
+  <Breadcrumb href="../..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
   <Breadcrumb href="..">{data.subject.shortName || data.subject.name}</Breadcrumb>
   <Breadcrumb><em>Ajouter</em></Breadcrumb>
 </Breadcrumbs>

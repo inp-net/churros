@@ -249,7 +249,7 @@
       <InputCheckbox label="Apprenti" bind:value={apprentice} />
     </div>
   {/if}
-  <InputField label="Filière mineure">
+  <InputField label="Parcours">
     <InputSearchObject
       clearable
       value={minor?.id}

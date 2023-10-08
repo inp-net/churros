@@ -4,7 +4,7 @@
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import { page } from '$app/stores';
   import CardDocument from '$lib/components/CardDocument.svelte';
-  import { DISPLAY_DOCUMENT_TYPES, ORDER_DOCUMENT_TYPES } from '$lib/display';
+  import { DISPLAY_DOCUMENT_TYPES, ICONS_DOCUMENT_TYPES, ORDER_DOCUMENT_TYPES } from '$lib/display';
   import { DocumentType } from '$lib/zeus';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
@@ -21,7 +21,7 @@
 
 <Breadcrumbs root="/documents">
   <Breadcrumb href="../..">{data.major.shortName}</Breadcrumb>
-  <Breadcrumb href="..">{$page.params.yearTier.toUpperCase()}</Breadcrumb>
+  <Breadcrumb href="..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
   <Breadcrumb>{data.subject.shortName || data.subject.name}</Breadcrumb>
 </Breadcrumbs>
 
@@ -43,7 +43,10 @@
       .filter(({ node }) => node.type === type)
       .map((e) => e.node)}
 
-    <h2 class="typo-field-label">{DISPLAY_DOCUMENT_TYPES.get(type)}</h2>
+    <h2 class="typo-field-label">
+      <svelte:component this={ICONS_DOCUMENT_TYPES.get(type)}></svelte:component>
+      {DISPLAY_DOCUMENT_TYPES.get(type)}
+    </h2>
 
     <ul class="nobullet">
       {#each documents as { solutionPaths, uid, ...rest }}

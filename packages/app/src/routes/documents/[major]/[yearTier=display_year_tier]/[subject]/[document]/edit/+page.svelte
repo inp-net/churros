@@ -10,7 +10,8 @@
 
 <Breadcrumbs root="/documents">
   <Breadcrumb href="../../../..">{data.major.shortName}</Breadcrumb>
-  <Breadcrumb href="../../..">{$page.params.yearTier.toUpperCase()}</Breadcrumb>
+  <Breadcrumb href="../../..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb
+  >
   <Breadcrumb href="../..">{data.subject.shortName || data.subject.name}</Breadcrumb>
   <Breadcrumb href=".."
     >{data.document.title} <span class="muted">&nbsp;({data.document.schoolYear})</span></Breadcrumb

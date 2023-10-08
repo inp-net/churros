@@ -10,12 +10,27 @@
   <Breadcrumb>{data.major.shortName}</Breadcrumb>
 </Breadcrumbs>
 
+<h2 class="typo-field-label">Étudiants</h2>
 <ul class="nobullet">
   <li>
-    <CardMajor name="1A" href="./1a" />
+    <CardMajor name="FISE" shortName="1A" href="./1a-fise" />
   </li>
   <li>
-    <CardMajor name="2A" href="./2a" />
+    <CardMajor name="FISE" shortName="2A" href="./2a-fise" />
+  </li>
+  <li>
+    <CardMajor name="3A" href="./3a" />
+  </li>
+</ul>
+
+<h2 class="typo-field-label">Apprentis</h2>
+
+<ul class="nobullet">
+  <li>
+    <CardMajor name="FISA" shortName="1A" href="./1a-fisa" />
+  </li>
+  <li>
+    <CardMajor name="FISA" shortName="2A" href="./2a-fisa" />
   </li>
   <li>
     <CardMajor name="3A" href="./3a" />
@@ -27,6 +42,17 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin-top: 2rem;
+  }
+
+  h2 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5em;
+    margin-left: calc(2 * var(--border-block));
+    font-size: 1rem;
+    font-weight: bold;
+
+    &:first-of-type {
+      margin-top: 2rem;
+    }
   }
 </style>

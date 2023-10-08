@@ -14,6 +14,7 @@
   import { me } from '$lib/session';
   import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
+  import { toasts } from '$lib/toasts';
 
   let files: FileList | undefined = undefined;
 
@@ -32,6 +33,8 @@
           shortName: string;
           minors: Array<{ name: string }>;
           majors: Array<{ name: string }>;
+          forApprentices: boolean;
+          yearTier: number;
         };
     type: DocumentType;
     paperPaths: string[];
@@ -50,6 +53,8 @@
           type: data.type,
           id: data.id,
           subjectUid: data.subject.uid,
+          subjectForApprentices: data.subject.forApprentices,
+          subjectYearTier: data.subject.yearTier,
         },
         {
           __typename: true,
@@ -57,8 +62,11 @@
           '...on MutationUpsertDocumentSuccess': {
             data: {
               id: true,
+              title: true,
               subject: {
                 uid: true,
+                yearTier: true,
+                forApprentices: true,
                 majors: { uid: true },
                 minors: { uid: true, yearTier: true, majors: { uid: true } },
               },
@@ -124,8 +132,13 @@
     );
     const { subject } = upsertDocument.data;
     const majorUid = subject.majors[0]?.uid ?? subject.minors[0]?.majors[0]?.uid ?? $me?.major.uid;
-    const yearTier = subject.minors[0]?.yearTier ?? $me?.yearTier;
-    await goto(`/documents/${majorUid}/${yearTier}a/${subject.uid}/${upsertDocument.data.uid}`);
+    const yearTier = subject.yearTier ?? subject.minors[0]?.yearTier ?? $me?.yearTier;
+    toasts.success('Document modifié', `${upsertDocument.data.title} a bien été modifié.`);
+    await goto(
+      `/documents/${majorUid}/${yearTier}a${subject?.forApprentices ? '-fisa' : ''}/${
+        subject.uid
+      }/${upsertDocument.data.uid}`,
+    );
   }
 
   function fileListOf(files: File[]): FileList {

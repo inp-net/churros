@@ -1,5 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, DocumentType } from '@prisma/client';
 import slug from 'slug';
+import { Convert } from './frappe-types';
+import { copyFileSync, mkdirSync, readFileSync, statSync } from 'node:fs';
+import dichotomid from 'dichotomid';
+import path from 'node:path';
 
 const p = new PrismaClient();
 
@@ -129,8 +133,8 @@ await createMinors(EEEA, 1, [
     shortName: 'EN',
   },
   {
-    name: 'Génie Électrique et Automatique',
-    shortName: 'GEA',
+    name: 'Énergie',
+    shortName: 'NRG',
   },
 ]);
 
@@ -284,6 +288,9 @@ const SUBJECTS: Record<
         'Calcul Scientifique',
       ].map((m) => ({ name: m })),
       FISE: [
+        ...['Droit du travail', 'Contexte économique et Management', 'Processus stochastiques'].map(
+          (name) => ({ name }),
+        ),
         {
           name: 'Mathématiques 1',
           shortName: 'Maths 1',
@@ -431,6 +438,8 @@ const SUBJECTS: Record<
   SN: {
     '1': {
       FISA: [
+        "?-66-Organisation et Structure de l'Entreprise",
+        '?-67-Droit social',
         '1-58-Introduction aux Réseaux',
         "1-59-Protocoles de l'Internet",
         '1-60-Méthodologie de la Programmation',
@@ -446,7 +455,8 @@ const SUBJECTS: Record<
         '2-62-Automates',
         '2-64-Théorie des Graphes',
       ].map((m) => ({
-        semester: Number.parseFloat(m.split('-')[0]!) as 1 | 2,
+        semester:
+          m.split('-')[0]! === '?' ? undefined : (Number.parseFloat(m.split('-')[0]!) as 1 | 2),
         name: m.split('-')[2]!,
         oldFrappeCodes: m.split('-')[1]?.split(' ').map(Number),
       })),
@@ -575,35 +585,56 @@ const SUBJECTS: Record<
         };
       }),
       FISE: [
-        '847-S8-TAV (M)',
-        '848-S7-Architecture des Ordinateurs (A)',
-        '849-S7-Systèmes Concurrents et Communicants (A B L M R)',
-        '850-S7-Programmation Fonctionnelle (A B M)',
-        '851-S7-Traduction des Langages (A B M)',
-        '852-S7-Génie du Logiciel et des Systèmes (B L M)',
-        '853-S7-IP (A R T)',
-        '854-S7-Couches Physiques (A R T)',
-        '855-S7-Internet (A R T)',
-        '856-S7-Automates (B L M)',
-        '857-S7-Théorie des Graphes (A B M L)',
-        '858-S7-Optimisation (B L M)',
-        '859-S7-Recherche Opérationnelle (B L M)',
-        '860-S7-Programmation Fonctionnelle (L)',
-        "861-S8-Architecture des Systèmes d'Exploitation (A)",
-        '863-S8-Base de Données (A B L M)',
-        '864-S8-Analyse Hilbertienne (B)',
-        '865-S8-Contrôle Optimal (B)',
-        '866-S8-EDP (B M)',
-        '867-S8-Modélisation Géométrique (B M)',
-        '868-S8-Systèmes de Transitions (L)',
-        '869-S8-Sémantique et Traduction des Langages (L)',
-        '870-S8-Programmation Mobile (L M)',
-        '871-S8-Apprentissage Profond (L M)',
-        '872-S8-Image, Rendu, Modélisation (M)',
+        '848-S7 -- Architecture des Ordinateurs (A)',
+        '856-S7 -- Automates (B L M)',
+        '854-S7 -- Couches Physiques (A R T)',
+        '852-S7 -- Génie du Logiciel et des Systèmes (B L M)',
+        '949-S7 -- Intergiciels (A B M)',
+        '855-S7 -- Internet (A R T)',
+        '853-S7 -- IP (A R T)',
+        '858-S7 -- Optimisation (B L M)',
+        '850-S7 -- Programmation Fonctionnelle (A B M)',
+        '860-S7 -- Programmation Fonctionnelle (L)',
+        '859-S7 -- Recherche Opérationnelle (B L M)',
+        '990-S7 -- Réseaux de Télécom',
+        '987-S7 -- Rézo Loco',
+        '849-S7 -- Systèmes Concurrents et Communicants (A B L M R)',
+        '857-S7 -- Théorie des Graphes (A B M L)',
+        '851-S7 -- Traduction des Langages (A B M)',
+        '1078-S8 -- Algèbre Linéaire Creuse (B)',
+        '864-S8 -- Analyse Hilbertienne (B)',
+        '948-S8 -- Applications Web (A B L M R)',
+        '890-S8 -- Apprentissage (R)',
+        '871-S8 -- Apprentissage Profond (L M)',
+        "861-S8 -- Architecture des Systèmes d'Exploitation (A)",
+        '863-S8 -- Base de Données (A B L M)',
+        '1051-S8 -- Calculabilité & complexité',
+        '865-S8 -- Contrôle Optimal (B)',
+        '866-S8 -- EDP (B M)',
+        '1054-S8 -- Évalutation de performance (A R)',
+        '872-S8 -- Image, Rendu, Modélisation (M)',
+        '1058-S8 -- Interconnexion',
+        '867-S8 -- Modélisation Géométrique (B M)',
+        '1053-S8 -- OpenMP',
+        '1079-S8 -- Optimisation 2 (B)',
+        '1050-S8 -- Programmation Avancée',
+        '870-S8 -- Programmation Mobile (L M)',
+        '1055-S8 -- Sécurité (A seulement)',
+        '869-S8 -- Sémantique et Traduction des Langages (L)',
+        '1080-S8 -- Statistiques 2 (B)',
+        '873-S8 -- Systèmes Concurrents (R)',
+        '868-S8 -- Systèmes de Transitions (L)',
+        '847-S8 -- TAV (M)',
       ].map((m) => {
-        const [code, semester, nameAndMinors] = m.split('-') as [string, string, string];
-        const [name, minorsString] = nameAndMinors.split(' (') as [string, string];
-        const minorsCodes = minorsString?.replace(')', '').split(' ') as string[];
+        const [code, semester, nameAndMinors] = m.replace(' -- ', '-').split('-') as [
+          string,
+          string,
+          string,
+        ];
+        const [name, minorsString] = nameAndMinors.split(' (', 2) as [string] | [string, string];
+        const minorsCodes = minorsString
+          ? (minorsString.replace(')', '').split(' ') as string[])
+          : [];
         return {
           name,
           minors: minorsCodes.map(
@@ -623,6 +654,46 @@ const SUBJECTS: Record<
       }),
     },
     '3': [
+      // "Regular" SN
+      ...[
+        '919-Accès aux données multimédia',
+        '920-Analyse de contenus multimédias',
+        '922-Big Data non structurées',
+        '916-Calcul réparti',
+        '917-Cloud et Big Data, Machine Learning',
+        '931-Communications spatiales et aéronautiques',
+        '923-High Performance Scientific Computing',
+        '934-Ingénierie des Systèmes Embarqués',
+        '1057-L - Langage pour le temps réel',
+        '932-Logiciels embarqués',
+        '921-M - Problèmes Inverses pour le 3D',
+        '933-Méthodes formelles',
+        '913-Raffinage et Méthodes formelles',
+        "925-Réseaux d'opérateurs",
+        '935-Réseaux et Systèmes Temps Réel',
+        '929-Réseaux mobiles avancés',
+        "924-Réseaux pour l'IoT",
+        '914-Systèmes Critiques',
+        "915-Systèmes d'information",
+        '930-Systèmes de communication terrestres et objets connectés',
+        "926-Techniques avancées d'Opérateurs",
+        '928-Télécoms avancées',
+        '927-Virtualisation',
+        "918-Vision et Synthèse d'images, Réalité augmentée",
+      ].map((m) => {
+        const [code, name] = m.split('-', 2) as [string, string];
+        return {
+          name: name.replace(/^(L|M) - /, ''),
+          minors: name.startsWith('L - ')
+            ? ['logiciel']
+            : name.startsWith('M - ')
+            ? ['imm']
+            : SN_MINORS_3A.filter((m) => !['TLS-SEC', 'ModIA'].includes(m.shortName)).map((m) =>
+                slug(m.shortName),
+              ),
+          oldFrappeCodes: Number.parseInt(code!, 10),
+        };
+      }),
       // TLS-SEC
       ...[
         '491-Rappels assembleur',
@@ -658,7 +729,13 @@ const SUBJECTS: Record<
   },
   EEEA: {
     '1': {
-      FISA: [],
+      FISA: [
+        {
+          name: 'Matlab Simulink',
+          oldFrappeCodes: 899,
+          semester: 1,
+        },
+      ],
       FISE: [
         '823-HABILITATION ELECTRIQUE',
         '802-S1 - Algorithmique et programmation impérative',
@@ -691,24 +768,84 @@ const SUBJECTS: Record<
         '820-S2 - Traitement du signal',
         '819-S2 - Traitement numérique du signal',
         '816-S2 - Transistors de signal et composants de puissance',
+        // EN
+        '31-Analyse de Fourier (EN)',
+        '46-Antennes (EN)',
+        '583-Approche théorique de la logique combinatoire (EN)',
+        '584-Circuits Passifs Idéaux (EN)',
+        '585-Contrôle et Analyse des Systèmes Linéaires (EN)',
+        '35-Électromagnétisme (EN)',
+        '43-Électronique linéaire (EN)',
+        '294-Électronique numérique (EN)',
+        '45-Filtrage analogique (EN)',
+        "44-Fonctions de l'électronique (EN)",
+        '586-Gestion Comptable et Financière (EN)',
+        "47-Ingénierie micro-ondes en guides d'ondes (EN)",
+        '38-Jonctions PN et ses applications (EN)',
+        '36-Lignes de transmission (EN)',
+        '587-Matlab (EN)',
+        "579-Méthodes d'analyse des circuits (EN)",
+        '588-Mini-Projet (EN)',
+        '580-Modélisation Composants (EN)',
+        '32-Modélisation mathématique du hasard (EN)',
+        '42-Optimisation (EN)',
+        '581-Ouverture Scientifique et Culturelle (EN)',
+        '37-Physique des semi-conducteurs (EN)',
+        '582-Programmation et C (EN)',
+        '664-Projet Professionnel Personnel (EN)',
+        '589-Projet Traitement du Signal (EN)',
+        "590-Technologies et fonctions de l'électronique numérique (EN)",
+        '48-Traitement du signal — Signaux déterministes (EN)',
+        '49-Traitement numérique du signal (EN)',
+        '40-Transistors bipolaires (EN)',
+        '39-Transistors MOS (EN)',
+        '41-Variables complexes (EN)',
+        // GEA
+        '552-Approche lagrangienne (GEA)',
+        '199-Circuit et Signaux (GEA)',
+        "468-Composants de l'EnP (GEA)",
+        '467-CVS (GEA)',
+        '747-EDP (GEA)',
+        '210-Électrodynamique1 (GEA)',
+        '473-Électrodynamique2 (GEA)',
+        '231-Énergies et réseaux électriques (GEA)',
+        '207-Fonctions Logiques (GEA)',
+        '464-Gestion (GEA)',
+        "213-Informatique pour l'ingénieur (GEA)",
+        '466-Intégration_Fourier (GEA)',
+        '749-Machine 2 (GEA)',
+        '471-Machine1 (GEA)',
+        "748-Méthode d'analyse numérique (GEA)",
+        '551-Milieux et interaction magnétique (GEA)',
+        "229-Procédés de conversion d'énergie électromécanique (GEA)",
+        '209-Propriétés fondamentales de la cellule de commutation (GEA)',
+        '469-SLC1 (GEA)',
+        '470-SLC2 (GEA)',
+        '232-Structure et exploitation des calculateurs (GEA)',
+        '465-Variables complexes (GEA)',
       ].map((m) => {
-        let [code, semester, name] = m.split('-', 3).map((c) => c.trim()) as [
-          string,
-          string,
-          string,
-        ];
+        let [code, ...nameAndSemester] = m.split('-', 3).map((c) => c.trim()) as
+          | [string, string]
+          | [string, string, string];
+        let name = nameAndSemester[0];
+        let semester: 1 | 2 | undefined = undefined;
+        if (nameAndSemester.length === 2) {
+          semester = nameAndSemester[0]! === 'S2' ? 2 : 1;
+          name = nameAndSemester[1]!;
+        }
         let minor = undefined;
         if (/.+ \([A-Z]+\)$/.test(name)) {
           const [n, min] = name.split(' (', 2) as [string, string];
           name = n;
           minor = min.replace(')', '').toLowerCase();
+          if (minor === 'gea') minor = 'nrg';
         }
 
         return {
           name,
           oldFrappeCodes: Number.parseInt(code!, 10),
-          semester: semester === 'S2' ? 2 : 1,
-          minors: minor ? [minor.toLowerCase()] : ['gea', 'en'],
+          semester,
+          minors: minor ? [minor.toLowerCase()] : undefined,
         };
       }),
     },
@@ -834,10 +971,38 @@ const SUBJECTS: Record<
         }),
       ],
     },
-    '3': [],
+    '3': [
+      // PN
+      ...[
+        '1032-Analyse électromagnétique de la diffraction',
+        '1039-Calcul Haute Performance',
+        "1037-CEM pour l'aéronautique 1",
+        '1044-Commande optimale',
+        '1038-Compatibilité électromagnétique',
+        '1031-Équipement radar',
+        '1041-Incertitudes en CEM',
+        '1036-Introduction à la magnétohydrodynamique',
+        '1030-Méthodes numériques en électromagnétisme',
+        '1040-Méthodes variationnelles pour les EDP de la physique',
+        '1035-Modélisation des phénomènes couplés',
+        '1043-Modélisation numérique par éléments finis',
+        '1042-Optimisation topologique',
+        '1034-Phénomènes avancés en conversion électromécanique',
+        '1033-Physique des plasmas',
+        '1045-Volumes finis',
+      ].map((m) => {
+        const [code, name] = m.split('-', 2).map((c) => c.trim()) as [string, string];
+        return {
+          name,
+          oldFrappeCodes: Number.parseInt(code!, 10),
+          minors: ['pn'],
+        };
+      }),
+    ],
   },
 };
 
+const OLD_FRAPPE_MAPPING: Record<string, number[]> = {};
 async function createSubjects(
   byYearTier: (typeof SUBJECTS)[keyof typeof SUBJECTS],
   major: { id: string; shortName: string },
@@ -870,17 +1035,15 @@ async function createSubjects(
     })),
   ];
 
-  const OLD_FRAPPE_MAPPING: Record<string, number[]> = {};
-
   for (const subject of subjects) {
-    subject.shortName ??= subject.name;
+    const shortName = subject.shortName || subject.name;
     const oldFrappeCodes = subject.oldFrappeCodes ?? [];
     delete subject.oldFrappeCodes;
     try {
       const { id, uid, minors } = await p.subject.create({
         data: {
           ...subject,
-          uid: slug(subject.shortName),
+          uid: slug(shortName),
           majors: { connect: { id: major.id } },
           minors: subject.minors
             ? {
@@ -949,27 +1112,56 @@ async function createSubjects(
             },
           });
         } else {
-          console.log(
-            `\t\tMerging minors to ${JSON.stringify([
-              ...subject.minors!,
-              ...minors.map((m) => m.uid),
-            ])}`,
-          );
-          await p.subject.update({
-            where: { id },
-            data: {
-              minors: {
-                set: [
-                  ...subject.minors!.map((uid) => ({
-                    uid_yearTier: { uid, yearTier: subject.yearTier },
-                  })),
-                  ...minors.map(({ uid }) => ({
-                    uid_yearTier: { uid, yearTier: subject.yearTier },
-                  })),
-                ],
+          const mergedMinorUids = [
+            ...new Set(...[...subject.minors!, ...minors.map((m) => m.uid)]),
+          ];
+          const allMinorsWithinMajor =
+            new Set(
+              ...(
+                await p.minor.findMany({
+                  where: { uid: { in: mergedMinorUids } },
+                  include: { majors: true },
+                })
+              ).flatMap((m) => m.majors.map((m) => m.uid)),
+            ).size === 1;
+          if (allMinorsWithinMajor) {
+            console.log(`\t\tMerging minors to ${JSON.stringify(mergedMinorUids)}`);
+            await p.subject.update({
+              where: { id },
+              data: {
+                minors: {
+                  set: [
+                    ...subject.minors!.map((uid) => ({
+                      uid_yearTier: { uid, yearTier: subject.yearTier },
+                    })),
+                    ...minors.map(({ uid }) => ({
+                      uid_yearTier: { uid, yearTier: subject.yearTier },
+                    })),
+                  ],
+                },
               },
-            },
-          });
+            });
+          } else {
+            console.log('\t\tAdding major to minor uid');
+            await p.subject.create({
+              data: {
+                ...subject,
+                uid: slug(`${shortName}-${major.shortName}`),
+                majors: { connect: { id: major.id } },
+                minors: subject.minors
+                  ? {
+                      connect: subject.minors.map((m) => ({
+                        uid_yearTier: {
+                          uid: m,
+                          yearTier: subject.yearTier,
+                        },
+                      })),
+                    }
+                  : undefined,
+              },
+              include: { minors: true },
+            });
+          }
         }
         if (id in OLD_FRAPPE_MAPPING) {
           OLD_FRAPPE_MAPPING[id]!.push(
@@ -997,3 +1189,268 @@ async function createSubjects(
 await createSubjects(SUBJECTS.MFEE, MFEE);
 await createSubjects(SUBJECTS.EEEA, EEEA);
 await createSubjects(SUBJECTS.SN, SN);
+// Import documents, creating  as needed
+const TAG_TO_SUBJECT_AND_IS_SOLUTION = {
+  TD: [DocumentType.Exercises, false],
+  'BE Corrigé': [DocumentType.GradedExercises, true],
+  TP: [DocumentType.Practical, false],
+  'BE Sujet': [DocumentType.GradedExercises, false],
+  Examen: [DocumentType.Exam, false],
+  Fiche: [DocumentType.Summary, false],
+  'TD Corrigé': [DocumentType.Exercises, true],
+  'TP Corrigé': [DocumentType.Practical, true],
+  'Examen Corrigé': [DocumentType.Exam, true],
+  Cours: [DocumentType.CourseNotes, false],
+  PowerPoint: [DocumentType.CourseSlides, false],
+  'Correction Exam': [DocumentType.Exam, true],
+  "Sujet d'annale": [DocumentType.Exam, false],
+  'Enoncé TD': [DocumentType.Exercises, false],
+  'Fiche révision': [DocumentType.Summary, false],
+  'Annale corrigée': [DocumentType.Exam, true],
+  'Annale non corrigée': [DocumentType.Exam, false],
+  'Sujet DM': [DocumentType.GradedExercises, false],
+  'DM corrigé': [DocumentType.GradedExercises, true],
+  'Enoncé Exam': [DocumentType.Exam, false],
+} as const;
+
+const NOTFOUND_SUBJECT_OLD_IDS = new Set<number>();
+let NOTCREATED_DOCUMENTS_COUNT = 0;
+
+let {
+  frappe_document,
+  frappe_document_tags,
+  frappe_documentfichier,
+  frappe_matiere,
+  frappe_annee,
+  frappe_filiere,
+  frappe_tag,
+  portailuser_portailuser,
+  auth_user,
+} = Convert.toFrappeTypes(readFileSync('./frappe-dump.json').toString());
+
+// Remove non-n7 subjects
+frappe_matiere = frappe_matiere.filter((matiere) => {
+  const filiere = frappe_filiere.find((f) => f.id === matiere.filiere_id)!;
+  const annee = frappe_annee.find((a) => a.id === filiere.annee_id)!;
+  return annee.ecole_id === '2';
+});
+
+// Remove non-n7 majors
+frappe_filiere = frappe_filiere.filter((filiere) => {
+  const annee = frappe_annee.find((a) => a.id === filiere.annee_id)!;
+  return annee.ecole_id === '2';
+});
+
+// Remove non-n7 documents
+frappe_document = frappe_document.filter((document) =>
+  frappe_matiere.some((matiere) => matiere.id === document.matiere_id),
+);
+
+let documentsResidual: Record<
+  string,
+  {
+    uid: string;
+    subjectUid: string;
+    subjectFISA: boolean | undefined;
+    subjectYearTier: number | undefined;
+    subjectId_uid: { subjectId: string; uid: string };
+    isSolution: boolean;
+    tags: Array<
+      (typeof TAG_TO_SUBJECT_AND_IS_SOLUTION)[keyof typeof TAG_TO_SUBJECT_AND_IS_SOLUTION]
+    >;
+  }
+> = {}; // Maps id to { subjectId_uid,  }
+for (const {
+  annee,
+  auteur_id,
+  creation,
+  derniere_modif,
+  description,
+  matiere_id,
+  nom,
+  id,
+} of frappe_document) {
+  console.info(
+    `* Creating document ${nom} (${frappe_matiere.find((m) => m.id === matiere_id)!.nom})`,
+  );
+  const subjectId = Object.entries(OLD_FRAPPE_MAPPING).find(([_, oldIDs]) =>
+    oldIDs.includes(Number.parseInt(matiere_id, 10)),
+  )?.[0];
+  if (!subjectId) {
+    console.error(`\t! No corresponding subject for matiere_id=${matiere_id} found. Skipping.`);
+    NOTFOUND_SUBJECT_OLD_IDS.add(Number.parseInt(matiere_id, 10));
+    continue;
+  }
+  const subject = await p.subject.findUniqueOrThrow({
+    where: {
+      id: subjectId,
+    },
+    include: { minors: true },
+  });
+  const author = await p.user.findUnique({
+    where: {
+      uid: auth_user.find(
+        (u) =>
+          u.id === portailuser_portailuser.find((pu) => pu.user_ptr_id === auteur_id)!.user_ptr_id,
+      )!.username,
+    },
+  });
+  if (
+    frappe_document_tags
+      .map((dt) => frappe_tag.find((t) => t.id === dt.tag_id))
+      .every((t) => t?.ecole_id !== '2')
+  ) {
+    console.warn(`- Skipping ${nom} (${subject.uid}) because it has tags from other schools`);
+    continue;
+  }
+  const tags = frappe_document_tags
+    .filter((dt) => dt.document_id === id)
+    .map((dt) => frappe_tag.find((t) => t.id === dt.tag_id))
+    .filter(Boolean)
+    .map(
+      (t) => TAG_TO_SUBJECT_AND_IS_SOLUTION[t!.nom as keyof typeof TAG_TO_SUBJECT_AND_IS_SOLUTION],
+    );
+
+  const [type, isSolution] = tags[0] ?? [DocumentType.Miscellaneous, false];
+
+  const uidBase = `${slug(nom)}${annee ? `-${annee}` : ''}`;
+  const uidNumber = await dichotomid(
+    async (n) =>
+      !(await p.document.findUnique({
+        where: {
+          subjectId_uid: { subjectId: subject.id, uid: `${uidBase}${n ? `-${n}` : ''}` },
+        },
+      })),
+  );
+  const uid = `${uidBase}${uidNumber ? `-${uidNumber}` : ''}`;
+
+  documentsResidual[id] = {
+    uid,
+    subjectId_uid: { subjectId: subject.id, uid },
+    subjectUid: subject.uid,
+    subjectFISA: subject.forApprentices,
+    subjectYearTier: subject.yearTier ?? undefined,
+    isSolution,
+    tags,
+  };
+
+  await p.document.create({
+    data: {
+      description: description ?? '',
+      schoolYear: annee ? Number.parseInt(annee) : 0,
+      title: nom,
+      type,
+      uid,
+      createdAt: new Date(creation),
+      updatedAt: new Date(derniere_modif),
+      uploader: author ? { connect: { id: author.id } } : undefined,
+      subject: { connect: { id: subject.id } },
+    },
+  });
+
+  console.info(`- Created ${uid} (${subject.uid})`);
+}
+
+console.info(documentsResidual);
+function fileExists(filename: string): boolean {
+  try {
+    return statSync(filename).isFile();
+  } catch {
+    return false;
+  }
+}
+
+async function downloadFile(from: string, dest: string) {
+  if (fileExists(dest)) {
+    // console.log(`  Logo of ${ldapGroup.cn} already exists, skipping…`);
+  } else {
+    try {
+      mkdirSync(path.dirname(dest), { recursive: true });
+      copyFileSync(path.join('.', 'frappe-documents', path.basename(from)), dest);
+    } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      console.error(`  Failed to copy ${from} -> ${dest}:`);
+      console.error(error);
+    }
+  }
+}
+
+for (const { document_id, fichier, ordre } of frappe_documentfichier) {
+  console.info(`* Creating file ${fichier} (${document_id})`);
+  const document = documentsResidual[document_id];
+  if (!document) {
+    console.info(`- Skipping ${document_id} because it has no document`);
+    continue;
+  }
+  const extension = path.extname(fichier);
+  const basename = path.basename(fichier, extension);
+  const filePath = `documents/${
+    document.subjectFISA === undefined ? 'fisea' : document.subjectFISA ? 'fisa' : 'fise'
+  }/${document.subjectYearTier ?? 'anyone'}/${document.subjectUid}/${document.uid}/${ordre}-${slug(
+    basename,
+  )}${extension}`;
+
+  await downloadFile(fichier, `../storage/${filePath}`);
+
+  await p.document.update({
+    where: {
+      subjectId_uid: document.subjectId_uid,
+    },
+    data: {
+      [document.isSolution ? 'solutionPaths' : 'paperPaths']: {
+        push: filePath,
+      },
+    },
+  });
+  console.info(`- Created ${filePath} (${document.subjectUid})`);
+}
+
+const notfoundDocumentsCount = frappe_document.length - Object.keys(documentsResidual).length;
+
+if (notfoundDocumentsCount > 0) {
+  console.warn(`! Failed to create ${notfoundDocumentsCount} documents`);
+}
+
+if (NOTFOUND_SUBJECT_OLD_IDS.size > 0) {
+  console.warn(
+    `! No corresponding subject for the following matiere_ids:\n` +
+      [...NOTFOUND_SUBJECT_OLD_IDS]
+        .map((id) => `- #${id} ${frappe_matiere.find((m) => m.id === id.toString())!.nom}`)
+        .join('\n'),
+  );
+  console.warn(
+    `! It corresponds to the following majors:\n` +
+      [
+        ...new Set(
+          frappe_filiere
+            .filter((filiere) =>
+              frappe_matiere.some(
+                (matiere) =>
+                  NOTFOUND_SUBJECT_OLD_IDS.has(parseFloat(matiere.id)) &&
+                  matiere.filiere_id === filiere.id,
+              ),
+            )
+            .map(
+              (filiere) =>
+                `${filiere.nom} ${
+                  frappe_annee.find((annee) => annee.id === filiere.annee_id)!.nom
+                }`,
+            ),
+        ),
+      ].join('\n'),
+  );
+  console.info(
+    `SQL request to see which matieres:
+
+
+    SELECT * FROM \`frappe_matiere\`
+
+    JOIN \`frappe_filiere\` ON filiere_id=\`frappe_filiere\`.\`id\`
+    JOIN \`frappe_annee\` ON frappe_filiere.annee_id = frappe_annee.id
+
+    WHERE frappe_matiere.id IN (${[...NOTFOUND_SUBJECT_OLD_IDS].join(
+      ', ',
+    )}) AND frappe_annee.ecole_id = 2;
+    `,
+  );
+}

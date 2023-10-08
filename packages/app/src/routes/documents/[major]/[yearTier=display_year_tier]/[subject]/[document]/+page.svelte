@@ -18,6 +18,7 @@
   import { me } from '$lib/session';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import { goto } from '$app/navigation';
+  import { ICONS_DOCUMENT_TYPES } from '$lib/display';
 
   const { PUBLIC_STORAGE_URL } = env;
 
@@ -113,6 +114,7 @@
       comments,
       solutionPaths,
       paperPaths,
+      type,
     },
   } = data);
   $: emptyDocument = solutionPaths.length + paperPaths.length === 0;
@@ -120,9 +122,14 @@
 
 <Breadcrumbs root="/documents">
   <Breadcrumb href="../../..">{major.shortName}</Breadcrumb>
-  <Breadcrumb href="../..">{$page.params.yearTier.toUpperCase()}</Breadcrumb>
+  <Breadcrumb href="../..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
   <Breadcrumb href="..">{subject.shortName || subject.name}</Breadcrumb>
-  <Breadcrumb>{title} <span class="muted">&nbsp;({schoolYear})</span></Breadcrumb>
+  <Breadcrumb>
+    <span class="breadcrumb-icon">
+      <svelte:component this={ICONS_DOCUMENT_TYPES.get(type)}></svelte:component>
+    </span>
+    {title} <span class="muted">&nbsp;({schoolYear})</span></Breadcrumb
+  >
 </Breadcrumbs>
 
 <article class="document">
@@ -270,6 +277,10 @@
 </section>
 
 <style lang="scss">
+  .breadcrumb-icon {
+    font-size: 0.9em;
+  }
+
   .document {
     padding: 2rem;
     margin-top: 2rem;

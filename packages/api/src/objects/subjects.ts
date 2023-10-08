@@ -13,6 +13,9 @@ export const SubjectType = builder.prismaObject('Subject', {
     majors: t.relation('majors'),
     minors: t.relation('minors'),
     links: t.relation('links'),
+    semester: t.exposeInt('semester', { nullable: true }),
+    yearTier: t.exposeInt('yearTier', { nullable: true }),
+    forApprentices: t.exposeBoolean('forApprentices'),
     documents: t.relatedConnection('documents', {
       type: DocumentType,
       cursor: 'id',
@@ -44,9 +47,8 @@ builder.queryField('subjects', (t) =>
 );
 
 builder.queryField('subjectsOfMinor', (t) =>
-  t.prismaConnection({
-    type: SubjectType,
-    cursor: 'id',
+  t.prismaField({
+    type: [SubjectType],
     args: {
       uid: t.arg.string({ required: true }),
       yearTier: t.arg.int({ required: true }),
@@ -65,27 +67,28 @@ builder.queryField('subjectsOfMinor', (t) =>
             },
           },
         },
-        orderBy: { name: 'asc' },
+        orderBy: [{ nextExamAt: 'asc' }, { semester: 'asc' }, { name: 'asc' }],
       });
     },
   }),
 );
 
 builder.queryField('subjectsOfMajor', (t) =>
-  t.prismaConnection({
-    type: SubjectType,
-    cursor: 'id',
+  t.prismaField({
+    type: [SubjectType],
     args: {
       uid: t.arg.string({ required: true }),
       yearTier: t.arg.int({ required: false }),
+      forApprentices: t.arg.boolean({ required: false }),
     },
     authScopes: () => true,
-    async resolve(query, _, { uid, yearTier }) {
+    async resolve(query, _, { uid, yearTier, forApprentices }) {
       // XXX should become uniqueOrThrow at some point when all majors have uids
       const major = await prisma.major.findFirstOrThrow({ where: { uid } });
       return prisma.subject.findMany({
         ...query,
         where: {
+          ...(forApprentices !== null && forApprentices !== undefined ? { forApprentices } : {}),
           OR: [
             {
               yearTier,
@@ -109,7 +112,7 @@ builder.queryField('subjectsOfMajor', (t) =>
             },
           ],
         },
-        orderBy: { name: 'asc' },
+        orderBy: [{ nextExamAt: 'asc' }, { semester: 'asc' }, { name: 'asc' }],
       });
     },
   }),

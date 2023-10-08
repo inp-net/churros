@@ -204,7 +204,7 @@ builder.mutationField('upsertDocument', (t) =>
       title: t.arg.string({ required: true }),
       description: t.arg.string({ required: true }),
       subjectUid: t.arg.string({ required: true }),
-      subjectYearTier: t.arg.int({ required: true }),
+      subjectYearTier: t.arg.int({ required: false }),
       subjectForApprentices: t.arg.boolean({ required: true }),
       type: t.arg({ type: DocumentEnumType, required: true }),
     },
@@ -216,13 +216,13 @@ builder.mutationField('upsertDocument', (t) =>
       _,
       { id, subjectUid, title, schoolYear, subjectYearTier, subjectForApprentices, ...data },
     ) {
-      const subject = await prisma.subject.findUnique({
+      const subject = await prisma.subject.findFirst({
         where: {
-          uid_yearTier_forApprentices: {
-            uid: subjectUid,
-            yearTier: subjectYearTier,
-            forApprentices: subjectForApprentices,
-          },
+          // uid_yearTier_forApprentices: {
+          uid: subjectUid,
+          yearTier: subjectYearTier,
+          forApprentices: subjectForApprentices,
+          // },
         },
       });
       if (!subject) throw new GraphQLError('Matière introuvable');

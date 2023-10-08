@@ -17,6 +17,15 @@ import IconComment from '~icons/mdi/comment-outline';
 import IconGodparent from '~icons/mdi/account-multiple-outline';
 import IconGroupMembers from '~icons/mdi/account-group-outline';
 import IconNotification from '~icons/mdi/bell-outline';
+import IconFileDocumentOutline from '~icons/mdi/file-document-outline';
+import IconPlayBoxOutline from '~icons/mdi/play-box-outline';
+import IconCalendarEndOutline from '~icons/mdi/calendar-end-outline';
+import IconAndroidStudio from '~icons/mdi/android-studio';
+import IconStar from '~icons/mdi/star-outline';
+import IconDotsHorizontal from '~icons/mdi/dots-horizontal';
+import IconTestTube from '~icons/mdi/test-tube';
+import IconHammerWrench from '~icons/mdi/hammer-wrench';
+import IconSigma from '~icons/mdi/sigma';
 import IconPermissions from '~icons/mdi/shield-account-outline';
 import type { SvelteComponent } from 'svelte';
 
@@ -118,6 +127,19 @@ export const DISPLAY_DOCUMENT_TYPES = new Map<DocumentType, string>([
   [DocumentType.Practical, 'TP'],
   [DocumentType.PracticalExam, 'BE'],
   [DocumentType.Summary, 'Fiche'],
+]);
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const ICONS_DOCUMENT_TYPES = new Map<DocumentType, typeof SvelteComponent<any>>([
+  [DocumentType.CourseNotes, IconFileDocumentOutline],
+  [DocumentType.CourseSlides, IconPlayBoxOutline],
+  [DocumentType.Exam, IconCalendarEndOutline],
+  [DocumentType.Exercises, IconAndroidStudio],
+  [DocumentType.GradedExercises, IconStar],
+  [DocumentType.Miscellaneous, IconDotsHorizontal],
+  [DocumentType.Practical, IconTestTube],
+  [DocumentType.PracticalExam, IconHammerWrench],
+  [DocumentType.Summary, IconSigma],
 ]);
 
 export const ORDER_DOCUMENT_TYPES: DocumentType[] = [

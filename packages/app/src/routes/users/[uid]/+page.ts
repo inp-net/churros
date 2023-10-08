@@ -47,6 +47,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           links: { name: true, value: true, computedValue: true },
           minor: {
             name: true,
+            shortName: true,
             uid: true,
           },
           major: {

@@ -2,23 +2,23 @@
   import { formatRelative } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
 
-  type Minor = {
-    uid: string;
-    name: string;
-  };
   export let href: string;
   export let documentsCount: number;
   export let nextExamAt: Date | undefined = undefined;
   export let name: string;
   export let shortName: string;
-  export let majors: Array<{ uid: string; name: string }>;
-  export let minors: Minor[];
+  export let semester: number | undefined = undefined;
 </script>
 
 <a {href}>
   <article class="document">
     <header>
-      <h3>{shortName || name}</h3>
+      <h3>
+        {#if semester}
+          <span class="semester muted">{semester}<sup>e</sup> Semestre</span>
+        {/if}
+        {shortName || name}
+      </h3>
     </header>
     <p class="infos">
       {#if nextExamAt}
@@ -31,7 +31,7 @@
           </strong></span
         > ·
       {/if}
-      <span class="documents-count"
+      <span class:muted={documentsCount < 1} class="documents-count"
         >{#if documentsCount}{documentsCount} document{documentsCount > 1 ? 's' : ''}{:else}Aucun
           document{/if}</span
       >

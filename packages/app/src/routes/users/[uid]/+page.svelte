@@ -139,11 +139,16 @@
       </p>
       <p class="major">
         {user.yearTier}A ({user.graduationYear}) ·
-        <a href="/documents/{user.major.uid}/{user.yearTier}a/"
+        <a href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}/"
           ><abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr></a
         >
         {#if user.minor}
-          · {user.minor.name}
+          ·
+          <a
+            href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}#{user
+              .minor.uid}"
+            ><abbr title="" use:tooltip={user.minor.name}>{user.minor.shortName}</abbr></a
+          >
         {/if}
         · {#each user.major.schools as school}
           <a class="school" href="/schools/{school.uid}">{school.name}</a>
