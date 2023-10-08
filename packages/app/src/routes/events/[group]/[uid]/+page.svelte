@@ -10,6 +10,9 @@
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import AreaReactions from './AreaReactions.svelte';
+  import { calendarLinks } from '$lib/calendars';
+  import IconGoogleCalendar from '~icons/logos/google-calendar';
+  import IconCalendar from '~icons/mdi/calendar-export-outline';
 
   export let data: PageData;
 
@@ -34,6 +37,8 @@
 
   const bookingURL = (registrationId: string) =>
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
+
+  const calendarURLs = calendarLinks(data.event);
 </script>
 
 <Header {...data.event} />
@@ -94,6 +99,21 @@
     </ul>
   </section>
 {/if}
+
+<section class="add-to-calendar">
+  <h2>Ajouter à mon calendrier</h2>
+  <ul class="nobullet options">
+    <li>
+      <ButtonSecondary icon={IconGoogleCalendar} newTab href={calendarURLs.google}
+        >Google Agenda</ButtonSecondary
+      >
+    </li>
+    <li>
+      <ButtonSecondary icon={IconCalendar} newTab href={calendarURLs.ical}>Autres</ButtonSecondary>
+    </li>
+  </ul>
+</section>
+
 <section class="news">
   <h2>
     Actualités
@@ -187,6 +207,14 @@
 
   .ticket .places .left::after {
     width: 1px;
+  }
+
+  .add-to-calendar .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
   }
 
   .organizers {
