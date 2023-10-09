@@ -548,6 +548,7 @@ builder.queryField('events', (t) =>
                   some: {
                     opensAt: { gte: startOfDay(new Date()) },
                   },
+                  startsAt: { gte: startOfDay(new Date()) },
                 },
               ]
             : []),

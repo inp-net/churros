@@ -24,7 +24,9 @@
     e.mySoonestShotgunOpensAt ? format(e.mySoonestShotgunOpensAt, 'yyyy-MM-dd') : '',
   );
 
-  $: shownDays = [...new Set([...Object.keys(groupedByDate), ...Object.keys(groupedByShotgun)])];
+  $: shownDays = [...new Set([...Object.keys(groupedByDate), ...Object.keys(groupedByShotgun)])]
+    .filter(Boolean)
+    .sort();
 
   let openedShotgunsList: string | undefined = undefined;
 
@@ -67,73 +69,75 @@
           showMonth={parseISO(day).getMonth() !== new Date().getMonth()}
           day={parseISO(day)}
         />
-        {#if groupedByShotgun[day]?.length > 0}
-          {@const shotguns = groupedByShotgun[day]}
-          <div class="shotguns" class:open={openedShotgunsList === day}>
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <!-- svelte-ignore a11y-no-static-element-interactions -->
-            <header
-              on:click={(e) => {
-                handleClickOnShotgunListHeader(day, e);
-              }}
-            >
-              <ul class="groups nobullet">
-                {#each new Set(shotguns.map((s) => s.group.uid)) as groupUid}
+        <div class="shotguns-and-events">
+          {#if groupedByShotgun[day]?.length > 0}
+            {@const shotguns = groupedByShotgun[day]}
+            <div class="shotguns" class:open={openedShotgunsList === day}>
+              <!-- svelte-ignore a11y-click-events-have-key-events -->
+              <!-- svelte-ignore a11y-no-static-element-interactions -->
+              <header
+                on:click={(e) => {
+                  handleClickOnShotgunListHeader(day, e);
+                }}
+              >
+                <ul class="groups nobullet">
+                  {#each new Set(shotguns.map((s) => s.group.uid)) as groupUid}
+                    <li>
+                      <img
+                        class="group-logo"
+                        src={groupLogoSrc(
+                          $isDark,
+                          shotguns.find((s) => s.group.uid === groupUid)?.group ?? {
+                            pictureFile: '',
+                            pictureFileDark: '',
+                          },
+                        )}
+                        alt={groupUid}
+                      />
+                    </li>
+                  {/each}
+                </ul>
+                {shotguns.length} shotgun{shotguns.length > 1 ? 's' : ''}
+                <ButtonGhost
+                  on:click={() => {
+                    openedShotgunsList = openedShotgunsList === day ? undefined : day;
+                  }}
+                >
+                  <IconChevronDown></IconChevronDown>
+                </ButtonGhost>
+              </header>
+              <ul class="nobullet shotguns-list">
+                {#each shotguns as shotgun}
                   <li>
                     <img
                       class="group-logo"
-                      src={groupLogoSrc(
-                        $isDark,
-                        shotguns.find((s) => s.group.uid === groupUid)?.group ?? {
-                          pictureFile: '',
-                          pictureFileDark: '',
-                        },
-                      )}
-                      alt={groupUid}
+                      src={groupLogoSrc($isDark, shotgun.group)}
+                      alt={shotgun.group.name}
                     />
+                    <a href="/events/{shotgun.group.uid}/{shotgun.uid}">{shotgun.title}</a>
+                    {#if shotgun.mySoonestShotgunOpensAt}
+                      <strong>{format(shotgun.mySoonestShotgunOpensAt, 'HH:mm')}</strong>
+                    {/if}
                   </li>
                 {/each}
               </ul>
-              {shotguns.length} shotgun{shotguns.length > 1 ? 's' : ''}
-              <ButtonGhost
-                on:click={() => {
-                  openedShotgunsList = openedShotgunsList === day ? undefined : day;
-                }}
-              >
-                <IconChevronDown></IconChevronDown>
-              </ButtonGhost>
-            </header>
-            <ul class="nobullet shotguns-list">
-              {#each shotguns as shotgun}
+            </div>
+          {/if}
+          {#if eventsOfDay?.length > 0}
+            <ul class="nobullet events-of-day">
+              {#each eventsOfDay.sort( (a, b) => compareAsc(a.startsAt, b.startsAt), ) as event (event.id)}
                 <li>
-                  <img
-                    class="group-logo"
-                    src={groupLogoSrc($isDark, shotgun.group)}
-                    alt={shotgun.group.name}
+                  <CardEvent
+                    bind:expandedEventId
+                    collapsible
+                    href="/events/{event.group.uid}/{event.uid}"
+                    {...event}
                   />
-                  <a href="/events/{shotgun.group.uid}/{shotgun.uid}">{shotgun.title}</a>
-                  {#if shotgun.mySoonestShotgunOpensAt}
-                    <strong>{format(shotgun.mySoonestShotgunOpensAt, 'HH:mm')}</strong>
-                  {/if}
                 </li>
               {/each}
             </ul>
-          </div>
-        {/if}
-        {#if eventsOfDay?.length > 0}
-          <ul class="nobullet events-of-day">
-            {#each eventsOfDay.sort( (a, b) => compareAsc(a.startsAt, b.startsAt), ) as event (event.id)}
-              <li>
-                <CardEvent
-                  bind:expandedEventId
-                  collapsible
-                  href="/events/{event.group.uid}/{event.uid}"
-                  {...event}
-                />
-              </li>
-            {/each}
-          </ul>
-        {/if}
+          {/if}
+        </div>
       </section>
     {/each}
   </div>
@@ -166,6 +170,13 @@
     flex-direction: column;
     flex-grow: 1;
     gap: 1rem;
+  }
+
+  .shotguns-and-events {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
   }
 
   .shotguns {
@@ -209,9 +220,14 @@
 
   .shotguns header :global(> button) {
     margin-left: auto;
+    font-size: 1.5em;
   }
 
-  .shotguns.open header :global(> button) {
+  .shotguns header :global(> button svg) {
+    transition: all 0.125s ease;
+  }
+
+  .shotguns.open header :global(> button svg) {
     transform: rotate(180deg);
   }
 
