@@ -5,7 +5,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
   loadQuery(
     {
       events: [
-        { future: true },
+        { future: true, upcomingShotguns: true },
         {
           pageInfo: { hasNextPage: true, startCursor: true },
           edges: {
@@ -24,6 +24,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
               descriptionPreview: true,
               placesLeft: true,
               capacity: true,
+              mySoonestShotgunOpensAt: true,
               tickets: {
                 name: true,
                 opensAt: true,

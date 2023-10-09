@@ -321,6 +321,67 @@ export const EventType = builder.prismaNode('Event', {
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
     reactions: t.relation('reactions'),
+    mySoonestShotgunOpensAt: t.field({
+      type: DateTimeScalar,
+      nullable: true,
+      async resolve({ id }, _, { user }) {
+        const tickets = await prisma.ticket.findMany({
+          where: { event: { id } },
+          include: {
+            openToGroups: true,
+            openToSchools: true,
+            openToMajors: true,
+            event: {
+              include: {
+                managers: { include: { user: true } },
+                bannedUsers: true,
+                group: {
+                  include: {
+                    studentAssociation: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const userWithContributions = await prisma.user.findUniqueOrThrow({
+          where: { id: user?.id },
+          include: {
+            groups: {
+              include: { group: true },
+            },
+            major: {
+              include: {
+                schools: true,
+              },
+            },
+            contributions: {
+              include: {
+                option: {
+                  include: {
+                    offeredIn: true,
+                    paysFor: {
+                      include: {
+                        school: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const accessibleTickets = tickets.filter((t) => userCanSeeTicket(t, userWithContributions));
+        if (accessibleTickets.length === 0) return;
+        return new Date(
+          Math.min(
+            ...accessibleTickets.map((t) => t.opensAt?.valueOf() ?? Number.POSITIVE_INFINITY),
+          ),
+        );
+      },
+    }),
     myReactions: t.field({
       type: BooleanMapScalar,
       async resolve({ id }, _, { user }) {
@@ -473,15 +534,31 @@ builder.queryField('events', (t) =>
     cursor: 'id',
     args: {
       future: t.arg.boolean({ required: false }),
+      upcomingShotguns: t.arg.boolean({ required: false }),
     },
-    async resolve(query, _, { future }, { user }) {
+    async resolve(query, _, { future, upcomingShotguns }, { user }) {
       future = future ?? false;
+      upcomingShotguns = upcomingShotguns ?? false;
+      const dateCondition = {
+        OR: [
+          ...(future ? [{ startsAt: { gte: startOfDay(new Date()) } }] : []),
+          ...(upcomingShotguns
+            ? [
+                {
+                  some: {
+                    opensAt: { gte: startOfDay(new Date()) },
+                  },
+                },
+              ]
+            : []),
+        ],
+      };
       if (!user) {
         return prisma.event.findMany({
           ...query,
           where: {
             visibility: VisibilityPrisma.Public,
-            startsAt: future ? { gte: startOfDay(new Date()) } : undefined,
+            ...dateCondition,
           },
           orderBy: { startsAt: 'asc' },
         });
@@ -490,7 +567,7 @@ builder.queryField('events', (t) =>
       return prisma.event.findMany({
         ...query,
         where: {
-          startsAt: future ? { gte: startOfDay(new Date()) } : undefined,
+          ...dateCondition,
           ...visibleEventsPrismaQuery(user),
         },
         orderBy: { startsAt: 'asc' },
