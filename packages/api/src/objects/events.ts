@@ -540,19 +540,10 @@ builder.queryField('events', (t) =>
       future = future ?? false;
       upcomingShotguns = upcomingShotguns ?? false;
       const dateCondition = {
-        OR: [
-          ...(future ? [{ startsAt: { gte: startOfDay(new Date()) } }] : []),
-          ...(upcomingShotguns
-            ? [
-                {
-                  some: {
-                    opensAt: { gte: startOfDay(new Date()) },
-                  },
-                  startsAt: { gte: startOfDay(new Date()) },
-                },
-              ]
-            : []),
-        ],
+        ...(future || upcomingShotguns ? { startsAt: { gte: startOfDay(new Date()) } } : {}),
+        ...(upcomingShotguns
+          ? { tickets: { some: { opensAt: { gte: startOfDay(new Date()) } } } }
+          : {}),
       };
       if (!user) {
         return prisma.event.findMany({
