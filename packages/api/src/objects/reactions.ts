@@ -62,12 +62,14 @@ builder.mutationField('upsertReaction', (t) =>
       commentId: t.arg.id({ required: false }),
       eventId: t.arg.id({ required: false }),
     },
-    authScopes(_, { articleId, documentId }, { user }) {
+    authScopes(_, { articleId, documentId, eventId }, { user }) {
       if (!user) return false;
       return Boolean(
         user?.admin ||
           // TODO only allow for articles the user can see
           articleId /* && true */ ||
+          // TODO only allow for events the user can see
+          eventId /* && true */ ||
           (documentId && user?.canAccessDocuments),
       );
     },
