@@ -1,4 +1,4 @@
-import { Selector, loadQuery } from '$lib/zeus';
+import { Selector, loadQuery, makeMutation } from '$lib/zeus';
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 
@@ -53,6 +53,13 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
   const id = `${
     reverseMap(ID_PREFIXES_TO_TYPENAMES).Registration
   }:${params.pseudoID.toLowerCase()}`;
+
+  const { checkIfRegistrationIsPaid: markedAsPaid } = await makeMutation(
+    {
+      checkIfRegistrationIsPaid: [{ id }, true],
+    },
+    { fetch, parent },
+  );
 
   const { registration, registrationQRCode } = await loadQuery(
     {
@@ -115,5 +122,5 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
 
   if (registration.__typename === 'Error') throw error(400, registration.message);
 
-  return { registration: registration.data, registrationQRCode };
+  return { registration: registration.data, registrationQRCode, markedAsPaid };
 };

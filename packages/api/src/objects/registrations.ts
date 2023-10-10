@@ -84,17 +84,14 @@ export function authorIsBeneficiary(
   );
 }
 
-builder.queryField('registration', (t) =>
-  t.prismaField({
-    type: RegistrationType,
-    errors: {},
+builder.mutationField('checkIfRegistrationIsPaid', (t) =>
+  t.boolean({
     args: {
       id: t.arg.id(),
     },
-    async resolve(query, _, { id }, { user }) {
+    async resolve(_, { id }, { user }) {
       if (!user) throw new GraphQLError('Not logged in');
       let registration = await prisma.registration.findFirstOrThrow({
-        ...query,
         where: {
           id: id.toLowerCase(),
           OR: [
@@ -146,10 +143,55 @@ builder.queryField('registration', (t) =>
               lydiaTransaction: true,
             },
           });
+          return true;
         }
       }
 
-      return registration;
+      return false;
+    },
+  }),
+);
+
+builder.queryField('registration', (t) =>
+  t.prismaField({
+    type: RegistrationType,
+    errors: {},
+    args: {
+      id: t.arg.id(),
+    },
+    async resolve(query, _, { id }, { user }) {
+      if (!user) throw new GraphQLError('Not logged in');
+      return prisma.registration.findFirstOrThrow({
+        ...query,
+        where: {
+          id: id.toLowerCase(),
+          OR: [
+            {
+              ticket: {
+                event: {
+                  managers: {
+                    some: {
+                      userId: user.id,
+                    },
+                  },
+                },
+              },
+            },
+            {
+              authorId: user.id,
+            },
+            {
+              beneficiary: user.uid,
+            },
+            {
+              beneficiary: user.fullName,
+            },
+          ],
+        },
+        include: {
+          lydiaTransaction: true,
+        },
+      });
     },
   }),
 );
