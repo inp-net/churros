@@ -11,6 +11,9 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
   import AreaComments from '$lib/components/AreaComments.svelte';
+  import { DISPLAY_VISIBILITIES } from '$lib/display';
+  import Badge from '$lib/components/Badge.svelte';
+  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
   import AreaReactions from '../../../events/[group]/[uid]/AreaReactions.svelte';
 
   export let data: PageData;
@@ -20,6 +23,7 @@
     links,
     title,
     bodyHtml,
+    visibility,
     group,
     pictureFile,
     event,
@@ -57,6 +61,11 @@
     <p class="published-at">
       Publié le {dateTimeFormatter.format(publishedAt)} par
       <a href="/groups/{group.uid}">{group.name}</a>
+
+      <Badge>
+        <IndicatorVisibility {visibility} />
+        {DISPLAY_VISIBILITIES[visibility]}
+      </Badge>
     </p>
   </header>
 
