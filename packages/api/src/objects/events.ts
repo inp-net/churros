@@ -25,6 +25,7 @@ import {
   PaymentMethod,
   EventFrequency,
   type Group,
+  type Prisma,
 } from '@prisma/client';
 import { htmlToText, toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
@@ -539,12 +540,13 @@ builder.queryField('events', (t) =>
     async resolve(query, _, { future, upcomingShotguns }, { user }) {
       future = future ?? false;
       upcomingShotguns = upcomingShotguns ?? false;
-      const dateCondition = {
-        ...(future || upcomingShotguns ? { startsAt: { gte: startOfDay(new Date()) } } : {}),
-        ...(upcomingShotguns
-          ? { tickets: { some: { opensAt: { gte: startOfDay(new Date()) } } } }
-          : {}),
-      };
+      let dateCondition: Prisma.EventWhereInput = {};
+      if (future || upcomingShotguns) {
+        dateCondition = {
+          startsAt: { gte: startOfDay(new Date()) },
+        };
+      }
+
       if (!user) {
         return prisma.event.findMany({
           ...query,
