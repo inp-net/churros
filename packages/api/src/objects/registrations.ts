@@ -125,7 +125,7 @@ builder.queryField('registration', (t) =>
         },
       });
 
-      if (!registration.paid && registration.lydiaTransaction?.transactionId) {
+      if (!registration.paid && registration.lydiaTransaction?.requestId) {
         const state = await checkLydiaTransaction(registration.lydiaTransaction);
         if (state === LydiaTransactionState.Paid) {
           await prisma.logEntry.create({
