@@ -14,6 +14,7 @@
   import { DISPLAY_VISIBILITIES } from '$lib/display';
   import Badge from '$lib/components/Badge.svelte';
   import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
+  import AreaReactions from '../../../events/[group]/[uid]/AreaReactions.svelte';
 
   export let data: PageData;
   let {
@@ -27,9 +28,12 @@
     pictureFile,
     event,
     comments,
+    myReactions,
+    reactionCounts,
   } = data.article;
+
   $: canEditArticles =
-    $me?.admin ||
+    $me?.canEditGroups ||
     $me?.groups.some(({ group: { uid }, canEditArticles }) => uid === group.uid && canEditArticles);
 
   $: canEditEvent =
@@ -68,6 +72,14 @@
   <section class="body user-html">
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html bodyHtml}
+  </section>
+
+  <section class="reactions">
+    <AreaReactions
+      bind:myReactions
+      bind:reactionCounts
+      connection={{ articleId: data.article.id }}
+    />
   </section>
 
   {#if links.length > 0}

@@ -14,8 +14,7 @@ import {
   levenshteinFilterAndSort,
   sanitizeOperators,
 } from '../services/search.js';
-import type { Group, User } from '@prisma/client';
-import { NotificationTypeEnum } from './notifications.js';
+import { NotificationChannel } from './notifications.js';
 import { FamilyTree, getFamilyTree } from '../godchildren-tree.js';
 import { yearTier } from '../date.js';
 import { addDays } from 'date-fns';
@@ -27,6 +26,7 @@ import { toHtml } from '../services/markdown.js';
 import { markAsContributor, queryLdapUser } from '../services/ldap.js';
 import { createUid } from '../services/registration.js';
 import { log } from './logs.js';
+import type { User } from '@prisma/client';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -121,7 +121,8 @@ export const UserType = builder.prismaNode('User', {
     }),
     major: t.relation('major', { authScopes: { loggedIn: true, $granted: 'me' } }),
     managedEvents: t.relation('managedEvents'),
-    notificationSettings: t.relation('notificationSettings', {
+    enabledNotificationChannels: t.expose('enabledNotificationChannels', {
+      type: [NotificationChannel],
       authScopes: { loggedIn: true, $granted: 'me' },
     }),
     contributesWith: t.field({
@@ -192,24 +193,6 @@ export const UserType = builder.prismaNode('User', {
     emailChangeRequests: t.relation('emailChanges', {
       authScopes: { $granted: 'me' },
     }),
-  }),
-});
-
-export const NotificationSettingType = builder.prismaObject('NotificationSetting', {
-  fields: (t) => ({
-    id: t.exposeID('id'),
-    type: t.expose('type', { type: NotificationTypeEnum }),
-    allow: t.exposeBoolean('allow'),
-    groupId: t.exposeID('groupId', { nullable: true }),
-    group: t.relation('group', { nullable: true }),
-  }),
-});
-
-export const NotificationSettingInput = builder.inputType('NotificationSettingsInput', {
-  fields: (t) => ({
-    type: t.field({ type: NotificationTypeEnum }),
-    allow: t.boolean(),
-    groupUid: t.string({ required: false }),
   }),
 });
 
@@ -719,58 +702,23 @@ builder.mutationField('deleteUserPicture', (t) =>
 );
 
 builder.mutationField('updateNotificationSettings', (t) =>
-  t.prismaField({
-    type: [NotificationSettingType],
+  t.field({
+    type: [NotificationChannel],
     args: {
       uid: t.arg.string(),
-      notificationSettings: t.arg({ type: [NotificationSettingInput] }),
+      enabledChannels: t.arg({ type: [NotificationChannel] }),
     },
     authScopes(_, { uid }, { user }) {
       return Boolean(user?.canEditUsers || uid === user?.uid);
     },
-    async resolve(query, _, { uid, notificationSettings }) {
-      const user = await prisma.user.findUniqueOrThrow({ where: { uid } });
-
-      for (const { groupUid, type, allow } of notificationSettings) {
-        let group: Group | undefined;
-        if (groupUid) {
-          group =
-            (await prisma.group.findUnique({
-              where: { uid: groupUid },
-            })) ?? undefined;
-        }
-
-        const notificationSetting = await prisma.notificationSetting.findFirst({
-          where: {
-            userId: user.id,
-            type,
-            // eslint-disable-next-line unicorn/no-null
-            groupId: group?.id ?? null,
-          },
-        });
-
-        await prisma.notificationSetting.upsert({
-          where: { id: notificationSetting?.id ?? '' },
-          create: {
-            userId: user.id,
-            type,
-            allow,
-            // eslint-disable-next-line unicorn/no-null
-            groupId: group?.id ?? null,
-          },
-          update: {
-            allow,
-            type,
-            // eslint-disable-next-line unicorn/no-null
-            groupId: group?.id ?? null,
-          },
-        });
-      }
-
-      return prisma.notificationSetting.findMany({
-        ...query,
-        where: { userId: user.id },
+    async resolve(_query, { uid, enabledChannels }) {
+      const { enabledNotificationChannels } = await prisma.user.update({
+        where: { uid },
+        data: {
+          enabledNotificationChannels: { set: enabledChannels },
+        },
       });
+      return enabledNotificationChannels;
     },
   }),
 );

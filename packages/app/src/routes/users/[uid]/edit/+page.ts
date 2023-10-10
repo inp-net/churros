@@ -79,17 +79,7 @@ export const _userQuery = Selector('User')({
       },
     },
   },
-  notificationSettings: {
-    id: true,
-    type: true,
-    allow: true,
-    group: {
-      id: true,
-      uid: true,
-      name: true,
-      pictureFile: true,
-    },
-  },
+  enabledNotificationChannels: true,
 });
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {

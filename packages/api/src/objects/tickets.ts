@@ -187,6 +187,7 @@ builder.queryField('ticket', (t) =>
         include: {
           event: {
             include: {
+              coOrganizers: true,
               managers: {
                 include: {
                   user: true,
@@ -218,6 +219,7 @@ builder.queryField('ticketByUid', (t) =>
         include: {
           event: {
             include: {
+              coOrganizers: true,
               managers: {
                 include: {
                   user: true,
@@ -246,8 +248,9 @@ export function userCanSeeTicket(
   }: {
     event: {
       id: string;
-      group: { school: null | { uid: string }; studentAssociation: null | { id: string } };
+      group: { studentAssociation: null | { id: string } };
       managers: Array<{ userId: string }>;
+      bannedUsers: Array<{ id: string }>;
     };
     onlyManagersCanProvide: boolean;
     openToGroups: Array<{ uid: string }>;
@@ -276,6 +279,9 @@ export function userCanSeeTicket(
   // Managers can see everything
   if (event.managers.some(({ userId }) => userId === user?.id)) return true;
 
+  // Banned users cannot see any ticket
+  if (event.bannedUsers.some(({ id }) => id === user?.id)) return false;
+
   // Check if user is an apprentice
   if (openToApprentices === true && !user?.apprentice) return false;
   if (openToApprentices === false && user?.apprentice) return false;
@@ -284,11 +290,7 @@ export function userCanSeeTicket(
   const isContributor = Boolean(
     user?.contributions.some(
       ({ option: { paysFor }, paid }) =>
-        paid &&
-        paysFor.some(
-          ({ id, school }) =>
-            id === event.group.studentAssociation?.id || event.group.school?.uid === school.uid,
-        ),
+        paid && paysFor.some(({ id }) => id === event.group.studentAssociation?.id),
     ),
   );
 
@@ -333,6 +335,7 @@ builder.queryField('ticketsOfEvent', (t) =>
         where: { groupId_uid: { groupId: group.id, uid: eventUid } },
 
         include: {
+          coOrganizers: true,
           managers: {
             include: {
               user: true,
@@ -350,7 +353,6 @@ builder.queryField('ticketsOfEvent', (t) =>
           ...query.include,
           openToGroups: {
             include: {
-              school: true,
               studentAssociation: true,
             },
           },
@@ -358,10 +360,10 @@ builder.queryField('ticketsOfEvent', (t) =>
           event: {
             include: {
               managers: true,
+              bannedUsers: true,
               group: {
                 include: {
                   studentAssociation: true,
-                  school: true,
                 },
               },
             },

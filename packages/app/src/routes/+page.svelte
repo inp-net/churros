@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ArticleCard from '$lib/components/CardArticle.svelte';
+  import CardArticle from '$lib/components/CardArticle.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
   import { _pageQuery } from './+page';
@@ -72,15 +72,10 @@
 {/if}
 
 <section class="articles">
-  {#each data.homepage.edges as { node: { uid, title, bodyHtml, visibility, publishedAt, group, author, pictureFile, links } }}
-    <ArticleCard
-      {visibility}
-      {title}
-      {publishedAt}
-      {links}
+  {#each data.homepage.edges as { node: { id, uid, pictureFile, group, ...rest } } (id)}
+    <CardArticle
+      {...rest}
       {group}
-      {author}
-      {bodyHtml}
       href="/posts/{group.uid}/{uid}/"
       img={pictureFile ? { src: `${env.PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
     />

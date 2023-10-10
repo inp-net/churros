@@ -2,11 +2,11 @@ import { GraphQLError } from 'graphql';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { DateTimeScalar } from './scalars.js';
-import { NotificationType as NotificationTypePrisma } from '@prisma/client';
+import { NotificationChannel as NotificationChannelPrisma } from '@prisma/client';
 import { notify } from '../services/notifications.js';
 
-export const NotificationTypeEnum = builder.enumType(NotificationTypePrisma, {
-  name: 'NotificationType',
+export const NotificationChannel = builder.enumType(NotificationChannelPrisma, {
+  name: 'NotificationChannel',
 });
 
 export const NotificationType = builder.prismaNode('Notification', {
@@ -23,7 +23,7 @@ export const NotificationType = builder.prismaNode('Notification', {
     body: t.exposeString('body'),
     title: t.exposeString('title'),
     imageFile: t.exposeString('imageFile'),
-    type: t.expose('type', { type: NotificationTypeEnum }),
+    channel: t.expose('channel', { type: NotificationChannel }),
     actions: t.relation('actions'),
     goto: t.exposeString('goto'),
   }),
@@ -36,10 +36,10 @@ builder.queryField('notifications', (t) =>
     args: {
       subscriptionEndpoint: t.arg.id({ required: false }),
       groupUids: t.arg({ type: ['String'], required: false, defaultValue: [] }),
-      types: t.arg({ type: [NotificationTypeEnum], required: false, defaultValue: [] }),
+      channels: t.arg({ type: [NotificationChannel], required: false, defaultValue: [] }),
     },
     authScopes: { loggedIn: true },
-    async resolve(query, _, { groupUids, subscriptionEndpoint, types }, { user }) {
+    async resolve(query, _, { groupUids, subscriptionEndpoint, channels }, { user }) {
       if (!user) throw new GraphQLError('You must be logged in.');
       return prisma.notification.findMany({
         ...query,
@@ -52,7 +52,7 @@ builder.queryField('notifications', (t) =>
                 },
               },
           groupId: (groupUids ?? []).length > 0 ? { in: groupUids! } : undefined,
-          type: (types ?? []).length > 0 ? { in: types! } : undefined,
+          channel: (channels ?? []).length > 0 ? { in: channels! } : undefined,
         },
         orderBy: { createdAt: 'desc' },
       });
@@ -92,7 +92,6 @@ builder.mutationField('testNotification', (t) =>
               },
             },
           },
-          include: { notificationSettings: true },
         }),
         {
           title: 'Test notification',
@@ -102,7 +101,7 @@ builder.mutationField('testNotification', (t) =>
           actions: [],
           image: undefined,
           data: {
-            type: NotificationTypePrisma.Other,
+            channel: NotificationChannelPrisma.Other,
             group: undefined,
             goto: 'https://www.youtube.com/watch?v=chaLRQZKi6w&t=7',
           },

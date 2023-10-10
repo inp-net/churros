@@ -11,10 +11,10 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import { page } from '$app/stores';
-  import { isDark } from '$lib/theme';
   import { me } from '$lib/session';
   import { default as parseUserAgent } from 'ua-parser-js';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
+  import Modal from './Modal.svelte';
 
   let title = '';
   let description = '';
@@ -84,28 +84,7 @@
   }
 </script>
 
-<svelte:window
-  on:click={(e) => {
-    if (!(e.target instanceof HTMLElement)) return;
-    if (e.target === element) element.close();
-  }}
-/>
-
-<dialog
-  on:close={(e) => {
-    if (element.classList.contains('closing')) return;
-
-    // FIXME preventDefault() has no effect somehow
-    e.preventDefault();
-    element.classList.add('closing');
-    setTimeout(() => {
-      element.close();
-      element.classList.remove('closing');
-    }, 200);
-  }}
-  class={$isDark ? 'dark' : 'light'}
-  bind:this={element}
->
+<Modal bind:element>
   <div class="content">
     <h1>
       {#if issueType === 'bug'}Signaler{:else}Proposer{/if}
@@ -121,9 +100,17 @@
         options={{ bug: 'Signaler un bug', feature: 'Proposer une idée' }}
         bind:value={issueType}
       />
-      <InputText required bind:value={title} label="Titre" />
+      <InputText
+        required
+        bind:value={title}
+        label={issueType === 'bug' ? 'Description précise' : 'Titre'}
+      />
       <InputLongText
+        required={issueType === 'bug'}
         label={issueType === 'bug' ? 'Comment reproduire ce bug?' : 'Décris précisément ton idée'}
+        placeholder={issueType === 'bug'
+          ? "Un bug non reproductible n'existe pas!"
+          : "Hésites pas même si tu pense que c'est “pas important”,\nc'est à nous de décider de l'importance d'une nouvelle fonctionnalité ;)"}
         bind:value={description}
       />
       <InputCheckbox
@@ -141,13 +128,17 @@
       <section class="feedback">
         {#if link}
           <Alert theme="success"
-            >Ton {#if issueType === 'bug'}bug a bien été signalé{:else}idée à bien était soumise{/if}.
+            >Ton {#if issueType === 'bug'}bug a bien été signalé{:else}idée a bien été soumise{/if}.
             C'est <a href={link}>l'issue n°{issueNumber}</a>.
-            <ButtonSecondary href={link} icon={IconArrowRight}>Voir</ButtonSecondary>
+            <ButtonSecondary newTab insideProse href={link} icon={IconArrowRight}
+              >Voir</ButtonSecondary
+            >
           </Alert>
         {:else if errored}
           <Alert theme="danger"
             >Impossible de créer l'issue. <ButtonSecondary
+              insideProse
+              newTab
               href="https://git.inpt.fr/inp-net/churros/-/issues/new"
               >Créer l'issue sur le site</ButtonSecondary
             >
@@ -156,37 +147,9 @@
       </section>
     </form>
   </div>
-</dialog>
+</Modal>
 
 <style>
-  dialog {
-    position: fixed;
-    z-index: 1000;
-    min-width: calc(min(100%, 500px));
-    padding: 1.5rem;
-    color: var(--text);
-    background: var(--bg);
-    border: none;
-    border-radius: var(--radius-block);
-  }
-
-  dialog:global(.closing) {
-    animation: pop-up 0.5s ease reverse;
-  }
-
-  dialog[open] {
-    animation: pop-up 0.25s ease;
-  }
-
-  dialog:not([open])::backdrop {
-    background-color: transparent;
-  }
-
-  dialog[open]::backdrop {
-    background-color: var(--backdrop);
-    transition: background-color 0.5s ease;
-  }
-
   .content {
     display: flex;
     flex-direction: column;
@@ -219,31 +182,5 @@
   .submit p {
     margin: 0 2rem;
     text-align: justify;
-  }
-
-  @media (width <= 1000px) {
-    dialog {
-      border-radius: 0;
-    }
-  }
-
-  @keyframes pop-up {
-    from {
-      transform: scale(0);
-    }
-
-    to {
-      transform: scale(1);
-    }
-  }
-
-  @keyframes fade-in {
-    from {
-      background-color: transparent;
-    }
-
-    to {
-      background-color: var(--backdrop);
-    }
   }
 </style>

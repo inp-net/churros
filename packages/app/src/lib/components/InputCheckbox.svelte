@@ -88,7 +88,9 @@
         <Check />
       {/if}
     </div>
-    <div class="labels">{label}</div>
+    <div class="labels">
+      {#if $$slots.default}<slot />{:else}{label}{/if}
+    </div>
   {/if}
 </label>
 
@@ -117,7 +119,7 @@
   }
 
   .checkbox {
-    --size: 1.7rem;
+    --size: 1.7em;
     --border: var(--border-block);
 
     position: relative;

@@ -13,6 +13,8 @@
   import { Gif } from 'svelte-tenor';
   import { groupLogoSrc } from '$lib/logos';
   import { env } from '$env/dynamic/public';
+  import { afterNavigate } from '$app/navigation';
+  import { formatDate } from '$lib/dates';
 
   export let data: PageData;
 
@@ -31,6 +33,14 @@
     $me?.admin ||
       $me?.groups.some(({ group: { uid } }) => env.PUBLIC_FOY_GROUPS?.split(',').includes(uid)),
   );
+
+  afterNavigate(() => {
+    const cDay = new Date();
+    const daySection = document.querySelector(
+      `section.day[id="${formatISO(cDay, { representation: 'date' })}"]`,
+    );
+    if (daySection) daySection.scrollIntoView({ behavior: 'smooth' });
+  });
 </script>
 
 <div class="content">
@@ -43,6 +53,9 @@
   <div class="navigation">
     <a href="/events/week/{formatISO(previousMonday(data.shownWeek), { representation: 'date' })}"
       ><IconBackward /> Précédente</a
+    >
+    <a href="/events/week/{formatISO(previousMonday(new Date()), { representation: 'date' })}">
+      Aujourd'hui</a
     >
     <a href="/events/week/{formatISO(nextMonday(data.shownWeek), { representation: 'date' })}">
       Suivante <IconForward />
@@ -82,15 +95,20 @@
             gif: 'https://media.tenor.com/EbyOKpncujQAAAAi/john-travolta-tra-jt-transparent.gif',
           }}
         />
-        <p>Aucun événement cette semaine</p>
+        <p>
+          {#if isSameDay(data.shownWeek, previousMonday(new Date()))}
+            Aucun évènement pour <br /><strong>cette semaine</strong>
+          {:else}
+            Aucun événement pour la semaine du
+            <br />
+            <strong>{formatDate(data.shownWeek)}</strong>
+          {/if}
+        </p>
       </div>
     {:else}
       {#each daysOfWeek as day}
-        <section class="day">
-          <CalendarDay
-            showMonth={new Set(daysOfWeek.map((d) => d.getMonth())).size > 1}
-            {day}
-          />
+        <section class="day" id={formatISO(day, { representation: 'date' })}>
+          <CalendarDay showMonth={new Set(daysOfWeek.map((d) => d.getMonth())).size > 1} {day} />
           <div class="events-of-day">
             {#each events.filter((e) => isSameDay(e.startsAt, day)) as event}
               <CardEvent

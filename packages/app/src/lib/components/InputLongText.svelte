@@ -1,5 +1,8 @@
 <script lang="ts">
+  import IconHelp from '~icons/mdi/help';
   import InputField from './InputField.svelte';
+  import ModalMarkdownHelp from './ModalMarkdownHelp.svelte';
+  import ButtonInk from './ButtonInk.svelte';
 
   export let submitShortcut = false;
   export let value: string;
@@ -11,6 +14,8 @@
 
   let element: HTMLTextAreaElement;
 
+  let markdownHelpDialogElement: HTMLDialogElement;
+
   function handleControlEnter(event: KeyboardEvent) {
     if (submitShortcut && event.ctrlKey && event.key === 'Enter') {
       event.preventDefault();
@@ -19,6 +24,10 @@
     }
   }
 </script>
+
+{#if rich && label}
+  <ModalMarkdownHelp bind:element={markdownHelpDialogElement}></ModalMarkdownHelp>
+{/if}
 
 <InputField {label} {required} hint={hint || (rich ? 'Syntaxe Markdown supportée' : undefined)}>
   <textarea
@@ -31,6 +40,14 @@
     {...$$restProps}
     placeholder={placeholder + (submitShortcut ? '\nCtrl-Entrer pour envoyer' : '')}
   />
+  {#if rich && label}
+    <ButtonInk
+      on:click={() => {
+        markdownHelpDialogElement.showModal();
+      }}
+      icon={IconHelp}>Aide sur markdown</ButtonInk
+    >
+  {/if}
 </InputField>
 
 <style>

@@ -38,3 +38,5 @@ packages/api/scripts/frappe-documents/
 # Ignore jetbrains ide files
 .idea
 packages/api/scripts/*.tar.gz
+cli/churros/__pycache__
+cli/dist

@@ -143,7 +143,7 @@
   .slider {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     transition: transform 0.2s ease-in-out;
   }
 

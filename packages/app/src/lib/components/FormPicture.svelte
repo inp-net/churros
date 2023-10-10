@@ -7,6 +7,7 @@
   import IconEdit from '~icons/mdi/pencil';
   import InputField from './InputField.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
+  import { toasts } from '$lib/toasts';
 
   export const LEGENDS = {
     Group: 'Logo du groupe',
@@ -45,6 +46,7 @@
         },
         { variables: { file: files[0] } },
       );
+      toasts.success(`${LEGENDS[objectName]} mis${objectName === 'Group' ? '' : 'e'} à jour`);
       // Add a timestamp to the URL to force the browser to reload the image
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       object[pictureFilePropertyName] = `${result[`update${objectName}Picture`]}?v=${Date.now()}`;

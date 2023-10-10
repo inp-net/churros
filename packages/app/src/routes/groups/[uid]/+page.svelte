@@ -31,11 +31,12 @@
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import { isDark } from '$lib/theme';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import { roleEmojis } from '$lib/permissions';
+  import { isOnClubBoard, roleEmojis } from '$lib/permissions';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import { tooltip } from '$lib/tooltip';
   import { groupLogoSrc } from '$lib/logos';
+  import { toasts } from '$lib/toasts';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -64,26 +65,22 @@
 
   let confirmingGroupQuit = false;
 
-  $: clubBoard = group.members?.filter(
-    ({ president, vicePresident, treasurer, secretary }) =>
-      president || vicePresident || treasurer || secretary,
-  );
+  $: clubBoard = group.members?.filter((m) => isOnClubBoard(m));
+  $: meOnClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
 
-  $: onClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
-
-  $: myPermissions = $me ? $me.groups.find(({ group: { uid } }) => uid === group.uid) : undefined;
+  $: myPermissions = $me?.groups?.find(({ group: { uid } }) => uid === group.uid);
 
   $: ({ group } = data);
 
   $: canEditDetails = Boolean(
     $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups,
   );
-  $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || onClubBoard);
+  $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || meOnClubBoard);
   $: canEditEvents = canEditArticles;
   $: canEditMembers = Boolean(
     $me?.admin ||
       myPermissions?.canEditMembers ||
-      onClubBoard ||
+      meOnClubBoard ||
       $me?.canEditGroups ||
       $me?.canEditUsers,
   );
@@ -96,7 +93,7 @@
       });
       window.location.reload();
     } catch (error: unknown) {
-      console.error(error);
+      toasts.error(`Impossible de rejoindre ${group.name}`, error?.toString());
     }
   };
 
@@ -109,7 +106,7 @@
       });
       window.location.reload();
     } catch (error: unknown) {
-      console.error(error);
+      toasts.error(`Impossible de quitter ${group.name}`, error?.toString());
     }
   };
 </script>
@@ -129,7 +126,7 @@
           <ButtonGhost help="Modifier les infos" href="./edit"><IconGear /></ButtonGhost>
         {/if}
 
-        {#if group.members?.find(({ member: { uid } }) => uid === $me?.uid)}
+        {#if group?.members?.find(({ member: { uid } }) => uid === $me?.uid)}
           <Badge theme="success">Membre</Badge>
           {#if confirmingGroupQuit}
             <p>Sur de toi?</p>
@@ -153,7 +150,10 @@
 
       <p>
         {DISPLAY_GROUP_TYPES[group.type]}
-        {#if group.school}· <a href="/schools/{group.school?.uid}">{group.school?.name}</a>{/if}
+        {#if group.studentAssociation?.school}· <a
+            href="/schools/{group.studentAssociation.school.uid}"
+            >{group.studentAssociation.school.name}</a
+          >{/if}
         {#if group.studentAssociation}· <a
             href="/student-associations/{group.studentAssociation?.uid}"
             >{group.studentAssociation?.name}</a
@@ -176,7 +176,7 @@
       </dl>
 
       <ul class="social-links nobullet">
-        {#each group.links.filter(({ value }) => Boolean(value)) as { name, value }}
+        {#each group?.links.filter(({ value }) => Boolean(value)) as { name, value }}
           <li>
             <a href={value} use:tooltip={DISPLAY_SOCIAL_NETWORK[name]}>
               <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
@@ -188,11 +188,11 @@
   </header>
 
   <section class="description user-html">
-    {#if group.longDescriptionHtml.trim().length}
+    {#if group?.longDescriptionHtml.trim().length}
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html group.longDescriptionHtml}
+      {@html group?.longDescriptionHtml}
     {:else}
-      {group.description}
+      {group?.description}
     {/if}
   </section>
 
@@ -226,11 +226,22 @@
     {/if}
   </section>
 
-  {#if group.root && (group.root.children.length ?? 0) > 0}
+  {#if (group.root && (group.root.children.length ?? 0) > 0) || meOnClubBoard}
+    {@const hasSubgroups = (group.root?.children.length ?? 0) > 0}
     <section class="subgroups">
-      <h2>Sous-groupes</h2>
+      <h2>
+        Sous-groupes {#if hasSubgroups}<ButtonSecondary icon={IconAdd} href="./subgroups/create"
+            >Créer</ButtonSecondary
+          >{/if}
+      </h2>
 
-      <TreeGroups highlightUid={group.uid} group={group.root} />
+      {#if group.root && hasSubgroups}
+        <TreeGroups highlightUid={group.uid} group={group.root} />
+      {:else}
+        <ButtonSecondary icon={IconAdd} href="./subgroups/create"
+          >Créer un sous-groupe</ButtonSecondary
+        >
+      {/if}
     </section>
   {/if}
 
@@ -264,7 +275,7 @@
           href="/events/{group.uid}/{uid}"
           {...event}
           publishedAt={event.startsAt}
-          bodyHtml={event.descriptionHtml}
+          bodyPreview={event.descriptionPreview}
         />
       {/each}
     </ul>

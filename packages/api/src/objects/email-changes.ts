@@ -36,6 +36,7 @@ export async function requestEmailChange(email: string, userId: string): Promise
   );
 
   await transporter.sendMail({
+    from: process.env.PUBLIC_CONTACT_EMAIL,
     to: email,
     subject: `Validation de votre adresse e-mail`,
     html: `

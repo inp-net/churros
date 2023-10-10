@@ -420,6 +420,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.22.20"
     "@centraverse/api": "workspace:^"
+    "@iconify-json/logos": "npm:^1.1.37"
     "@iconify-json/material-symbols": "npm:^1.1.58"
     "@iconify-json/mdi": "npm:^1.1.54"
     "@iconify-json/simple-icons": "npm:^1.1.70"
@@ -433,6 +434,7 @@ __metadata:
     "@types/lodash.groupby": "npm:^4.6.7"
     "@types/ua-parser-js": "npm:^0.7.37"
     arborist: "workspace:^"
+    calendar-link: "npm:^2.6.0"
     cookie: "npm:^0.5.0"
     date-fns: "npm:^2.30.0"
     dotenv: "npm:^16.3.1"
@@ -457,6 +459,7 @@ __metadata:
     svelte-check: "npm:^3.5.1"
     svelte-loader: "npm:^3.1.9"
     svelte-preprocess: "npm:^5.0.4"
+    svelte-store2storage: "npm:^1.0.0"
     svelte-tenor: "npm:^0.2.0"
     sveltejs-tippy: "npm:^3.0.0"
     tslib: "npm:^2.6.2"
@@ -1409,6 +1412,15 @@ __metadata:
   version: 1.2.1
   resolution: "@humanwhocodes/object-schema@npm:1.2.1"
   checksum: c860f96faaaaecd6c5c4ee6912f7c761579031b464c3cf55832e59e18b116968d89b570ef6a9a10b1670a67e7998a530c8c549b4a41b118153340772ad10cea9
+  languageName: node
+  linkType: hard
+
+"@iconify-json/logos@npm:^1.1.37":
+  version: 1.1.37
+  resolution: "@iconify-json/logos@npm:1.1.37"
+  dependencies:
+    "@iconify/types": "npm:*"
+  checksum: 705fad1b83fe7dc69f0ae39ceb0c32abfa24261099e446c30bde3a92cdc4381a822f759f42ab3ffce631392b35b64efa854313a3227164770e1f987dc24f5475
   languageName: node
   linkType: hard
 
@@ -3478,6 +3490,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"calendar-link@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "calendar-link@npm:2.6.0"
+  dependencies:
+    dayjs: "npm:^1.9.3"
+    query-string: "npm:^6.13.6"
+  checksum: 1a412962d0edc82fa070aa645a020e51723e550f46bd751899dba56ec488c1f9910e30db10c67c9d73afdcf575f65ba98d4f9106cadde6d9802bcdf5899475e3
+  languageName: node
+  linkType: hard
+
 "call-bind@npm:^1.0.0":
   version: 1.0.2
   resolution: "call-bind@npm:1.0.2"
@@ -4154,6 +4176,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dayjs@npm:^1.9.3":
+  version: 1.11.10
+  resolution: "dayjs@npm:1.11.10"
+  checksum: 634d270e4c3ee09cdb9c9c0195b1963f4a2d63a0627f30650841ecec92d8804a11547bec4e513e7e4fe159bf9bb8249abddf759a1e736eb2f5bc856b653eaf07
+  languageName: node
+  linkType: hard
+
 "debug@npm:2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -4205,6 +4234,13 @@ __metadata:
   dependencies:
     character-entities: "npm:^2.0.0"
   checksum: a42a6a12147a46fb2b0ee5b642089463d7d572116c40c2808829e63a13eb6b06875e3b84ffb2843c1be54fb785804f24007f2338754853fb8754ba24d5b97c89
+  languageName: node
+  linkType: hard
+
+"decode-uri-component@npm:^0.2.0":
+  version: 0.2.2
+  resolution: "decode-uri-component@npm:0.2.2"
+  checksum: 470428dd2c9310a948f7a942a64e5e5005a992beba979a6ac0b3635ca1a3915753c7871e3e85d3fd21ea5a7b829f62b7b4c2b368fc8b7cc7455b4d7182807e72
   languageName: node
   linkType: hard
 
@@ -5213,6 +5249,13 @@ __metadata:
   dependencies:
     to-regex-range: "npm:^5.0.1"
   checksum: e5ccb299de8a12ea5dcef663f658933e2fbdf40aeab3e7e5af9132e82d7f6bdd0984ac2e122dc1825707f33917c308bc40b632b852331c900c317c5d64bb7bf0
+  languageName: node
+  linkType: hard
+
+"filter-obj@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "filter-obj@npm:1.1.0"
+  checksum: ae94072c11c7bf14d8baa6e9b99770dc2324088ae47081b2961e461d35b4cfa3dbe34a2e747ae98a8e789255480d0e28b2cf970dd8ce3cfba301e76cda03344c
   languageName: node
   linkType: hard
 
@@ -9248,6 +9291,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"query-string@npm:^6.13.6":
+  version: 6.14.1
+  resolution: "query-string@npm:6.14.1"
+  dependencies:
+    decode-uri-component: "npm:^0.2.0"
+    filter-obj: "npm:^1.1.0"
+    split-on-first: "npm:^1.0.0"
+    strict-uri-encode: "npm:^2.0.0"
+  checksum: 5e2b08906ff1778272f05cddb568eec6547f0b466f541e0acafb388f11cf0975527bac0d36be0021e6ff70f695cb61e634cdd3a8b5db4a11fd2f799e87d11808
+  languageName: node
+  linkType: hard
+
 "queue-microtask@npm:^1.2.2":
   version: 1.2.3
   resolution: "queue-microtask@npm:1.2.3"
@@ -10181,6 +10236,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"split-on-first@npm:^1.0.0":
+  version: 1.1.0
+  resolution: "split-on-first@npm:1.1.0"
+  checksum: ae2bc24abc415ee7b2259ae4572857a84650b610b2ee6436b50bc8563840a74ee38b0a32c0e1d9ac4986e16408c934f01018dc6c33fdaaadd45356efa78c7e1b
+  languageName: node
+  linkType: hard
+
 "split2@npm:^3.0.0, split2@npm:^3.2.2":
   version: 3.2.2
   resolution: "split2@npm:3.2.2"
@@ -10220,6 +10282,13 @@ __metadata:
     fast-fifo: "npm:^1.1.0"
     queue-tick: "npm:^1.0.1"
   checksum: 45d84a3b4311c2655dba1530fe0fb6f05a7f8a5dde8f0a867902d09a56f39ab6d2151651c1b8708d44a99e8e3e7cafb8651919026ed23b1175f3b26ca6524641
+  languageName: node
+  linkType: hard
+
+"strict-uri-encode@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "strict-uri-encode@npm:2.0.0"
+  checksum: 3dccd623de057e3b9646be72dd6d5b2dc18ab7abccfcc8276a2b7d3fde7f4159e24e3324b475e87cce6b0d0c8e58e1a632714f85fa9c76f756ea5e456dc520a0
   languageName: node
   linkType: hard
 
@@ -10678,6 +10747,13 @@ __metadata:
     typescript:
       optional: true
   checksum: 31105ea4951d83f740634aafeaab7fac23263a24b90945398108f1a03af265fd703f297c36495c072a510902f21327c513cb7c609c62d1fbfdb608ac79ecc966
+  languageName: node
+  linkType: hard
+
+"svelte-store2storage@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "svelte-store2storage@npm:1.0.0"
+  checksum: 6875dee2b32af9f068a2896ca81a06d7862bdb642fd6b153046a7e71f1b2ba508f5ff78edfbae01c28dc3516337c6f10abac8e2d6c6397b1bdbed1e7c1db1243
   languageName: node
   linkType: hard
 

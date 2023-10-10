@@ -31,11 +31,14 @@
   import InputLinks from './InputLinks.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputDate from './InputDate.svelte';
+  import InputListOfGroups from './InputListOfGroups.svelte';
+  import { toasts } from '$lib/toasts';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
   let loading = false;
   let confirmingDelete = false;
+  let newBannedUser: (typeof event)['bannedUsers'][number] | undefined;
 
   $: canEditManagers =
     !event.uid ||
@@ -61,6 +64,7 @@
       upsertEvent: [
         {
           groupUid: event.group.uid,
+          coOrganizers: event.coOrganizers.map((g) => g.uid),
           contactMail: event.contactMail,
           description: event.description,
           endsAt: event.endsAt,
@@ -91,6 +95,7 @@
             ...permissions,
             userUid: user.uid,
           })),
+          bannedUsers: event.bannedUsers.map(({ uid }) => uid),
           id: event.id,
           lydiaAccountId: event.beneficiary?.id,
         },
@@ -105,6 +110,9 @@
                 uid: true,
               },
               group: {
+                uid: true,
+              },
+              coOrganizers: {
                 uid: true,
               },
               contactMail: true,
@@ -177,6 +185,13 @@
                 canEditPermissions: true,
                 canVerifyRegistrations: true,
               },
+              bannedUsers: {
+                uid: true,
+                firstName: true,
+                lastName: true,
+                fullName: true,
+                pictureFile: true,
+              },
             },
           },
         },
@@ -193,6 +208,11 @@
     serverError = '';
 
     dispatch('save');
+    toasts.success(
+      `Ton évènement ${DISPLAY_VISIBILITIES[
+        upsertEvent.data.visibility
+      ].toLowerCase()} a bien été ${event.uid ? 'modifié' : 'créé'}`,
+    );
     await goto(redirectAfterSave(upsertEvent.data.uid, upsertEvent.data.group.uid));
   }
 
@@ -231,7 +251,7 @@
     // eslint-disable-next-line unicorn/no-null
     openToContributors: null,
     openToPromotions: [],
-    openToSchools: [],
+    openToSchools: $me?.major.schools?.filter((s) => s.uid !== 'inp') ?? [],
     openToMajors: [],
     autojoinGroups: [],
     // eslint-disable-next-line unicorn/no-null
@@ -309,6 +329,13 @@
       pictureFile: string;
       pictureFileDark: string;
     };
+    coOrganizers: Array<{
+      id: string;
+      uid: string;
+      name: string;
+      pictureFile: string;
+      pictureFileDark: string;
+    }>;
     managers: Array<{
       user: {
         uid: string;
@@ -320,6 +347,13 @@
       canEdit: boolean;
       canEditPermissions: boolean;
       canVerifyRegistrations: boolean;
+    }>;
+    bannedUsers: Array<{
+      uid: string;
+      firstName: string;
+      lastName: string;
+      pictureFile: string;
+      fullName: string;
     }>;
   };
 
@@ -357,6 +391,11 @@
       <FormPicture rectangular objectName="Event" bind:object={event} />
     {/if}
     <InputGroup required group={event.group} label="Groupe" bind:uid={event.group.uid} />
+    <InputListOfGroups
+      uids={event.coOrganizers.map((g) => g.uid)}
+      label="Co-organisé par"
+      bind:groups={event.coOrganizers}
+    ></InputListOfGroups>
     <InputText required label="Titre" maxlength={255} bind:value={event.title} />
     <InputSelectOne
       label="Visibilité"
@@ -587,6 +626,36 @@
       <Alert theme="danger">Impossible de sauvegarder l'évènement: {serverError}</Alert>
     {/if}
   </section>
+  <section class="banned-users">
+    <h2>Bannis</h2>
+    <p class="typo-details">
+      Pour interdire à des personnes de réserver une place sur cet évènement
+    </p>
+    <form
+      on:submit|preventDefault={() => {
+        if (!newBannedUser) return;
+        event.bannedUsers = [...event.bannedUsers, newBannedUser];
+        newBannedUser = undefined;
+      }}
+      class="new-ban"
+    >
+      <InputPerson label="" bind:user={newBannedUser} uid={newBannedUser?.uid} />
+      <ButtonSecondary disabled={!newBannedUser} type="submit">Bannir</ButtonSecondary>
+    </form>
+    <ul class="nobullet bans">
+      {#each event.bannedUsers as user}
+        <li>
+          <AvatarPerson href="/users/{user.uid}" {...user} />
+          <ButtonSecondary
+            on:click={() => {
+              event.bannedUsers = event.bannedUsers.filter(({ uid }) => uid !== user.uid);
+            }}
+            icon={IconClose}>Autoriser</ButtonSecondary
+          >
+        </li>
+      {/each}
+    </ul>
+  </section>
   <section class="submit">
     {#if confirmingDelete}
       <h2>Es-tu sûr·e ?</h2>
@@ -597,11 +666,33 @@
       >
       <ButtonSecondary
         on:click={async () => {
-          await $zeus.mutate({
-            deleteEventPicture: [{ id: event.id }, true],
-            deleteEvent: [{ id: event.id }, true],
-          });
           confirmingDelete = false;
+          toasts.success('Évènement supprimé', `L'évènement ${event.title} a bien été supprimé`, {
+            lifetime: 5000,
+            showLifetime: true,
+            data: {
+              confirm: true,
+              id: event.id,
+              gotoOnCancel: `/events/${event.group.uid}/${event.uid}/edit/`,
+            },
+            labels: {
+              action: 'Annuler',
+              close: 'OK',
+            },
+            async action(toast) {
+              toast.data.confirm = false;
+              await toasts.remove(toast.id);
+              await goto(toast.data.gotoOnCancel);
+            },
+            async closed({ data: { id, confirm } }) {
+              if (confirm) {
+                await $zeus.mutate({
+                  deleteEventPicture: [{ id }, true],
+                  deleteEvent: [{ id }, true],
+                });
+              }
+            },
+          });
           await goto('/');
         }}
         danger>Oui</ButtonSecondary
@@ -707,8 +798,34 @@
     justify-content: center;
   }
 
+  section.banned-users {
+    max-width: 600px;
+  }
+
+  .new-ban {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+
+  .bans {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bans li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   .submit {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     align-items: center;
     justify-content: center;
@@ -725,7 +842,7 @@
   @media (width >= 1100px) {
     form.event {
       display: grid;
-      grid-template-areas: 'info tickets' 'managers managers' 'submit submit';
+      grid-template-areas: 'info tickets' 'managers managers' 'bans bans' 'submit submit';
       grid-template-columns: 1fr 1fr;
       align-items: start;
     }
@@ -736,6 +853,10 @@
 
     section.managers {
       grid-area: managers;
+    }
+
+    section.banned-users {
+      grid-area: bans;
     }
 
     section.info {

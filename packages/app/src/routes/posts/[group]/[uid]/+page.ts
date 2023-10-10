@@ -23,6 +23,8 @@ export const _articleQuery = Selector('Article')({
     uid: true,
     groups: { group: { name: true, uid: true }, title: true },
   },
+  myReactions: true,
+  reactionCounts: true,
   comments: [
     {
       first: 100,
@@ -53,6 +55,7 @@ export const _articleQuery = Selector('Article')({
     placesLeft: true,
     capacity: true,
     descriptionHtml: true,
+    descriptionPreview: true,
     pictureFile: true,
     links: {
       name: true,

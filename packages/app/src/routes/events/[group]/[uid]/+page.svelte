@@ -9,10 +9,25 @@
   import Header from './Header.svelte';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
+  import AreaReactions from './AreaReactions.svelte';
+  import { calendarLinks } from '$lib/calendars';
+  import IconGoogleCalendar from '~icons/logos/google-calendar';
+  import IconCalendar from '~icons/mdi/calendar-export-outline';
 
   export let data: PageData;
 
-  const { descriptionHtml, links, group, contactMail, articles, placesLeft, capacity } = data.event;
+  let {
+    descriptionHtml,
+    links,
+    group,
+    coOrganizers,
+    contactMail,
+    articles,
+    placesLeft,
+    capacity,
+    reactionCounts,
+    myReactions,
+  } = data.event;
 
   const tickets = data.ticketsOfEvent;
 
@@ -22,6 +37,8 @@
 
   const bookingURL = (registrationId: string) =>
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
+
+  const calendarURLs = calendarLinks(data.event);
 </script>
 
 <Header {...data.event} />
@@ -55,6 +72,10 @@
   {@html descriptionHtml}
 </section>
 
+<section class="reactions">
+  <AreaReactions bind:myReactions bind:reactionCounts connection={{ eventId: data.event.id }} />
+</section>
+
 {#if tickets.length > 0}
   <section class="tickets">
     <h2>
@@ -62,7 +83,9 @@
         {#if placesLeft === Number.POSITIVE_INFINITY || placesLeft === -1}
           illimitées
         {:else}
-          <span class="left">{placesLeft} restantes</span><span class="capacity">{capacity}</span>
+          <span class="left">{placesLeft} restante{placesLeft > 1 ? 's' : ''}</span><span
+            class="capacity">{capacity}</span
+          >
         {/if}
       </span>
     </h2>
@@ -76,6 +99,21 @@
     </ul>
   </section>
 {/if}
+
+<section class="add-to-calendar">
+  <h2>Ajouter à mon calendrier</h2>
+  <ul class="nobullet options">
+    <li>
+      <ButtonSecondary icon={IconGoogleCalendar} newTab href={calendarURLs.google}
+        >Google Agenda</ButtonSecondary
+      >
+    </li>
+    <li>
+      <ButtonSecondary icon={IconCalendar} newTab href={calendarURLs.ical}>Autres</ButtonSecondary>
+    </li>
+  </ul>
+</section>
+
 <section class="news">
   <h2>
     Actualités
@@ -87,7 +125,7 @@
   <ul class="nobullet">
     {#each articles as { uid, ...article } (uid)}
       <li>
-        <CardArticle href="/posts/{group.uid}/{uid}/" {...article} />
+        <CardArticle href="/posts/{article.group.uid}/{uid}/" {...article} />
       </li>
     {:else}
       <li class="empty muted">Aucun post pour le moment.</li>
@@ -96,14 +134,20 @@
 </section>
 
 <section class="organizer">
-  <h2>Organisé par</h2>
-  <div class="organizer-name-and-contact">
-    <a class="organizer-name" href="/groups/{group.uid}">
-      <img src={groupLogoSrc($isDark, group)} alt="" />
-      {group.name}
-    </a>
-    <ButtonSecondary href="mailto:{contactMail}">Contact</ButtonSecondary>
-  </div>
+  <h2>
+    Organisé par
+    <ButtonSecondary href="mailto:{contactMail}">Contacter l'orga</ButtonSecondary>
+  </h2>
+  <ul class="nobullet organizers">
+    {#each [group, ...coOrganizers] as g}
+      <li class="organizer-name-and-contact">
+        <a class="organizer-name" href="/groups/{g.uid}">
+          <img src={groupLogoSrc($isDark, g)} alt="" />
+          {g.name}
+        </a>
+      </li>
+    {/each}
+  </ul>
 </section>
 
 <style lang="scss">
@@ -163,6 +207,20 @@
 
   .ticket .places .left::after {
     width: 1px;
+  }
+
+  .add-to-calendar .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .organizers {
+    display: flex;
+    gap: 4rem;
+    margin-top: 0.5rem;
   }
 
   .organizer-name-and-contact {

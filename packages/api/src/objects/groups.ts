@@ -21,12 +21,12 @@ import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { visibleArticlesPrismaQuery } from './articles.js';
 import { visibleEventsPrismaQuery } from './events.js';
+import { onBoard } from '../auth.js';
 
 export function userIsInBureauOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
     user?.groups.some(
-      ({ group: { uid }, president, secretary, treasurer, vicePresident }) =>
-        uid === groupUid && (president || secretary || treasurer || vicePresident),
+      ({ group: { uid }, ...permissions }) => uid === groupUid && onBoard(permissions),
     ),
   );
 }
@@ -89,11 +89,18 @@ export const GroupType = builder.prismaNode('Group', {
         ],
       },
     }),
-    school: t.relation('school', { nullable: true }),
     studentAssociation: t.relation('studentAssociation', { nullable: true }),
     parent: t.relation('parent', { nullable: true }),
     selfJoinable: t.exposeBoolean('selfJoinable'),
     events: t.relation('events', {
+      query(_, { user }) {
+        return {
+          where: visibleEventsPrismaQuery(user),
+          orderBy: { startsAt: 'desc' },
+        };
+      },
+    }),
+    coOrganizedEvents: t.relation('coOrganizedEvents', {
       query(_, { user }) {
         return {
           where: visibleEventsPrismaQuery(user),
@@ -140,24 +147,13 @@ builder.queryField('groups', (t) =>
           ...(user?.admin
             ? {}
             : {
-                OR: [
-                  {
-                    school: {
-                      id: {
-                        in: user?.major.schools.map(({ id }) => id) ?? [],
-                      },
+                studentAssociation: {
+                  school: {
+                    id: {
+                      in: user?.major.schools.map(({ id }) => id) ?? [],
                     },
                   },
-                  {
-                    studentAssociation: {
-                      school: {
-                        id: {
-                          in: user?.major.schools.map(({ id }) => id) ?? [],
-                        },
-                      },
-                    },
-                  },
-                ],
+                },
               }),
         },
         orderBy: { name: 'asc' },
@@ -191,24 +187,13 @@ LIMIT 20
         ...query,
         where: {
           id: { in: fuzzyResults.map(({ id }) => id) },
-          OR: [
-            {
-              school: {
-                id: {
-                  in: user?.major.schools.map(({ id }) => id) ?? [],
-                },
+          studentAssociation: {
+            school: {
+              id: {
+                in: user?.major.schools.map(({ id }) => id) ?? [],
               },
             },
-            {
-              studentAssociation: {
-                school: {
-                  id: {
-                    in: user?.major.schools.map(({ id }) => id) ?? [],
-                  },
-                },
-              },
-            },
-          ],
+          },
         },
       });
       const results = await prisma.group.findMany({
@@ -225,24 +210,13 @@ LIMIT 20
               ],
             },
             {
-              OR: [
-                {
-                  school: {
-                    id: {
-                      in: user?.major.schools.map(({ id }) => id) ?? [],
-                    },
+              studentAssociation: {
+                school: {
+                  id: {
+                    in: user?.major.schools.map(({ id }) => id) ?? [],
                   },
                 },
-                {
-                  studentAssociation: {
-                    school: {
-                      id: {
-                        in: user?.major.schools.map(({ id }) => id) ?? [],
-                      },
-                    },
-                  },
-                },
-              ],
+              },
             },
           ],
         },
@@ -291,14 +265,28 @@ builder.mutationField('upsertGroup', (t) =>
       selfJoinable: t.arg.boolean(),
       related: t.arg({ type: ['String'] }),
     },
-    authScopes(_, { uid }, { user }) {
+    async authScopes(_, { uid, type }, { user }) {
+      if (!user) return false;
       const creating = !uid;
-      if (creating) return Boolean(user?.canEditGroups);
+      const parentGroup = await prisma.group.findUnique({
+        where: { uid: uid ?? '' },
+        include: { members: true },
+      });
+      // allow board of parent group to create subgroups
+      if (creating) {
+        return Boolean(
+          user?.canEditGroups ||
+            (type === GroupPrismaType.Group &&
+              parentGroup?.members.some(
+                ({ memberId, ...permissions }) => memberId === user?.id && onBoard(permissions),
+              )),
+        );
+      }
+
       return Boolean(
         user?.canEditGroups ||
           (user?.groups ?? []).some(
-            ({ president, secretary, treasurer, vicePresident, group }) =>
-              group.uid === uid && (president || secretary || treasurer || vicePresident),
+            ({ group, ...permissions }) => group.uid === uid && onBoard(permissions),
           ),
       );
     },
@@ -316,7 +304,6 @@ builder.mutationField('upsertGroup', (t) =>
         address,
         description,
         website,
-        schoolUid,
         studentAssociationUid,
         email,
         longDescription,
@@ -398,7 +385,6 @@ builder.mutationField('upsertGroup', (t) =>
           related: { connect: related.map((uid) => ({ uid })) },
           parent:
             parentUid === null || parentUid === undefined ? {} : { connect: { uid: parentUid } },
-          school: schoolUid ? { connect: { uid: schoolUid } } : {},
           studentAssociation: studentAssociationUid
             ? { connect: { uid: studentAssociationUid } }
             : {},
@@ -416,7 +402,6 @@ builder.mutationField('upsertGroup', (t) =>
             parentUid === null || parentUid === undefined
               ? { disconnect: true }
               : { connect: { uid: parentUid } },
-          school: schoolUid ? { connect: { uid: schoolUid } } : { disconnect: true },
           studentAssociation: studentAssociationUid
             ? { connect: { uid: studentAssociationUid } }
             : { disconnect: true },

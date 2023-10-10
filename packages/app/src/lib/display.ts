@@ -1,16 +1,23 @@
 import {
-  NotificationType,
+  NotificationChannel,
   type DocumentType,
   type EventFrequency,
   type GroupType,
   type PaymentMethod,
-} from './zeus';
+} from '$lib/zeus';
 import LogoLydia from '~icons/simple-icons/lydia';
 import IconCreditCard from '~icons/mdi/credit-card-outline';
 import IconCash from '~icons/mdi/hand-coin-outline';
 import IconPaymentCheck from '~icons/mdi/checkbook';
 import IconQuestionMark from '~icons/mdi/dots-horizontal';
 import IconBankTransfer from '~icons/mdi/bank';
+import IconArticle from '~icons/mdi/note-text-outline';
+import IconShotgun from '~icons/mdi/pistol';
+import IconComment from '~icons/mdi/comment-outline';
+import IconGodparent from '~icons/mdi/account-multiple-outline';
+import IconGroupMembers from '~icons/mdi/account-group-outline';
+import IconNotification from '~icons/mdi/bell-outline';
+import IconPermissions from '~icons/mdi/shield-account-outline';
 import type { SvelteComponent } from 'svelte';
 
 export const DISPLAY_PAYMENT_METHODS = {
@@ -36,32 +43,37 @@ export const HELP_VISIBILITY = {
   Private: 'Visible par personne (excepté les administrateurs et organisateurs)',
 };
 
-export const DISPLAY_NOTIFICATION_TYPES: Record<NotificationType, string> = {
-  NewArticle: 'Nouveau post',
-  ShotgunOpeningSoon: "Ouverture imminente d'un shotgun",
-  ShotgunOpened: "Ouverture d'un shotgun",
-  ShotgunClosingSoon: "Fermeture imminente d'un shotgun",
-  ShotgunClosed: "Fermeture d'un shotgun",
-  GodparentRequestReceived: 'Réception de demandes de parrainage',
-  GodparentRequestAccepted: 'Approbation de demandes de parrainage',
-  GodparentRequestRefused: 'Refus de demandes de parrainage',
-  PermissionsChanged: 'Modification de mes permissions',
-  CommentRepliedTo: 'Réponse à un commentaire',
+export const DISPLAY_NOTIFICATION_CHANNELS: Record<NotificationChannel, string> = {
+  Articles: 'Posts',
+  Shotguns: 'Shotguns',
+  Comments: 'Commentaires',
+  GodparentRequests: 'Demandes de parrainage',
+  GroupBoard: 'Changements de bureau',
+  Permissions: 'Changement de permissions',
   Other: 'Autres',
 };
 
-export const ORDER_NOTIFICATION_TYPES: NotificationType[] = [
-  NotificationType.NewArticle,
-  NotificationType.ShotgunOpeningSoon,
-  NotificationType.ShotgunOpened,
-  NotificationType.ShotgunClosingSoon,
-  NotificationType.ShotgunClosed,
-  NotificationType.GodparentRequestReceived,
-  NotificationType.GodparentRequestAccepted,
-  NotificationType.GodparentRequestRefused,
-  NotificationType.PermissionsChanged,
-  NotificationType.CommentRepliedTo,
+export const ORDER_NOTIFICATION_CHANNELS: NotificationChannel[] = [
+  NotificationChannel.Shotguns,
+  NotificationChannel.Articles,
+  NotificationChannel.GodparentRequests,
+  NotificationChannel.Comments,
+  NotificationChannel.GroupBoard,
+  NotificationChannel.Permissions,
+  NotificationChannel.Other,
 ];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const ICONS_NOTIFICATION_CHANNELS: Record<NotificationChannel, typeof SvelteComponent<any>> =
+  {
+    Articles: IconArticle,
+    Shotguns: IconShotgun,
+    Comments: IconComment,
+    GodparentRequests: IconGodparent,
+    GroupBoard: IconGroupMembers,
+    Other: IconNotification,
+    Permissions: IconPermissions,
+  };
 
 export const DISPLAY_GROUP_TYPES: Record<GroupType, string> = {
   Association: 'Association',
@@ -107,3 +119,5 @@ export const DISPLAY_DOCUMENT_TYPES: Record<DocumentType, string> = {
   PracticalExam: 'BE',
   Summary: 'Fiche',
 };
+
+export const ORDER_REACTIONS: string[] = ['👍', '👎', '👏', '😂', '😮', '😡', '❤️', '💀', '🎉'];

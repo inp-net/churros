@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import EventForm from '$lib/components/FormEvent.svelte';
+  import FormEvent from '$lib/components/FormEvent.svelte';
   import { me } from '$lib/session';
   import { EventFrequency, Visibility } from '$lib/zeus';
   import type { PageData } from './$types';
@@ -36,6 +36,8 @@
     frequency: EventFrequency.Once,
     recurringUntil: undefined,
     pictureFile: '',
+    coOrganizers: [],
+    bannedUsers: [],
   };
   // export const snapshot: Snapshot = {
   //   capture: () => ({ event }),
@@ -52,7 +54,7 @@
 <div class="content">
   <h1>Créer un évènement</h1>
 
-  <EventForm {redirectAfterSave} bind:event availableLydiaAccounts={data.lydiaAccountsOfGroup} />
+  <FormEvent {redirectAfterSave} bind:event availableLydiaAccounts={data.lydiaAccountsOfGroup} />
 </div>
 
 <style>

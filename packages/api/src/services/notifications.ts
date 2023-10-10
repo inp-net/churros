@@ -1,14 +1,13 @@
 import {
   type Group,
   type NotificationSubscription,
-  NotificationType,
   type Ticket,
   type User,
   Visibility,
-  type NotificationSetting,
   type GroupMember,
   type Major,
   type School,
+  NotificationChannel,
 } from '@prisma/client';
 import { htmlToText } from './markdown.js';
 import { prisma } from '../prisma.js';
@@ -17,8 +16,10 @@ import { Cron } from 'croner';
 import type { MaybePromise } from '@pothos/core';
 import { Prisma } from '@prisma/client';
 import { toHtml } from './markdown.js';
-import { differenceInSeconds, minutesToSeconds, subMinutes } from 'date-fns';
+import { format, subMinutes } from 'date-fns';
 import { fullName } from '../objects/users.js';
+import { mappedGetAncestors } from 'arborist';
+import { nanoid } from 'nanoid';
 
 if (
   process.env.PUBLIC_CONTACT_EMAIL &&
@@ -47,14 +48,11 @@ export type PushNotification = {
   vibrate?: number[];
   data: {
     group: string | undefined;
-    type: NotificationType;
+    channel: NotificationChannel;
     subscriptionName?: string;
     goto: string;
   };
 };
-
-export const scheduledNotificationID = (type: NotificationType, objectId: string) =>
-  `notification/${type}/${objectId}`;
 
 export async function scheduleNewArticleNotification({
   id,
@@ -79,7 +77,6 @@ export async function scheduleNewArticleNotification({
         include: {
           group: {
             include: {
-              school: true,
               studentAssociation: {
                 include: {
                   school: true,
@@ -98,32 +95,39 @@ export async function scheduleNewArticleNotification({
       // If the article's group is not in a school the user is in
       if (
         !user.major.schools.some(
-          (school) =>
-            school.id === (article.group.school?.id ?? article.group.studentAssociation?.school.id),
+          (school) => school.id === article.group.studentAssociation?.school.id,
         )
       )
         return;
       // If the article was set to restricted and/or the user is not in the group anymore
-      if (
-        article.visibility === Visibility.Restricted &&
-        !user.groups.some(({ group }) => group.id === article.groupId)
-      )
-        return;
+      if (article.visibility === Visibility.Restricted) {
+        // Get the user's groups and their ancestors
+        const ancestors = await prisma.group
+          // Get all groups in the same family as the user's groups
+          .findMany({
+            where: { familyId: { in: user.groups.map(({ group }) => group.familyId ?? group.id) } },
+            select: { id: true, parentId: true, uid: true },
+          })
+          // Get all ancestors of the groups
+          .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
+          // Flatten the ancestors into a single array
+          .then((groups) => groups.flat());
+
+        if (!ancestors.some(({ uid }) => uid === article.group.uid)) return;
+      }
 
       return {
         title: `Nouveau post de ${article.group.name}: ${article.title}`,
         body: ellipsis(htmlToText(await toHtml(article.body))),
         data: {
           group: article.group.uid,
-          type: NotificationType.NewArticle,
+          channel: NotificationChannel.Articles,
           goto: `/posts/${article.group.uid}/${article.uid}`,
         },
       };
     },
     {
-      type: NotificationType.NewArticle,
       at: publishedAt,
-      objectId: id,
       eager,
     },
   );
@@ -135,7 +139,7 @@ export async function scheduleShotgunNotifications({
 }: {
   id: string;
   tickets: Ticket[];
-}): Promise<SizedArray<Cron | boolean, 4> | undefined> {
+}): Promise<[Cron | boolean, Cron | boolean] | undefined> {
   if (tickets.length === 0) return;
   const soonDate = (date: Date) => subMinutes(date, 10);
 
@@ -149,7 +153,7 @@ export async function scheduleShotgunNotifications({
 
   // All 4 notifications are sensibly the same
   const makeNotification =
-    (type: NotificationType) =>
+    (type: 'Closing' | 'Opening') =>
     async (
       user: User & {
         major: Major & { schools: School[] };
@@ -169,7 +173,6 @@ export async function scheduleShotgunNotifications({
                   school: true,
                 },
               },
-              school: true,
             },
           },
         },
@@ -179,7 +182,7 @@ export async function scheduleShotgunNotifications({
       if (!event) return;
 
       // Don't send if the event is not open to any school the user is in
-      const schoolOfEvent = event.group.school ?? event.group.studentAssociation?.school;
+      const schoolOfEvent = event.group.studentAssociation?.school;
       if (!user.major.schools.some((school) => school.id === schoolOfEvent?.id)) return;
 
       // Don't send notifications for unlisted or private events
@@ -194,7 +197,7 @@ export async function scheduleShotgunNotifications({
         return;
 
       // For closing notifications, don't send if the user has registered a ticket
-      if (type === NotificationType.ShotgunClosingSoon || type === NotificationType.ShotgunClosed) {
+      if (type === 'Closing') {
         const registration = await prisma.registration.findFirst({
           where: {
             ticket: {
@@ -223,7 +226,7 @@ export async function scheduleShotgunNotifications({
         body: '',
         data: {
           group: event.group.uid,
-          type,
+          channel: NotificationChannel.Shotguns,
           goto: `/events/${event.group.uid}/${event.uid}`,
         },
         image: event.pictureFile,
@@ -237,31 +240,18 @@ export async function scheduleShotgunNotifications({
       ];
 
       switch (type) {
-        case NotificationType.ShotgunOpeningSoon: {
-          notification.title = `Le shotgun pour ${event.title} ouvre bientôt !`;
-          notification.body = `À vos marques`;
+        case 'Opening': {
+          notification.title = `Shotgun pour ${event.title}`;
+          notification.body = `Prépare-toi, il ouvre à ${format(opensAt, 'HH:mm')}`;
           notification.timestamp = opensAt.valueOf();
           break;
         }
 
-        case NotificationType.ShotgunOpened: {
-          notification.title = `La chasse est ouverte !`;
-          notification.body = `Viens prendre ta place pour ${event.title}`;
-          notification.actions = openedShotgunActions;
-          break;
-        }
-
-        case NotificationType.ShotgunClosingSoon: {
-          notification.title = `Le shotgun pour ${event.title} ferme bientôt !`;
-          notification.body = `Dépêche-toi`;
+        case 'Closing': {
+          notification.title = `Shotgun pour ${event.title}`;
+          notification.body = `Attention, il ferme à ${format(closesAt, 'HH:mm')}, dépeches-toi !`;
           notification.timestamp = closesAt.valueOf();
           notification.actions = openedShotgunActions;
-          break;
-        }
-
-        case NotificationType.ShotgunClosed: {
-          notification.title = `Le shotgun pour ${event.title} est fermé !`;
-          notification.body = `Trop tard`;
           break;
         }
 
@@ -274,30 +264,12 @@ export async function scheduleShotgunNotifications({
     };
 
   return [
-    await scheduleNotification(makeNotification(NotificationType.ShotgunOpeningSoon), {
+    await scheduleNotification(makeNotification('Opening'), {
       at: soonDate(opensAt),
-      type: NotificationType.ShotgunOpeningSoon,
-      objectId: id,
-      // Only show the soon notification if the shotgun is opening in more than 2 minutes, else there's no point.
-      eager: differenceInSeconds(new Date(), opensAt) > minutesToSeconds(2),
-    }),
-    await scheduleNotification(makeNotification(NotificationType.ShotgunOpened), {
-      at: opensAt,
-      type: NotificationType.ShotgunOpened,
-      objectId: id,
       eager: true,
     }),
-    await scheduleNotification(makeNotification(NotificationType.ShotgunClosingSoon), {
+    await scheduleNotification(makeNotification('Closing'), {
       at: soonDate(closesAt),
-      type: NotificationType.ShotgunClosingSoon,
-      objectId: id,
-      // Only show the soon notification if the shotgun is closing in more than 2 minutes, else there's no point.
-      eager: differenceInSeconds(new Date(), closesAt) > minutesToSeconds(2),
-    }),
-    await scheduleNotification(makeNotification(NotificationType.ShotgunClosed), {
-      at: closesAt,
-      type: NotificationType.ShotgunClosed,
-      objectId: id,
       eager: true,
     }),
   ];
@@ -324,17 +296,13 @@ export async function scheduleNotification(
   ) => MaybePromise<PushNotification | undefined>,
   {
     at,
-    type,
-    objectId,
     eager = false,
   }: {
     at: Date;
-    type: NotificationType;
-    objectId: string;
     eager?: boolean;
   },
 ): Promise<Cron | boolean> {
-  const id = scheduledNotificationID(type, objectId);
+  const id = nanoid();
   if (at.valueOf() <= Date.now() && !eager) {
     console.info(`[cron ${id}] Not scheduling notification in the past and eager is false`);
     return false;
@@ -406,158 +374,124 @@ export async function notify<U extends User>(
       },
     },
     include: {
-      owner: {
-        include: {
-          notificationSettings: {
-            include: {
-              group: true,
-            },
-          },
-        },
-      },
+      owner: true,
     },
   });
 
-  const sentSubscriptions = [];
+  const sentSubscriptions: typeof subscriptions = [];
 
-  for (const subscription of subscriptions) {
-    const { endpoint, authKey, p256dhKey, id } = subscription;
-    const owner = users.find(({ id }) => id === subscription.owner.id);
-    if (!owner) continue;
-    let notif = typeof notification === 'function' ? await notification(owner) : notification;
-    notif = {
-      badge: '/monochrome-icon.png',
-      icon: '/favicon.png',
-      ...notif,
-    };
-    notif.data.subscriptionName = subscription.name;
-    // FIXME: waiting on <FormNotificationSetting> to not be broken anymore
-    // if (
-    //   !canSendNotificationToUser(
-    //     subscription.owner.notificationSettings,
-    //     notif.data.type,
-    //     notif.data.group,
-    //   )
-    // ) {
-    //   console.info(
-    //     `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
-    //       owner.id
-    //     }] Skipping since user has disabled ${notif.data.type} on ${
-    //       notif.data.group ?? 'global'
-    //     } notifications`,
-    //   );
-    //   continue;
-    // }
-
-    try {
-      await webpush.sendNotification(
-        {
-          endpoint,
-          keys: {
-            auth: authKey,
-            p256dh: p256dhKey,
-          },
-        },
-        JSON.stringify(notif),
-        {
-          vapidDetails: {
-            subject: `mailto:${process.env.PUBLIC_CONTACT_EMAIL}`,
-            publicKey: process.env.PUBLIC_VAPID_KEY,
-            privateKey: process.env.VAPID_PRIVATE_KEY,
-          },
-        },
-      );
-      await prisma.notification.create({
-        data: {
-          subscription: {
-            connect: {
-              id,
-            },
-          },
-          timestamp: notif.timestamp ? new Date(notif.timestamp) : new Date(),
-          actions: {
-            createMany: {
-              data: (notif.actions ?? [])
-                .filter(({ action }) => /^https?:\/\//.test(action))
-                .map(({ action, title }) => ({
-                  value: action,
-                  name: title,
-                })),
-            },
-          },
-          title: notif.title,
-          body: notif.body,
-          imageFile: notif.image,
-          vibrate: notif.vibrate,
-          goto: notif.data.goto,
-          type: notif.data.type,
-          ...(notif.data.group ? { group: { connect: { uid: notif.data.group } } } : {}),
-        },
-      });
-      sentSubscriptions.push(subscription);
-    } catch (error: unknown) {
-      if (error instanceof WebPushError) {
-        console.error(
-          `[${notif.data.type} on ${notif.data.group ?? 'global'} @ ${
+  await Promise.all(
+    subscriptions.map(async (subscription) => {
+      const { endpoint, authKey, p256dhKey, id } = subscription;
+      const owner = users.find(({ id }) => id === subscription.owner.id);
+      if (!owner) return;
+      let notif = typeof notification === 'function' ? await notification(owner) : notification;
+      notif = {
+        badge: '/logo-masked.png',
+        ...notif,
+      };
+      notif.data.subscriptionName = subscription.name;
+      if (!canSendNotificationToUser(subscription.owner, notif.data.channel)) {
+        console.info(
+          `[${notif.data.channel} on ${notif.data.group ?? 'global'} @ ${
             owner.id
-          }] ${error.body.trim()}`,
+          }] Skipping since user has disabled ${notif.data.channel} notifications`,
         );
+        return;
       }
 
-      if (
-        error instanceof WebPushError &&
-        error.body.trim() === 'push subscription has unsubscribed or expired.'
-      ) {
-        await prisma.notificationSubscription
-          .delete({
-            where: {
-              endpoint,
+      try {
+        await webpush.sendNotification(
+          {
+            endpoint,
+            keys: {
+              auth: authKey,
+              p256dh: p256dhKey,
             },
-          })
-          .catch((error) => {
-            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
-              // Subscription was deleted in the meantime, nothing to worry about
-            } else {
-              throw error;
-            }
-          });
-      }
-    }
+          },
+          JSON.stringify(notif),
+          {
+            vapidDetails: {
+              subject: `mailto:${process.env.PUBLIC_CONTACT_EMAIL}`,
+              publicKey: process.env.PUBLIC_VAPID_KEY,
+              privateKey: process.env.VAPID_PRIVATE_KEY,
+            },
+          },
+        );
+        await prisma.notification.create({
+          data: {
+            subscription: {
+              connect: {
+                id,
+              },
+            },
+            timestamp: notif.timestamp ? new Date(notif.timestamp) : new Date(),
+            actions: {
+              createMany: {
+                data: (notif.actions ?? [])
+                  .filter(({ action }) => /^https?:\/\//.test(action))
+                  .map(({ action, title }) => ({
+                    value: action,
+                    name: title,
+                  })),
+              },
+            },
+            title: notif.title,
+            body: notif.body,
+            imageFile: notif.image,
+            vibrate: notif.vibrate,
+            goto: notif.data.goto,
+            channel: notif.data.channel,
+            ...(notif.data.group ? { group: { connect: { uid: notif.data.group } } } : {}),
+          },
+        });
+        sentSubscriptions.push(subscription);
+      } catch (error: unknown) {
+        if (error instanceof WebPushError) {
+          console.error(
+            `[${notif.data.channel} on ${notif.data.group ?? 'global'} @ ${
+              owner.id
+            }] ${error.body.trim()}`,
+          );
+        }
 
-    console.info(
-      `[${notif.tag ?? '(untagged)'}] notification sent to ${
-        subscription.owner.uid
-      } with data ${JSON.stringify(notif)} (sub ${id} @ ${endpoint})`,
-    );
-  }
+        if (
+          error instanceof WebPushError &&
+          error.body.trim() === 'push subscription has unsubscribed or expired.'
+        ) {
+          await prisma.notificationSubscription
+            .delete({
+              where: {
+                endpoint,
+              },
+            })
+            .catch((error) => {
+              if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
+                // Subscription was deleted in the meantime, nothing to worry about
+              } else {
+                throw error;
+              }
+            });
+        }
+      }
+
+      console.info(
+        `[${notif.tag ?? '(untagged)'}] notification sent to ${
+          subscription.owner.uid
+        } with data ${JSON.stringify(notif)} (sub ${id} @ ${endpoint})`,
+      );
+    }),
+  );
 
   return sentSubscriptions;
 }
 
 export function canSendNotificationToUser(
-  notificationSettings: Array<NotificationSetting & { group: Group | null }>,
-  type: NotificationType,
-  groupUid: string | undefined,
+  subscriptionOwner: { enabledNotificationChannels: NotificationChannel[] },
+  channel: NotificationChannel,
 ): boolean {
-  if (groupUid) {
-    const groupSetting = notificationSettings.find(
-      ({ type: t, group }) => t === type && group?.uid === groupUid,
-    );
-    if (groupSetting) return groupSetting.allow;
-  }
-
-  const setting = notificationSettings.find(({ type: t }) => t === type);
-  if (!setting) return false;
-  if (setting.allow) return true;
-
-  return false;
+  return (
+    subscriptionOwner.enabledNotificationChannels.includes(channel) ||
+    subscriptionOwner.enabledNotificationChannels.length === 0
+  );
 }
-
-type SizedArray<T, N extends number> = N extends N
-  ? number extends N
-    ? T[]
-    : _TupleOf<T, N, []>
-  : never;
-type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N
-  ? R
-  : _TupleOf<T, N, [T, ...R]>;

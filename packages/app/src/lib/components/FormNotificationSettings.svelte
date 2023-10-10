@@ -1,173 +1,73 @@
 <script lang="ts">
-  import { DISPLAY_NOTIFICATION_TYPES, ORDER_NOTIFICATION_TYPES } from '$lib/display';
-  import { type NotificationType, Selector, zeus } from '$lib/zeus';
-  import IconEarth from '~icons/mdi/earth';
-  import { nanoid } from 'nanoid';
-  import InputCheckbox from './InputCheckbox.svelte';
+  import {
+    DISPLAY_NOTIFICATION_CHANNELS,
+    ICONS_NOTIFICATION_CHANNELS,
+    ORDER_NOTIFICATION_CHANNELS,
+  } from '$lib/display';
+  import { zeus, type NotificationChannel } from '$lib/zeus';
   import ButtonSecondary from './ButtonSecondary.svelte';
-  import InputGroup from './InputGroup.svelte';
+  import InputCheckbox from './InputCheckbox.svelte';
 
-  const asBooleanOrNull = (v: unknown) => v as boolean | null;
-
-  let loading = false;
-  export let availableGroups: Array<{
-    uid: string;
-    name: string;
-    id: string;
-    pictureFile: string;
-    pictureFileDark: string;
-  }>;
   export let userUid: string;
-  export let settings: Array<{
-    type: NotificationType;
-    allow: boolean;
-    id: string;
-    group?: undefined | { uid: string; name: string; id: string; pictureFile: string };
-  }> = [];
+  export let loading = false;
+  export let enabledChannels: NotificationChannel[];
 
-  async function updateNotificationSettings() {
+  let _enabledChannels: Record<NotificationChannel, boolean> = enabledChannelsMap(enabledChannels);
+
+  function enabledChannelsMap(channels: NotificationChannel[]) {
+    return Object.fromEntries(
+      ORDER_NOTIFICATION_CHANNELS.map((chan) => [chan, channels.includes(chan)]),
+    ) as typeof _enabledChannels;
+  }
+
+  async function save() {
     loading = true;
     const { updateNotificationSettings } = await $zeus.mutate({
       updateNotificationSettings: [
         {
+          enabledChannels: Object.entries(_enabledChannels)
+            .filter(([_, enabled]) => enabled)
+            .map(([channel]) => channel) as NotificationChannel[],
           uid: userUid,
-          notificationSettings: settings.map(({ group, type, allow }) => ({
-            type,
-            allow,
-            // eslint-disable-next-line unicorn/no-null
-            groupUid: group?.uid ?? null,
-          })),
         },
-        Selector('NotificationSetting')({
-          type: true,
-          allow: true,
-          id: true,
-          group: {
-            uid: true,
-            name: true,
-            id: true,
-            pictureFile: true,
-          },
-        }),
+        true,
       ],
     });
     loading = false;
-
-    settings = updateNotificationSettings;
-  }
-
-  function computeDisplayedSettings(
-    notifSettings: typeof settings,
-    seldGroup: typeof selectedGroup,
-  ) {
-    const predicate =
-      (t: NotificationType, seldGroup: typeof selectedGroup) =>
-      ({ type, group }: { type: NotificationType; group?: undefined | { uid: string } }) =>
-        type === t && (seldGroup ? seldGroup === group?.uid : !group);
-
-    return (ORDER_NOTIFICATION_TYPES ).map((t) =>
-      notifSettings.some(predicate(t, seldGroup))
-        ? {
-            ...notifSettings.find(predicate(t, seldGroup))!,
-            index: notifSettings.findIndex(predicate(t, seldGroup)),
-          }
-        : {
-            type: t,
-            allow: true,
-            group: seldGroup ? availableGroups.find(({ uid }) => uid === seldGroup) : undefined,
-            id: 'notifsetting:fake:' + nanoid(10),
-            index: notifSettings.findIndex(predicate(t, seldGroup)),
-          },
-    );
-  }
-
-  $: displayedSettings = computeDisplayedSettings(settings, selectedGroup);
-
-  let selectedGroup: string | undefined;
-
-  function allowOrNull(index: number, allow: boolean): boolean | null {
-    // eslint-disable-next-line unicorn/no-null
-    return index === -1 ? null : allow;
+    enabledChannels = updateNotificationSettings;
+    _enabledChannels = enabledChannelsMap(enabledChannels);
   }
 </script>
 
-<form on:submit|preventDefault={updateNotificationSettings}>
-  <div class="select-group">
-    <InputGroup
-      nullIcon={IconEarth}
-      placeholder="Globalement"
-      bind:uid={selectedGroup}
-      label="Pour"
-      allow={availableGroups.map((g) => g.uid)}
-      clearable
-      group={availableGroups.find((g) => g.uid === selectedGroup)}
-    />
-  </div>
-  <ul class="nobullet">
-    {#if selectedGroup}
-      {#each displayedSettings as { type, allow, group, index }}
-        <li>
-          <InputCheckbox
-            ternary
-            labelNull="Réglage global ({settings.find(
-              (setting) => setting.type === type && setting.group === undefined,
-            )?.allow
-              ? 'Oui'
-              : 'Non'})"
-            label={DISPLAY_NOTIFICATION_TYPES[type]}
-            value={allowOrNull(index, allow)}
-            on:input={(e) => {
-              if (!('detail' in e)) return;
-              const detail = asBooleanOrNull(e.detail);
-              if ((detail === null || detail === undefined) && index > 0) {
-                settings = settings.filter((_, i) => i !== index);
-              } else if (index === -1 && detail !== null) {
-                settings = [
-                  ...settings,
-                  {
-                    type,
-                    allow: detail,
-                    group,
-                    id: 'notifsetting:fake:' + nanoid(10),
-                  },
-                ];
-              } else if (detail !== null && detail !== undefined) {
-                settings[index].allow = detail;
-              }
-            }}
-          />
-        </li>
-      {/each}
-    {:else}
-      {#each displayedSettings as { type, index }}
-        <li>
-          <InputCheckbox
-            label={DISPLAY_NOTIFICATION_TYPES[type]}
-            bind:value={settings[index].allow}
-          />
-        </li>
-      {/each}
-    {/if}
-  </ul>
+<form on:submit|preventDefault={save}>
+  {#each ORDER_NOTIFICATION_CHANNELS as channel}
+    <InputCheckbox
+      bind:value={_enabledChannels[channel]}
+      label={DISPLAY_NOTIFICATION_CHANNELS[channel]}
+    >
+      <div class="label">
+        <div class="icon">
+          <svelte:component this={ICONS_NOTIFICATION_CHANNELS[channel]}></svelte:component>
+        </div>
+        {DISPLAY_NOTIFICATION_CHANNELS[channel]}
+      </div>
+    </InputCheckbox>
+  {/each}
+
   <section class="submit">
-    <ButtonSecondary {loading} type="submit" theme="primary">Sauvegarder</ButtonSecondary>
+    <ButtonSecondary {loading} submits>Sauvegarder</ButtonSecondary>
   </section>
 </form>
 
 <style>
-  ul {
+  form {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
   }
 
-  .submit {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-  }
-
-  .select-group {
-    margin-bottom: 1rem;
+  .icon {
+    display: inline-block;
+    width: 1.2em;
   }
 </style>

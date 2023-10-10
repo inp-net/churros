@@ -29,6 +29,13 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             pictureFile: true,
             pictureFileDark: true,
           },
+          coOrganizers: {
+            id: true,
+            uid: true,
+            name: true,
+            pictureFile: true,
+            pictureFileDark: true,
+          },
           tickets: {
             id: true,
             name: true,
@@ -144,6 +151,13 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             canEdit: true,
             canEditPermissions: true,
             canVerifyRegistrations: true,
+          },
+          bannedUsers: {
+            uid: true,
+            firstName: true,
+            lastName: true,
+            fullName: true,
+            pictureFile: true,
           },
         }),
       ],

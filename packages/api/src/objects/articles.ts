@@ -2,7 +2,7 @@ import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
-import { toHtml } from '../services/markdown.js';
+import { htmlToText, toHtml } from '../services/markdown.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
 import { LinkInput } from './links.js';
 import { dichotomid } from 'dichotomid';
@@ -23,6 +23,14 @@ export const ArticleType = builder.prismaNode('Article', {
     title: t.exposeString('title'),
     body: t.exposeString('body'),
     bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),
+    bodyPreview: t.string({
+      resolve: async ({ body }) =>
+        (
+          htmlToText(await toHtml(body))
+            .split('\n')
+            .find((line) => line.trim() !== '') ?? ''
+        ).slice(0, 255),
+    }),
     published: t.exposeBoolean('published'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
@@ -31,6 +39,35 @@ export const ArticleType = builder.prismaNode('Article', {
     author: t.relation('author', { nullable: true }),
     group: t.relation('group'),
     links: t.relation('links'),
+    myReactions: t.field({
+      type: 'BooleanMap',
+      async resolve({ id }, _, { user }) {
+        const reactions = await prisma.reaction.findMany({
+          where: { articleId: id },
+        });
+        const emojis = new Set(reactions.map((r) => r.emoji));
+        return Object.fromEntries(
+          [...emojis].map((emoji) => [
+            emoji,
+            user ? reactions.some((r) => r.emoji === emoji && r.authorId === user.id) : false,
+          ]),
+        );
+      },
+    }),
+    reactionCounts: t.field({
+      type: 'Counts',
+      async resolve({ id }) {
+        const reactions = await prisma.reaction.findMany({
+          where: { articleId: id },
+          select: { emoji: true },
+        });
+        // eslint-disable-next-line unicorn/no-array-reduce
+        return reactions.reduce<Record<string, number>>(
+          (counts, { emoji }) => ({ ...counts, [emoji]: (counts[emoji] ?? 0) + 1 }),
+          {},
+        );
+      },
+    }),
     comments: t.relatedConnection('comments', {
       cursor: 'id',
       query: {

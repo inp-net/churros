@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-await-expression-member */
 /* eslint-disable unicorn/no-null */
-import { type Group, PrismaClient, NotificationType, ContributionOption } from '@prisma/client';
+import { type Group, PrismaClient, ContributionOption } from '@prisma/client';
 import { hash } from 'argon2';
 import { compareAsc, differenceInYears, parse, parseISO } from 'date-fns';
 import { createWriteStream, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -9,6 +9,7 @@ import { Readable } from 'node:stream';
 import { finished } from 'node:stream/promises';
 import type { ReadableStream } from 'node:stream/web';
 import { SingleBar } from 'cli-progress';
+import { onBoard } from '../src/auth.js';
 const prisma = new PrismaClient();
 
 const NEW_MAJOR_SHORTNAMES: Partial<Record<Ldap.ShortName, string>> = {
@@ -195,12 +196,6 @@ async function makeUser(user: OldUser, ldapUser: Ldap.User, aeOption: Contributi
         },
       },
       links: { create: [] },
-      notificationSettings: {
-        create: Object.values(NotificationType).map((type) => ({
-          type,
-          allow: true,
-        })),
-      },
       contributions: ldapUser.inscritAE
         ? {
             create: {
@@ -296,7 +291,6 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
       const secretary = secretaryIndex > -1;
       const vicePresident = vicePresidentIndex > -1;
       const treasurer = treasurerIndex > -1;
-      const bureau = president || secretary || vicePresident || treasurer;
 
       let title = 'Membre';
       if (president) {
@@ -312,8 +306,8 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
       try {
         await prisma.groupMember.create({
           data: {
-            canEditArticles: bureau,
-            canEditMembers: bureau,
+            canEditArticles: onBoard({ president, secretary, vicePresident, treasurer }),
+            canEditMembers: onBoard({ president, secretary, vicePresident, treasurer }),
             president,
             secretary,
             treasurer,

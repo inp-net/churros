@@ -13,10 +13,11 @@
   import InputLongText from './InputLongText.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputListOfGroups from './InputListOfGroups.svelte';
-  import InputSchool from './InputSchool.svelte';
   import InputStudentAssociation from './InputStudentAssociation.svelte';
+  import { toasts } from '$lib/toasts';
 
   export let data: PageData;
+  export let creatingSubgroup = false;
 
   let serverError = '';
 
@@ -32,7 +33,6 @@
     type,
     parent,
     related,
-    school,
     studentAssociation,
   } = data.group;
 
@@ -73,7 +73,6 @@
             parentUid: parent?.uid,
             type,
             related: related.map(({ uid }) => uid),
-            schoolUid: school?.uid,
             studentAssociationUid: studentAssociation?.uid,
           },
           {
@@ -91,6 +90,7 @@
 
       serverError = '';
       data.group = upsertGroup.data;
+      toasts.success(`${data.group.name} mis à jour`);
       if (data.group.uid) await goto(`/groups/${data.group.uid}/edit`);
     } finally {
       loading = false;
@@ -99,17 +99,23 @@
 </script>
 
 <form on:submit|preventDefault={updateClub}>
-  <InputSelectOne label="Type de groupe" required options={DISPLAY_GROUP_TYPES} bind:value={type} />
+  {#if !creatingSubgroup}
+    <InputSelectOne
+      label="Type de groupe"
+      required
+      options={DISPLAY_GROUP_TYPES}
+      bind:value={type}
+    />
 
-  <div class="side-by-side">
-    <InputSchool clearable label="École de rattachement" bind:object={school} uid={school?.uid} />
-    <InputStudentAssociation
-      clearable
-      label="AE de rattachement"
-      bind:object={studentAssociation}
-      uid={studentAssociation?.uid}
-    ></InputStudentAssociation>
-  </div>
+    <div class="side-by-side">
+      <InputStudentAssociation
+        clearable
+        label="AE de rattachement"
+        bind:object={studentAssociation}
+        uid={studentAssociation?.uid}
+      ></InputStudentAssociation>
+    </div>
+  {/if}
 
   <InputCheckbox label="Auto-joignable" bind:value={selfJoinable} />
 
@@ -121,7 +127,9 @@
   <InputText label="Email" type="email" maxlength={255} bind:value={email} />
   <InputText label="Site web" type="url" maxlength={255} bind:value={website} />
   <InputSocialLinks label="Réseaux sociaux" bind:value={links} />
-  <InputGroup clearable label="Groupe parent" bind:group={parent} uid={parent?.uid} />
+  {#if !creatingSubgroup}
+    <InputGroup clearable label="Groupe parent" bind:group={parent} uid={parent?.uid} />
+  {/if}
   <InputListOfGroups
     label="Groupes à voir"
     bind:groups={related}

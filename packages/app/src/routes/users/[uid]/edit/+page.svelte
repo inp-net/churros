@@ -23,6 +23,7 @@
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import FormPassword from '$lib/components/FormPassword.svelte';
+  import FormNotificationSettings from '$lib/components/FormNotificationSettings.svelte';
 
   let godparentRequestSendServerError = '';
   let godparentRequestSending = false;
@@ -316,12 +317,11 @@
         </p>
       {/if}
       {#if data.user.uid === $me?.uid}
-        <!-- <h2>Notifications</h2>
+        <h2>Notifications</h2>
         <FormNotificationSettings
-          availableGroups={$me?.groups?.map((g) => g.group) ?? []}
           userUid={data.user.uid}
-          bind:settings={data.user.notificationSettings}
-        /> -->
+          bind:enabledChannels={data.user.enabledNotificationChannels}
+        ></FormNotificationSettings>
         <h2>Données personnelles</h2>
         <p>
           <a href="{env.PUBLIC_USER_DUMP_URL}?token={data.token}" download="{data.me.uid}.json">

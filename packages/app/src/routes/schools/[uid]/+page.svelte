@@ -1,10 +1,28 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import CardService from '$lib/components/CardService.svelte';
+  import { onDestroy, onMount } from 'svelte';
+  import { toasts } from '$lib/toasts';
 
   export let data: PageData;
 
   const { school } = data;
+
+  let warningToastId: string;
+
+  onMount(() => {
+    warningToastId = toasts.warn(
+      'Page en bêta',
+      "Les pages d'écoles ne sont pas encore terminées",
+      {
+        lifetime: Number.POSITIVE_INFINITY,
+      },
+    );
+  });
+
+  onDestroy(async () => {
+    await toasts.remove(warningToastId);
+  });
 </script>
 
 <div class="content">
@@ -36,7 +54,7 @@
         <a href={`/student-associations/${studentAssociation.uid ?? ''}/`}>
           <div class="avatar">
             <img
-              src="/student-associations/${studentAssociation.uid}.png"
+              src="/student-associations/{studentAssociation.uid}.png"
               alt={studentAssociation.name}
             />
           </div>
@@ -141,7 +159,7 @@
     justify-content: center;
   }
 
-  @media (min-width: 1000px) {
+  @media (width >= 1000px) {
     section h2 {
       justify-content: start;
       text-align: left;

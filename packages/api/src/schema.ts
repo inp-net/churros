@@ -35,6 +35,7 @@ import './objects/documents.js';
 import './objects/comments.js';
 import './objects/subjects.js';
 import './objects/minors.js';
+import './objects/reactions.js';
 
 // Import other mutations and/or queries that are not objects
 import './services/gitlab.js';

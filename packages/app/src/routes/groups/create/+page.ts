@@ -8,7 +8,6 @@ export const load: PageLoad = async ({ fetch, parent }) => {
   return {
     ...(await loadQuery(
       {
-        schools: { id: true, name: true },
         schoolGroups: { majors: { id: true, name: true }, names: true },
       },
       { fetch, parent },
@@ -19,9 +18,8 @@ export const load: PageLoad = async ({ fetch, parent }) => {
       uid: '',
       type: GroupType.Club,
       parentId: undefined,
-      school: me.major.schools[0],
       groupId: '',
-      studentAssociationId: undefined,
+      studentAssociationId: me.contributesTo[0]?.id,
       name: '',
       color: '#aaaaaa',
       address: '',

@@ -4,7 +4,7 @@
   import type { PageData } from './$types';
   import { tooltip } from '$lib/tooltip';
   import IconFacebook from '~icons/mdi/facebook-box';
-  import type { SvelteComponent } from 'svelte';
+  import { onDestroy, onMount, type SvelteComponent } from 'svelte';
   import IconInstagram from '~icons/mdi/instagram';
   import IconTwitter from '~icons/mdi/twitter';
   import IconAnilist from '~icons/simple-icons/anilist';
@@ -13,7 +13,11 @@
   import IconHackernews from '~icons/mdi/hackernews';
   import IconDiscord from '~icons/mdi/discord';
   import IconWebsite from '~icons/mdi/earth';
+  import { GroupType } from '$lib/zeus';
+  import { toasts } from '$lib/toasts';
+  import AreaContribute from '$lib/components/AreaContribute.svelte';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     facebook: IconFacebook,
     instagram: IconInstagram,
@@ -40,9 +44,17 @@
 
   const { studentAssociation } = data;
 
-  const groups = [
-    ...new Set([...studentAssociation.groups, ...studentAssociation.school.groups]),
-  ].sort((a, b) => a.name.localeCompare(b.name));
+  let warningToastId: string;
+
+  onMount(() => {
+    warningToastId = toasts.warn('Page en bêta', "Les pages d'AEs ne sont pas encore finiolées", {
+      lifetime: Number.POSITIVE_INFINITY,
+    });
+  });
+
+  onDestroy(async () => {
+    await toasts.remove(warningToastId);
+  });
 </script>
 
 <div class="content">
@@ -73,15 +85,31 @@
     </div>
   </header>
 
-  <section class="description">
-    <h2>Description</h2>
-    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-    {@html studentAssociation.description}
-  </section>
+  <div class="description-and-contribution">
+    <section class="description">
+      <h2>Description</h2>
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+      {@html studentAssociation.description}
+    </section>
+    <section class="contribute">
+      {#if data.me}
+        <h2>Cotiser</h2>
+        {#if data.me.contributesTo.some((c) => c.uid === studentAssociation.uid)}
+          <p>Tu cotises pour {studentAssociation.name}. Merci!</p>
+        {:else}
+          <AreaContribute
+            {studentAssociation}
+            pendingContributions={data.me.pendingContributions}
+            contributionOptions={studentAssociation.contributionOptions}
+          />
+        {/if}
+      {/if}
+    </section>
+  </div>
 
-  <section class="StudentAssociationSections">
+  <section class="student-association-sections">
     <h2>Bureaux de l'association</h2>
-    {#each groups.filter((group) => group.type === 'StudentAssociationSection') as studentAssociationSection}
+    {#each studentAssociation.groups.filter((group) => group.type === GroupType.StudentAssociationSection) as studentAssociationSection}
       <a href="/groups/{studentAssociationSection.uid}/" class="group">
         <div class="avatar">
           <img
@@ -104,7 +132,7 @@
   <section class="clubs">
     <h2>Associations et Clubs</h2>
     <div class="groups">
-      {#each groups.filter((group) => group.type === 'Club' || group.type === 'Association') as group}
+      {#each studentAssociation.groups.filter((group) => group.type === GroupType.Club || group.type === GroupType.Association) as group}
         <a href="/groups/{group.uid}/" class="group">
           <div class="avatar">
             <img src="{env.PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} />
@@ -156,7 +184,15 @@
     flex-wrap: wrap;
     column-gap: 1rem;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  section.student-association-sections,
+  section.clubs {
+    h2 {
+      margin-bottom: 1rem;
+    }
   }
 
   .avatar {
@@ -211,7 +247,7 @@
     margin-bottom: 1rem;
   }
 
-  @media (min-width: 1000px) {
+  @media (width >= 1000px) {
     section h2 {
       justify-content: start;
       text-align: left;
@@ -223,7 +259,7 @@
 
     .content {
       display: grid;
-      grid-template-areas: 'header header' 'description StudentAssociationSections' 'clubs clubs';
+      grid-template-areas: 'header header' 'description-and-contribution student-association-sections' 'clubs clubs';
       grid-template-columns: 50% 50%;
       column-gap: 5rem;
       justify-content: start;
@@ -236,12 +272,23 @@
     }
 
     section.description {
-      grid-area: description;
       justify-content: start;
 
       :global(p) {
         text-align: left;
       }
+    }
+
+    section.contribute {
+      margin-top: 2rem;
+
+      h2 {
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    .description-and-contribution {
+      grid-area: description-and-contribution;
     }
 
     .clubs {
