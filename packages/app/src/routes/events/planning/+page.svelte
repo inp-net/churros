@@ -3,7 +3,7 @@
   import IconChevronDown from '~icons/mdi/chevron-down';
   import type { PageData } from './$types';
   import CalendarDay from '$lib/components/CalendarDay.svelte';
-  import { compareAsc, format, parseISO } from 'date-fns';
+  import { compareAsc, format, isFuture, isToday, parse, parseISO } from 'date-fns';
   import { closestMonday } from '$lib/dates';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
@@ -25,7 +25,11 @@
   );
 
   $: shownDays = [...new Set([...Object.keys(groupedByDate), ...Object.keys(groupedByShotgun)])]
-    .filter(Boolean)
+    .filter((dateString) => {
+      if (!dateString) return false;
+      const date = parse(dateString, 'yyyy-MM-dd', new Date());
+      return isFuture(date) || isToday(date);
+    })
     .sort();
 
   let openedShotgunsList: string | undefined = undefined;
