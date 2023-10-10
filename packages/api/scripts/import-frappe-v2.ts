@@ -1043,6 +1043,13 @@ async function createSubjects(
       const { id, uid, minors } = await p.subject.create({
         data: {
           ...subject,
+          unit: {
+            create: {
+              name: Array.isArray(oldFrappeCodes)
+                ? oldFrappeCodes.join(',')
+                : oldFrappeCodes.toString(),
+            },
+          },
           uid: slug(shortName),
           majors: { connect: { id: major.id } },
           minors: subject.minors

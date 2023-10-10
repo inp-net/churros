@@ -23,7 +23,9 @@ packages/api/scripts/import.log
 packages/api/scripts/ldap-types.js
 packages/api/scripts/*.ldif
 packages/api/scripts/*.json
+packages/api/scripts/*.tar.gz
 packages/api/storage/
+packages/api/scripts/frappe-documents/
 
 visual-identity/
 packages/api/scripts/.venv/
