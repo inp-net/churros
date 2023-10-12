@@ -1,7 +1,9 @@
 import { loadQuery } from '$lib/zeus';
+import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent, params }) => {
+  if (params.major === 'eeea') throw redirect(307, '/documents/eeea');
   const yearTier = Number.parseInt(params.yearTier.replace(/a(-fis(e|a))?$/, ''), 10);
   const forApprentices = params.yearTier.endsWith('a-fisa');
   return loadQuery(
