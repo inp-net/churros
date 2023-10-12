@@ -817,3 +817,13 @@ await prisma.thirdPartyApp.create({
     owner: { connect: { id: ski.id } },
   },
 });
+
+await prisma.shopItem.create({
+  data: {
+    name: 'Boules quies',
+    description: 'Achter des boules quies pour pas entendre Téo',
+    price: 10,
+    quantity: 10,
+    group: { connect: { uid: 'ski' } },
+  },
+});

@@ -40,6 +40,8 @@ import './objects/user-candidates.js';
 import './objects/users.js';
 import './services/ade.js';
 import './services/oauth.js';
+import './objects/pictures.js';
+import './objects/shop-items.js';
 
 // Import other mutations and/or queries that are not objects
 import './services/gitlab.js';

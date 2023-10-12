@@ -57,6 +57,9 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   reac: 'Reaction',
   promocode: 'PromotionCode',
   promo: 'Promotion',
+  picfile: 'Picture',
+  shopitem: 'ShopItem',
+  shoppayment: 'ShopPayment',
 } as const;
 /* end @generated from schema */
 
