@@ -26,6 +26,9 @@ import '#modules/services';
 import '#modules/student-associations';
 import '#modules/ticketing';
 import '#modules/users';
+import './objects/pictures.js';
+import './objects/shop-items.js';
+
 
 const { rateLimitDirectiveTransformer } = rateLimitDirective({
   keyGenerator: (dargs, src, args, ctx: Context, info) => {
