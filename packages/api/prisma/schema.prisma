@@ -816,7 +816,7 @@ model Reaction {
   @@unique([emoji, authorId, commentId])
 }
 
-model StoreIem {
+model StoreItem {
   id       String    @id @default(dbgenerated("nanoid('storeitem:')"))
   name     String    @db.VarChar(255)
   price    Float     @default(0)
