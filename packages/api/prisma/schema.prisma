@@ -554,7 +554,8 @@ model Ticket {
 /// A reservation is a user's registration for a ticket
 model Registration {
   id            String         @id @default(dbgenerated("nanoid('r:')"))
-  ticketId      String
+  ticketId      String?
+  shopItemId    String?
   beneficiary   String
   authorId      String?
   authorEmail   String         @default("")
@@ -567,7 +568,8 @@ model Registration {
   paid          Boolean        @default(false)
 
   lydiaTransaction LydiaTransaction?
-  ticket           Ticket            @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  ticket           Ticket?           @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  shopItem         ShopeItem?        @relation(fields: [shopItemId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   author           User?             @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   verifiedBy       User?             @relation(name: "verifiedBy", fields: [verifiedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   verifiedAt       DateTime?
@@ -823,8 +825,12 @@ model ShopeItem {
   quantity Int       @default(0)
   description String @default("") @db.Text
   pictureFile String @default("") @db.VarChar(255)
+  startsAt    DateTime?
+  endsAt      DateTime?
   groupId     String
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
+  registrations         Registration[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
