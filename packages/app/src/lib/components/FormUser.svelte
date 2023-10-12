@@ -61,7 +61,7 @@
       major: {
         name: string;
         id: string;
-        minors: Array<{ id: string; name: string; yearTier: number }>;
+        minors: Array<{ id: string; name: string; yearTier: number; shortName: string }>;
         schools: Array<{
           name: string;
           id: string;
@@ -251,6 +251,7 @@
   {/if}
   <InputField label="Parcours">
     <InputSearchObject
+      hint="Si tu ne trouves pas ton parcours, vérifies ta filière et ta promo"
       clearable
       value={minor?.id}
       valueKey="id"
@@ -260,12 +261,17 @@
         new Fuse(
           major.minors.filter((m) => m.yearTier === yearTier(graduationYear)),
           {
-            keys: ['name', 'id'],
+            keys: ['name', 'id', 'shortName'],
           },
         )
           .search(query)
           .map((r) => r.item)}
-    ></InputSearchObject>
+    >
+      <span slot="item" let:item
+        >{item.shortName || item.name}
+        {#if item.shortName && item.shortName !== item.name}({item.name}){/if}</span
+      >
+    </InputSearchObject>
   </InputField>
   <div class="side-by-side">
     <InputText

@@ -71,7 +71,7 @@ export const _userQuery = Selector('User')({
   major: {
     id: true,
     name: true,
-    minors: { id: true, name: true, yearTier: true },
+    minors: { id: true, name: true, yearTier: true, shortName: true },
     schools: {
       name: true,
       id: true,
