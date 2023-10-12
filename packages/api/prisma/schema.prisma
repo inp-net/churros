@@ -78,6 +78,7 @@ model User {
   comments                  Comment[]
   bannedFromEvents          Event[]                    @relation("bannedFromEvents")
   reactions                 Reaction[]
+  shopPayments              ShopPayment[]
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -554,8 +555,7 @@ model Ticket {
 /// A reservation is a user's registration for a ticket
 model Registration {
   id            String         @id @default(dbgenerated("nanoid('r:')"))
-  ticketId      String?
-  shopItemId    String?
+  ticketId      String
   beneficiary   String
   authorId      String?
   authorEmail   String         @default("")
@@ -568,8 +568,7 @@ model Registration {
   paid          Boolean        @default(false)
 
   lydiaTransaction LydiaTransaction?
-  ticket           Ticket?           @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  shopItem         ShopItem?        @relation(fields: [shopItemId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  ticket           Ticket            @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   author           User?             @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   verifiedBy       User?             @relation(name: "verifiedBy", fields: [verifiedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   verifiedAt       DateTime?
@@ -623,6 +622,8 @@ model LydiaTransaction {
   phoneNumber                      String        @default("") @db.VarChar(255)
   registrationId                   String?       @unique
   registration                     Registration? @relation(fields: [registrationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  shopPaymentId                    String?       @unique
+  shopPayment                      ShopPayment?  @relation(fields: [shopPaymentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   requestId                        String?
   requestUuid                      String?
   transactionId                    String?
@@ -830,15 +831,33 @@ model ShopItem {
   name     String    @db.VarChar(255)
   price    Float     @default(0)
   quantity Int       @default(0)
+  max      Int        @default(0)
+  visibility  Visibility @default(Private)
+  archived Boolean   @default(false)
   description String @default("") @db.Text
   startsAt    DateTime?
   endsAt      DateTime?
   groupId     String
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
-  registrations         Registration[]
   pictures              Picture[]
+  shopPayments          ShopPayment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ShopPayment {
+  id       String    @id @default(dbgenerated("nanoid('shoppayment:')"))
+  shopItemId String
+  userId String
+  paid Boolean @default(false)
+  quantity Int @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  paymentMethod PaymentMethod
+
+  shopItem ShopItem @relation(fields: [shopItemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  lydiaTransaction LydiaTransaction?
 }

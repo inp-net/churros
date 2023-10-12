@@ -38,6 +38,8 @@ import './objects/teaching-units.js';
 import './objects/minors.js';
 import './objects/reactions.js';
 import './services/ade.js';
+import './objects/pictures.js';
+import './objects/shop-items.js';
 
 // Import other mutations and/or queries that are not objects
 import './services/gitlab.js';
