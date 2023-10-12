@@ -8,15 +8,25 @@
   export let name: string;
   export let shortName: string;
   export let semester: number | undefined = undefined;
+  export let yearTier: number | undefined = undefined;
+
+  // Converts relative (1=first or 2=second) semester to absolute (S5, S6, etc) semester. Behavior for relativeSemester>2 is undefined.
+  function absoluteSemester(relativeSemester: number) {
+    return 4 + (yearTier ?? 0) + (relativeSemester - 1) * 2;
+  }
 </script>
 
 <a {href}>
   <article class="document">
     <header>
       <h3>
-        {#if semester}
-          <span class="semester muted">{semester}<sup>e</sup> Semestre</span>
-        {/if}
+        <span class="semester muted">
+          {#if semester}
+            S{absoluteSemester(semester)}
+            <!-- {:else}
+            S{absoluteSemester(1)}+S{absoluteSemester(2)} -->
+          {/if}
+        </span>
         {shortName || name}
       </h3>
     </header>

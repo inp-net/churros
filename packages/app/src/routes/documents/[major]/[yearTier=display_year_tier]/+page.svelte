@@ -30,16 +30,16 @@
   <Breadcrumb>{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
 </Breadcrumbs>
 
-{#if displayPreferredMinor}
+{#if displayPreferredMinor && $me?.minor}
   <div class="minor-anchor" id={$me.minor.uid}></div>
   <h2>
     {$me.minor.name}
     <a href="#{$me.minor.uid}" class="jump-to-anchor"><IconLink></IconLink></a>
   </h2>
   <ul class="nobullet">
-    {#each subjectsOfMinor($me.minor) as { node } (node.uid)}
+    {#each subjectsOfMinor($me.minor) as node (node.uid)}
       <li>
-        <CardSubject href="./{node.uid}" majors={[]} {...node}></CardSubject>
+        <CardSubject href="./{node.uid}" {...node}></CardSubject>
       </li>
     {:else}
       <li class="empty muted">Aucune matière dans ta filière??? Contactes net7.</li>
@@ -66,7 +66,7 @@
   <ul class="nobullet minorless-subjects">
     {#each subjectsOfMinor(undefined) as subject (subject.id)}
       <li>
-        <CardSubject href="./{subject.uid}" majors={[]} {...subject}></CardSubject>
+        <CardSubject href="./{subject.uid}" {...subject}></CardSubject>
       </li>
     {/each}
   </ul>
@@ -81,7 +81,7 @@
   <ul class="nobullet">
     {#each subjectsOfMinor(minor) as subject (subject.id)}
       <li>
-        <CardSubject href="./{subject.uid}" majors={[]} {...subject}></CardSubject>
+        <CardSubject href="./{subject.uid}" {...subject}></CardSubject>
       </li>
     {/each}
   </ul>
