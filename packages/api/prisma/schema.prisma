@@ -373,7 +373,7 @@ model Group {
   tickets            Ticket[]            @relation("openTo")
   barWeeks           BarWeek[]
   services           Service[]
-  storeItems         StoreIem[]
+  shopeItems         ShopeItem[]
 
   notifications          Notification[]
   groupId                String?
@@ -816,7 +816,7 @@ model Reaction {
   @@unique([emoji, authorId, commentId])
 }
 
-model StoreItem {
+model ShopeItem {
   id       String    @id @default(dbgenerated("nanoid('storeitem:')"))
   name     String    @db.VarChar(255)
   price    Float     @default(0)
