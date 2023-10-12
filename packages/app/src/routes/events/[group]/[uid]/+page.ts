@@ -89,6 +89,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           frequency: true,
           reactionCounts: true,
           myReactions: true,
+          visibility: true,
           articles: {
             uid: true,
             bodyHtml: true,
