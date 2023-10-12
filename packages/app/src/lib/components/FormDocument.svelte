@@ -167,7 +167,6 @@
       ></InputSubject>
       <InputText label="Titre" required bind:value={data.title}></InputText>
       <InputNumber
-        unit="{data.schoolYear}-{data.schoolYear + 1}"
         hint="Mettre la plus petite année. Par exemple, {new Date().getFullYear()} pour l'année {new Date().getFullYear()}-{new Date().getFullYear() +
           1}"
         label="Année scolaire"
