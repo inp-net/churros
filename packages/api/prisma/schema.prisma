@@ -373,6 +373,7 @@ model Group {
   tickets            Ticket[]            @relation("openTo")
   barWeeks           BarWeek[]
   services           Service[]
+  storeItems         StoreIem[]
 
   notifications          Notification[]
   groupId                String?
@@ -813,4 +814,18 @@ model Reaction {
   @@unique([emoji, authorId, articleId])
   @@unique([emoji, authorId, eventId])
   @@unique([emoji, authorId, commentId])
+}
+
+model StoreIem {
+  id       String    @id @default(dbgenerated("nanoid('storeitem:')"))
+  name     String    @db.VarChar(255)
+  price    Float     @default(0)
+  quantity Int       @default(0)
+  description String @default("") @db.Text
+  pictureFile String @default("") @db.VarChar(255)
+  groupId     String
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
