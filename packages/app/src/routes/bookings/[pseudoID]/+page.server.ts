@@ -36,6 +36,9 @@ const ID_PREFIXES_TO_TYPENAMES = {
   doc: 'Document',
   comment: 'Comment',
   reac: 'Reaction',
+  picfile: 'Picture',
+  shopitem: 'ShopItem',
+  shoppayment: 'ShopPayment',
 } as const;
 /* end @generated from schema */
 
