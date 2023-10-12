@@ -411,7 +411,7 @@ model Group {
   tickets            Ticket[]            @relation("openTo")
   barWeeks           BarWeek[]
   services           Service[]
-  shopeItems         ShopeItem[]
+  shopeItems         ShopItem[]
 
   notifications          Notification[]
   groupId                String?
@@ -610,7 +610,7 @@ model Registration {
   lydiaTransaction  LydiaTransaction?
   paypalTransaction PaypalTransaction?
   ticket            Ticket?            @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  shopItem         ShopeItem?        @relation(fields: [shopItemId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  shopItem          ShopItem?        @relation(fields: [shopItemId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   author            User?              @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   verifiedBy        User?              @relation(name: "verifiedBy", fields: [verifiedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   verifiedAt        DateTime?
@@ -919,8 +919,8 @@ model Promotion {
   priceOverride Int
 }
 
-model ShopeItem {
-  id       String    @id @default(dbgenerated("nanoid('storeitem:')"))
+model ShopItem {
+  id       String    @id @default(dbgenerated("nanoid('shopitem:')"))
   name     String    @db.VarChar(255)
   price    Float     @default(0)
   quantity Int       @default(0)
