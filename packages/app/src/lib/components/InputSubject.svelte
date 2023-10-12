@@ -9,14 +9,18 @@
     uid?: string;
     name: string;
     shortName: string;
-    minors: Array<{ name: string }>;
-    majors: Array<{ name: string }>;
+    yearTier: number;
+    minors: Array<{ name: string; uid: string }>;
+    majors: Array<{ name: string; uid: string }>;
   };
   export let object: Subject | undefined;
   export let uid: string | undefined;
 
   export let label: string;
   export let clearable = false;
+
+  export let restrainToYearTier: number | undefined = undefined;
+  export let restrainToMajorUid: string | undefined = undefined;
 
   let subjects: Subject[] = [];
   onMount(async () => {
@@ -25,11 +29,16 @@
         uid: true,
         name: true,
         shortName: true,
+        yearTier: true,
         majors: {
+          uid: true,
           name: true,
+          shortName: true,
         },
         minors: {
           name: true,
+          shortName: true,
+          yearTier: true,
         },
       },
     }));
@@ -41,11 +50,29 @@
     {clearable}
     search={(q) =>
       new Fuse(
-        subjects.map((s) => ({
-          ...s,
-        })),
+        subjects
+          .filter((s) => {
+            if (restrainToYearTier) 
+              return s.yearTier === restrainToYearTier;
+            
+            if (restrainToMajorUid) 
+              return s.majors.some((m) => m.uid === restrainToMajorUid);
+            
+            return true;
+          })
+          .map((s) => ({
+            ...s,
+          })),
         {
-          keys: ['name', 'uid', 'shortName'],
+          keys: [
+            'name',
+            'uid',
+            'shortName',
+            'majors.name',
+            'minors.name',
+            'majors.shortName',
+            'minors.shortName',
+          ],
         },
       )
         .search(q)
@@ -56,9 +83,10 @@
     labelKey="name"
   >
     <span class="label" slot="item" let:item
-      >{item.shortName || item.name} · {[...item.majors, ...item.minors]
-        .map((s) => s.name)
-        .join(', ')}</span
+      >{item.shortName || item.name} · {item.yearTier}A {item.majors
+        .map((s) => s.shortName)
+        .join(', ')}
+      {#if item.minors.length > 0}({item.minors.map((s) => s.shortName).join(', ')}){/if}</span
     >
   </InputSearchObject>
 </InputField>
