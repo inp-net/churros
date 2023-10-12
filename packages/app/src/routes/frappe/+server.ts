@@ -9,6 +9,8 @@ export const GET: RequestHandler = ({ locals, url }) => {
   const tier = yearTier(me.graduationYear);
   throw redirect(
     303,
-    tier > 3 ? `/documents` : `/documents/${me.major.uid}/${tier}a${me.apprentice ? '-fisa' : ''}/`,
+    tier > 3
+      ? `/documents`
+      : `/documents/${me.major.uid}/${tier}a${me.apprentice ? '-fisa' : '-fise'}/`,
   );
 };
