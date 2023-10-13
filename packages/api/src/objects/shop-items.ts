@@ -79,9 +79,6 @@ export async function visibleShopPrismaQuery(groupUid: string, user: { id: strin
 builder.queryField('shopItems', (t) =>
   t.prismaField({
     type: [ShopItemType],
-    authScopes(_, {}, { user }) {
-      return Boolean(user);
-    },
     args: {
       groupUid: t.arg.string(),
     },
