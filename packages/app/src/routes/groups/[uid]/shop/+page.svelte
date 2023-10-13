@@ -31,7 +31,7 @@
   {#each shopItems as shopItem}
     <div>
       <p>{shopItem.name}</p>
-      <p>{shopItem.quantity}*{shopItem.price} €</p>
+      <p>{shopItem.stock}*{shopItem.price} €</p>
       <p>max: {shopItem.max}</p>
       <p>{shopItem.description}</p>
     </div>
