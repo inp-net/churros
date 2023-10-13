@@ -112,13 +112,14 @@ CREATE TABLE "ShopItem" (
     "id" TEXT NOT NULL DEFAULT nanoid('shopitem:'),
     "name" VARCHAR(255) NOT NULL,
     "price" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "quantity" INTEGER NOT NULL DEFAULT 0,
+    "stock" INTEGER NOT NULL DEFAULT 0,
     "max" INTEGER NOT NULL DEFAULT 0,
     "visibility" "Visibility" NOT NULL DEFAULT 'Private',
     "archived" BOOLEAN NOT NULL DEFAULT false,
     "description" TEXT NOT NULL DEFAULT '',
     "startsAt" TIMESTAMP(3),
     "endsAt" TIMESTAMP(3),
+    "lydiaAccountId" TEXT,
     "groupId" TEXT NOT NULL,
     "allowedPaymentMethods" "PaymentMethod"[] DEFAULT ARRAY[]::"PaymentMethod"[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -161,6 +162,9 @@ ALTER TABLE "LydiaTransaction" ADD CONSTRAINT "LydiaTransaction_shopPaymentId_fk
 
 -- AddForeignKey
 ALTER TABLE "ShopItem" ADD CONSTRAINT "ShopItem_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ShopItem" ADD CONSTRAINT "ShopItem_lydiaAccountId_fkey" FOREIGN KEY ("lydiaAccountId") REFERENCES "LydiaAccount"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ShopPayment" ADD CONSTRAINT "ShopPayment_shopItemId_fkey" FOREIGN KEY ("shopItemId") REFERENCES "ShopItem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
