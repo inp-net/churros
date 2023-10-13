@@ -12,7 +12,7 @@
   onMount(() => {
     warningToastId = toasts.warn(
       'Page en bêta',
-      "Les pages d'écoles ne sont pas encore terminées",
+      "Les boutiques sont en cours de fonctionnement",
       {
         lifetime: Number.POSITIVE_INFINITY,
       },
