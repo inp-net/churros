@@ -79,7 +79,6 @@
       Introduction aux télécommunications:
         N6EE07A: Introduction aux communications numériques
         N6EE07B: Introduction aux réseaux
-
   2A:
     FISA:
       (*):
@@ -538,3 +537,529 @@
         N9EE37: Formation générale
         N9EK01A: Professional English-S9
         N9EE37A: Journées thématiques énergies et développement durable
+SN:
+  1A:
+    FISA:
+      (*):
+        # S5 - Bases des réseaux
+        - N5AN01A: Introduction aux Réseaux
+        - N5AN01B: Protocoles de l'Internet
+        # S5 - UE Méthodologie de la programmation
+        - Méthodologie de la Programmation
+        # S5 - UE Outils d'Ingénierie 1
+        - 'Remise à niveau: Math'
+        - Probabilités
+        - Logique, preuve et induction
+        # S5 - UE Architecture des ordinateurs
+        - Architecture des ordinateurs
+        # S6 - UE Réseaux opérés
+        - Réseaux téléphoniques
+        - Réseaux longue distance
+        # S6 - UE Technologie Objet
+        - Conception et Programmation Objet
+        # S6 - UE Systèmes centralisés
+        - Systèmes Centralisés
+        # S6 - UE Outils d'ingénierie 2
+        - Base de données
+        - Automates
+        - Théorie des Graphes
+    FISE:
+      (*):
+        # S5 - Environnement informatique
+        - Environnement informatique
+        # S5 - UE Analyse Numérique - Statistiques
+        - Statistiques
+        - EDP: Équations aux dérivées partielles
+        - Optimisation
+        # S5 - UE Intégration et Applications - Probabilités
+        - Intégration: Intégration et applications
+        - Probabilités
+        # S5 - UE Mise à niveau Math
+        - 'Mise à niveau: Algèbre'
+        - 'Mise à niveau: Analyse'
+        # S5 - UE Modélisation - Architecture
+        - Modélisation
+        - Archi: Architecture des ordinateurs
+        # S5 - UE Programmation Impérative
+        - PIM: Programmation impérative
+        # S5 - UE Analyse de Données - Automatique
+        - Analyse de Données
+        - Automatique
+        - Langage C
+        # S6 - UE Architecture - Système
+        - SEC: Systèmes d'Exploitation Centralisés
+        - Langage C
+        # S6 - UE Calcul scientifique – Apprentissage
+        - CS: Calcul Scientifique
+        - Apprentissage
+        # S6 - UE Réseaux
+        - Rézoloco: Réseaux locaux
+        - Internet
+        # S6 - UE Traitement du Signal - Télécommunications
+        - Télécom: Télécommunications
+        - TS: Traitement du signal
+        # S6 - UE Technologie Objet - Technologie Objet
+        - TOB: Technologie Objet
+  2A:
+    FISE:
+      # S7
+      N7EN01: IDM et Intergiciels - T (wtf????)
+      N7EN01A: Ingénierie dirigée par les modèles
+      N7EN01B: Intergiciels
+      N7EN01C: Introduction aux Applications Web
+      N7EN02: Communications Numériques sur Canaux Sélectifs - RT
+      N7EN02A: Modélisation canal
+      N7EN02B: Égalisation de canal
+      N7EN02C: OFDM/CDMA
+      N7EN03: Communications numériques codées - RT
+      N7EN03A: Codage canal
+      N7EN03B: Récepteurs
+      N7EN03C: codage source
+      N7EN03D: Projet
+      N7EN05: Internet et Graphes - ART
+      N7EN05A: Internet
+      N7EN05B: Théorie des graphes
+      N7EN05C: Projet d'interconnexion
+      N7EN06: Réseaux Locaux et de Télécommunications - ART
+      N7EN06A: Réseaux Locaux
+      N7EN06B: Réseaux de Télécommunications
+      N7EN07: Architecture des Ordinateurs - A
+      N7EN07A: Architecture des Ordinateurs
+      N7EN08: Programmation Fonctionnelle et Traduction des Langages - ABML
+      N7EN08A: Programmation Fonctionnelle
+      N7EN08B: Traduction des langages
+      N7EN08C: Projets PF et TDL
+      N7EN09: Systèmes Concurrents et Communicants - AMRL
+      N7EN09A: Systèmes Concurrents
+      N7EN09B: Intergiciels
+      N7EN09C: Projet Données Réparties
+      N7EN10: Théorie des Automates et des Langages, Théorie des Graphes - BML
+      N7EN10A: Automates
+      N7EN10B: Graphes
+      N7EN11: Génie du Logiciel et des Systèmes - BML
+      N7EN11A: Génie du Logiciel et des Systèmes
+      N7EN12: Optimisation et RO - BML
+      N7EN12A: Optimisation
+      N7EN12B: Recherche opérationnelle
+      N7EN13: Programmation fonctionnelle
+      N7EN13A: Programmation Fonctionnelle
+      N7EN16: Systèmes concurrents et communicants - B
+      N7EN16A: Systèmes Concurrents
+      N7EN16B: Intergiciels
+      N8EN01: Applications concurrentes et communicantes, bases de données
+      N8EN01A: OpenMP
+      N8EN01B: Applications Web
+      N8EN01C: Base de données
+      N8EN01E: Projet Données Réparties
+      N8EN03: Algèbre Linéaire Avancée
+      N8EN03A: Algèbre Linéaire Creuse
+      N8EN03B: Algèbre linéaire pour le data mining
+      N8EN03C: Simulation numérique
+      N8EN04: Traitement des données audio-visuelles
+      N8EN04A: Traitement des données audio-visuelles
+      N8EN05: Contrôle et Analyse Multirésolution
+      N8EN05A: Analyse Hilbertienne et applications
+      N8EN05B: Contrôle Optimal
+      N8EN06: Modélisation Géométrique et EDP
+      N8EN06A: Modélisation Géométrique
+      N8EN06B: Équations aux Dérivées Partielles
+      N8EN07: Apprentissage Machine et optimisation
+      N8EN07A: Optimisation 2
+      N8EN07B: Statistiques 2
+      N8EN08: Méthodes formelles
+      N8EN08A: Systèmes de transitions
+      N8EN08B: Vérification par Analyse Statique
+      N8EN09: Paradigmes émergents de la programmation
+      N8EN09A: Programmation Déclarative
+      N8EN09B: Programmation Avancée
+      N8EN09C: Calculabilité & complexité
+      N8EN10: Sémantique et Traduction des Langages
+      N8EN10A: Sémantique et Traduction des Langages
+      N8EN11: Image, Modélisation et Rendu
+      N8EN11A: Traitement d'Images
+      N8EN11B: Modélisation
+      N8EN11C: Rendu
+      N8EN12: Programmation Mobile et apprentissage profond
+      N8EN12A: Programmation Mobile
+      N8EN12B: Apprentissage Profond
+      N8EN13: Récepteurs Numériques Avancés
+      N8EN13A: Bancs de Filtres
+      N8EN13B: Conception de récepteur
+      N8EN13C: Systèmes à étalement de spectre
+      N8EN13D: Projet
+      N8EN14: Optimisation et Apprentissage
+      N8EN14A: Algorithmes adaptatifs et distribués
+      N8EN14B: Optimisation pour les Télécommunications
+      N8EN14C: Détection, classification et apprentissag
+      N8EN14D: Modélisation des réseaux
+      N8EN16: Systèmes Numériques de Traitement de l'Information
+      N8EN16A: FPGA - architecture et programmation
+      N8EN16C: Processeur pour le traitement du signal
+      N8EN18: Science des réseaux et apprentissage
+      N8EN18A: Qualité de service
+      N8EN18B: Contrôle et Apprentissage
+      N8EN18C: Science des réseaux
+      N8EN18D: Projet Ingénierie des réseaux
+      N8EN19: Systèmes de télécom sans fil et mobiles 1
+      N8EN19A: Réseaux mobiles (T)
+      N8EN19B: Réseaux sans fil (T)
+      N8EN19C: Couches Physiques
+      N8EN20: Systèmes, Applications Mobiles & Sécurité
+      N8EN20A: Systèmes d’exploitation
+      N8EN20B: Programmation de mobiles
+      N8EN20C: Sécurité
+      N8EN21: Architecture des Systèmes d'exploitation
+      N8EN21A: Architecture des Systèmes d'exploitation
+      N8EN22: IDM et développement web
+      N8EN22A: Ingénierie Dirigée par les Modèles (IDM)
+      N8EN22B: Applications Web
+      N8EN23: Interconnexion et Modélisation des Réseaux
+      N8EN23A: Interconnexion
+      N8EN23B: Évaluation de Performances
+      N8EN23C: Simulation des réseaux
+      N8EN24: Systèmes de télécom sans fil et mobiles 2
+      N8EN24A: réseaux mobiles
+      N8EN24B: Réseaux sans fil
+      N8EN24C: Projet de Réseaux Sans FIl
+      N8EN24D: Projet de réseaux mobiles
+      N8EN24E: Couches PHY Parcours R
+      N8EN25: Systèmes de télécom sans fil et mobiles 3
+      N8EN25A: Réseaux mobiles
+      N8EN25B: Réseaux sans fil
+      N8EN25C: Sécurité
+      N8EN25D: Couches PHY Parcours A
+    FISA:
+      ModIA:
+        N8EAN01: Traitement du Signal
+        N8EAN01A: Ondelettes
+        N8EAN01B: Analyse Hilbertienne
+        N8EAN02: Infrastructure pour le big data et virtualisation
+        N8EAN02A: Infrastructure pour le big data et virtualisation
+        N8EAN03: Programmation fonctionnelle et Théorie des graphes
+        N8EAN03A: Théorie des Graphes
+        N8EAN03B: Programmation fonctionnelle
+        N8EAN04: Machine learning
+        N8EAN04A: Machine learning
+      (*):
+        N7AN01: Réseaux
+        N7AN01A: Evaluation de Performances de Réseaux
+        N7AN01C: Réseaux Opérés avancés
+        N7AN01D: Analyse de données et classification
+        N7AN02: Protocoles de l'Internet & Réseaux Locaux
+        N7AN02A: Protocoles Avancés de l'Internet
+        N7AN02B: Architecture des réseaux locaux
+        N7AN03: Outils mathématiques pour l'ingénieur
+        N7AN03A: Statistiques
+        N7AN03B: Recherche opérationnelle
+        N7AN04: Systèmes concurrents et Applications Internet
+        N7AN04A: Applications Internet
+        N7AN04B: Systèmes Concurrents IR
+        N8AN01: Architecture des réseaux
+        N8AN01B: Interconnexion des systèmes
+        N8AN01C: Réseaux d'opérateurs mobiles/sans fil
+        N8AN02: Méthodes formelles
+        N8AN02A: IDM
+        N8AN02B: Systèmes de transition
+        N8AN02C: Programmation fonctionnelle
+        N8AN02D: Traduction des langages
+        N8AN03: Intergiciels et sécurité
+        N8AN03A: Intergiciels
+        N8AN03B: Sécurité
+  3A:
+    HPC et Big Data:
+      N9EN11: Systèmes répartis et sécurité
+      N9EN11A: Systèmes et algorithmes répartis
+      N9EN11B: Calcul Parallèle
+      N9EN11C: Sécurité et informatique légale
+      N9EN19: Advanced statistical machine learning
+      N9EN20: High Performance Scientific Computing
+      N9EN20A: Algorithmes pour le Calcul à Hautes Performances
+      N9EN20B: Méthodes Itératives en Algèbre Linéaire / Iterative Methods for Linear Algebra
+      N9EN20C: Optimisation Discrète
+      N9EN20E: Algèbre Linéaire du Quantique
+      N9EN21: Inverse problems
+      N9EN21A: Assimilation de données
+    IBDIOT:
+      N9EN01: Réseaux pour l'Iot
+      N9EN01B: IoT Cellular Architectures
+      N9EN01C: WPAN/LPWAN IoT architectures
+      N9EN01D: Projet-IoT Interconnection
+      N9EN08: Infrastructure for Cloud and Big Data
+      N9EN08A: Infrastructure for Cloud
+      N9EN08B: Infrastructure for Big Data
+      N9EN09: Réseaux d'Opérateurs
+      N8EN09B: Réseaux de coeur
+      N9EN09C: Réseaux métropolitains
+      N9EN09D: Interconnexion avancée
+      N9EN09E: Métrologie
+      N9EN09F: Datacenter Networking
+      N9EN10: Services d'Infrastructure
+      N9EN10A: Cloud networking
+      N9EN10B: SDN et Virtualisation
+      N9EN10C: Distribution des contenus
+    IMM:
+      N9EN15: Intelligence Artificielle et Multimédia
+      N9EN15A: Intelligence Artificielle et Multimédia
+      N9EN16: Compression, Streaming et Interaction
+      N9EN16A: Audionumérique
+      N9EN16B: Compression, Streaming, Interactions Vidéo
+      N9EN16C: Modélisation, Compression, Streaming, Interactions 3D
+      N9EN17: Vision, Réalité Augmentée et Applications
+      N9EN17A: Vision
+      N9EN17B: Réalité Augmentée
+      N9EN17C: APP transversal Multimédia
+      N9EN18: Problèmes inverses pour le 3D
+      N9EN18A: Problèmes inverses pour le 3D
+    SEmbiIOT:
+      N9EN05: Systèmes Temps Réels
+      N9EN05A: Systèmes et Ordonnancement Temps Réel
+      N9EN05B: Langage pour le temps réel
+      N9EN05C: Participation Concours (Projet Arduino)
+      N9EN06: Réseaux embarqués
+      N9EN06A: Bus de terrain
+      N9EN06B: Ethernet Temps Réel
+      N9EN06C: Déploiement réseaux temps réel
+      N9EN07: IoT Industriel et Usine du futur
+      N9EN07A: Domaine d’application de l’IoT critique
+      N9EN07B: Usine du Futur
+      N9EN07C: Protocoles sans-fil pour IoT industriel
+      N9EN07D: Synchronisation pour l’IoT
+      N9EN23: Validation des systèmes
+      N9EN23A: Langage de spécification de systèmes
+      N9EN23B: Bus tolérants aux panne
+      N9EN23C: Techniques de validation
+      N9EN23D: Sûreté de fonctionnement
+    Logiciel:
+      N9EN05: Systèmes Temps Réel
+      N9EN05A: Systèmes et Ordonnancement Temps Réel
+      N9EN05B: Langage pour le temps réel
+      N9EN05C: Participation Concours (Projet Arduino)
+      N9EN11: Systèmes répartis et sécurité
+      N9EN11A: Systèmes et algorithmes répartis
+      N9EN 11B: Calcul Parallèle
+      N9EN11C: Sécurité et informatique légale
+      N9EN12: Raffinement et méthodes formelles
+      N9EN12A: Spécifications formelles
+      N9EN12B: Développement formel de systèmes
+      N9EN13: Interfaces d'accès à l'information
+      N9EN13A: Web sémantique
+      N9EN13B: Recherche d'information
+      N9EN13C: IHM (Interface Homme Machine)
+      N9EN13D: Sûreté de fonctionnement
+    Télécom et objets connectés:
+      N9EN02: Télécommunications Avancées
+      N9EN02A: Communications multi-antennes et multi-utilisateurs
+      N9EN02B: Bancs de filtres et OFDM avancés
+      N9EN02C: Codage moderne et détection avancée
+      N9EN03: Terrestrial communication systems and IoT
+      N9EN03B: Techniques d'accès & comm. coopératives
+      N9EN03C: Couches PHY - 4G-5G
+      N9EN03D: Réseaux pour l'IoT
+      N9EN04: Communications spaciales et aéronautiques
+      N9EN04A: Systèmes satellites
+      N9EN04B: Multimédia et mobile par satellites
+      N9EN14: Réseaux mobiles
+      N9EN14A: Mobilité réseau
+      N9EN14B: Mobilité d’accès
+      N9EN14C: Architecture Télecom mobiles
+    ModIA:
+      - N0EAN01: Statistique en grande dimension et Apprentissage profond
+      - Statistique en grande dimension et Apprentissage profond
+      - N0EAN02: High performance scientific computing
+      - Résolution de systèmes linéaires issus d'EDP
+      - High Performance Computing
+      - N0EAN03: Apprentissage sous contraintes physiques
+      - Apprentissage sous contraintes physiques
+      - N0EAN04: Technologies pour l'IA
+      - Technologies pour l'IA
+      - N0EAN05: Systèmes de confiance
+      - Systèmes de confiance
+MF2E:
+  1A:
+    FISA:
+      - Automatique
+      - Mathématiques
+      - Mécanique des Milieux Continus
+      - Thermodynamique
+      - Signaux et Systèmes
+      - Calcul scientifique et programmation (Python)
+      - Mécanique des Fluides -Solutions Exactes
+      - Thermique 1
+      - Mécanique des fluides
+      - Hydraulique
+      - 'MATH 2 : Probabilités, Statistique, ED0/EDP'
+      - Calcul Scientifique
+      - TP Signal
+      - Réviser les maths en intégrant une école d'ingénieur
+    FISE:
+      (*):
+        - Mécanique des milieux continus
+        - Mécanique du vol
+        - A32: Thermodynamique
+        - A35: Introduction à la mécanique des fluides
+        - A52: Différences finies et analyse des schémas numériques pour les EDP
+        - A55: Informatique appliquée - systèmes, outils, architecture
+        - A61: Mecanique Rationnelle
+        - B32: Expériences Numériques Laminaires - code Fluent
+        - B33: 'Mécanique des Fluides: bilans intégraux'
+        - B34: Ecoulements Potentiels
+        - B35: Ecoulements à bas Reynolds
+        - B36: Couches limites, jets, sillages laminaires
+        - N6EM03C: Bulles, gouttes et particules
+        - B43: Machines hydrauliques
+        - B51: Algorithmique et méthodes de programmation
+        - B52: Initiation au langage de programmation FORTRAN
+        - B53: 'Méthodes numériques: méthode des volumes finis'
+        - B61: Elasticité linéaire
+        - N5M2A: Intégration et applications
+        - NAH4B: Initiation à Matlab et à Python
+        - APP Hydraulique
+        - NBH4B: Introduction à l'optimisation
+        - N6EM02A: Signal
+        - N6EM02A: Vibrations Sous Contrôle
+        - NBH10A: Probabilités et statistiques
+  2A:
+    FISE:
+      (*):
+        - Processus Stochastiques
+        - APP Climat / Climate PBL
+        - APP Hydraulique à Surface Libre
+        - Simulations hydrodynamiques et Transferts
+        - Fluides complexes
+        - Couches limites, jets et sillages laminaires
+        - Introduction aux Ecoulements Turbulents
+        - Dynamique des ondes
+        - Introduction à la Mécanique des Structures
+        - Expériences numériques de mécanique des fluides - FLUENT et StarCCM+
+        - Méthodes numériques pour la résolution d'EDP
+        - Processus stochastiques - 2020
+        - Échanges thermiques
+        - Transferts en milieux poreux
+        - Projets d'Initiative Personnelle
+        - Dispersion Turbulente
+        - Projet expérimental
+        - Projet numérique
+        - N8EM04A: Erosion et transport de matière solide
+        - N8EM04B: Hydraulique en milieux poreux
+        - NDH4Bbis: Hydraulique en milieux poreux
+        - N8EM04C: Eco-hydraulique
+        - Contrôle de canaux et irrigation
+        - Ecoulements compressibles
+        - N8EM06B: Turbomachines à gaz
+        - N8EM07A: Introduction à la microfluidique
+        - N8EM07B: Analyse physique des procédés industriels
+        - N8EM07C: Thermodynamique des Machines
+        - Vibrations Sous Ecoulements Turbulents
+        - Projet de Substitution au Stage d'Hydrodynamique Appliquée
+  3A:
+    (*):
+      - CLAT 2023: Couche limite atmosphérique
+      - Développement Durable, RSE, Ethique
+      - N9EM02B: AEROACOUSTIQUE
+      - PFE soutenances 2023
+      - RISP: Risques et Prévention
+      - AGIT: Agitation Mélange
+      - BES Schémas pour le compressible
+      - Combustion
+      - Impacts des Aménagements Industriels sur l'Environnement
+      - ELCS: Environnement Logiciel Calcul Scientifique
+      - AIMP: Application Industrielles des Milieux Poreux
+      - ASID: Assimilation de données
+      - BEIEPE: Bureau d'Etudes Industrielles Energétique, Procédés et Environnement
+      - BESM: Bureau d’Études Spécialisées Moteur
+      - BESPY: BES Langage Python
+      - BESZ: Bureau d'Etudes Spécialisées "Modélisation des zones inondables"
+      - CHPH: Ecoulements diphasiques avec changement de phase
+      - COAH: Conduite d'opérations appliquée à l'hydraulique
+      - CODC: Code de Calcul
+      - Connexion à distance
+      - CORA: Coalescence, rupture et agrégation
+      - DBGP: Dynamique des bulles, gouttes, particules
+      - DEPO: Procédé de Dépollution
+      - DimReac - Pré-requis de design de réacteurs chimiques
+      - DIPH: Ecoulements diphasiques
+      - E21: Développement durable, responsabilité sociale des entreprise, éthique
+      - ECGP: Ecoulement gaz - particules
+      - ES33: Modélisation hydrologique approfondie
+      - EURB: L'eau en milieu urbain
+      - Controverses socio-techniques dans un monde en transition
+      - FLAM: Flammes et foyers
+      - HABAMU: Hydrologie approfondie, bassin versant et milieu urbain
+      - HLCO: Hydrodynamique Littorale et Côtière
+      - HSOU: Hydrologie souterraine
+      - HSTA: Hydrologie statistique
+      - HTRA: Hydrologie des transferts
+      - HYDI: Hydraulique diphasique
+      - HYHY: Hydraulique en charge et à surface libre
+      - IFS: Interactions fluide-structure
+      - INGO: Ingénierie des aménagements hydroélectriques
+      - LECA: Ledaflow and Cathare - Numerical Diphasic in pipes
+      - M2R-DET: Transfert avec changement de phase
+      - M2R-DET: Turbulence et Mélange
+      - M2R-DET: Turbulence without and with fluid density variations
+      - MAESL: Modélisation avancée des écoulements à surface libre
+      - Maillage
+      - MFIT: Rappels de Mécanique des Fluides et Initiation à la Turbulence
+      - MGRA: Milieux granulaires
+      - MICRO: Microfluidics
+      - MIPO: Transfers in porous media
+      - MMED: Méthodes Mathématiques pour l'Exploitation des Données
+      - MNEC: Méthodes numériques pour la simulation des écoulements compressibles
+      - MNEI: Méthodes numériques pour la simulation des écoulements incompressibles
+      - MNIF: Méthodes numériques aux Interfaces
+      - MODE: Modélisation des écoulements environnementaux
+      - MPME: Microprocédés et Microéchangeurs
+      - MSOL: Mécanique des sols
+      - MTHE: Machines Thermiques
+      - MTSS: Modèles de turbulence pour les simulations stationnaires
+      - N9EM02A - Aérodynamique
+      - NEH1D: Entreprenariat
+      - NEHF3F: Couplage Multiphysique
+      - NEHF4F: Transferts en milieux diphasiques et turbulents
+      - N9EM18D: Optimisation énergétique des cycles thermodynamiques à vapeur
+      - NEHM2B: Modélisation en turbulence
+      - Neptune
+      - NHEC4: Entreprenariat
+      - PHET: Physique des écoulements turbulents
+      - PhyCoSep: Physico-chemical hydrodynamics - colloidal suspensions and separation processes
+      - SIG (Systèmes d'Informations Géographiques)
+      - SNGE: Simulation Numérique des Grandes Echelles
+      - Modélisation des Transferts en Paroi
+      - Soutenance PFE 2020
+      - STRU: Durabilité et fiabilité des ouvrages
+      - TDDM: Thermodynamique des Machines
+      - TEER: Transition énergétique et Energies renouvelables
+      - TREM: Transport et Mélange
+      - TSMO: Transport Sédimentaire et Morphodynamique
+      - UIAP: Utilisation de l'Intelligence Artificielle pour la Prévison
+    Mastère Spécialisé Hydraulique:
+      # Mise à niveau:
+      MSH001: Méthodes mathématiques et numériques pour l'ingénieur
+      MSH002: Mécanique des fluides
+      MSH003: Initiation à Matlab
+      A51: Informatique appliquée - systèmes, outils, architecture
+      # Enseignements de formation générale:
+      E21: Développement durable, responsabilité sociale des entreprise, éthique
+      HYE22: Gestion et management de projet
+      HYE23: Entreprenariat
+      # Ressources en eau:
+      MSH-HYDR: Hydraulique en charge et à surface libre
+      TRAI: Traitement des eaux ; eaux potables et eaux usées
+      EURB: L'eau en milieu urbain
+      MSH04: Initiation aux codes de calcul en mécanique des fluides
+      # Hydrologie:
+      CYCL: Cycle de l'eau et bassins versants
+      HSOU: Hydrologie souterraine
+      HSTA: Hydrologie statistique
+      HTRA: Hydrologie des transferts
+      BESZ: Bureau d'Etudes Spécialisées "Modélisation des zones inondables"
+      # Ingénierie de l'aménagement:
+      MSOL: Mécanique des sols
+      INGO: Ingénierie des ouvrages hydrauliques
+      STRU: Durabilité et fiabilité des ouvrages
+      IMPA: Impacts des aménagements hydrauliques sur l'environnement
+      TELE: Télédétection
+      SIGE: Système d'information géographique
+      RISP: Risques et prévention
+      # Auditeur libre:
+      HLCO: Hydrodynamique Littorale et Côtière

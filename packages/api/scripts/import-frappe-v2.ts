@@ -469,7 +469,6 @@ const SUBJECTS: Record<
         },
         {
           name: 'Probabilités',
-          shortName: 'Probas',
           oldFrappeCodes: 740,
           semester: 1,
         },
@@ -481,14 +480,28 @@ const SUBJECTS: Record<
         },
         {
           name: 'Optimisation',
-          shortName: 'Opti',
           oldFrappeCodes: 711,
           semester: 1,
         },
         {
           name: 'Statistiques',
-          shortName: 'Stats',
           oldFrappeCodes: 712,
+          semester: 1,
+        },
+        {
+          name: 'Mise à niveau: Algèbre',
+          oldFrappeCodes: [],
+          semester: 1,
+        },
+        {
+          name: 'Mise à niveau: Analyse',
+          oldFrappeCodes: [],
+          semester: 1,
+        },
+        {
+          name: 'Équation Différentielles Partielles',
+          shortName: 'EDP',
+          oldFrappeCodes: [],
           semester: 1,
         },
         {
@@ -499,19 +512,16 @@ const SUBJECTS: Record<
         },
         {
           name: 'Automatique',
-          shortName: 'Autom',
           oldFrappeCodes: 714,
           semester: 1,
         },
         {
           name: 'Langage C',
-          shortName: 'C',
           oldFrappeCodes: 950,
           semester: 1,
         },
         {
           name: 'Modélisation',
-          shortName: 'Modé',
           oldFrappeCodes: 715,
           semester: 1,
         },
@@ -542,6 +552,16 @@ const SUBJECTS: Record<
           shortName: 'CS',
           semester: 2,
           oldFrappeCodes: 718,
+        },
+        {
+          name: 'Analyse de Données',
+          oldFrappeCodes: [],
+          semester: 2,
+        },
+        {
+          name: 'Apprentissage',
+          oldFrappeCodes: [],
+          semester: 2,
         },
         {
           name: 'Technologie Objet',
