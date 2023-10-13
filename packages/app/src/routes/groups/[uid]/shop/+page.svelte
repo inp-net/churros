@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import CardService from '$lib/components/CardService.svelte';
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
 
@@ -30,6 +29,11 @@
     <p class="text-center">Aucun article</p>
   {/if}
   {#each shopItems as shopItem}
-    <p>{shopItem}</p>
+    <div>
+      <p>{shopItem.name}</p>
+      <p>{shopItem.quantity}*{shopItem.price} €</p>
+      <p>max: {shopItem.max}</p>
+      <p>{shopItem.description}</p>
+    </div>
   {/each}
 </div>

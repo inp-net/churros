@@ -12,6 +12,7 @@ export const ShopItemType = builder.prismaObject('ShopItem', {
     description: t.exposeString('description'),
     price: t.exposeInt('price'),
     quantity: t.exposeInt('quantity'),
+    max: t.exposeInt('max'),
     startsAt: t.expose('startsAt', { type: DateTimeScalar, nullable: true }),
     endsAt: t.expose('endsAt', { type: DateTimeScalar, nullable: true }),
     group: t.relation('group'),
