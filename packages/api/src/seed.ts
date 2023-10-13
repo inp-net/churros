@@ -823,8 +823,21 @@ await prisma.shopItem.create({
     name: 'Boules quies',
     description: 'Acheter des boules quies pour pas entendre Téo',
     price: 10,
-    stock: 25,
+    stock: 0,
     max: 5,
+    visibility: Visibility.Public,
+    group: { connect: { uid: 'ski' } },
+  },
+});
+
+await prisma.shopItem.create({
+  data: {
+    name: 'Server',
+    description: 'Atom 2 duo',
+    price: 100000,
+    stock: 1,
+    max: 5,
+    visibility: Visibility.Restricted,
     group: { connect: { uid: 'ski' } },
   },
 });
