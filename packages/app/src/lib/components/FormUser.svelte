@@ -31,11 +31,12 @@
     graduationYear: true,
     phone: true,
     birthday: true,
-    minor: { id: true, name: true, yearTier: true },
+    minor: { id: true, name: true, yearTier: true, shortName: true },
     major: {
       id: true,
       name: true,
-      minors: { id: true, name: true, yearTier: true },
+      shortName: true,
+      minors: { id: true, name: true, yearTier: true, shortName: true },
       schools: { id: true, name: true, studentAssociations: { id: true, name: true } },
     },
     email: true,
@@ -57,9 +58,11 @@
         id: string;
         name: string;
         yearTier: number;
+        shortName: string;
       };
       major: {
         name: string;
+        shortName: string;
         id: string;
         minors: Array<{ id: string; name: string; yearTier: number; shortName: string }>;
         schools: Array<{

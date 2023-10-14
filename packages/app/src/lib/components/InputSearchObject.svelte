@@ -23,6 +23,8 @@
   export let placeholder = '';
 
   let query: string;
+
+  const asItemType = (x: unknown): T => x as T;
 </script>
 
 <div class="input-container">
@@ -51,7 +53,7 @@
     loadingText="Chargement…"
     {...$$restProps}
   >
-    <slot slot="item" name="item" let:item {item}>{item[labelKey]}</slot>
+    <slot slot="item" name="item" let:item item={asItemType(item)}>{item[labelKey]}</slot>
   </AutoComplete>
   {#if clearable && object !== undefined && object !== null}
     <ButtonGhost

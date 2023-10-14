@@ -25,16 +25,16 @@
     title: string;
     schoolYear: number;
     description: string;
-    subject:
+    subject?:
       | undefined
       | {
           uid: string;
           name: string;
           shortName: string;
-          minors: Array<{ name: string }>;
-          majors: Array<{ name: string }>;
+          minors: Array<{ name: string; uid: string; shortName: string }>;
+          majors: Array<{ name: string; uid: string; shortName: string }>;
           forApprentices: boolean;
-          yearTier: number;
+          yearTier?: number | undefined;
         };
     type: DocumentType;
     paperPaths: string[];
@@ -131,12 +131,13 @@
       }),
     );
     const { subject } = upsertDocument.data;
-    const majorUid = subject.majors[0]?.uid ?? subject.minors[0]?.majors[0]?.uid ?? $me?.major.uid;
-    const yearTier = subject.yearTier ?? subject.minors[0]?.yearTier ?? $me?.yearTier;
+    const majorUid =
+      subject?.majors[0]?.uid ?? subject?.minors[0]?.majors[0]?.uid ?? $me?.major.uid;
+    const yearTier = subject?.yearTier ?? subject?.minors[0]?.yearTier ?? $me?.yearTier;
     toasts.success('Document modifié', `${upsertDocument.data.title} a bien été modifié.`);
     await goto(
       `/documents/${majorUid}/${yearTier}a${subject?.forApprentices ? '-fisa' : ''}/${
-        subject.uid
+        subject?.uid ?? 'all'
       }/${upsertDocument.data.uid}`,
     );
   }

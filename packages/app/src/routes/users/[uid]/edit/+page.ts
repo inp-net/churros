@@ -67,8 +67,10 @@ export const _userQuery = Selector('User')({
   familyTree: {
     users: { uid: true },
   },
-  minor: { id: true, name: true, yearTier: true },
+  minor: { id: true, name: true, yearTier: true, shortName: true, uid: true },
   major: {
+    shortName: true,
+    uid: true,
     id: true,
     name: true,
     minors: { id: true, name: true, yearTier: true, shortName: true },

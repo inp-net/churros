@@ -9,9 +9,9 @@
     uid?: string;
     name: string;
     shortName: string;
-    yearTier: number;
-    minors: Array<{ name: string; uid: string }>;
-    majors: Array<{ name: string; uid: string }>;
+    yearTier?: number | undefined;
+    minors: Array<{ name: string; uid: string; shortName: string }>;
+    majors: Array<{ name: string; uid: string; shortName: string }>;
   };
   export let object: Subject | undefined;
   export let uid: string | undefined;
@@ -36,6 +36,7 @@
           shortName: true,
         },
         minors: {
+          uid: true,
           name: true,
           shortName: true,
           yearTier: true,
