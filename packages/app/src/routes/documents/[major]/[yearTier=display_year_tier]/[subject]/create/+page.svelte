@@ -11,8 +11,6 @@
   export let data: PageData;
 
   function documentTypeSentence(type: DocumentType, subject: string) {
-    // Remove uppercases if not fully uppercase
-    const properCasing = (s: string) => (s.toUpperCase() === s ? s : s.toLowerCase());
     const articles: Record<DocumentType, string> = {
       [DocumentType.Exam]: 'un',
       [DocumentType.Exercises]: 'un',
@@ -25,13 +23,11 @@
       [DocumentType.Miscellaneous]: '',
     };
 
-    if (articles[type]) {
-      return `Ajouter ${articles[type]} ${properCasing(
-        DISPLAY_DOCUMENT_TYPES.get(type)!,
-      )} de ${properCasing(subject)}`;
-    }
+    if (articles[type]) 
+      return `Ajouter ${articles[type]} ${DISPLAY_DOCUMENT_TYPES.get(type)!} de ${subject}`;
+    
 
-    return `Ajouter un document de ${properCasing(subject)}`;
+    return `Ajouter un document de ${subject}`;
   }
 
   let document = {
