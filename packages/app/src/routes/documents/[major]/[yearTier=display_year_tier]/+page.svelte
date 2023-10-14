@@ -8,6 +8,7 @@
   import CardSubject from '$lib/components/CardSubject.svelte';
   import { me } from '$lib/session';
   import type { PageData } from './$types';
+  import groupBy from 'lodash.groupby';
   import WipMigrationNotice from '../WIPMigrationNotice.svelte';
 
   export let data: PageData;
@@ -27,6 +28,12 @@
           a.unit?.name?.localeCompare(b.unit?.name ?? '') ||
           a.name.localeCompare(b.name),
       );
+  }
+
+  function subjectsOfMinorByUnit(minor: undefined | { uid: string }) {
+    return Object.entries(
+      groupBy(subjectsOfMinor(minor), (s) => s.unit?.shortName || s.unit?.name),
+    );
   }
 
   $: displayPreferredMinor =
@@ -56,7 +63,7 @@
     {/each}
   </ul>
   <hr />
-{:else if !$me?.minor && browser && localStorage.getItem('ignoreDefineYourMinor') !== 'true'}
+{:else if !$me?.minor && $me?.major.uid === data.major.uid && browser && localStorage.getItem('ignoreDefineYourMinor') !== 'true'}
   <div class="define-your-minor">
     <p class="muted">
       Marre de scroll pour avoir son parcours? Définis ton parcours dans <a href="/me"
@@ -74,10 +81,16 @@
 
 {#if subjectsOfMinor(undefined).length > 0}
   <ul class="nobullet minorless-subjects">
-    {#each subjectsOfMinor(undefined) as subject (subject.id)}
-      <li>
-        <CardSubject href="./{subject.uid}" {...subject}></CardSubject>
-      </li>
+    {#each subjectsOfMinorByUnit(undefined) as [unitShortName, subjectsOfUnit] (unitShortName)}
+      {@const {unit} = subjectsOfUnit[0]}
+      {#if unit}
+        <h3 class="typo-field-label">{unit.shortName || unit.name}</h3>
+      {/if}
+      {#each subjectsOfUnit as subject (subject.id)}
+        <li>
+          <CardSubject href="./{subject.uid}" {...subject} unit={undefined}></CardSubject>
+        </li>
+      {/each}
     {/each}
   </ul>
 {/if}
@@ -89,10 +102,16 @@
   {/if}
 
   <ul class="nobullet">
-    {#each subjectsOfMinor(minor) as subject (subject.id)}
-      <li>
-        <CardSubject href="./{subject.uid}" {...subject}></CardSubject>
-      </li>
+    {#each subjectsOfMinorByUnit(minor) as [unitShortName, subjectsOfUnit] (unitShortName)}
+      {@const {unit} = subjectsOfUnit[0]}
+      {#if unit}
+        <h3 class="typo-field-label">UE {unit.shortName || unit.name}</h3>
+      {/if}
+      {#each subjectsOfUnit as subject (subject.id)}
+        <li>
+          <CardSubject href="./{subject.uid}" {...subject} unit={undefined}></CardSubject>
+        </li>
+      {/each}
     {/each}
   </ul>
 {/each}
@@ -108,6 +127,10 @@
     * {
       flex-shrink: 0;
     }
+  }
+
+  h3 {
+    margin-top: 1rem;
   }
 
   ul {
