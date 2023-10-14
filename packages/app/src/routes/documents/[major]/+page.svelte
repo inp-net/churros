@@ -4,7 +4,9 @@
   import type { PageData } from './$types';
   import CardMajor from '$lib/components/CardMajor.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { me } from '$lib/session';
+  import { page } from '$app/stores';
+  import WipMigrationNotice from './WIPMigrationNotice.svelte';
+
   export let data: PageData;
 </script>
 
@@ -12,7 +14,7 @@
   <Breadcrumb>{data.major.shortName}</Breadcrumb>
 </Breadcrumbs>
 
-{#if data.major.shortName === '3EA' && !$me?.admin}
+{#if data.major.shortName === '3EA' && !$page.url.searchParams.has('continue')}
   <section class="work-in-progress">
     <h1>Frappe des 3EAs en cours de migration</h1>
     <p>
@@ -27,36 +29,42 @@
       En attendant, tu peux toujours te rendre sur <ButtonSecondary
         insideProse
         href="https://bde.enseeiht.fr/services/frappe/">l'ancienne Frappe</ButtonSecondary
-      >
+      > ou <ButtonSecondary insideProse href="?continue">continuer</ButtonSecondary>, même si tout
+      n'est pas encore importé.
     </p>
   </section>
 {:else}
-  <h2 class="typo-field-label">Étudiants</h2>
-  <ul class="nobullet">
-    <li>
-      <CardMajor name="FISE" shortName="1A" href="./1a-fise" />
-    </li>
-    <li>
-      <CardMajor name="FISE" shortName="2A" href="./2a-fise" />
-    </li>
-    <li>
-      <CardMajor name="3A" href="./3a" />
-    </li>
-  </ul>
+  <WipMigrationNotice></WipMigrationNotice>
 
-  <h2 class="typo-field-label">Apprentis</h2>
+  <section class="fise">
+    <h2 class="typo-field-label">Étudiants</h2>
+    <ul class="nobullet">
+      <li>
+        <CardMajor name="FISE" shortName="1A" href="./1a-fise" />
+      </li>
+      <li>
+        <CardMajor name="FISE" shortName="2A" href="./2a-fise" />
+      </li>
+      <li>
+        <CardMajor name="3A" href="./3a" />
+      </li>
+    </ul>
+  </section>
 
-  <ul class="nobullet">
-    <li>
-      <CardMajor name="FISA" shortName="1A" href="./1a-fisa" />
-    </li>
-    <li>
-      <CardMajor name="FISA" shortName="2A" href="./2a-fisa" />
-    </li>
-    <li>
-      <CardMajor name="3A" href="./3a" />
-    </li>
-  </ul>
+  <section class="fisa">
+    <h2 class="typo-field-label">Apprentis</h2>
+    <ul class="nobullet">
+      <li>
+        <CardMajor name="FISA" shortName="1A" href="./1a-fisa" />
+      </li>
+      <li>
+        <CardMajor name="FISA" shortName="2A" href="./2a-fisa" />
+      </li>
+      <li>
+        <CardMajor name="3A" href="./3a" />
+      </li>
+    </ul>
+  </section>
 {/if}
 
 <style>
@@ -74,7 +82,7 @@
     gap: 1rem;
   }
 
-  h2 {
+  h2:not(.migration-notice) {
     margin-top: 1.5rem;
     margin-bottom: 0.5em;
     margin-left: calc(2 * var(--border-block));

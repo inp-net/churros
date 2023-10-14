@@ -7,6 +7,7 @@
   import { DISPLAY_DOCUMENT_TYPES, ICONS_DOCUMENT_TYPES, ORDER_DOCUMENT_TYPES } from '$lib/display';
   import { DocumentType } from '$lib/zeus';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import WipMigrationNotice from '../../WIPMigrationNotice.svelte';
 
   export let data: PageData;
 
@@ -24,6 +25,8 @@
   <Breadcrumb href="..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
   <Breadcrumb>{data.subject.shortName || data.subject.name}</Breadcrumb>
 </Breadcrumbs>
+
+<WipMigrationNotice></WipMigrationNotice>
 
 {#if data.subject.links.length > 0}
   <section class="links">
@@ -99,7 +102,7 @@
     margin-top: 2rem;
   }
 
-  h2 {
+  h2:not(.migration-notice) {
     margin-top: 1.5rem;
     margin-bottom: 0.5em;
     margin-left: calc(2 * var(--border-block));

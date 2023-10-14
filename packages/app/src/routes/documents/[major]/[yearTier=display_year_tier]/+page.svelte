@@ -8,6 +8,7 @@
   import CardSubject from '$lib/components/CardSubject.svelte';
   import { me } from '$lib/session';
   import type { PageData } from './$types';
+  import WipMigrationNotice from '../WIPMigrationNotice.svelte';
 
   export let data: PageData;
 
@@ -36,6 +37,8 @@
   <Breadcrumb href="..">{data.major.shortName}</Breadcrumb>
   <Breadcrumb>{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
 </Breadcrumbs>
+
+<WipMigrationNotice></WipMigrationNotice>
 
 {#if displayPreferredMinor && $me?.minor}
   <div class="minor-anchor" id={$me.minor.uid}></div>
@@ -95,11 +98,11 @@
 {/each}
 
 <style lang="scss">
-  h2 {
+  h2:not(.migration-notice) {
     display: flex;
     gap: 1.5rem;
     align-items: center;
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     margin-bottom: 0.5rem;
 
     * {

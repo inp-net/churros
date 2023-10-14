@@ -19,6 +19,7 @@
   .content :global(> h2),
   .content :global(> .breadcrumbs),
   .content :global(> article),
+  .content :global(> div),
   .content :global(> section) {
     max-width: 800px;
     margin-right: auto;
