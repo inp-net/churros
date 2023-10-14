@@ -19,6 +19,10 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
           uid: true,
           nextExamAt: true,
           yearTier: true,
+          unit: {
+            shortName: true,
+            name: true,
+          },
           minors: {
             name: true,
             uid: true,

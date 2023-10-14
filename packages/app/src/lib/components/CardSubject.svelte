@@ -9,10 +9,11 @@
   export let shortName: string;
   export let semester: number | undefined = undefined;
   export let yearTier: number | undefined = undefined;
+  export let unit: { shortName: string; name: string } | undefined = undefined;
 
   // Converts relative (1=first or 2=second) semester to absolute (S5, S6, etc) semester. Behavior for relativeSemester>2 is undefined.
   function absoluteSemester(relativeSemester: number) {
-    return 4 + (yearTier ?? 0) + (relativeSemester - 1) * 2;
+    return 5 + ((yearTier ?? 0) - 1) * 2 + (relativeSemester - 1);
   }
 </script>
 
@@ -31,6 +32,11 @@
       </h3>
     </header>
     <p class="infos">
+      {#if unit}
+        <span class="unit">
+          UE {unit.shortName || unit.name}
+        </span> ·
+      {/if}
       {#if nextExamAt}
         <span class="exam-date"
           >Partiel <strong class="primary">

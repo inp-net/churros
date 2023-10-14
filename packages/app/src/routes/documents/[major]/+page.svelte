@@ -4,6 +4,7 @@
   import type { PageData } from './$types';
   import CardMajor from '$lib/components/CardMajor.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { me } from '$lib/session';
   export let data: PageData;
 </script>
 
@@ -11,7 +12,7 @@
   <Breadcrumb>{data.major.shortName}</Breadcrumb>
 </Breadcrumbs>
 
-{#if data.major.shortName === '3EA'}
+{#if data.major.shortName === '3EA' && !$me?.admin}
   <section class="work-in-progress">
     <h1>Frappe des 3EAs en cours de migration</h1>
     <p>
