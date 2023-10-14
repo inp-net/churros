@@ -5,7 +5,7 @@
   import IconAdmin from '~icons/mdi/security';
   import IconLogout from '~icons/mdi/logout-variant';
   import IconWebsite from '~icons/mdi/earth';
-  import { dateFormatter, yearTier } from '$lib/dates.js';
+  import { dateFormatter } from '$lib/dates.js';
   import { me } from '$lib/session.js';
   import type { PageData } from './$types';
   import IconFacebook from '~icons/mdi/facebook-box';
@@ -138,8 +138,18 @@
         @{user.uid}
       </p>
       <p class="major">
-        {yearTier(user.graduationYear)}A ({user.graduationYear}) ·
-        <abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr>
+        {user.yearTier}A ({user.graduationYear}) ·
+        <a href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}/"
+          ><abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr></a
+        >
+        {#if user.minor}
+          ·
+          <a
+            href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}#{user
+              .minor.uid}"
+            ><abbr title="" use:tooltip={user.minor.name}>{user.minor.shortName}</abbr></a
+          >
+        {/if}
         · {#each user.major.schools as school}
           <a class="school" href="/schools/{school.uid}">{school.name}</a>
         {/each}

@@ -36,3 +36,7 @@ export function yearTier(graduationYear: number): number {
 export function fromYearTier(tier: number): number {
   return schoolYearStart().getFullYear() - tier + 4;
 }
+
+export function parseYearTier(yearTierDisplay: string): number {
+  return Number.parseInt(yearTierDisplay.replace(/a$/, ''), 10);
+}

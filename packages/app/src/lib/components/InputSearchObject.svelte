@@ -21,6 +21,10 @@
   export let clearable = false;
 
   export let placeholder = '';
+
+  let query: string;
+
+  const asItemType = (x: unknown): T => x as T;
 </script>
 
 <div class="input-container">
@@ -42,19 +46,21 @@
     localFiltering={false}
     bind:selectedItem={object}
     bind:value
+    bind:text={query}
     valueFieldName={valueKey}
     labelFieldName={labelKey}
     noResultsText="Aucun résultat"
     loadingText="Chargement…"
     {...$$restProps}
   >
-    <slot slot="item" name="item" let:item {item}>{item[labelKey]}</slot>
+    <slot slot="item" name="item" let:item item={asItemType(item)}>{item[labelKey]}</slot>
   </AutoComplete>
   {#if clearable && object !== undefined && object !== null}
     <ButtonGhost
       on:click={() => {
         object = undefined;
         value = undefined;
+        query = '';
         emit('clear');
       }}><IconClose /></ButtonGhost
     >

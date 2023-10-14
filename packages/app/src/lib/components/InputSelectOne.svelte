@@ -5,7 +5,7 @@
 
   export let value: string | undefined = undefined;
   export let label: string;
-  export let options: string[] | Record<string, string>;
+  export let options: string[] | Record<string, string> | Map<string, string>;
   export let name: string | undefined = undefined;
   export let required = false;
   export let hint: string | undefined = undefined;
@@ -28,6 +28,8 @@
   let optionsWithDisplay: Record<string, string> = {};
   $: optionsWithDisplay = Array.isArray(options)
     ? Object.fromEntries(options.map((option) => [option, option]))
+    : options instanceof Map
+    ? Object.fromEntries(options.entries())
     : options;
 
   let fieldsetElement: HTMLFieldSetElement;

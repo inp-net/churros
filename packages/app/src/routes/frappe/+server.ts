@@ -7,5 +7,10 @@ export const GET: RequestHandler = ({ locals, url }) => {
   const { me } = locals;
   if (!me) throw redirectToLogin(url.pathname);
   const tier = yearTier(me.graduationYear);
-  throw redirect(302, tier > 3 ? `/documents` : `/documents/${me.major.uid}/${tier}a/`);
+  throw redirect(
+    303,
+    tier > 3
+      ? `/documents/${me.major.uid}`
+      : `/documents/${me.major.uid}/${tier}a${me.apprentice ? '-fisa' : '-fise'}/`,
+  );
 };

@@ -1,3 +1,4 @@
+import { parseYearTier } from '$lib/dates';
 import { redirectToLogin } from '$lib/session';
 import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
@@ -8,10 +9,14 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
   return loadQuery(
     {
       major: [{ uid: params.major }, { name: true, shortName: true, uid: true }],
-      subject: [{ uid: params.subject }, { name: true, shortName: true, uid: true, id: true }],
+      subject: [
+        { uid: params.subject, yearTier: parseYearTier(params.yearTier) },
+        { name: true, shortName: true, uid: true, id: true },
+      ],
       document: [
         {
           subjectUid: params.subject,
+          subjectYearTier: parseYearTier(params.yearTier),
           documentUid: params.document,
         },
         {

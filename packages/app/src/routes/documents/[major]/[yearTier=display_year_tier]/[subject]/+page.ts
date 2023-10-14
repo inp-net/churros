@@ -1,15 +1,18 @@
+import { parseYearTier } from '$lib/dates';
 import { redirectToLogin } from '$lib/session';
 import { loadQuery } from '$lib/zeus';
+import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent, params, url }) => {
+  if (params.major === 'eeea') throw redirect(308, '/documents/eeea');
   const { me } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
   return loadQuery(
     {
       major: [{ uid: params.major }, { name: true, shortName: true, uid: true }],
       subject: [
-        { uid: params.subject },
+        { uid: params.subject, yearTier: parseYearTier(params.yearTier) },
         {
           name: true,
           shortName: true,
@@ -21,6 +24,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
       documentsOfSubject: [
         {
           subjectUid: params.subject,
+          yearTier: parseYearTier(params.yearTier),
         },
         {
           pageInfo: { hasNextPage: true, endCursor: true },

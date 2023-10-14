@@ -28,8 +28,8 @@ export const DocumentType = builder.prismaNode('Document', {
     descriptionHtml: t.string({
       resolve: async ({ description }) => toHtml(description),
     }),
-    subject: t.relation('subject'),
-    subjectId: t.exposeID('subjectId'),
+    subject: t.relation('subject', { nullable: true }),
+    subjectId: t.exposeID('subjectId', { nullable: true }),
     type: t.expose('type', { type: DocumentEnumType }),
     paperPaths: t.exposeStringList('paperPaths', {
       description:
@@ -44,7 +44,7 @@ export const DocumentType = builder.prismaNode('Document', {
       cursor: 'id',
       type: CommentType,
       query: {
-        orderBy: { updatedAt: 'desc' },
+        orderBy: { createdAt: 'asc' },
       },
     }),
   }),
@@ -135,12 +135,22 @@ builder.queryField('documentsOfSubject', (t) =>
     cursor: 'id',
     args: {
       subjectUid: t.arg.string({ required: true }),
+      yearTier: t.arg.int({ required: true }),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin || user?.canAccessDocuments);
     },
-    async resolve(query, _, { subjectUid }) {
-      const subject = await prisma.subject.findUniqueOrThrow({ where: { uid: subjectUid } });
+    async resolve(query, _, { subjectUid, yearTier }) {
+      /* eslint-disable unicorn/no-null */
+      const subject = await prisma.subject.findFirstOrThrow({
+        where: {
+          OR: [
+            { uid: subjectUid, yearTier },
+            { uid: subjectUid, yearTier: null },
+          ],
+        },
+      });
+      /* eslint-enable unicorn/no-null */
       return prisma.document.findMany({
         ...query,
         where: {
@@ -157,13 +167,23 @@ builder.queryField('document', (t) =>
     type: DocumentType,
     args: {
       subjectUid: t.arg.string(),
+      subjectYearTier: t.arg.int({ required: true }),
       documentUid: t.arg.string(),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin || user?.canAccessDocuments);
     },
-    async resolve(query, _, { subjectUid, documentUid }) {
-      const subject = await prisma.subject.findUniqueOrThrow({ where: { uid: subjectUid } });
+    async resolve(query, _, { subjectUid, documentUid, subjectYearTier }) {
+      /* eslint-disable unicorn/no-null */
+      const subject = await prisma.subject.findFirstOrThrow({
+        where: {
+          OR: [
+            { uid: subjectUid, yearTier: subjectYearTier },
+            { uid: subjectUid, yearTier: null },
+          ],
+        },
+      });
+      /* eslint-enable unicorn/no-null */
       return prisma.document.findUniqueOrThrow({
         ...query,
         where: {
@@ -184,13 +204,27 @@ builder.mutationField('upsertDocument', (t) =>
       title: t.arg.string({ required: true }),
       description: t.arg.string({ required: true }),
       subjectUid: t.arg.string({ required: true }),
+      subjectYearTier: t.arg.int({ required: false }),
+      subjectForApprentices: t.arg.boolean({ required: true }),
       type: t.arg({ type: DocumentEnumType, required: true }),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin || user?.canAccessDocuments);
     },
-    async resolve(query, _, { id, subjectUid, title, schoolYear, ...data }) {
-      const subject = await prisma.subject.findUnique({ where: { uid: subjectUid } });
+    async resolve(
+      query,
+      _,
+      { id, subjectUid, title, schoolYear, subjectYearTier, subjectForApprentices, ...data },
+    ) {
+      const subject = await prisma.subject.findFirst({
+        where: {
+          // uid_yearTier_forApprentices: {
+          uid: subjectUid,
+          yearTier: subjectYearTier,
+          forApprentices: subjectForApprentices,
+          // },
+        },
+      });
       if (!subject) throw new GraphQLError('Matière introuvable');
       const uidBase = `${slug(title)}${schoolYear ? `-${schoolYear}` : ''}`;
       const uidNumber = await dichotomid(
@@ -374,7 +408,7 @@ builder.mutationField('deleteDocumentFile', (t) =>
       });
       const { subject, uid, solutionPaths, id } = document;
       const root = new URL(process.env.STORAGE).pathname;
-      const path = join(root, 'documents', subject.uid, uid, filename);
+      const path = join(root, 'documents', subject?.uid ?? 'unknown', uid, filename);
       try {
         unlinkSync(path);
       } catch {}
@@ -397,7 +431,10 @@ builder.mutationField('deleteDocumentFile', (t) =>
 
 function documentFilePath(
   root: string,
-  subject: { id: string; name: string; uid: string; shortName: string; nextExamAt: Date | null },
+  subject:
+    | { id: string; name: string; uid: string; shortName: string; nextExamAt: Date | null }
+    | undefined
+    | null,
   document: { uid: string; solutionPaths: string[]; paperPaths: string[] },
   solution: boolean,
   file: { name: string },
@@ -405,7 +442,7 @@ function documentFilePath(
   return join(
     root,
     'documents',
-    subject.uid,
+    subject?.uid ?? 'unknown',
     document.uid,
     `${document[solution ? 'solutionPaths' : 'paperPaths'].length}-${file.name}`,
   );

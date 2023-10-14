@@ -4,9 +4,11 @@
   export let href = '';
 </script>
 
-<ButtonGhost {...$$restProps} {href} disabled={!href}>
-  <slot />
-</ButtonGhost>
+<div class="breadcrumb-item">
+  <ButtonGhost {...$$restProps} {href} disabled={!href}>
+    <slot />
+  </ButtonGhost>
+</div>
 <span class="separator" aria-hidden="true">
   <IconChevronRight></IconChevronRight>
 </span>
@@ -16,5 +18,11 @@
     &:last-of-type {
       display: none;
     }
+  }
+
+  .breadcrumb-item :global(> button) {
+    display: flex;
+    gap: 0.25em;
+    align-items: center;
   }
 </style>

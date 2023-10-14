@@ -120,6 +120,7 @@ export const UserType = builder.prismaNode('User', {
       query: { orderBy: { createdAt: 'desc' } },
     }),
     major: t.relation('major', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    minor: t.relation('minor', { nullable: true, authScopes: { loggedIn: true, $granted: 'me' } }),
     managedEvents: t.relation('managedEvents'),
     enabledNotificationChannels: t.expose('enabledNotificationChannels', {
       type: [NotificationChannel],
@@ -367,6 +368,7 @@ builder.mutationField('updateUser', (t) =>
       firstName: t.arg.string(),
       lastName: t.arg.string(),
       majorId: t.arg.id(),
+      minorId: t.arg.id({ required: false }),
       graduationYear: t.arg.int({ required: false }),
       email: t.arg.string(),
       otherEmails: t.arg.stringList(),
@@ -403,6 +405,7 @@ builder.mutationField('updateUser', (t) =>
       {
         uid,
         majorId,
+        minorId,
         email,
         otherEmails,
         graduationYear,
@@ -509,6 +512,7 @@ builder.mutationField('updateUser', (t) =>
         where: { uid },
         data: {
           major: { connect: { id: majorId } },
+          minor: minorId ? { connect: { id: minorId } } : { disconnect: true },
           graduationYear: graduationYear ?? undefined,
           nickname,
           description,

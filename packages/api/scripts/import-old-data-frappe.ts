@@ -1,3 +1,4 @@
+/* eslint-ignore */
 // Load dump
 import { DocumentType, PrismaClient } from '@prisma/client';
 import { copyFileSync, mkdirSync, readFileSync, statSync } from 'fs';
@@ -51,11 +52,16 @@ function progressbar(objectName: string, total: number): SingleBar {
 }
 
 // Create PPP subjet
-if (!(await p.subject.findUnique({ where: { uid: 'ppp' } })))
+if (
+  !(await p.subject.findUnique({
+    where: { uid_yearTier_forApprentices: { uid: 'ppp', yearTier: 2, forApprentices: false } },
+  }))
+)
   await p.subject.create({
     data: {
       name: 'Projet Professionnel Personnel',
       uid: 'ppp',
+      yearTier: 2,
       minors: {
         create: {
           name: 'CAM',
@@ -78,12 +84,13 @@ for (const { nom, filiere_id } of frappe_matiere) {
   const filiereSlug = (filiere: string, annee: string) =>
     slug(`${filiere.trim()} ${annee.trim().replace(/A$/, '')}`, { lower: true });
   // console.info(`* Creating subject ${nom}`)
-  const existing = await p.subject.findUnique({ where: { uid: slug(nom) } });
+  const existing = await p.subject.findFirst({ where: { uid: slug(nom), yearTier: null } });
   if (existing) {
     // console.info(`- Subject ${nom} already exists as ${slug(nom)}`)
     bar.increment();
     continue;
   }
+  const subjectYearTier = Number.parseInt(filiere_annee.nom.replace(/A/, ''));
   await p.subject.create({
     data: {
       name: nom,
@@ -91,12 +98,15 @@ for (const { nom, filiere_id } of frappe_matiere) {
       minors: {
         connectOrCreate: {
           where: {
-            uid: filiereSlug(filiere.nom, filiere_annee.nom),
+            uid_yearTier: {
+              uid: filiereSlug(filiere.nom, filiere_annee.nom),
+              yearTier: subjectYearTier,
+            },
           },
           create: {
             name: filiere.nom,
             uid: filiereSlug(filiere.nom, filiere_annee.nom),
-            yearTier: Number.parseInt(filiere_annee.nom.replace(/A/, '')),
+            yearTier: subjectYearTier,
             majors: { connect: { id: (await p.major.findMany())[0]!.id } },
           },
         },
@@ -162,7 +172,7 @@ for (const {
   id,
 } of frappe_document) {
   // console.info(`* Creating document ${nom} (${frappe_matiere.find(m => m.id === matiere_id)!.nom})`)
-  const subject = await p.subject.findUniqueOrThrow({
+  const subject = await p.subject.findFirstOrThrow({
     where: { uid: slug(frappe_matiere.find((m) => m.id === matiere_id)!.nom) },
     include: { minors: true },
   });
