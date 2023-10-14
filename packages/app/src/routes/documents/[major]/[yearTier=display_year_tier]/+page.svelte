@@ -20,11 +20,12 @@
       .filter(({ minors }) =>
         minor === undefined ? minors.length === 0 : minors.some((m) => m.uid === minor.uid),
       )
-      .sort((a, b) => (
+      .sort(
+        (a, b) =>
           (a.semester ?? 0) - (b.semester ?? 0) ||
           a.unit?.name?.localeCompare(b.unit?.name ?? '') ||
-          a.name.localeCompare(b.name)
-        ));
+          a.name.localeCompare(b.name),
+      );
   }
 
   $: displayPreferredMinor =

@@ -52,12 +52,10 @@
       new Fuse(
         subjects
           .filter((s) => {
-            if (restrainToYearTier) 
-              return s.yearTier === restrainToYearTier;
-            
-            if (restrainToMajorUid) 
-              return s.majors.some((m) => m.uid === restrainToMajorUid);
-            
+            if (restrainToYearTier) return s.yearTier === restrainToYearTier;
+
+            if (restrainToMajorUid) return s.majors.some((m) => m.uid === restrainToMajorUid);
+
             return true;
           })
           .map((s) => ({

@@ -25,10 +25,11 @@
       [DocumentType.Miscellaneous]: '',
     };
 
-    if (articles[type])
-      {return `Ajouter ${articles[type]} ${properCasing(
+    if (articles[type]) {
+      return `Ajouter ${articles[type]} ${properCasing(
         DISPLAY_DOCUMENT_TYPES.get(type)!,
-      )} de ${properCasing(subject)}`;}
+      )} de ${properCasing(subject)}`;
+    }
 
     return `Ajouter un document de ${properCasing(subject)}`;
   }
