@@ -18,6 +18,13 @@
     DocumentType.Practical,
     DocumentType.PracticalExam,
   ]);
+
+  const documentsByType = ORDER_DOCUMENT_TYPES.map((type) => [
+    type,
+    data.documentsOfSubject.edges.filter(({ node }) => node.type === type).map((e) => e.node),
+  ]).sort(
+    ([_, aDocs], [__, bDocs]) => Number(bDocs.length > 0) - Number(aDocs.length > 0),
+  ) as unknown as Array<[DocumentType, Array<(typeof data.documentsOfSubject.edges)[number]['node']>]>;
 </script>
 
 <Breadcrumbs root="/documents">
@@ -41,33 +48,30 @@
 {/if}
 
 {#if data.documentsOfSubject.edges.length > 0}
-  {#each ORDER_DOCUMENT_TYPES as type}
-    {@const documents = data.documentsOfSubject.edges
-      .filter(({ node }) => node.type === type)
-      .map((e) => e.node)}
-
-    <h2 class="typo-field-label">
-      <svelte:component this={ICONS_DOCUMENT_TYPES.get(type)}></svelte:component>
-      {DISPLAY_DOCUMENT_TYPES.get(type)}
-    </h2>
-
-    <ul class="nobullet">
-      {#each documents as { solutionPaths, uid, ...rest }}
-        <li>
-          <CardDocument
-            href="./{uid}"
-            hasSolution={documentTypesWithSolutions.has(type)
-              ? solutionPaths.length > 0
-              : undefined}
-            {...rest}
+  {#each documentsByType as [type, documents]}
+    <section class={type.toLowerCase()}>
+      <h2 class="typo-field-label">
+        <svelte:component this={ICONS_DOCUMENT_TYPES.get(type)}></svelte:component>
+        {DISPLAY_DOCUMENT_TYPES.get(type)}
+      </h2>
+      <ul class="nobullet">
+        {#each documents as { solutionPaths, uid, ...rest }}
+          <li>
+            <CardDocument
+              href="./{uid}"
+              hasSolution={documentTypesWithSolutions.has(type)
+                ? solutionPaths.length > 0
+                : undefined}
+              {...rest}
+            ></CardDocument>
+          </li>
+        {/each}
+        <li class="new">
+          <CardDocument createdAt={new Date()} add href="./create?type={type}" title="Ajouter"
           ></CardDocument>
         </li>
-      {/each}
-      <li class="new">
-        <CardDocument createdAt={new Date()} add href="./create?type={type}" title="Ajouter"
-        ></CardDocument>
-      </li>
-    </ul>
+      </ul>
+    </section>
   {/each}
 {:else}
   <div class="no-docs">
