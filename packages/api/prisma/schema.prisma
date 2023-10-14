@@ -680,10 +680,11 @@ model Announcement {
 }
 
 model TeachingUnit {
-  id       String    @id @default(dbgenerated("nanoid('ue:')"))
-  name     String    @db.VarChar(255)
-  moodleId String?   @unique @db.VarChar(255)
-  subjects Subject[]
+  id        String    @id @default(dbgenerated("nanoid('ue:')"))
+  name      String    @db.VarChar(255)
+  shortName String    @default("") @db.VarChar(255)
+  moodleId  String?   @db.VarChar(255)
+  subjects  Subject[]
 }
 
 model Subject {
@@ -694,7 +695,7 @@ model Subject {
   yearTier       Int?
   forApprentices Boolean       @default(false)
   links          Link[]
-  moodleId       String?       @unique @db.VarChar(255)
+  moodleId       String?       @db.VarChar(255)
   unitId         String?
   unit           TeachingUnit? @relation(fields: [unitId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   nextExamAt     DateTime?
