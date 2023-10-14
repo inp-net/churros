@@ -8,6 +8,8 @@ import { fullName } from './users.js';
 import { createLdapUser } from '../services/ldap.js';
 import { createTransport } from 'nodemailer';
 import { yearTier } from '../date.js';
+import { notify } from '../services/notifications.js';
+import { NotificationChannel } from '@prisma/client';
 
 const mailer = createTransport(process.env.SMTP_URL);
 
@@ -155,8 +157,39 @@ builder.mutationField('completeRegistration', (t) =>
             cededImageRightsToTVn7,
             apprentice,
           },
+          include: { major: true },
         }),
       );
+      if (user) {
+        await notify(await prisma.user.findMany({ where: { admin: true } }), {
+          title: `Nouvelle inscription!`,
+          body: `${user.email} (${user.firstName} ${user.lastName}, ${
+            user.graduationYear ? yearTier(user.graduationYear) : '?'
+          }A ${user.major?.shortName ?? 'sans filière'}) s'est inscrit·e!`,
+          data: {
+            channel: NotificationChannel.Other,
+            goto: `/`,
+            group: undefined,
+          },
+        });
+      } else {
+        const candidate = await prisma.userCandidate.findUniqueOrThrow({
+          where: { token },
+          include: { major: true },
+        });
+        await notify(await prisma.user.findMany({ where: { admin: true } }), {
+          title: `Inscription en attente de validation`,
+          body: `${candidate.email} (${candidate.firstName} ${candidate.lastName}, ${
+            candidate.graduationYear ? yearTier(candidate.graduationYear) : '?'
+          }A ${candidate.major?.shortName ?? 'sans filière'}) a fait une demande d'inscription.`,
+          data: {
+            channel: NotificationChannel.Other,
+            goto: `/signups`,
+            group: undefined,
+          },
+        });
+      }
+
       if (user?.major && user.major.ldapSchool) {
         try {
           await createLdapUser({ ...user, otherEmails: [] }, password);
