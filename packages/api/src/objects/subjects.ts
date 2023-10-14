@@ -8,6 +8,7 @@ export const SubjectType = builder.prismaObject('Subject', {
     id: t.exposeID('id'),
     name: t.exposeString('name'),
     shortName: t.exposeString('shortName'),
+    emoji: t.exposeString('emoji'),
     uid: t.exposeString('uid'),
     nextExamAt: t.expose('nextExamAt', { type: DateTimeScalar, nullable: true }),
     majors: t.relation('majors'),

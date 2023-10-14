@@ -14,6 +14,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
         {
           id: true,
           name: true,
+          emoji: true,
           shortName: true,
           semester: true,
           uid: true,

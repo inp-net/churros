@@ -704,6 +704,7 @@ model Subject {
   documents      Document[]
   // 1 for the first semester, 2 for the second one. Null means both
   semester       Int?
+  emoji          String        @default("") @db.VarChar(4)
 
   @@unique([uid, yearTier, forApprentices])
 }
