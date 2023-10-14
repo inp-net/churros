@@ -1241,7 +1241,6 @@ const TAG_TO_SUBJECT_AND_IS_SOLUTION = {
 } as const;
 
 const NOTFOUND_SUBJECT_OLD_IDS = new Set<number>();
-let NOTCREATED_DOCUMENTS_COUNT = 0;
 
 let {
   frappe_document,

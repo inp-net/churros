@@ -118,17 +118,18 @@ builder.mutationField('upsertComment', (t) =>
         ? { title: comment.article.title, author: comment.article.author }
         : undefined;
 
+      // TODO factor out code to get URL to the comment (or use /[globalId])
       const documentMajor =
-        comment.document?.subject.majors[0]?.uid ??
-        comment.document?.subject.minors[0]?.majors[0]?.uid ??
+        comment.document?.subject!.majors[0]?.uid ??
+        comment.document?.subject!.minors[0]?.majors[0]?.uid ??
         'unknown';
       const commentUrl =
         process.env.FRONTEND_ORIGIN +
         (comment.document
           ? `/documents/${documentMajor}/${
-              comment.document.subject.minors[0]?.yearTier ??
+              comment.document.subject!.minors[0]?.yearTier ??
               yearTier(comment.author?.graduationYear ?? 1)
-            }a/${comment.document.subject.uid}/${comment.document.uid}/`
+            }a/${comment.document.subject!.uid}/${comment.document.uid}/`
           : `/posts/${comment.article!.group.uid}/${comment.article!.uid}`) +
         `#comment-${comment.id.replace(TYPENAMES_TO_ID_PREFIXES.Comment + ':', '')}`;
 

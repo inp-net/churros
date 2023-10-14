@@ -4,33 +4,6 @@ import { PrismaClient } from '@prisma/client';
 import slug from 'slug';
 import dichotomid from 'dichotomid';
 
-type NewMajor = {
-  name: string;
-  shortName: string;
-  ldapSchoolUid?: string;
-};
-
-type NewSubject = {
-  name: string;
-  shortName: string;
-  yearTier?: number;
-  forApprentices: boolean;
-  moodleId?: string;
-  unit?: {
-    name: string;
-    shortName: string;
-    moodleId?: string;
-  };
-  majors: [NewMajor];
-  minors: Array<{
-    name: string;
-    shortName: string;
-    uid: string;
-    majors: [NewMajor];
-    yearTier: number;
-  }>;
-};
-
 const majors = YAML.parse(await readFile('./new-subjects.yaml', 'utf-8')) as {
   [major: string]: {
     [yearTier: `${number}A`]: {

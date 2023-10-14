@@ -21,11 +21,14 @@
   let paymentLoading = false;
   let serverError = '';
 
-  // For this page only, force light theme
   onMount(() => {
+    // For this page only, force light theme
     actualTheme = $theme;
     $theme = 'light';
+
+    if (data.markedAsPaid) toasts.success('Place payée', 'Ta place a bien été payée.');
   });
+
   beforeNavigate(() => {
     $theme = actualTheme;
   });
