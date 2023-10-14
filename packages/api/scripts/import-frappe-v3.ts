@@ -1,8 +1,34 @@
-import { readFile } from 'fs/promises';
+import { copyFile, mkdir, readFile, stat } from 'fs/promises';
 import YAML from 'yaml';
 import { PrismaClient } from '@prisma/client';
 import slug from 'slug';
 import dichotomid from 'dichotomid';
+import { Convert } from './frappe-types';
+import path from 'node:path';
+import { DocumentType } from '@prisma/client';
+
+const TAG_TO_SUBJECT_AND_IS_SOLUTION = {
+  TD: [DocumentType.Exercises, false],
+  'BE Corrigé': [DocumentType.GradedExercises, true],
+  TP: [DocumentType.Practical, false],
+  'BE Sujet': [DocumentType.GradedExercises, false],
+  Examen: [DocumentType.Exam, false],
+  Fiche: [DocumentType.Summary, false],
+  'TD Corrigé': [DocumentType.Exercises, true],
+  'TP Corrigé': [DocumentType.Practical, true],
+  'Examen Corrigé': [DocumentType.Exam, true],
+  Cours: [DocumentType.CourseNotes, false],
+  PowerPoint: [DocumentType.CourseSlides, false],
+  'Correction Exam': [DocumentType.Exam, true],
+  "Sujet d'annale": [DocumentType.Exam, false],
+  'Enoncé TD': [DocumentType.Exercises, false],
+  'Fiche révision': [DocumentType.Summary, false],
+  'Annale corrigée': [DocumentType.Exam, true],
+  'Annale non corrigée': [DocumentType.Exam, false],
+  'Sujet DM': [DocumentType.GradedExercises, false],
+  'DM corrigé': [DocumentType.GradedExercises, true],
+  'Enoncé Exam': [DocumentType.Exam, false],
+} as const;
 
 const majors = YAML.parse(await readFile('./new-subjects.yaml', 'utf-8')) as {
   [major: string]: {
@@ -25,7 +51,6 @@ const p = new PrismaClient();
 
 let deletionCounts: Record<string, number> = {};
 console.info('* Clearing data');
-deletionCounts['comment'] = await p.comment.deleteMany({}).then((r) => r.count);
 deletionCounts['document'] = await p.document.deleteMany({}).then((r) => r.count);
 deletionCounts['subject'] = await p.subject.deleteMany({}).then((r) => r.count);
 deletionCounts['minor'] = await p.minor.deleteMany({}).then((r) => r.count);
@@ -135,7 +160,9 @@ for (let [majorShortName, yearTiers] of Object.entries(majors)) {
         }
 
         const subjectsCleaned = subjects.map((subject) =>
-          typeof subject === 'string' ? [subject, subject] : Object.entries(subject)[0]!,
+          typeof subject === 'string'
+            ? [subject.replace(/\s+@\d+$/, ''), subject]
+            : Object.entries(subject)[0]!,
         ) as Array<[string, string]>;
 
         let units = subjectsCleaned
@@ -296,3 +323,132 @@ console.info(
     .sort((a, b) => parseFloat(a) - parseFloat(b))
     .join(' '),
 );
+
+let {
+  frappe_document,
+  frappe_document_tags,
+  frappe_documentfichier,
+  frappe_tag,
+  portailuser_portailuser,
+  auth_user,
+} = Convert.toFrappeTypes(await readFile('./frappe-dump.json', 'utf-8'));
+
+for (const [subjectId, oldSubjectIds] of OLD_FRAPPE_MAPPING.entries()) {
+  const subject = await p.subject.findUniqueOrThrow({ where: { id: subjectId } });
+  console.log(
+    `* Importing documents for subject ${subject.shortName || subject.name} (${subject.yearTier}A ${
+      subject.forApprentices ? 'FISA' : 'FISE'
+    })`,
+  );
+  for (const oldSubjectId of oldSubjectIds) {
+    console.log(`\t* Importing documents from old subject ${oldSubjectId}`);
+    const documents = frappe_document.filter((d) => d.matiere_id === oldSubjectId);
+    for (const oldDocument of documents) {
+      console.log(`\t\t* Importing document ${oldDocument.nom}`);
+      const files = frappe_documentfichier.filter((f) => f.document_id === oldDocument.id);
+      let filepaths: string[] = [];
+      await Promise.all(
+        files.map(async ({ fichier, ordre }) => {
+          const extension = path.extname(fichier);
+          const basename = path.basename(fichier, extension);
+          const filePath = `documents/${
+            subject.forApprentices === undefined
+              ? 'fisea'
+              : subject.forApprentices
+              ? 'fisa'
+              : 'fise'
+          }/${subject.yearTier ?? 'anyone'}/${subject.uid}/${slug(oldDocument.nom)}/${
+            parseFloat(ordre) + 1
+          }-${basename}${extension}`;
+          filepaths.push(filePath);
+
+          await downloadFile(fichier, `../storage/${filePath}`);
+          console.info(`\t\t\t+ Copied file ${fichier} to ${filePath}`);
+        }),
+      );
+
+      const { description, annee, nom, creation, derniere_modif, auteur_id } = oldDocument;
+
+      const author = await p.user.findUnique({
+        where: {
+          uid: auth_user.find(
+            (u) =>
+              u.id ===
+              portailuser_portailuser.find((pu) => pu.user_ptr_id === auteur_id)!.user_ptr_id,
+          )!.username,
+        },
+      });
+      if (
+        frappe_document_tags
+          .map((dt) => frappe_tag.find((t) => t.id === dt.tag_id))
+          .every((t) => t?.ecole_id !== '2')
+      ) {
+        console.warn(`- Skipping ${nom} (${subject.uid}) because it has tags from other schools`);
+        continue;
+      }
+      const tags = frappe_document_tags
+        .filter((dt) => dt.document_id === oldDocument.id)
+        .map((dt) => frappe_tag.find((t) => t.id === dt.tag_id))
+        .filter(Boolean)
+        .map(
+          (t) =>
+            TAG_TO_SUBJECT_AND_IS_SOLUTION[t!.nom as keyof typeof TAG_TO_SUBJECT_AND_IS_SOLUTION],
+        );
+
+      const [type, isSolution] = tags[0] ?? [DocumentType.Miscellaneous, false];
+
+      const uidBase = `${slug(nom)}${annee ? `-${annee}` : ''}`;
+      const uidNumber = await dichotomid(
+        async (n) =>
+          !(await p.document.findUnique({
+            where: {
+              subjectId_uid: { subjectId: subject.id, uid: `${uidBase}${n ? `-${n}` : ''}` },
+            },
+          })),
+      );
+      const uid = `${uidBase}${uidNumber ? `-${uidNumber}` : ''}`;
+
+      const document = await p.document.create({
+        data: {
+          // TODO bbcode to markdown
+          description: description ?? '',
+          schoolYear: annee ? Number.parseInt(annee) : 0,
+          title: nom,
+          type,
+          uid,
+          createdAt: new Date(creation),
+          updatedAt: new Date(derniere_modif),
+          uploader: author ? { connect: { id: author.id } } : undefined,
+          subject: { connect: { id: subject.id } },
+          solutionPaths: isSolution ? { set: filepaths } : undefined,
+          paperPaths: !isSolution ? { set: filepaths } : undefined,
+        },
+      });
+
+      console.info(`\t\t+ Created document ${document.title} (${document.uid})`);
+    }
+  }
+}
+
+async function fileExists(filename: string): Promise<boolean> {
+  try {
+    return await stat(filename).then((s) => s.isFile());
+  } catch {
+    return false;
+  }
+}
+
+async function downloadFile(from: string, dest: string) {
+  if (await fileExists(dest)) {
+    // console.log(`  Logo of ${ldapGroup.cn} already exists, skipping…`);
+  } else {
+    try {
+      await mkdir(path.dirname(dest), { recursive: true });
+      await copyFile(path.join('.', 'frappe-documents', path.basename(from)), dest);
+    } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      console.error(`  Failed to copy ${from} -> ${dest}:`);
+      console.error(error);
+    }
+  }
+}

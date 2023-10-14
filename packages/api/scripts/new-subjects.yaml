@@ -648,7 +648,7 @@ SN:
         N8EN25A: Réseaux mobiles
         N8EN25B: Réseaux sans fil
         N8EN25C: Sécurité @1055
-        N8EN25D: Couches PHY
+        N8EN25D: Couche physique
       HPC Big Data:
         N7EN08: UE Programmation Fonctionnelle et Traduction des Langages
         N7EN08A: Programmation Fonctionnelle
@@ -724,7 +724,7 @@ SN:
         N8EN24B: Réseaux sans fil
         N8EN24C: Projet de Réseaux Sans Fil
         N8EN24D: Projet de réseaux mobiles
-        N8EN24E: Couches PHY
+        N8EN24E: Couche physique
       IMM:
         N7EN08: UE Programmation Fonctionnelle et Traduction des Langages
         N7EN08A: Programmation Fonctionnelle
@@ -828,7 +828,7 @@ SN:
         N8EN19: UE Systèmes de télécom sans fil et mobiles 1
         N8EN19A: Réseaux mobiles
         N8EN19B: Réseaux sans fil
-        N8EN19C: Couches Physiques
+        N8EN19C: Couche physique
         N8EN20: UE Systèmes, Applications Mobiles & Sécurité
         N8EN20A: Systèmes d'exploitation
         N8EN20B: Programmation de mobiles
@@ -981,7 +981,7 @@ SN:
         N9EN02C: Codage moderne et détection avancée
         N9EN03: Terrestrial communication systems and IoT @930
         N9EN03B: Techniques d'accès & comm. coopératives
-        N9EN03C: Couches PHY - 4G-5G
+        N9EN03C: Couche physique - 4G-5G
         N9EN03D: Réseaux pour l'IoT
         N9EN04: Communications spaciales et aéronautiques
         N9EN04A: Systèmes satellites
