@@ -31,6 +31,7 @@ const ID_PREFIXES_TO_TYPENAMES = {
   notifsub: 'NotificationSubscription',
   notif: 'Notification',
   ann: 'Announcement',
+  ue: 'TeachingUnit',
   subj: 'Subject',
   doc: 'Document',
   comment: 'Comment',
