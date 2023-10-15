@@ -15,7 +15,10 @@ export const _eventQuery = Selector('QueryEventsOfGroupConnection')({
         value: true,
         computedValue: true,
       },
-      groupId: true,
+      group: {
+        name: true,
+        uid: true,
+      },
       title: true,
       startsAt: true,
       endsAt: true,
