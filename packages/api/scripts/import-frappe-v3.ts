@@ -332,7 +332,11 @@ for (let [majorShortName, yearTiers] of Object.entries(majors)) {
               : ` ${subject.minors.map((m) => m.shortName).join(', ')}`;
 
           console.info(
-            `\t\t\t\t+ Subject ${subject.shortName} "${subject.name}" [${subjectCharacteristics}]`,
+            `\t\t\t\t+ Subject${
+              subject.emoji || subject.shortName
+                ? ` ${[subject.emoji, subject.shortName].join(' ')} `
+                : ''
+            }"${subject.name}" [${subjectCharacteristics}]`,
           );
 
           if (oldFrappeRefs?.length > 0) {
