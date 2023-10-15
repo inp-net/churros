@@ -141,8 +141,10 @@
       Année scolaire {schoolYear}–{schoolYear + 1}
       <br />
       {#if !isSameDay(createdAt, updatedAt)}
-        Modifié le {formatDate(updatedAt)}{:else}
-        Mis en ligne le {formatDate(createdAt)}
+        Modifié le {formatDate(updatedAt)}
+        {#if !uploader}
+          Mis en ligne le {formatDate(createdAt)}
+        {/if}
       {/if}
     </p>
     <div class="actions">
@@ -228,13 +230,19 @@
       </ul>
     {/if}
   </div>
-  {#if uploader}
-    <div class="uploader">
-      <AvatarPerson href="/users/{uploader.uid}" {...uploader}></AvatarPerson>
+  <div class="uploader-and-id">
+    {#if uploader}
+      <div class="uploader">
+        <AvatarPerson
+          role={`A mis en ligne le ${formatDate(createdAt)}`}
+          href="/users/{uploader.uid}"
+          {...uploader}
+        ></AvatarPerson>
+      </div>
+    {/if}
+    <div class="id typo-details">
+      <code>{document.id.replace(/^doc:/, '')}</code>
     </div>
-  {/if}
-  <div class="id typo-details">
-    <code>{document.id.replace(/^doc:/, '')}</code>
   </div>
 </article>
 <section class="comments">
@@ -326,13 +334,23 @@
     margin: 0 auto;
   }
 
+  .uploader-and-id {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+  }
+
   .uploader {
     margin-top: 2rem;
   }
 
+  .uploader :global(.person) {
+    padding: 0;
+  }
+
   .id {
     margin-top: 1.5rem;
-    text-align: right;
+    margin-left: auto;
   }
 
   .id code {
