@@ -13,6 +13,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
         { uid: params.subject, yearTier: parseYearTier(params.yearTier) },
         {
           name: true,
+          emoji: true,
           shortName: true,
           uid: true,
           id: true,

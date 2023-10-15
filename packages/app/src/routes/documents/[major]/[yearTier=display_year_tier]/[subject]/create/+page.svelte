@@ -23,9 +23,8 @@
       [DocumentType.Miscellaneous]: '',
     };
 
-    if (articles[type]) 
+    if (articles[type])
       return `Ajouter ${articles[type]} ${DISPLAY_DOCUMENT_TYPES.get(type)!} de ${subject}`;
-    
 
     return `Ajouter un document de ${subject}`;
   }
@@ -47,7 +46,10 @@
 <Breadcrumbs root="/documents">
   <Breadcrumb href="../../..">{data.major.shortName}</Breadcrumb>
   <Breadcrumb href="../..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
-  <Breadcrumb href="..">{data.subject.shortName || data.subject.name}</Breadcrumb>
+  <Breadcrumb href="..">
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {data.subject.shortName || data.subject.name}</Breadcrumb
+  >
   <Breadcrumb><em>Ajouter</em></Breadcrumb>
 </Breadcrumbs>
 

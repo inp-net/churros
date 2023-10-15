@@ -11,7 +11,15 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
       major: [{ uid: params.major }, { name: true, shortName: true, uid: true }],
       subject: [
         { uid: params.subject, yearTier: parseYearTier(params.yearTier) },
-        { name: true, shortName: true, uid: true, id: true, forApprentices: true, yearTier: true },
+        {
+          name: true,
+          shortName: true,
+          uid: true,
+          id: true,
+          forApprentices: true,
+          yearTier: true,
+          emoji: true,
+        },
       ],
       document: [
         {
@@ -31,6 +39,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           updatedAt: true,
           subject: {
             name: true,
+            emoji: true,
             shortName: true,
             forApprentices: true,
             yearTier: true,

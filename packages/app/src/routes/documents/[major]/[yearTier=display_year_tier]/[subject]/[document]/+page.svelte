@@ -123,7 +123,10 @@
 <Breadcrumbs root="/documents">
   <Breadcrumb href="../../..">{major.shortName}</Breadcrumb>
   <Breadcrumb href="../..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
-  <Breadcrumb href="..">{subject.shortName || subject.name}</Breadcrumb>
+  <Breadcrumb href="..">
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {subject.shortName || subject.name}</Breadcrumb
+  >
   <Breadcrumb>
     <span class="breadcrumb-icon">
       <svelte:component this={ICONS_DOCUMENT_TYPES.get(type)}></svelte:component>
