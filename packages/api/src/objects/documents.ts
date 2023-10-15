@@ -215,6 +215,7 @@ builder.mutationField('upsertDocument', (t) =>
       query,
       _,
       { id, subjectUid, title, schoolYear, subjectYearTier, subjectForApprentices, ...data },
+      { user },
     ) {
       const subject = await prisma.subject.findFirst({
         where: {
@@ -231,11 +232,11 @@ builder.mutationField('upsertDocument', (t) =>
         async (n) =>
           !(await prisma.document.findUnique({
             where: {
-              subjectId_uid: { subjectId: subject.id, uid: `${uidBase}${n ? `-${n}` : ''}` },
+              subjectId_uid: { subjectId: subject.id, uid: `${uidBase}${n > 1 ? `-${n}` : ''}` },
             },
           })),
       );
-      const uid = `${uidBase}${uidNumber ? `-${uidNumber}` : ''}`;
+      const uid = `${uidBase}${uidNumber > 1 ? `-${uidNumber}` : ''}`;
       const upsertData = {
         title,
         schoolYear,
@@ -247,7 +248,7 @@ builder.mutationField('upsertDocument', (t) =>
       return prisma.document.upsert({
         ...query,
         where: { id: id ?? '' },
-        create: { ...upsertData, uid },
+        create: { ...upsertData, uid, uploader: { connect: { id: user?.id ?? '' } } },
         update: upsertData,
       });
     },
