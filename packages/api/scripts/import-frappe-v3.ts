@@ -127,14 +127,17 @@ for (let [majorShortName, yearTiers] of Object.entries(majors)) {
   switch (majorShortName) {
     case '3EA': {
       longName = 'Électronique, Énergie Électrique et Automatique';
+      majorUid = 'eeea';
       break;
     }
     case 'SN': {
       longName = 'Sciences du Numériques';
+      majorUid = 'sdn';
       break;
     }
     case 'MF2E': {
       longName = 'Mécanique des Fluides, Énergétique et Environnement';
+      majorUid = 'mfee';
       break;
     }
   }
