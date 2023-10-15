@@ -23,9 +23,8 @@
       [DocumentType.Miscellaneous]: '',
     };
 
-    if (articles[type]) 
+    if (articles[type])
       return `Ajouter ${articles[type]} ${DISPLAY_DOCUMENT_TYPES.get(type)!} de ${subject}`;
-    
 
     return `Ajouter un document de ${subject}`;
   }
