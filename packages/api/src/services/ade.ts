@@ -2,8 +2,11 @@ import { builder } from '../builder.js';
 import { log } from '../objects/logs.js';
 import { prisma } from '../prisma.js';
 
-export async function nextExamDates(user: { uid: string }): Promise<Record<string, Date>> {
-  const exams = (await fetch(`https://calendrier-n7.inpt.fr/${user.uid}/next-exams`).then(
+export async function nextExamDates(user: {
+  schoolUid: string | null;
+}): Promise<Record<string, Date>> {
+  if (!user.schoolUid) return {};
+  const exams = (await fetch(`https://calendrier-n7.inpt.fr/${user.schoolUid}/next-exams`).then(
     async (response) => {
       if (response.status !== 200) {
         await log('ADE', 'error', { error: await response.text() });
