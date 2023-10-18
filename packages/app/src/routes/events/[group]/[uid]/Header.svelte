@@ -21,7 +21,7 @@
   export let frequency: EventFrequency;
   export let recurringUntil: Date | undefined = undefined;
   export let subtitle = '';
-  export let visibility: Visibility;
+  export let visibility: Visibility | undefined = undefined;
 
   onMount(() => {
     if (browser) document.querySelector('main')?.classList.add('fullsize');
@@ -77,10 +77,12 @@
     {#if subtitle}
       <p class="subtitle">{subtitle}</p>
     {/if}
-    <p class="visibility">
-      <IndicatorVisibility {visibility} />
-      {DISPLAY_VISIBILITIES[visibility]}
-    </p>
+    {#if visibility}
+      <p class="visibility">
+        <IndicatorVisibility {visibility} />
+        {DISPLAY_VISIBILITIES[visibility]}
+      </p>
+    {/if}
   </div>
 </header>
 
