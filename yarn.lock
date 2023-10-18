@@ -410,6 +410,7 @@ __metadata:
     typescript: "npm:^5.2.2"
     unified: "npm:^10.1.2"
     web-push: "npm:^3.6.6"
+    yaml: "npm:^2.3.2"
     zod: "npm:^3.22.2"
   languageName: unknown
   linkType: soft
@@ -11934,6 +11935,13 @@ __metadata:
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
   checksum: d6f04384bdf1105256581aef39991f825e358f3f48f081974b0e0f39ff5240c60ccafb5842cb79d1287517efa2b9ee172c702f2e4855ba6cc46948b40a43aa6e
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.3.2":
+  version: 2.3.2
+  resolution: "yaml@npm:2.3.2"
+  checksum: e75e2ecbcd654a165ab2e5f5d29873fa2db1a3599e005475d42a975207e507c9c62232257dc0ce16c75e146559a30047d9dc961aa9c45291298db66db3906ff1
   languageName: node
   linkType: hard
 

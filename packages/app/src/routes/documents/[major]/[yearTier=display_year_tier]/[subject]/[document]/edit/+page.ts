@@ -1,3 +1,4 @@
+import { parseYearTier } from '$lib/dates';
 import { redirectToLogin } from '$lib/session';
 import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
@@ -8,30 +9,50 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
   return loadQuery(
     {
       major: [{ uid: params.major }, { name: true, shortName: true, uid: true }],
-      subject: [{ uid: params.subject }, { name: true, shortName: true, uid: true, id: true }],
+      subject: [
+        { uid: params.subject, yearTier: parseYearTier(params.yearTier) },
+        {
+          name: true,
+          shortName: true,
+          uid: true,
+          id: true,
+          forApprentices: true,
+          yearTier: true,
+          emoji: true,
+        },
+      ],
       document: [
         {
           subjectUid: params.subject,
           documentUid: params.document,
+          subjectYearTier: parseYearTier(params.yearTier),
         },
         {
           title: true,
           id: true,
           type: true,
           schoolYear: true,
-          descriptionHtml: true,
+          description: true,
           solutionPaths: true,
           paperPaths: true,
           createdAt: true,
           updatedAt: true,
           subject: {
             name: true,
+            emoji: true,
+            shortName: true,
+            forApprentices: true,
+            yearTier: true,
             uid: true,
             minors: {
               uid: true,
+              name: true,
+              shortName: true,
             },
             majors: {
               uid: true,
+              name: true,
+              shortName: true,
             },
           },
           uploader: {
@@ -39,24 +60,6 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             pictureFile: true,
             fullName: true,
           },
-          comments: [
-            {
-              first: 100,
-            },
-            {
-              edges: {
-                node: {
-                  id: true,
-                  author: { uid: true, fullName: true, pictureFile: true },
-                  bodyHtml: true,
-                  body: true,
-                  inReplyToId: true,
-                  createdAt: true,
-                  updatedAt: true,
-                },
-              },
-            },
-          ],
         },
       ],
     },

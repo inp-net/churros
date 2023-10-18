@@ -26,9 +26,7 @@
     actualTheme = $theme;
     $theme = 'light';
 
-    if (data.markedAsPaid) 
-      toasts.success('Place payée', 'Ta place a bien été payée.');
-    
+    if (data.markedAsPaid) toasts.success('Place payée', 'Ta place a bien été payée.');
   });
 
   beforeNavigate(() => {
