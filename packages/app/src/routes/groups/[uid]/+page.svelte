@@ -37,7 +37,6 @@
   import { tooltip } from '$lib/tooltip';
   import { groupLogoSrc } from '$lib/logos';
   import { toasts } from '$lib/toasts';
-  import { _eventQuery } from './+page';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -268,11 +267,11 @@
     </h2>
 
     <ul class="nobullet">
-      {#each data.events.edges.slice(0, 3) as { node } (node.uid)}
+      {#each group.events.edges.slice(0, 3) as { node } (node.uid)}
         <!-- TODO CardEvent -->
         <CardArticle
           hideGroup
-          {group}
+          {...node}
           href="/events/{node.group.uid}/{node.uid}"
           {...node}
           publishedAt={node.startsAt}

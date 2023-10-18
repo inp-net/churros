@@ -103,10 +103,11 @@ export const GroupType = builder.prismaNode('Group', {
     events: t.prismaConnection({
       type: EventType,
       cursor: 'id',
-      async resolve(_, {}, {}, { user }) {
+      async resolve(_, { id }, {}, { user }) {
         return prisma.event.findMany({
           where: {
             ...visibleEventsPrismaQuery(user),
+            OR: [{ groupId: id }, { coOrganizers: { some: { id } } }],
           },
           orderBy: { startsAt: 'desc' },
         });

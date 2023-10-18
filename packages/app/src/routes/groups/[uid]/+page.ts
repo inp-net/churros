@@ -1,37 +1,9 @@
 import { byMemberGroupTitleImportance } from '$lib/sorting';
-import { loadQuery, Selector } from '$lib/zeus';
+import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
-
-export const _eventQuery = Selector('QueryEventsOfGroupConnection')({
-  pageInfo: { hasNextPage: true, endCursor: true },
-  edges: {
-    cursor: true,
-    node: {
-      descriptionHtml: true,
-      descriptionPreview: true,
-      uid: true,
-      links: {
-        name: true,
-        value: true,
-        computedValue: true,
-      },
-      group: {
-        name: true,
-        uid: true,
-      },
-      title: true,
-      startsAt: true,
-      endsAt: true,
-      pictureFile: true,
-      visibility: true,
-      location: true,
-    },
-  },
-});
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
   const { me } = await parent();
-  const { events } = await loadQuery({ events: [{}, _eventQuery] }, { fetch, parent });
   const data = await loadQuery(
     {
       group: [
@@ -122,6 +94,35 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 vicePresident: true,
                 secretary: true,
               },
+              events: [
+                {},
+                {
+                  edges: {
+                    node: {
+                      descriptionHtml: true,
+                      descriptionPreview: true,
+                      uid: true,
+                      links: {
+                        name: true,
+                        value: true,
+                        computedValue: true,
+                      },
+                      title: true,
+                      startsAt: true,
+                      endsAt: true,
+                      pictureFile: true,
+                      visibility: true,
+                      location: true,
+                      group: {
+                        uid: true,
+                        pictureFile: true,
+                        pictureFileDark: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              ],
             }
           : // Unauthenticated query
             {
@@ -171,6 +172,35 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               },
               links: { name: true, value: true, computedValue: true },
               ancestors: { uid: true, name: true, pictureFile: true },
+              events: [
+                {},
+                {
+                  edges: {
+                    node: {
+                      descriptionHtml: true,
+                      descriptionPreview: true,
+                      uid: true,
+                      links: {
+                        name: true,
+                        value: true,
+                        computedValue: true,
+                      },
+                      title: true,
+                      startsAt: true,
+                      visibility: true,
+                      endsAt: true,
+                      pictureFile: true,
+                      location: true,
+                      group: {
+                        uid: true,
+                        pictureFile: true,
+                        pictureFileDark: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              ],
             },
       ],
     },
@@ -178,9 +208,6 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
   );
   return {
     ...data,
-    events: {
-      ...events,
-    },
     group: {
       ...data.group,
       // typescript infers data.group.members as ... | never[] when it's actually ... | undefined
