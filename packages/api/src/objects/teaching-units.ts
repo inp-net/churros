@@ -5,7 +5,7 @@ export const TeachingUnitType = builder.prismaObject('TeachingUnit', {
     id: t.exposeID('id'),
     name: t.exposeString('name'),
     shortName: t.exposeString('shortName'),
-    moodleId: t.exposeString('moodleId', { nullable: true }),
+    apogeeCode: t.exposeString('apogeeCode', { nullable: true }),
     subjects: t.relation('subjects'),
   }),
 });

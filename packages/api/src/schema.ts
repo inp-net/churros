@@ -37,6 +37,7 @@ import './objects/subjects.js';
 import './objects/teaching-units.js';
 import './objects/minors.js';
 import './objects/reactions.js';
+import './services/ade.js';
 
 // Import other mutations and/or queries that are not objects
 import './services/gitlab.js';

@@ -32,7 +32,7 @@
 
   function subjectsOfMinorByUnit(minor: undefined | { uid: string }) {
     return Object.entries(
-      groupBy(subjectsOfMinor(minor), (s) => s.unit?.shortName || s.unit?.name),
+      groupBy(subjectsOfMinor(minor), (s) => s.unit?.shortName || s.unit?.name || 'Sans UE'),
     );
   }
 
@@ -54,10 +54,16 @@
     <a href="#{$me.minor.uid}" class="jump-to-anchor"><IconLink></IconLink></a>
   </h2>
   <ul class="nobullet">
-    {#each subjectsOfMinor($me.minor) as node (node.uid)}
-      <li>
-        <CardSubject href="./{node.uid}" {...node}></CardSubject>
-      </li>
+    {#each subjectsOfMinorByUnit($me.minor) as [unitShortName, subjects] (unitShortName)}
+      {@const { unit } = subjects[0]}
+      {#if unit}
+        <h3 class="typo-field-label">{unit.shortName || unit.name}</h3>
+      {/if}
+      {#each subjects as subject (subject.uid)}
+        <li>
+          <CardSubject href="./{subject.uid}" {...subject} unit={undefined}></CardSubject>
+        </li>
+      {/each}
     {:else}
       <li class="empty muted">Aucune matière dans ta filière??? Contactes net7.</li>
     {/each}
@@ -82,7 +88,7 @@
 {#if subjectsOfMinor(undefined).length > 0}
   <ul class="nobullet minorless-subjects">
     {#each subjectsOfMinorByUnit(undefined) as [unitShortName, subjectsOfUnit] (unitShortName)}
-      {@const {unit} = subjectsOfUnit[0]}
+      {@const { unit } = subjectsOfUnit[0]}
       {#if unit}
         <h3 class="typo-field-label">{unit.shortName || unit.name}</h3>
       {/if}
@@ -103,9 +109,9 @@
 
   <ul class="nobullet">
     {#each subjectsOfMinorByUnit(minor) as [unitShortName, subjectsOfUnit] (unitShortName)}
-      {@const {unit} = subjectsOfUnit[0]}
+      {@const { unit } = subjectsOfUnit[0]}
       {#if unit}
-        <h3 class="typo-field-label">UE {unit.shortName || unit.name}</h3>
+        <h3 class="typo-field-label">{unit.shortName || unit.name}</h3>
       {/if}
       {#each subjectsOfUnit as subject (subject.id)}
         <li>

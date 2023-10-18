@@ -24,13 +24,18 @@
     data.documentsOfSubject.edges.filter(({ node }) => node.type === type).map((e) => e.node),
   ]).sort(
     ([_, aDocs], [__, bDocs]) => Number(bDocs.length > 0) - Number(aDocs.length > 0),
-  ) as unknown as Array<[DocumentType, Array<(typeof data.documentsOfSubject.edges)[number]['node']>]>;
+  ) as unknown as Array<
+    [DocumentType, Array<(typeof data.documentsOfSubject.edges)[number]['node']>]
+  >;
 </script>
 
 <Breadcrumbs root="/documents">
   <Breadcrumb href="../..">{data.major.shortName}</Breadcrumb>
   <Breadcrumb href="..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
-  <Breadcrumb>{data.subject.shortName || data.subject.name}</Breadcrumb>
+  <Breadcrumb
+    >{data.subject.emoji ? `${data.subject.emoji} ` : ''}{data.subject.shortName ||
+      data.subject.name}</Breadcrumb
+  >
 </Breadcrumbs>
 
 <WipMigrationNotice></WipMigrationNotice>

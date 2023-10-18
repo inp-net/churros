@@ -845,28 +845,6 @@ SN:
         N8EAN03B: Programmation fonctionnelle
         N8EAN04: Machine learning
         N8EAN04A: Machine learning
-      TLS-SEC:
-        - Cryptographie @490
-        - Rappels assembleur @491
-        - Rappels réseaux @492
-        - Rappels langage C @493
-        - Rappels système d'exploitation @494
-        - Définitions sécurité/safety @495
-        - Attaques et sécurisation des couches OSI @497
-        - Sécurité des réseaux non filiaires @498
-        - Vulnérabilités logicielles @499
-        - Virus et techniques virales @500
-        - Protection des systèmes d'exploitation @501
-        - Sécurisation des protocoles @502
-        - Composants fondamentaux d'une architecture sécurisée @503
-        - Attaques matérielles et sécurisation @504
-        - Intrusion systèmes et réseaux @506
-        - Sécurité dans l'aérospatiale @507
-        - Reverse engineering @508
-        - SHS-Conférences @876
-        - Master Secu @877
-        - Vulnérabilité Web @893
-        - Preuves Formelles @974
       (*):
         N7AN01: Réseaux
         N7AN01A: Evaluation de Performances de Réseaux @74
@@ -998,6 +976,28 @@ SN:
         - Apprentissage sous contraintes physiques
         - Technologies pour l'IA
         - Systèmes de confiance
+      TLS-SEC:
+        - Cryptographie @490
+        - Rappels assembleur @491
+        - Rappels réseaux @492
+        - Rappels langage C @493
+        - Rappels système d'exploitation @494
+        - Définitions sécurité/safety @495
+        - Attaques et sécurisation des couches OSI @497
+        - Sécurité des réseaux non filiaires @498
+        - Vulnérabilités logicielles @499
+        - Virus et techniques virales @500
+        - Protection des systèmes d'exploitation @501
+        - Sécurisation des protocoles @502
+        - Composants fondamentaux d'une architecture sécurisée @503
+        - Attaques matérielles et sécurisation @504
+        - Intrusion systèmes et réseaux @506
+        - Sécurité dans l'aérospatiale @507
+        - Reverse engineering @508
+        - SHS-Conférences @876
+        - Master Secu @877
+        - Vulnérabilité Web @893
+        - Preuves Formelles @974
 MF2E:
   1A:
     FISA:

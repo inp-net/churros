@@ -40,8 +40,8 @@ const majors = YAML.parse(await readFile('./new-subjects.yaml', 'utf-8')) as {
   };
 };
 
-const MOODLE_TO_OLD_FRAPPE_MAPPING = JSON.parse(
-  await readFile('./moodle-to-old-frappe.json', 'utf-8'),
+const APOGEE_TO_OLD_FRAPPE_MAPPING = JSON.parse(
+  await readFile('./apogee-to-old-frappe.json', 'utf-8'),
 ) as Record<string, string[]>;
 
 /* Maps each subject Id to one or more old frappe subject Ids, from which documents should be imported into the new subject */
@@ -61,7 +61,7 @@ console.info(
     .join(', ')}`,
 );
 
-type MoodleCode = {
+type ApogeeCode = {
   code: string;
   semester: 5 | 6 | 7 | 8 | 9;
   major: 'EE' | 'AE' | 'EK' | 'AN' | 'EN' | 'EAN' | 'EM';
@@ -69,7 +69,34 @@ type MoodleCode = {
   subjectLetter?: string & { length: 1 };
 };
 
-function decodeMoodleCode(code: string): undefined | (MoodleCode & { isUnit: boolean }) {
+const SUBJECT_WORDS_TO_EMOJI = YAML.parse(
+  await readFile('./subject-emojis.yaml', 'utf-8'),
+) as Record<string, string>;
+
+function inferSubjectEmoji(text: string): string {
+  // comparator to get the closest match to the beginning of the string first
+  const comparator = ([_, aIndex]: [string, number], [__, bIndex]: [string, number]) =>
+    aIndex - bIndex;
+
+  // number is the match position
+  const candidates = Object.entries(SUBJECT_WORDS_TO_EMOJI).map(
+    ([matchingWords, emoji]) =>
+      (
+        matchingWords
+          .split(',')
+          .map((word) => {
+            const pattern = new RegExp(`(^|\\b)${word.toLowerCase()}s?(\\b|$)`);
+            const match = pattern.exec(text.toLowerCase());
+            return [emoji, match?.index];
+          })
+          .filter(([_, index]) => index !== undefined) as Array<[string, number]>
+      ).sort(comparator)[0] ?? ['', undefined],
+  ) as Array<[string, number]>;
+
+  return candidates.sort(comparator)[0]?.[0] ?? '';
+}
+
+function decodeApogeeCode(code: string): undefined | (ApogeeCode & { isUnit: boolean }) {
   const pattern = /N([56789])(EE|AE|EK|AN|EN|EAN|EM)(\d+)([A-Z])?/;
   const match = pattern.exec(code);
   if (!match) {
@@ -80,16 +107,16 @@ function decodeMoodleCode(code: string): undefined | (MoodleCode & { isUnit: boo
     return undefined;
   }
   return {
-    semester: Number.parseInt(semester, 10) as MoodleCode['semester'],
-    major: major as MoodleCode['major'],
+    semester: Number.parseInt(semester, 10) as ApogeeCode['semester'],
+    major: major as ApogeeCode['major'],
     unitNumber: Number.parseInt(unitNumber, 10),
-    subjectLetter: subjectLetter as MoodleCode['subjectLetter'],
+    subjectLetter: subjectLetter as ApogeeCode['subjectLetter'],
     isUnit: !Boolean(subjectLetter),
     code,
   };
 }
 
-function toRelativeSemester(semester: undefined | MoodleCode['semester']): 1 | 2 | undefined {
+function toRelativeSemester(semester: undefined | ApogeeCode['semester']): 1 | 2 | undefined {
   if (semester === undefined) return undefined;
   return semester % 2 === 0 ? 2 : 1;
 }
@@ -100,14 +127,17 @@ for (let [majorShortName, yearTiers] of Object.entries(majors)) {
   switch (majorShortName) {
     case '3EA': {
       longName = 'Électronique, Énergie Électrique et Automatique';
+      majorUid = 'eeea';
       break;
     }
     case 'SN': {
       longName = 'Sciences du Numériques';
+      majorUid = 'sdn';
       break;
     }
     case 'MF2E': {
       longName = 'Mécanique des Fluides, Énergétique et Environnement';
+      majorUid = 'mfee';
       break;
     }
   }
@@ -166,33 +196,33 @@ for (let [majorShortName, yearTiers] of Object.entries(majors)) {
         ) as Array<[string, string]>;
 
         let units = subjectsCleaned
-          .map(([shortNameOrCode, name]) => [decodeMoodleCode(shortNameOrCode), name])
+          .map(([shortNameOrCode, name]) => [decodeApogeeCode(shortNameOrCode), name])
           .filter(
-            ([decoded]) => (decoded as undefined | (MoodleCode & { isUnit: boolean }))?.isUnit,
+            ([decoded]) => (decoded as undefined | (ApogeeCode & { isUnit: boolean }))?.isUnit,
           )
           .map(([decoded, name]) => ({
-            ...(decoded as MoodleCode & { isUnit: true; subjectLetter: undefined }),
+            ...(decoded as ApogeeCode & { isUnit: true; subjectLetter: undefined }),
             name: (name as string).replace(/\s+@\d+$/, ''),
           }));
 
-        const unitsMoodleIdsToDatabaseIds: Map<string, string> = new Map();
+        const unitsapogeeCodesToDatabaseIds: Map<string, string> = new Map();
         for (const unit of units) {
           let existingUnit = await p.teachingUnit.findFirst({
-            where: { moodleId: unit.code },
+            where: { apogeeCode: unit.code },
           });
           existingUnit = await p.teachingUnit.upsert({
             where: { id: existingUnit?.id ?? '' },
             create: {
               name: unit.name.replace(/^UE\s+/, ''),
-              moodleId: unit.code,
+              apogeeCode: unit.code,
             },
             update: {},
           });
-          unitsMoodleIdsToDatabaseIds.set(unit.code, existingUnit.id);
+          unitsapogeeCodesToDatabaseIds.set(unit.code, existingUnit.id);
         }
 
         for (const [shortNameOrCode, nameWithOldFrappeRefs] of subjectsCleaned) {
-          const subjectInfosFromMoodleCode = decodeMoodleCode(shortNameOrCode);
+          const subjectInfosFromApogeeCode = decodeApogeeCode(shortNameOrCode);
           let name = nameWithOldFrappeRefs;
           let oldFrappeRefs: string[] = [];
           if (/\s+@\d+$/.test(nameWithOldFrappeRefs)) {
@@ -203,19 +233,19 @@ for (let [majorShortName, yearTiers] of Object.entries(majors)) {
             oldFrappeRefs = oldFrappeRefsString.split(',');
           }
           if (
-            subjectInfosFromMoodleCode?.code &&
-            MOODLE_TO_OLD_FRAPPE_MAPPING[subjectInfosFromMoodleCode.code]
+            subjectInfosFromApogeeCode?.code &&
+            APOGEE_TO_OLD_FRAPPE_MAPPING[subjectInfosFromApogeeCode.code]
           ) {
-            oldFrappeRefs = MOODLE_TO_OLD_FRAPPE_MAPPING[subjectInfosFromMoodleCode.code]!;
+            oldFrappeRefs = APOGEE_TO_OLD_FRAPPE_MAPPING[subjectInfosFromApogeeCode.code]!;
           }
-          if (subjectInfosFromMoodleCode?.isUnit) continue;
+          if (subjectInfosFromApogeeCode?.isUnit) continue;
           const unit = units.find((unit) => shortNameOrCode.startsWith(unit.code));
-          let subjectUid = slug(subjectInfosFromMoodleCode ? name : shortNameOrCode);
-          const existingSubject = subjectInfosFromMoodleCode
+          let subjectUid = slug(subjectInfosFromApogeeCode ? name : shortNameOrCode);
+          const existingSubject = subjectInfosFromApogeeCode
             ? (await p.subject.findFirst({
                 where: {
                   OR: [
-                    { moodleId: subjectInfosFromMoodleCode.code, yearTier },
+                    { apogeeCode: subjectInfosFromApogeeCode.code, yearTier },
                     {
                       uid: subjectUid,
                       yearTier,
@@ -259,24 +289,25 @@ for (let [majorShortName, yearTiers] of Object.entries(majors)) {
               forApprentices,
             ]}\x1b[0m`,
           );
-          const relativeSemester = toRelativeSemester(subjectInfosFromMoodleCode?.semester);
+          const relativeSemester = toRelativeSemester(subjectInfosFromApogeeCode?.semester);
 
           const subject = await p.subject.upsert({
             where: { id: existingSubject?.id ?? '' },
             create: {
               name,
-              shortName: !subjectInfosFromMoodleCode ? shortNameOrCode : undefined,
+              shortName: !subjectInfosFromApogeeCode ? shortNameOrCode : undefined,
               yearTier,
               uid: subjectUid,
               forApprentices,
-              moodleId: subjectInfosFromMoodleCode?.code,
+              emoji: inferSubjectEmoji(shortNameOrCode) || inferSubjectEmoji(name),
+              apogeeCode: subjectInfosFromApogeeCode?.code,
               minors: minor ? { connect: { id: minor.id } } : undefined,
               majors: minor ? undefined : { connect: { id: major.id } },
               semester: relativeSemester,
               unit: unit
                 ? {
                     connect: {
-                      id: unitsMoodleIdsToDatabaseIds.get(unit.code) ?? '',
+                      id: unitsapogeeCodesToDatabaseIds.get(unit.code) ?? '',
                     },
                   }
                 : undefined,
@@ -301,7 +332,11 @@ for (let [majorShortName, yearTiers] of Object.entries(majors)) {
               : ` ${subject.minors.map((m) => m.shortName).join(', ')}`;
 
           console.info(
-            `\t\t\t\t+ Subject ${subject.shortName} "${subject.name}" [${subjectCharacteristics}]`,
+            `\t\t\t\t+ Subject${
+              subject.emoji || subject.shortName
+                ? ` ${[subject.emoji, subject.shortName].join(' ')} `
+                : ''
+            }"${subject.name}" [${subjectCharacteristics}]`,
           );
 
           if (oldFrappeRefs?.length > 0) {
@@ -402,11 +437,11 @@ for (const [subjectId, oldSubjectIds] of OLD_FRAPPE_MAPPING.entries()) {
         async (n) =>
           !(await p.document.findUnique({
             where: {
-              subjectId_uid: { subjectId: subject.id, uid: `${uidBase}${n ? `-${n}` : ''}` },
+              subjectId_uid: { subjectId: subject.id, uid: `${uidBase}${n > 1 ? `-${n}` : ''}` },
             },
           })),
       );
-      const uid = `${uidBase}${uidNumber ? `-${uidNumber}` : ''}`;
+      const uid = `${uidBase}${uidNumber > 1 ? `-${uidNumber}` : ''}`;
 
       const document = await p.document.create({
         data: {
