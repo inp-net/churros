@@ -1,7 +1,8 @@
 <script lang="ts">
+  import ButtonBack from '$lib/components/ButtonBack.svelte';
   import FormDocument from '$lib/components/FormDocument.svelte';
   import { schoolYearStart } from '$lib/dates';
-  import { DocumentType } from '../../../zeus';
+  import { DocumentType } from '$lib/zeus';
 
   const data = {
     id: '',
@@ -14,5 +15,7 @@
     solutionPaths: [],
   };
 </script>
+
+<h1><ButtonBack></ButtonBack> Ajouter un document</h1>
 
 <FormDocument {data}></FormDocument>

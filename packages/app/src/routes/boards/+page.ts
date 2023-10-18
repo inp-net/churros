@@ -1,3 +1,4 @@
+import { isOnClubBoard } from '$lib/permissions';
 import { GroupType, Selector, loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
@@ -34,10 +35,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
       .filter(({ type }) => type !== GroupType.List)
       .map(({ members, ...group }) => ({
         ...group,
-        members: members.filter(
-          ({ president, vicePresident, treasurer, secretary }) =>
-            president || vicePresident || treasurer || secretary,
-        ),
+        members: members.filter((m) => isOnClubBoard(m)),
       })),
   };
 };

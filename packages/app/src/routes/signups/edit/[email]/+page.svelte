@@ -17,6 +17,7 @@
   import IconCheck from '~icons/mdi/check';
   import IconSave from '~icons/mdi/content-save-outline';
   import IconDelete from '~icons/mdi/delete-outline';
+  import { toasts } from '$lib/toasts';
 
   export let data: PageData;
 
@@ -67,13 +68,16 @@
         if (register) await goto('../..');
       } else {
         loadingRefuse = true;
+        // eslint-disable-next-line no-alert
+        const reason = prompt('pk ?');
+        if (!reason) {
+          toasts.error('Il faut une raison pour refuser une inscription');
+          loading = false;
+          return;
+        }
+
         await $zeus.mutate({
-          /* eslint-disable no-alert */
-          refuseRegistration: [
-            { email: data.userCandidateByEmail.email, reason: prompt('pk ?') ?? '' },
-            true,
-          ],
-          /* eslint-enable no-alert */
+          refuseRegistration: [{ email: data.userCandidateByEmail.email, reason }, true],
         });
       }
     } finally {

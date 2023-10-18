@@ -53,10 +53,9 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
 
   const canEdit =
     me.canEditGroups ||
-    (Boolean(article.author?.id === me.id) &&
-      me.groups.some(
-        ({ canEditArticles, group }) => group.id === article.group.id && canEditArticles,
-      ));
+    me.groups.some(
+      ({ canEditArticles, group }) => group.id === article.group.id && canEditArticles,
+    );
   if (!canEdit) throw redirect(307, '..');
   return { article };
 };

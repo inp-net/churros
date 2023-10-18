@@ -14,17 +14,21 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { me } from '$lib/session';
+  import { toasts } from '$lib/toasts';
 
   let actualTheme: string;
   let confirmingCancellation = false;
   let paymentLoading = false;
   let serverError = '';
 
-  // For this page only, force light theme
   onMount(() => {
+    // For this page only, force light theme
     actualTheme = $theme;
     $theme = 'light';
+
+    if (data.markedAsPaid) toasts.success('Place payée', 'Ta place a bien été payée.');
   });
+
   beforeNavigate(() => {
     $theme = actualTheme;
   });
@@ -201,7 +205,7 @@
                   ],
                 });
                 if (cancelRegistration.__typename === 'Error')
-                  console.error(cancelRegistration.message);
+                  toasts.error("Impossible d'annuler cette place", cancelRegistration.message);
                 else await goto('..');
               }}>Oui, je confirme</ButtonPrimary
             >

@@ -152,6 +152,13 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             canEditPermissions: true,
             canVerifyRegistrations: true,
           },
+          bannedUsers: {
+            uid: true,
+            firstName: true,
+            lastName: true,
+            fullName: true,
+            pictureFile: true,
+          },
         }),
       ],
     },

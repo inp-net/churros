@@ -14,6 +14,7 @@
   import InputCheckbox from './InputCheckbox.svelte';
   import InputListOfGroups from './InputListOfGroups.svelte';
   import InputStudentAssociation from './InputStudentAssociation.svelte';
+  import { toasts } from '$lib/toasts';
 
   export let data: PageData;
   export let creatingSubgroup = false;
@@ -89,6 +90,7 @@
 
       serverError = '';
       data.group = upsertGroup.data;
+      toasts.success(`${data.group.name} mis à jour`);
       if (data.group.uid) await goto(`/groups/${data.group.uid}/edit`);
     } finally {
       loading = false;

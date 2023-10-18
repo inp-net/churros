@@ -9,6 +9,8 @@ import { Readable } from 'node:stream';
 import { finished } from 'node:stream/promises';
 import type { ReadableStream } from 'node:stream/web';
 import { SingleBar } from 'cli-progress';
+import slug from 'slug';
+import { onBoard } from '../src/auth.js';
 const prisma = new PrismaClient();
 
 const NEW_MAJOR_SHORTNAMES: Partial<Record<Ldap.ShortName, string>> = {
@@ -141,10 +143,12 @@ async function makeSchool(school: Ldap.School) {
 }
 
 async function makeMajor(major: Ldap.Major) {
+  const shortName = NEW_MAJOR_SHORTNAMES[major.shortName] ?? major.shortName;
   return prisma.major.create({
     data: {
       name: major.displayName,
-      shortName: NEW_MAJOR_SHORTNAMES[major.shortName] ?? major.shortName,
+      shortName,
+      uid: slug(shortName),
       schools: {
         connect: [
           {
@@ -290,7 +294,6 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
       const secretary = secretaryIndex > -1;
       const vicePresident = vicePresidentIndex > -1;
       const treasurer = treasurerIndex > -1;
-      const bureau = president || secretary || vicePresident || treasurer;
 
       let title = 'Membre';
       if (president) {
@@ -306,8 +309,8 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
       try {
         await prisma.groupMember.create({
           data: {
-            canEditArticles: bureau,
-            canEditMembers: bureau,
+            canEditArticles: onBoard({ president, secretary, vicePresident, treasurer }),
+            canEditMembers: onBoard({ president, secretary, vicePresident, treasurer }),
             president,
             secretary,
             treasurer,

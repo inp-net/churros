@@ -5,6 +5,17 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
   const { me } = await parent();
   const data = await loadQuery(
     {
+      ...(me
+        ? {
+            me: {
+              pendingContributions: {
+                id: true,
+                name: true,
+              },
+              contributesTo: { uid: true },
+            },
+          }
+        : {}),
       studentAssociation: [
         params,
         me
@@ -29,6 +40,20 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 type: true,
                 description: true,
                 pictureFile: true,
+              },
+              contributionOptions: {
+                id: true,
+                price: true,
+                offeredIn: {
+                  uid: true,
+                  name: true,
+                },
+                paysFor: {
+                  id: true,
+                  name: true,
+                  uid: true,
+                },
+                name: true,
               },
             }
           : // Unauthenticated query

@@ -231,14 +231,14 @@
     gap: 0.5rem;
     width: 100%;
     max-width: 600px;
-    padding: 0 1rem 0 0;
+    padding: 0 1rem;
     transform: translateX(-50%);
     @media (width >= 1000px) {
       right: 0;
-      bottom: 0;
+      bottom: 6rem;
       left: unset;
       max-width: 700px;
-      padding: 0 2rem 6rem 0;
+      padding: 0 2rem 0 0;
       transform: unset;
     }
   }

@@ -6,6 +6,7 @@
   import { zeus } from '$lib/zeus';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { tooltip } from '$lib/tooltip';
+  import { toasts } from '$lib/toasts';
 
   export let data: PageData;
 
@@ -66,7 +67,13 @@
         <ButtonSecondary
           on:click={async () => {
             // eslint-disable-next-line no-alert
-            await decide(email, false, prompt('pk ?') ?? '');
+            const reason = prompt('pk ?');
+            if (!reason) {
+              toasts.error("Il faut une raison pour refuser l'inscription");
+              return;
+            }
+
+            await decide(email, false, reason);
           }}
           icon={IconTrash}
           danger

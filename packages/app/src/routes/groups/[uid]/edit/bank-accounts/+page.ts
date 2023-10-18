@@ -1,6 +1,7 @@
 import { loadQuery, Selector } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
+import { isOnClubBoard } from '$lib/permissions';
 
 export const _clubQuery = Selector('Group')({
   uid: true,
@@ -18,10 +19,6 @@ export const _clubQuery = Selector('Group')({
     name: true,
     value: true,
   },
-  school: {
-    id: true,
-    name: true,
-  },
   selfJoinable: true,
 });
 
@@ -29,10 +26,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
   const { me, mobile } = await parent();
   if (
     !me?.canEditGroups &&
-    !me?.groups.some(
-      ({ group, president, secretary, treasurer, vicePresident }) =>
-        group.uid === params.uid && (president || secretary || treasurer || vicePresident),
-    )
+    !me?.groups.some(({ group, ...perms }) => group.uid === params.uid && isOnClubBoard(perms))
   )
     throw redirect(307, '..');
 

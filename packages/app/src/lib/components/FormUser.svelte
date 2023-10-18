@@ -15,6 +15,8 @@
   import { createEventDispatcher } from 'svelte';
   import InputSocialLinks from './InputSocialLinks.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
+  import { yearTier } from '$lib/dates';
+  import { toasts } from '$lib/toasts';
   const emit = createEventDispatcher();
 
   const userQuery = Selector('User')({
@@ -29,25 +31,17 @@
     graduationYear: true,
     phone: true,
     birthday: true,
+    minor: { id: true, name: true, yearTier: true, shortName: true },
     major: {
       id: true,
       name: true,
+      shortName: true,
+      minors: { id: true, name: true, yearTier: true, shortName: true },
       schools: { id: true, name: true, studentAssociations: { id: true, name: true } },
     },
     email: true,
     otherEmails: true,
     links: { name: true, value: true },
-    notificationSettings: {
-      id: true,
-      type: true,
-      allow: true,
-      group: {
-        id: true,
-        uid: true,
-        name: true,
-        pictureFile: true,
-      },
-    },
     cededImageRightsToTVn7: true,
     contributesTo: {
       id: true,
@@ -60,9 +54,17 @@
       address: string;
       description: string;
       graduationYear: number;
+      minor?: {
+        id: string;
+        name: string;
+        yearTier: number;
+        shortName: string;
+      };
       major: {
         name: string;
+        shortName: string;
         id: string;
+        minors: Array<{ id: string; name: string; yearTier: number; shortName: string }>;
         schools: Array<{
           name: string;
           id: string;
@@ -89,7 +91,11 @@
     name: string;
   }>;
 
-  export let majors: Array<{ id: string; name: string }>;
+  export let majors: Array<{
+    id: string;
+    name: string;
+    minors: Array<{ id: string; name: string; yearTier: number }>;
+  }>;
 
   // We don't want form bindings to be reactive to let them evolve separately from the data
   let {
@@ -109,6 +115,7 @@
       birthday = null,
       contributesWith,
       major,
+      minor,
       cededImageRightsToTVn7,
     },
   } = data;
@@ -148,6 +155,8 @@
             address,
             graduationYear,
             majorId: major.id,
+            // eslint-disable-next-line unicorn/no-null
+            minorId: minor?.id ?? null,
             phone,
             apprentice,
             birthday,
@@ -165,8 +174,18 @@
       });
 
       if (updateUser.__typename === 'Error') {
-        console.error(updateUser.message);
+        toasts.error('Impossible de sauvegarder le profil', updateUser.message);
         return;
+      }
+
+      if (updateUser.data.email === email) {
+        toasts.success('Profil sauvegardé');
+      } else {
+        toasts.info(
+          `Les changements d'email doivent être validés.`,
+          `Regarde ta boîte mail pour ${email}`,
+          { lifetime: 10_000 },
+        );
       }
 
       // eslint-disable-next-line unicorn/no-null
@@ -233,6 +252,30 @@
       <InputCheckbox label="Apprenti" bind:value={apprentice} />
     </div>
   {/if}
+  <InputField label="Parcours">
+    <InputSearchObject
+      hint="Si tu ne trouves pas ton parcours, vérifies ta filière et ta promo"
+      clearable
+      value={minor?.id}
+      valueKey="id"
+      labelKey="name"
+      bind:object={minor}
+      search={(query) =>
+        new Fuse(
+          major.minors.filter((m) => m.yearTier === yearTier(graduationYear)),
+          {
+            keys: ['name', 'id', 'shortName'],
+          },
+        )
+          .search(query)
+          .map((r) => r.item)}
+    >
+      <span slot="item" let:item
+        >{item.shortName || item.name}
+        {#if item.shortName && item.shortName !== item.name}({item.name}){/if}</span
+      >
+    </InputSearchObject>
+  </InputField>
   <div class="side-by-side">
     <InputText
       type="email"

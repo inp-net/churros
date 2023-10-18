@@ -146,6 +146,19 @@ export const findSchoolUser = async (
               groups,
               pojo,
             });
+            if ('email' in searchBy) {
+              console.info('ldap sync', 'bypass since searching by email', {});
+              resolve({
+                groups,
+                attrs: Object.fromEntries(
+                  pojo.attributes.map(({ type, values }) => [
+                    type,
+                    values.length > 0 ? values[0] : undefined,
+                  ]),
+                ),
+              });
+            }
+
             return;
           }
 

@@ -3,4 +3,3 @@
 build/
 node_modules/
 packages/api/scripts/*.json
-cli/

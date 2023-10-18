@@ -4,8 +4,11 @@ export function groupLogoSrc(
   $isDark: boolean,
   group: { pictureFile: string; pictureFileDark: string },
 ): string {
-  if ($isDark && group.pictureFileDark) return `${env.PUBLIC_STORAGE_URL}${group.pictureFileDark}`;
-  if (group.pictureFile) return `${env.PUBLIC_STORAGE_URL}${group.pictureFile}`;
+  const prefix = (path: string) =>
+    path.startsWith('//') ? path.replace('//', '/') : `${env.PUBLIC_STORAGE_URL}${path}`;
+
+  if ($isDark && group.pictureFileDark) return prefix(group.pictureFileDark);
+  if (group.pictureFile) return prefix(group.pictureFile);
 
   return '';
 }

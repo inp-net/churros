@@ -5,7 +5,7 @@
 
   export let value: string | undefined = undefined;
   export let label: string;
-  export let options: string[] | Record<string, string>;
+  export let options: string[] | Record<string, string> | Map<string, string>;
   export let name: string | undefined = undefined;
   export let required = false;
   export let hint: string | undefined = undefined;
@@ -28,6 +28,8 @@
   let optionsWithDisplay: Record<string, string> = {};
   $: optionsWithDisplay = Array.isArray(options)
     ? Object.fromEntries(options.map((option) => [option, option]))
+    : options instanceof Map
+    ? Object.fromEntries(options.entries())
     : options;
 
   let fieldsetElement: HTMLFieldSetElement;
@@ -62,6 +64,7 @@
 
     /* using a border creates a weird gap with the overflow-hidden rectangle of selected item if it hits the corner. for some reason the outline is thicker than the border at the same width, so we multiply by 2/3 to roughly get the same appearance */
     outline: calc(2 / 3 * var(--border-block)) solid var(--border);
+    outline-offset: calc(-1 * var(--border-block));
   }
 
   input {

@@ -22,7 +22,6 @@ export async function getFamilyTree({
   // Climb up
   const visitedUsers = [] as string[];
   async function parentId(id: string): Promise<string | undefined> {
-    console.log(`Getting parent of ${id}, visited users are ${visitedUsers.join(' ')}`);
     const user = await prisma.user.findUniqueOrThrow({ where: { id } });
     if (visitedUsers.includes(user.uid))
       throw new GraphQLError('Cannot have cycles in the family tree');

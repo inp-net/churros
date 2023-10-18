@@ -47,9 +47,11 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   notifsub: 'NotificationSubscription',
   notif: 'Notification',
   ann: 'Announcement',
+  ue: 'TeachingUnit',
   subj: 'Subject',
   doc: 'Document',
   comment: 'Comment',
+  reac: 'Reaction',
 } as const;
 /* end @generated from schema */
 
@@ -70,6 +72,8 @@ export const builder = new SchemaBuilder<{
     DateTime: { Input: Date; Output: Date };
     File: { Input: never; Output: File };
     ID: { Input: string; Output: string };
+    Counts: { Input: Record<string, number>; Output: Record<string, number> };
+    BooleanMap: { Input: Record<string, boolean>; Output: Record<string, boolean> };
   };
 }>({
   plugins: [
@@ -84,10 +88,13 @@ export const builder = new SchemaBuilder<{
     ValidationPlugin,
   ],
   authScopes,
-  complexity: { limit: { complexity: 20_000, depth: 7, breadth: 150 } },
+  complexity: { limit: { complexity: 20_100, depth: 7, breadth: 150 } },
   defaultInputFieldRequiredness: true,
   errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma, exposeDescriptions: true },
+  scopeAuthOptions: {
+    unauthorizedError: () => new GraphQLError("Tu n'es pas autorisé à effectuer cette action."),
+  },
   relayOptions: {
     clientMutationId: 'omit',
     cursorType: 'String',

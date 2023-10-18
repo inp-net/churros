@@ -105,3 +105,7 @@ export function formatRecurrence(frequency: EventFrequency, startsAt: Date, ends
     }
   }
 }
+
+export function parseYearTier(yearTierDisplay: string): number {
+  return Number.parseInt(yearTierDisplay.replace(/a$/, ''), 10);
+}

@@ -5,7 +5,7 @@
   import IconAdmin from '~icons/mdi/security';
   import IconLogout from '~icons/mdi/logout-variant';
   import IconWebsite from '~icons/mdi/earth';
-  import { dateFormatter, yearTier } from '$lib/dates.js';
+  import { dateFormatter } from '$lib/dates.js';
   import { me } from '$lib/session.js';
   import type { PageData } from './$types';
   import IconFacebook from '~icons/mdi/facebook-box';
@@ -24,13 +24,11 @@
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import CardArticle from '$lib/components/CardArticle.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import Alert from '$lib/components/Alert.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import { goto } from '$app/navigation';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { zeus } from '$lib/zeus';
-  import InputText from '$lib/components/InputText.svelte';
   import { tooltip } from '$lib/tooltip';
+  import AreaContribute from '$lib/components/AreaContribute.svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -73,50 +71,6 @@
     const cookies = cookie.parse(document.cookie);
     window.localStorage.setItem('isReallyLoggedout', 'true');
     await goto(`/logout/?token=${cookies.token}`);
-  }
-
-  let contributeServerError = '';
-  let contributeLoading: string | undefined = undefined;
-  let contributePhone = $me?.phone ?? '';
-
-  async function contribute(optionId: string) {
-    contributeLoading = optionId;
-    const { contribute } = await $zeus.mutate({
-      contribute: [
-        {
-          optionId,
-          phone: contributePhone,
-        },
-        {
-          __typename: true,
-          '...on Error': { message: true },
-          '...on MutationContributeSuccess': { data: true },
-        },
-      ],
-    });
-
-    contributeLoading = undefined;
-    if (contribute.__typename === 'Error') {
-      contributeServerError = contribute.message;
-    } else {
-      contributeServerError = '';
-      window.location.reload();
-    }
-  }
-
-  async function cancelContribution(optionId: string) {
-    contributeLoading = optionId;
-    try {
-      await $zeus.mutate({
-        cancelPendingContribution: [{ optionId }, true],
-      });
-    } catch (error: unknown) {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      contributeServerError = `${error}`;
-    }
-
-    contributeLoading = undefined;
-    window.location.reload();
   }
 
   function rolesBadge({
@@ -184,8 +138,18 @@
         @{user.uid}
       </p>
       <p class="major">
-        {yearTier(user.graduationYear)}A ({user.graduationYear}) ·
-        <abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr>
+        {user.yearTier}A ({user.graduationYear}) ·
+        <a href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}/"
+          ><abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr></a
+        >
+        {#if user.minor}
+          ·
+          <a
+            href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}#{user
+              .minor.uid}"
+            ><abbr title="" use:tooltip={user.minor.name}>{user.minor.shortName}</abbr></a
+          >
+        {/if}
         · {#each user.major.schools as school}
           <a class="school" href="/schools/{school.uid}">{school.name}</a>
         {/each}
@@ -262,37 +226,8 @@
       </p>
 
       <div class="manage">
-        <InputText type="tel" label="Numéro de téléphone" bind:value={contributePhone} />
-        <ul class="nobullet options">
-          {#each contributionOptions as { name, price, id }}
-            {@const pendingContribution = user.pendingContributions.find((c) => c?.id === id)}
-            <li>
-              <ButtonSecondary
-                danger={Boolean(pendingContribution)}
-                loading={contributeLoading === id}
-                on:click={async () => {
-                  await (pendingContribution
-                    ? cancelContribution(pendingContribution.id)
-                    : contribute(id));
-                }}
-              >
-                {#if pendingContribution}
-                  Annuler la demande pour {name}
-                {:else}
-                  {name}
-                  <strong class="price"
-                    >{new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
-                      price,
-                    )}</strong
-                  >
-                {/if}
-              </ButtonSecondary>
-            </li>
-          {/each}
-        </ul>
-        {#if contributeServerError}
-          <Alert theme="danger">{contributeServerError}</Alert>
-        {/if}
+        <AreaContribute {contributionOptions} pendingContributions={user.pendingContributions}
+        ></AreaContribute>
       </div>
 
       <p class="typo-details">
@@ -489,12 +424,6 @@
 
   .groups .typo-details {
     margin-bottom: 1rem;
-  }
-
-  ul.options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
   }
 
   .contribution > p {

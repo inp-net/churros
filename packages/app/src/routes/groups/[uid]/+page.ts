@@ -69,6 +69,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 uid: true,
                 title: true,
                 bodyHtml: true,
+                bodyPreview: true,
                 pictureFile: true,
                 author: { firstName: true, lastName: true, uid: true, fullName: true },
                 publishedAt: true,
@@ -95,6 +96,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               },
               events: {
                 descriptionHtml: true,
+                descriptionPreview: true,
                 uid: true,
                 links: {
                   name: true,
@@ -128,6 +130,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 uid: true,
                 title: true,
                 bodyHtml: true,
+                bodyPreview: true,
                 pictureFile: true,
                 publishedAt: true,
               },
@@ -158,6 +161,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               ancestors: { uid: true, name: true, pictureFile: true },
               events: {
                 descriptionHtml: true,
+                descriptionPreview: true,
                 uid: true,
                 links: {
                   name: true,

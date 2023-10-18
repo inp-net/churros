@@ -34,13 +34,14 @@
   "scripts": {
     "build": "test -f .env || cp .env.example .env && cp .env packages/api/ && yarn workspaces foreach --topological-dev -pv run build && yarn format",
     "dev": "test -f .env || cp .env.example .env && cp .env packages/api/ && docker compose up -d && yarn dotenv -- yarn workspaces foreach -piv run dev",
-    "format": "prettier . --write --ignore-unknown --plugin prettier-plugin-svelte && cd cli && poetry run black .",
+    "format": "prettier . --write --ignore-unknown --plugin prettier-plugin-svelte",
     "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
     "lintfix": "eslint --fix . & stylelint --fix '**/*.{css,scss,svelte}' &",
     "postinstall": "husky install",
     "prisma": "yarn workspace @centraverse/api run prisma",
     "reset": "docker compose up -d && NODE_ENV=development yarn prisma migrate reset --force",
-    "start": "docker compose up -d && yarn workspaces foreach -piv run start"
+    "start": "docker compose up -d && yarn workspaces foreach -piv run start",
+    "migration": "yarn prisma migrate dev --name"
   },
   "volta": {
     "node": "20.6.1",

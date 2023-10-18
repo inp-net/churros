@@ -10,8 +10,23 @@
   }
 
   .content {
-    max-width: 1000px;
+    max-width: 1200px;
     padding: 0 1rem;
     margin: 0 auto;
+  }
+
+  .content :global(> ul),
+  .content :global(> h2),
+  .content :global(> .breadcrumbs),
+  .content :global(> article),
+  .content :global(> div),
+  .content :global(> section) {
+    max-width: 800px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .content :global(> .breadcrumbs) {
+    margin-bottom: 2rem;
   }
 </style>

@@ -10,7 +10,7 @@ function props(parameters: string | [string, number] | object | undefined) {
   if (!parameters) {
     return {
       content: '',
-      allowHtml: false,
+      // allowHtml: false,
       delay: [delay, 0],
     };
   }

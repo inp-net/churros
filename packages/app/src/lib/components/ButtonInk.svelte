@@ -35,6 +35,7 @@
     gap: 0.5em;
     align-items: center;
     padding: 0.25em 0.5em;
+    font-size: inherit;
     font-weight: bold;
     color: var(--link);
     text-transform: uppercase;
@@ -46,9 +47,14 @@
     box-shadow: none;
   }
 
+  .button-ink.inside-prose {
+    gap: 0.25em;
+    padding: 0 0.25em;
+  }
+
   .button-ink:hover,
   .button-ink:focus-visible {
-    --text: var(--hover-text);
+    --link: var(--hover-text);
 
     background: var(--hover-bg);
   }

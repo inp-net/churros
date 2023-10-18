@@ -28,10 +28,11 @@ import {
   PaymentMethod,
   EventFrequency,
   type Group,
+  type Prisma,
 } from '@prisma/client';
-import { toHtml } from '../services/markdown.js';
+import { htmlToText, toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
-import { DateTimeScalar, FileScalar } from './scalars.js';
+import { DateTimeScalar, FileScalar, CountsScalar, BooleanMapScalar } from './scalars.js';
 import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { LinkInput } from './links.js';
@@ -54,6 +55,7 @@ import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { GraphQLError } from 'graphql';
+import { onBoard } from '../auth.js';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -65,10 +67,18 @@ export const EventFrequencyType = builder.enumType(EventFrequency, {
 
 export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
   return {
-    visibility: {
-      not: VisibilityPrisma.Private,
-    },
     OR: [
+      {
+        visibility: VisibilityPrisma.Private,
+        OR: [
+          {
+            author: { uid: user?.uid ?? '' },
+          },
+          {
+            managers: { some: { user: { uid: user?.uid ?? '' } } },
+          },
+        ],
+      },
       // Completely public events
       {
         visibility: VisibilityPrisma.Public,
@@ -118,18 +128,24 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
 }
 
 class RegistrationsCounts {
-  /* eslint-disable @typescript-eslint/parameter-properties */
   total: number;
   paid: number;
   verified: number;
   unpaidLydia: number;
-  /* eslint-enable @typescript-eslint/parameter-properties */
+  cancelled: number;
 
-  constructor(total: number, paid: number, verified: number, unpaidLydia: number) {
-    this.total = total;
-    this.paid = paid;
-    this.verified = verified;
-    this.unpaidLydia = unpaidLydia;
+  constructor(data: {
+    total: number;
+    paid: number;
+    verified: number;
+    unpaidLydia: number;
+    cancelled: number;
+  }) {
+    this.total = data.total;
+    this.paid = data.paid;
+    this.verified = data.verified;
+    this.unpaidLydia = data.unpaidLydia;
+    this.cancelled = data.cancelled;
   }
 }
 
@@ -141,6 +157,7 @@ const RegistrationsCountsType = builder
       paid: t.exposeInt('paid'),
       verified: t.exposeInt('verified'),
       unpaidLydia: t.exposeInt('unpaidLydia'),
+      cancelled: t.exposeInt('cancelled'),
     }),
   });
 
@@ -221,6 +238,14 @@ export const EventType = builder.prismaNode('Event', {
     lydiaAccountId: t.exposeID('lydiaAccountId', { nullable: true }),
     description: t.exposeString('description'),
     descriptionHtml: t.string({ resolve: async ({ description }) => toHtml(description) }),
+    descriptionPreview: t.string({
+      resolve: async ({ description }) =>
+        (
+          htmlToText(await toHtml(description))
+            .split('\n')
+            .find((line) => line.trim() !== '') ?? ''
+        ).slice(0, 255),
+    }),
     uid: t.exposeString('uid'),
     title: t.exposeString('title'),
     startsAt: t.expose('startsAt', { type: DateTimeScalar }),
@@ -230,6 +255,7 @@ export const EventType = builder.prismaNode('Event', {
     location: t.exposeString('location'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     managers: t.relation('managers'),
+    bannedUsers: t.relation('bannedUsers'),
     tickets: t.field({
       type: [TicketType],
       async resolve({ id }, _, { user }) {
@@ -244,6 +270,7 @@ export const EventType = builder.prismaNode('Event', {
             openToSchools: true,
             event: {
               include: {
+                bannedUsers: true,
                 managers: { include: { user: true, event: true } },
                 group: {
                   include: {
@@ -297,6 +324,99 @@ export const EventType = builder.prismaNode('Event', {
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
+    reactions: t.relation('reactions'),
+    mySoonestShotgunOpensAt: t.field({
+      type: DateTimeScalar,
+      nullable: true,
+      async resolve({ id }, _, { user }) {
+        const tickets = await prisma.ticket.findMany({
+          where: { event: { id } },
+          include: {
+            openToGroups: true,
+            openToSchools: true,
+            openToMajors: true,
+            event: {
+              include: {
+                managers: { include: { user: true } },
+                bannedUsers: true,
+                group: {
+                  include: {
+                    studentAssociation: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const userWithContributions = await prisma.user.findUniqueOrThrow({
+          where: { id: user?.id },
+          include: {
+            groups: {
+              include: { group: true },
+            },
+            major: {
+              include: {
+                schools: true,
+              },
+            },
+            contributions: {
+              include: {
+                option: {
+                  include: {
+                    offeredIn: true,
+                    paysFor: {
+                      include: {
+                        school: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const accessibleTickets = tickets.filter((t) => userCanSeeTicket(t, userWithContributions));
+        if (accessibleTickets.length === 0) return;
+        return new Date(
+          Math.min(
+            ...accessibleTickets.map((t) => t.opensAt?.valueOf() ?? Number.POSITIVE_INFINITY),
+          ),
+        );
+      },
+    }),
+    myReactions: t.field({
+      type: BooleanMapScalar,
+      async resolve({ id }, _, { user }) {
+        const reactions = await prisma.reaction.findMany({
+          where: { eventId: id },
+        });
+        const emojis = new Set(reactions.map((r) => r.emoji));
+        return Object.fromEntries(
+          [...emojis].map((emoji) => [
+            emoji,
+            user ? reactions.some((r) => r.emoji === emoji && r.authorId === user.id) : false,
+          ]),
+        );
+      },
+    }),
+    reactionCounts: t.field({
+      type: CountsScalar,
+      async resolve({ id }) {
+        const reactions = await prisma.reaction.findMany({
+          where: { eventId: id },
+        });
+        // eslint-disable-next-line unicorn/no-array-reduce
+        return reactions.reduce<Record<string, number>>(
+          (counts, reaction) => ({
+            ...counts,
+            [reaction.emoji]: (counts[reaction.emoji] ?? 0) + 1,
+          }),
+          {},
+        );
+      },
+    }),
     capacity: t.int({
       async resolve({ id }) {
         const tickets = await prisma.ticket.findMany({
@@ -347,13 +467,15 @@ export const EventType = builder.prismaNode('Event', {
       async resolve({ id }) {
         const results = await prisma.registration.findMany({
           where: { ticket: { event: { id } } },
+          include: { ticket: true },
         });
         return {
-          total: results.length,
-          paid: results.filter((r) => r.paid).length,
+          total: results.filter((r) => !r.cancelledAt).length,
+          paid: results.filter((r) => r.ticket.price !== 0 && r.paid && !r.cancelledAt).length,
           verified: results.filter((r) => r.verifiedAt).length,
           unpaidLydia: results.filter((r) => !r.paid && r.paymentMethod === PaymentMethod.Lydia)
             .length,
+          cancelled: results.filter((r) => r.cancelledAt).length,
         };
       },
     }),
@@ -416,15 +538,24 @@ builder.queryField('events', (t) =>
     cursor: 'id',
     args: {
       future: t.arg.boolean({ required: false }),
+      upcomingShotguns: t.arg.boolean({ required: false }),
     },
-    async resolve(query, _, { future }, { user }) {
+    async resolve(query, _, { future, upcomingShotguns }, { user }) {
       future = future ?? false;
+      upcomingShotguns = upcomingShotguns ?? false;
+      let dateCondition: Prisma.EventWhereInput = {};
+      if (future || upcomingShotguns) {
+        dateCondition = {
+          startsAt: { gte: startOfDay(new Date()) },
+        };
+      }
+
       if (!user) {
         return prisma.event.findMany({
           ...query,
           where: {
             visibility: VisibilityPrisma.Public,
-            startsAt: future ? { gte: startOfDay(new Date()) } : undefined,
+            ...dateCondition,
           },
           orderBy: { startsAt: 'asc' },
         });
@@ -433,7 +564,7 @@ builder.queryField('events', (t) =>
       return prisma.event.findMany({
         ...query,
         where: {
-          startsAt: future ? { gte: new Date() } : undefined,
+          ...dateCondition,
           ...visibleEventsPrismaQuery(user),
         },
         orderBy: { startsAt: 'asc' },
@@ -636,21 +767,23 @@ builder.mutationField('upsertEvent', (t) =>
       startsAt: t.arg({ type: DateTimeScalar }),
       endsAt: t.arg({ type: DateTimeScalar }),
       managers: t.arg({ type: [ManagerOfEventInput] }),
-      coOrganizers: t.arg.stringList(),
+      bannedUsers: t.arg.stringList({ description: 'List of user uids' }),
+      coOrganizers: t.arg.stringList({ description: 'List of group uids' }),
     },
     async authScopes(_, { id, groupUid }, { user }) {
       const creating = !id;
       if (!user) return false;
       if (user.admin) return true;
 
-      if (creating) {
-        return Boolean(
-          user.canEditGroups ||
-            user.groups.some(
-              ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
-            ),
-        );
-      }
+      const canCreate = Boolean(
+        user.canEditGroups ||
+          onBoard(user.groups.find(({ group }) => group.uid === groupUid)) ||
+          user.groups.some(
+            ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
+          ),
+      );
+
+      if (creating) return canCreate;
 
       const event = await prisma.event.findUnique({
         where: { id },
@@ -660,7 +793,8 @@ builder.mutationField('upsertEvent', (t) =>
       if (!event) return false;
 
       return Boolean(
-        event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit),
+        canCreate ||
+          event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit),
       );
     },
     async resolve(
@@ -683,6 +817,7 @@ builder.mutationField('upsertEvent', (t) =>
         visibility,
         frequency,
         coOrganizers,
+        bannedUsers,
         recurringUntil,
       },
       { user },
@@ -743,6 +878,9 @@ builder.mutationField('upsertEvent', (t) =>
           coOrganizers: {
             connect: connectFromListOfUids(coOrganizers),
           },
+          bannedUsers: {
+            connect: connectFromListOfUids(bannedUsers),
+          },
         },
         update: {
           description,
@@ -758,6 +896,9 @@ builder.mutationField('upsertEvent', (t) =>
           endsAt,
           coOrganizers: {
             connect: connectFromListOfUids(coOrganizers),
+          },
+          bannedUsers: {
+            connect: connectFromListOfUids(bannedUsers),
           },
           managers:
             user?.admin ||

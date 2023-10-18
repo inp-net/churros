@@ -17,6 +17,7 @@
   import IconDownload from '~icons/mdi/download-outline';
   import { page } from '$app/stores';
   import { format } from 'date-fns';
+  import { toasts } from '$lib/toasts';
 
   export let data: PageData;
   const { group } = data;
@@ -62,7 +63,7 @@
     });
 
     if (groupMembersCsv.__typename === 'Error') {
-      console.error(groupMembersCsv.message);
+      toasts.error("Erreur lors de l'export CSV", groupMembersCsv.message);
       return;
     }
 
@@ -124,13 +125,13 @@
       });
       data.group.members = data.group.members.filter((member) => member.memberId !== memberId);
     } catch (error: unknown) {
-      console.error(error);
+      toasts.error(`Impossible de virer ce membre`, error?.toString());
     }
   };
 
   const updateGroupMember = async (memberId: string) => {
+    const member = group.members.find((member) => member.memberId === memberId);
     try {
-      const member = group.members.find((member) => member.memberId === memberId);
       if (!member) throw new Error('Member not found');
       const updateData = { ...member, ...updatingMember };
       const { upsertGroupMember } = await $zeus.mutate({
@@ -169,7 +170,7 @@
       );
       updatingMember.memberId = '';
     } catch (error: unknown) {
-      console.error(error);
+      toasts.error(`Impossible de changer @${member?.member.uid ?? '?'}`, error?.toString());
     }
   };
 

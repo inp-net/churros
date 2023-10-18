@@ -76,6 +76,8 @@ model User {
   cancellations             Registration[]             @relation("cancelledBy")
   documents                 Document[]
   comments                  Comment[]
+  bannedFromEvents          Event[]                    @relation("bannedFromEvents")
+  reactions                 Reaction[]
 
   @@unique([schoolServer, schoolUid])
 }
@@ -204,7 +206,7 @@ model Link {
 /// A school syllabus
 model Major {
   id            String  @id @default(dbgenerated("nanoid('major:')"))
-  uid           String  @default("") @db.VarChar(255)
+  uid           String  @unique @db.VarChar(255)
   name          String  @db.VarChar(255)
   shortName     String  @default("") @db.VarChar(255)
   ldapSchoolUid String? @db.VarChar(255)
@@ -219,13 +221,16 @@ model Major {
 }
 
 model Minor {
-  id       String    @id @default(dbgenerated("nanoid('minor:')"))
-  name     String
-  uid      String    @unique
-  majors   Major[]
-  yearTier Int
-  subjects Subject[]
-  users    User[]
+  id        String    @id @default(dbgenerated("nanoid('minor:')"))
+  name      String
+  shortName String    @default("")
+  uid       String
+  majors    Major[]
+  yearTier  Int
+  subjects  Subject[]
+  users     User[]
+
+  @@unique([uid, yearTier])
 }
 
 model School {
@@ -406,10 +411,11 @@ model Article {
   links       Link[]
   comments    Comment[]
 
-  author  User?   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  group   Group   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  event   Event?  @relation(fields: [eventId], references: [id])
-  eventId String?
+  author    User?      @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  group     Group      @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  event     Event?     @relation(fields: [eventId], references: [id])
+  eventId   String?
+  reactions Reaction[]
 
   @@unique([groupId, uid])
 }
@@ -447,6 +453,8 @@ model Event {
   articles       Article[]
   lydiaAccountId String?
   links          Link[]
+  bannedUsers    User[]         @relation("bannedFromEvents")
+  reactions      Reaction[]
 
   @@unique([groupId, uid])
 }
@@ -671,16 +679,34 @@ model Announcement {
   endsAt    DateTime
 }
 
+model TeachingUnit {
+  id         String    @id @default(dbgenerated("nanoid('ue:')"))
+  name       String    @db.VarChar(255)
+  shortName  String    @default("") @db.VarChar(255)
+  apogeeCode String?   @db.VarChar(255)
+  subjects   Subject[]
+}
+
 model Subject {
-  id         String     @id @default(dbgenerated("nanoid('subj:')"))
-  name       String
-  uid        String     @unique
-  shortName  String     @default("") @db.VarChar(255)
-  links      Link[]
-  nextExamAt DateTime?
-  majors     Major[]
-  minors     Minor[]
-  documents  Document[]
+  id             String        @id @default(dbgenerated("nanoid('subj:')"))
+  name           String
+  uid            String
+  shortName      String        @default("") @db.VarChar(255)
+  yearTier       Int?
+  forApprentices Boolean       @default(false)
+  links          Link[]
+  apogeeCode     String?       @db.VarChar(255)
+  unitId         String?
+  unit           TeachingUnit? @relation(fields: [unitId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  nextExamAt     DateTime?
+  majors         Major[]
+  minors         Minor[]
+  documents      Document[]
+  // 1 for the first semester, 2 for the second one. Null means both
+  semester       Int?
+  emoji          String        @default("") @db.VarChar(4)
+
+  @@unique([uid, yearTier, forApprentices])
 }
 
 enum DocumentType {
@@ -708,8 +734,9 @@ model Document {
 
   title         String
   description   String       @db.Text
-  subject       Subject      @relation(fields: [subjectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  subjectId     String
+  // Null subject means the document needs to be sorted
+  subject       Subject?     @relation(fields: [subjectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subjectId     String?
   type          DocumentType
   paperPaths    String[] // le sujet 
   solutionPaths String[] // la correction
@@ -717,7 +744,8 @@ model Document {
   uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   uploaderId String?
 
-  comments Comment[]
+  comments  Comment[]
+  reactions Reaction[]
 
   @@unique([subjectId, uid])
 }
@@ -735,7 +763,32 @@ model Comment {
   article    Article?  @relation(fields: [articleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   articleId  String?
 
-  inReplyTo   Comment?  @relation(name: "reply", fields: [inReplyToId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  inReplyTo   Comment?   @relation(name: "reply", fields: [inReplyToId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   inReplyToId String?
-  replies     Comment[] @relation(name: "reply")
+  replies     Comment[]  @relation(name: "reply")
+  reactions   Reaction[]
+}
+
+model Reaction {
+  id    String @id @default(dbgenerated("nanoid('reac:')"))
+  emoji String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User?    @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId  String?
+
+  document   Document? @relation(fields: [documentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  documentId String?
+  article    Article?  @relation(fields: [articleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  articleId  String?
+  event      Event?    @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  eventId    String?
+  comment    Comment?  @relation(fields: [commentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  commentId  String?
+
+  @@unique([emoji, authorId, documentId])
+  @@unique([emoji, authorId, articleId])
+  @@unique([emoji, authorId, eventId])
+  @@unique([emoji, authorId, commentId])
 }
