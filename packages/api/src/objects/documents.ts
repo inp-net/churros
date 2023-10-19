@@ -304,7 +304,7 @@ builder.mutationField('uploadDocumentFile', (t) =>
       const document = await prisma.document.findUniqueOrThrow({
         where: { id: documentId },
       });
-      return Boolean(user?.admin || document.uploaderId === user?.uid);
+      return Boolean(user?.admin || document.uploaderId === user?.id);
     },
     async resolve(_, { documentId, file, solution }) {
       const document = await prisma.document.findUniqueOrThrow({
@@ -344,7 +344,7 @@ builder.mutationField('setDocumentFileIsSolution', (t) =>
       const document = await prisma.document.findUniqueOrThrow({
         where: { id: documentId },
       });
-      return Boolean(user?.admin || document.uploaderId === user?.uid);
+      return Boolean(user?.admin || document.uploaderId === user?.id);
     },
     async resolve(_, { documentId, filename, isSolution }) {
       const document = await prisma.document.findUniqueOrThrow({
