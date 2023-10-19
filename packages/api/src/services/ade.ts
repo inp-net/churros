@@ -46,7 +46,7 @@ builder.mutationField('updateSubjectsExamDates', (t) =>
         if (subject.count > 0) syncedSubjects[apogeeCode] = examDate;
       }
 
-      await log('ADE', 'sync', { syncedSubjects });
+      await log('ADE', 'sync', { syncedSubjects }, undefined, user);
 
       return true;
     },
