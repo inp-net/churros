@@ -53,7 +53,7 @@
           type: data.type,
           id: data.id,
           subjectUid: data.subject.uid,
-          subjectForApprentices: data.subject.forApprentices,
+          subjectForApprentices: data.subject.forApprentices ?? false,
           subjectYearTier: data.subject.yearTier,
         },
         {
@@ -78,6 +78,7 @@
     });
     if (upsertDocument.__typename === 'Error') {
       serverError = upsertDocument.message;
+      toasts.error(`Impossible de sauvegarder`, serverError);
       return;
     }
 
@@ -272,9 +273,9 @@
   }
 
   .submit {
-    display: flex;
-    justify-content: center;
+    margin: 2rem auto 0;
     margin-top: 2rem;
+    text-align: center;
   }
 
   .new-files {
