@@ -34,15 +34,19 @@ builder.mutationField('updateSubjectsExamDates', (t) =>
         return false;
       }
 
+      const syncedSubjects: Record<string, Date> = {};
+
       for (const [apogeeCode, examDate] of Object.entries(examDates)) {
-        await log('ADE', 'sync', { [apogeeCode]: examDate }, apogeeCode, user);
-        await prisma.subject.updateMany({
+        const subject = await prisma.subject.updateMany({
           where: { apogeeCode },
           data: {
             nextExamAt: examDate,
           },
         });
+        if (subject.count > 0) syncedSubjects[apogeeCode] = examDate;
       }
+
+      await log('ADE', 'sync', { syncedSubjects });
 
       return true;
     },
