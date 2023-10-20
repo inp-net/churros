@@ -15,7 +15,6 @@
   import { createEventDispatcher } from 'svelte';
   import InputSocialLinks from './InputSocialLinks.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
-  import { yearTier } from '$lib/dates';
   import { toasts } from '$lib/toasts';
   const emit = createEventDispatcher();
 
@@ -252,21 +251,17 @@
       <InputCheckbox label="Apprenti" bind:value={apprentice} />
     </div>
   {/if}
-  <InputField label="Parcours">
+  <InputField label="Parcours" hint="Si tu ne trouves pas ton parcours, vérifies ta filière">
     <InputSearchObject
-      hint="Si tu ne trouves pas ton parcours, vérifies ta filière et ta promo"
       clearable
       value={minor?.id}
       valueKey="id"
       labelKey="name"
       bind:object={minor}
       search={(query) =>
-        new Fuse(
-          major.minors.filter((m) => m.yearTier === yearTier(graduationYear)),
-          {
-            keys: ['name', 'id', 'shortName'],
-          },
-        )
+        new Fuse(major.minors, {
+          keys: ['name', 'id', 'shortName'],
+        })
           .search(query)
           .map((r) => r.item)}
     >
