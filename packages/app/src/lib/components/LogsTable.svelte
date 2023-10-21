@@ -1,5 +1,6 @@
 <script lang="ts">
   import { formatDateTime } from '$lib/dates';
+  // @ts-expect-error Untyped lib
   import JSONTree from 'svelte-json-tree';
 
   let openedLogId = '';

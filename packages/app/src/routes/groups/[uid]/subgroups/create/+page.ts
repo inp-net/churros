@@ -16,11 +16,15 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
           pictureFileDark: true,
           website: true,
           email: true,
+          children: {
+            name: true,
+            studentAssociation: { school: { name: true } },
+          },
           studentAssociation: {
             id: true,
             uid: true,
             name: true,
-            school: { uid: true, id: true, name: true },
+            school: { uid: true, id: true, name: true, color: true },
           },
         },
       ],

@@ -16,7 +16,7 @@ import {
   levenshteinSorter,
   sanitizeOperators,
 } from '../services/search.js';
-import type { Context } from '../context.js';
+import { purgeUserSessions, type Context } from '../context.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { visibleArticlesPrismaQuery } from './articles.js';
@@ -344,6 +344,7 @@ builder.mutationField('upsertGroup', (t) =>
       },
       { user },
     ) {
+      if (!user) throw new GraphQLError("Vous n'êtes pas connecté·e");
       // --- First, we update the group's children's familyId according to the new parent of this group. ---
       // We have 2 possible cases for updating the parent: either it is:
       // - null (or set to ''): the group does not have a parent anymore;
@@ -439,6 +440,26 @@ builder.mutationField('upsertGroup', (t) =>
             : { disconnect: true },
         },
       });
+      if ((await prisma.groupMember.count({ where: { groupId: group.id } })) === 0) {
+        await prisma.group.update({
+          where: { id: group.id },
+          data: {
+            members: {
+              create: {
+                president: true,
+                title: 'Prez',
+                member: {
+                  connect: {
+                    uid: user.uid,
+                  },
+                },
+              },
+            },
+          },
+        });
+        purgeUserSessions(user.uid);
+      }
+
       await log('groups', uid ? 'update' : 'create', group, group.uid, user);
       return group;
     },
