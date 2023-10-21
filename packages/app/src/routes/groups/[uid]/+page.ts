@@ -94,22 +94,35 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 vicePresident: true,
                 secretary: true,
               },
-              events: {
-                descriptionHtml: true,
-                descriptionPreview: true,
-                uid: true,
-                links: {
-                  name: true,
-                  value: true,
-                  computedValue: true,
+              events: [
+                {},
+                {
+                  edges: {
+                    node: {
+                      descriptionHtml: true,
+                      descriptionPreview: true,
+                      uid: true,
+                      links: {
+                        name: true,
+                        value: true,
+                        computedValue: true,
+                      },
+                      title: true,
+                      startsAt: true,
+                      endsAt: true,
+                      pictureFile: true,
+                      visibility: true,
+                      location: true,
+                      group: {
+                        uid: true,
+                        pictureFile: true,
+                        pictureFileDark: true,
+                        name: true,
+                      },
+                    },
+                  },
                 },
-                title: true,
-                startsAt: true,
-                endsAt: true,
-                pictureFile: true,
-                visibility: true,
-                location: true,
-              },
+              ],
             }
           : // Unauthenticated query
             {
@@ -159,22 +172,35 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               },
               links: { name: true, value: true, computedValue: true },
               ancestors: { uid: true, name: true, pictureFile: true },
-              events: {
-                descriptionHtml: true,
-                descriptionPreview: true,
-                uid: true,
-                links: {
-                  name: true,
-                  value: true,
-                  computedValue: true,
+              events: [
+                {},
+                {
+                  edges: {
+                    node: {
+                      descriptionHtml: true,
+                      descriptionPreview: true,
+                      uid: true,
+                      links: {
+                        name: true,
+                        value: true,
+                        computedValue: true,
+                      },
+                      title: true,
+                      startsAt: true,
+                      visibility: true,
+                      endsAt: true,
+                      pictureFile: true,
+                      location: true,
+                      group: {
+                        uid: true,
+                        pictureFile: true,
+                        pictureFileDark: true,
+                        name: true,
+                      },
+                    },
+                  },
                 },
-                title: true,
-                startsAt: true,
-                visibility: true,
-                endsAt: true,
-                pictureFile: true,
-                location: true,
-              },
+              ],
             },
       ],
     },

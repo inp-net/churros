@@ -3,6 +3,7 @@ import {
   startOfWeek,
   endOfWeek,
   differenceInDays,
+  differenceInWeeks,
   startOfDay,
   endOfDay,
   getDay,
@@ -12,6 +13,8 @@ import {
   getMonth,
   setDay,
   addDays,
+  isBefore,
+  weeksToDays,
 } from 'date-fns';
 import { TicketType, createUid as createTicketUid, userCanSeeTicket } from './tickets.js';
 import {
@@ -626,32 +629,14 @@ builder.queryField('eventsInWeek', (t) =>
         )
           return false;
 
-        switch (event.frequency) {
-          case EventFrequency.Weekly: {
-            // a weekly event is visible each week
-            return true;
-          }
-
-          case EventFrequency.Monthly: {
-            return event.startsAt.getDate() === today.getDate();
-          }
-
-          case EventFrequency.Biweekly: {
-            return differenceInDays(event.startsAt, today) % 14 === 0;
-          }
-
-          default: {
-            return true;
-          }
-        }
+        if (event.recurringUntil) return isBefore(today, event.recurringUntil);
+        return true;
       }
 
       function fixRecurrentEventDates(event: EventPrisma): EventPrisma {
         let { startsAt, endsAt, frequency } = event;
         switch (frequency) {
-          case EventFrequency.Weekly:
-          case EventFrequency.Biweekly: {
-            // move event from its original startsAt to today's week.
+          case EventFrequency.Weekly: {
             const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
             const dayDelta = differenceInDays(todayWeek, startsAt);
             startsAt = addDays(startsAt, dayDelta);
@@ -659,11 +644,28 @@ builder.queryField('eventsInWeek', (t) =>
             break;
           }
 
+          case EventFrequency.Biweekly: {
+            // move event from its original startsAt to today's week.
+            const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
+            const weekDelta = differenceInWeeks(todayWeek, startsAt);
+            if (weekDelta % 2 === 0) {
+              startsAt = addDays(startsAt, weeksToDays(weekDelta));
+              endsAt = addDays(endsAt, weeksToDays(weekDelta));
+            }
+
+            break;
+          }
+
           case EventFrequency.Monthly: {
-            startsAt = setYear(startsAt, getYear(today));
-            startsAt = setMonth(startsAt, getMonth(today));
-            endsAt = setYear(endsAt, getYear(today));
-            endsAt = setMonth(endsAt, getMonth(today));
+            const monthCorrect =
+              getMonth(today) === getMonth(endOfWeek(today, { weekStartsOn: 1 })) ? 0 : 1;
+            const yearCorrect =
+              getYear(today) === getYear(endOfWeek(today, { weekStartsOn: 1 })) ? 0 : 1;
+
+            startsAt = setMonth(startsAt, getMonth(today) + monthCorrect);
+            endsAt = setMonth(endsAt, getMonth(today) + monthCorrect);
+            startsAt = setYear(startsAt, getYear(today) + yearCorrect);
+            endsAt = setYear(endsAt, getYear(today) + yearCorrect);
             break;
           }
 

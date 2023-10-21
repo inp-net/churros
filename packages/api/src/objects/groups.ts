@@ -20,7 +20,7 @@ import type { Context } from '../context.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { visibleArticlesPrismaQuery } from './articles.js';
-import { visibleEventsPrismaQuery } from './events.js';
+import { EventType, visibleEventsPrismaQuery } from './events.js';
 import { onBoard } from '../auth.js';
 import { log } from './logs.js';
 
@@ -110,12 +110,25 @@ export const GroupType = builder.prismaNode('Group', {
     studentAssociation: t.relation('studentAssociation', { nullable: true }),
     parent: t.relation('parent', { nullable: true }),
     selfJoinable: t.exposeBoolean('selfJoinable'),
-    events: t.relation('events', {
+    ownEvents: t.relation('events', {
       query(_, { user }) {
         return {
           where: visibleEventsPrismaQuery(user),
           orderBy: { startsAt: 'desc' },
         };
+      },
+    }),
+    events: t.prismaConnection({
+      type: EventType,
+      cursor: 'id',
+      async resolve(_, { id }, {}, { user }) {
+        return prisma.event.findMany({
+          where: {
+            ...visibleEventsPrismaQuery(user),
+            OR: [{ groupId: id }, { coOrganizers: { some: { id } } }],
+          },
+          orderBy: { startsAt: 'desc' },
+        });
       },
     }),
     coOrganizedEvents: t.relation('coOrganizedEvents', {
