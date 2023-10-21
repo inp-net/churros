@@ -41,7 +41,11 @@
     undefined;
   export let hideGroup = false;
 
-  $: authorSrc = hideGroup ? author?.pictureFile ?? '' : groupLogoSrc($isDark, group);
+  $: authorSrc = hideGroup
+    ? author
+      ? `${env.PUBLIC_STORAGE_URL}${author?.pictureFile}`
+      : ''
+    : groupLogoSrc($isDark, group);
 </script>
 
 <div class="post-outer" class:future={isFuture(publishedAt)}>
@@ -53,7 +57,7 @@
   <a {href} class="post-link">
     <article class="post">
       {#if authorSrc}
-        <img src="{env.PUBLIC_STORAGE_URL}{authorSrc}" alt={group.name} class="group-logo" />
+        <img src={authorSrc} alt={group.name} class="group-logo" />
       {:else}
         <div class="group-logo no-logo"></div>
       {/if}
@@ -216,6 +220,7 @@
     margin: 0.5rem 0;
     overflow: hidden;
     color: white;
+    background-position: center;
     background-size: cover;
     border-radius: var(--radius-block);
   }
