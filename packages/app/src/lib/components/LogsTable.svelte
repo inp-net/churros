@@ -1,5 +1,6 @@
 <script lang="ts">
   import { formatDateTime } from '$lib/dates';
+  import JSONTree from 'svelte-json-tree';
 
   let openedLogId = '';
 
@@ -44,7 +45,15 @@
           <td><a href="/users/{log.user?.uid}">{log.user?.fullName}</a></td>
         </tr>
         {#if openedLogId === log.id}
-          <tr class="details"><td colspan="5">{log.message}</td></tr>
+          <tr class="details"
+            ><td colspan="5" class:json={log.message.startsWith('{')}>
+              {#if log.message.startsWith('{')}
+                <JSONTree --json-tree-font-size="1em" value={JSON.parse(log.message)}></JSONTree>
+              {:else}
+                {log.message}
+              {/if}
+            </td></tr
+          >
         {/if}
       {/each}
     </tbody>
@@ -106,8 +115,12 @@
     border-radius: var(--radius-inline);
   }
 
-  td[colspan] {
+  td[colspan]:not(.json) {
     text-align: center;
+  }
+
+  .json :global(*) {
+    font-family: 'Courier New', Courier, monospace;
   }
 
   td.code {
