@@ -67,7 +67,9 @@ export function formatEventDates(
       return new Intl.DateTimeFormat('fr-FR', {
         dateStyle: 'full',
         timeStyle: 'short',
-      }).formatRange(startsAt, endsAt);
+      })
+        .formatRange(startsAt, endsAt)
+        .replaceAll(new Date().getFullYear().toString(), '');
     }
 
     default: {

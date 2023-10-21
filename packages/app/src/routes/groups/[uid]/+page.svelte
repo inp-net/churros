@@ -273,7 +273,6 @@
           hideGroup
           {...node}
           href="/events/{node.group.uid}/{node.uid}"
-          {...node}
           publishedAt={node.startsAt}
           bodyPreview={node.descriptionPreview}
         />

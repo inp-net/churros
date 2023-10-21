@@ -65,13 +65,20 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               selfJoinable: true,
               ancestors: { uid: true, name: true, pictureFile: true },
               articles: {
+                id: true,
                 visibility: true,
                 uid: true,
                 title: true,
                 bodyHtml: true,
                 bodyPreview: true,
                 pictureFile: true,
-                author: { firstName: true, lastName: true, uid: true, fullName: true },
+                author: {
+                  firstName: true,
+                  lastName: true,
+                  uid: true,
+                  fullName: true,
+                  pictureFile: true,
+                },
                 publishedAt: true,
               },
               studentAssociation: {
@@ -99,6 +106,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 {
                   edges: {
                     node: {
+                      id: true,
                       descriptionHtml: true,
                       descriptionPreview: true,
                       uid: true,
@@ -139,6 +147,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               email: true,
               selfJoinable: true,
               articles: {
+                id: true,
                 visibility: true,
                 uid: true,
                 title: true,
@@ -177,6 +186,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 {
                   edges: {
                     node: {
+                      id: true,
                       descriptionHtml: true,
                       descriptionPreview: true,
                       uid: true,

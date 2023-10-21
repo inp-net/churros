@@ -3,14 +3,15 @@
   import { Visibility } from '$lib/zeus';
   import IconLock from '~icons/mdi/lock-outline';
   import IconSchool from '~icons/mdi/school-outline';
-  import IconCommunity from '~icons/mdi/google-circles-extended';
+  import IconCommunity from '~icons/mdi/account-group-outline';
   import IconLinkLock from '~icons/mdi/link-lock';
-  import IconGlobe from '~icons/mdi/earth';
+  import IconGlobe from '~icons/mdi/web';
+  import { tooltip } from '$lib/tooltip';
 
   export let visibility: Visibility | undefined;
 </script>
 
-<div class="visibility" title={visibility ? DISPLAY_VISIBILITIES[visibility] : undefined}>
+<span class="visibility" use:tooltip={visibility ? DISPLAY_VISIBILITIES[visibility] : undefined}>
   {#if visibility === Visibility.Private}
     <IconLock />
   {:else if visibility === Visibility.Unlisted}
@@ -22,4 +23,10 @@
   {:else if visibility === Visibility.SchoolRestricted}
     <IconSchool></IconSchool>
   {/if}
-</div>
+</span>
+
+<style>
+  .visibility {
+    font-size: 1em;
+  }
+</style>

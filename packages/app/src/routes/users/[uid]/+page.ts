@@ -89,6 +89,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             {
               edges: {
                 node: {
+                  id: true,
                   title: true,
                   uid: true,
                   group: { uid: true, name: true, pictureFile: true, pictureFileDark: true },

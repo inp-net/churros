@@ -23,12 +23,13 @@ export const ArticleType = builder.prismaNode('Article', {
     body: t.exposeString('body'),
     bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),
     bodyPreview: t.string({
-      resolve: async ({ body }) =>
-        (
+      async resolve({ body }) {
+        const fullText =
           htmlToText(await toHtml(body))
             .split('\n')
-            .find((line) => line.trim() !== '') ?? ''
-        ).slice(0, 255),
+            .find((line) => line.trim() !== '') ?? '';
+        return fullText.slice(0, 255) + (fullText.length > 255 ? '...' : '');
+      },
     }),
     published: t.exposeBoolean('published'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
@@ -265,7 +266,7 @@ builder.mutationField('upsertArticle', (t) =>
         },
         title,
         body,
-        visibility: Visibility[visibility] ,
+        visibility: Visibility[visibility],
         publishedAt,
         published: publishedAt <= new Date(),
       };
