@@ -8,7 +8,7 @@
   import IconHeart from '~icons/mdi/heart-outline';
   import IconHeartFilled from '~icons/mdi/heart';
   import { isDark } from '$lib/theme';
-  import { PUBLIC_STORAGE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { formatEventDates } from '$lib/dates';
   import { DISPLAY_VISIBILITIES } from '$lib/display';
   import ButtonGhost from './ButtonGhost.svelte';
@@ -82,14 +82,11 @@
         <p class="description">
           {bodyPreview}
         </p>
-        {#if img}
-          <img {...img} alt={img.alt ?? `Image de ${title}`} class="image" />
-        {/if}
         {#if event}
           <a
             href={event.href}
             class="event"
-            style:background-image="url({PUBLIC_STORAGE_URL}{event.pictureFile})"
+            style:background-image="url({env.PUBLIC_STORAGE_URL}{event.pictureFile})"
           >
             <div class="content">
               <h2>{event.title}</h2>
@@ -104,6 +101,8 @@
               </p>
             </div>
           </a>
+        {:else if img}
+          <img {...img} alt={img.alt ?? `Image de ${title}`} class="image" />
         {/if}
         {#if links.length > 0}
           <ul class="links nobullet">
