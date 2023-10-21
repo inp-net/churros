@@ -4,6 +4,7 @@ import {
   type EventFrequency,
   type GroupType,
   type PaymentMethod,
+  Visibility,
 } from '$lib/zeus';
 import LogoLydia from '~icons/simple-icons/lydia';
 import IconCreditCard from '~icons/mdi/credit-card-outline';
@@ -38,19 +39,43 @@ export const DISPLAY_PAYMENT_METHODS = {
   Other: 'Autre',
 };
 
-export const DISPLAY_VISIBILITIES = {
+export const ORDER_VISIBILITIES: Visibility[] = [
+  Visibility.Public,
+  Visibility.SchoolRestricted,
+  Visibility.GroupRestricted,
+  Visibility.Unlisted,
+  Visibility.Private,
+];
+
+export const DISPLAY_VISIBILITIES: Record<Visibility, string> = {
   Public: 'Public',
-  Restricted: 'Restreint au groupe',
+  GroupRestricted: 'Groupe',
+  SchoolRestricted: 'École',
   Unlisted: 'Non répertorié',
   Private: 'Privé',
 };
 
-export const HELP_VISIBILITY = {
-  Public: 'Visible par tous',
-  Restricted: 'Visible par les membres du groupe',
+export const HELP_VISIBILITY: Record<Visibility, string> = {
+  Public: 'Visible par tous (même sans être connecté)',
+  GroupRestricted: 'Visible par les membres du groupe',
+  SchoolRestricted: "Visible par les étudiant·e·s de cette l'école",
   Unlisted: 'Visible par tout ceux qui possèdent le lien',
-  Private: 'Visible par personne (excepté les administrateurs et organisateurs)',
+  Private: 'Visible par personne (excepté les administrateur·ice·s et organisateur·ice·s)',
 };
+
+export const HELP_VISIBILITY_DYNAMIC: (
+  groups: Array<{ name: string; studentAssociation: { school: { name: string } } }>,
+) => Record<Visibility, string> = (groups) => ({
+  Public: `Visible par tous (même sans être connecté)`,
+  GroupRestricted: `Visible par les membres de ${[...new Set(groups.map((g) => g.name))].join(
+    ', ',
+  )}`,
+  SchoolRestricted: `Visible par les étudiant·e·s de ${[
+    ...new Set(groups.map((g) => g.studentAssociation.school.name)),
+  ].join(', ')}`,
+  Unlisted: 'Visible par tout ceux qui possèdent le lien',
+  Private: 'Visible par personne (excepté les administrateur·ice·s et organisateur·ice·s)',
+});
 
 export const DISPLAY_NOTIFICATION_CHANNELS: Record<NotificationChannel, string> = {
   Articles: 'Posts',
@@ -155,3 +180,10 @@ export const ORDER_DOCUMENT_TYPES: DocumentType[] = [
 ];
 
 export const ORDER_REACTIONS: string[] = ['👍', '👎', '👏', '😂', '😮', '😡', '❤️', '💀', '🎉'];
+
+export function orderedDisplay<T extends string | number | symbol>(
+  order: T[],
+  display: Record<T, string>,
+): Array<[T, string]> {
+  return order.map((value) => [value, display[value]] as [T, string]);
+}

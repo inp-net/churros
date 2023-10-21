@@ -5,7 +5,7 @@
 
   export let value: string | undefined = undefined;
   export let label: string;
-  export let options: string[] | Record<string, string> | Map<string, string>;
+  export let options: string[] | Record<string, string> | Map<string, string> | Array<[string, string]>;
   export let name: string | undefined = undefined;
   export let required = false;
   export let hint: string | undefined = undefined;
@@ -25,12 +25,12 @@
     }
   });
 
-  let optionsWithDisplay: Record<string, string> = {};
+  let optionsWithDisplay: Array<[string, string]> = [];
   $: optionsWithDisplay = Array.isArray(options)
-    ? Object.fromEntries(options.map((option) => [option, option]))
+    ? options.map((option) => (Array.isArray(option) ? option : [option, option]))
     : options instanceof Map
-    ? Object.fromEntries(options.entries())
-    : options;
+    ? [...options.entries()]
+    : Object.entries(options);
 
   let fieldsetElement: HTMLFieldSetElement;
 
@@ -40,7 +40,7 @@
 <InputField {label} {required} {hint} errors={errorMessage ? [errorMessage] : []}>
   <div class="wrapper">
     <fieldset bind:this={fieldsetElement}>
-      {#each Object.entries(optionsWithDisplay) as [option, display] (option)}
+      {#each optionsWithDisplay as [option, display] (option)}
         <label aria-current={option === value}>
           <input type="radio" {required} {name} bind:group={value} value={option} />
           <slot {value} {display} {option}>{display}</slot>

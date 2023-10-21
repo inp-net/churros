@@ -6,7 +6,12 @@
   import { page } from '$app/stores';
   import { _articleQuery } from '../../routes/posts/[group]/[uid]/edit/+page';
   import DateInput from '$lib/components/InputDate.svelte';
-  import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
+  import {
+    DISPLAY_VISIBILITIES,
+    HELP_VISIBILITY_DYNAMIC,
+    ORDER_VISIBILITIES,
+    orderedDisplay,
+  } from '$lib/display';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputText from './InputText.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
@@ -29,6 +34,20 @@
         uid: string;
         name: string;
         id: string;
+        root?:
+          | {
+              uid: string;
+              name: string;
+              id: string;
+              studentAssociation?: { school: { name: string } } | undefined;
+              children: Array<{
+                uid: string;
+                id: string;
+                name: string;
+                studentAssociation?: { school: { name: string } } | undefined;
+              }>;
+            }
+          | undefined;
       };
       author?: {
         id: string;
@@ -126,9 +145,9 @@
   <InputSelectOne
     required
     bind:value={visibility}
-    options={DISPLAY_VISIBILITIES}
+    options={orderedDisplay(ORDER_VISIBILITIES.reverse(), DISPLAY_VISIBILITIES)}
     label="Visibilité"
-    hint={HELP_VISIBILITY[visibility]}
+    hint={HELP_VISIBILITY_DYNAMIC([group.root, ...group.root.children])[visibility]}
   />
   <InputLongText label="Description" bind:value={body} rich />
   <InputLinks label="Liens" bind:value={links} />

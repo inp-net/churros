@@ -62,7 +62,9 @@ export const EventFrequencyType = builder.enumType(EventFrequency, {
   name: 'EventFrequency',
 });
 
-export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
+export function visibleEventsPrismaQuery(
+  user: { uid: string } | undefined,
+): Prisma.EventWhereInput {
   return {
     OR: [
       {
@@ -80,7 +82,29 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
       {
         visibility: VisibilityPrisma.Public,
       },
-      // Restricted events in the user's groups
+      // SchoolRestricted events
+      {
+        visibility: VisibilityPrisma.SchoolRestricted,
+        OR: [
+          {
+            group: {
+              studentAssociation: {
+                school: { majors: { some: { students: { some: { uid: user?.uid ?? '' } } } } },
+              },
+            },
+            coOrganizers: {
+              some: {
+                studentAssociation: {
+                  school: {
+                    majors: { some: { students: { some: { uid: user?.uid ?? '' } } } },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      // GroupRestricted events in the user's groups
       {
         OR: [
           // TODO does not work for sub-sub groups
@@ -98,7 +122,7 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
             coOrganizers: { some: { members: { some: { member: { uid: user?.uid ?? '' } } } } },
           },
         ],
-        visibility: VisibilityPrisma.Restricted,
+        visibility: VisibilityPrisma.GroupRestricted,
       },
       // Unlisted events that the user booked
       {
@@ -1070,7 +1094,7 @@ export async function eventAccessibleByUser(
       return true;
     }
 
-    case Visibility.Restricted: {
+    case Visibility.GroupRestricted: {
       if (!user) return false;
       // All managers can see the event, no matter their permissions
       if (eventManagedByUser(event, user, {})) return true;

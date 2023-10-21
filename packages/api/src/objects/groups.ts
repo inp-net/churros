@@ -22,6 +22,7 @@ import { join } from 'node:path';
 import { visibleArticlesPrismaQuery } from './articles.js';
 import { visibleEventsPrismaQuery } from './events.js';
 import { onBoard } from '../auth.js';
+import { log } from './logs.js';
 
 export function userIsInBureauOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
@@ -40,6 +41,23 @@ export function userIsPresidentOf(user: Context['user'], groupUid: string): bool
 export function userIsTreasurerOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
     user?.groups.some(({ group: { uid }, treasurer }) => uid === groupUid && treasurer),
+  );
+}
+
+export async function ancestorsOfGroup<T extends { familyId?: string | null; id: string }>(
+  ...groups: T[]
+) {
+  return (
+    prisma.group
+      // Get all groups in the same family as the user's groups
+      .findMany({
+        where: { familyId: { in: groups.map(({ id, familyId }) => familyId ?? id) } },
+        select: { id: true, parentId: true, uid: true },
+      })
+      // Get all ancestors of the groups
+      .then((gs) => mappedGetAncestors(gs, groups, { mappedKey: 'id' }))
+      // Flatten the ancestors into a single array
+      .then((groups) => groups.flat())
   );
 }
 
@@ -265,11 +283,11 @@ builder.mutationField('upsertGroup', (t) =>
       selfJoinable: t.arg.boolean(),
       related: t.arg({ type: ['String'] }),
     },
-    async authScopes(_, { uid, type }, { user }) {
+    async authScopes(_, { uid, parentUid, type }, { user }) {
       if (!user) return false;
       const creating = !uid;
       const parentGroup = await prisma.group.findUnique({
-        where: { uid: uid ?? '' },
+        where: { uid: parentUid ?? '' },
         include: { members: true },
       });
       // allow board of parent group to create subgroups
@@ -407,15 +425,7 @@ builder.mutationField('upsertGroup', (t) =>
             : { disconnect: true },
         },
       });
-      await prisma.logEntry.create({
-        data: {
-          area: 'group',
-          action: uid ? 'update' : 'create',
-          target: group.uid,
-          message: `${uid ? 'Mise à jour' : 'Création'} de ${group.uid}`,
-          user: { connect: { id: user?.id } },
-        },
-      });
+      await log('groups', uid ? 'update' : 'create', group, group.uid, user);
       return group;
     },
   }),

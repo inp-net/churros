@@ -11,7 +11,7 @@
     DISPLAY_EVENT_FREQUENCY,
     DISPLAY_MANAGER_PERMISSION_LEVELS,
     DISPLAY_VISIBILITIES,
-    HELP_VISIBILITY,
+    HELP_VISIBILITY_DYNAMIC,
   } from '$lib/display';
   import InputText from './InputText.svelte';
   import InputNumber from './InputNumber.svelte';
@@ -328,6 +328,7 @@
       name: string;
       pictureFile: string;
       pictureFileDark: string;
+      studentAssociation: { school: { name: string } };
     };
     coOrganizers: Array<{
       id: string;
@@ -335,6 +336,7 @@
       name: string;
       pictureFile: string;
       pictureFileDark: string;
+      studentAssociation: { school: { name: string } };
     }>;
     managers: Array<{
       user: {
@@ -399,7 +401,7 @@
     <InputText required label="Titre" maxlength={255} bind:value={event.title} />
     <InputSelectOne
       label="Visibilité"
-      hint={HELP_VISIBILITY[event.visibility]}
+      hint={HELP_VISIBILITY_DYNAMIC([event.group, ...event.coOrganizers])[event.visibility]}
       bind:value={event.visibility}
       options={DISPLAY_VISIBILITIES}
     />
