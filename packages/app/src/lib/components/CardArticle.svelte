@@ -53,7 +53,7 @@
   <a {href} class="post-link">
     <article class="post">
       {#if authorSrc}
-        <img src={authorSrc} alt={group.name} class="group-logo" />
+        <img src="{env.PUBLIC_STORAGE_URL}{authorSrc}" alt={group.name} class="group-logo" />
       {:else}
         <div class="group-logo no-logo"></div>
       {/if}
