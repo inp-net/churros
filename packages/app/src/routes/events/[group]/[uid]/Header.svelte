@@ -130,9 +130,4 @@
     align-items: center;
     margin-bottom: 1rem;
   }
-
-  .visibility {
-    display: flex;
-    gap: 0.25em;
-  }
 </style>
