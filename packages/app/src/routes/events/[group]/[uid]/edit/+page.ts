@@ -29,6 +29,10 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             pictureFile: true,
             pictureFileDark: true,
             studentAssociation: { school: { name: true } },
+            children: {
+              name: true,
+              studentAssociation: { school: { name: true } },
+            },
           },
           coOrganizers: {
             id: true,
@@ -37,6 +41,10 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             pictureFile: true,
             pictureFileDark: true,
             studentAssociation: { school: { name: true } },
+            children: {
+              name: true,
+              studentAssociation: { school: { name: true } },
+            },
           },
           tickets: {
             id: true,

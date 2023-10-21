@@ -15,13 +15,9 @@ export const _articleQuery = Selector('Article')({
     name: true,
     id: true,
     studentAssociation: { school: { name: true } },
-    root: {
+    children: {
       name: true,
       studentAssociation: { school: { name: true } },
-      children: {
-        name: true,
-        studentAssociation: { school: { name: true } },
-      },
     },
   },
   author: {

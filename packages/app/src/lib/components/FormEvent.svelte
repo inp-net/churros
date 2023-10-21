@@ -328,7 +328,11 @@
       name: string;
       pictureFile: string;
       pictureFileDark: string;
-      studentAssociation: { school: { name: string } };
+      studentAssociation?: { school: { name: string } };
+      children: Array<{
+        name: string;
+        studentAssociation?: { school: { name: string } };
+      }>;
     };
     coOrganizers: Array<{
       id: string;
@@ -336,7 +340,11 @@
       name: string;
       pictureFile: string;
       pictureFileDark: string;
-      studentAssociation: { school: { name: string } };
+      studentAssociation?: { school: { name: string } };
+      children: Array<{
+        name: string;
+        studentAssociation?: { school: { name: string } };
+      }>;
     }>;
     managers: Array<{
       user: {
@@ -401,7 +409,9 @@
     <InputText required label="Titre" maxlength={255} bind:value={event.title} />
     <InputSelectOne
       label="Visibilité"
-      hint={HELP_VISIBILITY_DYNAMIC([event.group, ...event.coOrganizers])[event.visibility]}
+      hint={HELP_VISIBILITY_DYNAMIC(
+        [event.group, ...event.coOrganizers].flatMap((g) => [g, ...g.children]),
+      )[event.visibility]}
       bind:value={event.visibility}
       options={DISPLAY_VISIBILITIES}
     />

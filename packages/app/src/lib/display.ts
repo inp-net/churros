@@ -63,16 +63,23 @@ export const HELP_VISIBILITY: Record<Visibility, string> = {
   Private: 'Visible par personne (excepté les administrateur·ice·s et organisateur·ice·s)',
 };
 
+function naturalJoin(items: string[]): string {
+  items = items.filter(Boolean);
+  if (items.length === 0) return '';
+  if (items.length === 1) return items[0];
+  return items.slice(0, - 1).join(', ') + ' et ' + items.at(-1);
+}
+
 export const HELP_VISIBILITY_DYNAMIC: (
-  groups: Array<{ name: string; studentAssociation: { school: { name: string } } }>,
+  groups: Array<{ name: string; studentAssociation?: { school: { name: string } } }>,
 ) => Record<Visibility, string> = (groups) => ({
   Public: `Visible par tous (même sans être connecté)`,
-  GroupRestricted: `Visible par les membres de ${[...new Set(groups.map((g) => g.name))].join(
-    ', ',
-  )}`,
-  SchoolRestricted: `Visible par les étudiant·e·s de ${[
-    ...new Set(groups.map((g) => g.studentAssociation.school.name)),
-  ].join(', ')}`,
+  GroupRestricted: `Visible par les membres de ${naturalJoin([
+    ...new Set(groups.map((g) => g.name)),
+  ])}`,
+  SchoolRestricted: `Visible par les étudiant·e·s de ${naturalJoin([
+    ...new Set(groups.map((g) => g.studentAssociation?.school.name ?? '')),
+  ])}`,
   Unlisted: 'Visible par tout ceux qui possèdent le lien',
   Private: 'Visible par personne (excepté les administrateur·ice·s et organisateur·ice·s)',
 });

@@ -34,20 +34,10 @@
         uid: string;
         name: string;
         id: string;
-        root?:
-          | {
-              uid: string;
-              name: string;
-              id: string;
-              studentAssociation?: { school: { name: string } } | undefined;
-              children: Array<{
-                uid: string;
-                id: string;
-                name: string;
-                studentAssociation?: { school: { name: string } } | undefined;
-              }>;
-            }
-          | undefined;
+        children: Array<{
+          name: string;
+          studentAssociation?: { school: { name: string } } | undefined;
+        }>;
       };
       author?: {
         id: string;
@@ -147,7 +137,7 @@
     bind:value={visibility}
     options={orderedDisplay(ORDER_VISIBILITIES.reverse(), DISPLAY_VISIBILITIES)}
     label="Visibilité"
-    hint={HELP_VISIBILITY_DYNAMIC([group.root, ...group.root.children])[visibility]}
+    hint={HELP_VISIBILITY_DYNAMIC([group, ...group.children])[visibility]}
   />
   <InputLongText label="Description" bind:value={body} rich />
   <InputLinks label="Liens" bind:value={links} />
