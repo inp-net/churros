@@ -1,4 +1,3 @@
-import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
@@ -8,7 +7,7 @@ import { LinkInput } from './links.js';
 import { dichotomid } from 'dichotomid';
 import { unlink } from 'node:fs/promises';
 import { VisibilityEnum } from './events.js';
-import { Visibility } from '@prisma/client';
+import { type Prisma, Visibility } from '@prisma/client';
 import { scheduleNewArticleNotification } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
@@ -24,12 +23,13 @@ export const ArticleType = builder.prismaNode('Article', {
     body: t.exposeString('body'),
     bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),
     bodyPreview: t.string({
-      resolve: async ({ body }) =>
-        (
+      async resolve({ body }) {
+        const fullText =
           htmlToText(await toHtml(body))
             .split('\n')
-            .find((line) => line.trim() !== '') ?? ''
-        ).slice(0, 255),
+            .find((line) => line.trim() !== '') ?? '';
+        return fullText.slice(0, 255) + (fullText.length > 255 ? '...' : '');
+      },
     }),
     published: t.exposeBoolean('published'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
@@ -80,28 +80,65 @@ export const ArticleType = builder.prismaNode('Article', {
 
 export function visibleArticlesPrismaQuery(
   user: { uid: string; canEditGroups: boolean } | undefined,
-) {
+): Prisma.ArticleWhereInput {
+  // Get the user's groups and their ancestors
   if (user?.canEditGroups) return {};
   return {
     OR: [
-      // Published articles that are
       {
+        publishedAt: { lte: new Date() },
+        // Published articles that are
         OR: [
           // Public
           { visibility: Visibility.Public },
-          // Restricted to the group and the user is a member of the group
+          // SchoolRestricted and the user is a student of this school
           {
-            visibility: Visibility.Restricted,
+            visibility: Visibility.SchoolRestricted,
             group: {
-              members: {
-                some: {
-                  member: { uid: user?.uid ?? '' },
+              studentAssociation: {
+                school: {
+                  majors: {
+                    some: {
+                      students: {
+                        some: {
+                          uid: user?.uid ?? '',
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },
           },
+          // GroupRestricted to the group and the user is a member of the group
+          // or a member of a children group
+          // TODO handle children of children
+          {
+            visibility: Visibility.GroupRestricted,
+            group: {
+              OR: [
+                {
+                  members: {
+                    some: {
+                      member: { uid: user?.uid ?? '' },
+                    },
+                  },
+                },
+                {
+                  children: {
+                    some: {
+                      members: {
+                        some: {
+                          member: { uid: user?.uid ?? '' },
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
         ],
-        publishedAt: { lte: new Date() },
       },
 
       // Or the user has permission to create articles
@@ -152,37 +189,9 @@ builder.queryField('homepage', (t) =>
         });
       }
 
-      // Get the user's groups and their ancestors
-      const ancestors = await prisma.group
-        // Get all groups in the same family as the user's groups
-        .findMany({
-          where: { familyId: { in: user.groups.map(({ group }) => group.familyId ?? group.id) } },
-          select: { id: true, parentId: true, uid: true },
-        })
-        // Get all ancestors of the groups
-        .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
-        // Flatten the ancestors into a single array
-        .then((groups) => groups.flat());
-
       return prisma.article.findMany({
         ...query,
-        where: {
-          publishedAt: {
-            lte: new Date(),
-          },
-          OR: [
-            // Show articles from the same school as the user
-            {
-              visibility: Visibility.Public,
-              // group: { school: { id: { in: user.major.schools.map(({ id }) => id) } } },
-            },
-            // Show articles from groups whose user is a member
-            {
-              visibility: { in: [Visibility.Public, Visibility.Restricted] },
-              group: { uid: { in: ancestors.map(({ uid }) => uid) } },
-            },
-          ],
-        },
+        where: visibleArticlesPrismaQuery(user),
         orderBy: { publishedAt: 'desc' },
       });
     },
@@ -257,7 +266,7 @@ builder.mutationField('upsertArticle', (t) =>
         },
         title,
         body,
-        visibility: Visibility[visibility as keyof typeof Visibility],
+        visibility: Visibility[visibility],
         publishedAt,
         published: publishedAt <= new Date(),
       };

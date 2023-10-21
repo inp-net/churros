@@ -266,7 +266,7 @@ builder.mutationField('deleteDocument', (t) =>
         where: { id },
         select: { uploaderId: true },
       });
-      return Boolean(user?.admin || user?.uid === author?.uploaderId);
+      return Boolean(user?.admin || user?.id === author?.uploaderId);
     },
     async resolve(_, { id }, { user }) {
       const document = await prisma.document.findUniqueOrThrow({ where: { id } });
@@ -304,7 +304,7 @@ builder.mutationField('uploadDocumentFile', (t) =>
       const document = await prisma.document.findUniqueOrThrow({
         where: { id: documentId },
       });
-      return Boolean(user?.admin || document.uploaderId === user?.uid);
+      return Boolean(user?.admin || document.uploaderId === user?.id);
     },
     async resolve(_, { documentId, file, solution }) {
       const document = await prisma.document.findUniqueOrThrow({
@@ -344,7 +344,7 @@ builder.mutationField('setDocumentFileIsSolution', (t) =>
       const document = await prisma.document.findUniqueOrThrow({
         where: { id: documentId },
       });
-      return Boolean(user?.admin || document.uploaderId === user?.uid);
+      return Boolean(user?.admin || document.uploaderId === user?.id);
     },
     async resolve(_, { documentId, filename, isSolution }) {
       const document = await prisma.document.findUniqueOrThrow({
@@ -400,7 +400,7 @@ builder.mutationField('deleteDocumentFile', (t) =>
       const document = await prisma.document.findUniqueOrThrow({
         where: { id: documentId },
       });
-      return Boolean(user?.admin || document.uploaderId === user?.uid);
+      return Boolean(user?.admin || document.uploaderId === user?.id);
     },
     async resolve(_, { documentId, filename }) {
       const document = await prisma.document.findUniqueOrThrow({

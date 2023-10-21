@@ -3,6 +3,7 @@ import {
   startOfWeek,
   endOfWeek,
   differenceInDays,
+  differenceInWeeks,
   startOfDay,
   endOfDay,
   getDay,
@@ -12,6 +13,8 @@ import {
   getMonth,
   setDay,
   addDays,
+  isBefore,
+  weeksToDays,
 } from 'date-fns';
 import { TicketType, createUid as createTicketUid, userCanSeeTicket } from './tickets.js';
 import {
@@ -62,7 +65,9 @@ export const EventFrequencyType = builder.enumType(EventFrequency, {
   name: 'EventFrequency',
 });
 
-export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
+export function visibleEventsPrismaQuery(
+  user: { uid: string } | undefined,
+): Prisma.EventWhereInput {
   return {
     OR: [
       {
@@ -80,7 +85,29 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
       {
         visibility: VisibilityPrisma.Public,
       },
-      // Restricted events in the user's groups
+      // SchoolRestricted events
+      {
+        visibility: VisibilityPrisma.SchoolRestricted,
+        OR: [
+          {
+            group: {
+              studentAssociation: {
+                school: { majors: { some: { students: { some: { uid: user?.uid ?? '' } } } } },
+              },
+            },
+            coOrganizers: {
+              some: {
+                studentAssociation: {
+                  school: {
+                    majors: { some: { students: { some: { uid: user?.uid ?? '' } } } },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      // GroupRestricted events in the user's groups
       {
         OR: [
           // TODO does not work for sub-sub groups
@@ -98,7 +125,7 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
             coOrganizers: { some: { members: { some: { member: { uid: user?.uid ?? '' } } } } },
           },
         ],
-        visibility: VisibilityPrisma.Restricted,
+        visibility: VisibilityPrisma.GroupRestricted,
       },
       // Unlisted events that the user booked
       {
@@ -602,32 +629,14 @@ builder.queryField('eventsInWeek', (t) =>
         )
           return false;
 
-        switch (event.frequency) {
-          case EventFrequency.Weekly: {
-            // a weekly event is visible each week
-            return true;
-          }
-
-          case EventFrequency.Monthly: {
-            return event.startsAt.getDate() === today.getDate();
-          }
-
-          case EventFrequency.Biweekly: {
-            return differenceInDays(event.startsAt, today) % 14 === 0;
-          }
-
-          default: {
-            return true;
-          }
-        }
+        if (event.recurringUntil) return isBefore(today, event.recurringUntil);
+        return true;
       }
 
       function fixRecurrentEventDates(event: EventPrisma): EventPrisma {
         let { startsAt, endsAt, frequency } = event;
         switch (frequency) {
-          case EventFrequency.Weekly:
-          case EventFrequency.Biweekly: {
-            // move event from its original startsAt to today's week.
+          case EventFrequency.Weekly: {
             const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
             const dayDelta = differenceInDays(todayWeek, startsAt);
             startsAt = addDays(startsAt, dayDelta);
@@ -635,11 +644,28 @@ builder.queryField('eventsInWeek', (t) =>
             break;
           }
 
+          case EventFrequency.Biweekly: {
+            // move event from its original startsAt to today's week.
+            const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
+            const weekDelta = differenceInWeeks(todayWeek, startsAt);
+            if (weekDelta % 2 === 0) {
+              startsAt = addDays(startsAt, weeksToDays(weekDelta));
+              endsAt = addDays(endsAt, weeksToDays(weekDelta));
+            }
+
+            break;
+          }
+
           case EventFrequency.Monthly: {
-            startsAt = setYear(startsAt, getYear(today));
-            startsAt = setMonth(startsAt, getMonth(today));
-            endsAt = setYear(endsAt, getYear(today));
-            endsAt = setMonth(endsAt, getMonth(today));
+            const monthCorrect =
+              getMonth(today) === getMonth(endOfWeek(today, { weekStartsOn: 1 })) ? 0 : 1;
+            const yearCorrect =
+              getYear(today) === getYear(endOfWeek(today, { weekStartsOn: 1 })) ? 0 : 1;
+
+            startsAt = setMonth(startsAt, getMonth(today) + monthCorrect);
+            endsAt = setMonth(endsAt, getMonth(today) + monthCorrect);
+            startsAt = setYear(startsAt, getYear(today) + yearCorrect);
+            endsAt = setYear(endsAt, getYear(today) + yearCorrect);
             break;
           }
 
@@ -1070,7 +1096,7 @@ export async function eventAccessibleByUser(
       return true;
     }
 
-    case Visibility.Restricted: {
+    case Visibility.GroupRestricted: {
       if (!user) return false;
       // All managers can see the event, no matter their permissions
       if (eventManagedByUser(event, user, {})) return true;

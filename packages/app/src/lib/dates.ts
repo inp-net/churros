@@ -67,7 +67,9 @@ export function formatEventDates(
       return new Intl.DateTimeFormat('fr-FR', {
         dateStyle: 'full',
         timeStyle: 'short',
-      }).formatRange(startsAt, endsAt);
+      })
+        .formatRange(startsAt, endsAt)
+        .replaceAll(new Date().getFullYear().toString(), '');
     }
 
     default: {
@@ -87,7 +89,7 @@ export function formatRecurrence(frequency: EventFrequency, startsAt: Date, ends
     }
 
     case EventFrequency.Monthly: {
-      return `Tout les mois le ${format(startsAt, 'DD')}, de ${format(
+      return `Tout les mois le ${format(startsAt, 'dd')}, de ${format(
         startsAt,
         'HH:mm',
       )} à ${format(endsAt, 'HH:mm')}`;

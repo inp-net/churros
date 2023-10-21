@@ -19,6 +19,7 @@
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import { goto } from '$app/navigation';
   import { ICONS_DOCUMENT_TYPES } from '$lib/display';
+  import { toasts } from '$lib/toasts';
 
   const { PUBLIC_STORAGE_URL } = env;
 
@@ -152,9 +153,16 @@
         <p><strong>Sûr·e ?</strong></p>
         <ButtonInk
           on:click={async () => {
-            await $zeus.mutate({
-              deleteDocument: [{ id: document.id }, true],
-            });
+            try {
+              await $zeus.mutate({
+                deleteDocument: [{ id: document.id }, true],
+              });
+            } catch (error) {
+              toasts.error(`Impossible de supprimer le document`, error?.toString());
+              return;
+            }
+
+            toasts.success('Document supprimé');
             confirmingDelete = false;
             await goto('..');
           }}

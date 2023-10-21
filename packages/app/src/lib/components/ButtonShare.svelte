@@ -11,9 +11,7 @@
   export let href = '';
   export let text = false;
 
-  function canShare() {
-    return browser && navigator.canShare?.();
-  }
+  $: canShare = Boolean(browser && navigator.share !== undefined);
 
   function rewriteUrl(url: URL): string {
     const segments = url.pathname.split('/').filter(Boolean);
@@ -42,8 +40,8 @@
 </script>
 
 {#if text}
-  <ButtonInk on:click={share} icon={canShare() ? IconShare : IconCopyLink}
-    >{#if canShare()}Partager{:else}Copier le lien{/if}</ButtonInk
+  <ButtonInk on:click={share} icon={canShare ? IconShare : IconCopyLink}
+    >{#if canShare}Partager{:else}Copier le lien{/if}</ButtonInk
   >
 {:else}
   <GhostButton help="Partager" on:click={share} darkShadow={white}>

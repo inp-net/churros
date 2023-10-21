@@ -16,6 +16,7 @@ export const SubjectType = builder.prismaObject('Subject', {
     links: t.relation('links'),
     unitId: t.exposeID('unitId', { nullable: true }),
     unit: t.relation('unit', { nullable: true }),
+    apogeeCode: t.exposeString('apogeeCode', { nullable: true }),
     semester: t.exposeInt('semester', { nullable: true }),
     yearTier: t.exposeInt('yearTier', { nullable: true }),
     forApprentices: t.exposeBoolean('forApprentices'),

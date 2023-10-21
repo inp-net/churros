@@ -94,13 +94,14 @@ export async function scheduleNewArticleNotification({
         return;
       // If the article's group is not in a school the user is in
       if (
+        article.visibility === Visibility.SchoolRestricted &&
         !user.major.schools.some(
           (school) => school.id === article.group.studentAssociation?.school.id,
         )
       )
         return;
-      // If the article was set to restricted and/or the user is not in the group anymore
-      if (article.visibility === Visibility.Restricted) {
+      // If the article was set to grouprestricted and/or the user is not in the group anymore
+      if (article.visibility === Visibility.GroupRestricted) {
         // Get the user's groups and their ancestors
         const ancestors = await prisma.group
           // Get all groups in the same family as the user's groups
@@ -166,6 +167,15 @@ export async function scheduleShotgunNotifications({
         },
         include: {
           tickets: true,
+          coOrganizers: {
+            include: {
+              studentAssociation: {
+                include: {
+                  school: true,
+                },
+              },
+            },
+          },
           group: {
             include: {
               studentAssociation: {
@@ -182,8 +192,21 @@ export async function scheduleShotgunNotifications({
       if (!event) return;
 
       // Don't send if the event is not open to any school the user is in
-      const schoolOfEvent = event.group.studentAssociation?.school;
-      if (!user.major.schools.some((school) => school.id === schoolOfEvent?.id)) return;
+      const schoolsOfEvent = new Set(
+        [
+          event.group.studentAssociation?.school,
+          ...event.coOrganizers.map((c) => c.studentAssociation?.school),
+        ]
+          .filter(Boolean)
+          .map((s) => s!.id),
+      );
+
+      // Don't send notifications for school-restricted events if the recipient is not in any of the organizing schools
+      if (
+        event.visibility === Visibility.SchoolRestricted &&
+        !user.major.schools.some((school) => schoolsOfEvent.has(school.id))
+      )
+        return;
 
       // Don't send notifications for unlisted or private events
       if (event.visibility === Visibility.Unlisted || event.visibility === Visibility.Private)
@@ -191,7 +214,7 @@ export async function scheduleShotgunNotifications({
 
       // Don't send if the event is unlisted and the recipient is not in the group
       if (
-        event.visibility === Visibility.Restricted &&
+        event.visibility === Visibility.GroupRestricted &&
         !user.groups.some(({ group }) => group.id === event.groupId)
       )
         return;

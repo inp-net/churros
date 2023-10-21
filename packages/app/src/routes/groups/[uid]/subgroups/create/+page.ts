@@ -3,7 +3,7 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent, params }) => {
   const {
-    group: { id: parentId, school, studentAssociation, email, website, ...parentGroup },
+    group: { id: parentId, studentAssociation, email, website, ...parentGroup },
   } = await loadQuery(
     {
       group: [
@@ -16,8 +16,16 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
           pictureFileDark: true,
           website: true,
           email: true,
-          school: { id: true, uid: true, name: true, color: true },
-          studentAssociation: { id: true, uid: true, name: true },
+          children: {
+            name: true,
+            studentAssociation: { school: { name: true } },
+          },
+          studentAssociation: {
+            id: true,
+            uid: true,
+            name: true,
+            school: { uid: true, id: true, name: true, color: true },
+          },
         },
       ],
     },
@@ -37,10 +45,10 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
       uid: '',
       type: GroupType.Group,
       parentId,
-      parent: parentGroup,
-      school,
+      parent: { ...parentGroup, id: parentId },
       groupId: '',
       studentAssociationId: studentAssociation?.id,
+      studentAssociation,
       name: '',
       color: '#aaaaaa',
       address: '',

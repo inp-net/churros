@@ -72,10 +72,14 @@
 {/if}
 
 <section class="articles">
-  {#each data.homepage.edges as { node: { id, uid, pictureFile, group, ...rest } } (id)}
+  {#each data.homepage.edges as { node: { id, uid, pictureFile, group, reactionCounts, myReactions, event, ...rest } } (id)}
     <CardArticle
       {...rest}
+      {id}
       {group}
+      likes={reactionCounts['❤️'] ?? 0}
+      liked={myReactions['❤️']}
+      event={event ? { href: `/events/${event.group.uid}/${event.uid}`, ...event } : undefined}
       href="/posts/{group.uid}/{uid}/"
       img={pictureFile ? { src: `${env.PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
     />
@@ -100,8 +104,11 @@
   }
 
   section.articles {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2rem;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 2rem auto 0;
   }
 
   section.birthdays h2 {
