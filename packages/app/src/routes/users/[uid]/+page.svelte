@@ -120,7 +120,7 @@
         <div class="text">
           {user.firstName}
           {user.lastName}
-          {#if user.admin}<Badge title="Possède tout les droits" theme="info"><IconAdmin /></Badge>
+          {#if user.admin}<Badge title="Possède tous les droits" theme="info"><IconAdmin /></Badge>
           {/if}
         </div>
 
