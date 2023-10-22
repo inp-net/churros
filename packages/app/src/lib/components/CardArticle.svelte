@@ -198,6 +198,8 @@
 
   .group-link {
     flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
   }
 
   .group-logo:hover,
