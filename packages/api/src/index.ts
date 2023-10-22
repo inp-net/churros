@@ -17,7 +17,6 @@ import { prisma } from './prisma.js';
 import { schema, writeSchema } from './schema.js';
 import { markAsContributor } from './services/ldap.js';
 import { log } from './objects/logs.js';
-import { rescheduleNotifications } from './services/notifications.js';
 
 z.setErrorMap(customErrorMap);
 
@@ -324,4 +323,4 @@ webhook.listen(4001, () => {
   console.info('Webhook ready at http://localhost:4001');
 });
 
-await rescheduleNotifications();
+// await rescheduleNotifications();
