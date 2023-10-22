@@ -407,6 +407,7 @@ model Article {
   visibility  Visibility @default(Private)
   createdAt   DateTime   @default(now())
   publishedAt DateTime   @default(now())
+  notifiedAt  DateTime?  @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
   pictureFile String     @default("") @db.VarChar(255)
   links       Link[]
   comments    Comment[]
@@ -439,6 +440,7 @@ model Event {
   title          String         @db.VarChar(255)
   startsAt       DateTime
   endsAt         DateTime
+  notifiedAt  DateTime?  @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
   location       String         @default("") @db.VarChar(255)
   visibility     Visibility
   frequency      EventFrequency @default(Once)

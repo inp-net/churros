@@ -58,11 +58,15 @@ export async function scheduleNewArticleNotification({
   id,
   publishedAt,
   eager,
+  notifiedAt,
 }: {
   id: string;
   publishedAt: Date;
+  notifiedAt: Date | null;
   eager: boolean;
 }): Promise<Cron | boolean> {
+  if (notifiedAt) return false;
+
   const ellipsis = (text: string) =>
     `${text
       .split(
@@ -125,6 +129,14 @@ export async function scheduleNewArticleNotification({
           channel: NotificationChannel.Articles,
           goto: `/posts/${article.group.uid}/${article.uid}`,
         },
+        async afterSent() {
+          await prisma.article.update({
+            where: { id: article.id },
+            data: {
+              notifiedAt: new Date(),
+            },
+          });
+        },
       };
     },
     {
@@ -137,11 +149,14 @@ export async function scheduleNewArticleNotification({
 export async function scheduleShotgunNotifications({
   id,
   tickets,
+  notifiedAt,
 }: {
   id: string;
   tickets: Ticket[];
+  notifiedAt: Date | null;
 }): Promise<[Cron | boolean, Cron | boolean] | undefined> {
   if (tickets.length === 0) return;
+  if (notifiedAt) return;
   const soonDate = (date: Date) => subMinutes(date, 10);
 
   const opensAt = new Date(
@@ -244,6 +259,17 @@ export async function scheduleShotgunNotifications({
         if (registration) return;
       }
 
+      const setNotifiedAt = async () => {
+        const { id } = await prisma.event.update({
+          where: { id: event.id },
+          data: {
+            notifiedAt: new Date(),
+          },
+        });
+
+        console.info(`Set notifiedAt to ${id}`);
+      };
+
       const notification: PushNotification = {
         title: '',
         body: '',
@@ -283,7 +309,10 @@ export async function scheduleShotgunNotifications({
         }
       }
 
-      return notification;
+      return {
+        ...notification,
+        afterSent: setNotifiedAt,
+      };
     };
 
   return [
@@ -316,7 +345,7 @@ export async function scheduleNotification(
       major: Major & { schools: School[] };
       groups: Array<GroupMember & { group: Group }>;
     },
-  ) => MaybePromise<PushNotification | undefined>,
+  ) => MaybePromise<(PushNotification & { afterSent: () => Promise<void> }) | undefined>,
   {
     at,
     eager = false,
@@ -361,7 +390,11 @@ export async function scheduleNotification(
           `[cron ${id} @ ${user.uid}] Sending notification (time is ${at.toISOString()})`,
         );
         const notificationToSend = await notification(user);
-        if (notificationToSend) await notify([user], { tag: id, ...notificationToSend });
+        if (notificationToSend) {
+          const { afterSent, ...notificationData } = notificationToSend;
+          await notify([user], { tag: id, ...notificationData });
+          await afterSent();
+        }
       }
     },
   );
@@ -517,4 +550,28 @@ export function canSendNotificationToUser(
     subscriptionOwner.enabledNotificationChannels.includes(channel) ||
     subscriptionOwner.enabledNotificationChannels.length === 0
   );
+}
+
+export async function rescheduleNotifications() {
+  const unnotifiedEvents = await prisma.event.findMany({
+    // eslint-disable-next-line unicorn/no-null
+    where: { notifiedAt: null },
+    include: { tickets: true },
+  });
+
+  const unnotifiedArticles = await prisma.article.findMany({
+    // eslint-disable-next-line unicorn/no-null
+    where: { notifiedAt: null },
+  });
+
+  console.info(
+    `Rescheduling notifications for ${unnotifiedEvents.length} events and ${unnotifiedArticles.length} articles`,
+  );
+
+  await Promise.all([
+    ...unnotifiedEvents.map(async (event) => scheduleShotgunNotifications(event)),
+    ...unnotifiedArticles.map(async (article) =>
+      scheduleNewArticleNotification({ ...article, eager: true }),
+    ),
+  ]);
 }

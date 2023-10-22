@@ -254,6 +254,8 @@ builder.mutationField('upsertArticle', (t) =>
     ) {
       const old = await prisma.article.findUnique({ where: { id: id ?? '' } });
       const data = {
+        // eslint-disable-next-line unicorn/no-null
+        notifiedAt: null,
         author: {
           connect: {
             id: authorId,
