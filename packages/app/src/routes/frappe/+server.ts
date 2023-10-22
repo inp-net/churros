@@ -15,13 +15,13 @@ export const GET: RequestHandler = ({ locals, url, fetch }) => {
       {
         fetch,
         parent: async () =>
-          new Promise((resolve) =>
-            { resolve({
+          new Promise((resolve) => {
+            resolve({
               mobile: false,
               me,
               token: token ?? '',
-            }); },
-          ),
+            });
+          }),
       },
     );
   } catch (error) {

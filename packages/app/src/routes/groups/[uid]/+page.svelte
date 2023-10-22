@@ -267,15 +267,14 @@
     </h2>
 
     <ul class="nobullet">
-      {#each group.events.slice(0, 3) as { uid, ...event } (uid)}
+      {#each group.events.edges.slice(0, 3) as { node } (node.uid)}
         <!-- TODO CardEvent -->
         <CardArticle
           hideGroup
-          {group}
-          href="/events/{group.uid}/{uid}"
-          {...event}
-          publishedAt={event.startsAt}
-          bodyPreview={event.descriptionPreview}
+          {...node}
+          href="/events/{node.group.uid}/{node.uid}"
+          publishedAt={node.startsAt}
+          bodyPreview={node.descriptionPreview}
         />
       {/each}
     </ul>

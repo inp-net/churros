@@ -90,6 +90,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           reactionCounts: true,
           myReactions: true,
           articles: {
+            id: true,
             uid: true,
             bodyHtml: true,
             bodyPreview: true,
@@ -109,6 +110,8 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
               pictureFile: true,
             },
             createdAt: true,
+            myReactions: true,
+            reactionCounts: true,
           },
           author: {
             uid: true,

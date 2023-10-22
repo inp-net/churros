@@ -557,7 +557,7 @@ for (let i = 0; i < end; i++) {
 - Deux
 - Trois
 `,
-    visibility: i % 3 === 0 ? Visibility.Public : Visibility.Restricted,
+    visibility: i % 3 === 0 ? Visibility.Public : Visibility.GroupRestricted,
     published: i % 7 > 1,
     createdAt: new Date(startDate * (1 - i / end) + endDate * (i / end)),
     publishedAt: new Date(
@@ -686,7 +686,7 @@ await prisma.event.create({
     startsAt: new Date(),
     uid: 'passation-tvn7',
     title: 'Passation TVn7',
-    visibility: Visibility.Restricted,
+    visibility: Visibility.GroupRestricted,
     author: { connect: { uid: 'deuxtroisq' } },
     group: { connect: { uid: 'ski' } },
     links: {

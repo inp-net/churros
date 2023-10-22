@@ -462,7 +462,8 @@ model Event {
 enum Visibility {
   Private
   Unlisted
-  Restricted
+  GroupRestricted
+  SchoolRestricted
   Public
 }
 

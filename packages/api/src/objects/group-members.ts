@@ -20,9 +20,21 @@ export const GroupMemberType = builder.prismaObject('GroupMember', {
     treasurer: t.exposeBoolean('treasurer'),
     vicePresident: t.exposeBoolean('vicePresident'),
     secretary: t.exposeBoolean('secretary'),
-    canEditMembers: t.exposeBoolean('canEditMembers'),
-    canEditArticles: t.exposeBoolean('canEditArticles'),
-    canScanEvents: t.exposeBoolean('canScanEvents'),
+    canEditMembers: t.boolean({
+      resolve({ canEditMembers, ...roles }) {
+        return onBoard(roles) || canEditMembers;
+      },
+    }),
+    canEditArticles: t.boolean({
+      resolve({ canEditArticles, ...roles }) {
+        return onBoard(roles) || canEditArticles;
+      },
+    }),
+    canScanEvents: t.boolean({
+      resolve({ canScanEvents, ...roles }) {
+        return onBoard(roles) || canScanEvents;
+      },
+    }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     member: t.relation('member'),
     group: t.relation('group'),

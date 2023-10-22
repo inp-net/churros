@@ -53,7 +53,7 @@
   }));
 
   let loading = false;
-  const updateClub = async () => {
+  const submit = async () => {
     if (loading) return;
     try {
       loading = true;
@@ -98,7 +98,7 @@
   };
 </script>
 
-<form on:submit|preventDefault={updateClub}>
+<form on:submit|preventDefault={submit}>
   {#if !creatingSubgroup}
     <InputSelectOne
       label="Type de groupe"

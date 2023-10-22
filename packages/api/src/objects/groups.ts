@@ -16,12 +16,13 @@ import {
   levenshteinSorter,
   sanitizeOperators,
 } from '../services/search.js';
-import type { Context } from '../context.js';
+import { purgeUserSessions, type Context } from '../context.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { visibleArticlesPrismaQuery } from './articles.js';
-import { visibleEventsPrismaQuery } from './events.js';
+import { EventType, visibleEventsPrismaQuery } from './events.js';
 import { onBoard } from '../auth.js';
+import { log } from './logs.js';
 
 export function userIsInBureauOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
@@ -40,6 +41,23 @@ export function userIsPresidentOf(user: Context['user'], groupUid: string): bool
 export function userIsTreasurerOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
     user?.groups.some(({ group: { uid }, treasurer }) => uid === groupUid && treasurer),
+  );
+}
+
+export async function ancestorsOfGroup<T extends { familyId?: string | null; id: string }>(
+  ...groups: T[]
+) {
+  return (
+    prisma.group
+      // Get all groups in the same family as the user's groups
+      .findMany({
+        where: { familyId: { in: groups.map(({ id, familyId }) => familyId ?? id) } },
+        select: { id: true, parentId: true, uid: true },
+      })
+      // Get all ancestors of the groups
+      .then((gs) => mappedGetAncestors(gs, groups, { mappedKey: 'id' }))
+      // Flatten the ancestors into a single array
+      .then((groups) => groups.flat())
   );
 }
 
@@ -92,12 +110,25 @@ export const GroupType = builder.prismaNode('Group', {
     studentAssociation: t.relation('studentAssociation', { nullable: true }),
     parent: t.relation('parent', { nullable: true }),
     selfJoinable: t.exposeBoolean('selfJoinable'),
-    events: t.relation('events', {
+    ownEvents: t.relation('events', {
       query(_, { user }) {
         return {
           where: visibleEventsPrismaQuery(user),
           orderBy: { startsAt: 'desc' },
         };
+      },
+    }),
+    events: t.prismaConnection({
+      type: EventType,
+      cursor: 'id',
+      async resolve(_, { id }, {}, { user }) {
+        return prisma.event.findMany({
+          where: {
+            ...visibleEventsPrismaQuery(user),
+            OR: [{ groupId: id }, { coOrganizers: { some: { id } } }],
+          },
+          orderBy: { startsAt: 'desc' },
+        });
       },
     }),
     coOrganizedEvents: t.relation('coOrganizedEvents', {
@@ -110,6 +141,7 @@ export const GroupType = builder.prismaNode('Group', {
     }),
     children: t.relation('children'),
     root: t.relation('familyRoot', { nullable: true }),
+    familyChildren: t.relation('familyChildren'),
     related: t.relation('related'),
   }),
 });
@@ -265,11 +297,11 @@ builder.mutationField('upsertGroup', (t) =>
       selfJoinable: t.arg.boolean(),
       related: t.arg({ type: ['String'] }),
     },
-    async authScopes(_, { uid, type }, { user }) {
+    async authScopes(_, { uid, parentUid, type }, { user }) {
       if (!user) return false;
       const creating = !uid;
       const parentGroup = await prisma.group.findUnique({
-        where: { uid: uid ?? '' },
+        where: { uid: parentUid ?? '' },
         include: { members: true },
       });
       // allow board of parent group to create subgroups
@@ -312,6 +344,7 @@ builder.mutationField('upsertGroup', (t) =>
       },
       { user },
     ) {
+      if (!user) throw new GraphQLError("Vous n'êtes pas connecté·e");
       // --- First, we update the group's children's familyId according to the new parent of this group. ---
       // We have 2 possible cases for updating the parent: either it is:
       // - null (or set to ''): the group does not have a parent anymore;
@@ -407,15 +440,27 @@ builder.mutationField('upsertGroup', (t) =>
             : { disconnect: true },
         },
       });
-      await prisma.logEntry.create({
-        data: {
-          area: 'group',
-          action: uid ? 'update' : 'create',
-          target: group.uid,
-          message: `${uid ? 'Mise à jour' : 'Création'} de ${group.uid}`,
-          user: { connect: { id: user?.id } },
-        },
-      });
+      if ((await prisma.groupMember.count({ where: { groupId: group.id } })) === 0) {
+        await prisma.group.update({
+          where: { id: group.id },
+          data: {
+            members: {
+              create: {
+                president: true,
+                title: 'Prez',
+                member: {
+                  connect: {
+                    uid: user.uid,
+                  },
+                },
+              },
+            },
+          },
+        });
+        purgeUserSessions(user.uid);
+      }
+
+      await log('groups', uid ? 'update' : 'create', group, group.uid, user);
       return group;
     },
   }),
