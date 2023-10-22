@@ -531,14 +531,10 @@ builder.mutationField('upsertRegistration', (t) =>
         include: {
           event: {
             include: {
-              coOrganizers: true,
+              coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+              group: { include: { studentAssociation: { include: { school: true } } } },
               managers: { include: { user: true } },
               bannedUsers: true,
-              group: {
-                include: {
-                  studentAssociation: true,
-                },
-              },
             },
           },
           openToGroups: true,
@@ -794,7 +790,8 @@ builder.mutationField('paidRegistration', (t) =>
             include: {
               event: {
                 include: {
-                  coOrganizers: true,
+                  coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+                  group: { include: { studentAssociation: { include: { school: true } } } },
                   managers: { include: { user: true } },
                 },
               },

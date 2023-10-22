@@ -46,6 +46,8 @@
       ? `${env.PUBLIC_STORAGE_URL}${author?.pictureFile}`
       : ''
     : groupLogoSrc($isDark, group);
+
+  $: authorHref = hideGroup && author ? `/users/${author.uid}` : `/groups/${group.uid}`;
 </script>
 
 <div class="post-outer" class:future={isFuture(publishedAt)}>
@@ -56,18 +58,20 @@
   {/if}
   <a {href} class="post-link">
     <article class="post">
-      {#if authorSrc}
-        <img src={authorSrc} alt={group.name} class="group-logo" />
-      {:else}
-        <div class="group-logo no-logo"></div>
-      {/if}
+      <a href={authorHref} class="group-link">
+        {#if authorSrc}
+          <img src={authorSrc} alt={group.name} class="group-logo" />
+        {:else}
+          <div class="group-logo no-logo"></div>
+        {/if}
+      </a>
 
       <div class="content">
         <header>
           {#if hideGroup && author}
-            <strong class="group">{author.fullName}</strong>
+            <a href={authorHref} class="group">{author.fullName}</a>
           {:else if !hideGroup}
-            <strong class="group">{group.name}</strong>
+            <a href={authorHref} class="group">{group.name}</a>
           {/if}
           {#if !hideGroup || author}
             <span class="separator">·</span>
@@ -183,7 +187,6 @@
   }
 
   .group-logo {
-    flex-shrink: 0;
     grid-row: 1 / 2;
     width: 3rem;
     height: 3rem;
@@ -193,12 +196,30 @@
     object-fit: contain;
   }
 
+  .group-link {
+    flex-shrink: 0;
+  }
+
+  .group-logo:hover,
+  .group-logo:focus-visible {
+    border-color: var(--primary-link);
+  }
+
   header {
     display: flex;
     flex-wrap: wrap;
     column-gap: 0.5ch;
     align-items: center;
     margin-bottom: 0.25rem;
+  }
+
+  header a:hover,
+  header a:focus-visible {
+    color: var(--primary-link);
+  }
+
+  header .group {
+    font-weight: bold;
   }
 
   .visibility {

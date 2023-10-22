@@ -187,7 +187,8 @@ builder.queryField('ticket', (t) =>
         include: {
           event: {
             include: {
-              coOrganizers: true,
+              coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+              group: { include: { studentAssociation: { include: { school: true } } } },
               managers: {
                 include: {
                   user: true,
@@ -219,7 +220,8 @@ builder.queryField('ticketByUid', (t) =>
         include: {
           event: {
             include: {
-              coOrganizers: true,
+              coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+              group: { include: { studentAssociation: { include: { school: true } } } },
               managers: {
                 include: {
                   user: true,
@@ -333,9 +335,9 @@ builder.queryField('ticketsOfEvent', (t) =>
       const group = await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } });
       const event = await prisma.event.findUnique({
         where: { groupId_uid: { groupId: group.id, uid: eventUid } },
-
         include: {
-          coOrganizers: true,
+          coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+          group: { include: { studentAssociation: { include: { school: true } } } },
           managers: {
             include: {
               user: true,

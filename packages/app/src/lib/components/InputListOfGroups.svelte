@@ -29,6 +29,11 @@
           name: true,
           pictureFile: true,
           pictureFileDark: true,
+          studentAssociation: { school: { name: true } },
+          children: {
+            name: true,
+            studentAssociation: { school: { name: true } },
+          },
         },
       ],
     });

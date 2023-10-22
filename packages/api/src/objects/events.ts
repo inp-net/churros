@@ -545,7 +545,8 @@ builder.queryField('event', (t) =>
       const event = await prisma.event.findFirstOrThrow({
         where: { uid, group: { uid: groupUid } },
         include: {
-          coOrganizers: true,
+          coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+          group: { include: { studentAssociation: { include: { school: true } } } },
           managers: { include: { user: true } },
         },
       });
@@ -563,14 +564,23 @@ builder.queryField('events', (t) =>
     args: {
       future: t.arg.boolean({ required: false }),
       upcomingShotguns: t.arg.boolean({ required: false }),
+      noLinkedArticles: t.arg.boolean({ required: false }),
     },
-    async resolve(query, _, { future, upcomingShotguns }, { user }) {
+    async resolve(query, _, { future, upcomingShotguns, noLinkedArticles }, { user }) {
       future = future ?? false;
       upcomingShotguns = upcomingShotguns ?? false;
-      let dateCondition: Prisma.EventWhereInput = {};
+      let constraints: Prisma.EventWhereInput = {};
       if (future || upcomingShotguns) {
-        dateCondition = {
+        constraints = {
           startsAt: { gte: startOfDay(new Date()) },
+        };
+      }
+
+      if (noLinkedArticles) {
+        constraints = {
+          articles: {
+            none: {},
+          },
         };
       }
 
@@ -579,7 +589,7 @@ builder.queryField('events', (t) =>
           ...query,
           where: {
             visibility: VisibilityPrisma.Public,
-            ...dateCondition,
+            ...constraints,
           },
           orderBy: { startsAt: 'asc' },
         });
@@ -588,7 +598,7 @@ builder.queryField('events', (t) =>
       return prisma.event.findMany({
         ...query,
         where: {
-          ...dateCondition,
+          ...constraints,
           ...visibleEventsPrismaQuery(user),
         },
         orderBy: { startsAt: 'asc' },
@@ -1076,7 +1086,14 @@ builder.mutationField('upsertEvent', (t) =>
 export async function eventAccessibleByUser(
   event:
     | (EventPrisma & {
-        coOrganizers: Array<{ id: string; uid: string }>;
+        coOrganizers: Array<{
+          id: string;
+          uid: string;
+          studentAssociation?: null | { school: { uid: string } };
+        }>;
+        group: {
+          studentAssociation?: null | { school: { uid: string } };
+        };
         managers: Array<{
           user: { uid: string };
 
@@ -1094,6 +1111,17 @@ export async function eventAccessibleByUser(
     case Visibility.Public:
     case Visibility.Unlisted: {
       return true;
+    }
+
+    case Visibility.SchoolRestricted: {
+      if (!user) return false;
+      if (eventManagedByUser(event, user, {})) return true;
+      return Boolean(
+        [event.group, ...event.coOrganizers]
+          .map((g) => g.studentAssociation?.school.uid)
+          .filter(Boolean)
+          .some((schoolUid) => user.major.schools.some((s) => s.uid === schoolUid!)),
+      );
     }
 
     case Visibility.GroupRestricted: {
@@ -1200,7 +1228,8 @@ builder.queryField('searchEvents', (t) =>
             : {}),
         },
         include: {
-          coOrganizers: true,
+          coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+          group: { include: { studentAssociation: { include: { school: true } } } },
           managers: {
             include: {
               user: true,
@@ -1235,7 +1264,8 @@ builder.queryField('searchEvents', (t) =>
           ],
         },
         include: {
-          coOrganizers: true,
+          coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+          group: { include: { studentAssociation: { include: { school: true } } } },
           managers: {
             include: {
               user: true,
@@ -1248,7 +1278,8 @@ builder.queryField('searchEvents', (t) =>
         ...results.sort(levenshteinSorter(fuzzyIDs)),
         ...levenshteinFilterAndSort<
           Event & {
-            coOrganizers: Group[];
+            group: Group & { studentAssociation?: null | { school: { uid: string } } };
+            coOrganizers: Array<Group & { studentAssociation?: null | { school: { uid: string } } }>;
             managers: Array<EventManager & { user: { uid: string } }>;
           }
         >(
