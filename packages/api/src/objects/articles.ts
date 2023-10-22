@@ -78,11 +78,18 @@ export const ArticleType = builder.prismaNode('Article', {
   }),
 });
 
+/**
+ * Articles that the given user can see
+ * @param user the user
+ * @param level if 'wants', only return articles that the user _wants_ to see, if 'can', shows all the articles they have access to
+ * @returns a Prisma.ArticleWhereInput, an object to pass inside of a `where` field in a prisma query
+ */
 export function visibleArticlesPrismaQuery(
   user: { uid: string; canEditGroups: boolean } | undefined,
+  level: 'can' | 'wants',
 ): Prisma.ArticleWhereInput {
   // Get the user's groups and their ancestors
-  if (user?.canEditGroups) return {};
+  if (user?.canEditGroups && level === 'can') return {};
   return {
     OR: [
       {
@@ -191,7 +198,7 @@ builder.queryField('homepage', (t) =>
 
       return prisma.article.findMany({
         ...query,
-        where: visibleArticlesPrismaQuery(user),
+        where: visibleArticlesPrismaQuery(user, 'wants'),
         orderBy: { publishedAt: 'desc' },
       });
     },

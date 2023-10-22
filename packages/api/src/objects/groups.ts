@@ -88,7 +88,7 @@ export const GroupType = builder.prismaNode('Group', {
     articles: t.relation('articles', {
       query(_, { user }) {
         return {
-          where: visibleArticlesPrismaQuery(user),
+          where: visibleArticlesPrismaQuery(user, 'can'),
           orderBy: { publishedAt: 'desc' },
         };
       },
