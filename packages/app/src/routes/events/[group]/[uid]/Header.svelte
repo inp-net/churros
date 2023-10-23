@@ -8,8 +8,10 @@
   import IconWhen from '~icons/mdi/calendar-outline';
   import IconRepeat from '~icons/mdi/repeat';
   import { env } from '$env/dynamic/public';
-  import { EventFrequency } from '../../../../zeus';
+  import { EventFrequency, type Visibility } from '../../../../zeus';
   import { DISPLAY_EVENT_FREQUENCY } from '$lib/display';
+  import { DISPLAY_VISIBILITIES } from '$lib/display';
+  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
 
   export let title: string;
   export let startsAt: Date | undefined = undefined;
@@ -19,6 +21,7 @@
   export let frequency: EventFrequency;
   export let recurringUntil: Date | undefined = undefined;
   export let subtitle = '';
+  export let visibility: Visibility | undefined = undefined;
 
   onMount(() => {
     if (browser) document.querySelector('main')?.classList.add('fullsize');
@@ -73,6 +76,12 @@
     {/if}
     {#if subtitle}
       <p class="subtitle">{subtitle}</p>
+    {/if}
+    {#if visibility}
+      <p class="visibility">
+        <IndicatorVisibility {visibility} />
+        {DISPLAY_VISIBILITIES[visibility]}
+      </p>
     {/if}
   </div>
 </header>
