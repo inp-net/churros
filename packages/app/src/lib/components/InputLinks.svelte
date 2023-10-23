@@ -123,7 +123,7 @@
                     title="Modifier les remplacements"
                     on:click={() => {
                       for (const [key, value] of url.searchParams)
-                        if (/^\[.*]$/.test(value)) replacements[key] = value.replace(/^\[|]$/g, '');
+                        if (/^\[.*]$/.test(value)) replacements[key] = value.replaceAll(/^\[|]$/g, '');
 
                       editingComputedLink = link.name;
                     }}
@@ -264,6 +264,7 @@
 
   .inputs input {
     padding: 0.25rem 0;
+    color: var(--text);
     background: transparent;
     border: none;
   }

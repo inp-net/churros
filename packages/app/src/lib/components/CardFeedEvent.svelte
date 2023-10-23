@@ -221,6 +221,10 @@
     object-fit: contain;
   }
 
+  article:hover .group-logo {
+    background: var(--hover-bg);
+  }
+
   .group-logo-link {
     flex-shrink: 0;
     transition: all 0.25s ease;
