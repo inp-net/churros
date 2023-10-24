@@ -95,6 +95,8 @@ export function visibleEventsPrismaQuery(
                 school: { majors: { some: { students: { some: { uid: user?.uid ?? '' } } } } },
               },
             },
+          },
+          {
             coOrganizers: {
               some: {
                 studentAssociation: {
@@ -109,6 +111,7 @@ export function visibleEventsPrismaQuery(
       },
       // GroupRestricted events in the user's groups
       {
+        visibility: VisibilityPrisma.GroupRestricted,
         OR: [
           // TODO does not work for sub-sub groups
           {
@@ -125,7 +128,6 @@ export function visibleEventsPrismaQuery(
             coOrganizers: { some: { members: { some: { member: { uid: user?.uid ?? '' } } } } },
           },
         ],
-        visibility: VisibilityPrisma.GroupRestricted,
       },
       // Unlisted events that the user booked
       {
@@ -1279,7 +1281,9 @@ builder.queryField('searchEvents', (t) =>
         ...levenshteinFilterAndSort<
           Event & {
             group: Group & { studentAssociation?: null | { school: { uid: string } } };
-            coOrganizers: Array<Group & { studentAssociation?: null | { school: { uid: string } } }>;
+            coOrganizers: Array<
+              Group & { studentAssociation?: null | { school: { uid: string } } }
+            >;
             managers: Array<EventManager & { user: { uid: string } }>;
           }
         >(
