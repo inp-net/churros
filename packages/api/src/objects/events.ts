@@ -355,6 +355,7 @@ export const EventType = builder.prismaNode('Event', {
       type: DateTimeScalar,
       nullable: true,
       async resolve({ id }, _, { user }) {
+        if (!user) return;
         const tickets = await prisma.ticket.findMany({
           where: { event: { id } },
           include: {
