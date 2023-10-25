@@ -331,6 +331,10 @@ maintenance.get('/', (_, res) => {
   );
 });
 
+maintenance.get('/*', (_, res) => {
+  res.redirect('/');
+});
+
 maintenance.listen(4002, () => {
   console.info('Maintenance page server listening at http://localhost:4002');
 });
