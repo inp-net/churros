@@ -1,10 +1,12 @@
-import { sessionUserQuery } from '$lib/session';
+import { aled, sessionUserQuery } from '$lib/session';
 import { chain } from '$lib/zeus';
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 
 export const handle: Handle = async ({ event, resolve }) => {
-  const { token } = cookie.parse(event.request.headers.get('Cookie') ?? '');
+  const cookieData = cookie.parse(event.request.headers.get('Cookie') ?? '');
+  aled('hooks.server.ts: handle: parsed cookie from tokens', cookieData);
+  const { token } = cookieData;
   if (token) {
     try {
       const { me } = await chain(fetch, { token })('query')({
@@ -12,6 +14,7 @@ export const handle: Handle = async ({ event, resolve }) => {
       });
       event.locals.token = token;
       event.locals.me = me;
+      aled('hooks.server.ts: handle: setting locals on event', event);
     } catch {}
   }
 
@@ -23,6 +26,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   // Delete invalid token
   if (token && !event.locals.me) {
+    aled('hooks.server.ts: handle: deleting invalid token');
     response.headers.append(
       'Set-Cookie',
       cookie.serialize('token', '', { expires: new Date(0), path: '/', sameSite: 'strict' }),
@@ -40,6 +44,8 @@ export const handleFetch: HandleFetch = async ({ request, fetch }) => {
       request,
     );
   }
+
+  aled('hooks.server.ts: handleFetch', request);
 
   return fetch(request).catch(() => {
     throw new TypeError('Impossible de joindre le serveur.');
