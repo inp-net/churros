@@ -30,10 +30,9 @@ builder.queryField('comments', (t) =>
   t.prismaConnection({
     type: CommentType,
     cursor: 'id',
-    authScopes: () => false,
-    // authScopes(_, {}, { user }) {
-    //   return Boolean(user);
-    // },
+    authScopes(_, {}, { user }) {
+      return Boolean(user);
+    },
     async resolve(query) {
       return prisma.comment.findMany({
         ...query,
@@ -49,10 +48,9 @@ builder.queryField('comment', (t) =>
     args: {
       id: t.arg.id(),
     },
-    authScopes: () => false,
-    // authScopes(_, {}, { user }) {
-    //   return Boolean(user);
-    // },
+    authScopes(_, {}, { user }) {
+      return Boolean(user);
+    },
     async resolve(query, _, { id }) {
       return prisma.comment.findUniqueOrThrow({
         ...query,
