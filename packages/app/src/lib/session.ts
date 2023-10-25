@@ -80,7 +80,7 @@ export const saveSessionToken = (
 export function aled(...o: unknown[]) {
   // eslint-disable-next-line no-console
   console.log(o);
-  void fetch(`https://churros.inpt.fr/log?message=${encodeURIComponent(JSON.stringify(o))}`);
+  // void fetch(`https://churros.inpt.fr/log?message=${encodeURIComponent(JSON.stringify(o))}`);
 }
 
 /** Returns a temporary redirect object. */
