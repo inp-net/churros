@@ -62,17 +62,19 @@ builder.mutationField('upsertReaction', (t) =>
       commentId: t.arg.id({ required: false }),
       eventId: t.arg.id({ required: false }),
     },
-    authScopes(_, { articleId, documentId, eventId }, { user }) {
-      if (!user) return false;
-      return Boolean(
-        user?.admin ||
-          // TODO only allow for articles the user can see
-          articleId /* && true */ ||
-          // TODO only allow for events the user can see
-          eventId /* && true */ ||
-          (documentId && user?.canAccessDocuments),
-      );
-    },
+    authScopes: () => false,
+    // authScopes(_, { articleId, documentId, eventId }, { user }) {
+    //   return false;
+    //   if (!user) return false;
+    //   return Boolean(
+    //     user?.admin ||
+    //       // TODO only allow for articles the user can see
+    //       articleId /* && true */ ||
+    //       // TODO only allow for events the user can see
+    //       eventId /* && true */ ||
+    //       (documentId && user?.canAccessDocuments),
+    //   );
+    // },
     async resolve(query, { id, emoji, documentId, articleId, commentId, eventId }, { user }) {
       const upsertData = {
         emoji,
@@ -124,20 +126,22 @@ builder.mutationField('deleteReaction', (t) =>
       commentId: t.arg.id({ required: false }),
       eventId: t.arg.id({ required: false }),
     },
-    async authScopes(_, { emoji, documentId, articleId, commentId, eventId }, { user }) {
-      if (!user) return false;
-      const reaction = await prisma.reaction.findFirst({
-        where: {
-          emoji,
-          documentId,
-          articleId,
-          commentId,
-          eventId,
-          authorId: user.id,
-        },
-      });
-      return Boolean(user?.admin || reaction?.authorId === user?.id);
-    },
+    authScopes: () => false,
+    // async authScopes(_, { emoji, documentId, articleId, commentId, eventId }, { user }) {
+    //   return false;
+    //   if (!user) return false;
+    //   const reaction = await prisma.reaction.findFirst({
+    //     where: {
+    //       emoji,
+    //       documentId,
+    //       articleId,
+    //       commentId,
+    //       eventId,
+    //       authorId: user.id,
+    //     },
+    //   });
+    //   return Boolean(user?.admin || reaction?.authorId === user?.id);
+    // },
     async resolve(_query, { emoji, documentId, articleId, commentId, eventId }, { user }) {
       await log(
         'reactions',
@@ -171,19 +175,21 @@ builder.mutationField('toggleReaction', (t) =>
       commentId: t.arg.id({ required: false }),
       eventId: t.arg.id({ required: false }),
     },
-    authScopes(_, { documentId, articleId, commentId, eventId }, { user }) {
-      if (!user) return false;
-      return Boolean(
-        user?.admin ||
-          // TODO only allow for articles the user can see
-          articleId /* && true */ ||
-          // TODO only allow for events the user can see
-          eventId /* && true */ ||
-          // TODO only allow for comments on stuff the user can see
-          commentId /* && true */ ||
-          (documentId && user?.canAccessDocuments),
-      );
-    },
+    authScopes: () => false,
+    // authScopes(_, { documentId, articleId, commentId, eventId }, { user }) {
+    //   return false;
+    //   if (!user) return false;
+    //   return Boolean(
+    //     user?.admin ||
+    //       // TODO only allow for articles the user can see
+    //       articleId /* && true */ ||
+    //       // TODO only allow for events the user can see
+    //       eventId /* && true */ ||
+    //       // TODO only allow for comments on stuff the user can see
+    //       commentId /* && true */ ||
+    //       (documentId && user?.canAccessDocuments),
+    //   );
+    // },
     async resolve(_query, { emoji, documentId, articleId, commentId, eventId }, { user }) {
       await log(
         'reactions',

@@ -53,7 +53,8 @@ builder.mutationField('requestEmailChange', (t) =>
     args: {
       email: t.arg.string(),
     },
-    authScopes: { loggedIn: true },
+    // authScopes: { loggedIn: true },
+    authScopes: () => false,
     async resolve(_, { email }, { user }) {
       if (!user) throw new GraphQLError('Not logged in');
       await requestEmailChange(email, user.id);
@@ -69,6 +70,7 @@ builder.mutationField('validateEmail', (t) =>
     args: {
       token: t.arg.string(),
     },
+    authScopes: () => false,
     async resolve(_, { token }) {
       const id = `${TYPENAMES_TO_ID_PREFIX['EmailChange']!}:${token.toLowerCase()}`;
       // prisma errors out if the email validation is not found

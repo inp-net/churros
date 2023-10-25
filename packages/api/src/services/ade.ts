@@ -24,6 +24,7 @@ export async function nextExamDates(user: {
 
 builder.mutationField('updateSubjectsExamDates', (t) =>
   t.boolean({
+    authScopes: () => false,
     async resolve(_, {}, { user }) {
       if (!user) return false;
       let examDates: Awaited<ReturnType<typeof nextExamDates>>;

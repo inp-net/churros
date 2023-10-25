@@ -9,6 +9,7 @@ builder.mutationField('createGitlabIssue', (t) =>
       isBug: t.arg.boolean(),
     },
     authScopes: () => true,
+    // authScopes: () => false,
     async resolve(_, { title, description, isBug }, { user }) {
       let hasGitlabAccount = false;
       if (user) {

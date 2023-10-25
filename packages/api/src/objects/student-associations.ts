@@ -89,9 +89,11 @@ builder.mutationField('contribute', (t) =>
       optionId: t.arg.id(),
       phone: t.arg.string(),
     },
-    authScopes(_, {}, { user }) {
-      return Boolean(user);
-    },
+    authScopes: () => false,
+    // authScopes(_, {}, { user }) {
+    //   return false;
+    //   return Boolean(user);
+    // },
     async resolve(_, { optionId, phone }, { user }) {
       if (!user) return false;
 
@@ -178,9 +180,11 @@ builder.mutationField('cancelPendingContribution', (t) =>
     args: {
       optionId: t.arg.id(),
     },
-    authScopes(_, {}, { user }) {
-      return Boolean(user);
-    },
+    authScopes: () => false,
+    // authScopes(_, {}, { user }) {
+    //   return false;
+    //   return Boolean(user);
+    // },
     async resolve(_, { optionId }, { user }) {
       if (!user) return false;
 

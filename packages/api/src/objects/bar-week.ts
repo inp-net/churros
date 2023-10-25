@@ -3,7 +3,7 @@ import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
 import { DateTimeScalar } from './scalars.js';
-import { userIsInBureauOf } from './groups.js';
+// import { userIsInBureauOf } from './groups.js';
 import { GraphQLError } from 'graphql';
 
 export const BarWeekType = builder.prismaNode('BarWeek', {
@@ -75,11 +75,13 @@ builder.mutationField('upsertBarWeek', (t) =>
       description: t.arg.string(),
       groupsUids: t.arg({ type: ['String'] }),
     },
-    authScopes(_, {}, { user }) {
-      // Only members of a certain group(s) can upsert a bar week
-      const foyGroupsUids = process.env['FOY_GROUPS']?.split(',') ?? [];
-      return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
-    },
+    authScopes: () => false,
+    // authScopes(_, {}, { user }) {
+    //   return false
+    //   // Only members of a certain group(s) can upsert a bar week
+    //   const foyGroupsUids = process.env['FOY_GROUPS']?.split(',') ?? [];
+    //   return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
+    // },
     async resolve(query, _, { id, startsAt, endsAt, description, groupsUids }, { user }) {
       // Check if ends at date is after starts at date
       if (endsAt < startsAt) throw new GraphQLError('Bar week ends before it starts.');
@@ -135,11 +137,13 @@ builder.mutationField('deleteBarWeek', (t) =>
   t.field({
     type: 'Boolean',
     args: { id: t.arg.id() },
-    authScopes(_, {}, { user }) {
-      // Only members of a certain group(s) can upsert a bar week
-      const foyGroupsUids = process.env['FOY_GROUPS']?.split(',') ?? [];
-      return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
-    },
+    authScopes: () => false,
+    // authScopes(_, {}, { user }) {
+    //   return false
+    //   // Only members of a certain group(s) can upsert a bar week
+    //   const foyGroupsUids = process.env['FOY_GROUPS']?.split(',') ?? [];
+    //   return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
+    // },
     async resolve(_, { id }, { user }) {
       await prisma.barWeek.delete({ where: { id } });
       await prisma.logEntry.create({

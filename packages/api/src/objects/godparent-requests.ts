@@ -68,10 +68,12 @@ builder.mutationField('upsertGodparentRequest', (t) =>
       godchildUid: t.arg.string(),
       godparentUid: t.arg.string(),
     },
-    authScopes(_, { godchildUid }, { user }) {
-      if (godchildUid !== user?.uid) return Boolean(user?.admin || user?.canEditUsers);
-      return Boolean(user);
-    },
+    authScopes: () => false,
+    // authScopes(_, { godchildUid }, { user }) {
+    //   return false
+    //   if (godchildUid !== user?.uid) return Boolean(user?.admin || user?.canEditUsers);
+    //   return Boolean(user);
+    // },
     async resolve(query, _, { id, godparentUid, godchildUid }, { user }) {
       if (!user) throw new GraphQLError('Not logged in');
       const godparent = await prisma.user.findUniqueOrThrow({ where: { uid: godparentUid } });
@@ -126,23 +128,25 @@ builder.mutationField('deleteGodparentRequest', (t) =>
       id: t.arg.id(),
       accept: t.arg.boolean(),
     },
-    async authScopes(_, { id, accept }, { user }) {
-      if (!user) return false;
-      if (user.admin || user.canEditUsers) return true;
-      const request = await prisma.godparentRequest.findUnique({
-        where: {
-          id,
-        },
-      });
-      if (!request) return false;
-      if (accept) {
-        // Only the godparent can accept requests from godchildren
-        return request.godparentId === user.id;
-      }
+    authScopes: () => false,
+    // async authScopes(_, { id, accept }, { user }) {
+    //   return false
+    //   if (!user) return false;
+    //   if (user.admin || user.canEditUsers) return true;
+    //   const request = await prisma.godparentRequest.findUnique({
+    //     where: {
+    //       id,
+    //     },
+    //   });
+    //   if (!request) return false;
+    //   if (accept) {
+    //     // Only the godparent can accept requests from godchildren
+    //     return request.godparentId === user.id;
+    //   }
 
-      // Both of them can refuse (/cancel) requests
-      return [request.godchildId, request.godparentId].includes(user.id);
-    },
+    //   // Both of them can refuse (/cancel) requests
+    //   return [request.godchildId, request.godparentId].includes(user.id);
+    // },
     async resolve(_query, _, { id, accept }) {
       const request = await prisma.godparentRequest.delete({
         where: { id },

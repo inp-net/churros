@@ -26,6 +26,7 @@ builder.mutationField('createPasswordReset', (t) =>
     args: {
       email: t.arg.string(),
     },
+    authScopes: () => false,
     async resolve(_, { email }) {
       const result = await prisma.passwordReset.create({
         data: {
@@ -70,8 +71,9 @@ builder.mutationField('usePasswordReset', (t) =>
       token: t.arg.string(),
       newPassword: t.arg.string(),
     },
+    authScopes: () => false,
     async resolve(_, { token, newPassword }) {
-      const id = `${TYPENAMES_TO_ID_PREFIXES['PasswordReset']!}:${token.toLowerCase()}`;
+      const id = `${TYPENAMES_TO_ID_PREFIXES.PasswordReset!}:${token.toLowerCase()}`;
       const reset = await prisma.passwordReset.findUniqueOrThrow({
         where: { id },
         include: {
@@ -135,18 +137,20 @@ builder.mutationField('resetPassword', (t) =>
       newPassword: t.arg.string(),
       disconnectAll: t.arg.boolean(),
     },
-    authScopes(_, { uid }, { user }) {
-      const result = Boolean(user?.admin || uid === user?.uid);
-      if (!result) {
-        console.error(
-          `Cannot edit password: ${uid} =?= ${user?.uid ?? '<none>'} OR ${JSON.stringify(
-            user?.admin,
-          )}`,
-        );
-      }
+    authScopes: () => false,
+    // authScopes(_, { uid }, { user }) {
+    //   return false;
+    //   const result = Boolean(user?.admin || uid === user?.uid);
+    //   if (!result) {
+    //     console.error(
+    //       `Cannot edit password: ${uid} =?= ${user?.uid ?? '<none>'} OR ${JSON.stringify(
+    //         user?.admin,
+    //       )}`,
+    //     );
+    //   }
 
-      return result;
-    },
+    //   return result;
+    // },
     async resolve(_, { uid, oldPassword, newPassword, disconnectAll }, { user }) {
       const userEdited = await prisma.user.findUniqueOrThrow({
         where: { uid },

@@ -297,31 +297,33 @@ builder.mutationField('upsertGroup', (t) =>
       selfJoinable: t.arg.boolean(),
       related: t.arg({ type: ['String'] }),
     },
-    async authScopes(_, { uid, parentUid, type }, { user }) {
-      if (!user) return false;
-      const creating = !uid;
-      const parentGroup = await prisma.group.findUnique({
-        where: { uid: parentUid ?? '' },
-        include: { members: true },
-      });
-      // allow board of parent group to create subgroups
-      if (creating) {
-        return Boolean(
-          user?.canEditGroups ||
-            (type === GroupPrismaType.Group &&
-              parentGroup?.members.some(
-                ({ memberId, ...permissions }) => memberId === user?.id && onBoard(permissions),
-              )),
-        );
-      }
+    authScopes: () => false,
+    // async authScopes(_, { uid, parentUid, type }, { user }) {
+    //   return false
+    //   if (!user) return false;
+    //   const creating = !uid;
+    //   const parentGroup = await prisma.group.findUnique({
+    //     where: { uid: parentUid ?? '' },
+    //     include: { members: true },
+    //   });
+    //   // allow board of parent group to create subgroups
+    //   if (creating) {
+    //     return Boolean(
+    //       user?.canEditGroups ||
+    //         (type === GroupPrismaType.Group &&
+    //           parentGroup?.members.some(
+    //             ({ memberId, ...permissions }) => memberId === user?.id && onBoard(permissions),
+    //           )),
+    //     );
+    //   }
 
-      return Boolean(
-        user?.canEditGroups ||
-          (user?.groups ?? []).some(
-            ({ group, ...permissions }) => group.uid === uid && onBoard(permissions),
-          ),
-      );
-    },
+    //   return Boolean(
+    //     user?.canEditGroups ||
+    //       (user?.groups ?? []).some(
+    //         ({ group, ...permissions }) => group.uid === uid && onBoard(permissions),
+    //       ),
+    //   );
+    // },
     // eslint-disable-next-line complexity
     async resolve(
       query,
@@ -471,11 +473,14 @@ builder.mutationField('deleteGroup', (t) =>
   t.field({
     type: 'Boolean',
     args: { uid: t.arg.string() },
-    authScopes: (_, { uid }, { user }) =>
-      Boolean(
-        user?.canEditGroups ||
-          user?.groups.some(({ group, president }) => president && group.uid === uid),
-      ),
+    authScopes: () => false,
+    // authScopes: (_, { uid }, { user }) => {
+    //   return false
+    //   Boolean(
+    //     user?.canEditGroups ||
+    //       user?.groups.some(({ group, president }) => president && group.uid === uid),
+    //   )
+    // },
     async resolve(_, { uid }, { user }) {
       await prisma.group.delete({ where: { uid } });
       await prisma.logEntry.create({
@@ -501,8 +506,11 @@ builder.mutationField('updateGroupPicture', (t) =>
       file: t.arg({ type: FileScalar }),
       dark: t.arg.boolean(),
     },
-    authScopes: (_, { uid }, { user }) =>
-      Boolean(user?.canEditGroups || user?.groups.some(({ group }) => group.uid === uid)),
+    authScopes: () => false,
+    // authScopes: (_, { uid }, { user }) => {
+    //   return false
+    //   Boolean(user?.canEditGroups || user?.groups.some(({ group }) => group.uid === uid))
+    // },
     async resolve(_, { uid, file, dark }, { user }) {
       const picture = updatePicture({
         resource: 'group',
@@ -531,7 +539,11 @@ builder.mutationField('deleteGroupPicture', (t) =>
   t.field({
     type: 'Boolean',
     args: { uid: t.arg.string(), dark: t.arg.boolean() },
-    authScopes: (_, { uid }, { user }) => Boolean(user?.canEditGroups || uid === user?.uid),
+    authScopes: () => false,
+    // authScopes: (_, { uid }, { user }) => {
+    //   return false
+    //   Boolean(user?.canEditGroups || uid === user?.uid)
+    // },
     async resolve(_, { uid, dark }, { user }) {
       const { pictureFile } = await prisma.group.findUniqueOrThrow({
         where: { uid },
