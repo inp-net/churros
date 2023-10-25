@@ -57,10 +57,12 @@ builder.mutationField('mergeDocuments', (t) =>
       from: t.arg.idList({ required: true }),
       into: t.arg.id({ required: true }),
     },
-    authScopes(_, {}, { user }) {
-      return Boolean(user?.admin);
-    },
+    authScopes: () => false,
+    // authScopes(_, {}, { user }) {
+    //   return Boolean(user?.admin);
+    // },
     async resolve(query, { from, into }, { user }) {
+      return false
       await log('documents', 'merge', { from }, into, user);
       let sources = await prisma.document.findMany({
         where: { id: { in: from } },
@@ -208,9 +210,11 @@ builder.mutationField('upsertDocument', (t) =>
       subjectForApprentices: t.arg.boolean({ required: true }),
       type: t.arg({ type: DocumentEnumType, required: true }),
     },
-    authScopes(_, {}, { user }) {
-      return Boolean(user?.admin || user?.canAccessDocuments);
-    },
+    authScopes: () => false,
+    // authScopes(_, {}, { user }) {
+    //   return false
+    //   return Boolean(user?.admin || user?.canAccessDocuments);
+    // },
     async resolve(
       query,
       _,
@@ -261,13 +265,15 @@ builder.mutationField('deleteDocument', (t) =>
     args: {
       id: t.arg.id(),
     },
-    async authScopes(_, { id }, { user }) {
-      const author = await prisma.document.findUnique({
-        where: { id },
-        select: { uploaderId: true },
-      });
-      return Boolean(user?.admin || user?.id === author?.uploaderId);
-    },
+    authScopes: () => false,
+    // async authScopes(_, { id }, { user }) {
+    //   return false
+    //   const author = await prisma.document.findUnique({
+    //     where: { id },
+    //     select: { uploaderId: true },
+    //   });
+    //   return Boolean(user?.admin || user?.id === author?.uploaderId);
+    // },
     async resolve(_, { id }, { user }) {
       const document = await prisma.document.findUniqueOrThrow({ where: { id } });
       await log('documents', 'delete', document, id, user);
@@ -300,12 +306,14 @@ builder.mutationField('uploadDocumentFile', (t) =>
       file: t.arg({ type: FileScalar, required: true }),
       solution: t.arg.boolean(),
     },
-    async authScopes(_, { documentId }, { user }) {
-      const document = await prisma.document.findUniqueOrThrow({
-        where: { id: documentId },
-      });
-      return Boolean(user?.admin || document.uploaderId === user?.id);
-    },
+    authScopes: () => false,
+    // async authScopes(_, { documentId }, { user }) {
+    //   return false
+    //   const document = await prisma.document.findUniqueOrThrow({
+    //     where: { id: documentId },
+    //   });
+    //   return Boolean(user?.admin || document.uploaderId === user?.id);
+    // },
     async resolve(_, { documentId, file, solution }) {
       const document = await prisma.document.findUniqueOrThrow({
         where: { id: documentId },
@@ -340,12 +348,14 @@ builder.mutationField('setDocumentFileIsSolution', (t) =>
       filename: t.arg.string({ required: true }),
       isSolution: t.arg.boolean({ required: true }),
     },
-    async authScopes(_, { documentId }, { user }) {
-      const document = await prisma.document.findUniqueOrThrow({
-        where: { id: documentId },
-      });
-      return Boolean(user?.admin || document.uploaderId === user?.id);
-    },
+    authScopes: () => false,
+    // async authScopes(_, { documentId }, { user }) {
+    //   return false
+    //   const document = await prisma.document.findUniqueOrThrow({
+    //     where: { id: documentId },
+    //   });
+    //   return Boolean(user?.admin || document.uploaderId === user?.id);
+    // },
     async resolve(_, { documentId, filename, isSolution }) {
       const document = await prisma.document.findUniqueOrThrow({
         where: { id: documentId },
@@ -396,12 +406,14 @@ builder.mutationField('deleteDocumentFile', (t) =>
       documentId: t.arg.id({ required: true }),
       filename: t.arg.string({ required: true }),
     },
-    async authScopes(_, { documentId }, { user }) {
-      const document = await prisma.document.findUniqueOrThrow({
-        where: { id: documentId },
-      });
-      return Boolean(user?.admin || document.uploaderId === user?.id);
-    },
+    authScopes: () => false,
+    // async authScopes(_, { documentId }, { user }) {
+    //   return false
+    //   const document = await prisma.document.findUniqueOrThrow({
+    //     where: { id: documentId },
+    //   });
+    //   return Boolean(user?.admin || document.uploaderId === user?.id);
+    // },
     async resolve(_, { documentId, filename }) {
       const document = await prisma.document.findUniqueOrThrow({
         where: { id: documentId },

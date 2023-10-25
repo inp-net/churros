@@ -28,9 +28,10 @@ builder.queryField('announcements', (t) =>
   t.prismaConnection({
     type: AnnouncementType,
     cursor: 'id',
-    authScopes() {
-      return true;
-    },
+    authScopes: () => false,
+    // authScopes() {
+    //   return true;
+    // },
     async resolve(query) {
       return prisma.announcement.findMany({
         ...query,
@@ -91,9 +92,10 @@ builder.mutationField('upsertAnnouncement', (t) =>
       endsAt: t.arg({ type: DateTimeScalar }),
       warning: t.arg.boolean(),
     },
-    authScopes(_, {}, { user }) {
-      return Boolean(user?.admin);
-    },
+    authScopes: () => false,
+    // authScopes(_, {}, { user }) {
+    //   return Boolean(user?.admin);
+    // },
     async resolve(query, _, { id, title, body, startsAt, endsAt, warning }, { user }) {
       const upsertData = {
         title,
@@ -131,9 +133,11 @@ builder.mutationField('deleteAnnouncement', (t) =>
     args: {
       id: t.arg.id(),
     },
-    authScopes(_, {}, { user }) {
-      return Boolean(user?.admin);
-    },
+    authScopes: () => false,
+    // authScopes(_, {}, { user }) {
+    //   return false
+    //   // return Boolean(user?.admin);
+    // },
     async resolve(_, { id }, { user }) {
       await prisma.announcement.delete({
         where: { id },

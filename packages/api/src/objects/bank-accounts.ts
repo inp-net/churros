@@ -38,10 +38,13 @@ builder.mutationField('upsertLydiaAccount', (t) =>
       privateToken: t.arg.string(),
       vendorToken: t.arg.string(),
     },
-    authScopes: (_, { groupUid }, { user }) =>
-      Boolean(
-        user?.admin || userIsPresidentOf(user, groupUid) || userIsTreasurerOf(user, groupUid),
-      ),
+    authScopes: () => false,
+    // authScopes: (_, { groupUid }, { user }) => {
+    //   return false
+    //   return Boolean(
+    //     user?.admin || userIsPresidentOf(user, groupUid) || userIsTreasurerOf(user, groupUid),
+    //   )
+    // },
     async resolve(query, _, { id, groupUid, name, privateToken, vendorToken }, { user }) {
       await checkLydiaAccount(vendorToken, privateToken);
       const data = {
