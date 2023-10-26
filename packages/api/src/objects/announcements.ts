@@ -28,9 +28,10 @@ builder.queryField('announcements', (t) =>
   t.prismaConnection({
     type: AnnouncementType,
     cursor: 'id',
-    authScopes() {
-      return true;
-    },
+    authScopes: () => false,
+    // authScopes() {
+    //   return true;
+    // },
     async resolve(query) {
       return prisma.announcement.findMany({
         ...query,
