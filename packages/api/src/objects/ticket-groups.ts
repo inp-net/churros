@@ -1,6 +1,6 @@
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
-// import { eventManagedByUser } from './events.js';
+import { eventManagedByUser } from './events.js';
 
 export const TicketGroupType = builder.prismaNode('TicketGroup', {
   id: { field: 'id' },
@@ -42,50 +42,48 @@ builder.mutationField('upsertTicketGroup', (t) =>
       eventId: t.arg.id(),
       tickets: t.arg({ type: ['ID'] }),
     },
-    authScopes: () => false,
-    // async authScopes(_, { tickets: ticketIDs, id, eventId }, { user }) {
-    //   return false;
-    //   // Make sure that the tickets added to that group all exists and are part of events managed by the user
-    //   const ticketGroup = await prisma.ticketGroup.findFirst({
-    //     where: { id: id ?? '' },
-    //     include: {
-    //       event: {
-    //         include: {
-    //           managers: {
-    //             include: {
-    //               user: true,
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   });
-    //   const event = await prisma.event.findUnique({
-    //     where: { id: eventId },
-    //     include: { managers: { include: { user: true } } },
-    //   });
-    //   const tickets = await prisma.ticket.findMany({
-    //     where: { id: { in: ticketIDs } },
-    //     include: { event: { include: { managers: { include: { user: true } } } } },
-    //   });
-    //   const events = [ticketGroup, ...tickets]
-    //     .map((tg) => tg?.event)
-    //     // remove empties
-    //     .filter(Boolean)
-    //     // remove duplicates (sort by ID and remove consecutive duplicates)
-    //     .sort((a, b) => a!.id.localeCompare(b!.id))
-    //     .filter((e, i, arr) => !i || e!.id !== arr[i - 1]?.id);
+    async authScopes(_, { tickets: ticketIDs, id, eventId }, { user }) {
+      // Make sure that the tickets added to that group all exists and are part of events managed by the user
+      const ticketGroup = await prisma.ticketGroup.findFirst({
+        where: { id: id ?? '' },
+        include: {
+          event: {
+            include: {
+              managers: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      const event = await prisma.event.findUnique({
+        where: { id: eventId },
+        include: { managers: { include: { user: true } } },
+      });
+      const tickets = await prisma.ticket.findMany({
+        where: { id: { in: ticketIDs } },
+        include: { event: { include: { managers: { include: { user: true } } } } },
+      });
+      const events = [ticketGroup, ...tickets]
+        .map((tg) => tg?.event)
+        // remove empties
+        .filter(Boolean)
+        // remove duplicates (sort by ID and remove consecutive duplicates)
+        .sort((a, b) => a!.id.localeCompare(b!.id))
+        .filter((e, i, arr) => !i || e!.id !== arr[i - 1]?.id);
 
-    //   if (!events.every(Boolean)) return false;
+      if (!events.every(Boolean)) return false;
 
-    //   return (
-    //     events.every((event) =>
-    //       eventManagedByUser(event! /* legal since we removed potential nulls */, user, {
-    //         canEdit: true,
-    //       }),
-    //     ) && eventManagedByUser(event!, user, { canEdit: true })
-    //   );
-    // },
+      return (
+        events.every((event) =>
+          eventManagedByUser(event! /* legal since we removed potential nulls */, user, {
+            canEdit: true,
+          }),
+        ) && eventManagedByUser(event!, user, { canEdit: true })
+      );
+    },
     async resolve(_, {}, { id, name, capacity, tickets, eventId }) {
       const data = {
         name,
@@ -113,30 +111,29 @@ builder.mutationField('deleteTicketGroup', (t) =>
     args: {
       id: t.arg.id(),
     },
-    authScopes: () => false,
-    // async authScopes(_, { id }, { user }) {
-    //   // Make sure that the tickets added to that group all exists and are part of events managed by the user
-    //   const ticketGroup = await prisma.ticketGroup.findFirst({
-    //     where: { id },
-    //     include: {
-    //       event: {
-    //         include: {
-    //           managers: {
-    //             include: {
-    //               user: true,
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   });
+    async authScopes(_, { id }, { user }) {
+      // Make sure that the tickets added to that group all exists and are part of events managed by the user
+      const ticketGroup = await prisma.ticketGroup.findFirst({
+        where: { id },
+        include: {
+          event: {
+            include: {
+              managers: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
-    //   if (!ticketGroup) return false;
+      if (!ticketGroup) return false;
 
-    //   return eventManagedByUser(ticketGroup.event, user, {
-    //     canEdit: true,
-    //   });
-    // },
+      return eventManagedByUser(ticketGroup.event, user, {
+        canEdit: true,
+      });
+    },
     async resolve(_, { id }) {
       await prisma.ticketGroup.delete({ where: { id } });
       return true;

@@ -2,7 +2,7 @@ import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
 import { PaymentMethodEnum } from './registrations.js';
-import { eventAccessibleByUser } from './events.js';
+import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { DateTimeScalar } from './scalars.js';
 import { LinkInput } from './links.js';
 import slug from 'slug';
@@ -421,26 +421,24 @@ builder.mutationField('deleteTicket', (t) =>
     args: {
       id: t.arg.id(),
     },
-    authScopes: () => false,
-    // async authScopes(_, { id }, { user }) {
-    //   return false;
-    //   const ticket = await prisma.ticket.findUnique({
-    //     where: { id },
-    //     include: {
-    //       event: {
-    //         include: {
-    //           managers: {
-    //             include: {
-    //               user: true,
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   });
-    //   if (!ticket) return false;
-    //   return eventManagedByUser(ticket.event, user, { canEdit: true });
-    // },
+    async authScopes(_, { id }, { user }) {
+      const ticket = await prisma.ticket.findUnique({
+        where: { id },
+        include: {
+          event: {
+            include: {
+              managers: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!ticket) return false;
+      return eventManagedByUser(ticket.event, user, { canEdit: true });
+    },
     async resolve(_, { id }) {
       await prisma.ticket.delete({ where: { id } });
       return true;

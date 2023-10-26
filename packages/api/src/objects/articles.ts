@@ -220,41 +220,39 @@ builder.mutationField('upsertArticle', (t) =>
       eventId: t.arg.id({ required: false }),
       visibility: t.arg({ type: VisibilityEnum }),
     },
-    authScopes: () => false,
-    // async authScopes(_, { id, authorId, groupId }, { user }) {
-    //   return false
-    //   const creating = !id;
-    //   if (!user) return false;
-    //   if (user.canEditGroups) return true;
+    async authScopes(_, { id, authorId, groupId }, { user }) {
+      const creating = !id;
+      if (!user) return false;
+      if (user.canEditGroups) return true;
 
-    //   if (creating) {
-    //     if (!groupId) return false;
-    //     return Boolean(
-    //       user.groups.some(
-    //         ({ group: { id }, canEditArticles }) => canEditArticles && groupId === id,
-    //       ),
-    //     );
-    //   }
+      if (creating) {
+        if (!groupId) return false;
+        return Boolean(
+          user.groups.some(
+            ({ group: { id }, canEditArticles }) => canEditArticles && groupId === id,
+          ),
+        );
+      }
 
-    //   const article = await prisma.article.findUniqueOrThrow({ where: { id } });
+      const article = await prisma.article.findUniqueOrThrow({ where: { id } });
 
-    //   return (
-    //     // Spoofing is disallowed
-    //     ((authorId === user.id &&
-    //       // To set their-self or remove the author, the user must be allowed to write articles
-    //       authorId === article.authorId) ||
-    //       user.groups.some(
-    //         ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
-    //       )) &&
-    //     // Who can edit this article?
-    //     // The author
-    //     (user.id === article.authorId ||
-    //       // Other authors of the group
-    //       user.groups.some(
-    //         ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
-    //       ))
-    //   );
-    // },
+      return (
+        // Spoofing is disallowed
+        ((authorId === user.id &&
+          // To set their-self or remove the author, the user must be allowed to write articles
+          authorId === article.authorId) ||
+          user.groups.some(
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
+          )) &&
+        // Who can edit this article?
+        // The author
+        (user.id === article.authorId ||
+          // Other authors of the group
+          user.groups.some(
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
+          ))
+      );
+    },
     async resolve(
       query,
       _,
@@ -323,26 +321,24 @@ builder.mutationField('deleteArticle', (t) =>
   t.field({
     type: 'Boolean',
     args: { id: t.arg.id() },
-    authScopes: () => false,
-    // async authScopes(_, { id }, { user }) {
-    //   return false
-    //   if (!user) return false;
-    //   if (user.canEditGroups) return true;
+    async authScopes(_, { id }, { user }) {
+      if (!user) return false;
+      if (user.canEditGroups) return true;
 
-    //   const article = await prisma.article.findUniqueOrThrow({ where: { id } });
+      const article = await prisma.article.findUniqueOrThrow({ where: { id } });
 
-    //   // Who can delete this article?
-    //   return (
-    //     // Admins
-    //     user.admin ||
-    //     // The author
-    //     user.id === article.authorId ||
-    //     // Other authors of the group
-    //     user.groups.some(
-    //       ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
-    //     )
-    //   );
-    // },
+      // Who can delete this article?
+      return (
+        // Admins
+        user.admin ||
+        // The author
+        user.id === article.authorId ||
+        // Other authors of the group
+        user.groups.some(
+          ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
+        )
+      );
+    },
     async resolve(_, { id }, { user }) {
       await prisma.article.delete({ where: { id } });
 
@@ -388,26 +384,24 @@ builder.mutationField('updateArticlePicture', (t) =>
       id: t.arg.id(),
       file: t.arg({ type: FileScalar }),
     },
-    authScopes: () => false,
-    // async authScopes(_, { id }, { user }) {
-    //   return false
-    //   const article = await prisma.article.findUniqueOrThrow({
-    //     where: { id },
-    //   });
-    //   if (user?.canEditGroups) return true;
+    async authScopes(_, { id }, { user }) {
+      const article = await prisma.article.findUniqueOrThrow({
+        where: { id },
+      });
+      if (user?.canEditGroups) return true;
 
-    //   return Boolean(
-    //     // Who can edit this article?
-    //     // Admins
-    //     user?.admin ||
-    //       // The author
-    //       user?.id === article.authorId ||
-    //       // Other authors of the group
-    //       user?.groups.some(
-    //         ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
-    //       ),
-    //   );
-    // },
+      return Boolean(
+        // Who can edit this article?
+        // Admins
+        user?.admin ||
+          // The author
+          user?.id === article.authorId ||
+          // Other authors of the group
+          user?.groups.some(
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
+          ),
+      );
+    },
     async resolve(_, { id, file }, { user }) {
       await prisma.logEntry.create({
         data: {
@@ -435,26 +429,24 @@ builder.mutationField('deleteArticlePicture', (t) =>
     args: {
       id: t.arg.id(),
     },
-    authScopes: () => false,
-    // async authScopes(_, { id }, { user }) {
-    //   return false
-    //   const article = await prisma.article.findUniqueOrThrow({
-    //     where: { id },
-    //   });
-    //   if (user?.canEditGroups) return true;
+    async authScopes(_, { id }, { user }) {
+      const article = await prisma.article.findUniqueOrThrow({
+        where: { id },
+      });
+      if (user?.canEditGroups) return true;
 
-    //   return Boolean(
-    //     // Who can edit this article?
-    //     // Admins
-    //     user?.admin ||
-    //       // The author
-    //       user?.id === article.authorId ||
-    //       // Other authors of the group
-    //       user?.groups.some(
-    //         ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
-    //       ),
-    //   );
-    // },
+      return Boolean(
+        // Who can edit this article?
+        // Admins
+        user?.admin ||
+          // The author
+          user?.id === article.authorId ||
+          // Other authors of the group
+          user?.groups.some(
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
+          ),
+      );
+    },
     async resolve(_, { id }, { user }) {
       const { pictureFile } = await prisma.article.findUniqueOrThrow({
         where: { id },

@@ -2,7 +2,7 @@ import type { LydiaAccount } from '@prisma/client';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { checkLydiaAccount } from '../services/lydia.js';
-// import { userIsPresidentOf, userIsTreasurerOf } from './groups.js';
+import { userIsPresidentOf, userIsTreasurerOf } from './groups.js';
 
 export const LydiaAccountType = builder.prismaObject('LydiaAccount', {
   fields: (t) => ({
@@ -38,13 +38,10 @@ builder.mutationField('upsertLydiaAccount', (t) =>
       privateToken: t.arg.string(),
       vendorToken: t.arg.string(),
     },
-    authScopes: () => false,
-    // authScopes: (_, { groupUid }, { user }) => {
-    //   return false
-    //   return Boolean(
-    //     user?.admin || userIsPresidentOf(user, groupUid) || userIsTreasurerOf(user, groupUid),
-    //   )
-    // },
+    authScopes: (_, { groupUid }, { user }) =>
+      Boolean(
+        user?.admin || userIsPresidentOf(user, groupUid) || userIsTreasurerOf(user, groupUid),
+      ),
     async resolve(query, _, { id, groupUid, name, privateToken, vendorToken }, { user }) {
       await checkLydiaAccount(vendorToken, privateToken);
       const data = {

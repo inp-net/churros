@@ -82,7 +82,6 @@ builder.mutationField('testNotification', (t) =>
     args: {
       subscriptionEndpoint: t.arg.string(),
     },
-    authScopes: () => false,
     async resolve(_, { subscriptionEndpoint }) {
       await notify(
         await prisma.user.findMany({

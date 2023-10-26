@@ -30,10 +30,9 @@ builder.queryField('comments', (t) =>
   t.prismaConnection({
     type: CommentType,
     cursor: 'id',
-    authScopes: () => false,
-    // authScopes(_, {}, { user }) {
-    //   return Boolean(user);
-    // },
+    authScopes(_, {}, { user }) {
+      return Boolean(user);
+    },
     async resolve(query) {
       return prisma.comment.findMany({
         ...query,
@@ -49,10 +48,9 @@ builder.queryField('comment', (t) =>
     args: {
       id: t.arg.id(),
     },
-    authScopes: () => false,
-    // authScopes(_, {}, { user }) {
-    //   return Boolean(user);
-    // },
+    authScopes(_, {}, { user }) {
+      return Boolean(user);
+    },
     async resolve(query, _, { id }) {
       return prisma.comment.findUniqueOrThrow({
         ...query,
@@ -72,16 +70,14 @@ builder.mutationField('upsertComment', (t) =>
       articleId: t.arg.id({ required: false }),
       inReplyToId: t.arg.id({ required: false }),
     },
-    authScopes: () => false,
-    // authScopes(_, { articleId, documentId }, { user }) {
-    //   return false
-    //   return Boolean(
-    //     user?.admin ||
-    //       // TODO only allow for articles the user can see
-    //       articleId /* && true */ ||
-    //       (documentId && user?.canAccessDocuments),
-    //   );
-    // },
+    authScopes(_, { articleId, documentId }, { user }) {
+      return Boolean(
+        user?.admin ||
+          // TODO only allow for articles the user can see
+          articleId /* && true */ ||
+          (documentId && user?.canAccessDocuments),
+      );
+    },
     async resolve(query, _, { id, body, documentId, articleId, inReplyToId }, { user }) {
       const upsertData = {
         body,
@@ -183,12 +179,10 @@ builder.mutationField('deleteComment', (t) =>
     args: {
       id: t.arg.id(),
     },
-    authScopes: () => false,
-    // async authScopes(_, { id }, { user }) {
-    //   return false
-    //   const comment = await prisma.comment.findUnique({ where: { id } });
-    //   return Boolean(user?.admin || comment?.authorId === user?.id);
-    // },
+    async authScopes(_, { id }, { user }) {
+      const comment = await prisma.comment.findUnique({ where: { id } });
+      return Boolean(user?.admin || comment?.authorId === user?.id);
+    },
     async resolve(_query, { id }) {
       const repliesCount = await prisma.comment.count({ where: { inReplyToId: id } });
       await log('comments', 'delete', { repliesCount }, id);

@@ -2,9 +2,9 @@ import { GraphQLError } from 'graphql';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 import { DateTimeScalar } from './scalars.js';
-// import { fullName } from './users.js';
+import { fullName } from './users.js';
 import { purgeUserSessions } from '../context.js';
-// import { GroupType } from '@prisma/client';
+import { GroupType } from '@prisma/client';
 import { createTransport } from 'nodemailer';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { onBoard } from '../auth.js';
@@ -51,39 +51,37 @@ builder.mutationField('addGroupMember', (t) =>
       uid: t.arg.string(),
       title: t.arg.string(),
     },
-    authScopes: () => false,
-    // async authScopes(_, { groupUid, uid }, { user }) {
-    //   return false
-    //   const member = await prisma.user.findUniqueOrThrow({
-    //     where: { uid },
-    //     include: {
-    //       contributions: {
-    //         include: { option: { include: { paysFor: { include: { school: true } } } } },
-    //       },
-    //     },
-    //   });
-    //   const group = await prisma.group.findUniqueOrThrow({
-    //     where: { uid: groupUid },
-    //     include: { studentAssociation: true },
-    //   });
+    async authScopes(_, { groupUid, uid }, { user }) {
+      const member = await prisma.user.findUniqueOrThrow({
+        where: { uid },
+        include: {
+          contributions: {
+            include: { option: { include: { paysFor: { include: { school: true } } } } },
+          },
+        },
+      });
+      const group = await prisma.group.findUniqueOrThrow({
+        where: { uid: groupUid },
+        include: { studentAssociation: true },
+      });
 
-    //   if (
-    //     (group.type === GroupType.Club || group.type === GroupType.List) &&
-    //     !member.contributions.some(({ option: { paysFor } }) =>
-    //       paysFor.some(({ id }) => id === group.studentAssociation?.id),
-    //     )
-    //   ) {
-    //     // pas cotisant
-    //     throw new GraphQLError(`${fullName(member)} n'est pas cotisant·e`);
-    //   }
+      if (
+        (group.type === GroupType.Club || group.type === GroupType.List) &&
+        !member.contributions.some(({ option: { paysFor } }) =>
+          paysFor.some(({ id }) => id === group.studentAssociation?.id),
+        )
+      ) {
+        // pas cotisant
+        throw new GraphQLError(`${fullName(member)} n'est pas cotisant·e`);
+      }
 
-    //   return Boolean(
-    //     user?.canEditGroups ||
-    //       user?.groups.some(
-    //         ({ group, canEditMembers }) => canEditMembers && group.uid === groupUid,
-    //       ),
-    //   );
-    // },
+      return Boolean(
+        user?.canEditGroups ||
+          user?.groups.some(
+            ({ group, canEditMembers }) => canEditMembers && group.uid === groupUid,
+          ),
+      );
+    },
     async resolve(query, _, { groupUid, uid, title }, { user }) {
       purgeUserSessions(uid);
       try {
@@ -123,8 +121,7 @@ builder.mutationField('selfJoinGroup', (t) =>
       groupUid: t.arg.string(),
       uid: t.arg.string(),
     },
-    // authScopes: { loggedIn: true },
-    authScopes: () => false,
+    authScopes: { loggedIn: true },
     async resolve(query, _, { groupUid, uid }, { user: me }) {
       const group = await prisma.group.findUnique({ where: { uid: groupUid } });
       if (!group?.selfJoinable) throw new Error('This group is not self-joinable.');
@@ -167,14 +164,11 @@ builder.mutationField('upsertGroupMember', (t) =>
       canEditArticles: t.arg.boolean(),
       canScanEvents: t.arg.boolean(),
     },
-    authScopes: () => false,
-    // authScopes: (_, { groupId }, { user }) => {
-    //   return false
-    //   return Boolean(
-    //     user?.canEditGroups ||
-    //       user?.groups.some(({ group, canEditMembers }) => canEditMembers && group.id === groupId),
-    //   )
-    // },
+    authScopes: (_, { groupId }, { user }) =>
+      Boolean(
+        user?.canEditGroups ||
+          user?.groups.some(({ group, canEditMembers }) => canEditMembers && group.id === groupId),
+      ),
     async resolve(
       query,
       _,
@@ -297,15 +291,12 @@ builder.mutationField('deleteGroupMember', (t) =>
       memberId: t.arg.id(),
       groupId: t.arg.id(),
     },
-    authScopes: () => false,
-    // authScopes: (_, { memberId, groupId }, { user }) => {
-    //   return false
-    //   return Boolean(
-    //     memberId === user?.id ||
-    //       user?.canEditGroups ||
-    //       user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id),
-    //   )
-    // },
+    authScopes: (_, { memberId, groupId }, { user }) =>
+      Boolean(
+        memberId === user?.id ||
+          user?.canEditGroups ||
+          user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id),
+      ),
     async resolve(_, { memberId, groupId }, { user: me }) {
       const { uid } = await prisma.user.findUniqueOrThrow({
         where: { id: memberId },

@@ -387,20 +387,18 @@ builder.mutationField('updateUser', (t) =>
       }),
       contributesWith: t.arg({ type: ['ID'], required: false }),
     },
-    authScopes: () => false,
-    // authScopes(_, { uid }, { user }) {
-    //   return false;
-    //   const result = Boolean(user?.canEditUsers || uid === user?.uid);
-    //   if (!result) {
-    //     console.error(
-    //       `Cannot edit profile: ${uid} =?= ${user?.uid ?? '<none>'} OR ${JSON.stringify(
-    //         user?.canEditUsers,
-    //       )}`,
-    //     );
-    //   }
+    authScopes(_, { uid }, { user }) {
+      const result = Boolean(user?.canEditUsers || uid === user?.uid);
+      if (!result) {
+        console.error(
+          `Cannot edit profile: ${uid} =?= ${user?.uid ?? '<none>'} OR ${JSON.stringify(
+            user?.canEditUsers,
+          )}`,
+        );
+      }
 
-    //   return result;
-    // },
+      return result;
+    },
     async resolve(
       query,
       _,
@@ -561,11 +559,9 @@ builder.mutationField('syncUserLdap', (t) =>
     args: {
       uid: t.arg.string(),
     },
-    authScopes: () => false,
-    // authScopes(_, {}, { user }) {
-    //   return false;
-    //   return Boolean(user?.admin);
-    // },
+    authScopes(_, {}, { user }) {
+      return Boolean(user?.admin);
+    },
     async resolve(_, { uid }) {
       const userDb = await prisma.user.findUnique({
         where: { uid },
@@ -621,8 +617,7 @@ builder.mutationField('updateUserPermissions', (t) =>
       canEditUsers: t.arg.boolean(),
       canAccessDocuments: t.arg.boolean(),
     },
-    // authScopes: (_, {}, { user }) => Boolean(user?.admin),
-    authScopes: () => false,
+    authScopes: (_, {}, { user }) => Boolean(user?.admin),
     async resolve(query, _, { uid, canEditGroups, canEditUsers, canAccessDocuments }, { user }) {
       purgeUserSessions(uid);
       const userUpdated = await prisma.user.update({
@@ -655,8 +650,7 @@ builder.mutationField('updateUserPicture', (t) =>
       uid: t.arg.string(),
       file: t.arg({ type: FileScalar }),
     },
-    // authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
-    authScopes: () => false,
+    authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
     async resolve(_, { uid, file }, { user }) {
       await prisma.logEntry.create({
         data: {
@@ -682,8 +676,7 @@ builder.mutationField('deleteUserPicture', (t) =>
   t.field({
     type: 'Boolean',
     args: { uid: t.arg.string() },
-    // authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
-    authScopes: () => false,
+    authScopes: (_, { uid }, { user }) => Boolean(user?.canEditUsers || uid === user?.uid),
     async resolve(_, { uid }) {
       const { pictureFile } = await prisma.user.findUniqueOrThrow({
         where: { uid },
@@ -719,11 +712,9 @@ builder.mutationField('updateNotificationSettings', (t) =>
       uid: t.arg.string(),
       enabledChannels: t.arg({ type: [NotificationChannel] }),
     },
-    authScopes: () => false,
-    // authScopes(_, { uid }, { user }) {
-    //   return false;
-    //   return Boolean(user?.canEditUsers || uid === user?.uid);
-    // },
+    authScopes(_, { uid }, { user }) {
+      return Boolean(user?.canEditUsers || uid === user?.uid);
+    },
     async resolve(_query, { uid, enabledChannels }) {
       const { enabledNotificationChannels } = await prisma.user.update({
         where: { uid },
@@ -743,7 +734,6 @@ builder.mutationField('deleteGodchild', (t) =>
       parentUid: t.arg.string(),
       godchildUid: t.arg.string(),
     },
-    authScopes: () => false,
     async resolve(_, { parentUid, godchildUid }) {
       const parent = await prisma.user.findUniqueOrThrow({ where: { uid: parentUid } });
       const godchild = await prisma.user.findUniqueOrThrow({ where: { uid: godchildUid } });

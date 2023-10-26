@@ -111,11 +111,9 @@ builder.mutationField('upsertService', (t) =>
       groupUid: t.arg.string({ required: false }),
       studentAssociationUid: t.arg.string({ required: false }),
     },
-    authScopes: () => false,
-    // authScopes(_, {}, { user }) {
-    //   return false;
-    //   return Boolean(user?.admin);
-    // },
+    authScopes(_, {}, { user }) {
+      return Boolean(user?.admin);
+    },
     async resolve(
       query,
       _,

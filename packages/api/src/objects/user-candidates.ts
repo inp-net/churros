@@ -87,7 +87,6 @@ builder.mutationField('startRegistration', (t) =>
         },
       }),
     },
-    authScopes: () => false,
     resolve: async (_, { email }) => register(email),
   }),
 );
@@ -110,7 +109,6 @@ builder.mutationField('completeRegistration', (t) =>
       cededImageRightsToTVn7: t.arg.boolean(),
       apprentice: t.arg.boolean(),
     },
-    authScopes: () => false,
     validate: [
       ({ password, passwordConfirmation }) => password === passwordConfirmation,
       { path: ['passwordConfirmation'], message: 'Les mots de passe ne correspondent pas.' },
@@ -210,8 +208,7 @@ builder.queryField('userCandidateByEmail', (t) =>
 
 builder.mutationField('acceptRegistration', (t) =>
   t.field({
-    // authScopes: { canEditUsers: true },
-    authScopes: () => false,
+    authScopes: { canEditUsers: true },
     type: 'Boolean',
     args: { email: t.arg.string() },
     async resolve(_, { email }, { user }) {
@@ -234,7 +231,7 @@ builder.mutationField('acceptRegistration', (t) =>
 builder.mutationField('updateUserCandidate', (t) =>
   t.field({
     type: 'Boolean',
-    authScopes: ( )=> false,
+    authScopes: { canEditUsers: true },
     errors: { types: [ZodError] },
     args: {
       register: t.arg.boolean(),
@@ -284,8 +281,7 @@ builder.mutationField('updateUserCandidate', (t) =>
 
 builder.mutationField('refuseRegistration', (t) =>
   t.field({
-    // authScopes: { canEditUsers: true },
-    authScopes: ( )=>false,
+    authScopes: { canEditUsers: true },
     type: 'Boolean',
     args: { email: t.arg.string(), reason: t.arg.string() },
     async resolve(_, { email, reason }, { user }) {

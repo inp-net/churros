@@ -55,7 +55,7 @@ import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
 import { GraphQLError } from 'graphql';
-// import { onBoard } from '../auth.js';
+import { onBoard } from '../auth.js';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -756,17 +756,15 @@ builder.mutationField('deleteEvent', (t) =>
     args: {
       id: t.arg.id(),
     },
-    authScopes: () => false,
-    // async authScopes(_, { id }, { user }) {
-    //   return false
-    //   const event = await prisma.event.findUniqueOrThrow({
-    //     where: { id },
-    //     include: { managers: true },
-    //   });
-    //   return Boolean(
-    //     user?.admin || event.managers.some(({ userId, canEdit }) => userId === user?.id && canEdit),
-    //   );
-    // },
+    async authScopes(_, { id }, { user }) {
+      const event = await prisma.event.findUniqueOrThrow({
+        where: { id },
+        include: { managers: true },
+      });
+      return Boolean(
+        user?.admin || event.managers.some(({ userId, canEdit }) => userId === user?.id && canEdit),
+      );
+    },
     async resolve(_, { id }, { user }) {
       await prisma.event.delete({
         where: { id },
@@ -809,35 +807,33 @@ builder.mutationField('upsertEvent', (t) =>
       bannedUsers: t.arg.stringList({ description: 'List of user uids' }),
       coOrganizers: t.arg.stringList({ description: 'List of group uids' }),
     },
-    authScopes: () => false,
-    // async authScopes(_, { id, groupUid }, { user }) {
-    //   return false
-    //   const creating = !id;
-    //   if (!user) return false;
-    //   if (user.admin) return true;
+    async authScopes(_, { id, groupUid }, { user }) {
+      const creating = !id;
+      if (!user) return false;
+      if (user.admin) return true;
 
-    //   const canCreate = Boolean(
-    //     user.canEditGroups ||
-    //       onBoard(user.groups.find(({ group }) => group.uid === groupUid)) ||
-    //       user.groups.some(
-    //         ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
-    //       ),
-    //   );
+      const canCreate = Boolean(
+        user.canEditGroups ||
+          onBoard(user.groups.find(({ group }) => group.uid === groupUid)) ||
+          user.groups.some(
+            ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
+          ),
+      );
 
-    //   if (creating) return canCreate;
+      if (creating) return canCreate;
 
-    //   const event = await prisma.event.findUnique({
-    //     where: { id },
-    //     include: { managers: { include: { user: true } } },
-    //   });
+      const event = await prisma.event.findUnique({
+        where: { id },
+        include: { managers: { include: { user: true } } },
+      });
 
-    //   if (!event) return false;
+      if (!event) return false;
 
-    //   return Boolean(
-    //     canCreate ||
-    //       event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit),
-    //   );
-    // },
+      return Boolean(
+        canCreate ||
+          event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit),
+      );
+    },
     async resolve(
       query,
       _,
@@ -1328,23 +1324,21 @@ builder.mutationField('updateEventPicture', (t) =>
       id: t.arg.id(),
       file: t.arg({ type: FileScalar }),
     },
-    authScopes: () => false,
-    // async authScopes(_, { id }, { user }) {
-    //   return false
-    //   const event = await prisma.event.findUniqueOrThrow({
-    //     where: { id },
-    //   });
+    async authScopes(_, { id }, { user }) {
+      const event = await prisma.event.findUniqueOrThrow({
+        where: { id },
+      });
 
-    //   return Boolean(
-    //     // Who can edit this event?
-    //     // The author
-    //     user?.id === event.authorId ||
-    //       // Other authors of the group
-    //       user?.groups.some(
-    //         ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId,
-    //       ),
-    //   );
-    // },
+      return Boolean(
+        // Who can edit this event?
+        // The author
+        user?.id === event.authorId ||
+          // Other authors of the group
+          user?.groups.some(
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId,
+          ),
+      );
+    },
     async resolve(_, { id, file }) {
       return updatePicture({
         resource: 'event',
@@ -1363,23 +1357,21 @@ builder.mutationField('deleteEventPicture', (t) =>
     args: {
       id: t.arg.id(),
     },
-    authScopes: () => false,
-    // async authScopes(_, { id }, { user }) {
-    //   return false
-    //   const event = await prisma.event.findUniqueOrThrow({
-    //     where: { id },
-    //   });
+    async authScopes(_, { id }, { user }) {
+      const event = await prisma.event.findUniqueOrThrow({
+        where: { id },
+      });
 
-    //   return Boolean(
-    //     // Who can edit this event?
-    //     // The author
-    //     user?.id === event.authorId ||
-    //       // Other authors of the group
-    //       user?.groups.some(
-    //         ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId,
-    //       ),
-    //   );
-    // },
+      return Boolean(
+        // Who can edit this event?
+        // The author
+        user?.id === event.authorId ||
+          // Other authors of the group
+          user?.groups.some(
+            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId,
+          ),
+      );
+    },
     async resolve(_, { id }) {
       const { pictureFile } = await prisma.event.findUniqueOrThrow({
         where: { id },

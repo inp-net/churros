@@ -73,7 +73,6 @@ builder.mutationField('upsertNotificationSubscription', (t) =>
         }),
       }),
     },
-    authScopes: () => false,
     async resolve(query, _, { endpoint, name, expiresAt, keys }, { user }) {
       if (!user) throw new GraphQLError('You must be logged in.');
       const subscription = await prisma.notificationSubscription.findFirst({
@@ -113,7 +112,6 @@ builder.mutationField('deleteNotificationSubscription', (t) =>
     args: {
       endpoint: t.arg.string(),
     },
-    authScopes: () => false,
     async resolve(_, { endpoint }, { user }) {
       if (!user) throw new GraphQLError('You must be logged in.');
       await prisma.notificationSubscription.deleteMany({
