@@ -181,6 +181,10 @@
     flex-grow: 1;
   }
 
+  .body img{
+    max-width: 300px;
+  }
+
   .actions {
     margin-left: auto;
   }
