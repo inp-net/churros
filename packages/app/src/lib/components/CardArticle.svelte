@@ -191,6 +191,7 @@
     width: 3rem;
     height: 3rem;
     overflow: hidden;
+    background: var(--bg);
     border: 2px solid var(--muted-border);
     border-radius: 50%;
     object-fit: contain;

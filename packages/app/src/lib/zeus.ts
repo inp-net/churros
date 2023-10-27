@@ -16,6 +16,7 @@ import extractFiles from 'extract-files/extractFiles.mjs';
 import isFile from 'extract-files/isExtractableFile.mjs';
 import { GraphQLError } from 'graphql';
 import { derived } from 'svelte/store';
+import { aled } from './session';
 
 export * from '../zeus/index.js';
 
@@ -50,6 +51,7 @@ export class ZeusError extends Error {
 
 export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
   const headers = new Headers();
+  aled('zeus.ts: inside chain; maybe setting Authorization header', { token, headers });
   if (token) headers.set('Authorization', `Bearer ${token}`);
   return Thunder(async (query, variables) => {
     /* eslint-disable */
@@ -106,6 +108,7 @@ const scalars = ZeusScalars({
 });
 
 export const zeus = derived(page, ({ data }) => {
+  aled('zeus.ts: inside derived store $zeus', data);
   const chained = chain(fetch, { token: (data as LayoutServerData).token });
   return {
     query: chained('query', { scalars }),
@@ -117,14 +120,16 @@ export const loadQuery = async <Query extends ValueTypes['Query']>(
   query: Query,
   { fetch, parent }: { fetch: LoadEvent['fetch']; parent?: () => Promise<LayoutServerData> },
 ) => {
-  const { token } = parent ? await parent() : { token: undefined };
-  return chain(fetch, { token })('query', { scalars })(query);
+  const parentData = parent ? await parent() : { token: undefined };
+  aled('zeus.ts: loadQuery with parent data', { parentData, query });
+  return chain(fetch, { token: parentData.token })('query', { scalars })(query);
 };
 
 export const makeMutation = async <Mutation extends ValueTypes['Mutation']>(
   mutation: Mutation,
   { fetch, parent }: { fetch: LoadEvent['fetch']; parent?: () => Promise<LayoutServerData> },
 ) => {
-  const { token } = parent ? await parent() : { token: undefined };
-  return chain(fetch, { token })('mutation', { scalars })(mutation);
+  const parentData = parent ? await parent() : { token: undefined };
+  aled('zeus.ts: makeMutation with parent data', { parentData, mutation });
+  return chain(fetch, { token: parentData.token })('mutation', { scalars })(mutation);
 };

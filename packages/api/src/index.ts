@@ -323,4 +323,21 @@ webhook.listen(4001, () => {
   console.info('Webhook ready at http://localhost:4001');
 });
 
+const maintenance = express();
+
+maintenance.get('/', (_, res) => {
+  console.info(`Hit maintenance page`);
+  res.send(
+    `<h1>Maintenance en cours</h1><p>J'ai reçu des signalements de bug assez grave où la personne est connectée au profil de quelqu'un d'autre.</p><p>J'ai mis hors-ligne l'application le temps de comprendre d'où ça vient, mais c'est des bugs assez compliqués à résoudre vu qu'ils sont difficilement reproductibles.</p><p>On mettra en place une solution de secours pour le contrôle des billets pour ce soir si nécéssaire.</p><p>Je suis vraiment désolé, c'est pas sérieux du tout, j'ai un peu envie de crever mais voilà vraiment désolé.</p><p><strong>Ce qui ont vraiment besoin d'accéder l'appli, contactez moi, je vous donne un accès.</strong></p>`,
+  );
+});
+
+maintenance.get('/*', (_, res) => {
+  res.redirect('/');
+});
+
+maintenance.listen(4002, () => {
+  console.info('Maintenance page server listening at http://localhost:4002');
+});
+
 // await rescheduleNotifications();

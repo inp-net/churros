@@ -69,6 +69,7 @@ export const saveSessionToken = (
   },
 ) => {
   window.localStorage.removeItem('isReallyLoggedout');
+  aled('session.ts: setting token cookie', { token, expiresAt });
   document.cookie = cookie.serialize('token', token, {
     expires: expiresAt ? new Date(expiresAt) : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     path: '/',
@@ -76,8 +77,17 @@ export const saveSessionToken = (
   });
 };
 
+export function aled(...o: unknown[]) {
+  // eslint-disable-next-line no-console
+  console.log(o);
+  // void fetch(`https://churros.inpt.fr/log?message=${encodeURIComponent(JSON.stringify(o))}`);
+}
+
 /** Returns a temporary redirect object. */
 export const redirectToLogin = (to: string) =>
   redirect(307, `/login?${new URLSearchParams({ to }).toString()}`);
 
-export const me = derived(page, ($page) => $page.data.me);
+export const me = derived(page, ($page) => {
+  aled('session.ts: me = derived(page, $page)', $page.data);
+  return $page.data.me;
+});
