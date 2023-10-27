@@ -38,6 +38,9 @@
 
   $: displayPreferredMinor =
     minors.length > 1 && $me?.minor && minors.some((m) => m.uid === $me?.minor?.uid);
+
+  // eslint-disable-next-line no-console
+  $: console.log($me?.major);
 </script>
 
 <Breadcrumbs root="/documents">
@@ -69,7 +72,7 @@
     {/each}
   </ul>
   <hr />
-{:else if !$me?.minor && $me?.major.uid === data.major.uid && browser && localStorage.getItem('ignoreDefineYourMinor') !== 'true'}
+{:else if (!$me?.minor || $me?.major.uid !== data.major.uid) && browser && localStorage.getItem('ignoreDefineYourMinor') !== 'true'}
   <div class="define-your-minor">
     <p class="muted">
       Marre de scroll pour avoir son parcours? Définis ton parcours dans <a href="/me"
