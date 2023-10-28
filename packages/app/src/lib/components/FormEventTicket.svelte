@@ -9,7 +9,6 @@
   import ButtonGhost from './ButtonGhost.svelte';
   import IconChevronDown from '~icons/mdi/chevron-down';
   import IconChevronUp from '~icons/mdi/chevron-up';
-  import InputListOfGroups from './InputListOfGroups.svelte';
   import InputSearchObjectList from './InputSearchObjectList.svelte';
   import { type PaymentMethod, zeus } from '$lib/zeus';
   import Fuse from 'fuse.js';
@@ -18,6 +17,7 @@
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import InputLinks from './InputLinks.svelte';
   import { me } from '$lib/session';
+  import InputGroups from './InputGroups.svelte';
   const emit = createEventDispatcher();
 
   export let expandedTicketId = '';
@@ -41,6 +41,7 @@
     openToGroups: Array<{
       name: string;
       uid: string;
+      id: string;
       pictureFile: string;
       pictureFileDark: string;
     }>;
@@ -54,11 +55,14 @@
     autojoinGroups: Array<{
       name: string;
       uid: string;
+      id: string;
       pictureFile: string;
       pictureFileDark: string;
     }>;
     allowedPaymentMethods: PaymentMethod[];
   };
+
+  export let allGroups: typeof ticket.openToGroups;
 
   $: expanded = expandedTicketId === ticket.id;
 
@@ -157,11 +161,7 @@
       />
     </InputField>
 
-    <InputListOfGroups
-      uids={ticket.openToGroups.map(({ uid }) => uid)}
-      label="Groupes"
-      bind:groups={ticket.openToGroups}
-    />
+    <InputGroups multiple options={allGroups} label="Groupes" bind:groups={ticket.openToGroups} />
 
     <InputField label="Écoles">
       {#each $me?.major.schools ?? [] as school}
@@ -263,10 +263,11 @@
       bind:value={ticket.onlyManagersCanProvide}
     />
 
-    <InputListOfGroups
+    <InputGroups
       label="Inscrire sur des groupes à la réservation"
+      multiple
       bind:groups={ticket.autojoinGroups}
-      uids={ticket.autojoinGroups.map((g) => g.uid)}
+      options={allGroups}
     />
 
     <InputField label="Méthodes de paiement">

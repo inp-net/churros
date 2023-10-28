@@ -33,6 +33,7 @@ export const _clubQuery = Selector('Group')({
     },
   },
   parent: {
+    id: true,
     uid: true,
     name: true,
     pictureFile: true,
@@ -40,6 +41,7 @@ export const _clubQuery = Selector('Group')({
   },
   selfJoinable: true,
   related: {
+    id: true,
     uid: true,
     name: true,
     pictureFile: true,

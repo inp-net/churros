@@ -4,7 +4,6 @@
   import { _clubQuery as clubQuery } from '../../routes/groups/[uid]/edit/+page';
   import Alert from '$lib/components/Alert.svelte';
   import { goto } from '$app/navigation';
-  import InputGroup from './InputGroup.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
   import InputText from './InputText.svelte';
@@ -12,9 +11,9 @@
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
-  import InputListOfGroups from './InputListOfGroups.svelte';
   import InputStudentAssociation from './InputStudentAssociation.svelte';
   import { toasts } from '$lib/toasts';
+  import InputGroups from './InputGroups.svelte';
 
   export let data: PageData;
   export let creatingSubgroup = false;
@@ -98,52 +97,54 @@
   };
 </script>
 
-<form on:submit|preventDefault={submit}>
-  {#if !creatingSubgroup}
-    <InputSelectOne
-      label="Type de groupe"
-      required
-      options={DISPLAY_GROUP_TYPES}
-      bind:value={type}
-    />
+{#await $zeus.query({ groups: [{}, clubQuery.parent] })}
+  <p class="loading muted">Chargement...</p>
+{:then { groups: allGroups }}
+  <form on:submit|preventDefault={submit}>
+    {#if !creatingSubgroup}
+      <InputSelectOne
+        label="Type de groupe"
+        required
+        options={DISPLAY_GROUP_TYPES}
+        bind:value={type}
+      />
 
-    <div class="side-by-side">
-      <InputStudentAssociation
-        clearable
-        label="AE de rattachement"
-        bind:object={studentAssociation}
-        uid={studentAssociation?.uid}
-      ></InputStudentAssociation>
-    </div>
-  {/if}
+      <div class="side-by-side">
+        <InputStudentAssociation
+          clearable
+          label="AE de rattachement"
+          bind:object={studentAssociation}
+          uid={studentAssociation?.uid}
+        ></InputStudentAssociation>
+      </div>
+    {/if}
 
-  <InputCheckbox label="Auto-joignable" bind:value={selfJoinable} />
+    <InputCheckbox label="Auto-joignable" bind:value={selfJoinable} />
 
-  <InputText required label="Nom" maxlength={255} bind:value={name} />
-  <InputText label="Description courte" maxlength={255} bind:value={description} />
-  <InputLongText rich label="Description" bind:value={longDescription} />
-  <!-- TODO colors ? -->
-  <InputText label="Salle" maxlength={255} bind:value={address} />
-  <InputText label="Email" type="email" maxlength={255} bind:value={email} />
-  <InputText label="Site web" type="url" maxlength={255} bind:value={website} />
-  <InputSocialLinks label="Réseaux sociaux" bind:value={links} />
-  {#if !creatingSubgroup}
-    <InputGroup clearable label="Groupe parent" bind:group={parent} uid={parent?.uid} />
-  {/if}
-  <InputListOfGroups
-    label="Groupes à voir"
-    bind:groups={related}
-    uids={related.map((r) => r.uid)}
-  />
-  {#if serverError}
-    <Alert theme="danger"
-      >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert
-    >
-  {/if}
-  <section class="submit">
-    <ButtonPrimary submits {loading}>Sauvegarder</ButtonPrimary>
-  </section>
-</form>
+    <InputText required label="Nom" maxlength={255} bind:value={name} />
+    <InputText label="Description courte" maxlength={255} bind:value={description} />
+    <InputLongText rich label="Description" bind:value={longDescription} />
+    <!-- TODO colors ? -->
+    <InputText label="Salle" maxlength={255} bind:value={address} />
+    <InputText label="Email" type="email" maxlength={255} bind:value={email} />
+    <InputText label="Site web" type="url" maxlength={255} bind:value={website} />
+    <InputSocialLinks label="Réseaux sociaux" bind:value={links} />
+    {#if !creatingSubgroup}
+      <InputGroups clearable label="Groupe parent" bind:group={parent} options={allGroups}
+      ></InputGroups>
+    {/if}
+    <InputGroups multiple label="Groupes à voir" bind:groups={related} options={allGroups} />
+
+    {#if serverError}
+      <Alert theme="danger"
+        >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert
+      >
+    {/if}
+    <section class="submit">
+      <ButtonPrimary submits {loading}>Sauvegarder</ButtonPrimary>
+    </section>
+  </form>
+{/await}
 
 <style>
   form {

@@ -273,6 +273,7 @@
     openToAlumni?: boolean | null | undefined;
     openToSchools: Array<{ name: string; color: string; uid: string }>;
     openToGroups: Array<{
+      id: string;
       name: string;
       uid: string;
       pictureFile: string;
@@ -284,6 +285,7 @@
     godsonLimit: number;
     onlyManagersCanProvide: boolean;
     autojoinGroups: Array<{
+      id: string;
       name: string;
       uid: string;
       pictureFile: string;
@@ -437,11 +439,14 @@
 
   let coOrganizersOptions: typeof event.coOrganizers = [];
   let groupOptions: Array<typeof event.group> = [];
+  let allGroups: Array<typeof event.group> = [];
 
   onMount(async () => {
     const { groups } = await $zeus.query({
       groups: [{}, eventQuery.group],
     });
+
+    allGroups = groups;
 
     groupOptions = groups.filter((g) => $me?.groups.some((m) => m.group.id === g.id));
 
@@ -587,6 +592,7 @@
             <section class="tickets-of-group">
               {#each ticketGroup.tickets as ticket, j (ticket.id)}
                 <FormEventTicket
+                  {allGroups}
                   on:delete={() => {
                     ticketGroup.tickets = ticketGroup.tickets.filter(({ id }) => id !== ticket.id);
                   }}
@@ -624,6 +630,7 @@
         {#each event.tickets as ticket (ticket.id)}
           {#if !ticketIsInGroup(ticket)}
             <FormEventTicket
+              {allGroups}
               on:delete={() => {
                 event.tickets = event.tickets.filter(({ id }) => id !== ticket.id);
               }}
