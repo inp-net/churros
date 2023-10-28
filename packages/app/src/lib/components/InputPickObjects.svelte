@@ -18,6 +18,7 @@
   export let selection: T[] = [];
   export let options: T[];
   export let pickerTitle = 'Choisir';
+  export let clearButtonLabel = 'Effacer';
   const closeOnSelect = !multiple;
   let query = '';
 
@@ -157,7 +158,7 @@
         on:click={() => {
           value = undefined;
           selection = [];
-        }}>Effacer</ButtonSecondary
+        }}>{clearButtonLabel}</ButtonSecondary
       >
     {/if}
 

@@ -16,8 +16,8 @@
   import InputSelectMultiple from './InputSelectMultiple.svelte';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import InputLinks from './InputLinks.svelte';
-  import { me } from '$lib/session';
   import InputGroups from './InputGroups.svelte';
+  import InputSchools from './InputSchools.svelte';
   const emit = createEventDispatcher();
 
   export let expandedTicketId = '';
@@ -37,7 +37,7 @@
     capacity: number;
     openToPromotions: number[];
     links: Array<{ value: string; name: string }>;
-    openToSchools: Array<{ name: string; color: string; uid: string }>;
+    openToSchools: Array<{ name: string; id: string; uid: string }>;
     openToGroups: Array<{
       name: string;
       uid: string;
@@ -161,35 +161,22 @@
       />
     </InputField>
 
-    <InputGroups multiple options={allGroups} label="Groupes" bind:groups={ticket.openToGroups} />
+    <InputGroups
+      placeholder="Aucune restriction"
+      multiple
+      options={allGroups}
+      label="Groupes"
+      clearButtonLabel="Tous"
+      bind:groups={ticket.openToGroups}
+    />
 
-    <InputField label="Écoles">
-      {#each $me?.major.schools ?? [] as school}
-        <ButtonSecondary
-          on:click={() => {
-            ticket.openToSchools = [school];
-          }}>{school.name}</ButtonSecondary
-        >
-      {/each}
-      <InputSearchObjectList
-        search={async (query) => {
-          const { schools } = await $zeus.query({
-            schools: {
-              name: true,
-              color: true,
-              uid: true,
-            },
-          });
-
-          const searcher = new Fuse(schools, { keys: ['name', 'uid'] });
-          return searcher.search(query).map(({ item }) => item);
-        }}
-        labelKey="name"
-        valueKey="uid"
-        values={ticket.openToSchools.map(({ uid }) => uid)}
-        bind:objects={ticket.openToSchools}
-      />
-    </InputField>
+    <InputSchools
+      label="Ecoles"
+      placeholder="Aucune contrainte"
+      clearButtonLabel="Toutes"
+      multiple
+      bind:schools={ticket.openToSchools}
+    ></InputSchools>
 
     <InputField label="Filières">
       <InputSearchObjectList

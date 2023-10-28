@@ -1,69 +1,69 @@
 <script lang="ts">
   import InputField from './InputField.svelte';
   import IconCheck from '~icons/mdi/check';
-  import { groupLogoSrc } from '$lib/logos';
-  import { isDark } from '$lib/theme';
   import InputPickObjects from './InputPickObjects.svelte';
+  import { zeus } from '$lib/zeus';
 
-  type Group = {
+  type School = {
     id: string;
     uid: string;
     name: string;
-    pictureFile: string;
-    pictureFileDark: string;
   };
   export let clearButtonLabel = 'Effacer';
   export let label: string;
-  export let disallowed: Group[] = [];
+  export let disallowed: School[] = [];
   export let required = false;
-  export let group: Group | undefined = undefined;
-  export let groups: Group[] = [];
+  export let school: School | undefined = undefined;
+  export let schools: School[] = [];
   export let clearable = !required;
   export let multiple = false;
-  export let options: Group[];
-  export let disallowedExplanation: (g: Group) => string = () => 'Impossible';
+  export let disallowedExplanation: (g: School) => string = () => 'Impossible';
 
   export let placeholder = '';
 </script>
 
 <InputField {label} {required}>
-  <InputPickObjects
-    {clearButtonLabel}
-    {clearable}
-    {multiple}
-    bind:selection={groups}
-    bind:value={group}
-    disabledOptions={disallowed}
-    searchKeys={['name', 'uid']}
-    {options}
-    pickerTitle={multiple ? 'Choisir des groupes' : 'Choisir un groupe'}
-  >
-    <div class="avatar" slot="thumbnail" let:object>
-      {#if object}
-        <img src={groupLogoSrc($isDark, object)} alt={object.name?.toString()} />
-        <span class="group-name">{object?.name}</span>
-      {:else}
-        <span class="group-name muted">{placeholder || 'Aucun groupe sélectionné'}</span>
-      {/if}
-    </div>
-    <div
-      slot="item"
-      let:item
-      let:selected
-      let:disabled
-      class="suggestion"
-      class:selected
-      class:disabled
+  {#await $zeus.query({ schools: { id: true, name: true, uid: true } })}
+    <p class="loading muted">Chargement...</p>
+  {:then { schools: options }}
+    <InputPickObjects
+      {clearButtonLabel}
+      {clearable}
+      {multiple}
+      bind:selection={schools}
+      bind:value={school}
+      disabledOptions={disallowed}
+      searchKeys={['name', 'uid']}
+      {options}
+      pickerTitle={multiple ? 'Choisir des écoles' : 'Choisir une école'}
     >
-      <div class="selected-badge" class:selected><IconCheck></IconCheck></div>
-      <img src={groupLogoSrc($isDark, item)} alt={item.name} />
-      {#if disabled}
-        <span class="name why">{disallowedExplanation(item)}</span>
-      {:else}
-        <span class="name">{item.name}</span>
-      {/if}
-    </div>
-  </InputPickObjects>
+      <div class="avatar" slot="thumbnail" let:object>
+        {#if object}
+          <img src="//schools/{object.uid}.png" alt={object.name?.toString()} />
+          <span class="group-name">{object?.name}</span>
+        {:else}
+          <span class="group-name muted">{placeholder || 'Aucune école sélectionnée'}</span>
+        {/if}
+      </div>
+      <div
+        slot="item"
+        let:item
+        let:selected
+        let:disabled
+        class="suggestion"
+        class:selected
+        class:disabled
+      >
+        <div class="selected-badge" class:selected><IconCheck></IconCheck></div>
+        <img src="//schools/{item.uid}.png" alt={item.name} />
+        {#if disabled}
+          <span class="name why">{disallowedExplanation(item)}</span>
+        {:else}
+          <span class="name">{item.name}</span>
+        {/if}
+      </div>
+    </InputPickObjects>
+  {/await}
 </InputField>
 
 <style>

@@ -76,7 +76,7 @@ builder.queryField('lydiaAccounts', (t) =>
   t.prismaField({
     type: [LydiaAccountType],
     authScopes: { loggedIn: true },
-    async resolve(query, {}, {}) {
+    async resolve(query, _, {}) {
       const results = await prisma.lydiaAccount.findMany({ ...query });
       return results.map((result) =>
         Object.fromEntries(

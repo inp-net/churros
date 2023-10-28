@@ -1,49 +1,52 @@
 <script lang="ts">
   import InputField from './InputField.svelte';
   import IconCheck from '~icons/mdi/check';
-  import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import InputPickObjects from './InputPickObjects.svelte';
+  import { groupLogoSrc } from '$lib/logos';
 
-  type Group = {
+  type LydiaAccount = {
     id: string;
-    uid: string;
     name: string;
-    pictureFile: string;
-    pictureFileDark: string;
+    group?:
+      | undefined
+      | {
+          name: string;
+          pictureFile: string;
+          pictureFileDark: string;
+        };
   };
-  export let clearButtonLabel = 'Effacer';
   export let label: string;
-  export let disallowed: Group[] = [];
+  export let disallowed: LydiaAccount[] = [];
   export let required = false;
-  export let group: Group | undefined = undefined;
-  export let groups: Group[] = [];
+  export let account: LydiaAccount | undefined = undefined;
+  export let accounts: LydiaAccount[] = [];
   export let clearable = !required;
+  export let options: LydiaAccount[] = [];
   export let multiple = false;
-  export let options: Group[];
-  export let disallowedExplanation: (g: Group) => string = () => 'Impossible';
+  export let disallowedExplanation: (account: LydiaAccount) => string = () => 'Impossible';
 
   export let placeholder = '';
 </script>
 
 <InputField {label} {required}>
   <InputPickObjects
-    {clearButtonLabel}
     {clearable}
     {multiple}
-    bind:selection={groups}
-    bind:value={group}
+    bind:selection={accounts}
+    bind:value={account}
     disabledOptions={disallowed}
-    searchKeys={['name', 'uid']}
     {options}
-    pickerTitle={multiple ? 'Choisir des groupes' : 'Choisir un groupe'}
+    pickerTitle={multiple ? 'Choisir des comptes Lydia pro' : 'Choisir un compte Lydia pro'}
   >
     <div class="avatar" slot="thumbnail" let:object>
       {#if object}
-        <img src={groupLogoSrc($isDark, object)} alt={object.name?.toString()} />
-        <span class="group-name">{object?.name}</span>
+        {#if object?.group}
+          <img src={groupLogoSrc($isDark, object.group)} alt={object?.group.name.toString()} />
+        {/if}
+        <span class="name">{object?.name}</span>
       {:else}
-        <span class="group-name muted">{placeholder || 'Aucun groupe sélectionné'}</span>
+        <span class="name muted">{placeholder || 'Aucun compte sélectionné'}</span>
       {/if}
     </div>
     <div
@@ -56,11 +59,18 @@
       class:disabled
     >
       <div class="selected-badge" class:selected><IconCheck></IconCheck></div>
-      <img src={groupLogoSrc($isDark, item)} alt={item.name} />
+      {#if item.group}
+        <img src={groupLogoSrc($isDark, item.group)} alt={item.name} />
+      {/if}
       {#if disabled}
         <span class="name why">{disallowedExplanation(item)}</span>
       {:else}
-        <span class="name">{item.name}</span>
+        <div class="name">
+          <div class="account-name">{item.name}</div>
+          {#if item.group}
+            <div class="group-name">{item.group.name}</div>
+          {/if}
+        </div>
       {/if}
     </div>
   </InputPickObjects>
@@ -101,6 +111,14 @@
     padding: 0.5rem;
   }
 
+  .suggestion .name {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    justify-content: center;
+    text-align: center;
+  }
+
   .suggestion img {
     --size: 5rem;
 
@@ -117,6 +135,10 @@
     border-radius: var(--radius-block);
     transition: all 0.25s ease;
     object-fit: contain;
+  }
+
+  .suggestion .group-name {
+    font-size: 0.75em;
   }
 
   .suggestion.disabled {

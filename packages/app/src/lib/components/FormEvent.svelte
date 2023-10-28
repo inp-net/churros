@@ -1,7 +1,6 @@
 <script lang="ts">
   import IconPlus from '~icons/mdi/plus';
   import { nanoid } from 'nanoid';
-  import InputField from './InputField.svelte';
   import DateInput from './InputDate.svelte';
   import IconClose from '~icons/mdi/close';
   import { type PaymentMethod, Visibility, zeus, EventFrequency, Selector } from '$lib/zeus';
@@ -23,8 +22,6 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import InputPerson from './InputPerson.svelte';
   import FormPicture from './FormPicture.svelte';
-  import InputSearchObject from './InputSearchObject.svelte';
-  import Fuse from 'fuse.js';
   import { me } from '$lib/session';
   import AvatarPerson from './AvatarPerson.svelte';
   import InputLinks from './InputLinks.svelte';
@@ -32,6 +29,7 @@
   import InputDate from './InputDate.svelte';
   import { toasts } from '$lib/toasts';
   import InputGroups from './InputGroups.svelte';
+  import InputLydiaAccounts from './InputLydiaAccounts.svelte';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
@@ -128,6 +126,11 @@
               beneficiary: {
                 id: true,
                 name: true,
+                group: {
+                  pictureFile: true,
+                  pictureFileDark: true,
+                  name: true,
+                },
               },
               ticketGroups: {
                 name: true,
@@ -144,7 +147,7 @@
                   openToPromotions: true,
                   openToExternal: true,
                   openToAlumni: true,
-                  openToSchools: { name: true, color: true, id: true },
+                  openToSchools: { name: true, uid: true, id: true },
                   openToGroups: { name: true, uid: true, pictureFile: true },
                   openToApprentices: true,
                   openToContributors: true,
@@ -164,7 +167,7 @@
                 openToPromotions: true,
                 openToExternal: true,
                 openToAlumni: true,
-                openToSchools: { name: true, color: true, id: true },
+                openToSchools: { name: true, uid: true, id: true },
                 openToGroups: { name: true, uid: true, pictureFile: true, pictureFileDark: true },
                 openToContributors: true,
                 openToApprentices: true,
@@ -271,7 +274,7 @@
     openToPromotions: number[];
     openToExternal?: boolean | null | undefined;
     openToAlumni?: boolean | null | undefined;
-    openToSchools: Array<{ name: string; color: string; uid: string }>;
+    openToSchools: Array<{ name: string; id: string; uid: string }>;
     openToGroups: Array<{
       id: string;
       name: string;
@@ -299,6 +302,13 @@
   export let availableLydiaAccounts: Array<{
     name: string;
     id: string;
+    group?:
+      | undefined
+      | {
+          pictureFile: string;
+          pictureFileDark: string;
+          name: string;
+        };
   }>;
 
   export let event: {
@@ -312,7 +322,19 @@
       tickets: Ticket[];
     }>;
     contactMail: string;
-    beneficiary?: undefined | { name: string; id: string };
+    beneficiary?:
+      | undefined
+      | {
+          name: string;
+          id: string;
+          group?:
+            | undefined
+            | {
+                pictureFile: string;
+                pictureFileDark: string;
+                name: string;
+              };
+        };
     description: string;
     endsAt?: Date | undefined;
     links: Array<{ name: string; value: string }>;
@@ -494,20 +516,12 @@
       <DateInput required label="Fin" time bind:value={event.endsAt} />
     </div>
     <InputText label="Lieu" maxlength={255} bind:value={event.location} />
-    <InputField label="Compte Lydia bénéficiaire" hint="Commences à taper le nom du compte lydia">
-      <InputSearchObject
-        clearable
-        bind:object={event.beneficiary}
-        on:clear={() => {
-          event.beneficiary = undefined;
-        }}
-        value={event.beneficiary?.id}
-        labelKey="name"
-        valueKey="id"
-        search={(query) =>
-          new Fuse(availableLydiaAccounts, { keys: ['name'] }).search(query).map((r) => r.item)}
-      />
-    </InputField>
+    <InputLydiaAccounts
+      clearable
+      bind:account={event.beneficiary}
+      options={availableLydiaAccounts}
+      label="Compte Lydia bénéficiaire"
+    ></InputLydiaAccounts>
     <InputText
       label="E-mail de contact de l'orga"
       bind:value={event.contactMail}

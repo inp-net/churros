@@ -4,10 +4,10 @@
   import { goto } from '$app/navigation';
   import InputText from './InputText.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
-  import InputSchool from './InputSchool.svelte';
-  import InputStudentAssociation from './InputStudentAssociation.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
   import InputGroups from './InputGroups.svelte';
+  import InputSchools from './InputSchools.svelte';
+  import InputStudentAssociations from './InputStudentAssociations.svelte';
 
   export let service: {
     id?: string;
@@ -16,8 +16,8 @@
     url: string;
     logo: string;
     logoSourceType: LogoSourceType;
-    school?: { uid: string; name: string; color: string };
-    studentAssociation?: { uid?: string; name: string };
+    school?: { uid: string; name: string; id: string };
+    studentAssociation?: { uid?: string; name: string; id: string };
     group?: { id: string; uid: string; name: string; pictureFile: string; pictureFileDark: string };
   } = { name: '', description: '', url: '', logo: '', logoSourceType: LogoSourceType.Icon };
 
@@ -59,8 +59,8 @@
                   pictureFile: true,
                   pictureFileDark: true,
                 },
-                school: { uid: true, name: true, color: true },
-                studentAssociation: { uid: true, name: true },
+                school: { uid: true, name: true, id: true },
+                studentAssociation: { uid: true, name: true, id: true },
               },
             },
           },
@@ -99,12 +99,11 @@
       }}
     />
     <InputText label="Logo" bind:value={service.logo} maxlength={255} />
-    <InputSchool label="École" clearable uid={service.school?.uid} bind:object={service.school} />
-    <InputStudentAssociation
+    <InputSchools label="École" clearable bind:school={service.school} />
+    <InputStudentAssociations
       label="Association Etudiante"
       clearable
-      uid={service.studentAssociation?.uid}
-      bind:object={service.studentAssociation}
+      bind:association={service.studentAssociation}
     />
     <InputGroups clearable label="Groupe" bind:group={service.group} options={allGroups}
     ></InputGroups>

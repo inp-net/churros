@@ -55,6 +55,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             opensAt: true,
             closesAt: true,
             autojoinGroups: {
+              id: true,
               uid: true,
               name: true,
               pictureFile: true,
@@ -72,7 +73,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             openToSchools: {
               uid: true,
               name: true,
-              color: true,
+              id: true,
             },
             openToMajors: {
               shortName: true,
@@ -80,6 +81,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
               id: true,
             },
             openToGroups: {
+              id: true,
               uid: true,
               name: true,
               pictureFile: true,
@@ -113,7 +115,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
               openToSchools: {
                 name: true,
                 uid: true,
-                color: true,
+                id: true,
               },
               openToMajors: {
                 shortName: true,
@@ -121,12 +123,14 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
                 id: true,
               },
               openToGroups: {
+                id: true,
                 uid: true,
                 name: true,
                 pictureFile: true,
                 pictureFileDark: true,
               },
               autojoinGroups: {
+                id: true,
                 uid: true,
                 name: true,
                 pictureFileDark: true,
@@ -141,6 +145,11 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           beneficiary: {
             id: true,
             name: true,
+            group: {
+              name: true,
+              pictureFile: true,
+              pictureFileDark: true,
+            },
           },
           links: {
             value: true,

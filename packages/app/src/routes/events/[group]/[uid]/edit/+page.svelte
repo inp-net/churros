@@ -1,22 +1,37 @@
 <script lang="ts">
   import FormEvent from '$lib/components/FormEvent.svelte';
-  import { Selector, zeus } from '$lib/zeus';
+  import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
 
   export let data: PageData;
 
-  let availableLydiaAccounts: Array<{ name: string; id: string }> = [];
+  let availableLydiaAccounts: Array<{
+    name: string;
+    id: string;
+    group?:
+      | {
+          pictureFile: string;
+          pictureFileDark: string;
+          name: string;
+        }
+      | undefined;
+  }> = [];
 
   onMount(async () => {
-    const { lydiaAccountsOfGroup } = await $zeus.query({
-      lydiaAccountsOfGroup: [
-        { uid: data.event.group.uid },
-        Selector('LydiaAccount')({ id: true, name: true }),
-      ],
+    const { lydiaAccounts } = await $zeus.query({
+      lydiaAccounts: {
+        id: true,
+        name: true,
+        group: {
+          pictureFile: true,
+          pictureFileDark: true,
+          name: true,
+        },
+      },
     });
-    availableLydiaAccounts = lydiaAccountsOfGroup;
+    availableLydiaAccounts = lydiaAccounts;
   });
 </script>
 

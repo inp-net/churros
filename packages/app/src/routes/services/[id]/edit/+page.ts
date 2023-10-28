@@ -14,19 +14,21 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
           logo: true,
           logoSourceType: true,
           group: {
+            id: true,
             uid: true,
             name: true,
             pictureFile: true,
             pictureFileDark: true,
           },
           studentAssociation: {
+            id: true,
             uid: true,
             name: true,
           },
           school: {
+            id: true,
             uid: true,
             name: true,
-            color: true,
           },
         },
       ],

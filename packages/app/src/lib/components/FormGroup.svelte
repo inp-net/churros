@@ -11,9 +11,9 @@
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
-  import InputStudentAssociation from './InputStudentAssociation.svelte';
   import { toasts } from '$lib/toasts';
   import InputGroups from './InputGroups.svelte';
+  import InputStudentAssociations from './InputStudentAssociations.svelte';
 
   export let data: PageData;
   export let creatingSubgroup = false;
@@ -110,12 +110,11 @@
       />
 
       <div class="side-by-side">
-        <InputStudentAssociation
+        <InputStudentAssociations
           clearable
           label="AE de rattachement"
-          bind:object={studentAssociation}
-          uid={studentAssociation?.uid}
-        ></InputStudentAssociation>
+          bind:association={studentAssociation}
+        ></InputStudentAssociations>
       </div>
     {/if}
 
