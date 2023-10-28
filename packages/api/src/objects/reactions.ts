@@ -215,19 +215,18 @@ builder.mutationField('toggleReaction', (t) =>
         });
         return false;
       }
- 
-        await prisma.reaction.create({
-          data: {
-            emoji,
-            document: documentId ? { connect: { id: documentId } } : undefined,
-            article: articleId ? { connect: { id: articleId } } : undefined,
-            comment: commentId ? { connect: { id: commentId } } : undefined,
-            event: eventId ? { connect: { id: eventId } } : undefined,
-            author: { connect: { id: user!.id } },
-          },
-        });
-        return true;
-      
+
+      await prisma.reaction.create({
+        data: {
+          emoji,
+          document: documentId ? { connect: { id: documentId } } : undefined,
+          article: articleId ? { connect: { id: articleId } } : undefined,
+          comment: commentId ? { connect: { id: commentId } } : undefined,
+          event: eventId ? { connect: { id: eventId } } : undefined,
+          author: { connect: { id: user!.id } },
+        },
+      });
+      return true;
     },
   }),
 );

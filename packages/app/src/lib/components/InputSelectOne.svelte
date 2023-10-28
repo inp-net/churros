@@ -5,7 +5,11 @@
 
   export let value: string | undefined = undefined;
   export let label: string;
-  export let options: string[] | Record<string, string> | Map<string, string> | Array<[string, string]>;
+  export let options:
+    | string[]
+    | Record<string, string>
+    | Map<string, string>
+    | Array<[string, string]>;
   export let name: string | undefined = undefined;
   export let required = false;
   export let hint: string | undefined = undefined;

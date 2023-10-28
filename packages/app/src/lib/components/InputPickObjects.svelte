@@ -31,16 +31,16 @@
   function select(item: T) {
     return () => {
       if (multiple) {
-        temporarySelection = selected(item) ? temporarySelection.filter((i) => i.id !== item.id) : [...temporarySelection, item];
+        temporarySelection = selected(item)
+          ? temporarySelection.filter((i) => i.id !== item.id)
+          : [...temporarySelection, item];
         value = item;
       } else {
         value = item;
         selection = [item];
       }
 
-      if (closeOnSelect) 
-        dialog.close();
-      
+      if (closeOnSelect) dialog.close();
     };
   }
 

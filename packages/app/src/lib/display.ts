@@ -67,7 +67,7 @@ function naturalJoin(items: string[]): string {
   items = items.filter(Boolean);
   if (items.length === 0) return '';
   if (items.length === 1) return items[0];
-  return items.slice(0, - 1).join(', ') + ' et ' + items.at(-1);
+  return items.slice(0, -1).join(', ') + ' et ' + items.at(-1);
 }
 
 export const HELP_VISIBILITY_DYNAMIC: (
