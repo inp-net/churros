@@ -9,10 +9,12 @@
   export let placeholder = '';
   export let required = false;
   export let label: string;
+  export let element: HTMLInputElement | undefined = undefined;
 </script>
 
 <InputField {label} {required}>
   <BaseInputText
+    bind:element
     {placeholder}
     type={time ? 'datetime-local' : 'date'}
     bind:value

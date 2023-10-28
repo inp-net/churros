@@ -17,6 +17,8 @@
   export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let required = false;
   export let closeKeyboardOnEnter = false;
+  export let element: HTMLInputElement | undefined = undefined;
+  export let focused = false;
 
   // TODO use (HTMLInputElement).valueAsDate instead
   function stringifyValue(val: typeof value, type: string): string {
@@ -91,8 +93,6 @@
   let resettable = false;
   $: resettable = initial !== undefined && value !== initial;
 
-  let focused = false;
-
   let inputContainer: HTMLDivElement;
 
   onMount(() => {
@@ -113,10 +113,12 @@
       </div>
     {/if}
     <input
+      bind:this={element}
       class:danger={errored}
       class:primary={focused}
       on:change
       on:blur
+      on:focusout
       on:focus
       on:keyup
       on:keypress={(e) => {

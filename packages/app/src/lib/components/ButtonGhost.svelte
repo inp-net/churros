@@ -18,11 +18,13 @@
   {...$$restProps}
   class:dark-shadow={darkShadow}
   class:disabled
+  {disabled}
   {type}
   {href}
   use:tooltip={help}
   class="button-ghost {danger ? 'danger' : ''} {success ? 'success' : ''} {$$restProps.class}"
-  on:click><slot /></svelte:element
+  on:click
+  on:mousedown><slot /></svelte:element
 >
 
 <style lang="scss">

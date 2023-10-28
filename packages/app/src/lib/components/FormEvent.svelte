@@ -4,7 +4,7 @@
   import InputField from './InputField.svelte';
   import DateInput from './InputDate.svelte';
   import IconClose from '~icons/mdi/close';
-  import { type PaymentMethod, Visibility, zeus, EventFrequency } from '$lib/zeus';
+  import { type PaymentMethod, Visibility, zeus, EventFrequency, Selector } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
   import {
@@ -19,9 +19,8 @@
   import InputSelectOne from './InputSelectOne.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import FormEventTicket from './FormEventTicket.svelte';
-  import InputGroup from './InputGroup.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import InputPerson from './InputPerson.svelte';
   import FormPicture from './FormPicture.svelte';
   import InputSearchObject from './InputSearchObject.svelte';
@@ -31,8 +30,8 @@
   import InputLinks from './InputLinks.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputDate from './InputDate.svelte';
-  import InputListOfGroups from './InputListOfGroups.svelte';
   import { toasts } from '$lib/toasts';
+  import InputGroups from './InputGroups.svelte';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
@@ -367,6 +366,49 @@
     }>;
   };
 
+  export let eventQuery = Selector('Event')({
+    coOrganizers: {
+      id: true,
+      uid: true,
+      name: true,
+      pictureFile: true,
+      pictureFileDark: true,
+      studentAssociation: {
+        school: {
+          name: true,
+        },
+      },
+      children: {
+        name: true,
+        studentAssociation: {
+          school: {
+            name: true,
+          },
+        },
+      },
+    },
+    group: {
+      id: true,
+      uid: true,
+      name: true,
+      pictureFile: true,
+      pictureFileDark: true,
+      studentAssociation: {
+        school: {
+          name: true,
+        },
+      },
+      children: {
+        name: true,
+        studentAssociation: {
+          school: {
+            name: true,
+          },
+        },
+      },
+    },
+  });
+
   function permissionsFromLevel(level: 'readonly' | 'verifyer' | 'editor' | 'fullaccess'): {
     canEdit: boolean;
     canEditPermissions: boolean;
@@ -392,6 +434,21 @@
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const aspermissionlevel = (x: any) => x as 'readonly' | 'verifyer' | 'editor' | 'fullaccess';
+
+  let coOrganizersOptions: typeof event.coOrganizers = [];
+  let groupOptions: Array<typeof event.group> = [];
+
+  onMount(async () => {
+    const { groups } = await $zeus.query({
+      groups: [{}, eventQuery.group],
+    });
+
+    groupOptions = groups.filter((g) => $me?.groups.some((m) => m.group.id === g.id));
+
+    ({ groups: coOrganizersOptions } = await $zeus.query({
+      groups: [{}, eventQuery.coOrganizers],
+    }));
+  });
 </script>
 
 <form class="event" on:submit|preventDefault={async () => saveChanges()}>
@@ -400,12 +457,22 @@
     {#if event.id}
       <FormPicture rectangular objectName="Event" bind:object={event} />
     {/if}
-    <InputGroup required group={event.group} label="Groupe" bind:uid={event.group.uid} />
-    <InputListOfGroups
-      uids={event.coOrganizers.map((g) => g.uid)}
+    <InputGroups
+      options={groupOptions}
+      disallowed={event.coOrganizers}
+      required
+      bind:group={event.group}
+      label="Groupe"
+    />
+    <InputGroups
+      options={coOrganizersOptions}
+      disallowed={[event.group]}
+      disallowedExplanation={(_) => `Déjà choisi`}
+      multiple
       label="Co-organisé par"
+      placeholder="Aucun groupe"
       bind:groups={event.coOrganizers}
-    ></InputListOfGroups>
+    ></InputGroups>
     <InputText required label="Titre" maxlength={255} bind:value={event.title} />
     <InputSelectOne
       label="Visibilité"
