@@ -39,7 +39,7 @@
     >
       <div class="avatar" slot="thumbnail" let:object>
         {#if object}
-          <img src="//schools/{object.uid}.png" alt={object.name?.toString()} />
+          <img src="/schools/{object.uid}.png" alt={object.name?.toString()} />
           <span class="group-name">{object?.name}</span>
         {:else}
           <span class="group-name muted">{placeholder || 'Aucune école sélectionnée'}</span>
@@ -55,7 +55,7 @@
         class:disabled
       >
         <div class="selected-badge" class:selected><IconCheck></IconCheck></div>
-        <img src="//schools/{item.uid}.png" alt={item.name} />
+        <img src="/schools/{item.uid}.png" alt={item.name} />
         {#if disabled}
           <span class="name why">{disallowedExplanation(item)}</span>
         {:else}
