@@ -181,7 +181,7 @@
     flex-grow: 1;
   }
 
-  .body img{
+  .body :global(img) {
     max-width: 300px;
   }
 
