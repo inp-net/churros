@@ -136,17 +136,18 @@ builder.queryField('documentsOfSubject', (t) =>
     args: {
       subjectUid: t.arg.string({ required: true }),
       yearTier: t.arg.int({ required: true }),
+      forApprentices: t.arg.boolean({ required: true }),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin || user?.canAccessDocuments);
     },
-    async resolve(query, _, { subjectUid, yearTier }) {
+    async resolve(query, _, { subjectUid, yearTier, forApprentices }) {
       /* eslint-disable unicorn/no-null */
       const subject = await prisma.subject.findFirstOrThrow({
         where: {
           OR: [
-            { uid: subjectUid, yearTier },
-            { uid: subjectUid, yearTier: null },
+            { uid: subjectUid, yearTier, forApprentices },
+            { uid: subjectUid, yearTier: null, forApprentices },
           ],
         },
       });
@@ -168,18 +169,19 @@ builder.queryField('document', (t) =>
     args: {
       subjectUid: t.arg.string(),
       subjectYearTier: t.arg.int({ required: true }),
+      subjectForApprentices: t.arg.boolean(),
       documentUid: t.arg.string(),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin || user?.canAccessDocuments);
     },
-    async resolve(query, _, { subjectUid, documentUid, subjectYearTier }) {
+    async resolve(query, _, { subjectUid, documentUid, subjectYearTier, subjectForApprentices }) {
       /* eslint-disable unicorn/no-null */
       const subject = await prisma.subject.findFirstOrThrow({
         where: {
           OR: [
-            { uid: subjectUid, yearTier: subjectYearTier },
-            { uid: subjectUid, yearTier: null },
+            { uid: subjectUid, yearTier: subjectYearTier, forApprentices: subjectForApprentices },
+            { uid: subjectUid, yearTier: null, forApprentices: subjectForApprentices },
           ],
         },
       });

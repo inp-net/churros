@@ -175,6 +175,8 @@ const GouttesDeau = await prisma.subject.create({
     name: "Gouttes d'eau",
     uid: 'gouttes-deau',
     majors: { connect: [{ id: MécaniqueDesFluides.id }] },
+    yearTier: 1,
+    forApprentices: false,
   },
 });
 
@@ -327,6 +329,7 @@ for (const [i, data] of usersData.entries()) {
       graduationYear: 2020 + (i % 6),
       major: { connect: { id: major.id } },
       credentials: { create: { type: CredentialType.Password, value: await hash('a') } },
+      canAccessDocuments: true,
     },
   });
 }

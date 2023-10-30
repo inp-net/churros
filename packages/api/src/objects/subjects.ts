@@ -128,16 +128,17 @@ builder.queryField('subject', (t) =>
     args: {
       uid: t.arg.string(),
       yearTier: t.arg.int(),
+      forApprentices: t.arg.boolean(),
     },
     authScopes: () => true,
-    async resolve(query, _, { uid, yearTier }) {
+    async resolve(query, _, { uid, yearTier, forApprentices }) {
       return prisma.subject.findFirstOrThrow({
         ...query,
         /* eslint-disable unicorn/no-null */
         where: {
           OR: [
-            { uid, yearTier },
-            { uid, yearTier: null },
+            { uid, yearTier, forApprentices },
+            { uid, yearTier: null, forApprentices },
           ],
         },
         /* eslint-enable unicorn/no-null */

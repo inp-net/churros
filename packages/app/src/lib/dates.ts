@@ -111,3 +111,14 @@ export function formatRecurrence(frequency: EventFrequency, startsAt: Date, ends
 export function parseYearTier(yearTierDisplay: string): number {
   return Number.parseInt(yearTierDisplay.replace(/a$/, ''), 10);
 }
+
+export function parseDisplayYearTierAndForApprentices(param: string): {
+  yearTier: number;
+  forApprentices: boolean;
+} {
+  const [yearTierDisplay, fiseOrFisa] = param.split('-', 2) as [string, string];
+  return {
+    yearTier: parseYearTier(yearTierDisplay),
+    forApprentices: fiseOrFisa === 'fisa',
+  };
+}
