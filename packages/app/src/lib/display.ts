@@ -186,7 +186,14 @@ export const ORDER_DOCUMENT_TYPES: DocumentType[] = [
   DocumentType.Miscellaneous,
 ];
 
-export const ORDER_REACTIONS: string[] = ['👍', '👎', '👏', '😂', '😮', '😡', '❤️', '💀', '🎉'];
+export const ORDER_REACTIONS = ['❤️', '👍', '👎', '😂', '😮', '😡', '💀', '🎉'] as const;
+
+// export const ICONS_REACTIONS: Record<typeof ORDER_REACTIONS[number], {outlined: SvelteComponent<any>, filled: SvelteComponent<any>} > = {
+//   '❤️': {
+//     filled: IconHeart,
+//     outlined:
+//   }
+// }
 
 export function orderedDisplay<T extends string | number | symbol>(
   order: T[],

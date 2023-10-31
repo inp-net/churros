@@ -2,11 +2,11 @@
   import { intlFormatDistance, isFuture } from 'date-fns';
   import { Visibility, type EventFrequency, zeus } from '$lib/zeus';
   import IconInfo from '~icons/mdi/information-outline';
+  import IconHeart from '~icons/mdi/heart-outline';
+  import IconHeartFilled from '~icons/mdi/heart';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
   import { groupLogoSrc } from '$lib/logos';
-  import IconHeart from '~icons/mdi/heart-outline';
-  import IconHeartFilled from '~icons/mdi/heart';
   import { isDark } from '$lib/theme';
   import { env } from '$env/dynamic/public';
   import { formatEventDates } from '$lib/dates';
@@ -226,7 +226,11 @@
   }
 
   .visibility {
+    padding: 0.2em 0.7em;
+    margin-left: auto;
     font-size: 0.7em;
+    background: var(--muted-bg);
+    border-radius: var(--radius-block);
   }
 
   .image {

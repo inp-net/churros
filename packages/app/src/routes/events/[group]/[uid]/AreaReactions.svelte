@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import { ORDER_REACTIONS } from '$lib/display';
   import { zeus } from '$lib/zeus';
 
@@ -11,11 +11,12 @@
 
 <ul class="nobullet">
   {#each ORDER_REACTIONS as reaction}
-    <li>
-      <ButtonSecondary
-        highlighted={myReactions[reaction]}
+    <li class:highlighted={myReactions[reaction]}>
+      <ButtonGhost
         on:click={async () => {
           if (myReactions[reaction]) {
+            reactionCounts[reaction]--;
+            myReactions[reaction] = false;
             const { deleteReaction } = await $zeus.mutate({
               deleteReaction: [
                 {
@@ -25,11 +26,11 @@
                 true,
               ],
             });
-            if (deleteReaction) {
-              reactionCounts[reaction]--;
-              myReactions[reaction] = false;
-            }
+            reactionCounts[reaction] += deleteReaction ? 0 : 1;
+            myReactions[reaction] = !deleteReaction;
           } else {
+            reactionCounts[reaction] = (reactionCounts[reaction] ?? 0) + 1;
+            myReactions[reaction] = true;
             const { upsertReaction } = await $zeus.mutate({
               upsertReaction: [
                 {
@@ -43,9 +44,10 @@
             myReactions[reaction] = true;
           }
         }}
-        >{reaction}
-        <span class="count">{reactionCounts[reaction] ?? 0}</span>
-      </ButtonSecondary>
+      >
+        {reaction}
+        <span class="count">{reactionCounts[reaction] ?? 0} </span>
+      </ButtonGhost>
     </li>
   {/each}
 </ul>
@@ -57,7 +59,17 @@
     gap: 0.75rem;
   }
 
+  li.highlighted :global(.button-ghost) {
+    color: var(--primary-bg);
+    background: #9ce0ff !important;
+  }
+
+  li :global(.button-ghost) {
+    padding: 0.25em 0.5em;
+  }
+
   .count {
+    margin-left: 0.5em;
     font-family: var(--font-mono);
   }
 </style>

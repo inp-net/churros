@@ -8,10 +8,14 @@
   import IconGlobe from '~icons/mdi/web';
   import { tooltip } from '$lib/tooltip';
 
+  export let showTooltip = false;
   export let visibility: Visibility | undefined;
 </script>
 
-<span class="visibility" use:tooltip={visibility ? DISPLAY_VISIBILITIES[visibility] : undefined}>
+<span
+  class="visibility"
+  use:tooltip={showTooltip && visibility ? DISPLAY_VISIBILITIES[visibility] : undefined}
+>
   {#if visibility === Visibility.Private}
     <IconLock />
   {:else if visibility === Visibility.Unlisted}

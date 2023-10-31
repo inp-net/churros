@@ -54,7 +54,12 @@
   }}
 />
 
-<nav id="navigation-top" class:scrolled class:transparent={scanningTickets}>
+<nav
+  style:z-index={scrolled ? '10' : '-1'}
+  id="navigation-top"
+  class:scrolled
+  class:transparent={scanningTickets}
+>
   {#if scanningTickets}
     <div class="current-event">
       <ButtonBack />
@@ -119,7 +124,6 @@
     top: 0;
     right: 0;
     left: 0;
-    z-index: 10;
     display: flex;
     flex-direction: row;
     gap: 1rem;
@@ -151,11 +155,11 @@
   }
 
   .wordmark {
+    display: flex;
+    align-items: start;
     width: 10rem;
     height: 3rem;
     object-fit: cover;
-    display: flex;
-    align-items: start;
   }
 
   .profilepic {

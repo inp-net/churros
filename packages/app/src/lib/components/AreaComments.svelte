@@ -2,7 +2,6 @@
   import { zeus } from '$lib/zeus';
   import CardComment from '$lib/components/CardComment.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
-  import InputLongText from './InputLongText.svelte';
   import { me } from '$lib/session';
   import Alert from './Alert.svelte';
   import { page } from '$app/stores';
@@ -91,22 +90,17 @@
 </script>
 
 {#if $me}
-  <form
-    on:submit|preventDefault={async () => {
-      await addComment();
-    }}
-    class="new-comment"
-  >
-    <InputLongText
-      submitShortcut
-      label=""
-      rows="2"
-      rich
-      bind:value={newComment.body}
-      placeholder="Ajouter un commentaire"
-    />
-    <ButtonSecondary submits>Commenter</ButtonSecondary>
-  </form>
+  <CardComment
+    bodyHtml=""
+    bind:body={newComment.body}
+    author={$me}
+    id=""
+    canReply={false}
+    createdAt={new Date()}
+    updatedAt={undefined}
+    creating
+    on:edit={async () => addComment()}
+  ></CardComment>
 
   <ul class="nobullet comments">
     {#each comments.edges.filter(({ node: { inReplyToId } }) => !inReplyToId) as { node }}
@@ -137,17 +131,7 @@
   </Alert>
 {/if}
 
-<style lang="scss">
-  .new-comment {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-
-    & :global(> :first-child) {
-      flex-grow: 1;
-    }
-  }
-
+<style>
   .comments {
     display: flex;
     flex-direction: column;
