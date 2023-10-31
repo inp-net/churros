@@ -10,6 +10,7 @@
     name: string;
     shortName: string;
     yearTier?: number | undefined;
+    forApprentices?: boolean;
     minors: Array<{ name: string; uid: string; shortName: string }>;
     majors: Array<{ name: string; uid: string; shortName: string }>;
   };
@@ -30,6 +31,7 @@
         name: true,
         shortName: true,
         yearTier: true,
+        forApprentices: true,
         majors: {
           uid: true,
           name: true,
@@ -82,9 +84,9 @@
     labelKey="name"
   >
     <span class="label" slot="item" let:item
-      >{item.shortName || item.name} · {item.yearTier}A {item.majors
-        .map((s) => s.shortName)
-        .join(', ')}
+      >{item.shortName || item.name} · {item.yearTier}A {item.forApprentices
+        ? 'FISA '
+        : ''}{item.majors.map((s) => s.shortName).join(', ')}
       {#if item.minors.length > 0}({item.minors.map((s) => s.shortName).join(', ')}){/if}</span
     >
   </InputSearchObject>
