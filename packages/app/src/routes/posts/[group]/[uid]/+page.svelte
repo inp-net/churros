@@ -13,8 +13,7 @@
   import IconHeart from '~icons/mdi/heart-outline';
   import IconHeartFilled from '~icons/mdi/heart';
   import IconInfo from '~icons/mdi/information-outline';
-  import { isFuture } from 'date-fns';
-  import { intlFormatDistance } from 'date-fns/fp';
+  import { isFuture, intlFormatDistance } from 'date-fns';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import { zeus } from '$lib/zeus';
