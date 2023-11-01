@@ -68,7 +68,7 @@
       <a href="/groups/{group.uid}" class="group">{group.name}</a>
       <span class="separator">·</span>
       <span class="date">
-        {intlFormatDistance(new Date(), publishedAt)}
+        {intlFormatDistance(publishedAt, new Date())}
       </span>
       <BadgeVisibility {visibility} />
     </section>
