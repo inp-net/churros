@@ -22,6 +22,8 @@ function connectLdap(): ldap.Client {
   return ldapClient;
 }
 
+type LdapBoolean = 'TRUE' | 'FALSE' | boolean;
+
 /* interface LdapSchool {
   objectClass: string[];
   o: string;
@@ -75,16 +77,16 @@ interface LdapUser {
   uidParrain?: string[];
 }
 
-/* interface LdapGroup {
+interface LdapGroup {
   objectClass: string[];
-  cn: string;
+  cn?: string;
   displayName: string;
   gidNumber: number;
-  hasWebsite: boolean;
+  hasWebsite: LdapBoolean;
   memberUid: string[];
 }
 
-interface LdabClub extends LdapGroup {
+interface LdapClub extends LdapGroup {
   activite: string;
   anneePassation: number;
   ecole: string;
@@ -95,7 +97,7 @@ interface LdabClub extends LdapGroup {
   tresorier: string;
   vicePresident: string[];
   typeClub?: string;
-} */
+}
 
 function hashPassword(password: string): string {
   const salt = crypto.randomBytes(4);
@@ -610,20 +612,44 @@ async function createLdapClub(
   },
 ): Promise<void> {
   return new Promise((resolve, reject) => {
+    const president = club.members.find((m) => m.president)?.user.uid;
+    // Check if the club has a president
+    if (!president) {
+      reject(new Error('No president'));
+      return;
+    }
+
+    const tresorier = club.members.find((m) => m.treasurer)?.user.uid;
+    // Check if the club has a treasurer
+    if (!tresorier) {
+      reject(new Error('No treasurer'));
+      return;
+    }
+
+    // Get gidNumber
+    const gidNumber = Number(findFreeGidNumber());
+
+    // Check if gidNumber is valid
+    if (!gidNumber) {
+      reject(new Error('No gidNumber'));
+      return;
+    }
+
     const clubDn = `cn=${club.ldapUid},ou=clubs,ou=groups,o=${club.studentAssociation.school.uid},${LDAP_BASE_DN}`;
-    const clubAttributes = {
+    const clubAttributes: LdapClub = {
       objectClass: ['top', 'posixGroup', 'Groupe', 'Club'],
       displayName: club.name,
-      gidNumber: findFreeGidNumber(),
+      mailAlias: [`${club.ldapUid}@${club.studentAssociation.school.internalMailDomain}`],
+      gidNumber,
       hasWebsite: 'FALSE',
       memberUid: club.members.map((m) => m.user.uid),
       activite: 'club',
       anneePassation: club.members.find((m) => m.president)?.user.graduationYear ?? 0,
       ecole: `o=${club.studentAssociation.school.uid},${LDAP_BASE_DN}`,
-      local: club.address,
-      president: club.members.find((m) => m.president)?.user.uid,
+      local: [club.address],
+      president,
       secretaire: club.members.filter((m) => m.secretary).map((m) => m.user.uid),
-      tresorier: club.members.find((m) => m.treasurer)?.user.uid,
+      tresorier,
       vicePresident: club.members.filter((m) => m.vicePresident).map((m) => m.user.uid),
       typeClub: 'club',
     };
@@ -646,4 +672,51 @@ async function createLdapClub(
   });
 }
 
-export { queryLdapUser, createLdapUser, resetLdapUserPassword, createLdapGroup, createLdapClub };
+/* Sync ldap group members
+Take a group from the database and sync it's members with ldap
+The group must have a ldapUid and a studentAssociation with a school
+The group must have a list of members with a user created in ldap
+syncLdapGroupMembers(group: Group): Promise<void>
+*/
+
+async function syncLdapGroupMembers(group: Group & { studentAssociation: StudentAssociation & { school: School }, members: Array<GroupMember & { user: User }> }): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (!group.studentAssociation.school) {
+      reject(new Error('No school'));
+      return;
+    }
+
+    if (!group.ldapUid) {
+      reject(new Error('No ldapUid'));
+      return;
+    }
+
+    const groupDn = `cn=${group.ldapUid},ou=grp-informels,ou=groups,o=${group.studentAssociation.school.uid},${LDAP_BASE_DN}`;
+    const groupChange = new ldap.Change({
+      operation: 'replace',
+      modification: {
+        type: 'memberUid',
+        // users that exist in the database but not in ldap will be ignored
+        values: group.members.map((m) => m.user.uid).filter((uid) => queryLdapUser(uid) !== null),
+      },
+    });
+
+    connectLdap().bind(LDAP_BIND_DN, LDAP_BIND_PASSWORD, (bindError) => {
+      if (bindError) {
+        console.error('LDAP Bind Error:', bindError);
+        // Handle the bind error
+      } else {
+        connectLdap().modify(groupDn, groupChange, (error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolve();
+        });
+      }
+    });
+  });
+}
+
+export { queryLdapUser, createLdapUser, resetLdapUserPassword, createLdapGroup, createLdapClub, syncLdapGroupMembers };
