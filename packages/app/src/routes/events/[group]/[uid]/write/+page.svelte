@@ -26,7 +26,7 @@
 
 <div class="content">
   <h1><ButtonBack /> Écrire un post sur {data.event.title}</h1>
-  <FormArticle afterGoTo={() => '..'} hideEvent bind:data={articleData} />
+  <FormArticle afterGoTo={() => '..'} bind:data={articleData} />
 </div>
 
 <style>

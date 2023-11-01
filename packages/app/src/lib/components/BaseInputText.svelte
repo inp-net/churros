@@ -105,7 +105,7 @@
   });
 </script>
 
-<div class="wrapper base-input typo-paragraph" class:danger={errored} class:primary={focused}>
+<div class="wrapper base-input typo-paragraph" class:danger={errored} class:focused>
   <div class="input-area" bind:this={inputContainer}>
     {#if $$slots.before}
       <div class="left-icon">
@@ -115,7 +115,7 @@
     <input
       bind:this={element}
       class:danger={errored}
-      class:primary={focused}
+      class:focused
       on:change
       on:blur
       on:focusout
@@ -203,12 +203,21 @@
   }
 
   .wrapper:hover,
-  .wrapper:focus-within,
   .wrapper:hover input,
+  .wrapper:focus-within,
   .wrapper:focus-within input {
     color: var(--hover-text);
     background: var(--hover-bg);
+  }
+
+  .wrapper:hover,
+  .wrapper:hover input {
     border-color: var(--hover-border);
+  }
+
+  .wrapper:focus-within,
+  .wrapper:focus-within input {
+    border-color: var(--primary-border);
   }
 
   .wrapper > div {

@@ -36,8 +36,12 @@ export const _articleQuery = Selector('Article')({
     uid: true,
     title: true,
     startsAt: true,
+    endsAt: true,
     pictureFile: true,
     visibility: true,
+    recurringUntil: true,
+    frequency: true,
+    location: true,
   },
   eventId: true,
   links: {

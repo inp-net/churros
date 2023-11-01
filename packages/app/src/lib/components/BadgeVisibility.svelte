@@ -5,9 +5,10 @@
   import IndicatorVisibility from './IndicatorVisibility.svelte';
 
   export let visibility: Visibility;
+  export let inline = false;
 </script>
 
-<div class="badge-visibility" use:tooltip={HELP_VISIBILITY[visibility]}>
+<div class:inline class="badge-visibility" use:tooltip={HELP_VISIBILITY[visibility]}>
   <IndicatorVisibility {visibility}></IndicatorVisibility>
   {DISPLAY_VISIBILITIES[visibility]}
 </div>
@@ -18,5 +19,9 @@
     font-size: 0.9em;
     background: var(--muted-bg);
     border-radius: var(--radius-block);
+  }
+
+  .badge-visibility.inline {
+    display: inline-block;
   }
 </style>

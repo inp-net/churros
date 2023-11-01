@@ -62,20 +62,25 @@ export function formatEventDates(
   endsAt: Date,
   recurringUntil: Date | undefined,
 ): string {
-  switch (frequency) {
-    case EventFrequency.Once: {
-      return new Intl.DateTimeFormat('fr-FR', {
-        dateStyle: 'full',
-        timeStyle: 'short',
-      })
-        .formatRange(startsAt, endsAt)
-        .replaceAll(new Date().getFullYear().toString(), '');
-    }
+  try {
+    switch (frequency) {
+      case EventFrequency.Once: {
+        return new Intl.DateTimeFormat('fr-FR', {
+          dateStyle: 'full',
+          timeStyle: 'short',
+        })
+          .formatRange(startsAt, endsAt)
+          .replaceAll(new Date().getFullYear().toString(), '');
+      }
 
-    default: {
-      if (recurringUntil) return `Du ${formatDate(startsAt)} au ${formatDate(recurringUntil)}`;
-      return `À partir du ${formatDate(startsAt)}`;
+      default: {
+        if (recurringUntil) return `Du ${formatDate(startsAt)} au ${formatDate(recurringUntil)}`;
+        return `À partir du ${formatDate(startsAt)}`;
+      }
     }
+  } catch (error) {
+    console.error(error);
+    return '';
   }
 }
 

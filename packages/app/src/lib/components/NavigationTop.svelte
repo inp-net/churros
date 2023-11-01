@@ -160,7 +160,8 @@
     transition: all 0.75s ease;
   }
 
-  nav.scrolled .cobweb {
+  nav.scrolled .cobweb,
+  nav:hover .cobweb {
     top: 0;
     left: 0;
     transition-duration: 3s;

@@ -49,6 +49,7 @@
     position: relative;
     display: inline-block;
     text-align: center;
+    border-radius: var(--radius-block);
     outline: 0 solid var(--ring);
     transition: all 80ms ease-in;
 
@@ -56,7 +57,6 @@
       width: 100%;
       padding: 1rem;
       border: var(--border-block) dashed var(--border);
-      border-radius: var(--radius-block);
     }
 
     &:focus-within,

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { SvelteComponent } from 'svelte';
+  import LoadingSpinner from './LoadingSpinner.svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let icon: typeof SvelteComponent<any> | undefined = undefined;
@@ -7,6 +8,8 @@
   export let insideProse = false;
   export let submits = false;
   export let danger = false;
+  export let loading = false;
+  export let disabled = false;
 </script>
 
 <svelte:element
@@ -20,8 +23,13 @@
   on:click
   role="button"
   tabindex="0"
+  disabled={disabled || loading}
 >
-  {#if icon}
+  {#if loading}
+    <div class="icon">
+      <LoadingSpinner></LoadingSpinner>
+    </div>
+  {:else if icon}
     <div class="icon">
       <svelte:component this={icon} />
     </div>

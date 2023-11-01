@@ -1,10 +1,9 @@
 <script lang="ts">
-  import IconCheck from '~icons/mdi/check';
   import IconClose from '~icons/mdi/close';
   import IconEvent from '~icons/mdi/calendar-outline';
-  import { type Visibility, zeus } from '$lib/zeus';
-  import InputPickObjects from './InputPickObjects.svelte';
+  import type { Visibility } from '$lib/zeus';
   import ButtonGhost from './ButtonGhost.svelte';
+  import InputEvent from './InputEvent.svelte';
 
   type Event = {
     id: string;
@@ -21,39 +20,10 @@
   export let suggestions: Event[] = [];
   export let clearable = false;
 
-  function allowed(uid: string) {
-    const result =
-      (allow.length > 0 ? allow.includes(uid) : true) &&
-      (except.length > 0 ? !except.includes(uid) : true);
-    return result;
-  }
-
-  async function search(query: string) {
-    const { searchEvents } = await $zeus.query({
-      searchEvents: [
-        { q: query, groupUid },
-        {
-          uid: true,
-          id: true,
-          title: true,
-          pictureFile: true,
-          startsAt: true,
-          visibility: true,
-        },
-      ],
-    });
-    return searchEvents.filter(({ uid }) => allowed(uid)).map((item) => ({ item }));
-  }
+  const asEventType = (x: unknown) => x as Event;
 </script>
 
-<InputPickObjects
-  options={suggestions}
-  {clearable}
-  {search}
-  pickerTitle="Choisir un évènement"
-  searchKeys={['title']}
-  bind:value={event}
->
+<InputEvent {groupUid} {clearable} {allow} {except} {suggestions} bind:event>
   <div class:empty={!event} class="pill" slot="input" let:value let:openPicker let:clear>
     <ButtonGhost on:click={openPicker}>
       <span class="icon">
@@ -61,7 +31,7 @@
       </span>
       <span class="text">
         {#if value}
-          {value.title}
+          {asEventType(value).title}
         {:else}
           Évènement
         {/if}
@@ -75,20 +45,7 @@
       </div>
     {/if}
   </div>
-  <div
-    slot="item"
-    let:item
-    let:selected
-    let:disabled
-    class="suggestion"
-    class:selected
-    class:disabled
-  >
-    <div class="selected-badge" class:selected><IconCheck></IconCheck></div>
-    <img src={item.pictureFile} alt={item.title} />
-    <span class="name">{item.title}</span>
-  </div>
-</InputPickObjects>
+</InputEvent>
 
 <style lang="scss">
   .pill {
@@ -125,66 +82,5 @@
 
   .pill .icon {
     font-size: 0.85em;
-  }
-
-  .suggestion {
-    --size: 5rem;
-
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    row-gap: 0.5rem;
-    align-items: center;
-    width: calc(1.5 * var(--size));
-    padding: 0.5rem;
-    text-align: center;
-  }
-
-  .suggestion img {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: var(--size);
-    overflow: hidden;
-    color: var(--muted-text);
-    text-align: center;
-    background: var(--muted-bg);
-    border: 0 solid var(--primary-border);
-    border-radius: var(--radius-block);
-    transition: all 0.25s ease;
-    object-fit: contain;
-  }
-
-  .suggestion.disabled {
-    opacity: 0.5;
-  }
-
-  .suggestion.selected img {
-    border-width: calc(2 * var(--border-block));
-  }
-
-  .suggestion .selected-badge {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    color: var(--primary-text);
-    content: '';
-    background: var(--primary-bg);
-    border-radius: 50%;
-    opacity: 0;
-    transition: all 0.125s ease;
-    transform: scale(0);
-  }
-
-  .suggestion.selected .selected-badge {
-    opacity: 1;
-    transform: scale(1);
   }
 </style>

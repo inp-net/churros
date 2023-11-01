@@ -1,10 +1,6 @@
 <script lang="ts">
-  import IconPlus from '~icons/mdi/plus';
-  import IconEdit from '~icons/mdi/edit';
+  import IconCheck from '~icons/mdi/check';
   import { type Visibility, zeus } from '$lib/zeus';
-  import InputField from './InputField.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import { page } from '$app/stores';
   import InputPickObjects from './InputPickObjects.svelte';
 
   type Event = {
@@ -16,8 +12,6 @@
     visibility: Visibility;
   };
   export let groupUid: string;
-  export let label: string;
-  export let required = false;
   export let allow: string[] = [];
   export let except: string[] = [];
   export let event: Event | undefined = undefined;
@@ -49,43 +43,89 @@
   }
 </script>
 
-<InputField {label} {required}>
-  <div class="side-by-side">
-    <InputPickObjects
-      options={suggestions}
-      {clearable}
-      {search}
-      pickerTitle="Choisir un évènement"
-      searchKeys={['title']}
-      bind:value={event}
-    ></InputPickObjects>
-    {#if event}
-      <ButtonSecondary
-        circle
-        insideProse
-        icon={IconEdit}
-        href="/events/{groupUid}/{event.uid}/edit?{new URLSearchParams({
-          back: $page.url.pathname,
-        }).toString()}"
-      />
-    {:else}
-      <ButtonSecondary
-        circle
-        icon={IconPlus}
-        href="/events/{groupUid}/create?{new URLSearchParams({
-          back: $page.url.pathname,
-        }).toString()}"
-      />
-    {/if}
+<InputPickObjects
+  options={suggestions}
+  {clearable}
+  {search}
+  pickerTitle="Choisir un évènement"
+  searchKeys={['title']}
+  bind:value={event}
+>
+  <slot name="input" slot="input" let:value let:openPicker let:clear {value} {openPicker} {clear} />
+  <div
+    slot="item"
+    let:item
+    let:selected
+    let:disabled
+    class="suggestion"
+    class:selected
+    class:disabled
+  >
+    <div class="selected-badge" class:selected><IconCheck></IconCheck></div>
+    <img src={item.pictureFile} alt={item.title} />
+    <span class="name">{item.title}</span>
   </div>
-</InputField>
+</InputPickObjects>
 
 <style lang="scss">
-  .side-by-side {
-    display: grid;
-    flex-wrap: wrap;
-    grid-template-columns: auto min-content;
-    gap: 1rem;
+  .suggestion {
+    --size: 5rem;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
     align-items: center;
+    width: calc(1.5 * var(--size));
+    padding: 0.5rem;
+    text-align: center;
+  }
+
+  .suggestion img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: var(--size);
+    overflow: hidden;
+    color: var(--muted-text);
+    text-align: center;
+    background: var(--muted-bg);
+    border: 0 solid var(--primary-border);
+    border-radius: var(--radius-block);
+    transition: all 0.25s ease;
+    object-fit: contain;
+  }
+
+  .suggestion.disabled {
+    opacity: 0.5;
+  }
+
+  .suggestion.selected img {
+    border-width: calc(2 * var(--border-block));
+  }
+
+  .suggestion .selected-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    color: var(--primary-text);
+    content: '';
+    background: var(--primary-bg);
+    border-radius: 50%;
+    opacity: 0;
+    transition: all 0.125s ease;
+    transform: scale(0);
+  }
+
+  .suggestion.selected .selected-badge {
+    opacity: 1;
+    transform: scale(1);
   }
 </style>
