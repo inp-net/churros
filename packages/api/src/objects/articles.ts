@@ -213,7 +213,7 @@ builder.mutationField('upsertArticle', (t) =>
       id: t.arg.id({ required: false }),
       authorId: t.arg.id(),
       groupId: t.arg.id(),
-      title: t.arg.string(),
+      title: t.arg.string({ validate: { minLength: 1 } }),
       body: t.arg.string(),
       publishedAt: t.arg({ type: DateTimeScalar }),
       links: t.arg({ type: [LinkInput] }),

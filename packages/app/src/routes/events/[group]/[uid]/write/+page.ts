@@ -23,6 +23,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
         { uid: params.group },
         {
           pictureFile: true,
+          pictureFileDark: true,
           name: true,
           uid: true,
           id: true,

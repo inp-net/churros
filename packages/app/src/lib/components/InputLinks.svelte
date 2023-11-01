@@ -122,9 +122,10 @@
                   <GhostButton
                     title="Modifier les remplacements"
                     on:click={() => {
-                      for (const [key, value] of url.searchParams)
-                        {if (/^\[.*]$/.test(value))
-                          replacements[key] = value.replaceAll(/^\[|]$/g, '');}
+                      for (const [key, value] of url.searchParams) {
+                        if (/^\[.*]$/.test(value))
+                          replacements[key] = value.replaceAll(/^\[|]$/g, '');
+                      }
 
                       editingComputedLink = link.name;
                     }}

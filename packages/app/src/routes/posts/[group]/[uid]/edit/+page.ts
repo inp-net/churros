@@ -14,6 +14,8 @@ export const _articleQuery = Selector('Article')({
     uid: true,
     name: true,
     id: true,
+    pictureFile: true,
+    pictureFileDark: true,
     studentAssociation: { school: { name: true } },
     children: {
       name: true,

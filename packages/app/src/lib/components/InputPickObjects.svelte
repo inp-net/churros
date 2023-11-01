@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { MaybePromise } from '@sveltejs/kit';
+
   import Fuse from 'fuse.js';
   import ButtonGhost from './ButtonGhost.svelte';
   import IconSearch from '~icons/mdi/magnify';
@@ -12,6 +14,7 @@
   export let disabledOptions: T[] = [];
   export let multiple = false;
   export let searchKeys: string[] = [];
+  export let search: ((query: string) => MaybePromise<Array<{ item: T }>>) | undefined = undefined;
   // why the fuck does eslint think that T | undefined has somehow redundance ? T is $$Generic<{id: string}> and has no overlap with undefined whatsoever???
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   export let value: T | undefined = undefined;
@@ -45,13 +48,26 @@
     };
   }
 
+  function openPicker() {
+    dialog.showModal();
+  }
+
+  function clear() {
+    value = undefined;
+    selection = [];
+  }
+
   $: selected = (item: T) => {
     if (multiple) return temporarySelection.some((i) => i.id === item.id);
     return value?.id === item.id;
   };
 
-  $: searcher = new Fuse(options, { keys: searchKeys });
-  $: shownOptions = query.length > 1 ? searcher.search(query).map(({ item }) => item) : options;
+  $: searcher = search ? { search } : new Fuse(options, { keys: searchKeys });
+  async function shownOptions(query: string) {
+    if (query.length <= 1) return options;
+    const results = await searcher.search(query);
+    return results.map((r) => r.item);
+  }
 
   let groupsListElement: HTMLUListElement;
   let searchFocused = false;
@@ -81,26 +97,30 @@
       class:search-not-empty={query.length > 0}
       bind:this={groupsListElement}
     >
-      {#each shownOptions as item (item.id)}
-        <li>
-          <!-- We use mousedown instead of click so that an element can still be selected while an input is focused. Otherwise, clicking on the element just closes the keyboard (which is pretty cringe) -->
-          <ButtonGhost
-            disabled={disabledOptions.some((option) => option.id === item.id)}
-            on:mousedown={select(item)}
-          >
-            <slot
-              name="item"
-              {item}
-              selected={selected(item)}
+      {#await shownOptions(query)}
+        <li class="muted loading">Chargement...</li>
+      {:then options}
+        {#each options as item (item.id)}
+          <li>
+            <!-- We use mousedown instead of click so that an element can still be selected while an input is focused. Otherwise, clicking on the element just closes the keyboard (which is pretty cringe) -->
+            <ButtonGhost
               disabled={disabledOptions.some((option) => option.id === item.id)}
-            />
-          </ButtonGhost>
-        </li>
-      {:else}
-        <li>
-          <slot name="no-results">Aucun résultat</slot>
-        </li>
-      {/each}
+              on:mousedown={select(item)}
+            >
+              <slot
+                name="item"
+                {item}
+                selected={selected(item)}
+                disabled={disabledOptions.some((option) => option.id === item.id)}
+              />
+            </ButtonGhost>
+          </li>
+        {:else}
+          <li>
+            <slot name="no-results">Aucun résultat</slot>
+          </li>
+        {/each}
+      {/await}
     </ul>
     <div class="search">
       {#if searchKeys.length > 0}
@@ -133,42 +153,36 @@
   </div>
 </Modal>
 
-<div class="picker-input">
-  <div class="current-value">
-    {#if multiple}
-      <ul class="selection nobullet">
-        {#each selection as object (object.id)}
-          <li>
-            <slot name="thumbnail" object={asItemType(object)} />
-          </li>
-        {:else}
-          <li class="empty">
-            <slot name="thumbnail" object={undefined} />
-          </li>
-        {/each}
-      </ul>
-    {:else}
-      <slot name="thumbnail" object={asItemType(value)} />
-    {/if}
-  </div>
-  <div class="actions">
-    {#if clearable}
-      <ButtonSecondary
-        disabled={value === undefined && selection.length === 0}
-        on:click={() => {
-          value = undefined;
-          selection = [];
-        }}>{clearButtonLabel}</ButtonSecondary
-      >
-    {/if}
+<slot name="input" {multiple} {selection} {value} {clearable} {openPicker} {clear}>
+  <div class="picker-input">
+    <div class="current-value">
+      {#if multiple}
+        <ul class="selection nobullet">
+          {#each selection as object (object.id)}
+            <li>
+              <slot name="thumbnail" object={asItemType(object)} />
+            </li>
+          {:else}
+            <li class="empty">
+              <slot name="thumbnail" object={undefined} />
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <slot name="thumbnail" object={asItemType(value)} />
+      {/if}
+    </div>
+    <div class="actions">
+      {#if clearable}
+        <ButtonSecondary disabled={value === undefined && selection.length === 0} on:click={clear}
+          >{clearButtonLabel}</ButtonSecondary
+        >
+      {/if}
 
-    <ButtonSecondary
-      on:click={() => {
-        dialog.showModal();
-      }}>Choisir</ButtonSecondary
-    >
+      <ButtonSecondary on:click={openPicker}>Choisir</ButtonSecondary>
+    </div>
   </div>
-</div>
+</slot>
 
 <style>
   .picker-input {
@@ -194,8 +208,7 @@
     display: flex;
     flex-wrap: wrap;
     column-gap: 0.5rem;
-    align-content: start;
-    justify-content: center;
+    place-content: start center;
     width: 100%;
     max-height: 75vh;
     overflow-y: auto;

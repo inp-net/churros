@@ -12,6 +12,8 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
       group: [
         { uid: params.group },
         {
+          pictureFile: true,
+          pictureFileDark: true,
           uid: true,
           id: true,
           name: true,

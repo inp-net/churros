@@ -79,7 +79,6 @@ export const saveSessionToken = (
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function aled(...o: unknown[]) {
-   
   // console.log(o);
   // void fetch(`https://churros.inpt.fr/log?message=${encodeURIComponent(JSON.stringify(o))}`);
 }

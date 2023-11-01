@@ -2,23 +2,19 @@
   import Alert from '$lib/components/Alert.svelte';
   import { Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
-  import EventSearch from './InputEvent.svelte';
   import { page } from '$app/stores';
   import { _articleQuery } from '../../routes/posts/[group]/[uid]/edit/+page';
-  import DateInput from '$lib/components/InputDate.svelte';
-  import {
-    DISPLAY_VISIBILITIES,
-    HELP_VISIBILITY_DYNAMIC,
-    ORDER_VISIBILITIES,
-    orderedDisplay,
-  } from '$lib/display';
+  import { DISPLAY_VISIBILITIES, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputText from './InputText.svelte';
-  import InputSelectOne from './InputSelectOne.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputLinks from '$lib/components/InputLinks.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import { toasts } from '$lib/toasts';
+  import InputPillEvent from './InputPillEvent.svelte';
+  import InputVisibility from './InputVisibility.svelte';
+  import InputPillDate from './InputPillDate.svelte';
+  import InputGroups from './InputGroups.svelte';
 
   export let afterGoTo: (article: (typeof data)['article']) => string = (article) =>
     `/posts/${article.group.uid}/${article.uid}/`;
@@ -34,6 +30,8 @@
         uid: string;
         name: string;
         id: string;
+        pictureFile: string;
+        pictureFileDark: string;
         children: Array<{
           name: string;
           studentAssociation?: { school: { name: string } } | undefined;
@@ -72,8 +70,9 @@
 
   let confirmingDelete = false;
 
-  let { id, event, eventId, title, author, body, publishedAt, visibility, links, group } =
-    data.article;
+  let { id, event, title, author, body, visibility, links, group } = data.article;
+
+  let publishLater: Date | undefined = undefined;
 
   let loading = false;
   const updateArticle = async () => {
@@ -85,11 +84,11 @@
           {
             id,
             authorId: author?.id ?? '',
-            eventId: eventId ?? '',
+            eventId: event?.id ?? '',
             groupId: group.id,
             title,
             body,
-            publishedAt: publishedAt?.toISOString(),
+            publishedAt: (publishLater ?? new Date()).toISOString(),
             links,
             visibility,
           },
@@ -110,8 +109,7 @@
 
       serverError = '';
       data.article = upsertArticle.data;
-      ({ id, event, eventId, title, author, body, publishedAt, links, group, visibility } =
-        data.article);
+      ({ id, event, title, author, body, links, group, visibility } = data.article);
       if (data.article.uid) {
         toasts.success(
           `Ton article ${DISPLAY_VISIBILITIES[visibility].toLowerCase()} a bien été ${
@@ -126,20 +124,33 @@
   };
 </script>
 
-<form on:submit|preventDefault={updateArticle}>
-  {#if !hideEvent}
-    <EventSearch {event} label="Évènement lié" groupUid={$page.params.group} bind:id={eventId} />
-  {/if}
-  <InputText required label="Titre" maxlength={255} bind:value={title} />
-  <DateInput required time label="Publier le" bind:value={publishedAt} />
-  <InputSelectOne
-    required
-    bind:value={visibility}
-    options={orderedDisplay(ORDER_VISIBILITIES.reverse(), DISPLAY_VISIBILITIES)}
-    label="Visibilité"
-    hint={HELP_VISIBILITY_DYNAMIC([group, ...group.children])[visibility]}
-  />
-  <InputLongText label="Description" bind:value={body} rich />
+<form class="form-article" on:submit|preventDefault={updateArticle}>
+  <section class="author">
+    {#await $zeus.query( { groups: [{}, { id: true, name: true, uid: true, pictureFile: true, pictureFileDark: true }] }, ) then { groups: options }}
+      <InputGroups required label="" {options} bind:group></InputGroups>
+    {/await}
+    <InputVisibility bind:value={visibility}></InputVisibility>
+  </section>
+  <p class="explain-visibility">{HELP_VISIBILITY_DYNAMIC([group])[visibility]}</p>
+  <div class="content">
+    <InputText required label="Titre" bind:value={title}></InputText>
+    <div class="description">
+      <InputLongText rich bind:value={body} label=""></InputLongText>
+    </div>
+  </div>
+
+  <section class="pills">
+    {#if !hideEvent}
+      {#await $zeus.query( { eventsOfGroup: [{ groupUid: group.uid }, { edges: { node: _articleQuery.event } }] }, ) then { eventsOfGroup: { edges } }}
+        <InputPillEvent
+          suggestions={edges.map((n) => n.node)}
+          bind:event
+          groupUid={$page.params.group}
+        />
+      {/await}
+    {/if}
+    <InputPillDate after={new Date()} bind:value={publishLater}>Publier plus tard</InputPillDate>
+  </section>
   <InputLinks label="Liens" bind:value={links} />
   {#if serverError}
     <Alert theme="danger"
@@ -217,7 +228,14 @@
   form {
     display: flex;
     flex-flow: column wrap;
+  }
+
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
+    align-items: center;
+    margin: 1rem 0;
   }
 
   .submit {
@@ -226,5 +244,34 @@
     align-items: center;
     justify-content: center;
     margin-top: 2rem;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  section.author {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.5ch;
+    align-content: center;
+    align-items: center;
+  }
+
+  section.author :global(.input-visibility) {
+    margin-left: auto;
+  }
+
+  :global(.badge-visibility) {
+    margin-left: auto;
+  }
+
+  .explain-visibility {
+    margin-top: 0.125rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.75em;
+    text-align: right;
   }
 </style>
