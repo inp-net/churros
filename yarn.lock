@@ -461,6 +461,7 @@ __metadata:
     svelte-json-tree: "npm:^2.2.0"
     svelte-loader: "npm:^3.1.9"
     svelte-preprocess: "npm:^5.0.4"
+    svelte-seo: "npm:^1.5.4"
     svelte-store2storage: "npm:^1.0.0"
     svelte-tenor: "npm:^0.2.0"
     sveltejs-tippy: "npm:^3.0.0"
@@ -9773,6 +9774,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"schema-dts@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "schema-dts@npm:1.1.2"
+  peerDependencies:
+    typescript: ">=4.1.0"
+  checksum: 53123f68db692dc2529613e9eee45342a1abc75d69ab298733ac6cc943f376c8bf3fe8168ba5be84e629293428d1d2db6bd1452a20910b80989af8b93d8019ca
+  languageName: node
+  linkType: hard
+
 "selderee@npm:^0.11.0":
   version: 0.11.0
   resolution: "selderee@npm:0.11.0"
@@ -10639,6 +10649,15 @@ __metadata:
     typescript:
       optional: true
   checksum: 31105ea4951d83f740634aafeaab7fac23263a24b90945398108f1a03af265fd703f297c36495c072a510902f21327c513cb7c609c62d1fbfdb608ac79ecc966
+  languageName: node
+  linkType: hard
+
+"svelte-seo@npm:^1.5.4":
+  version: 1.5.4
+  resolution: "svelte-seo@npm:1.5.4"
+  dependencies:
+    schema-dts: "npm:^1.1.2"
+  checksum: 6b70f3b3d452d3be1e35153ff3e32a27faa96a84de64e4ff4608f8436d4832b8ce5c63420d680cea1868b9d20ea38552a2ceba1095adede245e0b60cd1c2afc8
   languageName: node
   linkType: hard
 

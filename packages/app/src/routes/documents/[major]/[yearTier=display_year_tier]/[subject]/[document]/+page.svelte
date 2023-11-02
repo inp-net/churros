@@ -1,4 +1,5 @@
 <script lang="ts">
+  import SEO from 'svelte-seo';
   import IconDelete from '~icons/mdi/delete-outline';
   import IconEdit from '~icons/mdi/edit-outline';
   import IconBack from '~icons/mdi/undo-variant';
@@ -120,6 +121,13 @@
   } = data);
   $: emptyDocument = solutionPaths.length + paperPaths.length === 0;
 </script>
+
+<SEO
+  title="{subject.shortName || subject.name} - {title}"
+  description="La Frappe sur Churros: Sauve tes partiels!\n{descriptionHtml}"
+  applicationName="Churros"
+  keywords="{subject.uid}, document, cours"
+></SEO>
 
 <Breadcrumbs root="/documents">
   <Breadcrumb href="../../..">{major.shortName}</Breadcrumb>
