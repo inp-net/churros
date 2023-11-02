@@ -17,7 +17,7 @@
     }) as Array<[string, typeof data.majors]>;
 </script>
 
-<Breadcrumbs root="/documents"></Breadcrumbs>
+<Breadcrumbs root="/documents/"></Breadcrumbs>
 
 {#each majorsBySchool as [schoolUid, majorsOfSchool]}
   {@const school = data.schools.find((s) => s.uid === schoolUid)}
