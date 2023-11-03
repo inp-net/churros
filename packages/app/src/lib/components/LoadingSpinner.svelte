@@ -8,6 +8,7 @@
 
 <style>
   .loading-spinner {
+    display: inline-block;
     animation: spin 700ms ease infinite;
   }
 
