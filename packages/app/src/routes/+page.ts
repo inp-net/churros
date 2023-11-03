@@ -84,7 +84,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
   const { homepage, events } = await loadQuery(
     {
       homepage: [{}, _pageQuery],
-      events: [{ noLinkedArticles: true }, _eventQuery],
+      events: [{ noLinkedArticles: true, past: true }, _eventQuery],
     },
     { fetch, parent },
   );
