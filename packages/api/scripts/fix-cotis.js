@@ -2,8 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import { readFileSync } from 'fs';
 
 const p = new PrismaClient();
-// @ts-ignore
-const { users } = JSON.stringify(readFileSync('./dump-ldap.json'));
+
+const { users } = JSON.parse(readFileSync('./dump-ldap.json', 'utf-8'));
 
 const aen7 = await p.contributionOption.findFirst({ where: { name: 'AEn7' } });
 if (!aen7) throw new Error('AEn7 not found');
