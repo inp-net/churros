@@ -254,7 +254,7 @@
     </h2>
 
     <ul class="nobullet">
-      {#each group.articles.slice(0, 3) as { uid, ...article } (uid)}
+      {#each group.articles.slice(0, 3) as { uid, ...article } (article.id)}
         <CardArticle hideGroup {group} href="/posts/{group.uid}/{uid}" {...article} />
       {/each}
     </ul>
@@ -268,7 +268,7 @@
     </h2>
 
     <ul class="nobullet">
-      {#each group.events.edges.slice(0, 3) as { node } (node.uid)}
+      {#each group.events.edges.slice(0, 3) as { node } (node.id)}
         <CardFeedEvent
           likes={node.reactionCounts['❤️']}
           liked={node.myReactions['❤']}
