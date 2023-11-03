@@ -26,6 +26,7 @@ export const _clubQuery = Selector('Group')({
   studentAssociation: {
     uid: true,
     name: true,
+    id: true,
     school: {
       uid: true,
       color: true,
@@ -33,6 +34,7 @@ export const _clubQuery = Selector('Group')({
     },
   },
   parent: {
+    id: true,
     uid: true,
     name: true,
     pictureFile: true,
@@ -40,6 +42,7 @@ export const _clubQuery = Selector('Group')({
   },
   selfJoinable: true,
   related: {
+    id: true,
     uid: true,
     name: true,
     pictureFile: true,

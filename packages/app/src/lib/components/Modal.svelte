@@ -1,5 +1,7 @@
 <script lang="ts">
   import { isDark } from '$lib/theme';
+  import { createEventDispatcher } from 'svelte';
+  const dispatch = createEventDispatcher();
 
   export let element: HTMLDialogElement;
 </script>
@@ -7,7 +9,10 @@
 <svelte:window
   on:click={(e) => {
     if (!(e.target instanceof HTMLElement)) return;
-    if (e.target === element) element.close();
+    if (e.target === element) {
+      dispatch('close-by-outside-click');
+      element.close();
+    }
   }}
 />
 
@@ -54,6 +59,7 @@
   }
 
   dialog[open]::backdrop {
+    overscroll-behavior: contain;
     background-color: var(--backdrop);
     transition: background-color 0.5s ease;
   }

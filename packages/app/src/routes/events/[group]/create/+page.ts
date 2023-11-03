@@ -25,6 +25,11 @@ export const load: PageLoad = async ({ fetch, parent, url, params }) => {
           pictureFileDark: true,
           uid: true,
           id: true,
+          studentAssociation: { school: { name: true } },
+          children: {
+            name: true,
+            studentAssociation: { school: { name: true } },
+          },
           members: {
             member: {
               uid: true,
@@ -37,13 +42,16 @@ export const load: PageLoad = async ({ fetch, parent, url, params }) => {
           },
         }),
       ],
-      lydiaAccountsOfGroup: [
-        { uid: params.group },
-        Selector('LydiaAccount')({
-          id: true,
+      lydiaAccounts: {
+        id: true,
+        name: true,
+        group: {
+          uid: true,
           name: true,
-        }),
-      ],
+          pictureFile: true,
+          pictureFileDark: true,
+        },
+      },
     },
     { fetch, parent },
   );

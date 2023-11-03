@@ -119,7 +119,7 @@
   }
 
   .checkbox {
-    --size: 1.7rem;
+    --size: 1.7em;
     --border: var(--border-block);
 
     position: relative;

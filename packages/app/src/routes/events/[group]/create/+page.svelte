@@ -15,8 +15,11 @@
     description: '',
     endsAt: undefined,
     groupUid: $page.params.uid,
-    contactMail: data.group.email,
-    beneficiary: data.lydiaAccountsOfGroup.length === 1 ? data.lydiaAccountsOfGroup[0] : undefined,
+    contactMail: data.group?.email,
+    beneficiary:
+      data.lydiaAccounts.filter((l) => l.group?.uid === data.group?.uid).length === 1
+        ? data.lydiaAccounts.find((l) => l.group?.uid === data.group?.uid)
+        : undefined,
     links: [],
     location: '',
     managers: $me
@@ -54,7 +57,7 @@
 <div class="content">
   <h1>Créer un évènement</h1>
 
-  <FormEvent {redirectAfterSave} bind:event availableLydiaAccounts={data.lydiaAccountsOfGroup} />
+  <FormEvent {redirectAfterSave} bind:event availableLydiaAccounts={data.lydiaAccounts} />
 </div>
 
 <style>

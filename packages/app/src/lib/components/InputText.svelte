@@ -12,18 +12,25 @@
   export let value: string;
   export let autocomplete: string | undefined = undefined;
   export let errorMessage: string | undefined = undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let label: string;
+  export let focused = false;
+
+  export let element: HTMLInputElement | undefined = undefined;
 </script>
 
 <InputField {hint} {errors} {label} {...$$restProps}>
   <BaseInputText
     {type}
     bind:value
+    bind:element
+    bind:focused
     on:input
     on:change
     on:blur
     on:focus
+    on:focusout
     on:action
     {autocomplete}
     {name}

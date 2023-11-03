@@ -2,9 +2,16 @@
   import { page } from '$app/stores';
   import GhostButton from './ButtonGhost.svelte';
   import IconShare from '~icons/mdi/share-variant-outline';
+  import IconCopyLink from '~icons/mdi/clipboard-outline';
+  import ButtonInk from './ButtonInk.svelte';
+  import { toasts } from '$lib/toasts';
+  import { browser } from '$app/environment';
 
   export let white = false;
   export let href = '';
+  export let text = false;
+
+  $: canShare = Boolean(browser && navigator.share !== undefined);
 
   function rewriteUrl(url: URL): string {
     const segments = url.pathname.split('/').filter(Boolean);
@@ -16,11 +23,8 @@
 
     return url.toString();
   }
-</script>
 
-<GhostButton
-  help="Partager"
-  on:click={async () => {
+  async function share() {
     try {
       await navigator.share({
         url: href || rewriteUrl($page.url),
@@ -28,14 +32,19 @@
         text: document.querySelector('meta[name=description]')?.getAttribute('content') ?? '',
       });
     } catch {
-      await navigator.clipboard.writeText(href || rewriteUrl($page.url));
+      const url = href || rewriteUrl($page.url);
+      await navigator.clipboard.writeText(url);
+      toasts.info('Lien copié dans le presse-papiers');
     }
-  }}
-  darkShadow={white}
->
-  {#if white}
-    <IconShare color="white" />
-  {:else}
-    <IconShare />
-  {/if}
-</GhostButton>
+  }
+</script>
+
+{#if text}
+  <ButtonInk on:click={share} icon={canShare ? IconShare : IconCopyLink}
+    >{#if canShare}Partager{:else}Copier le lien{/if}</ButtonInk
+  >
+{:else}
+  <GhostButton help="Partager" on:click={share} darkShadow={white}>
+    <IconShare color={white ? 'white' : undefined} />
+  </GhostButton>
+{/if}

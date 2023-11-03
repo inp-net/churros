@@ -49,9 +49,8 @@
           href="https://git.inpt.fr/inp-net/churros/-/commit/{CURRENT_COMMIT}"
           >{CURRENT_COMMIT.slice(0, 8)}</a
         >
-      {:else}trunk{/if}
+      {:else}trunk{/if} · <InputCheckbox bind:value={$debugging} label="Mode debug"></InputCheckbox>
     </code>
-    <InputCheckbox bind:value={$debugging} label="Mode debug"></InputCheckbox>
   </footer>
 </div>
 
@@ -87,5 +86,13 @@
 
   footer a {
     text-decoration: underline;
+  }
+
+  footer code {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1ch;
+    align-items: center;
+    justify-content: center;
   }
 </style>

@@ -3,7 +3,11 @@ import { TYPENAMES_TO_ID_PREFIXES, builder } from '../builder.js';
 import { DateTimeScalar } from './scalars.js';
 import { prisma } from '../prisma.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
-import { payEventRegistrationViaLydia } from '../services/lydia.js';
+import {
+  LydiaTransactionState,
+  checkLydiaTransaction,
+  payEventRegistrationViaLydia,
+} from '../services/lydia.js';
 import { placesLeft, userCanSeeTicket } from './tickets.js';
 import { GraphQLError } from 'graphql';
 import { UserType, fullName } from './users.js';
@@ -85,6 +89,74 @@ export function authorIsBeneficiary(
   );
 }
 
+builder.mutationField('checkIfRegistrationIsPaid', (t) =>
+  t.boolean({
+    args: {
+      id: t.arg.id(),
+    },
+    async resolve(_, { id }, { user }) {
+      if (!user) throw new GraphQLError('Not logged in');
+      let registration = await prisma.registration.findFirstOrThrow({
+        where: {
+          id: id.toLowerCase(),
+          OR: [
+            {
+              ticket: {
+                event: {
+                  managers: {
+                    some: {
+                      userId: user.id,
+                    },
+                  },
+                },
+              },
+            },
+            {
+              authorId: user.id,
+            },
+            {
+              beneficiary: user.uid,
+            },
+            {
+              beneficiary: user.fullName,
+            },
+          ],
+        },
+        include: {
+          lydiaTransaction: true,
+        },
+      });
+
+      if (!registration.paid && registration.lydiaTransaction?.requestId) {
+        const state = await checkLydiaTransaction(registration.lydiaTransaction);
+        if (state === LydiaTransactionState.Paid) {
+          await prisma.logEntry.create({
+            data: {
+              action: 'lydia fallback mark as paid',
+              area: 'registration',
+              message:
+                'Transaction was already paid for, marking registration as paid (from registration query)',
+              target: registration.id,
+            },
+          });
+          registration = await prisma.registration.update({
+            where: { id: registration.id },
+            data: {
+              paid: true,
+            },
+            include: {
+              lydiaTransaction: true,
+            },
+          });
+          return true;
+        }
+      }
+
+      return false;
+    },
+  }),
+);
+
 builder.queryField('registration', (t) =>
   t.prismaField({
     type: RegistrationType,
@@ -120,6 +192,9 @@ builder.queryField('registration', (t) =>
               beneficiary: user.fullName,
             },
           ],
+        },
+        include: {
+          lydiaTransaction: true,
         },
       });
     },
@@ -462,14 +537,10 @@ builder.mutationField('upsertRegistration', (t) =>
         include: {
           event: {
             include: {
-              coOrganizers: true,
+              coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+              group: { include: { studentAssociation: { include: { school: true } } } },
               managers: { include: { user: true } },
               bannedUsers: true,
-              group: {
-                include: {
-                  studentAssociation: true,
-                },
-              },
             },
           },
           openToGroups: true,
@@ -725,7 +796,8 @@ builder.mutationField('paidRegistration', (t) =>
             include: {
               event: {
                 include: {
-                  coOrganizers: true,
+                  coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+                  group: { include: { studentAssociation: { include: { school: true } } } },
                   managers: { include: { user: true } },
                 },
               },

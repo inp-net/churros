@@ -19,10 +19,6 @@ export const _clubQuery = Selector('Group')({
     name: true,
     value: true,
   },
-  school: {
-    id: true,
-    name: true,
-  },
   selfJoinable: true,
 });
 

@@ -37,6 +37,7 @@
   import { tooltip } from '$lib/tooltip';
   import { groupLogoSrc } from '$lib/logos';
   import { toasts } from '$lib/toasts';
+  import CardFeedEvent from '$lib/components/CardFeedEvent.svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -253,7 +254,7 @@
     </h2>
 
     <ul class="nobullet">
-      {#each group.articles.slice(0, 3) as { uid, ...article } (uid)}
+      {#each group.articles.slice(0, 3) as { uid, ...article } (article.id)}
         <CardArticle hideGroup {group} href="/posts/{group.uid}/{uid}" {...article} />
       {/each}
     </ul>
@@ -267,15 +268,12 @@
     </h2>
 
     <ul class="nobullet">
-      {#each group.events.slice(0, 3) as { uid, ...event } (uid)}
-        <!-- TODO CardEvent -->
-        <CardArticle
-          hideGroup
-          {group}
-          href="/events/{group.uid}/{uid}"
-          {...event}
-          publishedAt={event.startsAt}
-          bodyHtml={event.descriptionHtml}
+      {#each group.events.edges.slice(0, 3) as { node } (node.id)}
+        <CardFeedEvent
+          likes={node.reactionCounts['❤️']}
+          liked={node.myReactions['❤']}
+          {...node}
+          href="/events/{node.group.uid}/{node.uid}"
         />
       {/each}
     </ul>

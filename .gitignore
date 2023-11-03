@@ -41,3 +41,4 @@ packages/api/scripts/*.tar.gz
 cli/churros/__pycache__
 cli/dist
 bubblewrap/
+packages/app/src/lib/buildinfo.ts

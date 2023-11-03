@@ -2,12 +2,12 @@
   import { LogoSourceType, zeus } from '$lib/zeus';
   import Alert from '$lib/components/Alert.svelte';
   import { goto } from '$app/navigation';
-  import InputGroup from './InputGroup.svelte';
   import InputText from './InputText.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
-  import InputSchool from './InputSchool.svelte';
-  import InputStudentAssociation from './InputStudentAssociation.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
+  import InputGroups from './InputGroups.svelte';
+  import InputSchools from './InputSchools.svelte';
+  import InputStudentAssociations from './InputStudentAssociations.svelte';
 
   export let service: {
     id?: string;
@@ -16,9 +16,9 @@
     url: string;
     logo: string;
     logoSourceType: LogoSourceType;
-    school?: { uid: string; name: string; color: string };
-    studentAssociation?: { uid?: string; name: string };
-    group?: { uid: string; name: string; pictureFile: string; pictureFileDark: string };
+    school?: { uid: string; name: string; id: string };
+    studentAssociation?: { uid?: string; name: string; id: string };
+    group?: { id: string; uid: string; name: string; pictureFile: string; pictureFileDark: string };
   } = { name: '', description: '', url: '', logo: '', logoSourceType: LogoSourceType.Icon };
 
   let serverError = '';
@@ -52,9 +52,15 @@
                 description: true,
                 logo: true,
                 logoSourceType: true,
-                group: { uid: true, name: true, pictureFile: true, pictureFileDark: true },
-                school: { uid: true, name: true, color: true },
-                studentAssociation: { uid: true, name: true },
+                group: {
+                  id: true,
+                  uid: true,
+                  name: true,
+                  pictureFile: true,
+                  pictureFileDark: true,
+                },
+                school: { uid: true, name: true, id: true },
+                studentAssociation: { uid: true, name: true, id: true },
               },
             },
           },
@@ -75,38 +81,42 @@
   };
 </script>
 
-<form on:submit|preventDefault={updateService}>
-  <InputText required label="Nom" bind:value={service.name} maxlength={255} />
-  <InputText required label="URL" bind:value={service.url} maxlength={255} />
-  <InputText label="Description" bind:value={service.description} maxlength={255} />
-  <InputSelectOne
-    label="Type de logo"
-    bind:value={service.logoSourceType}
-    options={{
-      Icon: 'Icon',
-      InternalLink: 'Lien interne',
-      ExternalLink: 'Lien externe',
-      GroupLogo: 'Groupe',
-    }}
-  />
-  <InputText label="Logo" bind:value={service.logo} maxlength={255} />
-  <InputSchool label="École" clearable uid={service.school?.uid} bind:object={service.school} />
-  <InputStudentAssociation
-    label="Association Etudiante"
-    clearable
-    uid={service.studentAssociation?.uid}
-    bind:object={service.studentAssociation}
-  />
-  <InputGroup clearable label="Groupe" bind:group={service.group} uid={service.group?.uid} />
-  {#if serverError}
-    <Alert theme="danger"
-      >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert
-    >
-  {/if}
-  <section class="submit">
-    <ButtonPrimary submits {loading}>Sauvegarder</ButtonPrimary>
-  </section>
-</form>
+{#await $zeus.query( { groups: [{}, { name: true, uid: true, id: true, pictureFile: true, pictureFileDark: true }] }, )}
+  <p class="loading muted">Chargement...</p>
+{:then { groups: allGroups }}
+  <form on:submit|preventDefault={updateService}>
+    <InputText required label="Nom" bind:value={service.name} maxlength={255} />
+    <InputText required label="URL" bind:value={service.url} maxlength={255} />
+    <InputText label="Description" bind:value={service.description} maxlength={255} />
+    <InputSelectOne
+      label="Type de logo"
+      bind:value={service.logoSourceType}
+      options={{
+        Icon: 'Icon',
+        InternalLink: 'Lien interne',
+        ExternalLink: 'Lien externe',
+        GroupLogo: 'Groupe',
+      }}
+    />
+    <InputText label="Logo" bind:value={service.logo} maxlength={255} />
+    <InputSchools label="École" clearable bind:school={service.school} />
+    <InputStudentAssociations
+      label="Association Etudiante"
+      clearable
+      bind:association={service.studentAssociation}
+    />
+    <InputGroups clearable label="Groupe" bind:group={service.group} options={allGroups}
+    ></InputGroups>
+    {#if serverError}
+      <Alert theme="danger"
+        >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert
+      >
+    {/if}
+    <section class="submit">
+      <ButtonPrimary submits {loading}>Sauvegarder</ButtonPrimary>
+    </section>
+  </form>
+{/await}
 
 <style>
   form {

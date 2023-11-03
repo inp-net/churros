@@ -3,6 +3,7 @@
   import type { SvelteComponent } from 'svelte';
   import IconSpinner from '~icons/mdi/loading';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let icon: typeof SvelteComponent<any> | undefined = undefined;
   export let loading = false;
   export let circle = false;
@@ -18,6 +19,7 @@
   export let newTab = false;
   export let tabindex = 0;
   export let help = '';
+  export let highlighted = false;
 </script>
 
 <svelte:element
@@ -27,6 +29,7 @@
   use:tooltip={help || undefined}
   class="button-secondary typo-paragraph"
   class:danger
+  class:highlighted
   class:success
   class:circle
   class:inside-prose={insideProse}
@@ -67,6 +70,13 @@
     background: var(--bg);
     border: var(--border-block) solid var(--border);
     border-radius: 1000px;
+    transition: all 200ms ease;
+  }
+
+  .button-secondary.highlighted {
+    color: var(--primary-bg);
+    background-color: #9ce0ff;
+    border-color: var(--primary-bg);
   }
 
   .button-secondary:disabled,

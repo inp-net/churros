@@ -14,6 +14,13 @@ export const _articleQuery = Selector('Article')({
     uid: true,
     name: true,
     id: true,
+    pictureFile: true,
+    pictureFileDark: true,
+    studentAssociation: { school: { name: true } },
+    children: {
+      name: true,
+      studentAssociation: { school: { name: true } },
+    },
   },
   author: {
     firstName: true,
@@ -29,8 +36,12 @@ export const _articleQuery = Selector('Article')({
     uid: true,
     title: true,
     startsAt: true,
+    endsAt: true,
     pictureFile: true,
     visibility: true,
+    recurringUntil: true,
+    frequency: true,
+    location: true,
   },
   eventId: true,
   links: {

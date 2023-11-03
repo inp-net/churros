@@ -17,6 +17,8 @@
   export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let required = false;
   export let closeKeyboardOnEnter = false;
+  export let element: HTMLInputElement | undefined = undefined;
+  export let focused = false;
 
   // TODO use (HTMLInputElement).valueAsDate instead
   function stringifyValue(val: typeof value, type: string): string {
@@ -91,8 +93,6 @@
   let resettable = false;
   $: resettable = initial !== undefined && value !== initial;
 
-  let focused = false;
-
   let inputContainer: HTMLDivElement;
 
   onMount(() => {
@@ -105,7 +105,7 @@
   });
 </script>
 
-<div class="wrapper base-input typo-paragraph" class:danger={errored} class:primary={focused}>
+<div class="wrapper base-input typo-paragraph" class:danger={errored} class:focused>
   <div class="input-area" bind:this={inputContainer}>
     {#if $$slots.before}
       <div class="left-icon">
@@ -113,10 +113,12 @@
       </div>
     {/if}
     <input
+      bind:this={element}
       class:danger={errored}
-      class:primary={focused}
+      class:focused
       on:change
       on:blur
+      on:focusout
       on:focus
       on:keyup
       on:keypress={(e) => {
@@ -201,12 +203,21 @@
   }
 
   .wrapper:hover,
-  .wrapper:focus-within,
   .wrapper:hover input,
+  .wrapper:focus-within,
   .wrapper:focus-within input {
     color: var(--hover-text);
     background: var(--hover-bg);
+  }
+
+  .wrapper:hover,
+  .wrapper:hover input {
     border-color: var(--hover-border);
+  }
+
+  .wrapper:focus-within,
+  .wrapper:focus-within input {
+    border-color: var(--primary-border);
   }
 
   .wrapper > div {

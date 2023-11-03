@@ -10,20 +10,84 @@ export const _pageQuery = Selector('QueryHomepageConnection')({
       uid: true,
       title: true,
       bodyHtml: true,
+      bodyPreview: true,
       body: true,
       visibility: true,
       publishedAt: true,
       pictureFile: true,
+      reactionCounts: true,
+      myReactions: true,
       group: { uid: true, name: true, pictureFile: true, pictureFileDark: true },
-      author: { uid: true, firstName: true, lastName: true, fullName: true },
+      author: { uid: true, pictureFile: true, fullName: true },
       links: { value: true, computedValue: true, name: true },
+      event: {
+        group: { uid: true },
+        title: true,
+        pictureFile: true,
+        uid: true,
+        location: true,
+        startsAt: true,
+        endsAt: true,
+        frequency: true,
+        recurringUntil: true,
+      },
+    },
+  },
+});
+
+export const _eventQuery = Selector('QueryEventsConnection')({
+  pageInfo: { hasNextPage: true, endCursor: true },
+  edges: {
+    node: {
+      id: true,
+      myReactions: true,
+      reactionCounts: true,
+      title: true,
+      uid: true,
+      location: true,
+      startsAt: true,
+      endsAt: true,
+      visibility: true,
+      links: {
+        value: true,
+        computedValue: true,
+        name: true,
+      },
+      descriptionPreview: true,
+      group: {
+        uid: true,
+        name: true,
+        pictureFile: true,
+        pictureFileDark: true,
+      },
+      coOrganizers: {
+        uid: true,
+        name: true,
+        pictureFile: true,
+        pictureFileDark: true,
+      },
+      tickets: {
+        name: true,
+        price: true,
+        uid: true,
+        opensAt: true,
+        closesAt: true,
+        placesLeft: true,
+        capacity: true,
+      },
     },
   },
 });
 
 export const load: PageLoad = async ({ fetch, parent }) => {
   const { me } = await parent();
-  const { homepage } = await loadQuery({ homepage: [{}, _pageQuery] }, { fetch, parent });
+  const { homepage, events } = await loadQuery(
+    {
+      homepage: [{}, _pageQuery],
+      events: [{ noLinkedArticles: true, past: true }, _eventQuery],
+    },
+    { fetch, parent },
+  );
   if (me) {
     const { birthdays } = await loadQuery(
       {
@@ -41,8 +105,8 @@ export const load: PageLoad = async ({ fetch, parent }) => {
       },
       { fetch, parent },
     );
-    return { homepage, birthdays };
+    return { homepage, events, birthdays };
   }
 
-  return { homepage, birthdays: undefined };
+  return { homepage, events, birthdays: undefined };
 };

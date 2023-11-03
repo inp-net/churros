@@ -53,7 +53,7 @@
         <CardGroup
           href="/student-associations/{uid}"
           {name}
-          pictureFile="//student-associations/{uid}.png"
+          pictureFile="/student-associations/{uid}.png"
           pictureFileDark=""
         ></CardGroup>
       </li>

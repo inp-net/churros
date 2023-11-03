@@ -9,7 +9,11 @@
     <header>
       <h3>{shortName || name}</h3>
     </header>
-    <p class="infos"></p>
+    <p class="infos">
+      {#if shortName}
+        {name}
+      {/if}
+    </p>
   </article>
 </a>
 

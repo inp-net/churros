@@ -3,7 +3,6 @@
   import { $ as Zvar, zeus, type DocumentType } from '$lib/zeus';
   import ButtonGhost from './ButtonGhost.svelte';
   import IconDelete from '~icons/mdi/delete-outline';
-  import ButtonBack from './ButtonBack.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputFile from './InputFile.svelte';
@@ -15,6 +14,7 @@
   import { me } from '$lib/session';
   import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
+  import { toasts } from '$lib/toasts';
 
   let files: FileList | undefined = undefined;
 
@@ -25,14 +25,16 @@
     title: string;
     schoolYear: number;
     description: string;
-    subject:
+    subject?:
       | undefined
       | {
           uid: string;
           name: string;
           shortName: string;
-          minors: Array<{ name: string }>;
-          majors: Array<{ name: string }>;
+          minors: Array<{ name: string; uid: string; shortName: string }>;
+          majors: Array<{ name: string; uid: string; shortName: string }>;
+          forApprentices: boolean;
+          yearTier?: number | undefined;
         };
     type: DocumentType;
     paperPaths: string[];
@@ -51,6 +53,8 @@
           type: data.type,
           id: data.id,
           subjectUid: data.subject.uid,
+          subjectForApprentices: data.subject.forApprentices ?? false,
+          subjectYearTier: data.subject.yearTier,
         },
         {
           __typename: true,
@@ -58,8 +62,11 @@
           '...on MutationUpsertDocumentSuccess': {
             data: {
               id: true,
+              title: true,
               subject: {
                 uid: true,
+                yearTier: true,
+                forApprentices: true,
                 majors: { uid: true },
                 minors: { uid: true, yearTier: true, majors: { uid: true } },
               },
@@ -71,6 +78,7 @@
     });
     if (upsertDocument.__typename === 'Error') {
       serverError = upsertDocument.message;
+      toasts.error(`Impossible de sauvegarder`, serverError);
       return;
     }
 
@@ -124,9 +132,15 @@
       }),
     );
     const { subject } = upsertDocument.data;
-    const majorUid = subject.majors[0]?.uid ?? subject.minors[0]?.majors[0]?.uid ?? $me?.major.uid;
-    const yearTier = subject.minors[0]?.yearTier ?? $me?.yearTier;
-    await goto(`/documents/${majorUid}/${yearTier}a/${subject.uid}/${upsertDocument.data.uid}`);
+    const majorUid =
+      subject?.majors[0]?.uid ?? subject?.minors[0]?.majors[0]?.uid ?? $me?.major.uid;
+    const yearTier = subject?.yearTier ?? subject?.minors[0]?.yearTier ?? $me?.yearTier;
+    toasts.success('Document modifié', `${upsertDocument.data.title} a bien été modifié.`);
+    await goto(
+      `/documents/${majorUid}/${yearTier}a${subject?.forApprentices ? '-fisa' : ''}/${
+        subject?.uid ?? 'all'
+      }/${upsertDocument.data.uid}`,
+    );
   }
 
   function fileListOf(files: File[]): FileList {
@@ -141,113 +155,99 @@
   let fileInputElement: HTMLInputElement;
 </script>
 
-<div class="content">
-  <h1><ButtonBack></ButtonBack>{data.id ? 'Modifier' : 'Ajouter'} un document</h1>
-
-  <form on:submit|preventDefault={submit}>
-    <div class="side-by-side">
-      <section class="metadata">
-        <h2>Infos</h2>
-        <InputSelectOne
-          label="Type de document"
-          required
-          options={DISPLAY_DOCUMENT_TYPES}
-          bind:value={data.type}
-        ></InputSelectOne>
-        <InputSubject label="Matière" uid={data.subject?.uid} bind:object={data.subject}
-        ></InputSubject>
-        <InputText label="Titre" required bind:value={data.title}></InputText>
-        <InputNumber
-          unit="{data.schoolYear}-{data.schoolYear + 1}"
-          hint="Mettre la plus petite année. Par exemple, {new Date().getFullYear()} pour l'année {new Date().getFullYear()}-{new Date().getFullYear() +
-            1}"
-          label="Année scolaire"
-          bind:value={data.schoolYear}
-        ></InputNumber>
-        <InputLongText label="Description" rich bind:value={data.description}></InputLongText>
-      </section>
-      <section class="files">
-        <h2>Fichiers</h2>
-        <InputFile
-          bind:inputElement={fileInputElement}
-          label="Ajouter des fichiers"
-          multiple
-          bind:files
-        >
-          <ul class="new-files nobullet">
-            {#each files ? [...files] : [] as file}
-              <li class="existing-file">
-                <span class="filename">{file.name}</span>
-                <InputCheckbox
-                  help="Ce fichier est (ou fait partie d'un) corrigé"
-                  label="Correction"
-                  bind:value={newFilesSolutions[file.name]}
-                ></InputCheckbox>
-                <ButtonGhost
-                  on:click={() => {
-                    files = fileListOf([...(files ?? [])].filter((f) => f.name !== file.name));
-                  }}
-                  danger
-                  help="Supprimer"><IconDelete></IconDelete></ButtonGhost
-                >
-              </li>
-            {/each}
-
-            {#each [...data.paperPaths, ...data.solutionPaths].sort() as filepath}
-              <li class="existing-file">
-                <span class="filename">{filepath.split('/').at(-1)}</span>
-                <InputCheckbox
-                  help="Ce fichier est (ou fait partie d'un) corrigé"
-                  label="Correction"
-                  on:change={(e) => {
-                    if (!(e?.target instanceof HTMLInputElement)) return;
-                    if (e.target.checked) {
-                      // Move to solutionPaths
-                      data.solutionPaths = [...data.solutionPaths, filepath];
-                      data.paperPaths = data.paperPaths.filter((path) => path !== filepath);
-                    } else {
-                      // Move to paperPaths
-                      data.paperPaths = [...data.paperPaths, filepath];
-                      data.solutionPaths = data.solutionPaths.filter((path) => path !== filepath);
-                    }
-                  }}
-                  value={data.solutionPaths.includes(filepath)}
-                ></InputCheckbox>
-                <ButtonGhost
-                  on:click={() => {
-                    filesToDelete.add(filepath);
-                    data.paperPaths = data.paperPaths.filter((path) => path !== filepath);
-                    data.solutionPaths = data.solutionPaths.filter((path) => path !== filepath);
-                  }}
-                  danger
-                  help="Supprimer"><IconDelete></IconDelete></ButtonGhost
-                >
-              </li>
-            {/each}
-          </ul>
-        </InputFile>
-      </section>
-    </div>
-    <section class="submit">
-      <ButtonPrimary submits>Enregistrer</ButtonPrimary>
-      {#if serverError}
-        <Alert theme="danger">{serverError}</Alert>
-      {/if}
+<form on:submit|preventDefault={submit}>
+  <div class="side-by-side">
+    <section class="metadata">
+      <h2>Infos</h2>
+      <InputSelectOne
+        label="Type de document"
+        required
+        options={DISPLAY_DOCUMENT_TYPES}
+        bind:value={data.type}
+      ></InputSelectOne>
+      <InputSubject label="Matière" uid={data.subject?.uid} bind:object={data.subject}
+      ></InputSubject>
+      <InputText label="Titre" required bind:value={data.title}></InputText>
+      <InputNumber
+        hint="Mettre la plus petite année. Par exemple, {new Date().getFullYear()} pour l'année {new Date().getFullYear()}-{new Date().getFullYear() +
+          1}"
+        label="Année scolaire"
+        bind:value={data.schoolYear}
+      ></InputNumber>
+      <InputLongText label="Description" rich bind:value={data.description}></InputLongText>
     </section>
-  </form>
-</div>
+    <section class="files">
+      <h2>Fichiers</h2>
+      <InputFile
+        dropzone
+        bind:inputElement={fileInputElement}
+        label="Ajouter des fichiers"
+        multiple
+        bind:files
+      >
+        <ul class="new-files nobullet">
+          {#each files ? [...files] : [] as file}
+            <li class="existing-file">
+              <span class="filename">{file.name}</span>
+              <InputCheckbox
+                help="Ce fichier est (ou fait partie d'un) corrigé"
+                label="Correction"
+                bind:value={newFilesSolutions[file.name]}
+              ></InputCheckbox>
+              <ButtonGhost
+                on:click={() => {
+                  files = fileListOf([...(files ?? [])].filter((f) => f.name !== file.name));
+                }}
+                danger
+                help="Supprimer"><IconDelete></IconDelete></ButtonGhost
+              >
+            </li>
+          {/each}
+
+          {#each [...data.paperPaths, ...data.solutionPaths].sort() as filepath}
+            <li class="existing-file">
+              <span class="filename">{filepath.split('/').at(-1)}</span>
+              <InputCheckbox
+                help="Ce fichier est (ou fait partie d'un) corrigé"
+                label="Correction"
+                on:change={(e) => {
+                  if (!(e?.target instanceof HTMLInputElement)) return;
+                  if (e.target.checked) {
+                    // Move to solutionPaths
+                    data.solutionPaths = [...data.solutionPaths, filepath];
+                    data.paperPaths = data.paperPaths.filter((path) => path !== filepath);
+                  } else {
+                    // Move to paperPaths
+                    data.paperPaths = [...data.paperPaths, filepath];
+                    data.solutionPaths = data.solutionPaths.filter((path) => path !== filepath);
+                  }
+                }}
+                value={data.solutionPaths.includes(filepath)}
+              ></InputCheckbox>
+              <ButtonGhost
+                on:click={() => {
+                  filesToDelete.add(filepath);
+                  data.paperPaths = data.paperPaths.filter((path) => path !== filepath);
+                  data.solutionPaths = data.solutionPaths.filter((path) => path !== filepath);
+                }}
+                danger
+                help="Supprimer"><IconDelete></IconDelete></ButtonGhost
+              >
+            </li>
+          {/each}
+        </ul>
+      </InputFile>
+    </section>
+  </div>
+  <section class="submit">
+    <ButtonPrimary submits>Enregistrer</ButtonPrimary>
+    {#if serverError}
+      <Alert theme="danger">{serverError}</Alert>
+    {/if}
+  </section>
+</form>
 
 <style>
-  .content {
-    max-width: 1200px;
-    padding: 0 1rem;
-    margin: 0 auto;
-  }
-
-  h1 {
-    margin-bottom: 1rem;
-  }
-
   .side-by-side {
     display: flex;
     flex-wrap: wrap;
@@ -273,9 +273,9 @@
   }
 
   .submit {
-    display: flex;
-    justify-content: center;
+    margin: 2rem auto 0;
     margin-top: 2rem;
+    text-align: center;
   }
 
   .new-files {

@@ -12,9 +12,9 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import InputListOfGroups from '$lib/components/InputListOfGroups.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import { toasts } from '$lib/toasts';
+  import InputGroups from '$lib/components/InputGroups.svelte';
 
   export let data: PageData;
 
@@ -22,6 +22,7 @@
     id: undefined,
     description: '',
     groups: [] as Array<{
+      id: string;
       uid: string;
       pictureFile: string;
       pictureFileDark: string;
@@ -73,6 +74,7 @@
               endsAt: true,
               startsAt: true,
               groups: {
+                id: true,
                 uid: true,
                 name: true,
                 pictureFile: true,
@@ -117,90 +119,91 @@
     </div>
   </h1>
 
-  <ul class="nobullet">
-    {#each barWeeks
-      .filter((b) => showPastBarWeeks || isFuture(b.endsAt))
-      .sort((a, b) => compareDesc(a.startsAt, b.startsAt)) as barWeek, i (barWeek.id)}
-      <li>
-        <Card>
-          <h3>
-            {dateFormatter.format(barWeek.startsAt)}—{dateFormatter.format(barWeek.endsAt)}
-            {barWeek.groups.map(({ name }) => name).join(', ')}
-          </h3>
-          {#if expandedBarWeekId === barWeek.id}
-            <InputText label="Description" maxlength={255} bind:value={barWeek.description} />
+  {#await $zeus.query( { groups: [{}, { id: true, uid: true, name: true, pictureFile: true, pictureFileDark: true }] }, )}
+    <p class="muted loading">Chargement...</p>
+  {:then { groups: allGroups }}
+    <ul class="nobullet">
+      {#each barWeeks
+        .filter((b) => showPastBarWeeks || isFuture(b.endsAt))
+        .sort((a, b) => compareDesc(a.startsAt, b.startsAt)) as barWeek, i (barWeek.id)}
+        <li>
+          <Card>
+            <h3>
+              {dateFormatter.format(barWeek.startsAt)}—{dateFormatter.format(barWeek.endsAt)}
+              {barWeek.groups.map(({ name }) => name).join(', ')}
+            </h3>
+            {#if expandedBarWeekId === barWeek.id}
+              <InputText label="Description" maxlength={255} bind:value={barWeek.description} />
 
-            <InputListOfGroups
-              label="Groupes"
-              bind:groups={barWeeks[i].groups}
-              uids={barWeek.groups.map((g) => g.uid)}
-            />
+              <InputGroups
+                multiple
+                label="Groupes"
+                bind:groups={barWeeks[i].groups}
+                options={allGroups}
+              />
 
-            <div class="side-by-side">
-              <DateInput label="Début" bind:value={barWeeks[i].startsAt} />
-              <DateInput label="Fin" bind:value={barWeeks[i].endsAt} />
-            </div>
-            {#if serverErrors[barWeek.id]}
-              <Alert theme="danger">{serverErrors[barWeek.id]}</Alert>
+              <div class="side-by-side">
+                <DateInput label="Début" bind:value={barWeeks[i].startsAt} />
+                <DateInput label="Fin" bind:value={barWeeks[i].endsAt} />
+              </div>
+              {#if serverErrors[barWeek.id]}
+                <Alert theme="danger">{serverErrors[barWeek.id]}</Alert>
+              {/if}
+              <section class="actions">
+                <ButtonSecondary icon={IconConfirm} on:click={async () => updateBarWeek(barWeek)}
+                  >Enregistrer
+                </ButtonSecondary>
+                <ButtonSecondary
+                  danger
+                  icon={IconDelete}
+                  on:click={async () => deleteBarWeek(barWeek)}>Supprimer</ButtonSecondary
+                >
+              </section>
+            {:else}
+              <div class="description user-html">
+                <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                {@html barWeek.descriptionHtml}
+              </div>
+              <section class="actions">
+                <ButtonSecondary
+                  icon={IconEdit}
+                  on:click={() => {
+                    expandedBarWeekId = barWeek.id;
+                  }}>Modifier</ButtonSecondary
+                >
+                <ButtonSecondary
+                  danger
+                  icon={IconDelete}
+                  on:click={async () => deleteBarWeek(barWeek)}>Supprimer</ButtonSecondary
+                >
+              </section>
             {/if}
-            <section class="actions">
-              <ButtonSecondary icon={IconConfirm} on:click={async () => updateBarWeek(barWeek)}
-                >Enregistrer
-              </ButtonSecondary>
-              <ButtonSecondary
-                danger
-                icon={IconDelete}
-                on:click={async () => deleteBarWeek(barWeek)}>Supprimer</ButtonSecondary
-              >
-            </section>
-          {:else}
-            <div class="description user-html">
-              <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-              {@html barWeek.descriptionHtml}
-            </div>
-            <section class="actions">
-              <ButtonSecondary
-                icon={IconEdit}
-                on:click={() => {
-                  expandedBarWeekId = barWeek.id;
-                }}>Modifier</ButtonSecondary
-              >
-              <ButtonSecondary
-                danger
-                icon={IconDelete}
-                on:click={async () => deleteBarWeek(barWeek)}>Supprimer</ButtonSecondary
-              >
-            </section>
-          {/if}
-        </Card>
-      </li>
-    {:else}
-      <li>Aucune semaine de bar à afficher.</li>
-    {/each}
-  </ul>
+          </Card>
+        </li>
+      {:else}
+        <li>Aucune semaine de bar à afficher.</li>
+      {/each}
+    </ul>
 
-  <h2>Nouvelle semaine de bar</h2>
+    <h2>Nouvelle semaine de bar</h2>
 
-  <Card>
-    <form class="new-bar-week" on:submit|preventDefault={async () => updateBarWeek(newBarWeek)}>
-      <InputListOfGroups
-        label="Groupes"
-        bind:groups={newBarWeek.groups}
-        uids={newBarWeek.groups.map((g) => g.uid)}
-      />
-      <InputText label="Description" maxlength={255} bind:value={newBarWeek.description} />
-      <div class="side-by-side">
-        <DateInput label="Début" bind:value={newBarWeek.startsAt} />
-        <DateInput label="Fin" bind:value={newBarWeek.endsAt} />
-      </div>
-      {#if serverErrors.new}
-        <Alert theme="danger">{serverErrors.new}</Alert>
-      {/if}
-      <section class="submit">
-        <ButtonPrimary submits>Ajouter</ButtonPrimary>
-      </section>
-    </form>
-  </Card>
+    <Card>
+      <form class="new-bar-week" on:submit|preventDefault={async () => updateBarWeek(newBarWeek)}>
+        <InputGroups multiple label="Groupes" bind:groups={newBarWeek.groups} options={allGroups} />
+        <InputText label="Description" maxlength={255} bind:value={newBarWeek.description} />
+        <div class="side-by-side">
+          <DateInput label="Début" bind:value={newBarWeek.startsAt} />
+          <DateInput label="Fin" bind:value={newBarWeek.endsAt} />
+        </div>
+        {#if serverErrors.new}
+          <Alert theme="danger">{serverErrors.new}</Alert>
+        {/if}
+        <section class="submit">
+          <ButtonPrimary submits>Ajouter</ButtonPrimary>
+        </section>
+      </form>
+    </Card>
+  {/await}
 </div>
 
 <style>

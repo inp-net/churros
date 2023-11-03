@@ -74,7 +74,7 @@
   </button>
 
   <a
-    href="/events/planning"
+    href="/events/planning/"
     class:current={!flyoutOpen && current === 'events'}
     class:disabled={flyoutOpen}
     use:tooltip={'Événements'}
@@ -87,7 +87,7 @@
   </a>
 
   <a
-    href="/services"
+    href="/services/"
     class:current={!flyoutOpen && current === 'services'}
     class:disabled={flyoutOpen}
     use:tooltip={'Les autre services'}

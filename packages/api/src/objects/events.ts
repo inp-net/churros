@@ -3,6 +3,7 @@ import {
   startOfWeek,
   endOfWeek,
   differenceInDays,
+  differenceInWeeks,
   startOfDay,
   endOfDay,
   getDay,
@@ -12,6 +13,8 @@ import {
   getMonth,
   setDay,
   addDays,
+  isBefore,
+  weeksToDays,
 } from 'date-fns';
 import { TicketType, createUid as createTicketUid, userCanSeeTicket } from './tickets.js';
 import {
@@ -25,10 +28,11 @@ import {
   PaymentMethod,
   EventFrequency,
   type Group,
+  type Prisma,
 } from '@prisma/client';
-import { toHtml } from '../services/markdown.js';
+import { htmlToText, toHtml } from '../services/markdown.js';
 import { prisma } from '../prisma.js';
-import { DateTimeScalar, FileScalar } from './scalars.js';
+import { DateTimeScalar, FileScalar, CountsScalar, BooleanMapScalar } from './scalars.js';
 import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { LinkInput } from './links.js';
@@ -61,18 +65,53 @@ export const EventFrequencyType = builder.enumType(EventFrequency, {
   name: 'EventFrequency',
 });
 
-export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
+export function visibleEventsPrismaQuery(
+  user: { uid: string } | undefined,
+): Prisma.EventWhereInput {
   return {
-    visibility: {
-      not: VisibilityPrisma.Private,
-    },
     OR: [
+      {
+        visibility: VisibilityPrisma.Private,
+        OR: [
+          {
+            author: { uid: user?.uid ?? '' },
+          },
+          {
+            managers: { some: { user: { uid: user?.uid ?? '' } } },
+          },
+        ],
+      },
       // Completely public events
       {
         visibility: VisibilityPrisma.Public,
       },
-      // Restricted events in the user's groups
+      // SchoolRestricted events
       {
+        visibility: VisibilityPrisma.SchoolRestricted,
+        OR: [
+          {
+            group: {
+              studentAssociation: {
+                school: { majors: { some: { students: { some: { uid: user?.uid ?? '' } } } } },
+              },
+            },
+          },
+          {
+            coOrganizers: {
+              some: {
+                studentAssociation: {
+                  school: {
+                    majors: { some: { students: { some: { uid: user?.uid ?? '' } } } },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      // GroupRestricted events in the user's groups
+      {
+        visibility: VisibilityPrisma.GroupRestricted,
         OR: [
           // TODO does not work for sub-sub groups
           {
@@ -89,7 +128,6 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
             coOrganizers: { some: { members: { some: { member: { uid: user?.uid ?? '' } } } } },
           },
         ],
-        visibility: VisibilityPrisma.Restricted,
       },
       // Unlisted events that the user booked
       {
@@ -116,26 +154,24 @@ export function visibleEventsPrismaQuery(user: { uid: string } | undefined) {
 }
 
 class RegistrationsCounts {
-  /* eslint-disable @typescript-eslint/parameter-properties */
   total: number;
   paid: number;
   verified: number;
   unpaidLydia: number;
   cancelled: number;
-  /* eslint-enable @typescript-eslint/parameter-properties */
 
-  constructor(
-    total: number,
-    paid: number,
-    verified: number,
-    unpaidLydia: number,
-    cancelled: number,
-  ) {
-    this.total = total;
-    this.paid = paid;
-    this.verified = verified;
-    this.unpaidLydia = unpaidLydia;
-    this.cancelled = cancelled;
+  constructor(data: {
+    total: number;
+    paid: number;
+    verified: number;
+    unpaidLydia: number;
+    cancelled: number;
+  }) {
+    this.total = data.total;
+    this.paid = data.paid;
+    this.verified = data.verified;
+    this.unpaidLydia = data.unpaidLydia;
+    this.cancelled = data.cancelled;
   }
 }
 
@@ -228,6 +264,14 @@ export const EventType = builder.prismaNode('Event', {
     lydiaAccountId: t.exposeID('lydiaAccountId', { nullable: true }),
     description: t.exposeString('description'),
     descriptionHtml: t.string({ resolve: async ({ description }) => toHtml(description) }),
+    descriptionPreview: t.string({
+      resolve: async ({ description }) =>
+        (
+          htmlToText(await toHtml(description))
+            .split('\n')
+            .find((line) => line.trim() !== '') ?? ''
+        ).slice(0, 255),
+    }),
     uid: t.exposeString('uid'),
     title: t.exposeString('title'),
     startsAt: t.expose('startsAt', { type: DateTimeScalar }),
@@ -306,6 +350,100 @@ export const EventType = builder.prismaNode('Event', {
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
+    reactions: t.relation('reactions'),
+    mySoonestShotgunOpensAt: t.field({
+      type: DateTimeScalar,
+      nullable: true,
+      async resolve({ id }, _, { user }) {
+        if (!user) return;
+        const tickets = await prisma.ticket.findMany({
+          where: { event: { id } },
+          include: {
+            openToGroups: true,
+            openToSchools: true,
+            openToMajors: true,
+            event: {
+              include: {
+                managers: { include: { user: true } },
+                bannedUsers: true,
+                group: {
+                  include: {
+                    studentAssociation: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const userWithContributions = await prisma.user.findUniqueOrThrow({
+          where: { id: user?.id },
+          include: {
+            groups: {
+              include: { group: true },
+            },
+            major: {
+              include: {
+                schools: true,
+              },
+            },
+            contributions: {
+              include: {
+                option: {
+                  include: {
+                    offeredIn: true,
+                    paysFor: {
+                      include: {
+                        school: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const accessibleTickets = tickets.filter((t) => userCanSeeTicket(t, userWithContributions));
+        if (accessibleTickets.length === 0) return;
+        return new Date(
+          Math.min(
+            ...accessibleTickets.map((t) => t.opensAt?.valueOf() ?? Number.POSITIVE_INFINITY),
+          ),
+        );
+      },
+    }),
+    myReactions: t.field({
+      type: BooleanMapScalar,
+      async resolve({ id }, _, { user }) {
+        const reactions = await prisma.reaction.findMany({
+          where: { eventId: id },
+        });
+        const emojis = new Set(reactions.map((r) => r.emoji));
+        return Object.fromEntries(
+          [...emojis].map((emoji) => [
+            emoji,
+            user ? reactions.some((r) => r.emoji === emoji && r.authorId === user.id) : false,
+          ]),
+        );
+      },
+    }),
+    reactionCounts: t.field({
+      type: CountsScalar,
+      async resolve({ id }) {
+        const reactions = await prisma.reaction.findMany({
+          where: { eventId: id },
+        });
+        // eslint-disable-next-line unicorn/no-array-reduce
+        return reactions.reduce<Record<string, number>>(
+          (counts, reaction) => ({
+            ...counts,
+            [reaction.emoji]: (counts[reaction.emoji] ?? 0) + 1,
+          }),
+          {},
+        );
+      },
+    }),
     capacity: t.int({
       async resolve({ id }) {
         const tickets = await prisma.ticket.findMany({
@@ -410,7 +548,8 @@ builder.queryField('event', (t) =>
       const event = await prisma.event.findFirstOrThrow({
         where: { uid, group: { uid: groupUid } },
         include: {
-          coOrganizers: true,
+          coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+          group: { include: { studentAssociation: { include: { school: true } } } },
           managers: { include: { user: true } },
         },
       });
@@ -427,15 +566,39 @@ builder.queryField('events', (t) =>
     cursor: 'id',
     args: {
       future: t.arg.boolean({ required: false }),
+      past: t.arg.boolean({ required: false }),
+      upcomingShotguns: t.arg.boolean({ required: false }),
+      noLinkedArticles: t.arg.boolean({ required: false }),
     },
-    async resolve(query, _, { future }, { user }) {
+    async resolve(query, _, { future, past, upcomingShotguns, noLinkedArticles }, { user }) {
       future = future ?? false;
+      past = past ?? false;
+      upcomingShotguns = upcomingShotguns ?? false;
+      let constraints: Prisma.EventWhereInput = {};
+      if (future || upcomingShotguns) {
+        constraints = {
+          startsAt: { gte: startOfDay(new Date()) },
+        };
+      } else if (past) {
+        constraints = {
+          endsAt: { lte: endOfDay(new Date()) },
+        };
+      }
+
+      if (noLinkedArticles) {
+        constraints = {
+          articles: {
+            none: {},
+          },
+        };
+      }
+
       if (!user) {
         return prisma.event.findMany({
           ...query,
           where: {
             visibility: VisibilityPrisma.Public,
-            startsAt: future ? { gte: startOfDay(new Date()) } : undefined,
+            ...constraints,
           },
           orderBy: { startsAt: 'asc' },
         });
@@ -444,7 +607,7 @@ builder.queryField('events', (t) =>
       return prisma.event.findMany({
         ...query,
         where: {
-          startsAt: future ? { gte: new Date() } : undefined,
+          ...constraints,
           ...visibleEventsPrismaQuery(user),
         },
         orderBy: { startsAt: 'asc' },
@@ -485,32 +648,14 @@ builder.queryField('eventsInWeek', (t) =>
         )
           return false;
 
-        switch (event.frequency) {
-          case EventFrequency.Weekly: {
-            // a weekly event is visible each week
-            return true;
-          }
-
-          case EventFrequency.Monthly: {
-            return event.startsAt.getDate() === today.getDate();
-          }
-
-          case EventFrequency.Biweekly: {
-            return differenceInDays(event.startsAt, today) % 14 === 0;
-          }
-
-          default: {
-            return true;
-          }
-        }
+        if (event.recurringUntil) return isBefore(today, event.recurringUntil);
+        return true;
       }
 
       function fixRecurrentEventDates(event: EventPrisma): EventPrisma {
         let { startsAt, endsAt, frequency } = event;
         switch (frequency) {
-          case EventFrequency.Weekly:
-          case EventFrequency.Biweekly: {
-            // move event from its original startsAt to today's week.
+          case EventFrequency.Weekly: {
             const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
             const dayDelta = differenceInDays(todayWeek, startsAt);
             startsAt = addDays(startsAt, dayDelta);
@@ -518,11 +663,28 @@ builder.queryField('eventsInWeek', (t) =>
             break;
           }
 
+          case EventFrequency.Biweekly: {
+            // move event from its original startsAt to today's week.
+            const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
+            const weekDelta = differenceInWeeks(todayWeek, startsAt);
+            if (weekDelta % 2 === 0) {
+              startsAt = addDays(startsAt, weeksToDays(weekDelta));
+              endsAt = addDays(endsAt, weeksToDays(weekDelta));
+            }
+
+            break;
+          }
+
           case EventFrequency.Monthly: {
-            startsAt = setYear(startsAt, getYear(today));
-            startsAt = setMonth(startsAt, getMonth(today));
-            endsAt = setYear(endsAt, getYear(today));
-            endsAt = setMonth(endsAt, getMonth(today));
+            const monthCorrect =
+              getMonth(today) === getMonth(endOfWeek(today, { weekStartsOn: 1 })) ? 0 : 1;
+            const yearCorrect =
+              getYear(today) === getYear(endOfWeek(today, { weekStartsOn: 1 })) ? 0 : 1;
+
+            startsAt = setMonth(startsAt, getMonth(today) + monthCorrect);
+            endsAt = setMonth(endsAt, getMonth(today) + monthCorrect);
+            startsAt = setYear(startsAt, getYear(today) + yearCorrect);
+            endsAt = setYear(endsAt, getYear(today) + yearCorrect);
             break;
           }
 
@@ -933,7 +1095,14 @@ builder.mutationField('upsertEvent', (t) =>
 export async function eventAccessibleByUser(
   event:
     | (EventPrisma & {
-        coOrganizers: Array<{ id: string; uid: string }>;
+        coOrganizers: Array<{
+          id: string;
+          uid: string;
+          studentAssociation?: null | { school: { uid: string } };
+        }>;
+        group: {
+          studentAssociation?: null | { school: { uid: string } };
+        };
         managers: Array<{
           user: { uid: string };
 
@@ -953,7 +1122,18 @@ export async function eventAccessibleByUser(
       return true;
     }
 
-    case Visibility.Restricted: {
+    case Visibility.SchoolRestricted: {
+      if (!user) return false;
+      if (eventManagedByUser(event, user, {})) return true;
+      return Boolean(
+        [event.group, ...event.coOrganizers]
+          .map((g) => g.studentAssociation?.school.uid)
+          .filter(Boolean)
+          .some((schoolUid) => user.major.schools.some((s) => s.uid === schoolUid!)),
+      );
+    }
+
+    case Visibility.GroupRestricted: {
       if (!user) return false;
       // All managers can see the event, no matter their permissions
       if (eventManagedByUser(event, user, {})) return true;
@@ -1057,7 +1237,8 @@ builder.queryField('searchEvents', (t) =>
             : {}),
         },
         include: {
-          coOrganizers: true,
+          coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+          group: { include: { studentAssociation: { include: { school: true } } } },
           managers: {
             include: {
               user: true,
@@ -1092,7 +1273,8 @@ builder.queryField('searchEvents', (t) =>
           ],
         },
         include: {
-          coOrganizers: true,
+          coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+          group: { include: { studentAssociation: { include: { school: true } } } },
           managers: {
             include: {
               user: true,
@@ -1105,7 +1287,10 @@ builder.queryField('searchEvents', (t) =>
         ...results.sort(levenshteinSorter(fuzzyIDs)),
         ...levenshteinFilterAndSort<
           Event & {
-            coOrganizers: Group[];
+            group: Group & { studentAssociation?: null | { school: { uid: string } } };
+            coOrganizers: Array<
+              Group & { studentAssociation?: null | { school: { uid: string } } }
+            >;
             managers: Array<EventManager & { user: { uid: string } }>;
           }
         >(

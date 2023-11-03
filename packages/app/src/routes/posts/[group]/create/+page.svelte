@@ -1,13 +1,12 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import FormArticle from '$lib/components/FormArticle.svelte';
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
 
   export let data: PageData;
 </script>
 
 <div class="content">
-  <h1><ButtonBack /> Écrire un post en tant que {data.article.group.name}</h1>
+  <h2>Nouveau post</h2>
   <FormArticle bind:data />
 </div>
 
@@ -20,9 +19,7 @@
     margin: 0 auto;
   }
 
-  h1 {
-    display: flex;
-    align-items: center;
+  h2 {
     text-align: center;
   }
 </style>

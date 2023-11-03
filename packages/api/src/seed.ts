@@ -175,6 +175,8 @@ const GouttesDeau = await prisma.subject.create({
     name: "Gouttes d'eau",
     uid: 'gouttes-deau',
     majors: { connect: [{ id: MécaniqueDesFluides.id }] },
+    yearTier: 1,
+    forApprentices: false,
   },
 });
 
@@ -327,6 +329,7 @@ for (const [i, data] of usersData.entries()) {
       graduationYear: 2020 + (i % 6),
       major: { connect: { id: major.id } },
       credentials: { create: { type: CredentialType.Password, value: await hash('a') } },
+      canAccessDocuments: true,
     },
   });
 }
@@ -557,7 +560,7 @@ for (let i = 0; i < end; i++) {
 - Deux
 - Trois
 `,
-    visibility: i % 3 === 0 ? Visibility.Public : Visibility.Restricted,
+    visibility: i % 3 === 0 ? Visibility.Public : Visibility.GroupRestricted,
     published: i % 7 > 1,
     createdAt: new Date(startDate * (1 - i / end) + endDate * (i / end)),
     publishedAt: new Date(
@@ -686,7 +689,7 @@ await prisma.event.create({
     startsAt: new Date(),
     uid: 'passation-tvn7',
     title: 'Passation TVn7',
-    visibility: Visibility.Restricted,
+    visibility: Visibility.GroupRestricted,
     author: { connect: { uid: 'deuxtroisq' } },
     group: { connect: { uid: 'ski' } },
     links: {

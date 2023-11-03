@@ -9,13 +9,11 @@ import {
   type School,
   NotificationChannel,
 } from '@prisma/client';
-import { htmlToText } from './markdown.js';
 import { prisma } from '../prisma.js';
 import webpush, { WebPushError } from 'web-push';
 import { Cron } from 'croner';
 import type { MaybePromise } from '@pothos/core';
 import { Prisma } from '@prisma/client';
-import { toHtml } from './markdown.js';
 import { format, subMinutes } from 'date-fns';
 import { fullName } from '../objects/users.js';
 import { mappedGetAncestors } from 'arborist';
@@ -58,17 +56,14 @@ export async function scheduleNewArticleNotification({
   id,
   publishedAt,
   eager,
+  notifiedAt,
 }: {
   id: string;
   publishedAt: Date;
+  notifiedAt: Date | null;
   eager: boolean;
 }): Promise<Cron | boolean> {
-  const ellipsis = (text: string) =>
-    `${text
-      .split(
-        '\n',
-      )[0]! /* the separator is not the empty string so there's no way to get an empty array of of String#split */
-      .slice(0, 100)}…`;
+  if (notifiedAt) return false;
 
   return scheduleNotification(
     async (user) => {
@@ -94,13 +89,14 @@ export async function scheduleNewArticleNotification({
         return;
       // If the article's group is not in a school the user is in
       if (
+        article.visibility === Visibility.SchoolRestricted &&
         !user.major.schools.some(
           (school) => school.id === article.group.studentAssociation?.school.id,
         )
       )
         return;
-      // If the article was set to restricted and/or the user is not in the group anymore
-      if (article.visibility === Visibility.Restricted) {
+      // If the article was set to grouprestricted and/or the user is not in the group anymore
+      if (article.visibility === Visibility.GroupRestricted) {
         // Get the user's groups and their ancestors
         const ancestors = await prisma.group
           // Get all groups in the same family as the user's groups
@@ -117,12 +113,20 @@ export async function scheduleNewArticleNotification({
       }
 
       return {
-        title: `Nouveau post de ${article.group.name}: ${article.title}`,
-        body: ellipsis(htmlToText(await toHtml(article.body))),
+        title: `Nouveau post de ${article.group.name}`,
+        body: article.title,
         data: {
           group: article.group.uid,
           channel: NotificationChannel.Articles,
           goto: `/posts/${article.group.uid}/${article.uid}`,
+        },
+        async afterSent() {
+          await prisma.article.update({
+            where: { id: article.id },
+            data: {
+              notifiedAt: new Date(),
+            },
+          });
         },
       };
     },
@@ -136,11 +140,14 @@ export async function scheduleNewArticleNotification({
 export async function scheduleShotgunNotifications({
   id,
   tickets,
+  notifiedAt,
 }: {
   id: string;
   tickets: Ticket[];
+  notifiedAt: Date | null;
 }): Promise<[Cron | boolean, Cron | boolean] | undefined> {
   if (tickets.length === 0) return;
+  if (notifiedAt) return;
   const soonDate = (date: Date) => subMinutes(date, 10);
 
   const opensAt = new Date(
@@ -166,6 +173,15 @@ export async function scheduleShotgunNotifications({
         },
         include: {
           tickets: true,
+          coOrganizers: {
+            include: {
+              studentAssociation: {
+                include: {
+                  school: true,
+                },
+              },
+            },
+          },
           group: {
             include: {
               studentAssociation: {
@@ -182,8 +198,21 @@ export async function scheduleShotgunNotifications({
       if (!event) return;
 
       // Don't send if the event is not open to any school the user is in
-      const schoolOfEvent = event.group.studentAssociation?.school;
-      if (!user.major.schools.some((school) => school.id === schoolOfEvent?.id)) return;
+      const schoolsOfEvent = new Set(
+        [
+          event.group.studentAssociation?.school,
+          ...event.coOrganizers.map((c) => c.studentAssociation?.school),
+        ]
+          .filter(Boolean)
+          .map((s) => s!.id),
+      );
+
+      // Don't send notifications for school-restricted events if the recipient is not in any of the organizing schools
+      if (
+        event.visibility === Visibility.SchoolRestricted &&
+        !user.major.schools.some((school) => schoolsOfEvent.has(school.id))
+      )
+        return;
 
       // Don't send notifications for unlisted or private events
       if (event.visibility === Visibility.Unlisted || event.visibility === Visibility.Private)
@@ -191,7 +220,7 @@ export async function scheduleShotgunNotifications({
 
       // Don't send if the event is unlisted and the recipient is not in the group
       if (
-        event.visibility === Visibility.Restricted &&
+        event.visibility === Visibility.GroupRestricted &&
         !user.groups.some(({ group }) => group.id === event.groupId)
       )
         return;
@@ -220,6 +249,17 @@ export async function scheduleShotgunNotifications({
         });
         if (registration) return;
       }
+
+      const setNotifiedAt = async () => {
+        const { id } = await prisma.event.update({
+          where: { id: event.id },
+          data: {
+            notifiedAt: new Date(),
+          },
+        });
+
+        console.info(`Set notifiedAt to ${id}`);
+      };
 
       const notification: PushNotification = {
         title: '',
@@ -260,7 +300,10 @@ export async function scheduleShotgunNotifications({
         }
       }
 
-      return notification;
+      return {
+        ...notification,
+        afterSent: setNotifiedAt,
+      };
     };
 
   return [
@@ -293,7 +336,7 @@ export async function scheduleNotification(
       major: Major & { schools: School[] };
       groups: Array<GroupMember & { group: Group }>;
     },
-  ) => MaybePromise<PushNotification | undefined>,
+  ) => MaybePromise<(PushNotification & { afterSent: () => Promise<void> }) | undefined>,
   {
     at,
     eager = false,
@@ -338,7 +381,11 @@ export async function scheduleNotification(
           `[cron ${id} @ ${user.uid}] Sending notification (time is ${at.toISOString()})`,
         );
         const notificationToSend = await notification(user);
-        if (notificationToSend) await notify([user], { tag: id, ...notificationToSend });
+        if (notificationToSend) {
+          const { afterSent, ...notificationData } = notificationToSend;
+          await notify([user], { tag: id, ...notificationData });
+          await afterSent();
+        }
       }
     },
   );
@@ -494,4 +541,28 @@ export function canSendNotificationToUser(
     subscriptionOwner.enabledNotificationChannels.includes(channel) ||
     subscriptionOwner.enabledNotificationChannels.length === 0
   );
+}
+
+export async function rescheduleNotifications() {
+  const unnotifiedEvents = await prisma.event.findMany({
+    // eslint-disable-next-line unicorn/no-null
+    where: { notifiedAt: null },
+    include: { tickets: true },
+  });
+
+  const unnotifiedArticles = await prisma.article.findMany({
+    // eslint-disable-next-line unicorn/no-null
+    where: { notifiedAt: null },
+  });
+
+  console.info(
+    `Rescheduling notifications for ${unnotifiedEvents.length} events and ${unnotifiedArticles.length} articles`,
+  );
+
+  await Promise.all([
+    ...unnotifiedEvents.map(async (event) => scheduleShotgunNotifications(event)),
+    ...unnotifiedArticles.map(async (article) =>
+      scheduleNewArticleNotification({ ...article, eager: true }),
+    ),
+  ]);
 }

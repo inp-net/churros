@@ -8,6 +8,7 @@
   export let success = false;
   export let disabled = false;
   export let href = '';
+  export let tight = false;
 </script>
 
 <svelte:element
@@ -18,11 +19,14 @@
   {...$$restProps}
   class:dark-shadow={darkShadow}
   class:disabled
+  class:tight
+  {disabled}
   {type}
   {href}
   use:tooltip={help}
   class="button-ghost {danger ? 'danger' : ''} {success ? 'success' : ''} {$$restProps.class}"
-  on:click><slot /></svelte:element
+  on:click
+  on:mousedown><slot /></svelte:element
 >
 
 <style lang="scss">
@@ -38,6 +42,11 @@
     flex-shrink: 0;
     width: max-content;
     padding: 0.25em;
+
+    &.tight {
+      padding: 0;
+    }
+
     color: var(--text);
     word-wrap: break-word;
     white-space: normal;
@@ -56,6 +65,13 @@
       &:hover,
       &:focus-visible {
         --text: var(--hover-text);
+
+        &.danger,
+        &.success {
+          --text: var(--hover-text);
+
+          background: var(--bg);
+        }
 
         &:not(.dark-shadow) {
           background: var(--hover-bg);

@@ -54,6 +54,7 @@
 />
 
 <nav id="navigation-top" class:scrolled class:transparent={scanningTickets}>
+  <img alt="Toile d'araingée" src="/halloween-cobweb.png" class="cobweb" />
   {#if scanningTickets}
     <div class="current-event">
       <ButtonBack />
@@ -123,8 +124,20 @@
     justify-content: space-between;
     padding: 1rem 1.5rem;
     margin: 0;
-    background: var(--bg);
-    transition: box-shadow 0.25s ease;
+    background-color: var(--bg);
+    background-image: url('/halloween-topbar.png');
+    background-repeat: repeat no-repeat;
+    background-position: bottom center;
+    background-position-y: 100px;
+    background-size: contain;
+    transition:
+      box-shadow 0.25s ease,
+      background-position-y 0.5s ease;
+  }
+
+  nav.scrolled {
+    background-position-y: bottom;
+    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
   }
 
   nav.transparent {
@@ -134,8 +147,20 @@
     --text: white;
   }
 
-  nav.scrolled {
-    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
+  .cobweb {
+    position: absolute;
+    top: -80px;
+    left: 0;
+    height: 100%;
+    pointer-events: none;
+    transition: all 0.75s ease;
+  }
+
+  nav.scrolled .cobweb,
+  nav:hover .cobweb {
+    top: 0;
+    left: 0;
+    transition-duration: 3s;
   }
 
   .actions {

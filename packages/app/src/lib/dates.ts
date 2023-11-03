@@ -62,18 +62,25 @@ export function formatEventDates(
   endsAt: Date,
   recurringUntil: Date | undefined,
 ): string {
-  switch (frequency) {
-    case EventFrequency.Once: {
-      return new Intl.DateTimeFormat('fr-FR', {
-        dateStyle: 'full',
-        timeStyle: 'short',
-      }).formatRange(startsAt, endsAt);
-    }
+  try {
+    switch (frequency) {
+      case EventFrequency.Once: {
+        return new Intl.DateTimeFormat('fr-FR', {
+          dateStyle: 'full',
+          timeStyle: 'short',
+        })
+          .formatRange(startsAt, endsAt)
+          .replaceAll(new Date().getFullYear().toString(), '');
+      }
 
-    default: {
-      if (recurringUntil) return `Du ${formatDate(startsAt)} au ${formatDate(recurringUntil)}`;
-      return `À partir du ${formatDate(startsAt)}`;
+      default: {
+        if (recurringUntil) return `Du ${formatDate(startsAt)} au ${formatDate(recurringUntil)}`;
+        return `À partir du ${formatDate(startsAt)}`;
+      }
     }
+  } catch (error) {
+    console.error(error);
+    return '';
   }
 }
 
@@ -87,7 +94,7 @@ export function formatRecurrence(frequency: EventFrequency, startsAt: Date, ends
     }
 
     case EventFrequency.Monthly: {
-      return `Tout les mois le ${format(startsAt, 'DD')}, de ${format(
+      return `Tout les mois le ${format(startsAt, 'dd')}, de ${format(
         startsAt,
         'HH:mm',
       )} à ${format(endsAt, 'HH:mm')}`;
@@ -104,4 +111,19 @@ export function formatRecurrence(frequency: EventFrequency, startsAt: Date, ends
       return '';
     }
   }
+}
+
+export function parseYearTier(yearTierDisplay: string): number {
+  return Number.parseInt(yearTierDisplay.replace(/a$/, ''), 10);
+}
+
+export function parseDisplayYearTierAndForApprentices(param: string): {
+  yearTier: number;
+  forApprentices: boolean;
+} {
+  const [yearTierDisplay, fiseOrFisa] = param.split('-', 2) as [string, string];
+  return {
+    yearTier: parseYearTier(yearTierDisplay),
+    forApprentices: fiseOrFisa === 'fisa',
+  };
 }

@@ -1,15 +1,7 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
-  import IconPlus from '~icons/mdi/plus';
-  import IconEdit from '~icons/mdi/edit';
-  import IconNone from '~icons/mdi/help';
+  import IconCheck from '~icons/mdi/check';
   import { type Visibility, zeus } from '$lib/zeus';
-  import InputField from './InputField.svelte';
-  import { formatDateTime } from '$lib/dates';
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import { page } from '$app/stores';
-  import IndicatorVisibility from './IndicatorVisibility.svelte';
-  import InputSearchObject from './InputSearchObject.svelte';
+  import InputPickObjects from './InputPickObjects.svelte';
 
   type Event = {
     id: string;
@@ -20,12 +12,11 @@
     visibility: Visibility;
   };
   export let groupUid: string;
-  export let label: string;
-  export let id: string | undefined;
-  export let required = false;
   export let allow: string[] = [];
   export let except: string[] = [];
   export let event: Event | undefined = undefined;
+  export let suggestions: Event[] = [];
+  export let clearable = false;
 
   function allowed(uid: string) {
     const result =
@@ -34,7 +25,7 @@
     return result;
   }
 
-  async function search(query: string): Promise<Event[]> {
+  async function search(query: string) {
     const { searchEvents } = await $zeus.query({
       searchEvents: [
         { q: query, groupUid },
@@ -48,105 +39,93 @@
         },
       ],
     });
-    return searchEvents.filter(({ uid }) => allowed(uid));
+    return searchEvents.filter(({ uid }) => allowed(uid)).map((item) => ({ item }));
   }
 </script>
 
-<InputField {label} {required}>
-  <div class="side-by-side">
-    <InputSearchObject {search} bind:value={id} bind:object={event} labelKey="title">
-      <div class="avatar" slot="thumbnail" let:object>
-        {#if object}
-          <img
-            src="{env.PUBLIC_STORAGE_URL}{object.pictureFile}"
-            alt={object.title?.toString() ?? ''}
-          />
-        {:else}
-          <IconNone />
-        {/if}
-      </div>
-      <div class="suggestion" slot="item" let:item>
-        <div class="avatar">
-          <img src="{env.PUBLIC_STORAGE_URL}{item.pictureFile}" alt={item.title} />
-        </div>
-        <div class="text">
-          <p class="title">{item.title}</p>
-          <p class="date">{formatDateTime(item.startsAt)}</p>
-        </div>
-        <IndicatorVisibility visibility={item.visibility} />
-      </div>
-    </InputSearchObject>
-    {#if event}
-      <ButtonSecondary
-        circle
-        insideProse
-        icon={IconEdit}
-        href="/events/{groupUid}/{event.uid}/edit?{new URLSearchParams({
-          back: $page.url.pathname,
-        }).toString()}"
-      />
-    {:else}
-      <ButtonSecondary
-        circle
-        icon={IconPlus}
-        href="/events/{groupUid}/create?{new URLSearchParams({
-          back: $page.url.pathname,
-        }).toString()}"
-      />
-    {/if}
+<InputPickObjects
+  options={suggestions}
+  {clearable}
+  {search}
+  pickerTitle="Choisir un évènement"
+  searchKeys={['title']}
+  bind:value={event}
+>
+  <slot name="input" slot="input" let:value let:openPicker let:clear {value} {openPicker} {clear} />
+  <div
+    slot="item"
+    let:item
+    let:selected
+    let:disabled
+    class="suggestion"
+    class:selected
+    class:disabled
+  >
+    <div class="selected-badge" class:selected><IconCheck></IconCheck></div>
+    <img src={item.pictureFile} alt={item.title} />
+    <span class="name">{item.title}</span>
   </div>
-</InputField>
+</InputPickObjects>
 
 <style lang="scss">
-  .side-by-side {
-    display: grid;
-    flex-wrap: wrap;
-    grid-template-columns: auto min-content;
-    gap: 1rem;
-    align-items: center;
-  }
-
   .suggestion {
+    --size: 5rem;
+
+    position: relative;
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    row-gap: 0.5rem;
     align-items: center;
-    width: 100%;
-
-    .text {
-      display: flex;
-      flex-flow: column wrap;
-    }
-
-    .date {
-      font-size: 0.75em;
-      font-weight: bold;
-    }
-
-    :global(.visibility) {
-      margin-left: auto;
-    }
+    width: calc(1.5 * var(--size));
+    padding: 0.5rem;
+    text-align: center;
   }
 
-  .avatar {
-    --size: 2rem;
-
+  .suggestion img {
     display: flex;
-    flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    width: calc(1.5 * var(--size));
+    width: 100%;
     height: var(--size);
     overflow: hidden;
-    line-height: var(--size);
     color: var(--muted-text);
     text-align: center;
     background: var(--muted-bg);
-    border-radius: var(--border-block);
+    border: 0 solid var(--primary-border);
+    border-radius: var(--radius-block);
+    transition: all 0.25s ease;
+    object-fit: contain;
   }
 
-  .avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .suggestion.disabled {
+    opacity: 0.5;
+  }
+
+  .suggestion.selected img {
+    border-width: calc(2 * var(--border-block));
+  }
+
+  .suggestion .selected-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    color: var(--primary-text);
+    content: '';
+    background: var(--primary-bg);
+    border-radius: 50%;
+    opacity: 0;
+    transition: all 0.125s ease;
+    transform: scale(0);
+  }
+
+  .suggestion.selected .selected-badge {
+    opacity: 1;
+    transform: scale(1);
   }
 </style>

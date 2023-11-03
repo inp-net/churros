@@ -7,16 +7,37 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   const { me } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
 
-  if (
-    !me.canEditGroups &&
-    !me.groups.some(({ group, canEditArticles }) => group.uid === params.group && canEditArticles)
-  )
-    throw redirect(307, '.');
-
   const { group } = await loadQuery(
-    { group: [{ uid: params.group }, { uid: true, id: true, name: true }] },
+    {
+      group: [
+        { uid: params.group },
+        {
+          pictureFile: true,
+          pictureFileDark: true,
+          uid: true,
+          id: true,
+          name: true,
+          studentAssociation: { school: { name: true } },
+          children: {
+            name: true,
+            studentAssociation: { school: { name: true } },
+          },
+          members: {
+            canEditArticles: true,
+            member: { uid: true },
+          },
+        },
+      ],
+    },
     { fetch, parent },
   );
+
+  if (
+    !me.canEditGroups &&
+    !group.members.some(({ canEditArticles, member }) => member.uid === me.uid && canEditArticles)
+  )
+    throw redirect(307, '/posts/create');
+
   return {
     article: {
       id: '',

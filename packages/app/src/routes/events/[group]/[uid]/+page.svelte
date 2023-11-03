@@ -9,10 +9,14 @@
   import Header from './Header.svelte';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
+  import AreaReactions from './AreaReactions.svelte';
+  import { calendarLinks } from '$lib/calendars';
+  import IconGoogleCalendar from '~icons/logos/google-calendar';
+  import IconCalendar from '~icons/mdi/calendar-export-outline';
 
   export let data: PageData;
 
-  const {
+  let {
     descriptionHtml,
     links,
     group,
@@ -21,6 +25,8 @@
     articles,
     placesLeft,
     capacity,
+    reactionCounts,
+    myReactions,
   } = data.event;
 
   const tickets = data.ticketsOfEvent;
@@ -31,6 +37,8 @@
 
   const bookingURL = (registrationId: string) =>
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
+
+  const calendarURLs = calendarLinks(data.event);
 </script>
 
 <Header {...data.event} />
@@ -64,6 +72,10 @@
   {@html descriptionHtml}
 </section>
 
+<section class="reactions">
+  <AreaReactions bind:myReactions bind:reactionCounts connection={{ eventId: data.event.id }} />
+</section>
+
 {#if tickets.length > 0}
   <section class="tickets">
     <h2>
@@ -87,6 +99,21 @@
     </ul>
   </section>
 {/if}
+
+<section class="add-to-calendar">
+  <h2>Ajouter à mon calendrier</h2>
+  <ul class="nobullet options">
+    <li>
+      <ButtonSecondary icon={IconGoogleCalendar} newTab href={calendarURLs.google}
+        >Google Agenda</ButtonSecondary
+      >
+    </li>
+    <li>
+      <ButtonSecondary icon={IconCalendar} newTab href={calendarURLs.ical}>Autres</ButtonSecondary>
+    </li>
+  </ul>
+</section>
+
 <section class="news">
   <h2>
     Actualités
@@ -98,7 +125,12 @@
   <ul class="nobullet">
     {#each articles as { uid, ...article } (uid)}
       <li>
-        <CardArticle href="/posts/{article.group.uid}/{uid}/" {...article} />
+        <CardArticle
+          likes={reactionCounts['❤️']}
+          liked={myReactions['❤️']}
+          href="/posts/{article.group.uid}/{uid}/"
+          {...article}
+        />
       </li>
     {:else}
       <li class="empty muted">Aucun post pour le moment.</li>
@@ -182,9 +214,19 @@
     width: 1px;
   }
 
+  .add-to-calendar .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+
   .organizers {
     display: flex;
-    gap: 4rem;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+    column-gap: 2rem;
     margin-top: 0.5rem;
   }
 

@@ -1,14 +1,15 @@
 <script lang="ts">
-  import ArticleCard from '$lib/components/CardArticle.svelte';
+  import CardArticle from '$lib/components/CardArticle.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
-  import { _pageQuery } from './+page';
+  import { _eventQuery, _pageQuery } from './+page';
   import { env } from '$env/dynamic/public';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import { me } from '$lib/session';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import CardFeedEvent from '$lib/components/CardFeedEvent.svelte';
 
   export let data: PageData;
 
@@ -18,15 +19,44 @@
     if (loading) return;
     try {
       loading = true;
-      const { homepage } = await $zeus.query({
+      const { homepage, events } = await $zeus.query({
         homepage: [{ after: data.homepage.pageInfo.endCursor }, _pageQuery],
+        events: [{ after: data.events.pageInfo.endCursor }, _eventQuery],
       });
       data.homepage.pageInfo = homepage.pageInfo;
       data.homepage.edges = [...data.homepage.edges, ...homepage.edges];
+      data.events.pageInfo = events.pageInfo;
+      data.events.edges = [...data.events.edges, ...events.edges];
     } finally {
       loading = false;
     }
   };
+
+  type HomepageItem =
+    | {
+        id: string;
+        article: (typeof data.homepage.edges)[0]['node'];
+        event: undefined;
+      }
+    | {
+        id: string;
+        event: (typeof data.events.edges)[0]['node'];
+        article: undefined;
+      };
+
+  function itemDate(item: HomepageItem): Date | undefined {
+    return item.article?.publishedAt ?? item.event?.startsAt;
+  }
+
+  function homepageItems(
+    articles: typeof data.homepage.edges,
+    events: typeof data.events.edges,
+  ): HomepageItem[] {
+    return [
+      ...articles.map(({ node }) => ({ id: node.id, article: node, event: undefined })),
+      ...events.map(({ node }) => ({ id: node.id, article: undefined, event: node })),
+    ].sort((a, b) => itemDate(b)!.getTime() - itemDate(a)!.getTime());
+  }
 </script>
 
 <h1>Mon feed</h1>
@@ -72,17 +102,29 @@
 {/if}
 
 <section class="articles">
-  {#each data.homepage.edges as { node: { id, uid, title, bodyHtml, publishedAt, group, author, pictureFile, links } } (id)}
-    <ArticleCard
-      {title}
-      {publishedAt}
-      {links}
-      {group}
-      {author}
-      {bodyHtml}
-      href="/posts/{group.uid}/{uid}/"
-      img={pictureFile ? { src: `${env.PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
-    />
+  {#each homepageItems(data.homepage.edges, data.events.edges) as item (item.id)}
+    {#if item.article}
+      {@const { id, uid, pictureFile, group, reactionCounts, myReactions, event, ...rest } =
+        item.article}
+      <CardArticle
+        {...rest}
+        {id}
+        {group}
+        likes={reactionCounts['❤️'] ?? 0}
+        liked={myReactions['❤️']}
+        event={event ? { href: `/events/${event.group.uid}/${event.uid}`, ...event } : undefined}
+        href="/posts/{group.uid}/{uid}/"
+        img={pictureFile ? { src: `${env.PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
+      />
+    {:else}
+      {@const { uid, reactionCounts, myReactions, ...event } = item.event}
+      <CardFeedEvent
+        href="/events/{event.group.uid}/{uid}"
+        likes={reactionCounts['❤️']}
+        liked={myReactions['❤️']}
+        {...event}
+      ></CardFeedEvent>
+    {/if}
   {/each}
 </section>
 
@@ -104,8 +146,11 @@
   }
 
   section.articles {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2rem;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 2rem auto 0;
   }
 
   section.birthdays h2 {

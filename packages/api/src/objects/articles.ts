@@ -1,14 +1,13 @@
-import { mappedGetAncestors } from 'arborist';
 import slug from 'slug';
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
-import { toHtml } from '../services/markdown.js';
+import { htmlToText, toHtml } from '../services/markdown.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
 import { LinkInput } from './links.js';
 import { dichotomid } from 'dichotomid';
 import { unlink } from 'node:fs/promises';
 import { VisibilityEnum } from './events.js';
-import { Visibility } from '@prisma/client';
+import { type Prisma, Visibility } from '@prisma/client';
 import { scheduleNewArticleNotification } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
@@ -23,6 +22,15 @@ export const ArticleType = builder.prismaNode('Article', {
     title: t.exposeString('title'),
     body: t.exposeString('body'),
     bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),
+    bodyPreview: t.string({
+      async resolve({ body }) {
+        const fullText =
+          htmlToText(await toHtml(body))
+            .split('\n')
+            .find((line) => line.trim() !== '') ?? '';
+        return fullText.slice(0, 255) + (fullText.length > 255 ? '...' : '');
+      },
+    }),
     published: t.exposeBoolean('published'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
@@ -31,6 +39,35 @@ export const ArticleType = builder.prismaNode('Article', {
     author: t.relation('author', { nullable: true }),
     group: t.relation('group'),
     links: t.relation('links'),
+    myReactions: t.field({
+      type: 'BooleanMap',
+      async resolve({ id }, _, { user }) {
+        const reactions = await prisma.reaction.findMany({
+          where: { articleId: id },
+        });
+        const emojis = new Set(reactions.map((r) => r.emoji));
+        return Object.fromEntries(
+          [...emojis].map((emoji) => [
+            emoji,
+            user ? reactions.some((r) => r.emoji === emoji && r.authorId === user.id) : false,
+          ]),
+        );
+      },
+    }),
+    reactionCounts: t.field({
+      type: 'Counts',
+      async resolve({ id }) {
+        const reactions = await prisma.reaction.findMany({
+          where: { articleId: id },
+          select: { emoji: true },
+        });
+        // eslint-disable-next-line unicorn/no-array-reduce
+        return reactions.reduce<Record<string, number>>(
+          (counts, { emoji }) => ({ ...counts, [emoji]: (counts[emoji] ?? 0) + 1 }),
+          {},
+        );
+      },
+    }),
     comments: t.relatedConnection('comments', {
       cursor: 'id',
       query: {
@@ -41,30 +78,74 @@ export const ArticleType = builder.prismaNode('Article', {
   }),
 });
 
+/**
+ * Articles that the given user can see
+ * @param user the user
+ * @param level if 'wants', only return articles that the user _wants_ to see, if 'can', shows all the articles they have access to
+ * @returns a Prisma.ArticleWhereInput, an object to pass inside of a `where` field in a prisma query
+ */
 export function visibleArticlesPrismaQuery(
   user: { uid: string; canEditGroups: boolean } | undefined,
-) {
-  if (user?.canEditGroups) return {};
+  level: 'can' | 'wants',
+): Prisma.ArticleWhereInput {
+  // Get the user's groups and their ancestors
+  if (user?.canEditGroups && level === 'can') return {};
   return {
     OR: [
-      // Published articles that are
       {
+        publishedAt: { lte: new Date() },
+        // Published articles that are
         OR: [
           // Public
           { visibility: Visibility.Public },
-          // Restricted to the group and the user is a member of the group
+          // SchoolRestricted and the user is a student of this school
           {
-            visibility: Visibility.Restricted,
+            visibility: Visibility.SchoolRestricted,
             group: {
-              members: {
-                some: {
-                  member: { uid: user?.uid ?? '' },
+              studentAssociation: {
+                school: {
+                  majors: {
+                    some: {
+                      students: {
+                        some: {
+                          uid: user?.uid ?? '',
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },
           },
+          // GroupRestricted to the group and the user is a member of the group
+          // or a member of a children group
+          // TODO handle children of children
+          {
+            visibility: Visibility.GroupRestricted,
+            group: {
+              OR: [
+                {
+                  members: {
+                    some: {
+                      member: { uid: user?.uid ?? '' },
+                    },
+                  },
+                },
+                {
+                  children: {
+                    some: {
+                      members: {
+                        some: {
+                          member: { uid: user?.uid ?? '' },
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
         ],
-        publishedAt: { lte: new Date() },
       },
 
       // Or the user has permission to create articles
@@ -115,37 +196,9 @@ builder.queryField('homepage', (t) =>
         });
       }
 
-      // Get the user's groups and their ancestors
-      const ancestors = await prisma.group
-        // Get all groups in the same family as the user's groups
-        .findMany({
-          where: { familyId: { in: user.groups.map(({ group }) => group.familyId ?? group.id) } },
-          select: { id: true, parentId: true, uid: true },
-        })
-        // Get all ancestors of the groups
-        .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
-        // Flatten the ancestors into a single array
-        .then((groups) => groups.flat());
-
       return prisma.article.findMany({
         ...query,
-        where: {
-          publishedAt: {
-            lte: new Date(),
-          },
-          OR: [
-            // Show articles from the same school as the user
-            {
-              visibility: Visibility.Public,
-              // group: { school: { id: { in: user.major.schools.map(({ id }) => id) } } },
-            },
-            // Show articles from groups whose user is a member
-            {
-              visibility: { in: [Visibility.Public, Visibility.Restricted] },
-              group: { uid: { in: ancestors.map(({ uid }) => uid) } },
-            },
-          ],
-        },
+        where: visibleArticlesPrismaQuery(user, 'wants'),
         orderBy: { publishedAt: 'desc' },
       });
     },
@@ -160,7 +213,7 @@ builder.mutationField('upsertArticle', (t) =>
       id: t.arg.id({ required: false }),
       authorId: t.arg.id(),
       groupId: t.arg.id(),
-      title: t.arg.string(),
+      title: t.arg.string({ validate: { minLength: 1 } }),
       body: t.arg.string(),
       publishedAt: t.arg({ type: DateTimeScalar }),
       links: t.arg({ type: [LinkInput] }),
@@ -208,6 +261,8 @@ builder.mutationField('upsertArticle', (t) =>
     ) {
       const old = await prisma.article.findUnique({ where: { id: id ?? '' } });
       const data = {
+        // eslint-disable-next-line unicorn/no-null
+        notifiedAt: null,
         author: {
           connect: {
             id: authorId,
@@ -220,7 +275,7 @@ builder.mutationField('upsertArticle', (t) =>
         },
         title,
         body,
-        visibility: Visibility[visibility as keyof typeof Visibility],
+        visibility: Visibility[visibility],
         publishedAt,
         published: publishedAt <= new Date(),
       };

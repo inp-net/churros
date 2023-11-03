@@ -3,6 +3,7 @@
   import IconDelete from '~icons/mdi/delete-outline';
   import IconEdit from '~icons/mdi/edit-outline';
   import IconCancelEditing from '~icons/mdi/close';
+  import IconSubmit from '~icons/mdi/send-outline';
   import IconFinishEditing from '~icons/mdi/check';
   import { isSameSecond } from 'date-fns';
   import AvatarPerson from './AvatarPerson.svelte';
@@ -18,6 +19,7 @@
   const dispatch = createEventDispatcher();
 
   let editing = false;
+  export let creating = false;
   export let canReply = true;
   export let id: string;
   export let bodyHtml: string;
@@ -38,23 +40,25 @@
 
 <div class="comment-jump-to-anchor" id="comment-{removeIdPrefix('Comment', id)}" />
 
-<article class="comment">
+<article class="comment" class:creating>
   <div class="metadata">
     {#if author}
       <AvatarPerson small href="/users/{author.uid}" {...author} />
     {:else}
       <AvatarPerson small pictureFile="" href="" fullName="???" />
     {/if}
-    <div class="date muted">
-      {#if !isSameSecond(createdAt, updatedAt ?? createdAt)}
-        Modifié le {formatDateTime(updatedAt)}{:else}
-        Ajouté le {formatDateTime(createdAt)}
-      {/if}
-    </div>
+    {#if !creating}
+      <div class="date muted">
+        {#if !isSameSecond(createdAt, updatedAt ?? createdAt)}
+          Modifié le {formatDateTime(updatedAt)}{:else}
+          Ajouté le {formatDateTime(createdAt)}
+        {/if}
+      </div>
+    {/if}
   </div>
   <div class="body-and-actions">
     <div class="body">
-      {#if editing}
+      {#if editing || creating}
         <form
           on:submit|preventDefault={() => {
             dispatch('edit', [id, body]);
@@ -64,9 +68,9 @@
           <InputLongText
             submitShortcut
             rows={Math.max(body.split('\n').length, 2)}
-            autofocus
             label=""
             rich
+            placeholder={creating ? 'Ajoutez votre commentaire' : ''}
             bind:value={body}
           />
         </form>
@@ -77,7 +81,13 @@
     </div>
     {#if $me?.admin || author?.uid === $me?.uid}
       <div class="actions">
-        {#if editing}
+        {#if creating}
+          <ButtonGhost
+            on:click={() => {
+              dispatch('edit', [id, body]);
+            }}><IconSubmit></IconSubmit></ButtonGhost
+          >
+        {:else if editing}
           <ButtonGhost
             class="success"
             on:click={() => {
@@ -169,6 +179,11 @@
     border-radius: var(--radius-block);
   }
 
+  .comment.creating {
+    padding: 0;
+    background: transparent;
+  }
+
   .body-and-actions {
     display: flex;
     flex-wrap: wrap;
@@ -177,11 +192,22 @@
     justify-content: space-between;
   }
 
+  .comment.creating .body-and-actions {
+    align-items: center;
+  }
+
   .body {
     flex-grow: 1;
   }
 
+  .body :global(img) {
+    max-width: 300px;
+  }
+
   .actions {
+    display: flex;
+    align-content: center;
+    height: 100%;
     margin-left: auto;
   }
 
