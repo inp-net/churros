@@ -40,3 +40,4 @@ packages/api/scripts/frappe-documents/
 packages/api/scripts/*.tar.gz
 cli/churros/__pycache__
 cli/dist
+packages/app/src/lib/buildinfo.ts
