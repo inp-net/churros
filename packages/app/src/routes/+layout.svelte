@@ -336,7 +336,7 @@
     right: 0;
     bottom: 4.5rem;
     left: 0;
-    z-index: 1000;
+    z-index: 20;
     width: 100%;
 
     @media (width>=600px) {

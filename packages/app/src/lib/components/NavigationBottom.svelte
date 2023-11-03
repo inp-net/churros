@@ -240,7 +240,7 @@
     right: 0;
     bottom: 3rem;
     left: 0;
-    z-index: 2;
+    z-index: 30;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
