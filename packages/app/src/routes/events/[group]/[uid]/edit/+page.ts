@@ -8,6 +8,15 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
   if (!me) throw redirectToLogin(url.pathname);
   const data = await loadQuery(
     {
+      lydiaAccounts: {
+        id: true,
+        name: true,
+        group: {
+          pictureFile: true,
+          pictureFileDark: true,
+          name: true,
+        },
+      },
       groups: [{}, Selector('Group')({ uid: true, id: true, name: true, pictureFile: true })],
       event: [
         {
