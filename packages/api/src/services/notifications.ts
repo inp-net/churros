@@ -9,13 +9,11 @@ import {
   type School,
   NotificationChannel,
 } from '@prisma/client';
-import { htmlToText } from './markdown.js';
 import { prisma } from '../prisma.js';
 import webpush, { WebPushError } from 'web-push';
 import { Cron } from 'croner';
 import type { MaybePromise } from '@pothos/core';
 import { Prisma } from '@prisma/client';
-import { toHtml } from './markdown.js';
 import { format, subMinutes } from 'date-fns';
 import { fullName } from '../objects/users.js';
 import { mappedGetAncestors } from 'arborist';
@@ -67,13 +65,6 @@ export async function scheduleNewArticleNotification({
 }): Promise<Cron | boolean> {
   if (notifiedAt) return false;
 
-  const ellipsis = (text: string) =>
-    `${text
-      .split(
-        '\n',
-      )[0]! /* the separator is not the empty string so there's no way to get an empty array of of String#split */
-      .slice(0, 100)}…`;
-
   return scheduleNotification(
     async (user) => {
       const article = await prisma.article.findUnique({
@@ -122,8 +113,8 @@ export async function scheduleNewArticleNotification({
       }
 
       return {
-        title: `Nouveau post de ${article.group.name}: ${article.title}`,
-        body: ellipsis(htmlToText(await toHtml(article.body))),
+        title: `Nouveau post de ${article.group.name}`,
+        body: article.title,
         data: {
           group: article.group.uid,
           channel: NotificationChannel.Articles,
