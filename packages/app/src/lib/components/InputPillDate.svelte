@@ -4,7 +4,7 @@
   import ButtonGhost from './ButtonGhost.svelte';
   import { formatISO, intlFormatDistance, parseISO } from 'date-fns';
   export let value: Date | undefined;
-  export let after: Date | undefined=undefined;
+  export let after: Date | undefined = undefined;
 
   let _valueString = value ? formatISO(value) : undefined;
   let inputElement: HTMLInputElement;
@@ -26,7 +26,12 @@
         <slot />
       </span>
     {/if}
-    <input min={after ? formatISO(after) : undefined} bind:this={inputElement} type="datetime-local" bind:value={_valueString} />
+    <input
+      min={after ? formatISO(after) : undefined}
+      bind:this={inputElement}
+      type="datetime-local"
+      bind:value={_valueString}
+    />
   </ButtonGhost>
   {#if value}
     <ButtonGhost
