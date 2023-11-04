@@ -137,7 +137,7 @@ builder.mutationField('completeRegistration', (t) =>
           message: `Complétion de l'inscription de ${firstName} ${lastName} ${yearTier(
             graduationYear,
           ).toString()}A ${phone}`,
-          /* eslint-enable */
+
           target: `token ${token}`,
         },
       });
@@ -178,7 +178,7 @@ builder.mutationField('completeRegistration', (t) =>
           (needsVerification ? `a fait une demande d'inscription` : `s'est inscrit·e!`),
         data: {
           channel: NotificationChannel.Other,
-          goto: needsVerification ? '/signups' : `/`,
+          goto: needsVerification ? '/signups' : `/user/${user.uid}`,
           group: undefined,
         },
       });

@@ -233,12 +233,10 @@
               },
             } = event;
             if (!target || !(target instanceof HTMLElement)) return;
-            if (Math.abs(Math.abs(movementX) - Math.abs(movementY)) < 10) 
-              return;
-            
-            if (Math.abs(movementX) < 10) 
-              return;
-            
+            if (Math.abs(Math.abs(movementX) - Math.abs(movementY)) < 10) return;
+
+            if (Math.abs(movementX) < 10) return;
+
             target.style.transform = `translateX(${movementX > 0 ? '+' : '-'}100vw)`;
             setTimeout(() => {
               $hiddenQuickBookings = [...$hiddenQuickBookings, registration.id];

@@ -78,7 +78,7 @@
     text-align: center;
   }
 
-  @media (max-width: 1200px) {
+  @media (width <= 1200px) {
     .birthdays {
       flex-direction: column;
     }

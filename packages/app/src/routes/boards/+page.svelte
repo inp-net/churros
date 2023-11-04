@@ -15,7 +15,7 @@
   {#each groups as group}
     <li>
       <CardGroup href="/groups/{group.uid}" {...group} />
-      {#each group.members.sort(byMemberGroupTitleImportance) as { member, title }}
+      {#each group.members.sort(byMemberGroupTitleImportance) as { member }}
         <CardPerson href="/users/{member.uid}" {...member} />
       {/each}
     </li>

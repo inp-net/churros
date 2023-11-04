@@ -73,16 +73,17 @@
     max-width: 600px;
     margin: 0 auto;
   }
+
   h1,
   p {
     text-align: center;
   }
 
   form {
-    margin-top: 2rem;
     display: flex;
     flex-flow: column wrap;
     gap: 1rem;
+    margin-top: 2rem;
   }
 
   .submit {

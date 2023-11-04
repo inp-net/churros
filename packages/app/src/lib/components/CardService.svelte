@@ -15,6 +15,7 @@
   import IconDomainSwitch from '~icons/mdi/domain-switch';
   import type { SvelteComponent } from 'svelte';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
     add: IconAdd,
     car: IconCar,
