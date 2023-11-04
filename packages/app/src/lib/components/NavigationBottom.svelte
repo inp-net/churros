@@ -132,7 +132,7 @@
     {#if $me?.admin || $me?.canEditGroups}
       <a href="/groups/create">
         <IconGroupOutline />
-        <span>Groupes</span>
+        <span>Groupe</span>
       </a>
     {/if}
 
