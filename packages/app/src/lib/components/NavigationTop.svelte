@@ -17,6 +17,7 @@
   import { afterNavigate } from '$app/navigation';
   import LogoChurros from './LogoChurros.svelte';
   import { browser } from '$app/environment';
+  import { tooltip } from '$lib/tooltip';
   const dispatch = createEventDispatcher();
 
   onMount(() => {
@@ -92,7 +93,22 @@
           {:else}
             <IconNotif />{/if}</ButtonGhost
         >
-        <ButtonGhost href="/search/" help="Rechercher"><IconSearch /></ButtonGhost>
+        <div
+          class="button-relocation-help"
+          use:tooltip={$page.url.pathname.startsWith('/search') ||
+          window.localStorage.getItem('hideNewSearchLocationHelp')
+            ? undefined
+            : {
+                content: 'La recherche est maintenant ici! <button>OK</button>',
+                showOnCreate: true,
+                allowHTML: true,
+                onHidden() {
+                  window.localStorage.setItem('hideNewSearchLocationHelp', 'true');
+                },
+              }}
+        >
+          <ButtonGhost href="/search/" help="Rechercher"><IconSearch /></ButtonGhost>
+        </div>
         <ButtonGhost href="/users/{$me?.uid}" help="Mon profil">
           {#if $me.pictureFile}
             <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
