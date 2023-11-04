@@ -225,8 +225,7 @@
   .organizers {
     display: flex;
     flex-wrap: wrap;
-    row-gap: 1rem;
-    column-gap: 2rem;
+    gap: 1rem 2rem;
     margin-top: 0.5rem;
   }
 

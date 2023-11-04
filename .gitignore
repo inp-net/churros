@@ -24,9 +24,6 @@ packages/api/scripts/dump-ldap.ldif
 packages/api/scripts/ldap-dump.ldif
 packages/api/scripts/ldap-types.js
 packages/api/scripts/cas-data.json
-
-.env
-packages/*/.env
 packages/api/scripts/fisas.json
 packages/api/scripts/fisas.tsv
 packages/api/scripts/integration-1as.tsv
@@ -35,8 +32,13 @@ packages/api/scripts/frappe-dump.json
 packages/api/scripts/frappe-dump-raw.json
 packages/api/scripts/frappe-documents/
 
+.env
+packages/*/.env
+
 # Ignore jetbrains ide files
 .idea
 packages/api/scripts/*.tar.gz
 cli/churros/__pycache__
 cli/dist
+bubblewrap/
+packages/app/src/lib/buildinfo.ts

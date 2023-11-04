@@ -566,16 +566,22 @@ builder.queryField('events', (t) =>
     cursor: 'id',
     args: {
       future: t.arg.boolean({ required: false }),
+      past: t.arg.boolean({ required: false }),
       upcomingShotguns: t.arg.boolean({ required: false }),
       noLinkedArticles: t.arg.boolean({ required: false }),
     },
-    async resolve(query, _, { future, upcomingShotguns, noLinkedArticles }, { user }) {
+    async resolve(query, _, { future, past, upcomingShotguns, noLinkedArticles }, { user }) {
       future = future ?? false;
+      past = past ?? false;
       upcomingShotguns = upcomingShotguns ?? false;
       let constraints: Prisma.EventWhereInput = {};
       if (future || upcomingShotguns) {
         constraints = {
           startsAt: { gte: startOfDay(new Date()) },
+        };
+      } else if (past) {
+        constraints = {
+          endsAt: { lte: endOfDay(new Date()) },
         };
       }
 

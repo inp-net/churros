@@ -71,7 +71,7 @@ builder.mutationField('usePasswordReset', (t) =>
       newPassword: t.arg.string(),
     },
     async resolve(_, { token, newPassword }) {
-      const id = `${TYPENAMES_TO_ID_PREFIXES['PasswordReset']!}:${token.toLowerCase()}`;
+      const id = `${TYPENAMES_TO_ID_PREFIXES.PasswordReset!}:${token.toLowerCase()}`;
       const reset = await prisma.passwordReset.findUniqueOrThrow({
         where: { id },
         include: {

@@ -2,17 +2,16 @@
   import IconHomeOutline from '~icons/mdi/home-outline';
   import IconPeople from '~icons/mdi/account-add-outline';
   import IconHome from '~icons/mdi/home';
-  import IconSearchOutline from '~icons/mdi/card-search-outline';
-  import IconSearch from '~icons/mdi/card-search';
   import IconAddCircleOutline from '~icons/mdi/plus-circle-outline';
   import IconAddCircle from '~icons/mdi/plus-circle';
   import IconCalendarOutline from '~icons/mdi/calendar-blank-outline';
   import IconCalendar from '~icons/mdi/calendar';
   import IconDotsCircleOutline from '~icons/mdi/dots-horizontal-circle-outline';
   import IconDotsCircle from '~icons/mdi/dots-horizontal-circle';
+  import IconGroup from '~icons/mdi/account-group';
+  import IconGroupOutline from '~icons/mdi/account-group-outline';
 
   import IconBarWeek from '~icons/mdi/beer-outline';
-  import IconGroup from '~icons/mdi/account-group-outline';
   import IconAnnouncement from '~icons/mdi/bullhorn-outline';
   import IconDocument from '~icons/mdi/file-outline';
   import IconArticle from '~icons/mdi/newspaper';
@@ -22,7 +21,7 @@
   import { page } from '$app/stores';
   import { tooltip } from '$lib/tooltip';
 
-  export let current: 'home' | 'search' | 'events' | 'services';
+  export let current: 'home' | 'groups' | 'events' | 'services';
   let flyoutOpen = false;
 
   beforeNavigate(() => {
@@ -48,15 +47,15 @@
   </a>
 
   <a
-    href="/search"
-    class:current={!flyoutOpen && current === 'search'}
+    href="/groups"
+    class:current={!flyoutOpen && current === 'groups'}
     class:disabled={flyoutOpen}
-    use:tooltip={'Rechercher'}
+    use:tooltip={'Clubs'}
   >
-    {#if current === 'search'}
-      <IconSearch />
+    {#if current === 'groups'}
+      <IconGroup />
     {:else}
-      <IconSearchOutline />
+      <IconGroupOutline />
     {/if}
   </a>
 
@@ -130,10 +129,12 @@
       </a>
     {/if}
 
-    <a href="/groups">
-      <IconGroup />
-      <span>Groupes</span>
-    </a>
+    {#if $me?.admin || $me?.canEditGroups}
+      <a href="/groups/create">
+        <IconGroupOutline />
+        <span>Groupe</span>
+      </a>
+    {/if}
 
     {#if $me?.admin}
       <a href="/announcements">
@@ -239,7 +240,7 @@
     right: 0;
     bottom: 3rem;
     left: 0;
-    z-index: 2;
+    z-index: 30;
     display: flex;
     flex-wrap: wrap;
     align-items: center;

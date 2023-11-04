@@ -92,14 +92,14 @@
 
   h2 {
     margin: 1rem;
+    margin-bottom: 0;
     text-align: center;
-    margin-bottom: 0rem;
   }
 
   h2 + .results-count {
     margin-bottom: 1rem;
-    text-align: center;
     font-weight: normal;
+    text-align: center;
   }
 
   ul {

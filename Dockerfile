@@ -1,4 +1,4 @@
-from node:20
+from node:20-bullseye
 
 WORKDIR /app
 
@@ -18,8 +18,4 @@ run yarn build
 
 run rm -rf .git
 
-# Required for readiness probe
-run apt-get update && apt-get install -y lsof
-
 RUN chmod +x /app/entrypoint.sh
-

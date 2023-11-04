@@ -397,7 +397,7 @@ for (const [subjectId, oldSubjectIds] of OLD_FRAPPE_MAPPING.entries()) {
           }-${basename}${extension}`;
           filepaths.push(filePath);
 
-          await downloadFile(fichier, `../storage/${filePath}`);
+          await downloadFile(fichier, `../storage/${filePath}`, 3);
           console.info(`\t\t\t+ Copied file ${fichier} to ${filePath}`);
         }),
       );
@@ -473,9 +473,9 @@ async function fileExists(filename: string): Promise<boolean> {
   }
 }
 
-async function downloadFile(from: string, dest: string) {
+async function downloadFile(from: string, dest: string, indentation: number) {
   if (await fileExists(dest)) {
-    // console.log(`  Logo of ${ldapGroup.cn} already exists, skipping…`);
+    console.info(`${'\t'.repeat(indentation)}= File ${dest} already exists`);
   } else {
     try {
       await mkdir(path.dirname(dest), { recursive: true });

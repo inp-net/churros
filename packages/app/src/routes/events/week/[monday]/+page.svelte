@@ -48,6 +48,7 @@
     tabs={[
       { name: 'Semaine', href: '.' },
       { name: 'Planning', href: '../../planning/' },
+      { name: 'Mes places', href: '/bookings' },
     ]}
   />
   <div class="navigation">

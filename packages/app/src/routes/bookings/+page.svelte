@@ -1,11 +1,20 @@
 <script lang="ts">
   import CardTicket from '$lib/components/CardTicket.svelte';
+  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+  import { closestMonday } from '$lib/dates';
+  import { format } from 'date-fns';
   import type { PageData } from './$types';
 
   export let data: PageData;
 </script>
 
-<h1>Mes places</h1>
+<NavigationTabs
+  tabs={[
+    { name: 'Semaine', href: `/events/week/${format(closestMonday(new Date()), 'yyyy-MM-dd')}` },
+    { name: 'Planning', href: '/events/planning' },
+    { name: 'Mes places', href: '.' },
+  ]}
+/>
 
 <ul class="nobullet">
   {#each data.registrationsOfUser.edges as { node, node: { id } }}
@@ -16,18 +25,13 @@
 </ul>
 
 <style>
-  h1 {
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-
   ul {
     display: flex;
     flex-flow: column wrap;
     gap: 1rem;
     align-items: center;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 2rem auto 0;
   }
 
   li {

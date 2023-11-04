@@ -182,8 +182,7 @@
     .text-and-numbers {
       display: flex;
       flex-wrap: wrap;
-      row-gap: 1rem;
-      column-gap: 0.5rem;
+      gap: 1rem 0.5rem;
       align-items: center;
       justify-content: space-between;
       width: 100%;

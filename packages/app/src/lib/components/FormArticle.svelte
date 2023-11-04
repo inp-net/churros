@@ -105,7 +105,7 @@
             groupId: group.id,
             title,
             body,
-            publishedAt: (publishLater ?? new Date()).toISOString(),
+            publishedAt: (publishLater ?? data.article.publishedAt ?? new Date()).toISOString(),
             links,
             visibility,
           },
@@ -178,11 +178,9 @@
 <form
   class="form-article"
   on:submit|preventDefault={async () => {
-    if (!id && (visibility === Visibility.Public || visibility === Visibility.SchoolRestricted)) 
+    if (!id && (visibility === Visibility.Public || visibility === Visibility.SchoolRestricted))
       modalWarnNotifications.showModal();
-     else 
-      await updateArticle();
-    
+    else await updateArticle();
   }}
 >
   <h1>

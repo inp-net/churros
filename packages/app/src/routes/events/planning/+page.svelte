@@ -48,6 +48,7 @@
     tabs={[
       { name: 'Semaine', href: `../week/${format(closestMonday(new Date()), 'yyyy-MM-dd')}` },
       { name: 'Planning', href: '.' },
+      { name: 'Mes places', href: '/bookings' },
     ]}
   />
 
