@@ -458,6 +458,7 @@ __metadata:
     sass: "npm:^1.69.5"
     svelte: "npm:^4.2.2"
     svelte-check: "npm:^3.5.2"
+    svelte-gestures: "npm:^1.5.2"
     svelte-json-tree: "npm:^2.2.0"
     svelte-loader: "npm:^3.1.9"
     svelte-local-storage-store: "npm:^0.6.0"
@@ -10554,6 +10555,13 @@ __metadata:
     svelte:
       optional: true
   checksum: 07edd8ab0594356aa27cc4a46cf174a76828c9648ac1af21463c5687dc1814e37e0d551e304276339459c924a755d1054fd9286065ed36bb3140b36c553275ae
+  languageName: node
+  linkType: hard
+
+"svelte-gestures@npm:^1.5.2":
+  version: 1.5.2
+  resolution: "svelte-gestures@npm:1.5.2"
+  checksum: 11355d35b6c9f5888b728bcaec04ca781a1556faf207473f9e52d187846d98a399ead023fd6040a95b767ce9eef458615fa220c27e7fb3797b140d82d266f324
   languageName: node
   linkType: hard
 

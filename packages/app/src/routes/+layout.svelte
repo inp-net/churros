@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { swipe } from 'svelte-gestures';
   import TopBar from '$lib/components/NavigationTop.svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { theme } from '$lib/theme.js';
@@ -18,7 +19,13 @@
   import Toast from '$lib/components/Toast.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
   import type { PageData } from './$types';
-  import { differenceInHours, differenceInMinutes, formatDistanceToNow, isFuture } from 'date-fns';
+  import {
+    differenceInHours,
+    differenceInMinutes,
+    formatDistanceToNow,
+    isBefore,
+    isFuture,
+  } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
   import { slide } from 'svelte/transition';
   import { writable } from 'svelte/store';
@@ -144,6 +151,9 @@
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
 
   let reportIssueDialogElement: HTMLDialogElement;
+
+  // See https://github.com/Rezi/svelte-gestures/pull/21
+  const quickBookingTouchAction = 'pan-y pinch-zoom' as unknown as 'pan-y';
 </script>
 
 <ModalReportIssue bind:element={reportIssueDialogElement} />
@@ -202,11 +212,40 @@
         {/each}
       </section>
     {/if}
+
+    <NavigationBottom current={currentTab($page.url)} />
+
     {#if data.registrationsOfUser?.edges.length > 0 && !$page.url.pathname.startsWith('/bookings')}
       {@const registration = data.registrationsOfUser.edges[0].node}
-      {#if !$hiddenQuickBookings.includes(registration.id) && differenceInMinutes(registration.ticket.event.startsAt, now) <= 30 && differenceInHours(now, registration.ticket.event.endsAt) <= 2}
-        <!-- TODO make it swipable to dismis -->
-        <section transition:slide={{ axis: 'y', duration: 100 }} class="quick-booking">
+      <!-- If the quick booking is not hidden and:
+      - it starts in less than 30 mins; or
+      - it ongoing; or 
+      - was finished less than 2 hours ago -->
+      {#if !$hiddenQuickBookings.includes(registration.id) && (differenceInMinutes(registration.ticket.event.startsAt, now) <= 30 || isBefore(now, registration.ticket.event.endsAt) || differenceInHours(now, registration.ticket.event.endsAt) <= 2)}
+        <section
+          in:slide={{ axis: 'y', duration: 100 }}
+          use:swipe={{ touchAction: quickBookingTouchAction }}
+          on:swipemove={(event) => {
+            const {
+              target,
+              detail: {
+                event: { movementY, movementX },
+              },
+            } = event;
+            if (!target || !(target instanceof HTMLElement)) return;
+            if (Math.abs(Math.abs(movementX) - Math.abs(movementY)) < 10) 
+              return;
+            
+            if (Math.abs(movementX) < 10) 
+              return;
+            
+            target.style.transform = `translateX(${movementX > 0 ? '+' : '-'}100vw)`;
+            setTimeout(() => {
+              $hiddenQuickBookings = [...$hiddenQuickBookings, registration.id];
+            }, 500);
+          }}
+          class="quick-booking"
+        >
           <p class="hint">
             <strong>
               C'est {#if isFuture(registration.ticket.event.startsAt)}
@@ -233,8 +272,6 @@
       <slot />
     </main>
   </div>
-
-  <NavigationBottom current={currentTab($page.url)} />
 </div>
 
 <style lang="scss">
@@ -338,6 +375,8 @@
     left: 0;
     z-index: 20;
     width: 100%;
+    transition: all 0.25s ease;
+    transform: translateX(0);
 
     @media (width>=600px) {
       right: 1rem;

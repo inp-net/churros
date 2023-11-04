@@ -102,6 +102,7 @@
   .qrcode {
     right: 0;
     box-sizing: border-box;
+    flex-shrink: 0;
     font-size: 2rem;
     color: var(--text);
     text-align: right;
