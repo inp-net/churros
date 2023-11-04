@@ -1,5 +1,5 @@
 import { PaymentMethod as PaymentMethodPrisma, type Registration, type User } from '@prisma/client';
-import { builder } from '../builder.js';
+import { TYPENAMES_TO_ID_PREFIXES, builder } from '../builder.js';
 import { DateTimeScalar } from './scalars.js';
 import { prisma } from '../prisma.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
@@ -28,6 +28,11 @@ export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
 export const RegistrationType = builder.prismaNode('Registration', {
   id: { field: 'id' },
   fields: (t) => ({
+    code: t.string({
+      resolve({ id }) {
+        return id.replace(TYPENAMES_TO_ID_PREFIXES.Registration + ':', '');
+      },
+    }),
     ticketId: t.exposeID('ticketId'),
     authorId: t.exposeID('authorId'),
     beneficiary: t.exposeString('beneficiary'),
@@ -232,12 +237,13 @@ builder.queryField('registrationsOfUser', (t) =>
     cursor: 'id',
     args: {
       userUid: t.arg.string(),
+      forUserOnly: t.arg.boolean({ required: false }),
     },
     authScopes(_, { userUid }, { user }) {
       if (!user) throw new GraphQLError('User not found');
       return Boolean(user.admin || user.uid === userUid);
     },
-    async resolve(query, _, { userUid }, { user: me }) {
+    async resolve(query, _, { userUid, forUserOnly }, { user: me }) {
       if (!me) throw new GraphQLError('Not logged in');
       const user = await prisma.user.findUnique({ where: { uid: userUid } });
       if (!user) throw new GraphQLError('User not found');
@@ -245,7 +251,7 @@ builder.queryField('registrationsOfUser', (t) =>
         ...query,
         where: {
           OR: [
-            { author: { uid: userUid } },
+            { author: { uid: userUid }, ...(forUserOnly ? { beneficiary: '' } : {}) },
             { beneficiary: userUid },
             { beneficiary: fullName(user) },
           ],

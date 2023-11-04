@@ -2,8 +2,7 @@
   import IconIssue from '~icons/mdi/chat-alert-outline';
   import IconNotif from '~icons/mdi/bell-outline';
   import IconNotifFilled from '~icons/mdi/bell';
-  import IconTicket from '~icons/mdi/ticket-outline';
-  import IconTicketFilled from '~icons/mdi/ticket-confirmation';
+  import IconSearch from '~icons/mdi/search';
   import IconAccount from '~icons/mdi/account-circle-outline';
 
   import ButtonSecondary from './ButtonSecondary.svelte';
@@ -18,6 +17,7 @@
   import { afterNavigate } from '$app/navigation';
   import LogoChurros from './LogoChurros.svelte';
   import { browser } from '$app/environment';
+  import { tooltip } from '$lib/tooltip';
   const dispatch = createEventDispatcher();
 
   onMount(() => {
@@ -93,10 +93,22 @@
           {:else}
             <IconNotif />{/if}</ButtonGhost
         >
-        <ButtonGhost href="/bookings/" help="Mes places"
-          >{#if $page.url.pathname.startsWith('/bookings')}<IconTicketFilled />{:else}
-            <IconTicket />{/if}</ButtonGhost
+        <div
+          class="button-relocation-help"
+          use:tooltip={$page.url.pathname.startsWith('/search') ||
+          window.localStorage.getItem('hideNewSearchLocationHelp')
+            ? undefined
+            : {
+                content: 'La recherche est maintenant ici! <button>OK</button>',
+                showOnCreate: true,
+                allowHTML: true,
+                onHidden() {
+                  window.localStorage.setItem('hideNewSearchLocationHelp', 'true');
+                },
+              }}
         >
+          <ButtonGhost href="/search/" help="Rechercher"><IconSearch /></ButtonGhost>
+        </div>
         <ButtonGhost href="/users/{$me?.uid}" help="Mon profil">
           {#if $me.pictureFile}
             <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
@@ -206,6 +218,7 @@
       font-size: 1.2rem;
       text-overflow: ellipsis;
       white-space: nowrap;
+      /* stylelint-disable-next-line property-no-unknown */
       line-clamp: 1;
     }
   }

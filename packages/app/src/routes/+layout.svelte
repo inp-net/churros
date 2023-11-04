@@ -1,6 +1,8 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { swipe } from 'svelte-gestures';
   import TopBar from '$lib/components/NavigationTop.svelte';
+  import { syncToLocalStorage } from 'svelte-store2storage';
   import { theme } from '$lib/theme.js';
   import { onMount } from 'svelte';
   import '../design/app.scss';
@@ -15,17 +17,33 @@
   import ModalReportIssue from '$lib/components/ModalReportIssue.svelte';
   import { toasts } from '$lib/toasts';
   import Toast from '$lib/components/Toast.svelte';
+  import CardTicket from '$lib/components/CardTicket.svelte';
+  import type { PageData } from './$types';
+  import {
+    differenceInHours,
+    differenceInMinutes,
+    formatDistanceToNow,
+    isBefore,
+    isFuture,
+  } from 'date-fns';
+  import fr from 'date-fns/locale/fr/index.js';
+  import { slide } from 'svelte/transition';
+  import { writable } from 'svelte/store';
 
-  function currentTab(url: URL): 'events' | 'search' | 'services' | 'home' {
+  function currentTab(url: URL): 'events' | 'groups' | 'services' | 'home' {
     const starts = (segment: string) => url.pathname.startsWith(segment);
 
-    if (starts('/search')) return 'search';
+    if (starts('/groups')) return 'groups';
     if (starts('/week') || starts('/bookings') || starts('/events')) return 'events';
     if (starts('/services')) return 'services';
     return 'home';
   }
 
+  export let data: PageData;
   let showInitialSpinner = true;
+
+  const hiddenQuickBookings = writable([] as string[]);
+  if (browser) syncToLocalStorage(hiddenQuickBookings, 'hidden_quick_bookings');
 
   onMount(() => {
     if (!$me && !localStorage.getItem('isReallyLoggedout')) {
@@ -37,6 +55,10 @@
     } else {
       showInitialSpinner = false;
     }
+
+    setInterval(() => {
+      now = new Date();
+    }, 5000);
   });
 
   let announcements = [] as Array<{
@@ -45,6 +67,8 @@
     warning: boolean;
     id: string;
   }>;
+
+  let now = new Date();
 
   type NProgress = {
     start: () => void;
@@ -55,6 +79,7 @@
   beforeNavigate(() => {
     (window as unknown as Window & { NProgress: NProgress }).NProgress.start();
   });
+
   afterNavigate(async () => {
     const { NProgress } = window as unknown as Window & { NProgress: NProgress };
 
@@ -126,6 +151,9 @@
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
 
   let reportIssueDialogElement: HTMLDialogElement;
+
+  // See https://github.com/Rezi/svelte-gestures/pull/21
+  const quickBookingTouchAction = 'pan-y pinch-zoom' as unknown as 'pan-y';
 </script>
 
 <ModalReportIssue bind:element={reportIssueDialogElement} />
@@ -185,12 +213,65 @@
       </section>
     {/if}
 
+    <NavigationBottom current={currentTab($page.url)} />
+
+    {#if data.registrationsOfUser?.edges.length > 0 && !$page.url.pathname.startsWith('/bookings')}
+      {@const registration = data.registrationsOfUser.edges[0].node}
+      <!-- If the quick booking is not hidden and:
+      - it starts in less than 30 mins; or
+      - it ongoing; or 
+      - was finished less than 2 hours ago -->
+      {#if !$hiddenQuickBookings.includes(registration.id) && (differenceInMinutes(registration.ticket.event.startsAt, now) <= 30 || isBefore(now, registration.ticket.event.endsAt) || differenceInHours(now, registration.ticket.event.endsAt) <= 2)}
+        <section
+          in:slide={{ axis: 'y', duration: 100 }}
+          use:swipe={{ touchAction: quickBookingTouchAction }}
+          on:swipemove={(event) => {
+            const {
+              target,
+              detail: {
+                event: { movementY, movementX },
+              },
+            } = event;
+            if (!target || !(target instanceof HTMLElement)) return;
+            if (Math.abs(Math.abs(movementX) - Math.abs(movementY)) < 10) 
+              return;
+            
+            if (Math.abs(movementX) < 10) 
+              return;
+            
+            target.style.transform = `translateX(${movementX > 0 ? '+' : '-'}100vw)`;
+            setTimeout(() => {
+              $hiddenQuickBookings = [...$hiddenQuickBookings, registration.id];
+            }, 500);
+          }}
+          class="quick-booking"
+        >
+          <p class="hint">
+            <strong>
+              C'est {#if isFuture(registration.ticket.event.startsAt)}
+                dans {formatDistanceToNow(registration.ticket.event.startsAt, {
+                  locale: fr,
+                }).replace('environ ', '')}{:else}maintenant{/if}! Voici ta place
+            </strong>
+            <span class="dismiss">
+              <ButtonGhost
+                on:click={() => {
+                  $hiddenQuickBookings = [...$hiddenQuickBookings, registration.id];
+                }}
+              >
+                <IconClose></IconClose>
+              </ButtonGhost>
+            </span>
+          </p>
+          <CardTicket floating href="/bookings/{registration.code}" {...registration}></CardTicket>
+        </section>
+      {/if}
+    {/if}
+
     <main class:fullsize={pageIsFullsize()}>
       <slot />
     </main>
   </div>
-
-  <NavigationBottom current={currentTab($page.url)} />
 </div>
 
 <style lang="scss">
@@ -285,6 +366,36 @@
     flex-wrap: wrap;
     column-gap: 1rem;
     align-items: center;
+  }
+
+  .quick-booking {
+    position: fixed;
+    right: 0;
+    bottom: 4.5rem;
+    left: 0;
+    z-index: 20;
+    width: 100%;
+    transition: all 0.25s ease;
+    transform: translateX(0);
+
+    @media (width>=600px) {
+      right: 1rem;
+      left: unset;
+      max-width: 400px;
+    }
+
+    .hint {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 0.5rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem;
+      text-align: center;
+
+      // fade from transparent to var(--bg)
+      background: linear-gradient(to bottom, transparent 0%, var(--bg) 60%);
+    }
   }
 
   @keyframes spinner {
