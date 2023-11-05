@@ -9,7 +9,7 @@
 
 <div
   {...$$restProps}
-  use:tooltip={{ content: title, trigger: 'mouseenter focus click' }}
+  use:tooltip={title ? { content: title, trigger: 'mouseenter focus click' } : undefined}
   class="badge {theme === 'info' ? 'primary' : theme}"
 >
   {#if theme === 'success'}
