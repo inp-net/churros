@@ -3,6 +3,7 @@
   import cookie from 'cookie';
   import IconGear from '~icons/mdi/gear-outline';
   import IconAdmin from '~icons/mdi/security';
+  import IconCode from '~icons/mdi/code-braces';
   import IconLogout from '~icons/mdi/logout-variant';
   import IconWebsite from '~icons/mdi/earth';
   import { dateFormatter } from '$lib/dates.js';
@@ -63,7 +64,7 @@
 
   $: familyTree = makeFamilyTree(familyNesting);
 
-  $: ({ user, contributionOptions } = data);
+  $: ({ user, contributionOptions, isDeveloper } = data);
 
   // $: contributesToEverything = contributionOptions
 
@@ -122,6 +123,9 @@
           {user.lastName}
           {#if user.admin}<Badge title="Possède tous les droits" theme="info"><IconAdmin /></Badge>
           {/if}
+          {#if isDeveloper}<Badge title="A écrit du code pour Churros" theme="info">
+              <IconCode></IconCode>
+            </Badge>{/if}
         </div>
 
         <div class="actions">
