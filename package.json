@@ -4,6 +4,7 @@
     "@commitlint/cli": "^18.2.0",
     "@commitlint/config-conventional": "^17.7.0",
     "@types/lodash": "^4.14.200",
+    "@types/lodash.uniqby": "^4.7.8",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "dotenv-cli": "^7.3.0",

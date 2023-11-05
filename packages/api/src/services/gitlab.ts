@@ -1,3 +1,4 @@
+import uniqBy from 'lodash.uniqby';
 import { builder } from '../builder.js';
 import { UserType } from '../objects/users.js';
 import { prisma } from '../prisma.js';
@@ -17,6 +18,9 @@ builder.queryField('contributors', (t) =>
         deletions: number;
       }>;
       const contributorEmails = [...new Set(contributors.map((contributor) => contributor.email))];
+      const uids = contributorEmails
+        .filter((e) => e.endsWith('@bde.enseeiht.fr'))
+        .map((e) => e.replace('@bde.enseeiht.fr', ''));
 
       const users = await prisma.user.findMany({
         where: {
@@ -25,11 +29,14 @@ builder.queryField('contributors', (t) =>
             {
               otherEmails: { hasSome: contributorEmails },
             },
+            {
+              uid: { in: uids },
+            },
           ],
         },
       });
 
-      return users;
+      return uniqBy(users, (u) => u.id);
     },
   }),
 );

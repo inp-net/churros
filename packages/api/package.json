@@ -30,6 +30,7 @@
     "image-type": "^5.2.0",
     "ldap-authentication": "^3.0.3",
     "ldapjs": "^3.0.5",
+    "lodash.uniqby": "^4.7.0",
     "multer": "^1.4.5-lts.1",
     "nanoid": "^5.0.2",
     "nodemailer": "^6.9.7",
