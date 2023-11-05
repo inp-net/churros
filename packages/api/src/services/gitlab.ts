@@ -3,12 +3,12 @@ import { builder } from '../builder.js';
 import { UserType } from '../objects/users.js';
 import { prisma } from '../prisma.js';
 
-builder.queryField('contributors', (t) =>
+builder.queryField('codeContributors', (t) =>
   t.prismaField({
     type: [UserType],
     authScopes: () => true,
     async resolve() {
-      const contributors = (await fetch(
+      const codeContributors = (await fetch(
         `https:///git.inpt.fr/api/v4/projects/${process.env.GITLAB_PROJECT_ID}/repository/contributors`,
       ).then(async (r) => r.json())) as Array<{
         name: string;
@@ -17,7 +17,9 @@ builder.queryField('contributors', (t) =>
         additions: number;
         deletions: number;
       }>;
-      const contributorEmails = [...new Set(contributors.map((contributor) => contributor.email))];
+      const contributorEmails = [
+        ...new Set(codeContributors.map((contributor) => contributor.email)),
+      ];
       const uids = contributorEmails
         .filter((e) => e.endsWith('@bde.enseeiht.fr'))
         .map((e) => e.replace('@bde.enseeiht.fr', ''));

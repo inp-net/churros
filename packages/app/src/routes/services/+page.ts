@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
           pictureFileDark: true,
         },
       },
-      contributors: {
+      codeContributors: {
         id: true,
       },
     },

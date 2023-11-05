@@ -5,6 +5,7 @@
   import IconCanEditPosts from '~icons/mdi/text-box-edit-outline';
   import IconCanScanEvents from '~icons/mdi/qrcode';
   export let small = false;
+  export let inline = false;
   export let fullName: string;
   export let role = '';
   export let pictureFile: string;
@@ -16,7 +17,14 @@
   const src = `${env.PUBLIC_STORAGE_URL}${pictureFile}`;
 </script>
 
-<svelte:element this={href ? 'a' : 'div'} class:small class:highlighted class="person" {href}>
+<svelte:element
+  this={href ? 'a' : 'div'}
+  class:inline
+  class:small
+  class:highlighted
+  class="person"
+  {href}
+>
   <div class="img">
     {#if pictureFile}
       <img {src} alt={fullName} />
@@ -66,6 +74,10 @@
     width: fit-content;
     padding: 0.5em;
     margin: 0;
+  }
+
+  .person.inline {
+    display: inline-flex;
   }
 
   .permissions {

@@ -50,7 +50,7 @@
       />
     </a>
     <span class="credits">
-      Développé par <a href="/credits">{data.contributors.length} personnes</a> à
+      Développé par <a href="/credits">{data.codeContributors.length} personnes</a> à
       <a href="https://net7.dev">net7</a>
     </span>
     <code>
