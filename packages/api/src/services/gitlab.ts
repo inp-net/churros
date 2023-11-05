@@ -1,4 +1,38 @@
 import { builder } from '../builder.js';
+import { UserType } from '../objects/users.js';
+import { prisma } from '../prisma.js';
+
+builder.queryField('contributors', (t) =>
+  t.prismaField({
+    type: [UserType],
+    authScopes: () => true,
+    async resolve() {
+      const contributors = (await fetch(
+        `https:///git.inpt.fr/api/v4/projects/${process.env.GITLAB_PROJECT_ID}/repository/contributors`,
+      ).then(async (r) => r.json())) as Array<{
+        name: string;
+        email: string;
+        commits: number;
+        additions: number;
+        deletions: number;
+      }>;
+      const contributorEmails = [...new Set(contributors.map((contributor) => contributor.email))];
+
+      const users = await prisma.user.findMany({
+        where: {
+          OR: [
+            { email: { in: contributorEmails } },
+            {
+              otherEmails: { hasSome: contributorEmails },
+            },
+          ],
+        },
+      });
+
+      return users;
+    },
+  }),
+);
 
 builder.mutationField('createGitlabIssue', (t) =>
   t.field({
