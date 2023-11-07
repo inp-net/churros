@@ -23,8 +23,8 @@
     differenceInHours,
     differenceInMinutes,
     formatDistanceToNow,
-    isBefore,
     isFuture,
+    isWithinInterval,
   } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
   import { slide } from 'svelte/transition';
@@ -221,7 +221,7 @@
       - it starts in less than 30 mins; or
       - it ongoing; or 
       - was finished less than 2 hours ago -->
-      {#if !$hiddenQuickBookings.includes(registration.id) && (differenceInMinutes(registration.ticket.event.startsAt, now) <= 30 || isBefore(now, registration.ticket.event.endsAt) || differenceInHours(now, registration.ticket.event.endsAt) <= 2)}
+      {#if !$hiddenQuickBookings.includes(registration.id) && (differenceInMinutes(registration.ticket.event.startsAt, now) <= 30 || isWithinInterval( now, { start: registration.ticket.event.startsAt, end: registration.ticket.event.endsAt }, ) || differenceInHours(now, registration.ticket.event.endsAt) <= 2)}
         <section
           in:slide={{ axis: 'y', duration: 100 }}
           use:swipe={{ touchAction: quickBookingTouchAction }}
