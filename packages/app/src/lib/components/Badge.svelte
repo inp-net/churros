@@ -1,11 +1,17 @@
 <script lang="ts">
+  import { tooltip } from '$lib/tooltip';
   export let theme: 'danger' | 'warning' | 'success' | 'info' = 'info';
+  export let title: string | undefined = undefined;
   import IconCheck from '~icons/mdi/check';
   import IconError from '~icons/mdi/error';
   import IconWarning from '~icons/mdi/warning';
 </script>
 
-<div {...$$restProps} class="badge {theme === 'info' ? 'primary' : theme}">
+<div
+  {...$$restProps}
+  use:tooltip={title ? { content: title, trigger: 'mouseenter focus click' } : undefined}
+  class="badge {theme === 'info' ? 'primary' : theme}"
+>
   {#if theme === 'success'}
     <IconCheck />
   {:else if theme === 'warning'}

@@ -5,6 +5,7 @@
   import type { PageData } from './$types';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import { debugging } from '$lib/debugging';
+  import { isDark } from '$lib/theme';
 
   export let data: PageData;
 
@@ -41,8 +42,19 @@
   </ul>
 
   <footer>
-    <code
-      ><a href="https://git.inpt.fr/inp-net/churros/-/commits/v{CURRENT_VERSION}"
+    <a href="https://net7.dev">
+      <img
+        class="net7-logo"
+        src="https://net7.dev/images/net7_{$isDark ? 'white' : 'dark'}.svg"
+        alt="net7"
+      />
+    </a>
+    <span class="credits">
+      Développé par <a href="/credits">{data.codeContributors.length} personnes</a> à
+      <a href="https://net7.dev">net7</a>
+    </span>
+    <code>
+      <a href="https://git.inpt.fr/inp-net/churros/-/commits/v{CURRENT_VERSION}"
         >v{CURRENT_VERSION}</a
       >
       · built against {#if CURRENT_COMMIT}<a
@@ -82,6 +94,14 @@
     font-size: 0.7em;
     font-weight: normal;
     text-align: center;
+  }
+
+  footer .credits {
+    font-size: 1.3em;
+  }
+
+  footer .net7-logo {
+    width: 10em;
   }
 
   footer a {

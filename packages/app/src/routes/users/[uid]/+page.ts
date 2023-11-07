@@ -104,6 +104,9 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           ],
         },
       ],
+      codeContributors: {
+        uid: true,
+      },
     },
     { fetch, parent },
   );
@@ -114,5 +117,6 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
       ...data.user,
       groups: data.user.groups.sort(byMemberGroupTitleImportance),
     },
+    isDeveloper: data.codeContributors.some((c) => c.uid === data.user.uid),
   };
 };

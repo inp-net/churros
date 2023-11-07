@@ -5,6 +5,5 @@
     "exactOptionalPropertyTypes": false,
     "outDir": "./build",
     "ignoreDeprecations": "5.0"
-  },
-  "include": ["src/"]
+  }
 }

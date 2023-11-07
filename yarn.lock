@@ -388,6 +388,7 @@ __metadata:
     image-type: "npm:^5.2.0"
     ldap-authentication: "npm:^3.0.3"
     ldapjs: "npm:^3.0.5"
+    lodash.uniqby: "npm:^4.7.0"
     multer: "npm:^1.4.5-lts.1"
     nanoid: "npm:^5.0.2"
     nodemailer: "npm:^6.9.7"
@@ -2291,6 +2292,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash.uniqby@npm:^4.7.8":
+  version: 4.7.8
+  resolution: "@types/lodash.uniqby@npm:4.7.8"
+  dependencies:
+    "@types/lodash": "npm:*"
+  checksum: e711f4fb3d00cb872e748c4bbcdc30d81f1160ec14d4000af98e8a418626cd3742151dae31f83b6c980396f798ae859ef0d05a735affd9643e2a02e83972582c
+  languageName: node
+  linkType: hard
+
 "@types/lodash@npm:*":
   version: 4.14.197
   resolution: "@types/lodash@npm:4.14.197"
@@ -3412,6 +3422,7 @@ __metadata:
     "@commitlint/cli": "npm:^18.2.0"
     "@commitlint/config-conventional": "npm:^17.7.0"
     "@types/lodash": "npm:^4.14.200"
+    "@types/lodash.uniqby": "npm:^4.7.8"
     "@typescript-eslint/eslint-plugin": "npm:^6.9.0"
     "@typescript-eslint/parser": "npm:^6.9.0"
     dotenv-cli: "npm:^7.3.0"
@@ -6912,6 +6923,13 @@ __metadata:
   version: 4.5.0
   resolution: "lodash.uniq@npm:4.5.0"
   checksum: 8ac56bbaa8a4ccd0dd8b9cabdcee89dfb382f8907fdb6ac12d40d46298c7b4de74c6bdab3a9e6fb4f0307568a67220f9ce86270e17dd8b628a312be9ee3a4767
+  languageName: node
+  linkType: hard
+
+"lodash.uniqby@npm:^4.7.0":
+  version: 4.7.0
+  resolution: "lodash.uniqby@npm:4.7.0"
+  checksum: 6c2e2eeabadfe482c3261a648de4225480bae6472e5a640a6e72b11dd69f1f826fe7663d3fcb6a1cc1e440d5dda3317328cda201198c1391ab4c389bef0fecb0
   languageName: node
   linkType: hard
 

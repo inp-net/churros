@@ -30,6 +30,7 @@
     "image-type": "^5.2.0",
     "ldap-authentication": "^3.0.3",
     "ldapjs": "^3.0.5",
+    "lodash.uniqby": "^4.7.0",
     "multer": "^1.4.5-lts.1",
     "nanoid": "^5.0.2",
     "nodemailer": "^6.9.7",
@@ -78,7 +79,7 @@
   },
   "private": true,
   "scripts": {
-    "build": "prisma generate && tsx ./scripts/update-id-prefix-to-typename-map.ts && tsx ./scripts/inject-current-commit-hash.ts && tsc && tsx ./scripts/post-build.ts",
+    "build": "prisma generate && tsc && node ./build/scripts/update-id-prefix-to-typename-map.js && node ./build/scripts/inject-current-commit-hash.js && prisma generate && tsc && node ./build/scripts/post-build.js",
     "clean": "git clean -Xdf .",
     "dev": "NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
     "start": "node ./build/src/index.js",
