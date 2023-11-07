@@ -207,13 +207,15 @@ class ProfitsBreakdown {
 
 const ProfitsBreakdownType = builder.objectRef<ProfitsBreakdown>('ProfitsBreakdown').implement({
   fields: (t) => ({
-    total: t.exposeInt('total'),
+    total: t.exposeFloat('total'),
     byPaymentMethod: t.expose('byPaymentMethod', {
       type: builder
         .objectRef<Record<PaymentMethod, number>>('ProfitsBreakdownByPaymentMethod')
         .implement({
           fields: (t) =>
-            Object.fromEntries(Object.entries(PaymentMethod).map(([_, p]) => [p, t.exposeInt(p)])),
+            Object.fromEntries(
+              Object.entries(PaymentMethod).map(([_, p]) => [p, t.exposeFloat(p)]),
+            ),
         }),
     }),
     byTicket: t.expose('byTicket', {
@@ -221,7 +223,7 @@ const ProfitsBreakdownType = builder.objectRef<ProfitsBreakdown>('ProfitsBreakdo
         builder.objectRef<{ id: string; amount: number }>('ProfitsBreakdownByTicket').implement({
           fields: (t) => ({
             id: t.exposeID('id'),
-            amount: t.exposeInt('amount'),
+            amount: t.exposeFloat('amount'),
           }),
         }),
       ],
