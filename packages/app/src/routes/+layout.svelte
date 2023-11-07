@@ -19,13 +19,7 @@
   import Toast from '$lib/components/Toast.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
   import type { PageData } from './$types';
-  import {
-    differenceInHours,
-    differenceInMinutes,
-    formatDistanceToNow,
-    isFuture,
-    isWithinInterval,
-  } from 'date-fns';
+  import { addHours, formatDistanceToNow, isFuture, isWithinInterval, subMinutes } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
   import { slide } from 'svelte/transition';
   import { writable } from 'svelte/store';
@@ -221,7 +215,7 @@
       - it starts in less than 30 mins; or
       - it ongoing; or 
       - was finished less than 2 hours ago -->
-      {#if !$hiddenQuickBookings.includes(registration.id) && (differenceInMinutes(registration.ticket.event.startsAt, now) <= 30 || isWithinInterval( now, { start: registration.ticket.event.startsAt, end: registration.ticket.event.endsAt }, ) || differenceInHours(now, registration.ticket.event.endsAt) <= 2)}
+      {#if !$hiddenQuickBookings.includes(registration.id) && isWithinInterval( now, { start: subMinutes(registration.ticket.event.startsAt, 30), end: addHours(registration.ticket.event.endsAt, 2) }, )}
         <section
           in:slide={{ axis: 'y', duration: 100 }}
           use:swipe={{ touchAction: quickBookingTouchAction }}
