@@ -179,11 +179,11 @@ const RegistrationsCountsType = builder
   .objectRef<RegistrationsCounts>('RegistrationsCounts')
   .implement({
     fields: (t) => ({
-      total: t.exposeInt('total'),
-      paid: t.exposeInt('paid'),
-      verified: t.exposeInt('verified'),
-      unpaidLydia: t.exposeInt('unpaidLydia'),
-      cancelled: t.exposeInt('cancelled'),
+      total: t.exposeFloat('total'),
+      paid: t.exposeFloat('paid'),
+      verified: t.exposeFloat('verified'),
+      unpaidLydia: t.exposeFloat('unpaidLydia'),
+      cancelled: t.exposeFloat('cancelled'),
     }),
   });
 
