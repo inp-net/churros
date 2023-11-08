@@ -656,14 +656,16 @@ builder.queryField('events', (t) =>
       }
 
       if (!user) {
-        return prisma.event.findMany({
-          ...query,
-          where: {
-            visibility: VisibilityPrisma.Public,
-            ...constraints,
-          },
-          orderBy: { startsAt: 'asc' },
-        });
+        return prisma.event
+          .findMany({
+            ...query,
+            where: {
+              visibility: VisibilityPrisma.Public,
+              ...constraints,
+            },
+            orderBy: { startsAt: 'asc' },
+          })
+          .then((events) => events.map((e) => findNextRecurringEvent(e)));
       }
 
       return prisma.event
