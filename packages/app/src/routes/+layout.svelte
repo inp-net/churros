@@ -141,6 +141,36 @@
     return Boolean(window.localStorage.getItem(`hideAnnouncement${id}`));
   }
 
+  function shouldShowQuickBooking(
+    hiddenQuickBookings: string[],
+    registration: {
+      id: string;
+      code: unknown;
+      beneficiary: string;
+      authorIsBeneficiary: boolean;
+      paid: boolean;
+      cancelled: boolean;
+      author: { fullName: string };
+      beneficiaryUser?: { fullName: string } | undefined;
+      ticket: {
+        name: string;
+        event: { pictureFile: string; title: string; startsAt: Date; endsAt: Date };
+      };
+    },
+  ): boolean {
+    try {
+      return (
+        !hiddenQuickBookings.includes(registration.id) &&
+        isWithinInterval(now, {
+          start: subMinutes(registration.ticket.event.startsAt, 30),
+          end: addHours(registration.ticket.event.endsAt, 2),
+        })
+      );
+    } catch {
+      return false;
+    }
+  }
+
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
 
@@ -215,7 +245,7 @@
       - it starts in less than 30 mins; or
       - it ongoing; or 
       - was finished less than 2 hours ago -->
-      {#if !$hiddenQuickBookings.includes(registration.id) && isWithinInterval( now, { start: subMinutes(registration.ticket.event.startsAt, 30), end: addHours(registration.ticket.event.endsAt, 2) }, )}
+      {#if shouldShowQuickBooking($hiddenQuickBookings, registration)}
         <section
           in:slide={{ axis: 'y', duration: 100 }}
           use:swipe={{ touchAction: quickBookingTouchAction }}
