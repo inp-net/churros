@@ -1,8 +1,11 @@
 <script lang="ts">
   import Alert from '$lib/components/Alert.svelte';
   import IconClose from '~icons/mdi/close';
+  import IconCancelEditing from '~icons/mdi/close';
+  import IconPencil from '~icons/mdi/pencil-outline';
   import IconSynchronize from '~icons/mdi/database-sync-outline';
   import IconCheck from '~icons/mdi/check';
+  import IconFinishEditing from '~icons/mdi/check';
   import IconActive from '~icons/mdi/adjust';
   import type { PageData } from './$types';
   import Permissions from '../../../../lib/components/FormUserPermissions.svelte';
@@ -10,10 +13,9 @@
   import FormPicture from '$lib/components/FormPicture.svelte';
   import { me } from '$lib/session';
   import { formatDate, formatDateTime } from '$lib/dates';
-  import { CredentialType } from '$lib/zeus';
+  import { CredentialType, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { zeus } from '$lib/zeus';
   import { default as parseUserAgent } from 'ua-parser-js';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { env } from '$env/dynamic/public';
@@ -23,6 +25,8 @@
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import FormPassword from '$lib/components/FormPassword.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import FormNotificationSettings from '$lib/components/FormNotificationSettings.svelte';
 
   let godparentRequestSendServerError = '';
@@ -30,6 +34,7 @@
   let godparentDeleting = false;
   let godparentDeleteServerError = '';
   let ldapSyncResult: undefined | boolean = undefined;
+  let editingSession: { id: string; oldName: string } | undefined = undefined;
 
   const deleteToken = async (id: string, active: boolean) => {
     if (active) {
@@ -39,6 +44,13 @@
       await $zeus.mutate({ deleteToken: [{ id }, true] });
       data.me.credentials = data.me.credentials.filter((credential) => credential.id !== id);
     }
+  };
+
+  const renameSession = async (id: string, name: string) => {
+    await $zeus.mutate({ renameSession: [{ id, name }, true] });
+    const idx = data.me.credentials.findIndex((credential) => credential.id === id);
+    data.me.credentials[idx].name = name;
+    editingSession = undefined;
   };
 
   const sendGodparentRequest = async () => {
@@ -353,25 +365,56 @@
           >
         </h2>
         <ul class="nobullet">
-          {#each data.me.credentials.filter(({ type }) => type === CredentialType.Token) as { createdAt, userAgent, active, id }}
+          {#each data.me.credentials.filter(({ type }) => type === CredentialType.Token) as { createdAt, name, userAgent, active, id }}
             <li>
               <div class="active-indicator">
-                {#if active}<IconActive />{/if}
+                {#if active}
+                  <IconActive />
+                {/if}
               </div>
               <div class="date-and-ua">
                 <p class="date">Ouverte le {formatDateTime(createdAt)}</p>
-                <p class="user-agent">
-                  {#if active}
-                    Session actuelle
+                <p class="name">
+                  <!--                  -->
+                  {#if editingSession?.id === id}
+                    <InputText label="" maxlength={255} bind:value={name} />
                   {:else}
-                    {humanizeUserAgent(userAgent)}
+                    {name.length > 0 ? name : humanizeUserAgent(userAgent)}
+                  {/if}
+
+                  {#if active}
+                    <span class="active"> Session actuelle </span>
                   {/if}
                 </p>
               </div>
-              <div class="logout">
-                <ButtonSecondary danger on:click={async () => deleteToken(id, active)}
-                  >Déconnecter</ButtonSecondary
-                >
+              <div class="actions">
+                {#if editingSession?.id === id}
+                  <ButtonGhost class="success" on:click={async () => renameSession(id, name)}>
+                    <IconFinishEditing />
+                  </ButtonGhost>
+                  <ButtonGhost
+                    help="Annuler les modifications"
+                    class="danger"
+                    on:click={() => {
+                      name = editingSession?.oldName ?? '';
+                      editingSession = undefined;
+                    }}
+                  >
+                    <IconCancelEditing />
+                  </ButtonGhost>
+                {:else}
+                  <ButtonGhost
+                    help="Renommer"
+                    on:click={() => {
+                      editingSession = { id, oldName: name };
+                    }}
+                  >
+                    <IconPencil />
+                  </ButtonGhost>
+                {/if}
+                <ButtonSecondary danger on:click={async () => deleteToken(id, active)}>
+                  Déconnecter
+                </ButtonSecondary>
               </div>
             </li>
           {/each}
@@ -439,7 +482,7 @@
 
   .sessions li {
     display: grid;
-    grid-template-columns: 2rem 1fr min-content;
+    grid-template-columns: 2rem 1fr 0.5fr;
     gap: 0.5rem;
     align-items: center;
     padding: 0.5rem 1rem;
@@ -452,6 +495,30 @@
 
   .sessions .active-indicator {
     width: 2rem;
+  }
+
+  .sessions .name {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    align-items: center;
+  }
+
+  .sessions .active {
+    &::before {
+      padding: 0 0.5em;
+      content: '•';
+    }
+
+    font-weight: 600;
+  }
+
+  .sessions .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    align-items: center;
+    justify-content: center;
+    justify-self: self-end;
   }
 
   .send-request {

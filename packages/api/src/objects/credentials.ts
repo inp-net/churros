@@ -19,6 +19,7 @@ export const CredentialEnumType = builder.enumType(CredentialPrismaType, {
 export const CredentialType = builder.prismaObject('Credential', {
   fields: (t) => ({
     id: t.exposeID('id'),
+    name: t.exposeString('name'),
     // userId: t.exposeID('userId'),
     type: t.expose('type', { type: CredentialEnumType }),
     token: t.exposeString('value', { authScopes: { $granted: 'login' } }),
@@ -308,6 +309,28 @@ builder.mutationField('deleteToken', (t) =>
     async resolve(_, { id }, { user }) {
       await prisma.credential.delete({ where: { id } });
       purgeUserSessions(user!.uid);
+      return true;
+    },
+  }),
+);
+
+builder.mutationField('renameSession', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: { id: t.arg.id(), name: t.arg({ type: 'String', defaultValue: undefined }) },
+    async authScopes(_, { id }, { user }) {
+      const credential = await prisma.credential.findUniqueOrThrow({
+        where: { id },
+      });
+      if (credential.type !== CredentialPrismaType.Token) return false;
+      return user?.id === credential.userId;
+    },
+    async resolve(_, { id, name }) {
+      await prisma.credential.update({
+        where: { id },
+        data: { name },
+      });
+
       return true;
     },
   }),
