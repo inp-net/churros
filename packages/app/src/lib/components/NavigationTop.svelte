@@ -6,7 +6,6 @@
   import IconAccount from '~icons/mdi/account-circle-outline';
 
   import ButtonSecondary from './ButtonSecondary.svelte';
-  import { createEventDispatcher, onMount } from 'svelte';
   import { me } from '$lib/session';
   import { env } from '$env/dynamic/public';
   import { page } from '$app/stores';
@@ -18,20 +17,15 @@
   import LogoChurros from './LogoChurros.svelte';
   import { browser } from '$app/environment';
   import { tooltip } from '$lib/tooltip';
-  const dispatch = createEventDispatcher();
+  import ModalReportIssue from './ModalReportIssue.svelte';
 
-  onMount(() => {
-    window.addEventListener('scroll', () => {
-      scrolled = window.scrollY >= 3;
-    });
-  });
-
-  let scrolled = false;
+  export let scrolled = false;
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
 
   let deviceWidth = browser ? window.innerWidth : 500;
 
   let currentEvent: undefined | { title: string; startsAt: Date } = undefined;
+  let reportIssueDialogElement: HTMLDialogElement;
 
   afterNavigate(async () => {
     if ($page.url.pathname.endsWith('/scan/')) {
@@ -54,6 +48,8 @@
   }}
 />
 
+<ModalReportIssue bind:element={reportIssueDialogElement} />
+
 <nav id="navigation-top" class:scrolled class:transparent={scanningTickets}>
   {#if scanningTickets}
     <div class="current-event">
@@ -73,7 +69,7 @@
     {#if scanningTickets}
       <ButtonGhost
         help="Signaler un bug ou proposer une idée"
-        on:click={() => dispatch('report-issue')}
+        on:click={() => { reportIssueDialogElement.showModal(); }}
         style="color:red"><IconIssue /></ButtonGhost
       >
       <div class="wordmark">
@@ -82,7 +78,7 @@
     {:else}
       <ButtonGhost
         help="Signaler un bug ou proposer une idée"
-        on:click={() => dispatch('report-issue')}
+        on:click={() => { reportIssueDialogElement.showModal(); }}
         style="color:red"><IconIssue /></ButtonGhost
       >
       {#if $me}
@@ -127,16 +123,12 @@
 
 <style lang="scss">
   nav {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
     z-index: 10;
     display: flex;
-    flex-direction: row;
     gap: 1rem;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
     padding: 1rem 1.5rem;
     margin: 0;
     background-color: var(--bg);
@@ -165,7 +157,7 @@
   .wordmark {
     display: flex;
     align-items: start;
-    width: 10rem;
+    width: auto;
     height: 3rem;
     object-fit: cover;
   }

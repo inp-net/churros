@@ -10,16 +10,15 @@
   import IconDotsCircle from '~icons/mdi/dots-horizontal-circle';
   import IconGroup from '~icons/mdi/account-group';
   import IconGroupOutline from '~icons/mdi/account-group-outline';
-
   import IconBarWeek from '~icons/mdi/beer-outline';
   import IconAnnouncement from '~icons/mdi/bullhorn-outline';
   import IconDocument from '~icons/mdi/file-outline';
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
+  import IconDocumentFilled from '~icons/mdi/file';
   import { beforeNavigate } from '$app/navigation';
   import { me } from '$lib/session';
   import { page } from '$app/stores';
-  import { tooltip } from '$lib/tooltip';
 
   export let current: 'home' | 'groups' | 'events' | 'services' | 'documents';
   let flyoutOpen = false;
@@ -30,73 +29,88 @@
 </script>
 
 <nav
+  class="navigation-side"
   class:flyout-open={flyoutOpen}
   class:transparent={$page.url.pathname.endsWith('/scan/') && !flyoutOpen}
 >
   <a
+    class="navigation-item"
     href="/"
     class:current={!flyoutOpen && current === 'home'}
     class:disabled={flyoutOpen}
-    use:tooltip={'Mon feed'}
   >
     {#if current === 'home'}
       <IconHome />
     {:else}
       <IconHomeOutline />
     {/if}
+    Mon feed
   </a>
 
   <a
+    class="navigation-item"
     href="/groups"
     class:current={!flyoutOpen && current === 'groups'}
     class:disabled={flyoutOpen}
-    use:tooltip={'Clubs'}
   >
     {#if current === 'groups'}
       <IconGroup />
     {:else}
       <IconGroupOutline />
     {/if}
+    Clubs
   </a>
 
   <button
+    class="navigation-item"
     class:current={flyoutOpen}
     on:click={() => {
       flyoutOpen = !flyoutOpen;
     }}
-    use:tooltip={'Créer…'}
   >
     {#if flyoutOpen}
       <IconAddCircle />
     {:else}
       <IconAddCircleOutline />
     {/if}
+    Créer…
   </button>
 
   <a
+    class="navigation-item"
     href="/events/planning/"
     class:current={!flyoutOpen && current === 'events'}
     class:disabled={flyoutOpen}
-    use:tooltip={'Événements'}
   >
     {#if current === 'events'}
       <IconCalendar />
     {:else}
       <IconCalendarOutline />
     {/if}
+    Événements
+  </a>
+
+  <a class="navigation-item" href="/frappe" class:current={!flyoutOpen && current === 'documents'}>
+    {#if current === 'documents'}
+      <IconDocumentFilled />
+    {:else}
+      <IconDocument />
+    {/if}
+    La Frappe
   </a>
 
   <a
+    class="navigation-item"
     href="/services/"
-    class:current={!flyoutOpen && (current === 'services' || current === 'documents')}
+    class:current={!flyoutOpen && current === 'services'}
     class:disabled={flyoutOpen}
-    use:tooltip={'Les autre services'}
   >
     {#if current === 'services'}
       <IconDotsCircle />
     {:else}
       <IconDotsCircleOutline />
     {/if}
+    Les autre services
   </a>
 </nav>
 
@@ -169,22 +183,12 @@
 
 <style>
   nav {
-    z-index: 101;
     display: flex;
-    gap: 1rem;
-    align-items: center;
-    justify-content: space-evenly;
-    width: 100%;
-    height: 4rem;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem;
     background: var(--bg);
     border-top: var(--border-block) solid rgb(0 0 0 / 5%);
-  }
-
-  nav.transparent {
-    color: white;
-    background: transparent;
-
-    --text: white;
   }
 
   nav.flyout-open {
@@ -200,10 +204,24 @@
     border: none;
   }
 
-  a,
-  button {
+  .navigation-item {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
     font-size: 1.25rem;
+    text-align: left;
+    border-radius: var(--radius-block);
     transition: color 0.25s ease;
+  }
+
+  .navigation-item:hover,
+  .navigation-item:focus-visible {
+    background-color: var(--hover-bg);
+  }
+
+  .navigation-item :global(> svg) {
+    height: 1.2em;
   }
 
   .disabled {
@@ -212,6 +230,11 @@
 
   .current {
     color: var(--primary-link);
+    background-color: color-mix(in srgb, var(--primary-link) 25%, transparent);
+  }
+
+  .flyout-backdrop:not(.open) {
+    display: none;
   }
 
   .flyout-backdrop.open {
@@ -234,25 +257,26 @@
 
   .flyout {
     position: fixed;
+    top: 130px; /* XXX: where create button is... */
     right: 0;
-    bottom: 3rem;
-    left: 0;
+    left: 5rem;
     z-index: 30;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-evenly;
-    max-height: 75vh;
+    max-width: 30rem;
     padding: 1rem;
     background: var(--bg);
     border-top: var(--border-block) solid rgb(0 0 0 / 5%);
-    border-top-left-radius: calc(4 * var(--radius-block));
-    border-top-right-radius: calc(4 * var(--radius-block));
-    transition: bottom 0.2s ease-in-out;
+    border-radius: calc(4 * var(--radius-block));
+    opacity: 1;
+    transition: all 0.3s ease-in-out;
   }
 
   .flyout:not(.open) {
-    bottom: -100%;
+    left: -40rem;
+    opacity: 0;
   }
 
   .flyout a {
@@ -272,7 +296,7 @@
     font-size: 0.8rem;
   }
 
-  @media (width >= 900px) {
+  @media (width <= 899px) {
     nav {
       display: none;
     }

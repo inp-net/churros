@@ -49,13 +49,6 @@
 </div>
 
 <style lang="scss">
-  :root.error-404 {
-    --bg: #000;
-    --text: #25bf22;
-    --border: #25bf22;
-    --primary-link: #54fe54;
-  }
-
   :global(.errored .page) {
     display: flex;
   }
