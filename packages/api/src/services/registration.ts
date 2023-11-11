@@ -159,6 +159,7 @@ export const saveUser = async ({
       apprentice,
       credentials: { create: { type: CredentialType.Password, value: password } },
       links: { create: [] },
+      canAccessDocuments: true, // TODO behavior should be different for ensat
     },
     include: {
       major: {
