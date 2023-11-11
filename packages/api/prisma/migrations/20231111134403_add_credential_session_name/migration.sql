@@ -57,13 +57,13 @@ ALTER TABLE "Minor" ALTER COLUMN "id" SET DEFAULT nanoid('minor:');
 ALTER TABLE "Notification" ALTER COLUMN "id" SET DEFAULT nanoid('notif:');
 
 -- AlterTable
-ALTER TABLE "NotificationSetting" ALTER COLUMN "id" SET DEFAULT nanoid('notifsetting:');
-
--- AlterTable
 ALTER TABLE "NotificationSubscription" ALTER COLUMN "id" SET DEFAULT nanoid('notifsub:');
 
 -- AlterTable
 ALTER TABLE "PasswordReset" ALTER COLUMN "id" SET DEFAULT nanoid('passreset:');
+
+-- AlterTable
+ALTER TABLE "Reaction" ALTER COLUMN "id" SET DEFAULT nanoid('reac:');
 
 -- AlterTable
 ALTER TABLE "Registration" ALTER COLUMN "id" SET DEFAULT nanoid('r:');
@@ -79,6 +79,9 @@ ALTER TABLE "StudentAssociation" ALTER COLUMN "id" SET DEFAULT nanoid('ae:');
 
 -- AlterTable
 ALTER TABLE "Subject" ALTER COLUMN "id" SET DEFAULT nanoid('subj:');
+
+-- AlterTable
+ALTER TABLE "TeachingUnit" ALTER COLUMN "id" SET DEFAULT nanoid('ue:');
 
 -- AlterTable
 ALTER TABLE "Ticket" ALTER COLUMN "id" SET DEFAULT nanoid('t:');
