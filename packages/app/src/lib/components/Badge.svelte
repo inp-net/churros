@@ -2,14 +2,16 @@
   import { tooltip } from '$lib/tooltip';
   export let theme: 'danger' | 'warning' | 'success' | 'info' = 'info';
   export let title: string | undefined = undefined;
+  export let inline = false;
   import IconCheck from '~icons/mdi/check';
-  import IconError from '~icons/mdi/error';
-  import IconWarning from '~icons/mdi/warning';
+  import IconError from '~icons/mdi/error-outline';
+  import IconWarning from '~icons/mdi/warning-outline';
 </script>
 
 <div
   {...$$restProps}
   use:tooltip={title ? { content: title, trigger: 'mouseenter focus click' } : undefined}
+  class:inline
   class="badge {theme === 'info' ? 'primary' : theme}"
 >
   {#if theme === 'success'}
@@ -36,8 +38,18 @@
     border-radius: var(--radius-inline);
   }
 
+  .inline {
+    padding: 0.125em 0.25em;
+    font-size: 0.9em;
+  }
+
   div > :global(.icon) {
     width: 1.2em;
     height: 1.2em;
+  }
+
+  .inline > :global(.icon) {
+    width: 1em;
+    height: 1em;
   }
 </style>

@@ -20,4 +20,5 @@
   {:else}
     <IconBack />
   {/if}
+  <slot />
 </GhostButton>

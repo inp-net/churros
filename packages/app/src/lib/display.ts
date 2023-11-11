@@ -5,6 +5,7 @@ import {
   type GroupType,
   type PaymentMethod,
   Visibility,
+  IssueState,
 } from '$lib/zeus';
 import LogoLydia from '~icons/simple-icons/lydia';
 import IconCreditCard from '~icons/mdi/credit-card-outline';
@@ -194,6 +195,12 @@ export const ORDER_REACTIONS = ['❤️', '👍', '👎', '😂', '😮', '😡'
 //     outlined:
 //   }
 // }
+
+export const ISSUE_STATE_DISPLAY = new Map<IssueState, string>([
+  [IssueState.Closed, 'Terminé'],
+  [IssueState.Open, 'En cours'],
+  [IssueState.Deployed, 'En ligne'],
+]);
 
 export function orderedDisplay<T extends string | number | symbol>(
   order: T[],

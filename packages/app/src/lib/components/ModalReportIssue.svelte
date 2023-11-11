@@ -1,6 +1,7 @@
 <script lang="ts">
   import { zeus } from '$lib/zeus';
   import IconClose from '~icons/mdi/close';
+  import IconMore from '~icons/mdi/dots-horizontal-circle-outline';
   import IconArrowRight from '~icons/mdi/arrow-right';
   import Alert from './Alert.svelte';
   import ButtonGhost from './ButtonGhost.svelte';
@@ -94,6 +95,10 @@
         }}><IconClose /></ButtonGhost
       >
     </h1>
+    <p>
+      Après signalement, tu pourras suivre la progression de ton rapport sur la page Tes Rapports
+      (acessible depuis <IconMore></IconMore> )
+    </p>
     <form on:submit|preventDefault={submitIssue}>
       <InputSelectOne
         label=""
@@ -153,13 +158,13 @@
   .content {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
   }
 
   form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    margin-top: 2rem;
   }
 
   h1 {

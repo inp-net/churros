@@ -13,6 +13,10 @@
   import IconWebsite from '~icons/mdi/web';
   import IconLogs from '~icons/mdi/pulse';
   import IconDomainSwitch from '~icons/mdi/domain-switch';
+  import IconBookshelf from '~icons/mdi/bookshelf';
+  import IconGit from '~icons/mdi/git';
+  import IconCalendar from '~icons/mdi/calendar-multiselect-outline';
+
   import type { SvelteComponent } from 'svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,6 +30,9 @@
     carrot: Carrot,
     logs: IconLogs,
     domainswitch: IconDomainSwitch,
+    calendar: IconCalendar,
+    git: IconGit,
+    book: IconBookshelf,
   };
 
   export let service: {
