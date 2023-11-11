@@ -1,6 +1,7 @@
 <script lang="ts">
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
+  import IconDelete from '~icons/mdi/backspace-outline';
 
   export let value: Date | undefined | null;
   export let time = false;
@@ -17,6 +18,11 @@
     bind:element
     {placeholder}
     type={time ? 'datetime-local' : 'date'}
+    actionIcon={required ? undefined : IconDelete}
+    on:action={() => {
+      // eslint-disable-next-line unicorn/no-null
+      if (!required) value = null;
+    }}
     bind:value
     {name}
     {initial}

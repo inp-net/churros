@@ -185,25 +185,7 @@
         errors={formErrors?.graduationYear?._errors}
       />
     </div>
-    <InputDate
-      label="Date de naissance"
-      errors={formErrors?.birthday?._errors}
-      required
-      bind:value={birthday}
-    />
-    <InputText
-      label="Numéro de téléphone"
-      type="tel"
-      errors={formErrors?.phone?._errors}
-      maxlength={255}
-      bind:value={phone}
-    />
-    <InputText
-      label="Adresse postale"
-      errors={formErrors?.address?._errors}
-      maxlength={255}
-      bind:value={address}
-    />
+
     <div class="side-by-side">
       <InputText
         label="Mot de passe"
@@ -236,6 +218,30 @@
     <p class="typo-details">
       Cela revient à remplir et signer <a href="/cessation-droit-image-tvn7.pdf">ce document</a>
     </p>
+    <section class="optional-info">
+      <h2>Informations Personnelles</h2>
+      <p class="typo-details muted">
+        Ces infos seront visibles par les autres élèves. Elles sont totalement facultatives.
+      </p>
+      <InputDate
+        label="Date de naissance"
+        errors={formErrors?.birthday?._errors}
+        bind:value={birthday}
+      />
+      <InputText
+        label="Numéro de téléphone"
+        type="tel"
+        errors={formErrors?.phone?._errors}
+        maxlength={255}
+        bind:value={phone}
+      />
+      <InputText
+        label="Adresse postale"
+        errors={formErrors?.address?._errors}
+        maxlength={255}
+        bind:value={address}
+      />
+    </section>
     <section class="submit">
       <ButtonPrimary {loading} submits>S'inscrire</ButtonPrimary>
     </section>

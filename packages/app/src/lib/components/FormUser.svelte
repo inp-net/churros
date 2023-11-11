@@ -279,8 +279,18 @@
       maxlength={255}
       bind:value={email}
     />
-    <InputText type="tel" label="Numéro de téléphone" maxlength={255} bind:value={phone} />
   </div>
+  {#if canEditContributions}
+    <InputCheckbox bind:value={cededImageRightsToTVn7} label="Je cède mon droit à l'image à TVn7" />
+    <p class="typo-details">
+      Cela revient à remplir et signer <a href="/cessation-droit-image-tvn7.pdf">ce document</a>
+    </p>
+  {/if}
+  <h2>Infos du profil</h2>
+  <p>
+    Ces informations seront visibles par les autres élèves sur ton profil. Elles sont totalement
+    facultatives.
+  </p>
   <InputSocialLinks bind:value={links} label="Réseaux sociaux" />
   <InputEmailList placeholder="moi@example.com" label="Autres emails" bind:value={otherEmails} />
   <InputDate
@@ -292,13 +302,8 @@
     label="Date de naissance"
     bind:value={birthday}
   />
+  <InputText type="tel" label="Numéro de téléphone" maxlength={255} bind:value={phone} />
   <InputText label="Adresse postale" maxlength={255} bind:value={address} />
-  {#if canEditContributions}
-    <InputCheckbox bind:value={cededImageRightsToTVn7} label="Je cède mon droit à l'image à TVn7" />
-    <p class="typo-details">
-      Cela revient à remplir et signer <a href="/cessation-droit-image-tvn7.pdf">ce document</a>
-    </p>
-  {/if}
   <section class="submit">
     <ButtonSecondary submits {loading}>Sauvegarder</ButtonSecondary>
   </section>
