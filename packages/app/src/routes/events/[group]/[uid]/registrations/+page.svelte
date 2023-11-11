@@ -246,10 +246,6 @@
     )} de ventes
   </section>
 
-  <section class="new">
-    <Badge>NEW</Badge> Plus besoin de tout charger pour télécharger le .csv ;)
-  </section>
-
   <div class="actions">
     {#await csv()}
       <ButtonSecondary icon={IconDownload} loading>Exporter en .csv</ButtonSecondary>
@@ -520,10 +516,6 @@
     margin: 0 auto;
     margin-bottom: 2rem;
     text-align: center;
-  }
-
-  header .new {
-    margin-bottom: 1rem;
   }
 
   header .actions {
