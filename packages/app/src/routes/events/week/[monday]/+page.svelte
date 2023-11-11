@@ -31,7 +31,7 @@
 
   const canChangeBarWeek = Boolean(
     $me?.admin ||
-      $me?.groups.some(({ group: { uid } }) => env.PUBLIC_FOY_GROUPS?.split(',').includes(uid)),
+      $me?.groups?.some(({ group: { uid } }) => env.PUBLIC_FOY_GROUPS?.split(',').includes(uid)),
   );
 
   afterNavigate(() => {
