@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { zeus } from '$lib/zeus';
+  import { GroupType, zeus } from '$lib/zeus';
   import type { PageData } from '../../routes/groups/[uid]/edit/$types';
   import { _clubQuery as clubQuery } from '../../routes/groups/[uid]/edit/+page';
   import Alert from '$lib/components/Alert.svelte';
@@ -114,6 +114,7 @@
           clearable
           label="AE de rattachement"
           bind:association={studentAssociation}
+          required={[GroupType.Club, GroupType.List].includes(type)}
         ></InputStudentAssociations>
       </div>
     {/if}

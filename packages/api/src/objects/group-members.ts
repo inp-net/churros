@@ -41,6 +41,10 @@ export const GroupMemberType = builder.prismaObject('GroupMember', {
   }),
 });
 
+export function membersNeedToPayForTheStudentAssociation(group: { type: GroupType }): boolean {
+  return group.type === GroupType.Club || group.type === GroupType.List;
+}
+
 /** Adds a member to a group. The member is found by their name. */
 builder.mutationField('addGroupMember', (t) =>
   t.prismaField({
@@ -66,7 +70,7 @@ builder.mutationField('addGroupMember', (t) =>
       });
 
       if (
-        (group.type === GroupType.Club || group.type === GroupType.List) &&
+        membersNeedToPayForTheStudentAssociation(group) &&
         !member.contributions.some(({ option: { paysFor } }) =>
           paysFor.some(({ id }) => id === group.studentAssociation?.id),
         )
