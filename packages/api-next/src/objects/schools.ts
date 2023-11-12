@@ -1,5 +1,5 @@
-import { Module, Query } from '@nestjs/common';
-import { Args, Field, ID, ObjectType, Resolver } from '@nestjs/graphql';
+import { Module } from '@nestjs/common';
+import { Args, Field, ID, ObjectType, Query, Resolver } from '@nestjs/graphql';
 import { PrismaModule, PrismaService } from '../prisma';
 
 @ObjectType()
