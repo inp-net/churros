@@ -201,7 +201,8 @@
   </div>
   <p class="typo-details">Connexion en cours…</p>
   <p class="troubleshoot">
-    Si ce message reste affiché longtemps: <ButtonSecondary insideProse
+    Si ce message reste affiché longtemps: <ButtonSecondary
+      insideProse
       on:click={() => {
         window.location.reload();
       }}>Recharger</ButtonSecondary

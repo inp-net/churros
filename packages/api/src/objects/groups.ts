@@ -348,9 +348,9 @@ builder.mutationField('upsertGroup', (t) =>
       { user },
     ) {
       if (!user) throw new GraphQLError("Vous n'êtes pas connecté·e");
-      if (membersNeedToPayForTheStudentAssociation({ type }) && !studentAssociationUid) 
+      if (membersNeedToPayForTheStudentAssociation({ type }) && !studentAssociationUid)
         throw new GraphQLError("Il faut préciser l'AE de rattachement pour un club ou une liste");
-      
+
       // --- First, we update the group's children's familyId according to the new parent of this group. ---
       // We have 2 possible cases for updating the parent: either it is:
       // - null (or set to ''): the group does not have a parent anymore;

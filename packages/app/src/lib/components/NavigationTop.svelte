@@ -69,7 +69,9 @@
     {#if scanningTickets}
       <ButtonGhost
         help="Signaler un bug ou proposer une idée"
-        on:click={() => { reportIssueDialogElement.showModal(); }}
+        on:click={() => {
+          reportIssueDialogElement.showModal();
+        }}
         style="color:red"><IconIssue /></ButtonGhost
       >
       <div class="wordmark">
@@ -78,7 +80,9 @@
     {:else}
       <ButtonGhost
         help="Signaler un bug ou proposer une idée"
-        on:click={() => { reportIssueDialogElement.showModal(); }}
+        on:click={() => {
+          reportIssueDialogElement.showModal();
+        }}
         style="color:red"><IconIssue /></ButtonGhost
       >
       {#if $me}
