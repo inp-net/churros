@@ -6,6 +6,7 @@
   import type { PageData } from './$types';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import { CURRENT_VERSION } from '$lib/buildinfo';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   export let data: PageData;
 </script>
@@ -30,6 +31,15 @@
       </li>
     {/each}
   </ul>
+
+  {#if data.issuesByUser.length >= 20}
+    <p>
+      Note: seuls tes derniers 20 signalements sont affichés. Pour voir des plus anciens, rends-toi
+      sur <ButtonSecondary insideProse href="https://git.inpt.fr/inp-net/churros/-/issues"
+        >Notre gitlab</ButtonSecondary
+      >
+    </p>
+  {/if}
 
   <h2>À propos de l'état “<Badge inline theme="success">Réglé</Badge>”</h2>
   <p class="explain-states">
