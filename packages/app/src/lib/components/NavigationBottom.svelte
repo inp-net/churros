@@ -21,6 +21,7 @@
   import { page } from '$app/stores';
   import { tooltip } from '$lib/tooltip';
   import type { MOBILE_NAVIGATION_TABS } from '../../routes/+layout.svelte';
+  import { scrollToTop } from '$lib/scroll';
 
   export let current: (typeof MOBILE_NAVIGATION_TABS)[number];
   let flyoutOpen = false;
@@ -34,31 +35,43 @@
   class:flyout-open={flyoutOpen}
   class:transparent={$page.url.pathname.endsWith('/scan/') && !flyoutOpen}
 >
-  <a
-    href="/"
-    class:current={!flyoutOpen && current === 'home'}
-    class:disabled={flyoutOpen}
-    use:tooltip={'Mon feed'}
-  >
-    {#if current === 'home'}
+  {#if $page.url.pathname === '/'}
+    <button class="current" class:disabled={flyoutOpen} on:click={scrollToTop}>
       <IconHome />
-    {:else}
-      <IconHomeOutline />
-    {/if}
-  </a>
+    </button>
+  {:else}
+    <a
+      href="/"
+      class:current={!flyoutOpen && current === 'home'}
+      class:disabled={flyoutOpen}
+      use:tooltip={'Mon feed'}
+    >
+      {#if current === 'home'}
+        <IconHome />
+      {:else}
+        <IconHomeOutline />
+      {/if}
+    </a>
+  {/if}
 
-  <a
-    href="/groups"
-    class:current={!flyoutOpen && current === 'groups'}
-    class:disabled={flyoutOpen}
-    use:tooltip={'Clubs'}
-  >
-    {#if current === 'groups'}
-      <IconGroup />
-    {:else}
-      <IconGroupOutline />
-    {/if}
-  </a>
+  {#if $page.url.pathname === '/groups/'}
+    <button class="current" class:disabled={flyoutOpen} on:click={scrollToTop}>
+      <IconGroup></IconGroup>
+    </button>
+  {:else}
+    <a
+      href="/groups"
+      class:current={!flyoutOpen && current === 'groups'}
+      class:disabled={flyoutOpen}
+      use:tooltip={'Clubs'}
+    >
+      {#if current === 'groups'}
+        <IconGroup />
+      {:else}
+        <IconGroupOutline />
+      {/if}
+    </a>
+  {/if}
 
   <button
     class:current={flyoutOpen}

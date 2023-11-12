@@ -26,6 +26,7 @@
   import { me } from '$lib/session';
   import { page } from '$app/stores';
   import type { DESKTOP_NAVIGATION_TABS } from '../../routes/+layout.svelte';
+  import { scrollToTop } from '$lib/scroll';
 
   export let current: (typeof DESKTOP_NAVIGATION_TABS)[number];
   let flyoutOpen = false;
@@ -40,19 +41,26 @@
   class:flyout-open={flyoutOpen}
   class:transparent={$page.url.pathname.endsWith('/scan/') && !flyoutOpen}
 >
-  <a
-    class="navigation-item"
-    href="/"
-    class:current={!flyoutOpen && current === 'home'}
-    class:disabled={flyoutOpen}
-  >
-    {#if current === 'home'}
-      <IconHome />
-    {:else}
-      <IconHomeOutline />
-    {/if}
-    <span>Mon feed</span>
-  </a>
+  {#if $page.url.pathname === '/'}
+    <button class="navigation-item current" class:disabled={flyoutOpen} on:click={scrollToTop}>
+      <IconHome></IconHome>
+      <span>Mon feed</span>
+    </button>
+  {:else}
+    <a
+      class="navigation-item"
+      href="/"
+      class:current={!flyoutOpen && current === 'home'}
+      class:disabled={flyoutOpen}
+    >
+      {#if current === 'home'}
+        <IconHome />
+      {:else}
+        <IconHomeOutline />
+      {/if}
+      <span>Mon feed</span>
+    </a>
+  {/if}
 
   <a
     class="navigation-item"
@@ -293,7 +301,7 @@
 
   .current {
     color: var(--primary-link);
-    background-color: color-mix(in srgb, var(--primary-link) 25%, transparent);
+    background-color: color-mix(in srgb, var(--primary-link) 15%, transparent);
   }
 
   .flyout-backdrop:not(.open) {
