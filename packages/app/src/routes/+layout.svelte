@@ -35,6 +35,7 @@
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
   import { writable, type Writable } from 'svelte/store';
   import { syncToLocalStorage } from 'svelte-store2storage';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   function currentTabDesktop(url: URL): (typeof DESKTOP_NAVIGATION_TABS)[number] {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -199,6 +200,13 @@
     <IconLoading />
   </div>
   <p class="typo-details">Connexion en cours…</p>
+  <p class="troubleshoot">
+    Si ce message reste affiché longtemps: <ButtonSecondary insideProse
+      on:click={() => {
+        window.location.reload();
+      }}>Recharger</ButtonSecondary
+    >
+  </p>
 </div>
 
 <section class="toasts">
@@ -407,6 +415,17 @@ The root layout is composed of several elements:
     img {
       object-fit: contain;
       height: 10rem;
+    }
+
+    .troubleshoot {
+      position: absolute;
+      bottom: 4rem;
+
+      --bg: transparent;
+      --border: var(--primary-text);
+      --text: var(--primary-text);
+
+      text-align: center;
     }
   }
 
