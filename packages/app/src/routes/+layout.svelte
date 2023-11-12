@@ -30,9 +30,11 @@
   import { me } from '$lib/session';
   import { toasts } from '$lib/toasts';
   import Toast from '$lib/components/Toast.svelte';
-  import type { PageData } from './$types';
+  import type { PageData, Snapshot } from './$types';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
+  import { writable, type Writable } from 'svelte/store';
+  import { syncToLocalStorage } from 'svelte-store2storage';
 
   function currentTabDesktop(url: URL): (typeof DESKTOP_NAVIGATION_TABS)[number] {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -50,14 +52,20 @@
 
   function currentTabMobile(url: URL): (typeof MOBILE_NAVIGATION_TABS)[number] {
     const tab = currentTabDesktop(url);
-    for (const mobileTab of MOBILE_NAVIGATION_TABS) 
-      if (mobileTab === tab) return tab;
-    
+    for (const mobileTab of MOBILE_NAVIGATION_TABS) if (mobileTab === tab) return tab;
+
     return 'services';
   }
 
   export let data: PageData;
   let showInitialSpinner = true;
+  let scrollableArea: HTMLElement;
+
+  /**
+   * Stores scrollTop of scrollableArea per URL
+   */
+  const scrollPositions: Writable<Record<string, number>> = writable({});
+  if (browser) syncToLocalStorage(scrollPositions, 'scroll_positions');
 
   onMount(() => {
     if (!$me && !localStorage.getItem('isReallyLoggedout')) {
@@ -98,6 +106,7 @@
 
   beforeNavigate(() => {
     (window as unknown as Window & { NProgress: NProgress }).NProgress.start();
+    $scrollPositions[$page.url.pathname] = scrollableArea.scrollTop;
   });
 
   afterNavigate(async () => {
@@ -107,6 +116,8 @@
     setTimeout(() => {
       NProgress.remove();
     }, 1000);
+
+    scrollableArea.scrollTo(0, $scrollPositions[$page.url.pathname] ?? 0);
 
     const { announcementsNow } = await $zeus.query({
       announcementsNow: [
@@ -156,6 +167,13 @@
       });
     }
   });
+
+  export const snapshot: Snapshot<number> = {
+    capture: () => scrollableArea.scrollTop,
+    restore(y) {
+      scrollableArea.scrollTo(0, y);
+    },
+  };
 
   function pageIsFullsize(url: URL) {
     const fragments = url.pathname.split('/');
@@ -207,6 +225,7 @@
       id="scrollable-area"
       class="contents-and-announcements"
       class:fullsize={pageIsFullsize($page.url)}
+      bind:this={scrollableArea}
     >
       <section class="announcements fullsize">
         {#if !scanningTickets && !showingTicket}
