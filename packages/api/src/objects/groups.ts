@@ -108,6 +108,43 @@ export const GroupType = builder.prismaNode('Group', {
         ],
       },
     }),
+    president: t.prismaField({
+      type: 'GroupMember',
+      nullable: true,
+      resolve: async (query, { id }) =>
+        prisma.groupMember.findFirst({ ...query, where: { group: { id }, president: true } }),
+    }),
+    vicePresidents: t.prismaField({
+      type: ['GroupMember'],
+      resolve: async (query, { id }) =>
+        prisma.groupMember.findMany({ ...query, where: { group: { id }, vicePresident: true } }),
+    }),
+    secretaries: t.prismaField({
+      type: ['GroupMember'],
+      resolve: async (query, { id }) =>
+        prisma.groupMember.findMany({ ...query, where: { group: { id }, secretary: true } }),
+    }),
+    treasurers: t.prismaField({
+      type: ['GroupMember'],
+      resolve: async (query, { id }) =>
+        prisma.groupMember.findMany({ ...query, where: { group: { id }, treasurer: true } }),
+    }),
+    boardMembers: t.prismaField({
+      type: ['GroupMember'],
+      resolve: async (query, { id }) =>
+        prisma.groupMember.findMany({
+          ...query,
+          where: {
+            group: { id },
+            OR: [
+              { president: true },
+              { vicePresident: true },
+              { secretary: true },
+              { treasurer: true },
+            ],
+          },
+        }),
+    }),
     studentAssociation: t.relation('studentAssociation', { nullable: true }),
     parent: t.relation('parent', { nullable: true }),
     selfJoinable: t.exposeBoolean('selfJoinable'),
