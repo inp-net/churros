@@ -1,3 +1,19 @@
+<script lang="ts" context="module">
+  export const DESKTOP_NAVIGATION_TABS = [
+    'home',
+    'groups',
+    'events',
+    'documents',
+    'reports',
+    'services',
+    'signups',
+    'announcements',
+    'backrooms',
+  ] as const;
+
+  export const MOBILE_NAVIGATION_TABS = ['home', 'groups', 'events', 'services'] as const;
+</script>
+
 <script lang="ts">
   import { page } from '$app/stores';
   import TopBar from '$lib/components/NavigationTop.svelte';
@@ -18,14 +34,26 @@
   import NavigationSide from '$lib/components/NavigationSide.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
 
-  function currentTab(url: URL): 'events' | 'groups' | 'services' | 'home' | 'documents' {
+  function currentTabDesktop(url: URL): (typeof DESKTOP_NAVIGATION_TABS)[number] {
     const starts = (segment: string) => url.pathname.startsWith(segment);
 
     if (starts('/groups')) return 'groups';
     if (starts('/week') || starts('/bookings') || starts('/events')) return 'events';
     if (starts('/services')) return 'services';
     if (starts('/documents')) return 'documents';
+    if (starts('/signups')) return 'signups';
+    if (starts('/backrooms') || starts('/logs')) return 'backrooms';
+    if (starts('/reports')) return 'reports';
+    if (starts('/announcements')) return 'announcements';
     return 'home';
+  }
+
+  function currentTabMobile(url: URL): (typeof MOBILE_NAVIGATION_TABS)[number] {
+    const tab = currentTabDesktop(url);
+    for (const mobileTab of MOBILE_NAVIGATION_TABS) 
+      if (mobileTab === tab) return tab;
+    
+    return 'services';
   }
 
   export let data: PageData;
@@ -174,7 +202,7 @@
   <TopBar {scrolled} />
 
   <div class="page-and-sidenav">
-    <NavigationSide current={currentTab($page.url)} />
+    <NavigationSide current={currentTabDesktop($page.url)} />
     <div
       id="scrollable-area"
       class="contents-and-announcements"
@@ -207,7 +235,7 @@
     </div>
   </div>
 
-  <NavigationBottom current={currentTab($page.url)} />
+  <NavigationBottom current={currentTabMobile($page.url)} />
 </div>
 
 <style lang="scss">
@@ -223,7 +251,7 @@ The root layout is composed of several elements:
 - the top navbar
 - horizontally:
   - the side navbar (desktop only)
-  - vertically:
+  - vertically (this is the content that scrolls):
     - the announcements
     - the page content
 - the bottom navbar (mobile only)
@@ -282,6 +310,10 @@ The root layout is composed of several elements:
   }
 
   @media (width >= 900px) {
+    .announcements {
+      padding: 0 1rem;
+    }
+
     .announcement:first-child {
       border-top-left-radius: var(--radius-block);
       border-top-right-radius: var(--radius-block);

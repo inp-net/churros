@@ -20,8 +20,9 @@
   import { me } from '$lib/session';
   import { page } from '$app/stores';
   import { tooltip } from '$lib/tooltip';
+  import type { MOBILE_NAVIGATION_TABS } from '../../routes/+layout.svelte';
 
-  export let current: 'home' | 'groups' | 'events' | 'services' | 'documents';
+  export let current: (typeof MOBILE_NAVIGATION_TABS)[number];
   let flyoutOpen = false;
 
   beforeNavigate(() => {
@@ -88,7 +89,7 @@
 
   <a
     href="/services/"
-    class:current={!flyoutOpen && (current === 'services' || current === 'documents')}
+    class:current={!flyoutOpen && current === 'services'}
     class:disabled={flyoutOpen}
     use:tooltip={'Les autre services'}
   >

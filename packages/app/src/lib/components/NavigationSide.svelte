@@ -1,6 +1,8 @@
 <script lang="ts">
   import IconHomeOutline from '~icons/mdi/home-outline';
   import IconPeople from '~icons/mdi/account-add-outline';
+  import IconPeopleFilled from '~icons/mdi/account-add';
+  import IconLogout from '~icons/mdi/logout';
   import IconHome from '~icons/mdi/home';
   import IconAddCircleOutline from '~icons/mdi/plus-circle-outline';
   import IconAddCircle from '~icons/mdi/plus-circle';
@@ -12,15 +14,20 @@
   import IconGroupOutline from '~icons/mdi/account-group-outline';
   import IconBarWeek from '~icons/mdi/beer-outline';
   import IconAnnouncement from '~icons/mdi/bullhorn-outline';
+  import IconAnnouncementFilled from '~icons/mdi/bullhorn';
   import IconDocument from '~icons/mdi/file-outline';
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
   import IconDocumentFilled from '~icons/mdi/file';
+  import IconTerminal from '~icons/mdi/console';
+  import IconBugOutline from '~icons/mdi/bug-outline';
+  import IconBug from '~icons/mdi/bug';
   import { beforeNavigate } from '$app/navigation';
   import { me } from '$lib/session';
   import { page } from '$app/stores';
+  import type { DESKTOP_NAVIGATION_TABS } from '../../routes/+layout.svelte';
 
-  export let current: 'home' | 'groups' | 'events' | 'services' | 'documents';
+  export let current: (typeof DESKTOP_NAVIGATION_TABS)[number];
   let flyoutOpen = false;
 
   beforeNavigate(() => {
@@ -44,7 +51,7 @@
     {:else}
       <IconHomeOutline />
     {/if}
-    Mon feed
+    <span>Mon feed</span>
   </a>
 
   <a
@@ -58,23 +65,25 @@
     {:else}
       <IconGroupOutline />
     {/if}
-    Clubs
+    <span>Clubs</span>
   </a>
 
-  <button
-    class="navigation-item"
-    class:current={flyoutOpen}
-    on:click={() => {
-      flyoutOpen = !flyoutOpen;
-    }}
-  >
-    {#if flyoutOpen}
-      <IconAddCircle />
-    {:else}
-      <IconAddCircleOutline />
-    {/if}
-    Créer…
-  </button>
+  {#if $me}
+    <button
+      class="navigation-item"
+      class:current={flyoutOpen}
+      on:click={() => {
+        flyoutOpen = !flyoutOpen;
+      }}
+    >
+      {#if flyoutOpen}
+        <IconAddCircle />
+      {:else}
+        <IconAddCircleOutline />
+      {/if}
+      <span>Créer…</span>
+    </button>
+  {/if}
 
   <a
     class="navigation-item"
@@ -87,17 +96,36 @@
     {:else}
       <IconCalendarOutline />
     {/if}
-    Événements
+    <span>Événements</span>
   </a>
-
-  <a class="navigation-item" href="/frappe" class:current={!flyoutOpen && current === 'documents'}>
+  <a
+    class="navigation-item"
+    href="/frappe"
+    class:current={!flyoutOpen && current === 'documents'}
+    class:disabled={flyoutOpen}
+  >
     {#if current === 'documents'}
       <IconDocumentFilled />
     {:else}
       <IconDocument />
     {/if}
-    La Frappe
+    <span>La Frappe</span>
   </a>
+  {#if $me}
+    <a
+      href="/reports"
+      class="navigation-item"
+      class:current={!flyoutOpen && current === 'reports'}
+      class:disabled={flyoutOpen}
+    >
+      {#if current === 'reports'}
+        <IconBug></IconBug>
+      {:else}
+        <IconBugOutline></IconBugOutline>
+      {/if}
+      <span>Mes signalements</span>
+    </a>
+  {/if}
 
   <a
     class="navigation-item"
@@ -110,8 +138,55 @@
     {:else}
       <IconDotsCircleOutline />
     {/if}
-    Les autre services
+    <span>Les autre services</span>
   </a>
+
+  {#if $me?.admin || $me?.canEditUsers}
+    <a
+      href="/signups"
+      class="navigation-item"
+      class:current={!flyoutOpen && current === 'signups'}
+      class:disabled={flyoutOpen}
+    >
+      {#if current === 'signups'}
+        <IconPeopleFilled />
+      {:else}
+        <IconPeople />
+      {/if}
+      <span>Inscriptions</span>
+    </a>
+  {/if}
+  {#if $me?.admin}
+    <a
+      href="/announcements"
+      class="navigation-item"
+      class:current={!flyoutOpen && current === 'announcements'}
+      class:disabled={flyoutOpen}
+    >
+      {#if current === 'announcements'}
+        <IconAnnouncementFilled />
+      {:else}
+        <IconAnnouncement />
+      {/if}
+      <span>Annonces</span>
+    </a>
+    <a
+      href="/backrooms"
+      class="navigation-item"
+      class:current={!flyoutOpen && current === 'backrooms'}
+      class:disabled={flyoutOpen}
+    >
+      <IconTerminal></IconTerminal>
+      <span>Backrooms</span>
+    </a>
+  {/if}
+
+  {#if $me}
+    <a href="/logout?token={$page.data.token}" class="navigation-item" class:disabled={flyoutOpen}>
+      <IconLogout></IconLogout>
+      <span>Se déconnecter</span>
+    </a>
+  {/if}
 </nav>
 
 <svelte:window
@@ -151,9 +226,9 @@
     {/if}
 
     {#if $me?.admin}
-      <a href="/announcements">
+      <a href="/announcements/create">
         <IconAnnouncement />
-        <span>Annonces</span>
+        <span>Annonce</span>
       </a>
     {/if}
 
@@ -171,13 +246,6 @@
       <IconEvent />
       <span>Événement</span>
     </a>
-
-    {#if $me?.admin || $me?.canEditUsers}
-      <a href="/signups">
-        <IconPeople />
-        <span>Inscriptions</span>
-      </a>
-    {/if}
   </section>
 </div>
 
@@ -188,11 +256,6 @@
     gap: 0.25rem;
     padding: 1rem;
     background: var(--bg);
-    border-top: var(--border-block) solid rgb(0 0 0 / 5%);
-  }
-
-  nav.flyout-open {
-    border-top-color: var(--bg);
   }
 
   button {
@@ -215,8 +278,8 @@
     transition: color 0.25s ease;
   }
 
-  .navigation-item:hover,
-  .navigation-item:focus-visible {
+  .navigation-item:not(.current):hover,
+  .navigation-item:not(.current):focus-visible {
     background-color: var(--hover-bg);
   }
 
@@ -296,7 +359,7 @@
     font-size: 0.8rem;
   }
 
-  @media (width <= 899px) {
+  @media (width < 900px) {
     nav {
       display: none;
     }
