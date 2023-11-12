@@ -6,6 +6,7 @@
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import { debugging } from '$lib/debugging';
   import { isDark } from '$lib/theme';
+  import { toasts } from '$lib/toasts';
 
   export let data: PageData;
 
@@ -61,7 +62,13 @@
           href="https://git.inpt.fr/inp-net/churros/-/commit/{CURRENT_COMMIT}"
           >{CURRENT_COMMIT.slice(0, 8)}</a
         >
-      {:else}trunk{/if} · <InputCheckbox bind:value={$debugging} label="Mode debug"></InputCheckbox>
+      {:else}trunk{/if} · <InputCheckbox
+        on:change={() => {
+          toasts.info(`Debug mode ${$debugging ? 'on' : 'off'}`);
+        }}
+        bind:value={$debugging}
+        label="Mode debug"
+      ></InputCheckbox>
     </code>
   </footer>
 </div>
