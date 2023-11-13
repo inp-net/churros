@@ -76,6 +76,7 @@ class Issue {
   difficulty!: number | null;
   number!: number;
   deployedIn!: string;
+  duplicatedFrom!: number | null;
 
   constructor(args: Issue) {
     Object.assign(this, args);
@@ -116,63 +117,101 @@ export const IssueType = builder.objectType(Issue, {
       },
     }),
     deployedIn: t.exposeString('deployedIn'),
+    duplicatedFrom: t.exposeInt('duplicatedFrom', { nullable: true }),
   }),
 });
+
+type GitlabIssue = {
+  state: string;
+  description: string;
+  updatedAt: string;
+  iid: number;
+  labels: { nodes: Array<{ title: string }> };
+  title: string;
+};
+type GitlabAPIResponse = {
+  fromIssuebot: Array<GitlabIssue & { closedAsDuplicateOf: null | GitlabIssue }>;
+  fromGitlabUsers: Array<GitlabIssue & { closedAsDuplicateOf: null | GitlabIssue }>;
+};
+
+const issueQuery = `state, description, updatedAt, iid, labels { nodes { title }}, title`;
+
+const difficultyOrImportanceFromLabel = (
+  map: Record<string, number>,
+  labels: GitlabIssue['labels'],
+) => {
+  const highestUnbounded = Math.max(
+    ...labels.nodes.map((l) => map[l.title] ?? Number.NEGATIVE_INFINITY),
+  );
+  // eslint-disable-next-line unicorn/no-null
+  if (highestUnbounded === Number.NEGATIVE_INFINITY) return null;
+  return highestUnbounded / Object.values(map).length;
+};
+
+function makeIssue(
+  { state, description, updatedAt, iid, labels, title }: GitlabIssue,
+  duplicatedFrom: number | undefined,
+) {
+  return new Issue({
+    title,
+    body: description,
+    difficulty: difficultyOrImportanceFromLabel(ISSUE_DIFFICULTY_LABELS_MAP_UNBOUNDED, labels),
+    importance: difficultyOrImportanceFromLabel(ISSUE_IMPORTANCE_LABELS_MAP_UNBOUNDED, labels),
+    number: iid,
+    state: state === 'closed' ? IssueState.Closed : IssueState.Open,
+    submittedAt: new Date(updatedAt),
+    deployedIn: '', // TODO
+    // eslint-disable-next-line unicorn/no-null
+    duplicatedFrom: duplicatedFrom ?? null,
+  });
+}
 
 builder.queryField('issuesByUser', (t) =>
   t.field({
     type: [IssueType],
     async resolve(_, __, { user }) {
       if (!user) return [];
-      type GitlabAPIResponse = Array<{
-        state: string;
-        description: string;
-        updated_at: string;
-        iid: number;
-        labels: string[];
-        title: string;
-      }>;
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const byUsername: GitlabAPIResponse = await fetch(
-        `https://git.inpt.fr/api/v4/projects/${process.env.GITLAB_PROJECT_ID}/issues?author_username=${user.uid}`,
-      ).then(async (r) => r.json());
+      const query = (uid: string) => `query {
+        project(fullPath: "inp-net/churros") {
+          fromIssuebot: issues(search: "@${uid}", first: 20) {
+            nodes {
+              ${issueQuery}, closedAsDuplicateOf { ${issueQuery} }
+            }
+          }
+          fromGitlabUsers: issues(authorUsername: "${uid}", first: 20) {
+            nodes {
+              ${issueQuery}, closedAsDuplicateOf { ${issueQuery} }
+            }
+          }
+        }
+      }`;
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      let bySearch: GitlabAPIResponse = await fetch(
-        `https://git.inpt.fr/api/v4/projects/${process.env.GITLAB_PROJECT_ID}/issues?search=@${user.uid}`,
-      ).then(async (r) => r.json());
-      bySearch = bySearch.filter(({ description }) =>
-        description.includes(`[@${user.uid}](https://`),
-      );
+      const { fromIssuebot, fromGitlabUsers } = await fetch(`https://git.inpt.fr/api/graphql`, {
+        body: JSON.stringify({ query: query('litschan') }),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(async (r) => r.json())
+        .then(
+          (r) =>
+            /* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
+            (r.data?.project
+              ? // @ts-expect-error untyped api response
+                Object.fromEntries(Object.entries(r.data.project).map(([k, v]) => [k, v.nodes!]))
+              : {
+                  fromIssuebot: [],
+                  fromGitlabUsers: [],
+                }) as GitlabAPIResponse,
+          /* eslint-enable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
+        );
 
-      const allIssues = [...byUsername, ...bySearch];
+      const allIssues = [...fromIssuebot, ...fromGitlabUsers];
 
-      const difficultyOrImportanceFromLabel = (map: Record<string, number>, labels: string[]) => {
-        const highestUnbounded = Math.max(...labels.map((l) => map[l] ?? Number.NEGATIVE_INFINITY));
-        // eslint-disable-next-line unicorn/no-null
-        if (highestUnbounded === Number.NEGATIVE_INFINITY) return null;
-        return highestUnbounded / Object.values(map).length;
-      };
-
-      return allIssues.map(
-        ({ state, description, updated_at, iid, labels, title }) =>
-          new Issue({
-            title,
-            body: description,
-            difficulty: difficultyOrImportanceFromLabel(
-              ISSUE_DIFFICULTY_LABELS_MAP_UNBOUNDED,
-              labels,
-            ),
-            importance: difficultyOrImportanceFromLabel(
-              ISSUE_IMPORTANCE_LABELS_MAP_UNBOUNDED,
-              labels,
-            ),
-            number: iid,
-            state: state === 'closed' ? IssueState.Closed : IssueState.Open,
-            submittedAt: new Date(updated_at),
-            deployedIn: '', // TODO
-          }),
+      return allIssues.map(({ closedAsDuplicateOf, ...issue }) =>
+        makeIssue(closedAsDuplicateOf ?? issue, closedAsDuplicateOf ? issue.iid : undefined),
       );
     },
   }),

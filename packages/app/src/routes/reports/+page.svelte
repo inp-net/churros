@@ -15,10 +15,16 @@
   <h1><ButtonBack></ButtonBack> Tes rapports</h1>
 
   <ul class="nobullet reports">
-    {#each data.issuesByUser as { number, title, state } (number)}
+    {#each data.issuesByUser as { number, title, state, duplicatedFrom } (number)}
       <li>
         <a href="./{number}">
-          <span class="number">#{number}</span>{title}
+          <span class="number">#{duplicatedFrom ?? number}</span>
+          <span class="main">
+            {#if duplicatedFrom}
+              <Badge>Dupliquée de #{number}</Badge>
+            {/if}
+            {title}
+          </span>
           {#if state === IssueState.Closed}
             <Badge theme="success">Réglé</Badge>
           {/if}

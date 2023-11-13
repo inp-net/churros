@@ -15,6 +15,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
         importance: true,
         difficulty: true,
         url: true,
+        duplicatedFrom: true,
       },
     },
     { fetch, parent },
