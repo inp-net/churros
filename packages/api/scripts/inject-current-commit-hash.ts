@@ -1,5 +1,5 @@
 import { execa } from 'execa';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 async function git(args: string): Promise<string> {
@@ -25,4 +25,6 @@ let content = readFileSync(filepath)
     /export const CURRENT_VERSION\s*=.*$/m,
     `export const CURRENT_VERSION = "${tag}" as string`,
   );
+
+mkdirSync(path.dirname(filepath), { recursive: true });
 writeFileSync(filepath, content);
