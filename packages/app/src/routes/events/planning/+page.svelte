@@ -13,7 +13,6 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
 
   export let data: PageData;
-
   let expandedEventId: string | undefined = undefined;
 
   $: events = data.events?.edges.map((e) => e?.node);

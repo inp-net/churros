@@ -65,6 +65,56 @@ export const EventFrequencyType = builder.enumType(EventFrequency, {
   name: 'EventFrequency',
 });
 
+function findNextRecurringEvent(event: EventPrisma): EventPrisma {
+  const today = new Date();
+  const { startsAt, endsAt, frequency } = event;
+  let newStartsAt = startsAt;
+  switch (frequency) {
+    case EventFrequency.Weekly: {
+      const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
+      const dayDelta = differenceInDays(todayWeek, startsAt);
+      newStartsAt = addDays(startsAt, dayDelta);
+      const correctedDelta = isBefore(today, newStartsAt) ? dayDelta : dayDelta + 7;
+      return {
+        ...event,
+        startsAt: addDays(startsAt, correctedDelta),
+        endsAt: addDays(endsAt, correctedDelta),
+      };
+    }
+
+    case EventFrequency.Biweekly: {
+      // move event from its original startsAt to today's week.
+      const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
+      const weekDelta = differenceInWeeks(todayWeek, startsAt);
+      const tempStartsAt = addDays(startsAt, weeksToDays(weekDelta));
+      const correctedDelta = isBefore(today, tempStartsAt) ? weekDelta : weekDelta + 2;
+      const newStartsAt = addDays(startsAt, weeksToDays(correctedDelta));
+      const newEndsAt = addDays(endsAt, weeksToDays(correctedDelta));
+      return { ...event, startsAt: newStartsAt, endsAt: newEndsAt };
+    }
+
+    case EventFrequency.Monthly: {
+      const monthCorrect =
+        getMonth(today) === getMonth(endOfWeek(today, { weekStartsOn: 1 })) ? 0 : 1;
+      const yearCorrect = getYear(today) === getYear(endOfWeek(today, { weekStartsOn: 1 })) ? 0 : 1;
+
+      const tempStartsAt = setMonth(startsAt, getMonth(today) + monthCorrect);
+      const correctedDelta = isBefore(today, tempStartsAt) ? monthCorrect : monthCorrect + 1;
+      const newStartsAt = setMonth(startsAt, getMonth(today) + correctedDelta);
+      const newEndsAt = setMonth(endsAt, getMonth(today) + correctedDelta);
+      return {
+        ...event,
+        startsAt: setYear(newStartsAt, getYear(today) + yearCorrect),
+        endsAt: setYear(newEndsAt, getYear(today) + yearCorrect),
+      };
+    }
+
+    default: {
+      return event;
+    }
+  }
+}
+
 export function visibleEventsPrismaQuery(
   user: { uid: string } | undefined,
 ): Prisma.EventWhereInput {
@@ -571,15 +621,25 @@ builder.queryField('events', (t) =>
       past: t.arg.boolean({ required: false }),
       upcomingShotguns: t.arg.boolean({ required: false }),
       noLinkedArticles: t.arg.boolean({ required: false }),
+      pastRecurring: t.arg.boolean({ required: false }),
     },
-    async resolve(query, _, { future, past, upcomingShotguns, noLinkedArticles }, { user }) {
+    async resolve(
+      query,
+      _,
+      { future, past, upcomingShotguns, noLinkedArticles, pastRecurring },
+      { user },
+    ) {
       future = future ?? false;
       past = past ?? false;
       upcomingShotguns = upcomingShotguns ?? false;
+      pastRecurring = pastRecurring ?? false;
       let constraints: Prisma.EventWhereInput = {};
-      if (future || upcomingShotguns) {
+      if (future || upcomingShotguns || pastRecurring) {
         constraints = {
-          startsAt: { gte: startOfDay(new Date()) },
+          OR: [
+            { startsAt: { gte: startOfDay(new Date()) } },
+            { recurringUntil: { gte: startOfDay(new Date()) } },
+          ],
         };
       } else if (past) {
         constraints = {
@@ -596,24 +656,28 @@ builder.queryField('events', (t) =>
       }
 
       if (!user) {
-        return prisma.event.findMany({
-          ...query,
-          where: {
-            visibility: VisibilityPrisma.Public,
-            ...constraints,
-          },
-          orderBy: { startsAt: 'asc' },
-        });
+        return prisma.event
+          .findMany({
+            ...query,
+            where: {
+              visibility: VisibilityPrisma.Public,
+              ...constraints,
+            },
+            orderBy: { startsAt: 'asc' },
+          })
+          .then((events) => events.map((e) => findNextRecurringEvent(e)));
       }
 
-      return prisma.event.findMany({
-        ...query,
-        where: {
-          ...constraints,
-          ...visibleEventsPrismaQuery(user),
-        },
-        orderBy: { startsAt: 'asc' },
-      });
+      return prisma.event
+        .findMany({
+          ...query,
+          where: {
+            ...constraints,
+            ...visibleEventsPrismaQuery(user),
+          },
+          orderBy: { startsAt: 'asc' },
+        })
+        .then((events) => events.map((e) => findNextRecurringEvent(e)));
     },
   }),
 );
