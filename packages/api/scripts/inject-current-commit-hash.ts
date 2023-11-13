@@ -1,5 +1,5 @@
 import { execa } from 'execa';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 async function git(args: string): Promise<string> {
@@ -15,16 +15,8 @@ const tag = await git(
 const filepath = path.join(toplevel.trim(), './packages/app/src/lib/buildinfo.ts');
 console.log(`Injecting CURRENT_COMMIT="${hash}" into ${filepath}`);
 console.log(`Injecting CURRENT_VERSION=${tag} into ${filepath}`);
-let content = readFileSync(filepath)
-  .toString()
-  .replace(
-    /export const CURRENT_COMMIT\s*=.*$/m,
-    `export const CURRENT_COMMIT = "${hash}" as string`,
-  )
-  .replace(
-    /export const CURRENT_VERSION\s*=.*$/m,
-    `export const CURRENT_VERSION = "${tag}" as string`,
-  );
-
-mkdirSync(path.dirname(filepath), { recursive: true });
-writeFileSync(filepath, content);
+writeFileSync(
+  filepath,
+  `export const CURRENT_COMMIT = "${hash}" as string;
+export const CURRENT_VERSION = "${tag}" as string`,
+);
