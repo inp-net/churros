@@ -4,6 +4,7 @@ import { UserType } from '../objects/users.js';
 import { prisma } from '../prisma.js';
 import { DateTimeScalar } from '../objects/scalars.js';
 import { toHtml } from './markdown.js';
+import { GraphQLError } from 'graphql';
 
 builder.queryField('codeContributors', (t) =>
   t.prismaField({
@@ -165,6 +166,46 @@ function makeIssue(
     duplicatedFrom: duplicatedFrom ?? null,
   });
 }
+
+builder.queryField('issue', (t) =>
+  t.field({
+    type: IssueType,
+    args: {
+      number: t.arg.int(),
+    },
+    async resolve(_, { number }) {
+      const data = await fetch(`https://git.inpt.fr/api/graphql`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `query {
+          project(fullPath: "inp-net/churros") {
+            issue(iid: "${number}") {
+              ${issueQuery}, closedAsDuplicateOf { ${issueQuery} }
+            }
+          }
+        }`,
+        }),
+      })
+        .then(async (r) => r.json())
+        .then(
+          /* eslint-disable unicorn/no-null, @typescript-eslint/no-unsafe-member-access */
+          (j) =>
+            (j.data?.project?.issue ?? null) as
+              | null
+              | (GitlabIssue & { closedAsDuplicateOf: null | GitlabIssue }),
+          /* eslint-enable unicorn/no-null, @typescript-eslint/no-unsafe-member-access */
+        );
+
+      if (!data) throw new GraphQLError('Signalement non trouvé');
+
+      const { closedAsDuplicateOf, ...issue } = data;
+      return makeIssue(closedAsDuplicateOf ?? issue, closedAsDuplicateOf ? issue.iid : undefined);
+    },
+  }),
+);
 
 builder.queryField('issuesByUser', (t) =>
   t.field({
