@@ -47,6 +47,7 @@
     tabs={[
       { name: 'Semaine', href: `../week/${format(closestMonday(new Date()), 'yyyy-MM-dd')}` },
       { name: 'Planning', href: '.' },
+      { name: 'Mes places', href: '/bookings' },
     ]}
   />
 
@@ -192,6 +193,12 @@
     border-radius: var(--radius-block);
   }
 
+  .shotguns .groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
   .shotguns .group-logo {
     width: 3rem;
     height: 3rem;
@@ -243,6 +250,12 @@
   .shotguns li strong {
     display: inline-block;
     margin-left: auto;
+  }
+
+  .shotguns-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .empty {
