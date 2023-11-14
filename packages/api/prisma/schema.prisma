@@ -80,7 +80,6 @@ model User {
   reactions                 Reaction[]
 
   // For full-text search
-  majorShortName String                  @ignore @default("")
   search         Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@unique([schoolServer, schoolUid])
@@ -430,7 +429,6 @@ model Article {
   reactions Reaction[]
 
   // For full-text search
-  groupName String                  @ignore @default("")
   search    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@unique([groupId, uid])
@@ -475,8 +473,6 @@ model Event {
   reactions      Reaction[]
 
   // For full-text search
-  groupName         String                  @ignore @default("")
-  coOrganizersNames String                  @ignore @default("")
   search            Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@unique([groupId, uid])
