@@ -2,24 +2,27 @@ import { redirectToLogin } from '$lib/session';
 import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent, url }) => {
+export const load: PageLoad = async ({ fetch, parent, url, params: { q } }) => {
   const { me } = await parent();
   if (!me) throw redirectToLogin(url.pathname + url.search);
-  if (!url.searchParams.has('q')) return { searchUsers: [], searchGroups: [], searchEvents: [] };
+  if (!q) return { searchUsers: [], searchGroups: [], searchEvents: [] };
 
   return loadQuery(
     {
       searchUsers: [
-        { q: url.searchParams.get('q')! },
+        { q },
         { uid: true, firstName: true, lastName: true, pictureFile: true, fullName: true },
       ],
       searchGroups: [
-        { q: url.searchParams.get('q')! },
+        {
+          q,
+          similarityCutoff: Number.parseFloat(url.searchParams.get('sim') ?? '0.05'),
+        },
         { uid: true, name: true, pictureFile: true, pictureFileDark: true },
       ],
       searchEvents: [
         {
-          q: url.searchParams.get('q')!,
+          q,
         },
         {
           id: true,
@@ -50,6 +53,21 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
             groups: { title: true, group: { name: true, uid: true } },
           },
           location: true,
+        },
+      ],
+      searchArticles: [
+        { q },
+        {
+          id: true,
+          uid: true,
+          title: true,
+          pictureFile: true,
+          bodyHtml: true,
+          author: {
+            uid: true,
+            fullName: true,
+            pictureFile: true,
+          },
         },
       ],
     },

@@ -11,7 +11,7 @@ generator pothos {
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
-  extensions = [fuzzystrmatch, pgcrypto, unaccent]
+  extensions = [fuzzystrmatch, pgcrypto, unaccent, pg_trgm]
 }
 
 /// Users are the people who use the app
@@ -79,7 +79,11 @@ model User {
   bannedFromEvents          Event[]                    @relation("bannedFromEvents")
   reactions                 Reaction[]
 
+  // For full-text search
+  search         Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+
   @@unique([schoolServer, schoolUid])
+  @@index([search], type: Gin)
 }
 
 /// Requests to become someone's godchild. Gets deleted once the request has been accepted (or denied). godchild is the requester, godparent is the requested.
@@ -259,7 +263,7 @@ enum CredentialType {
 model Credential {
   id        String         @id @default(dbgenerated("nanoid('credential:')"))
   userId    String
-  name      String         @db.VarChar(255) @default("")
+  name      String         @default("") @db.VarChar(255)
   type      CredentialType
   value     String         @db.VarChar(255)
   userAgent String         @default("") @db.VarChar(255)
@@ -374,6 +378,11 @@ model Group {
   groupId                String?
   ticketGroupId          String?
   joinedByBookingTickets Ticket[]       @relation("autojoin")
+
+  // For full-text search
+  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+
+  @@index([search], type: Gin)
 }
 
 /// The intermediate model between users and groups
@@ -419,7 +428,11 @@ model Article {
   eventId   String?
   reactions Reaction[]
 
+  // For full-text search
+  search    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+
   @@unique([groupId, uid])
+  @@index([search], type: Gin)
 }
 
 enum EventFrequency {
@@ -441,7 +454,7 @@ model Event {
   title          String         @db.VarChar(255)
   startsAt       DateTime
   endsAt         DateTime
-  notifiedAt  DateTime?  @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
+  notifiedAt     DateTime?      @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
   location       String         @default("") @db.VarChar(255)
   visibility     Visibility
   frequency      EventFrequency @default(Once)
@@ -459,7 +472,11 @@ model Event {
   bannedUsers    User[]         @relation("bannedFromEvents")
   reactions      Reaction[]
 
+  // For full-text search
+  search            Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+
   @@unique([groupId, uid])
+  @@index([search], type: Gin)
 }
 
 enum Visibility {

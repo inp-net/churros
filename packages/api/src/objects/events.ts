@@ -1,61 +1,55 @@
-import { builder } from '../builder.js';
 import {
-  startOfWeek,
-  endOfWeek,
-  differenceInDays,
-  differenceInWeeks,
-  startOfDay,
-  endOfDay,
-  getDay,
-  setYear,
-  getYear,
-  setMonth,
-  getMonth,
-  setDay,
-  addDays,
-  isBefore,
-  weeksToDays,
-} from 'date-fns';
-import { TicketType, createUid as createTicketUid, userCanSeeTicket } from './tickets.js';
-import {
-  type Event as EventPrisma,
-  Visibility as VisibilityPrisma,
+  EventFrequency,
+  PaymentMethod,
   Visibility,
-  type Event,
-  type EventManager,
+  Visibility as VisibilityPrisma,
+  type Event as EventPrisma,
+  type Prisma,
   type Ticket,
   type TicketGroup,
-  PaymentMethod,
-  EventFrequency,
-  type Group,
-  type Prisma,
 } from '@prisma/client';
-import { htmlToText, toHtml } from '../services/markdown.js';
-import { prisma } from '../prisma.js';
-import { DateTimeScalar, FileScalar, CountsScalar, BooleanMapScalar } from './scalars.js';
 import { mappedGetAncestors } from 'arborist';
-import slug from 'slug';
-import { LinkInput } from './links.js';
-import type { Context } from '../context.js';
-import dichotomid from 'dichotomid';
 import {
-  type FuzzySearchResult,
-  levenshteinFilterAndSort,
-  levenshteinSorter,
-  splitSearchTerms,
-  sanitizeOperators,
-} from '../services/search.js';
-import { dateFromNumbers } from '../date.js';
-import { TicketInput } from './tickets.js';
-import { TicketGroupInput } from './ticket-groups.js';
+  addDays,
+  differenceInDays,
+  differenceInWeeks,
+  endOfDay,
+  endOfWeek,
+  getDay,
+  getMonth,
+  getYear,
+  isBefore,
+  setDay,
+  setMonth,
+  setYear,
+  startOfDay,
+  startOfWeek,
+  weeksToDays,
+} from 'date-fns';
+import dichotomid from 'dichotomid';
+import slug from 'slug';
+import { builder } from '../builder.js';
+import type { Context } from '../context.js';
+import { prisma } from '../prisma.js';
+import { htmlToText, toHtml } from '../services/markdown.js';
+import { fullTextSearch, sortWithMatches } from '../services/search.js';
 import { ManagerOfEventInput } from './event-managers.js';
+import { LinkInput } from './links.js';
+import { BooleanMapScalar, CountsScalar, DateTimeScalar, FileScalar } from './scalars.js';
+import { TicketGroupInput } from './ticket-groups.js';
+import {
+  TicketInput,
+  TicketType,
+  createUid as createTicketUid,
+  userCanSeeTicket,
+} from './tickets.js';
 // import imageType, { minimumBytes } from 'image-type';
-import { unlink } from 'node:fs/promises';
-import { scheduleShotgunNotifications } from '../services/notifications.js';
-import { updatePicture } from '../pictures.js';
-import { join } from 'node:path';
 import { GraphQLError } from 'graphql';
+import { unlink } from 'node:fs/promises';
+import { join } from 'node:path';
 import { onBoard } from '../auth.js';
+import { updatePicture } from '../pictures.js';
+import { scheduleShotgunNotifications } from '../services/notifications.js';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -1267,40 +1261,21 @@ builder.queryField('searchEvents', (t) =>
       q: t.arg.string(),
       groupUid: t.arg.string({ required: false }),
     },
-    async resolve(query, _, { q, groupUid }, { user }) {
-      q = sanitizeOperators(q).trim();
-      const { searchString: search, numberTerms } = splitSearchTerms(q);
-      const fuzzyIDs: FuzzySearchResult = await prisma.$queryRaw`
-      SELECT "id", levenshtein_less_equal(LOWER(unaccent("title")), LOWER(unaccent(${search})), 20) as changes
-      FROM "Event"
-      ORDER BY changes ASC
-      LIMIT 30
-      `;
-      const group = await prisma.group.findUnique({
-        where: { uid: groupUid ?? '' },
-        include: { familyRoot: true },
+    async resolve(query, _, { q, groupUid }) {
+      const group = groupUid
+        ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid }, select: { id: true } })
+        : undefined;
+
+      const matches = await fullTextSearch('Event', q, {
+        fuzzy: ['title'],
+        highlight: ['description', 'title'],
+        additionalClauses: group ? { groupId: group.id } : {},
       });
-      const fuzzyEvents = await prisma.event.findMany({
+
+      const events = await prisma.event.findMany({
         ...query,
         where: {
-          id: {
-            in: fuzzyIDs.map(({ id }) => id),
-          },
-          ...(groupUid
-            ? {
-                OR: [
-                  {
-                    group: {
-                      OR: [
-                        { uid: groupUid },
-                        ...(group?.familyId ? [{ familyId: group.familyId }] : []),
-                      ],
-                    },
-                  },
-                  { coOrganizers: { some: { uid: groupUid } } },
-                ],
-              }
-            : {}),
+          id: { in: matches.map(({ id }) => id) },
         },
         include: {
           coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
@@ -1312,68 +1287,7 @@ builder.queryField('searchEvents', (t) =>
           },
         },
       });
-      const results = await prisma.event.findMany({
-        ...query,
-        where: {
-          ...(groupUid ? { group: { uid: groupUid } } : {}),
-          OR: [
-            { uid: { search } },
-            { title: { search } },
-            { description: { search } },
-            numberTerms.length > 0
-              ? {
-                  AND: [
-                    {
-                      startsAt: {
-                        gte: dateFromNumbers(numberTerms),
-                      },
-                    },
-                    {
-                      endsAt: { lte: dateFromNumbers(numberTerms) },
-                    },
-                  ],
-                }
-              : {},
-            { location: { search } },
-            { contactMail: { search } },
-          ],
-        },
-        include: {
-          coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
-          group: { include: { studentAssociation: { include: { school: true } } } },
-          managers: {
-            include: {
-              user: true,
-            },
-          },
-        },
-      });
-
-      return [
-        ...results.sort(levenshteinSorter(fuzzyIDs)),
-        ...levenshteinFilterAndSort<
-          Event & {
-            group: Group & { studentAssociation?: null | { school: { uid: string } } };
-            coOrganizers: Array<
-              Group & { studentAssociation?: null | { school: { uid: string } } }
-            >;
-            managers: Array<EventManager & { user: { uid: string } }>;
-          }
-        >(
-          fuzzyIDs,
-          10,
-          results.map(({ id }) => id),
-        )(fuzzyEvents),
-        // fucking js does not allow promises for .filter
-        // eslint-disable-next-line unicorn/no-array-reduce
-      ].reduce(
-        async (acc, event) => {
-          if (await eventAccessibleByUser(event, user)) return [...(await acc), event];
-
-          return acc;
-        },
-        Promise.resolve([] as Event[]),
-      );
+      return sortWithMatches(events, matches);
     },
   }),
 );

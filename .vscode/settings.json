@@ -4,5 +4,7 @@
   "cssvar.files": ["packages/app/src/design/default-theme.scss"],
   "cssvar.postcssSyntax": { "postcss-scss": ["scss", "svelte"] },
   "scss.lint.unknownAtRules": "ignore",
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "sql-formatter.dialect": "pl/sql",
+  "sql-formatter.uppercase": true
 }

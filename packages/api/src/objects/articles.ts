@@ -11,6 +11,7 @@ import { type Prisma, Visibility } from '@prisma/client';
 import { scheduleNewArticleNotification } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
+import { fullTextSearch, sortWithMatches } from '../services/search.js';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
@@ -356,15 +357,30 @@ builder.mutationField('deleteArticle', (t) =>
   }),
 );
 
-// builder.queryField('searchArticles', t => t.prismaField({
-//   type: [ArticleType],
-//   args: {
-//     q: t.arg.string(),
-//   },
-//   async resolve(query, _, { q }) {
-//     const terms = new Set(String(q).split(' ').filter(Boolean));
-//   }
-// }))
+builder.queryField('searchArticles', (t) =>
+  t.prismaField({
+    type: [ArticleType],
+    args: {
+      q: t.arg.string(),
+      groupUid: t.arg.string({ required: false }),
+    },
+    async resolve(query, _, { q, groupUid }) {
+      const group = groupUid
+        ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } })
+        : undefined;
+      const matches = await fullTextSearch('Article', q, {
+        fuzzy: ['title', 'body'],
+        highlight: ['title', 'body'],
+        additionalClauses: group ? { groupId: group.id } : {},
+      });
+      const articles = await prisma.article.findMany({
+        ...query,
+        where: { id: { in: matches.map((m) => m.id) } },
+      });
+      return sortWithMatches(articles, matches);
+    },
+  }),
+);
 
 export async function createUid({ title, groupId }: { title: string; groupId: string }) {
   const base = slug(title);
