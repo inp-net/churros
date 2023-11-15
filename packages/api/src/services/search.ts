@@ -87,7 +87,7 @@ export async function fullTextSearch(
     similarityCutoff?: number | null | undefined;
     fuzzy: readonly string[];
     highlight: readonly string[];
-    additionalClauses: Record<string, string>;
+    additionalClauses?: Record<string, string>;
   },
 ): Promise<Array<FullTextMatch<typeof highlightedColumns>>> {
   // We select id, rank, similarity, and highlights, which are named highlights_<columns>
