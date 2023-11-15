@@ -1,32 +1,25 @@
+import { addDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
+import { join } from 'node:path';
 import { phone as parsePhoneNumber } from 'phone';
 import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
-import { prisma } from '../prisma.js';
-import { LinkInput } from './links.js';
-import { DateTimeScalar, FileScalar } from './scalars.js';
-import { requestEmailChange } from './email-changes.js';
-import {
-  type FuzzySearchResult,
-  splitSearchTerms,
-  levenshteinSorter,
-  levenshteinFilterAndSort,
-  sanitizeOperators,
-} from '../services/search.js';
-import { NotificationChannel } from './notifications.js';
-import { FamilyTree, getFamilyTree } from '../godchildren-tree.js';
 import { yearTier } from '../date.js';
-import { addDays } from 'date-fns';
-import { StudentAssociationType } from './student-associations.js';
+import { FamilyTree, getFamilyTree } from '../godchildren-tree.js';
 import { updatePicture } from '../pictures.js';
-import { join } from 'node:path';
-import { ContributionOptionType } from './contribution-options.js';
-import { toHtml } from '../services/markdown.js';
+import { prisma } from '../prisma.js';
 import { markAsContributor, queryLdapUser } from '../services/ldap.js';
+import { toHtml } from '../services/markdown.js';
 import { createUid } from '../services/registration.js';
+import { fullTextSearch, sortWithMatches } from '../services/search.js';
+import { ContributionOptionType } from './contribution-options.js';
+import { requestEmailChange } from './email-changes.js';
+import { LinkInput } from './links.js';
 import { log } from './logs.js';
-import type { User } from '@prisma/client';
+import { NotificationChannel } from './notifications.js';
+import { DateTimeScalar, FileScalar } from './scalars.js';
+import { StudentAssociationType } from './student-associations.js';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -252,45 +245,21 @@ builder.queryField('allUsers', (t) =>
 builder.queryField('searchUsers', (t) =>
   t.prismaField({
     type: [UserType],
-    args: { q: t.arg.string() },
+    args: { q: t.arg.string(), similarityCutoff: t.arg.float({ required: false }) },
     authScopes: { loggedIn: true },
-    async resolve(query, _, { q }) {
-      q = sanitizeOperators(q).trim();
-      const { numberTerms, searchString: search } = splitSearchTerms(q);
-      const searchResults: FuzzySearchResult = await prisma.$queryRaw`
-SELECT "id", levenshtein_less_equal(LOWER(unaccent("firstName" ||' '|| "lastName")), LOWER(unaccent(${q})), 10) as changes
-FROM "User"
-ORDER BY changes ASC
-LIMIT 10
-`;
+    async resolve(query, _, { q, similarityCutoff }) {
+      const matches = await fullTextSearch('User', q, {
+        similarityCutoff,
+        fuzzy: ['firstName', 'lastName', 'nickname', 'email', 'uid'],
+        highlight: ['description'],
+      });
 
       const users = await prisma.user.findMany({
         ...query,
-        where: {
-          OR: [
-            { firstName: { search } },
-            { lastName: { search } },
-            { uid: { search } },
-            { nickname: { search } },
-            { major: { name: { search } } },
-            { graduationYear: { in: numberTerms } },
-          ],
-        },
+        where: { id: { in: matches.map(({ id }) => id) } },
       });
 
-      const fuzzyUsers = await prisma.user.findMany({
-        ...query,
-        where: { id: { in: searchResults.map(({ id }) => id) } },
-      });
-
-      return [
-        ...users.sort(levenshteinSorter(searchResults)),
-        ...levenshteinFilterAndSort<User>(
-          searchResults,
-          5,
-          users.map(({ id }) => id),
-        )(fuzzyUsers),
-      ];
+      return sortWithMatches(users, matches);
     },
   }),
 );

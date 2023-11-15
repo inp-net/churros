@@ -1,29 +1,23 @@
-import { type Group, GroupType as GroupPrismaType } from '@prisma/client';
+import { GroupType as GroupPrismaType } from '@prisma/client';
 import { getDescendants, hasCycle, mappedGetAncestors } from 'arborist';
 import dichotomid from 'dichotomid';
-import slug from 'slug';
-import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
-import { toHtml } from '../services/markdown.js';
-import { LinkInput } from './links.js';
 import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
-import { FileScalar } from './scalars.js';
-import {
-  type FuzzySearchResult,
-  levenshteinFilterAndSort,
-  splitSearchTerms,
-  levenshteinSorter,
-  sanitizeOperators,
-} from '../services/search.js';
+import { join } from 'node:path';
+import slug from 'slug';
+import { onBoard } from '../auth.js';
+import { builder } from '../builder.js';
 import { purgeUserSessions, type Context } from '../context.js';
 import { updatePicture } from '../pictures.js';
-import { join } from 'node:path';
+import { prisma } from '../prisma.js';
+import { toHtml } from '../services/markdown.js';
+import { fullTextSearch, sortWithMatches } from '../services/search.js';
 import { visibleArticlesPrismaQuery } from './articles.js';
 import { EventType, visibleEventsPrismaQuery } from './events.js';
-import { onBoard } from '../auth.js';
-import { log } from './logs.js';
 import { membersNeedToPayForTheStudentAssociation } from './group-members.js';
+import { LinkInput } from './links.js';
+import { log } from './logs.js';
+import { FileScalar } from './scalars.js';
 
 export function userIsInBureauOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
@@ -244,64 +238,22 @@ builder.queryField('group', (t) =>
 builder.queryField('searchGroups', (t) =>
   t.prismaField({
     type: [GroupType],
-    args: { q: t.arg.string() },
+    args: { q: t.arg.string(), similarityCutoff: t.arg.float({ required: false }) },
     authScopes: { loggedIn: true },
-    async resolve(query, _, { q }, { user }) {
-      q = sanitizeOperators(q).trim();
-      const { searchString: search } = splitSearchTerms(q);
-      const fuzzyResults: FuzzySearchResult = await prisma.$queryRaw`
-SELECT "id", levenshtein_less_equal(LOWER(unaccent("name")), LOWER(unaccent(${q})), 15) as changes
-FROM "Group"
-ORDER BY changes ASC
-LIMIT 20
-`;
-      const resultsByFuzzySearch = await prisma.group.findMany({
-        ...query,
-        where: {
-          id: { in: fuzzyResults.map(({ id }) => id) },
-          studentAssociation: {
-            school: {
-              id: {
-                in: user?.major.schools.map(({ id }) => id) ?? [],
-              },
-            },
-          },
-        },
-      });
-      const results = await prisma.group.findMany({
-        ...query,
-        where: {
-          AND: [
-            {
-              OR: [
-                { uid: { search } },
-                { name: { search } },
-                { description: { search } },
-                { longDescription: { search } },
-                { email: { search } },
-              ],
-            },
-            {
-              studentAssociation: {
-                school: {
-                  id: {
-                    in: user?.major.schools.map(({ id }) => id) ?? [],
-                  },
-                },
-              },
-            },
-          ],
-        },
+    async resolve(query, _, { q, similarityCutoff }) {
+      const matches = await fullTextSearch('Group', q, {
+        similarityCutoff,
+        fuzzy: ['name', 'uid'],
+        highlight: ['description'],
       });
 
-      return [
-        ...results.sort(levenshteinSorter(fuzzyResults)),
-        ...levenshteinFilterAndSort<Group>(
-          fuzzyResults,
-          3,
-          results.map(({ id }) => id),
-        )(resultsByFuzzySearch),
-      ];
+      const groups = await prisma.group.findMany({
+        ...query,
+        where: { id: { in: matches.map(({ id }) => id) } },
+      });
+
+      // Order by their index in newResults
+      return sortWithMatches(groups, matches);
     },
   }),
 );
