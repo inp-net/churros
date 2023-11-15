@@ -12,7 +12,8 @@
 
   let q = $page.params.q ?? '';
   const similarityCutoff = $page.url.searchParams.get('sim') ?? 0.05;
-  const results = [...data.searchUsers, ...data.searchGroups, ...data.searchEvents];
+
+  $: results = [...data.searchUsers, ...data.searchGroups, ...data.searchEvents];
 
   const submitSearchQuery = async () => {
     await goto(
