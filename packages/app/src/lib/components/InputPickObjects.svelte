@@ -18,6 +18,7 @@
   // why the fuck does eslint think that T | undefined has somehow redundance ? T is $$Generic<{id: string}> and has no overlap with undefined whatsoever???
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   export let value: T | undefined = undefined;
+  export let threshold: number | undefined = undefined;
   export let selection: T[] = [];
   export let options: T[];
   export let pickerTitle = 'Choisir';
@@ -62,7 +63,7 @@
     return value?.id === item.id;
   };
 
-  $: searcher = search ? { search } : new Fuse(options, { keys: searchKeys });
+  $: searcher = search ? { search } : new Fuse(options, { keys: searchKeys, threshold });
   async function shownOptions(query: string) {
     if (query.length <= 1) return options;
     const results = await searcher.search(query);

@@ -35,6 +35,7 @@
     bind:value={group}
     disabledOptions={disallowed}
     searchKeys={['name', 'uid']}
+    threshold={0.3}
     {options}
     pickerTitle={multiple ? 'Choisir des groupes' : 'Choisir un groupe'}
   >
