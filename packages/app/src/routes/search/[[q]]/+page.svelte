@@ -6,14 +6,14 @@
   import CardGroup from '$lib/components/CardGroup.svelte';
   import CardPerson from '$lib/components/CardPerson.svelte';
   import { goto } from '$app/navigation';
-  // import CardEvent from '$lib/components/CardEvent.svelte';
 
   export let data: PageData;
 
-  let q = $page.params.q ?? '';
+  $: initialQ = $page.params.q ?? '';
+  let q = initialQ;
   const similarityCutoff = $page.url.searchParams.get('sim') ?? 0.05;
 
-  $: results = [...data.searchUsers, ...data.searchGroups, ...data.searchEvents];
+  $: results = [...data.searchUsers, ...data.searchGroups];
 
   const submitSearchQuery = async () => {
     await goto(
@@ -35,7 +35,7 @@
   />
 </form>
 
-{#if !q}
+{#if !initialQ}
   <p class="empty">Pas de question, pas de réponse</p>
 {:else if results.length === 0}
   <p class="empty">Aucun résultat</p>
@@ -66,16 +66,6 @@
       {/each}
     </ul>
   {/if}
-  <!-- {#if data.searchEvents.length > 0}
-    <h2>Évènements</h2>
-    <ul class="nobullet events">
-      {#each data.searchEvents as event (event.id)}
-        <li>
-          <CardEvent href="/events/{event.group.uid}/{event.uid}" {...event} />
-        </li>
-      {/each}
-    </ul>
-  {/if} -->
 {/if}
 
 <style lang="scss">
