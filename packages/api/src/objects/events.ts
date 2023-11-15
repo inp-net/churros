@@ -665,8 +665,7 @@ builder.queryField('events', (t) =>
         .findMany({
           ...query,
           where: {
-            ...constraints,
-            ...visibleEventsPrismaQuery(user),
+            AND: [constraints, visibleEventsPrismaQuery(user)],
           },
           orderBy: { startsAt: 'asc' },
         })
