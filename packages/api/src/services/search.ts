@@ -128,6 +128,8 @@ export async function fullTextSearch(
     WHERE
       ${additionalFilters ? `(${additionalFilters}) AND ` : ''}
       (query @@ "search" OR similarity > $3)
+    ORDER BY
+      rank, similarity DESC NULLS LAST
   `;
 
   const results: Array<{ id: string; rank: number; similarity: number }> =
