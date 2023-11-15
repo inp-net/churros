@@ -285,7 +285,7 @@ CREATE INDEX "User_search_idx" ON "User" USING GIN ("search");
 -- Group
 CREATE
 OR replace FUNCTION update_group_search() returns TRIGGER AS $$ BEGIN
-	NEW."search" := setweight(to_tsvector('english', NEW."name"), 'A') || setweight(to_tsvector('english', NEW."description"), 'B') || setweight(to_tsvector('english', NEW."email"), 'B') || setweight(to_tsvector('english', NEW."website"), 'C') || setweight(to_tsvector('english', NEW."uid"), 'D');
+	NEW."search" := setweight(to_tsvector('french', NEW."name"), 'A') || setweight(to_tsvector('french', NEW."description"), 'B') || setweight(to_tsvector('french', NEW."email"), 'B') || setweight(to_tsvector('french', NEW."website"), 'C') || setweight(to_tsvector('french', NEW."uid"), 'D');
 
 RETURN NEW;
 
@@ -314,13 +314,13 @@ BEGIN
 			"Major"."id" = NEW."majorId"
 	);
 
-NEW."search" := setweight(to_tsvector('english', NEW."lastName"), 'A') || setweight(to_tsvector('english', NEW."firstName"), 'A') || setweight(to_tsvector('english', NEW."nickname"), 'B') || setweight(to_tsvector('english', NEW."email"), 'B') || setweight(to_tsvector('english', NEW."phone"), 'B') || setweight(to_tsvector('english', NEW."uid"), 'C') || setweight(
-	to_tsvector('english', NEW."graduationYear" :: text),
+NEW."search" := setweight(to_tsvector('french', NEW."lastName"), 'A') || setweight(to_tsvector('french', NEW."firstName"), 'A') || setweight(to_tsvector('french', NEW."nickname"), 'B') || setweight(to_tsvector('french', NEW."email"), 'B') || setweight(to_tsvector('french', NEW."phone"), 'B') || setweight(to_tsvector('french', NEW."uid"), 'C') || setweight(
+	to_tsvector('french', NEW."graduationYear" :: text),
 	'D'
 ) || setweight(
-	to_tsvector('english', major_short_name),
+	to_tsvector('french', major_short_name),
 	'D'
-) || setweight(to_tsvector('english', NEW."description"), 'D');
+) || setweight(to_tsvector('french', NEW."description"), 'D');
 
 RETURN NEW;
 
@@ -361,10 +361,10 @@ co_organizers_names := (
 		"_coOrganizer"."B" = NEW."groupId"
 );
 
-NEW."search" := setweight(to_tsvector('english', NEW."title"), 'A') || setweight(to_tsvector('english', NEW."description"), 'B') || setweight(to_tsvector('english', group_name), 'C') || setweight(
-	to_tsvector('english', co_organizers_names),
+NEW."search" := setweight(to_tsvector('french', NEW."title"), 'A') || setweight(to_tsvector('french', NEW."description"), 'B') || setweight(to_tsvector('french', group_name), 'C') || setweight(
+	to_tsvector('french', co_organizers_names),
 	'C'
-) || setweight(to_tsvector('english', NEW."location"), 'D');
+) || setweight(to_tsvector('french', NEW."location"), 'D');
 
 RETURN NEW;
 
@@ -393,7 +393,7 @@ BEGIN
 			"Group"."id" = NEW."groupId"
 	);
 
-NEW."search" := setweight(to_tsvector('english', NEW."title"), 'A') || setweight(to_tsvector('english', NEW."body"), 'B') || setweight(to_tsvector('english', group_name), 'C');
+NEW."search" := setweight(to_tsvector('french', NEW."title"), 'A') || setweight(to_tsvector('french', NEW."body"), 'B') || setweight(to_tsvector('french', group_name), 'C');
 
 RETURN NEW;
 
