@@ -1,5 +1,5 @@
-import { log } from '../objects/logs';
-import { prisma } from '../prisma';
+import { log } from '../objects/logs.js';
+import { prisma } from '../prisma.js';
 
 export type FuzzySearchResult = Array<{ id: string; changes: number }>;
 
