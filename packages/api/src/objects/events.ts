@@ -642,10 +642,8 @@ builder.queryField('events', (t) =>
       }
 
       if (noLinkedArticles) {
-        constraints = {
-          articles: {
-            none: {},
-          },
+        constraints.articles = {
+          none: {},
         };
       }
 
