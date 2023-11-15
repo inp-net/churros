@@ -5,7 +5,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
   loadQuery(
     {
       events: [
-        { future: true, upcomingShotguns: true, pastRecurring: true },
+        { future: true, upcomingShotguns: true },
         {
           pageInfo: { hasNextPage: true, startCursor: true },
           edges: {
