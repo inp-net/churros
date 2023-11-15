@@ -1261,7 +1261,7 @@ builder.queryField('searchEvents', (t) =>
       q: t.arg.string(),
       groupUid: t.arg.string({ required: false }),
     },
-    async resolve(query, _, { q, groupUid }) {
+    async resolve(query, _, { q, groupUid }, { user }) {
       const group = groupUid
         ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid }, select: { id: true } })
         : undefined;
@@ -1275,7 +1275,12 @@ builder.queryField('searchEvents', (t) =>
       const events = await prisma.event.findMany({
         ...query,
         where: {
-          id: { in: matches.map(({ id }) => id) },
+          AND: [
+            {
+              id: { in: matches.map(({ id }) => id) },
+            },
+            visibleEventsPrismaQuery(user),
+          ],
         },
         include: {
           coOrganizers: { include: { studentAssociation: { include: { school: true } } } },

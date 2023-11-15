@@ -364,7 +364,7 @@ builder.queryField('searchArticles', (t) =>
       q: t.arg.string(),
       groupUid: t.arg.string({ required: false }),
     },
-    async resolve(query, _, { q, groupUid }) {
+    async resolve(query, _, { q, groupUid }, { user }) {
       const group = groupUid
         ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } })
         : undefined;
@@ -375,7 +375,9 @@ builder.queryField('searchArticles', (t) =>
       });
       const articles = await prisma.article.findMany({
         ...query,
-        where: { id: { in: matches.map((m) => m.id) } },
+        where: {
+          AND: [{ id: { in: matches.map((m) => m.id) } }, visibleArticlesPrismaQuery(user, 'can')],
+        },
       });
       return sortWithMatches(articles, matches);
     },
