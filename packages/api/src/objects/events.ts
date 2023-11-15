@@ -632,7 +632,8 @@ builder.queryField('events', (t) =>
         constraints = {
           OR: [
             { startsAt: { gte: startOfDay(new Date()) } },
-            { recurringUntil: { gte: startOfDay(new Date()) } },
+            // eslint-disable-next-line unicorn/no-null
+            { recurringUntil: { not: null, gte: startOfDay(new Date()) } },
           ],
         };
       } else if (past) {
