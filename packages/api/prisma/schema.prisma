@@ -11,7 +11,7 @@ generator pothos {
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
-  extensions = [fuzzystrmatch, pgcrypto, unaccent]
+  extensions = [fuzzystrmatch, pgcrypto, unaccent, pg_trgm]
 }
 
 /// Users are the people who use the app
