@@ -5,18 +5,20 @@
   import BaseInputText from '$lib/components/BaseInputText.svelte';
   import CardGroup from '$lib/components/CardGroup.svelte';
   import CardPerson from '$lib/components/CardPerson.svelte';
+  import { goto } from '$app/navigation';
   // import CardEvent from '$lib/components/CardEvent.svelte';
 
   export let data: PageData;
 
-  let q = $page.url.searchParams.get('q') ?? '';
+  let q = $page.params.q ?? '';
+  const similarityCutoff = $page.url.searchParams.get('sim') ?? 0.05;
   const results = [...data.searchUsers, ...data.searchGroups, ...data.searchEvents];
 
-  const submitSearchQuery = () => {
-    // goto does not re-trigger the page load function when submitting after the first load (see #1)
-    // may be liked to the fact that we only change a query parameter
-    // using this works (instead of goto())
-    window.location.search = `?${new URLSearchParams({ q }).toString()}`;
+  const submitSearchQuery = async () => {
+    await goto(
+      `/search/${encodeURIComponent(q)}` +
+        (similarityCutoff === 0.05 ? '' : `?sim=${similarityCutoff}`),
+    );
   };
 </script>
 
@@ -32,8 +34,8 @@
   />
 </form>
 
-{#if data.searchUsers === undefined || data.searchGroups === undefined}
-  <p class="empty">Cherchez !</p>
+{#if !q}
+  <p class="empty">Pas de question, pas de réponse</p>
 {:else if results.length === 0}
   <p class="empty">Aucun résultat</p>
 {:else}
