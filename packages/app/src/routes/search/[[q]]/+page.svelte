@@ -6,6 +6,7 @@
   import CardGroup from '$lib/components/CardGroup.svelte';
   import CardPerson from '$lib/components/CardPerson.svelte';
   import { goto } from '$app/navigation';
+  import { debugging } from '$lib/debugging';
 
   export let data: PageData;
 
@@ -45,8 +46,11 @@
       {data.searchUsers.length} résultat{data.searchUsers.length > 1 ? 's' : ''}
     </p>
     <ul class="nobullet">
-      {#each data.searchUsers as { uid, ...rest }}
-        <li>
+      {#each data.searchUsers as { user: { uid, ...rest }, rank, similarity }}
+        <li data-rank={rank ?? 'null'} data-similarity={similarity}>
+          {#if $debugging}
+            <pre>rank {rank} <br />sim {similarity}</pre>
+          {/if}
           <CardPerson href="/users/{uid}" {...rest} />
         </li>
       {/each}
@@ -58,8 +62,11 @@
       {data.searchGroups.length} résultat{data.searchGroups.length > 1 ? 's' : ''}
     </p>
     <ul class="nobullet">
-      {#each data.searchGroups as { uid, ...rest }}
-        <li>
+      {#each data.searchGroups as { group: { uid, ...rest }, rank, similarity }}
+        <li data-rank={rank ?? 'null'} data-similarity={similarity}>
+          {#if $debugging}
+            <pre>rank {rank} <br />sim {similarity}</pre>
+          {/if}
           <CardGroup href="/groups/{uid}" {...rest} />
         </li>
       {/each}

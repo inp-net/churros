@@ -15,11 +15,19 @@ export const load: PageLoad = async ({ fetch, parent, url, params: { q } }) => {
     {
       searchUsers: [
         { q, similarityCutoff },
-        { uid: true, firstName: true, lastName: true, pictureFile: true, fullName: true },
+        {
+          similarity: true,
+          rank: true,
+          user: { uid: true, firstName: true, lastName: true, pictureFile: true, fullName: true },
+        },
       ],
       searchGroups: [
         { q, similarityCutoff },
-        { uid: true, name: true, pictureFile: true, pictureFileDark: true },
+        {
+          similarity: true,
+          rank: true,
+          group: { uid: true, name: true, pictureFile: true, pictureFileDark: true },
+        },
       ],
     },
     { fetch, parent },

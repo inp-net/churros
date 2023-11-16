@@ -32,7 +32,7 @@ import { builder } from '../builder.js';
 import type { Context } from '../context.js';
 import { prisma } from '../prisma.js';
 import { htmlToText, toHtml } from '../services/markdown.js';
-import { fullTextSearch, sortWithMatches } from '../services/search.js';
+import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { ManagerOfEventInput } from './event-managers.js';
 import { LinkInput } from './links.js';
 import { BooleanMapScalar, CountsScalar, DateTimeScalar, FileScalar } from './scalars.js';
@@ -1290,7 +1290,7 @@ builder.queryField('searchEvents', (t) =>
           },
         },
       });
-      return sortWithMatches(events, matches);
+      return sortWithMatches(highlightProperties(events, matches, ['description']), matches);
     },
   }),
 );

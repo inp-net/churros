@@ -12,7 +12,7 @@ import { prisma } from '../prisma.js';
 import { markAsContributor, queryLdapUser } from '../services/ldap.js';
 import { toHtml } from '../services/markdown.js';
 import { createUid } from '../services/registration.js';
-import { fullTextSearch, sortWithMatches } from '../services/search.js';
+import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { ContributionOptionType } from './contribution-options.js';
 import { requestEmailChange } from './email-changes.js';
 import { LinkInput } from './links.js';
@@ -20,6 +20,7 @@ import { log } from './logs.js';
 import { NotificationChannel } from './notifications.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
 import { StudentAssociationType } from './student-associations.js';
+import type { User } from '@prisma/client';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -190,6 +191,26 @@ export const UserType = builder.prismaNode('User', {
   }),
 });
 
+export class UserSearchResult {
+  user!: User;
+  id!: string;
+  similarity!: number;
+  rank!: number | null;
+}
+
+export const UserSearchResultType = builder.objectType(UserSearchResult, {
+  name: 'UserSearchResult',
+  fields: (t) => ({
+    user: t.prismaField({
+      type: 'User',
+      resolve: (_, { user }) => user,
+    }),
+    id: t.exposeID('id'),
+    similarity: t.exposeFloat('similarity'),
+    rank: t.exposeFloat('rank', { nullable: true }),
+  }),
+});
+
 /** Returns the current user. */
 builder.queryField('me', (t) =>
   // We use `prismaField` instead of `field` to leverage the nesting
@@ -243,11 +264,11 @@ builder.queryField('allUsers', (t) =>
 
 /** Searches for user on all text fields. */
 builder.queryField('searchUsers', (t) =>
-  t.prismaField({
-    type: [UserType],
+  t.field({
+    type: [UserSearchResultType],
     args: { q: t.arg.string(), similarityCutoff: t.arg.float({ required: false }) },
     authScopes: { loggedIn: true },
-    async resolve(query, _, { q, similarityCutoff }) {
+    async resolve(_, { q, similarityCutoff }) {
       const matches = await fullTextSearch('User', q, {
         similarityCutoff: similarityCutoff ?? 0.08,
         fuzzy: ['firstName', 'lastName', 'nickname', 'email', 'uid'],
@@ -255,11 +276,22 @@ builder.queryField('searchUsers', (t) =>
       });
 
       const users = await prisma.user.findMany({
-        ...query,
         where: { id: { in: matches.map(({ id }) => id) } },
       });
 
-      return sortWithMatches(users, matches);
+      return sortWithMatches(
+        highlightProperties(users, matches, ['description']).map((user) => {
+          const { id, rank, similarity } = matches.find(({ id }) => id === user.id)!;
+
+          return {
+            user,
+            id,
+            rank,
+            similarity,
+          };
+        }),
+        matches,
+      );
     },
   }),
 );

@@ -1,4 +1,4 @@
-import { GroupType as GroupPrismaType } from '@prisma/client';
+import { type Group, GroupType as GroupPrismaType } from '@prisma/client';
 import { getDescendants, hasCycle, mappedGetAncestors } from 'arborist';
 import dichotomid from 'dichotomid';
 import { GraphQLError } from 'graphql';
@@ -11,7 +11,7 @@ import { purgeUserSessions, type Context } from '../context.js';
 import { updatePicture } from '../pictures.js';
 import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
-import { fullTextSearch, sortWithMatches } from '../services/search.js';
+import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { visibleArticlesPrismaQuery } from './articles.js';
 import { EventType, visibleEventsPrismaQuery } from './events.js';
 import { membersNeedToPayForTheStudentAssociation } from './group-members.js';
@@ -235,12 +235,33 @@ builder.queryField('group', (t) =>
       prisma.group.findUniqueOrThrow({ ...query, where: { uid } }),
   }),
 );
+
+export class GroupSearchResult {
+  group!: Group;
+  rank!: number | null;
+  similarity!: number;
+  id!: string;
+}
+
+export const GroupSearchResultType = builder.objectType(GroupSearchResult, {
+  name: 'GroupSearchResult',
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    group: t.prismaField({
+      type: 'Group',
+      resolve: (_, { group }) => group,
+    }),
+    rank: t.exposeFloat('rank', { nullable: true }),
+    similarity: t.exposeFloat('similarity'),
+  }),
+});
+
 builder.queryField('searchGroups', (t) =>
-  t.prismaField({
-    type: [GroupType],
+  t.field({
+    type: [GroupSearchResultType],
     args: { q: t.arg.string(), similarityCutoff: t.arg.float({ required: false }) },
     authScopes: { loggedIn: true },
-    async resolve(query, _, { q, similarityCutoff }) {
+    async resolve(_, { q, similarityCutoff }) {
       const matches = await fullTextSearch('Group', q, {
         similarityCutoff: similarityCutoff ?? 0.2,
         fuzzy: ['name', 'uid'],
@@ -248,12 +269,23 @@ builder.queryField('searchGroups', (t) =>
       });
 
       const groups = await prisma.group.findMany({
-        ...query,
         where: { id: { in: matches.map(({ id }) => id) } },
       });
 
       // Order by their index in newResults
-      return sortWithMatches(groups, matches);
+      return sortWithMatches(
+        highlightProperties(groups, matches).map((group) => {
+          const { id, rank, similarity } = matches.find(({ id }) => id === group.id)!;
+
+          return {
+            id,
+            rank,
+            similarity,
+            group,
+          };
+        }),
+        matches,
+      );
     },
   }),
 );

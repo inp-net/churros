@@ -11,7 +11,7 @@ import { type Prisma, Visibility } from '@prisma/client';
 import { scheduleNewArticleNotification } from '../services/notifications.js';
 import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
-import { fullTextSearch, sortWithMatches } from '../services/search.js';
+import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
@@ -379,7 +379,7 @@ builder.queryField('searchArticles', (t) =>
           AND: [{ id: { in: matches.map((m) => m.id) } }, visibleArticlesPrismaQuery(user, 'can')],
         },
       });
-      return sortWithMatches(articles, matches);
+      return sortWithMatches(highlightProperties(articles, matches, ['body']), matches);
     },
   }),
 );

@@ -170,3 +170,33 @@ export function sortWithMatches<T extends { id: string }>(
       matches.findIndex(({ id }) => id === a.id) - matches.findIndex(({ id }) => id === b.id),
   );
 }
+
+/**
+ * Replace values in given objects with their highlighted values after a full text search
+ * @param objects The objects to highlight values in
+ * @param matches The full text matches
+ * @param htmlProperties Property names that will not be highlighted, but will have `<property>Html` and `<property>Preview` highlighted instead.
+ * @returns The objects with highlighted values
+ */
+export function highlightProperties<T extends { id: string }>(
+  objects: T[],
+  matches: Array<FullTextMatch<readonly string[]>>,
+  htmlProperties: readonly string[] = [],
+): T[] {
+  const highlight = (id: string, prop: string) =>
+    matches.find((m) => m.id === id)?.highlights[prop];
+  return objects.map(
+    (object) =>
+      Object.fromEntries([
+        // Transform non-html properties
+        ...Object.entries(object)
+          .filter(([k, _]) => !htmlProperties.includes(k))
+          .map(([k, v]) => [k, highlight(object.id, k) ?? v]),
+        // Transform html properties
+        ...htmlProperties.flatMap((prop) => [
+          [`${prop}Html`, highlight(object.id, prop)],
+          [`${prop}Preview`, highlight(object.id, prop)],
+        ]),
+      ]) as T,
+  );
+}

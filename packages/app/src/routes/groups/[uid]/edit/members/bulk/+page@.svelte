@@ -58,16 +58,12 @@
         uid = userByEmail.uid;
       } else {
         let { searchUsers } = await $zeus.query({
-          searchUsers: [
-            {
-              q: line,
-            },
-            { uid: true, firstName: true, lastName: true },
-          ],
+          searchUsers: [{ q: line }, { user: { uid: true, firstName: true, lastName: true } }],
         });
         const compare = (s: string) => unaccent(s).trim().toLowerCase().replaceAll(/\s+/g, ' ');
         searchUsers = searchUsers.filter(
-          (u) => compare(`${u.firstName} ${u.lastName}`) === compare(line),
+          ({ user: { firstName, lastName } }) =>
+            compare(`${firstName} ${lastName}`) === compare(line),
         );
         if (searchUsers.length === 0) {
           throw new Error(`Utilisateur·ice introuvable`);
@@ -77,7 +73,9 @@
           );
         }
 
-        uid = searchUsers[0].uid;
+        ({
+          user: { uid },
+        } = searchUsers[0]);
       }
 
       const { addGroupMember } = await $zeus.mutate({
