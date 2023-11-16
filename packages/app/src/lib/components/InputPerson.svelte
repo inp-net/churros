@@ -33,15 +33,17 @@
       searchUsers: [
         { q: query },
         {
-          uid: true,
-          fullName: true,
-          firstName: true,
-          lastName: true,
-          pictureFile: true,
+          user: {
+            uid: true,
+            fullName: true,
+            firstName: true,
+            lastName: true,
+            pictureFile: true,
+          },
         },
       ],
     });
-    return searchUsers.filter(({ uid }) => allowed(uid));
+    return searchUsers.filter(({ user: { uid } }) => allowed(uid)).map(({ user }) => user);
   }
 </script>
 

@@ -248,9 +248,8 @@
 
   .title {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-between;
 
     /* ça sert à ce que la hauteur ne varie pas selon si c'est collapsible ou pas */
     min-height: 5rem;
@@ -269,7 +268,6 @@
 
   .title-text {
     line-height: 1.1;
-    text-align: center;
   }
 
   .title:not(.has-picture) {
@@ -313,6 +311,7 @@
   }
 
   .chevron-up {
+    flex-shrink: 0;
     padding: 0;
     margin: 0;
     font-size: 2rem;
