@@ -229,7 +229,7 @@ builder.queryField('issuesByUser', (t) =>
       }`;
 
       const { fromIssuebot, fromGitlabUsers } = await fetch(`https://git.inpt.fr/api/graphql`, {
-        body: JSON.stringify({ query: query('litschan') }),
+        body: JSON.stringify({ query: query(user.uid) }),
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
