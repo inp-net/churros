@@ -11,14 +11,13 @@
 
   $: initialQ = $page.params.q ?? '';
   let q = initialQ;
-  const similarityCutoff = $page.url.searchParams.get('sim') ?? 0.05;
+  const similarityCutoff = $page.url.searchParams.get('sim') ?? undefined;
 
   $: results = [...data.searchUsers, ...data.searchGroups];
 
   const submitSearchQuery = async () => {
     await goto(
-      `/search/${encodeURIComponent(q)}` +
-        (similarityCutoff === 0.05 ? '' : `?sim=${similarityCutoff}`),
+      `/search/${encodeURIComponent(q)}` + (similarityCutoff ? `?sim=${similarityCutoff}` : ''),
     );
   };
 </script>

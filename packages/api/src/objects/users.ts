@@ -249,7 +249,7 @@ builder.queryField('searchUsers', (t) =>
     authScopes: { loggedIn: true },
     async resolve(query, _, { q, similarityCutoff }) {
       const matches = await fullTextSearch('User', q, {
-        similarityCutoff,
+        similarityCutoff: similarityCutoff ?? 0.08,
         fuzzy: ['firstName', 'lastName', 'nickname', 'email', 'uid'],
         highlight: ['description'],
       });

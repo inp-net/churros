@@ -242,7 +242,7 @@ builder.queryField('searchGroups', (t) =>
     authScopes: { loggedIn: true },
     async resolve(query, _, { q, similarityCutoff }) {
       const matches = await fullTextSearch('Group', q, {
-        similarityCutoff,
+        similarityCutoff: similarityCutoff ?? 0.2,
         fuzzy: ['name', 'uid'],
         highlight: ['description'],
       });

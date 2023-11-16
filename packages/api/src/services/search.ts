@@ -79,7 +79,7 @@ export async function fullTextSearch(
   table: string,
   q: string,
   {
-    similarityCutoff = 0.05,
+    similarityCutoff = 0.1,
     fuzzy: fuzzySearchedColumns = [],
     highlight: highlightedColumns = [],
     additionalClauses = {},
