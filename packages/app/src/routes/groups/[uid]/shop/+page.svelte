@@ -34,6 +34,7 @@
       <p>{shopItem.stock}*{shopItem.price} €</p>
       <p>max: {shopItem.max}</p>
       <p>{shopItem.description}</p>
+      <a href="/groups/{shopItem.group.uid}/shop/{shopItem.id}">Acheter</a>
     </div>
   {/each}
 </div>

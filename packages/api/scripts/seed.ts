@@ -858,4 +858,26 @@ await prisma.thirdPartyApp.create({
   },
 });
 
-exit(0);
+await prisma.shopItem.create({
+  data: {
+    name: 'Boules quies',
+    description: 'Acheter des boules quies pour pas entendre Téo',
+    price: 10,
+    stock: 0,
+    max: 5,
+    visibility: Visibility.Public,
+    group: { connect: { uid: 'ski' } },
+  },
+});
+
+await prisma.shopItem.create({
+  data: {
+    name: 'Server',
+    description: 'Atom 2 duo',
+    price: 100000,
+    stock: 1,
+    max: 5,
+    visibility: Visibility.GroupRestricted,
+    group: { connect: { uid: 'ski' } },
+  },
+});
