@@ -4,6 +4,7 @@ import { PaymentMethodEnum } from './registrations.js';
 import { prisma } from '../prisma.js';
 import { onBoard } from '../auth.js';
 import { Visibility } from '@prisma/client';
+import { GraphQLError } from 'graphql';
 
 export const ShopItemType = builder.prismaObject('ShopItem', {
   fields: (t) => ({
@@ -19,7 +20,7 @@ export const ShopItemType = builder.prismaObject('ShopItem', {
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     pictures: t.relation('pictures'),
-    paymentMethod: t.expose('allowedPaymentMethods', { type: [PaymentMethodEnum], nullable: true }),
+    paymentMethod: t.expose('allowedPaymentMethods', { type: [PaymentMethodEnum] }),
   }),
 });
 
@@ -52,7 +53,10 @@ export async function visibleShopPrismaQuery(groupUid: string, user: { id: strin
           visibility: Visibility.Private,
         },
         {
-          visibility: Visibility.Restricted,
+          visibility: Visibility.GroupRestricted,
+        },
+        {
+          Visibility: Visibility.SchoolRestricted,
         },
         {
           visibility: Visibility.Unlisted,
@@ -66,7 +70,7 @@ export async function visibleShopPrismaQuery(groupUid: string, user: { id: strin
           visibility: Visibility.Public,
         },
         {
-          visibility: Visibility.Restricted,
+          visibility: Visibility.SchoolRestricted,
         },
       ],
     };
@@ -99,6 +103,61 @@ builder.queryField('shopItems', (t) =>
           },
         },
       });
+    },
+  }),
+);
+
+builder.queryField('shopItem', (t) =>
+  t.prismaField({
+    type: ShopItemType,
+    args: {
+      itemUid: t.arg.string(),
+    },
+    async resolve(query, _, { itemUid }, { user }) {
+      const item = await prisma.shopItem.findFirst({
+        ...query,
+        where: {
+          id: itemUid,
+        },
+        include: {
+          group: {
+            include: {
+              members: {
+                include: {
+                  member: true,
+                },
+                where: {
+                  member: {
+                    id: user?.id,
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!item) {
+        throw new GraphQLError('Item not found');
+      }
+
+      // Switch case
+      switch (item.visibility) {
+        case Visibility.Public || Visibility.Unlisted:
+          return item;
+        case Visibility.GroupRestricted:
+          if (item.group.members.length) {
+            return item;
+          }
+          throw new GraphQLError('Not allowed to view item');
+        case Visibility.Private:
+          if (onBoard(item.group.members[0])) {
+            return item;
+          }
+          throw new GraphQLError('Not allowed to view item');
+        default:
+          throw new GraphQLError('Something went wrong');
+      }
     },
   }),
 );

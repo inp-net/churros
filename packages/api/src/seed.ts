@@ -781,7 +781,7 @@ await prisma.shopItem.create({
     price: 100000,
     stock: 1,
     max: 5,
-    visibility: Visibility.Restricted,
+    visibility: Visibility.GroupRestricted,
     group: { connect: { uid: 'ski' } },
   },
 });
