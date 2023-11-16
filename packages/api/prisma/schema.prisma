@@ -942,7 +942,7 @@ model ShopItem {
   lydiaAccountId        String?
   groupId     String
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
+  allowedPaymentMethods PaymentMethod[] @default([]) // empty means nothing
   pictures              Picture[]
   shopPayments          ShopPayment[]
   lydiaAccount          LydiaAccount? @relation(fields: [lydiaAccountId], references: [id], onDelete: SetNull, onUpdate: Cascade)

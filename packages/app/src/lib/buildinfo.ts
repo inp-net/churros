@@ -1,2 +1,2 @@
-export const CURRENT_COMMIT = "001ec3b276aa61fc3d91a44c30e3007e5d22a208" as string;
+export const CURRENT_COMMIT = "736eba7f823900b27bb851a2f1a63f5eda237c6e" as string;
 export const CURRENT_VERSION = "1.23.6" as string
