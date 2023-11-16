@@ -5,6 +5,7 @@ import { prisma } from '../prisma.js';
 import { onBoard } from '../auth.js';
 import { Visibility } from '@prisma/client';
 import { GraphQLError } from 'graphql';
+import { VisibilityEnum } from './events.js';
 
 export const ShopItemType = builder.prismaObject('ShopItem', {
   fields: (t) => ({
@@ -20,7 +21,9 @@ export const ShopItemType = builder.prismaObject('ShopItem', {
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     pictures: t.relation('pictures'),
-    paymentMethod: t.expose('allowedPaymentMethods', { type: [PaymentMethodEnum] }),
+    paymentMethods: t.expose('allowedPaymentMethods', { type: [PaymentMethodEnum] }),
+    visibility: t.expose('visibility', { type: VisibilityEnum }),
+    lydiaAccount: t.relation('lydiaAccount'),
   }),
 });
 
@@ -56,7 +59,7 @@ export async function visibleShopPrismaQuery(groupUid: string, user: { id: strin
           visibility: Visibility.GroupRestricted,
         },
         {
-          Visibility: Visibility.SchoolRestricted,
+          visibility: Visibility.SchoolRestricted,
         },
         {
           visibility: Visibility.Unlisted,
@@ -143,7 +146,8 @@ builder.queryField('shopItem', (t) =>
 
       // Switch case
       switch (item.visibility) {
-        case Visibility.Public || Visibility.Unlisted:
+        case Visibility.Public:
+        case Visibility.Unlisted:
           return item;
         case Visibility.GroupRestricted:
           if (item.group.members.length) {
@@ -158,6 +162,86 @@ builder.queryField('shopItem', (t) =>
         default:
           throw new GraphQLError('Something went wrong');
       }
+    },
+  }),
+);
+
+builder.mutationField('upsertShopItem', (t) =>
+  t.prismaField({
+    type: ShopItemType,
+    errors: {},
+    args: {
+      id: t.arg.id({ required: false }),
+      name: t.arg.string(),
+      price: t.arg.int(),
+      stock: t.arg.int(),
+      max: t.arg.int(),
+      description: t.arg.string(),
+      paymentMethods: t.arg({ type: [PaymentMethodEnum] }),
+      startsAt: t.arg({ type: DateTimeScalar, required: false }),
+      endsAt: t.arg({ type: DateTimeScalar, required: false }),
+      groupUid: t.arg.string(),
+      visibility: t.arg({ type: VisibilityEnum }),
+      lydiaAccounId: t.arg.string(),
+    },
+    async resolve(
+      query,
+      _,
+      {
+        id,
+        name,
+        price,
+        stock,
+        max,
+        description,
+        startsAt,
+        endsAt,
+        groupUid,
+        visibility,
+        lydiaAccounId,
+      },
+      { user },
+    ) {
+      const shopItem = await prisma.shopItem.upsert({
+        ...query,
+        where: { id: id ?? '' },
+        create: {
+          name,
+          price,
+          stock,
+          max,
+          description,
+          startsAt,
+          endsAt,
+          group: { connect: { uid: groupUid } },
+          lydiaAccount: { connect: { id: lydiaAccounId } },
+          visibility,
+        },
+        update: {
+          name,
+          price,
+          stock,
+          max,
+          description,
+          startsAt,
+          endsAt,
+          group: { connect: { uid: groupUid } },
+          lydiaAccount: { connect: { id: lydiaAccounId } },
+          visibility,
+        },
+      });
+
+      await prisma.logEntry.create({
+        data: {
+          area: 'shop',
+          action: 'create',
+          target: shopItem.id,
+          message: `Service ${shopItem.id} created: ${shopItem.name}`,
+          user: user ? { connect: { id: user.id } } : undefined,
+        },
+      });
+
+      return shopItem;
     },
   }),
 );

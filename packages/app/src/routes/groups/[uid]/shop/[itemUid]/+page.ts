@@ -13,7 +13,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
           stock: true,
           max: true,
           description: true,
-          paymentMethod: true,
+          paymentMethods: true,
           pictures: {
             path: true,
             position: true,
