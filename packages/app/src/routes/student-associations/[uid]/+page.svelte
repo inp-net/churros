@@ -88,8 +88,10 @@
   <div class="description-and-contribution">
     <section class="description">
       <h2>Description</h2>
-      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html studentAssociation.description}
+      <div data-user-html>
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+        {@html studentAssociation.description}
+      </div>
     </section>
     <section class="contribute">
       {#if data.me}

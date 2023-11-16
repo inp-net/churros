@@ -199,7 +199,7 @@
     </div>
   </section>
   <h2>{title}</h2>
-  <div class="description">
+  <div class="description" data-user-html>
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html descriptionHtml}
   </div>

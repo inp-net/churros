@@ -195,6 +195,10 @@ body {
   margin: 0;
 }
 
+[data-user-html] > p {
+  margin-bottom: 1em;
+}
+
 ul,
 ol {
   padding-left: 1em;
@@ -245,8 +249,4 @@ a.user-mention:hover,
 a.user-mention:focus-visible {
   color: var(--primary-hover-text) !important;
   background-color: var(--primary-hover-bg) !important;
-}
-
-.user-html > p {
-  margin: 1rem 0;
 }

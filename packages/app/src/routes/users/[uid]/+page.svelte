@@ -168,7 +168,7 @@
           </li>
         {/each}
       </ul>
-      <p class="bio user-html">
+      <p class="bio" data-user-html>
         <!-- eslint-disable-next-line svelte/no-at-html-tags -->
         {@html user.descriptionHtml}
       </p>

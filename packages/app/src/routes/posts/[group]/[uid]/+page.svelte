@@ -57,7 +57,7 @@
     </div>
   {/if}
   <div class="content">
-    <div class="description">
+    <div class="description" data-user-html>
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html bodyHtml}
     </div>

@@ -68,8 +68,10 @@
     </ul>
   {/if}
 
-  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-  {@html descriptionHtml}
+  <div data-user-html>
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+    {@html descriptionHtml}
+  </div>
 </section>
 
 <section class="reactions">

@@ -188,7 +188,7 @@
     </div>
   </header>
 
-  <section class="description user-html">
+  <section class="description" data-user-html>
     {#if group?.longDescriptionHtml.trim().length}
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html group?.longDescriptionHtml}

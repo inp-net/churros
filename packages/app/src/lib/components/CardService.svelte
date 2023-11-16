@@ -67,7 +67,7 @@
     <span>{service.logo}</span>
   {/if}
   <p class="name" class:small>{service.name}</p>
-  <p class="description typo-details user-html">
+  <p class="description typo-details" data-user-html>
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html service.description ?? ''}
   </p>

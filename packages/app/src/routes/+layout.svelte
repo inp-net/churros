@@ -242,7 +242,7 @@
             <article class="announcement {warning ? 'warning' : 'primary'}">
               <div class="text">
                 <strong>{title}</strong>
-                <div class="body">
+                <div class="body" data-user-html>
                   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                   {@html bodyHtml}
                 </div>

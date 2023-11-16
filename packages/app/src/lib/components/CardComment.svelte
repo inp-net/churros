@@ -75,8 +75,10 @@
           />
         </form>
       {:else}
-        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-        {@html bodyHtml}
+        <div data-user-html>
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html bodyHtml}
+        </div>
       {/if}
     </div>
     {#if $me?.admin || author?.uid === $me?.uid}

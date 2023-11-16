@@ -52,7 +52,7 @@
   />
 
   <div class="days">
-    {#if events.length === 0}
+    {#if shownDays.length === 0 || events.length === 0}
       <div class="empty">
         <Gif
           gif={{
