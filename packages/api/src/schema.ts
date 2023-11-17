@@ -42,6 +42,7 @@ import './services/ade.js';
 import './services/oauth.js';
 import './objects/pictures.js';
 import './objects/shop-items.js';
+import './objects/shop-payment.js';
 
 // Import other mutations and/or queries that are not objects
 import './services/gitlab.js';
