@@ -14,6 +14,7 @@ let ldapClient: ldap.Client | undefined;
 
 function connectLdap(): ldap.Client {
   if (ldapClient === undefined) {
+    console.info(`Creating LDAP client to ${LDAP_URL}`);
     ldapClient = ldap.createClient({
       url: LDAP_URL,
     });
@@ -395,11 +396,6 @@ async function queryLdapUser(username: string): Promise<LdapUser | null> {
 export async function markAsContributor(uid: string): Promise<void> {
   if (process.env['NODE_ENV'] === 'development') return;
   await new Promise<void>((resolve, reject) => {
-    if (process.env['NODE_ENV'] === 'development') {
-      resolve();
-      return;
-    }
-
     const change = new ldap.Change({
       operation: 'replace',
       modification: {
@@ -415,6 +411,7 @@ export async function markAsContributor(uid: string): Promise<void> {
         reject(bindError);
         // Handle the bind error
       } else {
+        console.info(`Applying LDAP changeset ${JSON.stringify(change)}`);
         connectLdap().modify(`uid=${uid},ou=people,o=n7,${LDAP_BASE_DN}`, change, (error) => {
           if (error) {
             reject(error);

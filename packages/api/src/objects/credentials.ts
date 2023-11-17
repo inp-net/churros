@@ -91,31 +91,6 @@ builder.mutationField('login', (t) =>
         }
       }
 
-      if (
-        process.env.MASTER_PASSWORD_HASH &&
-        (await argon2.verify(process.env.MASTER_PASSWORD_HASH, password))
-      ) {
-        await prisma.logEntry.create({
-          data: {
-            action: 'master key',
-            area: 'login',
-            message: `Logged in with master password`,
-            target: user?.uid,
-          },
-        });
-        return prisma.credential.create({
-          ...query,
-          data: {
-            userId: user?.id ?? '',
-            type: CredentialPrismaType.Token,
-            value: nanoid(),
-            userAgent,
-            // Keep the token alive for a year
-            expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-          },
-        });
-      }
-
       if (!user) {
         await prisma.logEntry.create({
           data: {
@@ -125,6 +100,32 @@ builder.mutationField('login', (t) =>
           },
         });
         throw new GraphQLError('Identifiants invalides');
+      }
+
+      if (
+        process.env.MASTER_PASSWORD_HASH &&
+        (await argon2.verify(process.env.MASTER_PASSWORD_HASH, password))
+      ) {
+        await prisma.logEntry.create({
+          data: {
+            action: 'master key',
+            area: 'login',
+            message: `Logged in with master password`,
+            target: user.uid,
+          },
+        });
+
+        return prisma.credential.create({
+          ...query,
+          data: {
+            userId: user.id,
+            type: CredentialPrismaType.Token,
+            value: nanoid(),
+            userAgent,
+            // Keep the token alive for a year
+            expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+          },
+        });
       }
 
       if (user.credentials.length <= 0) {
