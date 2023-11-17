@@ -1,11 +1,10 @@
-import { PaymentMethod as PaymentMethodPrisma } from '@prisma/client';
 import { builder } from '../builder.js';
 import { DateTimeScalar } from './scalars.js';
 import { prisma } from '../prisma.js';
-
-export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
-  name: 'PaymentMethod',
-});
+import { payEventRegistrationViaLydia } from '../services/lydia.js';
+import { GraphQLError } from 'graphql';
+import { PaymentMethodEnum } from './registrations.js';
+import type { PaymentMethod as PaymentMethodPrisma } from '@prisma/client';
 
 export const ShopPaymentType = builder.prismaObject('ShopPayment', {
   fields: (t) => ({
@@ -15,11 +14,41 @@ export const ShopPaymentType = builder.prismaObject('ShopPayment', {
     quantity: t.exposeInt('quantity'),
     shopItem: t.relation('shopItem'),
     paymentMethod: t.expose('paymentMethod', { type: PaymentMethodEnum }),
-    lydiaTransaction: t.relation('lydiaTransaction'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
   }),
 });
+
+builder.queryField('orders', (t) =>
+  t.prismaField({
+    type: [ShopPaymentType],
+    args: {
+      groupUid: t.arg.string(),
+    },
+    async resolve(query, _, { groupUid }, { user }) {
+      return prisma.shopPayment.findMany({
+        ...query,
+        where: {
+          user: {
+            id: user?.id,
+          },
+          shopItem: {
+            group: {
+              uid: groupUid,
+            },
+          },
+        },
+        include: {
+          shopItem: {
+            include: {
+              pictures: true,
+            },
+          },
+        },
+      });
+    },
+  }),
+);
 
 builder.mutationField('upsertShopPayment', (t) =>
   t.prismaField({
@@ -32,8 +61,14 @@ builder.mutationField('upsertShopPayment', (t) =>
       quantity: t.arg.int({ required: true }),
       paymentMethod: t.arg.string({ required: true }),
       paid: t.arg.boolean({ required: true }),
+      phone: t.arg.string(),
     },
-    async resolve(query, _, { id, userUid, shopItemId, quantity, paymentMethod, paid }, { user }) {
+    async resolve(
+      query,
+      _,
+      { id, userUid, shopItemId, quantity, paymentMethod, paid, phone },
+      { user },
+    ) {
       const shopItem = await prisma.shopItem.findUniqueOrThrow({
         where: { id: shopItemId },
         include: {
@@ -61,6 +96,14 @@ builder.mutationField('upsertShopPayment', (t) =>
         },
       });
 
+      await pay(
+        userUid,
+        shopItem.group.name,
+        quantity * shopItem.price,
+        paymentMethod as PaymentMethodPrisma,
+        phone,
+      );
+
       await prisma.logEntry.create({
         data: {
           area: 'shop payment',
@@ -75,3 +118,28 @@ builder.mutationField('upsertShopPayment', (t) =>
     },
   }),
 );
+
+async function pay(
+  from: string,
+  to: string,
+  amount: number,
+  by: PaymentMethodPrisma,
+  phone?: string,
+  registrationId?: string,
+) {
+  switch (by) {
+    case 'Lydia': {
+      if (!phone) throw new GraphQLError('Missing phone number');
+      await payEventRegistrationViaLydia(phone, registrationId);
+      return;
+    }
+
+    default: {
+      return new Promise((_resolve, reject) => {
+        reject(
+          new GraphQLError(`Attempt to pay ${to} ${amount} from ${from} by ${by}: not implemented`),
+        );
+      });
+    }
+  }
+}

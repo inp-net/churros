@@ -199,6 +199,7 @@ builder.mutationField('upsertShopItem', (t) =>
         groupUid,
         visibility,
         lydiaAccounId,
+        paymentMethods,
       },
       { user },
     ) {
@@ -215,6 +216,9 @@ builder.mutationField('upsertShopItem', (t) =>
           endsAt,
           group: { connect: { uid: groupUid } },
           lydiaAccount: { connect: { id: lydiaAccounId } },
+          allowedPaymentMethods: {
+            set: paymentMethods || [],
+          },
           visibility,
         },
         update: {
@@ -227,6 +231,9 @@ builder.mutationField('upsertShopItem', (t) =>
           endsAt,
           group: { connect: { uid: groupUid } },
           lydiaAccount: { connect: { id: lydiaAccounId } },
+          allowedPaymentMethods: {
+            set: paymentMethods || [],
+          },
           visibility,
         },
       });
