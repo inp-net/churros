@@ -1290,7 +1290,9 @@ builder.queryField('searchEvents', (t) =>
           },
         },
       });
-      return sortWithMatches(highlightProperties(events, matches, ['description']), matches);
+      return sortWithMatches(highlightProperties(events, matches, ['description']), matches).map(
+        ({ object }) => object,
+      );
     },
   }),
 );

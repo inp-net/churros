@@ -161,14 +161,15 @@ export async function fullTextSearch(
   }));
 }
 
-export function sortWithMatches<T extends { id: string }>(
+export function sortWithMatches<T extends { id: string }, C extends readonly string[]>(
   objects: T[],
-  matches: Array<FullTextMatch<readonly string[]>>,
-): T[] {
-  return objects.sort(
-    (a, b) =>
-      matches.findIndex(({ id }) => id === a.id) - matches.findIndex(({ id }) => id === b.id),
-  );
+  matches: Array<FullTextMatch<C>>,
+): Array<{ object: T } & FullTextMatch<C>> {
+  return matches.map(({ id, ...match }) => ({
+    object: objects.find((o) => o.id === id)!,
+    id,
+    ...match,
+  }));
 }
 
 /**

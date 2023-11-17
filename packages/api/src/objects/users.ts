@@ -279,18 +279,8 @@ builder.queryField('searchUsers', (t) =>
         where: { id: { in: matches.map(({ id }) => id) } },
       });
 
-      return sortWithMatches(
-        highlightProperties(users, matches, ['description']).map((user) => {
-          const { id, rank, similarity } = matches.find(({ id }) => id === user.id)!;
-
-          return {
-            user,
-            id,
-            rank,
-            similarity,
-          };
-        }),
-        matches,
+      return sortWithMatches(highlightProperties(users, matches, ['description']), matches).map(
+        ({ object, ...match }) => ({ user: object, ...match }),
       );
     },
   }),

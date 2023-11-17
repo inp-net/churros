@@ -273,18 +273,8 @@ builder.queryField('searchGroups', (t) =>
       });
 
       // Order by their index in newResults
-      return sortWithMatches(
-        highlightProperties(groups, matches).map((group) => {
-          const { id, rank, similarity } = matches.find(({ id }) => id === group.id)!;
-
-          return {
-            id,
-            rank,
-            similarity,
-            group,
-          };
-        }),
-        matches,
+      return sortWithMatches(highlightProperties(groups, matches), matches).map(
+        ({ object, ...match }) => ({ ...match, group: object }),
       );
     },
   }),

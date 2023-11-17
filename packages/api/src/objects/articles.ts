@@ -379,7 +379,9 @@ builder.queryField('searchArticles', (t) =>
           AND: [{ id: { in: matches.map((m) => m.id) } }, visibleArticlesPrismaQuery(user, 'can')],
         },
       });
-      return sortWithMatches(highlightProperties(articles, matches, ['body']), matches);
+      return sortWithMatches(highlightProperties(articles, matches, ['body']), matches).map(
+        ({ object }) => object,
+      );
     },
   }),
 );
