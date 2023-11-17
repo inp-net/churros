@@ -28,6 +28,7 @@ import '#modules/ticketing';
 import '#modules/users';
 import './objects/pictures.js';
 import './objects/shop-items.js';
+import './objects/shop-payment.js';
 
 
 const { rateLimitDirectiveTransformer } = rateLimitDirective({
