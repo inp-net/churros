@@ -92,3 +92,57 @@ dialog,
   --radius-inline: 0.25rem;
   --radius-block: 0.5rem;
 }
+
+:root.rainbow-logo {
+  animation: rainbow 0.125s linear infinite alternate;
+}
+
+@property --logo-base {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: black;
+}
+
+@property --logo-highlight {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: black;
+}
+
+@property --logo-shadows {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: black;
+}
+
+@keyframes rainbow {
+  0% {
+    --logo-base: hsl(0deg 100% 50%);
+    --logo-highlight: hsl(0deg 100% 75%);
+    --logo-shadows: hsl(0deg 100% 25%);
+  }
+
+  25% {
+    --logo-base: hsl(60deg 100% 50%);
+    --logo-highlight: hsl(60deg 100% 25%);
+    --logo-shadows: hsl(60deg 100% 75%);
+  }
+
+  50% {
+    --logo-base: hsl(120deg 100% 50%);
+    --logo-highlight: hsl(120deg 100% 25%);
+    --logo-shadows: hsl(120deg 100% 75%);
+  }
+
+  75% {
+    --logo-base: hsl(180deg 100% 50%);
+    --logo-highlight: hsl(180deg 100% 25%);
+    --logo-shadows: hsl(180deg 100% 75%);
+  }
+
+  100% {
+    --logo-base: hsl(240deg 100% 50%);
+    --logo-highlight: hsl(240deg 100% 25%);
+    --logo-shadows: hsl(240deg 100% 75%);
+  }
+}

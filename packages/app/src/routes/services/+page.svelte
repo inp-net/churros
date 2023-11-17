@@ -64,7 +64,7 @@
         >
       {:else}trunk{/if} · <InputCheckbox
         on:change={() => {
-          toasts.info(`Debug mode ${$debugging ? 'on' : 'off'}`);
+          toasts.info(`Debug mode ${$debugging ? 'off' : 'on'}`);
         }}
         bind:value={$debugging}
         label="Mode debug"

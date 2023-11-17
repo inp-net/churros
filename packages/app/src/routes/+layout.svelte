@@ -36,6 +36,7 @@
   import { writable, type Writable } from 'svelte/store';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { debugging } from '$lib/debugging';
 
   function currentTabDesktop(url: URL): (typeof DESKTOP_NAVIGATION_TABS)[number] {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -78,6 +79,10 @@
     } else {
       showInitialSpinner = false;
     }
+
+    debugging.subscribe(($debugging) => {
+      document.documentElement.classList.toggle('rainbow-logo', $debugging);
+    });
 
     const scrollableArea = document.querySelector('#scrollable-area');
     scrollableArea!.addEventListener('scroll', () => {
