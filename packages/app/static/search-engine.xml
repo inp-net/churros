@@ -1,0 +1,9 @@
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="https://www.mozilla.org/2006/browser/search/">
+  <ShortName>Churros</ShortName>
+  <Description>Rechercher des groupes, personnes, posts et évènemnts Churros</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image width="16" height="16" type="image/x-icon">https://churros.inpt.fr/favicon.ico</Image>
+  <Url type="text/html" template="churros.inpt.fr/search/{searchTerms}"/>
+  <!--<Url type="application/x-suggestions+json" template="[suggestionURL]"/> -->
+  <moz:SearchForm>https://churros.inpt.fr/search/</moz:SearchForm>
+</OpenSearchDescription>
