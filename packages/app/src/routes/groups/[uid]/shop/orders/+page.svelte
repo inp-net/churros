@@ -2,6 +2,7 @@
   import type { PageData } from './$types';
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
 
   export let data: PageData;
 
@@ -28,7 +29,11 @@
   {/if}
   {#each orders as order}
     <div>
-      <p>{order.shopItem.name}</p>
+      <h2>{order.shopItem.name}</h2>
+      <p>{order.quantity * order.shopItem.price} €</p>
+      <ButtonPrimary href="/groups/{order.shopItem.group.uid}/shop/{order.shopItem.id}"
+        >Voir</ButtonPrimary
+      >
     </div>
   {/each}
 </div>
