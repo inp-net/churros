@@ -15,7 +15,7 @@
   <h1><ButtonBack></ButtonBack> Tes rapports</h1>
 
   <ul class="nobullet reports">
-    {#each data.issuesByUser as { number, title, state, duplicatedFrom } (number)}
+    {#each data.issuesByUser as { number, title, state, duplicatedFrom } (duplicatedFrom ?? number)}
       <li>
         <a href="./{number}">
           <span class="number">#{duplicatedFrom ?? number}</span>
