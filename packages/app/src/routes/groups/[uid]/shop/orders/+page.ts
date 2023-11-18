@@ -20,6 +20,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
             description: true,
             paymentMethods: true,
             visibility: true,
+            group: { uid: true },
           },
         },
       ],
