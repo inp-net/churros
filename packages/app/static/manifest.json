@@ -58,5 +58,13 @@
     }
   ],
   "theme_color": "#1b6f7c",
-  "background_color": "#1b6f7c"
+  "background_color": "#1b6f7c",
+  "chrome_settings_overrides": {
+    "search_provider": {
+      "name": "Recherche Churros",
+      "search_url": "https://churros.inpt.fr/search/{searchTerms}",
+      "keyword": "chur",
+      "favicon_url": "https://churros.inpt.fr/favicon.ico"
+    }
+  }
 }
