@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { prisma } from '#lib';
-import type { LydiaTransaction } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { createHash } from 'node:crypto';
+import type { LydiaAccount, LydiaTransaction, ShopItem, ShopPayment } from '@prisma/client';
 
 // Get the Lydia API URL from the environment
 const { PUBLIC_LYDIA_API_URL, LYDIA_WEBHOOK_URL } = process.env;
@@ -29,7 +29,6 @@ export async function payEventRegistrationViaLydia(
   registrationId?: string,
 ): Promise<void> {
   // Get the lydia tokens from the registration
-  console.log(registrationId);
   const registration = await prisma.registration.findUnique({
     where: { id: registrationId },
     include: {
@@ -45,7 +44,6 @@ export async function payEventRegistrationViaLydia(
       lydiaTransaction: true,
     },
   });
-  console.log(registration);
   if (!registration) throw new Error('Registration not found');
   const beneficiaryVendorToken = registration.ticket.event.beneficiary?.vendorToken;
   if (!beneficiaryVendorToken) throw new GraphQLError("L'évènement n'a pas de bénéficiaire");
@@ -95,6 +93,72 @@ export async function payEventRegistrationViaLydia(
     registration.ticket.price,
     phone,
     beneficiaryVendorToken,
+  );
+
+  // Update the lydia transaction
+  await prisma.lydiaTransaction.update({
+    where: { id: transaction.id },
+    data: {
+      phoneNumber: phone,
+      ...requestDetails,
+    },
+  });
+}
+
+// Send a payment request to a number
+export async function payShopPaymentViaLydia(
+  phone: string,
+  shopPayment: ShopPayment & {
+    shopItem: ShopItem & { lydiaAccount: LydiaAccount | null };
+    lydiaTransaction: LydiaTransaction | null;
+  },
+): Promise<void> {
+  if (!shopPayment.shopItem.lydiaAccount) throw new Error('Lydia account not found');
+  // Check if transaction was already paid for, in that case mark registration as paid
+  if (shopPayment.lydiaTransaction?.requestId && shopPayment.lydiaTransaction.requestUuid) {
+    const state = await checkLydiaTransaction(shopPayment.lydiaTransaction);
+    if (state === LydiaTransactionState.Paid) {
+      await prisma.logEntry.create({
+        data: {
+          action: 'fallback mark as paid',
+          area: 'lydia',
+          message: 'Transaction was already paid for, marking registration as paid',
+          target: shopPayment.id,
+        },
+      });
+      await prisma.shopPayment.update({
+        where: { id: shopPayment.id },
+        data: {
+          paid: true,
+        },
+      });
+      return;
+    }
+  }
+
+  let transaction = shopPayment.lydiaTransaction;
+  // Check if a lydia transaction already exists
+  if (!transaction) {
+    // Create a lydia transaction
+    transaction = await prisma.lydiaTransaction.create({
+      data: {
+        shopPayment: { connect: { id: shopPayment.id } },
+        phoneNumber: phone,
+      },
+    });
+  }
+
+  // Cancel the previous transaction
+  if (transaction.requestId && transaction.requestUuid) {
+    // Cancel the previous transaction
+    await cancelLydiaTransaction(transaction, shopPayment.shopItem.lydiaAccount.vendorToken);
+  }
+
+  const requestDetails = await sendLydiaPaymentRequest(
+    shopPayment.shopItem.name,
+    shopPayment.shopItem.price * shopPayment.quantity,
+    phone,
+    shopPayment.shopItem.lydiaAccount.vendorToken,
   );
 
   // Update the lydia transaction
