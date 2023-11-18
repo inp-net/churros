@@ -259,6 +259,11 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
                 paid: true,
               },
             },
+            shopPayment: {
+              update: {
+                paid: true,
+              },
+            }
           },
         });
         return res.status(200).send('OK');
