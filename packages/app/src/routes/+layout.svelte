@@ -215,18 +215,20 @@
   </p>
 </div>
 
-<section class="toasts">
-  {#each $toasts as toast (toast.id)}
-    <Toast
-      on:action={async () => {
-        if (toast.callbacks.action) await toast.callbacks.action(toast);
-      }}
-      action={toast.labels.action}
-      closeLabel={toast.labels.close}
-      {...toast}
-    ></Toast>
-  {/each}
-</section>
+{#if browser}
+  <section class="toasts">
+    {#each $toasts as toast (toast.id)}
+      <Toast
+        on:action={async () => {
+          if (toast.callbacks.action) await toast.callbacks.action(toast);
+        }}
+        action={toast.labels.action}
+        closeLabel={toast.labels.close}
+        {...toast}
+      ></Toast>
+    {/each}
+  </section>
+{/if}
 
 <OverlayQuickBookings {now} registrationsOfUser={data.registrationsOfUser}></OverlayQuickBookings>
 

@@ -41,7 +41,7 @@ NEW."search" := setweight(to_tsvector('french', NEW."lastName"), 'A') || setweig
 	to_tsvector('french', NEW."graduationYear" :: text),
 	'D'
 ) || setweight(
-	to_tsvector('french', major_short_name),
+	to_tsvector('french', coalesce(major_short_name, '')),
 	'D'
 ) || setweight(to_tsvector('french', NEW."description"), 'D');
 

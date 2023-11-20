@@ -94,7 +94,7 @@
       </div>
     </section>
     <section class="contribute">
-      {#if data.me}
+      {#if data.me && !data.me.external}
         <h2>Cotiser</h2>
         {#if data.me.contributesTo.some((c) => c.uid === studentAssociation.uid)}
           <p>Tu cotises pour {studentAssociation.name}. Merci!</p>

@@ -12,7 +12,7 @@
     .filter(([_, majors]) => majors.length > 0)
     .sort(([schoolUid]) => {
       // Put schools of the user first
-      if ($me?.major.schools.some((s) => s.uid === schoolUid)) return -1;
+      if ($me?.major?.schools.some((s) => s.uid === schoolUid)) return -1;
       return 1;
     }) as Array<[string, typeof data.majors]>;
 </script>

@@ -13,6 +13,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 name: true,
               },
               contributesTo: { uid: true },
+              external: true,
             },
           }
         : {}),

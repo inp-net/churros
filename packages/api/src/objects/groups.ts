@@ -91,8 +91,7 @@ export const GroupType = builder.prismaNode('Group', {
     services: t.relation('services'),
     links: t.relation('links'),
     members: t.relation('members', {
-      // Seeing group members requires being logged in
-      // authScopes: { loggedIn: true },
+      authScopes: { student: true },
       query: {
         orderBy: [
           { president: 'desc' },
@@ -216,7 +215,7 @@ builder.queryField('groups', (t) =>
                 studentAssociation: {
                   school: {
                     id: {
-                      in: user?.major.schools.map(({ id }) => id) ?? [],
+                      in: user?.major?.schools.map(({ id }) => id) ?? [],
                     },
                   },
                 },

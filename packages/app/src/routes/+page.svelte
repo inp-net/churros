@@ -84,7 +84,7 @@
           <AvatarPerson
             href="/users/{uid}"
             {...user}
-            role="{major.shortName} · {new Date().getFullYear() -
+            role="{major?.shortName ?? '(exté)'} · {new Date().getFullYear() -
               (birthday?.getFullYear() ?? 0)} ans"
           />
         </li>

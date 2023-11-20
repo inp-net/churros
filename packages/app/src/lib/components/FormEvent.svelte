@@ -254,7 +254,7 @@
     // eslint-disable-next-line unicorn/no-null
     openToContributors: null,
     openToPromotions: [],
-    openToSchools: $me?.major.schools?.filter((s) => s.uid !== 'inp') ?? [],
+    openToSchools: $me?.major?.schools?.filter((s) => s.uid !== 'inp') ?? [],
     openToMajors: [],
     autojoinGroups: [],
     // eslint-disable-next-line unicorn/no-null

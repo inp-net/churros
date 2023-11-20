@@ -42,6 +42,7 @@ export const load: LayoutLoad = async ({ fetch, data }) => {
               author: {
                 fullName: true,
               },
+              authorEmail: true,
               paid: true,
               cancelled: true,
             },

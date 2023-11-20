@@ -9,6 +9,7 @@
   export let disabled = false;
   export let href = '';
   export let tight = false;
+  export let inline = false;
 </script>
 
 <svelte:element
@@ -19,6 +20,7 @@
   {...$$restProps}
   class:dark-shadow={darkShadow}
   class:disabled
+  class:inline
   class:tight
   {disabled}
   {type}

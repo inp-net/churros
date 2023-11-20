@@ -46,7 +46,7 @@ export const UserCandidateType = builder.prismaNode('UserCandidate', {
     cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
     apprentice: t.exposeBoolean('apprentice'),
 
-    major: t.relation('major'),
+    major: t.relation('major', { nullable: true }),
   }),
 });
 
@@ -99,7 +99,7 @@ builder.mutationField('completeRegistration', (t) =>
       token: t.arg.string(),
       firstName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       lastName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      majorId: t.arg.id(),
+      majorId: t.arg.id({ required: false }),
       graduationYear: t.arg.int({ validate: { min: 1900, max: 2100 } }),
       birthday: t.arg({ type: DateTimeScalar, required: false }),
       phone: t.arg.string({ validate: { maxLength: 255 } }),

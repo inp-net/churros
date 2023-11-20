@@ -9,7 +9,8 @@
   export let beneficiary: string;
   export let beneficiaryUser: undefined | { fullName: string } = undefined;
   export let authorIsBeneficiary: boolean;
-  export let author: { fullName: string };
+  export let author: undefined | { fullName: string } = undefined;
+  export let authorEmail: string;
   export let paid: boolean;
   export let cancelled: boolean;
 
@@ -33,7 +34,7 @@
         {#if beneficiary}
           Pour {beneficiaryUser?.fullName ?? beneficiary}
         {:else}
-          Par {author.fullName}
+          Par {author?.fullName ?? authorEmail}
         {/if}
       </div>
     {/if}

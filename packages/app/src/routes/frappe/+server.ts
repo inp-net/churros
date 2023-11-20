@@ -30,10 +30,12 @@ export const GET: RequestHandler = ({ locals, url, fetch }) => {
 
   throw redirect(
     303,
-    tier > 3
-      ? `/documents/${me.major.uid}`
-      : `/documents/${me.major.uid}/${tier}a${
-          tier === 3 ? '' : me.apprentice ? '-fisa' : '-fise'
-        }/`,
+    me.major
+      ? tier > 3
+        ? `/documents/${me.major.uid}`
+        : `/documents/${me.major.uid}/${tier}a${
+            tier === 3 ? '' : me.apprentice ? '-fisa' : '-fise'
+          }/`
+      : '/documents/',
   );
 };

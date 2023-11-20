@@ -115,8 +115,8 @@ export const createUid = async ({
 export const completeRegistration = async (
   candidate: UserCandidate,
 ): Promise<(User & { major?: null | (Major & { ldapSchool?: School | null }) }) | undefined> => {
-  // If the user has no school email, it must be manually accepted.
-  if (!candidate.schoolEmail) return undefined;
+  // If the user has no school email, it must be manually accepted, except if the account is marked as external (i.e. no major given)
+  if (!candidate.schoolEmail && candidate.majorId) return undefined;
 
   return saveUser(candidate);
 };
@@ -148,7 +148,7 @@ export const saveUser = async ({
       graduationYear: graduationYear!,
       firstName,
       lastName,
-      major: { connect: { id: majorId! } },
+      major: majorId ? { connect: { id: majorId } } : undefined,
       address,
       birthday,
       phone,
@@ -159,7 +159,7 @@ export const saveUser = async ({
       apprentice,
       credentials: { create: { type: CredentialType.Password, value: password } },
       links: { create: [] },
-      canAccessDocuments: true, // TODO behavior should be different for ensat
+      canAccessDocuments: Boolean(majorId), // TODO behavior should be different for ensat
     },
     include: {
       major: {

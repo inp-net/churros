@@ -72,7 +72,7 @@
     {/each}
   </ul>
   <hr />
-{:else if (!$me?.minor || $me?.major.uid !== data.major.uid) && browser && localStorage.getItem('ignoreDefineYourMinor') !== 'true'}
+{:else if !$me?.external && (!$me?.minor || $me?.major?.uid !== data.major.uid) && browser && localStorage.getItem('ignoreDefineYourMinor') !== 'true'}
   <div class="define-your-minor">
     <p class="muted">
       Marre de scroll pour avoir son parcours? Définis ton parcours dans <a href="/me"
