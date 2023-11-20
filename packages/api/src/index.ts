@@ -307,18 +307,6 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
     vendor_token,
   };
 
-  console.info(
-    `Lydia webhook received: ${JSON.stringify({
-      request_id,
-      amount,
-      currency,
-      sig,
-      signed,
-      transaction_identifier,
-      vendor_token,
-    })}`,
-  )
-
   try {
     const { verified, transaction } = await verifyLydiaTransaction(
       request_id,
@@ -396,11 +384,6 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
                 paid: true,
               },
             },
-            shopPayment: {
-              update: {
-                paid: true,
-              },
-            },
           },
         });
         return res.status(200).send('OK');
@@ -451,6 +434,43 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
             target: transaction_identifier,
           },
         });
+        return res.status(200).send('OK');
+      }
+    } else if (transaction.shopPayment) {
+      const beneficiary = transaction.shopPayment.shopItem.lydiaAccount;
+      if (!beneficiary) {
+        await prisma.logEntry.create({
+          data: {
+            area: 'lydia webhook',
+            action: 'fail',
+            message: 'no lydia account linked',
+          },
+        });
+        return res.status(400).send('No lydia accounts for this student association');
+      }
+
+      if (sig === lydiaSignature(beneficiary, signatureParameters)) {
+        await prisma.logEntry.create({
+          data: {
+            area: 'lydia webhook',
+            action: 'success',
+            message: `shop payment transaction marked as paid: ${JSON.stringify(
+              { beneficiary },
+              undefined,
+              2,
+            )}`,
+            target: transaction_identifier,
+          },
+        });
+        await prisma.shopPayment.update({
+          where: {
+            id: transaction.shopPayment.id,
+          },
+          data: {
+            paid: true,
+          },
+        });
+
         return res.status(200).send('OK');
       }
     }
