@@ -23,7 +23,7 @@
   let choosingPaymentMethodLoading: PaymentMethod | undefined = undefined;
 
   let quantity = 1;
-  let max = Math.min(shopItem.max, shopItem.stock);
+  let max = Math.min(shopItem.max, shopItem.stockLeft);
 
   async function payBy(method: PaymentMethod | undefined) {
     if ($me?.uid === undefined) {
@@ -90,7 +90,9 @@
 
 <div class="content">
   <h2>{shopItem.name}</h2>
-  <p>{shopItem.stock}*{shopItem.price} €</p>
+  <p>Stock: {shopItem.stock}</p>
+  <p>Restant: {shopItem.stockLeft}</p>
+  <p>Price: {shopItem.price} €</p>
   <p>max: {shopItem.max}</p>
   <p>{shopItem.description}</p>
   <input type="number" bind:value={quantity} min="1" {max} />

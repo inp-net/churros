@@ -24,6 +24,20 @@ export const ShopItemType = builder.prismaObject('ShopItem', {
     paymentMethods: t.expose('allowedPaymentMethods', { type: [PaymentMethodEnum] }),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     lydiaAccount: t.relation('lydiaAccount'),
+    stockLeft: t.field({
+      type: 'Int',
+      resolve: async ({ id }) => {
+        const item = await prisma.shopItem.findUnique({
+          where: { id },
+          include: { shopPayments: { where: { paid: true } } },
+        });
+        if (!item) {
+          throw new GraphQLError('Item not found');
+        }
+        const sold = item.shopPayments.reduce((acc, payment) => acc + payment.quantity, 0);
+        return item.stock - sold;
+      },
+    }),
   }),
 });
 
