@@ -307,6 +307,18 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
     vendor_token,
   };
 
+  console.info(
+    `Lydia webhook received: ${JSON.stringify({
+      request_id,
+      amount,
+      currency,
+      sig,
+      signed,
+      transaction_identifier,
+      vendor_token,
+    })}`,
+  )
+
   try {
     const { verified, transaction } = await verifyLydiaTransaction(
       request_id,
@@ -388,7 +400,7 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
               update: {
                 paid: true,
               },
-            }
+            },
           },
         });
         return res.status(200).send('OK');

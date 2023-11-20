@@ -30,6 +30,7 @@
   {#each orders as order}
     <div>
       <h2>{order.shopItem.name}</h2>
+      <p>{order.paid}</p>
       <p>{order.quantity * order.shopItem.price} €</p>
       <ButtonPrimary href="/groups/{order.shopItem.group.uid}/shop/{order.shopItem.id}"
         >Voir</ButtonPrimary
