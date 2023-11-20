@@ -281,6 +281,15 @@ export async function verifyLydiaTransaction(
           },
         },
       },
+      shopPayment: {
+        include: {
+          shopItem: {
+            include: {
+              lydiaAccount: true,
+            },
+          }
+        },
+      },
       contribution: {
         include: {
           user: true,
@@ -294,11 +303,12 @@ export async function verifyLydiaTransaction(
     },
   });
   if (!transaction) throw new Error('Transaction not found');
-  if (!transaction.registration && !transaction.contribution)
+  if (!transaction.registration && !transaction.contribution && !transaction.shopPayment)
     throw new Error('Transaction has no purpose');
   const beneficiary =
     transaction.registration?.ticket.event.beneficiary ??
-    transaction.contribution?.option.beneficiary;
+    transaction.contribution?.option.beneficiary ??
+    transaction.shopPayment?.shopItem.lydiaAccount;
   if (!beneficiary) throw new Error('Transaction has no beneficiary');
 
   return {
