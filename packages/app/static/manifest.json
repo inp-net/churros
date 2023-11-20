@@ -66,5 +66,19 @@
       "keyword": "chur",
       "favicon_url": "https://churros.inpt.fr/favicon.ico"
     }
-  }
+  },
+  "shortcuts": [
+    {
+      "name": "Évènements",
+      "short_name": "Évènements",
+      "description": "Voir les évènements à venir",
+      "url": "/events/planning",
+      "icons": [
+        {
+          "src": "/icons/planning.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
 }
