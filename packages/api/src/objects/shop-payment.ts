@@ -77,10 +77,18 @@ builder.mutationField('upsertShopPayment', (t) =>
         include: {
           group: true,
           lydiaAccount: true,
+          shopPayments: {
+            where: {
+              paid: true,
+            },
+          },
         },
       });
 
-      if (shopItem.stock < quantity) {
+      const stockLeft =
+        shopItem.stock - shopItem.shopPayments.reduce((acc, curr) => acc + curr.quantity, 0);
+
+      if (stockLeft < quantity) {
         throw new GraphQLError('Not enough stock');
       } else if (shopItem.max < quantity) {
         throw new GraphQLError('Too much quantity');
@@ -94,6 +102,7 @@ builder.mutationField('upsertShopPayment', (t) =>
           shopItem: { connect: { id: shopItem.id } },
           quantity,
           paymentMethod: paymentMethod as PaymentMethodPrisma,
+          paid: shopItem.price === 0,
         },
         update: {
           user: { connect: { uid: userUid } },
@@ -128,10 +137,9 @@ builder.mutationField('paidShopPayment', (t) =>
       phone: t.arg.string({ required: false }),
     },
     async authScopes(_, { shopPaymentId }, { user }) {
-      const creating = !shopPaymentId;
       if (!user) return false;
       const shopPayment = await prisma.shopPayment.findUnique({
-        where: { id: shopPaymentId },
+        where: { id: shopPaymentId, paid: false },
         include: {
           shopItem: {
             include: {
@@ -141,13 +149,8 @@ builder.mutationField('paidShopPayment', (t) =>
           },
         },
       });
-      if (!shopPayment) throw new GraphQLError("La commande n'existe pas");
 
-      if (creating) {
-        if (shopPayment.quantity > shopPayment.shopItem.stock) {
-          throw new GraphQLError('Not enough stock');
-        }
-      }
+      if (!shopPayment) throw new GraphQLError("La commande n'existe pas");
 
       return true;
     },
@@ -155,15 +158,26 @@ builder.mutationField('paidShopPayment', (t) =>
       if (!user) throw new GraphQLError('User not found');
 
       const shopPayment = await prisma.shopPayment.findUnique({
-        where: { id: shopPaymentId },
+        where: { id: shopPaymentId, paid: false },
         include: {
-          shopItem: { include: { group: true, lydiaAccount: true } },
+          shopItem: {
+            include: { group: true, lydiaAccount: true, shopPayments: { where: { paid: true } } },
+          },
           lydiaTransaction: true,
         },
       });
+
       if (!shopPayment) throw new GraphQLError('Shop payment not found');
+
       if (!paymentMethod) throw new GraphQLError('Payment method not found');
-      if (!phone) throw new GraphQLError('Phone not found');
+
+      const stockLeft =
+        shopPayment.shopItem.stock -
+        shopPayment.shopItem.shopPayments.reduce((acc, curr) => acc + curr.quantity, 0);
+
+      if (shopPayment.quantity > stockLeft) {
+        throw new GraphQLError('Not enough stock');
+      }
 
       // Process payment
       await pay(user.uid, paymentMethod, shopPayment, phone);
@@ -194,7 +208,7 @@ async function pay(
     shopItem: ShopItem & { lydiaAccount: LydiaAccount | null; group: Group };
     lydiaTransaction: LydiaTransaction | null;
   },
-  phone?: string,
+  phone?: string | null,
 ) {
   switch (by) {
     case 'Lydia': {

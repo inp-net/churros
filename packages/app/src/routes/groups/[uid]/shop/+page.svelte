@@ -27,7 +27,9 @@
   {#each shopItems as shopItem}
     <div>
       <p>{shopItem.name}</p>
-      <p>{shopItem.stock}*{shopItem.price} €</p>
+      <p>Stock: {shopItem.stock}</p>
+      <p>Restant: {shopItem.stockLeft}</p>
+      <p>Prix: {shopItem.price} €</p>
       <p>max: {shopItem.max}</p>
       <p>{shopItem.description}</p>
       <a href="/groups/{shopItem.group.uid}/shop/{shopItem.id}">Voir</a>
