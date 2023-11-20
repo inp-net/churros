@@ -324,34 +324,33 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
         return res.status(400).send('No lydia accounts for this student association');
       }
 
-      if (sig === lydiaSignature(beneficiary, signatureParameters)) {
-        await prisma.logEntry.create({
-          data: {
-            area: 'lydia webhook',
-            action: 'success',
-            message: `shop payment transaction marked as paid: ${JSON.stringify(
-              { beneficiary },
-              undefined,
-              2,
-            )}`,
-            target: transaction_identifier,
-          },
-        });
-        await prisma.shopPayment.update({
-          where: {
-            id: transaction.shopPayment.id,
-          },
-          data: {
-            paid: true,
-          },
-        });
+      await prisma.logEntry.create({
+        data: {
+          area: 'lydia webhook',
+          action: 'success',
+          message: `shop payment transaction marked as paid: ${JSON.stringify(
+            { beneficiary },
+            undefined,
+            2,
+          )}`,
+          target: transaction_identifier,
+        },
+      });
+      await prisma.shopPayment.update({
+        where: {
+          id: transaction.shopPayment.id,
+        },
+        data: {
+          paid: true,
+        },
+      });
 
-        return res.status(200).send('OK');
-      }
+      return res.status(200).send('OK');
     }
 
     return res.status(400).send('Bad request');
-  } catch {
+  } catch (error) {
+    console.error('Lydia webhook error', error);
     return res.status(400).send('Bad request');
   }
 });
