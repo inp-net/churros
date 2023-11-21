@@ -4,14 +4,16 @@ import { prisma } from '../prisma.js';
 import { payShopPaymentViaLydia } from '../services/lydia.js';
 import { GraphQLError } from 'graphql';
 import { PaymentMethodEnum } from './registrations.js';
-import type {
-  Group,
-  LydiaAccount,
-  LydiaTransaction,
-  PaymentMethod as PaymentMethodPrisma,
-  ShopItem,
-  ShopPayment,
+import {
+  Visibility,
+  type Group,
+  type LydiaAccount,
+  type LydiaTransaction,
+  type PaymentMethod as PaymentMethodPrisma,
+  type ShopItem,
+  type ShopPayment,
 } from '@prisma/client';
+import { onBoard } from '../auth.js';
 
 export const ShopPaymentType = builder.prismaObject('ShopPayment', {
   fields: (t) => ({
@@ -71,6 +73,68 @@ builder.mutationField('upsertShopPayment', (t) =>
       quantity: t.arg.int({ required: true }),
       paymentMethod: t.arg.string({ required: false }),
     },
+    async authScopes(_, { shopItemId }, { user }) {
+      if (!user) return false;
+
+      const shopItem = await prisma.shopItem.findUniqueOrThrow({
+        where: { id: shopItemId },
+        include: {
+          group: {
+            include: {
+              members: {
+                include: {
+                  member: true,
+                },
+                where: {
+                  member: {
+                    id: user.id,
+                  },
+                },
+              },
+              studentAssociation: {
+                include: {
+                  school: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      switch (shopItem.visibility) {
+        case Visibility.Private: {
+          if (!onBoard(shopItem.group.members[0])) 
+            return false;
+          
+          break;
+        }
+
+        case Visibility.Public:
+        case Visibility.Unlisted: {
+          break;
+        }
+
+        case Visibility.GroupRestricted: {
+          if (shopItem.group.members.length > 0) 
+            break;
+          
+          return false;
+        }
+
+        case Visibility.SchoolRestricted: {
+          if (shopItem.group.studentAssociation?.school.uid === user.schoolUid) 
+            break;
+          
+          return false;
+        }
+
+        default: {
+          throw new GraphQLError('Something went wrong');
+        }
+      }
+
+      return true;
+    },
     async resolve(query, _, { id, userUid, shopItemId, quantity, paymentMethod }, { user }) {
       const shopItem = await prisma.shopItem.findUniqueOrThrow({
         where: { id: shopItemId },
@@ -88,11 +152,18 @@ builder.mutationField('upsertShopPayment', (t) =>
       const stockLeft =
         shopItem.stock - shopItem.shopPayments.reduce((acc, curr) => acc + curr.quantity, 0);
 
-      if (stockLeft < quantity) {
+      const userLeft =
+        shopItem.max -
+        shopItem.shopPayments.reduce(
+          (acc, curr) => acc + (curr.userId === userUid ? curr.quantity : 0),
+          0,
+        );
+
+      if (stockLeft < quantity) 
         throw new GraphQLError('Not enough stock');
-      } else if (shopItem.max < quantity) {
+       else if (userLeft < quantity) 
         throw new GraphQLError('Too much quantity');
-      }
+      
 
       const shopPayment = await prisma.shopPayment.upsert({
         ...query,
@@ -175,12 +246,22 @@ builder.mutationField('paidShopPayment', (t) =>
         shopPayment.shopItem.stock -
         shopPayment.shopItem.shopPayments.reduce((acc, curr) => acc + curr.quantity, 0);
 
-      if (shopPayment.quantity > stockLeft) {
+      const userLeft =
+        shopPayment.shopItem.max -
+        shopPayment.shopItem.shopPayments.reduce(
+          (acc, curr) => acc + (curr.userId === user.uid ? curr.quantity : 0),
+          0,
+        );
+
+      if (shopPayment.quantity > stockLeft) 
         throw new GraphQLError('Not enough stock');
-      }
+       else if (shopPayment.quantity > userLeft) 
+        throw new GraphQLError('Too much quantity');
+      
 
       // Process payment
       await pay(user.uid, paymentMethod, shopPayment, phone);
+
       await prisma.logEntry.create({
         data: {
           area: 'shop payment',
@@ -190,6 +271,7 @@ builder.mutationField('paidShopPayment', (t) =>
           user: { connect: { id: user.id } },
         },
       });
+
       return prisma.shopPayment.update({
         ...query,
         where: { id: shopPaymentId },

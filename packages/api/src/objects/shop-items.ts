@@ -26,14 +26,14 @@ export const ShopItemType = builder.prismaObject('ShopItem', {
     lydiaAccount: t.relation('lydiaAccount'),
     stockLeft: t.field({
       type: 'Int',
-      resolve: async ({ id }) => {
+      async resolve({ id }) {
         const item = await prisma.shopItem.findUnique({
           where: { id },
           include: { shopPayments: { where: { paid: true } } },
         });
-        if (!item) {
+        if (!item) 
           throw new GraphQLError('Item not found');
-        }
+        
         const sold = item.shopPayments.reduce((acc, payment) => acc + payment.quantity, 0);
         return item.stock - sold;
       },
@@ -41,7 +41,17 @@ export const ShopItemType = builder.prismaObject('ShopItem', {
   }),
 });
 
-export async function visibleShopPrismaQuery(groupUid: string, user: { id: string }) {
+interface VisibilityQuery {
+  OR?: Array<{
+    visibility: Visibility;
+  }>;
+  visibility?: Visibility;
+}
+
+export async function visibleShopPrismaQuery(
+  groupUid: string,
+  user: { id: string; schoolUid: string | null },
+) {
   const group = await prisma.group.findFirst({
     where: {
       uid: groupUid,
@@ -55,6 +65,11 @@ export async function visibleShopPrismaQuery(groupUid: string, user: { id: strin
           member: {
             id: user.id,
           },
+        },
+      },
+      studentAssociation: {
+        include: {
+          school: true,
         },
       },
     },
@@ -80,7 +95,25 @@ export async function visibleShopPrismaQuery(groupUid: string, user: { id: strin
         },
       ],
     };
-  } else if (group?.members.length) {
+  }
+
+ if (group?.members.length) {
+    return {
+      OR: [
+        {
+          visibility: Visibility.Public,
+        },
+        {
+          visibility: Visibility.GroupRestricted,
+        },
+        {
+          visibility: Visibility.SchoolRestricted,
+        },
+      ],
+    };
+  }
+
+ if (group?.studentAssociation?.school?.uid === user.schoolUid) {
     return {
       OR: [
         {
@@ -92,6 +125,7 @@ export async function visibleShopPrismaQuery(groupUid: string, user: { id: strin
       ],
     };
   }
+
   return {
     visibility: Visibility.Public,
   };
@@ -104,12 +138,12 @@ builder.queryField('shopItems', (t) =>
       groupUid: t.arg.string(),
     },
     async resolve(query, _, { groupUid }, { user }) {
-      let visibility: any = {
+      let visibility: VisibilityQuery = {
         visibility: Visibility.Public,
       };
-      if (user) {
+      if (user) 
         visibility = await visibleShopPrismaQuery(groupUid, user);
-      }
+      
 
       return prisma.shopItem.findMany({
         ...query,
@@ -154,27 +188,34 @@ builder.queryField('shopItem', (t) =>
         },
       });
 
-      if (!item) {
+      if (!item) 
         throw new GraphQLError('Item not found');
-      }
+      
 
       // Switch case
       switch (item.visibility) {
         case Visibility.Public:
-        case Visibility.Unlisted:
+        case Visibility.Unlisted: {
           return item;
-        case Visibility.GroupRestricted:
-          if (item.group.members.length) {
+        }
+
+        case Visibility.GroupRestricted: {
+          if (item.group.members.length > 0) 
             return item;
-          }
+          
           throw new GraphQLError('Not allowed to view item');
-        case Visibility.Private:
-          if (onBoard(item.group.members[0])) {
+        }
+
+        case Visibility.Private: {
+          if (onBoard(item.group.members[0])) 
             return item;
-          }
+          
           throw new GraphQLError('Not allowed to view item');
-        default:
+        }
+
+        default: {
           throw new GraphQLError('Something went wrong');
+        }
       }
     },
   }),
@@ -197,6 +238,38 @@ builder.mutationField('upsertShopItem', (t) =>
       groupUid: t.arg.string(),
       visibility: t.arg({ type: VisibilityEnum }),
       lydiaAccounId: t.arg.string(),
+    },
+
+    async authScopes(_, { groupUid }, { user }) {
+      if (!user) return false;
+
+      const group = await prisma.group.findFirst({
+        where: {
+          uid: groupUid,
+        },
+        include: {
+          members: {
+            include: {
+              member: true,
+            },
+            where: {
+              member: {
+                id: user.id,
+              },
+            },
+          },
+        },
+      });
+
+      if (!group) 
+        return false;
+      
+
+      if (!onBoard(group.members[0])) 
+        return false;
+      
+
+      return true;
     },
     async resolve(
       query,
@@ -255,7 +328,7 @@ builder.mutationField('upsertShopItem', (t) =>
       await prisma.logEntry.create({
         data: {
           area: 'shop',
-          action: 'create',
+          action: id ? 'update' : 'create',
           target: shopItem.id,
           message: `Service ${shopItem.id} created: ${shopItem.name}`,
           user: user ? { connect: { id: user.id } } : undefined,
