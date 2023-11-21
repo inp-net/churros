@@ -29,6 +29,60 @@ export const ShopPaymentType = builder.prismaObject('ShopPayment', {
   }),
 });
 
+builder.queryField('shopPayments', (t) =>
+  t.prismaField({
+    type: [ShopPaymentType],
+    args: {
+      shopItemId: t.arg.id(),
+    },
+    async authScopes(_, { shopItemId }, { user }) {
+      if (!user) return false;
+
+      const shopItem = await prisma.shopItem.findUniqueOrThrow({
+        where: { id: shopItemId },
+        include: {
+          group: {
+            include: {
+              members: {
+                include: {
+                  member: true,
+                },
+                where: {
+                  member: {
+                    id: user.id,
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!shopItem) return false;
+
+      if (!onBoard(shopItem.group.members[0])) return false;
+
+      return true;
+    },
+    async resolve(query, _, { shopItemId }) {
+      return prisma.shopPayment.findMany({
+        ...query,
+        where: {
+          shopItem: {
+            id: shopItemId,
+          },
+        },
+        include: {
+          user: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+    },
+  }),
+);
+
 builder.queryField('orders', (t) =>
   t.prismaField({
     type: [ShopPaymentType],
