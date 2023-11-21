@@ -287,7 +287,7 @@ export async function verifyLydiaTransaction(
             include: {
               lydiaAccount: true,
             },
-          }
+          },
         },
       },
       contribution: {
