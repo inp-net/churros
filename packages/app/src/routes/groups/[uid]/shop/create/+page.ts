@@ -1,6 +1,5 @@
 import { redirectToLogin } from '$lib/session';
 import { Visibility, loadQuery } from '$lib/zeus.js';
-import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, parent, url }) => {
@@ -44,10 +43,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
       max: 0,
       description: '',
       paymentMethods: [],
-      lydiaAccount: {
-        id: '',
-        name: '',
-      },
+      lydiaAccount: undefined,
       visibility: Visibility.Private,
       startsAt: undefined,
       endsAt: undefined,

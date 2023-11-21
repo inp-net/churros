@@ -1,10 +1,7 @@
 <script lang="ts">
-  import { PaymentMethod, Visibility, zeus } from '$lib/zeus';
+  import { type PaymentMethod, type Visibility, zeus } from '$lib/zeus';
   import { DISPLAY_PAYMENT_METHODS, DISPLAY_VISIBILITIES } from '$lib/display';
-  import ButtonGhost from './ButtonGhost.svelte';
-  import IconDelete from '~icons/mdi/delete-outline';
   import ButtonPrimary from './ButtonPrimary.svelte';
-  import InputFile from './InputFile.svelte';
   import InputDate from './InputDate.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputNumber from './InputNumber.svelte';
@@ -13,12 +10,8 @@
   import InputSelectOne from './InputSelectOne.svelte';
   import InputText from './InputText.svelte';
   import InputLydiaAccounts from './InputLydiaAccounts.svelte';
-  import { me } from '$lib/session';
-  import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
   import { toasts } from '$lib/toasts';
-
-  let files: FileList | undefined = undefined;
 
   let serverError = '';
 
@@ -36,10 +29,12 @@
     group: {
       uid: string;
     };
-    lydiaAccount: {
-      id: string;
-      name: string;
-    };
+    lydiaAccount?:
+      | {
+          id: string;
+          name: string;
+        }
+      | undefined;
   };
 
   export let availableLydiaAccounts: Array<{
@@ -101,7 +96,7 @@
     if (upsertShopItem.__typename === 'Error') {
       serverError = upsertShopItem.message;
       toasts.error(`Impossible de sauvegarder`, serverError);
-      return;
+      
     }
   }
 </script>
@@ -174,21 +169,5 @@
     margin: 2rem auto 0;
     margin-top: 2rem;
     text-align: center;
-  }
-
-  .new-files {
-    width: 100%;
-    margin-top: 1rem;
-  }
-
-  .existing-file {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-
-  .existing-file .filename {
-    margin-right: auto;
-    text-align: left;
   }
 </style>

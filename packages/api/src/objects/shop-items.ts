@@ -21,9 +21,10 @@ export const ShopItemType = builder.prismaObject('ShopItem', {
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     pictures: t.relation('pictures'),
+    shopPayments: t.relation('shopPayments'),
     paymentMethods: t.expose('allowedPaymentMethods', { type: [PaymentMethodEnum] }),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
-    lydiaAccount: t.relation('lydiaAccount'),
+    lydiaAccount: t.relation('lydiaAccount', { nullable: true }),
     stockLeft: t.field({
       type: 'Int',
       async resolve({ id }) {
@@ -230,7 +231,7 @@ builder.mutationField('upsertShopItem', (t) =>
       endsAt: t.arg({ type: DateTimeScalar, required: false }),
       groupUid: t.arg.string(),
       visibility: t.arg({ type: VisibilityEnum }),
-      lydiaAccounId: t.arg.string(),
+      lydiaAccounId: t.arg.string({ required: false }),
     },
 
     async authScopes(_, { groupUid }, { user }) {
@@ -291,7 +292,7 @@ builder.mutationField('upsertShopItem', (t) =>
           startsAt,
           endsAt,
           group: { connect: { uid: groupUid } },
-          lydiaAccount: { connect: { id: lydiaAccounId } },
+          lydiaAccount: lydiaAccounId ? { connect: { id: lydiaAccounId } } : undefined,
           allowedPaymentMethods: {
             set: paymentMethods || [],
           },
@@ -306,7 +307,7 @@ builder.mutationField('upsertShopItem', (t) =>
           startsAt,
           endsAt,
           group: { connect: { uid: groupUid } },
-          lydiaAccount: { connect: { id: lydiaAccounId } },
+          lydiaAccount: lydiaAccounId ? { connect: { id: lydiaAccounId } } : { disconnect: true },
           allowedPaymentMethods: {
             set: paymentMethods || [],
           },
