@@ -18,6 +18,7 @@ import qrcode from 'qrcode';
 import { createTransport } from 'nodemailer';
 import { log } from './logs.js';
 import { yearTier } from '../date.js';
+import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 
 const mailer = createTransport(process.env.SMTP_URL);
 
@@ -327,6 +328,64 @@ builder.queryField('registrationsOfTicket', (t) =>
         ...query,
         where: { ticket: { id: ticket } },
       });
+    },
+  }),
+);
+
+export class RegistrationSearch {
+  registration!: Registration;
+  id!: string;
+  rank!: number | null;
+  similarity!: number;
+}
+
+export const RegistrationSearchType = builder.objectType(RegistrationSearch, {
+  name: 'RegistrationSearch',
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    registration: t.prismaField({
+      type: 'Registration',
+      resolve: (_, { registration }) => registration,
+    }),
+    rank: t.exposeFloat('rank', { nullable: true }),
+    similarity: t.exposeFloat('similarity'),
+  }),
+});
+
+builder.queryField('searchRegistrations', (t) =>
+  t.field({
+    type: [RegistrationSearch],
+    args: {
+      groupUid: t.arg.string(),
+      eventUid: t.arg.string(),
+      q: t.arg.string(),
+    },
+    async authScopes(_, { eventUid, groupUid }, { user }) {
+      const event = await prisma.event.findFirstOrThrow({
+        where: {
+          group: { uid: groupUid },
+          uid: eventUid,
+        },
+        include: {
+          managers: { include: { user: true } },
+        },
+      });
+      return eventManagedByUser(event, user, {});
+    },
+    async resolve(_, { eventUid, groupUid, q }) {
+      const matches = await fullTextSearch('Registration', q, {
+        fuzzy: ['beneficiary'],
+        highlight: ['beneficiary'],
+      });
+      const events = await prisma.registration.findMany({
+        where: {
+          id: { in: matches.map((m) => m.id) },
+          ticket: { event: { uid: eventUid, group: { uid: groupUid } } },
+        },
+      });
+      return highlightProperties(sortWithMatches(events, matches), matches).map(
+        ({ object, ...match }) => ({ registration: object, ...match }),
+      );
     },
   }),
 );

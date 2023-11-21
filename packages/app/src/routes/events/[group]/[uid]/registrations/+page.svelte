@@ -1,34 +1,77 @@
 <script lang="ts">
-  import IconDownload from '~icons/mdi/download-outline';
-  import IconCash from '~icons/mdi/currency-usd';
-  import IconCashOff from '~icons/mdi/currency-usd-off';
-  import IconCancel from '~icons/mdi/cancel';
-  import IconOpposed from '~icons/mdi/hand-back-right-off-outline';
-  import type { PageData } from './$types';
-  import IconCheck from '~icons/mdi/check';
-  import IconClose from '~icons/mdi/close';
-  import IconSortUp from '~icons/mdi/triangle-small-up';
-  import IconChevronRight from '~icons/mdi/chevron-right';
-  import IconSortDown from '~icons/mdi/triangle-small-down';
-  import { page } from '$app/stores';
-  import { formatDateTime } from '$lib/dates';
-  import { compareAsc, compareDesc, format, isSameDay } from 'date-fns';
-  import { zeus } from '$lib/zeus';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
-  import Badge from '$lib/components/Badge.svelte';
-  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
-  import { _registrationsQuery } from './+page';
   import { afterNavigate } from '$app/navigation';
-  import { tooltip } from '$lib/tooltip';
+  import { page } from '$app/stores';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import Badge from '$lib/components/Badge.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import { formatDateTime } from '$lib/dates';
+  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
   import { me } from '$lib/session';
   import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
+  import { zeus } from '$lib/zeus';
+  import { compareAsc, compareDesc, format, isSameDay } from 'date-fns';
+  import debounce from 'lodash.debounce';
+  import IconCancel from '~icons/mdi/cancel';
+  import IconCheck from '~icons/mdi/check';
+  import IconChevronRight from '~icons/mdi/chevron-right';
+  import { default as IconClear, default as IconClose } from '~icons/mdi/close';
+  import IconCash from '~icons/mdi/currency-usd';
+  import IconCashOff from '~icons/mdi/currency-usd-off';
+  import IconDownload from '~icons/mdi/download-outline';
+  import IconOpposed from '~icons/mdi/hand-back-right-off-outline';
+  import IconSearch from '~icons/mdi/magnify';
+  import IconSortDown from '~icons/mdi/triangle-small-down';
+  import IconSortUp from '~icons/mdi/triangle-small-up';
+  import type { PageData } from './$types';
+  import { _registrationsQuery } from './+page';
 
   let compact = false;
   let loadingMore = false;
   let csvExportError = '';
+  let searchQuery = '';
+  let loadingSearchResults = false;
+
+  let searchResults: typeof registrations = {
+    pageInfo: { endCursor: undefined, hasNextPage: false },
+    edges: [],
+  };
+
+  async function submitSearchQuery(q: string) {
+    if (!q) {
+      loadingSearchResults = false;
+      return;
+    }
+
+    loadingSearchResults = true;
+    await debounce(async () => {
+      const results = await $zeus.query({
+        searchRegistrations: [
+          {
+            eventUid: $page.params.uid,
+            groupUid: $page.params.group,
+            q,
+          },
+          {
+            registration: _registrationsQuery.edges.node,
+          },
+        ],
+      });
+
+      searchResults = {
+        pageInfo: { endCursor: '', hasNextPage: false },
+        edges: results.searchRegistrations.map(({ registration }) => ({
+          cursor: '',
+          node: registration,
+        })),
+      };
+      loadingSearchResults = false;
+    }, 500)();
+  }
 
   async function loadMore() {
     if (loadingMore) return;
@@ -236,6 +279,10 @@
   }
 
   $: compare = compareRegistrations(sortBy, sortDirection);
+  $: void submitSearchQuery(searchQuery);
+  $: displayedRegistrations = (searchQuery ? searchResults : registrations).edges.sort(
+    (a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id),
+  );
 </script>
 
 <header>
@@ -247,6 +294,26 @@
       profitsBreakdown.total,
     )} de ventes
   </section>
+
+  <div class="search">
+    <form
+      on:submit|preventDefault={async () => {
+        await submitSearchQuery(searchQuery);
+      }}
+    >
+      <InputText
+        label=""
+        actionIcon={searchQuery ? IconClear : undefined}
+        on:action={() => {
+          searchQuery = '';
+        }}
+        placeholder="Bénéficiaire, nom de ticket,..."
+        bind:value={searchQuery}
+      >
+        <span slot="before"><IconSearch></IconSearch></span>
+      </InputText>
+    </form>
+  </div>
 
   <div class="actions">
     {#await csv()}
@@ -317,201 +384,210 @@
       </tr>
     </thead>
     <tbody>
-      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, authorEmail, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod, verifiedAt, verifiedBy, opposed, opposedAt, opposedBy, cancelled, cancelledAt, cancelledBy } } (id)}
-        {@const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined)}
-        {@const code = id.replace(/^r:/, '').toUpperCase()}
-        <tr class:selected={rowIsSelected[id]}>
-          <td class="actions">
-            <InputCheckbox bind:value={rowIsSelected[id]} label="" />
-          </td>
-          <td>
-            {#if isSameDay(createdAt, new Date())}
-              {format(createdAt, 'HH:mm')}
-            {:else}
-              {formatDateTime(createdAt)}
-            {/if}
-          </td>
-          <td
-            class="centered"
-            class:danger={opposed || cancelled}
-            class:success={paid && verifiedAt}
-            class:warning={!paid}
-            use:tooltip={opposedAt || verifiedAt || cancelledAt
-              ? (opposedAt
-                  ? `Opposée le ${formatDateTime(opposedAt)} par ${opposedBy?.fullName ?? '?'}`
-                  : '') +
-                (verifiedAt ? ', ' : '') +
-                (verifiedAt
-                  ? `Scannée le ${formatDateTime(verifiedAt)} par ${verifiedBy?.fullName ?? '?'}`
-                  : '') +
-                (cancelledAt ? ', ' : '') +
-                (cancelledAt
-                  ? `Annulée le ${formatDateTime(cancelledAt)} par ${cancelledBy?.fullName ?? '?'}`
-                  : '')
-              : paid
-              ? 'Payée'
-              : 'Non payée'}
-          >
-            {#if opposed}
-              <IconOpposed />
-            {:else if cancelledAt}
-              <IconCancel />
-            {:else if verifiedAt && paid}
-              <IconCheck />
-            {:else if paid}
-              <IconCash />
-            {:else}
-              <IconCashOff />
-            {/if}
-          </td>
-          <td
-            class="centered"
-            use:tooltip={paymentMethod ? DISPLAY_PAYMENT_METHODS[paymentMethod] : 'Inconnue'}
-          >
-            <svelte:component this={PAYMENT_METHODS_ICONS[paymentMethod ?? 'Other']} />
-          </td>
-          <td>
-            {#if ticket.group}
-              {ticket.group.name} <IconChevronRight />
-            {/if}
-            {ticket.name}
-          </td>
-          {#if benef}
+      {#if loadingSearchResults}
+        <tr><td colspan={COLUMNS.length + 1}><LoadingSpinner></LoadingSpinner></td></tr>
+      {:else}
+        {#each displayedRegistrations as { node: registration, node: { paid, id, beneficiary, authorEmail, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod, verifiedAt, verifiedBy, opposed, opposedAt, opposedBy, cancelled, cancelledAt, cancelledBy } } (id)}
+          {@const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined)}
+          {@const code = id.replace(/^r:/, '').toUpperCase()}
+          <tr class:selected={rowIsSelected[id]}>
+            <td class="actions">
+              <InputCheckbox bind:value={rowIsSelected[id]} label="" />
+            </td>
             <td>
-              {#if compact}
-                <a href="/users/{benef.uid}">{benef.fullName}</a>
+              {#if isSameDay(createdAt, new Date())}
+                {format(createdAt, 'HH:mm')}
               {:else}
-                <AvatarPerson href="/users/{benef.uid}" {...benef} />
+                {formatDateTime(createdAt)}
               {/if}
             </td>
-            <td class="centered">
-              {#if benef.contributesTo.length > 0}
-                {#if compact && benef.contributesTo.find(({ name }) => name === 'AEn7')}
-                  <IconCheck />
-                {:else}
-                  {benef.contributesTo.map(({ name }) => name).join(', ')}
-                {/if}
-              {:else}
-                <IconClose />
-              {/if}
-            </td>
-            <td class="centered">
-              {benef.major?.shortName ?? ''}
-            </td>
-            <td class="centered">
-              {benef.yearTier}A
-            </td>
-          {:else}
-            <td colspan="4">{beneficiary || authorEmail} <Badge>exté</Badge> </td>
-          {/if}
-          <td>
-            {#if !authorIsBeneficiary}
-              {#if author}
-                {#if compact}
-                  <a href="/users/{author.uid}">{author.fullName}</a>
-                {:else}
-                  <AvatarPerson href="/users/{author.uid}" {...author} />
-                {/if}
-              {:else}
-                {authorEmail}
-              {/if}
-            {/if}
-          </td>
-          <td class="centered">
-            <a href="/bookings/{code}/"><code>{code}</code></a>
-          </td>
-          <td class="actions">
-            <ButtonGhost
-              danger={paid}
-              success={!paid}
-              help={'Marquer comme ' + (paid ? 'non payée' : 'payée')}
-              on:click={async () => updatePaidStatus(!paid, registration)}
+            <td
+              class="centered"
+              class:danger={opposed || cancelled}
+              class:success={paid && verifiedAt}
+              class:warning={!paid}
+              use:tooltip={opposedAt || verifiedAt || cancelledAt
+                ? (opposedAt
+                    ? `Opposée le ${formatDateTime(opposedAt)} par ${opposedBy?.fullName ?? '?'}`
+                    : '') +
+                  (verifiedAt ? ', ' : '') +
+                  (verifiedAt
+                    ? `Scannée le ${formatDateTime(verifiedAt)} par ${verifiedBy?.fullName ?? '?'}`
+                    : '') +
+                  (cancelledAt ? ', ' : '') +
+                  (cancelledAt
+                    ? `Annulée le ${formatDateTime(cancelledAt)} par ${
+                        cancelledBy?.fullName ?? '?'
+                      }`
+                    : '')
+                : paid
+                ? 'Payée'
+                : 'Non payée'}
             >
-              {#if paid}
-                <IconCashOff />
-              {:else}
+              {#if opposed}
+                <IconOpposed />
+              {:else if cancelledAt}
+                <IconCancel />
+              {:else if verifiedAt && paid}
+                <IconCheck />
+              {:else if paid}
                 <IconCash />
+              {:else}
+                <IconCashOff />
               {/if}
-            </ButtonGhost>
-            {#if !verifiedAt}
+            </td>
+            <td
+              class="centered"
+              use:tooltip={paymentMethod ? DISPLAY_PAYMENT_METHODS[paymentMethod] : 'Inconnue'}
+            >
+              <svelte:component this={PAYMENT_METHODS_ICONS[paymentMethod ?? 'Other']} />
+            </td>
+            <td>
+              {#if ticket.group}
+                {ticket.group.name} <IconChevronRight />
+              {/if}
+              {ticket.name}
+            </td>
+            {#if benef}
+              <td>
+                {#if compact}
+                  <a href="/users/{benef.uid}">{benef.fullName}</a>
+                {:else}
+                  <AvatarPerson href="/users/{benef.uid}" {...benef} />
+                {/if}
+              </td>
+              <td class="centered">
+                {#if benef.contributesTo.length > 0}
+                  {#if compact && benef.contributesTo.find(({ name }) => name === 'AEn7')}
+                    <IconCheck />
+                  {:else}
+                    {benef.contributesTo.map(({ name }) => name).join(', ')}
+                  {/if}
+                {:else}
+                  <IconClose />
+                {/if}
+              </td>
+              <td class="centered">
+                {benef.major?.shortName ?? ''}
+              </td>
+              <td class="centered">
+                {benef.yearTier}A
+              </td>
+            {:else}
+              <td colspan="4">{beneficiary || authorEmail} <Badge>exté</Badge> </td>
+            {/if}
+            <td>
+              {#if !authorIsBeneficiary}
+                {#if author}
+                  {#if compact}
+                    <a href="/users/{author.uid}">{author.fullName}</a>
+                  {:else}
+                    <AvatarPerson href="/users/{author.uid}" {...author} />
+                  {/if}
+                {:else}
+                  {authorEmail}
+                {/if}
+              {/if}
+            </td>
+            <td class="centered">
+              <a href="/bookings/{code}/"><code>{code}</code></a>
+            </td>
+            <td class="actions">
               <ButtonGhost
-                danger={Boolean(verifiedAt)}
-                success={!verifiedAt}
-                help={'Vérifier la réservation'}
-                on:click={async () => {
-                  await updatePaidStatus(true, registration);
-                  const { verifyRegistration } = await $zeus.mutate({
-                    verifyRegistration: [
-                      {
-                        eventUid: $page.params.uid,
-                        groupUid: $page.params.group,
-                        id,
-                      },
-                      {
-                        __typename: true,
-                        '...on Error': {
-                          message: true,
+                danger={paid}
+                success={!paid}
+                help={'Marquer comme ' + (paid ? 'non payée' : 'payée')}
+                on:click={async () => updatePaidStatus(!paid, registration)}
+              >
+                {#if paid}
+                  <IconCashOff />
+                {:else}
+                  <IconCash />
+                {/if}
+              </ButtonGhost>
+              {#if !verifiedAt}
+                <ButtonGhost
+                  danger={Boolean(verifiedAt)}
+                  success={!verifiedAt}
+                  help={'Vérifier la réservation'}
+                  on:click={async () => {
+                    await updatePaidStatus(true, registration);
+                    const { verifyRegistration } = await $zeus.mutate({
+                      verifyRegistration: [
+                        {
+                          eventUid: $page.params.uid,
+                          groupUid: $page.params.group,
+                          id,
                         },
-                        '...on MutationVerifyRegistrationSuccess': {
-                          data: {
-                            registration: {
-                              paid: true,
-                              verifiedAt: true,
-                              verifiedBy: {
-                                uid: true,
-                                pictureFile: true,
-                                fullName: true,
+                        {
+                          __typename: true,
+                          '...on Error': {
+                            message: true,
+                          },
+                          '...on MutationVerifyRegistrationSuccess': {
+                            data: {
+                              registration: {
+                                paid: true,
+                                verifiedAt: true,
+                                verifiedBy: {
+                                  uid: true,
+                                  pictureFile: true,
+                                  fullName: true,
+                                },
                               },
                             },
                           },
                         },
-                      },
-                    ],
-                  });
+                      ],
+                    });
 
-                  if (verifyRegistration.__typename === 'Error') {
-                    toasts.error(`Impossible de vérifier ${id}`, verifyRegistration.message);
-                    return;
-                  }
+                    if (verifyRegistration.__typename === 'Error') {
+                      toasts.error(`Impossible de vérifier ${id}`, verifyRegistration.message);
+                      return;
+                    }
 
-                  if (verifyRegistration.__typename === 'MutationVerifyRegistrationSuccess') {
-                    registrations.edges[
-                      registrations.edges.findIndex((r) => r.node.id === registration.id)
-                    ].node.verifiedAt = verifyRegistration.data.registration?.verifiedAt;
-                    registrations.edges[
-                      registrations.edges.findIndex((r) => r.node.id === registration.id)
-                    ].node.verifiedBy = verifyRegistration.data.registration?.verifiedBy;
-                  }
-                }}
-              >
-                <IconCheck />
-              </ButtonGhost>
-            {/if}
-            {#if !opposed}
-              <ButtonGhost
-                danger
-                help={'Opposer la réservation'}
-                on:click={async () => {
-                  await oppose(registration);
-                }}
-              >
-                <IconOpposed />
-              </ButtonGhost>
-            {/if}
-          </td>
-        </tr>
-      {:else}
-        <tr>
-          <td colspan="10">Aucune réservation pour le moment.</td>
-        </tr>
-      {/each}
+                    if (verifyRegistration.__typename === 'MutationVerifyRegistrationSuccess') {
+                      registrations.edges[
+                        registrations.edges.findIndex((r) => r.node.id === registration.id)
+                      ].node.verifiedAt = verifyRegistration.data.registration?.verifiedAt;
+                      registrations.edges[
+                        registrations.edges.findIndex((r) => r.node.id === registration.id)
+                      ].node.verifiedBy = verifyRegistration.data.registration?.verifiedBy;
+                    }
+                  }}
+                >
+                  <IconCheck />
+                </ButtonGhost>
+              {/if}
+              {#if !opposed}
+                <ButtonGhost
+                  danger
+                  help={'Opposer la réservation'}
+                  on:click={async () => {
+                    await oppose(registration);
+                  }}
+                >
+                  <IconOpposed />
+                </ButtonGhost>
+              {/if}
+            </td>
+          </tr>
+        {:else}
+          <tr>
+            <td colspan={COLUMNS.length + 1}
+              >{#if searchQuery}Aucun résultat{:else}
+                Aucune réservation pour le moment.{/if}</td
+            >
+          </tr>
+        {/each}
+      {/if}
     </tbody>
   </table>
 
-  {#if registrations.pageInfo.hasNextPage}
+  {#if !searchQuery && registrations.pageInfo.hasNextPage}
     <section class="load-more">
       <ButtonSecondary
-        help={`${registrations.edges.length}/${registrationsCounts.total} chargées`}
+        help={`${displayedRegistrations.length}/${registrationsCounts.total} chargées`}
         on:click={loadMore}
         loading={loadingMore}>Charger plus</ButtonSecondary
       >
@@ -532,6 +608,11 @@
     gap: 2rem;
     align-items: center;
     justify-content: center;
+  }
+
+  header .search {
+    max-width: 600px;
+    margin: 0 auto 1rem;
   }
 
   header h1 {

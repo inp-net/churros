@@ -127,3 +127,95 @@ INSERT
 	OR
 UPDATE
 	ON "Article" FOR each ROW EXECUTE PROCEDURE update_article_search();
+
+
+
+-- Registration
+CREATE OR REPLACE FUNCTION update_registration_search() RETURNS TRIGGER AS $$
+DECLARE
+    author_firstName text := '';
+author_lastName text := '';
+ticket_name text := '';
+ticket_description text := '';
+author_graduationYear text := '';
+ticket_price text := '';
+BEGIN
+    author_firstName := (
+                SELECT "firstName"
+                FROM "User"
+                WHERE "User"."id" = NEW."authorId"
+            );
+            
+author_lastName := (
+                SELECT "lastName"
+                FROM "User"
+                WHERE "User"."id" = NEW."authorId"
+            );
+            
+ticket_name := (
+                SELECT "name"
+                FROM "Ticket"
+                WHERE "Ticket"."id" = NEW."ticketId"
+            );
+            
+ticket_description := (
+                SELECT "description"
+                FROM "Ticket"
+                WHERE "Ticket"."id" = NEW."ticketId"
+            );
+            
+author_graduationYear := (
+                SELECT "graduationYear"
+                FROM "User"
+                WHERE "User"."id" = NEW."authorId"
+            );
+            
+ticket_price := (
+                SELECT "price"
+                FROM "Ticket"
+                WHERE "Ticket"."id" = NEW."ticketId"
+            );
+            
+
+    NEW."search" := setweight(to_tsvector('french', coalesce(author_firstName::text, '')), 'A')||setweight(to_tsvector('french', coalesce(author_lastName::text, '')), 'A')||setweight(to_tsvector('french', coalesce(ticket_name::text, '')), 'B')||setweight(to_tsvector('french', coalesce(ticket_description::text, '')), 'C')||setweight(to_tsvector('french', coalesce(author_graduationYear::text, '')), 'C')||setweight(to_tsvector('french', coalesce(ticket_price::text, '')), 'D');
+
+    RETURN NEW;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_registration_search_trigger before INSERT OR UPDATE ON "Registration" FOR EACH ROW EXECUTE PROCEDURE update_registration_search();
+
+
+
+
+-- Document
+CREATE OR REPLACE FUNCTION update_document_search() RETURNS TRIGGER AS $$
+DECLARE
+    subject_name text := '';
+uploader_firstName text := '';
+uploader_lastName text := '';
+BEGIN
+    subject_name := (
+                SELECT "name"
+                FROM "Subject"
+                WHERE "Subject"."id" = NEW."subjectId"
+            );
+            
+uploader_firstName := (
+                SELECT "firstName"
+                FROM "User"
+                WHERE "User"."id" = NEW."uploaderId"
+            );
+            
+uploader_lastName := (
+                SELECT "lastName"
+                FROM "User"
+                WHERE "User"."id" = NEW."uploaderId"
+            );
+            
+
+    NEW."search" := setweight(to_tsvector('french', coalesce(NEW."title"::text, '')), 'A')||setweight(to_tsvector('french', coalesce(NEW."description"::text, '')), 'B')||setweight(to_tsvector('french', coalesce(subject_name::text, '')), 'B')||setweight(to_tsvector('french', coalesce(uploader_firstName::text, '')), 'C')||setweight(to_tsvector('french', coalesce(uploader_lastName::text, '')), 'C');
+
+    RETURN NEW;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_document_search_trigger before INSERT OR UPDATE ON "Document" FOR EACH ROW EXECUTE PROCEDURE update_document_search();

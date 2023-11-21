@@ -574,6 +574,10 @@ model Registration {
   opposedAt        DateTime?
   cancelledBy      User?             @relation(name: "cancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull, onUpdate: Cascade)
   cancelledAt      DateTime?
+
+  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+
+  @@index([search], type: Gin)
 }
 
 enum PaymentMethod {
@@ -769,7 +773,10 @@ model Document {
   comments  Comment[]
   reactions Reaction[]
 
+  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+
   @@unique([subjectId, uid])
+  @@index([search], type: Gin)
 }
 
 model Comment {
