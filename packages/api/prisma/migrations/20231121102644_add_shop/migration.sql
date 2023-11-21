@@ -87,6 +87,9 @@ ALTER TABLE "StudentAssociation" ALTER COLUMN "id" SET DEFAULT nanoid('ae:');
 ALTER TABLE "Subject" ALTER COLUMN "id" SET DEFAULT nanoid('subj:');
 
 -- AlterTable
+ALTER TABLE "TeachingUnit" ALTER COLUMN "id" SET DEFAULT nanoid('ue:');
+
+-- AlterTable
 ALTER TABLE "Ticket" ALTER COLUMN "id" SET DEFAULT nanoid('t:');
 
 -- AlterTable
@@ -135,9 +138,10 @@ CREATE TABLE "ShopPayment" (
     "userId" TEXT NOT NULL,
     "paid" BOOLEAN NOT NULL DEFAULT false,
     "quantity" INTEGER NOT NULL DEFAULT 1,
+    "totalPrice" DOUBLE PRECISION NOT NULL,
+    "paymentMethod" "PaymentMethod" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "paymentMethod" "PaymentMethod" NOT NULL,
 
     CONSTRAINT "ShopPayment_pkey" PRIMARY KEY ("id")
 );
