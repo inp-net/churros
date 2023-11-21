@@ -91,7 +91,8 @@ export const GroupType = builder.prismaNode('Group', {
     services: t.relation('services'),
     links: t.relation('links'),
     members: t.relation('members', {
-      authScopes: { student: true },
+      // marche pas même quand ça devrait
+      // authScopes: { student: true },
       query: {
         orderBy: [
           { president: 'desc' },
