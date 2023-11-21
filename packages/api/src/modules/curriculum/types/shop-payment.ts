@@ -166,6 +166,7 @@ builder.mutationField('upsertShopPayment', (t) =>
           user: { connect: { uid: userUid } },
           shopItem: { connect: { id: shopItem.id } },
           quantity,
+          totalPrice: shopItem.price * quantity,
           paymentMethod: paymentMethod as PaymentMethodPrisma,
           paid: shopItem.price === 0,
         },
@@ -173,6 +174,7 @@ builder.mutationField('upsertShopPayment', (t) =>
           user: { connect: { uid: userUid } },
           shopItem: { connect: { id: shopItem.id } },
           quantity,
+          totalPrice: shopItem.price * quantity,
           paymentMethod: paymentMethod as PaymentMethodPrisma,
         },
       });
@@ -294,9 +296,7 @@ async function pay(
       return new Promise((_resolve, reject) => {
         reject(
           new GraphQLError(
-            `Attempt to pay ${shopPayment.shopItem.groupId} ${
-              shopPayment.shopItem.price * shopPayment.quantity
-            } from ${from} by ${by}: not implemented`,
+            `Attempt to pay ${shopPayment.shopItem.groupId} ${shopPayment.totalPrice} from ${from} by ${by}: not implemented`,
           ),
         );
       });

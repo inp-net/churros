@@ -931,46 +931,47 @@ model Promotion {
 }
 
 model Picture {
-  id       String   @id @default(dbgenerated("nanoid('picfile:')"))
-  path     String   @db.VarChar(255)
-  position Int      @default(0)
+  id        String     @id @default(dbgenerated("nanoid('picfile:')"))
+  path      String     @db.VarChar(255)
+  position  Int        @default(0)
   ShopItems ShopItem[]
 }
 
 model ShopItem {
-  id       String    @id @default(dbgenerated("nanoid('shopitem:')"))
-  name     String    @db.VarChar(255)
-  price    Float     @default(0)
-  stock    Int       @default(0)
-  max      Int        @default(0)
-  visibility  Visibility @default(Private)
-  archived Boolean   @default(false)
-  description String @default("") @db.Text
-  startsAt    DateTime?
-  endsAt      DateTime?
+  id                    String          @id @default(dbgenerated("nanoid('shopitem:')"))
+  name                  String          @db.VarChar(255)
+  price                 Float           @default(0)
+  stock                 Int             @default(0)
+  max                   Int             @default(0)
+  visibility            Visibility      @default(Private)
+  archived              Boolean         @default(false)
+  description           String          @default("") @db.Text
+  startsAt              DateTime?
+  endsAt                DateTime?
   lydiaAccountId        String?
-  groupId     String
-  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  allowedPaymentMethods PaymentMethod[] @default([]) // empty means nothing
+  groupId               String
+  group                 Group           @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  allowedPaymentMethods PaymentMethod[] @default([])
   pictures              Picture[]
   shopPayments          ShopPayment[]
-  lydiaAccount          LydiaAccount? @relation(fields: [lydiaAccountId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  lydiaAccount          LydiaAccount?   @relation(fields: [lydiaAccountId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model ShopPayment {
-  id       String    @id @default(dbgenerated("nanoid('shoppayment:')"))
-  shopItemId String
-  userId String
-  paid Boolean @default(false)
-  quantity Int @default(1)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id            String        @id @default(dbgenerated("nanoid('shoppayment:')"))
+  shopItemId    String
+  userId        String
+  paid          Boolean       @default(false)
+  quantity      Int           @default(1)
+  totalPrice    Float
   paymentMethod PaymentMethod
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
-  shopItem ShopItem @relation(fields: [shopItemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  shopItem         ShopItem          @relation(fields: [shopItemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   lydiaTransaction LydiaTransaction?
 }
