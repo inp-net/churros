@@ -473,6 +473,7 @@ __metadata:
     svelte-store2storage: "npm:^1.0.0"
     svelte-tenor: "npm:^0.2.0"
     sveltejs-tippy: "npm:^3.0.0"
+    sveltekit-search-params: "npm:^1.0.15"
     tslib: "npm:^2.6.2"
     typescript: "npm:^5.2.2"
     ua-parser-js: "npm:^1.0.37"
@@ -10784,6 +10785,16 @@ __metadata:
   dependencies:
     tippy.js: "npm:~6.0.1"
   checksum: cdc04bdedb28aeed99bbf8ddf1df4ef5c21ca1569f665b1fd3232800d7eaa7d699f43704f98174b0ee4be1d76921b841873cf83061c2dfa450628b1f13f4fcde
+  languageName: node
+  linkType: hard
+
+"sveltekit-search-params@npm:^1.0.15":
+  version: 1.0.15
+  resolution: "sveltekit-search-params@npm:1.0.15"
+  peerDependencies:
+    "@sveltejs/kit": ^1.0.0
+    svelte: ^3.55.0 || ^4.0.0
+  checksum: 35835a68ea49d6556e1b3e6807ccb7653ce5ba62d046c73433e09b4034e4c90e86c5542f56b76f4b0435372a6bbc2e92e3dada7fa49e287411984a836b46803c
   languageName: node
   linkType: hard
 

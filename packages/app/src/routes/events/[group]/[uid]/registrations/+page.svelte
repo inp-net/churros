@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import Badge from '$lib/components/Badge.svelte';
@@ -16,6 +15,8 @@
   import { zeus } from '$lib/zeus';
   import { compareAsc, compareDesc, format, isSameDay } from 'date-fns';
   import debounce from 'lodash.debounce';
+  import type { Writable } from 'svelte/store';
+  import { queryParam } from 'sveltekit-search-params';
   import IconCancel from '~icons/mdi/cancel';
   import IconCheck from '~icons/mdi/check';
   import IconChevronRight from '~icons/mdi/chevron-right';
@@ -33,8 +34,11 @@
   let compact = false;
   let loadingMore = false;
   let csvExportError = '';
-  let searchQuery = '';
   let loadingSearchResults = false;
+  const searchQuery = queryParam('q', {
+    encode: (v) => v || undefined,
+    decode: (v) => v ?? '',
+  }) as Writable<string>;
 
   let searchResults: typeof registrations = {
     pageInfo: { endCursor: undefined, hasNextPage: false },
@@ -135,32 +139,34 @@
     ['code', 'Code de réservation'],
   ] as const;
 
-  function fromSortingQueryParam(sorting: string): [typeof sortBy, typeof sortDirection] {
+  function fromSortingQueryParam(sorting: string): SortOptions {
     // If sorting starts with "-", it's descending, if it starts with "+" (or nothing), it's ascending
     const desc = sorting.startsWith('-');
     const key = sorting.replace(/^-+/, '');
-    return [key as typeof sortBy, desc ? 'descending' : 'ascending'];
+    return {
+      by: key as typeof $sort.by,
+      direction: desc ? 'descending' : 'ascending',
+    };
   }
 
-  function toSortingQueryParam(
-    sortBy: (typeof COLUMNS)[number][0],
-    direction: typeof sortDirection,
-  ) {
-    return `${direction === 'descending' ? '-' : ''}${sortBy}`;
+  function toSortingQueryParam(by: SortOptions['by'], direction: SortOptions['direction']) {
+    return `${direction === 'descending' ? '-' : ''}${by}`;
   }
 
-  let sortBy: (typeof COLUMNS)[number][0] = 'date';
-  let sortDirection: 'ascending' | 'descending' = 'descending';
-
-  afterNavigate(() => {
-    [sortBy, sortDirection] = fromSortingQueryParam($page.url.searchParams.get('sort') ?? '-date');
-  });
+  type SortOptions = {
+    by: (typeof COLUMNS)[number][0];
+    direction: 'ascending' | 'descending';
+  };
+  const sort = queryParam<SortOptions>('sort', {
+    decode: (v) => fromSortingQueryParam(v ?? '-date'),
+    encode: (v) => toSortingQueryParam(v.by, v.direction),
+  }) as Writable<SortOptions>;
 
   type Registration = (typeof registrations.edges)[number]['node'];
 
   function compareRegistrations(
-    sortBy: (typeof COLUMNS)[number][0],
-    sortDirection: 'ascending' | 'descending',
+    sortBy: SortOptions['by'],
+    sortDirection: SortOptions['direction'],
   ): (a: Registration, b: Registration) => number {
     const desc = sortDirection === 'descending';
     const benefUser = (r: Registration) =>
@@ -278,11 +284,11 @@
     }
   }
 
-  $: compare = compareRegistrations(sortBy, sortDirection);
-  $: void submitSearchQuery(searchQuery);
-  $: displayedRegistrations = (searchQuery ? searchResults : registrations).edges.sort(
-    (a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id),
-  );
+  $: compare = compareRegistrations($sort.by, $sort.direction);
+  $: void submitSearchQuery($searchQuery);
+  $: displayedRegistrations = (
+    $searchQuery && !loadingSearchResults ? searchResults : registrations
+  ).edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id));
 </script>
 
 <header>
@@ -298,17 +304,17 @@
   <div class="search">
     <form
       on:submit|preventDefault={async () => {
-        await submitSearchQuery(searchQuery);
+        await submitSearchQuery($searchQuery);
       }}
     >
       <InputText
         label=""
-        actionIcon={searchQuery ? IconClear : undefined}
+        actionIcon={$searchQuery ? IconClear : undefined}
         on:action={() => {
-          searchQuery = '';
+          $searchQuery = '';
         }}
         placeholder="Bénéficiaire, nom de ticket,..."
-        bind:value={searchQuery}
+        bind:value={$searchQuery}
       >
         <span slot="before"><IconSearch></IconSearch></span>
       </InputText>
@@ -348,29 +354,16 @@
         <th />
         {#each COLUMNS as [key, label] (key)}
           <th
-            class:sorting={sortBy === key}
+            class:sorting={$sort.by === key}
             on:click={() => {
-              $page.url.searchParams.set(
-                'sort',
-                toSortingQueryParam(
-                  key,
-                  sortBy === key
-                    ? sortDirection === 'ascending'
-                      ? 'descending'
-                      : 'ascending'
-                    : 'ascending',
-                ),
-              );
-              window.history.pushState(undefined, '', $page.url.href);
-              [sortBy, sortDirection] = fromSortingQueryParam(
-                $page.url.searchParams.get('sort') ?? '-date',
-              );
+              $sort.by = key;
+              $sort.direction = $sort.direction === 'ascending' ? 'descending' : 'ascending';
             }}
             ><div class="inner">
               {label}
               <div class="sort-icon">
-                {#if sortBy === key}
-                  {#if sortDirection === 'ascending'}
+                {#if $sort.by === key}
+                  {#if $sort.direction === 'ascending'}
                     <IconSortUp />
                   {:else}
                     <IconSortDown />
@@ -490,7 +483,7 @@
               {/if}
             </td>
             <td class="centered">
-              <a href="/bookings/{code}/"><code>{code}</code></a>
+              <a href="/bookings/{code}?utm_source=event-page"><code>{code}</code></a>
             </td>
             <td class="actions">
               <ButtonGhost

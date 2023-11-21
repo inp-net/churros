@@ -55,6 +55,7 @@
     "svelte-preprocess": "^5.0.4",
     "svelte-seo": "^1.5.4",
     "svelte-store2storage": "^1.0.0",
+    "sveltekit-search-params": "^1.0.15",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "unplugin-icons": "^0.17.1",
