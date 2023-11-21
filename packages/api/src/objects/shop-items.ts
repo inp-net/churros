@@ -31,9 +31,8 @@ export const ShopItemType = builder.prismaObject('ShopItem', {
           where: { id },
           include: { shopPayments: { where: { paid: true } } },
         });
-        if (!item) 
-          throw new GraphQLError('Item not found');
-        
+        if (!item) throw new GraphQLError('Item not found');
+
         const sold = item.shopPayments.reduce((acc, payment) => acc + payment.quantity, 0);
         return item.stock - sold;
       },
@@ -97,7 +96,7 @@ export async function visibleShopPrismaQuery(
     };
   }
 
- if (group?.members.length) {
+  if (group?.members.length) {
     return {
       OR: [
         {
@@ -113,7 +112,7 @@ export async function visibleShopPrismaQuery(
     };
   }
 
- if (group?.studentAssociation?.school?.uid === user.schoolUid) {
+  if (group?.studentAssociation?.school?.uid === user.schoolUid) {
     return {
       OR: [
         {
@@ -141,9 +140,7 @@ builder.queryField('shopItems', (t) =>
       let visibility: VisibilityQuery = {
         visibility: Visibility.Public,
       };
-      if (user) 
-        visibility = await visibleShopPrismaQuery(groupUid, user);
-      
+      if (user) visibility = await visibleShopPrismaQuery(groupUid, user);
 
       return prisma.shopItem.findMany({
         ...query,
@@ -188,9 +185,7 @@ builder.queryField('shopItem', (t) =>
         },
       });
 
-      if (!item) 
-        throw new GraphQLError('Item not found');
-      
+      if (!item) throw new GraphQLError('Item not found');
 
       // Switch case
       switch (item.visibility) {
@@ -200,16 +195,14 @@ builder.queryField('shopItem', (t) =>
         }
 
         case Visibility.GroupRestricted: {
-          if (item.group.members.length > 0) 
-            return item;
-          
+          if (item.group.members.length > 0) return item;
+
           throw new GraphQLError('Not allowed to view item');
         }
 
         case Visibility.Private: {
-          if (onBoard(item.group.members[0])) 
-            return item;
-          
+          if (onBoard(item.group.members[0])) return item;
+
           throw new GraphQLError('Not allowed to view item');
         }
 
@@ -261,13 +254,9 @@ builder.mutationField('upsertShopItem', (t) =>
         },
       });
 
-      if (!group) 
-        return false;
-      
+      if (!group) return false;
 
-      if (!onBoard(group.members[0])) 
-        return false;
-      
+      if (!onBoard(group.members[0])) return false;
 
       return true;
     },

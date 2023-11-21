@@ -32,7 +32,7 @@ builder.queryField('orders', (t) =>
   t.prismaField({
     type: [ShopPaymentType],
     args: {
-      groupUid: t.arg.string(),
+      groupUid: t.arg.string({ required: false }),
     },
     async resolve(query, _, { groupUid }, { user }) {
       return prisma.shopPayment.findMany({
@@ -43,7 +43,7 @@ builder.queryField('orders', (t) =>
           },
           shopItem: {
             group: {
-              uid: groupUid,
+              uid: groupUid ?? undefined,
             },
           },
         },
@@ -103,9 +103,8 @@ builder.mutationField('upsertShopPayment', (t) =>
 
       switch (shopItem.visibility) {
         case Visibility.Private: {
-          if (!onBoard(shopItem.group.members[0])) 
-            return false;
-          
+          if (!onBoard(shopItem.group.members[0])) return false;
+
           break;
         }
 
@@ -115,16 +114,14 @@ builder.mutationField('upsertShopPayment', (t) =>
         }
 
         case Visibility.GroupRestricted: {
-          if (shopItem.group.members.length > 0) 
-            break;
-          
+          if (shopItem.group.members.length > 0) break;
+
           return false;
         }
 
         case Visibility.SchoolRestricted: {
-          if (shopItem.group.studentAssociation?.school.uid === user.schoolUid) 
-            break;
-          
+          if (shopItem.group.studentAssociation?.school.uid === user.schoolUid) break;
+
           return false;
         }
 
@@ -159,11 +156,8 @@ builder.mutationField('upsertShopPayment', (t) =>
           0,
         );
 
-      if (stockLeft < quantity) 
-        throw new GraphQLError('Not enough stock');
-       else if (userLeft < quantity) 
-        throw new GraphQLError('Too much quantity');
-      
+      if (stockLeft < quantity) throw new GraphQLError('Not enough stock');
+      else if (userLeft < quantity) throw new GraphQLError('Too much quantity');
 
       const shopPayment = await prisma.shopPayment.upsert({
         ...query,
@@ -253,11 +247,8 @@ builder.mutationField('paidShopPayment', (t) =>
           0,
         );
 
-      if (shopPayment.quantity > stockLeft) 
-        throw new GraphQLError('Not enough stock');
-       else if (shopPayment.quantity > userLeft) 
-        throw new GraphQLError('Too much quantity');
-      
+      if (shopPayment.quantity > stockLeft) throw new GraphQLError('Not enough stock');
+      else if (shopPayment.quantity > userLeft) throw new GraphQLError('Too much quantity');
 
       // Process payment
       await pay(user.uid, paymentMethod, shopPayment, phone);
