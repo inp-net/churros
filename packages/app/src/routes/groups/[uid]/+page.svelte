@@ -83,7 +83,7 @@
       } else if (group.selfJoinable) {
         joinModal.showModal();
       } else {
-        toasts.warn(`${group.name} n'est pas auto-joignable`);
+        toasts.warn(`${group.name} n'est pas en inscription libre`);
         $promptJoinGroup = false;
       }
     }
