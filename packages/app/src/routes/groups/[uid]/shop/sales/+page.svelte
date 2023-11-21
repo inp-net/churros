@@ -6,7 +6,7 @@
 
   export let data: PageData;
 
-  const { orders } = data;
+  const { shopItems } = data;
 
   let warningToastId: string;
 
@@ -21,20 +21,18 @@
   });
 </script>
 
-<h1>Mes achats</h1>
+<h1>Gestion de la boutique</h1>
 
 <div class="content">
-  {#if orders.length === 0}
-    <p class="text-center">Aucun article</p>
+  {#if shopItems.length === 0}
+    <ButtonPrimary href="create">Ajouter un produit</ButtonPrimary>
   {/if}
-  {#each orders as order}
+  {#each shopItems as item}
     <div>
-      <h2>{order.shopItem.name}</h2>
-      <p>{order.paid}</p>
-      <p>{order.totalPrice} €</p>
-      <ButtonPrimary href="/groups/{order.shopItem.group.uid}/shop/{order.shopItem.id}"
-        >Voir</ButtonPrimary
-      >
+      <h2>{item.name}</h2>
+      <p>{item.stockLeft}/{item.stock}</p>
+      <p>{item.price} €</p>
+      <ButtonPrimary href="/groups/{item.group.uid}/shop/sales/{item.id}">Voir</ButtonPrimary>
     </div>
   {/each}
 </div>

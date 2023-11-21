@@ -12,6 +12,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
           id: true,
           quantity: true,
           paid: true,
+          totalPrice: true,
           paymentMethod: true,
           shopItem: {
             id: true,
