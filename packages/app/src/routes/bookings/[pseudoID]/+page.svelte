@@ -39,6 +39,7 @@
     beneficiary,
     beneficiaryUser,
     authorIsBeneficiary,
+    authorEmail,
     paid,
     opposed,
     cancelled,
@@ -136,7 +137,7 @@
       <dt>Bénéficiaire</dt>
       <dd>
         {#if authorIsBeneficiary}
-          {author.fullName}
+          {author?.fullName ?? authorEmail}
         {:else if beneficiaryUser}
           {beneficiaryUser.fullName}
         {:else}
@@ -144,7 +145,7 @@
         {/if}
       </dd>
       <dt>Payée par</dt>
-      <dd>{author.fullName}</dd>
+      <dd>{author?.fullName ?? authorEmail}</dd>
       <dt>Place</dt>
       <dd>{ticket.name}</dd>
       <dt>Prix</dt>
@@ -163,7 +164,7 @@
     </dl>
   </section>
 
-  {#if !cancelled}
+  {#if !cancelled && $me}
     <section class="cancel">
       {#if !confirmingCancellation}
         <ButtonSecondary

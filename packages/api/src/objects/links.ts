@@ -27,7 +27,7 @@ export const LinkType = builder.prismaNode('Link', {
           let searchingIn: string | Record<string, unknown> | undefined = obj;
 
           for (const fragment of dotstring.split('.')) {
-            if (searchingIn === undefined) return;
+            if (!searchingIn) return;
             if (typeof searchingIn === 'string') return searchingIn;
 
             searchingIn = searchingIn[fragment.trim()] as

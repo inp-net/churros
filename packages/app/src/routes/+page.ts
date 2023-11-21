@@ -88,7 +88,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
     },
     { fetch, parent },
   );
-  if (me) {
+  if (me && !me.external) {
     const { birthdays } = await loadQuery(
       {
         birthdays: [

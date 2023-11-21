@@ -51,6 +51,12 @@
       "purpose": "any"
     },
     {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "/logo-masked.png",
       "sizes": "1000x1000",
       "type": "image/png",
@@ -66,5 +72,19 @@
       "keyword": "chur",
       "favicon_url": "https://churros.inpt.fr/favicon.ico"
     }
-  }
+  },
+  "shortcuts": [
+    {
+      "name": "Évènements",
+      "short_name": "Évènements",
+      "description": "Voir les évènements à venir",
+      "url": "/events/planning",
+      "icons": [
+        {
+          "src": "/icons/planning.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
 }

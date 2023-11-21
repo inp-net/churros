@@ -39,15 +39,18 @@ export function fullName(user: { firstName: string; lastName: string; nickname?:
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
   id: { field: 'id' },
-  grantScopes: ({ id }, { user }) => (user?.id === id ? ['me'] : []),
+  grantScopes: ({ id, majorId }, { user }) => [
+    ...(id === user?.id ? ['me'] : []),
+    ...(majorId ? ['student'] : []),
+  ],
   fields: (t) => ({
-    majorId: t.exposeID('majorId'),
+    majorId: t.exposeID('majorId', { nullable: true }),
     uid: t.exposeString('uid'),
     otherEmails: t.expose('otherEmails', {
       type: ['String'],
-      authScopes: { loggedIn: true, $granted: 'me' },
+      authScopes: { student: true, $granted: 'me' },
     }),
-    email: t.exposeString('email', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    email: t.exposeString('email', { authScopes: { student: true, $granted: 'me' } }),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
     fullName: t.field({
@@ -61,10 +64,15 @@ export const UserType = builder.prismaNode('User', {
         return yearTier(graduationYear);
       },
     }),
+    external: t.boolean({
+      resolve({ majorId }) {
+        return !majorId;
+      },
+    }),
 
     // Profile details
-    address: t.exposeString('address', { authScopes: { loggedIn: true, $granted: 'me' } }),
-    description: t.exposeString('description', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    address: t.exposeString('address', { authScopes: { student: true, $granted: 'me' } }),
+    description: t.exposeString('description', { authScopes: { student: true, $granted: 'me' } }),
     descriptionHtml: t.string({
       async resolve({ description }) {
         return toHtml(description);
@@ -73,13 +81,13 @@ export const UserType = builder.prismaNode('User', {
     birthday: t.expose('birthday', {
       type: DateTimeScalar,
       nullable: true,
-      authScopes: { loggedIn: true, $granted: 'me' },
+      authScopes: { student: true, $granted: 'me' },
     }),
     links: t.relation('links', {
-      authScopes: { loggedIn: true, $granted: 'me' },
+      authScopes: { student: true, $granted: 'me' },
     }),
-    nickname: t.exposeString('nickname', { authScopes: { loggedIn: true, $granted: 'me' } }),
-    phone: t.exposeString('phone', { authScopes: { loggedIn: true, $granted: 'me' } }),
+    nickname: t.exposeString('nickname', { authScopes: { student: true, $granted: 'me' } }),
+    phone: t.exposeString('phone', { authScopes: { student: true, $granted: 'me' } }),
     pictureFile: t.exposeString('pictureFile'),
     cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
     apprentice: t.exposeBoolean('apprentice'),
@@ -102,7 +110,7 @@ export const UserType = builder.prismaNode('User', {
     }),
     articles: t.relatedConnection('articles', {
       cursor: 'id',
-      authScopes: { loggedIn: true, $granted: 'me' },
+      authScopes: { student: true, $granted: 'me' },
       query: { orderBy: { publishedAt: 'desc' } },
     }),
     groups: t.relation('groups', {
@@ -113,12 +121,12 @@ export const UserType = builder.prismaNode('User', {
       authScopes: { $granted: 'me' },
       query: { orderBy: { createdAt: 'desc' } },
     }),
-    major: t.relation('major', { authScopes: { loggedIn: true, $granted: 'me' } }),
-    minor: t.relation('minor', { nullable: true, authScopes: { loggedIn: true, $granted: 'me' } }),
+    major: t.relation('major', { nullable: true, authScopes: { student: true, $granted: 'me' } }),
+    minor: t.relation('minor', { nullable: true, authScopes: { student: true, $granted: 'me' } }),
     managedEvents: t.relation('managedEvents'),
     enabledNotificationChannels: t.expose('enabledNotificationChannels', {
       type: [NotificationChannel],
-      authScopes: { loggedIn: true, $granted: 'me' },
+      authScopes: { student: true, $granted: 'me' },
     }),
     contributesWith: t.field({
       type: [ContributionOptionType],
@@ -267,7 +275,7 @@ builder.queryField('searchUsers', (t) =>
   t.field({
     type: [UserSearchResultType],
     args: { q: t.arg.string(), similarityCutoff: t.arg.float({ required: false }) },
-    authScopes: { loggedIn: true },
+    authScopes: { student: true },
     async resolve(_, { q, similarityCutoff }) {
       const matches = await fullTextSearch('User', q, {
         similarityCutoff: similarityCutoff ?? 0.08,
@@ -295,7 +303,7 @@ builder.queryField('birthdays', (t) =>
       activeOnly: t.arg({ type: 'Boolean', required: false }),
       width: t.arg({ type: 'Int', required: false }),
     },
-    authScopes: { loggedIn: true },
+    authScopes: { student: true },
     async resolve(query, _, { now, activeOnly, width }, { user }) {
       now = now ?? new Date();
       activeOnly = activeOnly ?? true;
@@ -332,7 +340,7 @@ builder.queryField('birthdays', (t) =>
                   schools: {
                     some: {
                       uid: {
-                        in: user.major.schools.map((s) => s.uid),
+                        in: user.major?.schools.map((s) => s.uid) ?? [],
                         not: 'inp',
                       },
                     },
@@ -358,7 +366,7 @@ builder.mutationField('updateUser', (t) =>
       uid: t.arg.string(),
       firstName: t.arg.string(),
       lastName: t.arg.string(),
-      majorId: t.arg.id(),
+      majorId: t.arg.id({ required: false }),
       minorId: t.arg.id({ required: false }),
       graduationYear: t.arg.int({ required: false }),
       email: t.arg.string(),
@@ -502,7 +510,7 @@ builder.mutationField('updateUser', (t) =>
         ...query,
         where: { uid },
         data: {
-          major: { connect: { id: majorId } },
+          major: majorId ? { connect: { id: majorId } } : { disconnect: true },
           minor: minorId ? { connect: { id: minorId } } : { disconnect: true },
           graduationYear: graduationYear ?? undefined,
           nickname,

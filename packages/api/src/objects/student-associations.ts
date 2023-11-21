@@ -33,7 +33,7 @@ builder.queryField('studentAssociations', (t) =>
       return prisma.studentAssociation.findMany({
         ...query,
         where:
-          canContributeOnly && user
+          canContributeOnly && user?.major
             ? {
                 contributionOptions: {
                   some: {
@@ -107,7 +107,7 @@ builder.mutationField('contribute', (t) =>
         );
       }
 
-      if (!contributionOption.offeredIn.majors.some((major) => user.major.id === major.id))
+      if (!contributionOption.offeredIn.majors.some((major) => user.major?.id === major.id))
         throw new GraphQLError("Cette option de cotisation n'est pas offerte à votre école");
 
       let { transaction, ...contribution } = await prisma.contribution.upsert({

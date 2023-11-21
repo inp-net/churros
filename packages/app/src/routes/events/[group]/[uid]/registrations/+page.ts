@@ -22,6 +22,7 @@ export const _registrationsQuery = Selector('QueryRegistrationsOfEventConnection
         fullName: true,
         pictureFile: true,
       },
+      authorEmail: true,
       author: {
         uid: true,
         pictureFile: true,

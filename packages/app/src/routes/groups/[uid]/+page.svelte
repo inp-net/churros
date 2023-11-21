@@ -216,13 +216,15 @@
       <div class="more">
         <ButtonInk icon={IconPeople} href="./members">Voir tous les membres</ButtonInk>
       </div>
-    {:else if !$me}
+    {:else if !clubBoard}
       <Alert theme="warning"
-        >Connectez-vous pour voir les membres du groupe <ButtonSecondary
-          insideProse
-          href="/login?{new URLSearchParams({ to: $page.url.pathname }).toString()}"
-          >Se connecter</ButtonSecondary
-        >
+        >{#if $me?.external}
+          Il faut être un élève pour voir les membres du groupe{:else}
+          Connectez-vous pour voir les membres du groupe <ButtonSecondary
+            insideProse
+            href="/login?{new URLSearchParams({ to: $page.url.pathname }).toString()}"
+            >Se connecter</ButtonSecondary
+          >{/if}
       </Alert>
     {/if}
   </section>

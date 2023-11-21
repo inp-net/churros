@@ -43,7 +43,7 @@
     firstName,
     graduationYear,
     lastName,
-    majorId: majorId!,
+    majorId,
     phone,
     password,
     passwordConfirmation,
@@ -53,6 +53,7 @@
 
   let result: boolean | undefined;
   let loading = false;
+  let isStudent = Boolean(data.userCandidate.schoolUid);
   let formErrors: ZodFormattedError<typeof args> | undefined;
   const register = async () => {
     if (loading) return;
@@ -123,7 +124,7 @@
         <strong>Votre inscription est en attente de validation manuelle.</strong><br />
         Cependant, vous pouvez toujours compléter ou corriger les informations ci-dessous.
       </Alert>
-    {:else if data.userCandidate.schoolUid === null}
+    {:else if isStudent && data.userCandidate.schoolUid === null}
       <Alert theme="warning" inline>
         <strong>
           Votre compte n'est pas encore lié à une école, votre inscription sera validée
@@ -153,38 +154,41 @@
         bind:value={lastName}
       />
     </div>
-    <div class="side-by-side">
-      <InputField label="Filière">
-        <InputSearchObject
-          search={(q) =>
-            new Fuse(
-              data.schoolGroups.flatMap(({ majors }) => majors),
-              {
-                keys: ['name', 'shortName'],
-                threshold: 0.3,
-              },
-            )
-              .search(q)
-              .map(({ item }) => item)}
-          bind:value={majorId}
-          object={data.schoolGroups
-            .flatMap(({ majors }) => majors)
-            .find((major) => major.id === majorId)}
-          labelKey="shortName"
-        >
-          <svelte:fragment slot="item" let:item>
-            {asmajor(item).shortName} · {asmajor(item)
-              .schools.map(({ name }) => name)
-              .join(', ')}
-          </svelte:fragment>
-        </InputSearchObject>
-      </InputField>
-      <InputNumber
-        bind:value={graduationYear}
-        label="Promotion"
-        errors={formErrors?.graduationYear?._errors}
-      />
-    </div>
+    <InputCheckbox bind:value={isStudent} label="Je suis étudiant·e à Toulouse INP"></InputCheckbox>
+    {#if isStudent}
+      <div class="side-by-side">
+        <InputField label="Filière">
+          <InputSearchObject
+            search={(q) =>
+              new Fuse(
+                data.schoolGroups.flatMap(({ majors }) => majors),
+                {
+                  keys: ['name', 'shortName'],
+                  threshold: 0.3,
+                },
+              )
+                .search(q)
+                .map(({ item }) => item)}
+            bind:value={majorId}
+            object={data.schoolGroups
+              .flatMap(({ majors }) => majors)
+              .find((major) => major.id === majorId)}
+            labelKey="shortName"
+          >
+            <svelte:fragment slot="item" let:item>
+              {asmajor(item).shortName} · {asmajor(item)
+                .schools.map(({ name }) => name)
+                .join(', ')}
+            </svelte:fragment>
+          </InputSearchObject>
+        </InputField>
+        <InputNumber
+          bind:value={graduationYear}
+          label="Promotion"
+          errors={formErrors?.graduationYear?._errors}
+        />
+      </div>
+    {/if}
 
     <div class="side-by-side">
       <InputText

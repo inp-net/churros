@@ -30,8 +30,8 @@ model User {
   otherEmails                 String[]              @db.VarChar(255)
   firstName                   String                @db.VarChar(255)
   lastName                    String                @db.VarChar(255)
-  majorId                     String
-  major                       Major                 @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  majorId                     String?
+  major                       Major?                @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   minor                       Minor?                @relation(fields: [minorId], references: [id])
   minorId                     String?
   graduationYear              Int
@@ -80,7 +80,7 @@ model User {
   reactions                 Reaction[]
 
   // For full-text search
-  search         Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@unique([schoolServer, schoolUid])
   @@index([search], type: Gin)
@@ -429,7 +429,7 @@ model Article {
   reactions Reaction[]
 
   // For full-text search
-  search    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@unique([groupId, uid])
   @@index([search], type: Gin)
@@ -473,7 +473,7 @@ model Event {
   reactions      Reaction[]
 
   // For full-text search
-  search            Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@unique([groupId, uid])
   @@index([search], type: Gin)
@@ -555,7 +555,8 @@ model Registration {
   id            String         @id @default(dbgenerated("nanoid('r:')"))
   ticketId      String
   beneficiary   String
-  authorId      String
+  authorId      String?
+  authorEmail   String         @default("")
   verifiedById  String?
   opposedById   String?
   cancelledById String?
@@ -566,7 +567,7 @@ model Registration {
 
   lydiaTransaction LydiaTransaction?
   ticket           Ticket            @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  author           User              @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  author           User?             @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   verifiedBy       User?             @relation(name: "verifiedBy", fields: [verifiedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   verifiedAt       DateTime?
   opposedBy        User?             @relation(name: "opposedBy", fields: [opposedById], references: [id], onUpdate: Cascade, onDelete: SetNull)

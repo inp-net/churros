@@ -33,7 +33,7 @@
 
   $: usersRegistration = tickets
     .flatMap((t) => t.registrations)
-    .filter(({ beneficiary, author }) => author.uid === $me?.uid || beneficiary === $me?.uid);
+    .filter(({ beneficiary, author }) => author?.uid === $me?.uid || beneficiary === $me?.uid);
 
   const bookingURL = (registrationId: string) =>
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
@@ -48,7 +48,7 @@
     {#each usersRegistration as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id }}
       <li>
         <ButtonPrimary href={bookingURL(id)}
-          >{#if authorIsBeneficiary || author.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
+          >{#if authorIsBeneficiary || author?.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
               {beneficiaryUser.lastName}{:else}{beneficiary}{/if}{/if}
           <span class="ticket-name">{ticket.name}</span></ButtonPrimary
         >

@@ -104,7 +104,7 @@
       updateUser: [
         {
           ...data.user,
-          majorId: data.user.major.id,
+          majorId: data.user.major?.id,
           godparentUid: '',
           contributesWith: undefined,
         },

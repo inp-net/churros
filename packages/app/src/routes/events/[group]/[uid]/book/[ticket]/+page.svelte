@@ -37,6 +37,7 @@
 
   export let data: PageData;
   let beneficiary: string;
+  let authorEmail = '';
   let payingForThemself = true;
   const {
     id,
@@ -61,6 +62,7 @@
           paymentMethod: method,
           beneficiary: payingForThemself ? '' : beneficiary,
           ticketId: id,
+          authorEmail,
         },
         {
           __typename: true,
@@ -196,6 +198,10 @@
       {/await}
     </div>
   {:else}
+    {#if !$me}
+      <InputText type="email" bind:value={authorEmail} label="Ton adresse e-mail"></InputText>
+    {/if}
+
     {#if remainingGodsons > 0}
       <h2>Bénéficiaire</h2>
       <p>

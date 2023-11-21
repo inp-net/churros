@@ -76,7 +76,7 @@
     <span>Clubs</span>
   </a>
 
-  {#if $me}
+  {#if $me && !$me.external}
     <button
       class="navigation-item"
       class:current={flyoutOpen}
@@ -106,19 +106,21 @@
     {/if}
     <span>Événements</span>
   </a>
-  <a
-    class="navigation-item"
-    href="/frappe"
-    class:current={!flyoutOpen && current === 'documents'}
-    class:disabled={flyoutOpen}
-  >
-    {#if current === 'documents'}
-      <IconDocumentFilled />
-    {:else}
-      <IconDocument />
-    {/if}
-    <span>La Frappe</span>
-  </a>
+  {#if $me?.canAccessDocuments}
+    <a
+      class="navigation-item"
+      href="/frappe"
+      class:current={!flyoutOpen && current === 'documents'}
+      class:disabled={flyoutOpen}
+    >
+      {#if current === 'documents'}
+        <IconDocumentFilled />
+      {:else}
+        <IconDocument />
+      {/if}
+      <span>La Frappe</span>
+    </a>
+  {/if}
   {#if $me}
     <a
       href="/reports"

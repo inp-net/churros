@@ -56,7 +56,8 @@
         registration?: {
           beneficiary: string;
           authorIsBeneficiary: boolean;
-          author: { firstName: string; lastName: string };
+          author?: undefined | { firstName: string; lastName: string };
+          authorEmail: string;
           paid: boolean;
           opposed: boolean;
           opposedAt?: Date | null | undefined;
@@ -157,6 +158,7 @@
               registration: {
                 beneficiary: true,
                 authorIsBeneficiary: true,
+                authorEmail: true,
                 author: { firstName: true, lastName: true, fullName: true },
                 paid: true,
                 opposed: true,
@@ -266,7 +268,7 @@
         </div>
         <h2 class="invalid">Billet invalide</h2>
       {:else if result.registration}
-        {@const { authorIsBeneficiary, author, beneficiary, paymentMethod, ticket } =
+        {@const { authorIsBeneficiary, author, authorEmail, beneficiary, paymentMethod, ticket } =
           result.registration}
         {@const ok = result.state === RegistrationVerificationState.Ok}
         <div class="header">
@@ -275,11 +277,20 @@
           </div>
           <div class="text">
             {#if authorIsBeneficiary}
-              <h3>{author.firstName} {author.lastName}</h3>
+              <h3>
+                {#if author}
+                  {author.firstName} {author.lastName}
+                {:else}
+                  {authorEmail}
+                {/if}
+              </h3>
             {:else}
               <h3>{beneficiary}</h3>
               {#if ok}
-                <p>Achetée par {author.firstName} {author.lastName}</p>
+                <p>
+                  Achetée par {#if author}{author.firstName}
+                    {author.lastName}{:else}{authorEmail}{/if}
+                </p>
               {/if}
             {/if}
             {#if ok}

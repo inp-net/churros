@@ -104,7 +104,7 @@ builder.mutationField('usePasswordReset', (t) =>
           },
         },
       });
-      if (reset.user.major.ldapSchool) {
+      if (reset.user.major?.ldapSchool) {
         try {
           await resetLdapUserPassword(reset.user, newPassword);
         } catch (error) {
@@ -180,7 +180,7 @@ builder.mutationField('resetPassword', (t) =>
             },
           });
 
-          if (userEdited.major.ldapSchool) {
+          if (userEdited.major?.ldapSchool) {
             try {
               await resetLdapUserPassword(userEdited, newPassword);
             } catch (error) {

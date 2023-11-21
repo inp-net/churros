@@ -113,6 +113,8 @@ export const TicketType = builder.prismaNode('Ticket', {
     group: t.relation('group', { nullable: true }),
     remainingGodsons: t.int({
       async resolve({ godsonLimit, eventId }, _, { user }) {
+        // No godsons for external users, since godson limits can't be reasonably enforced
+        if (!user?.major) return 0;
         const { managers } = await prisma.event.findUniqueOrThrow({
           where: { id: eventId },
           include: {
@@ -247,6 +249,7 @@ export function userCanSeeTicket(
     openToMajors,
     openToContributors,
     openToApprentices,
+    openToExternal,
   }: {
     event: {
       id: string;
@@ -261,28 +264,34 @@ export function userCanSeeTicket(
     openToMajors: Array<{ id: string }>;
     openToContributors: boolean | null;
     openToApprentices: boolean | null;
+    openToExternal: boolean | null;
   },
   user?: {
     id: string;
     admin: boolean;
     groups: Array<{ group: { uid: string } }>;
     graduationYear: number;
-    major: { schools: Array<{ uid: string }>; id: string };
+    major?: { schools: Array<{ uid: string }>; id: string } | null;
     contributions: Array<{
       paid: boolean;
       option: { id: string; paysFor: Array<{ id: string; school: { uid: string } }> };
     }>;
     apprentice: boolean;
-  },
+  } | null,
 ): boolean {
   // Admins can see everything
   if (user?.admin) return true;
 
-  // Managers can see everything
-  if (event.managers.some(({ userId }) => userId === user?.id)) return true;
+  if (event.managers.some(({ userId }) => userId === user?.id))
+    // Managers can see everything
+    return true;
 
   // Banned users cannot see any ticket
   if (event.bannedUsers.some(({ id }) => id === user?.id)) return false;
+
+  // External accounts or logged-out users can only see tickets not excluded from external users
+  if (openToExternal === false && !user?.major) return false;
+  if (openToExternal === true && user?.major) return false;
 
   // Check if user is an apprentice
   if (openToApprentices === true && !user?.apprentice) return false;
@@ -307,13 +316,13 @@ export function userCanSeeTicket(
     return false;
 
   // Check that the user is in the major
-  if (openToMajors.length > 0 && !openToMajors.map((m) => m.id).includes(user?.major.id ?? ''))
+  if (openToMajors.length > 0 && !openToMajors.map((m) => m.id).includes(user?.major?.id ?? ''))
     return false;
 
   // Check that the user is in the school
   if (
     openToSchools.length > 0 &&
-    !openToSchools.some(({ uid }) => user?.major.schools.some((school) => school.uid === uid))
+    !openToSchools.some(({ uid }) => user?.major?.schools.some((school) => school.uid === uid))
   )
     return false;
 

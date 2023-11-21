@@ -44,6 +44,7 @@ function reverseMap<K extends string, V extends string>(obj: Record<K, V>): Reco
 }
 
 export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
+  const { me } = await parent();
   if (params.pseudoID.startsWith(reverseMap(ID_PREFIXES_TO_TYPENAMES).Registration + ':')) {
     throw redirect(
       301,
@@ -55,12 +56,15 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
     reverseMap(ID_PREFIXES_TO_TYPENAMES).Registration
   }:${params.pseudoID.toLowerCase()}`;
 
-  const { checkIfRegistrationIsPaid: markedAsPaid } = await makeMutation(
-    {
-      checkIfRegistrationIsPaid: [{ id }, true],
-    },
-    { fetch, parent },
-  );
+  let markedAsPaid = false;
+  if (me) {
+    ({ checkIfRegistrationIsPaid: markedAsPaid } = await makeMutation(
+      {
+        checkIfRegistrationIsPaid: [{ id }, true],
+      },
+      { fetch, parent },
+    ));
+  }
 
   const { registration, registrationQRCode } = await loadQuery(
     {
@@ -96,6 +100,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
                 lastName: true,
                 fullName: true,
               },
+              authorEmail: true,
               ticket: {
                 price: true,
                 name: true,

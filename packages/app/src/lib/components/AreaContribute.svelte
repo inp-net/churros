@@ -58,7 +58,7 @@
   function optionOfferedToUser(optionId: string) {
     const option = contributionOptions.find((o) => o.id === optionId);
     if (!option) return false;
-    return $me?.major.schools.some((school) => option.offeredIn.uid === school.uid);
+    return $me?.major?.schools.some((school) => option.offeredIn.uid === school.uid);
   }
 
   async function cancelContribution(optionId: string) {

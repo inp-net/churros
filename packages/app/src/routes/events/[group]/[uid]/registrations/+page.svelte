@@ -28,6 +28,7 @@
 
   let compact = false;
   let loadingMore = false;
+  let csvExportError = '';
 
   async function loadMore() {
     if (loadingMore) return;
@@ -64,7 +65,7 @@
     });
 
     if (registrationsCsv.__typename === 'Error') {
-      toasts.error("Erreur lors de l'export CSV", registrationsCsv.message);
+      csvExportError = registrationsCsv.message;
       return;
     }
 
@@ -151,7 +152,8 @@
       }
 
       case 'author': {
-        return (a, b) => (desc ? -1 : 1) * a.author.fullName.localeCompare(b.author.fullName);
+        const fullNameOrEmail = (r: Registration) => r.author?.fullName ?? r.authorEmail ?? '';
+        return (a, b) => (desc ? -1 : 1) * fullNameOrEmail(a).localeCompare(fullNameOrEmail(b));
       }
 
       case 'graduationYear': {
@@ -162,7 +164,7 @@
       }
 
       case 'major': {
-        const major = (r: Registration) => benefUser(r)?.major.shortName ?? '';
+        const major = (r: Registration) => benefUser(r)?.major?.shortName ?? '';
         return (a, b) => major(a).localeCompare(major(b));
       }
 
@@ -251,6 +253,8 @@
       <ButtonSecondary icon={IconDownload} loading>Exporter en .csv</ButtonSecondary>
     {:then csvContents}
       <ButtonSecondary
+        disabled={Boolean(csvExportError)}
+        help={csvExportError}
         icon={IconDownload}
         href="data:application/octet-stream;charset=utf-8,{encodeURIComponent(csvContents ?? '')}"
         download={`reservations-${$page.params.group}-${$page.params.uid}-${format(
@@ -313,7 +317,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod, verifiedAt, verifiedBy, opposed, opposedAt, opposedBy, cancelled, cancelledAt, cancelledBy } } (id)}
+      {#each registrations.edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id)) as { node: registration, node: { paid, id, beneficiary, authorEmail, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod, verifiedAt, verifiedBy, opposed, opposedAt, opposedBy, cancelled, cancelledAt, cancelledBy } } (id)}
         {@const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined)}
         {@const code = id.replace(/^r:/, '').toUpperCase()}
         <tr class:selected={rowIsSelected[id]}>
@@ -392,20 +396,24 @@
               {/if}
             </td>
             <td class="centered">
-              {benef.major.shortName ?? ''}
+              {benef.major?.shortName ?? ''}
             </td>
             <td class="centered">
               {benef.yearTier}A
             </td>
           {:else}
-            <td colspan="4">{beneficiary} <Badge>exté</Badge> </td>
+            <td colspan="4">{beneficiary || authorEmail} <Badge>exté</Badge> </td>
           {/if}
           <td>
             {#if !authorIsBeneficiary}
-              {#if compact}
-                <a href="/users/{author.uid}">{author.fullName}</a>
+              {#if author}
+                {#if compact}
+                  <a href="/users/{author.uid}">{author.fullName}</a>
+                {:else}
+                  <AvatarPerson href="/users/{author.uid}" {...author} />
+                {/if}
               {:else}
-                <AvatarPerson href="/users/{author.uid}" {...author} />
+                {authorEmail}
               {/if}
             {/if}
           </td>

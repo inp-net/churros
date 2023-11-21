@@ -50,6 +50,7 @@ import { join } from 'node:path';
 import { onBoard } from '../auth.js';
 import { updatePicture } from '../pictures.js';
 import { scheduleShotgunNotifications } from '../services/notifications.js';
+import { soonest } from '../date.js';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -451,12 +452,7 @@ export const EventType = builder.prismaNode('Event', {
         });
 
         const accessibleTickets = tickets.filter((t) => userCanSeeTicket(t, userWithContributions));
-        if (accessibleTickets.length === 0) return;
-        return new Date(
-          Math.min(
-            ...accessibleTickets.map((t) => t.opensAt?.valueOf() ?? Number.POSITIVE_INFINITY),
-          ),
-        );
+        return soonest(...accessibleTickets.map((t) => t.opensAt));
       },
     }),
     myReactions: t.field({
@@ -1187,7 +1183,7 @@ export async function eventAccessibleByUser(
         [event.group, ...event.coOrganizers]
           .map((g) => g.studentAssociation?.school.uid)
           .filter(Boolean)
-          .some((schoolUid) => user.major.schools.some((s) => s.uid === schoolUid!)),
+          .some((schoolUid) => user.major?.schools.some((s) => s.uid === schoolUid!)),
       );
     }
 

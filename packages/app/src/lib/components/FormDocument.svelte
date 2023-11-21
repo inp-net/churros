@@ -133,7 +133,7 @@
     );
     const { subject } = upsertDocument.data;
     const majorUid =
-      subject?.majors[0]?.uid ?? subject?.minors[0]?.majors[0]?.uid ?? $me?.major.uid;
+      subject?.majors[0]?.uid ?? subject?.minors[0]?.majors[0]?.uid ?? $me?.major?.uid ?? undefined;
     const yearTier = subject?.yearTier ?? subject?.minors[0]?.yearTier ?? $me?.yearTier;
     toasts.success('Document modifié', `${upsertDocument.data.title} a bien été modifié.`);
     await goto(

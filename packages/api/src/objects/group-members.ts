@@ -125,7 +125,7 @@ builder.mutationField('selfJoinGroup', (t) =>
       groupUid: t.arg.string(),
       uid: t.arg.string(),
     },
-    authScopes: { loggedIn: true },
+    authScopes: { student: true },
     async resolve(query, _, { groupUid, uid }, { user: me }) {
       const group = await prisma.group.findUnique({ where: { uid: groupUid } });
       if (!group?.selfJoinable) throw new Error('This group is not self-joinable.');
@@ -378,7 +378,7 @@ builder.queryField('groupMembersCsv', (t) =>
               paysFor.some((ae) => ae.uid === group.studentAssociation?.uid),
             ),
           ),
-          Filière: major.shortName,
+          Filière: major?.shortName ?? '',
           Apprenti: humanBoolean(apprentice),
           Promo: graduationYear.toString(),
         }) satisfies Record<(typeof columns)[number], string>;
