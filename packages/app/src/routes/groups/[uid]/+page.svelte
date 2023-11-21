@@ -11,7 +11,7 @@
   import { zeus } from '$lib/zeus';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
   import IconFacebook from '~icons/mdi/facebook-box';
-  import type { SvelteComponent } from 'svelte';
+  import { onMount, type SvelteComponent } from 'svelte';
   import IconInstagram from '~icons/mdi/instagram';
   import IconTwitter from '~icons/mdi/twitter';
   import IconAnilist from '~icons/simple-icons/anilist';
@@ -38,6 +38,11 @@
   import { groupLogoSrc } from '$lib/logos';
   import { toasts } from '$lib/toasts';
   import CardFeedEvent from '$lib/components/CardFeedEvent.svelte';
+  import { queryParam } from 'sveltekit-search-params';
+  import type { Writable } from 'svelte/store';
+  import Modal from '$lib/components/Modal.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import { browser } from '$app/environment';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -65,6 +70,24 @@
   export let data: PageData;
 
   let confirmingGroupQuit = false;
+  const promptJoinGroup = queryParam<boolean>('join', {
+    decode: (v) => v !== null,
+    encode: (v) => (v ? '' : undefined),
+  }) as Writable<boolean>;
+
+  onMount(() => {
+    if (browser && $promptJoinGroup) {
+      if (group?.members?.find(({ member }) => member.uid === $me?.uid)) {
+        toasts.success(`Tu es déjà membre de ${group.name}`);
+        $promptJoinGroup = false;
+      } else if (group.selfJoinable) {
+        joinModal.showModal();
+      } else {
+        toasts.warn(`${group.name} n'est pas auto-joignable`);
+        $promptJoinGroup = false;
+      }
+    }
+  });
 
   $: clubBoard = group.members?.filter((m) => isOnClubBoard(m));
   $: meOnClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
@@ -110,7 +133,29 @@
       toasts.error(`Impossible de quitter ${group.name}`, error?.toString());
     }
   };
+
+  let joinModal: HTMLDialogElement;
 </script>
+
+<Modal bind:element={joinModal}>
+  <h1>Rejoindre {group.name}?</h1>
+  <div class="modal-actions">
+    <ButtonSecondary
+      on:click={() => {
+        joinModal.close();
+        $promptJoinGroup = false;
+      }}>Annuler</ButtonSecondary
+    >
+    <ButtonPrimary
+      smaller
+      on:click={() => {
+        void joinGroup(group.uid);
+        joinModal.close();
+        $promptJoinGroup = false;
+      }}>Rejoindre</ButtonPrimary
+    >
+  </div>
+</Modal>
 
 <div class="content">
   <header>
@@ -297,6 +342,15 @@
     gap: 2rem;
     padding: 0 1rem;
     margin: 0 auto;
+  }
+
+  .modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
   }
 
   section {

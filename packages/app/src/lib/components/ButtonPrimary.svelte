@@ -51,7 +51,7 @@
   }
 
   .button-primary.smaller {
-    padding: 0.75rem 1.5rem;
+    padding: 0.5rem 1rem;
   }
 
   .button-primary:hover,
