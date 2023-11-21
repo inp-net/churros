@@ -21,6 +21,7 @@ export const ShopPaymentType = builder.prismaObject('ShopPayment', {
     user: t.relation('user'),
     paid: t.exposeBoolean('paid'),
     quantity: t.exposeInt('quantity'),
+    totalPrice: t.exposeInt('totalPrice'),
     shopItem: t.relation('shopItem'),
     paymentMethod: t.expose('paymentMethod', { type: PaymentMethodEnum }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
