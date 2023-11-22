@@ -33,6 +33,24 @@
     $theme = actualTheme;
   });
 
+  async function cancelRegistration() {
+    const { cancelRegistration } = await $zeus.mutate({
+      cancelRegistration: [
+        { id },
+        {
+          __typename: true,
+          '...on Error': { message: true },
+          '...on MutationCancelRegistrationSuccess': {
+            data: true,
+          },
+        },
+      ],
+    });
+    if (cancelRegistration.__typename === 'Error')
+      toasts.error("Impossible d'annuler cette place", cancelRegistration.message);
+    else await goto('..');
+  }
+
   export let data: PageData;
 
   const {
@@ -170,14 +188,11 @@
         <ButtonSecondary
           danger
           on:click={async () => {
-            if (paid) {
+            if (paid) 
               confirmingCancellation = true;
-            } else {
-              await $zeus.mutate({
-                deleteRegistration: [{ id }, true],
-              });
-              await goto('..');
-            }
+             else 
+              await cancelRegistration();
+            
           }}
           ><IconCancel />
           {#if paid}Libérer{:else}Annuler{/if} ma place</ButtonSecondary
@@ -191,25 +206,7 @@
               (s'il en reste) si tu veux de nouveau en réserver une. Le remboursement n'est pas
               systématique, contacte l'organisation pour savoir si tu sera remboursé·e.
             </p>
-            <ButtonPrimary
-              on:click={async () => {
-                const { cancelRegistration } = await $zeus.mutate({
-                  cancelRegistration: [
-                    { id },
-                    {
-                      __typename: true,
-                      '...on Error': { message: true },
-                      '...on MutationCancelRegistrationSuccess': {
-                        data: true,
-                      },
-                    },
-                  ],
-                });
-                if (cancelRegistration.__typename === 'Error')
-                  toasts.error("Impossible d'annuler cette place", cancelRegistration.message);
-                else await goto('..');
-              }}>Oui, je confirme</ButtonPrimary
-            >
+            <ButtonPrimary on:click={cancelRegistration}>Oui, je confirme</ButtonPrimary>
           </div>
         </Alert>
       {/if}
@@ -323,7 +320,7 @@
     margin: 0 auto;
   }
 
-  @media (min-width:  1000px) {
+  @media (width >= 1000px) {
     .content {
       display: grid;
       grid-template-areas: 'header header' 'pay pay' 'links links' 'qrcode details' 'qrcode cancel' 'fineprint fineprint';
