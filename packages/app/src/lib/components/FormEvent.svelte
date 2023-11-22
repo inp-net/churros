@@ -957,7 +957,7 @@
     border-radius: var(--radius-block);
   }
 
-  @media (width >= 1100px) {
+  @media (min-width:  1100px) {
     form.event {
       display: grid;
       grid-template-areas: 'info tickets' 'managers managers' 'bans bans' 'submit submit';

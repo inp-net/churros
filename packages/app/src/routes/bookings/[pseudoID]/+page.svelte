@@ -323,7 +323,7 @@
     margin: 0 auto;
   }
 
-  @media (width >= 1000px) {
+  @media (min-width:  1000px) {
     .content {
       display: grid;
       grid-template-areas: 'header header' 'pay pay' 'links links' 'qrcode details' 'qrcode cancel' 'fineprint fineprint';

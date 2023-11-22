@@ -249,7 +249,7 @@
     margin-bottom: 1rem;
   }
 
-  @media (width >= 1000px) {
+  @media (min-width:  1000px) {
     section h2 {
       justify-content: start;
       text-align: left;

@@ -307,7 +307,7 @@ The root layout is composed of several elements:
     width: 100%;
     height: 100%;
     min-height: 0;
-    @media (width >= 900px) {
+    @media (min-width:  900px) {
       grid-template-columns: max-content 1fr;
     }
   }
@@ -344,7 +344,7 @@ The root layout is composed of several elements:
     background: var(--bg);
   }
 
-  @media (width >= 900px) {
+  @media (min-width:  900px) {
     .announcements {
       padding: 0 1rem;
     }
@@ -383,7 +383,7 @@ The root layout is composed of several elements:
     max-width: 600px;
     padding: 0 1rem;
     transform: translateX(-50%);
-    @media (width >= 1000px) {
+    @media (min-width:  1000px) {
       right: 0;
       bottom: 6rem;
       left: unset;
