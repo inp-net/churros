@@ -1,24 +1,26 @@
 <script lang="ts">
-  import IconCheck from '~icons/mdi/check';
-  import IconPendingPayment from '~icons/mdi/cash-clock';
-  import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
-  import { EventFrequency, PaymentMethod, zeus } from '$lib/zeus';
-  import Alert from '$lib/components/Alert.svelte';
   import { page } from '$app/stores';
-  import { dateTimeFormatter, formatDate, formatDateTime } from '$lib/dates';
+  import Alert from '$lib/components/Alert.svelte';
+  import AreaPaypalPayRegistration from '$lib/components/AreaPaypalPayRegistration.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import InputText from '$lib/components/InputText.svelte';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import { dateTimeFormatter, formatDate, formatDateTime } from '$lib/dates';
+  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
   import { me } from '$lib/session';
+  import { EventFrequency, PaymentMethod, zeus } from '$lib/zeus';
+  import { onDestroy } from 'svelte';
+  import IconPendingPayment from '~icons/mdi/cash-clock';
+  import IconCheck from '~icons/mdi/check';
   import Header from '../../Header.svelte';
-  import { onMount, onDestroy } from 'svelte';
+  import type { PageData } from './$types';
 
   let done = false;
   $: done = $page.url.searchParams.has('done');
   let paying = false;
+  let chosenPaymentMethod = PaymentMethod.Other;
   let paymentLoading = false;
   let choosingPaymentMethodLoading: PaymentMethod | undefined = undefined;
   let paid = false;
@@ -88,9 +90,10 @@
     serverError = '';
 
     // TODO handle actually going there only when payment has gone through
-    if (method === PaymentMethod.Lydia) {
+    if (method === PaymentMethod.Lydia || method === PaymentMethod.PayPal) {
       registrationId = upsertRegistration.data.id;
       paying = true;
+      chosenPaymentMethod = method;
     } else {
       await goto(
         '?' +
@@ -101,19 +104,6 @@
       );
     }
   }
-
-  // function poll(action: () => Promise<void>, everyMs: number): Timeout {
-  //   return setInterval(() => {
-  //     void (async () => {
-  //       await action();
-  //     })();
-  //   }, everyMs);
-  // }
-
-  onMount(() => {
-    // Check every 2 seconds if the registration was paid.
-    // pollIntervalId = poll(redirectIfPaid, 2000);
-  });
 
   onDestroy(() => {
     if (pollIntervalId) clearInterval(pollIntervalId);
@@ -230,7 +220,8 @@
       <ButtonPrimary on:click={async () => payBy(undefined)}>Réserver</ButtonPrimary>
     {:else}
       <h2>
-        {#if paying}Paiement par Lydia{:else}Mode de paiement{/if}
+        {#if paying}Paiement par {DISPLAY_PAYMENT_METHODS[chosenPaymentMethod]}{:else}Mode de
+          paiement{/if}
       </h2>
       <!-- <p>Ta place n'est pas réservée tant que le paiement n'est pas terminé.</p> -->
 
@@ -253,7 +244,7 @@
             </li>
           {/each}
         </ul>
-      {:else}
+      {:else if chosenPaymentMethod === PaymentMethod.Lydia}
         <form
           class="pay"
           on:submit|preventDefault={async () => {
@@ -270,9 +261,7 @@
                   __typename: true,
                   '...on Error': { message: true },
                   '...on MutationPaidRegistrationSuccess': {
-                    data: {
-                      __typename: true,
-                    },
+                    data: true,
                   },
                 },
               ],
@@ -292,6 +281,9 @@
             <ButtonPrimary loading={paymentLoading} submits>Payer {price}€</ButtonPrimary>
           </section>
         </form>
+      {:else if chosenPaymentMethod === PaymentMethod.PayPal}
+        <AreaPaypalPayRegistration bind:paymentLoading {beneficiary} {registrationId}
+        ></AreaPaypalPayRegistration>
       {/if}
     {/if}
 

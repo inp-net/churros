@@ -15,11 +15,13 @@
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { me } from '$lib/session';
   import { toasts } from '$lib/toasts';
+  import AreaPaypalPayRegistration from '$lib/components/AreaPaypalPayRegistration.svelte';
 
   let actualTheme: string;
   let confirmingCancellation = false;
   let paymentLoading = false;
   let serverError = '';
+  let paying = false;
 
   onMount(() => {
     // For this page only, force light theme
@@ -49,6 +51,28 @@
     if (cancelRegistration.__typename === 'Error')
       toasts.error("Impossible d'annuler cette place", cancelRegistration.message);
     else await goto('..');
+  }
+
+  async function payRegistration() {
+    paymentLoading = true;
+    const { paidRegistration } = await $zeus.mutate({
+      paidRegistration: [
+        { regId: id, phone, beneficiary, paymentMethod },
+        {
+          __typename: true,
+          '...on Error': { message: true },
+          '...on MutationPaidRegistrationSuccess': {
+            __typename: true,
+          },
+        },
+      ],
+    });
+    if (paidRegistration.__typename === 'Error') {
+      serverError = paidRegistration.message;
+      paymentLoading = false;
+    } else {
+      window.location.reload();
+    }
   }
 
   export let data: PageData;
@@ -82,32 +106,7 @@
   </h1>
 
   {#if !paid && paymentMethod === PaymentMethod.Lydia}
-    <form
-      class="pay"
-      on:submit|preventDefault={async () => {
-        paymentLoading = true;
-        const { paidRegistration } = await $zeus.mutate({
-          paidRegistration: [
-            { regId: id, phone, beneficiary, paymentMethod: PaymentMethod.Lydia },
-            {
-              __typename: true,
-              '...on Error': { message: true },
-              '...on MutationPaidRegistrationSuccess': {
-                data: {
-                  __typename: true,
-                },
-              },
-            },
-          ],
-        });
-        if (paidRegistration.__typename === 'Error') {
-          serverError = paidRegistration.message;
-          paymentLoading = false;
-        } else {
-          window.location.reload();
-        }
-      }}
-    >
+    <form class="pay" on:submit|preventDefault={payRegistration}>
       <InputText
         initial={$me?.phone}
         type="tel"
@@ -126,6 +125,21 @@
     </form>
     {#if serverError}
       <Alert theme="danger">{serverError}</Alert>
+    {/if}
+  {:else if !paid && paymentMethod === PaymentMethod.PayPal}
+    {#if !paying}
+      <ButtonPrimary
+        loading={paymentLoading}
+        on:click={() => {
+          paying = true;
+        }}
+        >Payer {Intl.NumberFormat('fr-FR', {
+          style: 'currency',
+          currency: 'EUR',
+        }).format(ticket.price)}</ButtonPrimary
+      >
+    {:else}
+      <AreaPaypalPayRegistration bind:paymentLoading {beneficiary} registrationId={id} />
     {/if}
   {/if}
 
@@ -188,11 +202,8 @@
         <ButtonSecondary
           danger
           on:click={async () => {
-            if (paid) 
-              confirmingCancellation = true;
-             else 
-              await cancelRegistration();
-            
+            if (paid) confirmingCancellation = true;
+            else await cancelRegistration();
           }}
           ><IconCancel />
           {#if paid}Libérer{:else}Annuler{/if} ma place</ButtonSecondary
@@ -320,7 +331,7 @@
     margin: 0 auto;
   }
 
-  @media (width >= 1000px) {
+  @media (min-width: 1000px) {
     .content {
       display: grid;
       grid-template-areas: 'header header' 'pay pay' 'links links' 'qrcode details' 'qrcode cancel' 'fineprint fineprint';

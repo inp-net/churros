@@ -387,7 +387,7 @@
     column-gap: 0.5rem;
   }
 
-  @media (max-width:  600px) {
+  @media (max-width: 600px) {
     dl {
       grid-template-columns: 1fr;
     }
@@ -459,7 +459,7 @@
     margin: 0 auto;
   }
 
-  @media (min-width:  1000px) {
+  @media (min-width: 1000px) {
     .content {
       display: grid;
       grid-template-areas: 'header header' 'contribute contribute' 'groups groups' 'family articles';

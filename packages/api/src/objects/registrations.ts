@@ -1,24 +1,29 @@
 import { PaymentMethod as PaymentMethodPrisma, type Registration, type User } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
+import { isFuture, isPast } from 'date-fns';
+import { GraphQLError } from 'graphql';
+import { createTransport } from 'nodemailer';
+import * as qrcodeGeneratorLib from 'qr-code-generator-lib';
+import qrcode from 'qrcode';
 import { TYPENAMES_TO_ID_PREFIXES, builder } from '../builder.js';
-import { DateTimeScalar } from './scalars.js';
+import { yearTier } from '../date.js';
 import { prisma } from '../prisma.js';
-import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import {
   LydiaTransactionState,
   checkLydiaTransaction,
   payEventRegistrationViaLydia,
 } from '../services/lydia.js';
-import { placesLeft, userCanSeeTicket } from './tickets.js';
-import { GraphQLError } from 'graphql';
-import { UserType, fullName } from './users.js';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
-import { isPast, isFuture } from 'date-fns';
-import * as qrcodeGeneratorLib from 'qr-code-generator-lib';
-import qrcode from 'qrcode';
-import { createTransport } from 'nodemailer';
-import { log } from './logs.js';
-import { yearTier } from '../date.js';
+import {
+  checkPaypalPayment,
+  finishPaypalPayment,
+  payEventRegistrationViaPaypal,
+} from '../services/paypal.js';
 import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
+import { eventAccessibleByUser, eventManagedByUser } from './events.js';
+import { log } from './logs.js';
+import { DateTimeScalar } from './scalars.js';
+import { placesLeft, userCanSeeTicket } from './tickets.js';
+import { UserType, fullName } from './users.js';
 
 const mailer = createTransport(process.env.SMTP_URL);
 
@@ -104,12 +109,13 @@ builder.mutationField('checkIfRegistrationIsPaid', (t) =>
       id: t.arg.id(),
     },
     async resolve(_, { id }) {
-      let registration = await prisma.registration.findFirstOrThrow({
+      const registration = await prisma.registration.findFirstOrThrow({
         where: {
           id: id.toLowerCase(),
         },
         include: {
           lydiaTransaction: true,
+          paypalTransaction: true,
         },
       });
 
@@ -125,17 +131,35 @@ builder.mutationField('checkIfRegistrationIsPaid', (t) =>
               target: registration.id,
             },
           });
-          registration = await prisma.registration.update({
+          await prisma.registration.update({
             where: { id: registration.id },
             data: {
               paid: true,
             },
-            include: {
-              lydiaTransaction: true,
-            },
           });
           return true;
         }
+      } else if (!registration.paid && registration.paypalTransaction?.orderId) {
+        const paid = await checkPaypalPayment(registration.paypalTransaction.orderId);
+        if (paid) {
+          await log(
+            'registration',
+            'paypal manual check mark as paid',
+            {
+              registration,
+            },
+            registration.id,
+          );
+        }
+
+        await prisma.registration.update({
+          where: { id: registration.id },
+          data: {
+            paid,
+          },
+        });
+
+        return paid;
       }
 
       return false;
@@ -819,8 +843,10 @@ builder.mutationField('upsertRegistration', (t) =>
 );
 
 builder.mutationField('paidRegistration', (t) =>
-  t.prismaField({
-    type: RegistrationType,
+  t.field({
+    description:
+      'When paying with Paypal, returns the order id for a capture to finish the payment',
+    type: 'String',
     errors: {},
     args: {
       regId: t.arg.id(),
@@ -878,7 +904,8 @@ builder.mutationField('paidRegistration', (t) =>
 
       return true;
     },
-    async resolve(query, _, { regId, beneficiary, paymentMethod, phone }, { user }) {
+    // @ts-expect-error it says that the return type is string|undefined but i can't see where it'd be undefined
+    async resolve(_, { regId, beneficiary, paymentMethod, phone }, { user }) {
       const registration = await prisma.registration.findUnique({
         where: { id: regId },
         include: { ticket: { include: { event: true } } },
@@ -891,17 +918,22 @@ builder.mutationField('paidRegistration', (t) =>
       });
       if (!ticket) throw new GraphQLError('Ticket not found');
       if (!paymentMethod) throw new GraphQLError('Payment method not found');
-      if (!phone) throw new GraphQLError('Phone not found');
+      if (!phone && paymentMethod === PaymentMethodPrisma.Lydia)
+        throw new GraphQLError('Phone not found');
 
       // Process payment
-      await pay(
-        user?.uid ?? '(unregistered)',
-        ticket.event.beneficiary?.id ?? '(unregistered)',
-        ticket.price,
-        paymentMethod,
-        phone,
-        regId,
-      );
+      const paypalOrderId = await pay({
+        from: user?.uid ?? '(unregistered)',
+        to: ticket.event.beneficiary?.id ?? '(unregistered)',
+        amount: ticket.price,
+        by: paymentMethod,
+        phone: phone ?? '',
+        emailAddress: user?.email ?? '',
+        registrationId: registration.id,
+      });
+
+      if (paymentMethod === PaymentMethodPrisma.PayPal && !paypalOrderId)
+        throw new GraphQLError("PayPal n'a pas donné d'identifiant de commande");
 
       await log(
         'registration',
@@ -910,14 +942,30 @@ builder.mutationField('paidRegistration', (t) =>
         regId,
         user,
       );
-      return prisma.registration.update({
-        ...query,
+      await prisma.registration.update({
         where: { id: regId },
         data: {
           paymentMethod,
           beneficiary: beneficiary ?? '',
         },
       });
+
+      if (paymentMethod === PaymentMethodPrisma.PayPal) return paypalOrderId;
+      return '';
+    },
+  }),
+);
+
+builder.mutationField('finishPaypalRegistrationPayment', (t) =>
+  t.field({
+    type: 'Boolean',
+    errors: {},
+    args: {
+      orderId: t.arg.string(),
+    },
+    async resolve(_, { orderId }) {
+      await finishPaypalPayment(orderId);
+      return true;
     },
   }),
 );
@@ -1229,20 +1277,33 @@ builder.queryField('registrationsCsv', (t) =>
   }),
 );
 
-// eslint-disable-next-line max-params
-async function pay(
-  from: string,
-  to: string,
-  amount: number,
-  by: PaymentMethodPrisma,
-  phone?: string,
-  registrationId?: string,
-) {
+async function pay({
+  from,
+  to,
+  amount,
+  by,
+  phone,
+  emailAddress,
+  registrationId,
+}: {
+  from: string;
+  to: string;
+  amount: number;
+  by: PaymentMethodPrisma;
+  phone?: string;
+  emailAddress?: string;
+  registrationId?: string;
+}): Promise<string | undefined> {
   switch (by) {
     case 'Lydia': {
       if (!phone) throw new GraphQLError('Missing phone number');
       await payEventRegistrationViaLydia(phone, registrationId);
       return;
+    }
+
+    case 'PayPal': {
+      if (!registrationId) throw new GraphQLError('Pas de réservation associée');
+      return payEventRegistrationViaPaypal(registrationId, emailAddress ?? '');
     }
 
     default: {

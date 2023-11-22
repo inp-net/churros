@@ -369,7 +369,7 @@
     font-size: 0.8rem;
   }
 
-  @media (width < 900px) {
+  @media (max-width: 899px) {
     nav {
       display: none;
     }

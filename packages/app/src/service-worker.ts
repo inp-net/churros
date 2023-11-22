@@ -100,12 +100,14 @@ sw.addEventListener('notificationclick', (clickEvent) => {
   );
 });
 
-async function openURL(url: string) {
+async function openURL(urlString: string) {
   const windowClients = await sw.clients.matchAll({ type: 'window', includeUncontrolled: true });
   for (const client of windowClients)
-    if (client.url === url && 'focus' in client) return client.focus();
+    if (client.url === urlString && 'focus' in client) return client.focus();
 
-  if ('openWindow' in sw.clients) return sw.clients.openWindow(url);
+  const url = new URL(urlString);
+  url.searchParams.set('utm_source', 'notification');
+  if ('openWindow' in sw.clients) return sw.clients.openWindow(url.toString());
 }
 
 sw.addEventListener('fetch', (event) => {

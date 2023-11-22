@@ -429,6 +429,7 @@ __metadata:
     "@iconify-json/material-symbols": "npm:^1.1.61"
     "@iconify-json/mdi": "npm:^1.1.55"
     "@iconify-json/simple-icons": "npm:^1.1.76"
+    "@paypal/paypal-js": "npm:^7.1.0"
     "@sveltejs/adapter-node": "npm:^1.3.1"
     "@sveltejs/kit": "npm:^1.27.1"
     "@swc/core": "npm:^1.3.95"
@@ -1517,6 +1518,15 @@ __metadata:
   dependencies:
     semver: "npm:^7.3.5"
   checksum: c17d9f6a57aada6db66302ad0c02ad5df2984333385ba0a7883718cbc513f81ce2d4e41d3b949b05c387c2a49a2fdbfa0808b3cc640d0c1b9dce72a864811a30
+  languageName: node
+  linkType: hard
+
+"@paypal/paypal-js@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "@paypal/paypal-js@npm:7.1.0"
+  dependencies:
+    promise-polyfill: "npm:^8.3.0"
+  checksum: d0060e51a2e543b35b1f3d39d44f2599cb9bef58d06f168e18e7ce29e522d83a224330191acc3c2370bda31fc42791275b8f66a651f3d12e48e93b348fbe11dd
   languageName: node
   linkType: hard
 
@@ -9128,6 +9138,13 @@ __metadata:
   version: 2.2.0
   resolution: "process-warning@npm:2.2.0"
   checksum: 3f7bd8403a96e9098e0f0775471f851a57a7871415f818726808e88dd2018e613de6baa80c59aefff89e3f67a73e9bb9d49d825942e0c8c59e4c13f81e3b448c
+  languageName: node
+  linkType: hard
+
+"promise-polyfill@npm:^8.3.0":
+  version: 8.3.0
+  resolution: "promise-polyfill@npm:8.3.0"
+  checksum: 6ea10a4b0b2540b75b5dfc260ebbd6510684d748d2857b17413c9cf18beba9846b9004f6285040e427bb525f4eb35bca8346b43a41e35634fed40bda164fcca2
   languageName: node
   linkType: hard
 
