@@ -8,6 +8,7 @@
     "stylelint-config-prettier"
   ],
   "rules": {
-    "selector-pseudo-class-no-unknown": [true, { "ignorePseudoClasses": ["global"] }]
+    "selector-pseudo-class-no-unknown": [true, { "ignorePseudoClasses": ["global"] }],
+    "media-feature-range-notation": "prefix"
   }
 }
