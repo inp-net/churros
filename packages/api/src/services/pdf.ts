@@ -1,23 +1,32 @@
-import type { Event, Registration, Ticket } from '@prisma/client';
+import type { Event, Registration, Ticket, User } from '@prisma/client';
 import pdfMakePrinter from 'pdfmake';
 import type { TFontDictionary } from 'pdfmake/interfaces';
 
 const fonts: TFontDictionary = {
   SpaceGrotesk: {
-    normal: 'fonts/SpaceGrotesk-Regular.woff',
-    bold: 'fonts/SpaceGrotesk-Bold.woff',
-    italics: 'fonts/SpaceGrotesk-Italic.woff',
-    bolditalics: 'fonts/SpaceGrotesk-BoldItalic.woff',
+    normal: 'static/fonts/SpaceGrotesk-Regular.woff',
+    bold: 'static/fonts/SpaceGrotesk-Bold.woff',
+    italics: 'static/fonts/SpaceGrotesk-Italic.woff',
+    bolditalics: 'static/fonts/SpaceGrotesk-BoldItalic.woff',
   },
 };
 
-export function generatePDF(registration: Registration & { ticket: Ticket & { event: Event } }) {
+export function generatePDF(
+  registration: Registration & { ticket: Ticket & { event: Event }; author: User },
+) {
   // playground requires you to assign document definition to a variable called dd
-  console.info(registration);
+  const DISPLAY_PAYMENT_METHODS = {
+    Cash: 'Espèces',
+    Check: 'Chèque',
+    Card: 'Carte bancaire',
+    Transfer: 'Virement',
+    Lydia: 'Lydia',
+    Other: 'Autre',
+  };
 
   const dd = {
-    defaultStyle: {
-      font: 'SpaceGrotesk',
+    info: {
+      title: registration.ticket.event.title + ' - ' + registration.ticket.name,
     },
     content: [
       {
@@ -36,18 +45,23 @@ export function generatePDF(registration: Registration & { ticket: Ticket & { ev
                   'Prix :\n',
                   'Méthode de paiement :\n',
                   'Date de réservation :\n',
-                  'Lieu :\n',
+                  registration.ticket.event.location === '' ? '' : 'Lieu :\n',
                 ],
                 width: 200,
               },
               {
                 text: [
-                  registration.beneficiary + '\n',
-                  registration.authorId + '\n',
+                  registration.beneficiary === ''
+                    ? `${registration.author.firstName} ${registration.author.lastName}\n`
+                    : `${registration.beneficiary}\n`,
+                  `${registration.author.firstName} ${registration.author.lastName}\n`,
                   registration.ticket.name + '\n',
                   registration.ticket.price + '€\n',
-                  registration.paymentMethod + '\n',
-                  registration.ticket.event.startsAt.toISOString() + '\n',
+                  registration.paymentMethod
+                    ? DISPLAY_PAYMENT_METHODS[registration.paymentMethod]
+                    : 'Gratuit',
+                  '\n',
+                  registration.ticket.event.startsAt.toLocaleDateString() + '\n',
                   registration.ticket.event.location,
                 ],
               },
@@ -57,6 +71,9 @@ export function generatePDF(registration: Registration & { ticket: Ticket & { ev
         ],
       },
     ],
+    defaultStyle: {
+      font: 'SpaceGrotesk',
+    },
   };
 
   const printer = new pdfMakePrinter(fonts);

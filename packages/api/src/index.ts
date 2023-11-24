@@ -17,6 +17,7 @@ import { prisma } from './prisma.js';
 import { schema, writeSchema } from './schema.js';
 import { markAsContributor } from './services/ldap.js';
 import { log } from './objects/logs.js';
+import { generatePDF } from './services/pdf.js';
 
 z.setErrorMap(customErrorMap);
 
@@ -88,6 +89,7 @@ const yoga = createYoga({
 });
 
 const api = express();
+
 api.use(
   // Allow queries from the frontend only
   // cors({ origin: ['http://192.168.*', process.env.FRONTEND_ORIGIN, 'http://app'] }),
@@ -99,7 +101,9 @@ api.use(
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   }),
 );
+
 api.use('/graphql', async (req, res) => yoga(req, res));
+
 api.use(
   '/storage',
   // Another layer of protection against malicious uploads
@@ -126,9 +130,40 @@ api.use('/dump', async (req, res) => {
       .send('<h1>401 Unauthorized</h1><p>Usage: <code>/dump?token=[session token]</code></p>');
   }
 });
+
 api.get('/log', (req, res) => {
   console.info(req.query['message'] ?? '<empty>');
   res.send('ok');
+});
+
+api.get('/bookings/:pseudoID', async (req, res) => {
+  const id = `r:${req.params.pseudoID.toLowerCase()}`;
+
+  const registration = await prisma.registration.findUnique({
+    where: { id },
+    include: {
+      ticket: {
+        include: {
+          event: true,
+        },
+      },
+      author: true,
+    },
+  });
+
+  if (!registration) return res.status(404).send('Not found');
+
+  const pdf = generatePDF(registration);
+
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader(
+    'Content-Disposition',
+    `filename="${registration.ticket.event.title} - ${registration.ticket.name}.pdf"`,
+  );
+  pdf.pipe(res);
+  pdf.end();
+
+  return res.status(200);
 });
 
 api.get('/', (_req, res) => {
@@ -149,6 +184,7 @@ api.get('/', (_req, res) => {
 </body>
 </html>`);
 });
+
 api.listen(4000, () => {
   console.info(`Serving static content from ${process.env.STORAGE}`);
   console.info('API ready at http://localhost:4000');
