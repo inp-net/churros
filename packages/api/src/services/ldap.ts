@@ -94,7 +94,7 @@ interface LdapClub extends LdapGroup {
   mailAlias: string[];
   president: string;
   secretaire: string[];
-  tresorier: string;
+  tresorier: string[];
   vicePresident: string[];
   typeClub?: string;
 }
@@ -649,7 +649,7 @@ async function createLdapClub(
       local: [club.address],
       president,
       secretaire: club.members.filter((m) => m.secretary).map((m) => m.user.uid),
-      tresorier,
+      tresorier: club.members.filter((m) => m.treasurer).map((m) => m.user.uid),
       vicePresident: club.members.filter((m) => m.vicePresident).map((m) => m.user.uid),
       typeClub: 'club',
     };
@@ -679,7 +679,12 @@ The group must have a list of members with a user created in ldap
 syncLdapGroupMembers(group: Group): Promise<void>
 */
 
-async function syncLdapGroupMembers(group: Group & { studentAssociation: StudentAssociation & { school: School }, members: Array<GroupMember & { user: User }> }): Promise<void> {
+async function syncLdapGroupMembers(
+  group: Group & {
+    studentAssociation: StudentAssociation & { school: School };
+    members: Array<GroupMember & { user: User }>;
+  },
+): Promise<void> {
   return new Promise((resolve, reject) => {
     if (!group.studentAssociation.school) {
       reject(new Error('No school'));
@@ -727,7 +732,12 @@ The club must have a president and a treasurer
 syncLdapClub(club: Group): Promise<void>
 */
 
-async function syncLdapClub(club: Group & { studentAssociation: StudentAssociation & { school: School }, members: Array<GroupMember & { user: User }> }): Promise<void> {
+async function syncLdapClub(
+  club: Group & {
+    studentAssociation: StudentAssociation & { school: School };
+    members: Array<GroupMember & { user: User }>;
+  },
+): Promise<void> {
   return new Promise((resolve, reject) => {
     // Check if the club has a president
     const president = club.members.find((m) => m.president)?.user.uid;
@@ -753,7 +763,7 @@ async function syncLdapClub(club: Group & { studentAssociation: StudentAssociati
       local: [club.address],
       president,
       secretaire: club.members.filter((m) => m.secretary).map((m) => m.user.uid),
-      tresorier,
+      tresorier: club.members.filter((m) => m.treasurer).map((m) => m.user.uid),
       vicePresident: club.members.filter((m) => m.vicePresident).map((m) => m.user.uid),
       typeClub: 'club',
     };
@@ -785,4 +795,12 @@ async function syncLdapClub(club: Group & { studentAssociation: StudentAssociati
   });
 }
 
-export { queryLdapUser, createLdapUser, resetLdapUserPassword, createLdapGroup, createLdapClub, syncLdapGroupMembers, syncLdapClub };
+export {
+  queryLdapUser,
+  createLdapUser,
+  resetLdapUserPassword,
+  createLdapGroup,
+  createLdapClub,
+  syncLdapGroupMembers,
+  syncLdapClub,
+};
