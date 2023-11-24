@@ -215,9 +215,16 @@ builder.queryField('groups', (t) =>
             : {
                 studentAssociation: {
                   school: {
-                    id: {
-                      in: user?.major?.schools.map(({ id }) => id) ?? [],
-                    },
+                    OR: [
+                      {
+                        id: {
+                          in: user?.major?.schools.map(({ id }) => id) ?? [],
+                        },
+                      },
+                      {
+                        uid: process.env.PUBLIC_SCHOOL_UID,
+                      },
+                    ],
                   },
                 },
               }),
