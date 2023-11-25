@@ -13,7 +13,7 @@
 
   async function renderPaypalButton(id: string): Promise<void> {
     const paypalSdk = await loadPaypalScript({
-      clientId: env.PUBLIC_PAYPAL_CLIENT_ID,
+      clientId: env.PUBLIC_PAYPAL_CLIENT_ID ?? '',
       currency: 'EUR',
       commit: true,
       disableFunding: 'credit,paylater', // credit needs special licenses since we're non US, see https://developer.paypal.com/sdk/js/configuration/#link-disablefunding
