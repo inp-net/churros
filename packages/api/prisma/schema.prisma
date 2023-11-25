@@ -30,8 +30,8 @@ model User {
   otherEmails                 String[]              @db.VarChar(255)
   firstName                   String                @db.VarChar(255)
   lastName                    String                @db.VarChar(255)
-  majorId                     String
-  major                       Major                 @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  majorId                     String?
+  major                       Major?                @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   minor                       Minor?                @relation(fields: [minorId], references: [id])
   minorId                     String?
   graduationYear              Int
@@ -80,7 +80,7 @@ model User {
   reactions                 Reaction[]
 
   // For full-text search
-  search         Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@unique([schoolServer, schoolUid])
   @@index([search], type: Gin)
@@ -429,7 +429,7 @@ model Article {
   reactions Reaction[]
 
   // For full-text search
-  search    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@unique([groupId, uid])
   @@index([search], type: Gin)
@@ -473,7 +473,7 @@ model Event {
   reactions      Reaction[]
 
   // For full-text search
-  search            Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@unique([groupId, uid])
   @@index([search], type: Gin)
@@ -555,7 +555,8 @@ model Registration {
   id            String         @id @default(dbgenerated("nanoid('r:')"))
   ticketId      String
   beneficiary   String
-  authorId      String
+  authorId      String?
+  authorEmail   String         @default("")
   verifiedById  String?
   opposedById   String?
   cancelledById String?
@@ -564,19 +565,25 @@ model Registration {
   paymentMethod PaymentMethod?
   paid          Boolean        @default(false)
 
-  lydiaTransaction LydiaTransaction?
-  ticket           Ticket            @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  author           User              @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  verifiedBy       User?             @relation(name: "verifiedBy", fields: [verifiedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  verifiedAt       DateTime?
-  opposedBy        User?             @relation(name: "opposedBy", fields: [opposedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  opposedAt        DateTime?
-  cancelledBy      User?             @relation(name: "cancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  cancelledAt      DateTime?
+  lydiaTransaction  LydiaTransaction?
+  paypalTransaction PaypalTransaction?
+  ticket            Ticket             @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  author            User?              @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  verifiedBy        User?              @relation(name: "verifiedBy", fields: [verifiedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  verifiedAt        DateTime?
+  opposedBy         User?              @relation(name: "opposedBy", fields: [opposedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  opposedAt         DateTime?
+  cancelledBy       User?              @relation(name: "cancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  cancelledAt       DateTime?
+
+  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+
+  @@index([search], type: Gin)
 }
 
 enum PaymentMethod {
   Lydia
+  PayPal
   Card
   Transfer
   Check
@@ -626,6 +633,19 @@ model LydiaTransaction {
   updatedAt                        DateTime      @updatedAt
   contribution                     Contribution? @relation(fields: [studentAssociationContributionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   studentAssociationContributionId String?       @unique
+}
+
+/// Paypal payment
+model PaypalTransaction {
+  id             String        @id @default(dbgenerated("nanoid('paypalpayment:')"))
+  emailAddress   String        @default("") @db.VarChar(255)
+  registrationId String?       @unique
+  registration   Registration? @relation(fields: [registrationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  /// PayPal's order ID. 
+  orderId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 /// A bar week is a week during which some groups takeover the bar staff
@@ -768,7 +788,10 @@ model Document {
   comments  Comment[]
   reactions Reaction[]
 
+  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+
   @@unique([subjectId, uid])
+  @@index([search], type: Gin)
 }
 
 model Comment {

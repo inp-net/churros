@@ -429,6 +429,7 @@ __metadata:
     "@iconify-json/material-symbols": "npm:^1.1.61"
     "@iconify-json/mdi": "npm:^1.1.55"
     "@iconify-json/simple-icons": "npm:^1.1.76"
+    "@paypal/paypal-js": "npm:^7.1.0"
     "@sveltejs/adapter-node": "npm:^1.3.1"
     "@sveltejs/kit": "npm:^1.27.1"
     "@swc/core": "npm:^1.3.95"
@@ -436,6 +437,7 @@ __metadata:
     "@types/cookie": "npm:^0.5.3"
     "@types/html-to-text": "npm:^9.0.3"
     "@types/js-cookie": "npm:^3.0.5"
+    "@types/lodash.debounce": "npm:^4.0.9"
     "@types/lodash.groupby": "npm:^4.6.8"
     "@types/ua-parser-js": "npm:^0.7.38"
     arborist: "workspace:^"
@@ -452,6 +454,7 @@ __metadata:
     is-dark-color: "npm:^1.2.0"
     json-to-csv-in-browser: "npm:^1.0.8"
     lodash: "npm:^4.17.21"
+    lodash.debounce: "npm:^4.0.8"
     lodash.groupby: "npm:^4.6.0"
     nanoid: "npm:^5.0.2"
     party-js: "npm:^2.2.0"
@@ -471,6 +474,7 @@ __metadata:
     svelte-store2storage: "npm:^1.0.0"
     svelte-tenor: "npm:^0.2.0"
     sveltejs-tippy: "npm:^3.0.0"
+    sveltekit-search-params: "npm:^1.0.15"
     tslib: "npm:^2.6.2"
     typescript: "npm:^5.2.2"
     ua-parser-js: "npm:^1.0.37"
@@ -1565,6 +1569,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@paypal/paypal-js@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "@paypal/paypal-js@npm:7.1.0"
+  dependencies:
+    promise-polyfill: "npm:^8.3.0"
+  checksum: d0060e51a2e543b35b1f3d39d44f2599cb9bef58d06f168e18e7ce29e522d83a224330191acc3c2370bda31fc42791275b8f66a651f3d12e48e93b348fbe11dd
+  languageName: node
+  linkType: hard
+
 "@peculiar/asn1-schema@npm:^2.3.6":
   version: 2.3.6
   resolution: "@peculiar/asn1-schema@npm:2.3.6"
@@ -2331,6 +2344,15 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: d8c07aec349684b0afbd540a84287736e25b732ea76e92ac0d0fa53e74c0f2750ac09c38c161d6fc4fbe72e443af0c290b7a2b5266380fa0ca872a644039396c
+  languageName: node
+  linkType: hard
+
+"@types/lodash.debounce@npm:^4.0.9":
+  version: 4.0.9
+  resolution: "@types/lodash.debounce@npm:4.0.9"
+  dependencies:
+    "@types/lodash": "npm:*"
+  checksum: 310fbc35e47eca36fee24bd5f03957e5d3897c5724663902327dc4c1b096adc380da4717faa251e6208bfd89db88fee57bc899a1b2e5135765122004a205963c
   languageName: node
   linkType: hard
 
@@ -7442,6 +7464,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.debounce@npm:^4.0.8":
+  version: 4.0.8
+  resolution: "lodash.debounce@npm:4.0.8"
+  checksum: 960a803d892fc09976e7b559c36407000c3beb136cf20e88ae6a694b5d7cf64e31dde516079140a945ba695b7d5e5699444d61fd13a70ff7de409bbae7604005
+  languageName: node
+  linkType: hard
+
 "lodash.groupby@npm:^4.6.0":
   version: 4.6.0
   resolution: "lodash.groupby@npm:4.6.0"
@@ -9766,6 +9795,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"promise-polyfill@npm:^8.3.0":
+  version: 8.3.0
+  resolution: "promise-polyfill@npm:8.3.0"
+  checksum: 6ea10a4b0b2540b75b5dfc260ebbd6510684d748d2857b17413c9cf18beba9846b9004f6285040e427bb525f4eb35bca8346b43a41e35634fed40bda164fcca2
+  languageName: node
+  linkType: hard
+
 "promise-retry@npm:^2.0.1":
   version: 2.0.1
   resolution: "promise-retry@npm:2.0.1"
@@ -11590,6 +11626,16 @@ __metadata:
   dependencies:
     tippy.js: "npm:~6.0.1"
   checksum: cdc04bdedb28aeed99bbf8ddf1df4ef5c21ca1569f665b1fd3232800d7eaa7d699f43704f98174b0ee4be1d76921b841873cf83061c2dfa450628b1f13f4fcde
+  languageName: node
+  linkType: hard
+
+"sveltekit-search-params@npm:^1.0.15":
+  version: 1.0.15
+  resolution: "sveltekit-search-params@npm:1.0.15"
+  peerDependencies:
+    "@sveltejs/kit": ^1.0.0
+    svelte: ^3.55.0 || ^4.0.0
+  checksum: 35835a68ea49d6556e1b3e6807ccb7653ce5ba62d046c73433e09b4034e4c90e86c5542f56b76f4b0435372a6bbc2e92e3dada7fa49e287411984a836b46803c
   languageName: node
   linkType: hard
 

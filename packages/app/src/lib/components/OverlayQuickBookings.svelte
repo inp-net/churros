@@ -18,7 +18,8 @@
     authorIsBeneficiary: boolean;
     paid: boolean;
     cancelled: boolean;
-    author: { fullName: string };
+    author?: { fullName: string } | undefined;
+    authorEmail: string;
     beneficiaryUser?: { fullName: string } | undefined;
     ticket: {
       name: string;

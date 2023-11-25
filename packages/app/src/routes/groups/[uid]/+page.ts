@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     {
       group: [
         params,
-        me
+        me && !me.external
           ? // Authenticated query
             {
               id: true,
@@ -252,8 +252,6 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     ...data,
     group: {
       ...data.group,
-      // typescript infers data.group.members as ... | never[] when it's actually ... | undefined
-
       members: data.group.members?.sort(byMemberGroupTitleImportance),
     },
   };

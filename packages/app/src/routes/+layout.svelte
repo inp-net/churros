@@ -197,6 +197,11 @@
 
 <svelte:head>
   <title>AEn7</title>
+  <script
+    defer
+    src="https://stats.ewen.works/js/script.pageview-props.outbound-links.js"
+    data-domain="churros.inpt.fr"
+  ></script>
 </svelte:head>
 
 <div id="loading-overlay" class:visible={showInitialSpinner}>
@@ -215,18 +220,20 @@
   </p>
 </div>
 
-<section class="toasts">
-  {#each $toasts as toast (toast.id)}
-    <Toast
-      on:action={async () => {
-        if (toast.callbacks.action) await toast.callbacks.action(toast);
-      }}
-      action={toast.labels.action}
-      closeLabel={toast.labels.close}
-      {...toast}
-    ></Toast>
-  {/each}
-</section>
+{#if browser}
+  <section class="toasts">
+    {#each $toasts as toast (toast.id)}
+      <Toast
+        on:action={async () => {
+          if (toast.callbacks.action) await toast.callbacks.action(toast);
+        }}
+        action={toast.labels.action}
+        closeLabel={toast.labels.close}
+        {...toast}
+      ></Toast>
+    {/each}
+  </section>
+{/if}
 
 <OverlayQuickBookings {now} registrationsOfUser={data.registrationsOfUser}></OverlayQuickBookings>
 
@@ -305,7 +312,7 @@ The root layout is composed of several elements:
     width: 100%;
     height: 100%;
     min-height: 0;
-    @media (width >= 900px) {
+    @media (min-width: 900px) {
       grid-template-columns: max-content 1fr;
     }
   }
@@ -342,7 +349,7 @@ The root layout is composed of several elements:
     background: var(--bg);
   }
 
-  @media (width >= 900px) {
+  @media (min-width: 900px) {
     .announcements {
       padding: 0 1rem;
     }
@@ -381,7 +388,7 @@ The root layout is composed of several elements:
     max-width: 600px;
     padding: 0 1rem;
     transform: translateX(-50%);
-    @media (width >= 1000px) {
+    @media (min-width: 1000px) {
       right: 0;
       bottom: 6rem;
       left: unset;

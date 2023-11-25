@@ -168,7 +168,7 @@
 <style>
   .comment-jump-to-anchor {
     position: relative;
-    top: -120px;
+    top: 0;
     display: block;
     visibility: hidden;
   }

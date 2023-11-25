@@ -1,6 +1,17 @@
 import { builder } from '../builder.js';
 import { prisma } from '../prisma.js';
 
+export enum EventManagerPowerLevel {
+  ReadOnly,
+  ScanTickets,
+  Edit,
+  EditPermissions,
+}
+
+export const EventManagerPowerLevelType = builder.enumType(EventManagerPowerLevel, {
+  name: 'EventManagerPowerLevel',
+});
+
 export const EventManagerType = builder.prismaObject('EventManager', {
   fields: (t) => ({
     canVerifyRegistrations: t.exposeBoolean('canVerifyRegistrations'),
@@ -8,6 +19,16 @@ export const EventManagerType = builder.prismaObject('EventManager', {
     canEditPermissions: t.exposeBoolean('canEditPermissions'),
     event: t.relation('event'),
     user: t.relation('user'),
+    power: t.field({
+      type: EventManagerPowerLevelType,
+      resolve({ canVerifyRegistrations, canEdit, canEditPermissions }) {
+        if (canVerifyRegistrations && canEdit && canEditPermissions)
+          return EventManagerPowerLevel.EditPermissions;
+        if (canVerifyRegistrations && canEdit) return EventManagerPowerLevel.Edit;
+        if (canVerifyRegistrations) return EventManagerPowerLevel.ScanTickets;
+        return EventManagerPowerLevel.ReadOnly;
+      },
+    }),
   }),
 });
 

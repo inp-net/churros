@@ -59,17 +59,19 @@
         yearTier: number;
         shortName: string;
       };
-      major: {
-        name: string;
-        shortName: string;
-        id: string;
-        minors: Array<{ id: string; name: string; yearTier: number; shortName: string }>;
-        schools: Array<{
-          name: string;
-          id: string;
-          studentAssociations: Array<{ id: string; name: string }>;
-        }>;
-      };
+      major?:
+        | undefined
+        | {
+            name: string;
+            shortName: string;
+            id: string;
+            minors: Array<{ id: string; name: string; yearTier: number; shortName: string }>;
+            schools: Array<{
+              name: string;
+              id: string;
+              studentAssociations: Array<{ id: string; name: string }>;
+            }>;
+          };
       links: Array<{ name: string; value: string }>;
       nickname: string;
       phone: string;
@@ -153,7 +155,8 @@
             links: links.filter((l) => Boolean(l.value) && l.value.trim() !== '#'),
             address,
             graduationYear,
-            majorId: major.id,
+            // eslint-disable-next-line unicorn/no-null
+            majorId: major?.id ?? null,
             // eslint-disable-next-line unicorn/no-null
             minorId: minor?.id ?? null,
             phone,
@@ -232,10 +235,9 @@
       />
     </InputField>
     <div class="side-by-side">
-      <InputField required label="Filière">
+      <InputField label="Filière">
         <InputSearchObject
-          required
-          value={major.id}
+          value={major?.id}
           valueKey="id"
           labelKey="name"
           bind:object={major}
@@ -251,26 +253,28 @@
       <InputCheckbox label="Apprenti" bind:value={apprentice} />
     </div>
   {/if}
-  <InputField label="Parcours" hint="Si tu ne trouves pas ton parcours, vérifies ta filière">
-    <InputSearchObject
-      clearable
-      value={minor?.id}
-      valueKey="id"
-      labelKey="name"
-      bind:object={minor}
-      search={(query) =>
-        new Fuse(major.minors, {
-          keys: ['name', 'id', 'shortName'],
-        })
-          .search(query)
-          .map((r) => r.item)}
-    >
-      <span slot="item" let:item
-        >{item.shortName || item.name}
-        {#if item.shortName && item.shortName !== item.name}({item.name}){/if}</span
+  {#if major}
+    <InputField label="Parcours" hint="Si tu ne trouves pas ton parcours, vérifies ta filière">
+      <InputSearchObject
+        clearable
+        value={minor?.id}
+        valueKey="id"
+        labelKey="name"
+        bind:object={minor}
+        search={(query) =>
+          new Fuse(major?.minors ?? [], {
+            keys: ['name', 'id', 'shortName'],
+          })
+            .search(query)
+            .map((r) => r.item)}
       >
-    </InputSearchObject>
-  </InputField>
+        <span slot="item" let:item
+          >{item.shortName || item.name}
+          {#if item.shortName && item.shortName !== item.name}({item.name}){/if}</span
+        >
+      </InputSearchObject>
+    </InputField>
+  {/if}
   <div class="side-by-side">
     <InputText
       type="email"

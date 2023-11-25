@@ -143,20 +143,23 @@
       </p>
       <p class="major">
         {user.yearTier}A ({user.graduationYear}) ·
-        <a href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}/"
-          ><abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr></a
-        >
-        {#if user.minor}
-          ·
-          <a
-            href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}#{user
-              .minor.uid}"
-            ><abbr title="" use:tooltip={user.minor.name}>{user.minor.shortName}</abbr></a
+        {#if user.major}
+          <a href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}/"
+            ><abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr></a
           >
-        {/if}
-        · {#each user.major.schools as school}
-          <a class="school" href="/schools/{school.uid}">{school.name}</a>
-        {/each}
+          {#if user.minor}
+            ·
+            <a
+              href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice
+                ? '-fisa'
+                : ''}#{user.minor.uid}"
+              ><abbr title="" use:tooltip={user.minor.name}>{user.minor.shortName}</abbr></a
+            >
+          {/if}
+          · {#each user.major.schools as school}
+            <a class="school" href="/schools/{school.uid}">{school.name}</a>
+          {/each}
+        {:else}Exté{/if}
         {user.apprentice ? 'FISA' : ''}
       </p>
       <ul class="social-links nobullet">
@@ -220,7 +223,7 @@
     </div>
   </header>
 
-  {#if $me?.uid === user.uid && ((user.pendingContributions?.length ?? 0) > 0 || (user.contributesTo?.length ?? 0) <= 0)}
+  {#if !$me?.external && $me?.uid === user.uid && ((user.pendingContributions?.length ?? 0) > 0 || (user.contributesTo?.length ?? 0) <= 0)}
     <section class="contribution">
       <h2>Cotisation</h2>
       <p class="explain-contribution typo-details">
@@ -251,7 +254,7 @@
         }))}
       />
     </section>
-  {:else if $me?.uid === user.uid}
+  {:else if !$me?.external && $me?.uid === user.uid}
     <section class="groups">
       <h2>Groupes</h2>
       <p class="typo-details">Tu n'es dans aucun groupe... 😢</p>
@@ -384,7 +387,7 @@
     column-gap: 0.5rem;
   }
 
-  @media (width <= 600px) {
+  @media (max-width: 600px) {
     dl {
       grid-template-columns: 1fr;
     }
@@ -456,7 +459,7 @@
     margin: 0 auto;
   }
 
-  @media (width >= 1000px) {
+  @media (min-width: 1000px) {
     .content {
       display: grid;
       grid-template-areas: 'header header' 'contribute contribute' 'groups groups' 'family articles';

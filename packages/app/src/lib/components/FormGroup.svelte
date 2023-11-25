@@ -119,7 +119,11 @@
       </div>
     {/if}
 
-    <InputCheckbox label="Auto-joignable" bind:value={selfJoinable} />
+    <InputCheckbox
+      label="Inscription libre"
+      help="N'importe qui peut rejoindre le groupe"
+      bind:value={selfJoinable}
+    />
 
     <InputText required label="Nom" maxlength={255} bind:value={name} />
     <InputText label="Description courte" maxlength={255} bind:value={description} />

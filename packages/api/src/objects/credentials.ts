@@ -206,7 +206,8 @@ builder.mutationField('login', (t) =>
                 let schoolUser = await findSchoolUser({
                   email: user.email,
                 });
-                if (!schoolUser) {
+                // Don't try to search by name and whatnot if the user has no major
+                if (!schoolUser && user.major) {
                   // Try to find them in the school's LDAP
                   schoolUser = await findSchoolUser({
                     firstName: user.firstName,

@@ -165,11 +165,13 @@ export function sortWithMatches<T extends { id: string }, C extends readonly str
   objects: T[],
   matches: Array<FullTextMatch<C>>,
 ): Array<{ object: T } & FullTextMatch<C>> {
-  return matches.map(({ id, ...match }) => ({
-    object: objects.find((o) => o.id === id)!,
-    id,
-    ...match,
-  }));
+  return matches
+    .filter(({ id }) => objects.some((o) => o.id === id))
+    .map(({ id, ...match }) => ({
+      object: objects.find((o) => o.id === id)!,
+      id,
+      ...match,
+    }));
 }
 
 /**

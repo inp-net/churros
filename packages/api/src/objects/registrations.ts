@@ -1,23 +1,29 @@
 import { PaymentMethod as PaymentMethodPrisma, type Registration, type User } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
+import { isFuture, isPast } from 'date-fns';
+import { GraphQLError } from 'graphql';
+import { createTransport } from 'nodemailer';
+import * as qrcodeGeneratorLib from 'qr-code-generator-lib';
+import qrcode from 'qrcode';
 import { TYPENAMES_TO_ID_PREFIXES, builder } from '../builder.js';
-import { DateTimeScalar } from './scalars.js';
+import { yearTier } from '../date.js';
 import { prisma } from '../prisma.js';
-import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import {
   LydiaTransactionState,
   checkLydiaTransaction,
   payEventRegistrationViaLydia,
 } from '../services/lydia.js';
-import { placesLeft, userCanSeeTicket } from './tickets.js';
-import { GraphQLError } from 'graphql';
-import { UserType, fullName } from './users.js';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
-import { isPast, isFuture } from 'date-fns';
-import * as qrcodeGeneratorLib from 'qr-code-generator-lib';
-import qrcode from 'qrcode';
-import { createTransport } from 'nodemailer';
+import {
+  checkPaypalPayment,
+  finishPaypalPayment,
+  payEventRegistrationViaPaypal,
+} from '../services/paypal.js';
+import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
+import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { log } from './logs.js';
-import { yearTier } from '../date.js';
+import { DateTimeScalar } from './scalars.js';
+import { placesLeft, userCanSeeTicket } from './tickets.js';
+import { UserType, fullName } from './users.js';
 
 const mailer = createTransport(process.env.SMTP_URL);
 
@@ -34,7 +40,7 @@ export const RegistrationType = builder.prismaNode('Registration', {
       },
     }),
     ticketId: t.exposeID('ticketId'),
-    authorId: t.exposeID('authorId'),
+    authorId: t.exposeID('authorId', { nullable: true }),
     beneficiary: t.exposeString('beneficiary'),
     beneficiaryUser: t.field({
       type: UserType,
@@ -66,26 +72,34 @@ export const RegistrationType = builder.prismaNode('Registration', {
       },
     }),
     ticket: t.relation('ticket'),
-    author: t.relation('author'),
+    author: t.relation('author', { nullable: true }),
+    authorEmail: t.exposeString('authorEmail'),
     authorIsBeneficiary: t.boolean({
-      async resolve({ authorId, beneficiary }) {
+      async resolve({ authorId, authorEmail, beneficiary }) {
+        if (!authorId) return true;
         const author = await prisma.user.findUnique({ where: { id: authorId } });
         if (!author) return false;
-        return authorIsBeneficiary({ ...author, fullName: fullName(author) }, beneficiary);
+        return authorIsBeneficiary(
+          { ...author, fullName: fullName(author) },
+          beneficiary,
+          authorEmail,
+        );
       },
     }),
   }),
 });
 
 export function authorIsBeneficiary(
-  author: { uid: string; fullName: string; firstName: string; lastName: string },
+  author: { uid: string; fullName: string; firstName: string; lastName: string; email: string },
   beneficiary: string,
+  authorEmail: string,
 ) {
   return (
     !beneficiary.trim() ||
     author.uid === beneficiary ||
     author.fullName === beneficiary ||
-    `${author.firstName} ${author.lastName}` === beneficiary
+    `${author.firstName} ${author.lastName}` === beneficiary ||
+    authorEmail === author.email
   );
 }
 
@@ -94,36 +108,14 @@ builder.mutationField('checkIfRegistrationIsPaid', (t) =>
     args: {
       id: t.arg.id(),
     },
-    async resolve(_, { id }, { user }) {
-      if (!user) throw new GraphQLError('Not logged in');
-      let registration = await prisma.registration.findFirstOrThrow({
+    async resolve(_, { id }) {
+      const registration = await prisma.registration.findFirstOrThrow({
         where: {
           id: id.toLowerCase(),
-          OR: [
-            {
-              ticket: {
-                event: {
-                  managers: {
-                    some: {
-                      userId: user.id,
-                    },
-                  },
-                },
-              },
-            },
-            {
-              authorId: user.id,
-            },
-            {
-              beneficiary: user.uid,
-            },
-            {
-              beneficiary: user.fullName,
-            },
-          ],
         },
         include: {
           lydiaTransaction: true,
+          paypalTransaction: true,
         },
       });
 
@@ -139,17 +131,35 @@ builder.mutationField('checkIfRegistrationIsPaid', (t) =>
               target: registration.id,
             },
           });
-          registration = await prisma.registration.update({
+          await prisma.registration.update({
             where: { id: registration.id },
             data: {
               paid: true,
             },
-            include: {
-              lydiaTransaction: true,
-            },
           });
           return true;
         }
+      } else if (!registration.paid && registration.paypalTransaction?.orderId) {
+        const paid = await checkPaypalPayment(registration.paypalTransaction.orderId);
+        if (paid) {
+          await log(
+            'registration',
+            'paypal manual check mark as paid',
+            {
+              registration,
+            },
+            registration.id,
+          );
+        }
+
+        await prisma.registration.update({
+          where: { id: registration.id },
+          data: {
+            paid,
+          },
+        });
+
+        return paid;
       }
 
       return false;
@@ -164,34 +174,11 @@ builder.queryField('registration', (t) =>
     args: {
       id: t.arg.id(),
     },
-    async resolve(query, _, { id }, { user }) {
-      if (!user) throw new GraphQLError('Not logged in');
+    async resolve(query, _, { id }) {
       return prisma.registration.findFirstOrThrow({
         ...query,
         where: {
           id: id.toLowerCase(),
-          OR: [
-            {
-              ticket: {
-                event: {
-                  managers: {
-                    some: {
-                      userId: user.id,
-                    },
-                  },
-                },
-              },
-            },
-            {
-              authorId: user.id,
-            },
-            {
-              beneficiary: user.uid,
-            },
-            {
-              beneficiary: user.fullName,
-            },
-          ],
         },
         include: {
           lydiaTransaction: true,
@@ -219,9 +206,15 @@ builder.queryField('registrationOfUser', (t) =>
       });
 
       const registration = registrations.find(
-        ({ author, beneficiary }) =>
-          author.uid === user.uid &&
-          (authorIsBeneficiary({ ...author, fullName: fullName(author) }, beneficiary) ||
+        ({ author, beneficiary, authorEmail }) =>
+          (author?.uid === user.uid || authorEmail === user.email) &&
+          ((author
+            ? authorIsBeneficiary(
+                { ...author, fullName: fullName(author) },
+                beneficiary,
+                authorEmail,
+              )
+            : false) ||
             beneficiary === argBeneficiary),
       );
 
@@ -254,6 +247,7 @@ builder.queryField('registrationsOfUser', (t) =>
             { author: { uid: userUid }, ...(forUserOnly ? { beneficiary: '' } : {}) },
             { beneficiary: userUid },
             { beneficiary: fullName(user) },
+            { authorEmail: user.email },
           ],
         },
         orderBy: {
@@ -317,6 +311,7 @@ builder.queryField('registrationsOfUserForEvent', (t) =>
       return eventManagedByUser(event, user, { canVerifyRegistrations: true });
     },
     async resolve(query, _, { eventUid, groupUid, userUid }, {}) {
+      const user = await prisma.user.findUniqueOrThrow({ where: { uid: userUid } });
       return prisma.registration.findMany({
         ...query,
         where: {
@@ -337,6 +332,7 @@ builder.queryField('registrationsOfUserForEvent', (t) =>
             {
               beneficiary: userUid,
             },
+            { authorEmail: user.email },
           ],
         },
       });
@@ -356,6 +352,64 @@ builder.queryField('registrationsOfTicket', (t) =>
         ...query,
         where: { ticket: { id: ticket } },
       });
+    },
+  }),
+);
+
+export class RegistrationSearch {
+  registration!: Registration;
+  id!: string;
+  rank!: number | null;
+  similarity!: number;
+}
+
+export const RegistrationSearchType = builder.objectType(RegistrationSearch, {
+  name: 'RegistrationSearch',
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    registration: t.prismaField({
+      type: 'Registration',
+      resolve: (_, { registration }) => registration,
+    }),
+    rank: t.exposeFloat('rank', { nullable: true }),
+    similarity: t.exposeFloat('similarity'),
+  }),
+});
+
+builder.queryField('searchRegistrations', (t) =>
+  t.field({
+    type: [RegistrationSearch],
+    args: {
+      groupUid: t.arg.string(),
+      eventUid: t.arg.string(),
+      q: t.arg.string(),
+    },
+    async authScopes(_, { eventUid, groupUid }, { user }) {
+      const event = await prisma.event.findFirstOrThrow({
+        where: {
+          group: { uid: groupUid },
+          uid: eventUid,
+        },
+        include: {
+          managers: { include: { user: true } },
+        },
+      });
+      return eventManagedByUser(event, user, {});
+    },
+    async resolve(_, { eventUid, groupUid, q }) {
+      const matches = await fullTextSearch('Registration', q, {
+        fuzzy: ['beneficiary'],
+        highlight: ['beneficiary'],
+      });
+      const events = await prisma.registration.findMany({
+        where: {
+          id: { in: matches.map((m) => m.id) },
+          ticket: { event: { uid: eventUid, group: { uid: groupUid } } },
+        },
+      });
+      return highlightProperties(sortWithMatches(events, matches), matches).map(
+        ({ object, ...match }) => ({ registration: object, ...match }),
+      );
     },
   }),
 );
@@ -527,11 +581,13 @@ builder.mutationField('upsertRegistration', (t) =>
       paid: t.arg.boolean(),
       beneficiary: t.arg.string({ required: false }),
       paymentMethod: t.arg({ type: PaymentMethodEnum, required: false }),
+      authorEmail: t.arg.string({ required: false }),
     },
-    async authScopes(_, { ticketId, id, paid }, { user }) {
+    async authScopes(_, { ticketId, id, paid, authorEmail, beneficiary }, { user }) {
       const creating = !id;
-      if (!user) return false;
-
+      if (!authorEmail && !user) return false;
+      // cannot create a registration for someone else when not connected (because godson limits can't be tracked)
+      if (beneficiary && !user) return false;
       const ticket = await prisma.ticket.findUnique({
         where: { id: ticketId },
         include: {
@@ -554,7 +610,7 @@ builder.mutationField('upsertRegistration', (t) =>
       if (
         ticket.price > 0 &&
         paid &&
-        !(user.admin || eventManagedByUser(ticket.event, user, { canVerifyRegistrations: true }))
+        !(user?.admin || eventManagedByUser(ticket.event, user, { canVerifyRegistrations: true }))
       )
         return false;
 
@@ -562,39 +618,41 @@ builder.mutationField('upsertRegistration', (t) =>
         // Check that the user can access the event
         if (!(await eventAccessibleByUser(ticket.event, user))) return false;
 
-        const userWithContributesTo = await prisma.user.findUniqueOrThrow({
-          where: { id: user.id },
-          include: {
-            contributions: {
+        const userWithContributesTo = user
+          ? await prisma.user.findUniqueOrThrow({
+              where: { id: user.id },
               include: {
-                option: {
+                contributions: {
                   include: {
-                    paysFor: {
+                    option: {
                       include: {
-                        school: true,
+                        paysFor: {
+                          include: {
+                            school: true,
+                          },
+                        },
                       },
                     },
                   },
                 },
+                groups: {
+                  include: {
+                    group: true,
+                  },
+                },
+                managedEvents: {
+                  include: {
+                    event: true,
+                  },
+                },
+                major: {
+                  include: {
+                    schools: true,
+                  },
+                },
               },
-            },
-            groups: {
-              include: {
-                group: true,
-              },
-            },
-            managedEvents: {
-              include: {
-                event: true,
-              },
-            },
-            major: {
-              include: {
-                schools: true,
-              },
-            },
-          },
-        });
+            })
+          : undefined;
 
         // Check that the ticket is still open
         if (ticket.closesAt && isPast(ticket.closesAt)) return false;
@@ -623,7 +681,7 @@ builder.mutationField('upsertRegistration', (t) =>
         // Check for beneficiary limits
         if (!eventManagedByUser(ticket.event, user, {})) {
           const registrationsByThisAuthor = ticketAndRegistrations!.registrations.filter(
-            ({ author, beneficiary }) => author.uid === user.uid && beneficiary !== '',
+            ({ author, beneficiary }) => author?.uid === user?.uid && beneficiary !== '',
           );
           if (registrationsByThisAuthor.length > ticket.godsonLimit) return false;
         }
@@ -653,14 +711,18 @@ builder.mutationField('upsertRegistration', (t) =>
       });
       if (!registration) return false;
       if (
-        !user.admin &&
+        !user?.admin &&
         !eventManagedByUser(registration.ticket.event, user, { canVerifyRegistrations: true })
       )
         return false;
       return true;
     },
-    async resolve(query, _, { id, ticketId, beneficiary, paymentMethod, paid }, { user }) {
-      if (!user) throw new GraphQLError('User not found');
+    async resolve(
+      query,
+      _,
+      { id, ticketId, beneficiary, paymentMethod, paid, authorEmail },
+      { user },
+    ) {
       const creating = !id;
       beneficiary = beneficiary?.replace(/^@/, '').trim();
 
@@ -672,7 +734,8 @@ builder.mutationField('upsertRegistration', (t) =>
         const existingRegistration = await prisma.registration.findFirst({
           where: {
             ticket: { event: { id: event.id } },
-            authorId: user.id,
+            authorId: user?.id ?? undefined,
+            authorEmail: authorEmail ?? '',
             beneficiary: beneficiary ?? '',
             // eslint-disable-next-line unicorn/no-null
             cancelledAt: null,
@@ -686,10 +749,10 @@ builder.mutationField('upsertRegistration', (t) =>
         include: { event: { include: { beneficiary: true } }, autojoinGroups: true },
       });
 
-      if (paid && ticket.autojoinGroups.length > 0) {
+      if ((beneficiary || user) && paid && ticket.autojoinGroups.length > 0) {
         try {
           await prisma.user.update({
-            where: { uid: beneficiary || user.uid },
+            where: { uid: beneficiary || user!.uid },
             data: {
               groups: {
                 createMany: {
@@ -722,7 +785,8 @@ builder.mutationField('upsertRegistration', (t) =>
         },
         create: {
           ticket: { connect: { id: ticketId } },
-          author: { connect: { id: user.id } },
+          author: user ? { connect: { id: user.id } } : undefined,
+          authorEmail: authorEmail ?? '',
           // eslint-disable-next-line unicorn/no-null
           paymentMethod: paymentMethod ?? null,
           beneficiary: beneficiary ?? '',
@@ -732,7 +796,7 @@ builder.mutationField('upsertRegistration', (t) =>
       await log(
         'registration',
         creating ? 'create' : 'update',
-        { registration, ticket, user },
+        { registration, ticket, user, authorEmail },
         registration.id,
         user,
       );
@@ -740,7 +804,7 @@ builder.mutationField('upsertRegistration', (t) =>
         await log(
           'registration',
           'send mail',
-          { registration, to: user.email },
+          { registration, to: user?.email ?? authorEmail },
           registration.id,
           user,
         );
@@ -748,8 +812,10 @@ builder.mutationField('upsertRegistration', (t) =>
         const pseudoID = registration.id.replace(/^r:/, '').toUpperCase();
         const qrcodeBuffer = await qrcode.toBuffer(pseudoID, { errorCorrectionLevel: 'H' });
 
+        const recipient = user?.email ?? authorEmail;
+        if (!recipient) throw new GraphQLError('No recipient found to send email to.');
         await mailer.sendMail({
-          to: user.email,
+          to: recipient,
           from: process.env.PUBLIC_SUPPORT_EMAIL,
           attachments: [
             {
@@ -777,8 +843,10 @@ builder.mutationField('upsertRegistration', (t) =>
 );
 
 builder.mutationField('paidRegistration', (t) =>
-  t.prismaField({
-    type: RegistrationType,
+  t.field({
+    description:
+      'When paying with Paypal, returns the order id for a capture to finish the payment',
+    type: 'String',
     errors: {},
     args: {
       regId: t.arg.id(),
@@ -788,7 +856,6 @@ builder.mutationField('paidRegistration', (t) =>
     },
     async authScopes(_, { regId }, { user }) {
       const creating = !regId;
-      if (!user) return false;
       const registration = await prisma.registration.findUnique({
         where: { id: regId },
         include: {
@@ -837,9 +904,8 @@ builder.mutationField('paidRegistration', (t) =>
 
       return true;
     },
-    async resolve(query, _, { regId, beneficiary, paymentMethod, phone }, { user }) {
-      if (!user) throw new GraphQLError('User not found');
-
+    // @ts-expect-error it says that the return type is string|undefined but i can't see where it'd be undefined
+    async resolve(_, { regId, beneficiary, paymentMethod, phone }, { user }) {
       const registration = await prisma.registration.findUnique({
         where: { id: regId },
         include: { ticket: { include: { event: true } } },
@@ -852,34 +918,54 @@ builder.mutationField('paidRegistration', (t) =>
       });
       if (!ticket) throw new GraphQLError('Ticket not found');
       if (!paymentMethod) throw new GraphQLError('Payment method not found');
-      if (!phone) throw new GraphQLError('Phone not found');
+      if (!phone && paymentMethod === PaymentMethodPrisma.Lydia)
+        throw new GraphQLError('Phone not found');
 
       // Process payment
-      await pay(
-        user.uid,
-        ticket.event.beneficiary?.id ?? '(unregistered)',
-        ticket.price,
-        paymentMethod,
-        phone,
-        regId,
-      );
-      await prisma.logEntry.create({
-        data: {
-          area: 'registration',
-          action: 'update',
-          target: regId,
-          message: `Registration ${regId}: payment method set to ${paymentMethod}`,
-          user: { connect: { id: user.id } },
-        },
+      const paypalOrderId = await pay({
+        from: user?.uid ?? '(unregistered)',
+        to: ticket.event.beneficiary?.id ?? '(unregistered)',
+        amount: ticket.price,
+        by: paymentMethod,
+        phone: phone ?? '',
+        emailAddress: user?.email ?? '',
+        registrationId: registration.id,
       });
-      return prisma.registration.update({
-        ...query,
+
+      if (paymentMethod === PaymentMethodPrisma.PayPal && !paypalOrderId)
+        throw new GraphQLError("PayPal n'a pas donné d'identifiant de commande");
+
+      await log(
+        'registration',
+        'update',
+        { registration, paymentMethod, beneficiary },
+        regId,
+        user,
+      );
+      await prisma.registration.update({
         where: { id: regId },
         data: {
           paymentMethod,
           beneficiary: beneficiary ?? '',
         },
       });
+
+      if (paymentMethod === PaymentMethodPrisma.PayPal) return paypalOrderId;
+      return '';
+    },
+  }),
+);
+
+builder.mutationField('finishPaypalRegistrationPayment', (t) =>
+  t.field({
+    type: 'Boolean',
+    errors: {},
+    args: {
+      orderId: t.arg.string(),
+    },
+    async resolve(_, { orderId }) {
+      await finishPaypalPayment(orderId);
+      return true;
     },
   }),
 );
@@ -913,7 +999,7 @@ builder.mutationField('cancelRegistration', (t) =>
         },
       });
       if (!registration) return false;
-      if (!user.admin && user.uid !== registration.author.uid) return false;
+      if (!user.admin && user.uid !== registration.author?.uid) return false;
       return true;
     },
     async resolve(_, { id }, { user }) {
@@ -1128,6 +1214,7 @@ builder.queryField('registrationsCsv', (t) =>
           opposedAt,
           cancelledAt,
           paid,
+          authorEmail,
           author,
           ticket,
           paymentMethod,
@@ -1139,7 +1226,7 @@ builder.queryField('registrationsCsv', (t) =>
           | null
           | {
               firstName: string;
-              major: { shortName: string };
+              major: null | { shortName: string };
               graduationYear: number;
               lastName: string;
               contributions: Array<{ option: { paysFor: Array<{ uid: string | null }> } }>;
@@ -1147,8 +1234,8 @@ builder.queryField('registrationsCsv', (t) =>
       ) =>
         ({
           'Date de réservation': createdAt.toISOString(),
-          Bénéficiaire: benef ? fullName(benef) : beneficiary,
-          'Achat par': fullName(author),
+          Bénéficiaire: (benef ? fullName(benef) : beneficiary) || authorEmail,
+          'Achat par': author ? fullName(author) : authorEmail,
           Payée: humanBoolean(paid),
           Scannée: humanBoolean(Boolean(verifiedAt) && paid),
           'En opposition': humanBoolean(Boolean(opposedAt)),
@@ -1162,7 +1249,7 @@ builder.queryField('registrationsCsv', (t) =>
                 ),
               )
             : '',
-          Filière: benef?.major.shortName ?? '',
+          Filière: benef?.major?.shortName ?? '',
           Année: benef ? `${yearTier(benef.graduationYear)}A` : '',
           Promo: benef?.graduationYear.toString() ?? '',
           'Code de réservation': id.replace(/^r:/, '').toUpperCase(),
@@ -1190,20 +1277,33 @@ builder.queryField('registrationsCsv', (t) =>
   }),
 );
 
-// eslint-disable-next-line max-params
-async function pay(
-  from: string,
-  to: string,
-  amount: number,
-  by: PaymentMethodPrisma,
-  phone?: string,
-  registrationId?: string,
-) {
+async function pay({
+  from,
+  to,
+  amount,
+  by,
+  phone,
+  emailAddress,
+  registrationId,
+}: {
+  from: string;
+  to: string;
+  amount: number;
+  by: PaymentMethodPrisma;
+  phone?: string;
+  emailAddress?: string;
+  registrationId?: string;
+}): Promise<string | undefined> {
   switch (by) {
     case 'Lydia': {
       if (!phone) throw new GraphQLError('Missing phone number');
       await payEventRegistrationViaLydia(phone, registrationId);
       return;
+    }
+
+    case 'PayPal': {
+      if (!registrationId) throw new GraphQLError('Pas de réservation associée');
+      return payEventRegistrationViaPaypal(registrationId, emailAddress ?? '');
     }
 
     default: {

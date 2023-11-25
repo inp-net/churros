@@ -25,7 +25,7 @@ const sessions = new Map<
   string,
   User & { fullName: string; yearTier: number } & {
     groups: Array<GroupMember & { group: Group }>;
-    major: Major & { schools: School[] };
+    major: null | (Major & { schools: School[] });
     managedEvents: Array<EventManager & { event: Event & { group: Group } }>;
   }
 >();

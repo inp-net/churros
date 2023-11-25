@@ -40,3 +40,9 @@ export function fromYearTier(tier: number): number {
 export function parseYearTier(yearTierDisplay: string): number {
   return Number.parseInt(yearTierDisplay.replace(/a$/, ''), 10);
 }
+
+export function soonest(...dates: Array<Date | null | undefined>): Date | undefined {
+  const validDates = dates.filter(Boolean) as Date[];
+  if (validDates.length === 0) return undefined;
+  return new Date(Math.min(...validDates.map((date) => date.valueOf())));
+}

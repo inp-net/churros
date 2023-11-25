@@ -82,7 +82,7 @@ builder.queryField('userServices', (t) =>
           studentAssociation: {
             school: {
               uid: {
-                in: me.major.schools.map((school) => school.uid),
+                in: me.major?.schools.map((school) => school.uid),
               },
             },
           },

@@ -102,10 +102,11 @@
   }
 
   ul {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
     gap: 1rem;
-    justify-content: center;
+    place-content: center center;
+    place-items: center center;
   }
 
   // ul.events li {

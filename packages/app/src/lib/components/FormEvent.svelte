@@ -254,7 +254,7 @@
     // eslint-disable-next-line unicorn/no-null
     openToContributors: null,
     openToPromotions: [],
-    openToSchools: $me?.major.schools?.filter((s) => s.uid !== 'inp') ?? [],
+    openToSchools: $me?.major?.schools?.filter((s) => s.uid !== 'inp') ?? [],
     openToMajors: [],
     autojoinGroups: [],
     // eslint-disable-next-line unicorn/no-null
@@ -957,7 +957,7 @@
     border-radius: var(--radius-block);
   }
 
-  @media (width >= 1100px) {
+  @media (min-width: 1100px) {
     form.event {
       display: grid;
       grid-template-areas: 'info tickets' 'managers managers' 'bans bans' 'submit submit';

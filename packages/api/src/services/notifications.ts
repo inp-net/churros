@@ -90,7 +90,7 @@ export async function scheduleNewArticleNotification({
       // If the article's group is not in a school the user is in
       if (
         article.visibility === Visibility.SchoolRestricted &&
-        !user.major.schools.some(
+        !user.major?.schools.some(
           (school) => school.id === article.group.studentAssociation?.school.id,
         )
       )
@@ -163,7 +163,7 @@ export async function scheduleShotgunNotifications({
     (type: 'Closing' | 'Opening') =>
     async (
       user: User & {
-        major: Major & { schools: School[] };
+        major: null | (Major & { schools: School[] });
         groups: Array<GroupMember & { group: Group }>;
       },
     ) => {
@@ -210,7 +210,7 @@ export async function scheduleShotgunNotifications({
       // Don't send notifications for school-restricted events if the recipient is not in any of the organizing schools
       if (
         event.visibility === Visibility.SchoolRestricted &&
-        !user.major.schools.some((school) => schoolsOfEvent.has(school.id))
+        !user.major?.schools.some((school) => schoolsOfEvent.has(school.id))
       )
         return;
 
@@ -333,7 +333,7 @@ export async function scheduleShotgunNotifications({
 export async function scheduleNotification(
   notification: (
     user: User & {
-      major: Major & { schools: School[] };
+      major: null | (Major & { schools: School[] });
       groups: Array<GroupMember & { group: Group }>;
     },
   ) => MaybePromise<(PushNotification & { afterSent: () => Promise<void> }) | undefined>,

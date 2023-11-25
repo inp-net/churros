@@ -152,11 +152,6 @@
     margin: 0 auto;
   }
 
-  h1 {
-    display: flex;
-    align-items: center;
-  }
-
   .links-and-actions {
     display: flex;
     flex-wrap: wrap;

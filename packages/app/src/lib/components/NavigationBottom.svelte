@@ -286,7 +286,7 @@
     font-size: 0.8rem;
   }
 
-  @media (width >= 900px) {
+  @media (min-width: 900px) {
     nav {
       display: none;
     }

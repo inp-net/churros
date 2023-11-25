@@ -1,7 +1,7 @@
 import { loadQuery } from '$lib/zeus';
 import { redirect, type RequestHandler } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async ({ params, locals, fetch }) => {
+export const GET: RequestHandler = async ({ params, locals, fetch, url }) => {
   const uid = params.entity!.replace('@', '');
   let isGroup = false;
   try {
@@ -24,6 +24,6 @@ export const GET: RequestHandler = async ({ params, locals, fetch }) => {
     isGroup = true;
   } catch {}
 
-  const error = isGroup ? redirect(301, `/groups/${uid}`) : redirect(301, `/users/${uid}`);
-  throw error;
+  url.pathname = `/${isGroup ? 'groups' : 'users'}/${uid}`;
+  throw redirect(302, url);
 };

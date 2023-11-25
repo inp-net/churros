@@ -8,6 +8,7 @@ import {
   IssueState,
 } from '$lib/zeus';
 import LogoLydia from '~icons/simple-icons/lydia';
+import LogoPaypal from '~icons/simple-icons/paypal';
 import IconCreditCard from '~icons/mdi/credit-card-outline';
 import IconCash from '~icons/mdi/hand-coin-outline';
 import IconPaymentCheck from '~icons/mdi/checkbook';
@@ -31,13 +32,14 @@ import IconSigma from '~icons/mdi/sigma';
 import IconPermissions from '~icons/mdi/shield-account-outline';
 import type { SvelteComponent } from 'svelte';
 
-export const DISPLAY_PAYMENT_METHODS = {
+export const DISPLAY_PAYMENT_METHODS: Record<PaymentMethod, string> = {
   Cash: 'Espèces',
   Check: 'Chèque',
   Card: 'Carte bancaire',
   Transfer: 'Virement',
   Lydia: 'Lydia',
   Other: 'Autre',
+  PayPal: 'PayPal',
 };
 
 export const ORDER_VISIBILITIES: Visibility[] = [
@@ -141,6 +143,7 @@ export const PAYMENT_METHODS_ICONS: Record<PaymentMethod, typeof SvelteComponent
   Lydia: LogoLydia,
   Other: IconQuestionMark,
   Transfer: IconBankTransfer,
+  PayPal: LogoPaypal,
 };
 
 export const DISPLAY_EVENT_FREQUENCY: Record<EventFrequency, string> = {

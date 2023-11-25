@@ -44,7 +44,7 @@
               <AvatarPerson
                 href="/users/{uid}"
                 {...user}
-                role="{major.shortName} · {new Date().getFullYear() -
+                role="{major?.shortName ?? '(exté)'} · {new Date().getFullYear() -
                   (birthday?.getFullYear() ?? 0)} ans"
               />
             </li>
@@ -78,7 +78,7 @@
     text-align: center;
   }
 
-  @media (width <= 1200px) {
+  @media (max-width: 1200px) {
     .birthdays {
       flex-direction: column;
     }
