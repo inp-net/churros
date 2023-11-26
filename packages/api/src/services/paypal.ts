@@ -1,3 +1,4 @@
+import { PayPalTransactionStatus } from '@prisma/client';
 import { log } from '../objects/logs.js';
 import { prisma } from '../prisma.js';
 
@@ -73,7 +74,41 @@ export async function finishPaypalPayment(orderId: string) {
   return status;
 }
 
-export async function checkPaypalPayment(orderId: string): Promise<boolean> {
+export function paypalPaymentStatus(status: string): PayPalTransactionStatus {
+  switch (status) {
+    case 'CREATED': {
+      return PayPalTransactionStatus.Created;
+    }
+
+    case 'SAVED': {
+      return PayPalTransactionStatus.Saved;
+    }
+
+    case 'APPROVED': {
+      return PayPalTransactionStatus.Approved;
+    }
+
+    case 'VOIDED': {
+      return PayPalTransactionStatus.Voided;
+    }
+
+    case 'COMPLETED': {
+      return PayPalTransactionStatus.Completed;
+    }
+
+    case 'PAYER_ACTION_REQUIRED': {
+      return PayPalTransactionStatus.PayerActionRequired;
+    }
+
+    default: {
+      throw new Error(`Unknown paypal status ${status}`);
+    }
+  }
+}
+
+export async function checkPaypalPayment(
+  orderId: string,
+): Promise<{ paid: boolean; status: PayPalTransactionStatus }> {
   const response = await fetch(
     new URL(`/v2/checkout/orders/${orderId}`, PUBLIC_PAYPAL_API_BASE_URL),
     {
@@ -85,7 +120,10 @@ export async function checkPaypalPayment(orderId: string): Promise<boolean> {
     },
   );
   const { status } = (await response.json()) as { status: string };
-  return ['APPROVED', 'COMPLETED'].includes(status);
+  return {
+    paid: ['APPROVED', 'COMPLETED'].includes(status),
+    status: paypalPaymentStatus(status),
+  };
 }
 
 export async function payEventRegistrationViaPaypal(
@@ -99,12 +137,12 @@ export async function payEventRegistrationViaPaypal(
 
   // Transaction was already paid
   if (registration.paypalTransaction?.orderId) {
-    const paid = await checkPaypalPayment(registration.paypalTransaction.orderId);
+    const { paid, status } = await checkPaypalPayment(registration.paypalTransaction.orderId);
     if (paid) {
       await log('paypal', 'fallback mark as paid', { registration }, registration.id);
       await prisma.registration.update({
         where: { id: registration.id },
-        data: { paid: true },
+        data: { paid: true, status },
       });
     }
   }
