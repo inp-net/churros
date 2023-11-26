@@ -25,5 +25,5 @@ export const GET: RequestHandler = async ({ params, locals, fetch, url }) => {
   } catch {}
 
   url.pathname = `/${isGroup ? 'groups' : 'users'}/${uid}`;
-  throw redirect(302, url);
+  throw redirect(302, url.pathname);
 };
