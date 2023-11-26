@@ -151,7 +151,7 @@ export async function payEventRegistrationViaPaypal(
       await log('paypal', 'fallback mark as paid', { registration }, registration.id);
       await prisma.registration.update({
         where: { id: registration.id },
-        data: { paid: true, status },
+        data: { paid: true, paypalTransaction: { update: { status } } },
       });
     }
   }
