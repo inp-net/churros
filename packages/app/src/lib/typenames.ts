@@ -1,4 +1,4 @@
-/* @generated from schema by /packages/api/scripts/update-id-prefix-to-typename-map.ts */
+/* @generated from schema by /packages/api/build/scripts/update-id-prefix-to-typename-map.js */
 const ID_PREFIXES_TO_TYPENAMES = {
   u: 'User',
   godparentreq: 'GodparentRequest',
@@ -23,6 +23,7 @@ const ID_PREFIXES_TO_TYPENAMES = {
   log: 'LogEntry',
   lydia: 'LydiaAccount',
   lydiapayment: 'LydiaTransaction',
+  paypalpayment: 'PaypalTransaction',
   barweek: 'BarWeek',
   notifsub: 'NotificationSubscription',
   notif: 'Notification',

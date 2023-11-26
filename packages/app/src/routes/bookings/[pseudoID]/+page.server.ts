@@ -1,6 +1,6 @@
 import { Selector, loadQuery, makeMutation } from '$lib/zeus';
-import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
 /* @generated from schema by /packages/api/build/scripts/update-id-prefix-to-typename-map.js */
 const ID_PREFIXES_TO_TYPENAMES = {
@@ -27,6 +27,7 @@ const ID_PREFIXES_TO_TYPENAMES = {
   log: 'LogEntry',
   lydia: 'LydiaAccount',
   lydiapayment: 'LydiaTransaction',
+  paypalpayment: 'PaypalTransaction',
   barweek: 'BarWeek',
   notifsub: 'NotificationSubscription',
   notif: 'Notification',
