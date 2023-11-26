@@ -18,7 +18,7 @@ const fonts: TFontDictionary = {
 };
 
 export function generatePDF(
-  registration: Registration & { ticket: Ticket & { event: Event }; author: User },
+  registration: Registration & { ticket: Ticket & { event: Event }; author: null | User },
 ) {
   // playground requires you to assign document definition to a variable called dd
   const DISPLAY_PAYMENT_METHODS = {
@@ -73,9 +73,13 @@ export function generatePDF(
                     },
                   },
                   registration.beneficiary === ''
-                    ? `${registration.author.firstName} ${registration.author.lastName}\n`
+                    ? registration.author
+                      ? `${registration.author.firstName} ${registration.author.lastName}\n`
+                      : registration.authorEmail
                     : `${registration.beneficiary}\n`,
-                  `${registration.author.firstName} ${registration.author.lastName}\n`,
+                  registration.author
+                    ? `${registration.author.firstName} ${registration.author.lastName}\n`
+                    : registration.authorEmail,
                   registration.ticket.event.title + '\n',
                   registration.ticket.name + '\n',
                   registration.ticket.price + '€\n',
