@@ -70,7 +70,8 @@ export function formatEventDates(
           timeStyle: 'short',
         })
           .formatRange(startsAt, endsAt)
-          .replaceAll(new Date().getFullYear().toString(), '');
+          .replaceAll(new Date().getFullYear().toString(), '')
+          .replaceAll(' , ', ', ');
       }
 
       default: {
