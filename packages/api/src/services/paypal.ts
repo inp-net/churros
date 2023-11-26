@@ -54,11 +54,17 @@ async function initiatePaypalPayment(
         },
       ],
     }),
-  }).catch((error) => {
-    console.error(`Error while initiating paypal payment: ${error}`);
-    throw error;
-  });
-  const { id } = (await response.json()) as { id: string };
+  })
+    .catch((error) => {
+      console.error(`Error while initiating paypal payment: ${error}`);
+      throw error;
+    })
+    .then(async (r) => r.json() as Promise<Record<string, unknown>>);
+
+  if (!response['id'])
+    console.error(`Error while creating PayPal order: ${JSON.stringify(response)}`);
+
+  const { id } = response as { id: string };
   return id;
 }
 
