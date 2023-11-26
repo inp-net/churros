@@ -84,7 +84,9 @@ export function generatePDF(
                   registration.ticket.name + '\n',
                   registration.ticket.price + '€\n',
                   registration.paymentMethod
-                    ? DISPLAY_PAYMENT_METHODS[registration.paymentMethod]
+                    ? DISPLAY_PAYMENT_METHODS[
+                        registration.paymentMethod as keyof typeof DISPLAY_PAYMENT_METHODS
+                      ]
                     : 'Inconnue',
                   '\n',
                   registration.ticket.event.startsAt.toLocaleDateString() + '\n',
@@ -104,6 +106,7 @@ export function generatePDF(
 
   const printer = new pdfMakePrinter(fonts);
 
+  // @ts-expect-error says canvas is required, but it works without it so /shrug
   const pdf = printer.createPdfKitDocument(dd);
   return pdf;
 }
