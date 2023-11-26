@@ -40,6 +40,9 @@ async function initiatePaypalPayment(
     },
     body: JSON.stringify({
       intent: 'CAPTURE',
+      application_context: {
+        shipping_preference: 'NO_SHIPPING',
+      },
       purchase_units: [
         {
           amount: {
