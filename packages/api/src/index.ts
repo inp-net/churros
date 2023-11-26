@@ -136,7 +136,7 @@ api.get('/log', (req, res) => {
   res.send('ok');
 });
 
-api.get('/bookings/:pseudoID', async (req, res) => {
+api.get('/print-booking/:pseudoID', async (req, res) => {
   const id = `r:${req.params.pseudoID.toLowerCase()}`;
 
   const registration = await prisma.registration.findUnique({
