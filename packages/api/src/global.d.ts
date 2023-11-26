@@ -59,5 +59,6 @@ declare namespace NodeJS {
     PUBLIC_PAYPAL_CLIENT_ID: string;
     PAYPAL_CLIENT_SECRET: string;
     PUBLIC_PAYPAL_API_BASE_URL: string;
+    PUBLIC_SCHOOL_UID: string;
   }
 }

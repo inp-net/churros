@@ -6,6 +6,7 @@
   import { theme } from '$lib/theme';
   import { beforeNavigate, goto } from '$app/navigation';
   import IconCancel from '~icons/mdi/cancel';
+  import IconDownload from '~icons/mdi/download-outline';
   import Alert from '$lib/components/Alert.svelte';
   import { PaymentMethod, zeus } from '$lib/zeus';
   import InputText from '$lib/components/InputText.svelte';
@@ -92,6 +93,7 @@
     createdAt,
     paymentMethod,
   } = data.registration;
+  $: code = id.replace(/^r:/, '').toUpperCase();
   let phone = $me?.phone ?? '';
   const { viewbox: qrcodeViewbox, path: qrcodePath } = data.registrationQRCode;
 </script>
@@ -143,6 +145,12 @@
     {/if}
   {/if}
 
+  <section class="print">
+    <ButtonSecondary data-sveltekit-reload href="../{code}.pdf" icon={IconDownload}
+      >Imprimmer / Télécharger en PDF</ButtonSecondary
+    >
+  </section>
+
   <section class="code">
     {#if cancelled}
       <div class="qrcode cancelled">Place<br />annulée</div>
@@ -150,9 +158,7 @@
       <svg class="qrcode" viewBox={qrcodeViewbox} stroke="var(--text)" stroke-width="1.05">
         <path d={qrcodePath} fill="black" />
       </svg>
-      <p class="registration-code">
-        {id.split(':', 2)[1].toUpperCase()}
-      </p>
+      <p class="registration-code">{code}</p>
     {/if}
   </section>
 
@@ -250,6 +256,12 @@
     margin-left: auto;
   }
 
+  section.print {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .qrcode {
     width: 100%;
     max-height: 40vh;
@@ -334,8 +346,12 @@
   @media (min-width: 1000px) {
     .content {
       display: grid;
-      grid-template-areas: 'header header' 'pay pay' 'links links' 'qrcode details' 'qrcode cancel' 'fineprint fineprint';
+      grid-template-areas: 'header header' 'pay pay' 'print print' 'links links' 'qrcode details' 'qrcode cancel' 'fineprint fineprint';
       max-width: 1000px;
+    }
+
+    section.print {
+      grid-area: print;
     }
 
     section.links {
