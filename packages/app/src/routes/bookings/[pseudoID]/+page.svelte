@@ -147,7 +147,7 @@
 
   <section class="print">
     <ButtonSecondary data-sveltekit-reload href="../{code}.pdf" icon={IconDownload}
-      >Imprimmer / Télécharger en PDF</ButtonSecondary
+      >Imprimer / Télécharger en PDF</ButtonSecondary
     >
   </section>
 
