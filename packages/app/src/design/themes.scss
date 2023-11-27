@@ -3,6 +3,7 @@ dialog {
   &.dark,
   &.dark::backdrop {
     --bg: #{$neutral-900};
+    --default-bg: #{$neutral-900};
     --text: #{$neutral-200};
     --link: #{$indigo-400};
     --title: #{$neutral-100};
@@ -23,6 +24,7 @@ dialog {
   &.hacker,
   &.hacker::backdrop {
     --bg: black;
+    --default-bg: black;
     --text: #37e06c;
     --border: #37e06c;
     --link: #8dedab;

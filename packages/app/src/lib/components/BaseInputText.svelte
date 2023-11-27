@@ -25,6 +25,7 @@
     if (val === undefined || val === null) return '';
     switch (type) {
       case 'date': {
+        if (typeof val === 'string') return val;
         return (val as Date).toISOString().split('T')[0];
       }
 

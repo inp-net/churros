@@ -23,6 +23,24 @@ dialog,
   --disabled-text: #{$slate-600};
   --disabled-border: #{$gray-200};
 
+  // Useful when a property gets overriden
+  --default-bg: #{$white};
+  --default-text: #{$slate-800};
+  --default-title: #{$slate-900};
+  --default-muted: #{$slate-500};
+  --default-error: #{$red-800};
+  --default-link: #{$blue-700};
+  --default-border: #{$gray-400};
+  --default-shadow: 0 0 0.125rem #0004, 0 0.125rem 0.5rem #0001;
+  --default-shadow-big: 0 0 0.5rem #0004, 0 0.5rem 3rem #0001;
+  --default-ring: #{rgba($slate-400, 50%)};
+  --default-hover-bg: #{$gray-200};
+  --default-hover-text: #{$slate-700};
+  --default-hover-border: #{$gray-500};
+  --default-disabled-bg: #{$gray-100};
+  --default-disabled-text: #{$slate-600};
+  --default-disabled-border: #{$gray-200};
+
   // Primary
   --primary-bg: #{$blue-700};
   --primary-text: #{$white};

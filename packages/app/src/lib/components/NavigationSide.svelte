@@ -27,6 +27,7 @@
   import { page } from '$app/stores';
   import type { DESKTOP_NAVIGATION_TABS } from '../../routes/+layout.svelte';
   import { scrollToTop } from '$lib/scroll';
+  import FormEventBeta from './FormEventBeta.svelte';
 
   export let current: (typeof DESKTOP_NAVIGATION_TABS)[number];
   let flyoutOpen = false;
@@ -34,7 +35,11 @@
   beforeNavigate(() => {
     flyoutOpen = false;
   });
+
+  let createEventModal: HTMLDialogElement;
 </script>
+
+<FormEventBeta bind:modalElement={createEventModal}></FormEventBeta>
 
 <nav
   class="navigation-side"
@@ -222,40 +227,45 @@
 >
   <section class="flyout" class:open={flyoutOpen}>
     {#if $me?.admin}
-      <a href="/bar-weeks">
+      <a class="button" href="/bar-weeks">
         <IconBarWeek />
         <span>Semaine de bar</span>
       </a>
     {/if}
 
     {#if $me?.admin || $me?.canEditGroups}
-      <a href="/groups/create">
+      <a class="button" href="/groups/create">
         <IconGroupOutline />
         <span>Groupe</span>
       </a>
     {/if}
 
     {#if $me?.admin}
-      <a href="/announcements/create">
+      <a class="button" href="/announcements/create">
         <IconAnnouncement />
         <span>Annonce</span>
       </a>
     {/if}
 
-    <a href="/documents/create">
+    <a class="button" href="/documents/create">
       <IconDocument />
       <span>Frappe</span>
     </a>
 
-    <a href="/posts/create">
+    <a class="button" href="/posts/create">
       <IconArticle />
       <span>Post</span>
     </a>
 
-    <a href="/events/create">
+    <button
+      class="button"
+      on:click={() => {
+        createEventModal.showModal();
+      }}
+    >
       <IconEvent />
       <span>Événement</span>
-    </a>
+    </button>
   </section>
 </div>
 
@@ -352,7 +362,7 @@
     opacity: 0;
   }
 
-  .flyout a {
+  .flyout .button {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -364,7 +374,7 @@
     text-align: center;
   }
 
-  .flyout a span {
+  .flyout .button span {
     margin-top: 0.2rem;
     font-size: 0.8rem;
   }

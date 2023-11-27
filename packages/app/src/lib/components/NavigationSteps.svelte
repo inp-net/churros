@@ -61,9 +61,7 @@
     row-gap: 0.25rem;
     align-items: center;
     padding: 0.5rem;
-    font-weight: bold;
 
-    --bg: var(--primary-text);
   }
 
   .progress-steps-line::before {
@@ -92,7 +90,7 @@
     width: 1.25rem;
     height: 1.25rem;
     color: var(--primary-text);
-    background: var(--bg);
+    background: var(--default-bg);
     border: var(--border-block) solid var(--primary-border);
     border-radius: 50%;
     transition: border 0.125s ease;
@@ -112,6 +110,7 @@
   }
 
   .progress-step.current .button-inner .text {
+    font-weight: bold;
     transform: scale(115%);
   }
 

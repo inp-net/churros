@@ -1,9 +1,15 @@
 <script lang="ts">
   import { isDark } from '$lib/theme';
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   const dispatch = createEventDispatcher();
 
   export let element: HTMLDialogElement;
+  export let open = false;
+  export let noPadding = false;
+
+  onMount(() => {
+    if (open) element.showModal();
+  });
 </script>
 
 <svelte:window
@@ -28,7 +34,9 @@
       element.classList.remove('closing');
     }, 200);
   }}
-  class={$isDark ? 'dark' : 'light'}
+  {...$$restProps}
+  class="{$isDark ? 'dark' : 'light'} {$$restProps['class']}"
+  class:no-padding={noPadding}
   bind:this={element}
 >
   <slot />
@@ -44,6 +52,10 @@
     background: var(--bg);
     border: none;
     border-radius: var(--radius-block);
+  }
+
+  dialog.no-padding {
+    padding: 0;
   }
 
   dialog:global(.closing) {
