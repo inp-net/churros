@@ -140,7 +140,7 @@ builder.mutationField('checkIfRegistrationIsPaid', (t) =>
           return true;
         }
       } else if (!registration.paid && registration.paypalTransaction?.orderId) {
-        const paid = await checkPaypalPayment(registration.paypalTransaction.orderId);
+        const { paid, status } = await checkPaypalPayment(registration.paypalTransaction.orderId);
         if (paid) {
           await log(
             'registration',
@@ -157,6 +157,11 @@ builder.mutationField('checkIfRegistrationIsPaid', (t) =>
           data: {
             paid,
           },
+        });
+
+        await prisma.paypalTransaction.update({
+          where: { registrationId: registration.id },
+          data: { status },
         });
 
         return paid;

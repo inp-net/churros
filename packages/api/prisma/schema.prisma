@@ -635,12 +635,22 @@ model LydiaTransaction {
   studentAssociationContributionId String?       @unique
 }
 
+enum PayPalTransactionStatus {
+  Created
+  Saved
+  Approved
+  Voided
+  Completed
+  PayerActionRequired
+}
+
 /// Paypal payment
 model PaypalTransaction {
-  id             String        @id @default(dbgenerated("nanoid('paypalpayment:')"))
-  emailAddress   String        @default("") @db.VarChar(255)
-  registrationId String?       @unique
-  registration   Registration? @relation(fields: [registrationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id             String                   @id @default(dbgenerated("nanoid('paypalpayment:')"))
+  emailAddress   String                   @default("") @db.VarChar(255)
+  registrationId String?                  @unique
+  registration   Registration?            @relation(fields: [registrationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  status         PayPalTransactionStatus?
 
   /// PayPal's order ID. 
   orderId   String?

@@ -65,7 +65,7 @@ builder.mutationField('upsertComment', (t) =>
     type: CommentType,
     args: {
       id: t.arg.id({ required: false }),
-      body: t.arg.string(),
+      body: t.arg.string({ validate: { minLength: 1 } }),
       documentId: t.arg.id({ required: false }),
       articleId: t.arg.id({ required: false }),
       inReplyToId: t.arg.id({ required: false }),

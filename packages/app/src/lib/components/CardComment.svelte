@@ -85,6 +85,7 @@
       <div class="actions">
         {#if creating}
           <ButtonGhost
+            disabled={body.length === 0}
             on:click={() => {
               dispatch('edit', [id, body]);
             }}><IconSubmit></IconSubmit></ButtonGhost
@@ -159,7 +160,7 @@
           bind:value={replyingTo.body}
           placeholder={'Ajouter une réponse'}
         />
-        <ButtonSecondary submits>Répondre</ButtonSecondary>
+        <ButtonSecondary disabled={replyingTo.body.length === 0} submits>Répondre</ButtonSecondary>
       </form>
     {/if}
   </div>

@@ -1,6 +1,6 @@
 import { Selector, loadQuery, makeMutation } from '$lib/zeus';
-import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
 /* @generated from schema by /packages/api/build/scripts/update-id-prefix-to-typename-map.js */
 const ID_PREFIXES_TO_TYPENAMES = {
@@ -27,6 +27,7 @@ const ID_PREFIXES_TO_TYPENAMES = {
   log: 'LogEntry',
   lydia: 'LydiaAccount',
   lydiapayment: 'LydiaTransaction',
+  paypalpayment: 'PaypalTransaction',
   barweek: 'BarWeek',
   notifsub: 'NotificationSubscription',
   notif: 'Notification',
@@ -44,7 +45,6 @@ function reverseMap<K extends string, V extends string>(obj: Record<K, V>): Reco
 }
 
 export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
-  const { me } = await parent();
   if (params.pseudoID.startsWith(reverseMap(ID_PREFIXES_TO_TYPENAMES).Registration + ':')) {
     throw redirect(
       301,
@@ -57,14 +57,12 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
   }:${params.pseudoID.toLowerCase()}`;
 
   let markedAsPaid = false;
-  if (me) {
-    ({ checkIfRegistrationIsPaid: markedAsPaid } = await makeMutation(
-      {
-        checkIfRegistrationIsPaid: [{ id }, true],
-      },
-      { fetch, parent },
-    ));
-  }
+  ({ checkIfRegistrationIsPaid: markedAsPaid } = await makeMutation(
+    {
+      checkIfRegistrationIsPaid: [{ id }, true],
+    },
+    { fetch, parent },
+  ));
 
   const { registration, registrationQRCode } = await loadQuery(
     {

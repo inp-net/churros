@@ -4,6 +4,7 @@
   import { loadScript as loadPaypalScript } from '@paypal/paypal-js';
   import LoadingSpinner from './LoadingSpinner.svelte';
   import { PaymentMethod, zeus } from '$lib/zeus';
+  import { goto } from '$app/navigation';
 
   export let registrationId: string;
   export let beneficiary: string;
@@ -65,7 +66,7 @@
           if (finishPaypalRegistrationPayment.__typename === 'Error')
             throw new Error(finishPaypalRegistrationPayment.message);
 
-          window.location.reload();
+          await goto(`/bookings/${registrationId}`);
         },
       })
       .render(paypalCheckoutButtonContainer);
@@ -78,3 +79,10 @@
   <Alert theme="danger">{error.toString()}</Alert>
 {/await}
 <div bind:this={paypalCheckoutButtonContainer} id="paypal-checkout-button"></div>
+
+<style>
+  #paypal-checkout-button {
+    width: 100%;
+    max-width: 400px;
+  }
+</style>
