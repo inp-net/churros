@@ -94,6 +94,9 @@
     align-items: center;
     justify-content: space-between;
     height: 2.5rem;
+    border-radius: var(--radius-block);
+    flex-grow: 1;
+    overflow: hidden;
   }
 
   .date-and-time input {
@@ -105,6 +108,7 @@
     padding: 0.5rem;
     border: var(--border-block) solid var(--border);
     border-radius: var(--radius-block);
+    background-color: var(--default-bg);
   }
 
   .date-and-time input:first-child {
@@ -127,11 +131,6 @@
 
   .date-and-time:focus-within .separator {
     background-color: var(--primary-border);
-  }
-
-  .date-and-time {
-    border-radius: var(--radius-block);
-    overflow: hidden;
   }
 
   .date-and-time input:hover,

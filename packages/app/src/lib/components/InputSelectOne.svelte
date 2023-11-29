@@ -46,7 +46,7 @@
     <fieldset bind:this={fieldsetElement}>
       {#each optionsWithDisplay as [option, display] (option)}
         <label aria-current={option === value}>
-          <input type="radio" {required} {name} bind:group={value} value={option} />
+          <input on:input type="radio" {required} {name} bind:group={value} value={option} />
           <slot {value} {display} {option}>{display}</slot>
         </label>
       {/each}

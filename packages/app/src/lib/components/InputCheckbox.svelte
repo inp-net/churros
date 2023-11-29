@@ -57,6 +57,7 @@
         value = getTriState(event.target);
         previousValue = value;
       }}
+      {...$$restProps}
     />
     <div class="checkbox" data-state={JSON.stringify(value)}>
       {#if value !== null}
@@ -82,7 +83,7 @@
       </div>
     {/if}
   {:else}
-    <input on:change type="checkbox" bind:checked={value} />
+    <input on:change type="checkbox" bind:checked={value} {...$$restProps} />
     <div class="checkbox" data-state={JSON.stringify(value)}>
       {#if value === true}
         <Check />
