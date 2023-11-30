@@ -152,6 +152,13 @@ export function visibleEventsPrismaQuery(
               },
             },
           },
+          {
+            tickets: {
+              some: {
+                openToExternal: true,
+              },
+            },
+          },
         ],
       },
       // GroupRestricted events in the user's groups
@@ -607,6 +614,7 @@ builder.queryField('event', (t) =>
           coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
           group: { include: { studentAssociation: { include: { school: true } } } },
           managers: { include: { user: true } },
+          tickets: true,
         },
       });
       return eventAccessibleByUser(event, user);
@@ -1178,11 +1186,14 @@ export async function eventAccessibleByUser(
           canEditPermissions: boolean;
           canVerifyRegistrations: boolean;
         }>;
+        tickets: Array<{ openToExternal: boolean | null }>;
       })
     | null,
   user: Context['user'],
 ): Promise<boolean> {
   if (user?.admin) return true;
+
+  if (event?.tickets.some(({ openToExternal }) => openToExternal)) return true;
 
   switch (event?.visibility) {
     case Visibility.Public:
