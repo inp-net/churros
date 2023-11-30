@@ -452,6 +452,9 @@
 
   .content section.details {
     max-width: 700px;
+    flex-direction: column;
+    display: flex;
+    gap: 1rem;
   }
 
   .content section h2 {
