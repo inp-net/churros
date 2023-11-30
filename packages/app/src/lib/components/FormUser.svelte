@@ -1,21 +1,21 @@
 <script lang="ts">
-  import { Selector, zeus } from '$lib/zeus';
-  import InputText from './InputText.svelte';
-  import IconClear from '~icons/mdi/clear';
-  import InputDate from './InputDate.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import InputLongText from './InputLongText.svelte';
   import { me } from '$lib/session';
-  import InputSearchObjectList from './InputSearchObjectList.svelte';
-  import InputSearchObject from './InputSearchObject.svelte';
-  import Fuse from 'fuse.js';
-  import InputField from './InputField.svelte';
-  import InputNumber from './InputNumber.svelte';
-  import InputEmailList from './InputEmailList.svelte';
-  import { createEventDispatcher } from 'svelte';
-  import InputSocialLinks from './InputSocialLinks.svelte';
-  import InputCheckbox from './InputCheckbox.svelte';
   import { toasts } from '$lib/toasts';
+  import { Selector, zeus } from '$lib/zeus';
+  import Fuse from 'fuse.js';
+  import { createEventDispatcher } from 'svelte';
+  import IconClear from '~icons/mdi/clear';
+  import ButtonPrimary from './ButtonPrimary.svelte';
+  import InputCheckbox from './InputCheckbox.svelte';
+  import InputDate from './InputDate.svelte';
+  import InputEmailList from './InputEmailList.svelte';
+  import InputField from './InputField.svelte';
+  import InputLongText from './InputLongText.svelte';
+  import InputNumber from './InputNumber.svelte';
+  import InputSearchObject from './InputSearchObject.svelte';
+  import InputSearchObjectList from './InputSearchObjectList.svelte';
+  import InputSocialLinks from './InputSocialLinks.svelte';
+  import InputText from './InputText.svelte';
   const emit = createEventDispatcher();
 
   const userQuery = Selector('User')({
@@ -309,7 +309,7 @@
   <InputText type="tel" label="Numéro de téléphone" maxlength={255} bind:value={phone} />
   <InputText label="Adresse postale" maxlength={255} bind:value={address} />
   <section class="submit">
-    <ButtonSecondary submits {loading}>Sauvegarder</ButtonSecondary>
+    <ButtonPrimary submits {loading}>Sauvegarder</ButtonPrimary>
   </section>
 </form>
 
