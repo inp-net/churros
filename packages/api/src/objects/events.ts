@@ -177,22 +177,36 @@ export function visibleEventsPrismaQuery(
       // Unlisted events that the user booked
       {
         visibility: VisibilityPrisma.Unlisted,
-        tickets: {
-          some: {
-            registrations: {
+        OR: [
+          {
+            author: { uid: user?.uid ?? '' },
+          },
+          {
+            managers: {
               some: {
-                OR: [
-                  {
-                    beneficiary: user?.uid ?? '',
-                  },
-                  {
-                    author: { uid: user?.uid ?? '' },
-                  },
-                ],
+                user: { uid: user?.uid ?? '' },
               },
             },
           },
-        },
+          {
+            tickets: {
+              some: {
+                registrations: {
+                  some: {
+                    OR: [
+                      {
+                        beneficiary: user?.uid ?? '',
+                      },
+                      {
+                        author: { uid: user?.uid ?? '' },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        ],
       },
     ],
   };
