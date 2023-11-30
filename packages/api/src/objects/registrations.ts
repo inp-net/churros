@@ -24,6 +24,7 @@ import { log } from './logs.js';
 import { DateTimeScalar } from './scalars.js';
 import { placesLeft, userCanSeeTicket } from './tickets.js';
 import { UserType, fullName } from './users.js';
+import { actualPrice } from './promotions.js';
 
 const mailer = createTransport(process.env.SMTP_URL);
 
@@ -927,12 +928,14 @@ builder.mutationField('paidRegistration', (t) =>
       if (!paymentMethod) throw new GraphQLError('Payment method not found');
       if (!phone && paymentMethod === PaymentMethodPrisma.Lydia)
         throw new GraphQLError('Phone not found');
+    
+      const price = await actualPrice(ticket, user);
 
       // Process payment
       const paypalOrderId = await pay({
         from: user?.uid ?? '(unregistered)',
         to: ticket.event.beneficiary?.id ?? '(unregistered)',
-        amount: ticket.price,
+        amount: price,
         by: paymentMethod,
         phone: phone ?? '',
         emailAddress: user?.email ?? '',

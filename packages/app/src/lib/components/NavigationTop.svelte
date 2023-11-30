@@ -117,8 +117,11 @@
         </ButtonGhost>
       {:else}
         <ButtonSecondary href="/register/">Inscription</ButtonSecondary>
-        <ButtonSecondary href="/login/?{new URLSearchParams({ to: $page.url.pathname }).toString()}"
-          >Connexion</ButtonSecondary
+        <ButtonSecondary
+          href="/login/?{new URLSearchParams({
+            to: $page.url.pathname,
+            ...Object.fromEntries($page.url.searchParams.entries()),
+          }).toString()}">Connexion</ButtonSecondary
         >
       {/if}
     {/if}

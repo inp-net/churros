@@ -7,6 +7,8 @@ import {
   type Prisma,
   type Ticket,
   type TicketGroup,
+  PromotionType as PromotionTypePrisma,
+  GroupType,
 } from '@prisma/client';
 import { mappedGetAncestors } from 'arborist';
 import {
@@ -51,6 +53,10 @@ import { onBoard } from '../auth.js';
 import { updatePicture } from '../pictures.js';
 import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { soonest } from '../date.js';
+
+export const PromotionTypeEnum = builder.enumType(PromotionTypePrisma, {
+  name: 'PromotionType',
+});
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -1091,6 +1097,10 @@ builder.mutationField('upsertEvent', (t) =>
       }
 
       // 5. Upsert tickets, setting their group
+      const simppsPromotion = await prisma.promotion.findFirst({
+        where: { type: PromotionTypePrisma.SIMPPS, validUntil: { gte: new Date() } },
+      });
+
       for (const ticket of tickets) {
         const ticketGroupId = ticket.groupName
           ? ticketGroups.find((tg) => tg.name === ticket.groupName)!.id
@@ -1115,6 +1125,11 @@ builder.mutationField('upsertEvent', (t) =>
             openToSchools: { connect: connectFromListOfUids(ticket.openToSchools) },
             openToMajors: { connect: connectFromListOfIds(ticket.openToMajors) },
             autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
+            // SIMPPS promotion
+            subjectToPromotions:
+              simppsPromotion && group.type === GroupType.StudentAssociationSection
+                ? { connect: { id: simppsPromotion.id } }
+                : undefined,
           },
           update: {
             ...ticket,
@@ -1129,6 +1144,11 @@ builder.mutationField('upsertEvent', (t) =>
             openToSchools: { set: connectFromListOfUids(ticket.openToSchools) },
             openToMajors: { set: connectFromListOfIds(ticket.openToMajors) },
             autojoinGroups: { set: connectFromListOfUids(ticket.autojoinGroups) },
+            // SIMPPS promotion
+            subjectToPromotions:
+              simppsPromotion && group.type === GroupType.StudentAssociationSection
+                ? { connect: { id: simppsPromotion.id } }
+                : undefined,
           },
         });
       }

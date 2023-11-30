@@ -451,10 +451,10 @@
   }
 
   .content section.details {
-    max-width: 700px;
-    flex-direction: column;
     display: flex;
+    flex-direction: column;
     gap: 1rem;
+    max-width: 700px;
   }
 
   .content section h2 {

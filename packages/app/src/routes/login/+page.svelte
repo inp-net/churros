@@ -2,11 +2,11 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
-  import IconEyeOff from '~icons/mdi/eye-off';
-  import IconEye from '~icons/mdi/eye';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
+  import IconEye from '~icons/mdi/eye';
+  import IconEyeOff from '~icons/mdi/eye-off';
 
   import { me, saveSessionToken, sessionUserQuery } from '$lib/session';
   import { zeus } from '$lib/zeus';
@@ -21,7 +21,10 @@
     let url = new URL($page.url.searchParams.get('to') ?? '/', $page.url);
     if (url.origin !== $page.url.origin || url.pathname.startsWith('/login'))
       url = new URL('/', $page.url);
-    return goto(url, { invalidateAll: true });
+    const searchParams = new URLSearchParams(
+      [...$page.url.searchParams.entries()].filter(([k]) => k !== 'to'),
+    );
+    return goto(new URL(`${url.toString()}?${searchParams.toString()}`), { invalidateAll: true });
   };
 
   let loading = false;
