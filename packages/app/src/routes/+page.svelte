@@ -10,11 +10,19 @@
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import CardFeedEvent from '$lib/components/CardFeedEvent.svelte';
+  import { onMount } from 'svelte';
 
   export let data: PageData;
 
   let loading = false;
-  let selectedBirthdaysYearTier = $me?.yearTier?.toString() ?? 'all';
+  let selectedBirthdaysYearTier = 'all';
+  onMount(() => {
+    selectedBirthdaysYearTier = $me?.yearTier
+      ? $me.yearTier <= 3
+        ? $me.yearTier.toString()
+        : 'all'
+      : 'all';
+  });
   const loadMore = async () => {
     if (loading) return;
     try {
