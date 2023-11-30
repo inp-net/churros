@@ -191,6 +191,7 @@ builder.queryField('ticket', (t) =>
             include: {
               coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
               group: { include: { studentAssociation: { include: { school: true } } } },
+              tickets: true,
               managers: {
                 include: {
                   user: true,
@@ -224,6 +225,7 @@ builder.queryField('ticketByUid', (t) =>
             include: {
               coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
               group: { include: { studentAssociation: { include: { school: true } } } },
+              tickets: true,
               managers: {
                 include: {
                   user: true,
@@ -347,6 +349,7 @@ builder.queryField('ticketsOfEvent', (t) =>
         include: {
           coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
           group: { include: { studentAssociation: { include: { school: true } } } },
+          tickets: true,
           managers: {
             include: {
               user: true,
