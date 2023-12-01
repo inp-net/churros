@@ -6,7 +6,7 @@
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import { me } from '$lib/session';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
-  import { isOnClubBoard } from '$lib/permissions';
+  import { isOnClubBoard, roleEmojis } from '$lib/permissions';
 
   export let data: PageData;
 
@@ -46,8 +46,9 @@
       </h2>
 
       <ul class="nobullet">
-        {#each membersOfYear.sort(byMemberGroupTitleImportance) as { title, member } (member.uid)}
+        {#each membersOfYear.sort(byMemberGroupTitleImportance) as { title, member, ...permissions } (member.uid)}
           <li>
+            <span class="emojis">{roleEmojis(permissions)}</span>
             <AvatarPerson href="/users/{member.uid}" {...member} role={title} />
           </li>
         {/each}
@@ -83,5 +84,15 @@
     bottom: 2px;
     font-size: 0.8em;
     font-weight: 400;
+  }
+
+  .nobullet li {
+    display: grid;
+    grid-template-columns: 1.6rem 1fr;
+    align-items: center;
+  }
+
+  .nobullet li .emojis {
+    font-size: 1.2rem;
   }
 </style>
