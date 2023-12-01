@@ -1195,7 +1195,7 @@ export async function eventAccessibleByUser(
 ): Promise<boolean> {
   if (user?.admin) return true;
 
-  if (event?.tickets.some(({ openToExternal }) => openToExternal)) return true;
+  if (event?.tickets.some(({ openToExternal }) => openToExternal !== false)) return true;
 
   switch (event?.visibility) {
     case Visibility.Public:
