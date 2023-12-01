@@ -68,6 +68,12 @@ export const TicketType = builder.prismaNode('Ticket', {
     registrations: t.relation('registrations', {
       query(_, { user }) {
         if (user?.admin) return {};
+        if (!user) {
+          return {
+            where: { id: '' },
+          };
+        }
+
         return {
           where: {
             OR: [
