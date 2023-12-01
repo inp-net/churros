@@ -53,8 +53,10 @@
 
   form.claim-code {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     align-items: center;
+    justify-content: center;
   }
 
   li {
