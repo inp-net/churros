@@ -2,6 +2,7 @@
   import type { PageData } from './$types';
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
+  import ShopItem from '$lib/components/ShopItem.svelte';
 
   export let data: PageData;
 
@@ -29,14 +30,6 @@
     <p class="text-center">Aucun article</p>
   {/if}
   {#each shopItems as shopItem}
-    <div>
-      <p>{shopItem.name}</p>
-      <p>Stock: {shopItem.stock}</p>
-      <p>Restant: {shopItem.stockLeft}</p>
-      <p>Prix: {shopItem.price} €</p>
-      <p>max: {shopItem.max}</p>
-      <p>{shopItem.description}</p>
-      <a href="/groups/{shopItem.group.uid}/shop/{shopItem.id}">Voir</a>
-    </div>
+    <ShopItem {shopItem} />
   {/each}
 </div>
