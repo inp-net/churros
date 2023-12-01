@@ -33,3 +33,28 @@
     <ShopItem {shopItem} />
   {/each}
 </div>
+
+<style>
+  .content {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1em;
+    align-items: baseline;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  @media only screen and (width > 900px) and (width < 990px) {
+    .content {
+      justify-content: center;
+    }
+  }
+
+  @media only screen and (width <= 690px) {
+    .content {
+      justify-content: center;
+    }
+  }
+</style>
