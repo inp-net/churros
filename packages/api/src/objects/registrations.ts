@@ -837,8 +837,7 @@ builder.mutationField('upsertRegistration', (t) =>
           <p>Montre le QR code pour rentrer.</p>
           <img src="cid:qrcode" alt="${pseudoID}" />
           <p>En cas de problème, ton code de réservation est le:</p>
-          <p style="font-size: 32px; text-align: center;" align="center" size="32px"><code>${pseudoID}</code></p>
-          `,
+          <p style="font-size: 32px; text-align: center;" align="center" size="32px"><code>${pseudoID}</code></p><p><a href="https://churros.inpt.fr/bookings/${pseudoID}">Accéder à ma place</a></p>`,
           text: `Ton code de réservation est le ${pseudoID}`,
         });
       }
