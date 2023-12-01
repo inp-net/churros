@@ -127,7 +127,7 @@
         {#if placesLeft === -1 || placesLeft === Number.POSITIVE_INFINITY}
           Illimité
         {:else}
-          <span class="left">{placesLeft}</span><span class="capacity">{capacity}</span>
+          <!-- <span class="left">{placesLeft}</span><span class="capacity">{capacity}</span> -->
         {/if}
       </span>
       {#if !shotgunning}
