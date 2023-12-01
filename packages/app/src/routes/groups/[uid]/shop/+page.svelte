@@ -3,6 +3,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
   import ShopItem from '$lib/components/ShopItem.svelte';
+  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
 
   export let data: PageData;
 
@@ -21,6 +22,12 @@
   });
 </script>
 
+<NavigationTabs
+  tabs={[
+    { name: 'Boutique', href: '.' },
+    { name: 'Mes commandes', href: './orders' },
+  ]}
+/>
 <div class="content">
   {#if shopItems.length === 0}
     <p class="text-center">Aucun article</p>
