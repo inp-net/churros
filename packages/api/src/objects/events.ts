@@ -155,7 +155,9 @@ export function visibleEventsPrismaQuery(
           {
             tickets: {
               some: {
-                openToExternal: true,
+                openToExternal: {
+                  not: false,
+                },
               },
             },
           },
