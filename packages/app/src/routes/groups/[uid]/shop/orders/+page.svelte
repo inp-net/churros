@@ -3,6 +3,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
 
   export let data: PageData;
 
@@ -21,6 +22,12 @@
   });
 </script>
 
+<NavigationTabs
+  tabs={[
+    { name: 'Boutique', href: '../' },
+    { name: 'Mes commandes', href: '.' },
+  ]}
+/>
 <h1>Mes achats</h1>
 
 <div class="content">
