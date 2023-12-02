@@ -51,6 +51,7 @@ import { onBoard } from '../auth.js';
 import { updatePicture } from '../pictures.js';
 import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { soonest } from '../date.js';
+import { visibleArticlesPrismaQuery } from './articles.js';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -414,7 +415,9 @@ export const EventType = builder.prismaNode('Event', {
       },
     }),
     ticketGroups: t.relation('ticketGroups'),
-    articles: t.relation('articles'),
+    articles: t.relation('articles', {
+      query: (_, { user }) => ({ where: visibleArticlesPrismaQuery(user, 'wants') }),
+    }),
     group: t.relation('group'),
     coOrganizers: t.relation('coOrganizers'),
     links: t.relation('links'),
