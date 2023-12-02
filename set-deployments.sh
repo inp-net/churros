@@ -2,7 +2,8 @@
 
 help() {
     echo "Usage: $0 (prod|staging) <version>"
-    echo "       $0 (prod|staging) (uses latest tag)"
+    echo "       $0 (prod|staging)"
+    echo "			   (uses the latest tag)"
     exit 1
 }
 
@@ -30,10 +31,10 @@ esac
 
 case $env in
 	prod)
-		paths=deployment-{api,app}.yaml
+		paths=(deployment-{api,app}.yaml)
 		;;
 	staging)
-		paths=deployment-{api,app}-staging.yaml
+		paths=(deployment-{api,app}-staging.yaml)
 		;;
 	*)
 		help;
@@ -49,9 +50,9 @@ cd $(realpath k8s)
 
 git pull --autostash
 
-sed -i "s@harbor.k8s.inpt.fr/net7/centraverse:.*@harbor.k8s.inpt.fr/net7/centraverse:$version@g" $paths	
+sed -i "s@harbor.k8s.inpt.fr/net7/centraverse:.*@harbor.k8s.inpt.fr/net7/centraverse:$version@g" ${paths[@]}
 
-git add $paths
+git add ${paths[@]}
 
 git commit -m "churros: bump $env to $version"
 
