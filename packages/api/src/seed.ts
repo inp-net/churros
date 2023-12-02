@@ -64,6 +64,17 @@ function randomIdsOf<Count extends number>(
   return result as SizedArray<string, Count>;
 }
 
+// randomizes hours and minutes from given date
+function randomTime(date: Date, hoursIn: Generator<number>): Date {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    randomChoice([...hoursIn]),
+    Math.floor(Math.random() * 60),
+  );
+}
+
 const schoolsData = [
   {
     name: 'EAU',
@@ -741,11 +752,15 @@ const registration = await prisma.registration.create({
 for (const i of range(0, 100)) {
   await prisma.registration.create({
     data: {
+      createdAt: randomTime(registration.createdAt, range(13, 23)),
       ticketId: randomIdOf(event1.tickets),
-      authorId: randomIdOf(users.filter((u) => u.id !== registration.authorId)),
+      authorId:
+        // eslint-disable-next-line unicorn/no-null
+        i % 4 === 0 ? null : randomIdOf(users.filter((u) => u.id !== registration.authorId)),
+      authorEmail: i % 4 === 0 ? 'feur@quoi.com' : undefined,
       paymentMethod: i % 2 === 0 ? 'Lydia' : 'Cash',
       paid: true,
-      beneficiary: 'quentin',
+      beneficiary: i % 4 === 0 ? 'whatcoubeh' : randomChoice(users).uid,
     },
   });
 }
