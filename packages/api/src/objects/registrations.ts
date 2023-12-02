@@ -1167,7 +1167,7 @@ builder.queryField('registrationsCsv', (t) =>
         },
       });
 
-      return eventManagedByUser(event, me, { canVerifyRegistrations: true });
+      return eventManagedByUser(event, me, {});
     },
     async resolve(_, { eventUid, groupUid }) {
       const registrations = await prisma.registration.findMany({
