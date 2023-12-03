@@ -602,6 +602,7 @@ builder.mutationField('upsertRegistration', (t) =>
               group: { include: { studentAssociation: { include: { school: true } } } },
               managers: { include: { user: true } },
               bannedUsers: true,
+              tickets: true,
             },
           },
           openToGroups: true,
@@ -836,8 +837,7 @@ builder.mutationField('upsertRegistration', (t) =>
           <p>Montre le QR code pour rentrer.</p>
           <img src="cid:qrcode" alt="${pseudoID}" />
           <p>En cas de problème, ton code de réservation est le:</p>
-          <p style="font-size: 32px; text-align: center;" align="center" size="32px"><code>${pseudoID}</code></p>
-          `,
+          <p style="font-size: 32px; text-align: center;" align="center" size="32px"><code>${pseudoID}</code></p><p><a href="https://churros.inpt.fr/bookings/${pseudoID}">Accéder à ma place</a></p>`,
           text: `Ton code de réservation est le ${pseudoID}`,
         });
       }
@@ -871,6 +871,7 @@ builder.mutationField('paidRegistration', (t) =>
                   coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
                   group: { include: { studentAssociation: { include: { school: true } } } },
                   managers: { include: { user: true } },
+                  tickets: true,
                 },
               },
             },
@@ -1166,7 +1167,7 @@ builder.queryField('registrationsCsv', (t) =>
         },
       });
 
-      return eventManagedByUser(event, me, { canVerifyRegistrations: true });
+      return eventManagedByUser(event, me, {});
     },
     async resolve(_, { eventUid, groupUid }) {
       const registrations = await prisma.registration.findMany({

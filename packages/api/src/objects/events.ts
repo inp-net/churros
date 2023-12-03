@@ -51,6 +51,7 @@ import { onBoard } from '../auth.js';
 import { updatePicture } from '../pictures.js';
 import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { soonest } from '../date.js';
+import { visibleArticlesPrismaQuery } from './articles.js';
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -152,6 +153,15 @@ export function visibleEventsPrismaQuery(
               },
             },
           },
+          {
+            tickets: {
+              some: {
+                openToExternal: {
+                  not: false,
+                },
+              },
+            },
+          },
         ],
       },
       // GroupRestricted events in the user's groups
@@ -177,22 +187,36 @@ export function visibleEventsPrismaQuery(
       // Unlisted events that the user booked
       {
         visibility: VisibilityPrisma.Unlisted,
-        tickets: {
-          some: {
-            registrations: {
+        OR: [
+          {
+            author: { uid: user?.uid ?? '' },
+          },
+          {
+            managers: {
               some: {
-                OR: [
-                  {
-                    beneficiary: user?.uid ?? '',
-                  },
-                  {
-                    author: { uid: user?.uid ?? '' },
-                  },
-                ],
+                user: { uid: user?.uid ?? '' },
               },
             },
           },
-        },
+          {
+            tickets: {
+              some: {
+                registrations: {
+                  some: {
+                    OR: [
+                      {
+                        beneficiary: user?.uid ?? '',
+                      },
+                      {
+                        author: { uid: user?.uid ?? '' },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        ],
       },
     ],
   };
@@ -391,7 +415,9 @@ export const EventType = builder.prismaNode('Event', {
       },
     }),
     ticketGroups: t.relation('ticketGroups'),
-    articles: t.relation('articles'),
+    articles: t.relation('articles', {
+      query: (_, { user }) => ({ where: visibleArticlesPrismaQuery(user, 'wants') }),
+    }),
     group: t.relation('group'),
     coOrganizers: t.relation('coOrganizers'),
     links: t.relation('links'),
@@ -593,6 +619,7 @@ builder.queryField('event', (t) =>
           coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
           group: { include: { studentAssociation: { include: { school: true } } } },
           managers: { include: { user: true } },
+          tickets: true,
         },
       });
       return eventAccessibleByUser(event, user);
@@ -1164,11 +1191,14 @@ export async function eventAccessibleByUser(
           canEditPermissions: boolean;
           canVerifyRegistrations: boolean;
         }>;
+        tickets: Array<{ openToExternal: boolean | null }>;
       })
     | null,
   user: Context['user'],
 ): Promise<boolean> {
   if (user?.admin) return true;
+
+  if (event?.tickets.some(({ openToExternal }) => openToExternal !== false)) return true;
 
   switch (event?.visibility) {
     case Visibility.Public:
