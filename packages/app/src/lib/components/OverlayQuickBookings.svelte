@@ -114,7 +114,7 @@
     transform: translateX(0);
   }
 
-  @media (width>=600px) {
+  @media (min-width: 600px) {
     .quick-booking {
       right: 1rem;
       left: unset;
