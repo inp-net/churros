@@ -23,10 +23,18 @@ function idToCode(id: string) {
   return id.replace(/^r:/, '').toUpperCase();
 }
 
-async function bookingsOfEvent({ eventUid, groupUid }: { eventUid: string; groupUid: string }) {
+async function bookingsOfEvent({
+  eventUid,
+  groupUid,
+  ticketName,
+}: {
+  eventUid: string;
+  groupUid: string;
+  ticketName: string;
+}) {
   return prisma.registration.findMany({
     where: {
-      ticket: { event: { uid: eventUid, group: { uid: groupUid } } },
+      ticket: { name: ticketName, event: { uid: eventUid, group: { uid: groupUid } } },
       cancelledAt: null,
       opposedAt: null,
     },
@@ -47,26 +55,30 @@ async function renew(code: string) {
     console.error(`Booking ${code} not found`);
     return;
   }
-  const newRegistration = await prisma.registration.create({
-    data: {
-      ...omit(data, ['id']),
-    },
-    include: {
-      author: true,
-      ticket: {
-        include: {
-          event: true,
+  const [_, newRegistration] = await prisma.$transaction([
+    prisma.registration.update({
+      where: { id: data.id },
+      data: {
+        cancelledBy: { connect: { uid: 'astleyr' } },
+        cancelledAt: new Date(),
+        lydiaTransaction: { disconnect: true },
+        paypalTransaction: { disconnect: true },
+      },
+    }),
+    prisma.registration.create({
+      data: {
+        ...omit(data, ['id']),
+      },
+      include: {
+        author: true,
+        ticket: {
+          include: {
+            event: true,
+          },
         },
       },
-    },
-  });
-  await prisma.registration.update({
-    where: { id: data.id },
-    data: {
-      cancelledBy: { connect: { uid: 'astleyr' } },
-      cancelledAt: new Date(),
-    },
-  });
+    }),
+  ]);
   stolenBookingsNewCodes.set(idToCode(data.id), idToCode(newRegistration.id));
 
   return newRegistration;
@@ -123,9 +135,7 @@ Bien évidemment, tu n'a rien à payer en plus, on t'a juste fait une nouvelle r
 Ma nouvelle réservation: ${process.env.FRONTEND_ORIGIN}/bookings/${booking.id}
 
 En cas de problème, ces informations seront utiles:
-- Ancien code: ${idToCode(
-          invertMap(stolenBookingsNewCodes).get(idToCode(booking.id)) ?? '(introuvable)',
-        )}
+- Ancien code: ${invertMap(stolenBookingsNewCodes).get(idToCode(booking.id))!}
 - Nouveau code: ${idToCode(booking.id)}
 
 Désolé pour le dérangement,
@@ -142,8 +152,13 @@ net7 & INP-net`,
   });
 }
 
-async function main(groupUid: string, eventUid: string, bookedBeforeDate: Date) {
-  const stolenBookings = (await bookingsOfEvent({ groupUid, eventUid })).filter(
+async function main(
+  groupUid: string,
+  eventUid: string,
+  ticketName: string,
+  bookedBeforeDate: Date,
+) {
+  const stolenBookings = (await bookingsOfEvent({ groupUid, eventUid, ticketName })).filter(
     (b) => bookingInStolenList(b) || bookedBefore(bookedBeforeDate)(b),
   );
   console.log(`Found ${stolenBookings.length} stolen bookings`);
@@ -161,4 +176,4 @@ async function main(groupUid: string, eventUid: string, bookedBeforeDate: Date) 
   console.log(JSON.stringify(Object.fromEntries(stolenBookingsNewCodes.entries()), undefined, 2));
 }
 
-await main('groupe-1', 'ceci-est-un-evenement', setHours(setMinutes(new Date(), 0), 15));
+await main('groupe-1', 'ceci-est-un-evenement', 'Extés', setHours(setMinutes(new Date(), 0), 15));
