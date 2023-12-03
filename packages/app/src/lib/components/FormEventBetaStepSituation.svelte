@@ -1,11 +1,15 @@
 <script lang="ts">
+  import { DISPLAY_EVENT_FREQUENCY } from '$lib/display';
   import { me } from '$lib/session';
   import { EventFrequency, Selector, zeus } from '$lib/zeus';
   import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
-  import InputLydiaAccounts from './InputLydiaAccounts.svelte';
+  import InputCheckbox from './InputCheckbox.svelte';
+  import InputDate from './InputDate.svelte';
+  import InputGroups from './InputGroups.svelte';
+  import InputSelectOne from './InputSelectOne.svelte';
   import InputText from './InputText.svelte';
+  import LoadingSpinner from './LoadingSpinner.svelte';
 
-  export let contactMail: string;
   export let title: string;
   export let description: string;
   export let group: {
@@ -15,35 +19,11 @@
     pictureFile: string;
     pictureFileDark: string;
   };
-  export let pictureFile: string;
-  export let uid: string;
-  export let links: Array<{ name: string; value: string }>;
-  export let coOrganizers: Array<{
-    id: string;
-    uid: string;
-    name: string;
-    pictureFile: string;
-    pictureFileDark: string;
-  }>;
   export let startsAt: Date | undefined = undefined;
   export let endsAt: Date | undefined = undefined;
   export let location: string;
-  export let frequency: EventFrequency = EventFrequency.Once;
+  export let frequency: EventFrequency;
   export let recurringUntil: Date | undefined = undefined;
-
-  export let lydiaAccount:
-    | undefined
-    | {
-        name: string;
-        id: string;
-        group?:
-          | undefined
-          | {
-              pictureFile: string;
-              pictureFileDark: string;
-              name: string;
-            };
-      };
 
   export let eventQuery = Selector('Event')({
     coOrganizers: {
@@ -88,18 +68,6 @@
     },
   });
 
-  export let availableLydiaAccounts: Array<{
-    name: string;
-    id: string;
-    group?:
-      | undefined
-      | {
-          pictureFile: string;
-          pictureFileDark: string;
-          name: string;
-        };
-  }>;
-
   async function groupInputsOptions() {
     const { groups: allGroups } = await $zeus.query({
       groups: [{}, { ...eventQuery.group, ...eventQuery.coOrganizers }],
@@ -113,27 +81,38 @@
 </script>
 
 <section class="inputs">
-  <section class="contact">
-    <h2>Contact</h2>
-    <InputText type="email" label="Email de l'orga" bind:value={contactMail} maxlength={255}
-    ></InputText>
+  <InputText label="Lieu" bind:value={location}></InputText>
+  <div class="dates">
+    <InputDate time required label="Début" bind:value={startsAt}></InputDate>
+    <InputDate time required label="Fin" bind:value={endsAt}></InputDate>
+  </div>
+  <section class="recurrence">
+    <h2>Récurrence</h2>
+    <InputCheckbox
+      on:change={() => {
+        frequency = frequency === EventFrequency.Once ? EventFrequency.Weekly : EventFrequency.Once;
+      }}
+      label="L'évènement se répète"
+      value={frequency !== EventFrequency.Once}
+    ></InputCheckbox>
+    <div class="recurrence-options" class:disabled={frequency === EventFrequency.Once}>
+      <InputSelectOne
+        required={frequency !== EventFrequency.Once}
+        label="Répétition"
+        options={Object.entries(DISPLAY_EVENT_FREQUENCY).filter(([k]) => k !== EventFrequency.Once)}
+        bind:value={frequency}
+      ></InputSelectOne>
+      <InputDate
+        required={frequency !== EventFrequency.Once}
+        bind:value={recurringUntil}
+        label="Jusqu'à"
+      ></InputDate>
+    </div>
   </section>
-
-  <section class="banks">
-    <h2>Bancaire</h2>
-    <InputLydiaAccounts
-      label="Compte Lydia bénéficiaire"
-      options={availableLydiaAccounts}
-      bind:account={lydiaAccount}
-    ></InputLydiaAccounts>
-  </section>
-
-  <section class="managers"></section>
 </section>
 
 <section class="preview">
-  <FormEventBetaPreviewCard
-    {...{ title, description, endsAt, startsAt, frequency, location, recurringUntil }}
+  <FormEventBetaPreviewCard {...{ title, description, startsAt, endsAt, recurringUntil, frequency, location }}
   ></FormEventBetaPreviewCard>
 </section>
 
@@ -148,5 +127,23 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+  }
+
+  .inputs .dates {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .inputs .recurrence-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .inputs .recurrence-options.disabled {
+    opacity: 0.5;
   }
 </style>

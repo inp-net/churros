@@ -313,9 +313,9 @@
   }>;
 
   export let event: {
-    tickets: Ticket[];
     pictureFile: string;
     id: string;
+    tickets: Ticket[];
     ticketGroups: Array<{
       id: string;
       name: string;

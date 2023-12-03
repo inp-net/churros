@@ -18,6 +18,7 @@
   import InputLinks from './InputLinks.svelte';
   import InputGroups from './InputGroups.svelte';
   import InputSchools from './InputSchools.svelte';
+  import type { Ticket } from './FormEventBeta.svelte';
   const emit = createEventDispatcher();
 
   export let expandedTicketId = '';
@@ -27,40 +28,7 @@
     return `${yearTier(year)}A (${year})`;
   }
 
-  export let ticket: {
-    id: string;
-    name: string;
-    description: string;
-    opensAt?: Date | undefined;
-    closesAt?: Date | undefined;
-    price: number;
-    capacity: number;
-    openToPromotions: number[];
-    links: Array<{ value: string; name: string }>;
-    openToSchools: Array<{ name: string; id: string; uid: string }>;
-    openToGroups: Array<{
-      name: string;
-      uid: string;
-      id: string;
-      pictureFile: string;
-      pictureFileDark: string;
-    }>;
-    openToMajors: Array<{ name: string; shortName: string; id: string }>;
-    openToExternal?: boolean | null | undefined;
-    openToAlumni?: boolean | null | undefined;
-    openToContributors?: boolean | null | undefined;
-    openToApprentices?: boolean | null | undefined;
-    godsonLimit: number;
-    onlyManagersCanProvide: boolean;
-    autojoinGroups: Array<{
-      name: string;
-      uid: string;
-      id: string;
-      pictureFile: string;
-      pictureFileDark: string;
-    }>;
-    allowedPaymentMethods: PaymentMethod[];
-  };
+  export let ticket: Ticket;
 
   export let allGroups: typeof ticket.openToGroups;
 

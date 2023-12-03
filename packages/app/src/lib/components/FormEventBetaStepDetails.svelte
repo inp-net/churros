@@ -1,13 +1,11 @@
 <script lang="ts">
-  import { DISPLAY_EVENT_FREQUENCY } from '$lib/display';
   import { me } from '$lib/session';
-  import { EventFrequency, Selector, zeus } from '$lib/zeus';
+  import { Selector, zeus } from '$lib/zeus';
   import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
-  import InputCheckbox from './InputCheckbox.svelte';
-  import InputDate from './InputDate.svelte';
+  import FormPicture from './FormPicture.svelte';
   import InputGroups from './InputGroups.svelte';
+  import InputLinks from './InputLinks.svelte';
   import InputLongText from './InputLongText.svelte';
-  import InputSelectOne from './InputSelectOne.svelte';
   import InputText from './InputText.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
 
@@ -20,11 +18,9 @@
     pictureFile: string;
     pictureFileDark: string;
   };
-  export let startsAt: Date | undefined = undefined;
-  export let endsAt: Date | undefined = undefined;
-  export let location: string;
-  export let frequency: EventFrequency;
-  export let recurringUntil: Date | undefined = undefined;
+  export let pictureFile: string;
+  export let uid: string;
+  export let links: Array<{ name: string; value: string }>;
 
   export let eventQuery = Selector('Event')({
     coOrganizers: {
@@ -95,35 +91,18 @@
     <InputText required label="Titre" bind:value={title}></InputText>
     <InputLongText rich label="Description" bind:value={description}></InputLongText>
   </section>
-  <section class="when-where">
-    <h2>Où ça? Quand ça?</h2>
-    <InputText label="Lieu" bind:value={location}></InputText>
-    <div class="dates">
-      <InputDate time required label="Début" bind:value={startsAt}></InputDate>
-      <InputDate time required label="Fin" bind:value={endsAt}></InputDate>
-    </div>
-      <pre>{JSON.stringify({ startsAt, endsAt }, undefined, 2)}</pre>
-    <h3>Récurrence</h3>
-    <InputCheckbox
-      on:change={() => {
-        frequency = frequency === EventFrequency.Once ? EventFrequency.Weekly : EventFrequency.Once;
+  <InputLinks label="Liens" bind:value={links}></InputLinks>
+  <section class="thumbnail">
+    <h2>Miniature</h2>
+    <FormPicture
+      object={{
+        id: 'event',
+        uid,
+        pictureFile,
       }}
-      label="L'évènement se répète"
-      value={frequency !== EventFrequency.Once}
-    ></InputCheckbox>
-    <div class="recurrence-options" class:disabled={frequency === EventFrequency.Once}>
-      <InputSelectOne
-        required={frequency !== EventFrequency.Once}
-        label="Répétition"
-        options={Object.entries(DISPLAY_EVENT_FREQUENCY).filter(([k]) => k !== EventFrequency.Once)}
-        bind:value={frequency}
-      ></InputSelectOne>
-      <InputDate
-        required={frequency !== EventFrequency.Once}
-        bind:value={recurringUntil}
-        label="Jusqu'à"
-      ></InputDate>
-    </div>
+      objectName="Event"
+      dark
+    ></FormPicture>
   </section>
 </section>
 
@@ -142,23 +121,5 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
-  }
-
-  .inputs .dates {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    align-items: start;
-  }
-
-  .inputs .recurrence-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    align-items: start;
-  }
-
-  .inputs .recurrence-options.disabled {
-    opacity: 0.5;
   }
 </style>

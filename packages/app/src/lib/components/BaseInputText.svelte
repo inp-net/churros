@@ -19,6 +19,7 @@
   export let closeKeyboardOnEnter = false;
   export let element: HTMLInputElement | undefined = undefined;
   export let focused = false;
+  export let inline = false
 
   // TODO use (HTMLInputElement).valueAsDate instead
   function stringifyValue(val: typeof value, type: string): string {
@@ -106,7 +107,7 @@
   });
 </script>
 
-<div class="wrapper base-input typo-paragraph" class:danger={errored} class:focused>
+<div class="wrapper base-input typo-paragraph" class:danger={errored} class:focused class:inline>
   <div class="input-area" bind:this={inputContainer}>
     {#if $$slots.before}
       <div class="left-icon">
@@ -192,6 +193,11 @@
     background: var(--bg);
     border: var(--border-block) solid var(--border);
     border-radius: var(--radius-block);
+  }
+
+  .wrapper.inline {
+    display: inline-flex;
+    width: 4rem;
   }
 
   input {
