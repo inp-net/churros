@@ -24,7 +24,7 @@
     contactMail,
     articles,
     placesLeft,
-    capacity,
+    // capacity,
     reactionCounts,
     myReactions,
   } = data.event;
@@ -198,23 +198,23 @@
     margin: 0 1rem;
   }
 
-  .places .left::after {
-    display: inline-block;
-    height: 1.25em;
-    margin: 0.3em;
-    margin-bottom: -0.25em;
-    content: '';
-    background: var(--text);
-    transform: rotate(30deg);
-  }
+  // .places .left::after {
+  //   display: inline-block;
+  //   height: 1.25em;
+  //   margin: 0.3em;
+  //   margin-bottom: -0.25em;
+  //   content: '';
+  //   background: var(--text);
+  //   transform: rotate(30deg);
+  // }
 
-  h2 .places .left::after {
-    width: 3px;
-  }
+  // h2 .places .left::after {
+  //   width: 3px;
+  // }
 
-  .ticket .places .left::after {
-    width: 1px;
-  }
+  // .ticket .places .left::after {
+  //   width: 1px;
+  // }
 
   .add-to-calendar .options {
     display: flex;
