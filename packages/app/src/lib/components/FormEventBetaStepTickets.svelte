@@ -1,12 +1,14 @@
 <script lang="ts">
-  import { toasts } from '$lib/toasts';
+  import { createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
+  import IconDelete from '~icons/mdi/delete-outline';
+  import IconAdd from '~icons/mdi/plus';
+  import ButtonGhost from './ButtonGhost.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
   import { defaultTicket, shadowId, type Ticket } from './FormEventBeta.svelte';
   import FormTicketBeta from './FormTicketBeta.svelte';
-  import { createEventDispatcher } from 'svelte';
-  import { entries, findIndex, groupBy, uniqBy } from 'lodash';
-  import InputText from './InputText.svelte';
   import InputNumber from './InputNumber.svelte';
+  import InputText from './InputText.svelte';
   const dispatch = createEventDispatcher();
 
   export let tickets: Ticket[];
@@ -50,45 +52,50 @@
       g.id,
       tickets.filter((t) => t.ticketGroupId === g.id).sort(compareTickets(ticketsOrdering)),
     ]),
-  ] as [string, Ticket[]][];
+  ] as Array<[string, Ticket[]]>;
 
   $: tickets.sort((a, b) => ticketsOrdering.indexOf(a.id) - ticketsOrdering.indexOf(b.id));
 
   $: hasGroups = ticketGroups.length > 0;
+
+  function handleShortcuts(event: KeyboardEvent) {
+    if (event.key === 'ArrowUp' || event.key === 'K')
+      expandedTicketId = tickets[tickets.findIndex((t) => t.id === expandedTicketId) - 1]?.id;
+  }
 </script>
 
+<svelte:window on:keypress={handleShortcuts} />
+
 <ul class="tickets">
-  <li class="new-group">
-    <button
-      class="new group"
-      type="button"
-      on:click={() => {
-        let group = {
-          id: shadowId(),
-          capacity: 0,
-          name: '',
-        };
-        ticketGroups = [...ticketGroups, group];
-      }}>Nouveau groupe de billet</button
-    >
-  </li>
   {#each ticketsByGroup as [groupId, ticketsOfGroup] (groupId)}
     {@const group = ticketGroups.find((g) => g.id === groupId)}
     {#if group}
       <li class="group">
-        <InputText
-          inline
-          label=""
-          bind:value={ticketGroups[ticketGroups.findIndex((g) => g.id === groupId)].name}
-          placeholder="Groupe sans nom"
-        />
-        &middot;
-        <InputNumber
-          inline
-          label=""
-          bind:value={ticketGroups[ticketGroups.findIndex((g) => g.id === groupId)].capacity}
-        />
-        places
+        <div class="data">
+          <InputText
+            inline
+            label=""
+            bind:value={ticketGroups[ticketGroups.findIndex((g) => g.id === groupId)].name}
+            placeholder="Groupe sans nom"
+          />
+          &middot;
+          <InputNumber
+            inline
+            label=""
+            bind:value={ticketGroups[ticketGroups.findIndex((g) => g.id === groupId)].capacity}
+          />
+          place{#if group.capacity > 1}s{/if}
+        </div>
+        <ButtonGhost
+          danger
+          type="button"
+          on:click={() => {
+            tickets = tickets.filter((t) => t.ticketGroupId !== groupId);
+            ticketGroups = ticketGroups.filter((g) => g.id !== groupId);
+          }}
+        >
+          <IconDelete></IconDelete>
+        </ButtonGhost>
       </li>
     {:else if hasGroups}
       <li class="group none">Sans groupe</li>
@@ -99,26 +106,11 @@
         class="ticket-draggable-wrapper"
         draggable="true"
         on:dragstart={() => {
-          console.log('dragstart');
           movingTicketId = ticket.id;
         }}
-        on:dragover={() => {
-          console.log('dragover');
+        on:dragenter={() => {
           // if dragging over moving ticket, do nothing
           if (movingTicketId === ticket.id) return;
-          console.dir(
-            {
-              current: {
-                this: ticketsOrdering.indexOf(ticket.id),
-                moving: ticketsOrdering.indexOf(movingTicketId),
-              },
-              before: {
-                this: ticketsOrderingBeforeDragStart.indexOf(ticket.id),
-                moving: ticketsOrderingBeforeDragStart.indexOf(movingTicketId),
-              },
-            },
-            { depth: undefined },
-          );
           if (
             ticketsOrdering.indexOf(ticket.id) === ticketsOrdering.length - 1 &&
             ticketsOrderingBeforeDragStart.indexOf(movingTicketId) <
@@ -133,19 +125,16 @@
           }
         }}
         on:dragend={() => {
-          console.log('dragend');
           movingTicketId = '';
           ticketsOrderingBeforeDragStart = structuredClone(ticketsOrdering);
         }}
         on:drop={() => {
-          console.log('drop');
           movingTicketId = '';
         }}
       >
         <button
           on:click={() => {
-            if (expandedTicketId === ticket.id) expandedTicketId = '';
-            else expandedTicketId = ticket.id;
+            expandedTicketId = expandedTicketId === ticket.id ? '' : ticket.id;
           }}
           class:highlighted={ticket.id === expandedTicketId}
           class:dragging={ticket.id === movingTicketId}
@@ -153,7 +142,10 @@
           class="ticket"
           type="button"
         >
-          {ticket.name}
+          {ticket.name || 'Billet sans nom'}
+          <span class="price"
+            >{ticket.price}€{#if ticket.capacity > 0}, {ticket.capacity} places{/if}</span
+          >
         </button>
       </div>
     {/each}
@@ -166,7 +158,11 @@
           movingTicketId = '';
           ticketsOrderingBeforeDragStart = structuredClone(ticketsOrdering);
         }}
-        on:dragover={() => {
+        on:drop={() => {
+          movingTicketId = '';
+          ticketsOrderingBeforeDragStart = structuredClone(ticketsOrdering);
+        }}
+        on:dragenter={() => {
           // Move moving ticket to this group if it's not the moving ticket's current group
           const movingTicket = tickets.find((t) => t.id === movingTicketId);
           if (!movingTicket) return;
@@ -182,7 +178,7 @@
           }
         }}
         on:click={() => {
-          let newTicket = defaultTicket({ tickets, startsAt, endsAt }, shadowId());
+          const newTicket = defaultTicket({ tickets, startsAt, endsAt }, shadowId());
           if (groupId) newTicket.ticketGroupId = groupId;
           tickets = [...tickets, newTicket];
           ticketsOrdering = [...ticketsOrdering, newTicket.id];
@@ -193,6 +189,20 @@
       >
     </li>
   {/each}
+  <li class="new-group">
+    <ButtonSecondary
+      type="button"
+      icon={IconAdd}
+      on:click={() => {
+        const group = {
+          id: shadowId(),
+          capacity: 0,
+          name: '',
+        };
+        ticketGroups = [...ticketGroups, group];
+      }}>Nouveau groupe de billet</ButtonSecondary
+    >
+  </li>
 </ul>
 <section class="editing-ticket">
   {#if expandedTicketId}
@@ -218,44 +228,67 @@
     width: 400px;
   }
 
+  .group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .group.none {
+    color: var(--muted);
+  }
+
   .tickets {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: 400px;
     list-style: none;
-    width: 300px;
   }
 
   .ticket {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
     background-color: var(--muted-bg);
-    padding: 1rem;
-    border-radius: var(--radius-block);
-    box-shadow: none;
     border: none;
     border: var(--border-block) solid transparent;
-    cursor: pointer;
-    width: 100%;
+    border-radius: var(--radius-block);
+    box-shadow: none;
+    transition: margin 0.25s ease;
   }
+
   .ticket.new {
-    border: var(--border-block) dashed var(--border);
     background: transparent;
+    border: var(--border-block) dashed var(--border);
   }
+
   .ticket.indented {
+    width: calc(100% - 2rem);
     margin-left: 2rem;
   }
 
   .ticket:hover {
     background-color: var(--hover-bg);
   }
+
   .ticket.highlighted {
     border-color: var(--primary-border);
   }
+
   .ticket.dragging {
-    opacity: 0.5;
     background-color: color-mix(in srgb, var(--primary-bg) 15%, transparent);
+    opacity: 0.5;
   }
 
-  .ticket-draggable-wrapper {
-    width: 100%;
+  .ticket .price {
+    font-weight: bold;
+    color: var(--muted);
   }
 </style>

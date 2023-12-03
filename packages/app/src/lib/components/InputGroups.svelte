@@ -28,6 +28,7 @@
 
 <InputField {label} {required}>
   <InputPickObjects
+    on:close
     {clearButtonLabel}
     {clearable}
     {multiple}
@@ -39,14 +40,17 @@
     {options}
     pickerTitle={multiple ? 'Choisir des groupes' : 'Choisir un groupe'}
   >
-    <div class="avatar" slot="thumbnail" let:object>
-      {#if object}
-        <img src={groupLogoSrc($isDark, object)} alt={object.name?.toString()} />
-        <span class="group-name">{object?.name}</span>
-      {:else}
-        <span class="group-name muted">{placeholder || 'Aucun groupe sélectionné'}</span>
-      {/if}
-    </div>
+    <slot name="input" slot="input" let:openPicker {openPicker} />
+    <slot name="thumbnail" slot="thumbnail" let:object>
+      <div class="avatar">
+        {#if object}
+          <img src={groupLogoSrc($isDark, object)} alt={object.name?.toString()} />
+          <span class="group-name">{object?.name}</span>
+        {:else}
+          <span class="group-name muted">{placeholder || 'Aucun groupe sélectionné'}</span>
+        {/if}
+      </div>
+    </slot>
     <div
       slot="item"
       let:item

@@ -3,11 +3,11 @@
   import IconCalendar from '~icons/mdi/calendar-outline';
   import { formatEventDates } from '$lib/dates';
   import { EventFrequency } from '../../zeus';
-  export let title: string = '';
-  export let description: string = '';
+  export let title = '';
+  export let description = '';
   export let startsAt: Date | undefined = undefined;
   export let endsAt: Date | undefined = undefined;
-  export let location: string = '';
+  export let location = '';
   export let frequency: EventFrequency = EventFrequency.Once;
   export let recurringUntil: Date | undefined = undefined;
 </script>
@@ -21,12 +21,14 @@
     </div>
     {#if location}
       <div class="location">
-        <IconLocation></IconLocation> {location}
+        <IconLocation></IconLocation>
+        {location}
       </div>
     {/if}
     {#if startsAt && endsAt}
       <div class="dates">
-        <IconCalendar></IconCalendar> {formatEventDates(frequency, startsAt, endsAt, recurringUntil)}
+        <IconCalendar></IconCalendar>
+        {formatEventDates(frequency, startsAt, endsAt, recurringUntil)}
       </div>
     {/if}
   </div>
@@ -34,31 +36,31 @@
 
 <style>
   article {
-    width: 300px;
-    height: 500px;
-    border-radius: var(--radius-block);
-    background-color: var(--muted-bg);
     display: grid;
     grid-template-rows: 150px auto;
+    width: 300px;
+    height: 500px;
     overflow: hidden;
+    background-color: var(--muted-bg);
+    border-radius: var(--radius-block);
   }
 
   article img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 150px;
-    background: #000;
     color: #eee;
     text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: #000;
   }
 
   article .content {
-    padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    padding: 1rem;
   }
 
   article .description {

@@ -8,10 +8,11 @@
   export let id: string | undefined = undefined;
   export let required = false;
   export let errors: string[] | undefined = [];
+  export let grows = false;
 </script>
 
 {#if label}
-  <div class="field">
+  <div class="field" class:grows>
     <svelte:element this={id ? 'p' : 'label'} class="label-wrapper" {...$$restProps} for={id}
       ><p class="label typo-field-label">
         {label}{#if required}
@@ -39,7 +40,7 @@
 {/if}
 
 <style>
-  .field {
+  .field.grows {
     flex-grow: 1;
   }
 

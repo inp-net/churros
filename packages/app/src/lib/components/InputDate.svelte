@@ -21,32 +21,26 @@
   let timeValue: string | undefined | null = timePart(value);
 
   function datePart(datetime: Date | null | undefined) {
-    console.log(`getting date part of ${datetime}`);
     if (!datetime) return datetime;
     if (!isValid(datetime)) return;
     try {
-      const result = format(datetime, 'yyyy-MM-dd');
-      console.log(`ret ${result}`);
-    } catch (err) {
-      console.log(datetime, err);
-      return;
+      return format(datetime, 'yyyy-MM-dd');
+    } catch (error) {
+      console.error(datetime, error);
     }
   }
   function timePart(datetime: Date | null | undefined) {
-    console.log(`getting time part of ${datetime}`);
     if (!datetime) return datetime;
     if (!isValid(datetime)) return;
     try {
-      const result = format(datetime, 'HH:mm')
-      console.log(`ret ${result}`);
-    } catch (err) {
-      console.log(datetime, err);
-      return;
+      return format(datetime, 'HH:mm');
+    } catch (error) {
+      console.error(datetime, error);
     }
   }
 
   $: if (time) {
-    value = new Date(`${dateValue}T${timeValue}`);
+    value = dateValue && timeValue ? new Date(`${dateValue}T${timeValue}`) : undefined;
     dispatch('input', { value });
   }
 </script>
@@ -91,24 +85,24 @@
   .date-and-time {
     display: flex;
     flex-direction: row;
+    flex-grow: 1;
     align-items: center;
     justify-content: space-between;
     height: 2.5rem;
-    border-radius: var(--radius-block);
-    flex-grow: 1;
     overflow: hidden;
+    border-radius: var(--radius-block);
   }
 
   .date-and-time input {
+    flex-grow: 1;
     width: 50%;
     height: 100%;
-    flex-grow: 1;
-    background: transparent;
-    border: 0;
     padding: 0.5rem;
+    background: transparent;
+    background-color: var(--default-bg);
+    border: 0;
     border: var(--border-block) solid var(--border);
     border-radius: var(--radius-block);
-    background-color: var(--default-bg);
   }
 
   .date-and-time input:first-child {

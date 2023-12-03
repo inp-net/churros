@@ -1,7 +1,6 @@
 <script lang="ts">
   import InputDate from './InputDate.svelte';
   import InputField from './InputField.svelte';
-  import InputFile from './InputFile.svelte';
 
   export let start: Date | undefined | null;
   export let end: Date | undefined | null;
@@ -19,9 +18,9 @@
 </InputField>
 
 <style>
-    .date-range {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
+  .date-range {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
 </style>

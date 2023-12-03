@@ -27,6 +27,7 @@
     <p class="loading muted">Chargement...</p>
   {:then { schools: options }}
     <InputPickObjects
+      on:close
       {clearButtonLabel}
       {clearable}
       {multiple}
@@ -37,14 +38,17 @@
       {options}
       pickerTitle={multiple ? 'Choisir des écoles' : 'Choisir une école'}
     >
-      <div class="avatar" slot="thumbnail" let:object>
-        {#if object}
-          <img src="/schools/{object.uid}.png" alt={object.name?.toString()} />
-          <span class="group-name">{object?.name}</span>
-        {:else}
-          <span class="group-name muted">{placeholder || 'Aucune école sélectionnée'}</span>
-        {/if}
-      </div>
+      <slot name="input" slot="input" let:openPicker {openPicker} />
+      <slot name="thumbnail" slot="thumbnail" let:object {object}>
+        <div class="avatar">
+          {#if object}
+            <img src="/schools/{object.uid}.png" alt={object.name?.toString()} />
+            <span class="group-name">{object?.name}</span>
+          {:else}
+            <span class="group-name muted">{placeholder || 'Aucune école sélectionnée'}</span>
+          {/if}
+        </div>
+      </slot>
       <div
         slot="item"
         let:item

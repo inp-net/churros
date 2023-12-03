@@ -76,6 +76,7 @@
 
 <Modal
   bind:element={dialog}
+  on:close
   on:close-by-outside-click={() => {
     selection = structuredClone(temporarySelection);
   }}

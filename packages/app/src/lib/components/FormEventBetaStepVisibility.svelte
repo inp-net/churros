@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Visibility } from '$lib/zeus';
   import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
+  import InputVisibility from './InputVisibility.svelte';
 
   export let visibility: Visibility;
 
@@ -26,9 +27,7 @@
 </script>
 
 <section class="inputs">
-    <fieldset>
-        
-    </fieldset>
+  <InputVisibility bind:value={visibility}></InputVisibility>
 </section>
 <section class="preview">
   <FormEventBetaPreviewCard

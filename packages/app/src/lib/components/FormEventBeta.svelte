@@ -28,6 +28,8 @@
     autojoinGroups: [],
     // eslint-disable-next-line unicorn/no-null
     openToApprentices: null,
+    // eslint-disable-next-line unicorn/no-null
+    ticketGroupId: null,
     id,
   });
   export function shadowId() {
@@ -42,7 +44,7 @@
   }
   export type Ticket = {
     id: string;
-    ticketGroupId: string|undefined;
+    ticketGroupId: string | undefined;
     name: string;
     description: string;
     price: number;
@@ -157,22 +159,21 @@
 </script>
 
 <script lang="ts">
-  import { Visibility, EventFrequency, zeus, PaymentMethod } from '$lib/zeus';
+  import { EventFrequency, type PaymentMethod, Visibility, zeus } from '$lib/zeus';
   import { addDays } from 'date-fns';
-  import IconNext from '~icons/mdi/chevron-right';
+  import { nanoid } from 'nanoid';
+  import { onMount } from 'svelte';
+  import { writable } from 'svelte/store';
   import IconClose from '~icons/mdi/close';
   import ButtonGhost from './ButtonGhost.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
+  import ButtonPrimary from './ButtonPrimary.svelte';
   import FormEventBetaStepDetails from './FormEventBetaStepDetails.svelte';
+  import FormEventBetaStepOrganization from './FormEventBetaStepOrganization.svelte';
+  import FormEventBetaStepSituation from './FormEventBetaStepSituation.svelte';
+  import FormEventBetaStepTickets from './FormEventBetaStepTickets.svelte';
+  import LoadingSpinner from './LoadingSpinner.svelte';
   import Modal from './Modal.svelte';
   import NavigationSteps from './NavigationSteps.svelte';
-  import FormEventBetaStepSituation from './FormEventBetaStepSituation.svelte';
-  import FormEventBetaStepOrganization from './FormEventBetaStepOrganization.svelte';
-  import LoadingSpinner from './LoadingSpinner.svelte';
-  import ButtonPrimary from './ButtonPrimary.svelte';
-  import FormEventBetaStepTickets from './FormEventBetaStepTickets.svelte';
-  import { onMount } from 'svelte';
-  import { nanoid } from 'nanoid';
 
   export let modalElement: HTMLDialogElement;
 
@@ -201,7 +202,7 @@
     ],
   };
 
-  let steps: Array<readonly [string, string]> = [
+  const steps: Array<readonly [string, string]> = [
     ['details', 'Détails'],
     ['situation', 'Situation'],
     ['tickets', 'Billets'],
@@ -212,13 +213,11 @@
   const stepIndex = (id: string) => steps.findIndex(([href, _]) => href === id);
 
   let currentStep = 'tickets';
+  const statusMessage = writable('');
 
   function nextStepOrSubmit() {
-    if (currentStep === 'visibility') {
-      modalElement.close();
-    } else {
-      currentStep = steps[stepIndex(currentStep) + 1][0];
-    }
+    if (currentStep === 'visibility') modalElement.close();
+    else currentStep = steps[stepIndex(currentStep) + 1][0];
   }
 
   let scrolled = false;
@@ -273,14 +272,13 @@
         <FormEventBetaStepTickets
           bind:ticketGroups={event.ticketGroups}
           bind:tickets={event.tickets}
+          {statusMessage}
         ></FormEventBetaStepTickets>
       {/if}
     </div>
     <nav class="navigate-steps">
       <p class="status">
-        {#if currentStep !== 'details'}
-          Modifications enregistrées
-        {/if}
+        {$statusMessage}
       </p>
       <ButtonPrimary smaller submits>
         {#if currentStep === 'visibility'}
@@ -295,10 +293,10 @@
 
 <style>
   :global(.form-event-beta) {
-    width: 100%;
-    height: 100%;
-    max-width: 1200px;
     flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
   }
 
   :global(.form-event-beta[open]) {
@@ -308,15 +306,15 @@
   .content {
     position: relative;
     display: grid;
-    grid-template-rows: max-content auto max-content;
     flex-grow: 1;
+    grid-template-rows: max-content auto max-content;
   }
 
   section.top {
     position: sticky;
     top: 0;
-    background: var(--bg);
     z-index: 2;
+    background: var(--bg);
     transition: box-shadow 0.25s ease;
   }
 
@@ -325,48 +323,46 @@
   }
 
   h1 {
-    padding: 1rem 1.5rem;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--muted-border);
   }
 
   .steps {
     position: relative;
-    left: 0;
     right: 0;
+    left: 0;
     max-width: 1000px;
-    margin: 0 auto;
     padding: 0.5rem 1.5rem;
+    margin: 0 auto;
   }
 
   .inputs-and-preview {
+    position: relative;
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 4rem;
-    overflow-y: auto;
-    overflow-x: hidden;
-    position: relative;
     min-height: 0;
     padding: 1rem 1.5rem;
-    display: grid;
     margin: 0 auto;
+    overflow: hidden auto;
   }
 
   .navigate-steps {
-    align-self: end;
-    margin-top: auto;
-    align-items: center;
-    border-top: 1px solid var(--muted-border);
-    display: flex;
-    justify-content: space-between;
-    padding-top: 2rem;
     position: sticky;
-    left: 0;
     right: 0;
     bottom: 0;
-    background: var(--bg);
+    left: 0;
+    display: flex;
+    align-items: center;
+    align-self: end;
+    justify-content: space-between;
     padding: 1rem 1.5rem;
+    padding-top: 2rem;
+    margin-top: auto;
+    background: var(--bg);
+    border-top: 1px solid var(--muted-border);
   }
 </style>

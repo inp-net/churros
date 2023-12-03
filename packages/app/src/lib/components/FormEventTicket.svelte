@@ -1,24 +1,24 @@
 <script lang="ts">
+  import { fromYearTier, schoolYearStart, yearRangeUpTo, yearTier } from '$lib/dates';
+  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
+  import { zeus } from '$lib/zeus';
+  import Fuse from 'fuse.js';
   import { createEventDispatcher } from 'svelte';
+  import IconChevronDown from '~icons/mdi/chevron-down';
+  import IconChevronUp from '~icons/mdi/chevron-up';
+  import ButtonGhost from './ButtonGhost.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
+  import type { Ticket } from './FormEventBeta.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputDate from './InputDate.svelte';
   import InputField from './InputField.svelte';
-  import InputNumber from './InputNumber.svelte';
-  import InputText from './InputText.svelte';
-  import ButtonGhost from './ButtonGhost.svelte';
-  import IconChevronDown from '~icons/mdi/chevron-down';
-  import IconChevronUp from '~icons/mdi/chevron-up';
-  import InputSearchObjectList from './InputSearchObjectList.svelte';
-  import { type PaymentMethod, zeus } from '$lib/zeus';
-  import Fuse from 'fuse.js';
-  import { fromYearTier, schoolYearStart, yearRangeUpTo, yearTier } from '$lib/dates';
-  import InputSelectMultiple from './InputSelectMultiple.svelte';
-  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
-  import InputLinks from './InputLinks.svelte';
   import InputGroups from './InputGroups.svelte';
+  import InputLinks from './InputLinks.svelte';
+  import InputNumber from './InputNumber.svelte';
   import InputSchools from './InputSchools.svelte';
-  import type { Ticket } from './FormEventBeta.svelte';
+  import InputSearchObjectList from './InputSearchObjectList.svelte';
+  import InputSelectMultiple from './InputSelectMultiple.svelte';
+  import InputText from './InputText.svelte';
   const emit = createEventDispatcher();
 
   export let expandedTicketId = '';

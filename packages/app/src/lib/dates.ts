@@ -65,13 +65,17 @@ export function formatEventDates(
   try {
     switch (frequency) {
       case EventFrequency.Once: {
-        return new Intl.DateTimeFormat('fr-FR', {
-          dateStyle: 'full',
-          timeStyle: 'short',
-        })
-          .formatRange(startsAt, endsAt)
-          .replaceAll(new Date().getFullYear().toString(), '')
-          .replaceAll(' , ', ', ');
+        try {
+          return new Intl.DateTimeFormat('fr-FR', {
+            dateStyle: 'full',
+            timeStyle: 'short',
+          })
+            .formatRange(startsAt, endsAt)
+            .replaceAll(new Date().getFullYear().toString(), '')
+            .replaceAll(' , ', ', ');
+        } catch {
+          return 'Date invalide';
+        }
       }
 
       default: {

@@ -31,11 +31,12 @@
     element.classList.add('closing');
     setTimeout(() => {
       element.close();
+      dispatch('close');
       element.classList.remove('closing');
     }, 200);
   }}
   {...$$restProps}
-  class="{$isDark ? 'dark' : 'light'} {$$restProps['class']}"
+  class="{$isDark ? 'dark' : 'light'} {$$restProps.class}"
   class:no-padding={noPadding}
   bind:this={element}
 >

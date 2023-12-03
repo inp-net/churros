@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { me } from '$lib/session';
-  import { EventFrequency, Selector, zeus } from '$lib/zeus';
+  import { EventFrequency } from '$lib/zeus';
   import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
   import InputLydiaAccounts from './InputLydiaAccounts.svelte';
   import InputText from './InputText.svelte';
@@ -8,23 +7,23 @@
   export let contactMail: string;
   export let title: string;
   export let description: string;
-  export let group: {
-    id: string;
-    uid: string;
-    name: string;
-    pictureFile: string;
-    pictureFileDark: string;
-  };
-  export let pictureFile: string;
-  export let uid: string;
-  export let links: Array<{ name: string; value: string }>;
-  export let coOrganizers: Array<{
-    id: string;
-    uid: string;
-    name: string;
-    pictureFile: string;
-    pictureFileDark: string;
-  }>;
+  // export let group: {
+  //   id: string;
+  //   uid: string;
+  //   name: string;
+  //   pictureFile: string;
+  //   pictureFileDark: string;
+  // };
+  // export let pictureFile: string;
+  // export let uid: string;
+  // export let links: Array<{ name: string; value: string }>;
+  // export let coOrganizers: Array<{
+  //   id: string;
+  //   uid: string;
+  //   name: string;
+  //   pictureFile: string;
+  //   pictureFileDark: string;
+  // }>;
   export let startsAt: Date | undefined = undefined;
   export let endsAt: Date | undefined = undefined;
   export let location: string;
@@ -45,49 +44,6 @@
             };
       };
 
-  export let eventQuery = Selector('Event')({
-    coOrganizers: {
-      id: true,
-      uid: true,
-      name: true,
-      pictureFile: true,
-      pictureFileDark: true,
-      studentAssociation: {
-        school: {
-          name: true,
-        },
-      },
-      children: {
-        name: true,
-        studentAssociation: {
-          school: {
-            name: true,
-          },
-        },
-      },
-    },
-    group: {
-      id: true,
-      uid: true,
-      name: true,
-      pictureFile: true,
-      pictureFileDark: true,
-      studentAssociation: {
-        school: {
-          name: true,
-        },
-      },
-      children: {
-        name: true,
-        studentAssociation: {
-          school: {
-            name: true,
-          },
-        },
-      },
-    },
-  });
-
   export let availableLydiaAccounts: Array<{
     name: string;
     id: string;
@@ -99,17 +55,6 @@
           name: string;
         };
   }>;
-
-  async function groupInputsOptions() {
-    const { groups: allGroups } = await $zeus.query({
-      groups: [{}, { ...eventQuery.group, ...eventQuery.coOrganizers }],
-    });
-
-    const groupOptions = allGroups.filter((g) => $me?.groups.some((m) => m.group.id === g.id));
-    const coOrganizersOptions = [...allGroups];
-
-    return { coOrganizersOptions, groupOptions, allGroups };
-  }
 </script>
 
 <section class="inputs">

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { me } from '$lib/session';
   import { Selector, zeus } from '$lib/zeus';
   import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
   import FormPicture from './FormPicture.svelte';
@@ -65,26 +64,25 @@
     },
   });
 
-  async function groupInputsOptions() {
-    const { groups: allGroups } = await $zeus.query({
-      groups: [{}, { ...eventQuery.group, ...eventQuery.coOrganizers }],
+  async function myGroups() {
+    const {
+      me: { groups: memberships },
+    } = await $zeus.query({
+      me: { groups: { group: { ...eventQuery.group, ...eventQuery.coOrganizers } } },
     });
 
-    const groupOptions = allGroups.filter((g) => $me?.groups.some((m) => m.group.id === g.id));
-    const coOrganizersOptions = [...allGroups];
-
-    return { coOrganizersOptions, groupOptions, allGroups };
+    return memberships.map((m) => m.group);
   }
 </script>
 
 <section class="inputs">
   <section class="basic">
-    {#await groupInputsOptions()}
+    {#await myGroups()}
       <section class="loading">
         <LoadingSpinner></LoadingSpinner>
         Chargement des groupes…
       </section>
-    {:then { groupOptions, coOrganizersOptions, allGroups }}
+    {:then groupOptions}
       <InputGroups required options={groupOptions} label="Organisateur principal" bind:group
       ></InputGroups>
     {/await}
