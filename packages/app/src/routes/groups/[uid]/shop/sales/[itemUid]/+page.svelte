@@ -2,7 +2,6 @@
   import type { PageData } from './$types';
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
 
   export let data: PageData;
 
@@ -25,7 +24,7 @@
 
 <div class="content">
   {#if shopItem.shopPayments.length === 0}
-    <ButtonPrimary href="create">Aucun payement</ButtonPrimary>
+    <h2 class="none">Aucun payement ;(</h2>
   {/if}
   {#each shopItem.shopPayments as payment}
     <div>
@@ -36,3 +35,9 @@
     </div>
   {/each}
 </div>
+
+<style>
+  .none {
+    text-align: center;
+  }
+</style>
