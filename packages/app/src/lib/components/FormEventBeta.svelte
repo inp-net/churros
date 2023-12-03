@@ -42,6 +42,7 @@
   }
   export type Ticket = {
     id: string;
+    ticketGroupId: string|undefined;
     name: string;
     description: string;
     price: number;
@@ -165,7 +166,7 @@
   import FormEventBetaStepDetails from './FormEventBetaStepDetails.svelte';
   import Modal from './Modal.svelte';
   import NavigationSteps from './NavigationSteps.svelte';
-  import FormEventBetaStepCommunication from './FormEventBetaStepSituation.svelte';
+  import FormEventBetaStepSituation from './FormEventBetaStepSituation.svelte';
   import FormEventBetaStepOrganization from './FormEventBetaStepOrganization.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
@@ -257,7 +258,7 @@
           bind:location={event.location}
         ></FormEventBetaStepDetails>
       {:else if currentStep === 'situation'}
-        <FormEventBetaStepCommunication {...event}></FormEventBetaStepCommunication>
+        <FormEventBetaStepSituation {...event}></FormEventBetaStepSituation>
       {:else if currentStep === 'organization'}
         {#await $zeus.query( { lydiaAccounts: { id: true, name: true, group: { pictureFile: true, pictureFileDark: true, name: true } } }, )}
           <LoadingSpinner></LoadingSpinner>

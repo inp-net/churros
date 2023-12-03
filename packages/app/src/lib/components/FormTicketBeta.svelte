@@ -69,7 +69,7 @@
   }}
 >
   <div class="inputs">
-    <InputText required label="Nom" bind:value={ticket.name}></InputText>
+    <InputText autofocus required label="Nom" bind:value={ticket.name}></InputText>
     <!-- <InputText label="Description" bind:value={ticket.description}></InputText> -->
     <InputDateRange time label="Shotgun" bind:start={ticket.opensAt} bind:end={ticket.closesAt}
     ></InputDateRange>
@@ -108,7 +108,11 @@
     </section>
   </div>
   <footer>
-    <ButtonSecondary>Supprimer</ButtonSecondary>
+    <ButtonSecondary
+      on:click={() => {
+        dispatch('delete', ticket);
+      }}>Supprimer</ButtonSecondary
+    >
     <ButtonSecondary submits>Sauvegarder</ButtonSecondary>
   </footer>
 </form>

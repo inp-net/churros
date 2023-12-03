@@ -16,6 +16,7 @@
   export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let label: string;
   export let focused = false;
+  export let inline = false
 
   export let element: HTMLInputElement | undefined = undefined;
 </script>
@@ -38,6 +39,7 @@
     {errorMessage}
     {placeholder}
     {actionIcon}
+    {inline}
     {...$$restProps}
   >
     <slot name="before" slot="before" />
