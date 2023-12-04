@@ -26,11 +26,11 @@ dialog,
   // Primary
   --primary-bg: #{$blue-700};
   --primary-text: #{$white};
-  --primary-link: #{$blue-500};
-  --primary-border: #{$blue-700};
+  --primary-link: #{$green-500};
+  --primary-border: #{$green-700};
   --primary-shadow: 0 0.25rem 0.5rem #{rgba($zinc-800, 20%)};
-  --primary-ring: #{rgba($blue-400, 50%)};
-  --primary-hover-bg: #{$blue-500};
+  --primary-ring: #{rgba($green-400, 50%)};
+  --primary-hover-bg: #{$green-500};
   --primary-hover-text: #{$slate-50};
   --primary-hover-border: #{$blue-600};
   --primary-disabled-bg: #{rgba($blue-600, 50%)};
