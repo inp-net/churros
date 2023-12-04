@@ -23,7 +23,7 @@
     <thead>
       <tr>
         <th>Titre</th>
-        <th>Quantité</th>
+        <th>Restants</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -31,7 +31,7 @@
       {#each shopItems as shopItem (shopItem.id)}
         <tr>
           <td>{shopItem.name}</td>
-          <td>{shopItem.stock}</td>
+          <td>{shopItem.stockLeft}/{shopItem.stock}</td>
           <td class="actions">
             <ButtonSecondary href={`/groups/${shopItem.group.uid}/shop/${shopItem.id}/edit`}
               >Modifier</ButtonSecondary

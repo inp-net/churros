@@ -25,13 +25,15 @@
 <div class="container">
   <ShopImageCaroussel url={images} />
   <div class="info">
-    <h1 class="name">{shopItem.name}</h1>
-    <p>Max : {shopItem.max}</p>
-    <p>Stock : {shopItem.stock}</p>
-    <p>{shopItem.stockLeft} restants</p>
-    <p>{shopItem.description}</p>
+    <div>
+      <h1 class="name">{shopItem.name}</h1>
+      {#if shopItem.stock !== 0}
+        <p>{shopItem.stockLeft}/{shopItem.stock} restants</p>
+      {/if}
+      <p class="description">{shopItem.description}</p>
+    </div>
     <div class="price">
-      <h2>Prix : {shopItem.price} €</h2>
+      <h2>{shopItem.price} €</h2>
       <ButtonPrimary smaller={true} href={`/groups/${shopItem.group.uid}/shop/${shopItem.id}`}
         >Commander</ButtonPrimary
       >
@@ -44,17 +46,28 @@
     display: flex;
     flex: 0 0 auto;
     flex-direction: column;
-    max-width: 20em;
+    width: 18em;
+    height: 450px;
     padding: 1em;
     background-color: var(--muted-bg);
-    border-radius: 2em;
+    border-radius: 14px;
   }
 
   .info {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
+    height: 200px;
     padding: 0.5em 0 0;
+  }
+
+  .description {
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 
   .price {

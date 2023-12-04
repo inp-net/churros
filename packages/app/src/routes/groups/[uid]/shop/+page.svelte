@@ -42,7 +42,7 @@
     display: flex;
     flex-flow: row wrap;
     gap: 1em;
-    align-items: baseline;
+    align-items: end;
   }
 
   .text-center {
