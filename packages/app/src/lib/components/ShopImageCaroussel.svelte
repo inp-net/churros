@@ -34,15 +34,14 @@
     position: relative;
     display: flex;
     width: 100%;
-    height: 300px;
+    height: 250px;
     overflow: hidden;
   }
 
   .carousel-image {
     flex: 0 0 100%;
     width: 100%;
-    max-height: 20em;
-    border-radius: 2em;
+    border-radius: 7px;
     transition: transform 0.5s;
     object-fit: cover;
   }
