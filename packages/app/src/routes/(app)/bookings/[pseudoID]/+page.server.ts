@@ -1,4 +1,4 @@
-import { Selector, loadQuery, makeMutation } from '$lib/zeus';
+import { loadQuery, makeMutation, Selector } from '$lib/zeus';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 

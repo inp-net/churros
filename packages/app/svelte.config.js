@@ -1,4 +1,5 @@
 import adapter from '@sveltejs/adapter-node';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import preprocess from 'svelte-preprocess';
 
@@ -16,6 +17,9 @@ const config = {
 
   kit: {
     adapter: adapter(),
+    alias: {
+      $houdini: resolve('.', '$houdini'),
+    },
   },
 };
 

@@ -1,10 +1,12 @@
 import { sveltekit } from '@sveltejs/kit/vite';
+import houdini from 'houdini/vite';
 import { fileURLToPath } from 'node:url';
 import icons from 'unplugin-icons/vite';
 import { defineConfig, mergeConfig } from 'vite';
 
 export const commonConfig = defineConfig({
   plugins: [
+    houdini(),
     icons({
       compiler: 'svelte',
       defaultClass: 'icon',
