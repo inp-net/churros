@@ -1,0 +1,66 @@
+query UserSession {
+  me {
+    id
+    uid
+    firstName
+    pictureFile
+    phone
+    lastName
+    fullName
+    admin
+    external
+    canEditGroups
+    canEditUsers
+    canAccessDocuments
+    yearTier
+    apprentice
+    graduationYear
+    groups {
+      group {
+        uid
+        id
+        name
+        pictureFile
+        pictureFileDark
+      }
+      title
+      president
+      secretary
+      vicePresident
+      treasurer
+      canEditArticles
+      canEditMembers
+    }
+    managedEvents {
+      event {
+        uid
+        id
+      }
+      canEdit
+      canEditPermissions
+      canVerifyRegistrations
+    }
+    major {
+      id
+      uid
+      name
+      shortName
+      schools {
+        id
+        name
+        uid
+        color
+      }
+    }
+    minor {
+      uid
+      name
+    }
+    contributesTo {
+      id
+      school {
+        uid
+      }
+    }
+  }
+}
