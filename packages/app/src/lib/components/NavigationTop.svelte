@@ -159,6 +159,14 @@
 <style lang="scss">
   @use 'sass:math';
 
+  /* .santa {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    pointer-events: none;
+  } */
+
   nav {
     z-index: 10;
     display: flex;

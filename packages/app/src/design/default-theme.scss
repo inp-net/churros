@@ -18,7 +18,7 @@ dialog,
   --ring: #{rgba($slate-400, 50%)};
   --hover-bg: #{$gray-200};
   --hover-text: #{$slate-700};
-  --hover-border: #{$gray-500};
+  --hover-border: #{$red-700};
   --disabled-bg: #{$gray-100};
   --disabled-text: #{$slate-600};
   --disabled-border: #{$gray-200};
@@ -30,7 +30,7 @@ dialog,
   --primary-border: #{$green-700};
   --primary-shadow: 0 0.25rem 0.5rem #{rgba($zinc-800, 20%)};
   --primary-ring: #{rgba($green-400, 50%)};
-  --primary-hover-bg: #{$green-500};
+  --primary-hover-bg: #{$red-900};
   --primary-hover-text: #{$slate-50};
   --primary-hover-border: #{$blue-600};
   --primary-disabled-bg: #{rgba($blue-600, 50%)};
