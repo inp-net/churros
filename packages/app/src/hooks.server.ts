@@ -11,7 +11,7 @@ async function autheticateUser(event: RequestEvent): Promise<User | undefined> {
   if (!token) return undefined; // no token, no user
 
   // temporarily set the token will be overwritten by result of query
-  setSession(event, { token });
+  setSession(event, { me: undefined, token });
 
   // fetch the user
   const UserSessionQuery = new UserSessionStore();
@@ -23,7 +23,7 @@ async function autheticateUser(event: RequestEvent): Promise<User | undefined> {
 export const handle: Handle = async ({ event, resolve }) => {
   const user = await autheticateUser(event);
 
-  setSession(event, { user });
+  setSession(event, { me: user?.me, token: user?.token });
 
   event.locals.me = user?.me;
   event.locals.token = user?.token;

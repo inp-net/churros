@@ -1,13 +1,15 @@
-// schema: 'schema.graphql',
-import type { UserSession$result } from '$houdini';
-
 declare namespace App {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  type SessionUserType = import('$lib/session.js').SessionUser;
+  type UserSession$result = import('$houdini');
 
   interface Locals {
-    me?: UserSession$result;
+    me?: UserSession$result['me'];
     mobile: boolean;
+    token?: string;
+  }
+
+  interface Session {
+    me?: UserSession$result['me'];
     token?: string;
   }
 
