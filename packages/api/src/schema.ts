@@ -35,5 +35,13 @@ const { rateLimitDirectiveTransformer } = rateLimitDirective({
 
 export const schema = rateLimitDirectiveTransformer(builder.toSchema({}));
 
-export const writeSchema = async () =>
-  writeFile(new URL('build/schema.graphql', `file:///${process.cwd()}/`), printSchema(schema));
+export const writeSchema = async () => {
+  await writeFile(
+    new URL('build/schema.graphql', `file:///${process.cwd()}/`),
+    printSchema(schema),
+  );
+  await writeFile(
+    new URL('../app/schema.graphql', `file:///${process.cwd()}/`),
+    printSchema(schema),
+  );
+};

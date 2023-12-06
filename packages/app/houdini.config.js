@@ -1,6 +1,7 @@
 /** @type {import("houdini").ConfigFile} */
 const config = {
-  apiUrl: 'env:PUBLIC_API_URL',
+  schemaPath: 'schema.graphql',
+  // apiUrl: 'env:PUBLIC_API_URL',
   watchSchema: {
     url: 'env:PUBLIC_API_URL',
   },
