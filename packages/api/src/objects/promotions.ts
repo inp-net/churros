@@ -92,6 +92,7 @@ export async function actualPrice(
     include: { promotion: true },
   });
 
-  if (promotionCode) return promotionCode.promotion.priceOverride;
+  if (promotionCode && promotionCode.promotion.priceOverride < ticket.price)
+    return promotionCode.promotion.priceOverride;
   return ticket.price;
 }
