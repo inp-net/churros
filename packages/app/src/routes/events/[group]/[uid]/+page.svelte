@@ -13,6 +13,8 @@
   import { calendarLinks } from '$lib/calendars';
   import IconGoogleCalendar from '~icons/logos/google-calendar';
   import IconCalendar from '~icons/mdi/calendar-export-outline';
+  import { onMount } from 'svelte';
+  import { toasts } from '$lib/toasts';
 
   export let data: PageData;
 
@@ -39,6 +41,11 @@
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
 
   const calendarURLs = calendarLinks(data.event);
+
+  onMount(() => {
+    if (data.claimedCode) toasts.success('Ton code de réduction a bien été appliqué ;)');
+    else if (data.claimCodeError) toasts.error(data.claimCodeError);
+  });
 </script>
 
 <Header {...data.event} />

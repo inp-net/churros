@@ -1,8 +1,28 @@
 import { redirectToLogin } from '$lib/session';
-import { Selector, ZeusError, loadQuery } from '$lib/zeus';
+import { Selector, ZeusError, loadQuery, makeMutation } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent, params, url }) => {
+  let claimedCode = false;
+  let claimCodeError = '';
+  if (url.searchParams.has('claimCode')) {
+    const { me } = await parent().catch(() => ({ me: undefined }));
+    if (!me) throw redirectToLogin(url.pathname, { claimCode: url.searchParams.get('claimCode')! });
+    try {
+      ({ claimPromotionCode: claimedCode } = await makeMutation(
+        {
+          claimPromotionCode: [{ code: url.searchParams.get('claimCode')! }, true],
+        },
+        { fetch, parent },
+      ));
+    } catch (error: unknown) {
+      claimCodeError =
+        error instanceof ZeusError
+          ? error.errors.map((e) => e.message).join(', ')
+          : error?.toString() ?? 'Une erreur inconnue est survenue';
+    }
+  }
+
   try {
     const data = await loadQuery(
       {
@@ -155,10 +175,14 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
       },
       { fetch, parent },
     );
-    return data;
+    return {
+      ...data,
+      claimedCode,
+      claimCodeError,
+    };
   } catch (error) {
     if (error instanceof ZeusError) {
-      console.error(error);
+      // console.error(error);
       throw redirectToLogin(url.pathname);
     }
   }

@@ -8,6 +8,7 @@ import { LinkInput } from './links.js';
 import slug from 'slug';
 import dichotomid from 'dichotomid';
 import { PaymentMethod } from '@prisma/client';
+import { actualPrice } from './promotions.js';
 
 export const placesLeft = (ticket: {
   name: string;
@@ -63,7 +64,12 @@ export const TicketType = builder.prismaNode('Ticket', {
     descriptionHtml: t.string({ resolve: async ({ description }) => toHtml(description) }),
     opensAt: t.expose('opensAt', { type: DateTimeScalar, nullable: true }),
     closesAt: t.expose('closesAt', { type: DateTimeScalar, nullable: true }),
-    price: t.exposeFloat('price'),
+    basePrice: t.exposeFloat('price'),
+    price: t.float({
+      async resolve({ price, id }, _, { user }) {
+        return actualPrice({ price, id }, user);
+      },
+    }),
     capacity: t.exposeInt('capacity'),
     registrations: t.relation('registrations', {
       query(_, { user }) {

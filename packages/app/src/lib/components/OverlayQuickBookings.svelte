@@ -37,7 +37,8 @@
         isWithinInterval(now, {
           start: subMinutes(registration.ticket.event.startsAt, 30),
           end: addHours(registration.ticket.event.endsAt, 2),
-        })
+        }) &&
+        !registration.cancelled
       );
     } catch {
       return false;
