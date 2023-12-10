@@ -174,11 +174,11 @@
             {#if placesLeft + capacity === Number.POSITIVE_INFINITY}
               Places illimitées
             {:else}
-              <strong>
+              <!-- <strong>
                 <span style={placesLeft < 0.1 * capacity ? 'color: var(--error)' : ''}>
                   {placesLeft}
                 </span>/ {capacity}
-              </strong> places restantes
+              </strong> places restantes -->
             {/if}
           </p>
           <div class="places">

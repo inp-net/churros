@@ -1,10 +1,10 @@
-import { redirectToLogin } from '$lib/session';
 import { Selector, loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent, url }) => {
+export const load: PageLoad = async ({ fetch, parent }) => {
   const { me } = await parent();
-  if (!me) throw redirectToLogin(url.pathname);
+  if (!me) return {};
+
   return loadQuery(
     {
       registrationsOfUser: [

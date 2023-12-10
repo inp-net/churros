@@ -178,8 +178,15 @@ builder.queryField('article', (t) =>
       groupUid: t.arg.string(),
       uid: t.arg.string(),
     },
-    resolve: async (query, _, { uid, groupUid }) =>
-      prisma.article.findFirstOrThrow({ ...query, where: { uid, group: { uid: groupUid } } }),
+    resolve: async (query, _, { uid, groupUid }, { user }) =>
+      prisma.article.findFirstOrThrow({
+        ...query,
+        where: {
+          ...visibleArticlesPrismaQuery(user, 'can'),
+          uid,
+          group: { uid: groupUid },
+        },
+      }),
   }),
 );
 
