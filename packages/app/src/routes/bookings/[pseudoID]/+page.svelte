@@ -187,7 +187,7 @@
       <dt>Place</dt>
       <dd>{ticket.name}</dd>
       <dt>Prix</dt>
-      <dd>{ticket.price}€</dd>
+      <dd>{ticket.basePrice}€</dd>
       <dt>Méthode de paiement</dt>
       <dd>{DISPLAY_PAYMENT_METHODS[paymentMethod ?? 'Other']}</dd>
       <dt>Évènement</dt>

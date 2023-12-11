@@ -13,6 +13,8 @@
   import { calendarLinks } from '$lib/calendars';
   import IconGoogleCalendar from '~icons/logos/google-calendar';
   import IconCalendar from '~icons/mdi/calendar-export-outline';
+  import { onMount } from 'svelte';
+  import { toasts } from '$lib/toasts';
 
   export let data: PageData;
 
@@ -24,7 +26,7 @@
     contactMail,
     articles,
     placesLeft,
-    capacity,
+    // capacity,
     reactionCounts,
     myReactions,
   } = data.event;
@@ -39,6 +41,11 @@
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
 
   const calendarURLs = calendarLinks(data.event);
+
+  onMount(() => {
+    if (data.claimedCode) toasts.success('Ton code de réduction a bien été appliqué ;)');
+    else if (data.claimCodeError) toasts.error(data.claimCodeError);
+  });
 </script>
 
 <Header {...data.event} />
@@ -85,9 +92,9 @@
         {#if placesLeft === Number.POSITIVE_INFINITY || placesLeft === -1}
           illimitées
         {:else}
-          <span class="left">{placesLeft} restante{placesLeft > 1 ? 's' : ''}</span><span
+          <!-- <span class="left">{placesLeft} restante{placesLeft > 1 ? 's' : ''}</span><span
             class="capacity">{capacity}</span
-          >
+          > -->
         {/if}
       </span>
     </h2>
@@ -198,23 +205,23 @@
     margin: 0 1rem;
   }
 
-  .places .left::after {
-    display: inline-block;
-    height: 1.25em;
-    margin: 0.3em;
-    margin-bottom: -0.25em;
-    content: '';
-    background: var(--text);
-    transform: rotate(30deg);
-  }
+  // .places .left::after {
+  //   display: inline-block;
+  //   height: 1.25em;
+  //   margin: 0.3em;
+  //   margin-bottom: -0.25em;
+  //   content: '';
+  //   background: var(--text);
+  //   transform: rotate(30deg);
+  // }
 
-  h2 .places .left::after {
-    width: 3px;
-  }
+  // h2 .places .left::after {
+  //   width: 3px;
+  // }
 
-  .ticket .places .left::after {
-    width: 1px;
-  }
+  // .ticket .places .left::after {
+  //   width: 1px;
+  // }
 
   .add-to-calendar .options {
     display: flex;

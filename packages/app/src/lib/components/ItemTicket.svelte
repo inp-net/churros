@@ -20,7 +20,7 @@
   export let descriptionHtml: string;
   export let name: string;
   export let placesLeft: number;
-  export let capacity: number;
+  // export let capacity: number;
   export let uid: string;
   export let price: number;
   export let closesAt: Date | undefined = undefined;
@@ -127,7 +127,7 @@
         {#if placesLeft === -1 || placesLeft === Number.POSITIVE_INFINITY}
           Illimité
         {:else}
-          <span class="left">{placesLeft}</span><span class="capacity">{capacity}</span>
+          <!-- <span class="left">{placesLeft}</span><span class="capacity">{capacity}</span> -->
         {/if}
       </span>
       {#if !shotgunning}
@@ -229,23 +229,23 @@
     }
   }
 
-  .places .left::after {
-    display: inline-block;
-    height: 1.25em;
-    margin: 0.3em;
-    margin-bottom: -0.25em;
-    content: '';
-    background: var(--text);
-    transform: rotate(30deg);
-  }
+  // .places .left::after {
+  //   display: inline-block;
+  //   height: 1.25em;
+  //   margin: 0.3em;
+  //   margin-bottom: -0.25em;
+  //   content: '';
+  //   background: var(--text);
+  //   transform: rotate(30deg);
+  // }
 
-  h2 .places .left::after {
-    width: 3px;
-  }
+  // h2 .places .left::after {
+  //   width: 3px;
+  // }
 
-  .ticket .places .left::after {
-    width: 1px;
-  }
+  // .ticket .places .left::after {
+  //   width: 1px;
+  // }
 
   @keyframes pulse-text {
     0% {

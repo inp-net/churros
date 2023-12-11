@@ -37,7 +37,8 @@
         isWithinInterval(now, {
           start: subMinutes(registration.ticket.event.startsAt, 30),
           end: addHours(registration.ticket.event.endsAt, 2),
-        })
+        }) &&
+        !registration.cancelled
       );
     } catch {
       return false;
@@ -114,7 +115,7 @@
     transform: translateX(0);
   }
 
-  @media (width>=600px) {
+  @media (min-width: 600px) {
     .quick-booking {
       right: 1rem;
       left: unset;

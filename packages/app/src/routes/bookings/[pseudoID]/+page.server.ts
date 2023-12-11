@@ -101,6 +101,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
               authorEmail: true,
               ticket: {
                 price: true,
+                basePrice: true,
                 name: true,
                 group: {
                   name: true,

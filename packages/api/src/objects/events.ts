@@ -7,6 +7,8 @@ import {
   type Prisma,
   type Ticket,
   type TicketGroup,
+  PromotionType as PromotionTypePrisma,
+  GroupType,
 } from '@prisma/client';
 import { mappedGetAncestors } from 'arborist';
 import {
@@ -51,6 +53,11 @@ import { onBoard } from '../auth.js';
 import { updatePicture } from '../pictures.js';
 import { scheduleShotgunNotifications } from '../services/notifications.js';
 import { soonest } from '../date.js';
+import { visibleArticlesPrismaQuery } from './articles.js';
+
+export const PromotionTypeEnum = builder.enumType(PromotionTypePrisma, {
+  name: 'PromotionType',
+});
 
 export const VisibilityEnum = builder.enumType(VisibilityPrisma, {
   name: 'Visibility',
@@ -152,6 +159,15 @@ export function visibleEventsPrismaQuery(
               },
             },
           },
+          {
+            tickets: {
+              some: {
+                openToExternal: {
+                  not: false,
+                },
+              },
+            },
+          },
         ],
       },
       // GroupRestricted events in the user's groups
@@ -177,22 +193,36 @@ export function visibleEventsPrismaQuery(
       // Unlisted events that the user booked
       {
         visibility: VisibilityPrisma.Unlisted,
-        tickets: {
-          some: {
-            registrations: {
+        OR: [
+          {
+            author: { uid: user?.uid ?? '' },
+          },
+          {
+            managers: {
               some: {
-                OR: [
-                  {
-                    beneficiary: user?.uid ?? '',
-                  },
-                  {
-                    author: { uid: user?.uid ?? '' },
-                  },
-                ],
+                user: { uid: user?.uid ?? '' },
               },
             },
           },
-        },
+          {
+            tickets: {
+              some: {
+                registrations: {
+                  some: {
+                    OR: [
+                      {
+                        beneficiary: user?.uid ?? '',
+                      },
+                      {
+                        author: { uid: user?.uid ?? '' },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        ],
       },
     ],
   };
@@ -391,7 +421,9 @@ export const EventType = builder.prismaNode('Event', {
       },
     }),
     ticketGroups: t.relation('ticketGroups'),
-    articles: t.relation('articles'),
+    articles: t.relation('articles', {
+      query: (_, { user }) => ({ where: visibleArticlesPrismaQuery(user, 'wants') }),
+    }),
     group: t.relation('group'),
     coOrganizers: t.relation('coOrganizers'),
     links: t.relation('links'),
@@ -593,6 +625,7 @@ builder.queryField('event', (t) =>
           coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
           group: { include: { studentAssociation: { include: { school: true } } } },
           managers: { include: { user: true } },
+          tickets: true,
         },
       });
       return eventAccessibleByUser(event, user);
@@ -1069,6 +1102,10 @@ builder.mutationField('upsertEvent', (t) =>
       }
 
       // 5. Upsert tickets, setting their group
+      const simppsPromotion = await prisma.promotion.findFirst({
+        where: { type: PromotionTypePrisma.SIMPPS, validUntil: { gte: new Date() } },
+      });
+
       for (const ticket of tickets) {
         const ticketGroupId = ticket.groupName
           ? ticketGroups.find((tg) => tg.name === ticket.groupName)!.id
@@ -1093,6 +1130,11 @@ builder.mutationField('upsertEvent', (t) =>
             openToSchools: { connect: connectFromListOfUids(ticket.openToSchools) },
             openToMajors: { connect: connectFromListOfIds(ticket.openToMajors) },
             autojoinGroups: { connect: connectFromListOfUids(ticket.autojoinGroups) },
+            // SIMPPS promotion
+            subjectToPromotions:
+              simppsPromotion && group.type === GroupType.StudentAssociationSection
+                ? { connect: { id: simppsPromotion.id } }
+                : undefined,
           },
           update: {
             ...ticket,
@@ -1107,6 +1149,11 @@ builder.mutationField('upsertEvent', (t) =>
             openToSchools: { set: connectFromListOfUids(ticket.openToSchools) },
             openToMajors: { set: connectFromListOfIds(ticket.openToMajors) },
             autojoinGroups: { set: connectFromListOfUids(ticket.autojoinGroups) },
+            // SIMPPS promotion
+            subjectToPromotions:
+              simppsPromotion && group.type === GroupType.StudentAssociationSection
+                ? { connect: { id: simppsPromotion.id } }
+                : undefined,
           },
         });
       }
@@ -1164,11 +1211,14 @@ export async function eventAccessibleByUser(
           canEditPermissions: boolean;
           canVerifyRegistrations: boolean;
         }>;
+        tickets: Array<{ openToExternal: boolean | null }>;
       })
     | null,
   user: Context['user'],
 ): Promise<boolean> {
   if (user?.admin) return true;
+
+  if (event?.tickets.some(({ openToExternal }) => openToExternal !== false)) return true;
 
   switch (event?.visibility) {
     case Visibility.Public:

@@ -24,6 +24,7 @@ import { log } from './logs.js';
 import { DateTimeScalar } from './scalars.js';
 import { placesLeft, userCanSeeTicket } from './tickets.js';
 import { UserType, fullName } from './users.js';
+import { actualPrice } from './promotions.js';
 
 const mailer = createTransport(process.env.SMTP_URL);
 
@@ -602,6 +603,7 @@ builder.mutationField('upsertRegistration', (t) =>
               group: { include: { studentAssociation: { include: { school: true } } } },
               managers: { include: { user: true } },
               bannedUsers: true,
+              tickets: true,
             },
           },
           openToGroups: true,
@@ -836,8 +838,7 @@ builder.mutationField('upsertRegistration', (t) =>
           <p>Montre le QR code pour rentrer.</p>
           <img src="cid:qrcode" alt="${pseudoID}" />
           <p>En cas de problème, ton code de réservation est le:</p>
-          <p style="font-size: 32px; text-align: center;" align="center" size="32px"><code>${pseudoID}</code></p>
-          `,
+          <p style="font-size: 32px; text-align: center;" align="center" size="32px"><code>${pseudoID}</code></p><p><a href="https://churros.inpt.fr/bookings/${pseudoID}">Accéder à ma place</a></p>`,
           text: `Ton code de réservation est le ${pseudoID}`,
         });
       }
@@ -871,6 +872,7 @@ builder.mutationField('paidRegistration', (t) =>
                   coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
                   group: { include: { studentAssociation: { include: { school: true } } } },
                   managers: { include: { user: true } },
+                  tickets: true,
                 },
               },
             },
@@ -925,12 +927,14 @@ builder.mutationField('paidRegistration', (t) =>
       if (!paymentMethod) throw new GraphQLError('Payment method not found');
       if (!phone && paymentMethod === PaymentMethodPrisma.Lydia)
         throw new GraphQLError('Phone not found');
+    
+      const price = await actualPrice(ticket, user);
 
       // Process payment
       const paypalOrderId = await pay({
         from: user?.uid ?? '(unregistered)',
         to: ticket.event.beneficiary?.id ?? '(unregistered)',
-        amount: ticket.price,
+        amount: price,
         by: paymentMethod,
         phone: phone ?? '',
         emailAddress: user?.email ?? '',
@@ -1166,7 +1170,7 @@ builder.queryField('registrationsCsv', (t) =>
         },
       });
 
-      return eventManagedByUser(event, me, { canVerifyRegistrations: true });
+      return eventManagedByUser(event, me, {});
     },
     async resolve(_, { eventUid, groupUid }) {
       const registrations = await prisma.registration.findMany({

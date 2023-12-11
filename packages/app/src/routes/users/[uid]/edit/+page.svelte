@@ -452,6 +452,9 @@
   }
 
   .content section.details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     max-width: 700px;
   }
 
