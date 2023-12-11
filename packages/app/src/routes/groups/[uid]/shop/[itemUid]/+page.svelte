@@ -9,6 +9,7 @@
   import { goto } from '$app/navigation';
   import InputText from '$lib/components/InputText.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
 
   export let data: PageData;
 
@@ -86,16 +87,27 @@
   onDestroy(async () => {
     await toasts.remove(warningToastId);
   });
+
+  $: quantityString = quantity.toString();
 </script>
 
 <div class="content">
-  <h2>{shopItem.name}</h2>
-  <p>Stock: {shopItem.stock}</p>
-  <p>Restant: {shopItem.stockLeft}</p>
-  <p>Price: {shopItem.price} €</p>
-  <p>max: {shopItem.max}</p>
-  <p>{shopItem.description}</p>
-  <input type="number" bind:value={quantity} min="1" {max} />
+  <div class="twocolcontainer">
+    <div class="namepic">
+      <div class="left">
+        <ShopImageCaroussel {...shopItem} url={['https://i.redd.it/megamind-no-bitches-meme-3264x3264-v0-gb5bw6safuu81.png?s=6ba867d0072d85550510802f10d38bb9f15ec0e7','https://i.kym-cdn.com/entries/icons/original/000/037/984/thiccomniman.png']}/>
+      </div>
+      <div class="mid">
+        <h2>{shopItem.name}</h2>
+        <p>{shopItem.description}</p>
+      </div>
+    </div>
+    <div class="right">
+      <h2>Acheter</h2>
+      <p>Stock: {shopItem.stock}</p>
+      <p>Restant: {shopItem.stockLeft}</p>
+      <p>Price: {shopItem.price} €</p>
+      <InputText type="number" bind:value={quantityString} min="1" {max} label="Quantité" on:change={() => {quantity = parseInt(quantityString)}}/>
 
   <ul class="nobullet payment-methods">
     {#if !paying}
@@ -161,3 +173,72 @@
     {/if}
   </ul>
 </div>
+</div>
+
+</div>
+
+<style>
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .twocolcontainer {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .namepic {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-evenly;
+    width : 100%;
+  }
+  .left {
+    min-width:300px;
+    
+  }
+
+  .mid {
+    padding:1em;
+  }
+  .right {
+    width : 400px;
+    background-color: var(--muted-bg);
+    padding: 1em;
+    border-radius: 10px;
+  }
+
+  .payment-methods {
+    margin-top: 0.5em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+  }
+
+  @media only screen and (max-width: 1100px) {
+    .twocolcontainer {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .namepic {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap:2em;
+    }
+    .left {
+      width : 100%;
+    }
+  }
+</style>
