@@ -28,6 +28,7 @@
   import InputText from '$lib/components/InputText.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import FormNotificationSettings from '$lib/components/FormNotificationSettings.svelte';
+  import { browser } from '$app/environment';
 
   let godparentRequestSendServerError = '';
   let godparentRequestSending = false;
@@ -248,6 +249,11 @@
             noel: 'Noël',
           }}
           bind:value={$theme}
+          on:input={() => {
+            if (browser) 
+              window.localStorage.setItem('user_does_not_like_noel_theme', '');
+            
+          }}
         />
       {/if}
       <h2>Parrainages</h2>
