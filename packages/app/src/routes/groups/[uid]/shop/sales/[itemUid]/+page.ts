@@ -19,6 +19,8 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
             paymentMethod: true,
             user: {
               uid: true,
+              fullName: true,
+              pictureFile: true,
             },
           },
         },

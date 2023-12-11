@@ -2,6 +2,7 @@
   import type { PageData } from './$types';
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
+  import ItemBuyingTable from '$lib/components/ItemBuyingTable.svelte';
 
   export let data: PageData;
 
@@ -25,19 +26,16 @@
 <div class="content">
   {#if shopItem.shopPayments.length === 0}
     <h2 class="none">Aucun payement ;(</h2>
+  {:else}
+    <ItemBuyingTable payments={shopItem.shopPayments} />
   {/if}
-  {#each shopItem.shopPayments as payment}
-    <div>
-      <h2>{payment.user.uid}</h2>
-      <p>{payment.quantity}</p>
-      <p>{payment.totalPrice} €</p>
-      <p>Par {payment.paymentMethod}</p>
-    </div>
-  {/each}
 </div>
 
 <style>
-  .none {
-    text-align: center;
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 </style>

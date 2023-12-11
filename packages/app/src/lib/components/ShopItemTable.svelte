@@ -1,7 +1,6 @@
 <script lang="ts">
   import ButtonSecondary from './ButtonSecondary.svelte';
-  import ButtonGhost from './ButtonGhost.svelte';
-  import IconForward from '~icons/mdi/chevron-right';
+  import { goto } from '$app/navigation';
 
   type ShopItemType = {
     name: string;
@@ -29,15 +28,12 @@
     </thead>
     <tbody>
       {#each shopItems as shopItem (shopItem.id)}
-        <tr>
+        <tr on:click={goto(`/groups/${shopItem.group.uid}/shop/sales/${shopItem.id}`)}>
           <td>{shopItem.name}</td>
           <td>{shopItem.stockLeft}/{shopItem.stock}</td>
           <td class="actions">
             <ButtonSecondary href={`/groups/${shopItem.group.uid}/shop/${shopItem.id}/edit`}
               >Modifier</ButtonSecondary
-            >
-            <ButtonGhost href={`/groups/${shopItem.group.uid}/shop/sales/${shopItem.id}`}
-              ><IconForward /></ButtonGhost
             >
           </td>
         </tr>
@@ -76,6 +72,7 @@
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
+    background: var(--bg);
   }
 
   @media only screen and (width <= 400px) {
