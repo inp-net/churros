@@ -91,10 +91,10 @@ dialog {
     --primary-shadow: 0 0.25rem 0.5rem #{$black};
     --loading-bg: repeating-linear-gradient(
       45deg,
-      rgb(255 241 242 / 100%),
-      rgb(255 241 242 / 100%) 10px,
-      rgb(186 28 28 / 100%) 10px,
-      rgb(186 28 28 / 100%) 20px
+      rgb(255 241 242),
+      rgb(255 241 242) 10px,
+      rgb(186 28 28) 10px,
+      rgb(186 28 28) 20px
     );
     --hover-bg: #{$green-900}; /* #28504e */
     --hover-text: #{$neutral-200};
