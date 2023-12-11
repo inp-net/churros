@@ -12,13 +12,13 @@ dialog,
   --muted: #{$slate-500};
   --error: #{$red-800};
   --link: #{$blue-700};
-  --border: #{$red-700};
+  --border: #{$gray-400};
   --shadow: 0 0 0.125rem #0004, 0 0.125rem 0.5rem #0001;
   --shadow-big: 0 0 0.5rem #0004, 0 0.5rem 3rem #0001;
   --ring: #{rgba($slate-400, 50%)};
   --hover-bg: #{$gray-200};
   --hover-text: #{$slate-700};
-  --hover-border: #{$red-700};
+  --hover-border: #{$gray-500};
   --disabled-bg: #{$gray-100};
   --disabled-text: #{$slate-600};
   --disabled-border: #{$gray-200};
@@ -26,11 +26,11 @@ dialog,
   // Primary
   --primary-bg: #{$blue-700};
   --primary-text: #{$white};
-  --primary-link: #{$green-500};
-  --primary-border: #{$green-700};
+  --primary-link: #{$blue-500};
+  --primary-border: #{$blue-700};
   --primary-shadow: 0 0.25rem 0.5rem #{rgba($zinc-800, 20%)};
-  --primary-ring: #{rgba($green-400, 50%)};
-  --primary-hover-bg: #{$red-900};
+  --primary-ring: #{rgba($blue-400, 50%)};
+  --primary-hover-bg: #{$blue-500};
   --primary-hover-text: #{$slate-50};
   --primary-hover-border: #{$blue-600};
   --primary-disabled-bg: #{rgba($blue-600, 50%)};
@@ -71,7 +71,7 @@ dialog,
   --muted-border: #{$gray-200};
 
   // Other colors
-  --loading-bg: linear-gradient(to right, #{$orange-600}, #{$orange-200});
+  --loading-bg: #{$blue-700};
   --backdrop: rgb(0 0 0 / 30%);
 
   // Logo colors

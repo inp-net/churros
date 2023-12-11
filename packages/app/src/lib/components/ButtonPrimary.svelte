@@ -41,8 +41,8 @@
     padding: 0.75rem 1.75rem;
     color: var(--primary-text);
     cursor: pointer;
-    background: var(--bg);
-    border: var(--border-block) solid var(--border);
+    background: var(--primary-bg);
+    border: none;
     border-radius: 1000px;
 
     &.loading .content {
@@ -57,7 +57,7 @@
   .button-primary:hover,
   .button-primary:focus-visible {
     color: var(--primary-hover-text);
-    background: var(--border);
+    background: var(--primary-hover-bg);
   }
 
   .button-primary .loading {

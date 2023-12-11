@@ -37,6 +37,7 @@
   import { syncToLocalStorage } from 'svelte-store2storage';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { debugging } from '$lib/debugging';
+  import Snowflake from '~icons/mdi/snowflake';
 
   function currentTabDesktop(url: URL): (typeof DESKTOP_NAVIGATION_TABS)[number] {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -240,6 +241,14 @@
 <div class="layout">
   <TopBar {scrolled} />
 
+  {#if $theme === 'noel'}
+    {#each { length: 100 } as _}
+      <div class="flake">
+        <Snowflake />
+      </div>
+    {/each}
+  {/if}
+
   <div class="page-and-sidenav">
     <NavigationSide current={currentTabDesktop($page.url)} />
     <div
@@ -279,6 +288,8 @@
 </div>
 
 <style lang="scss">
+  @use 'sass:math';
+
   /*
 
 The root layout is composed of several elements:
@@ -457,5 +468,50 @@ The root layout is composed of several elements:
     --text: #25bf22;
     --border: #25bf22;
     --primary-link: #54fe54;
+  }
+
+  @function random-range($min, $max) {
+    $rand: math.random();
+    $random-range: $min + math.floor($rand * (($max - $min) + 1));
+    @return $random-range;
+  }
+
+  .flake {
+    position: absolute;
+    z-index: -10;
+    width: 10px;
+    height: 10px;
+    background: transparent;
+    border-radius: 50%;
+
+    $total: 200;
+
+    @for $i from 1 through $total {
+      $random-x: random-range(100000, 900000) * 0.0001vw;
+      $random-offset: random-range(-100000, 100000) * 0.0001vw;
+      $random-x-end: $random-x + $random-offset;
+      $random-x-end-yoyo: $random-x + (math.div($random-offset, 2));
+      $random-yoyo-time: math.div(random-range(30000, 80000), 100000);
+      $random-yoyo-y: $random-yoyo-time * 100vh;
+      $random-scale: math.random(15000) * 0.0001;
+      $fall-duration: random-range(15, 30) * 1s;
+      $fall-delay: math.random(30) * -1s;
+
+      &:nth-child(#{$i}) {
+        opacity: math.random(10000) * 0.0001;
+        transform: translate($random-x, -10px) scale($random-scale);
+        animation: fall-#{$i} $fall-duration $fall-delay linear infinite;
+      }
+
+      @keyframes fall-#{$i} {
+        #{percentage($random-yoyo-time)} {
+          transform: translate($random-x-end, $random-yoyo-y) scale($random-scale);
+        }
+
+        100% {
+          transform: translate($random-x-end-yoyo, 90vh) scale($random-scale);
+        }
+      }
+    }
   }
 </style>

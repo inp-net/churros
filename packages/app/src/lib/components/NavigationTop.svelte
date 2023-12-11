@@ -18,6 +18,7 @@
   import { browser } from '$app/environment';
   import { tooltip } from '$lib/tooltip';
   import ModalReportIssue from './ModalReportIssue.svelte';
+  import { theme } from '$lib/theme';
 
   export let scrolled = false;
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
@@ -50,38 +51,7 @@
 
 <ModalReportIssue bind:element={reportIssueDialogElement} />
 
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-<div class="snow"></div>
-
-<nav id="navigation-top" class:scrolled class:transparent={scanningTickets}>
+<nav id="navigation-top" class:scrolled class:transparent={scanningTickets} class={$theme}>
   {#if scanningTickets}
     <div class="current-event">
       <ButtonBack />
@@ -157,16 +127,6 @@
 </nav>
 
 <style lang="scss">
-  @use 'sass:math';
-
-  /* .santa {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    pointer-events: none;
-  } */
-
   nav {
     z-index: 10;
     display: flex;
@@ -180,6 +140,13 @@
     transition: box-shadow 0.25s ease;
   }
 
+  nav.noel {
+    background-color: transparent;
+    background-image: url('/noel-topbar.png');
+    background-repeat: repeat;
+    background-size: contain;
+  }
+
   nav.scrolled {
     box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
   }
@@ -189,51 +156,6 @@
     background: transparent;
 
     --text: white;
-  }
-
-  @function random-range($min, $max) {
-    $rand: math.random();
-    $random-range: $min + math.floor($rand * (($max - $min) + 1));
-    @return $random-range;
-  }
-
-  .snow {
-    position: absolute;
-    z-index: 0;
-    width: 10px;
-    height: 10px;
-    background: white;
-    border-radius: 50%;
-
-    $total: 200;
-
-    @for $i from 1 through $total {
-      $random-x: math.random(1000000) * 0.0001vw;
-      $random-offset: random-range(-100000, 100000) * 0.0001vw;
-      $random-x-end: $random-x + $random-offset;
-      $random-x-end-yoyo: $random-x + (math.div($random-offset, 2));
-      $random-yoyo-time: math.div(random-range(30000, 80000), 100000);
-      $random-yoyo-y: $random-yoyo-time * 100vh;
-      $random-scale: math.random(10000) * 0.0001;
-      $fall-duration: random-range(10, 30) * 1s;
-      $fall-delay: math.random(30) * -1s;
-
-      &:nth-child(#{$i}) {
-        opacity: math.random(10000) * 0.0001;
-        transform: translate($random-x, -10px) scale($random-scale);
-        animation: fall-#{$i} $fall-duration $fall-delay linear infinite;
-      }
-
-      @keyframes fall-#{$i} {
-        #{percentage($random-yoyo-time)} {
-          transform: translate($random-x-end, $random-yoyo-y) scale($random-scale);
-        }
-
-        100% {
-          transform: translate($random-x-end-yoyo, 100vh) scale($random-scale);
-        }
-      }
-    }
   }
 
   .actions {
