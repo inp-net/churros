@@ -245,6 +245,7 @@
             dark: 'Sombre',
             light: 'Clair',
             hacker: 'h4ck3r',
+            noel: 'Noël',
           }}
           bind:value={$theme}
         />

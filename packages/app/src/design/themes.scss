@@ -10,7 +10,7 @@ dialog {
     --primary-bg: #{$blue-900};
     --primary-text: #{$slate-100};
     --primary-shadow: 0 0.25rem 0.5rem #{$black};
-    --loading-bg: linear-gradient(to right, #{$pink-800}, #{$pink-600});
+    --loading-bg: #{$blue-900};
     --hover-bg: #{$neutral-700};
     --hover-text: #{$neutral-200};
     --muted-bg: #{$neutral-800};
@@ -34,7 +34,7 @@ dialog {
     --primary-link: var(--link);
     --primary-text: #fff;
     --primary-shadow: 0 0.25rem 0.5rem #{$black};
-    --loading-bg: linear-gradient(to right, #{$pink-800}, #{$pink-600});
+    --loading-bg: #0d6e2c;
     --hover-bg: #010703;
     --hover-text: #{$neutral-200};
     --muted-bg: var(--card-bg);
@@ -77,5 +77,37 @@ dialog {
       #{$blue-400},
       #{$purple-400}
     );
+  }
+
+  &.noel,
+  &.noel::backdrop {
+    --bg: #03001c;
+    --text: #{$neutral-200};
+    --link: #{$indigo-400};
+    --title: #{$neutral-100};
+    --shadow: 0 0.25rem 0.5rem #{$black};
+    --primary-bg: #{$green-900};
+    --primary-text: #{$neutral-200};
+    --primary-shadow: 0 0.25rem 0.5rem #{$black};
+    --loading-bg: repeating-linear-gradient(
+      45deg,
+      rgb(255 241 242 / 100%),
+      rgb(255 241 242 / 100%) 10px,
+      rgb(186 28 28 / 100%) 10px,
+      rgb(186 28 28 / 100%) 20px
+    );
+    --hover-bg: #{$green-900}; /* #28504e */
+    --hover-text: #{$neutral-200};
+    --muted-bg: #{$neutral-800};
+    --muted-text: #{$neutral-400};
+    --muted-border: #{$neutral-700};
+    --muted-link: #{$indigo-400};
+    --backdrop: rgb(0 0 0 / 80%);
+    --primary-ring: #{rgba($green-400, 50%)};
+    --primary-hover-bg: #{$green-500};
+    --primary-link: #{$green-500};
+    --primary-border: #{$green-900};
+    --border: #{$red-700};
+    --hover-border: #{$red-500};
   }
 }

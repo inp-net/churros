@@ -22,6 +22,7 @@
   import { tooltip } from '$lib/tooltip';
   import type { MOBILE_NAVIGATION_TABS } from '../../routes/+layout.svelte';
   import { scrollToTop } from '$lib/scroll';
+  import { theme } from '$lib/theme';
 
   export let current: (typeof MOBILE_NAVIGATION_TABS)[number];
   let flyoutOpen = false;
@@ -34,6 +35,7 @@
 <nav
   class:flyout-open={flyoutOpen}
   class:transparent={$page.url.pathname.endsWith('/scan/') && !flyoutOpen}
+  class={$theme}
 >
   {#if $page.url.pathname === '/'}
     <button class="current" class:disabled={flyoutOpen} on:click={scrollToTop}>
@@ -192,6 +194,13 @@
     height: 4rem;
     background: var(--bg);
     border-top: var(--border-block) solid rgb(0 0 0 / 5%);
+  }
+
+  nav.noel {
+    background-color: var(--bg);
+    background-image: url('/noel-bottombar.png');
+    background-size: cover;
+    border-top: none;
   }
 
   nav.transparent {
