@@ -75,6 +75,10 @@
     background: var(--bg);
   }
 
+  tr:hover td {
+    background: var(--hover-bg);
+  }
+
   @media only screen and (width <= 400px) {
     table {
       width: 100%;

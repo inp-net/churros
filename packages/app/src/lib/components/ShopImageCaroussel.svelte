@@ -33,7 +33,7 @@
   .carousel {
     position: relative;
     display: flex;
-    width: 100%;
+    width: 250px;
     height: 250px;
     overflow: hidden;
   }
