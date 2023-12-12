@@ -27,9 +27,8 @@
   const max = Math.min(shopItem.max, shopItem.stockLeft);
 
   async function payBy(method: PaymentMethod | undefined) {
-    if ($me?.uid === undefined) 
-      await goto('/login');
-    
+    if ($me?.uid === undefined) await goto('/login');
+
     choosingPaymentMethodLoading = method ?? PaymentMethod.Other;
     const { upsertShopPayment } = await $zeus.mutate({
       upsertShopPayment: [
@@ -87,14 +86,19 @@
   onDestroy(async () => {
     await toasts.remove(warningToastId);
   });
-
 </script>
 
 <div class="content">
   <div class="twocolcontainer">
     <div class="namepic">
       <div class="left">
-        <ShopImageCaroussel {...shopItem} url={['https://i.redd.it/megamind-no-bitches-meme-3264x3264-v0-gb5bw6safuu81.png?s=6ba867d0072d85550510802f10d38bb9f15ec0e7','https://i.kym-cdn.com/entries/icons/original/000/037/984/thiccomniman.png']}/>
+        <ShopImageCaroussel
+          {...shopItem}
+          url={[
+            'https://i.redd.it/megamind-no-bitches-meme-3264x3264-v0-gb5bw6safuu81.png?s=6ba867d0072d85550510802f10d38bb9f15ec0e7',
+            'https://i.kym-cdn.com/entries/icons/original/000/037/984/thiccomniman.png',
+          ]}
+        />
       </div>
       <div class="mid">
         <h2>{shopItem.name}</h2>
@@ -106,74 +110,81 @@
       <p>Stock: {shopItem.stock}</p>
       <p>Restant: {shopItem.stockLeft}</p>
       <p>Price: {shopItem.price} €</p>
-      <InputNumber bind:value={quantity} min="1" {max} label="Quantité" on:change={() => {if (quantity <0)quantity=0;}}/>
-
-  <ul class="nobullet payment-methods">
-    {#if !paying}
-      <ul class="nobullet payment-methods">
-        {#each shopItem.paymentMethods as method}
-          <li>
-            <ButtonSecondary
-              loading={choosingPaymentMethodLoading === method}
-              disabled={Boolean(choosingPaymentMethodLoading)}
-              icon={PAYMENT_METHODS_ICONS[method]}
-              on:click={async () => payBy(method)}
-            >
-              {DISPLAY_PAYMENT_METHODS[method]}
-            </ButtonSecondary>
-          </li>
-        {:else}
-          <li class="no-payment-methods danger">
-            Aucun moyen de paiement disponible. Contactez les managers de l'évènement.
-          </li>
-        {/each}
-      </ul>
-    {:else}
-      <form
-        class="pay"
-        on:submit|preventDefault={async () => {
-          paymentLoading = true;
-          const { paidShopPayment } = await $zeus.mutate({
-            paidShopPayment: [
-              {
-                shopPaymentId,
-                phone,
-                paymentMethod: PaymentMethod.Lydia,
-              },
-              {
-                __typename: true,
-                '...on Error': { message: true },
-                '...on MutationPaidShopPaymentSuccess': {
-                  data: {
-                    __typename: true,
-                  },
-                },
-              },
-            ],
-          });
-          if (paidShopPayment.__typename === 'Error') serverError = paidShopPayment.message;
-          else await goto('?' + new URLSearchParams({ done: shopPaymentId }).toString());
+      <InputNumber
+        bind:value={quantity}
+        min="1"
+        {max}
+        label="Quantité"
+        on:change={() => {
+          if (quantity < 0) quantity = 0;
         }}
-      >
-        <InputText
-          type="tel"
-          label="Numéro de téléphone"
-          initial={$me?.phone}
-          maxlength={255}
-          bind:value={phone}
-        />
+      />
 
-        <section class="submit">
-          <ButtonPrimary loading={paymentLoading} submits
-            >Payer {quantity * shopItem.price}€</ButtonPrimary
+      <ul class="nobullet payment-methods">
+        {#if !paying}
+          <ul class="nobullet payment-methods">
+            {#each shopItem.paymentMethods as method}
+              <li>
+                <ButtonSecondary
+                  loading={choosingPaymentMethodLoading === method}
+                  disabled={Boolean(choosingPaymentMethodLoading)}
+                  icon={PAYMENT_METHODS_ICONS[method]}
+                  on:click={async () => payBy(method)}
+                >
+                  {DISPLAY_PAYMENT_METHODS[method]}
+                </ButtonSecondary>
+              </li>
+            {:else}
+              <li class="no-payment-methods danger">
+                Aucun moyen de paiement disponible. Contactez les managers de l'évènement.
+              </li>
+            {/each}
+          </ul>
+        {:else}
+          <form
+            class="pay"
+            on:submit|preventDefault={async () => {
+              paymentLoading = true;
+              const { paidShopPayment } = await $zeus.mutate({
+                paidShopPayment: [
+                  {
+                    shopPaymentId,
+                    phone,
+                    paymentMethod: PaymentMethod.Lydia,
+                  },
+                  {
+                    __typename: true,
+                    '...on Error': { message: true },
+                    '...on MutationPaidShopPaymentSuccess': {
+                      data: {
+                        __typename: true,
+                      },
+                    },
+                  },
+                ],
+              });
+              if (paidShopPayment.__typename === 'Error') serverError = paidShopPayment.message;
+              else await goto('?' + new URLSearchParams({ done: shopPaymentId }).toString());
+            }}
           >
-        </section>
-      </form>
-    {/if}
-  </ul>
-</div>
-</div>
+            <InputText
+              type="tel"
+              label="Numéro de téléphone"
+              initial={$me?.phone}
+              maxlength={255}
+              bind:value={phone}
+            />
 
+            <section class="submit">
+              <ButtonPrimary loading={paymentLoading} submits
+                >Payer {quantity * shopItem.price}€</ButtonPrimary
+              >
+            </section>
+          </form>
+        {/if}
+      </ul>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -190,6 +201,7 @@
   .twocolcontainer {
     display: flex;
     flex-direction: row;
+    gap: 1em;
     align-items: center;
     justify-content: space-between;
     width: 100%;
@@ -200,12 +212,13 @@
     flex-direction: column;
     align-items: start;
     justify-content: space-evenly;
-    width : 100%;
+    width: 100%;
   }
 
   .left {
-    min-width:300px;
-    
+    width: 400px;
+    background-color: var(--muted-bg);
+    object-fit: contain;
   }
 
   .mid {
@@ -214,7 +227,7 @@
   }
 
   .right {
-    width : 400px;
+    width: 400px;
     padding: 1em;
     background-color: var(--muted-bg);
     border-radius: 10px;
@@ -238,7 +251,7 @@
 
     .namepic {
       flex-direction: column;
-      gap:2em;
+      gap: 2em;
       align-items: center;
       justify-content: center;
     }
@@ -246,6 +259,5 @@
     .left {
       min-width: 200px;
     }
-    
   }
 </style>

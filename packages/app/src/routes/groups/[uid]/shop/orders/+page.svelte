@@ -5,6 +5,7 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
+  import BadgePaymentStatus from '$lib/components/BadgePaymentStatus.svelte';
 
   export let data: PageData;
 
@@ -36,16 +37,20 @@
     <p class="text-center">Aucun article</p>
   {/if}
   {#each orders as order}
-    <div>
+    <div class="item">
       <ShopImageCaroussel
         url={[
           'https://i.redd.it/megamind-no-bitches-meme-3264x3264-v0-gb5bw6safuu81.png?s=6ba867d0072d85550510802f10d38bb9f15ec0e7',
           'https://i.kym-cdn.com/entries/icons/original/000/037/984/thiccomniman.png',
         ]}
       />
-      <h2>{order.shopItem.name}</h2>
-      <p>{order.paid}</p>
-      <p>{order.totalPrice} €</p>
+      <div class="info">
+        <h2>{order.shopItem.name}</h2>
+        <div class="priceinfo">
+          <p>{order.totalPrice} €</p>
+          <p><BadgePaymentStatus paid={order.paid} opposed={false} cancelled={false} /></p>
+        </div>
+      </div>
       <ButtonPrimary href="/groups/{order.shopItem.group.uid}/shop/{order.shopItem.id}"
         >Voir</ButtonPrimary
       >
@@ -59,11 +64,36 @@
     flex-flow: row wrap;
     gap: 1em;
     align-items: end;
-    margin: 0 auto;
+    margin: 1em auto;
+  }
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    align-items: center;
+    padding: 1em;
+    background: var(--muted-bg);
+    border-radius: 1em;
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    align-items: start;
   }
 
   .text-center {
     text-align: center;
+  }
+
+  .priceinfo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
   }
 
   @media only screen and (width > 900px) and (width < 990px) {
