@@ -10,13 +10,13 @@
   import InputText from '$lib/components/InputText.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
+  import InputNumber from '$lib/components/InputNumber.svelte';
 
   export let data: PageData;
 
   const { shopItem } = data;
 
   let warningToastId: string;
-  let serverError = '';
   let paying = false;
   let paymentLoading = false;
   let shopPaymentId = '';
@@ -24,12 +24,12 @@
   let choosingPaymentMethodLoading: PaymentMethod | undefined = undefined;
 
   let quantity = 1;
-  let max = Math.min(shopItem.max, shopItem.stockLeft);
+  const max = Math.min(shopItem.max, shopItem.stockLeft);
 
   async function payBy(method: PaymentMethod | undefined) {
-    if ($me?.uid === undefined) {
+    if ($me?.uid === undefined) 
       await goto('/login');
-    }
+    
     choosingPaymentMethodLoading = method ?? PaymentMethod.Other;
     const { upsertShopPayment } = await $zeus.mutate({
       upsertShopPayment: [
@@ -88,7 +88,6 @@
     await toasts.remove(warningToastId);
   });
 
-  $: quantityString = quantity.toString();
 </script>
 
 <div class="content">
@@ -107,7 +106,7 @@
       <p>Stock: {shopItem.stock}</p>
       <p>Restant: {shopItem.stockLeft}</p>
       <p>Price: {shopItem.price} €</p>
-      <InputText type="number" bind:value={quantityString} min="1" {max} label="Quantité" on:change={() => {quantity = parseInt(quantityString)}}/>
+      <InputNumber bind:value={quantity} min="1" {max} label="Quantité" on:change={() => {if (quantity <0)quantity=0;}}/>
 
   <ul class="nobullet payment-methods">
     {#if !paying}
@@ -137,8 +136,8 @@
           const { paidShopPayment } = await $zeus.mutate({
             paidShopPayment: [
               {
-                shopPaymentId: shopPaymentId,
-                phone: phone,
+                shopPaymentId,
+                phone,
                 paymentMethod: PaymentMethod.Lydia,
               },
               {
@@ -184,61 +183,69 @@
     align-items: center;
     justify-content: center;
     width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
   }
 
   .twocolcontainer {
     display: flex;
-    width: 100%;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
   }
 
   .namepic {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: start;
     justify-content: space-evenly;
     width : 100%;
   }
+
   .left {
     min-width:300px;
     
   }
 
   .mid {
-    padding:1em;
+    max-width: 450px;
+    margin: 1em 0;
   }
+
   .right {
     width : 400px;
-    background-color: var(--muted-bg);
     padding: 1em;
+    background-color: var(--muted-bg);
     border-radius: 10px;
   }
 
   .payment-methods {
-    margin-top: 0.5em;
     display: flex;
     flex-direction: row;
+    gap: 1em;
     align-items: center;
     justify-content: center;
-    gap: 1em;
+    margin-top: 0.5em;
   }
 
-  @media only screen and (max-width: 1100px) {
+  @media only screen and (width <= 1100px) {
     .twocolcontainer {
       flex-direction: column;
       align-items: center;
       justify-content: center;
     }
+
     .namepic {
       flex-direction: column;
+      gap:2em;
       align-items: center;
       justify-content: center;
-      gap:2em;
     }
+
     .left {
-      width : 100%;
+      min-width: 200px;
     }
+    
   }
 </style>
