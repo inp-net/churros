@@ -25,7 +25,7 @@
 <div class="container">
   <ShopImageCaroussel url={images} />
   <div class="info">
-    <div>
+    <div class="data">
       <h1 class="name">{shopItem.name}</h1>
       {#if shopItem.stock !== 0}
         <p>{shopItem.stockLeft}/{shopItem.stock} restants</p>
@@ -46,8 +46,10 @@
     display: flex;
     flex: 0 0 auto;
     flex-direction: column;
+    flex-grow: 1;
     width: 18em;
-    height: 450px;
+    max-width: 18em;
+    height: 100%;
     padding: 1em;
     background-color: var(--muted-bg);
     border-radius: 14px;
@@ -57,8 +59,13 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 200px;
     padding: 0.5em 0 0;
+  }
+
+  .data {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .description {
