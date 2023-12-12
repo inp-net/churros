@@ -1,5 +1,4 @@
 <script lang="ts">
-  import ButtonPrimary from './ButtonPrimary.svelte';
   import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
 
   type ShopItemType = {
@@ -22,7 +21,7 @@
   ];
 </script>
 
-<div class="container">
+<a class="container" href="./{shopItem.id}">
   <ShopImageCaroussel url={images} />
   <div class="info">
     <div class="data">
@@ -34,12 +33,9 @@
     </div>
     <div class="price">
       <h2>{shopItem.price} €</h2>
-      <ButtonPrimary smaller={true} href={`/groups/${shopItem.group.uid}/shop/${shopItem.id}`}
-        >Commander</ButtonPrimary
-      >
     </div>
   </div>
-</div>
+</a>
 
 <style>
   .container {
@@ -49,17 +45,22 @@
     flex-grow: 1;
     width: 18em;
     max-width: 18em;
-    height: 100%;
-    padding: 1em;
+    height: auto;
+    overflow: hidden;
     background-color: var(--muted-bg);
     border-radius: 14px;
+  }
+
+  .container:hover {
+    background: var(--hover-bg);
   }
 
   .info {
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
     justify-content: space-between;
-    padding: 0.5em 0 0;
+    padding: 1em;
   }
 
   .data {
