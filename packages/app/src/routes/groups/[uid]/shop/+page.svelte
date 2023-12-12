@@ -49,6 +49,11 @@
     align-items: end;
   }
 
+  :global(.content > *) {
+    flex-grow: 1;
+    height: 100%;
+  }
+
   .text-center {
     text-align: center;
   }
