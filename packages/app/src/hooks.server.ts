@@ -28,6 +28,10 @@ export const handle: Handle = async ({ event, resolve }) => {
   event.locals.me = user?.me;
   event.locals.token = user?.token;
 
+  event.locals.mobile = Boolean(
+    event.request.headers.get('User-Agent')?.toLowerCase().includes('mobile'),
+  );
+
   return resolve(event);
 };
 
