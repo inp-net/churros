@@ -17,6 +17,9 @@
   const { shopItem } = data;
 
   let warningToastId: string;
+  // ESlint ne sais pas que serverError est utilisé
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let serverError;
   let paying = false;
   let paymentLoading = false;
   let shopPaymentId = '';

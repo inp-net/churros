@@ -1,6 +1,7 @@
 <script lang="ts">
   import AvatarPerson from './AvatarPerson.svelte';
   import { PAYMENT_METHODS_ICONS } from '$lib/display';
+  import type { PaymentMethod } from '$lib/zeus';
 
   type shopPayments = Array<{
     id: string;
@@ -10,7 +11,7 @@
       pictureFile: string;
       uid: string;
     };
-    paymentMethod: string;
+    paymentMethod: PaymentMethod;
     quantity: number;
     totalPrice: number;
   }>;

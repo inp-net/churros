@@ -96,7 +96,6 @@
     if (upsertShopItem.__typename === 'Error') {
       serverError = upsertShopItem.message;
       toasts.error(`Impossible de sauvegarder`, serverError);
-      
     }
   }
 </script>
