@@ -28,7 +28,10 @@
     </thead>
     <tbody>
       {#each shopItems as shopItem (shopItem.id)}
-        <tr on:click={goto(`/groups/${shopItem.group.uid}/shop/sales/${shopItem.id}`)}>
+        <tr
+          on:click={async () =>
+            goto(`/groups/${shopItem.group.uid}/shop/sales/${shopItem.id}`)}
+        >
           <td>{shopItem.name}</td>
           <td>{shopItem.stockLeft}/{shopItem.stock}</td>
           <td class="actions">
