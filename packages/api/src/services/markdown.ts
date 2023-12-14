@@ -12,7 +12,7 @@ import linkifyHtml from 'linkify-html';
 import 'linkify-plugin-mention';
 
 /** Converts markdown to HTML. */
-export const toHtml = async (body: string) =>
+export const toHtml = async (body: string, options?: { linkifyUserMentions: boolean }) =>
   linkifyHtml(
     await unified()
       .use(remarkParse)
@@ -43,7 +43,10 @@ export const toHtml = async (body: string) =>
         'data-external-link': 'data-external-link',
       },
       formatHref: {
-        mention: (username) => `https://churros.inpt.fr/@${username.replace(/^\//, '')}`,
+        mention:
+          options?.linkifyUserMentions ?? true
+            ? (username) => `https://churros.inpt.fr/@${username.replace(/^\//, '')}`
+            : (u) => u,
       },
     },
   );

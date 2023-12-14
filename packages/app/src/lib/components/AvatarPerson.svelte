@@ -14,7 +14,9 @@
   export let permissions:
     | undefined
     | { canEditArticles: boolean; canEditMembers: boolean; canScanEvents: boolean } = undefined;
-  const src = `${env.PUBLIC_STORAGE_URL}${pictureFile}`;
+  const src = pictureFile.startsWith('https://')
+    ? pictureFile
+    : `${env.PUBLIC_STORAGE_URL}${pictureFile}`;
 </script>
 
 <svelte:element

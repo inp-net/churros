@@ -46,6 +46,26 @@ builder.queryField('codeContributors', (t) =>
   }),
 );
 
+async function renderGitlabMarkdown(markdown: string): Promise<string> {
+  return toHtml(
+    markdown.replaceAll(
+      /(?<=^|\W|\s)([\w/-]*)([!#])(\d+)(?=\s|\W|$)/g,
+      (ref: string, project: string, sigil: string, issue: string) => {
+        const page = { '!': 'merge_requests', '#': 'issues' }[sigil] ?? 'issues';
+        if (project.includes('/'))
+          // issue references for other projects outside inp-net
+          return `[${ref}](https://git.inpt.fr/${project}/-/${page}/${issue})`;
+        if (project)
+          // issue references for other projects in inp-net
+          return `[${ref}](https://git.inpt.fr/inp-net/${project}/-/${page}/${issue})`;
+        // issue references
+        return `[${ref}](https://git.inpt.fr/inp-net/churros/-/${page}/${issue})`;
+      },
+    ),
+    { linkifyUserMentions: false },
+  );
+}
+
 const ISSUE_IMPORTANCE_LABELS_MAP_UNBOUNDED = {
   'importance:rockbottom': 0,
   'importance:low': 1,
@@ -68,6 +88,18 @@ enum IssueState {
   Deployed,
 }
 
+class IssueComment {
+  body!: string;
+  authorName!: string;
+  authorAvatarUrl!: string;
+  authorGitlabUrl!: string;
+  addedAt!: Date;
+
+  constructor(args: IssueComment) {
+    Object.assign(this, args);
+  }
+}
+
 class Issue {
   title!: string;
   state!: IssueState;
@@ -78,6 +110,7 @@ class Issue {
   number!: number;
   deployedIn!: string;
   duplicatedFrom!: number | null;
+  comments!: IssueComment[];
 
   constructor(args: Issue) {
     Object.assign(this, args);
@@ -85,6 +118,26 @@ class Issue {
 }
 export const IssueStateType = builder.enumType(IssueState, {
   name: 'IssueState',
+});
+
+export const IssueCommentType = builder.objectType(IssueComment, {
+  name: 'IssueComment',
+  description: 'A Gitlab issue comment',
+  fields: (t) => ({
+    body: t.exposeString('body'),
+    bodyHtml: t.string({
+      async resolve({ body }) {
+        return renderGitlabMarkdown(body);
+      },
+    }),
+    authorName: t.exposeString('authorName'),
+    authorAvatarUrl: t.exposeString('authorAvatarUrl'),
+    authorGitlabUrl: t.exposeString('authorGitlabUrl'),
+    addedAt: t.expose('addedAt', {
+      type: DateTimeScalar,
+      description: 'The date at which the comment was added',
+    }),
+  }),
 });
 
 export const IssueType = builder.objectType(Issue, {
@@ -96,7 +149,7 @@ export const IssueType = builder.objectType(Issue, {
     body: t.exposeString('body'),
     bodyHtml: t.string({
       async resolve({ body }) {
-        return toHtml(body);
+        return renderGitlabMarkdown(body);
       },
     }),
     submittedAt: t.expose('submittedAt', {
@@ -119,6 +172,12 @@ export const IssueType = builder.objectType(Issue, {
     }),
     deployedIn: t.exposeString('deployedIn'),
     duplicatedFrom: t.exposeInt('duplicatedFrom', { nullable: true }),
+    comments: t.field({
+      type: [IssueCommentType],
+      resolve({ comments }) {
+        return comments;
+      },
+    }),
   }),
 });
 
@@ -129,13 +188,40 @@ type GitlabIssue = {
   iid: number;
   labels: { nodes: Array<{ title: string }> };
   title: string;
+  discussions: {
+    nodes: Array<{
+      notes: {
+        nodes: Array<{
+          body: string;
+          system: boolean;
+          internal: boolean;
+          author: { avatarUrl: string; name: string; webUrl: string };
+          createdAt: string;
+        }>;
+      };
+    }>;
+  };
 };
 type GitlabAPIResponse = {
   fromIssuebot: Array<GitlabIssue & { closedAsDuplicateOf: null | GitlabIssue }>;
   fromGitlabUsers: Array<GitlabIssue & { closedAsDuplicateOf: null | GitlabIssue }>;
 };
 
-const issueQuery = `state, description, updatedAt, iid, labels { nodes { title }}, title`;
+const issueQuery = `
+  state
+  description
+  updatedAt
+  iid 
+  labels { nodes { title }} 
+  title
+  discussions { nodes { notes { nodes { 
+    body
+    system
+    internal
+    author { avatarUrl name webUrl }
+    createdAt
+  }}}}
+`;
 
 const difficultyOrImportanceFromLabel = (
   map: Record<string, number>,
@@ -150,7 +236,7 @@ const difficultyOrImportanceFromLabel = (
 };
 
 function makeIssue(
-  { state, description, updatedAt, iid, labels, title }: GitlabIssue,
+  { state, description, updatedAt, iid, labels, title, discussions }: GitlabIssue,
   duplicatedFrom: number | undefined,
 ) {
   return new Issue({
@@ -164,6 +250,17 @@ function makeIssue(
     deployedIn: '', // TODO
     // eslint-disable-next-line unicorn/no-null
     duplicatedFrom: duplicatedFrom ?? null,
+    comments: discussions.nodes.flatMap((discussion) =>
+      discussion.notes.nodes
+        .filter((node) => !node.system && !node.internal)
+        .map((node) => ({
+          body: node.body,
+          authorName: node.author.name,
+          authorAvatarUrl: node.author.avatarUrl,
+          authorGitlabUrl: node.author.webUrl,
+          addedAt: new Date(node.createdAt),
+        })),
+    ),
   });
 }
 
