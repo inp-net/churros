@@ -38,12 +38,7 @@
   {/if}
   {#each orders as order}
     <div class="item">
-      <ShopImageCaroussel
-        url={[
-          'https://i.redd.it/megamind-no-bitches-meme-3264x3264-v0-gb5bw6safuu81.png?s=6ba867d0072d85550510802f10d38bb9f15ec0e7',
-          'https://i.kym-cdn.com/entries/icons/original/000/037/984/thiccomniman.png',
-        ]}
-      />
+      <ShopImageCaroussel url={order.shopItem.pictures.map((p) => p.path)} />
       <div class="info">
         <h2>{order.shopItem.name}</h2>
         <div class="priceinfo">
