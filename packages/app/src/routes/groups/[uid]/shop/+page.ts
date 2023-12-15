@@ -17,6 +17,9 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
           max: true,
           description: true,
           group: { uid: true },
+          pictures: {
+            path: true,
+          },
         },
       ],
     },
