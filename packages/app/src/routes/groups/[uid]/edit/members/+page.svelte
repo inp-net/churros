@@ -307,8 +307,8 @@
                   president
                     ? 'président·e'
                     : treasurer
-                    ? 'trésorier·e'
-                    : 'président·e et trésorièr·e'
+                      ? 'trésorier·e'
+                      : 'président·e et trésorièr·e'
                 }`
               : ''}
             on:click={async () => {

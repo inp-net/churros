@@ -265,7 +265,11 @@ builder.mutationField('upsertGroupMember', (t) =>
           ', ',
         );
 
-      if (oldMember && boardKeys.some((k) => groupMember[k] !== oldMember[k])) {
+      if (
+        oldMember &&
+        boardKeys.some((k) => groupMember[k] !== oldMember[k]) &&
+        group.type === 'Club'
+      ) {
         // TODO send notification too
         await mailer.sendMail({
           from: process.env.PUBLIC_CONTACT_EMAIL,

@@ -199,20 +199,20 @@
             {Math.abs(shotgunsStart.getTime() - now.getTime()) > 6 * 24 * 3600 * 1000
               ? formatDateTime(shotgunsStart)
               : Math.abs(shotgunsStart.getTime() - now.getTime()) > 15 * 60 * 1000
-              ? formatRelative(shotgunsStart, now, {
-                  locale: fr,
-                  weekStartsOn: 1,
-                }).replace('prochain ', '')
-              : (shotgunsStart.getTime() - now.getTime() > 0 ? 'dans ' : 'il y a ') +
-                formatDuration(
-                  intervalToDuration({
-                    start: now,
-                    end: new Date(shotgunsStart.getTime()),
-                  }),
-                  {
+                ? formatRelative(shotgunsStart, now, {
                     locale: fr,
-                  },
-                )}
+                    weekStartsOn: 1,
+                  }).replace('prochain ', '')
+                : (shotgunsStart.getTime() - now.getTime() > 0 ? 'dans ' : 'il y a ') +
+                  formatDuration(
+                    intervalToDuration({
+                      start: now,
+                      end: new Date(shotgunsStart.getTime()),
+                    }),
+                    {
+                      locale: fr,
+                    },
+                  )}
           </p>
         {/if}
       </section>

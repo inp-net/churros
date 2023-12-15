@@ -927,7 +927,7 @@ builder.mutationField('paidRegistration', (t) =>
       if (!paymentMethod) throw new GraphQLError('Payment method not found');
       if (!phone && paymentMethod === PaymentMethodPrisma.Lydia)
         throw new GraphQLError('Phone not found');
-    
+
       const price = await actualPrice(ticket, user);
 
       // Process payment

@@ -11,12 +11,12 @@
   $: roleBadge = groupMember.president
     ? '👑'
     : groupMember.treasurer
-    ? '💰'
-    : groupMember.vicePresident
-    ? '🌟'
-    : groupMember.secretary
-    ? '📜'
-    : '';
+      ? '💰'
+      : groupMember.vicePresident
+        ? '🌟'
+        : groupMember.secretary
+          ? '📜'
+          : '';
 </script>
 
 <svelte:element this={href ? 'a' : 'span'} {href} class="badge">

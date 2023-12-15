@@ -528,8 +528,8 @@ builder.mutationField('updateUser', (t) =>
             godparentUid === ''
               ? { disconnect: true }
               : godparentUid
-              ? { connect: { uid: godparentUid } }
-              : {},
+                ? { connect: { uid: godparentUid } }
+                : {},
         },
       });
 

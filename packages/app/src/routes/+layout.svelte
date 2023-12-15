@@ -323,6 +323,7 @@ The root layout is composed of several elements:
     width: 100%;
     height: 100%;
     min-height: 0;
+
     @media (min-width: 900px) {
       grid-template-columns: max-content 1fr;
     }
@@ -399,6 +400,7 @@ The root layout is composed of several elements:
     max-width: 600px;
     padding: 0 1rem;
     transform: translateX(-50%);
+
     @media (min-width: 1000px) {
       right: 0;
       bottom: 6rem;
@@ -473,6 +475,7 @@ The root layout is composed of several elements:
   @function random-range($min, $max) {
     $rand: math.random();
     $random-range: $min + math.floor($rand * (($max - $min) + 1));
+
     @return $random-range;
   }
 

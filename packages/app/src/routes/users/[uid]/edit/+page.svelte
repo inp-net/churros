@@ -250,9 +250,7 @@
           }}
           bind:value={$theme}
           on:input={() => {
-            if (browser) 
-              window.localStorage.setItem('user_does_not_like_noel_theme', '');
-            
+            if (browser) window.localStorage.setItem('user_does_not_like_noel_theme', '');
           }}
         />
       {/if}

@@ -267,8 +267,8 @@ async function makeGroup(group: OldGroup, ldapGroup: Ldap.Club) {
         ldapGroup.activite === Ldap.Activite.Bureaux
           ? 'StudentAssociationSection'
           : ldapGroup.activite === Ldap.Activite.Liste
-          ? 'List'
-          : typeClub[ldapGroup.typeClub ?? 'club'],
+            ? 'List'
+            : typeClub[ldapGroup.typeClub ?? 'club'],
       uid: ldapGroup.cn,
     },
   });

@@ -414,8 +414,8 @@
                       }`
                     : '')
                 : paid
-                ? 'Payée'
-                : 'Non payée'}
+                  ? 'Payée'
+                  : 'Non payée'}
             >
               {#if opposed}
                 <IconOpposed />
