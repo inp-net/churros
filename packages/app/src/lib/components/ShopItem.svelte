@@ -12,17 +12,16 @@
     group: {
       uid: string;
     };
+    pictures: Array<{
+      path: string;
+    }>;
   };
 
   export let shopItem: ShopItemType;
-  const images = [
-    'https://i.redd.it/megamind-no-bitches-meme-3264x3264-v0-gb5bw6safuu81.png?s=6ba867d0072d85550510802f10d38bb9f15ec0e7',
-    'https://i.kym-cdn.com/entries/icons/original/000/037/984/thiccomniman.png',
-  ];
 </script>
 
 <a class="container" href="./{shopItem.id}">
-  <ShopImageCaroussel url={images} />
+  <ShopImageCaroussel url={shopItem.pictures.map((p) => p.path)} />
   <div class="info">
     <div class="data">
       <h1 class="name">{shopItem.name}</h1>
