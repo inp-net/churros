@@ -1,7 +1,7 @@
 import { page } from '$app/stores';
 import { env } from '$env/dynamic/public';
+import { error, type LoadEvent, type NumericRange } from '@sveltejs/kit';
 import type { LayoutServerData } from '../../.svelte-kit/types/src/routes/$types';
-import { error, type LoadEvent } from '@sveltejs/kit';
 import {
   Thunder,
   ZeusScalars,
@@ -72,10 +72,10 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
     }
     /* eslint-enable */
 
-    const response = await fetch(env.PUBLIC_API_URL, { body, method: 'POST', headers });
+    const response = await fetch(new URL(env.PUBLIC_API_URL), { body, method: 'POST', headers });
 
     // If we received an HTTP error, propagate it
-    if (!response.ok) throw error(response.status);
+    if (!response.ok) throw error(response.status as NumericRange<400, 599>);
 
     return response
       .json()
