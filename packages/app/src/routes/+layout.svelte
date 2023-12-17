@@ -17,7 +17,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import TopBar from '$lib/components/NavigationTop.svelte';
-  import { theme } from '$lib/theme.js';
+  import { isDark, theme } from '$lib/theme.js';
   import { onMount } from 'svelte';
   import '../design/app.scss';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
@@ -38,6 +38,7 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { debugging } from '$lib/debugging';
   import Snowflake from '~icons/mdi/snowflake';
+  import { CURRENT_VERSION, CURRENT_COMMIT } from '$lib/buildinfo';
 
   function currentTabDesktop(url: URL): (typeof DESKTOP_NAVIGATION_TABS)[number] {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -207,6 +208,14 @@
     async
     src="https://stats.inpt.fr/script.js"
     data-website-id="e3bd5b08-b0a3-47ff-a274-1df9ba831c3e"
+    data-domains="churros.inpt.fr"
+    data-event-loggedin={$me ? 'true' : 'false'}
+    data-event-theme={$theme}
+    data-event-darkmode={$isDark ? 'true' : 'false'}
+    data-event-version={CURRENT_VERSION}
+    data-event-commit={CURRENT_COMMIT}
+    data-event-user-major={$me?.major?.shortName ?? '(none)'}
+    data-event-user-year-tier={$me?.yearTier ? `${$me.yearTier}A` : '(none)'}
   ></script>
 </svelte:head>
 
