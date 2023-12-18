@@ -85,7 +85,7 @@
 
   let confirmingDelete = false;
 
-  $: pastDate = false;
+  let pastDate = false;
 
   let { id, event, title, author, body, visibility, links, group } = data.article;
 

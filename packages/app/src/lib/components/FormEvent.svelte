@@ -36,6 +36,7 @@
   let serverError = '';
   let loading = false;
   let confirmingDelete = false;
+  let EndsAtAfterStartsAt = true;
   let newBannedUser: (typeof event)['bannedUsers'][number] | undefined;
 
   $: canEditManagers =
@@ -513,6 +514,7 @@
       <InputLongText rich label="Description" bind:value={event.description} />
       <InputLinks label="Liens" bind:value={event.links} />
       <div class="side-by-side">
+        <!-- -->
         <DateInput required label="Début" time bind:value={event.startsAt} />
         <DateInput required label="Fin" time bind:value={event.endsAt} />
       </div>
@@ -809,7 +811,17 @@
           }}>Rendre privé</ButtonSecondary
         >
       {:else}
-        <ButtonPrimary submits {loading}>Enregistrer</ButtonPrimary>
+        <ButtonPrimary
+          on:click={() => {
+            if (event.startsAt !== undefined && event.endsAt !== undefined) 
+              EndsAtAfterStartsAt = event.startsAt.getTime() < event.endsAt.getTime();
+            
+          }}
+          {loading}
+          submits={EndsAtAfterStartsAt}
+        >
+          Enregistrer
+        </ButtonPrimary>
         {#if event.id}
           <ButtonSecondary
             danger
@@ -822,6 +834,13 @@
     </section>
   {/await}
 </form>
+<section class="errors">
+  {#if !EndsAtAfterStartsAt}
+    <Alert theme="danger">
+      Impossible de programmer l'évenement : La date de fin est avant celle du début
+    </Alert>
+  {/if}
+</section>
 
 <style lang="scss">
   form {
@@ -948,6 +967,12 @@
     align-items: center;
     justify-content: center;
     margin-top: 2rem;
+  }
+
+  .errors {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
   p.empty {
