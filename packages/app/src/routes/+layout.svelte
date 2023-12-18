@@ -22,7 +22,6 @@
   import '../design/app.scss';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import IconLoading from '~icons/mdi/loading';
   import IconClose from '~icons/mdi/close';
   import { browser } from '$app/environment';
   import { zeus } from '$lib/zeus';
@@ -35,7 +34,6 @@
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
   import { writable, type Writable } from 'svelte/store';
   import { syncToLocalStorage } from 'svelte-store2storage';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { debugging } from '$lib/debugging';
   import Snowflake from '~icons/mdi/snowflake';
 
@@ -61,7 +59,6 @@
   }
 
   export let data: PageData;
-  let showInitialSpinner = true;
   let scrollableArea: HTMLElement;
 
   /**
@@ -76,9 +73,6 @@
       window.location.reload();
     } else if ($me) {
       localStorage.removeItem('isReallyLoggedout');
-      showInitialSpinner = false;
-    } else {
-      showInitialSpinner = false;
     }
 
     debugging.subscribe(($debugging) => {
@@ -204,22 +198,6 @@
     data-domain="churros.inpt.fr"
   ></script>
 </svelte:head>
-
-<div id="loading-overlay" class:visible={showInitialSpinner}>
-  <img src="/splash-screen.png" alt="AEn7" />
-  <div class="spinner">
-    <IconLoading />
-  </div>
-  <p class="typo-details">Connexion en cours…</p>
-  <p class="troubleshoot">
-    Si ce message reste affiché longtemps: <ButtonSecondary
-      insideProse
-      on:click={() => {
-        window.location.reload();
-      }}>Recharger</ButtonSecondary
-    >
-  </p>
-</div>
 
 {#if browser}
   <section class="toasts">
@@ -406,60 +384,6 @@ The root layout is composed of several elements:
       max-width: 700px;
       padding: 0 2rem 0 0;
       transform: unset;
-    }
-  }
-
-  @keyframes spinner {
-    from {
-      transform: rotate(0);
-    }
-
-    to {
-      transform: rotate(1turn);
-    }
-  }
-
-  #loading-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1000000000000000;
-    display: flex;
-    flex-flow: column wrap;
-    gap: 1.5rem;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary-text);
-    background: var(--primary-bg);
-
-    .spinner {
-      font-size: 2rem;
-      animation: spinner 700ms infinite;
-    }
-
-    img {
-      object-fit: contain;
-      height: 10rem;
-    }
-
-    .troubleshoot {
-      position: absolute;
-      bottom: 4rem;
-
-      --bg: transparent;
-      --border: var(--primary-text);
-      --text: var(--primary-text);
-
-      text-align: center;
-    }
-  }
-
-  #loading-overlay:not(.visible) {
-    display: none;
-  }
-
-  @media not all and (display-mode: standalone) {
-    #loading-overlay {
-      display: none;
     }
   }
 
