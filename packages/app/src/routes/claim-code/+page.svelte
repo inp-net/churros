@@ -26,6 +26,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    align-items: center;
     max-width: 600px;
     margin: 0 auto;
   }
