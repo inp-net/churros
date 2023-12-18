@@ -218,7 +218,7 @@
     />
     <InputText label="Surnom" maxlength={255} bind:value={nickname} />
   </div>
-  <InputLongText rich label="Description" bind:value={description} />
+  <InputLongText rich label="Description" maxlength={255} bind:value={description} />
   {#if canEditContributions}
     <InputField label="Cotisant à">
       <InputSearchObjectList
