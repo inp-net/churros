@@ -52,9 +52,11 @@
       icon={IconHelp}>Aide sur markdown</ButtonInk
     >
   {/if}
-  <div class="count">
-    {valueLength} / {maxlength ?? '∞'}
-  </div>
+  {#if maxlength}
+    <div class="count">
+      {valueLength} / {maxlength}
+    </div>
+  {/if}
 </InputField>
 
 <style>
