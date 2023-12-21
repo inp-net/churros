@@ -85,13 +85,13 @@
 
   let confirmingDelete = false;
 
-  let pastDate = false;
-
   let { id, event, title, author, body, visibility, links, group } = data.article;
 
   let publishLater: Date | undefined = isFuture(data.article.publishedAt)
     ? data.article.publishedAt
     : undefined;
+
+  $: pastDate = publishLater === undefined ? false : isPast(publishLater);
 
   let loading = false;
   const updateArticle = async () => {
@@ -239,16 +239,7 @@
   {/if}
   <section class="submit">
     {#if id === ''}
-      <!--Etienne a cook cette immondice tkt, moi c'était pire....MAIS LES 2 MARCHENT-->
-      <ButtonPrimary
-        on:click={() => {
-          if (publishLater !== undefined) pastDate = isPast(publishLater);
-        }}
-        {loading}
-        submits={!pastDate}
-      >
-        Publier
-      </ButtonPrimary>
+      <ButtonPrimary {loading} submits disabled={pastDate}>Publier</ButtonPrimary>
     {:else if confirmingDelete}
       <h2>Es-tu sûr·e ?</h2>
       <ButtonSecondary
@@ -300,15 +291,7 @@
         }}>Rendre privé</ButtonSecondary
       >
     {:else}
-      <ButtonPrimary
-        on:click={() => {
-          if (publishLater !== undefined) pastDate = isPast(publishLater);
-        }}
-        {loading}
-        submits={!pastDate}
-      >
-        Enregistrer
-      </ButtonPrimary>
+      <ButtonPrimary {loading} submits disabled={pastDate}>Enregistrer</ButtonPrimary>
       {#if data.article.id}
         <ButtonSecondary
           danger

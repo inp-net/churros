@@ -31,13 +31,17 @@
   import InputGroups from './InputGroups.svelte';
   import InputLydiaAccounts from './InputLydiaAccounts.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
+  import { isPast } from 'date-fns';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
   let loading = false;
   let confirmingDelete = false;
-  let EndsAtAfterStartsAt = true;
   let newBannedUser: (typeof event)['bannedUsers'][number] | undefined;
+
+  $:endsAtAfterStartsAt = (event.startsAt===undefined || event.endsAt===undefined) ? true : (event.startsAt.getTime() < event.endsAt.getTime());
+  $:pastDateStart = event.startsAt===undefined ? false : (isPast(event.startsAt));
+  $:isNotValidDate = !endsAtAfterStartsAt || pastDateStart;
 
   $: canEditManagers =
     !event.uid ||
@@ -475,7 +479,7 @@
 
 <form class="event" on:submit|preventDefault={async () => saveChanges()}>
   {#await groupInputsOptions()}
-    <section class="loading">
+    <section class:loading>
       <LoadingSpinner></LoadingSpinner>
       Chargement des groupes…
     </section>
@@ -811,15 +815,7 @@
           }}>Rendre privé</ButtonSecondary
         >
       {:else}
-        <ButtonPrimary
-          on:click={() => {
-            if (event.startsAt !== undefined && event.endsAt !== undefined) 
-              EndsAtAfterStartsAt = event.startsAt.getTime() < event.endsAt.getTime();
-            
-          }}
-          {loading}
-          submits={EndsAtAfterStartsAt}
-        >
+        <ButtonPrimary submits disabled={isNotValidDate}>
           Enregistrer
         </ButtonPrimary>
         {#if event.id}
@@ -835,10 +831,16 @@
   {/await}
 </form>
 <section class="errors">
-  {#if !EndsAtAfterStartsAt}
+  {#if !endsAtAfterStartsAt}
     <Alert theme="danger">
-      Impossible de programmer l'évenement : La date de fin est avant celle du début
+      Impossible de programmer l'évenement : La date de fin est avant celle du début.
     </Alert>
+  {/if}
+  {#if pastDateStart}
+    <Alert theme="danger">
+      Impossible de programmer l'événement : La date indiquée est déjà passé.
+    </Alert>
+
   {/if}
 </section>
 
@@ -971,8 +973,8 @@
 
   .errors {
     display: flex;
-    justify-content: center;
     flex-wrap: wrap;
+    justify-content: center;
   }
 
   p.empty {
