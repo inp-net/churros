@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "fr.inpt.churros.twa",
+      "sha256_cert_fingerprints": [
+        "B7:E5:53:D5:43:6D:B9:CC:75:C6:E7:6F:B0:8E:80:5F:B6:1C:CD:A2:58:A9:1A:21:A8:08:2B:36:F0:4E:EB:F3"
+      ]
+    }
+  }
+]

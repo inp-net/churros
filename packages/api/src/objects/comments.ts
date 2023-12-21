@@ -115,8 +115,8 @@ builder.mutationField('upsertComment', (t) =>
       const commentedOn: { title: string; author: User | null } | undefined = comment.document
         ? { title: comment.document.title, author: comment.document.uploader }
         : comment.article
-        ? { title: comment.article.title, author: comment.article.author }
-        : undefined;
+          ? { title: comment.article.title, author: comment.article.author }
+          : undefined;
 
       // TODO factor out code to get URL to the comment (or use /[globalId])
       const documentMajor =

@@ -2,14 +2,15 @@
   import Badge from '$lib/components/Badge.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import CardComment from '$lib/components/CardComment.svelte';
   import { ISSUE_STATE_DISPLAY } from '$lib/display';
   import { IssueState } from '$lib/zeus';
-  import type { PageData } from './$types';
   import IconOpenExternal from '~icons/mdi/open-in-new';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 
-  const { title, bodyHtml, importance, url, difficulty, number, state } = data.issue;
+  const { title, bodyHtml, importance, url, difficulty, number, state, comments } = data.issue;
 </script>
 
 <div class="content">
@@ -44,10 +45,29 @@
     {@html bodyHtml}
   </section>
 
+  <section class="comments">
+    <h2>Commentaires</h2>
+    <ul>
+      {#each comments as comment}
+        <CardComment
+          readonly
+          id=""
+          bodyHtml={comment.bodyHtml}
+          body={comment.body}
+          author={{
+            uid: '',
+            externalHref: comment.authorGitlabUrl,
+            fullName: comment.authorName,
+            pictureFile: comment.authorAvatarUrl,
+          }}
+          createdAt={new Date(comment.addedAt)}
+        ></CardComment>
+      {/each}
+    </ul>
+  </section>
+
   <section class="actions">
-    <ButtonSecondary href={url} icon={IconOpenExternal}
-      >Commentaires & plus d'infos sur Gitlab</ButtonSecondary
-    >
+    <ButtonSecondary href={url} icon={IconOpenExternal}>Plus d'infos sur Gitlab</ButtonSecondary>
   </section>
 </div>
 
@@ -81,6 +101,16 @@
   .body > :global(hr:last-of-type + *),
   .body > :global(hr:last-of-type) {
     display: none;
+  }
+
+  .comments h2 {
+    margin-bottom: 1rem;
+  }
+
+  .comments ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .actions {

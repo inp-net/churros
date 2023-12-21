@@ -18,6 +18,7 @@
   import { browser } from '$app/environment';
   import { tooltip } from '$lib/tooltip';
   import ModalReportIssue from './ModalReportIssue.svelte';
+  import { theme } from '$lib/theme';
 
   export let scrolled = false;
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
@@ -50,7 +51,7 @@
 
 <ModalReportIssue bind:element={reportIssueDialogElement} />
 
-<nav id="navigation-top" class:scrolled class:transparent={scanningTickets}>
+<nav id="navigation-top" class:scrolled class:transparent={scanningTickets} class={$theme}>
   {#if scanningTickets}
     <div class="current-event">
       <ButtonBack />
@@ -117,8 +118,11 @@
         </ButtonGhost>
       {:else}
         <ButtonSecondary href="/register/">Inscription</ButtonSecondary>
-        <ButtonSecondary href="/login/?{new URLSearchParams({ to: $page.url.pathname }).toString()}"
-          >Connexion</ButtonSecondary
+        <ButtonSecondary
+          href="/login/?{new URLSearchParams({
+            to: $page.url.pathname,
+            ...Object.fromEntries($page.url.searchParams.entries()),
+          }).toString()}">Connexion</ButtonSecondary
         >
       {/if}
     {/if}
@@ -137,6 +141,13 @@
     margin: 0;
     background-color: var(--bg);
     transition: box-shadow 0.25s ease;
+  }
+
+  nav.noel {
+    background-color: transparent;
+    background-image: url('/noel-topbar.png');
+    background-repeat: repeat;
+    background-size: contain;
   }
 
   nav.scrolled {

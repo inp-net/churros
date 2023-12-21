@@ -80,7 +80,8 @@ model User {
   reactions                 Reaction[]
 
   // For full-text search
-  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  search            Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  claimedPromotions PromotionCode[]
 
   @@unique([schoolServer, schoolUid])
   @@index([search], type: Gin)
@@ -544,8 +545,9 @@ model Ticket {
 
   onlyManagersCanProvide Boolean @default(false)
 
-  event Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  group TicketGroup? @relation(fields: [ticketGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  event               Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  group               TicketGroup? @relation(fields: [ticketGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  subjectToPromotions Promotion[]
 
   @@unique([eventId, ticketGroupId, uid])
 }
@@ -845,4 +847,33 @@ model Reaction {
   @@unique([emoji, authorId, articleId])
   @@unique([emoji, authorId, eventId])
   @@unique([emoji, authorId, commentId])
+}
+
+enum PromotionType {
+  SIMPPS
+  // More to come...
+}
+
+model PromotionCode {
+  id          String    @id @default(dbgenerated("nanoid('promocode:')"))
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  claimedAt   DateTime?
+  code        String    @unique
+  claimedBy   User?     @relation(fields: [claimedById], references: [id])
+  claimedById String?
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+  promotionId String
+}
+
+model Promotion {
+  id         String          @id @default(dbgenerated("nanoid('promo:')"))
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  validUntil DateTime?
+  type       PromotionType
+  codes      PromotionCode[]
+  validOn    Ticket[]
+
+  priceOverride Int
 }

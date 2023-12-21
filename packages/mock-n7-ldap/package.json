@@ -1,13 +1,13 @@
 {
   "name": "@centraverse/mock-n7-ldap",
   "dependencies": {
-    "@faker-js/faker": "^8.2.0",
-    "ldapjs": "^3.0.5"
+    "@faker-js/faker": "^8.3.1",
+    "ldapjs": "^3.0.7"
   },
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
-    "@types/ldapjs": "^3.0.3",
-    "tsx": "^3.14.0"
+    "@types/ldapjs": "^3.0.5",
+    "tsx": "^4.6.2"
   },
   "scripts": {
     "build": "tsc",

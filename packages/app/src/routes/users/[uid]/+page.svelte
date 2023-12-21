@@ -91,12 +91,12 @@
   $: roleBadge = user.groups.some(({ president }) => president)
     ? '👑'
     : user.groups.some(({ treasurer }) => treasurer)
-    ? '💰'
-    : user.groups.some(({ vicePresident }) => vicePresident)
-    ? '🌟'
-    : user.groups.some(({ secretary }) => secretary)
-    ? '📜'
-    : '';
+      ? '💰'
+      : user.groups.some(({ vicePresident }) => vicePresident)
+        ? '🌟'
+        : user.groups.some(({ secretary }) => secretary)
+          ? '📜'
+          : '';
 
   const formatPhoneNumber = (phone: string) =>
     phone.replace(/^\+33(\d)(\d\d)(\d\d)(\d\d)(\d\d)$/, '0$1 $2 $3 $4 $5');

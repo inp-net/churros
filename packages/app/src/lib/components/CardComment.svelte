@@ -19,14 +19,17 @@
   const dispatch = createEventDispatcher();
 
   let editing = false;
+  export let readonly = false;
   export let creating = false;
-  export let canReply = true;
+  export let canReply = !readonly;
   export let id: string;
   export let bodyHtml: string;
-  export let author: null | undefined | { uid: string; fullName: string; pictureFile: string } =
-    undefined;
+  export let author:
+    | null
+    | undefined
+    | { uid: string; fullName: string; pictureFile: string; externalHref?: string } = undefined;
   export let createdAt: Date;
-  export let updatedAt: Date | undefined | null;
+  export let updatedAt: Date | undefined | null = undefined;
   export let body: string;
   export let replyingTo = { body: '', inReplyToId: '' };
   export let replies: Array<{
@@ -43,7 +46,7 @@
 <article class="comment" class:creating>
   <div class="metadata">
     {#if author}
-      <AvatarPerson small href="/users/{author.uid}" {...author} />
+      <AvatarPerson small href={author.externalHref ?? `/users/${author.uid}`} {...author} />
     {:else}
       <AvatarPerson small pictureFile="" href="" fullName="???" />
     {/if}
@@ -81,7 +84,7 @@
         </div>
       {/if}
     </div>
-    {#if $me?.admin || author?.uid === $me?.uid}
+    {#if !readonly && ($me?.admin || author?.uid === $me?.uid)}
       <div class="actions">
         {#if creating}
           <ButtonGhost

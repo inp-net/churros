@@ -54,3 +54,12 @@ declare namespace svelteHTML {
     'on:pressmove'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
   }
 }
+
+declare module 'arborist' {
+  function createForest<
+    T extends { [P in V]: U } & { [P in W]?: U | undefined | null },
+    U extends PropertyKey = PropertyKey,
+    V extends PropertyKey = 'id',
+    W extends PropertyKey = 'parentId',
+  >(list: T[], keys: { idKey?: V; parentIdKey?: W }): Array<Tree<T>>;
+}

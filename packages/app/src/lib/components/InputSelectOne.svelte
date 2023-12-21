@@ -33,8 +33,8 @@
   $: optionsWithDisplay = Array.isArray(options)
     ? options.map((option) => (Array.isArray(option) ? option : [option, option]))
     : options instanceof Map
-    ? [...options.entries()]
-    : Object.entries(options);
+      ? [...options.entries()]
+      : Object.entries(options);
 
   let fieldsetElement: HTMLFieldSetElement;
 
@@ -64,6 +64,7 @@
     overflow: hidden;
     font-size: 1rem;
     font-weight: normal;
+    border-color: var(--border);
     border-radius: var(--radius-block);
 
     /* using a border creates a weird gap with the overflow-hidden rectangle of selected item if it hits the corner. for some reason the outline is thicker than the border at the same width, so we multiply by 2/3 to roughly get the same appearance */

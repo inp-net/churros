@@ -28,6 +28,7 @@
   import InputText from '$lib/components/InputText.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import FormNotificationSettings from '$lib/components/FormNotificationSettings.svelte';
+  import { browser } from '$app/environment';
 
   let godparentRequestSendServerError = '';
   let godparentRequestSending = false;
@@ -245,8 +246,12 @@
             dark: 'Sombre',
             light: 'Clair',
             hacker: 'h4ck3r',
+            noel: 'Noël',
           }}
           bind:value={$theme}
+          on:input={() => {
+            if (browser) window.localStorage.setItem('user_does_not_like_noel_theme', '');
+          }}
         />
       {/if}
       <h2>Parrainages</h2>
@@ -451,10 +456,10 @@
   }
 
   .content section.details {
-    max-width: 700px;
-    flex-direction: column;
     display: flex;
+    flex-direction: column;
     gap: 1rem;
+    max-width: 700px;
   }
 
   .content section h2 {

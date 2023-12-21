@@ -464,7 +464,7 @@ async function createLdapUser(
     ],
     uidNumber,
     gidNumber: 1000,
-    birthdate: user.birthday?.toISOString().split('T')[0] ?? '',
+    birthdate: user.birthday?.toISOString().split('T')[0] ?? '0001-01-01',
     cn: `${user.firstName} ${user.lastName}`,
     displayName: `${user.firstName} ${user.lastName}`,
     ecole: `o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`,

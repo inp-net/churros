@@ -1347,10 +1347,10 @@ function transform(val: any, typ: any, getProps: any, key: any = '', parent: any
     return typ.hasOwnProperty('unionMembers')
       ? transformUnion(typ.unionMembers, val)
       : typ.hasOwnProperty('arrayItems')
-      ? transformArray(typ.arrayItems, val)
-      : typ.hasOwnProperty('props')
-      ? transformObject(getProps(typ), typ.additional, val)
-      : invalidValue(typ, val, key, parent);
+        ? transformArray(typ.arrayItems, val)
+        : typ.hasOwnProperty('props')
+          ? transformObject(getProps(typ), typ.additional, val)
+          : invalidValue(typ, val, key, parent);
   }
   // Numbers can be parsed by Date but shouldn't be.
   if (typ === Date && typeof val !== 'number') return transformDate(val);

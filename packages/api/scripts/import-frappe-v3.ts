@@ -390,8 +390,8 @@ for (const [subjectId, oldSubjectIds] of OLD_FRAPPE_MAPPING.entries()) {
             subject.forApprentices === undefined
               ? 'fisea'
               : subject.forApprentices
-              ? 'fisa'
-              : 'fise'
+                ? 'fisa'
+                : 'fise'
           }/${subject.yearTier ?? 'anyone'}/${subject.uid}/${slug(oldDocument.nom)}/${
             parseFloat(ordre) + 1
           }-${basename}${extension}`;

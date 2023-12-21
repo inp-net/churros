@@ -1,6 +1,7 @@
 <script lang="ts">
   import IconIssue from '~icons/mdi/chat-alert-outline';
   import IconMore from '~icons/mdi/dots-horizontal-circle-outline';
+  import IconComments from '~icons/mdi/comment-multiple-outline';
   import Badge from '$lib/components/Badge.svelte';
   import { IssueState } from '../../zeus';
   import type { PageData } from './$types';
@@ -15,7 +16,7 @@
   <h1><ButtonBack></ButtonBack> Tes rapports</h1>
 
   <ul class="nobullet reports">
-    {#each data.issuesByUser as { number, title, state, duplicatedFrom } (duplicatedFrom ?? number)}
+    {#each data.issuesByUser as { number, title, state, duplicatedFrom, comments } (duplicatedFrom ?? number)}
       <li>
         <a href="./{number}">
           <span class="number">#{duplicatedFrom ?? number}</span>
@@ -25,9 +26,16 @@
             {/if}
             {title}
           </span>
-          {#if state === IssueState.Closed}
-            <Badge theme="success">Réglé</Badge>
-          {/if}
+          <div class="badges">
+            {#if comments.length}
+              <Badge title="{comments.length} commentaire{comments.length > 1 ? 's' : ''}"
+                ><IconComments></IconComments> {comments.length}</Badge
+              >
+            {/if}
+            {#if state === IssueState.Closed}
+              <Badge theme="success">Réglé</Badge>
+            {/if}
+          </div>
         </a>
       </li>
     {:else}
@@ -92,6 +100,12 @@
 
   .reports .number {
     font-family: var(--font-mono);
+  }
+
+  .reports .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
   h2 {

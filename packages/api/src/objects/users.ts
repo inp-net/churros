@@ -375,7 +375,7 @@ builder.mutationField('updateUser', (t) =>
       address: t.arg.string({ validate: { maxLength: 255 } }),
       phone: t.arg.string({ validate: { maxLength: 255 } }),
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
-      description: t.arg.string({ validate: { maxLength: 255 } }),
+      description: t.arg.string({ validate: { maxLength: 10_000 } }),
       links: t.arg({ type: [LinkInput] }),
       cededImageRightsToTVn7: t.arg.boolean(),
       apprentice: t.arg.boolean(),
@@ -528,8 +528,8 @@ builder.mutationField('updateUser', (t) =>
             godparentUid === ''
               ? { disconnect: true }
               : godparentUid
-              ? { connect: { uid: godparentUid } }
-              : {},
+                ? { connect: { uid: godparentUid } }
+                : {},
         },
       });
 

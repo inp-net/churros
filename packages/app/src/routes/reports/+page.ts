@@ -16,6 +16,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
         difficulty: true,
         url: true,
         duplicatedFrom: true,
+        comments: { addedAt: true },
       },
     },
     { fetch, parent },
