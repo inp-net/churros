@@ -377,6 +377,7 @@
 <style>
   .actions {
     display: flex;
+    gap: 0.5rem;
     align-items: center;
     justify-content: center;
     margin: 2rem 0 1rem;
