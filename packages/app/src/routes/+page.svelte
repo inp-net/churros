@@ -144,13 +144,14 @@
 
 <style>
   h1 {
+    margin-bottom: 1rem;
     text-align: center;
   }
 
   section.groups {
     display: flex;
     justify-content: center;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
   }
 
   section.articles {
