@@ -35,11 +35,18 @@
         dashedBorder
       />
     </li>
-    {#if $me?.admin}
-      <CardService
-        service={{ name: 'Backrooms', logo: 'terminal', logoSourceType: 'Icon', url: '/backrooms' }}
-      />
-    {/if}
+    <li class="backrooms">
+      {#if $me?.admin}
+        <CardService
+          service={{
+            name: 'Backrooms',
+            logo: 'terminal',
+            logoSourceType: 'Icon',
+            url: '/backrooms',
+          }}
+        />
+      {/if}
+    </li>
   </ul>
 
   <footer>
@@ -90,6 +97,13 @@
     flex-wrap: wrap;
     gap: 1rem;
     justify-content: center;
+  }
+
+  .backrooms {
+    display: flex;
+    flex-basis: 100%;
+    justify-content: center;
+    margin-top: 2rem;
   }
 
   footer {
