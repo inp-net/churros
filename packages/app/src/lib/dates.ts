@@ -1,6 +1,6 @@
+import { EventFrequency } from '$lib/zeus';
 import { format, isMonday, previousMonday } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
-import { EventFrequency } from '$lib/zeus';
 
 export const dateTimeFormatter = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'full',

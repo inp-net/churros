@@ -3954,6 +3954,7 @@ __metadata:
     postcss-html: "npm:^1.5.0"
     prettier: "npm:^3.1.1"
     prettier-plugin-jsdoc: "npm:^1.1.1"
+    prettier-plugin-organize-imports: "npm:^3.2.4"
     prettier-plugin-svelte: "npm:^3.1.2"
     simple-svelte-autocomplete: "npm:^2.5.2"
     stylelint: "npm:^16.0.2"
@@ -9832,6 +9833,23 @@ __metadata:
   peerDependencies:
     prettier: ^3.0.0
   checksum: 7b35bb5984a50bffdb0cd2b004844db756769b54b9c91c5ecdc66f02ab89bc2f1940643ca8e9f9859b69db0c30bd695f25b183c3a1eb4471589ea523b21c7519
+  languageName: node
+  linkType: hard
+
+"prettier-plugin-organize-imports@npm:^3.2.4":
+  version: 3.2.4
+  resolution: "prettier-plugin-organize-imports@npm:3.2.4"
+  peerDependencies:
+    "@volar/vue-language-plugin-pug": ^1.0.4
+    "@volar/vue-typescript": ^1.0.4
+    prettier: ">=2.0"
+    typescript: ">=2.9"
+  peerDependenciesMeta:
+    "@volar/vue-language-plugin-pug":
+      optional: true
+    "@volar/vue-typescript":
+      optional: true
+  checksum: c20afa9b379106839a273d53c83fef70920e8ae86939d4890a06c63da19440de411568793e716bafcdd96e5ba8e34233f2944ea53ecd6ac18ba1ec0fa05bb58b
   languageName: node
   linkType: hard
 

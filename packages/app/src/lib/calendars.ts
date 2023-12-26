@@ -1,6 +1,6 @@
 import { google, ics, type CalendarEvent } from 'calendar-link';
-import { EventFrequency } from '../zeus';
 import { formatISO } from 'date-fns';
+import { EventFrequency } from '../zeus';
 
 export function calendarLinks(event: {
   title: string;

@@ -57,7 +57,7 @@
           subjectYearTier: data.subject.yearTier,
         },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': { message: true },
           '...on MutationUpsertDocumentSuccess': {
             data: {

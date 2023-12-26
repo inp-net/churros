@@ -44,22 +44,22 @@ for (const subject of eeeaSubjects) {
     "Lien sur l'ancienne frappe": frappeCode
       ? `https://bde.enseeiht.fr/frappe/matiere/${frappeCode}`
       : '',
-    Année: subject.yearTier?.toString() ?? subject.minors[0]?.yearTier?.toString() ?? 'Inconnue',
-    Nom: subject.name,
-    Parcours: subject.minors.map((minor) => minor.name).join(', '),
+    'Année': subject.yearTier?.toString() ?? subject.minors[0]?.yearTier?.toString() ?? 'Inconnue',
+    'Nom': subject.name,
+    'Parcours': subject.minors.map((minor) => minor.name).join(', '),
     'Code Moodle de la nouvelle matière': '',
   });
 }
 
 const newSubjectsNested = JSON.parse(await readFile('new-subjects.json', 'utf-8'));
 let newSubjects: Array<{
-  Année: string;
-  Formation: '' | 'FISA' | 'FISE';
-  Parcours: string;
+  'Année': string;
+  'Formation': '' | 'FISA' | 'FISE';
+  'Parcours': string;
   'Code Moodle': string;
-  Nom: string;
+  'Nom': string;
   "Lien(s) sur l'ancienne frappe (commencent par bde.enseeiht.fr/services/frappe/matiere/)": string;
-  Commentaires: string;
+  'Commentaires': string;
 }> = [];
 
 // Orignal json is nested like this:
@@ -70,14 +70,14 @@ for (const year of Object.keys(newSubjectsNested['3EA'])) {
       for (const codeMoodle of Object.keys(newSubjectsNested['3EA'][year][formation][parcours])) {
         if (codeMoodle.length === 6 && codeMoodle.startsWith('N')) continue;
         newSubjects.push({
-          Année: year,
-          Formation: formation === '(*)' ? '' : (formation as 'FISA' | 'FISE'),
-          Parcours: parcours === '(*)' ? '' : parcours,
+          'Année': year,
+          'Formation': formation === '(*)' ? '' : (formation as 'FISA' | 'FISE'),
+          'Parcours': parcours === '(*)' ? '' : parcours,
           'Code Moodle': codeMoodle.startsWith('N') ? codeMoodle : '',
-          Nom: newSubjectsNested['3EA'][year][formation][parcours][codeMoodle],
+          'Nom': newSubjectsNested['3EA'][year][formation][parcours][codeMoodle],
           "Lien(s) sur l'ancienne frappe (commencent par bde.enseeiht.fr/services/frappe/matiere/)":
             '',
-          Commentaires: '',
+          'Commentaires': '',
         });
       }
     }

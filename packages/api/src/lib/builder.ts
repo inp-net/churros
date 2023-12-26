@@ -1,3 +1,4 @@
+import { prisma } from '#lib';
 import SchemaBuilder, { type BuiltinScalarRef } from '@pothos/core';
 import ComplexityPlugin from '@pothos/plugin-complexity';
 import DataloaderPlugin from '@pothos/plugin-dataloader';
@@ -9,10 +10,9 @@ import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
 import TracingPlugin, { isRootField, wrapResolver } from '@pothos/plugin-tracing';
 import ValidationPlugin from '@pothos/plugin-validation';
+import { GraphQLError, Kind } from 'graphql';
 import { authScopes, type AuthContexts, type AuthScopes } from './auth.js';
 import type { Context } from './context.js';
-import { prisma } from '#lib';
-import { GraphQLError, Kind } from 'graphql';
 
 /**
  * Maps database ID prefixes to GraphQL type names. Please add new types here as they are added to

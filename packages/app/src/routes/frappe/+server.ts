@@ -1,8 +1,8 @@
+import { yearTier } from '$lib/dates';
+import { redirectToLogin } from '$lib/session';
+import { makeMutation } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { redirectToLogin } from '$lib/session';
-import { yearTier } from '$lib/dates';
-import { makeMutation } from '$lib/zeus';
 
 export const GET: RequestHandler = ({ locals, url, fetch }) => {
   const { me, token } = locals;

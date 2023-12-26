@@ -64,7 +64,7 @@
         completeRegistration: [
           args,
           {
-            __typename: true,
+            '__typename': true,
             '...on MutationCompleteRegistrationSuccess': { data: true },
             '...on Error': { message: true },
             '...on ZodError': { message: true, fieldErrors: { path: true, message: true } },
@@ -89,7 +89,7 @@
           login: [
             { email: data.userCandidate.email, password },
             {
-              __typename: true,
+              '__typename': true,
               '...on Error': { message: true },
               '...on MutationLoginSuccess': {
                 data: { token: true, expiresAt: true, user: sessionUserQuery() },

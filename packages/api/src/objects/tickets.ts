@@ -1,14 +1,13 @@
-import { builder } from '../builder.js';
-import { prisma } from '#lib';
-import { toHtml } from '../services/markdown.js';
-import { PaymentMethodEnum } from './registrations.js';
-import { eventAccessibleByUser, eventManagedByUser } from './events.js';
-import { DateTimeScalar } from './scalars.js';
-import { LinkInput } from './links.js';
-import slug from 'slug';
-import dichotomid from 'dichotomid';
+import { builder, prisma } from '#lib';
 import { PaymentMethod } from '@prisma/client';
+import dichotomid from 'dichotomid';
+import slug from 'slug';
+import { toHtml } from '../services/markdown.js';
+import { eventAccessibleByUser, eventManagedByUser } from './events.js';
+import { LinkInput } from './links.js';
 import { actualPrice } from './promotions.js';
+import { PaymentMethodEnum } from './registrations.js';
+import { DateTimeScalar } from './scalars.js';
 
 export const placesLeft = (ticket: {
   name: string;

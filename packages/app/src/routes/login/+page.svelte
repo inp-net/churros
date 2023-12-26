@@ -39,7 +39,7 @@
         login: [
           { email, password },
           {
-            __typename: true,
+            '__typename': true,
             '...on Error': { message: true },
             '...on MutationLoginSuccess': {
               data: { token: true, expiresAt: true, user: sessionUserQuery() },

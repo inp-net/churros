@@ -86,7 +86,7 @@
             uid,
           },
           {
-            __typename: true,
+            '__typename': true,
             '...on Error': { message: true },
             '...on MutationAddGroupMemberSuccess': { data: { __typename: true } },
           },

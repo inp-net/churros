@@ -41,7 +41,7 @@
       cancelRegistration: [
         { id },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': { message: true },
           '...on MutationCancelRegistrationSuccess': {
             data: true,
@@ -60,7 +60,7 @@
       paidRegistration: [
         { regId: id, phone, beneficiary, paymentMethod },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': { message: true },
           '...on MutationPaidRegistrationSuccess': {
             __typename: true,

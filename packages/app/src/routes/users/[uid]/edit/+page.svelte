@@ -63,7 +63,7 @@
       upsertGodparentRequest: [
         { godparentUid, godchildUid: data.user.uid },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': { message: true },
           '...on MutationUpsertGodparentRequestSuccess': {
             data: {
@@ -110,7 +110,7 @@
           contributesWith: undefined,
         },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': { message: true },
           '...on MutationUpdateUserSuccess': {
             data: {

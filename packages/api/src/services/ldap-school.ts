@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
-import ldap from 'ldapjs';
-import '../context.js';
-import { nanoid } from 'nanoid';
-import { fromYearTier } from '../date.js';
-import { builder } from '../builder.js';
+import { builder } from '#lib';
 import bunyan from 'bunyan';
+import ldap from 'ldapjs';
+import { nanoid } from 'nanoid';
+import '../context.js';
+import { fromYearTier } from '../date.js';
 
 const logger = bunyan.createLogger({ name: 'CRI INP ldap', level: 'debug' });
 

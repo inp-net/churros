@@ -1,4 +1,4 @@
-import { builder } from '../builder.js';
+import { builder } from '#lib';
 
 export const TeachingUnitType = builder.prismaObject('TeachingUnit', {
   fields: (t) => ({

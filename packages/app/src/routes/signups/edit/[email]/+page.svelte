@@ -94,7 +94,7 @@
         updateUserCandidate: [
           { register, ...args },
           {
-            __typename: true,
+            '__typename': true,
             '...on MutationUpdateUserCandidateSuccess': { data: true },
             '...on Error': { message: true },
             '...on ZodError': { message: true, fieldErrors: { path: true, message: true } },

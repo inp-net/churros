@@ -1,10 +1,9 @@
-import slug from 'slug';
-import { builder } from '../builder.js';
-import { prisma } from '#lib';
-import { toHtml } from '../services/markdown.js';
-import { DateTimeScalar } from './scalars.js';
-import { userIsInBureauOf } from './groups.js';
+import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
+import slug from 'slug';
+import { toHtml } from '../services/markdown.js';
+import { userIsInBureauOf } from './groups.js';
+import { DateTimeScalar } from './scalars.js';
 
 export const BarWeekType = builder.prismaNode('BarWeek', {
   id: { field: 'id' },

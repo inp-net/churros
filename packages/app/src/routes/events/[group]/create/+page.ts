@@ -1,8 +1,8 @@
-import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import { isOnClubBoard } from '$lib/permissions';
 import { redirectToLogin } from '$lib/session';
 import { Selector, loadQuery } from '$lib/zeus';
-import { isOnClubBoard } from '$lib/permissions';
+import { redirect } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent, url, params }) => {
   const { me } = await parent();

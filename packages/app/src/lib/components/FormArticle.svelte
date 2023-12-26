@@ -110,7 +110,7 @@
             visibility,
           },
           {
-            __typename: true,
+            '__typename': true,
             '...on Error': { message: true },
             '...on MutationUpsertArticleSuccess': {
               data: _articleQuery,

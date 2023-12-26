@@ -1,7 +1,7 @@
-import type { PageLoad } from './$types';
-import { makeMutation } from '$lib/zeus';
 import { redirectToLogin } from '$lib/session';
 import { toasts } from '$lib/toasts';
+import { makeMutation } from '$lib/zeus';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent, params, url }) => {
   const { validateEmail } = await makeMutation(
@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
       validateEmail: [
         params,
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': { message: true },
           '...on MutationValidateEmailSuccess': {
             data: true,

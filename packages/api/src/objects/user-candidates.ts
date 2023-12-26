@@ -1,15 +1,14 @@
+import { builder, prisma } from '#lib';
+import { NotificationChannel, type Major, type UserCandidate } from '@prisma/client';
 import { hash } from 'argon2';
+import { createTransport } from 'nodemailer';
 import { ZodError } from 'zod';
-import { builder } from '../builder.js';
-import { prisma } from '#lib';
+import { yearTier } from '../date.js';
+import { createLdapUser } from '../services/ldap.js';
+import { notify } from '../services/notifications.js';
 import { completeRegistration, register, saveUser } from '../services/registration.js';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
-import { createLdapUser } from '../services/ldap.js';
-import { createTransport } from 'nodemailer';
-import { yearTier } from '../date.js';
-import { notify } from '../services/notifications.js';
-import { type Major, NotificationChannel, type UserCandidate } from '@prisma/client';
 
 const mailer = createTransport(process.env.SMTP_URL);
 

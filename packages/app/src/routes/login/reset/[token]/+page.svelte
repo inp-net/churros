@@ -19,7 +19,7 @@
           token: $page.params.token,
         },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': {
             message: true,
           },

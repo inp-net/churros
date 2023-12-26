@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import type { Group, Major, School, User, StudentAssociation, GroupMember } from '@prisma/client';
+import type { Group, GroupMember, Major, School, StudentAssociation, User } from '@prisma/client';
 import ldap from 'ldapjs';
 import crypto from 'node:crypto';
 import { log } from '../objects/logs.js';
@@ -643,4 +643,4 @@ async function createLdapClub(
   });
 }
 
-export { queryLdapUser, createLdapUser, resetLdapUserPassword, createLdapGroup, createLdapClub };
+export { createLdapClub, createLdapGroup, createLdapUser, queryLdapUser, resetLdapUserPassword };

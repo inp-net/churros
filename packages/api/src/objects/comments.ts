@@ -1,11 +1,10 @@
+import { TYPENAMES_TO_ID_PREFIXES, builder, prisma } from '#lib';
 import { NotificationChannel, type User } from '@prisma/client';
-import { TYPENAMES_TO_ID_PREFIXES, builder } from '../builder.js';
-import { prisma } from '#lib';
+import { yearTier } from '../date.js';
 import { toHtml } from '../services/markdown.js';
 import { notify } from '../services/notifications.js';
 import { log } from './logs.js';
 import { DateTimeScalar } from './scalars.js';
-import { yearTier } from '../date.js';
 
 export const CommentType = builder.prismaNode('Comment', {
   id: { field: 'id' },

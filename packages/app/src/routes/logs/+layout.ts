@@ -1,6 +1,6 @@
+import { redirectToLogin } from '$lib/session';
 import { redirect } from '@sveltejs/kit';
 import type { LayoutLoad } from './$types';
-import { redirectToLogin } from '$lib/session';
 
 export const load: LayoutLoad = async ({ parent }) => {
   const data = await parent();

@@ -75,7 +75,7 @@
             studentAssociationUid: studentAssociation?.uid,
           },
           {
-            __typename: true,
+            '__typename': true,
             '...on Error': { message: true },
             '...on MutationUpsertGroupSuccess': { data: clubQuery },
           },

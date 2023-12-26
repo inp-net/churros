@@ -36,6 +36,7 @@ module.exports = {
       },
     ],
     'capitalized-comments': 'off',
+    'curly': ['error', 'multi-or-nest', 'consistent'],
     'new-cap': 'off',
     'no-await-in-loop': 'off',
     'no-empty-pattern': 'off',
@@ -47,7 +48,6 @@ module.exports = {
     'unicorn/no-document-cookie': 'off',
     'unicorn/prefer-top-level-await': 'off',
     'unicorn/prevent-abbreviations': 'off',
-    curly: ['error', 'multi-or-nest', 'consistent'],
   },
   overrides: [
     {

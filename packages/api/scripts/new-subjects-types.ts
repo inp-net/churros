@@ -9,8 +9,8 @@
 
 export type NewSubjectsTypes = {
   '3EA': The3Ea;
-  SN: Sn;
-  MF2E: Mf2E;
+  'SN': Sn;
+  'MF2E': Mf2E;
 };
 
 export type The3Ea = {
@@ -129,8 +129,8 @@ export type The3Ea2A = {
 
 export type FluffyFISA = {
   '(*)': Fluffy;
-  EN: En;
-  GEA: Gea;
+  'EN': En;
+  'GEA': Gea;
 };
 
 export type Fluffy = {
@@ -195,15 +195,15 @@ export type Gea = {
 };
 
 export type FluffyFISE = {
-  Énergie: Énergie;
-  Électronique: Électronique;
+  'Énergie': Énergie;
+  'Électronique': Électronique;
   'Électronique Énergie Électrique et Simulation (EEES)': ÉlectroniqueÉnergieÉlectriqueEtSimulationEEES;
-  InSYS: FISEInSYS;
-  SysCom: FISESysCOM;
-  SATR: Satr;
-  SM: Sm;
-  PN: FisePn;
-  IATI: Iati;
+  'InSYS': FISEInSYS;
+  'SysCom': FISESysCOM;
+  'SATR': Satr;
+  'SM': Sm;
+  'PN': FisePn;
+  'IATI': Iati;
 };
 
 export type Iati = {
@@ -431,12 +431,12 @@ export type The3Ea3A = {
 };
 
 export type Tentacled = {
-  InSYS: InSYS;
-  SysCom: SysCOM;
-  ACISE: Acise;
-  CERE: Cere;
-  EMA: Ema;
-  PN: Pn;
+  'InSYS': InSYS;
+  'SysCom': SysCOM;
+  'ACISE': Acise;
+  'CERE': Cere;
+  'EMA': Ema;
+  'PN': Pn;
   'Éco-Énergie': ÉcoÉnergie;
 };
 
@@ -722,30 +722,30 @@ export type Indecent = {
 };
 
 export interface MastèreSpécialiséHydraulique {
-  MSH001: string;
-  MSH002: string;
-  MSH003: string;
-  A51: string;
-  E21: string;
-  HYE22: string;
-  HYE23: string;
+  'MSH001': string;
+  'MSH002': string;
+  'MSH003': string;
+  'A51': string;
+  'E21': string;
+  'HYE22': string;
+  'HYE23': string;
   'MSH-HYDR': string;
-  TRAI: string;
-  EURB: string;
-  MSH04: string;
-  CYCL: string;
-  HSOU: string;
-  HSTA: string;
-  HTRA: string;
-  BESZ: string;
-  MSOL: string;
-  INGO: string;
-  STRU: string;
-  IMPA: string;
-  TELE: string;
-  SIGE: string;
-  RISP: string;
-  HLCO: string;
+  'TRAI': string;
+  'EURB': string;
+  'MSH04': string;
+  'CYCL': string;
+  'HSOU': string;
+  'HSTA': string;
+  'HTRA': string;
+  'BESZ': string;
+  'MSOL': string;
+  'INGO': string;
+  'STRU': string;
+  'IMPA': string;
+  'TELE': string;
+  'SIGE': string;
+  'RISP': string;
+  'HLCO': string;
 }
 
 export type Sn = {
@@ -791,7 +791,7 @@ export type Sn2A = {
 };
 
 export type IndigoFISA = {
-  ModIA: FISAModIA;
+  'ModIA': FISAModIA;
   '(*)': Cunning;
 };
 
@@ -836,12 +836,12 @@ export type FISAModIA = {
 };
 
 export type IndecentFISE = {
-  ASR: ASR;
+  'ASR': ASR;
   'HPC Big Data': HPCBigData;
-  Réseau: Réseau;
-  IMM: FiseImm;
-  Logiciel: FISELogiciel;
-  Télécom: Télécom;
+  'Réseau': Réseau;
+  'IMM': FiseImm;
+  'Logiciel': FISELogiciel;
+  'Télécom': Télécom;
 };
 
 export type ASR = {
@@ -1085,12 +1085,12 @@ export type Sn3A = {
 
 export type Magenta = {
   'HPC et Big Data': HPCEtBigData;
-  IBDIOT: Ibdiot;
-  IMM: Imm;
-  SEmbiIOT: SEmbiIOT;
-  Logiciel: Logiciel;
+  'IBDIOT': Ibdiot;
+  'IMM': Imm;
+  'SEmbiIOT': SEmbiIOT;
+  'Logiciel': Logiciel;
   'Télécom et objets connectés': TélécomEtObjetsConnectés;
-  ModIA: Array<ModIAModIA | string>;
+  'ModIA': Array<ModIAModIA | string>;
 };
 
 export type HPCEtBigData = {
@@ -1144,22 +1144,22 @@ export type Imm = {
 };
 
 export type Logiciel = {
-  N9EN05: string;
-  N9EN05A: string;
-  N9EN05B: string;
-  N9EN05C: string;
-  N9EN11: string;
-  N9EN11A: string;
+  'N9EN05': string;
+  'N9EN05A': string;
+  'N9EN05B': string;
+  'N9EN05C': string;
+  'N9EN11': string;
+  'N9EN11A': string;
   'N9EN 11B': string;
-  N9EN11C: string;
-  N9EN12: string;
-  N9EN12A: string;
-  N9EN12B: string;
-  N9EN13: string;
-  N9EN13A: string;
-  N9EN13B: string;
-  N9EN13C: string;
-  N9EN13D: string;
+  'N9EN11C': string;
+  'N9EN12': string;
+  'N9EN12A': string;
+  'N9EN12B': string;
+  'N9EN13': string;
+  'N9EN13A': string;
+  'N9EN13B': string;
+  'N9EN13C': string;
+  'N9EN13D': string;
 };
 
 export type ModIAModIA = {

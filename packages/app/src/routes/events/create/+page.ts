@@ -1,7 +1,7 @@
+import { canCreateEvent } from '$lib/permissions';
 import { redirectToLogin } from '$lib/session';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { canCreateEvent } from '$lib/permissions';
 
 export const load: PageLoad = async ({ parent, url }) => {
   const { me } = await parent();
