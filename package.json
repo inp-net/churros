@@ -1,11 +1,5 @@
 {
   "name": "centraverse",
-  "dependencies": {
-    "fuse.js": "^7.0.0",
-    "html5-qrcode": "^2.3.8",
-    "pdfmake": "^0.2.8",
-    "simple-svelte-autocomplete": "^2.5.2"
-  },
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
