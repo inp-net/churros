@@ -1,10 +1,9 @@
+import { builder, prisma } from '#lib';
 import { NotificationChannel } from '@prisma/client';
-import { builder } from '../builder.js';
-import { prisma } from '#lib';
-import { notify } from '../services/notifications.js';
-import { DateTimeScalar } from './scalars.js';
 import { GraphQLError } from 'graphql';
 import { getFamilyTree } from '../godchildren-tree.js';
+import { notify } from '../services/notifications.js';
+import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
 
 export const GodparentRequestType = builder.prismaObject('GodparentRequest', {

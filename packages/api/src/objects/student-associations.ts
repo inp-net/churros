@@ -1,8 +1,7 @@
+import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
-import { builder } from '../builder.js';
-import { prisma } from '#lib';
-import { DateTimeScalar } from './scalars.js';
 import { cancelLydiaTransaction, sendLydiaPaymentRequest } from '../services/lydia.js';
+import { DateTimeScalar } from './scalars.js';
 
 export const StudentAssociationType = builder.prismaObject('StudentAssociation', {
   fields: (t) => ({

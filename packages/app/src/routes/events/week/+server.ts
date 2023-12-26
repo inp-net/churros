@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { formatISO, isMonday, previousMonday } from 'date-fns';
+import type { RequestHandler } from './$types';
 
 function closestMonday(date: Date) {
   if (isMonday(date)) return date;

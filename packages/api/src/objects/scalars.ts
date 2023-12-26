@@ -1,6 +1,6 @@
+import { builder } from '#lib';
 import { GraphQLError } from 'graphql';
 import { DateTimeResolver } from 'graphql-scalars';
-import { builder } from '../builder.js';
 
 export const DateTimeScalar = builder.addScalarType('DateTime', DateTimeResolver, {});
 

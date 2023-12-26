@@ -8,7 +8,7 @@
 
   const TABS = {
     '': 'Infos',
-    members: 'Membres',
+    'members': 'Membres',
     'bank-accounts': 'Bancaire',
   } as const;
 

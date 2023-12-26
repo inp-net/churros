@@ -1,22 +1,21 @@
+import { prisma } from '#lib';
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
-import { CredentialType } from '@prisma/client';
-import { Prisma } from '@prisma/client';
-import { lydiaSignature, verifyLydiaTransaction } from './services/lydia.js';
+import { CredentialType, Prisma } from '@prisma/client';
 import { createFetch } from '@whatwg-node/fetch';
 import cors from 'cors';
 import express, { type Request, type Response } from 'express';
-import multer from 'multer';
 import { GraphQLError } from 'graphql';
 import { createYoga } from 'graphql-yoga';
 import helmet from 'helmet';
+import multer from 'multer';
 import { fileURLToPath } from 'node:url';
-import { z, ZodError } from 'zod';
+import { ZodError, z } from 'zod';
 import { context } from './context.js';
 import { customErrorMap } from './errors.js';
-import { prisma } from '#lib';
+import { log } from './objects/logs.js';
 import { schema, writeSchema } from './schema.js';
 import { markAsContributor } from './services/ldap.js';
-import { log } from './objects/logs.js';
+import { lydiaSignature, verifyLydiaTransaction } from './services/lydia.js';
 import { generatePDF } from './services/pdf.js';
 
 z.setErrorMap(customErrorMap);
