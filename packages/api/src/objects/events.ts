@@ -32,7 +32,7 @@ import dichotomid from 'dichotomid';
 import slug from 'slug';
 import { builder } from '../builder.js';
 import type { Context } from '../context.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { htmlToText, toHtml } from '../services/markdown.js';
 import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { ManagerOfEventInput } from './event-managers.js';

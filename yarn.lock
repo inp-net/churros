@@ -306,7 +306,9 @@ __metadata:
     "@pothos/plugin-tracing": "npm:^0.5.8"
     "@pothos/plugin-validation": "npm:^3.10.1"
     "@prisma/client": "npm:5.7.0"
-    "@tsconfig/node18-strictest-esm": "npm:^1.0.1"
+    "@tsconfig/esm": "npm:^1.0.5"
+    "@tsconfig/node18": "npm:^18.2.2"
+    "@tsconfig/strictest": "npm:^2.0.2"
     "@types/bunyan": "npm:^1.8.11"
     "@types/cli-progress": "npm:^3.11.5"
     "@types/cookie": "npm:^0.6.0"
@@ -2470,6 +2472,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tsconfig/esm@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "@tsconfig/esm@npm:1.0.5"
+  checksum: 2dd844c600bc7d0ca2d881c992c5f6abf8270c9f297b6d6f80ad7e0035e94e38a52b725c51ad6576ecfab6f29c8270ab52b7ad5e2cf952e4e337bcb5cde7d877
+  languageName: node
+  linkType: hard
+
 "@tsconfig/node10@npm:^1.0.7":
   version: 1.0.9
   resolution: "@tsconfig/node10@npm:1.0.9"
@@ -2502,6 +2511,20 @@ __metadata:
   version: 1.0.1
   resolution: "@tsconfig/node18-strictest-esm@npm:1.0.1"
   checksum: 6cdcbbf1f7025ff6b0fd743e81d6e43f2d29dd081775dbf9f8fc218911e182e4b09280c7c9e9361ea58073204881e7b82cb4939d67361b939ba473059be4f47f
+  languageName: node
+  linkType: hard
+
+"@tsconfig/node18@npm:^18.2.2":
+  version: 18.2.2
+  resolution: "@tsconfig/node18@npm:18.2.2"
+  checksum: 71f2c65616125f3ec8c85704ea55100d2131e0c01cbf7a247e5f6f7d617dfaafd5ff4a09b4193bceface4b4f44e9aa909da8e9af3910c01a0661f202386e40af
+  languageName: node
+  linkType: hard
+
+"@tsconfig/strictest@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@tsconfig/strictest@npm:2.0.2"
+  checksum: 22275cecc42fb4068405e22abaf42d58352f65f9217f0c8bad0a459f178ea6d2ac4978e0157ff747322e299dfb90852d5a9988460f96b5ba647817f2a015f9ee
   languageName: node
   linkType: hard
 
@@ -3921,8 +3944,6 @@ __metadata:
     dotenv-cli: "npm:^7.3.0"
     eslint: "npm:^8.55.0"
     eslint-config-prettier: "npm:^9.1.0"
-    eslint-config-xo: "npm:^0.43.1"
-    eslint-config-xo-typescript: "npm:^1.0.1"
     eslint-plugin-svelte: "npm:^2.35.1"
     eslint-plugin-unicorn: "npm:^49.0.0"
     fuse.js: "npm:^7.0.0"
@@ -4268,13 +4289,6 @@ __metadata:
     readable-stream: "npm:^2.2.2"
     typedarray: "npm:^0.0.6"
   checksum: 2e9864e18282946dabbccb212c5c7cec0702745e3671679eb8291812ca7fd12023f7d8cb36493942a62f770ac96a7f90009dc5c82ad69893438371720fa92617
-  languageName: node
-  linkType: hard
-
-"confusing-browser-globals@npm:1.0.11":
-  version: 1.0.11
-  resolution: "confusing-browser-globals@npm:1.0.11"
-  checksum: 475d0a284fa964a5182b519af5738b5b64bf7e413cfd703c1b3496bf6f4df9f827893a9b221c0ea5873c1476835beb1e0df569ba643eff0734010c1eb780589e
   languageName: node
   linkType: hard
 
@@ -5323,29 +5337,6 @@ __metadata:
   bin:
     eslint-config-prettier: bin/cli.js
   checksum: 6d332694b36bc9ac6fdb18d3ca2f6ac42afa2ad61f0493e89226950a7091e38981b66bac2b47ba39d15b73fff2cd32c78b850a9cf9eed9ca9a96bfb2f3a2f10d
-  languageName: node
-  linkType: hard
-
-"eslint-config-xo-typescript@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "eslint-config-xo-typescript@npm:1.0.1"
-  peerDependencies:
-    "@typescript-eslint/eslint-plugin": ">=6.0.0"
-    "@typescript-eslint/parser": ">=6.0.0"
-    eslint: ">=8.0.0"
-    typescript: ">=4.7"
-  checksum: d8794d9a64d9849c27c22201e2badaa781a0241d371991759a581d06859659f9a849287739a54a9f0a514ffaf7bd4d538f82ea9c67b5ef704b5ee0353cdfc01e
-  languageName: node
-  linkType: hard
-
-"eslint-config-xo@npm:^0.43.1":
-  version: 0.43.1
-  resolution: "eslint-config-xo@npm:0.43.1"
-  dependencies:
-    confusing-browser-globals: "npm:1.0.11"
-  peerDependencies:
-    eslint: ">=8.27.0"
-  checksum: 753026f1eae1648d79921cc51d78d55182966d178093f14e08e09f191ccffabd0292a31c7dc70e65c6c655ac1cdcfa05d7f99e8af4f4164e04834f1bea96dbe0
   languageName: node
   linkType: hard
 

@@ -3,7 +3,7 @@ import argon2 from 'argon2';
 import { nanoid } from 'nanoid';
 import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { DateTimeScalar } from './scalars.js';
 import { authenticate as ldapAuthenticate } from 'ldap-authentication';
 import { GraphQLError } from 'graphql';

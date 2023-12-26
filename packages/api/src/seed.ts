@@ -9,7 +9,7 @@
 import { CredentialType, Visibility, GroupType, type Prisma, LogoSourceType } from '@prisma/client';
 import { hash } from 'argon2';
 import slug from 'slug';
-import { prisma } from './prisma.js';
+import { prisma } from '#lib';
 import { createUid } from './services/registration.js';
 
 function* range(start: number, end: number): Generator<number> {

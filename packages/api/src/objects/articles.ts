@@ -1,6 +1,6 @@
 import slug from 'slug';
 import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { htmlToText, toHtml } from '../services/markdown.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
 import { LinkInput } from './links.js';

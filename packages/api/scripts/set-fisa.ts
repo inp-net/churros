@@ -5,10 +5,7 @@ const data = JSON.parse(readFileSync('./fisas.json').toString());
 
 let notfound = [];
 
-/**
- * @param {string} str
- */
-function unaccent(str) {
+function unaccent(str: string) {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 for (const { firstName, lastName, major } of data) {

@@ -1,5 +1,5 @@
 import { createTransport } from 'nodemailer';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { ID_PREFIXES_TO_TYPENAMES, builder } from '../builder.js';
 import { GraphQLError } from 'graphql';
 import { DateTimeScalar } from './scalars.js';

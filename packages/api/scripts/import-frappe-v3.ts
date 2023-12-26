@@ -1,9 +1,9 @@
-import { copyFile, mkdir, readFile, stat } from 'fs/promises';
+import { copyFile, mkdir, readFile, stat } from 'node:fs/promises';
 import YAML from 'yaml';
 import { PrismaClient } from '@prisma/client';
 import slug from 'slug';
 import dichotomid from 'dichotomid';
-import { Convert } from './frappe-types';
+import { Convert } from './frappe-types.js';
 import path from 'node:path';
 import { DocumentType } from '@prisma/client';
 

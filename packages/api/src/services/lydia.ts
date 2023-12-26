@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { GraphQLError } from 'graphql';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { createHash } from 'node:crypto';
 import type { LydiaTransaction } from '@prisma/client';
 

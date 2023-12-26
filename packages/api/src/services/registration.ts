@@ -8,7 +8,7 @@ import {
 import dichotomid from 'dichotomid';
 import { nanoid } from 'nanoid';
 import { createTransport } from 'nodemailer';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { findSchoolUser } from './ldap-school.js';
 import slug from 'slug';
 import { queryLdapUser } from './ldap.js';

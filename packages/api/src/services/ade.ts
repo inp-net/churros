@@ -1,6 +1,6 @@
 import { builder } from '../builder.js';
 import { log } from '../objects/logs.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 
 export async function nextExamDates(user: {
   schoolUid: string | null;

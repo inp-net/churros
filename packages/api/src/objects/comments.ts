@@ -1,6 +1,6 @@
 import { NotificationChannel, type User } from '@prisma/client';
 import { TYPENAMES_TO_ID_PREFIXES, builder } from '../builder.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { toHtml } from '../services/markdown.js';
 import { notify } from '../services/notifications.js';
 import { log } from './logs.js';

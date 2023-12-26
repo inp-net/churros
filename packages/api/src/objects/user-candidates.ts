@@ -1,7 +1,7 @@
 import { hash } from 'argon2';
 import { ZodError } from 'zod';
 import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { completeRegistration, register, saveUser } from '../services/registration.js';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';

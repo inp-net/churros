@@ -1,5 +1,5 @@
 import { log } from '../objects/logs.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 
 export type FuzzySearchResult = Array<{ id: string; changes: number }>;
 
@@ -118,7 +118,7 @@ export async function fullTextSearch(
   // don't cause sql injections plz uwu
   const query = `
     SELECT
-      ${selection} 
+      ${selection}
     FROM
       "${table}",
       ${similarityComputation} similarity,
