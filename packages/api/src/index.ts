@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { z, ZodError } from 'zod';
 import { context } from './context.js';
 import { customErrorMap } from './errors.js';
-import { prisma } from './prisma.js';
+import { prisma } from '#lib';
 import { schema, writeSchema } from './schema.js';
 import { markAsContributor } from './services/ldap.js';
 import { log } from './objects/logs.js';

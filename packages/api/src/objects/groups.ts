@@ -9,7 +9,7 @@ import { onBoard } from '../auth.js';
 import { builder } from '../builder.js';
 import { purgeUserSessions, type Context } from '../context.js';
 import { updatePicture } from '../pictures.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { toHtml } from '../services/markdown.js';
 import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { visibleArticlesPrismaQuery } from './articles.js';

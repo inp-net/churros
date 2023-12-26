@@ -1,5 +1,5 @@
 import { CredentialType } from '@prisma/client';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { addSeconds } from 'date-fns';
 import { hash, verify } from 'argon2';
 import { createTransport } from 'nodemailer';

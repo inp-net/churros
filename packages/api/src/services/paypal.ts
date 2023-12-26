@@ -1,6 +1,6 @@
 import { PayPalTransactionStatus } from '@prisma/client';
 import { log } from '../objects/logs.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 
 const { PUBLIC_PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PUBLIC_PAYPAL_API_BASE_URL } = process.env;
 

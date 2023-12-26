@@ -11,7 +11,7 @@ import TracingPlugin, { isRootField, wrapResolver } from '@pothos/plugin-tracing
 import ValidationPlugin from '@pothos/plugin-validation';
 import { authScopes, type AuthContexts, type AuthScopes } from './auth.js';
 import type { Context } from './context.js';
-import { prisma } from './prisma.js';
+import { prisma } from '#lib';
 import { GraphQLError, Kind } from 'graphql';
 
 /**

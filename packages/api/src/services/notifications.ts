@@ -9,7 +9,7 @@ import {
   type School,
   NotificationChannel,
 } from '@prisma/client';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import webpush, { WebPushError } from 'web-push';
 import { Cron } from 'croner';
 import type { MaybePromise } from '@pothos/core';

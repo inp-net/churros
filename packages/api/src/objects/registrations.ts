@@ -7,7 +7,7 @@ import * as qrcodeGeneratorLib from 'qr-code-generator-lib';
 import qrcode from 'qrcode';
 import { TYPENAMES_TO_ID_PREFIXES, builder } from '../builder.js';
 import { yearTier } from '../date.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import {
   LydiaTransactionState,
   checkLydiaTransaction,

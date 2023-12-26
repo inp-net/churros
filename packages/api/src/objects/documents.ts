@@ -1,6 +1,6 @@
 import dichotomid from 'dichotomid';
 import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { toHtml } from '../services/markdown.js';
 import { CommentType } from './comments.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';

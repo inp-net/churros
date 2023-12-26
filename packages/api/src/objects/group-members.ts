@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
 import { purgeUserSessions } from '../context.js';

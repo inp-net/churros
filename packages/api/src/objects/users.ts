@@ -8,7 +8,7 @@ import { purgeUserSessions } from '../context.js';
 import { yearTier } from '../date.js';
 import { FamilyTree, getFamilyTree } from '../godchildren-tree.js';
 import { updatePicture } from '../pictures.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { markAsContributor, queryLdapUser } from '../services/ldap.js';
 import { toHtml } from '../services/markdown.js';
 import { createUid } from '../services/registration.js';

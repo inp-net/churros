@@ -1,6 +1,6 @@
 import { NotificationChannel } from '@prisma/client';
 import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { notify } from '../services/notifications.js';
 import { DateTimeScalar } from './scalars.js';
 import { GraphQLError } from 'graphql';

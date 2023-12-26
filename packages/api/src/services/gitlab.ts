@@ -1,7 +1,7 @@
 import uniqBy from 'lodash.uniqby';
 import { builder } from '../builder.js';
 import { UserType } from '../objects/users.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 import { DateTimeScalar } from '../objects/scalars.js';
 import { toHtml } from './markdown.js';
 import { GraphQLError } from 'graphql';
@@ -211,10 +211,10 @@ const issueQuery = `
   state
   description
   updatedAt
-  iid 
-  labels { nodes { title }} 
+  iid
+  labels { nodes { title }}
   title
-  discussions { nodes { notes { nodes { 
+  discussions { nodes { notes { nodes {
     body
     system
     internal

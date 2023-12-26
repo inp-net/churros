@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-await-expression-member */
 /* eslint-disable unicorn/no-null */
-import { type Group, PrismaClient, ContributionOption } from '@prisma/client';
+import { type Group, PrismaClient, type ContributionOption } from '@prisma/client';
 import { hash } from 'argon2';
 import { compareAsc, differenceInYears, parse, parseISO } from 'date-fns';
 import { createWriteStream, readFileSync, statSync, writeFileSync } from 'node:fs';

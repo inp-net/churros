@@ -1,5 +1,5 @@
 import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
+import { prisma } from '#lib';
 
 export const MinorType = builder.prismaNode('Minor', {
   id: { field: 'id' },

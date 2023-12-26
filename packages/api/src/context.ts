@@ -10,7 +10,7 @@ import {
   type User,
 } from '@prisma/client';
 import { GraphQLError } from 'graphql';
-import { prisma } from './prisma.js';
+import { prisma } from '#lib';
 import { fullName } from './objects/users.js';
 import { yearTier } from './date.js';
 
