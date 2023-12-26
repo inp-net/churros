@@ -53,6 +53,8 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   doc: 'Document',
   comment: 'Comment',
   reac: 'Reaction',
+  promocode: 'PromotionCode',
+  promo: 'Promotion',
 } as const;
 /* end @generated from schema */
 
