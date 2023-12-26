@@ -2831,13 +2831,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pdfmake@npm:^0.2.8":
+"@types/pdfmake@npm:0.2.8":
   version: 0.2.8
   resolution: "@types/pdfmake@npm:0.2.8"
   dependencies:
     "@types/node": "npm:*"
     "@types/pdfkit": "npm:*"
   checksum: 8a731755ffbcbdd216e436e0c9e1e2ed600ddd388362ae1fe4cafd758278fe9678eb39ff89bd066a2aec3c80b1c66f824b68057d30d29162520d6dec78131442
+  languageName: node
+  linkType: hard
+
+"@types/pdfmake@patch:@types/pdfmake@npm%3A0.2.8#~/.yarn/patches/@types-pdfmake-npm-0.2.8-22a107c1c7.patch":
+  version: 0.2.8
+  resolution: "@types/pdfmake@patch:@types/pdfmake@npm%3A0.2.8#~/.yarn/patches/@types-pdfmake-npm-0.2.8-22a107c1c7.patch::version=0.2.8&hash=02a04c"
+  dependencies:
+    "@types/node": "npm:*"
+    "@types/pdfkit": "npm:*"
+  checksum: f3835ebedfe41d57a622344a3de7cd31030a632a7b70b03892cb52d4907faabec73d11837c2412f04c667055da96c98385c59ef99b569811d1acdb26b6a28d98
   languageName: node
   linkType: hard
 
@@ -3905,7 +3915,7 @@ __metadata:
     "@sveltejs/vite-plugin-svelte": "npm:^3.0.1"
     "@types/lodash": "npm:^4.14.202"
     "@types/lodash.uniqby": "npm:^4.7.9"
-    "@types/pdfmake": "npm:^0.2.8"
+    "@types/pdfmake": "patch:@types/pdfmake@npm%3A0.2.8#~/.yarn/patches/@types-pdfmake-npm-0.2.8-22a107c1c7.patch"
     "@typescript-eslint/eslint-plugin": "npm:^6.14.0"
     "@typescript-eslint/parser": "npm:^6.14.0"
     dotenv-cli: "npm:^7.3.0"
