@@ -32,7 +32,7 @@
     "typescript": "^5.3.3"
   },
   "license": "AGPL-3.0-only",
-  "packageManager": "yarn@4.0.0-rc.30",
+  "packageManager": "yarn@4.0.2",
   "private": true,
   "scripts": {
     "build": "test -f .env || cp .env.example .env && cp .env packages/api/ && yarn workspaces foreach --topological-dev -pv run build && yarn format",
