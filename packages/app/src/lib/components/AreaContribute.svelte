@@ -39,7 +39,7 @@
           phone: contributePhone,
         },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': { message: true },
           '...on MutationContributeSuccess': { data: true },
         },

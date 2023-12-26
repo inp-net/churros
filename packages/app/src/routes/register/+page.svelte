@@ -26,7 +26,7 @@
         startRegistration: [
           args,
           {
-            __typename: true,
+            '__typename': true,
             '...on MutationStartRegistrationSuccess': { data: true },
             '...on Error': { message: true },
             '...on ZodError': { message: true, fieldErrors: { path: true, message: true } },

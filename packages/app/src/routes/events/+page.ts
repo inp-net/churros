@@ -1,7 +1,7 @@
-import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
 import { loadQuery } from '$lib/zeus';
+import { redirect } from '@sveltejs/kit';
 import { isFuture } from 'date-fns';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent }) => {
   const { eventsInWeek } = await loadQuery(

@@ -1,17 +1,17 @@
-import { builder } from '../builder.js';
+import { builder } from '#lib';
 import { DateTimeScalar } from './scalars.js';
 
 /**
  * Maps user input replacement keys (e.g. [prenom]) to their user property keys (e.g. firstName)
  */
 export const REPLACE_MAP = {
-  prénom: 'firstName',
-  nom: 'lastName',
+  'prénom': 'firstName',
+  'nom': 'lastName',
   'nom de famille': 'lastName',
-  filière: 'major.shortName',
-  uid: 'uid',
-  promo: 'graduationYear',
-  année: 'yearTier',
+  'filière': 'major.shortName',
+  'uid': 'uid',
+  'promo': 'graduationYear',
+  'année': 'yearTier',
 } as const;
 
 export const LinkType = builder.prismaNode('Link', {

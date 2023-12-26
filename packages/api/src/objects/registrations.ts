@@ -1,3 +1,4 @@
+import { TYPENAMES_TO_ID_PREFIXES, builder, prisma } from '#lib';
 import { PaymentMethod as PaymentMethodPrisma, type Registration, type User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { isFuture, isPast } from 'date-fns';
@@ -5,9 +6,7 @@ import { GraphQLError } from 'graphql';
 import { createTransport } from 'nodemailer';
 import * as qrcodeGeneratorLib from 'qr-code-generator-lib';
 import qrcode from 'qrcode';
-import { TYPENAMES_TO_ID_PREFIXES, builder } from '../builder.js';
 import { yearTier } from '../date.js';
-import { prisma } from '#lib';
 import {
   LydiaTransactionState,
   checkLydiaTransaction,
@@ -21,10 +20,10 @@ import {
 import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { log } from './logs.js';
+import { actualPrice } from './promotions.js';
 import { DateTimeScalar } from './scalars.js';
 import { placesLeft, userCanSeeTicket } from './tickets.js';
 import { UserType, fullName } from './users.js';
-import { actualPrice } from './promotions.js';
 
 const mailer = createTransport(process.env.SMTP_URL);
 
@@ -1243,24 +1242,24 @@ builder.queryField('registrationsCsv', (t) =>
       ) =>
         ({
           'Date de réservation': createdAt.toISOString(),
-          Bénéficiaire: (benef ? fullName(benef) : beneficiary) || authorEmail,
+          'Bénéficiaire': (benef ? fullName(benef) : beneficiary) || authorEmail,
           'Achat par': author ? fullName(author) : authorEmail,
-          Payée: humanBoolean(paid),
-          Scannée: humanBoolean(Boolean(verifiedAt) && paid),
+          'Payée': humanBoolean(paid),
+          'Scannée': humanBoolean(Boolean(verifiedAt) && paid),
           'En opposition': humanBoolean(Boolean(opposedAt)),
-          Annulée: humanBoolean(Boolean(cancelledAt)),
+          'Annulée': humanBoolean(Boolean(cancelledAt)),
           'Méthode de paiement': paymentMethod ?? 'Inconnue',
-          Billet: ticket.name,
-          Cotisant: benef
+          'Billet': ticket.name,
+          'Cotisant': benef
             ? humanBoolean(
                 benef.contributions.some(({ option: { paysFor } }) =>
                   paysFor.some(({ uid }) => uid === 'aen7'),
                 ),
               )
             : '',
-          Filière: benef?.major?.shortName ?? '',
-          Année: benef ? `${yearTier(benef.graduationYear)}A` : '',
-          Promo: benef?.graduationYear.toString() ?? '',
+          'Filière': benef?.major?.shortName ?? '',
+          'Année': benef ? `${yearTier(benef.graduationYear)}A` : '',
+          'Promo': benef?.graduationYear.toString() ?? '',
           'Code de réservation': id.replace(/^r:/, '').toUpperCase(),
           'Lien vers la place': `${process.env.FRONTEND_ORIGIN}/bookings/${id.replace(/^r:/, '')}/`,
         }) satisfies Record<(typeof columns)[number], string>;

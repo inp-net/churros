@@ -1,6 +1,5 @@
+import { builder, prisma } from '#lib';
 import type { LydiaAccount } from '@prisma/client';
-import { builder } from '../builder.js';
-import { prisma } from '#lib';
 import { checkLydiaAccount } from '../services/lydia.js';
 import { userIsPresidentOf, userIsTreasurerOf } from './groups.js';
 

@@ -1,7 +1,7 @@
+import { isOnClubBoard } from '$lib/permissions';
 import { loadQuery, Selector } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { isOnClubBoard } from '$lib/permissions';
 
 export const _clubQuery = Selector('Group')({
   uid: true,

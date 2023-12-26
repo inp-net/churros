@@ -67,7 +67,7 @@
           authorEmail,
         },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': {
             message: true,
           },
@@ -118,7 +118,7 @@
           id: registrationId,
         },
         {
-          __typename: true,
+          '__typename': true,
           '...on QueryRegistrationSuccess': { data: { paid: true, paymentMethod: true, id: true } },
           '...on Error': { message: true },
         },
@@ -258,7 +258,7 @@
                   paymentMethod: PaymentMethod.Lydia,
                 },
                 {
-                  __typename: true,
+                  '__typename': true,
                   '...on Error': { message: true },
                   '...on MutationPaidRegistrationSuccess': {
                     data: true,

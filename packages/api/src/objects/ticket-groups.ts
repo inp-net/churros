@@ -1,5 +1,4 @@
-import { builder } from '../builder.js';
-import { prisma } from '#lib';
+import { builder, prisma } from '#lib';
 import { eventManagedByUser } from './events.js';
 
 export const TicketGroupType = builder.prismaNode('TicketGroup', {

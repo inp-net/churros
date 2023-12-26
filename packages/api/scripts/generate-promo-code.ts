@@ -1,4 +1,4 @@
-import { type Event, type Group, PrismaClient, PromotionType } from '@prisma/client';
+import { PrismaClient, PromotionType, type Event, type Group } from '@prisma/client';
 
 function usage(): never {
   console.error(

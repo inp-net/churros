@@ -1,6 +1,6 @@
 /* eslint-disable */
-import ldap from 'ldapjs';
 import { faker } from '@faker-js/faker/locale/fr';
+import ldap from 'ldapjs';
 
 const server = ldap.createServer();
 

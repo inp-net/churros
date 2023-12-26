@@ -1,7 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { fileURLToPath } from 'node:url';
-import { defineConfig, mergeConfig } from 'vite';
 import icons from 'unplugin-icons/vite';
+import { defineConfig, mergeConfig } from 'vite';
 
 export const commonConfig = defineConfig({
   plugins: [

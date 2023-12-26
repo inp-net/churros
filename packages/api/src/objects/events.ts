@@ -1,14 +1,15 @@
+import { builder, prisma } from '#lib';
 import {
   EventFrequency,
+  GroupType,
   PaymentMethod,
+  PromotionType as PromotionTypePrisma,
   Visibility,
   Visibility as VisibilityPrisma,
   type Event as EventPrisma,
   type Prisma,
   type Ticket,
   type TicketGroup,
-  PromotionType as PromotionTypePrisma,
-  GroupType,
 } from '@prisma/client';
 import { mappedGetAncestors } from 'arborist';
 import {
@@ -30,9 +31,7 @@ import {
 } from 'date-fns';
 import dichotomid from 'dichotomid';
 import slug from 'slug';
-import { builder } from '../builder.js';
 import type { Context } from '../context.js';
-import { prisma } from '#lib';
 import { htmlToText, toHtml } from '../services/markdown.js';
 import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { ManagerOfEventInput } from './event-managers.js';
@@ -50,9 +49,9 @@ import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { onBoard } from '../auth.js';
+import { soonest } from '../date.js';
 import { updatePicture } from '../pictures.js';
 import { scheduleShotgunNotifications } from '../services/notifications.js';
-import { soonest } from '../date.js';
 import { visibleArticlesPrismaQuery } from './articles.js';
 
 export const PromotionTypeEnum = builder.enumType(PromotionTypePrisma, {

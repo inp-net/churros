@@ -74,7 +74,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
           id,
         },
         Selector('Registration')({
-          __typename: true,
+          '__typename': true,
           '...on Error': {
             message: true,
           },

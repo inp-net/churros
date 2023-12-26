@@ -9,9 +9,9 @@
   export let data: PageData;
   const TABS = {
     '': 'Infos',
-    edit: 'Modifier',
-    registrations: 'Places',
-    scan: 'Vérifier',
+    'edit': 'Modifier',
+    'registrations': 'Places',
+    'scan': 'Vérifier',
   } as const;
 
   function manager():

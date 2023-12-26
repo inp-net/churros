@@ -6,10 +6,10 @@
  * @module
  */
 
-import { CredentialType, Visibility, GroupType, type Prisma, LogoSourceType } from '@prisma/client';
+import { prisma } from '#lib';
+import { CredentialType, GroupType, LogoSourceType, Visibility, type Prisma } from '@prisma/client';
 import { hash } from 'argon2';
 import slug from 'slug';
-import { prisma } from '#lib';
 import { createUid } from './services/registration.js';
 
 function* range(start: number, end: number): Generator<number> {

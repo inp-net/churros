@@ -1,13 +1,12 @@
+import { builder, prisma } from '#lib';
+import { GroupType } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { GraphQLError } from 'graphql';
-import { builder } from '../builder.js';
-import { prisma } from '#lib';
+import { createTransport } from 'nodemailer';
+import { onBoard } from '../auth.js';
+import { purgeUserSessions } from '../context.js';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
-import { purgeUserSessions } from '../context.js';
-import { GroupType } from '@prisma/client';
-import { createTransport } from 'nodemailer';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
-import { onBoard } from '../auth.js';
 
 const mailer = createTransport(process.env.SMTP_URL);
 

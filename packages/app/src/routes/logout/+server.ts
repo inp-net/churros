@@ -14,7 +14,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
   return new Response('', {
     status: 307,
     headers: {
-      Location: '/',
+      'Location': '/',
       'Set-Cookie': 'token=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict',
     },
   });
