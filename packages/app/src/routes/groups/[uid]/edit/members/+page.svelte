@@ -454,8 +454,8 @@
     }
 
     .members .item .actions {
-      align-self: flex-start;
-      margin: 0.3rem 0 1.5rem;
+      align-self: center;
+      margin-top: 0.3rem;
     }
   }
 </style>
