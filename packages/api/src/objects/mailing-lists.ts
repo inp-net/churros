@@ -84,3 +84,31 @@ export async function removeMemberFromBureauLists(memberID: string) {
 
   if (trezGroups.length === 0) removeMemberFromMailingList(mailingAllTrez, email);
 }
+
+export async function addMemberToGroupMailingList(groupId: string, email: string) {
+  const group = await prisma.group.findUniqueOrThrow({
+    where: { id: groupId },
+    select: {
+      ldapUid: true,
+      studentAssociation: { select: { school: { select: { internalMailDomain: true } } } },
+    },
+  });
+
+  const mailingId = `${group.ldapUid}.list.${group.studentAssociation?.school.internalMailDomain}`;
+  await addMemberToMailingList(mailingId, email);
+}
+
+async function addMemberToMailingList(mailingId: string, email: string) {
+  const endpoint = `${apiUrl}/${mailingId}/member`;
+  await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Basic ' + apiToken },
+    body: JSON.stringify({
+      subscriber: email,
+      list_id: mailingId,
+      pre_verified: true,
+      pre_confirmed: true,
+      pre_approved: true,
+    }),
+  });
+}
