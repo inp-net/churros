@@ -60,5 +60,8 @@ declare namespace NodeJS {
     PAYPAL_CLIENT_SECRET: string;
     PUBLIC_PAYPAL_API_BASE_URL: string;
     PUBLIC_SCHOOL_UID: string;
+    /** Mailman secrets */
+    MAILMAN_API_URL: string;
+    MAILMAN_API_TOKEN: string;
   }
 }

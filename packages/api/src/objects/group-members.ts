@@ -5,6 +5,7 @@ import { GraphQLError } from 'graphql';
 import { createTransport } from 'nodemailer';
 import { onBoard } from '../auth.js';
 import { purgeUserSessions } from '../context.js';
+import { removeMemberFromBureauLists, removeMemberFromGroupMailingList } from './mailing-lists.js';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
 
@@ -305,10 +306,21 @@ builder.mutationField('deleteGroupMember', (t) =>
           user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id),
       ),
     async resolve(_, { memberId, groupId }, { user: me }) {
-      const { uid } = await prisma.user.findUniqueOrThrow({
-        where: { id: memberId },
-        select: { uid: true },
+      const { type } = await prisma.group.findUniqueOrThrow({
+        where: { id: groupId },
+        select: { type: true },
       });
+
+      const { uid, email } = await prisma.user.findUniqueOrThrow({
+        where: { id: memberId },
+        select: { uid: true, email: true },
+      });
+
+      if (type === 'Club' || type === 'Association') {
+        await removeMemberFromGroupMailingList(groupId, email);
+        await removeMemberFromBureauLists(memberId);
+      }
+
       purgeUserSessions(uid);
       await prisma.groupMember.delete({ where: { groupId_memberId: { groupId, memberId } } });
       await prisma.logEntry.create({
