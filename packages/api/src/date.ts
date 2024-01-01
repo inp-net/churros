@@ -46,3 +46,11 @@ export function soonest(...dates: Array<Date | null | undefined>): Date | undefi
   if (validDates.length === 0) return undefined;
   return new Date(Math.min(...validDates.map((date) => date.valueOf())));
 }
+
+export function formatDate(
+  date: Date | undefined | null,
+  style: Intl.DateTimeFormatOptions['dateStyle'] = 'long',
+): string {
+  if (!date) return '';
+  return new Intl.DateTimeFormat('fr-FR', { dateStyle: style }).format(date);
+}

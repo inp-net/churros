@@ -28,6 +28,7 @@
     "graphql-yoga": "^5.0.2",
     "helmet": "^7.1.0",
     "image-type": "^5.2.0",
+    "keep-a-changelog": "^2.5.3",
     "ldap-authentication": "^3.0.3",
     "ldapjs": "^3.0.7",
     "linkify-html": "^4.1.3",

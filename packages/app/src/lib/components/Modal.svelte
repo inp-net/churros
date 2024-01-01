@@ -1,9 +1,15 @@
 <script lang="ts">
   import { isDark } from '$lib/theme';
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   const dispatch = createEventDispatcher();
 
   export let element: HTMLDialogElement;
+  export let open = false;
+  export let maxWidth = 'unset';
+
+  onMount(() => {
+    if (open) element.showModal();
+  });
 </script>
 
 <svelte:window
@@ -30,6 +36,7 @@
   }}
   class={$isDark ? 'dark' : 'light'}
   bind:this={element}
+  style:max-width={maxWidth}
 >
   <slot />
 </dialog>

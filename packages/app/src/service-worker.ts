@@ -105,7 +105,7 @@ async function openURL(urlString: string) {
   for (const client of windowClients)
     if (client.url === urlString && 'focus' in client) return client.focus();
 
-  const url = new URL(urlString);
+  const url = new URL(urlString); // TODO this probably breaks local actions
   url.searchParams.set('utm_source', 'notification');
   if ('openWindow' in sw.clients) return sw.clients.openWindow(url.toString());
 }

@@ -22,6 +22,7 @@
   import '../design/app.scss';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ModalChangelog from '$lib/components/ModalChangelog.svelte';
   import IconLoading from '~icons/mdi/loading';
   import IconClose from '~icons/mdi/close';
   import { browser } from '$app/environment';
@@ -39,6 +40,7 @@
   import { debugging } from '$lib/debugging';
   import Snowflake from '~icons/mdi/snowflake';
   import { CURRENT_VERSION, CURRENT_COMMIT } from '$lib/buildinfo';
+  import { ackownledgedChangelogVersions } from '$lib/changelog';
 
   function currentTabDesktop(url: URL): (typeof DESKTOP_NAVIGATION_TABS)[number] {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -248,6 +250,12 @@
       ></Toast>
     {/each}
   </section>
+{/if}
+
+{#if !$ackownledgedChangelogVersions.includes(CURRENT_VERSION) }
+{#await $zeus.query({ changelog: true }) then {changelog} }
+  <ModalChangelog {changelog} />
+{/await}
 {/if}
 
 <OverlayQuickBookings {now} registrationsOfUser={data.registrationsOfUser}></OverlayQuickBookings>
