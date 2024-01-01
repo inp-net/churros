@@ -101,11 +101,18 @@ builder.mutationField('addGroupMember', (t) =>
             title,
           },
         });
-        const { email } = await prisma.user.findUniqueOrThrow({
-          where: { uid },
-          select: { email: true },
+
+        const { type } = await prisma.group.findUniqueOrThrow({
+          where: { uid: groupUid },
+          select: { type: true },
         });
-        await addMemberToGroupMailingList(groupUid, email);
+        if (type === 'Club' || type === 'Association') {
+          const { email } = await prisma.user.findUniqueOrThrow({
+            where: { uid },
+            select: { email: true },
+          });
+          await addMemberToGroupMailingList(groupUid, email);
+        }
 
         await prisma.logEntry.create({
           data: {
@@ -148,11 +155,17 @@ builder.mutationField('selfJoinGroup', (t) =>
         },
       });
 
-      const { email } = await prisma.user.findUniqueOrThrow({
-        where: { uid },
-        select: { email: true },
+      const { type } = await prisma.group.findUniqueOrThrow({
+        where: { uid: groupUid },
+        select: { type: true },
       });
-      await addMemberToGroupMailingList(groupUid, email);
+      if (type === 'Club' || type === 'Association') {
+        const { email } = await prisma.user.findUniqueOrThrow({
+          where: { uid },
+          select: { email: true },
+        });
+        await addMemberToGroupMailingList(groupUid, email);
+      }
 
       await prisma.logEntry.create({
         data: {
@@ -340,7 +353,7 @@ builder.mutationField('deleteGroupMember', (t) =>
         select: { uid: true, email: true },
       });
 
-      if (type === 'Club' || type === 'Association') {
+      if (type === 'Club' || type === 'Association' || type === 'StudentAssociationSection') {
         await removeMemberFromGroupMailingList(groupId, email);
         await updateMemberBureauLists(memberId);
       }
