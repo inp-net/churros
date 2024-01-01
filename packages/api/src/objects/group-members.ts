@@ -5,7 +5,11 @@ import { GraphQLError } from 'graphql';
 import { createTransport } from 'nodemailer';
 import { onBoard } from '../auth.js';
 import { purgeUserSessions } from '../context.js';
-import { removeMemberFromBureauLists, removeMemberFromGroupMailingList } from './mailing-lists.js';
+import {
+  addMemberToGroupMailingList,
+  removeMemberFromBureauLists,
+  removeMemberFromGroupMailingList,
+} from './mailing-lists.js';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
 
@@ -97,6 +101,11 @@ builder.mutationField('addGroupMember', (t) =>
             title,
           },
         });
+        const { email } = await prisma.user.findUniqueOrThrow({
+          where: { uid },
+          select: { email: true },
+        });
+        await addMemberToGroupMailingList(groupUid, email);
 
         await prisma.logEntry.create({
           data: {
@@ -138,6 +147,13 @@ builder.mutationField('selfJoinGroup', (t) =>
           title: 'Membre', // don't allow people to name themselves "Président", for example.
         },
       });
+
+      const { email } = await prisma.user.findUniqueOrThrow({
+        where: { uid },
+        select: { email: true },
+      });
+      await addMemberToGroupMailingList(groupUid, email);
+
       await prisma.logEntry.create({
         data: {
           area: 'group-member',
