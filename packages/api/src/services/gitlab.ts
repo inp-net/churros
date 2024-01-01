@@ -1,10 +1,9 @@
-import uniqBy from 'lodash.uniqby';
-import { builder } from '../builder.js';
-import { UserType } from '../objects/users.js';
-import { prisma } from '../prisma.js';
-import { DateTimeScalar } from '../objects/scalars.js';
-import { toHtml } from './markdown.js';
+import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
+import uniqBy from 'lodash.uniqby';
+import { DateTimeScalar } from '../objects/scalars.js';
+import { UserType } from '../objects/users.js';
+import { toHtml } from './markdown.js';
 
 builder.queryField('codeContributors', (t) =>
   t.prismaField({
@@ -211,10 +210,10 @@ const issueQuery = `
   state
   description
   updatedAt
-  iid 
-  labels { nodes { title }} 
+  iid
+  labels { nodes { title }}
   title
-  discussions { nodes { notes { nodes { 
+  discussions { nodes { notes { nodes {
     body
     system
     internal

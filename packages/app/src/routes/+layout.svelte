@@ -320,8 +320,6 @@ The root layout is composed of several elements:
     - the announcements
     - the page content
 - the bottom navbar (mobile only)
-
-
 */
 
   .layout {
@@ -345,6 +343,7 @@ The root layout is composed of several elements:
 
   .contents-and-announcements {
     min-height: 0;
+    padding-top: 1rem;
     padding-bottom: 2rem;
     overflow-y: scroll;
     scrollbar-width: thin;

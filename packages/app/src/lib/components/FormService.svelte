@@ -42,7 +42,7 @@
             studentAssociationUid: service.studentAssociation?.uid,
           },
           {
-            __typename: true,
+            '__typename': true,
             '...on Error': { message: true },
             '...on MutationUpsertServiceSuccess': {
               data: {

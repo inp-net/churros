@@ -1,7 +1,6 @@
-import { builder } from '../builder.js';
-import { DateTimeScalar } from './scalars.js';
-import { prisma } from '../prisma.js';
+import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
+import { DateTimeScalar } from './scalars.js';
 
 export const LogType = builder.prismaNode('LogEntry', {
   id: { field: 'id' },

@@ -3,9 +3,9 @@
 /// <reference no-default-lib="true"/>
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
+import * as $serviceWorker from '$service-worker';
 import type { PushNotification } from '@centraverse/api/src/services/notifications';
 import { default as parseUserAgent } from 'ua-parser-js';
-import * as $serviceWorker from '$service-worker';
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
 // can't import from $env/dynamic/public in service worker

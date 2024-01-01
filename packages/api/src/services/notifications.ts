@@ -1,23 +1,23 @@
+import { prisma } from '#lib';
+import type { MaybePromise } from '@pothos/core';
 import {
-  type Group,
-  type NotificationSubscription,
-  type Ticket,
-  type User,
+  NotificationChannel,
+  Prisma,
   Visibility,
+  type Group,
   type GroupMember,
   type Major,
+  type NotificationSubscription,
   type School,
-  NotificationChannel,
+  type Ticket,
+  type User,
 } from '@prisma/client';
-import { prisma } from '../prisma.js';
-import webpush, { WebPushError } from 'web-push';
-import { Cron } from 'croner';
-import type { MaybePromise } from '@pothos/core';
-import { Prisma } from '@prisma/client';
-import { format, subMinutes } from 'date-fns';
-import { fullName } from '../objects/users.js';
 import { mappedGetAncestors } from 'arborist';
+import { Cron } from 'croner';
+import { format, subMinutes } from 'date-fns';
 import { nanoid } from 'nanoid';
+import webpush, { WebPushError } from 'web-push';
+import { fullName } from '../objects/users.js';
 
 if (
   process.env.PUBLIC_CONTACT_EMAIL &&

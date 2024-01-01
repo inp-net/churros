@@ -132,7 +132,7 @@
     {/if}
   </h2>
   <ul class="nobullet">
-    {#each articles as { uid, ...article } (uid)}
+    {#each articles as { uid, reactionCounts, myReactions, ...article } (uid)}
       <li>
         <CardArticle
           likes={reactionCounts['❤️']}

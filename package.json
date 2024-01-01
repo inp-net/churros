@@ -6,14 +6,12 @@
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
     "@types/lodash": "^4.14.202",
     "@types/lodash.uniqby": "^4.7.9",
-    "@types/pdfmake": "^0.2.8",
+    "@types/pdfmake": "patch:@types/pdfmake@npm%3A0.2.8#~/.yarn/patches/@types-pdfmake-npm-0.2.8-22a107c1c7.patch",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
     "dotenv-cli": "^7.3.0",
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-config-xo": "^0.43.1",
-    "eslint-config-xo-typescript": "^1.0.1",
     "eslint-plugin-svelte": "^2.35.1",
     "eslint-plugin-unicorn": "^49.0.0",
     "husky": "^8.0.3",
@@ -21,6 +19,7 @@
     "postcss-html": "^1.5.0",
     "prettier": "^3.1.1",
     "prettier-plugin-jsdoc": "^1.1.1",
+    "prettier-plugin-organize-imports": "^3.2.4",
     "prettier-plugin-svelte": "^3.1.2",
     "stylelint": "^16.0.2",
     "stylelint-config-html": "^1.1.0",
@@ -32,19 +31,20 @@
     "typescript": "^5.3.3"
   },
   "license": "AGPL-3.0-only",
-  "packageManager": "yarn@4.0.0-rc.30",
+  "packageManager": "yarn@4.0.2",
   "private": true,
   "scripts": {
-    "build": "test -f .env || cp .env.example .env && cp .env packages/api/ && yarn workspaces foreach --topological-dev -pv run build && yarn format",
-    "dev": "test -f .env || cp .env.example .env && cp .env packages/api/ && docker compose up -d && yarn dotenv -- yarn workspaces foreach -piv run dev",
-    "format": "prettier . --write --ignore-unknown --plugin prettier-plugin-svelte",
+    "build": "yarn cp-env && yarn workspaces foreach --topological-dev -Apv run build && yarn format",
+    "cp-env": "test -f .env || cp .env.example .env && cp .env packages/api/ && cp .env packages/app/",
+    "dev": "yarn cp-env && docker compose up -d && yarn dotenv -- yarn workspaces foreach -Apiv run dev",
+    "format": "prettier . --write --ignore-unknown",
     "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
     "lintfix": "eslint --fix . & stylelint --fix '**/*.{css,scss,svelte}' &",
+    "migration": "yarn prisma migrate dev --name",
     "postinstall": "husky install",
     "prisma": "yarn workspace @centraverse/api run prisma",
     "reset": "docker compose up -d && NODE_ENV=development yarn prisma migrate reset --force",
-    "start": "docker compose up -d && yarn workspaces foreach -piv run start",
-    "migration": "yarn prisma migrate dev --name",
+    "start": "docker compose up -d && yarn workspaces foreach -Apiv run start",
     "triage": "xdg-open 'https://git.inpt.fr/inp-net/churros/-/issues/?sort=created_date&state=opened&not[label_name][]=importance:urgent&not[label_name][]=importance:high&not[label_name][]=importance:medium&not[label_name][]=importance:low&not[label_name][]=importance:rockbottom&not[label_name][]=difficulty:braindead&not[label_name][]=difficulty:easy&not[label_name][]=difficulty:moderate&not[label_name][]=difficulty:hard&not[label_name][]=difficulty:unknown'"
   },
   "volta": {
@@ -53,11 +53,5 @@
   },
   "workspaces": [
     "packages/*"
-  ],
-  "dependencies": {
-    "fuse.js": "^7.0.0",
-    "html5-qrcode": "^2.3.8",
-    "pdfmake": "^0.2.8",
-    "simple-svelte-autocomplete": "^2.5.2"
-  }
+  ]
 }

@@ -1,17 +1,16 @@
-import slug from 'slug';
-import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
-import { htmlToText, toHtml } from '../services/markdown.js';
-import { DateTimeScalar, FileScalar } from './scalars.js';
-import { LinkInput } from './links.js';
+import { builder, prisma } from '#lib';
+import { Visibility, type Prisma } from '@prisma/client';
 import { dichotomid } from 'dichotomid';
 import { unlink } from 'node:fs/promises';
-import { VisibilityEnum } from './events.js';
-import { type Prisma, Visibility } from '@prisma/client';
-import { scheduleNewArticleNotification } from '../services/notifications.js';
-import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
+import slug from 'slug';
+import { updatePicture } from '../pictures.js';
+import { htmlToText, toHtml } from '../services/markdown.js';
+import { scheduleNewArticleNotification } from '../services/notifications.js';
 import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
+import { VisibilityEnum } from './events.js';
+import { LinkInput } from './links.js';
+import { DateTimeScalar, FileScalar } from './scalars.js';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },

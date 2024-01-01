@@ -43,13 +43,13 @@
     const metadata = {
       ...(includeCurrentPageURL ? { Location: $page.url.toString() } : {}),
       'Logged-in': $me ? 'Yes' : 'No',
-      Version: CURRENT_VERSION,
-      Build: CURRENT_COMMIT,
-      Browser: `${ua.browser.name ?? 'unknown'} v${ua.browser.version ?? '?'} (engine ${
+      'Version': CURRENT_VERSION,
+      'Build': CURRENT_COMMIT,
+      'Browser': `${ua.browser.name ?? 'unknown'} v${ua.browser.version ?? '?'} (engine ${
         ua.engine.name ?? 'unknown'
       } v${ua.engine.version ?? '?'})`,
-      OS: `${ua.os.name ?? 'unknown'} v${ua.os.version ?? '?'}`,
-      Device: `${ua.device.type ?? 'unknown'} ${ua.device.vendor ?? 'unknown'} ${
+      'OS': `${ua.os.name ?? 'unknown'} v${ua.os.version ?? '?'}`,
+      'Device': `${ua.device.type ?? 'unknown'} ${ua.device.vendor ?? 'unknown'} ${
         ua.device.model ?? 'unknown'
       } (arch ${ua.cpu.architecture ?? 'unknown'})`,
     };

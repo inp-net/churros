@@ -153,7 +153,7 @@
     {:else}
       <IconDotsCircleOutline />
     {/if}
-    <span>Les autre services</span>
+    <span>Les autres services</span>
   </a>
 
   {#if $me?.admin || $me?.canEditUsers}

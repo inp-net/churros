@@ -104,7 +104,7 @@
       registrationsCsv: [
         { eventUid: $page.params.uid, groupUid: $page.params.group },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': { message: true },
           '...on QueryRegistrationsCsvSuccess': { data: true },
         },
@@ -234,7 +234,7 @@
       opposeRegistration: [
         { id: registration.id },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': {
             message: true,
           },
@@ -265,7 +265,7 @@
           paid: markAsPaid,
         },
         {
-          __typename: true,
+          '__typename': true,
           '...on MutationUpsertRegistrationSuccess': {
             data: {
               paid: true,
@@ -513,7 +513,7 @@
                           id,
                         },
                         {
-                          __typename: true,
+                          '__typename': true,
                           '...on Error': {
                             message: true,
                           },

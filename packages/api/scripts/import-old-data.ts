@@ -1,16 +1,16 @@
 /* eslint-disable unicorn/no-await-expression-member */
 /* eslint-disable unicorn/no-null */
-import { type Group, PrismaClient, ContributionOption } from '@prisma/client';
+import { PrismaClient, type ContributionOption, type Group } from '@prisma/client';
 import { hash } from 'argon2';
+import { SingleBar } from 'cli-progress';
 import { compareAsc, differenceInYears, parse, parseISO } from 'date-fns';
 import { createWriteStream, readFileSync, statSync, writeFileSync } from 'node:fs';
-import * as Ldap from './ldap-types.js';
 import { Readable } from 'node:stream';
 import { finished } from 'node:stream/promises';
 import type { ReadableStream } from 'node:stream/web';
-import { SingleBar } from 'cli-progress';
 import slug from 'slug';
 import { onBoard } from '../src/auth.js';
+import * as Ldap from './ldap-types.js';
 const prisma = new PrismaClient();
 
 const NEW_MAJOR_SHORTNAMES: Partial<Record<Ldap.ShortName, string>> = {

@@ -55,7 +55,7 @@
       groupMembersCsv: [
         { groupUid: $page.params.uid },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': { message: true },
           '...on QueryGroupMembersCsvSuccess': { data: true },
         },
@@ -75,7 +75,7 @@
       addGroupMember: [
         { groupUid: group.uid, uid: newMemberUid, title: newMemberTitle },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': {
             message: true,
           },
@@ -377,6 +377,7 @@
 <style>
   .actions {
     display: flex;
+    gap: 0.5rem;
     align-items: center;
     justify-content: center;
     margin: 2rem 0 1rem;
@@ -453,7 +454,8 @@
     }
 
     .members .item .actions {
-      align-self: flex-end;
+      align-self: center;
+      margin-top: 0.3rem;
     }
   }
 </style>

@@ -1,14 +1,13 @@
-import { GraphQLError } from 'graphql';
-import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
-import { DateTimeScalar } from './scalars.js';
+import { builder, prisma } from '#lib';
 import {
   NotificationChannel as NotificationChannelPrisma,
-  type NotificationSubscription,
   Visibility,
+  type NotificationSubscription,
 } from '@prisma/client';
+import { GraphQLError } from 'graphql';
 import { notify } from '../services/notifications.js';
 import { VisibilityEnum } from './events.js';
+import { DateTimeScalar } from './scalars.js';
 
 export const NotificationChannel = builder.enumType(NotificationChannelPrisma, {
   name: 'NotificationChannel',

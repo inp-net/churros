@@ -9,10 +9,10 @@ import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
 import TracingPlugin, { isRootField, wrapResolver } from '@pothos/plugin-tracing';
 import ValidationPlugin from '@pothos/plugin-validation';
-import { authScopes, type AuthContexts, type AuthScopes } from './auth.js';
-import type { Context } from './context.js';
-import { prisma } from './prisma.js';
 import { GraphQLError, Kind } from 'graphql';
+import { authScopes, type AuthContexts, type AuthScopes } from '../auth.js';
+import type { Context } from '../context.js';
+import { prisma } from './prisma.js';
 
 /**
  * Maps database ID prefixes to GraphQL type names. Please add new types here as they are added to
@@ -53,6 +53,8 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   doc: 'Document',
   comment: 'Comment',
   reac: 'Reaction',
+  promocode: 'PromotionCode',
+  promo: 'Promotion',
 } as const;
 /* end @generated from schema */
 

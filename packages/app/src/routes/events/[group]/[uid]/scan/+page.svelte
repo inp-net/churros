@@ -88,7 +88,7 @@
       }
     | undefined;
 
-  let closeTimeoutHandle: undefined | NodeJS.Timeout = undefined;
+  let closeTimeoutHandle: ReturnType<typeof setTimeout> | undefined = undefined;
   let showCameraSettings = true;
   let aspectRatio = 16 / 9;
   let scanner: Html5QrcodeScanner | undefined;
@@ -148,7 +148,7 @@
       verifyRegistration: [
         { id: decodedContents, groupUid: $page.params.group, eventUid: $page.params.uid },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': {
             message: true,
           },

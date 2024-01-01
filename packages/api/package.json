@@ -37,8 +37,9 @@
     "multer": "^1.4.5-lts.1",
     "nanoid": "^5.0.4",
     "nodemailer": "^6.9.7",
+    "pdfmake": "^0.2.8",
     "phone": "^3.1.41",
-    "qr-code-generator-lib": "^1.0.1",
+    "qr-code-generator-lib": "patch:qr-code-generator-lib@npm%3A1.0.1#~/.yarn/patches/qr-code-generator-lib-npm-1.0.1-14a65cb2e0.patch",
     "qrcode": "^1.5.3",
     "rehype-highlight": "^7.0.0",
     "rehype-katex": "^7.0.0",
@@ -56,7 +57,9 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@tsconfig/esm": "^1.0.5",
+    "@tsconfig/node18": "^18.2.2",
+    "@tsconfig/strictest": "^2.0.2",
     "@types/bunyan": "^1.8.11",
     "@types/cli-progress": "^3.11.5",
     "@types/cookie": "^0.6.0",
@@ -79,17 +82,20 @@
     "typescript": "^5.3.3",
     "yaml": "^2.3.4"
   },
+  "imports": {
+    "#lib": "./build/src/lib/index.js"
+  },
   "prisma": {
     "seed": "tsx ./src/seed.ts"
   },
   "private": true,
   "scripts": {
+    "add-fulltextsearch": "python scripts/add-fulltextsearch.py",
     "build": "prisma generate && tsc && node ./build/scripts/update-id-prefix-to-typename-map.js && node ./build/scripts/inject-current-commit-hash.js && prisma generate && tsc && node ./build/scripts/post-build.js",
     "clean": "git clean -Xdf .",
     "dev": "NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
-    "start": "node ./build/src/index.js",
     "migrate-old-data": "cd scripts && yarn tsc import-old-data.ts --lib es2021,DOM --module es2022 --target es2022 --moduleResolution node --allowSyntheticDefaultImports && yarn node import-old-data.js",
-    "add-fulltextsearch": "python scripts/add-fulltextsearch.py"
+    "start": "node ./build/src/index.js"
   },
   "type": "module",
   "volta": {

@@ -1,17 +1,16 @@
+import { builder, prisma } from '#lib';
+import { DocumentType as DocumentTypePrisma, type Document } from '@prisma/client';
 import dichotomid from 'dichotomid';
-import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
-import { toHtml } from '../services/markdown.js';
-import { CommentType } from './comments.js';
-import { DateTimeScalar, FileScalar } from './scalars.js';
-import { type Document, DocumentType as DocumentTypePrisma } from '@prisma/client';
-import slug from 'slug';
 import { GraphQLError } from 'graphql';
-import { basename, dirname, join, relative } from 'node:path';
 import { mkdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { rename, rm, rmdir } from 'node:fs/promises';
-import { log } from './logs.js';
+import { basename, dirname, join, relative } from 'node:path';
+import slug from 'slug';
+import { toHtml } from '../services/markdown.js';
 import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
+import { CommentType } from './comments.js';
+import { log } from './logs.js';
+import { DateTimeScalar, FileScalar } from './scalars.js';
 
 export const DocumentEnumType = builder.enumType(DocumentTypePrisma, {
   name: 'DocumentType',

@@ -37,6 +37,8 @@ const ID_PREFIXES_TO_TYPENAMES = {
   doc: 'Document',
   comment: 'Comment',
   reac: 'Reaction',
+  promocode: 'PromotionCode',
+  promo: 'Promotion',
 } as const;
 /* end @generated from schema */
 
@@ -72,7 +74,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
           id,
         },
         Selector('Registration')({
-          __typename: true,
+          '__typename': true,
           '...on Error': {
             message: true,
           },

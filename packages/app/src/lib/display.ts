@@ -1,36 +1,38 @@
 import {
-  NotificationChannel,
   DocumentType,
+  IssueState,
+  NotificationChannel,
+  Visibility,
   type EventFrequency,
   type GroupType,
   type PaymentMethod,
-  Visibility,
-  IssueState,
 } from '$lib/zeus';
-import LogoLydia from '~icons/simple-icons/lydia';
-import LogoPaypal from '~icons/simple-icons/paypal';
-import IconCreditCard from '~icons/mdi/credit-card-outline';
-import IconCash from '~icons/mdi/hand-coin-outline';
-import IconPaymentCheck from '~icons/mdi/checkbook';
-import IconQuestionMark from '~icons/mdi/dots-horizontal';
+import type { SvelteComponent } from 'svelte';
+import IconGroupMembers from '~icons/mdi/account-group-outline';
+import IconGodparent from '~icons/mdi/account-multiple-outline';
+import IconAndroidStudio from '~icons/mdi/android-studio';
 import IconBankTransfer from '~icons/mdi/bank';
+import IconNotification from '~icons/mdi/bell-outline';
+import IconCalendarEndOutline from '~icons/mdi/calendar-end-outline';
+import IconPaymentCheck from '~icons/mdi/checkbook';
+import IconComment from '~icons/mdi/comment-outline';
+import IconCreditCard from '~icons/mdi/credit-card-outline';
+import {
+  default as IconDotsHorizontal,
+  default as IconQuestionMark,
+} from '~icons/mdi/dots-horizontal';
+import IconFileDocumentOutline from '~icons/mdi/file-document-outline';
+import IconHammerWrench from '~icons/mdi/hammer-wrench';
+import IconCash from '~icons/mdi/hand-coin-outline';
 import IconArticle from '~icons/mdi/note-text-outline';
 import IconShotgun from '~icons/mdi/pistol';
-import IconComment from '~icons/mdi/comment-outline';
-import IconGodparent from '~icons/mdi/account-multiple-outline';
-import IconGroupMembers from '~icons/mdi/account-group-outline';
-import IconNotification from '~icons/mdi/bell-outline';
-import IconFileDocumentOutline from '~icons/mdi/file-document-outline';
 import IconPlayBoxOutline from '~icons/mdi/play-box-outline';
-import IconCalendarEndOutline from '~icons/mdi/calendar-end-outline';
-import IconAndroidStudio from '~icons/mdi/android-studio';
-import IconStar from '~icons/mdi/star-outline';
-import IconDotsHorizontal from '~icons/mdi/dots-horizontal';
-import IconTestTube from '~icons/mdi/test-tube';
-import IconHammerWrench from '~icons/mdi/hammer-wrench';
-import IconSigma from '~icons/mdi/sigma';
 import IconPermissions from '~icons/mdi/shield-account-outline';
-import type { SvelteComponent } from 'svelte';
+import IconSigma from '~icons/mdi/sigma';
+import IconStar from '~icons/mdi/star-outline';
+import IconTestTube from '~icons/mdi/test-tube';
+import LogoLydia from '~icons/simple-icons/lydia';
+import LogoPaypal from '~icons/simple-icons/paypal';
 
 export const DISPLAY_PAYMENT_METHODS: Record<PaymentMethod, string> = {
   Cash: 'Espèces',

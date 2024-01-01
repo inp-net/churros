@@ -1,6 +1,5 @@
-import { builder } from '../builder.js';
+import { builder, prisma } from '#lib';
 import { LogoSourceType } from '@prisma/client';
-import { prisma } from '../prisma.js';
 import { GraphQLError } from 'graphql';
 
 export const LogoSourceTypeEnum = builder.enumType(LogoSourceType, { name: 'LogoSourceType' });
