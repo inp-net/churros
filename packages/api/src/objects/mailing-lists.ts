@@ -28,7 +28,7 @@ async function removeMemberFromMailingList(mailing: string, email: string) {
   });
 }
 
-export async function removeMemberFromBureauLists(memberID: string) {
+export async function updateMemberBureauLists(memberID: string) {
   const { email } = await prisma.user.findUniqueOrThrow({
     where: { id: memberID },
     select: {
@@ -36,7 +36,7 @@ export async function removeMemberFromBureauLists(memberID: string) {
     },
   });
 
-  const { groups: bureauGroups } = await prisma.user.findUniqueOrThrow({
+  const nbBureau = await prisma.user.count({
     where: {
       id: memberID,
       groups: {
@@ -51,38 +51,32 @@ export async function removeMemberFromBureauLists(memberID: string) {
         },
       },
     },
-    select: {
-      groups: { select: { title: true } },
-    },
   });
-  const { groups: prezGroups } = await prisma.user.findUniqueOrThrow({
+  const nbPrez = await prisma.user.count({
     where: {
       id: memberID,
       groups: {
         some: { president: true, group: { OR: [{ type: 'Association' }, { type: 'Club' }] } },
       },
     },
-    select: {
-      groups: { select: { title: true } },
-    },
   });
-  const { groups: trezGroups } = await prisma.user.findUniqueOrThrow({
+  const nbTrez = await prisma.user.count({
     where: {
       id: memberID,
       groups: {
         some: { treasurer: true, group: { OR: [{ type: 'Association' }, { type: 'Club' }] } },
       },
     },
-    select: {
-      groups: { select: { title: true } },
-    },
   });
 
-  if (bureauGroups.length === 0) removeMemberFromMailingList(mailingAllBureau, email);
+  if (nbBureau === 0) removeMemberFromMailingList(mailingAllBureau, email);
+  else if (nbBureau >= 1) addMemberToMailingList(mailingAllBureau, email);
 
-  if (prezGroups.length === 0) removeMemberFromMailingList(mailingAllPrez, email);
+  if (nbPrez === 0) removeMemberFromMailingList(mailingAllPrez, email);
+  else if (nbPrez >= 1) addMemberToMailingList(mailingAllPrez, email);
 
-  if (trezGroups.length === 0) removeMemberFromMailingList(mailingAllTrez, email);
+  if (nbTrez === 0) removeMemberFromMailingList(mailingAllTrez, email);
+  else if (nbTrez >= 1) addMemberToMailingList(mailingAllTrez, email);
 }
 
 export async function addMemberToGroupMailingList(groupId: string, email: string) {

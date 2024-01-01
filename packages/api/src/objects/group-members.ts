@@ -7,8 +7,8 @@ import { onBoard } from '../auth.js';
 import { purgeUserSessions } from '../context.js';
 import {
   addMemberToGroupMailingList,
-  removeMemberFromBureauLists,
   removeMemberFromGroupMailingList,
+  updateMemberBureauLists,
 } from './mailing-lists.js';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
@@ -264,6 +264,14 @@ builder.mutationField('upsertGroupMember', (t) =>
         update: data,
         include: { member: true },
       });
+
+      if (
+        group.type === 'Club' ||
+        group.type === 'Association' ||
+        group.type === 'StudentAssociationSection'
+      )
+        await updateMemberBureauLists(memberId);
+
       await prisma.logEntry.create({
         data: {
           area: 'group-member',
@@ -334,7 +342,7 @@ builder.mutationField('deleteGroupMember', (t) =>
 
       if (type === 'Club' || type === 'Association') {
         await removeMemberFromGroupMailingList(groupId, email);
-        await removeMemberFromBureauLists(memberId);
+        await updateMemberBureauLists(memberId);
       }
 
       purgeUserSessions(uid);
