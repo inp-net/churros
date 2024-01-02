@@ -159,23 +159,22 @@
 </script>
 
 <script lang="ts">
-  import { EventFrequency, type PaymentMethod, Visibility, zeus } from '$lib/zeus';
+  import { EventFrequency, Visibility, zeus, type PaymentMethod } from '$lib/zeus';
   import { addDays } from 'date-fns';
   import { nanoid } from 'nanoid';
-  import { onMount } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import { writable } from 'svelte/store';
-  import IconClose from '~icons/mdi/close';
-  import ButtonGhost from './ButtonGhost.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import FormEventBetaStepDetails from './FormEventBetaStepDetails.svelte';
   import FormEventBetaStepOrganization from './FormEventBetaStepOrganization.svelte';
   import FormEventBetaStepSituation from './FormEventBetaStepSituation.svelte';
   import FormEventBetaStepTickets from './FormEventBetaStepTickets.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
-  import Modal from './Modal.svelte';
   import NavigationSteps from './NavigationSteps.svelte';
+  import FormEventBetaStepVisibility from './FormEventBetaStepVisibility.svelte';
 
-  export let modalElement: HTMLDialogElement;
+  let dispatch = createEventDispatcher();
+  let scrollableAreaElement: HTMLElement;
 
   export let event: Event = {
     title: 'Quoicoubaka',
@@ -216,95 +215,73 @@
   const statusMessage = writable('');
 
   function nextStepOrSubmit() {
-    if (currentStep === 'visibility') modalElement.close();
+    if (currentStep === 'visibility') dispatch('submit');
     else currentStep = steps[stepIndex(currentStep) + 1][0];
   }
 
   let scrolled = false;
 
   onMount(() => {
-    modalElement.addEventListener('scroll', () => {
-      scrolled = modalElement.scrollTop > 0;
+    scrollableAreaElement.addEventListener('scroll', () => {
+      scrolled = scrollableAreaElement.scrollTop > 0;
     });
   });
 </script>
 
-<Modal open noPadding class="form-event-beta" bind:element={modalElement}>
-  <form class="content" on:submit|self|preventDefault={nextStepOrSubmit}>
-    <section class="top" class:scrolled>
-      <h1>
-        Créer un évènement
-        <ButtonGhost
-          on:click={() => {
-            modalElement.close();
-          }}
-        >
-          <IconClose></IconClose>
-        </ButtonGhost>
-      </h1>
-      <div class="steps">
-        <NavigationSteps {steps} bind:currentStep></NavigationSteps>
-      </div>
-    </section>
-    <div class="inputs-and-preview">
-      {#if currentStep === 'details'}
-        <FormEventBetaStepDetails
-          {...event}
-          bind:title={event.title}
-          bind:description={event.description}
-          bind:startsAt={event.startsAt}
-          bind:endsAt={event.endsAt}
-          bind:location={event.location}
-        ></FormEventBetaStepDetails>
-      {:else if currentStep === 'situation'}
-        <FormEventBetaStepSituation {...event}></FormEventBetaStepSituation>
-      {:else if currentStep === 'organization'}
-        {#await $zeus.query( { lydiaAccounts: { id: true, name: true, group: { pictureFile: true, pictureFileDark: true, name: true } } }, )}
-          <LoadingSpinner></LoadingSpinner>
-        {:then { lydiaAccounts }}
-          <FormEventBetaStepOrganization
-            availableLydiaAccounts={lydiaAccounts}
-            {...event}
-            bind:lydiaAccount={event.beneficiary}
-          ></FormEventBetaStepOrganization>
-        {/await}
-      {:else if currentStep === 'tickets'}
-        <FormEventBetaStepTickets
-          bind:ticketGroups={event.ticketGroups}
-          bind:tickets={event.tickets}
-          {statusMessage}
-        ></FormEventBetaStepTickets>
-      {/if}
+<form class="content" on:submit|self|preventDefault={nextStepOrSubmit}>
+  <section class="top" class:scrolled>
+    <h1>Créer un évènement</h1>
+    <div class="steps">
+      <NavigationSteps {steps} bind:currentStep></NavigationSteps>
     </div>
-    <nav class="navigate-steps">
-      <p class="status">
-        {$statusMessage}
-      </p>
-      <ButtonPrimary smaller submits>
-        {#if currentStep === 'visibility'}
-          {#if event.visibility === Visibility.Private}Enregistrer{:else}Publier{/if}
-        {:else}
-          Continuer
-        {/if}
-      </ButtonPrimary>
-    </nav>
-  </form>
-</Modal>
+  </section>
+  <div class="inputs-and-preview" bind:this={scrollableAreaElement}>
+    {#if currentStep === 'details'}
+      <FormEventBetaStepDetails
+        {...event}
+        bind:title={event.title}
+        bind:description={event.description}
+        bind:startsAt={event.startsAt}
+        bind:endsAt={event.endsAt}
+        bind:location={event.location}
+      ></FormEventBetaStepDetails>
+    {:else if currentStep === 'situation'}
+      <FormEventBetaStepSituation {...event}></FormEventBetaStepSituation>
+    {:else if currentStep === 'organization'}
+      {#await $zeus.query( { lydiaAccounts: { id: true, name: true, group: { pictureFile: true, pictureFileDark: true, name: true } } }, )}
+        <LoadingSpinner></LoadingSpinner>
+      {:then { lydiaAccounts }}
+        <FormEventBetaStepOrganization
+          availableLydiaAccounts={lydiaAccounts}
+          {...event}
+          bind:lydiaAccount={event.beneficiary}
+        ></FormEventBetaStepOrganization>
+      {/await}
+    {:else if currentStep === 'tickets'}
+      <FormEventBetaStepTickets bind:ticketGroups={event.ticketGroups} bind:tickets={event.tickets}
+      ></FormEventBetaStepTickets>
+    {:else if currentStep === 'visibility'}
+      <FormEventBetaStepVisibility {...event} bind:visibility={event.visibility}
+      ></FormEventBetaStepVisibility>
+    {/if}
+  </div>
+  <nav class="navigate-steps">
+    <p class="status">
+      {$statusMessage}
+    </p>
+    <ButtonPrimary smaller submits>
+      {#if currentStep === 'visibility'}
+        {#if [Visibility.Unlisted, Visibility.Private].includes(event.visibility)}Enregistrer{:else}Publier{/if}
+      {:else}
+        Continuer
+      {/if}
+    </ButtonPrimary>
+  </nav>
+</form>
 
 <style>
-  :global(.form-event-beta) {
-    flex-direction: column;
-    width: 100%;
-    max-width: 1200px;
-    height: 100%;
-  }
-
-  :global(.form-event-beta[open]) {
-    display: flex;
-  }
-
   .content {
-    position: relative;
+    height: 100%;
     display: grid;
     flex-grow: 1;
     grid-template-rows: max-content auto max-content;
@@ -316,27 +293,18 @@
     z-index: 2;
     background: var(--bg);
     transition: box-shadow 0.25s ease;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
 
   section.top.scrolled {
     box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
   }
 
-  h1 {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--muted-border);
-  }
-
   .steps {
-    position: relative;
-    right: 0;
-    left: 0;
-    max-width: 1000px;
     padding: 0.5rem 1.5rem;
-    margin: 0 auto;
   }
 
   .inputs-and-preview {
@@ -346,7 +314,8 @@
     gap: 4rem;
     min-height: 0;
     padding: 1rem 1.5rem;
-    margin: 0 auto;
+    width: 100%;
+    /* margin: 0 auto; */
     overflow: hidden auto;
   }
 
@@ -360,7 +329,6 @@
     align-self: end;
     justify-content: space-between;
     padding: 1rem 1.5rem;
-    padding-top: 2rem;
     margin-top: auto;
     background: var(--bg);
     border-top: 1px solid var(--muted-border);

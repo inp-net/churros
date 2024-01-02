@@ -35,11 +35,9 @@
   beforeNavigate(() => {
     flyoutOpen = false;
   });
-
-  let createEventModal: HTMLDialogElement;
 </script>
 
-<FormEventBeta bind:modalElement={createEventModal}></FormEventBeta>
+<!-- <FormEventBeta bind:modalElement={createEventModal}></FormEventBeta> -->
 
 <nav
   class="navigation-side"
@@ -257,15 +255,10 @@
       <span>Post</span>
     </a>
 
-    <button
-      class="button"
-      on:click={() => {
-        createEventModal.showModal();
-      }}
-    >
+    <a class="button" href="/events/create">
       <IconEvent />
       <span>Événement</span>
-    </button>
+    </a>
   </section>
 </div>
 

@@ -250,3 +250,8 @@ a.user-mention:focus-visible {
   color: var(--primary-hover-text) !important;
   background-color: var(--primary-hover-bg) !important;
 }
+
+button,
+input {
+  color: var(--text);
+}

@@ -206,7 +206,7 @@
 </ul>
 <section class="editing-ticket">
   {#if expandedTicketId}
-    <div class="editing-ticket-transition-wrapper" transition:fly={{ duration: 50, x: 50 }}>
+    <div class="editing-ticket-transition-wrapper" transition:fly={{ duration: 200, x: 50 }}>
       <FormTicketBeta
         bind:ticket={tickets[tickets.findIndex((t) => t.id === expandedTicketId)]}
         on:save={({ detail: ticket }) => {

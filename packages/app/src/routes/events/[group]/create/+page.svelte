@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import FormEvent from '$lib/components/FormEvent.svelte';
+  import FormEventBeta from '$lib/components/FormEventBeta.svelte';
   import { me } from '$lib/session';
   import { EventFrequency, Visibility } from '$lib/zeus';
   import type { PageData } from './$types';
@@ -55,19 +56,17 @@
 </script>
 
 <div class="content">
-  <h1>Créer un évènement</h1>
-
-  <FormEvent {redirectAfterSave} bind:event availableLydiaAccounts={data.lydiaAccounts} />
+  <!-- <FormEvent {redirectAfterSave} bind:event availableLydiaAccounts={data.lydiaAccounts} /> -->
+  <FormEventBeta bind:event />
 </div>
 
 <style>
+  :global(main) {
+    height: 100%;
+  }
   .content {
     max-width: 1200px;
+    height: 100%;
     margin: 0 auto;
-  }
-
-  h1 {
-    margin-bottom: 3rem;
-    text-align: center;
   }
 </style>

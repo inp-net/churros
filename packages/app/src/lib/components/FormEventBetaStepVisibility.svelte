@@ -2,6 +2,7 @@
   import type { Visibility } from '$lib/zeus';
   import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
   import InputVisibility from './InputVisibility.svelte';
+  import InputVisibilityRadios from './InputVisibilityRadios.svelte';
 
   export let visibility: Visibility;
 
@@ -27,10 +28,10 @@
 </script>
 
 <section class="inputs">
-  <InputVisibility bind:value={visibility}></InputVisibility>
+  <InputVisibilityRadios label="Visibilité" bind:visibility />
 </section>
 <section class="preview">
   <FormEventBetaPreviewCard
-    {...{ title, description, group, pictureFile, uid, links, coOrganizers }}
+    {...{ title, description, group, pictureFile, uid, links, coOrganizers, visibility }}
   />
 </section>

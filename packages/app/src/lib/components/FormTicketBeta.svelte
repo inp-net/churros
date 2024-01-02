@@ -17,6 +17,7 @@
   import LoadingSpinner from './LoadingSpinner.svelte';
   import Pill from './Pill.svelte';
   import PillRemovable from './PillRemovable.svelte';
+  import InputLinks from './InputLinks.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -131,14 +132,14 @@
               on:remove={() => {
                 // eslint-disable-next-line unicorn/no-null
                 ticket.openToApprentices = null;
-              }}>FISAs</PillRemovable
+              }}>Apprenti·e·s</PillRemovable
             >
           {:else if ticket.openToApprentices === false}
             <PillRemovable
               on:remove={() => {
                 // eslint-disable-next-line unicorn/no-null
                 ticket.openToApprentices = null;
-              }}>FISEs</PillRemovable
+              }}>Étudiant·e·s</PillRemovable
             >
           {/if}
           {#each ticket.openToPromotions as graduationYear}
@@ -187,7 +188,7 @@
                 }}
               >
                 <IconAdd></IconAdd>
-                FISAs</Pill
+                Apprenti·e·s</Pill
               >
               <Pill
                 clickable
@@ -196,7 +197,7 @@
                 }}
               >
                 <IconAdd></IconAdd>
-                FISEs</Pill
+                Étudiant·e·s</Pill
               >
             {/if}
             <Pill
@@ -306,6 +307,13 @@
         </div>
       </section>
     {/if}
+    <section class="links">
+      <details>
+        <summary>Liens</summary>
+        <p>Acessibles après réservation</p>
+        <InputLinks label="" bind:value={ticket.links}></InputLinks>
+      </details>
+    </section>
   </div>
   <footer>
     <ButtonSecondary
@@ -334,10 +342,13 @@
   .ticket-form {
     display: flex;
     flex-direction: column;
+    flex-grow: 0;
     gap: 1rem;
     width: 100%;
     background: var(--muted-bg);
     border-radius: var(--radius-block);
+    overflow-y: scroll;
+    max-height: 100%;
   }
 
   .constraints h2 {

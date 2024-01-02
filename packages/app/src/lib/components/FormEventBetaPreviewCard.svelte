@@ -2,7 +2,8 @@
   import IconLocation from '~icons/mdi/map-marker-outline';
   import IconCalendar from '~icons/mdi/calendar-outline';
   import { formatEventDates } from '$lib/dates';
-  import { EventFrequency } from '../../zeus';
+  import { EventFrequency, Visibility } from '../../zeus';
+  import BadgeVisibility from './BadgeVisibility.svelte';
   export let title = '';
   export let description = '';
   export let startsAt: Date | undefined = undefined;
@@ -10,12 +11,20 @@
   export let location = '';
   export let frequency: EventFrequency = EventFrequency.Once;
   export let recurringUntil: Date | undefined = undefined;
+  export let visibility: Visibility | undefined = undefined;
 </script>
 
 <article class="preview-card">
   <img alt="Pas de miniature" class="thumb" />
   <div class="content">
-    <p class:empty={!title} class="title">{title || 'Pas de titre'}</p>
+    <div class="title-and-visiblity">
+      <p class:empty={!title} class="title">
+        {title || 'Pas de titre'}
+      </p>
+      {#if visibility}
+        <BadgeVisibility {visibility} />
+      {/if}
+    </div>
     <div class:empty={!description} class="description" data-user-html="">
       {description || 'Sans description'}
     </div>
@@ -74,6 +83,13 @@
   article .title {
     font-size: 1.2em;
     font-weight: bold;
+  }
+
+  .title-and-visiblity {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   article *.empty {

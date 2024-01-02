@@ -16,7 +16,7 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let label: string;
-  export let inline = false
+  export let inline = false;
 </script>
 
 <InputField {hint} {errors} {label} {required}>

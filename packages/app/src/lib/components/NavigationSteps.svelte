@@ -61,7 +61,6 @@
     row-gap: 0.25rem;
     align-items: center;
     padding: 0.5rem;
-
   }
 
   .progress-steps-line::before {
