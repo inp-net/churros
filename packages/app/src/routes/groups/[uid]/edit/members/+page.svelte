@@ -3,6 +3,7 @@
   import Fuse from 'fuse.js';
   import IconSearch from '~icons/mdi/search';
   import IconAdd from '~icons/mdi/add';
+  import IconBulkAddMembers from '~icons/mdi/account-multiple-plus-outline';
   import InputText from '$lib/components/InputText.svelte';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
@@ -357,7 +358,9 @@
 <form class="add-member" on:submit|preventDefault={addGroupMember}>
   <h2>
     Ajouter un membre
-    <ButtonSecondary insideProse href="./bulk">Ajouter en masse</ButtonSecondary>
+    <ButtonSecondary icon={IconBulkAddMembers} insideProse href="./bulk"
+      >Ajouter en masse</ButtonSecondary
+    >
   </h2>
   <InputPerson
     except={data.group.members.map(({ member: { uid } }) => uid)}
