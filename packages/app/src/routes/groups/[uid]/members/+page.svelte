@@ -7,6 +7,7 @@
   import { me } from '$lib/session';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import { isOnClubBoard, roleEmojis } from '$lib/permissions';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   export let data: PageData;
 
@@ -34,7 +35,9 @@
     {members.length} membre{members.length > 2 ? 's' : ''} de {name}
 
     {#if canEditMembers}
-      <a class="edit" href="../edit/members"><IconGear /></a>
+      <div class="title-actions">
+        <ButtonSecondary href="../edit/members" icon={IconGear}>Gérer</ButtonSecondary>
+      </div>
     {/if}
   </h1>
 
@@ -75,8 +78,8 @@
     margin: 0 auto;
   }
 
-  .edit {
-    margin-left: auto;
+  .title-actions {
+    margin-left: 1rem;
   }
 
   .count {
