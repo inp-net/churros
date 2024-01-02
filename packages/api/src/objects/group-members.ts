@@ -44,7 +44,7 @@ export function membersNeedToPayForTheStudentAssociation(group: { type: GroupTyp
   return group.type === GroupType.Club || group.type === GroupType.List;
 }
 
-/** Adds a member to a group. The member is found by their name. */
+/** Adds a member to a group. */
 builder.mutationField('addGroupMember', (t) =>
   t.prismaField({
     type: GroupMemberType,
@@ -78,12 +78,13 @@ builder.mutationField('addGroupMember', (t) =>
         throw new GraphQLError(`${fullName(member)} n'est pas cotisant·e`);
       }
 
-      return Boolean(
-        user?.canEditGroups ||
-          user?.groups.some(
-            ({ group, canEditMembers }) => canEditMembers && group.uid === groupUid,
-          ),
-      );
+      if (user?.canEditGroups) return true;
+
+      const editorOfGroup = await prisma.groupMember.findFirst({
+        where: { group: { uid: groupUid }, member: { uid }, canEditMembers: true },
+      });
+
+      return Boolean(editorOfGroup);
     },
     async resolve(query, _, { groupUid, uid, title }, { user }) {
       purgeUserSessions(uid);
