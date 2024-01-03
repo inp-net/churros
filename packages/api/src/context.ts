@@ -11,6 +11,7 @@ import {
   type User,
 } from '@prisma/client';
 import { GraphQLError } from 'graphql';
+import { onBoard } from './auth.js';
 import { yearTier } from './date.js';
 import { fullName } from './objects/users.js';
 
@@ -76,6 +77,12 @@ const getUser = async (token: string) => {
   // Normalize permissions
   user.canEditGroups ||= user.admin;
   user.canEditUsers ||= user.admin;
+  user.groups = user.groups.map((membership) => ({
+    ...membership,
+    canEditMembers: membership.canEditMembers || onBoard(membership),
+    canEditArticles: membership.canEditArticles || onBoard(membership),
+    canScanEvents: membership.canScanEvents || onBoard(membership),
+  }));
 
   // When the in memory store grows too big, delete some sessions
   if (sessions.size > 10_000)
