@@ -78,13 +78,9 @@ builder.mutationField('addGroupMember', (t) =>
         throw new GraphQLError(`${fullName(member)} n'est pas cotisant·e`);
       }
 
-      if (user?.canEditGroups) return true;
-
-      const editorOfGroup = await prisma.groupMember.findFirst({
-        where: { group: { uid: groupUid }, member: { uid }, canEditMembers: true },
-      });
-
-      return Boolean(editorOfGroup);
+      return Boolean(
+        user?.canEditGroups || user?.groups.some(({ group }) => group.uid === groupUid),
+      );
     },
     async resolve(query, _, { groupUid, uid, title }, { user }) {
       purgeUserSessions(uid);
