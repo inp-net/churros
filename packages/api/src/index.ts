@@ -134,12 +134,16 @@ api.use('/dump', async (req, res) => {
 
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use('/token', async (request, response) => {
-  let authorization = request.headers['authorization'];
-  if (!authorization) {
+  function error(text: string, code = 401) {
     return response
-      .status(401)
-      .send('No Authorization header. Set it to "Basic <base64(client_id:client_secret)>"');
+      .status(code)
+      .send(
+        `${text}\n\nSee the documentation of the 'authorize' mutation for more information: <a href="${process.env.FRONTEND_ORIGIN}/graphql">${process.env.FRONTEND_ORIGIN}/graphql</a>`,
+      );
   }
+  let authorization = request.headers['authorization'];
+  if (!authorization)
+    return error('No Authorization header. Set it to "Basic <base64(client_id:client_secret)>"');
 
   if (typeof authorization !== 'string') authorization = authorization[0];
 
@@ -159,22 +163,20 @@ api.use('/token', async (request, response) => {
     where: { value: authorizationCode },
     include: { client: true },
   });
-  if (!credential) return response.status(401).send('Invalid access code');
+  if (!credential) return error('Invalid access code');
   if (credential.type !== ThirdPartyCredentialType.AuthorizationCode)
-    return response.status(401).send('Invalid access code');
+    return error('Invalid access code');
   if (credential.expiresAt && credential.expiresAt < new Date())
-    return response.status(401).send('Access code expired');
+    return error('Access code expired');
   if (
     credential.client.id !== ensureHasIdPrefix(clientId, 'ThirdPartyApp') ||
     credential.client.secret !== clientSecret
-  ) {
-    console.log(credential.client, clientId, clientSecret)
-    return response.status(401).send('Invalid client_id/client_secret pair');
-  }
+  )
+    return error('Invalid client_id/client_secret pair');
 
-  if (!credential.client.active) return response.status(401).send('This app has been deactivated');
+  if (!credential.client.active) return error('This app has been deactivated');
   if (!credential.client.allowedRedirectUris.includes(redirectUri))
-    return response.status(401).send('Invalid redirect URI');
+    return error('Invalid redirect URI');
   await prisma.thirdPartyCredential.deleteMany({ where: { value: authorizationCode } });
   const accessToken = await prisma.thirdPartyCredential.create({
     data: {
