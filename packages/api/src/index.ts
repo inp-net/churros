@@ -372,5 +372,3 @@ maintenance.get('/*', (_, res) => {
 maintenance.listen(4002, () => {
   console.info('Maintenance page server listening at http://localhost:4002');
 });
-
-// await rescheduleNotifications();

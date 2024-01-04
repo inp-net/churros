@@ -1,5 +1,5 @@
 import { loadQuery } from '$lib/zeus';
-import type { LayoutLoad } from './$types';
+import type { LayoutLoad } from '../$types';
 
 export const ssr = false;
 

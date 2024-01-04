@@ -295,6 +295,7 @@ __metadata:
   dependencies:
     "@envelop/core": "npm:^5.0.0"
     "@graphql-yoga/node": "npm:^3.9.1"
+    "@node-oauth/express-oauth-server": "npm:^3.0.1"
     "@pothos/core": "npm:3.40.1"
     "@pothos/plugin-complexity": "npm:^3.13.0"
     "@pothos/plugin-dataloader": "npm:^3.17.2"
@@ -1793,6 +1794,37 @@ __metadata:
   bin:
     node-pre-gyp: bin/node-pre-gyp
   checksum: 2b24b93c31beca1c91336fa3b3769fda98e202fb7f9771f0f4062588d36dcc30fcf8118c36aa747fa7f7610d8cf601872bdaaf62ce7822bb08b545d1bbe086cc
+  languageName: node
+  linkType: hard
+
+"@node-oauth/express-oauth-server@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@node-oauth/express-oauth-server@npm:3.0.1"
+  dependencies:
+    "@node-oauth/oauth2-server": "npm:^4.3.0"
+    bluebird: "npm:^3.7.2"
+    express: "npm:^4.18.2"
+  checksum: f670d869e3cb0a1f7a765c461eed8a28634e3aeb3cb1ad2ff06cf85e8b4fa57651afc75b57587f1f8b4f393898221199306d3690686b4bf41ea56d74fc61d47c
+  languageName: node
+  linkType: hard
+
+"@node-oauth/formats@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@node-oauth/formats@npm:1.0.0"
+  checksum: cd89946031636feebc6b07bf44bb79841915d63a9908d5eb86f990d9fe7fa18d962645b1b8aab688dc62d796810b792ad871e2545dc04f449d358d382cc34fae
+  languageName: node
+  linkType: hard
+
+"@node-oauth/oauth2-server@npm:^4.3.0":
+  version: 4.3.3
+  resolution: "@node-oauth/oauth2-server@npm:4.3.3"
+  dependencies:
+    "@node-oauth/formats": "npm:1.0.0"
+    basic-auth: "npm:2.0.1"
+    bluebird: "npm:3.7.2"
+    promisify-any: "npm:2.0.1"
+    type-is: "npm:1.6.18"
+  checksum: 17a08059e14fa278a69a0959b9403205728c455b51c8f01f8d9fbf47fcc47a3e99e776ff56c1082e91700135cc1f249821462b5c678150807f20dde11c60a5c6
   languageName: node
   linkType: hard
 
@@ -3624,6 +3656,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"basic-auth@npm:2.0.1":
+  version: 2.0.1
+  resolution: "basic-auth@npm:2.0.1"
+  dependencies:
+    safe-buffer: "npm:5.1.2"
+  checksum: 05f56db3a0fc31c89c86b605231e32ee143fb6ae38dc60616bc0970ae6a0f034172def99e69d3aed0e2c9e7cac84e2d63bc51a0b5ff6ab5fc8808cc8b29923c1
+  languageName: node
+  linkType: hard
+
 "big.js@npm:^5.2.2":
   version: 5.2.2
   resolution: "big.js@npm:5.2.2"
@@ -3642,6 +3683,20 @@ __metadata:
   version: 2.0.5
   resolution: "binary-searching@npm:2.0.5"
   checksum: 914ccf15d4c989a8900e5617e2b6ec77a016f894b3833eaa5720a310214420dbd5d8eb577c158f99d25769968225c522cc37580c8d2ed46cc469f9d0365b7f15
+  languageName: node
+  linkType: hard
+
+"bluebird@npm:3.7.2, bluebird@npm:^3.7.2":
+  version: 3.7.2
+  resolution: "bluebird@npm:3.7.2"
+  checksum: 680de03adc54ff925eaa6c7bb9a47a0690e8b5de60f4792604aae8ed618c65e6b63a7893b57ca924beaf53eee69c5af4f8314148c08124c550fe1df1add897d2
+  languageName: node
+  linkType: hard
+
+"bluebird@npm:^2.10.0":
+  version: 2.11.0
+  resolution: "bluebird@npm:2.11.0"
+  checksum: d0c55c4c5f56522ee53e1762908c73ad97e403ce24d80ae99af3bf8902764530df0f7c88f35a1de809aa4b62d474c17f6bd83c8bc4f8cb539c50fddec1896c20
   languageName: node
   linkType: hard
 
@@ -4131,6 +4186,23 @@ __metadata:
   version: 1.0.4
   resolution: "clone@npm:1.0.4"
   checksum: 2176952b3649293473999a95d7bebfc9dc96410f6cbd3d2595cf12fd401f63a4bf41a7adbfd3ab2ff09ed60cb9870c58c6acdd18b87767366fabfc163700f13b
+  languageName: node
+  linkType: hard
+
+"co-bluebird@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "co-bluebird@npm:1.1.0"
+  dependencies:
+    bluebird: "npm:^2.10.0"
+    co-use: "npm:^1.1.0"
+  checksum: 3d45cc330cf6e71e846542293b2bc0ee4be53627ff84247b4b27e07f21a55d37dd9042f309332fa79050ea0739d6570aca4b87a76ce14b6e492e291c76ddf4b8
+  languageName: node
+  linkType: hard
+
+"co-use@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "co-use@npm:1.1.0"
+  checksum: 37f33acdd5bc5ba983a1966e68c018e7042045cccbf4cc2bc283b68ce18582f8d87e516dd9d6aa45e45c883891d1bf1f6713a576a2e49078abf92055f9c3bf40
   languageName: node
   linkType: hard
 
@@ -7067,6 +7139,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-generator@npm:^1.0.2":
+  version: 1.0.3
+  resolution: "is-generator@npm:1.0.3"
+  checksum: b2717c058422053f828280631b9b245006d3228011e381d35f11610bbe94ce022176bbe7218ae836c75ed5019423a5997fa958c0403d397df41d51e31b89937a
+  languageName: node
+  linkType: hard
+
 "is-glob@npm:^4.0.0, is-glob@npm:^4.0.1, is-glob@npm:^4.0.3, is-glob@npm:~4.0.1":
   version: 4.0.3
   resolution: "is-glob@npm:4.0.3"
@@ -9921,6 +10000,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"promisify-any@npm:2.0.1":
+  version: 2.0.1
+  resolution: "promisify-any@npm:2.0.1"
+  dependencies:
+    bluebird: "npm:^2.10.0"
+    co-bluebird: "npm:^1.1.0"
+    is-generator: "npm:^1.0.2"
+  checksum: 4d5aabdcf2b47daf1ec8b2888a722de406cf85b4f4e6074b486c3cf5eb1af56bc58c7f668144241cd90b059b0214e2bd61b994da8b0f8ddb34ace3e4de458415
+  languageName: node
+  linkType: hard
+
 "property-expr@npm:^2.0.5":
   version: 2.0.6
   resolution: "property-expr@npm:2.0.6"
@@ -10572,17 +10662,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"safe-buffer@npm:5.1.2, safe-buffer@npm:~5.1.0, safe-buffer@npm:~5.1.1":
+  version: 5.1.2
+  resolution: "safe-buffer@npm:5.1.2"
+  checksum: 780ba6b5d99cc9a40f7b951d47152297d0e260f0df01472a1b99d4889679a4b94a13d644f7dbc4f022572f09ae9005fa2fbb93bbbd83643316f365a3e9a45b21
+  languageName: node
+  linkType: hard
+
 "safe-buffer@npm:5.2.1, safe-buffer@npm:^5.0.1, safe-buffer@npm:~5.2.0":
   version: 5.2.1
   resolution: "safe-buffer@npm:5.2.1"
   checksum: 6501914237c0a86e9675d4e51d89ca3c21ffd6a31642efeba25ad65720bce6921c9e7e974e5be91a786b25aa058b5303285d3c15dbabf983a919f5f630d349f3
-  languageName: node
-  linkType: hard
-
-"safe-buffer@npm:~5.1.0, safe-buffer@npm:~5.1.1":
-  version: 5.1.2
-  resolution: "safe-buffer@npm:5.1.2"
-  checksum: 780ba6b5d99cc9a40f7b951d47152297d0e260f0df01472a1b99d4889679a4b94a13d644f7dbc4f022572f09ae9005fa2fbb93bbbd83643316f365a3e9a45b21
   languageName: node
   linkType: hard
 
@@ -12037,7 +12127,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-is@npm:^1.6.4, type-is@npm:~1.6.18":
+"type-is@npm:1.6.18, type-is@npm:^1.6.4, type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
   dependencies:
