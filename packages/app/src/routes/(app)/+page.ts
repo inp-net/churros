@@ -1,5 +1,5 @@
 import { loadQuery, Selector } from '$lib/zeus';
-import type { PageLoad } from '../$types';
+import type { PageLoad } from './$types';
 
 export const _pageQuery = Selector('QueryHomepageConnection')({
   pageInfo: { hasNextPage: true, endCursor: true },
