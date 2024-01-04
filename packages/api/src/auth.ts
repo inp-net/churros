@@ -1,5 +1,6 @@
 import type { User } from '@prisma/client';
 import type { Context } from './context.js';
+import { nanoid } from 'nanoid';
 
 export interface AuthScopes {
   loggedIn: boolean;
@@ -37,4 +38,12 @@ export function onBoard(
     permissions.vicePresident ||
     permissions.secretary
   );
+}
+
+export function isThirdPartyToken(token: string): boolean {
+  return token.startsWith('churros_');
+}
+
+export function generateThirdPartyToken(): string {
+  return `churros_${nanoid()}`;
 }

@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
-import { nanoid } from 'nanoid';
+import { generateThirdPartyToken } from '../auth.js';
 
 builder.mutationField('authorize', (t) =>
   t.string({
@@ -18,7 +18,7 @@ builder.mutationField('authorize', (t) =>
       const { value } = await prisma.thirdPartyCredential.create({
         data: {
           clientId,
-          value: nanoid(),
+          value: generateThirdPartyToken(),
           // Keep the token for 7 days
           expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
           owner: { connect: { id: user.id } },
