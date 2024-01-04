@@ -153,6 +153,9 @@ api.use('/token', async (request, response) => {
     .split(':') as [string, string];
 
   const formData = request.body;
+
+  await log('oauth', 'token', request.body, clientId);
+
   const { code: authorizationCode, redirect_uri: redirectUri } = z
     .object({
       code: z.string(),
@@ -160,6 +163,7 @@ api.use('/token', async (request, response) => {
       redirect_uri: z.string(),
     })
     .parse(formData);
+
   const credential = await prisma.thirdPartyCredential.findFirst({
     where: { value: authorizationCode },
     include: { client: true },

@@ -1,9 +1,12 @@
+import { browser } from '$app/environment';
 import { redirectToLogin } from '$lib/session.js';
 import { loadQuery } from '$lib/zeus';
 
 export async function load({ parent, url, fetch }) {
   const { me } = await parent();
   if (!me) throw redirectToLogin(url.pathname, Object.fromEntries(url.searchParams.entries()));
+
+  if (!browser) console.info(`[oauth] authorize(${me.uid}, ${url.search})`);
 
   const clientId = url.searchParams.get('client_id');
 

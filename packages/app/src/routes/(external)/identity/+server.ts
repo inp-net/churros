@@ -25,15 +25,16 @@ export const GET = async ({ fetch, request }) => {
     },
   );
 
-  return new Response(
-    JSON.stringify({
-      ...me,
-      ldapInternalEmail: `${me.uid}@${me.major?.ldapSchool?.internalMailDomain ?? 'external'}`,
-    }),
-    {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+  const data = {
+    ...me,
+    ldapInternalEmail: `${me.uid}@${me.major?.ldapSchool?.internalMailDomain ?? 'external'}`,
+  };
+
+  console.info(`[oauth] identity(${me.uid}) = ${JSON.stringify(data)}`);
+
+  return new Response(JSON.stringify(data), {
+    headers: {
+      'Content-Type': 'application/json',
     },
-  );
+  });
 };
