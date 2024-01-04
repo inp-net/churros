@@ -20,7 +20,7 @@
   import { me } from '$lib/session';
   import { page } from '$app/stores';
   import { tooltip } from '$lib/tooltip';
-  import type { MOBILE_NAVIGATION_TABS } from '../../routes/+layout.svelte';
+  import type { MOBILE_NAVIGATION_TABS } from '../../routes/(app)/+layout.svelte';
   import { scrollToTop } from '$lib/scroll';
   import { theme } from '$lib/theme';
 

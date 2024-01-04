@@ -11,6 +11,8 @@ const ID_PREFIXES_TO_TYPENAMES = {
   minor: 'Minor',
   school: 'School',
   credential: 'Credential',
+  token: 'ThirdPartyCredential',
+  app: 'ThirdPartyApp',
   ae: 'StudentAssociation',
   contribution: 'Contribution',
   contributionoption: 'ContributionOption',
