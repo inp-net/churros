@@ -27,9 +27,7 @@
     {name} souhaite accéder à ton compte Churros
   </h1>
 
-  <section class="about">
-    <p class="description">{description}</p>
-  </section>
+  <p class="description">{description}</p>
 
   <section class="accept">
     <ButtonPrimary
@@ -60,7 +58,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2rem;
+    gap: 1rem;
     margin: auto;
     padding: 3rem;
     flex-grow: 1;
@@ -70,8 +68,12 @@
     background: var(--bg);
   }
 
-  h1 {
+  h1, .description {
     text-align: center;
+  }
+
+  section.about {
+    margin-top: 3rem;
   }
 
   section.about > * {
@@ -86,6 +88,12 @@
     height: 4rem;
     margin-bottom: 2rem;
     filter: saturate(0);
+  }
+
+  section.logo {
+    max-height: 8rem;
+    display: flex;
+    justify-content: center;
   }
 
   section.accept {
