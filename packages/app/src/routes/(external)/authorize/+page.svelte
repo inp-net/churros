@@ -17,8 +17,8 @@
 </script>
 
 <main>
-  <section class="logo">
-    <LogoChurros />
+  <section class="churros-logo">
+    <LogoChurros wordmark />
   </section>
   <section class="logo">
     <img src={faviconUrl} alt="Logo de {name}" />
@@ -29,30 +29,28 @@
 
   <section class="about">
     <p class="description">{description}</p>
-    <span class="by">
-      par <AvatarPerson
-        inline
-        small
-        fullName={owner.name}
-        href="/groups/{owner.uid}"
-        pictureFile={groupLogoSrc($isDark, owner)}
-      ></AvatarPerson>
-    </span>
-    <p class="website"><a href={website}>{new URL(website).hostname}</a></p>
   </section>
 
   <section class="accept">
     <ButtonPrimary
       {loading}
       on:click={async () => {
-        loading = true
+        loading = true;
         const { authorize: token } = await $zeus.mutate({
           authorize: [{ clientId, redirectUri }, true],
         });
-        console.info(`Redirecting to ${redirectUri}`)
+        console.info(`Redirecting to ${redirectUri}`);
         window.location.href = redirectUri + '?token=' + token;
       }}>Autoriser</ButtonPrimary
     >
+  </section>
+
+  <section class="about">
+    <p class="more">
+      {name} est un service tierce développé par <a href="/groups/{owner.uid}">{owner.name}</a>, non
+      affilié à Churros. Plus d'infos à
+      <a href={website}>{new URL(website).hostname}</a>
+    </p>
   </section>
 </main>
 
@@ -72,9 +70,22 @@
     background: var(--bg);
   }
 
-  section.logo {
+  h1 {
+    text-align: center;
+  }
+
+  section.about > * {
+    text-align: center;
+  }
+
+  section.about .more {
+    opacity: 0.75;
+  }
+
+  section.churros-logo {
     height: 4rem;
     margin-bottom: 2rem;
+    filter: saturate(0);
   }
 
   section.accept {
