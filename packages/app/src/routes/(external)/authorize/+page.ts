@@ -9,6 +9,8 @@ export async function load({ parent, url, fetch }) {
 
   if (!clientId) throw new Error('No client_id provided');
 
+  const csrfState = url.searchParams.get('state') ?? '';
+
   const { thirdPartyApp } = await loadQuery(
     {
       thirdPartyApp: [
@@ -31,5 +33,5 @@ export async function load({ parent, url, fetch }) {
     { fetch, parent },
   );
 
-  return { app: thirdPartyApp };
+  return { app: thirdPartyApp, csrfState };
 }

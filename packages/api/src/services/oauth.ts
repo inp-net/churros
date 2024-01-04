@@ -202,10 +202,11 @@ Returns an access code.
 
 Use the frontend's /authorize endpoint instead of this, as it requires already being logged-in.
 
-Do a \`GET\` request to \`${process.env.FRONTEND_ORIGIN}/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code\` with:
+Do a \`GET\` request to \`${process.env.FRONTEND_ORIGIN}/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>\` with:
 
 - \`<clientId>\`: The client ID of the app. See registerApp to get this.
 - \`<redirectUri>\`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to \`<redirectUri>?code=<return value of this mutation>\`
+- \`<state>\`: A random string generated from personal information used to prevent CSRF attacks.
 
 Use that code to get an access token with /token:
 

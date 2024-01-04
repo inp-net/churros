@@ -35,7 +35,10 @@
           authorize: [{ clientId, redirectUri }, true],
         });
         console.info(`Redirecting to ${redirectUri}`);
-        window.location.href = redirectUri + '?code=' + token;
+        window.location.href = `${redirectUri}?${new URLSearchParams({
+          code: token,
+          state: data.csrfState,
+        }).toString()}`;
       }}>Autoriser</ButtonPrimary
     >
   </section>
@@ -53,16 +56,16 @@
   main {
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
+    gap: 1rem;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
-    margin: auto;
-    padding: 3rem;
-    flex-grow: 1;
-    border-radius: var(--radius-block);
-    border: 1px solid var(--muted-border);
     max-width: 30rem;
+    padding: 3rem;
+    margin: auto;
     background: var(--bg);
+    border: 1px solid var(--muted-border);
+    border-radius: var(--radius-block);
   }
 
   h1,
@@ -89,9 +92,9 @@
   }
 
   section.logo {
-    max-height: 8rem;
     display: flex;
     justify-content: center;
+    max-height: 8rem;
   }
 
   section.accept {
