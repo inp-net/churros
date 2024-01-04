@@ -1,5 +1,6 @@
 import { builder, ensureHasIdPrefix, prisma, removeIdPrefix } from '#lib';
 import { ThirdPartyCredentialType } from '@prisma/client';
+import { hash } from 'argon2';
 import { GraphQLError } from 'graphql';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
@@ -113,14 +114,15 @@ builder.mutationField('registerApp', (t) =>
       return Boolean(user?.canEditGroups || userIsInBureauOf(user, ownerGroupUid));
     },
     async resolve(_, { ownerGroupUid, ...data }) {
+      const secretClear = nanoid(30);
       const app = await prisma.thirdPartyApp.create({
         data: {
           ...data,
           owner: { connect: { uid: ownerGroupUid } },
-          secret: nanoid(30),
+          secret: await hash(secretClear),
         },
       });
-      return new ThirdPartyAppRegistrationResponse(removeIdPrefix(app.id), app.secret);
+      return new ThirdPartyAppRegistrationResponse(removeIdPrefix(app.id), secretClear);
     },
   }),
 );

@@ -2,6 +2,7 @@ import { ensureHasIdPrefix, prisma } from '#lib';
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
 import { CredentialType, Prisma, ThirdPartyCredentialType } from '@prisma/client';
 import { createFetch } from '@whatwg-node/fetch';
+import { verify } from 'argon2';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { type Request, type Response } from 'express';
@@ -170,7 +171,7 @@ api.use('/token', async (request, response) => {
     return error('Access code expired');
   if (
     credential.client.id !== ensureHasIdPrefix(clientId, 'ThirdPartyApp') ||
-    credential.client.secret !== clientSecret
+    !(await verify(credential.client.secret, clientSecret))
   )
     return error('Invalid client_id/client_secret pair');
 
