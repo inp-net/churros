@@ -1,7 +1,9 @@
-import { prisma } from '#lib';
+import { ensureHasIdPrefix, prisma } from '#lib';
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
-import { CredentialType, Prisma } from '@prisma/client';
+import { CredentialType, Prisma, ThirdPartyCredentialType } from '@prisma/client';
 import { createFetch } from '@whatwg-node/fetch';
+import { verify } from 'argon2';
+import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { type Request, type Response } from 'express';
 import { GraphQLError } from 'graphql';
@@ -10,6 +12,7 @@ import helmet from 'helmet';
 import multer from 'multer';
 import { fileURLToPath } from 'node:url';
 import { ZodError, z } from 'zod';
+import { generateThirdPartyToken } from './auth.js';
 import { context } from './context.js';
 import { customErrorMap } from './errors.js';
 import { log } from './objects/logs.js';
@@ -128,6 +131,70 @@ api.use('/dump', async (req, res) => {
       .status(401)
       .send('<h1>401 Unauthorized</h1><p>Usage: <code>/dump?token=[session token]</code></p>');
   }
+});
+
+api.use(bodyParser.urlencoded({ extended: false }));
+api.use('/token', async (request, response) => {
+  function error(text: string, code = 401) {
+    return response
+      .status(code)
+      .send(
+        `${text}\n\nSee the documentation of the 'authorize' mutation for more information: <a href="${process.env.FRONTEND_ORIGIN}/graphql">${process.env.FRONTEND_ORIGIN}/graphql</a>`,
+      );
+  }
+  let authorization = request.headers['authorization'];
+  if (!authorization)
+    return error('No Authorization header. Set it to "Basic <base64(client_id:client_secret)>"');
+
+  if (typeof authorization !== 'string') authorization = authorization[0];
+
+  const [clientId, clientSecret] = Buffer.from(authorization!.replace(/^Basic /, ''), 'base64')
+    .toString('utf8')
+    .split(':') as [string, string];
+
+  const formData = request.body;
+  const { code: authorizationCode, redirect_uri: redirectUri } = z
+    .object({
+      code: z.string(),
+      grant_type: z.literal('authorization_code'),
+      redirect_uri: z.string(),
+    })
+    .parse(formData);
+  const credential = await prisma.thirdPartyCredential.findFirst({
+    where: { value: authorizationCode },
+    include: { client: true },
+  });
+  if (!credential) return error('Invalid access code');
+  if (credential.type !== ThirdPartyCredentialType.AuthorizationCode)
+    return error('Invalid access code');
+  if (credential.expiresAt && credential.expiresAt < new Date())
+    return error('Access code expired');
+  if (
+    credential.client.id !== ensureHasIdPrefix(clientId, 'ThirdPartyApp') ||
+    !(await verify(credential.client.secret, clientSecret))
+  )
+    return error('Invalid client_id/client_secret pair');
+
+  if (!credential.client.active) {
+    return error(
+      `This app is not active yet. Please try again later. Contact ${process.env.PUBLIC_CONTACT_EMAIL} if your app takes more than a week to get activated.`,
+    );
+  }
+  if (!credential.client.allowedRedirectUris.includes(redirectUri))
+    return error('Invalid redirect URI');
+  await prisma.thirdPartyCredential.deleteMany({ where: { value: authorizationCode } });
+  const accessToken = await prisma.thirdPartyCredential.create({
+    data: {
+      type: ThirdPartyCredentialType.AccessToken,
+      value: generateThirdPartyToken(),
+      clientId: credential.clientId,
+      ownerId: credential.ownerId,
+      // Keep the token for 1 year
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+    },
+  });
+
+  return response.json({ access_token: accessToken.value, token_type: 'bearer' });
 });
 
 api.get('/log', (req, res) => {
@@ -372,5 +439,3 @@ maintenance.get('/*', (_, res) => {
 maintenance.listen(4002, () => {
   console.info('Maintenance page server listening at http://localhost:4002');
 });
-
-// await rescheduleNotifications();
