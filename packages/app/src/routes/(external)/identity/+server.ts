@@ -8,6 +8,11 @@ export const GET = async ({ fetch, request }) => {
         uid: true,
         fullName: true,
         email: true,
+        major: {
+          ldapSchool: {
+            internalMailDomain: true,
+          },
+        },
       },
     },
     {
@@ -20,9 +25,15 @@ export const GET = async ({ fetch, request }) => {
     },
   );
 
-  return new Response(JSON.stringify(me), {
-    headers: {
-      'Content-Type': 'application/json',
+  return new Response(
+    JSON.stringify({
+      ...me,
+      ldapInternalEmail: `${me.uid}@${me.major?.ldapSchool?.internalMailDomain ?? 'external'}`,
+    }),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
     },
-  });
+  );
 };
