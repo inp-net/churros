@@ -41,7 +41,7 @@
       document.documentElement.classList.toggle('rainbow-logo', $debugging);
     });
 
-    
+   let now = new Date(); 
 
     setInterval(() => {
       now = new Date();
@@ -166,20 +166,9 @@
   </section>
 {/if}
 
-<div class="content">
   <slot />
-</div>
 
   <style lang="scss">
-
-    .content {
-      min-height: 100vh;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: var(--muted-bg);
-    }
 
   #loading-overlay {
     position: fixed;

@@ -18,7 +18,7 @@ import { prisma } from './prisma.js';
  * Maps database ID prefixes to GraphQL type names. Please add new types here as they are added to
  * the schema, by running node scripts/update-id-prefix-to-typename-map.js.
  */
-/* @generated from schema by /packages/api/build/scripts/update-id-prefix-to-typename-map.js */
+/* @generated from schema by /packages/api/scripts/update-id-prefix-to-typename-map.ts */
 export const ID_PREFIXES_TO_TYPENAMES = {
   u: 'User',
   godparentreq: 'GodparentRequest',
@@ -31,6 +31,8 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   minor: 'Minor',
   school: 'School',
   credential: 'Credential',
+  token: 'ThirdPartyCredential',
+  app: 'ThirdPartyApp',
   ae: 'StudentAssociation',
   contribution: 'Contribution',
   contributionoption: 'ContributionOption',
@@ -64,6 +66,19 @@ export const TYPENAMES_TO_ID_PREFIXES = Object.fromEntries(
   (typeof ID_PREFIXES_TO_TYPENAMES)[keyof typeof ID_PREFIXES_TO_TYPENAMES],
   keyof typeof ID_PREFIXES_TO_TYPENAMES
 >;
+
+export function removeIdPrefix(id: string): string {
+  if (id.split(':').length !== 2) throw new Error(`Cannot remove id prefix from ${id}`);
+  const [prefix, rest] = id.split(':') as [string, string];
+  if (!(prefix in ID_PREFIXES_TO_TYPENAMES)) throw new Error(`Unknown prefix: ${prefix}`);
+  return rest;
+}
+
+export function ensureHasIdPrefix(id: string, typename: keyof typeof TYPENAMES_TO_ID_PREFIXES) {
+  if (id.split(':').length === 2) return id;
+  if (!(typename in TYPENAMES_TO_ID_PREFIXES)) throw new Error(`Unknown typename: ${typename}`);
+  return `${TYPENAMES_TO_ID_PREFIXES[typename]}:${id}`;
+}
 
 export const builder = new SchemaBuilder<{
   AuthContexts: AuthContexts;
