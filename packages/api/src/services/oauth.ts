@@ -114,7 +114,7 @@ builder.mutationField('registerApp', (t) =>
 builder.mutationField('authorize', (t) =>
   t.string({
     description:
-      "Authorize a third-party client to access the user's data. Returns the token to use.",
+      "Authorize a third-party client to access the user's data. Returns an access code. Use that code to get an access token with /token.",
     authScopes: { loggedIn: true },
     args: {
       clientId: t.arg.string(),
@@ -136,7 +136,7 @@ builder.mutationField('authorize', (t) =>
           clientId: client.id,
           value: generateThirdPartyToken(),
           type: ThirdPartyCredentialType.AuthorizationCode,
-          // Keep the token for 7 days
+          // Keep the auth code for 7 days
           expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
           ownerId: user.id,
         },

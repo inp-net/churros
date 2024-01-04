@@ -2,6 +2,7 @@ import { prisma } from '#lib';
 import type { YogaInitialContext } from '@graphql-yoga/node';
 import {
   CredentialType,
+  ThirdPartyCredentialType,
   type Event,
   type EventManager,
   type Group,
@@ -39,7 +40,7 @@ export const purgeUserSessions = (uid: User['uid']) => {
 export const getUserFromThirdPartyToken = async (token: string) => {
   const credential = await prisma.thirdPartyCredential
     .findFirstOrThrow({
-      where: { value: token },
+      where: { value: token, type: ThirdPartyCredentialType.AccessToken },
       include: {
         owner: {
           include: {
@@ -133,6 +134,8 @@ export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;
 
 /** The request context, made available in all resolvers. */
 export const context = async ({ request }: YogaInitialContext) => {
+  if (request.headers.get('Authorization')?.startsWith('Basic ')) return {};
+
   const token = getToken(request);
   if (!token) return {};
   return {

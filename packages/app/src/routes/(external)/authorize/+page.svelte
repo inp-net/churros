@@ -1,10 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import LogoChurros from '$lib/components/LogoChurros.svelte';
-  import { groupLogoSrc } from '$lib/logos';
-  import { isDark } from '$lib/theme';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
 
@@ -38,7 +35,7 @@
           authorize: [{ clientId, redirectUri }, true],
         });
         console.info(`Redirecting to ${redirectUri}`);
-        window.location.href = redirectUri + '?token=' + token;
+        window.location.href = redirectUri + '?code=' + token;
       }}>Autoriser</ButtonPrimary
     >
   </section>
@@ -68,7 +65,8 @@
     background: var(--bg);
   }
 
-  h1, .description {
+  h1,
+  .description {
     text-align: center;
   }
 
