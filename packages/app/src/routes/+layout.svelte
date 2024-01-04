@@ -1,29 +1,17 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import TopBar from '$lib/components/NavigationTop.svelte';
-  import { isDark, theme } from '$lib/theme.js';
-  import { onMount } from 'svelte';
-  import '../design/app.scss';
-  import NavigationBottom from '$lib/components/NavigationBottom.svelte';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import IconLoading from '~icons/mdi/loading';
-  import IconClose from '~icons/mdi/close';
   import { browser } from '$app/environment';
-  import { zeus } from '$lib/zeus';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
-  import { me } from '$lib/session';
-  import { toasts } from '$lib/toasts';
-  import Toast from '$lib/components/Toast.svelte';
-  import type { PageData, Snapshot } from './$types';
-  import NavigationSide from '$lib/components/NavigationSide.svelte';
-  import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
-  import { writable, type Writable } from 'svelte/store';
-  import { syncToLocalStorage } from 'svelte-store2storage';
+  import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import Toast from '$lib/components/Toast.svelte';
   import { debugging } from '$lib/debugging';
-  import Snowflake from '~icons/mdi/snowflake';
-  import { CURRENT_VERSION, CURRENT_COMMIT } from '$lib/buildinfo';
-  
+  import { me } from '$lib/session';
+  import { isDark, theme } from '$lib/theme.js';
+  import { toasts } from '$lib/toasts';
+  import { onMount } from 'svelte';
+  import IconLoading from '~icons/mdi/loading';
+  import '../design/app.scss';
+
   let showInitialSpinner = true;
 
   onMount(() => {
@@ -40,15 +28,7 @@
     debugging.subscribe(($debugging) => {
       document.documentElement.classList.toggle('rainbow-logo', $debugging);
     });
-
-   let now = new Date(); 
-
-    setInterval(() => {
-      now = new Date();
-    }, 5000);
   });
-
- 
 
   type NProgress = {
     start: () => void;
@@ -69,8 +49,6 @@
     setTimeout(() => {
       NProgress.remove();
     }, 1000);
-
-
   });
 
   onMount(() => {
@@ -107,10 +85,6 @@
       });
     }
   });
-
-
-
-
 </script>
 
 <svelte:head>
@@ -166,10 +140,9 @@
   </section>
 {/if}
 
-  <slot />
+<slot />
 
-  <style lang="scss">
-
+<style lang="scss">
   #loading-overlay {
     position: fixed;
     inset: 0;
@@ -214,7 +187,7 @@
     }
   }
 
-section.toasts {
+  section.toasts {
     position: fixed;
     bottom: 75px;
     left: 50%;
@@ -236,4 +209,4 @@ section.toasts {
       transform: unset;
     }
   }
-  </style>
+</style>

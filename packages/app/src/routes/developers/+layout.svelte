@@ -16,21 +16,21 @@
 </header>
 
 <div class="content">
-    <slot />
+  <slot />
 </div>
 
 <style>
   header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-    padding: 1rem 2rem;
-    background: var(--muted-bg);
     position: fixed;
     top: 0;
     right: 0;
     left: 0;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background: var(--muted-bg);
   }
 
   .content {
@@ -40,8 +40,8 @@
   .logo {
     display: flex;
     gap: 1rem;
-    height: 3rem;
     align-items: end;
+    height: 3rem;
   }
 
   .logo p {

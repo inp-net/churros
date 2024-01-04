@@ -3,7 +3,7 @@
   import { type EventFrequency, Visibility, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { _articleQuery } from '../../routes/posts/[group]/[uid]/edit/+page';
+  import { _articleQuery } from '../../routes/(app)/posts/[group]/[uid]/edit/+page';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import IconSend from '~icons/mdi/send-outline';

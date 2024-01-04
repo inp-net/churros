@@ -17,7 +17,7 @@
   import { isOnClubBoard } from '$lib/permissions';
   import { me } from '$lib/session';
   export let loading = false;
-  export let submitText = "Confirmer";
+  export let submitText = 'Confirmer';
   export let app: ThirdPartyApp;
 </script>
 
@@ -48,7 +48,7 @@
     <ButtonPrimary {loading} submits>{submitText}</ButtonPrimary>
   </section>
   <p class="muted">
-    <slot></slot>
+    <slot />
   </p>
 </form>
 
@@ -65,8 +65,8 @@
   }
 
   form p {
-    text-align: center;
     max-width: 500px;
     margin: 0 auto;
+    text-align: center;
   }
 </style>

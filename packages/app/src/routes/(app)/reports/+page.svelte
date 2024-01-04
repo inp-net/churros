@@ -3,7 +3,7 @@
   import IconMore from '~icons/mdi/dots-horizontal-circle-outline';
   import IconComments from '~icons/mdi/comment-multiple-outline';
   import Badge from '$lib/components/Badge.svelte';
-  import { IssueState } from '../../zeus';
+  import { IssueState } from '$lib/zeus';
   import type { PageData } from './$types';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import { CURRENT_VERSION } from '$lib/buildinfo';

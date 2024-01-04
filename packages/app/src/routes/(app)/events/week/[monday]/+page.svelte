@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CalendarDay from '../../../../lib/components/CalendarDay.svelte';
+  import CalendarDay from '$lib/components/CalendarDay.svelte';
   import IconBackward from '~icons/mdi/chevron-left';
   import IconGear from '~icons/mdi/cog-outline';
   import IconForward from '~icons/mdi/chevron-right';

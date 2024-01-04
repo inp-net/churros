@@ -15,44 +15,36 @@
 </script>
 
 <script lang="ts">
-  import { page } from '$app/stores';
-  import TopBar from '$lib/components/NavigationTop.svelte';
-  import { isDark, theme } from '$lib/theme.js';
-  import { onMount } from 'svelte';
-  import '../../design/app.scss';
-  import NavigationBottom from '$lib/components/NavigationBottom.svelte';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import IconLoading from '~icons/mdi/loading';
-  import IconClose from '~icons/mdi/close';
   import { browser } from '$app/environment';
-  import { zeus } from '$lib/zeus';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
-  import { me } from '$lib/session';
-  import { toasts } from '$lib/toasts';
-  import Toast from '$lib/components/Toast.svelte';
-  import type { PageData, Snapshot } from './$types';
+  import { page } from '$app/stores';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
+  import TopBar from '$lib/components/NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
-  import { writable, type Writable } from 'svelte/store';
+  import { theme } from '$lib/theme.js';
+  import { zeus } from '$lib/zeus';
+  import { onMount } from 'svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { debugging } from '$lib/debugging';
+  import { writable, type Writable } from 'svelte/store';
+  import IconClose from '~icons/mdi/close';
   import Snowflake from '~icons/mdi/snowflake';
-  import { CURRENT_VERSION, CURRENT_COMMIT } from '$lib/buildinfo';
-
+  import '../../design/app.scss';
+  import type { PageData, Snapshot } from './$types';
 
   export let data: PageData;
   let scrollableArea: HTMLElement;
 
   let scrolled = false;
- let announcements = [] as Array<{
+  let announcements = [] as Array<{
     title: string;
     bodyHtml: string;
     warning: boolean;
     id: string;
   }>;
 
-  let now = new Date();
+  const now = new Date();
 
   function currentTabDesktop(url: URL): (typeof DESKTOP_NAVIGATION_TABS)[number] {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -84,7 +76,7 @@
     if (!browser) return true;
     return Boolean(window.localStorage.getItem(`hideAnnouncement${id}`));
   }
-/**
+  /**
    * Stores scrollTop of scrollableArea per URL
    */
   const scrollPositions: Writable<Record<string, number>> = writable({});
@@ -123,8 +115,6 @@
       scrollableArea.scrollTo(0, y);
     },
   };
-
-
 
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
@@ -281,8 +271,6 @@ The root layout is composed of several elements:
     align-items: center;
   }
 
-  
-
   @keyframes spinner {
     from {
       transform: rotate(0);
@@ -292,8 +280,6 @@ The root layout is composed of several elements:
       transform: rotate(1turn);
     }
   }
-
-
 
   :root.error-404 {
     --bg: #000;

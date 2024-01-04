@@ -8,7 +8,7 @@
   import IconWhen from '~icons/mdi/calendar-outline';
   import IconRepeat from '~icons/mdi/repeat';
   import { env } from '$env/dynamic/public';
-  import { EventFrequency, type Visibility } from '../../../../zeus';
+  import { EventFrequency, type Visibility } from '$lib/zeus';
   import { DISPLAY_EVENT_FREQUENCY } from '$lib/display';
   import { DISPLAY_VISIBILITIES } from '$lib/display';
   import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';

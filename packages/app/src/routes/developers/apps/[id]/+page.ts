@@ -19,10 +19,18 @@ export const _query = {
   },
 };
 export async function load({ parent, fetch, params }) {
+  const parentData = await parent();
   return loadQuery(
     {
       thirdPartyApp: [params, _query],
     },
-    { fetch, parent },
+    {
+      fetch,
+      parent: async () => ({
+        ...parentData,
+        // XXX dunno why this is needed
+        token: parentData.token!,
+      }),
+    },
   );
 }

@@ -1,6 +1,6 @@
 import type { User } from '@prisma/client';
-import type { Context } from './context.js';
 import { nanoid } from 'nanoid';
+import type { Context } from './context.js';
 
 export interface AuthScopes {
   loggedIn: boolean;

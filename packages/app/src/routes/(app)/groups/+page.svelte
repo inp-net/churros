@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import Group from '../../lib/components/TreeGroups.svelte';
+  import Group from '$lib/components/TreeGroups.svelte';
   import { createForest } from 'arborist';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import IconPlus from '~icons/mdi/plus';

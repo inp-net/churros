@@ -25,7 +25,7 @@
   import { beforeNavigate } from '$app/navigation';
   import { me } from '$lib/session';
   import { page } from '$app/stores';
-  import type { DESKTOP_NAVIGATION_TABS } from '../../routes/+layout.svelte';
+  import type { DESKTOP_NAVIGATION_TABS } from '../../routes/(app)/+layout.svelte';
   import { scrollToTop } from '$lib/scroll';
 
   export let current: (typeof DESKTOP_NAVIGATION_TABS)[number];

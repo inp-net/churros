@@ -8,7 +8,7 @@
   import IconFinishEditing from '~icons/mdi/check';
   import IconActive from '~icons/mdi/adjust';
   import type { PageData } from './$types';
-  import Permissions from '../../../../lib/components/FormUserPermissions.svelte';
+  import Permissions from '$lib/components/FormUserPermissions.svelte';
   import FormUser from '$lib/components/FormUser.svelte';
   import FormPicture from '$lib/components/FormPicture.svelte';
   import { me } from '$lib/session';
