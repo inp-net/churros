@@ -2,20 +2,34 @@ import { builder, ensureHasIdPrefix, prisma, removeIdPrefix } from '#lib';
 import { ThirdPartyCredentialType } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { nanoid } from 'nanoid';
+import { z } from 'zod';
 import { generateThirdPartyToken } from '../auth.js';
 import { userIsInBureauOf } from '../objects/groups.js';
+import { log } from '../objects/logs.js';
 
 export const ThirdPartyApp = builder.prismaObject('ThirdPartyApp', {
   description: 'A third-party OAuth2 client',
   fields: (t) => ({
     id: t.exposeID('id'),
+    clientId: t.string({
+      resolve({ id }) {
+        return removeIdPrefix(id);
+      },
+    }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: true }),
     name: t.exposeString('name'),
+    secretLength: t.int({
+      resolve({ secret }) {
+        return secret.length;
+      },
+    }),
     description: t.exposeString('description'),
     website: t.exposeString('website'),
+    active: t.exposeBoolean('active'),
     faviconUrl: t.string({
       async resolve({ website, id }) {
+        if (!website) return '';
         const app = await prisma.thirdPartyApp.findUniqueOrThrow({ where: { id } });
         if (app.faviconUrl) return app.faviconUrl;
         console.info(`Fetching favicon for ${website}`);
@@ -91,7 +105,7 @@ builder.mutationField('registerApp', (t) =>
       }),
       website: t.arg.string({
         description: 'URL to the website of the app. Used, amongst other things, to get the icon.',
-        validate: { url: true },
+        validate: { schema: z.string().url().or(z.literal('')) },
       }),
       ownerGroupUid: t.arg.string({ description: 'The UID of  the group that made this app' }),
     },
@@ -107,6 +121,73 @@ builder.mutationField('registerApp', (t) =>
         },
       });
       return new ThirdPartyAppRegistrationResponse(removeIdPrefix(app.id), app.secret);
+    },
+  }),
+);
+
+builder.mutationField('editApp', (t) =>
+  t.prismaField({
+    description: "Update a third-party app's details",
+    type: 'ThirdPartyApp',
+    args: {
+      id: t.arg.id({
+        description: "The app's ID",
+      }),
+      website: t.arg.string({ required: false }),
+      name: t.arg.string({ required: false }),
+      description: t.arg.string({ required: false }),
+      allowedRedirectUris: t.arg.stringList({
+        required: false,
+        validate: { items: { url: true } },
+      }),
+      ownerGroupUid: t.arg.string({ required: false }),
+    },
+    async authScopes(_, { id }, { user }) {
+      if (!user) return false;
+      if (user.admin) return true;
+      return Boolean(
+        await prisma.thirdPartyApp.count({
+          where: {
+            id,
+            owner: {
+              members: {
+                some: {
+                  member: { id: user.id },
+                  OR: [
+                    {
+                      president: true,
+                    },
+                    {
+                      vicePresident: true,
+                    },
+                    {
+                      secretary: true,
+                    },
+                    {
+                      treasurer: true,
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        }),
+      );
+    },
+    async resolve(query, _, { id, ...data }, { user }) {
+      await log('third-party apps', 'edit', data, id, user);
+      return prisma.thirdPartyApp.update({
+        ...query,
+        where: { id },
+        data: {
+          allowedRedirectUris: data.allowedRedirectUris ?? undefined,
+          description: data.description ?? undefined,
+          name: data.name ?? undefined,
+          website: data.website ?? undefined,
+          owner: data.ownerGroupUid ? { connect: { uid: data.ownerGroupUid } } : undefined,
+          active: data.allowedRedirectUris === null ? undefined : false,
+        },
+      });
     },
   }),
 );
@@ -151,7 +232,11 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
         where: { id: ensureHasIdPrefix(clientId, 'ThirdPartyApp') },
       });
 
-      if (!client.active) throw new GraphQLError('This app has been deactivated');
+      if (!client.active) {
+        throw new GraphQLError(
+          `This app is not active yet. Please try again later. Contact ${process.env.PUBLIC_CONTACT_EMAIL} if your app takes more than a week to get activated.`,
+        );
+      }
 
       if (!client.allowedRedirectUris.includes(redirectUri))
         throw new GraphQLError('Invalid redirect URI');
@@ -167,6 +252,47 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
         },
       });
       return value;
+    },
+  }),
+);
+
+builder.queryField('myApps', (t) =>
+  t.prismaField({
+    type: ['ThirdPartyApp'],
+    authScopes: { loggedIn: true },
+    async resolve(query, _, __, { user }) {
+      if (!user) throw new GraphQLError('Not logged in');
+      const boardIn = await prisma.group.findMany({
+        where: {
+          members: {
+            some: {
+              member: { id: user.id },
+              OR: [
+                {
+                  president: true,
+                },
+                {
+                  vicePresident: true,
+                },
+                {
+                  secretary: true,
+                },
+                {
+                  treasurer: true,
+                },
+              ],
+            },
+          },
+        },
+      });
+      return prisma.thirdPartyApp.findMany({
+        ...query,
+        where: {
+          ownerId: {
+            in: boardIn.map((g) => g.id),
+          },
+        },
+      });
     },
   }),
 );

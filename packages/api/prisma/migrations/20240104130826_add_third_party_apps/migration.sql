@@ -128,7 +128,7 @@ CREATE TABLE "ThirdPartyApp" (
     "secret" TEXT NOT NULL,
     "website" TEXT NOT NULL,
     "faviconUrl" VARCHAR(255) NOT NULL DEFAULT '',
-    "active" BOOLEAN NOT NULL DEFAULT true,
+    "active" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "ThirdPartyApp_pkey" PRIMARY KEY ("id")
 );

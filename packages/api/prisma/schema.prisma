@@ -308,7 +308,7 @@ model ThirdPartyApp {
   secret              String
   website             String
   faviconUrl          String                 @default("") @db.VarChar(255) // Computed from website if not provided
-  active              Boolean                @default(true)
+  active              Boolean                @default(false)
 }
 
 /// There is one student association per school

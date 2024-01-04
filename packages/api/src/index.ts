@@ -174,7 +174,11 @@ api.use('/token', async (request, response) => {
   )
     return error('Invalid client_id/client_secret pair');
 
-  if (!credential.client.active) return error('This app has been deactivated');
+  if (!credential.client.active) {
+    return error(
+      `This app is not active yet. Please try again later. Contact ${process.env.PUBLIC_CONTACT_EMAIL} if your app takes more than a week to get activated.`,
+    );
+  }
   if (!credential.client.allowedRedirectUris.includes(redirectUri))
     return error('Invalid redirect URI');
   await prisma.thirdPartyCredential.deleteMany({ where: { value: authorizationCode } });
