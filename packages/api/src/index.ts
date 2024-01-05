@@ -135,7 +135,8 @@ api.use('/dump', async (req, res) => {
 
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use('/token', async (request, response) => {
-  function error(text: string, code = 401) {
+  async function error(text: string, code = 401) {
+    await log('oauth', 'token/error', { err: text, code }, clientId);
     return response
       .status(code)
       .send(
