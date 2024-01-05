@@ -144,26 +144,44 @@ api.use('/token', async (request, response) => {
       );
   }
   let authorization = request.headers['authorization'];
-  if (!authorization)
-    return error('No Authorization header. Set it to "Basic <base64(client_id:client_secret)>"');
+  let clientId = '',
+    clientSecret = '';
 
-  if (typeof authorization !== 'string') authorization = authorization[0];
+  if (authorization) {
+    if (typeof authorization !== 'string') authorization = authorization[0];
 
-  const [clientId, clientSecret] = Buffer.from(authorization!.replace(/^Basic /, ''), 'base64')
-    .toString('utf8')
-    .split(':') as [string, string];
+    [clientId, clientSecret] = Buffer.from(authorization!.replace(/^Basic /, ''), 'base64')
+      .toString('utf8')
+      .split(':') as [string, string];
+  }
 
   const formData = request.body;
 
   await log('oauth', 'token', request.body, clientId);
 
-  const { code: authorizationCode, redirect_uri: redirectUri } = z
+  const {
+    code: authorizationCode,
+    redirect_uri: redirectUri,
+    client_id,
+    client_secret,
+  } = z
     .object({
       code: z.string(),
       grant_type: z.literal('authorization_code'),
       redirect_uri: z.string(),
+      client_id: z.string().optional(),
+      client_secret: z.string().optional(),
     })
     .parse(formData);
+
+  if (client_id) clientId = client_id;
+  if (client_secret) clientSecret = client_secret;
+
+  if (!clientId || !clientSecret) {
+    return error(
+      'Missing client_id/client_secret pair. Put in in the Authorization header as "Basic [base64(client_id:client_secret)]" or in the request body as "client_id" and "client_secret"',
+    );
+  }
 
   const credential = await prisma.thirdPartyCredential.findFirst({
     where: { value: authorizationCode },
