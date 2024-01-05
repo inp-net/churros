@@ -25,12 +25,15 @@ import './objects/minors.js';
 import './objects/notification-subscriptions.js';
 import './objects/notifications.js';
 import './objects/password-resets.js';
+import './objects/pictures.js';
 import './objects/promotions.js';
 import './objects/reactions.js';
 import './objects/registrations.js';
 import './objects/scalars.js';
 import './objects/schools.js';
 import './objects/services.js';
+import './objects/shop-items.js';
+import './objects/shop-payment.js';
 import './objects/student-associations.js';
 import './objects/subjects.js';
 import './objects/teaching-units.js';
@@ -40,9 +43,6 @@ import './objects/user-candidates.js';
 import './objects/users.js';
 import './services/ade.js';
 import './services/oauth.js';
-import './objects/pictures.js';
-import './objects/shop-items.js';
-import './objects/shop-payment.js';
 
 // Import other mutations and/or queries that are not objects
 import './services/gitlab.js';

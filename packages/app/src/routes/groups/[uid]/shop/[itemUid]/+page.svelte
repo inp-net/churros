@@ -43,7 +43,7 @@
           quantity,
         },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': {
             message: true,
           },
@@ -150,7 +150,7 @@
                     paymentMethod: PaymentMethod.Lydia,
                   },
                   {
-                    __typename: true,
+                    '__typename': true,
                     '...on Error': { message: true },
                     '...on MutationPaidShopPaymentSuccess': {
                       data: {
@@ -239,7 +239,7 @@
     margin-top: 0.5em;
   }
 
-  @media only screen and (width <= 1100px) {
+  @media only screen and (max-width: 1100px) {
     .twocolcontainer {
       flex-direction: column;
       align-items: center;

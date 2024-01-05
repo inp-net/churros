@@ -1,11 +1,10 @@
-import { builder } from '../builder.js';
-import { DateTimeScalar } from './scalars.js';
-import { PaymentMethodEnum } from './registrations.js';
-import { prisma } from '../prisma.js';
-import { onBoard } from '../auth.js';
+import { builder, prisma } from '#lib';
 import { Visibility } from '@prisma/client';
 import { GraphQLError } from 'graphql';
+import { onBoard } from '../auth.js';
 import { VisibilityEnum } from './events.js';
+import { PaymentMethodEnum } from './registrations.js';
+import { DateTimeScalar } from './scalars.js';
 
 export const ShopItemType = builder.prismaObject('ShopItem', {
   fields: (t) => ({
