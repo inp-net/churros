@@ -7,11 +7,17 @@ export const GET = async ({ fetch, request }) => {
       me: {
         uid: true,
         fullName: true,
+        firstName: true,
+        lastName: true,
         email: true,
+        admin: true,
         major: {
           ldapSchool: {
             internalMailDomain: true,
           },
+        },
+        groups: {
+          group: { uid: true },
         },
       },
     },
@@ -28,6 +34,7 @@ export const GET = async ({ fetch, request }) => {
   const data = {
     ...me,
     ldapInternalEmail: `${me.uid}@${me.major?.ldapSchool?.internalMailDomain ?? 'external'}`,
+    groupsUids: me.groups.map((g) => g.group.uid),
   };
 
   console.info(`[oauth] identity(${me.uid}) = ${JSON.stringify(data)}`);
