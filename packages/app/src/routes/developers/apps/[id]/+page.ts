@@ -10,6 +10,7 @@ export const _query = {
   clientId: true,
   active: true,
   website: true,
+  secretLength: true,
   owner: {
     id: true,
     uid: true,

@@ -175,6 +175,27 @@ builder.mutationField('registerApp', (t) =>
   }),
 );
 
+builder.mutationField('rotateAppSecret', (t) =>
+  t.string({
+    description: "Rotate a third-party app's secret",
+    args: {
+      id: t.arg.id({
+        description: "The app's ID",
+      }),
+    },
+    authScopes: canEditApp,
+    async resolve(_, { id }, { user }) {
+      const secretClear = nanoid(CLIENT_SECRET_LENGTH);
+      await prisma.thirdPartyApp.update({
+        where: { id },
+        data: { secret: await hash(secretClear) },
+      });
+      await log('third-party apps', 'rotate secret', {}, id, user);
+      return secretClear;
+    },
+  }),
+);
+
 builder.mutationField('activateApp', (t) =>
   t.boolean({
     description: 'Activate a third-party app. Only admins can do this.',

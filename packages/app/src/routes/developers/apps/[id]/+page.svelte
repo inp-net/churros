@@ -1,17 +1,19 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
-  import IconReset from '~icons/mdi/refresh';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { toasts } from '$lib/toasts';
-  import type { PageData } from './$types';
-  import FormApp, { type ThirdPartyApp } from '../FormApp.svelte';
+  import Alert from '$lib/components/Alert.svelte';
   import Badge from '$lib/components/Badge.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
-  import { zeus } from '$lib/zeus';
-  import { _query } from './+page';
+  import ButtonCopyToClipboard from '$lib/components/ButtonCopyToClipboard.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import ButtonToggleShow from '$lib/components/ButtonToggleShow.svelte';
   import { formatDateTime } from '$lib/dates';
   import { me } from '$lib/session';
+  import { toasts } from '$lib/toasts';
+  import { zeus } from '$lib/zeus';
+  import IconReset from '~icons/mdi/refresh';
   import ButtonToggleActiveApp from '../ButtonToggleActiveApp.svelte';
+  import FormApp, { type ThirdPartyApp } from '../FormApp.svelte';
+  import type { PageData } from './$types';
+  import { _query } from './+page';
 
   export let data: PageData;
   let loading = false;
@@ -25,7 +27,11 @@
     active,
     owner,
     website,
+    secretLength,
   } = data.thirdPartyApp;
+
+  let clientSecret: string | undefined;
+  let clientSecretShown = true;
 
   let app: ThirdPartyApp = {
     name,
@@ -34,6 +40,35 @@
     website,
     ownerGroup: owner,
   };
+
+  function redact(textOrLength: string | number): string {
+    return '\u2022'.repeat(typeof textOrLength === 'string' ? textOrLength.length : textOrLength);
+  }
+
+  async function rotateSecret() {
+    await toasts.info('Es-tu sûr·e?', "L'ancien secret ne sera plus valide", {
+      async action({ data: { id }, id: toastId }) {
+        ({ rotateAppSecret: clientSecret } = await $zeus
+          .mutate({
+            rotateAppSecret: [{ id }, true],
+          })
+          .catch((error) => {
+            toasts.error('Impossible de regénérer le secret', error.message);
+            throw error;
+          }));
+        await toasts.remove(toastId);
+        await toasts.success('Secret regénéré');
+      },
+      labels: {
+        action: 'Confirmer',
+        close: 'Annuler',
+      },
+      lifetime: Number.POSITIVE_INFINITY,
+      data: {
+        id: data.thirdPartyApp.id,
+      },
+    });
+  }
 
   async function updateApp() {
     if (!app.ownerGroup) return;
@@ -87,16 +122,27 @@
   <section class="details">
     <dl>
       <dt><code> client_id </code></dt>
-      <dd><code>{clientId}</code></dd>
+      <dd>
+        <code>{clientId}</code>
+        <ButtonCopyToClipboard text={clientId}></ButtonCopyToClipboard>
+      </dd>
       <dt><code>client_secret</code></dt>
       <dd>
-        <ButtonSecondary
-          icon={IconReset}
-          danger
-          on:click={async () => {
-            await toasts.error('Pas encore implémenté', `Contactez ${env.PUBLIC_CONTACT_EMAIL}`);
-          }}>Réinitialiser</ButtonSecondary
-        >
+        {#if clientSecret}
+          <code>{clientSecretShown ? clientSecret : redact(clientSecret)}</code>
+          <ButtonToggleShow bind:shown={clientSecretShown}></ButtonToggleShow>
+          <ButtonCopyToClipboard text={clientSecret}></ButtonCopyToClipboard>
+          <Alert theme="danger"
+            >Attention, garde bien ce secret, on ne peut pas te le re-donner ensuite.</Alert
+          >
+        {:else}
+          <code>
+            {redact(secretLength)}
+          </code>
+          <ButtonSecondary icon={IconReset} danger on:click={rotateSecret}
+            >Regénérer</ButtonSecondary
+          >
+        {/if}
       </dd>
     </dl>
   </section>
