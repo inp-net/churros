@@ -1,9 +1,4 @@
-import { builder } from '../builder.js';
-import { DateTimeScalar } from './scalars.js';
-import { prisma } from '../prisma.js';
-import { payShopPaymentViaLydia } from '../services/lydia.js';
-import { GraphQLError } from 'graphql';
-import { PaymentMethodEnum } from './registrations.js';
+import { builder, prisma } from '#lib';
 import {
   Visibility,
   type Group,
@@ -13,7 +8,11 @@ import {
   type ShopItem,
   type ShopPayment,
 } from '@prisma/client';
+import { GraphQLError } from 'graphql';
 import { onBoard } from '../auth.js';
+import { payShopPaymentViaLydia } from '../services/lydia.js';
+import { PaymentMethodEnum } from './registrations.js';
+import { DateTimeScalar } from './scalars.js';
 
 export const ShopPaymentType = builder.prismaObject('ShopPayment', {
   fields: (t) => ({

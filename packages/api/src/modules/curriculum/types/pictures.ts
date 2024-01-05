@@ -1,4 +1,4 @@
-import { builder } from '../builder.js';
+import { builder } from '#lib';
 
 export const PictureType = builder.prismaObject('Picture', {
   fields: (t) => ({

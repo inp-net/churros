@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { prisma } from '#lib';
+import type { LydiaAccount, LydiaTransaction, ShopItem, ShopPayment } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { createHash } from 'node:crypto';
-import type { LydiaAccount, LydiaTransaction, ShopItem, ShopPayment } from '@prisma/client';
 
 // Get the Lydia API URL from the environment
 const { PUBLIC_LYDIA_API_URL, LYDIA_WEBHOOK_URL } = process.env;

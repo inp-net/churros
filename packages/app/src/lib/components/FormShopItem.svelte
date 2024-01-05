@@ -68,7 +68,7 @@
           visibility: data.visibility,
         },
         {
-          __typename: true,
+          '__typename': true,
           '...on Error': { message: true },
           '...on MutationUpsertShopItemSuccess': {
             data: {
