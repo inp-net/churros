@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import LogoChurros from '$lib/components/LogoChurros.svelte';
+  import { toasts } from '$lib/toasts';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
 
@@ -31,12 +32,35 @@
       {loading}
       on:click={async () => {
         loading = true;
-        const { authorize: token } = await $zeus.mutate({
-          authorize: [{ clientId, redirectUri }, true],
+        const { authorize } = await $zeus.mutate({
+          authorize: [
+            { clientId, redirectUri },
+            {
+              '__typename': true,
+              '...on MutationAuthorizeSuccess': {
+                data: true,
+              },
+              '...on OAuth2Error': {
+                code: true,
+                message: true,
+              },
+              '...on Error': {
+                message: true,
+              },
+            },
+          ],
         });
+        if (authorize.__typename === 'Error') {
+          await toasts.error('Une erreur est survenue', authorize.message);
+          loading = false;
+          return;
+        }
+
         console.info(`Redirecting to ${redirectUri}`);
         window.location.href = `${redirectUri}?${new URLSearchParams({
-          code: token,
+          ...(authorize.__typename === 'OAuth2Error'
+            ? { error: authorize.code, error_description: authorize.message }
+            : { code: authorize.data }),
           state: data.csrfState,
         }).toString()}`;
       }}>Autoriser</ButtonPrimary

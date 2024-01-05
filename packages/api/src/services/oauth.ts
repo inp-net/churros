@@ -272,6 +272,40 @@ builder.mutationField('editApp', (t) =>
   }),
 );
 
+// All OAuth2 errors from RFC 6749
+
+enum OAuth2ErrorCode {
+  InvalidRequest = 'invalid_request',
+  UnauthorizedClient = 'unauthorized_client',
+  AccessDenied = 'access_denied',
+  UnsupportedResponseType = 'unsupported_response_type',
+  InvalidScope = 'invalid_scope',
+  ServerError = 'server_error',
+  TemporarilyUnavailable = 'temporarily_unavailable',
+}
+
+class OAuth2Error extends Error {
+  code: OAuth2ErrorCode;
+
+  constructor(code: OAuth2ErrorCode, message: string) {
+    super(message);
+    this.code = code;
+  }
+}
+
+builder.enumType(OAuth2ErrorCode, {
+  name: 'OAuth2ErrorCode',
+  description: 'OAuth2 error codes, see RFC 6749 § 4.1.2.1',
+});
+
+builder.objectType(OAuth2Error, {
+  name: 'OAuth2Error',
+  fields: (t) => ({
+    message: t.exposeString('message'),
+    code: t.expose('code', { type: OAuth2ErrorCode }),
+  }),
+});
+
 builder.mutationField('authorize', (t) =>
   t.string({
     description: `
@@ -297,6 +331,9 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
 - \`redirect_uri\`: The redirect URI used in this request
       `,
     authScopes: { loggedIn: true },
+    errors: {
+      types: [OAuth2Error],
+    },
     args: {
       clientId: t.arg.string({
         description: 'The client ID of the app. See registerApp to get this.',
@@ -314,7 +351,8 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
       });
 
       if (!client.active) {
-        throw new GraphQLError(
+        throw new OAuth2Error(
+          OAuth2ErrorCode.UnauthorizedClient,
           `This app is not active yet. Please try again later. Contact ${process.env.PUBLIC_CONTACT_EMAIL} if your app takes more than a week to get activated.`,
         );
       }
