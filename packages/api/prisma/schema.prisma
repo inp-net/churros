@@ -609,7 +609,7 @@ model Registration {
 
   lydiaTransaction  LydiaTransaction?
   paypalTransaction PaypalTransaction?
-  ticket            Ticket?            @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  ticket            Ticket            @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   author            User?              @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   verifiedBy        User?              @relation(name: "verifiedBy", fields: [verifiedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   verifiedAt        DateTime?
