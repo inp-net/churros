@@ -6,7 +6,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   const { me } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
 
-  const { group } = await loadQuery(
+  /*   const { group } = await loadQuery(
     {
       group: [
         { uid: params.uid },
@@ -22,7 +22,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
       ],
     },
     { fetch, parent },
-  );
+  ); */
 
   return loadQuery(
     {
