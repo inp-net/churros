@@ -256,6 +256,14 @@ builder.mutationField('editApp', (t) =>
     authScopes: canEditApp,
     async resolve(query, _, { id, ...data }, { user }) {
       await log('third-party apps', 'edit', data, id, user);
+      const { allowedRedirectUris: oldAllowedRedirectUris } =
+        await prisma.thirdPartyApp.findUniqueOrThrow({ where: { id } });
+
+      const allowedURIsWillChange = !(
+        oldAllowedRedirectUris.every((uri) => (data.allowedRedirectUris ?? []).includes(uri)) &&
+        oldAllowedRedirectUris.length !== (data.allowedRedirectUris ?? []).length
+      );
+
       return prisma.thirdPartyApp.update({
         ...query,
         where: { id },
@@ -265,7 +273,7 @@ builder.mutationField('editApp', (t) =>
           name: data.name ?? undefined,
           website: data.website ?? undefined,
           owner: data.ownerGroupUid ? { connect: { uid: data.ownerGroupUid } } : undefined,
-          active: data.allowedRedirectUris === null ? undefined : false,
+          active: allowedURIsWillChange ? false : undefined,
         },
       });
     },
