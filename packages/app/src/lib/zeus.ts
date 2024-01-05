@@ -39,11 +39,15 @@ export class ZeusError extends Error {
       const errors = response.errors.map(
         ({ message, ...options }) => new GraphQLError(message, options),
       );
-      super(
-        `${response.errors.length} GraphQL error${response.errors.length === 1 ? '' : 's'}\n${errors
-          .map((error) => `\t${error.message} ${JSON.stringify(error.extensions)}`)
-          .join('\n')}`,
-      );
+      if (response.errors.length === 1) {
+        super(errors[0]!.message);
+      } else {
+        super(
+          `${response.errors.length} GraphQL errors\n${errors
+            .map((error) => `\t${error.message} ${JSON.stringify(error.extensions)}`)
+            .join('\n')}`,
+        );
+      }
       this.errors = errors;
     }
   }
