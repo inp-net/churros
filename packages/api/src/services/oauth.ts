@@ -72,8 +72,15 @@ export const ThirdPartyApp = builder.prismaObject('ThirdPartyApp', {
     faviconUrl: t.string({
       async resolve({ website, id }) {
         if (!website) return '';
+
+        function bustCache(url: string): string {
+          const result = new URL(url);
+          result.searchParams.set('client', removeIdPrefix(id));
+          return result.toString();
+        }
+
         const app = await prisma.thirdPartyApp.findUniqueOrThrow({ where: { id } });
-        if (app.faviconUrl) return app.faviconUrl;
+        if (app.faviconUrl) return bustCache(app.faviconUrl);
         console.info(`Fetching favicon for ${website}`);
         // TODO
         // const favicon = await getFavicon(website, {
@@ -86,7 +93,7 @@ export const ThirdPartyApp = builder.prismaObject('ThirdPartyApp', {
             faviconUrl: favicon.url,
           },
         });
-        return favicon.url;
+        return bustCache(favicon.url);
       },
     }),
     allowedRedirectUris: t.exposeStringList('allowedRedirectUris'),
