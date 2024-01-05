@@ -776,3 +776,44 @@ await prisma.barWeek.create({
     },
   },
 });
+
+const alamaternitei = await prisma.user.findUniqueOrThrow({
+  where: { uid: 'alamaternitei' },
+});
+
+const ski = await prisma.group.findUniqueOrThrow({
+  where: { uid: 'ski' },
+});
+
+await prisma.groupMember.upsert({
+  where: {
+    groupId_memberId: {
+      groupId: ski.id,
+      memberId: alamaternitei.id,
+    },
+  },
+  update: {
+    vicePresident: true,
+  },
+  create: {
+    vicePresident: true,
+    title: 'Membre',
+    group: { connect: { id: ski.id } },
+    member: { connect: { id: alamaternitei.id } },
+  },
+});
+
+await prisma.thirdPartyApp.create({
+  data: {
+    name: 'TVn7',
+    description: 'TVn7',
+    secret: await hash('chipichipi'),
+    id: 'app:chapachapa',
+    active: true,
+    website: 'https://wiki.inpt.fr',
+    allowedRedirectUris: {
+      set: ['https://wiki.inpt.fr', 'http://localhost:5000/login'],
+    },
+    owner: { connect: { id: ski.id } },
+  },
+});
