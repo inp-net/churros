@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import LogoChurros from '$lib/components/LogoChurros.svelte';
   import { toasts } from '$lib/toasts';
   import { zeus } from '$lib/zeus';
@@ -27,7 +28,7 @@
 
   <p class="description">{description}</p>
 
-  <section class="accept">
+  <section class="actions">
     <ButtonPrimary
       {loading}
       on:click={async () => {
@@ -64,6 +65,12 @@
           state: data.csrfState,
         }).toString()}`;
       }}>Autoriser</ButtonPrimary
+    >
+    <ButtonSecondary
+      href="{redirectUri}?{new URLSearchParams({
+        state: data.csrfState,
+        error: 'access_denied',
+      })}">Annuler</ButtonSecondary
     >
   </section>
 
@@ -121,8 +128,11 @@
     max-height: 8rem;
   }
 
-  section.accept {
+  section.actions {
     display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
     justify-content: center;
   }
 </style>
