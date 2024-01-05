@@ -2,7 +2,6 @@
   import { env } from '$env/dynamic/public';
   import IconReset from '~icons/mdi/refresh';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { formatDateTime, formatDatetimeLocal } from '$lib/dates';
   import { toasts } from '$lib/toasts';
   import type { PageData } from './$types';
   import FormApp, { type ThirdPartyApp } from '../FormApp.svelte';
@@ -10,6 +9,9 @@
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import { zeus } from '$lib/zeus';
   import { _query } from './+page';
+  import { formatDateTime } from '$lib/dates';
+  import { me } from '$lib/session';
+  import ButtonToggleActiveApp from '../ButtonToggleActiveApp.svelte';
 
   export let data: PageData;
   let loading = false;
@@ -77,6 +79,9 @@
         {/if}</Badge
       >
     </div>
+    {#if $me?.admin}
+      <ButtonToggleActiveApp {...data.thirdPartyApp}></ButtonToggleActiveApp>
+    {/if}
     <div class="date">Créée le {formatDateTime(createdAt)}</div>
   </section>
   <section class="details">
@@ -118,23 +123,23 @@
 
 <style>
   main {
-    max-width: 800px;
-    margin: 2rem auto;
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    max-width: 800px;
+    margin: 2rem auto;
   }
 
   h1 {
     display: flex;
-    align-items: center;
     gap: 1rem;
+    align-items: center;
   }
 
   .metadata {
     display: flex;
-    align-items: center;
     gap: 1rem;
+    align-items: center;
   }
 
   .favicon {

@@ -5,8 +5,47 @@ import { GraphQLError } from 'graphql';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
 import { generateThirdPartyToken } from '../auth.js';
+import type { Context } from '../context.js';
 import { userIsInBureauOf } from '../objects/groups.js';
 import { log } from '../objects/logs.js';
+
+export async function canEditApp(
+  _: unknown,
+  { id }: { id: string },
+  { user }: { user?: Context['user'] | undefined },
+) {
+  if (!user) return false;
+  if (user.admin) return true;
+
+  return Boolean(
+    await prisma.thirdPartyApp.count({
+      where: {
+        id,
+        owner: {
+          members: {
+            some: {
+              member: { id: user.id },
+              OR: [
+                {
+                  president: true,
+                },
+                {
+                  vicePresident: true,
+                },
+                {
+                  secretary: true,
+                },
+                {
+                  treasurer: true,
+                },
+              ],
+            },
+          },
+        },
+      },
+    }),
+  );
+}
 
 export const ThirdPartyApp = builder.prismaObject('ThirdPartyApp', {
   description: 'A third-party OAuth2 client',
@@ -127,6 +166,46 @@ builder.mutationField('registerApp', (t) =>
   }),
 );
 
+builder.mutationField('activateApp', (t) =>
+  t.boolean({
+    description: 'Activate a third-party app. Only admins can do this.',
+    args: {
+      id: t.arg.id({
+        description: "The app's ID",
+      }),
+    },
+    authScopes: { admin: true },
+    async resolve(_, { id }, { user }) {
+      await prisma.thirdPartyApp.update({
+        where: { id },
+        data: { active: true },
+      });
+      await log('third-party apps', 'activate', {}, id, user);
+      return true;
+    },
+  }),
+);
+
+builder.mutationField('deactivateApp', (t) =>
+  t.boolean({
+    description: 'Deactivate a third-party app. Only admins can do this.',
+    args: {
+      id: t.arg.id({
+        description: "The app's ID",
+      }),
+    },
+    authScopes: { admin: true },
+    async resolve(_, { id }, { user }) {
+      await prisma.thirdPartyApp.update({
+        where: { id },
+        data: { active: false },
+      });
+      await log('third-party apps', 'deactivate', {}, id, user);
+      return true;
+    },
+  }),
+);
+
 builder.mutationField('editApp', (t) =>
   t.prismaField({
     description: "Update a third-party app's details",
@@ -144,38 +223,7 @@ builder.mutationField('editApp', (t) =>
       }),
       ownerGroupUid: t.arg.string({ required: false }),
     },
-    async authScopes(_, { id }, { user }) {
-      if (!user) return false;
-      if (user.admin) return true;
-      return Boolean(
-        await prisma.thirdPartyApp.count({
-          where: {
-            id,
-            owner: {
-              members: {
-                some: {
-                  member: { id: user.id },
-                  OR: [
-                    {
-                      president: true,
-                    },
-                    {
-                      vicePresident: true,
-                    },
-                    {
-                      secretary: true,
-                    },
-                    {
-                      treasurer: true,
-                    },
-                  ],
-                },
-              },
-            },
-          },
-        }),
-      );
-    },
+    authScopes: canEditApp,
     async resolve(query, _, { id, ...data }, { user }) {
       await log('third-party apps', 'edit', data, id, user);
       return prisma.thirdPartyApp.update({
