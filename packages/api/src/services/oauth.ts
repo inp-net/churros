@@ -9,6 +9,8 @@ import type { Context } from '../context.js';
 import { userIsInBureauOf } from '../objects/groups.js';
 import { log } from '../objects/logs.js';
 
+export const CLIENT_SECRET_LENGTH = 30;
+
 export async function canEditApp(
   _: unknown,
   { id }: { id: string },
@@ -60,8 +62,8 @@ export const ThirdPartyApp = builder.prismaObject('ThirdPartyApp', {
     updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: true }),
     name: t.exposeString('name'),
     secretLength: t.int({
-      resolve({ secret }) {
-        return secret.length;
+      resolve() {
+        return CLIENT_SECRET_LENGTH;
       },
     }),
     description: t.exposeString('description'),
@@ -153,7 +155,7 @@ builder.mutationField('registerApp', (t) =>
       return Boolean(user?.canEditGroups || userIsInBureauOf(user, ownerGroupUid));
     },
     async resolve(_, { ownerGroupUid, ...data }) {
-      const secretClear = nanoid(30);
+      const secretClear = nanoid(CLIENT_SECRET_LENGTH);
       const app = await prisma.thirdPartyApp.create({
         data: {
           ...data,
