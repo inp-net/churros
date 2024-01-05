@@ -283,13 +283,13 @@ builder.mutationField('editApp', (t) =>
 // All OAuth2 errors from RFC 6749
 
 enum OAuth2ErrorCode {
-  InvalidRequest = 'invalid_request',
-  UnauthorizedClient = 'unauthorized_client',
-  AccessDenied = 'access_denied',
-  UnsupportedResponseType = 'unsupported_response_type',
-  InvalidScope = 'invalid_scope',
-  ServerError = 'server_error',
-  TemporarilyUnavailable = 'temporarily_unavailable',
+  invalid_request,
+  unauthorized_client,
+  access_denied,
+  unsupported_response_type,
+  invalid_scope,
+  server_error,
+  temporarily_unavailable,
 }
 
 class OAuth2Error extends Error {
@@ -360,7 +360,7 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
 
       if (!client.active) {
         throw new OAuth2Error(
-          OAuth2ErrorCode.UnauthorizedClient,
+          OAuth2ErrorCode.unauthorized_client,
           `This app is not active yet. Please try again later. Contact ${process.env.PUBLIC_CONTACT_EMAIL} if your app takes more than a week to get activated.`,
         );
       }
