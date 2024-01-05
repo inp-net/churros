@@ -1,15 +1,22 @@
+import { redirectToLogin } from '$lib/session';
+import { hasNoUndefineds } from '$lib/typing';
 import { loadQuery } from '$lib/zeus.js';
 
-export async function load({ fetch, parent }) {
-  const { myApps } = await loadQuery(
+export const _thirdAppDataQuery = {
+  name: true,
+  faviconUrl: true,
+  active: true,
+  id: true,
+  clientId: true,
+};
+
+export async function load({ fetch, parent, url }) {
+  const { me } = await parent();
+  if (!me) throw redirectToLogin(url.pathname, Object.fromEntries(url.searchParams.entries()));
+  const { myApps, allApps } = await loadQuery(
     {
-      myApps: {
-        name: true,
-        faviconUrl: true,
-        active: true,
-        id: true,
-        clientId: true,
-      },
+      myApps: _thirdAppDataQuery,
+      ...(me.admin ? { allApps: _thirdAppDataQuery } : {}),
     },
     {
       fetch,
@@ -23,6 +30,11 @@ export async function load({ fetch, parent }) {
       },
     },
   );
+  let otherApps: typeof myApps = [];
+  // XXX zeus infers allApps as Array<{...} | undefined> when the type is actually Array<{...}> | undefined, as confirmed at runtime...
+  // we check both conditions to make TS happy AND runtime happy, but don't remove the first check in that if.
+  if (allApps && hasNoUndefineds(allApps))
+    otherApps = allApps.filter((app) => !myApps.some((myApp) => myApp.id === app.id));
 
-  return { apps: myApps };
+  return { apps: myApps, otherApps };
 }
