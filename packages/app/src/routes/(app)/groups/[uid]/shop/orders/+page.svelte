@@ -91,13 +91,13 @@
     width: 100%;
   }
 
-  @media only screen and (width > 900px) and (width < 990px) {
+  @media only screen and (min-width: 900px) and (max-width: 990px) {
     .content {
       justify-content: center;
     }
   }
 
-  @media only screen and (width <= 690px) {
+  @media only screen and (max-width: 690px) {
     .content {
       justify-content: center;
     }
