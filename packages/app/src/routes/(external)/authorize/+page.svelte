@@ -125,7 +125,12 @@
   section.logo {
     display: flex;
     justify-content: center;
-    max-height: 8rem;
+    height: 4rem;
+  }
+
+  section.logo img {
+    height: 100%;
+    object-fit: contain;
   }
 
   section.actions {
