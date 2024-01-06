@@ -108,11 +108,11 @@ export const ThirdPartyApp = builder.prismaObject('ThirdPartyApp', {
         };
 
         favicons.sort((a, b) => height(a?.size) - height(b?.size)).reverse();
-        if (favicons.length > 1)
-          // apple-touch-icon.png is usually non-transparent, so we don't want it
-          favicons = favicons.filter((f) => !f?.url?.endsWith('apple-touch-icon.png'));
+        // apple-touch-icon.png is usually non-transparent, so we don't want it
+        const noAppleTouchIcons = favicons.filter((f) => !f?.url?.endsWith('apple-touch-icon.png'));
+        if (noAppleTouchIcons.length > 0) favicons = noAppleTouchIcons;
 
-        const favicon = favicons[0];
+        const favicon = favicons[0]!;
         await prisma.thirdPartyApp.update({
           where: { id: app.id },
           data: {
