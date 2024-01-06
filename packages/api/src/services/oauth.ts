@@ -70,18 +70,17 @@ export const ThirdPartyApp = builder.prismaObject('ThirdPartyApp', {
     }),
     usersCount: t.int({
       async resolve({ id }) {
-        return new Set(
-          await prisma.thirdPartyCredential.findMany({
-            where: {
-              clientId: id,
-              type: ThirdPartyCredentialType.AccessToken,
-              expiresAt: { gt: new Date() },
-            },
-            select: {
-              ownerId: true,
-            },
-          }),
-        ).size;
+        const tokens = await prisma.thirdPartyCredential.findMany({
+          where: {
+            clientId: id,
+            type: ThirdPartyCredentialType.AccessToken,
+            expiresAt: { gt: new Date() },
+          },
+          select: {
+            ownerId: true,
+          },
+        });
+        return new Set(tokens.map((token) => token.ownerId)).size;
       },
     }),
     description: t.exposeString('description'),
