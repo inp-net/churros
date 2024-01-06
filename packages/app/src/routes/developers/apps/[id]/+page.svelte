@@ -1,5 +1,6 @@
 <script lang="ts">
   import Alert from '$lib/components/Alert.svelte';
+  import IconWarning from '~icons/mdi/alert-outline';
   import Badge from '$lib/components/Badge.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonCopyToClipboard from '$lib/components/ButtonCopyToClipboard.svelte';
@@ -119,6 +120,15 @@
     {/if}
     <div class="date">Créée le {formatDateTime(createdAt)}</div>
   </section>
+  {#if !active}
+    <section class="inactive">
+      <IconWarning></IconWarning>
+      <p class="explain">
+        L'application n'est pas validée, donc seules les URIs de redirection locales (localhost,
+        etc) fonctionnent
+      </p>
+    </section>
+  {/if}
   <section class="details">
     <dl>
       <dt><code> client_id </code></dt>
@@ -186,6 +196,18 @@
     display: flex;
     gap: 1rem;
     align-items: center;
+  }
+
+  .inactive {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .inactive p {
+    flex-grow: 1;
+    width: min-content;
   }
 
   .favicon {

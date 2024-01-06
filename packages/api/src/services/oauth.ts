@@ -7,6 +7,7 @@ import { nanoid } from 'nanoid';
 import { z } from 'zod';
 import { generateThirdPartyToken } from '../auth.js';
 import type { Context } from '../context.js';
+import { isLocalNetwork } from '../lib/urls.js';
 import { userIsInBureauOf } from '../objects/groups.js';
 import { log } from '../objects/logs.js';
 
@@ -261,13 +262,16 @@ builder.mutationField('editApp', (t) =>
     authScopes: canEditApp,
     async resolve(query, _, { id, ...data }, { user }) {
       await log('third-party apps', 'edit', data, id, user);
-      const { allowedRedirectUris: oldAllowedRedirectUris } =
+      const { allowedRedirectUris: oldAllowedRedirectUris, website: oldWebsite } =
         await prisma.thirdPartyApp.findUniqueOrThrow({ where: { id } });
 
-      const allowedURIsWillChange = !(
-        oldAllowedRedirectUris.every((uri) => (data.allowedRedirectUris ?? []).includes(uri)) &&
-        oldAllowedRedirectUris.length !== (data.allowedRedirectUris ?? []).length
-      );
+      const allowedURIsWillChange =
+        data.allowedRedirectUris !== undefined &&
+        data.allowedRedirectUris !== null &&
+        !(
+          oldAllowedRedirectUris.every((uri) => data.allowedRedirectUris!.includes(uri)) &&
+          oldAllowedRedirectUris.length === data.allowedRedirectUris.length
+        );
 
       // eslint-disable-next-line unicorn/no-null
       const websiteWillChange = ![undefined, null, oldWebsite].includes(data.website);
@@ -367,7 +371,7 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
         where: { id: ensureHasIdPrefix(clientId, 'ThirdPartyApp') },
       });
 
-      if (!client.active) {
+      if (!client.active && !isLocalNetwork(redirectUri)) {
         throw new OAuth2Error(
           OAuth2ErrorCode.unauthorized_client,
           `This app is not active yet. Please try again later. Contact ${process.env.PUBLIC_CONTACT_EMAIL} if your app takes more than a week to get activated.`,

@@ -15,6 +15,7 @@ import { ZodError, z } from 'zod';
 import { generateThirdPartyToken } from './auth.js';
 import { context } from './context.js';
 import { customErrorMap } from './errors.js';
+import { isLocalNetwork } from './lib/urls.js';
 import { log } from './objects/logs.js';
 import { schema, writeSchema } from './schema.js';
 import { markAsContributor } from './services/ldap.js';
@@ -198,7 +199,7 @@ api.use('/token', async (request, response) => {
   )
     return error('Invalid client_id/client_secret pair');
 
-  if (!credential.client.active) {
+  if (!credential.client.active && !isLocalNetwork(redirectUri)) {
     return error(
       `This app is not active yet. Please try again later. Contact ${process.env.PUBLIC_CONTACT_EMAIL} if your app takes more than a week to get activated.`,
     );
