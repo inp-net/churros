@@ -14,7 +14,7 @@
   import IconCalendar from '~icons/mdi/calendar-outline';
   import IconReset from '~icons/mdi/refresh';
   import ButtonToggleActiveApp from '../ButtonToggleActiveApp.svelte';
-  import FormApp, { type ThirdPartyApp } from '../FormApp.svelte';
+  import FormApp from '../FormApp.svelte';
   import type { PageData } from './$types';
   import { _query } from './+page';
 
@@ -36,7 +36,7 @@
   let clientSecret: string | undefined;
   let clientSecretShown = true;
 
-  let app: ThirdPartyApp = {
+  let app = {
     name,
     description,
     allowedRedirectUris: allowedRedirectUris.join(' '),
@@ -49,7 +49,7 @@
   }
 
   async function rotateSecret() {
-    await toasts.info('Es-tu sûr·e?', "L'ancien secret ne sera plus valide", {
+    toasts.info('Es-tu sûr·e?', "L'ancien secret ne sera plus valide", {
       async action({ data: { id }, id: toastId }) {
         ({ rotateAppSecret: clientSecret } = await $zeus
           .mutate({
@@ -98,6 +98,13 @@
 
     ({ name, description, allowedRedirectUris, createdAt, faviconUrl, active, owner, website } =
       editApp);
+
+    app = {
+      ...app,
+      ...editApp,
+      allowedRedirectUris: allowedRedirectUris.join(' '),
+      ownerGroup: owner,
+    };
   }
 </script>
 
