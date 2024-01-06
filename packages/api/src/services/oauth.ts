@@ -95,10 +95,14 @@ export const ThirdPartyApp = builder.prismaObject('ThirdPartyApp', {
         if (app.faviconUrl) return app.faviconUrl;
         console.info(`Fetching favicon for ${website}`);
         // TODO store them locally
-        let favicons = await LogoScrape.getLogos(website);
+        let favicons = (await LogoScrape.getLogos(website)) as Array<{
+          url: string;
+          size?: `${number}x${number}`;
+          type: string;
+        }>;
         if (favicons.length === 0) return '';
 
-        const height = (size: unknown) => {
+        const height = (size: string | undefined) => {
           if (typeof size === 'string') return Number.parseFloat(size.split('x')[1] ?? '0');
           return 0;
         };
