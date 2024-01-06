@@ -131,6 +131,7 @@
   section.logo img {
     height: 100%;
     object-fit: contain;
+    border-radius: var(--border-block);
   }
 
   section.actions {
