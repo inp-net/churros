@@ -1,4 +1,5 @@
 import { builder, ensureHasIdPrefix, prisma, removeIdPrefix } from '#lib';
+import { LogoScrape } from '@lyuboslavlyubenov/logo-scrape';
 import { ThirdPartyCredentialType } from '@prisma/client';
 import { hash } from 'argon2';
 import { GraphQLError } from 'graphql';
@@ -73,27 +74,31 @@ export const ThirdPartyApp = builder.prismaObject('ThirdPartyApp', {
       async resolve({ website, id }) {
         if (!website) return '';
 
-        function bustCache(url: string): string {
-          const result = new URL(url);
-          result.searchParams.set('client', removeIdPrefix(id));
-          return result.toString();
-        }
-
         const app = await prisma.thirdPartyApp.findUniqueOrThrow({ where: { id } });
-        if (app.faviconUrl) return bustCache(app.faviconUrl);
+        if (app.faviconUrl) return app.faviconUrl;
         console.info(`Fetching favicon for ${website}`);
-        // TODO
-        // const favicon = await getFavicon(website, {
-        //   timeout: 2000,
-        // }).catch(() => ({ url: '' }));
-        const favicon = { url: new URL(website).origin + '/favicon.ico' };
+        // TODO store them locally
+        let favicons = await LogoScrape.getLogos(website);
+        if (favicons.length === 0) return '';
+
+        const height = (size: unknown) => {
+          if (typeof size === 'string') return Number.parseFloat(size.split('x')[1] ?? '0');
+          return 0;
+        };
+
+        favicons.sort((a, b) => height(a?.size) - height(b?.size)).reverse();
+        if (favicons.length > 1)
+          // apple-touch-icon.png is usually non-transparent, so we don't want it
+          favicons = favicons.filter((f) => !f?.url?.endsWith('apple-touch-icon.png'));
+
+        const favicon = favicons[0];
         await prisma.thirdPartyApp.update({
           where: { id: app.id },
           data: {
             faviconUrl: favicon.url,
           },
         });
-        return bustCache(favicon.url);
+        return favicon.url;
       },
     }),
     allowedRedirectUris: t.exposeStringList('allowedRedirectUris'),
@@ -264,6 +269,9 @@ builder.mutationField('editApp', (t) =>
         oldAllowedRedirectUris.length !== (data.allowedRedirectUris ?? []).length
       );
 
+      // eslint-disable-next-line unicorn/no-null
+      const websiteWillChange = ![undefined, null, oldWebsite].includes(data.website);
+
       return prisma.thirdPartyApp.update({
         ...query,
         where: { id },
@@ -274,6 +282,7 @@ builder.mutationField('editApp', (t) =>
           website: data.website ?? undefined,
           owner: data.ownerGroupUid ? { connect: { uid: data.ownerGroupUid } } : undefined,
           active: allowedURIsWillChange ? false : undefined,
+          faviconUrl: websiteWillChange ? '' : undefined,
         },
       });
     },
