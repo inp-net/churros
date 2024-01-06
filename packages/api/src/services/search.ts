@@ -1,5 +1,4 @@
 import { prisma } from '#lib';
-import { log } from '../objects/logs.js';
 
 export type FuzzySearchResult = Array<{ id: string; changes: number }>;
 
@@ -139,17 +138,6 @@ export async function fullTextSearch(
       // eslint-disable-next-line unicorn/no-useless-spread
       ...[q, HIGHLIGHTER_OPTIONS, similarityCutoff ?? 0.05, ...Object.values(additionalClauses)],
     );
-
-  await log(
-    'fulltext-search',
-    'search',
-    {
-      sql: query,
-      results,
-      query: q,
-    },
-    table,
-  );
 
   return results.map(({ id, rank, similarity, ...highlights }) => ({
     id,

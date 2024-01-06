@@ -1,3 +1,13 @@
+<script context="module" lang="ts">
+  export type Group = {
+    id: string;
+    uid: string;
+    name: string;
+    pictureFile: string;
+    pictureFileDark: string;
+  };
+</script>
+
 <script lang="ts">
   import InputField from './InputField.svelte';
   import IconCheck from '~icons/mdi/check';
@@ -5,13 +15,6 @@
   import { isDark } from '$lib/theme';
   import InputPickObjects from './InputPickObjects.svelte';
 
-  type Group = {
-    id: string;
-    uid: string;
-    name: string;
-    pictureFile: string;
-    pictureFileDark: string;
-  };
   export let clearButtonLabel = 'Effacer';
   export let label: string;
   export let disallowed: Group[] = [];

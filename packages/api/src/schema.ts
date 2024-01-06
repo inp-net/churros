@@ -39,7 +39,8 @@ import './objects/tickets.js';
 import './objects/user-candidates.js';
 import './objects/users.js';
 import './services/ade.js';
-import './services/changelog.js'
+import './services/changelog.js';
+import './services/oauth.js';
 
 // Import other mutations and/or queries that are not objects
 import './services/gitlab.js';

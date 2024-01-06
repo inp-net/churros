@@ -1,8 +1,6 @@
 import { loadQuery } from '$lib/zeus';
 import type { LayoutLoad } from './$types';
 
-export const ssr = false;
-
 export const load: LayoutLoad = async ({ fetch, data }) => {
   const { me, mobile, token } = data;
   if (!me) {
