@@ -1,6 +1,5 @@
 <script lang="ts">
   import Alert from '$lib/components/Alert.svelte';
-  import IconWarning from '~icons/mdi/alert-outline';
   import Badge from '$lib/components/Badge.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonCopyToClipboard from '$lib/components/ButtonCopyToClipboard.svelte';
@@ -10,6 +9,9 @@
   import { me } from '$lib/session';
   import { toasts } from '$lib/toasts';
   import { zeus } from '$lib/zeus';
+  import IconUsers from '~icons/mdi/account-multiple-outline';
+  import IconWarning from '~icons/mdi/alert-outline';
+  import IconCalendar from '~icons/mdi/calendar-outline';
   import IconReset from '~icons/mdi/refresh';
   import ButtonToggleActiveApp from '../ButtonToggleActiveApp.svelte';
   import FormApp, { type ThirdPartyApp } from '../FormApp.svelte';
@@ -118,7 +120,11 @@
     {#if $me?.admin}
       <ButtonToggleActiveApp {...data.thirdPartyApp}></ButtonToggleActiveApp>
     {/if}
-    <div class="date">Créée le {formatDateTime(createdAt)}</div>
+    <div class="users">
+      <IconUsers></IconUsers>
+      {data.thirdPartyApp.usersCount} utilisateur·ice·s
+    </div>
+    <div class="date"><IconCalendar></IconCalendar> Créée le {formatDateTime(createdAt)}</div>
   </section>
   {#if !active}
     <section class="inactive">

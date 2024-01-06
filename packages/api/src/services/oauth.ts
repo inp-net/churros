@@ -68,6 +68,22 @@ export const ThirdPartyApp = builder.prismaObject('ThirdPartyApp', {
         return CLIENT_SECRET_LENGTH;
       },
     }),
+    usersCount: t.int({
+      async resolve({ id }) {
+        return new Set(
+          await prisma.thirdPartyCredential.findMany({
+            where: {
+              clientId: id,
+              type: ThirdPartyCredentialType.AccessToken,
+              expiresAt: { gt: new Date() },
+            },
+            select: {
+              ownerId: true,
+            },
+          }),
+        ).size;
+      },
+    }),
     description: t.exposeString('description'),
     website: t.exposeString('website'),
     active: t.exposeBoolean('active'),

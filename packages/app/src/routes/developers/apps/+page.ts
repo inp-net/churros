@@ -8,6 +8,7 @@ export const _thirdAppDataQuery = {
   active: true,
   id: true,
   clientId: true,
+  usersCount: true,
 };
 
 export async function load({ fetch, parent, url }) {

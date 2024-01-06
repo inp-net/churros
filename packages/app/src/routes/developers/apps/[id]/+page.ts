@@ -11,6 +11,7 @@ export const _query = {
   active: true,
   website: true,
   secretLength: true,
+  usersCount: true,
   owner: {
     id: true,
     uid: true,

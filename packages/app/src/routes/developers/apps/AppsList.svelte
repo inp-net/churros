@@ -1,5 +1,7 @@
 <script lang="ts">
   import Badge from '$lib/components/Badge.svelte';
+  import { tooltip } from '$lib/tooltip';
+  import IconUsers from '~icons/mdi/account-multiple-outline';
 
   export let apps: Array<{
     name: string;
@@ -7,20 +9,27 @@
     id: string;
     clientId: string;
     active: boolean;
+    usersCount: number;
   }>;
 </script>
 
-{#each apps as { name, faviconUrl, id, clientId, active } (id)}
+{#each apps as { name, faviconUrl, id, clientId, active, usersCount } (id)}
   <li>
     <a href={`./${clientId}`}>
       <span class="name">
         <img src={faviconUrl} alt="" />
         {name}</span
       >
-      <Badge
-        title={active ? '' : "L'application est en attente de validation"}
-        theme={active ? 'success' : 'warning'}>{active ? 'Active' : 'Inactive'}</Badge
-      >
+      <div class="right">
+        <span use:tooltip={`${usersCount} personnes ont utilisé ${name}`} class="users-count">
+          <IconUsers></IconUsers>
+          {usersCount}
+        </span>
+        <Badge
+          title={active ? '' : "L'application est en attente de validation"}
+          theme={active ? 'success' : 'warning'}>{active ? 'Active' : 'Inactive'}</Badge
+        >
+      </div>
     </a>
   </li>
 {:else}
@@ -48,6 +57,16 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+  }
+
+  .right {
+    display: flex;
+    column-gap: 1.5rem;
+    align-items: center;
+  }
+
+  .users-count {
+    font-weight: bold;
   }
 
   img {
