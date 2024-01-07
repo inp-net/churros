@@ -7,7 +7,7 @@ import type { RequestHandler } from './$types';
 const { generateIcs } = icsService;
 
 export const GET: RequestHandler = async ({ locals, fetch, url }) => {
-  const { me } = locals;
+  const { token } = locals;
 
   const { events } = await loadQuery(
     {
@@ -29,14 +29,7 @@ export const GET: RequestHandler = async ({ locals, fetch, url }) => {
         },
       ],
     },
-    {
-      fetch,
-      async parent() {
-        return new Promise((resolve) => {
-          resolve({ me, token: '', mobile: true });
-        });
-      },
-    },
+    { fetch, token },
   );
 
   const toDatetimeAray = (date: Date): [number, number, number, number, number] => [

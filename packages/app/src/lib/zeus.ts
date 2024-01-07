@@ -1,7 +1,6 @@
 import { page } from '$app/stores';
 import { env } from '$env/dynamic/public';
 import { error, type LoadEvent, type NumericRange } from '@sveltejs/kit';
-import type { LayoutServerData } from '../../.svelte-kit/types/src/routes/$types';
 import {
   Thunder,
   ZeusScalars,
@@ -112,7 +111,7 @@ const scalars = ZeusScalars({
 
 export const zeus = derived(page, ({ data }) => {
   aled('zeus.ts: inside derived store $zeus', data);
-  const chained = chain(fetch, { token: (data as LayoutServerData).token });
+  const chained = chain(fetch, { token: data.token });
   return {
     query: chained('query', { scalars }),
     mutate: chained('mutation', { scalars }),
@@ -121,18 +120,32 @@ export const zeus = derived(page, ({ data }) => {
 
 export const loadQuery = async <Query extends ValueTypes['Query']>(
   query: Query,
-  { fetch, parent }: { fetch: LoadEvent['fetch']; parent?: () => Promise<LayoutServerData> },
+  {
+    fetch,
+    parent,
+    token,
+  }: {
+    fetch: LoadEvent['fetch'];
+    parent?: () => Promise<{ token?: string | undefined }>;
+    token?: string | undefined;
+  },
 ) => {
-  const parentData = parent ? await parent() : { token: undefined };
-  aled('zeus.ts: loadQuery with parent data', { parentData, query });
-  return chain(fetch, { token: parentData.token })('query', { scalars })(query);
+  ({ token } = parent ? await parent() : { token });
+  return chain(fetch, { token })('query', { scalars })(query);
 };
 
 export const makeMutation = async <Mutation extends ValueTypes['Mutation']>(
   mutation: Mutation,
-  { fetch, parent }: { fetch: LoadEvent['fetch']; parent?: () => Promise<LayoutServerData> },
+  {
+    fetch,
+    parent,
+    token,
+  }: {
+    fetch: LoadEvent['fetch'];
+    parent?: () => Promise<{ token?: string | undefined }>;
+    token?: string | undefined;
+  },
 ) => {
-  const parentData = parent ? await parent() : { token: undefined };
-  aled('zeus.ts: makeMutation with parent data', { parentData, mutation });
-  return chain(fetch, { token: parentData.token })('mutation', { scalars })(mutation);
+  ({ token } = parent ? await parent() : { token });
+  return chain(fetch, { token })('mutation', { scalars })(mutation);
 };

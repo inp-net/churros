@@ -51,7 +51,7 @@ export const _clubQuery = Selector('Group')({
 });
 
 export const load: PageLoad = async ({ fetch, params, url, parent }) => {
-  const { me, mobile } = await parent();
+  const { me, token } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
   if (
     !me.canEditGroups &&
@@ -71,16 +71,6 @@ export const load: PageLoad = async ({ fetch, params, url, parent }) => {
       ],
       schoolGroups: { names: true, majors: { id: true, name: true } },
     },
-    {
-      fetch,
-      parent: async () =>
-        new Promise((resolve) => {
-          resolve({
-            mobile,
-            me: undefined,
-            token: undefined,
-          });
-        }),
-    },
+    { fetch, token },
   );
 };

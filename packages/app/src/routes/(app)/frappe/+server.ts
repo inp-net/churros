@@ -14,14 +14,7 @@ export const GET: RequestHandler = ({ locals, url, fetch }) => {
       { updateSubjectsExamDates: true },
       {
         fetch,
-        parent: async () =>
-          new Promise((resolve) => {
-            resolve({
-              mobile: false,
-              me,
-              token: token ?? '',
-            });
-          }),
+        token,
       },
     );
   } catch (error) {
