@@ -43,3 +43,4 @@ cli/dist
 bubblewrap/
 packages/app/src/lib/buildinfo.ts
 packages/api/src/lib/buildinfo.ts
+packages/api/static/CHANGELOG.md

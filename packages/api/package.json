@@ -81,7 +81,7 @@
     "execa": "^8.0.1",
     "lodash.omit": "^4.5.0",
     "prisma": "5.7.0",
-    "tsx": "^4.6.2",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "yaml": "^2.3.4"
   },
@@ -94,7 +94,8 @@
   "private": true,
   "scripts": {
     "add-fulltextsearch": "python scripts/add-fulltextsearch.py",
-    "build": "prisma generate && tsc && node ./build/scripts/update-id-prefix-to-typename-map.js && node ./build/scripts/inject-current-commit-hash.js && prisma generate && tsc && node ./build/scripts/post-build.js",
+    "build": "prisma generate && yarn copy-changelog && tsx ./scripts/update-id-prefix-to-typename-map.ts && tsx ./scripts/inject-current-commit-hash.ts && tsc && node ./build/scripts/post-build.js",
+    "copy-changelog": "cp ../../CHANGELOG.md ./static/CHANGELOG.md",
     "clean": "git clean -Xdf .",
     "dev": "NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
     "migrate-old-data": "cd scripts && yarn tsc import-old-data.ts --lib es2021,DOM --module es2022 --target es2022 --moduleResolution node --allowSyntheticDefaultImports && yarn node import-old-data.js",

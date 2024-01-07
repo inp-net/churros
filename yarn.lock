@@ -368,7 +368,7 @@ __metadata:
     semver: "npm:^7.5.4"
     sharp: "npm:^0.33.0"
     slug: "npm:^8.2.3"
-    tsx: "npm:^4.6.2"
+    tsx: "npm:^4.7.0"
     typescript: "npm:^5.3.3"
     unified: "npm:^10.1.2"
     web-push: "npm:^3.6.6"
