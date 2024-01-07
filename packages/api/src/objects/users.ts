@@ -1,4 +1,4 @@
-import { CURRENT_VERSION, builder, prisma } from '#lib';
+import { builder, prisma } from '#lib';
 import type { User } from '@prisma/client';
 import { addDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
