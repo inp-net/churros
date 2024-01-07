@@ -1,22 +1,15 @@
-import { CURRENT_VERSION } from '$lib/buildinfo.js';
-import { Selector, SortDirection, loadQuery } from '$lib/zeus.js';
+import { CURRENT_VERSION } from '$lib/buildinfo';
+import { SortDirection, loadQuery } from '$lib/zeus';
+import { error } from '@sveltejs/kit';
+import { _changelogChangeQuery } from '../+layout';
 
-export const ssr = false;
-
-export const _changelogChangeQuery = Selector('ReleaseChange')({
-  authors: true,
-  issues: true,
-  mergeRequests: true,
-  reporters: true,
-  html: true,
-});
-
-export async function load({ parent, fetch }) {
+export async function load({ fetch, parent }) {
   const { combinedChangelog } = await loadQuery(
     {
       combinedChangelog: [
         {
           sort: SortDirection.Descending,
+          from: '0.0.0',
           to: CURRENT_VERSION,
         },
         {
@@ -40,10 +33,11 @@ export async function load({ parent, fetch }) {
         },
       ],
     },
-    { parent, fetch },
+    // @ts-expect-error thanks zeus
+    { fetch, parent },
   );
 
-  if (combinedChangelog.__typename === 'Error') return { combinedChangelog: [] };
+  if (combinedChangelog.__typename === 'Error') throw error(500, combinedChangelog.message);
 
   return { combinedChangelog: combinedChangelog.data };
 }

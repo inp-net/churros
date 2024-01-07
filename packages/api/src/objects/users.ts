@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { CURRENT_VERSION, builder, prisma } from '#lib';
 import type { User } from '@prisma/client';
 import { addDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
@@ -68,6 +68,7 @@ export const UserType = builder.prismaNode('User', {
         return !majorId;
       },
     }),
+    latestVersionSeenInChangelog: t.exposeString('latestVersionSeenInChangelog'),
 
     // Profile details
     address: t.exposeString('address', { authScopes: { student: true, $granted: 'me' } }),

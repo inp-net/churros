@@ -11,6 +11,7 @@
   import { onMount } from 'svelte';
   import IconLoading from '~icons/mdi/loading';
   import '../design/app.scss';
+  import ModalChangelog from '$lib/components/ModalChangelog.svelte';
 
   let showInitialSpinner = true;
 
@@ -139,7 +140,6 @@
     {/each}
   </section>
 {/if}
-
 <slot />
 
 <style lang="scss">

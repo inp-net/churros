@@ -365,6 +365,7 @@ __metadata:
     remark-math: "npm:^6.0.0"
     remark-parse: "npm:^10.0.2"
     remark-rehype: "npm:^10.1.0"
+    semver: "npm:^7.5.4"
     sharp: "npm:^0.33.0"
     slug: "npm:^8.2.3"
     tsx: "npm:^4.6.2"
