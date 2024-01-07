@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - C'est malheureusement la fin du thème de Noël :/ Vivement les campagnes des listes ;)
 
+## [1.40.2] - 2024-01-06
+
+### Corrections
+
+- Clients OAuth2: Le nombre d'utilisateur·ice·s d'une appli tierce est maintenant correct
+
 ## [1.40.0] - 2024-01-06
 
 ### Nouveautés
