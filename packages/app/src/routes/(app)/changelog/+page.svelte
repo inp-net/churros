@@ -1,9 +1,15 @@
 <script lang="ts">
   import { formatDate } from '$lib/dates';
-  import { DISPLAY_CHANGELOG_CATEGORIES } from '$lib/display';
+  import { DISPLAY_CHANGELOG_CATEGORIES, ORDER_CHANGELOG_CATEGORIES } from '$lib/display';
   import type { PageData } from './$types';
 
   export let data: PageData;
+
+  function changesByCategory(version: (typeof data.combinedChangelog)[number]) {
+    type Key = (typeof ORDER_CHANGELOG_CATEGORIES)[number];
+
+    return [...Object.entries(version.changes)] as Array<[Key, (typeof version.changes)[Key]]>;
+  }
 </script>
 
 <main>
@@ -14,7 +20,7 @@
     {#if version.date}
       <p class="date">{formatDate(version.date)}</p>
     {/if}
-    {#each Object.entries(version.changes) as [category, changes]}
+    {#each changesByCategory(version) as [category, changes]}
       {#if changes.length > 0}
         <h3>{DISPLAY_CHANGELOG_CATEGORIES.get(category)}</h3>
         <ul>
@@ -39,8 +45,8 @@
   main {
     display: flex;
     flex-direction: column;
-    margin: 0 auto;
     max-width: 1000px;
+    margin: 0 auto;
   }
 
   h1 {

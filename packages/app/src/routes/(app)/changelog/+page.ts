@@ -33,7 +33,6 @@ export async function load({ fetch, parent }) {
         },
       ],
     },
-    // @ts-expect-error thanks zeus
     { fetch, parent },
   );
 
