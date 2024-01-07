@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [1.41.0] - 2024-01-07
+## [Unreleased]
 
 ### Nouveautés
 
@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - C'est malheureusement la fin du thème de Noël :/ Vivement les campagnes des listes ;)
 
-## [1.40.0] - 2023-12-29
+## [1.40.0] - 2024-01-06
 
 ### Nouveautés
 

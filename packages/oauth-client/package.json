@@ -30,5 +30,9 @@
     "tsc": "^2.0.4",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
+  },
+  "release-it": {
+    "git": false,
+    "npm": false
   }
 }

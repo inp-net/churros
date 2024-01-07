@@ -104,5 +104,9 @@
   "type": "module",
   "volta": {
     "extends": "../../package.json"
+  },
+  "release-it": {
+    "git": false,
+    "npm": false
   }
 }
