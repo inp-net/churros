@@ -6,6 +6,7 @@
   import IconGear from '~icons/mdi/gear-outline';
   import IconJoinGroup from '~icons/mdi/account-plus';
   import IconQuitGroup from '~icons/mdi/account-cancel-outline';
+  import IconStore from '~icons/mdi/store';
   import { me } from '$lib/session.js';
   import type { PageData } from './$types';
   import { zeus } from '$lib/zeus';
@@ -168,8 +169,9 @@
         {group.name}
 
         <ButtonShare />
+        <ButtonGhost help="Accéder à la boutique" href="./shop/"><IconStore /></ButtonGhost>
         {#if canEditDetails}
-          <ButtonGhost help="Modifier les infos" href="./edit"><IconGear /></ButtonGhost>
+          <ButtonGhost help="Modifier les infos" href="./edit/"><IconGear /></ButtonGhost>
         {/if}
 
         {#if group?.members?.find(({ member: { uid } }) => uid === $me?.uid)}
@@ -272,6 +274,13 @@
           >{/if}
       </Alert>
     {/if}
+  </section>
+
+  <section class="shop">
+    <h2>
+      Boutique
+      <ButtonSecondary href="./shop/" icon={IconStore}>Voir</ButtonSecondary>
+    </h2>
   </section>
 
   {#if (group.root && (group.root.children.length ?? 0) > 0) || meOnClubBoard}
