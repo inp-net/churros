@@ -17,6 +17,7 @@
     }>;
   };
 
+  export let small = false;
   export let shopItem: ShopItemType;
 </script>
 
@@ -25,11 +26,14 @@
   <div class="info">
     <div class="data">
       <h1 class="name">{shopItem.name}</h1>
-      {#if shopItem.stock !== 0}
+      {#if shopItem.stock !== 0 && !small}
         <p>{shopItem.stockLeft}/{shopItem.stock} restants</p>
       {/if}
-      <p class="description">{shopItem.description}</p>
+      {#if !small}
+        <p class="description">{shopItem.description}</p>
+      {/if}
     </div>
+
     <div class="price">
       <h2>{shopItem.price} €</h2>
     </div>
@@ -85,7 +89,7 @@
     padding: 1em 0 0;
   }
 
-  @media (width <= 350px) {
+  @media (min-width: 350px) {
     .container {
       max-width: 15em;
     }

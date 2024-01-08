@@ -43,6 +43,12 @@
   import IconAdd from '~icons/mdi/plus';
   import IconTwitter from '~icons/mdi/twitter';
   import IconAnilist from '~icons/simple-icons/anilist';
+  import IconStore from '~icons/mdi/store';
+  import { me } from '$lib/session.js';
+  import type { PageData } from './$types';
+  import { zeus } from '$lib/zeus';
+  import { DISPLAY_GROUP_TYPES } from '$lib/display';
+  import { onMount, type SvelteComponent } from 'svelte';
   import type { PageData } from './$types';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -182,8 +188,9 @@
       <h1>
         {group.name}
         <ButtonShare />
+        <ButtonGhost help="Accéder à la boutique" href="./shop/"><IconStore /></ButtonGhost>
         {#if canEditDetails}
-          <ButtonGhost help="Modifier les infos" href="./edit"><IconGear /></ButtonGhost>
+          <ButtonGhost help="Modifier les infos" href="./edit/"><IconGear /></ButtonGhost>
         {/if}
 
         {#if group?.members?.find(({ member: { uid } }) => uid === $me?.uid)}
@@ -306,6 +313,13 @@
           >{/if}
       </Alert>
     {/if}
+  </section>
+
+  <section class="shop">
+    <h2>
+      Boutique
+      <ButtonSecondary href="./shop/" icon={IconStore}>Voir</ButtonSecondary>
+    </h2>
   </section>
 
   {#if (group.root && (group.root.children.length ?? 0) > 0) || meOnClubBoard}
