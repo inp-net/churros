@@ -19,27 +19,13 @@ class ChurrosRelease extends KeepAChangelog.Release {
   }
 }
 
-class ReleaseChange {
-  text!: string;
-  authors!: string[];
-  reporters!: string[];
-  issues!: number[];
-  mergeRequests!: number[];
-
-  constructor(
-    text: string,
-    issues: number[],
-    reporters: string[],
-    mergeRequests: number[],
-    authors: string[],
-  ) {
-    this.text = text;
-    this.authors = authors;
-    this.issues = issues;
-    this.mergeRequests = mergeRequests;
-    this.reporters = reporters;
-  }
-}
+type ReleaseChange = {
+  text: string;
+  authors: string[];
+  reporters: string[];
+  issues: number[];
+  mergeRequests: number[];
+};
 
 class ReleaseChangesMap {
   fixed!: ReleaseChange[];
@@ -81,13 +67,13 @@ class ChangelogRelease {
     const changes = new ReleaseChangesMap();
     for (const [type, changesOfType] of release.changes) {
       for (const change of changesOfType) {
-        const releaseChange = new ReleaseChange(
-          change.title + (change.description ? `\n${change.description}` : ''),
-          change.issues.map((i) => Number.parseInt(i, 10)).filter((i) => !Number.isNaN(i)),
-          [], //TODO
-          [], //TODO
-          [], //TODO
-        );
+        const releaseChange = {
+          text: change.title + (change.description ? `\n${change.description}` : ''),
+          issues: change.issues.map((i) => Number.parseInt(i, 10)).filter((i) => !Number.isNaN(i)),
+          reporters: [], //TODO
+          mergeRequests: [], //TODO
+          authors: [], //TODO
+        };
         switch (type) {
           case 'correctifs': {
             changes.fixed.push(releaseChange);
@@ -123,8 +109,7 @@ async function changelogFromFile() {
   });
 }
 
-export const ReleaseChangeType = builder.objectType(ReleaseChange, {
-  name: 'ReleaseChange',
+export const ReleaseChangeType = builder.objectRef<ReleaseChange>('ReleaseChange').implement({
   description: 'A change in the changelog',
   fields: (t) => ({
     text: t.exposeString('text', { description: 'The text of the change' }),
