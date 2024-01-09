@@ -3,6 +3,7 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import LogoChurros from '$lib/components/LogoChurros.svelte';
+  import { isPWA } from '$lib/pwa';
   import { toasts } from '$lib/toasts';
   import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
@@ -57,13 +58,19 @@
           return;
         }
 
-        console.info(`Redirecting to ${redirectUri}`);
-        window.location.href = `${redirectUri}?${new URLSearchParams({
+        const redirectTo = new URL(redirectUri);
+        redirectTo.search = new URLSearchParams({
           ...(authorize.__typename === 'OAuth2Error'
             ? { error: authorize.code, error_description: authorize.message }
             : { code: authorize.data }),
           state: data.csrfState,
-        }).toString()}`;
+        }).toString();
+
+        if (isPWA()) 
+          window.open(redirectTo.toString(), '_blank');
+         else 
+          window.location.href = redirectTo.toString();
+        
       }}>Autoriser</ButtonPrimary
     >
     <ButtonSecondary
