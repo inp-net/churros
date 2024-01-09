@@ -345,22 +345,6 @@ builder.queryField('registrationsOfUserForEvent', (t) =>
   }),
 );
 
-builder.queryField('registrationsOfTicket', (t) =>
-  t.prismaConnection({
-    type: RegistrationType,
-    cursor: 'id',
-    args: {
-      ticket: t.arg.id(),
-    },
-    async resolve(query, _, { ticket }) {
-      return prisma.registration.findMany({
-        ...query,
-        where: { ticket: { id: ticket } },
-      });
-    },
-  }),
-);
-
 export class RegistrationSearch {
   registration!: Registration;
   id!: string;
