@@ -589,10 +589,28 @@ builder.mutationField('upsertRegistration', (t) =>
       authorEmail: t.arg.string({ required: false }),
     },
     async authScopes(_, { ticketId, id, paid, authorEmail, beneficiary }, { user }) {
+      const logDenial = async (why: string, data?: Record<string, unknown> | undefined) => {
+        await log(
+          'registrations',
+          'deny',
+          { message: why, args: { paid, authorEmail, beneficiary }, ...data },
+          id,
+          user,
+        );
+      };
+
       const creating = !id;
-      if (!authorEmail && !user) return false;
+      if (!authorEmail && !user) {
+        await logDenial('not logged in and no user');
+        return false;
+      }
       // cannot create a registration for someone else when not connected (because godson limits can't be tracked)
-      if (beneficiary && !user) return false;
+      if (beneficiary && !user) {
+        await logDenial(
+          "cannot book for someone else without an account, godson limits can't be tracked",
+        );
+        return false;
+      }
       const ticket = await prisma.ticket.findUnique({
         where: { id: ticketId },
         include: {
@@ -610,19 +628,30 @@ builder.mutationField('upsertRegistration', (t) =>
           openToMajors: true,
         },
       });
-      if (!ticket) return false;
+      if (!ticket) {
+        await logDenial('ticket not found');
+        return false;
+      }
 
       // Only managers can mark a registration as paid
       if (
         ticket.price > 0 &&
         paid &&
         !(user?.admin || eventManagedByUser(ticket.event, user, { canVerifyRegistrations: true }))
-      )
+      ) {
+        await logDenial(
+          "only managers or admins can mark a registration as paid, ticket's price is not 0 and paid is true",
+          { ticket },
+        );
         return false;
+      }
 
       if (creating) {
         // Check that the user can access the event
-        if (!(await eventAccessibleByUser(ticket.event, user))) return false;
+        if (!(await eventAccessibleByUser(ticket.event, user))) {
+          await logDenial("user can't access the event the ticket is for", { ticket });
+          return false;
+        }
 
         const userWithContributesTo = user
           ? await prisma.user.findUniqueOrThrow({
@@ -661,20 +690,31 @@ builder.mutationField('upsertRegistration', (t) =>
           : undefined;
 
         // Check that the ticket is still open
-        if (ticket.closesAt && isPast(ticket.closesAt)) return false;
+        if (ticket.closesAt && isPast(ticket.closesAt)) {
+          await logDenial('shotgun is closed', { ticket });
+          return false;
+        }
 
         // Check that the ticket is open yet
-        if (ticket.opensAt && isFuture(ticket.opensAt)) return false;
+        if (ticket.opensAt && isFuture(ticket.opensAt)) {
+          await logDenial('shotgun is not open yet', { ticket });
+          return false;
+        }
 
         // Check that the user can see the event
-        if (!userCanSeeTicket(ticket, userWithContributesTo)) return false;
+        if (!userCanSeeTicket(ticket, userWithContributesTo)) {
+          await logDenial("user can't see the ticket", { ticket, userWithContributesTo });
+          return false;
+        }
 
         // Check for tickets that only managers can provide
         if (
           ticket.onlyManagersCanProvide &&
           !eventManagedByUser(ticket.event, user, { canVerifyRegistrations: true })
-        )
+        ) {
+          await logDenial('only managers can provide this ticket', { ticket });
           return false;
+        }
 
         const ticketAndRegistrations = await prisma.ticket.findUnique({
           where: { id: ticketId },
@@ -689,11 +729,23 @@ builder.mutationField('upsertRegistration', (t) =>
           const registrationsByThisAuthor = ticketAndRegistrations!.registrations.filter(
             ({ author, beneficiary }) => author?.uid === user?.uid && beneficiary !== '',
           );
-          if (registrationsByThisAuthor.length > ticket.godsonLimit) return false;
+          if (registrationsByThisAuthor.length > ticket.godsonLimit) {
+            await logDenial('godson limit reached', {
+              ticket,
+              registrationsByThisAuthor,
+              userWithContributesTo,
+            });
+            return false;
+          }
         }
 
         // Check that the ticket is not full
-        return placesLeft(ticketAndRegistrations!) > 0;
+        const full = placesLeft(ticketAndRegistrations!) <= 0;
+        if (full) {
+          await logDenial('no places left', { ticket });
+          return false;
+        }
+        return true;
       }
 
       // We are updating an existing registration. The permissions required are totally different.

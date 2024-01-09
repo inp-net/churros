@@ -18,7 +18,7 @@ export async function log(
   area: string,
   action: string,
   message: Record<string, unknown>,
-  target?: string,
+  target?: string | null,
   user?: { uid: string },
 ) {
   // eslint-disable-next-line no-console
