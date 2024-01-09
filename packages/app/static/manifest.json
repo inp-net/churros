@@ -9,40 +9,6 @@
   "id": "centraverse.aen7.beta",
   "description": "L'application de l'asso des étudiants de l'ENSEEIHT. Suit des clubs, prends ta place sur des évènements,  sauve tes partiels, et bien plus encore!",
   "categories": ["events"],
-  "screenshots": [
-    {
-      "src": "/screen-feed.png",
-      "type": "image/png"
-    },
-    {
-      "src": "/screen-week.png",
-      "type": "image/png"
-    },
-    {
-      "src": "/screen-tickets.png",
-      "type": "image/png"
-    },
-    {
-      "src": "/screen-bookings.png",
-      "type": "image/png"
-    },
-    {
-      "src": "/screen-ticket.png",
-      "type": "image/png"
-    },
-    {
-      "src": "/screen-search.png",
-      "type": "image/png"
-    },
-    {
-      "src": "/screen-group.png",
-      "type": "image/png"
-    },
-    {
-      "src": "/screen-user.png",
-      "type": "image/png"
-    }
-  ],
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
