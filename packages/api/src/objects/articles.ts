@@ -324,11 +324,22 @@ builder.mutationField('upsertArticle', (t) =>
           user: user ? { connect: { id: user.id } } : undefined,
         },
       });
-      await scheduleNewArticleNotification({
-        ...result,
+      const visibilitiesByVerbosity = [
+        Visibility.Private,
+        Visibility.Unlisted,
+        Visibility.GroupRestricted,
+        Visibility.SchoolRestricted,
+        Visibility.Public,
+      ];
+      void scheduleNewArticleNotification(result, {
         // Only post the notification immediately if the article was not already published before.
         // This prevents notifications if the content of the article is changed after its publication; but allows to send notifications immediately if the article was previously set to be published in the future and the author changes their mind and decides to publish it now.
-        eager: !old || old.publishedAt > new Date(),
+        eager:
+          !old ||
+          old.publishedAt > new Date() ||
+          // send new notifications when changing visibility of article to a more public one (e.g. from private to school-restricted)
+          visibilitiesByVerbosity.indexOf(result.visibility) >
+            visibilitiesByVerbosity.indexOf(old.visibility),
       });
       return result;
     },

@@ -52,17 +52,22 @@ export type PushNotification = {
   };
 };
 
-export async function scheduleNewArticleNotification({
-  id,
-  publishedAt,
-  eager,
-  notifiedAt,
-}: {
-  id: string;
-  publishedAt: Date;
-  notifiedAt: Date | null;
-  eager: boolean;
-}): Promise<Cron | boolean> {
+export async function scheduleNewArticleNotification(
+  {
+    id,
+    publishedAt,
+    notifiedAt,
+  }: {
+    id: string;
+    publishedAt: Date;
+    notifiedAt: Date | null;
+  },
+  {
+    eager,
+  }: {
+    eager: boolean;
+  },
+): Promise<Cron | boolean> {
   if (notifiedAt) return false;
 
   return scheduleNotification(
@@ -121,6 +126,9 @@ export async function scheduleNewArticleNotification({
           goto: `/posts/${article.group.uid}/${article.uid}`,
         },
         async afterSent() {
+          console.info(
+            `[${new Date().toISOString()}] Setting notifiedAt for article ${article.id}`,
+          );
           await prisma.article.update({
             where: { id: article.id },
             data: {
