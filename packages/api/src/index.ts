@@ -23,6 +23,7 @@ import { log } from './objects/logs.js';
 import { schema, writeSchema } from './schema.js';
 import { markAsContributor } from './services/ldap.js';
 import { lydiaSignature, verifyLydiaTransaction } from './services/lydia.js';
+import { rescheduleNotifications } from './services/notifications.js';
 import { generatePDF } from './services/pdf.js';
 
 z.setErrorMap(customErrorMap);
@@ -327,6 +328,7 @@ apiWebsocketHttpServer.listen(4003, () => {
 });
 
 await writeSchema();
+await rescheduleNotifications({ dryRun: true });
 
 const webhook = express();
 const upload: multer.Multer = multer();
