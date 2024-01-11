@@ -1,5 +1,4 @@
 import { builder, prisma } from '#lib';
-import type { User } from '@prisma/client';
 import { addDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
@@ -12,7 +11,6 @@ import { updatePicture } from '../pictures.js';
 import { markAsContributor, queryLdapUser } from '../services/ldap.js';
 import { toHtml } from '../services/markdown.js';
 import { createUid } from '../services/registration.js';
-import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { ContributionOptionType } from './contribution-options.js';
 import { requestEmailChange } from './email-changes.js';
 import { LinkInput } from './links.js';
@@ -198,26 +196,6 @@ export const UserType = builder.prismaNode('User', {
   }),
 });
 
-export class UserSearchResult {
-  user!: User;
-  id!: string;
-  similarity!: number;
-  rank!: number | null;
-}
-
-export const UserSearchResultType = builder.objectType(UserSearchResult, {
-  name: 'UserSearchResult',
-  fields: (t) => ({
-    user: t.prismaField({
-      type: 'User',
-      resolve: (_, { user }) => user,
-    }),
-    id: t.exposeID('id'),
-    similarity: t.exposeFloat('similarity'),
-    rank: t.exposeFloat('rank', { nullable: true }),
-  }),
-});
-
 /** Returns the current user. */
 builder.queryField('me', (t) =>
   // We use `prismaField` instead of `field` to leverage the nesting
@@ -266,30 +244,6 @@ builder.queryField('allUsers', (t) =>
       });
     },
     cursor: 'id',
-  }),
-);
-
-/** Searches for user on all text fields. */
-builder.queryField('searchUsers', (t) =>
-  t.field({
-    type: [UserSearchResultType],
-    args: { q: t.arg.string(), similarityCutoff: t.arg.float({ required: false }) },
-    authScopes: { student: true },
-    async resolve(_, { q, similarityCutoff }) {
-      const matches = await fullTextSearch('User', q, {
-        similarityCutoff: similarityCutoff ?? 0.08,
-        fuzzy: ['firstName', 'lastName', 'nickname', 'email', 'uid'],
-        highlight: ['description'],
-      });
-
-      const users = await prisma.user.findMany({
-        where: { id: { in: matches.map(({ id }) => id) } },
-      });
-
-      return sortWithMatches(highlightProperties(users, matches, ['description']), matches).map(
-        ({ object, ...match }) => ({ user: object, ...match }),
-      );
-    },
   }),
 );
 

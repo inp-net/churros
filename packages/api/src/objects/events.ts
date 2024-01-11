@@ -33,7 +33,6 @@ import dichotomid from 'dichotomid';
 import slug from 'slug';
 import type { Context } from '../context.js';
 import { htmlToText, toHtml } from '../services/markdown.js';
-import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { ManagerOfEventInput } from './event-managers.js';
 import { LinkInput } from './links.js';
 import { BooleanMapScalar, CountsScalar, DateTimeScalar, FileScalar } from './scalars.js';
@@ -1303,51 +1302,6 @@ export function eventManagedByUser(
       }),
   );
 }
-
-builder.queryField('searchEvents', (t) =>
-  t.prismaField({
-    type: [EventType],
-    args: {
-      q: t.arg.string(),
-      groupUid: t.arg.string({ required: false }),
-    },
-    async resolve(query, _, { q, groupUid }, { user }) {
-      const group = groupUid
-        ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid }, select: { id: true } })
-        : undefined;
-
-      const matches = await fullTextSearch('Event', q, {
-        fuzzy: ['title'],
-        highlight: ['description', 'title'],
-        additionalClauses: group ? { groupId: group.id } : {},
-      });
-
-      const events = await prisma.event.findMany({
-        ...query,
-        where: {
-          AND: [
-            {
-              id: { in: matches.map(({ id }) => id) },
-            },
-            visibleEventsPrismaQuery(user),
-          ],
-        },
-        include: {
-          coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
-          group: { include: { studentAssociation: { include: { school: true } } } },
-          managers: {
-            include: {
-              user: true,
-            },
-          },
-        },
-      });
-      return sortWithMatches(highlightProperties(events, matches, ['description']), matches).map(
-        ({ object }) => object,
-      );
-    },
-  }),
-);
 
 export async function createUid({ title, groupId }: { title: string; groupId: string }) {
   const base = slug(title);
