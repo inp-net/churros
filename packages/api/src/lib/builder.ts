@@ -7,12 +7,16 @@ import type PrismaTypes from '@pothos/plugin-prisma/generated';
 import RelayPlugin from '@pothos/plugin-relay';
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
+import SmartSubscriptionsPlugin, {
+  subscribeOptionsFromIterator,
+} from '@pothos/plugin-smart-subscriptions';
 import TracingPlugin, { isRootField, wrapResolver } from '@pothos/plugin-tracing';
 import ValidationPlugin from '@pothos/plugin-validation';
 import { GraphQLError, Kind } from 'graphql';
 import { authScopes, type AuthContexts, type AuthScopes } from '../auth.js';
 import type { Context } from '../context.js';
 import { prisma } from './prisma.js';
+import { pubsub } from './pubsub.js';
 
 /**
  * Maps database ID prefixes to GraphQL type names. Please add new types here as they are added to
@@ -80,6 +84,17 @@ export function ensureHasIdPrefix(id: string, typename: keyof typeof TYPENAMES_T
   return `${TYPENAMES_TO_ID_PREFIXES[typename]}:${id}`;
 }
 
+/**
+ * Split a global ID into its typename and local ID parts.
+ * @param id The global ID to split
+ */
+export function splitID(id: string): [keyof typeof TYPENAMES_TO_ID_PREFIXES, string] {
+  if (id.split(':').length !== 2) throw new Error(`Malformed ID ${id}`);
+  const [prefix, rest] = id.split(':') as [string, string];
+  if (!(prefix in ID_PREFIXES_TO_TYPENAMES)) throw new Error(`Unknown prefix: ${prefix}`);
+  return [ID_PREFIXES_TO_TYPENAMES[prefix as keyof typeof ID_PREFIXES_TO_TYPENAMES], rest];
+}
+
 export const builder = new SchemaBuilder<{
   AuthContexts: AuthContexts;
   AuthScopes: AuthScopes;
@@ -104,6 +119,7 @@ export const builder = new SchemaBuilder<{
     SimpleObjectsPlugin,
     TracingPlugin,
     ValidationPlugin,
+    SmartSubscriptionsPlugin,
   ],
   authScopes,
   complexity: { limit: { complexity: 30_000, depth: 7, breadth: 200 } },
@@ -138,10 +154,17 @@ export const builder = new SchemaBuilder<{
         );
       }),
   },
+  smartSubscriptions: {
+    ...subscribeOptionsFromIterator((name) => {
+      console.info(`Subscribing to ${name}`);
+      return pubsub.subscribe(name);
+    }),
+  },
 });
 
 builder.queryType({});
 builder.mutationType({});
+builder.subscriptionType({});
 
 // Parse GraphQL IDs as strings
 const id = (builder.configStore.getInputTypeRef('ID') as BuiltinScalarRef<string, string>).type;

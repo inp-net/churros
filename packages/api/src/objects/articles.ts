@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, publish, subscriptionName } from '#lib';
 import { Visibility, type Prisma } from '@prisma/client';
 import { dichotomid } from 'dichotomid';
 import { unlink } from 'node:fs/promises';
@@ -7,7 +7,6 @@ import slug from 'slug';
 import { updatePicture } from '../pictures.js';
 import { htmlToText, toHtml } from '../services/markdown.js';
 import { scheduleNewArticleNotification } from '../services/notifications.js';
-import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { VisibilityEnum } from './events.js';
 import { LinkInput } from './links.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
@@ -34,6 +33,7 @@ export const ArticleType = builder.prismaNode('Article', {
     published: t.exposeBoolean('published'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
+    notifiedAt: t.expose('notifiedAt', { type: DateTimeScalar, nullable: true }),
     publishedAt: t.expose('publishedAt', { type: DateTimeScalar }),
     pictureFile: t.exposeString('pictureFile'),
     author: t.relation('author', { nullable: true }),
@@ -72,6 +72,11 @@ export const ArticleType = builder.prismaNode('Article', {
       cursor: 'id',
       query: {
         orderBy: { createdAt: 'asc' },
+      },
+      subscribe(subscriptions, { id }) {
+        subscriptions.register(subscriptionName('Comment', 'created', id));
+        subscriptions.register(subscriptionName('Comment', 'updated', id));
+        subscriptions.register(subscriptionName('Comment', 'deleted', id));
       },
     }),
     event: t.relation('event', { nullable: true }),
@@ -173,6 +178,7 @@ export function visibleArticlesPrismaQuery(
 builder.queryField('article', (t) =>
   t.prismaField({
     type: ArticleType,
+    smartSubscription: true,
     args: {
       groupUid: t.arg.string(),
       uid: t.arg.string(),
@@ -194,6 +200,10 @@ builder.queryField('homepage', (t) =>
     description: 'Gets the homepage articles, customized if the user is logged in.',
     type: ArticleType,
     cursor: 'id',
+    smartSubscription: true,
+    subscribe(subs) {
+      subs.register(subscriptionName('Article', 'created'));
+    },
     async resolve(query, _, {}, { user }) {
       if (!user) {
         return prisma.article.findMany({
@@ -304,6 +314,7 @@ builder.mutationField('upsertArticle', (t) =>
           event: eventId ? { connect: { id: eventId } } : { disconnect: true },
         },
       });
+      publish(result.id, id ? 'updated' : 'created', result);
       await prisma.logEntry.create({
         data: {
           area: 'article',
@@ -358,6 +369,7 @@ builder.mutationField('deleteArticle', (t) =>
           user: user ? { connect: { id: user.id } } : undefined,
         },
       });
+      publish(id, 'deleted', id);
       return true;
     },
   }),

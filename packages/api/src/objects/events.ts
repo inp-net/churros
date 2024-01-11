@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, subscriptionName } from '#lib';
 import {
   EventFrequency,
   GroupType,
@@ -536,6 +536,9 @@ export const EventType = builder.prismaNode('Event', {
       },
     }),
     placesLeft: t.int({
+      subscribe: (subs, { id }) => {
+        subs.register(subscriptionName(id));
+      },
       async resolve({ id }) {
         const registrations = await prisma.registration.findMany({
           where: { ticket: { event: { id } } },
@@ -564,6 +567,9 @@ export const EventType = builder.prismaNode('Event', {
     }),
     registrationsCounts: t.field({
       type: RegistrationsCountsType,
+      subscribe: (subs, { id }) => {
+        subs.register(subscriptionName(id));
+      },
       async resolve({ id }) {
         const results = await prisma.registration.findMany({
           where: { ticket: { event: { id } } },
@@ -617,6 +623,7 @@ builder.queryField('event', (t) =>
       uid: t.arg.string(),
       groupUid: t.arg.string(),
     },
+    smartSubscription: true,
     async authScopes(_, { uid, groupUid }, { user }) {
       const event = await prisma.event.findFirstOrThrow({
         where: { uid, group: { uid: groupUid } },

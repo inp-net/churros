@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, publish, subscriptionName } from '#lib';
 import { toHtml } from '../services/markdown.js';
 import { DateTimeScalar } from './scalars.js';
 
@@ -45,15 +45,18 @@ builder.queryField('announcementsNow', (t) =>
     authScopes() {
       return true;
     },
-    args: {
-      now: t.arg({ type: DateTimeScalar }),
+    smartSubscription: true,
+    subscribe(subs) {
+      subs.register(subscriptionName('Announcement', 'created'));
+      subs.register(subscriptionName('Announcement', 'updated'));
+      subs.register(subscriptionName('Announcement', 'deleted'));
     },
-    async resolve(query, _, { now }) {
+    async resolve(query) {
       return prisma.announcement.findMany({
         ...query,
         where: {
-          startsAt: { lte: now },
-          endsAt: { gte: now },
+          startsAt: { lte: new Date() },
+          endsAt: { gte: new Date() },
         },
         orderBy: { startsAt: 'desc' },
       });
@@ -119,6 +122,9 @@ builder.mutationField('upsertAnnouncement', (t) =>
           user: user ? { connect: { id: user.id } } : undefined,
         },
       });
+
+      publish(announcement.id, id ? 'updated' : 'created', announcement);
+
       return announcement;
     },
   }),
@@ -146,6 +152,7 @@ builder.mutationField('deleteAnnouncement', (t) =>
           user: user ? { connect: { id: user.id } } : undefined,
         },
       });
+      publish(id, 'deleted', id);
       return true;
     },
   }),

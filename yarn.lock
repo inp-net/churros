@@ -295,6 +295,7 @@ __metadata:
   dependencies:
     "@envelop/core": "npm:^5.0.0"
     "@graphql-yoga/node": "npm:^3.9.1"
+    "@graphql-yoga/redis-event-target": "npm:^3.0.0"
     "@lyuboslavlyubenov/logo-scrape": "npm:^1.2.0"
     "@pothos/core": "npm:3.40.1"
     "@pothos/plugin-complexity": "npm:^3.13.0"
@@ -304,6 +305,7 @@ __metadata:
     "@pothos/plugin-relay": "npm:^3.45.1"
     "@pothos/plugin-scope-auth": "npm:^3.20.0"
     "@pothos/plugin-simple-objects": "npm:^3.7.0"
+    "@pothos/plugin-smart-subscriptions": "npm:^3.7.1"
     "@pothos/plugin-tracing": "npm:^0.5.8"
     "@pothos/plugin-validation": "npm:^3.10.1"
     "@prisma/client": "npm:5.7.0"
@@ -324,6 +326,7 @@ __metadata:
     "@types/qrcode": "npm:^1.5.5"
     "@types/slug": "npm:^5.0.7"
     "@types/web-push": "npm:^3.6.3"
+    "@types/ws": "npm:^8.5.10"
     arborist: "workspace:^"
     argon2: "npm:^0.31.2"
     bunyan: "npm:^1.8.15"
@@ -337,9 +340,11 @@ __metadata:
     express: "npm:^4.18.2"
     graphql: "npm:^16.8.1"
     graphql-scalars: "npm:^1.22.4"
+    graphql-ws: "npm:^5.14.3"
     graphql-yoga: "npm:^5.0.2"
     helmet: "npm:^7.1.0"
     image-type: "npm:^5.2.0"
+    ioredis: "npm:^5.3.2"
     ldap-authentication: "npm:^3.0.3"
     ldapjs: "npm:^3.0.7"
     linkify-html: "npm:^4.1.3"
@@ -370,6 +375,7 @@ __metadata:
     typescript: "npm:^5.3.3"
     unified: "npm:^10.1.2"
     web-push: "npm:^3.6.6"
+    ws: "npm:^8.16.0"
     yaml: "npm:^2.3.4"
     zod: "npm:^3.22.4"
   languageName: unknown
@@ -404,6 +410,7 @@ __metadata:
     extract-files: "npm:^13.0.0"
     fuse.js: "npm:^7.0.0"
     graphql: "npm:^16.8.1"
+    graphql-ws: "npm:^5.14.3"
     graphql-zeus: "npm:^5.3.2"
     html-to-text: "npm:^9.0.5"
     html5-qrcode: "npm:^2.3.8"
@@ -1469,6 +1476,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@graphql-yoga/redis-event-target@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@graphql-yoga/redis-event-target@npm:3.0.0"
+  dependencies:
+    "@graphql-yoga/typed-event-target": "npm:^3.0.0"
+    "@whatwg-node/events": "npm:^0.1.0"
+  peerDependencies:
+    ioredis: ^5.0.6
+  checksum: 16035ed1c10b7f8a582edaa99a3d1fb740ea81e73203a176f9e5115144165a3b8661cdb00d7e7a3572100af65daac0ff3f6d565c897a9244d0e0e7d9d1f9fcdd
+  languageName: node
+  linkType: hard
+
 "@graphql-yoga/subscription@npm:^3.1.0":
   version: 3.1.0
   resolution: "@graphql-yoga/subscription@npm:3.1.0"
@@ -1779,6 +1798,13 @@ __metadata:
     typescript: "npm:^5.3.3"
   languageName: unknown
   linkType: soft
+
+"@ioredis/commands@npm:^1.1.1":
+  version: 1.2.0
+  resolution: "@ioredis/commands@npm:1.2.0"
+  checksum: a5d3c29dd84d8a28b7c67a441ac1715cbd7337a7b88649c0f17c345d89aa218578d2b360760017c48149ef8a70f44b051af9ac0921a0622c2b479614c4f65b36
+  languageName: node
+  linkType: hard
 
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
@@ -2180,6 +2206,16 @@ __metadata:
     "@pothos/core": "*"
     graphql: ">=15.1.0"
   checksum: d2f240c97f51dd3e8b1194ba449c7c77511cdab19639525de91f2b86109d72f5330206512f7b90bb4a99a19b1cf584d51a9f8304634ddec359ddf38c509a076a
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-smart-subscriptions@npm:^3.7.1":
+  version: 3.7.1
+  resolution: "@pothos/plugin-smart-subscriptions@npm:3.7.1"
+  peerDependencies:
+    "@pothos/core": "*"
+    graphql: ">=15.1.0"
+  checksum: b149ca36398ef70f018717aff84906f5bedc3183789d28925dca190fe2739996c125553888355a65884782c86355648d4106a01243a0e16e7dc2845c40dc21a9
   languageName: node
   linkType: hard
 
@@ -3193,6 +3229,15 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: c08830b5568939ef4d5b40a347893284feb94bbacaffdf105556a4285f565c2396be99d7a4e7fa98ce72ec8de061a04f0283961f90c809d19a0aeae322d8e50e
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^8.5.10":
+  version: 8.5.10
+  resolution: "@types/ws@npm:8.5.10"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: e9af279b984c4a04ab53295a40aa95c3e9685f04888df5c6920860d1dd073fcc57c7bd33578a04b285b2c655a0b52258d34bee0a20569dca8defb8393e1e5d29
   languageName: node
   linkType: hard
 
@@ -4410,6 +4455,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cluster-key-slot@npm:^1.1.0":
+  version: 1.1.2
+  resolution: "cluster-key-slot@npm:1.1.2"
+  checksum: d7d39ca28a8786e9e801eeb8c770e3c3236a566625d7299a47bb71113fb2298ce1039596acb82590e598c52dbc9b1f088c8f587803e697cb58e1867a95ff94d3
+  languageName: node
+  linkType: hard
+
 "code-red@npm:^1.0.3":
   version: 1.0.4
   resolution: "code-red@npm:1.0.4"
@@ -5014,6 +5066,13 @@ __metadata:
   version: 1.0.0
   resolution: "delegates@npm:1.0.0"
   checksum: ba05874b91148e1db4bf254750c042bf2215febd23a6d3cda2e64896aef79745fbd4b9996488bd3cafb39ce19dbce0fd6e3b6665275638befffe1c9b312b91b5
+  languageName: node
+  linkType: hard
+
+"denque@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "denque@npm:2.1.0"
+  checksum: f9ef81aa0af9c6c614a727cb3bd13c5d7db2af1abf9e6352045b86e85873e629690f6222f4edd49d10e4ccf8f078bbeec0794fafaf61b659c0589d0c511ec363
   languageName: node
   linkType: hard
 
@@ -6725,6 +6784,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphql-ws@npm:^5.14.3":
+  version: 5.14.3
+  resolution: "graphql-ws@npm:5.14.3"
+  peerDependencies:
+    graphql: ">=0.11 <=16"
+  checksum: 0715feb7b6bf760e2460c31848983bd3bd5958c95d8120c2acc7416f24137585dab2eb731d6bb6f8de992afbc2ad0cf258a00c6a08aa21479fb3e9bd1d3e120a
+  languageName: node
+  linkType: hard
+
 "graphql-yoga@npm:3.9.1":
   version: 3.9.1
   resolution: "graphql-yoga@npm:3.9.1"
@@ -7391,6 +7459,23 @@ __metadata:
   version: 1.3.8
   resolution: "ini@npm:1.3.8"
   checksum: ec93838d2328b619532e4f1ff05df7909760b6f66d9c9e2ded11e5c1897d6f2f9980c54dd638f88654b00919ce31e827040631eab0a3969e4d1abefa0719516a
+  languageName: node
+  linkType: hard
+
+"ioredis@npm:^5.3.2":
+  version: 5.3.2
+  resolution: "ioredis@npm:5.3.2"
+  dependencies:
+    "@ioredis/commands": "npm:^1.1.1"
+    cluster-key-slot: "npm:^1.1.0"
+    debug: "npm:^4.3.4"
+    denque: "npm:^2.1.0"
+    lodash.defaults: "npm:^4.2.0"
+    lodash.isarguments: "npm:^3.1.0"
+    redis-errors: "npm:^1.2.0"
+    redis-parser: "npm:^3.0.0"
+    standard-as-callback: "npm:^2.1.0"
+  checksum: 0dd2b5b8004e891f5b62edf18ac223194f1f5204698ec827c903e789ea05b0b36f73395491749ec63c66470485bdfb228ccdf1714fbf631a0f78f33211f2c883
   languageName: node
   linkType: hard
 
@@ -8126,10 +8211,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.defaults@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "lodash.defaults@npm:4.2.0"
+  checksum: d5b77aeb702caa69b17be1358faece33a84497bcca814897383c58b28a2f8dfc381b1d9edbec239f8b425126a3bbe4916223da2a576bb0411c2cefd67df80707
+  languageName: node
+  linkType: hard
+
 "lodash.groupby@npm:^4.6.0":
   version: 4.6.0
   resolution: "lodash.groupby@npm:4.6.0"
   checksum: 3d136cad438ad6c3a078984ef60e057a3498b1312aa3621b00246ecb99e8f2c4d447e2815460db7a0b661a4fe4e2eeee96c84cb661a824bad04b6cf1f7bc6e9b
+  languageName: node
+  linkType: hard
+
+"lodash.isarguments@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "lodash.isarguments@npm:3.1.0"
+  checksum: 5e8f95ba10975900a3920fb039a3f89a5a79359a1b5565e4e5b4310ed6ebe64011e31d402e34f577eca983a1fc01ff86c926e3cbe602e1ddfc858fdd353e62d8
   languageName: node
   linkType: hard
 
@@ -10700,6 +10799,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"redis-errors@npm:^1.0.0, redis-errors@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "redis-errors@npm:1.2.0"
+  checksum: 5b316736e9f532d91a35bff631335137a4f974927bb2fb42bf8c2f18879173a211787db8ac4c3fde8f75ed6233eb0888e55d52510b5620e30d69d7d719c8b8a7
+  languageName: node
+  linkType: hard
+
+"redis-parser@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "redis-parser@npm:3.0.0"
+  dependencies:
+    redis-errors: "npm:^1.0.0"
+  checksum: ee16ac4c7b2a60b1f42a2cdaee22b005bd4453eb2d0588b8a4939718997ae269da717434da5d570fe0b05030466eeb3f902a58cf2e8e1ca058bf6c9c596f632f
+  languageName: node
+  linkType: hard
+
 "regenerator-runtime@npm:^0.14.0":
   version: 0.14.0
   resolution: "regenerator-runtime@npm:0.14.0"
@@ -11668,6 +11783,13 @@ __metadata:
   dependencies:
     minipass: "npm:^7.0.3"
   checksum: b091f2ae92474183c7ac5ed3f9811457e1df23df7a7e70c9476eaa9a0c4a0c8fc190fb45acefbf023ca9ee864dd6754237a697dc52a0fb182afe65d8e77443d8
+  languageName: node
+  linkType: hard
+
+"standard-as-callback@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "standard-as-callback@npm:2.1.0"
+  checksum: 012677236e3d3fdc5689d29e64ea8a599331c4babe86956bf92fc5e127d53f85411c5536ee0079c52c43beb0026b5ce7aa1d834dd35dd026e82a15d1bcaead1f
   languageName: node
   linkType: hard
 
@@ -13378,6 +13500,21 @@ __metadata:
     imurmurhash: "npm:^0.1.4"
     signal-exit: "npm:^4.0.1"
   checksum: e8c850a8e3e74eeadadb8ad23c9d9d63e4e792bd10f4836ed74189ef6e996763959f1249c5650e232f3c77c11169d239cbfc8342fc70f3fe401407d23810505d
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.16.0":
+  version: 8.16.0
+  resolution: "ws@npm:8.16.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: a7783bb421c648b1e622b423409cb2a58ac5839521d2f689e84bc9dc41d59379c692dd405b15a997ea1d4c0c2e5314ad707332d0c558f15232d2bc07c0b4618a
   languageName: node
   linkType: hard
 

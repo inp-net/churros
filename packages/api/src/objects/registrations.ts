@@ -1,4 +1,4 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma } from '#lib';
+import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, publish } from '#lib';
 import { PaymentMethod as PaymentMethodPrisma, type Registration, type User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { isFuture, isPast } from 'date-fns';
@@ -270,6 +270,9 @@ builder.queryField('registrationsOfEvent', (t) =>
     args: {
       groupUid: t.arg.string(),
       eventUid: t.arg.string(),
+    },
+    subscribe(subscriptions, { id }) {
+      subscriptions.register(id);
     },
     async authScopes(_, { eventUid, groupUid }, { user }) {
       const { managers } = await prisma.event.findFirstOrThrow({
@@ -842,6 +845,7 @@ builder.mutationField('upsertRegistration', (t) =>
         registration.id,
         user,
       );
+      publish(ticket.event.id, 'created', registration);
       if (creating) {
         await log(
           'registration',
@@ -1047,13 +1051,17 @@ builder.mutationField('cancelRegistration', (t) =>
       return true;
     },
     async resolve(_, { id }, { user }) {
-      await prisma.registration.update({
+      const {
+        ticket: { eventId },
+      } = await prisma.registration.update({
         where: { id },
         data: {
           cancelledAt: new Date(),
           cancelledBy: { connect: { id: user?.id } },
         },
+        include: { ticket: true },
       });
+      publish(eventId, 'deleted', id);
       return true;
     },
   }),
