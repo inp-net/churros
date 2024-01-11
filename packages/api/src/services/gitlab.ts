@@ -65,7 +65,10 @@ async function renderGitlabMarkdown(markdown: string): Promise<string> {
   );
 }
 
-const ISSUE_IMPORTANCE_LABELS_MAP_UNBOUNDED = {
+/**
+ * Maps importance label names to their value, from 0 (lowest) and then increasing.
+ */
+const ISSUE_IMPORTANCE_LABELS = {
   'importance:rockbottom': 0,
   'importance:low': 1,
   'importance:medium': 2,
@@ -73,7 +76,10 @@ const ISSUE_IMPORTANCE_LABELS_MAP_UNBOUNDED = {
   'importance:urgent': 4,
 };
 
-const ISSUE_DIFFICULTY_LABELS_MAP_UNBOUNDED = {
+/**
+ * Maps difficulty label names to their value, from 0 (easiest) and then increasing.
+ */
+const ISSUE_DIFFICULTY_LABELS = {
   'difficulty:braindead': 0,
   'difficulty:easy': 1,
   'difficulty:moderate': 2,
@@ -87,40 +93,32 @@ enum IssueState {
   Deployed,
 }
 
-class IssueComment {
-  body!: string;
-  authorName!: string;
-  authorAvatarUrl!: string;
-  authorGitlabUrl!: string;
-  addedAt!: Date;
+type IssueComment = {
+  body: string;
+  authorName: string;
+  authorAvatarUrl: string;
+  authorGitlabUrl: string;
+  addedAt: Date;
+};
 
-  constructor(args: IssueComment) {
-    Object.assign(this, args);
-  }
-}
+type Issue = {
+  title: string;
+  state: IssueState;
+  body: string;
+  submittedAt: Date;
+  importance: number | null;
+  difficulty: number | null;
+  number: number;
+  deployedIn: string;
+  duplicatedFrom: number | null;
+  comments: IssueComment[];
+};
 
-class Issue {
-  title!: string;
-  state!: IssueState;
-  body!: string;
-  submittedAt!: Date;
-  importance!: number | null;
-  difficulty!: number | null;
-  number!: number;
-  deployedIn!: string;
-  duplicatedFrom!: number | null;
-  comments!: IssueComment[];
-
-  constructor(args: Issue) {
-    Object.assign(this, args);
-  }
-}
 export const IssueStateType = builder.enumType(IssueState, {
   name: 'IssueState',
 });
 
-export const IssueCommentType = builder.objectType(IssueComment, {
-  name: 'IssueComment',
+export const IssueCommentType = builder.objectRef<IssueComment>('IssueComment').implement({
   description: 'A Gitlab issue comment',
   fields: (t) => ({
     body: t.exposeString('body'),
@@ -139,8 +137,7 @@ export const IssueCommentType = builder.objectType(IssueComment, {
   }),
 });
 
-export const IssueType = builder.objectType(Issue, {
-  name: 'Issue',
+export const IssueType = builder.objectRef<Issue>('Issue').implement({
   description: 'A Gitlab issue',
   fields: (t) => ({
     title: t.exposeString('title'),
@@ -238,11 +235,11 @@ function makeIssue(
   { state, description, updatedAt, iid, labels, title, discussions }: GitlabIssue,
   duplicatedFrom: number | undefined,
 ) {
-  return new Issue({
+  return {
     title,
     body: description,
-    difficulty: difficultyOrImportanceFromLabel(ISSUE_DIFFICULTY_LABELS_MAP_UNBOUNDED, labels),
-    importance: difficultyOrImportanceFromLabel(ISSUE_IMPORTANCE_LABELS_MAP_UNBOUNDED, labels),
+    difficulty: difficultyOrImportanceFromLabel(ISSUE_DIFFICULTY_LABELS, labels),
+    importance: difficultyOrImportanceFromLabel(ISSUE_IMPORTANCE_LABELS, labels),
     number: iid,
     state: state === 'closed' ? IssueState.Closed : IssueState.Open,
     submittedAt: new Date(updatedAt),
@@ -260,7 +257,7 @@ function makeIssue(
           addedAt: new Date(node.createdAt),
         })),
     ),
-  });
+  };
 }
 
 builder.queryField('issue', (t) =>
