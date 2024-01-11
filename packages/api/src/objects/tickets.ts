@@ -71,20 +71,17 @@ export const TicketType = builder.prismaNode('Ticket', {
     }),
     capacity: t.exposeInt('capacity'),
     registrations: t.relation('registrations', {
+      authScopes: { loggedIn: true },
       query(_, { user }) {
-        if (user?.admin) return {};
-        if (!user) {
-          return {
-            where: { id: '' },
-          };
-        }
+        if (!user) throw `unreachable`;
+        if (user.admin) return {};
 
         return {
           where: {
             OR: [
-              { author: { uid: user?.uid } },
-              { beneficiary: user?.uid },
-              { ticket: { event: { managers: { some: { user: { uid: user?.uid } } } } } },
+              { author: { uid: user.uid } },
+              { beneficiary: user.uid },
+              { ticket: { event: { managers: { some: { user: { uid: user.uid } } } } } },
             ],
           },
         };
