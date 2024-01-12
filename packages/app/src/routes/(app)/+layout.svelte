@@ -88,25 +88,27 @@
 
   afterNavigate(async () => {
     scrollableArea.scrollTo(0, $scrollPositions[$page.url.pathname] ?? 0);
-
-    const { announcementsNow } = await $zeus.query({
-      announcementsNow: [
-        { now: new Date() },
-        {
-          title: true,
-          bodyHtml: true,
-          warning: true,
-          id: true,
-        },
-      ],
-    });
-    announcements = announcementsNow;
   });
-  onMount(() => {
+  onMount(async () => {
     const scrollableArea = document.querySelector('#scrollable-area');
     scrollableArea!.addEventListener('scroll', () => {
       scrolled = scrollableArea!.scrollTop >= 3;
     });
+
+    const announcementsSubscription = $zeus.subscribe({
+      announcementsNow: {
+        title: true,
+        bodyHtml: true,
+        warning: true,
+        id: true,
+      },
+    });
+    announcementsSubscription.on(({ announcementsNow }) => {
+      console.log('announcements', announcementsNow);
+      announcements = announcementsNow;
+    });
+    announcementsSubscription.error(console.error);
+    announcementsSubscription.open();
   });
 
   export const snapshot: Snapshot<number> = {

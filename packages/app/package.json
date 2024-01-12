@@ -12,6 +12,7 @@
     "extract-files": "^13.0.0",
     "fuse.js": "^7.0.0",
     "graphql": "^16.8.1",
+    "graphql-ws": "^5.14.3",
     "html-to-text": "^9.0.5",
     "html5-qrcode": "^2.3.8",
     "ics": "^3.7.1",
@@ -75,7 +76,7 @@
     "mock-buildinfo": "echo 'export const CURRENT_VERSION=\"dev\"; export const CURRENT_COMMIT=\"dev\";' > src/lib/buildinfo.ts",
     "preview": "vite preview",
     "start": "ORIGIN=http://app node ./build/index.js",
-    "zeus": "zeus ../api/build/schema.graphql ./src --es"
+    "zeus": "zeus ../api/build/schema.graphql ./src --es --subscriptions"
   },
   "type": "module",
   "volta": {

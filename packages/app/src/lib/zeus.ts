@@ -3,6 +3,7 @@ import { env } from '$env/dynamic/public';
 import { error, type LoadEvent, type NumericRange } from '@sveltejs/kit';
 import type { LayoutServerData } from '../../.svelte-kit/types/src/routes/$types';
 import {
+  Subscription,
   Thunder,
   ZeusScalars,
   type GraphQLResponse,
@@ -52,6 +53,16 @@ export class ZeusError extends Error {
     }
   }
 }
+
+export const wsChain = (fetch: LoadEvent['fetch'], { token }: Options) => {
+  const headers = new Headers();
+  if (token) headers.set('Authorization', `Bearer ${token}`);
+  return Subscription(env.PUBLIC_API_WS_URL, {
+    get headers() {
+      return headers;
+    },
+  });
+};
 
 export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
   const headers = new Headers();
@@ -113,9 +124,11 @@ const scalars = ZeusScalars({
 export const zeus = derived(page, ({ data }) => {
   aled('zeus.ts: inside derived store $zeus', data);
   const chained = chain(fetch, { token: (data as LayoutServerData).token });
+  const wsChained = wsChain(fetch, { token: (data as LayoutServerData).token });
   return {
     query: chained('query', { scalars }),
     mutate: chained('mutation', { scalars }),
+    subscribe: wsChained('subscription', { scalars }),
   };
 });
 
