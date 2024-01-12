@@ -8,11 +8,16 @@ import { toHtml } from './markdown.js';
 builder.queryField('codeContributors', (t) =>
   t.prismaField({
     type: [UserType],
+    errors: {},
     authScopes: () => true,
     async resolve() {
       const codeContributors = (await fetch(
         `https:///git.inpt.fr/api/v4/projects/${process.env.GITLAB_PROJECT_ID}/repository/contributors`,
-      ).then(async (r) => r.json())) as Array<{
+      )
+        .then(async (r) => r.json())
+        .catch(() => {
+          throw new GraphQLError('Connexion à git.inpt.fr impossible');
+        })) as Array<{
         name: string;
         email: string;
         commits: number;
@@ -267,30 +272,32 @@ builder.queryField('issue', (t) =>
       number: t.arg.int(),
     },
     async resolve(_, { number }) {
-      const data = await fetch(`https://git.inpt.fr/api/graphql`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: `query {
-          project(fullPath: "inp-net/churros") {
-            issue(iid: "${number}") {
-              ${issueQuery}, closedAsDuplicateOf { ${issueQuery} }
+      let data: null | (GitlabIssue & { closedAsDuplicateOf: null | GitlabIssue });
+      try {
+        data = await fetch(`https://git.inpt.fr/api/graphql`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: `query {
+            project(fullPath: "inp-net/churros") {
+              issue(iid: "${number}") {
+                ${issueQuery}, closedAsDuplicateOf { ${issueQuery} }
+              }
             }
-          }
-        }`,
-        }),
-      })
-        .then(async (r) => r.json())
-        .then(
-          /* eslint-disable unicorn/no-null, @typescript-eslint/no-unsafe-member-access */
-          (j) =>
-            (j.data?.project?.issue ?? null) as
-              | null
-              | (GitlabIssue & { closedAsDuplicateOf: null | GitlabIssue }),
-          /* eslint-enable unicorn/no-null, @typescript-eslint/no-unsafe-member-access */
-        );
+          }`,
+          }),
+        })
+          .then(async (r) => r.json())
+          .then(
+            /* eslint-disable unicorn/no-null, @typescript-eslint/no-unsafe-member-access */
+            (j) => j.data?.project?.issue ?? null,
+            /* eslint-enable unicorn/no-null, @typescript-eslint/no-unsafe-member-access */
+          );
+      } catch {
+        throw new GraphQLError('Connexion à git.inpt.fr impossible');
+      }
 
       if (!data) throw new GraphQLError('Signalement non trouvé');
 
@@ -340,7 +347,10 @@ builder.queryField('issuesByUser', (t) =>
                   fromGitlabUsers: [],
                 }) as GitlabAPIResponse,
           /* eslint-enable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
-        );
+        )
+        .catch(() => {
+          throw new GraphQLError('Connexion à git.inpt.fr impossible');
+        });
 
       const allIssues = [...fromIssuebot, ...fromGitlabUsers];
 
@@ -363,9 +373,11 @@ builder.mutationField('createGitlabIssue', (t) =>
     async resolve(_, { title, description, isBug }, { user }) {
       let hasGitlabAccount = false;
       if (user) {
-        const data = (await fetch(`https://git.inpt.fr/api/v4/users?username=${user.uid}`).then(
-          async (r) => r.json(),
-        )) as unknown as unknown[];
+        const data = (await fetch(`https://git.inpt.fr/api/v4/users?username=${user.uid}`)
+          .then(async (r) => r.json())
+          .catch(() => {
+            throw new GraphQLError('Connexion à git.inpt.fr impossible');
+          })) as unknown as unknown[];
         hasGitlabAccount = data.length > 0;
       }
 

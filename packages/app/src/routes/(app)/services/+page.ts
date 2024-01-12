@@ -16,7 +16,13 @@ export const load: PageLoad = async ({ fetch, parent }) =>
         },
       },
       codeContributors: {
-        id: true,
+        '__typename': true,
+        '...on Error': { message: true },
+        '...on QueryCodeContributorsSuccess': {
+          data: {
+            id: true,
+          },
+        },
       },
     },
     { fetch, parent },
