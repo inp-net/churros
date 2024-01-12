@@ -7,13 +7,10 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { type Request, type Response } from 'express';
 import { GraphQLError } from 'graphql';
-import * as GraphQLWebSocket from 'graphql-ws/lib/use/ws';
 import { createYoga } from 'graphql-yoga';
 import helmet from 'helmet';
 import multer from 'multer';
-import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
-import { WebSocketServer } from 'ws';
 import { ZodError, z } from 'zod';
 import { generateThirdPartyToken } from './auth.js';
 import { context } from './context.js';
@@ -34,7 +31,6 @@ const yoga = createYoga({
   cors: false,
   context,
   graphiql: {
-    subscriptionsProtocol: 'WS',
     defaultQuery: /* GraphQL */ `
       query {
         homepage {
@@ -283,48 +279,6 @@ api.get('/', (_req, res) => {
 api.listen(4000, () => {
   console.info(`Serving static content from ${process.env.STORAGE}`);
   console.info('API ready at http://localhost:4000');
-});
-
-const apiWebsocketHttpServer = createServer(yoga);
-const apiWebsocket = new WebSocketServer({
-  server: apiWebsocketHttpServer,
-  path: yoga.graphqlEndpoint,
-});
-
-GraphQLWebSocket.useServer(
-  {
-    execute: (args) => args.rootValue.execute(args),
-    subscribe: (args) => args.rootValue.subscribe(args),
-    onSubscribe: async (ctx, msg) => {
-      const { schema, execute, subscribe, contextFactory, parse, validate } = yoga.getEnveloped({
-        ...ctx,
-        req: ctx.extra.request,
-        socket: ctx.extra.socket,
-        params: msg.payload,
-      });
-
-      const args = {
-        schema,
-        operationName: msg.payload.operationName,
-        document: parse(msg.payload.query),
-        variableValues: msg.payload.variables,
-        contextValue: await contextFactory(),
-        rootValue: {
-          execute,
-          subscribe,
-        },
-      };
-
-      const errors = validate(args.schema, args.document);
-      if (errors.length > 0) return errors;
-      return args;
-    },
-  },
-  apiWebsocket,
-);
-
-apiWebsocketHttpServer.listen(4003, () => {
-  console.info('Websocket ready at ws://localhost:4003');
 });
 
 await writeSchema();

@@ -18,13 +18,13 @@
   import { browser } from '$app/environment';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
+  import { env } from '$env/dynamic/public';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
   import TopBar from '$lib/components/NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
   import { theme } from '$lib/theme.js';
-  import { zeus } from '$lib/zeus';
   import { onMount } from 'svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { writable, type Writable } from 'svelte/store';
@@ -95,20 +95,19 @@
       scrolled = scrollableArea!.scrollTop >= 3;
     });
 
-    const announcementsSubscription = $zeus.subscribe({
-      announcementsNow: {
-        title: true,
-        bodyHtml: true,
-        warning: true,
-        id: true,
-      },
+    const announcementsSubscription = new EventSource(
+      new URL(
+        env.PUBLIC_API_URL +
+          '?' +
+          new URLSearchParams({
+            query: 'subscription { announcementsNow { title, bodyHtml, warning, id } }',
+          }).toString(),
+      ),
+    );
+
+    announcementsSubscription.addEventListener('next', ({ data }) => {
+      announcements = JSON.parse(data).data.announcementsNow;
     });
-    announcementsSubscription.on(({ announcementsNow }) => {
-      console.log('announcements', announcementsNow);
-      announcements = announcementsNow;
-    });
-    announcementsSubscription.error(console.error);
-    announcementsSubscription.open();
   });
 
   export const snapshot: Snapshot<number> = {

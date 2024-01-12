@@ -28,7 +28,6 @@
     "express": "^4.18.2",
     "graphql": "^16.8.1",
     "graphql-scalars": "^1.22.4",
-    "graphql-ws": "^5.14.3",
     "graphql-yoga": "^5.0.2",
     "helmet": "^7.1.0",
     "image-type": "^5.2.0",
@@ -59,7 +58,6 @@
     "slug": "^8.2.3",
     "unified": "^10.1.2",
     "web-push": "^3.6.6",
-    "ws": "^8.16.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -79,7 +77,6 @@
     "@types/nodemailer": "^6.4.14",
     "@types/slug": "^5.0.7",
     "@types/web-push": "^3.6.3",
-    "@types/ws": "^8.5.10",
     "bunyan": "^1.8.15",
     "cli-progress": "^3.12.0",
     "execa": "^8.0.1",
