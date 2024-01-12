@@ -160,20 +160,27 @@ api.use('/token', async (request, response) => {
 
   await log('oauth', 'token', request.body, clientId);
 
-  const {
-    code: authorizationCode,
-    redirect_uri: redirectUri,
-    client_id,
-    client_secret,
-  } = z
-    .object({
-      code: z.string(),
-      grant_type: z.literal('authorization_code'),
-      redirect_uri: z.string(),
-      client_id: z.string().optional(),
-      client_secret: z.string().optional(),
-    })
-    .parse(formData);
+  let authorizationCode, redirectUri: string;
+  let client_id, client_secret: string | undefined;
+
+  try {
+    ({
+      code: authorizationCode,
+      redirect_uri: redirectUri,
+      client_id,
+      client_secret,
+    } = await z
+      .object({
+        code: z.string(),
+        grant_type: z.literal('authorization_code'),
+        redirect_uri: z.string(),
+        client_id: z.string().optional(),
+        client_secret: z.string().optional(),
+      })
+      .parseAsync(formData));
+  } catch (error_) {
+    return error('Invalid request body: ' + error_?.toString() ?? '');
+  }
 
   if (client_id) clientId = client_id;
   if (client_secret) clientSecret = client_secret;
