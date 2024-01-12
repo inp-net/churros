@@ -219,7 +219,12 @@ api.use('/token', async (request, response) => {
     },
   });
 
-  return response.json({ access_token: accessToken.value, token_type: 'bearer' });
+  return response.json({
+    access_token: accessToken.value,
+    token_type: 'bearer',
+    // seconds left until token expires
+    expires_in: Math.floor(((accessToken.expiresAt ?? new Date()).getTime() - Date.now()) / 1000),
+  });
 });
 
 api.get('/log', (req, res) => {
