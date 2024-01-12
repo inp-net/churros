@@ -45,6 +45,7 @@ import {
 } from './tickets.js';
 // import imageType, { minimumBytes } from 'image-type';
 import { GraphQLError } from 'graphql';
+import omit from 'lodash.omit';
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { onBoard } from '../auth.js';
@@ -1115,11 +1116,10 @@ builder.mutationField('upsertEvent', (t) =>
         const ticketGroupId = ticket.groupName
           ? ticketGroups.find((tg) => tg.name === ticket.groupName)!.id
           : undefined;
-        delete ticket.groupName;
         await prisma.ticket.upsert({
           where: { id: ticket.id ?? '' },
           create: {
-            ...ticket,
+            ...omit(ticket, ['groupName']),
             uid: await createTicketUid({
               ...ticket,
               eventId: event.id,
@@ -1142,7 +1142,7 @@ builder.mutationField('upsertEvent', (t) =>
                 : undefined,
           },
           update: {
-            ...ticket,
+            ...omit(ticket, ['groupName']),
             id: undefined,
             group: ticketGroupId ? { connect: { id: ticketGroupId } } : { disconnect: true },
             links: {
