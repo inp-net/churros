@@ -160,20 +160,27 @@ api.use('/token', async (request, response) => {
 
   await log('oauth', 'token', request.body, clientId);
 
-  const {
-    code: authorizationCode,
-    redirect_uri: redirectUri,
-    client_id,
-    client_secret,
-  } = z
-    .object({
-      code: z.string(),
-      grant_type: z.literal('authorization_code'),
-      redirect_uri: z.string(),
-      client_id: z.string().optional(),
-      client_secret: z.string().optional(),
-    })
-    .parse(formData);
+  let authorizationCode, redirectUri: string;
+  let client_id, client_secret: string | undefined;
+
+  try {
+    ({
+      code: authorizationCode,
+      redirect_uri: redirectUri,
+      client_id,
+      client_secret,
+    } = await z
+      .object({
+        code: z.string(),
+        grant_type: z.literal('authorization_code'),
+        redirect_uri: z.string(),
+        client_id: z.string().optional(),
+        client_secret: z.string().optional(),
+      })
+      .parseAsync(formData));
+  } catch (error_) {
+    return error('Invalid request body: ' + error_?.toString() ?? '');
+  }
 
   if (client_id) clientId = client_id;
   if (client_secret) clientSecret = client_secret;
@@ -218,7 +225,12 @@ api.use('/token', async (request, response) => {
     },
   });
 
-  return response.json({ access_token: accessToken.value, token_type: 'bearer' });
+  return response.json({
+    access_token: accessToken.value,
+    token_type: 'bearer',
+    // seconds left until token expires
+    expires_in: Math.floor(((accessToken.expiresAt ?? new Date()).getTime() - Date.now()) / 1000),
+  });
 });
 
 api.get('/log', (req, res) => {
@@ -287,6 +299,9 @@ const upload: multer.Multer = multer();
 
 // Lydia webhook
 webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response) => {
+  webhook.get('/lydia-webhook/alive', (req, res) => {
+    res.sendStatus(200);
+  });
   // Retrieve the params from the request
   const { request_id, amount, currency, sig, signed, transaction_identifier, vendor_token } =
     req.body as {

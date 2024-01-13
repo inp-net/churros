@@ -11,7 +11,7 @@
   import { onMount } from 'svelte';
   import IconLoading from '~icons/mdi/loading';
   import '../design/app.scss';
-  import ModalChangelog from '$lib/components/ModalChangelog.svelte';
+  import { isPWA } from '$lib/pwa';
 
   let showInitialSpinner = true;
 
@@ -107,6 +107,7 @@
     data-event-commit={CURRENT_COMMIT}
     data-event-user-major={$me?.major?.shortName ?? '(none)'}
     data-event-user-year-tier={$me?.yearTier ? `${$me.yearTier}A` : '(none)'}
+    data-event-context={isPWA() ? 'pwa' : 'browser'}
   ></script>
 </svelte:head>
 
