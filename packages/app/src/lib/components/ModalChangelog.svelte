@@ -54,9 +54,8 @@
     ) as unknown as (typeof log)[number]['changes'];
 
     for (const version of versions) {
-      for (const category of ORDER_CHANGELOG_CATEGORIES) 
+      for (const category of ORDER_CHANGELOG_CATEGORIES)
         byCategory[category].push(...version.changes[category]);
-      
     }
 
     return [...Object.entries(byCategory)] as Array<
@@ -66,8 +65,8 @@
 
   function versionRange(versions: typeof log): { first: string; last: string } {
     return {
-      first: versions.at(-1).version,
-      last: versions[0].version,
+      first: versions.at(-1)?.version ?? '',
+      last: versions[0]?.version ?? '',
     };
   }
 
@@ -81,9 +80,9 @@
         latestVersionSeenInChangelog: true,
       },
     });
-    if (latestVersionSeenInChangelog === '0.0.0') 
+    if (latestVersionSeenInChangelog === '0.0.0')
       toasts.info("Tu peux toujours consulter les mises à jour dans 'les autres services' ;)");
-    
+
     void $zeus.mutate({
       acknowledgeChangelog: [
         {
