@@ -4,7 +4,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, parent, url }) => {
-  const { me, mobile } = await parent();
+  const { me, token } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
 
   if (
@@ -50,17 +50,6 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
         },
       ],
     },
-    {
-      fetch,
-
-      parent: async () =>
-        new Promise((resolve) => {
-          resolve({
-            mobile,
-            me: undefined,
-            token: undefined,
-          });
-        }),
-    },
+    { fetch, token },
   );
 };

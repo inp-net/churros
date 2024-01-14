@@ -141,7 +141,6 @@
     {/each}
   </section>
 {/if}
-
 <slot />
 
 <style lang="scss">

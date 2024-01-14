@@ -3,6 +3,7 @@
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
+    "@release-it/keep-a-changelog": "^5.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
     "@types/lodash": "^4.14.202",
     "@types/lodash.uniqby": "^4.7.9",
@@ -21,6 +22,7 @@
     "prettier-plugin-jsdoc": "^1.1.1",
     "prettier-plugin-organize-imports": "^3.2.4",
     "prettier-plugin-svelte": "^3.1.2",
+    "release-it": "^17.0.1",
     "stylelint": "^16.0.2",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-prettier": "^9.0.5",
@@ -45,7 +47,8 @@
     "prisma": "yarn workspace @centraverse/api run prisma",
     "reset": "docker compose up -d && NODE_ENV=development yarn prisma migrate reset --force",
     "start": "docker compose up -d && yarn workspaces foreach -Apiv run start",
-    "triage": "xdg-open 'https://git.inpt.fr/inp-net/churros/-/issues/?sort=created_date&state=opened&not[label_name][]=importance:urgent&not[label_name][]=importance:high&not[label_name][]=importance:medium&not[label_name][]=importance:low&not[label_name][]=importance:rockbottom&not[label_name][]=difficulty:braindead&not[label_name][]=difficulty:easy&not[label_name][]=difficulty:moderate&not[label_name][]=difficulty:hard&not[label_name][]=difficulty:unknown'"
+    "triage": "xdg-open 'https://git.inpt.fr/inp-net/churros/-/issues/?sort=created_date&state=opened&not[label_name][]=importance:urgent&not[label_name][]=importance:high&not[label_name][]=importance:medium&not[label_name][]=importance:low&not[label_name][]=importance:rockbottom&not[label_name][]=difficulty:braindead&not[label_name][]=difficulty:easy&not[label_name][]=difficulty:moderate&not[label_name][]=difficulty:hard&not[label_name][]=difficulty:unknown'",
+    "release": "GITLAB_TOKEN=$(rbw get 'release-it pat for git.inpt.fr') release-it && yarn workspace @centraverse/api copy-changelog"
   },
   "volta": {
     "node": "20.6.1",
@@ -53,5 +56,30 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "release-it": {
+    "git": {
+      "commitMessage": "chore(release): v${version}"
+    },
+    "npm": {
+      "publish": false,
+      "ignoreVersion": true
+    },
+    "gitlab": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/keep-a-changelog": {
+        "filename": "CHANGELOG.md",
+        "head": "main",
+        "addVersionUrl": true,
+        "versionUrlFormats": {
+          "repositoryUrl": "https://git.inpt.fr/inp-net/churros",
+          "unreleasedUrl": "{repositoryUrl}/-/compare/{tagName}...{head}",
+          "versionUrl": "{repositoryUrl}/-/releases/tag/{tagName}",
+          "firstVersionUrl": "{repositoryUrl}/-/releases/tag/{tagName}"
+        }
+      }
+    }
+  }
 }

@@ -68,6 +68,7 @@ export const UserType = builder.prismaNode('User', {
         return !majorId;
       },
     }),
+    latestVersionSeenInChangelog: t.exposeString('latestVersionSeenInChangelog'),
 
     // Profile details
     address: t.exposeString('address', { authScopes: { student: true, $granted: 'me' } }),

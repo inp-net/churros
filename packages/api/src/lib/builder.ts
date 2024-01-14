@@ -18,7 +18,7 @@ import { prisma } from './prisma.js';
  * Maps database ID prefixes to GraphQL type names. Please add new types here as they are added to
  * the schema, by running node scripts/update-id-prefix-to-typename-map.js.
  */
-/* @generated from schema by /packages/api/build/scripts/update-id-prefix-to-typename-map.js */
+/* @generated from schema by /packages/api/scripts/update-id-prefix-to-typename-map.ts */
 export const ID_PREFIXES_TO_TYPENAMES = {
   u: 'User',
   godparentreq: 'GodparentRequest',
