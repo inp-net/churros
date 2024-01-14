@@ -74,7 +74,7 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "clean": "git clean -Xdf .",
     "dev": "yarn mock-buildinfo && yarn zeus && vite dev --host",
-    "mock-buildinfo": "echo 'export const CURRENT_VERSION=\"dev\"; export const CURRENT_COMMIT=\"dev\";' > src/lib/buildinfo.ts",
+    "mock-buildinfo": "echo 'export const CURRENT_VERSION=\"1.41.0\"; export const CURRENT_COMMIT=\"dev\";' > src/lib/buildinfo.ts",
     "preview": "vite preview",
     "start": "ORIGIN=http://app node ./build/index.js",
     "zeus": "zeus ../api/build/schema.graphql ./src --es"

@@ -97,7 +97,8 @@
     "build": "prisma generate && yarn copy-changelog && tsx ./scripts/update-id-prefix-to-typename-map.ts && tsx ./scripts/inject-current-commit-hash.ts && tsc && node ./build/scripts/post-build.js",
     "copy-changelog": "cp ../../CHANGELOG.md ./static/CHANGELOG.md",
     "clean": "git clean -Xdf .",
-    "dev": "NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
+    "dev": "yarn mock-buildinfo && NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
+    "mock-buildinfo": "echo 'export const CURRENT_VERSION=\"1.41.0\"; export const CURRENT_COMMIT=\"dev\";' > src/lib/buildinfo.ts",
     "migrate-old-data": "cd scripts && yarn tsc import-old-data.ts --lib es2021,DOM --module es2022 --target es2022 --moduleResolution node --allowSyntheticDefaultImports && yarn node import-old-data.js",
     "start": "node ./build/src/index.js"
   },
