@@ -10,14 +10,13 @@
 
   export let data: PageData;
 
+  type Category = (typeof ORDER_CHANGELOG_CATEGORIES)[number];
+
   function changesByCategory(
     version: Omit<(typeof data.combinedChangelog)[number], 'description'>,
-  ) {
-    type Key = (typeof ORDER_CHANGELOG_CATEGORIES)[number];
-
-    return [
-      ...Object.entries(version.changes).filter(([_, changes]) => changes.length > 0),
-    ] as Array<[Key, (typeof version.changes)[Key]]>;
+  ): Array<[Category, (typeof data.combinedChangelog)[number]['changes'][Category]]> {
+    // @ts-expect-error classic case of Object.entries being too dumb. using a "as" cast causes a syntax error for the Svelte parser for some reason
+    return Object.entries(version.changes).filter(([_, changes]) => changes.length > 0);
   }
 </script>
 
@@ -109,21 +108,22 @@
 
   @keyframes sweep {
     0% {
-      opacity: 0;
       margin-left: -10px;
+      opacity: 0;
     }
+
     100% {
+      margin-left: 0;
       opacity: 1;
-      margin-left: 0px;
     }
   }
 
   h2 {
-    margin-top: 3rem;
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
     gap: 0.5em;
+    align-items: center;
+    margin-top: 3rem;
   }
 
   .date {
@@ -133,17 +133,17 @@
 
   h3 {
     margin: 1rem 0 0.5rem;
-    color: var(--link);
     line-height: 0.7;
+    color: var(--link);
   }
 
   h3::after {
-    content: '';
+    display: inline-block;
     width: 100%;
     height: 0.2em;
-    border-radius: var(--radius-block);
+    content: '';
     background: var(--link);
-    display: inline-block;
+    border-radius: var(--radius-block);
   }
 
   ul {
