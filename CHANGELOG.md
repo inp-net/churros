@@ -10,8 +10,6 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
-Les changements à venir!
-
 ### Nouveautés
 
 - Y'a maintenant des _changelogs_! C'est ce super truc que tu es en train de lire.
