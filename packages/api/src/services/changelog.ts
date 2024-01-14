@@ -138,7 +138,7 @@ export const ReleaseChangeType = builder.objectRef<ReleaseChange>('ReleaseChange
     text: t.exposeString('text', { description: 'The text of the change' }),
     html: t.string({
       async resolve({ text }) {
-        return toHtml(text);
+        return toHtml(text, { linkifyUserMentions: true, linkifyGitlabItems: true });
       },
     }),
     authors: t.exposeStringList('authors', {
