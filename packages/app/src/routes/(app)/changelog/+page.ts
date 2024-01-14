@@ -58,5 +58,9 @@ export async function load({ fetch, parent }) {
 
   if (combinedChangelog.__typename === 'Error') throw error(500, combinedChangelog.message);
 
-  return { combinedChangelog: combinedChangelog.data, upcomingChangelog: upcomingChangelog?.data };
+  return {
+    combinedChangelog: combinedChangelog.data,
+    upcomingChangelog:
+      upcomingChangelog.__typename === 'Error' ? undefined : upcomingChangelog.data,
+  };
 }
