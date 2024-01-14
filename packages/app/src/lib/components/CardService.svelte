@@ -16,6 +16,7 @@
   import IconBookshelf from '~icons/mdi/bookshelf';
   import IconGit from '~icons/mdi/git';
   import IconCalendar from '~icons/mdi/calendar-multiselect-outline';
+  import LogoFrappe from './LogoFrappe.svelte';
 
   import type { SvelteComponent } from 'svelte';
 
@@ -33,6 +34,7 @@
     calendar: IconCalendar,
     git: IconGit,
     book: IconBookshelf,
+    frappe: LogoFrappe,
   };
 
   export let service: {
