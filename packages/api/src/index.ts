@@ -298,10 +298,11 @@ const webhook = express();
 const upload: multer.Multer = multer();
 
 // Lydia webhook
+webhook.get('/lydia-webhook/alive', (_, res) => {
+  res.sendStatus(200);
+});
+
 webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response) => {
-  webhook.get('/lydia-webhook/alive', (_, res) => {
-    res.sendStatus(200);
-  });
   // Retrieve the params from the request
   const { request_id, amount, currency, sig, signed, transaction_identifier, vendor_token } =
     req.body as {
