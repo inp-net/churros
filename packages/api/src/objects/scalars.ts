@@ -37,3 +37,12 @@ export const BooleanMapScalar = builder.scalarType('BooleanMap', {
     return parsed as Record<string, boolean>;
   },
 });
+
+export enum SortDirection {
+  Ascending,
+  Descending,
+}
+
+export const SortDirectionEnum = builder.enumType(SortDirection, {
+  name: 'SortDirection',
+});

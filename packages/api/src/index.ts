@@ -300,6 +300,10 @@ const webhook = express();
 const upload: multer.Multer = multer();
 
 // Lydia webhook
+webhook.get('/lydia-webhook/alive', (_, res) => {
+  res.sendStatus(200);
+});
+
 webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response) => {
   webhook.get('/lydia-webhook/alive', (_, res) => {
     res.sendStatus(200);

@@ -32,6 +32,7 @@
   import Snowflake from '~icons/mdi/snowflake';
   import '../../design/app.scss';
   import type { PageData, Snapshot } from './$types';
+  import ModalChangelog from '$lib/components/ModalChangelog.svelte';
 
   export let data: PageData;
   let scrollableArea: HTMLElement;
@@ -120,6 +121,16 @@
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
 </script>
+
+{#if data.combinedChangelog.length > 0}
+  <ModalChangelog
+    on:acknowledge={() => {
+      data.combinedChangelog = [];
+    }}
+    open
+    log={data.combinedChangelog}
+  />
+{/if}
 
 <OverlayQuickBookings {now} registrationsOfUser={data.registrationsOfUser}></OverlayQuickBookings>
 

@@ -50,26 +50,6 @@ builder.queryField('codeContributors', (t) =>
   }),
 );
 
-async function renderGitlabMarkdown(markdown: string): Promise<string> {
-  return toHtml(
-    markdown.replaceAll(
-      /(?<=^|\W|\s)([\w/-]*)([!#])(\d+)(?=\s|\W|$)/g,
-      (ref: string, project: string, sigil: string, issue: string) => {
-        const page = { '!': 'merge_requests', '#': 'issues' }[sigil] ?? 'issues';
-        if (project.includes('/'))
-          // issue references for other projects outside inp-net
-          return `[${ref}](https://git.inpt.fr/${project}/-/${page}/${issue})`;
-        if (project)
-          // issue references for other projects in inp-net
-          return `[${ref}](https://git.inpt.fr/inp-net/${project}/-/${page}/${issue})`;
-        // issue references
-        return `[${ref}](https://git.inpt.fr/inp-net/churros/-/${page}/${issue})`;
-      },
-    ),
-    { linkifyUserMentions: false },
-  );
-}
-
 /**
  * Maps importance label names to their value, from 0 (lowest) and then increasing.
  */
@@ -129,7 +109,7 @@ export const IssueCommentType = builder.objectRef<IssueComment>('IssueComment').
     body: t.exposeString('body'),
     bodyHtml: t.string({
       async resolve({ body }) {
-        return renderGitlabMarkdown(body);
+        return toHtml(body, { linkifyGitlabItems: true, linkifyUserMentions: false });
       },
     }),
     authorName: t.exposeString('authorName'),
@@ -150,7 +130,7 @@ export const IssueType = builder.objectRef<Issue>('Issue').implement({
     body: t.exposeString('body'),
     bodyHtml: t.string({
       async resolve({ body }) {
-        return renderGitlabMarkdown(body);
+        return toHtml(body, { linkifyGitlabItems: true, linkifyUserMentions: false });
       },
     }),
     submittedAt: t.expose('submittedAt', {

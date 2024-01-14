@@ -13,7 +13,6 @@
 
   import IconBarWeek from '~icons/mdi/beer-outline';
   import IconAnnouncement from '~icons/mdi/bullhorn-outline';
-  import IconDocument from '~icons/mdi/file-outline';
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
   import { beforeNavigate } from '$app/navigation';
@@ -23,6 +22,7 @@
   import type { MOBILE_NAVIGATION_TABS } from '../../routes/(app)/+layout.svelte';
   import { scrollToTop } from '$lib/scroll';
   import { theme } from '$lib/theme';
+  import LogoFrappe from './LogoFrappe.svelte';
 
   export let current: (typeof MOBILE_NAVIGATION_TABS)[number];
   let flyoutOpen = false;
@@ -160,7 +160,7 @@
     {/if}
 
     <a href="/documents/create">
-      <IconDocument />
+      <LogoFrappe />
       <span>Frappe</span>
     </a>
 

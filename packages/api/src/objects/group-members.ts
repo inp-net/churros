@@ -123,8 +123,22 @@ builder.mutationField('selfJoinGroup', (t) =>
     },
     authScopes: { student: true },
     async resolve(query, _, { groupUid, uid }, { user: me }) {
-      const group = await prisma.group.findUnique({ where: { uid: groupUid } });
+      const group = await prisma.group.findUnique({
+        where: { uid: groupUid },
+        include: { studentAssociation: true },
+      });
       if (!group?.selfJoinable) throw new Error('This group is not self-joinable.');
+      if (
+        membersNeedToPayForTheStudentAssociation(group) &&
+        (await prisma.contribution.count({
+          where: {
+            userId: me?.id,
+            option: { paysFor: { some: { groups: { some: { groupId: group.id } } } } },
+          },
+        })) <= 0
+      )
+        throw new GraphQLError(`Tu n'es pas cotisant·e pour ${group.studentAssociation?.name}.`);
+
       purgeUserSessions(uid);
       const groupMember = await prisma.groupMember.create({
         ...query,

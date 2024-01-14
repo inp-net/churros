@@ -68,9 +68,7 @@
       </span>
     {/if}
     <code>
-      <a href="https://git.inpt.fr/inp-net/churros/-/commits/v{CURRENT_VERSION}"
-        >v{CURRENT_VERSION}</a
-      >
+      <a href="/changelog#v{CURRENT_VERSION}">v{CURRENT_VERSION}</a>
       · built against {#if CURRENT_COMMIT}<a
           href="https://git.inpt.fr/inp-net/churros/-/commit/{CURRENT_COMMIT}"
           >{CURRENT_COMMIT.slice(0, 8)}</a

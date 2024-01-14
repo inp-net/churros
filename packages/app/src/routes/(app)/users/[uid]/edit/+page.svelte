@@ -1,34 +1,31 @@
 <script lang="ts">
-  import Alert from '$lib/components/Alert.svelte';
-  import IconClose from '~icons/mdi/close';
-  import IconCancelEditing from '~icons/mdi/close';
-  import IconPencil from '~icons/mdi/pencil-outline';
-  import IconSynchronize from '~icons/mdi/database-sync-outline';
-  import IconCheck from '~icons/mdi/check';
-  import IconFinishEditing from '~icons/mdi/check';
-  import IconActive from '~icons/mdi/adjust';
-  import type { PageData } from './$types';
-  import Permissions from '$lib/components/FormUserPermissions.svelte';
-  import FormUser from '$lib/components/FormUser.svelte';
-  import FormPicture from '$lib/components/FormPicture.svelte';
-  import { me } from '$lib/session';
-  import { formatDate, formatDateTime } from '$lib/dates';
-  import { CredentialType, zeus } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { default as parseUserAgent } from 'ua-parser-js';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { env } from '$env/dynamic/public';
-  import InputPerson from '$lib/components/InputPerson.svelte';
+  import Alert from '$lib/components/Alert.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import { theme } from '$lib/theme';
-  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
-  import FormPassword from '$lib/components/FormPassword.svelte';
-  import InputText from '$lib/components/InputText.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import FormNotificationSettings from '$lib/components/FormNotificationSettings.svelte';
-  import { browser } from '$app/environment';
+  import FormPassword from '$lib/components/FormPassword.svelte';
+  import FormPicture from '$lib/components/FormPicture.svelte';
+  import FormUser from '$lib/components/FormUser.svelte';
+  import Permissions from '$lib/components/FormUserPermissions.svelte';
+  import InputPerson from '$lib/components/InputPerson.svelte';
+  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import { formatDate, formatDateTime } from '$lib/dates';
+  import { me } from '$lib/session';
+  import { theme } from '$lib/theme';
+  import { CredentialType, zeus } from '$lib/zeus';
+  import { default as parseUserAgent } from 'ua-parser-js';
+  import IconActive from '~icons/mdi/adjust';
+  import { default as IconCheck, default as IconFinishEditing } from '~icons/mdi/check';
+  import { default as IconCancelEditing, default as IconClose } from '~icons/mdi/close';
+  import IconSynchronize from '~icons/mdi/database-sync-outline';
+  import IconPencil from '~icons/mdi/pencil-outline';
+  import type { PageData } from './$types';
 
   let godparentRequestSendServerError = '';
   let godparentRequestSending = false;
@@ -246,12 +243,8 @@
             dark: 'Sombre',
             light: 'Clair',
             hacker: 'h4ck3r',
-            noel: 'Noël',
           }}
           bind:value={$theme}
-          on:input={() => {
-            if (browser) window.localStorage.setItem('user_does_not_like_noel_theme', '');
-          }}
         />
       {/if}
       <h2>Parrainages</h2>

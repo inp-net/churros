@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { CURRENT_VERSION } from '$lib/buildinfo';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import LogoChurros from '$lib/components/LogoChurros.svelte';
@@ -66,11 +67,8 @@
           state: data.csrfState,
         }).toString();
 
-        if (isPWA()) 
-          window.open(redirectTo.toString(), '_blank');
-         else 
-          window.location.href = redirectTo.toString();
-        
+        if (isPWA()) window.open(redirectTo.toString(), '_blank');
+        else window.location.href = redirectTo.toString();
       }}>Autoriser</ButtonPrimary
     >
     <ButtonSecondary
@@ -82,10 +80,15 @@
   </section>
 
   <section class="about">
-    <p class="more">
-      {name} est un service tierce développé par <a href="/groups/{owner.uid}">{owner.name}</a>, non
-      affilié à Churros. Plus d'infos à
-      <a href={website}>{new URL(website).hostname}</a>
+    {#if owner.uid !== 'inp-net-inp'}
+      <p class="more">
+        {name} est un service tierce développé par <a href="/groups/{owner.uid}">{owner.name}</a>,
+        non affilié à Churros. Plus d'infos à
+        <a href={website}>{new URL(website).hostname}</a>
+      </p>
+    {/if}
+    <p class="technical muted">
+      <code>Churros v{CURRENT_VERSION}</code>
     </p>
   </section>
 </main>
@@ -121,6 +124,12 @@
 
   section.about .more {
     opacity: 0.75;
+  }
+
+  section.about .technical {
+    margin-top: 1em;
+    font-size: 0.8rem;
+    font-weight: normal;
   }
 
   section.churros-logo {
