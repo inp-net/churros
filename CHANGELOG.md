@@ -8,6 +8,12 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - `Autres` pour les changements qui ne sont pas des nouvelles fonctionnalités ou des corrections de bugs.
 - `Sécurité` pour les mises à jour de sécurité.
 
+## [Unreleased]
+
+### Autres
+
+- C'est malheureusement la fin du thème de Noël :/ Vivement les campagnes des listes ;)
+
 ## [1.42.0] - 2024-01-14
 
 ### Nouveautés
@@ -17,10 +23,6 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Améliorations
 
 - Sur ordi, il y a maintenant un lien rapide vers tes réglages dans le menu de gauche.
-
-### Autres
-
-- C'est malheureusement la fin du thème de Noël :/ Vivement les campagnes des listes ;)
 
 ### Améliorations
 
