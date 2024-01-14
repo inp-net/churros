@@ -83,7 +83,7 @@
     if (latestVersionSeenInChangelog === '0.0.0')
       toasts.info("Tu peux toujours consulter les mises à jour dans 'les autres services' ;)");
 
-    void $zeus.mutate({
+    await $zeus.mutate({
       acknowledgeChangelog: [
         {
           version: versionRange(log).last,

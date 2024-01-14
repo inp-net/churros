@@ -8,6 +8,12 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - `Autres` pour les changements qui ne sont pas des nouvelles fonctionnalités ou des corrections de bugs.
 - `Sécurité` pour les mises à jour de sécurité.
 
+## [Unreleased]
+
+### Corrections
+
+- Le changelog ne s'affiche vraiment plus une fois que l'on le ferme. Désolés pour le spam :/ (#793)
+
 ## [1.42.1] - 2024-01-14
 
 ### Autres

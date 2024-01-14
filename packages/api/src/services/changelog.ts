@@ -14,7 +14,7 @@ class ChurrosRelease extends KeepAChangelog.Release {
   ) {
     super(version, date, changes);
     this.changes = new Map(
-      ['correctifs', 'améliorations', 'nouveautés', 'sécurité', 'autres'].map((t) => [t, []]),
+      ['corrections', 'améliorations', 'nouveautés', 'sécurité', 'autres'].map((t) => [t, []]),
     );
   }
 }
@@ -93,7 +93,7 @@ class ChangelogRelease {
           authors: [], //TODO
         };
         switch (type) {
-          case 'correctifs': {
+          case 'corrections': {
             changes.fixed.push(releaseChange);
             break;
           }
@@ -239,7 +239,11 @@ This is way more useful for querying a range of versions for a changelog, but no
             'Provide a value for the "from" argument or authenticate as a user.',
           );
         }
-        from = user.latestVersionSeenInChangelog;
+        const { latestVersionSeenInChangelog } = await prisma.user.findUniqueOrThrow({
+          where: { id: user.id },
+          select: { latestVersionSeenInChangelog: true },
+        });
+        from = latestVersionSeenInChangelog ?? '0.0.0';
       }
 
       if (SemVer.gte(from, to)) return [];
