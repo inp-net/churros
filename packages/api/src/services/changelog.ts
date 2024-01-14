@@ -126,8 +126,8 @@ class ChangelogRelease {
   }
 }
 
-async function changelogFromFile() {
-  return KeepAChangelog.parser(await readFile('static/CHANGELOG.md', 'utf8'), {
+async function changelogFromFile(fileContents?: string) {
+  return KeepAChangelog.parser(fileContents ?? (await readFile('static/CHANGELOG.md', 'utf8')), {
     releaseCreator: (version, date, changes) => new ChurrosRelease(version, date, changes),
   });
 }
@@ -294,8 +294,15 @@ builder.queryField('changelog', (t) =>
 builder.queryField('upcomingChangelog', (t) =>
   t.field({
     type: ChangelogReleaseType,
+    errors: {},
     async resolve() {
-      return ChangelogRelease.findIn(await changelogFromFile(), UpcomingVersion);
+      const futureChangelogFile = await fetch(
+        `https://git.inpt.fr/inp-net/churros/-/raw/main/CHANGELOG.md`,
+      );
+      return ChangelogRelease.findIn(
+        await changelogFromFile(await futureChangelogFile.text()),
+        UpcomingVersion,
+      );
     },
   }),
 );

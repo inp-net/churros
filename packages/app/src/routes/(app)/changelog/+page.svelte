@@ -24,7 +24,7 @@
 <main>
   <h1>Changelog</h1>
 
-  {#if changesByCategory(data.upcomingChangelog).length > 0}
+  {#if data.upcomingChangelog && changesByCategory(data.upcomingChangelog).length > 0}
     <Alert theme="default">
       <details>
         <summary> Prochainement </summary>

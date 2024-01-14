@@ -7,14 +7,22 @@ export async function load({ fetch, parent }) {
   const { combinedChangelog, upcomingChangelog } = await loadQuery(
     {
       upcomingChangelog: {
-        version: true,
-        date: true,
-        changes: {
-          added: _changelogChangeQuery,
-          fixed: _changelogChangeQuery,
-          improved: _changelogChangeQuery,
-          other: _changelogChangeQuery,
-          security: _changelogChangeQuery,
+        '__typename': true,
+        '...on QueryUpcomingChangelogSuccess': {
+          data: {
+            version: true,
+            date: true,
+            changes: {
+              added: _changelogChangeQuery,
+              fixed: _changelogChangeQuery,
+              improved: _changelogChangeQuery,
+              other: _changelogChangeQuery,
+              security: _changelogChangeQuery,
+            },
+          },
+        },
+        '...on Error': {
+          message: true,
         },
       },
       combinedChangelog: [
@@ -50,5 +58,5 @@ export async function load({ fetch, parent }) {
 
   if (combinedChangelog.__typename === 'Error') throw error(500, combinedChangelog.message);
 
-  return { combinedChangelog: combinedChangelog.data, upcomingChangelog };
+  return { combinedChangelog: combinedChangelog.data, upcomingChangelog: upcomingChangelog?.data };
 }
