@@ -18,12 +18,13 @@
   import { browser } from '$app/environment';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
-  import { env } from '$env/dynamic/public';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ModalChangelog from '$lib/components/ModalChangelog.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
   import TopBar from '$lib/components/NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
+  import { subscribe } from '$lib/subscriptions';
   import { theme } from '$lib/theme.js';
   import { onMount } from 'svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
@@ -32,7 +33,6 @@
   import Snowflake from '~icons/mdi/snowflake';
   import '../../design/app.scss';
   import type { PageData, Snapshot } from './$types';
-  import ModalChangelog from '$lib/components/ModalChangelog.svelte';
 
   export let data: PageData;
   let scrollableArea: HTMLElement;
@@ -96,19 +96,21 @@
       scrolled = scrollableArea!.scrollTop >= 3;
     });
 
-    const announcementsSubscription = new EventSource(
-      new URL(
-        env.PUBLIC_API_URL +
-          '?' +
-          new URLSearchParams({
-            query: 'subscription { announcementsNow { title, bodyHtml, warning, id } }',
-          }).toString(),
-      ),
+    await subscribe(
+      {
+        announcementsNow: {
+          id: true,
+          title: true,
+          bodyHtml: true,
+          warning: true,
+        },
+      },
+      async (data) => {
+        const freshData = await data;
+        if ('errors' in freshData) return;
+        ({ announcementsNow: announcements } = freshData);
+      },
     );
-
-    announcementsSubscription.addEventListener('next', ({ data }) => {
-      announcements = JSON.parse(data).data.announcementsNow;
-    });
   });
 
   export const snapshot: Snapshot<number> = {
