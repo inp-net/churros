@@ -2,6 +2,7 @@
   import IconHomeOutline from '~icons/mdi/home-outline';
   import IconPeople from '~icons/mdi/account-add-outline';
   import IconPeopleFilled from '~icons/mdi/account-add';
+  import IconSettings from '~icons/mdi/cog-outline';
   import IconLogout from '~icons/mdi/logout';
   import IconHome from '~icons/mdi/home';
   import IconAddCircleOutline from '~icons/mdi/plus-circle-outline';
@@ -191,12 +192,24 @@
     </a>
   {/if}
 
-  {#if $me}
-    <a href="/logout?token={$page.data.token}" class="navigation-item" class:disabled={flyoutOpen}>
-      <IconLogout></IconLogout>
-      <span>Se déconnecter</span>
-    </a>
-  {/if}
+  <section class="bottom">
+    {#if $me}
+      <a
+        href="/logout?token={$page.data.token}"
+        class="navigation-item"
+        class:disabled={flyoutOpen}
+      >
+        <IconLogout></IconLogout>
+        <span>Se déconnecter</span>
+      </a>
+    {/if}
+    {#if $me}
+      <a href="/users/{$me.uid}/edit" class="navigation-item">
+        <IconSettings></IconSettings>
+        <span>Réglages</span>
+      </a>
+    {/if}
+  </section>
 </nav>
 
 <svelte:window
@@ -266,6 +279,10 @@
     gap: 0.25rem;
     padding: 1rem;
     background: var(--bg);
+  }
+
+  nav .bottom {
+    margin-top: auto;
   }
 
   button {
