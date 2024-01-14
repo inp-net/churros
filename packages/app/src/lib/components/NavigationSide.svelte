@@ -19,7 +19,6 @@
   import IconDocument from '~icons/mdi/file-outline';
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
-  import IconDocumentFilled from '~icons/mdi/file';
   import IconTerminal from '~icons/mdi/console';
   import IconBugOutline from '~icons/mdi/bug-outline';
   import IconBug from '~icons/mdi/bug';
@@ -28,6 +27,7 @@
   import { page } from '$app/stores';
   import type { DESKTOP_NAVIGATION_TABS } from '../../routes/(app)/+layout.svelte';
   import { scrollToTop } from '$lib/scroll';
+  import LogoFrappe from './LogoFrappe.svelte';
 
   export let current: (typeof DESKTOP_NAVIGATION_TABS)[number];
   let flyoutOpen = false;
@@ -115,9 +115,9 @@
       class:disabled={flyoutOpen}
     >
       {#if current === 'documents'}
-        <IconDocumentFilled />
+        <LogoFrappe current={true} />
       {:else}
-        <IconDocument />
+        <LogoFrappe />
       {/if}
       <span>La Frappe</span>
     </a>
