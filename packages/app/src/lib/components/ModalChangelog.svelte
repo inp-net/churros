@@ -63,6 +63,10 @@
     >;
   }
 
+  function totalChangesCount(versions: typeof log) {
+    return flattenVersions(versions).reduce((acc, [_, changes]) => acc + changes.length, 0);
+  }
+
   function versionRange(versions: typeof log): { first: string; last: string } {
     return {
       first: versions.at(-1)?.version ?? '',
@@ -94,7 +98,12 @@
   }
 </script>
 
-<Modal {open} maxWidth="800px" bind:element on:close-by-outside-click={acknowledge}>
+<Modal
+  open={open && totalChangesCount(log) > 0}
+  maxWidth="800px"
+  bind:element
+  on:close-by-outside-click={acknowledge}
+>
   {@const { first, last } = versionRange(log)}
   <section class="centered">
     <LogoChurros wordmark />
