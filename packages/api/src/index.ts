@@ -299,7 +299,7 @@ const upload: multer.Multer = multer();
 
 // Lydia webhook
 webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response) => {
-  webhook.get('/lydia-webhook/alive', (req, res) => {
+  webhook.get('/lydia-webhook/alive', (_, res) => {
     res.sendStatus(200);
   });
   // Retrieve the params from the request
