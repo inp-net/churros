@@ -26,26 +26,27 @@ model User {
   schoolEmail  String? @db.VarChar(255)
 
   // Mandatory profile details
-  email                       String                @unique @db.VarChar(255)
-  otherEmails                 String[]              @db.VarChar(255)
-  firstName                   String                @db.VarChar(255)
-  lastName                    String                @db.VarChar(255)
-  majorId                     String?
-  major                       Major?                @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  minor                       Minor?                @relation(fields: [minorId], references: [id])
-  minorId                     String?
-  graduationYear              Int
-  apprentice                  Boolean               @default(false)
-  address                     String                @default("") @db.VarChar(255)
-  birthday                    DateTime?
-  description                 String                @default("") @db.Text
-  nickname                    String                @default("") @db.VarChar(255)
-  phone                       String                @default("") @db.VarChar(255)
-  pictureFile                 String                @default("") @db.VarChar(255)
-  links                       Link[]
-  godparentId                 String?
-  cededImageRightsToTVn7      Boolean               @default(false)
-  enabledNotificationChannels NotificationChannel[] @default([Articles, Shotguns, Permissions, GroupBoard, GodparentRequests, Comments, Other])
+  email                        String                @unique @db.VarChar(255)
+  otherEmails                  String[]              @db.VarChar(255)
+  firstName                    String                @db.VarChar(255)
+  lastName                     String                @db.VarChar(255)
+  majorId                      String?
+  major                        Major?                @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  minor                        Minor?                @relation(fields: [minorId], references: [id])
+  minorId                      String?
+  graduationYear               Int
+  apprentice                   Boolean               @default(false)
+  address                      String                @default("") @db.VarChar(255)
+  birthday                     DateTime?
+  description                  String                @default("") @db.Text
+  nickname                     String                @default("") @db.VarChar(255)
+  phone                        String                @default("") @db.VarChar(255)
+  pictureFile                  String                @default("") @db.VarChar(255)
+  links                        Link[]
+  godparentId                  String?
+  cededImageRightsToTVn7       Boolean               @default(false)
+  enabledNotificationChannels  NotificationChannel[] @default([Articles, Shotguns, Permissions, GroupBoard, GodparentRequests, Comments, Other])
+  latestVersionSeenInChangelog String                @default("0.0.0")
 
   // Permissions
   admin              Boolean @default(false)

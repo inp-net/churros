@@ -66,11 +66,8 @@
           state: data.csrfState,
         }).toString();
 
-        if (isPWA()) 
-          window.open(redirectTo.toString(), '_blank');
-         else 
-          window.location.href = redirectTo.toString();
-        
+        if (isPWA()) window.open(redirectTo.toString(), '_blank');
+        else window.location.href = redirectTo.toString();
       }}>Autoriser</ButtonPrimary
     >
     <ButtonSecondary

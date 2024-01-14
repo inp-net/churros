@@ -23,7 +23,7 @@ export const _clubQuery = Selector('Group')({
 });
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
-  const { me, mobile } = await parent();
+  const { me, token } = await parent();
   if (
     !me?.canEditGroups &&
     !me?.groups.some(({ group, ...perms }) => group.uid === params.uid && isOnClubBoard(perms))
@@ -41,16 +41,6 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
         }),
       ],
     },
-    {
-      fetch,
-      parent: async () =>
-        new Promise((resolve) => {
-          resolve({
-            mobile,
-            me: undefined,
-            token: undefined,
-          });
-        }),
-    },
+    { fetch, token },
   );
 };
