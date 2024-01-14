@@ -16,7 +16,6 @@
   import IconBarWeek from '~icons/mdi/beer-outline';
   import IconAnnouncement from '~icons/mdi/bullhorn-outline';
   import IconAnnouncementFilled from '~icons/mdi/bullhorn';
-  import IconDocument from '~icons/mdi/file-outline';
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
   import IconTerminal from '~icons/mdi/console';
@@ -256,7 +255,7 @@
     {/if}
 
     <a href="/documents/create">
-      <IconDocument />
+      <LogoFrappe />
       <span>Frappe</span>
     </a>
 
