@@ -1,9 +1,35 @@
+<script lang="ts" context="module">
+  export const COLOR_THEME_BY_CHANGELOG_CATEGORY: Record<
+    (typeof ORDER_CHANGELOG_CATEGORIES)[number],
+    'danger' | 'warning' | 'success' | 'primary' | ''
+  > = {
+    added: 'success',
+    fixed: 'danger',
+    improved: 'warning',
+    other: '',
+    security: 'danger',
+  };
+
+  export const BULLET_EMOJI_BY_CHANGELOG_CATEGORY: Record<
+    (typeof ORDER_CHANGELOG_CATEGORIES)[number],
+    string
+  > = {
+    added: /* sparkles */ '✨',
+    fixed: /* check mark */ '✅',
+    improved: /* thumbs up */ '👍',
+    other: /* arrow */ '➡️',
+    security: /* shield */ '🛡️',
+  };
+</script>
+
 <script lang="ts">
   import Modal from './Modal.svelte';
+  import LogoChurros from './LogoChurros.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import { DISPLAY_CHANGELOG_CATEGORIES, ORDER_CHANGELOG_CATEGORIES } from '$lib/display';
   import { zeus } from '$lib/zeus';
   import { createEventDispatcher } from 'svelte';
+  import { toasts } from '$lib/toasts';
 
   const dispatch = createEventDispatcher();
 
@@ -11,6 +37,7 @@
   export let log: Array<{
     date?: Date | undefined;
     version: string;
+    description: string;
     changes: Record<
       (typeof ORDER_CHANGELOG_CATEGORIES)[number],
       Array<{
@@ -44,8 +71,18 @@
     };
   }
 
-  function acknowledge() {
+  async function acknowledge() {
     dispatch('acknowledge');
+    const {
+      me: { latestVersionSeenInChangelog },
+    } = await $zeus.query({
+      me: {
+        latestVersionSeenInChangelog: true,
+      },
+    });
+    if (latestVersionSeenInChangelog === '0.0.0') {
+      toasts.info("Tu peux toujours consulter les mises à jour dans 'les autres services' ;)");
+    }
     void $zeus.mutate({
       acknowledgeChangelog: [
         {
@@ -59,17 +96,23 @@
 
 <Modal {open} maxWidth="800px" bind:element on:close-by-outside-click={acknowledge}>
   {@const { first, last } = versionRange(log)}
-  <p class="muted">
-    {#if first === last}
-      Version <strong>{first}</strong>
-    {:else}
-      Versions <strong>{first}</strong> à <strong>{last}</strong>
-    {/if}
-  </p>
+  <section class="centered">
+    <LogoChurros wordmark />
+    <h1>Quoi de neuf?</h1>
+    <p class="muted">
+      {#if first === last}
+        Version <strong>{first}</strong>
+      {:else}
+        Versions <strong>{first}</strong> à <strong>{last}</strong>
+      {/if}
+    </p>
+  </section>
   {#each flattenVersions(log) as [category, changes]}
     {#if changes.length > 0}
-      <h2>{DISPLAY_CHANGELOG_CATEGORIES.get(category)}</h2>
-      <ul>
+      <h2 class={COLOR_THEME_BY_CHANGELOG_CATEGORY[category]}>
+        {DISPLAY_CHANGELOG_CATEGORIES.get(category)}
+      </h2>
+      <ul style:list-style-type="'{BULLET_EMOJI_BY_CHANGELOG_CATEGORY[category]} '">
         {#each changes as change}
           <li>
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -96,6 +139,19 @@
 </Modal>
 
 <style>
+  .centered {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+  }
+  .centered :global(svg) {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 1em;
+  }
   .actions {
     display: flex;
     justify-content: flex-end;
@@ -104,6 +160,27 @@
   }
 
   h2 {
-    margin: 1rem 0;
+    margin: 2rem 0 1rem;
+    color: var(--link);
+    line-height: 0.7;
+  }
+
+  h2::after {
+    content: '';
+    width: 100%;
+    height: 0.2em;
+    border-radius: var(--radius-block);
+    background: var(--link);
+    display: inline-block;
+  }
+
+  li::marker {
+    display: inline-block;
+    font-size: 1.2rem;
+    padding-right: 0.5em;
+    scale: 150%;
+  }
+  ul {
+    padding-left: 2ch;
   }
 </style>

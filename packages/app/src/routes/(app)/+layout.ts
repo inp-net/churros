@@ -25,6 +25,7 @@ export async function load({ parent, fetch }) {
             data: {
               version: true,
               date: true,
+              description: true,
               changes: {
                 added: _changelogChangeQuery,
                 fixed: _changelogChangeQuery,

@@ -4,8 +4,19 @@ import { error } from '@sveltejs/kit';
 import { _changelogChangeQuery } from '../+layout';
 
 export async function load({ fetch, parent }) {
-  const { combinedChangelog } = await loadQuery(
+  const { combinedChangelog, upcomingChangelog } = await loadQuery(
     {
+      upcomingChangelog: {
+        version: true,
+        date: true,
+        changes: {
+          added: _changelogChangeQuery,
+          fixed: _changelogChangeQuery,
+          improved: _changelogChangeQuery,
+          other: _changelogChangeQuery,
+          security: _changelogChangeQuery,
+        },
+      },
       combinedChangelog: [
         {
           sort: SortDirection.Descending,
@@ -18,6 +29,7 @@ export async function load({ fetch, parent }) {
             data: {
               version: true,
               date: true,
+              description: true,
               changes: {
                 added: _changelogChangeQuery,
                 fixed: _changelogChangeQuery,
@@ -38,5 +50,5 @@ export async function load({ fetch, parent }) {
 
   if (combinedChangelog.__typename === 'Error') throw error(500, combinedChangelog.message);
 
-  return { combinedChangelog: combinedChangelog.data };
+  return { combinedChangelog: combinedChangelog.data, upcomingChangelog };
 }
