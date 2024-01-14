@@ -68,6 +68,7 @@
   dialog[open]::backdrop {
     overscroll-behavior: contain;
     background-color: var(--backdrop);
+    backdrop-filter: blur(10px);
     transition: background-color 0.5s ease;
   }
 
@@ -90,10 +91,12 @@
   @keyframes fade-in {
     from {
       background-color: transparent;
+      backdrop-filter: blur(0);
     }
 
     to {
       background-color: var(--backdrop);
+      backdrop-filter: blur(10px);
     }
   }
 </style>
