@@ -73,6 +73,7 @@
         "filename": "CHANGELOG.md",
         "head": "main",
         "addVersionUrl": true,
+        "addUnreleased": true,
         "versionUrlFormats": {
           "repositoryUrl": "https://git.inpt.fr/inp-net/churros",
           "unreleasedUrl": "{repositoryUrl}/-/compare/{tagName}...{head}",
