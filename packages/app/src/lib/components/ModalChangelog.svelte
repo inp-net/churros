@@ -54,9 +54,9 @@
     ) as unknown as (typeof log)[number]['changes'];
 
     for (const version of versions) {
-      for (const category of ORDER_CHANGELOG_CATEGORIES) {
+      for (const category of ORDER_CHANGELOG_CATEGORIES) 
         byCategory[category].push(...version.changes[category]);
-      }
+      
     }
 
     return [...Object.entries(byCategory)] as Array<
@@ -66,13 +66,14 @@
 
   function versionRange(versions: typeof log): { first: string; last: string } {
     return {
-      first: versions[versions.length - 1].version,
+      first: versions.at(-1).version,
       last: versions[0].version,
     };
   }
 
   async function acknowledge() {
     dispatch('acknowledge');
+    window.umami.track('acknowledge-changelog', { versionRange: versionRange(log) });
     const {
       me: { latestVersionSeenInChangelog },
     } = await $zeus.query({
@@ -80,9 +81,9 @@
         latestVersionSeenInChangelog: true,
       },
     });
-    if (latestVersionSeenInChangelog === '0.0.0') {
+    if (latestVersionSeenInChangelog === '0.0.0') 
       toasts.info("Tu peux toujours consulter les mises à jour dans 'les autres services' ;)");
-    }
+    
     void $zeus.mutate({
       acknowledgeChangelog: [
         {
@@ -143,43 +144,46 @@
     display: flex;
     flex-direction: column;
     gap: 0.5em;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     padding: 3rem;
   }
+
   .centered :global(svg) {
     width: 100%;
     max-width: 300px;
     margin-bottom: 1em;
   }
+
   .actions {
     display: flex;
-    justify-content: flex-end;
     gap: 1rem;
+    justify-content: flex-end;
     margin-top: 2rem;
   }
 
   h2 {
     margin: 2rem 0 1rem;
-    color: var(--link);
     line-height: 0.7;
+    color: var(--link);
   }
 
   h2::after {
-    content: '';
+    display: inline-block;
     width: 100%;
     height: 0.2em;
-    border-radius: var(--radius-block);
+    content: '';
     background: var(--link);
-    display: inline-block;
+    border-radius: var(--radius-block);
   }
 
   li::marker {
     display: inline-block;
-    font-size: 1.2rem;
     padding-right: 0.5em;
+    font-size: 1.2rem;
     scale: 150%;
   }
+
   ul {
     padding-left: 2ch;
   }
