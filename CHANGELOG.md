@@ -13,6 +13,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Corrections
 
 - Le changelog ne s'affiche vraiment plus une fois que l'on le ferme. Désolés pour le spam :/ (#793)
+- Nouveau logo pour la frappe ^^
 
 ## [1.42.1] - 2024-01-14
 
