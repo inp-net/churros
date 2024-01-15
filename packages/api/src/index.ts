@@ -7,10 +7,12 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { type Request, type Response } from 'express';
 import { GraphQLError } from 'graphql';
+import * as GraphQLWS from 'graphql-ws/lib/use/ws';
 import { createYoga } from 'graphql-yoga';
 import helmet from 'helmet';
 import multer from 'multer';
 import { fileURLToPath } from 'node:url';
+import { WebSocketServer } from 'ws';
 import { ZodError, z } from 'zod';
 import { generateThirdPartyToken } from './auth.js';
 import { context } from './context.js';
@@ -31,6 +33,7 @@ const yoga = createYoga({
   cors: false,
   context,
   graphiql: {
+    subscriptionsProtocol: 'WS',
     defaultQuery: /* GraphQL */ `
       query {
         homepage {
@@ -288,9 +291,16 @@ api.get('/', (_req, res) => {
 </html>`);
 });
 
-api.listen(4000, () => {
+const apiServer = api.listen(4000, () => {
   console.info(`Serving static content from ${process.env.STORAGE}`);
   console.info('API ready at http://localhost:4000');
+  const apiWebsocket = new WebSocketServer({
+    server: apiServer,
+    path: '/graphql',
+  });
+
+  GraphQLWS.useServer({ schema, context }, apiWebsocket);
+  console.info('Websocket ready at ws://localhost:4000');
 });
 
 await writeSchema();

@@ -34,6 +34,7 @@ export function publish<T>(
   if (action && discriminant) pubsub.publish(subscriptionName(id, action, discriminant), payload);
   if (discriminant) pubsub.publish(subscriptionName(typename, undefined, discriminant), payload);
   if (action) pubsub.publish(subscriptionName(typename, action), payload);
+  pubsub.publish(subscriptionName(id), payload);
 }
 
 export function subscriptionName(

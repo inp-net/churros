@@ -1,7 +1,9 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import Alert from '$lib/components/Alert.svelte';
   import Badge from '$lib/components/Badge.svelte';
+  import IconRefresh from '~icons/mdi/refresh';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
@@ -10,11 +12,13 @@
   import { formatDateTime } from '$lib/dates';
   import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
   import { me } from '$lib/session';
+  import { subscribe } from '$lib/subscriptions';
   import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
   import { zeus } from '$lib/zeus';
   import { compareAsc, compareDesc, format, isSameDay } from 'date-fns';
   import debounce from 'lodash.debounce';
+  import { onMount } from 'svelte';
   import type { Writable } from 'svelte/store';
   import { queryParam } from 'sveltekit-search-params';
   import IconCancel from '~icons/mdi/cancel';
@@ -30,11 +34,15 @@
   import IconSortUp from '~icons/mdi/triangle-small-up';
   import type { PageData } from './$types';
   import { _registrationsQuery } from './+page';
+  import ButtonInk from '$lib/components/ButtonInk.svelte';
 
+  export let data: PageData;
   let compact = false;
   let loadingMore = false;
   let csvExportError = '';
   let loadingSearchResults = false;
+  let initialRegistrationsTotalCount = data.event.registrationsCounts.total;
+  let newRegistrationsSinceLoad = 0;
   const searchQuery = queryParam('q', {
     encode: (v) => v || undefined,
     decode: (v) => v ?? '',
@@ -44,6 +52,37 @@
     pageInfo: { endCursor: undefined, hasNextPage: false },
     edges: [],
   };
+
+  onMount(() => {
+    $subscribe(
+      {
+        event: [
+          {
+            uid: $page.params.uid,
+            groupUid: $page.params.group,
+          },
+          {
+            registrationsCounts: {
+              cancelled: true,
+              paid: true,
+              unpaidLydia: true,
+              total: true,
+              verified: true,
+            },
+          },
+        ],
+      },
+      async (eventData) => {
+        const freshData = await eventData;
+        if ('errors' in freshData) return;
+        if (freshData.event.registrationsCounts.total > initialRegistrationsTotalCount) {
+          newRegistrationsSinceLoad =
+            freshData.event.registrationsCounts.total - initialRegistrationsTotalCount;
+        }
+        data.event.registrationsCounts = freshData.event.registrationsCounts;
+      },
+    );
+  });
 
   async function submitSearchQuery(q: string) {
     if (!q) {
@@ -119,12 +158,11 @@
     return registrationsCsv.data;
   }
 
-  export let data: PageData;
-  const {
+  $: ({
     registrationsOfEvent: registrations,
     event: { registrationsCounts, profitsBreakdown },
-  } = data;
-  const rowIsSelected = Object.fromEntries(registrations.edges.map(({ node }) => [node.id, false]));
+  } = data);
+  $: rowIsSelected = Object.fromEntries(registrations.edges.map(({ node }) => [node.id, false]));
 
   const COLUMNS = [
     ['date', 'Date'],
@@ -320,6 +358,33 @@
       </InputText>
     </form>
   </div>
+
+  {#if newRegistrationsSinceLoad > 0}
+    <Alert>
+      {newRegistrationsSinceLoad} nouvelles réservations. <ButtonInk
+        icon={IconRefresh}
+        on:click={async () => {
+          const newData = await $zeus.query({
+            registrationsOfEvent: [
+              { groupUid: $page.params.group, eventUid: $page.params.uid },
+              _registrationsQuery,
+            ],
+            event: [
+              { groupUid: $page.params.group, uid: $page.params.uid },
+              {
+                registrationsCounts: {
+                  total: true,
+                },
+              },
+            ],
+          });
+          data.registrationsOfEvent = newData.registrationsOfEvent;
+          initialRegistrationsTotalCount = newData.event.registrationsCounts.total;
+          newRegistrationsSinceLoad = 0;
+        }}>Afficher</ButtonInk
+      >
+    </Alert>
+  {/if}
 
   <div class="actions">
     {#await csv()}

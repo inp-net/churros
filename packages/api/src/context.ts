@@ -16,7 +16,7 @@ import { isThirdPartyToken, onBoard } from './auth.js';
 import { yearTier } from './date.js';
 import { fullName } from './objects/users.js';
 
-const getToken = ({ headers }: Request) => {
+const getToken = (headers: Headers) => {
   const auth = headers.get('Authorization');
   if (!auth) return;
   return auth.slice('Bearer '.length);
@@ -133,10 +133,17 @@ const getUser = async (token: string) => {
 export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;
 
 /** The request context, made available in all resolvers. */
-export const context = async ({ request }: YogaInitialContext) => {
-  if (request.headers.get('Authorization')?.startsWith('Basic ')) return {};
+export const context = async ({ request, ...rest }: YogaInitialContext) => {
+  const headers =
+    request && 'headers' in request
+      ? request.headers
+      : 'connectionParams' in rest
+        ? new Headers((rest.connectionParams as { headers: Headers }).headers)
+        : new Headers();
 
-  const token = getToken(request);
+  if (headers.get('Authorization')?.startsWith('Basic ')) return {};
+
+  const token = getToken(headers);
   if (!token) return {};
   return {
     token,

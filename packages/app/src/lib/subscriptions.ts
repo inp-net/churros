@@ -1,6 +1,20 @@
+import { page } from '$app/stores';
 import { env } from '$env/dynamic/public';
 import type { MaybePromise } from '@sveltejs/kit';
+import { createClient } from 'graphql-ws';
+import { derived } from 'svelte/store';
 import { chain, scalars, type ValueTypes } from './zeus';
+
+const subscriptionsClient = (token: string | undefined) =>
+  createClient({
+    url: env.PUBLIC_API_WEBSOCKET_URL,
+    connectionParams: {
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        'Content-Type': 'application/json',
+      },
+    },
+  });
 
 function renderQuery(query: Record<string, unknown> | object): string {
   return Object.entries(query)
@@ -26,25 +40,23 @@ function renderQuery(query: Record<string, unknown> | object): string {
 const chainedSubscriptions = <Q extends ValueTypes['Subscription']>(q: Q) =>
   chain(fetch, {})('subscription', { scalars })(q);
 
-export async function subscribe<Query extends ValueTypes['Subscription']>(
+function _suscribeWithToken<Query extends ValueTypes['Subscription']>(
+  token: string | undefined,
+): (
   query: Query,
   // putting Awaited<...> here causes an infinite type recursion
   callback: (
     data: { errors: Array<{ message: string }> } | ReturnType<typeof chainedSubscriptions<Query>>,
   ) => MaybePromise<void>,
-) {
-  const subscription = new EventSource(
-    new URL(
-      env.PUBLIC_API_URL +
-        '?' +
-        new URLSearchParams({
-          query: 'subscription { ' + renderQuery(query) + ' }',
-        }).toString(),
-    ),
-  );
+) => void {
+  return async (query, callback) => {
+    const subscription = subscriptionsClient(token).iterate({
+      query: 'subscription { ' + renderQuery(query) + ' }',
+    });
 
-  subscription.addEventListener('next', async ({ data }) => {
-    const obj = JSON.parse(data);
-    await callback(new Promise((resolve) => ('errors' in obj ? resolve(obj) : resolve(obj.data))));
-  });
+    for await (const { data } of subscription)
+      await callback(new Promise((resolve) => resolve(data)));
+  };
 }
+
+export const subscribe = derived(page, ($page) => _suscribeWithToken($page.data.token));

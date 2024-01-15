@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, subscriptionName } from '#lib';
 import { PaymentMethod } from '@prisma/client';
 import dichotomid from 'dichotomid';
 import slug from 'slug';
@@ -141,6 +141,9 @@ export const TicketType = builder.prismaNode('Ticket', {
       },
     }),
     placesLeft: t.int({
+      subscribe(subs, { id }) {
+        subs.register(subscriptionName(id));
+      },
       async resolve({ id }) {
         const ticket = await prisma.ticket.findUnique({
           where: { id },

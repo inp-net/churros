@@ -90,13 +90,13 @@
   afterNavigate(async () => {
     scrollableArea.scrollTo(0, $scrollPositions[$page.url.pathname] ?? 0);
   });
-  onMount(async () => {
+  onMount(() => {
     const scrollableArea = document.querySelector('#scrollable-area');
     scrollableArea!.addEventListener('scroll', () => {
       scrolled = scrollableArea!.scrollTop >= 3;
     });
 
-    await subscribe(
+    $subscribe(
       {
         announcementsNow: {
           id: true,
