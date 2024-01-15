@@ -1,10 +1,11 @@
 import { builder, prisma, publish, subscriptionName } from '#lib';
-import { Visibility, type Prisma } from '@prisma/client';
+import { Visibility, type Article, type Prisma } from '@prisma/client';
 import { dichotomid } from 'dichotomid';
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import slug from 'slug';
 import { updatePicture } from '../pictures.js';
+import { fullTextSearch, type SearchResult } from '../search.js';
 import { htmlToText, toHtml } from '../services/markdown.js';
 import { scheduleNewArticleNotification } from '../services/notifications.js';
 import { VisibilityEnum } from './events.js';
@@ -386,31 +387,45 @@ builder.mutationField('deleteArticle', (t) =>
   }),
 );
 
+export const ArticleSearchResultType = builder
+  .objectRef<SearchResult<{ article: Article }, ['body', 'title']>>('UserSearchResult')
+  .implement({
+    fields: (t) => ({
+      article: t.prismaField({
+        type: 'Article',
+        resolve: (_, { article }) => article,
+      }),
+      id: t.exposeID('id'),
+      similarity: t.exposeFloat('similarity'),
+      rank: t.exposeFloat('rank', { nullable: true }),
+      highlightedTitle: t.string({
+        resolve: ({ highlights }) => highlights.title,
+      }),
+    }),
+  });
+
 builder.queryField('searchArticles', (t) =>
-  t.prismaField({
-    type: [ArticleType],
+  t.field({
+    type: [ArticleSearchResultType],
     args: {
       q: t.arg.string(),
       groupUid: t.arg.string({ required: false }),
     },
-    async resolve(query, _, { q, groupUid }, { user }) {
+    async resolve(_, { q, groupUid }, { user }) {
       const group = groupUid
         ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } })
         : undefined;
-      const matches = await fullTextSearch('Article', q, {
+      return fullTextSearch('Article', q, {
+        property: 'article',
+        resolveObjects: (ids) =>
+          prisma.article.findMany({
+            where: { AND: [{ id: { in: ids } }, visibleArticlesPrismaQuery(user, 'can')] },
+          }),
         fuzzy: ['title', 'body'],
         highlight: ['title', 'body'],
+        htmlHighlights: ['title', 'body'],
         additionalClauses: group ? { groupId: group.id } : {},
       });
-      const articles = await prisma.article.findMany({
-        ...query,
-        where: {
-          AND: [{ id: { in: matches.map((m) => m.id) } }, visibleArticlesPrismaQuery(user, 'can')],
-        },
-      });
-      return sortWithMatches(highlightProperties(articles, matches, ['body']), matches).map(
-        ({ object }) => object,
-      );
     },
   }),
 );
