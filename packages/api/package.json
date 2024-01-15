@@ -101,7 +101,7 @@
   "private": true,
   "scripts": {
     "add-fulltextsearch": "python scripts/add-fulltextsearch.py",
-    "build": "prisma generate && yarn copy-changelog && tsx ./scripts/update-id-prefix-to-typename-map.ts && tsx ./scripts/inject-current-commit-hash.ts && tsc -b --extendedDiagnostics --traceResolution && tsx ./scripts/post-build.ts",
+    "build": "prisma generate && yarn copy-changelog && tsx ./scripts/update-id-prefix-to-typename-map.ts && tsx ./scripts/inject-current-commit-hash.ts && tsc && tsx ./scripts/post-build.ts",
     "copy-changelog": "cp ../../CHANGELOG.md ./static/CHANGELOG.md",
     "clean": "git clean -Xdf .",
     "dev": "yarn mock-buildinfo && NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
