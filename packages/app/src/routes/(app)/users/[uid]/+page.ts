@@ -124,7 +124,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
       groups: data.user.groups.sort(byMemberGroupTitleImportance),
     },
     isDeveloper:
-      data.codeContributors.__typename === 'User'
+      data.codeContributors.__typename === 'QueryCodeContributorsSuccess'
         ? data.codeContributors.data.some((c) => c.uid === data.user.uid)
         : false,
   };

@@ -388,7 +388,7 @@ builder.mutationField('deleteArticle', (t) =>
 );
 
 export const ArticleSearchResultType = builder
-  .objectRef<SearchResult<{ article: Article }, ['body', 'title']>>('UserSearchResult')
+  .objectRef<SearchResult<{ article: Article }, ['body', 'title']>>('ArticleSearchResultType')
   .implement({
     fields: (t) => ({
       article: t.prismaField({

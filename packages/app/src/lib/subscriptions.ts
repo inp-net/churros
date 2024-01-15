@@ -54,8 +54,10 @@ function _suscribeWithToken<Query extends ValueTypes['Subscription']>(
       query: 'subscription { ' + renderQuery(query) + ' }',
     });
 
-    for await (const { data } of subscription)
-      await callback(new Promise((resolve) => resolve(data)));
+    for await (const { data } of subscription) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await callback(new Promise((resolve) => resolve(data as any)));
+    }
   };
 }
 

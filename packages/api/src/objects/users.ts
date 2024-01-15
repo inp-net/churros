@@ -363,6 +363,7 @@ builder.mutationField('updateUser', (t) =>
         },
         { user },
       ) {
+        if (!user) throw new GraphQLError('Connexion requise');
         const targetUser = await prisma.user.findUniqueOrThrow({ where: { uid } });
 
         if (phone) {

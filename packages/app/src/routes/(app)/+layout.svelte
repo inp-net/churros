@@ -108,7 +108,12 @@
       async (data) => {
         const freshData = await data;
         if ('errors' in freshData) return;
-        ({ announcementsNow: announcements } = freshData);
+        announcements = freshData.announcementsNow.filter(Boolean) as Array<{
+          title: string;
+          bodyHtml: string;
+          warning: boolean;
+          id: string;
+        }>;
       },
     );
   });

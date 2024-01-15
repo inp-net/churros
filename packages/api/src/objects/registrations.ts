@@ -271,7 +271,11 @@ builder.queryField('registrationsOfEvent', (t) =>
       groupUid: t.arg.string(),
       eventUid: t.arg.string(),
     },
-    subscribe(subscriptions, { id }) {
+    async subscribe(subscriptions, _, { groupUid, eventUid }) {
+      const { id } = await prisma.event.findFirstOrThrow({
+        where: { uid: eventUid, group: { uid: groupUid } },
+      });
+
       subscriptions.register(id);
     },
     async authScopes(_, { eventUid, groupUid }, { user }) {

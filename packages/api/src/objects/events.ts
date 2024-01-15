@@ -1191,7 +1191,7 @@ builder.mutationField('upsertEvent', (t) =>
         },
       });
 
-      if (shotgunChanged) await scheduleShotgunNotifications(finalEvent);
+      if (shotgunChanged) await scheduleShotgunNotifications(finalEvent, { dryRun: false });
 
       return result;
     },

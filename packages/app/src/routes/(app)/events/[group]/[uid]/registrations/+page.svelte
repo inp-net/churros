@@ -75,11 +75,12 @@
       async (eventData) => {
         const freshData = await eventData;
         if ('errors' in freshData) return;
-        if (freshData.event.registrationsCounts.total > initialRegistrationsTotalCount) {
-          newRegistrationsSinceLoad =
-            freshData.event.registrationsCounts.total - initialRegistrationsTotalCount;
-        }
-        data.event.registrationsCounts = freshData.event.registrationsCounts;
+        const freshCounts = freshData.event?.registrationsCounts;
+        if (!freshCounts) return;
+        if (freshCounts.total > initialRegistrationsTotalCount) 
+          newRegistrationsSinceLoad = freshCounts.total - initialRegistrationsTotalCount;
+        
+        data.event.registrationsCounts = freshCounts;
       },
     );
   });

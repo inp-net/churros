@@ -1,6 +1,7 @@
 import { builder, prisma } from '#lib';
-import type { Group, User } from '@prisma/client';
+import type { Event, Group, User } from '@prisma/client';
 import { GraphQLError } from 'graphql';
+import { visibleEventsPrismaQuery } from '../objects/events.js';
 import { fullTextSearch, type SearchResult } from '../search.js';
 
 export const GroupSearchResultType = builder
@@ -56,6 +57,53 @@ builder.queryField('searchUsers', (t) =>
     authScopes: { student: true },
     async resolve(_, { q, similarityCutoff }) {
       return await searchUsers(q, similarityCutoff ?? undefined);
+    },
+  }),
+);
+
+export const EventSearchResultType = builder
+  .objectRef<SearchResult<{ event: Event }, ['description', 'title']>>('EvenSearchResult')
+  .implement({
+    fields: (t) => ({
+      event: t.prismaField({
+        type: 'Event',
+        resolve: (_, { event }) => event,
+      }),
+      id: t.exposeID('id'),
+      similarity: t.exposeFloat('similarity'),
+      rank: t.exposeFloat('rank', { nullable: true }),
+      highlightedTitle: t.string({
+        resolve: ({ highlights }) => highlights.title,
+      }),
+    }),
+  });
+
+builder.queryField('searchEvents', (t) =>
+  t.field({
+    type: [EventSearchResultType],
+    args: { q: t.arg.string(), groupUid: t.arg.string({ required: false }) },
+    async resolve(_, { q, groupUid }, { user }) {
+      const group = groupUid
+        ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } })
+        : undefined;
+      return fullTextSearch('Event', q, {
+        property: 'event',
+        async resolveObjects(ids) {
+          return prisma.event.findMany({
+            where: {
+              AND: [{ id: { in: ids } }, visibleEventsPrismaQuery(user)],
+            },
+          });
+        },
+        fuzzy: ['title'],
+        highlight: ['title', 'description'],
+        htmlHighlights: ['description'],
+        additionalClauses: group
+          ? {
+              groupId: group.id,
+            }
+          : {},
+      });
     },
   }),
 );

@@ -49,7 +49,7 @@
         if (!freshData.event) return;
         data.event.placesLeft = freshData.event.placesLeft;
         data.ticketsOfEvent = data.ticketsOfEvent.map((t) => {
-          const freshTicket = freshData.event.tickets.find(({ id }) => id === t.id);
+          const freshTicket = freshData.event?.tickets.find((t2) => t2?.id === t.id) ?? {};
           return { ...t, ...freshTicket };
         });
       },
