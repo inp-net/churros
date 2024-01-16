@@ -32,6 +32,7 @@ export async function load({ parent, fetch }) {
                 improved: _changelogChangeQuery,
                 other: _changelogChangeQuery,
                 security: _changelogChangeQuery,
+                technical: _changelogChangeQuery,
               },
             },
           },

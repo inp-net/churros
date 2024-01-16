@@ -7,6 +7,7 @@
   } from '$lib/components/ModalChangelog.svelte';
   import type { PageData } from './$types';
   import Alert from '$lib/components/Alert.svelte';
+  import { me } from '$lib/session';
 
   export let data: PageData;
 
@@ -15,8 +16,11 @@
   function changesByCategory(
     version: Omit<(typeof data.combinedChangelog)[number], 'description'>,
   ): Array<[Category, (typeof data.combinedChangelog)[number]['changes'][Category]]> {
+    const isDev = $me?.groups.some((g) => g.group.uid === 'devs');
     // @ts-expect-error classic case of Object.entries being too dumb. using a "as" cast causes a syntax error for the Svelte parser for some reason
-    return Object.entries(version.changes).filter(([_, changes]) => changes.length > 0);
+    return Object.entries(version.changes)
+      .filter(([_, changes]) => changes.length > 0)
+      .map(([category, changes]) => [category, category !== 'technical' || isDev ? changes : []]);
   }
 </script>
 
