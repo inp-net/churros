@@ -138,6 +138,7 @@
 
   .name {
     font-size: 1.2em;
+    line-height: 1.1;
   }
 
   .name.small {
