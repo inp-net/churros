@@ -49,6 +49,7 @@
             groupUid: service.group?.uid,
             schoolUid: service.school?.uid,
             studentAssociationUid: service.studentAssociation?.uid,
+            importance: service.importance,
           },
           {
             '__typename': true,

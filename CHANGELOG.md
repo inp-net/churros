@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Changer l'importance d'un service fonctionne maintenant correctement
+
 ## [1.43.2] - 2024-01-17
 
 ### Améliorations
