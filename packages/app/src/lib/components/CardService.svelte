@@ -8,7 +8,7 @@
   import IconCar from '~icons/mdi/car';
   import IconDefisInte from '~icons/mdi/sword-cross';
   import IconHand from '~icons/mdi/hand-heart';
-  import Carrot from '~icons/mdi/carrot';
+  import IconCarrot from '~icons/mdi/carrot';
   import IconTerminal from '~icons/mdi/terminal';
   import IconWebsite from '~icons/mdi/web';
   import IconLogs from '~icons/mdi/pulse';
@@ -17,24 +17,32 @@
   import IconGit from '~icons/mdi/git';
   import IconCalendar from '~icons/mdi/calendar-multiselect-outline';
   import LogoFrappe from './LogoFrappe.svelte';
+  import IconCoupon from '~icons/mdi/coupon';
+  import IconStatus from '~icons/mdi/checkbox-marked-circle-outline';
+  import IconHistory from '~icons/mdi/history';
+  import IconBugCheck from '~icons/mdi/bug-check';
 
   import type { SvelteComponent } from 'svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
-    add: IconAdd,
-    car: IconCar,
-    defis: IconDefisInte,
-    hand: IconHand,
-    terminal: IconTerminal,
-    website: IconWebsite,
-    carrot: Carrot,
-    logs: IconLogs,
-    domainswitch: IconDomainSwitch,
-    calendar: IconCalendar,
-    git: IconGit,
-    book: IconBookshelf,
-    frappe: LogoFrappe,
+    'add': IconAdd,
+    'car': IconCar,
+    'defis': IconDefisInte,
+    'hand': IconHand,
+    'terminal': IconTerminal,
+    'website': IconWebsite,
+    'carrot': IconCarrot,
+    'logs': IconLogs,
+    'domainswitch': IconDomainSwitch,
+    'calendar': IconCalendar,
+    'git': IconGit,
+    'book': IconBookshelf,
+    'frappe': LogoFrappe,
+    'coupon': IconCoupon,
+    'status': IconStatus,
+    'history': IconHistory,
+    'bug-check': IconBugCheck,
   };
 
   export let service: {
