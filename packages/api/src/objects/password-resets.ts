@@ -14,8 +14,6 @@ const TYPENAMES_TO_ID_PREFIXES = Object.fromEntries(
   keyof typeof ID_PREFIXES_TO_TYPENAMES
 >;
 
-const transporter = createTransport(process.env.SMTP_URL);
-
 const PASSWORD_RESET_EXPIRES_AFTER = 60 * 60 * 24;
 
 builder.mutationField('createPasswordReset', (t) =>
@@ -37,6 +35,8 @@ builder.mutationField('createPasswordReset', (t) =>
         `login/reset/${result.id.split(':', 2)[1]!.toUpperCase()}`,
         process.env.FRONTEND_ORIGIN,
       );
+
+      const transporter = createTransport(process.env.SMTP_URL);
 
       await transporter.sendMail({
         to: email,

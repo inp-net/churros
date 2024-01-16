@@ -25,8 +25,6 @@ import { DateTimeScalar } from './scalars.js';
 import { placesLeft, userCanSeeTicket } from './tickets.js';
 import { UserType, fullName } from './users.js';
 
-const mailer = createTransport(process.env.SMTP_URL);
-
 export const PaymentMethodEnum = builder.enumType(PaymentMethodPrisma, {
   name: 'PaymentMethod',
 });
@@ -863,6 +861,7 @@ builder.mutationField('upsertRegistration', (t) =>
 
         const recipient = user?.email ?? authorEmail;
         if (!recipient) throw new GraphQLError('No recipient found to send email to.');
+        const mailer = createTransport(process.env.SMTP_URL);
         await mailer.sendMail({
           to: recipient,
           from: process.env.PUBLIC_SUPPORT_EMAIL,

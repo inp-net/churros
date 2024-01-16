@@ -8,8 +8,6 @@ import { purgeUserSessions } from '../context.js';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
 
-const mailer = createTransport(process.env.SMTP_URL);
-
 export const GroupMemberType = builder.prismaObject('GroupMember', {
   fields: (t) => ({
     memberId: t.exposeID('memberId'),
@@ -281,6 +279,7 @@ builder.mutationField('upsertGroupMember', (t) =>
         group.type === 'Club'
       ) {
         // TODO send notification too
+        const mailer = createTransport(process.env.SMTP_URL);
         await mailer.sendMail({
           from: process.env.PUBLIC_CONTACT_EMAIL,
           to: 'respos-clubs@bde.enseeiht.fr',

@@ -5,17 +5,18 @@ import { splitID } from './builder.js';
 
 const REDIS_URL = new URL(process.env.REDIS_URL);
 
+export const publishClient = new Redis({
+  host: REDIS_URL.hostname,
+  port: Number.parseInt(REDIS_URL.port),
+});
+
+export const subscribeClient = new Redis({
+  host: REDIS_URL.hostname,
+  port: Number.parseInt(REDIS_URL.port),
+});
+
 export const pubsub = createPubSub({
-  eventTarget: createRedisEventTarget({
-    publishClient: new Redis({
-      host: REDIS_URL.hostname,
-      port: Number.parseInt(REDIS_URL.port),
-    }),
-    subscribeClient: new Redis({
-      host: REDIS_URL.hostname,
-      port: Number.parseInt(REDIS_URL.port),
-    }),
-  }),
+  eventTarget: createRedisEventTarget({ publishClient, subscribeClient }),
 });
 
 export function publish<T>(

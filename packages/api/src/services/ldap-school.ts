@@ -15,7 +15,7 @@ export interface LdapUser {
   lastName?: string;
 }
 
-const settings = JSON.parse(process.env.LDAP_SCHOOL) as {
+export const settings = JSON.parse(process.env.LDAP_SCHOOL) as {
   servers: Record<
     string,
     { url: string; filterAttribute: string; wholeEmail: boolean; attributesMap: LdapUser }

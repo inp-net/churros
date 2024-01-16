@@ -643,4 +643,12 @@ async function createLdapClub(
   });
 }
 
-export { createLdapClub, createLdapGroup, createLdapUser, queryLdapUser, resetLdapUserPassword };
+export {
+  LDAP_BIND_DN,
+  connectLdap,
+  createLdapClub,
+  createLdapGroup,
+  createLdapUser,
+  queryLdapUser,
+  resetLdapUserPassword,
+};

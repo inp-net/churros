@@ -10,8 +10,6 @@ import { completeRegistration, register, saveUser } from '../services/registrati
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
 
-const mailer = createTransport(process.env.SMTP_URL);
-
 /** Represents a user, mapped on the underlying database object. */
 export const UserCandidateType = builder.prismaNode('UserCandidate', {
   id: { field: 'id' },
@@ -284,6 +282,7 @@ builder.mutationField('refuseRegistration', (t) =>
     type: 'Boolean',
     args: { email: t.arg.string(), reason: t.arg.string() },
     async resolve(_, { email, reason }, { user }) {
+      const mailer = createTransport(process.env.SMTP_URL);
       await mailer.sendMail({
         to: email,
         from: process.env.PUBLIC_SUPPORT_EMAIL,

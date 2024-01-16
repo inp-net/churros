@@ -20,8 +20,8 @@ export const EmailChangeType = builder.prismaObject('EmailChange', {
   }),
 });
 
-const transporter = createTransport(process.env.SMTP_URL);
 export async function requestEmailChange(email: string, userId: string): Promise<void> {
+  const transporter = createTransport(process.env.SMTP_URL);
   const request = await prisma.emailChange.create({
     data: {
       user: { connect: { id: userId } },

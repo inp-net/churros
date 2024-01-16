@@ -40,11 +40,10 @@ import './objects/user-candidates.js';
 import './objects/users.js';
 import './services/ade.js';
 import './services/changelog.js';
+import './services/gitlab.js';
+import './services/healthcheck.js';
 import './services/oauth.js';
 import './services/search.js';
-
-// Import other mutations and/or queries that are not objects
-import './services/gitlab.js';
 
 export const schema = builder.toSchema({});
 
