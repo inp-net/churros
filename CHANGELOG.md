@@ -11,13 +11,15 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [1.43.2] - 2024-01-17
+
 ### Améliorations
 
 - Les services sont maintenant triés par importance
 
 ### Technique
 
-- `/health` renvoie un code 500 si l'API n'est pas joignable, même si ses checks ont certains composants qui fail. L'idée est que le front devrait être servi même sans par exemple l'accès au LDAP ou au serveur Redis. C'est aussi psk le check de notre LDAP fail pour une raison inconnue. 
+- `/health` renvoie un code 500 si l'API n'est pas joignable, même si ses checks ont certains composants qui fail. L'idée est que le front devrait être servi même sans par exemple l'accès au LDAP ou au serveur Redis. C'est aussi psk le check de notre LDAP fail pour une raison inconnue.
 
 ## [1.43.1] - 2024-01-16
 
@@ -74,7 +76,8 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.43.1...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.43.2...main
+[1.43.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.2
 [1.43.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.1
 [1.43.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.0
 [1.42.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.42.2
