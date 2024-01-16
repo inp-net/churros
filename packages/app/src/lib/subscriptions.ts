@@ -5,7 +5,7 @@ import { createClient } from 'graphql-ws';
 import { derived } from 'svelte/store';
 import { chain, scalars, type ValueTypes } from './zeus';
 
-const subscriptionsClient = (token: string | undefined) =>
+const subscriptionsClient = (token: string | undefined, websocketClient?: unknown) =>
   createClient({
     url: env.PUBLIC_API_WEBSOCKET_URL,
     connectionParams: {
@@ -14,6 +14,7 @@ const subscriptionsClient = (token: string | undefined) =>
         'Content-Type': 'application/json',
       },
     },
+    ...(websocketClient ? { webSocketImpl: websocketClient } : {}),
   });
 
 function renderQuery(query: Record<string, unknown> | object): string {
@@ -31,7 +32,7 @@ function renderQuery(query: Record<string, unknown> | object): string {
       } else if (typeof value === 'object') {
         return `${key} { ${renderQuery(value ?? {})} }`;
       } else if (value) {
-        return key + '\n';
+        return key;
       }
     })
     .join('\n');
@@ -40,8 +41,9 @@ function renderQuery(query: Record<string, unknown> | object): string {
 const chainedSubscriptions = <Q extends ValueTypes['Subscription']>(q: Q) =>
   chain(fetch, {})('subscription', { scalars })(q);
 
-function _suscribeWithToken<Query extends ValueTypes['Subscription']>(
+export function _suscribeWithToken<Query extends ValueTypes['Subscription']>(
   token: string | undefined,
+  websocket?: unknown,
 ): (
   query: Query,
   // putting Awaited<...> here causes an infinite type recursion
@@ -50,13 +52,17 @@ function _suscribeWithToken<Query extends ValueTypes['Subscription']>(
   ) => MaybePromise<void>,
 ) => void {
   return async (query, callback) => {
-    const subscription = subscriptionsClient(token).iterate({
+    const subscription = subscriptionsClient(token, websocket).iterate({
       query: 'subscription { ' + renderQuery(query) + ' }',
     });
 
-    for await (const { data } of subscription) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await callback(new Promise((resolve) => resolve(data as any)));
+    try {
+      for await (const { data } of subscription) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await callback(new Promise((resolve) => resolve(data as any)));
+      }
+    } catch (error) {
+      await callback(new Promise((_, reject) => reject(error)));
     }
   };
 }
