@@ -13,6 +13,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
           description: true,
           logo: true,
           logoSourceType: true,
+          importance: true,
           group: {
             id: true,
             uid: true,

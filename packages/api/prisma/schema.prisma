@@ -177,6 +177,7 @@ model Service {
   studentAssociation   StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   groupId              String?
   group                Group?              @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  importance           Int                 @default(0)
 
   @@unique([schoolId, studentAssociationId, groupId, url])
   @@unique([schoolId, studentAssociationId, groupId, name])

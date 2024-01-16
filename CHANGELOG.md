@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Améliorations
+
+- Les services sont maintenant triés par importance
+
 ## [1.43.1] - 2024-01-16
 
 ### Technique
