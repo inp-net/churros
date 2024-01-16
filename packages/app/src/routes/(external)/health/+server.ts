@@ -51,18 +51,59 @@ function vibeCheckDatWebsocket() {
   });
 }
 
+function deepFlatten(
+  o: Record<string, boolean | Record<string, unknown>>,
+): Record<string, boolean> {
+  return Object.fromEntries(
+    Object.entries(o).flatMap(([k, v]) =>
+      typeof v === 'boolean'
+        ? [[k, v]]
+        : Object.entries(deepFlatten(v as Record<string, boolean>)).map(([k2, v2]) => [
+            k2 ? `${k}_${k2}` : k,
+            v2,
+          ]),
+    ),
+  );
+}
+
 export async function GET({ fetch }) {
-  const { homepage } = await loadQuery(
+  const { healthcheck } = await loadQuery(
     {
-      homepage: [{ first: 1 }, { __typename: true }],
+      healthcheck: {
+        database: { prisma: true },
+        ldap: { internal: true, school: true },
+        mail: { smtp: true },
+        redis: { publish: true, subscribe: true },
+      },
     },
     { fetch },
-  );
+  )
+    .then((checks) => {
+      return {
+        healthcheck: {
+          '': true,
+          ...checks.healthcheck,
+        },
+      };
+    })
+    .catch(() => {
+      return {
+        healthcheck: {
+          '': false,
+          'database': { prisma: false },
+          'ldap': { internal: false, school: false },
+          'mail': { smtp: false },
+          'redis': { publish: false, subscribe: false },
+        },
+      };
+    });
 
   const checks = {
     app: true,
-    api: homepage.__typename === 'QueryHomepageConnection',
     websocket: await vibeCheckDatWebsocket().catch(() => false),
+    ...deepFlatten({
+      api: healthcheck,
+    }),
   };
 
   return new Response(

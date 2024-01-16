@@ -10,6 +10,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Ajout de healthchecks, sur /health et avec la query `healthcheck` dans l'API
+
 ## [1.43.0] - 2024-01-16
 
 ### Corrections
