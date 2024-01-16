@@ -223,6 +223,7 @@ export const DISPLAY_CHANGELOG_CATEGORIES = new Map<
   ['fixed', 'Corrections'],
   ['security', 'Sécurité'],
   ['other', 'Autres'],
+  ['technical', 'Technique'],
 ]);
 
 export const ORDER_CHANGELOG_CATEGORIES = [
@@ -231,4 +232,5 @@ export const ORDER_CHANGELOG_CATEGORIES = [
   'fixed',
   'security',
   'other',
+  'technical',
 ] as const;

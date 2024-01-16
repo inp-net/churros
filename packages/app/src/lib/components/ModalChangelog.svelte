@@ -1,13 +1,14 @@
 <script lang="ts" context="module">
   export const COLOR_THEME_BY_CHANGELOG_CATEGORY: Record<
     (typeof ORDER_CHANGELOG_CATEGORIES)[number],
-    'danger' | 'warning' | 'success' | 'primary' | ''
+    'danger' | 'warning' | 'success' | 'primary' | 'muted' | ''
   > = {
     added: 'success',
     fixed: 'danger',
     improved: 'warning',
     other: '',
     security: 'danger',
+    technical: 'muted',
   };
 
   export const BULLET_EMOJI_BY_CHANGELOG_CATEGORY: Record<
@@ -19,7 +20,10 @@
     improved: /* thumbs up */ '👍',
     other: /* arrow */ '➡️',
     security: /* shield */ '🛡️',
+    technical: /* gear */ '⚙️',
   };
+
+  export const CHANGELOG_MODAL_IGNORED_CATEGORIES = ['technical'];
 </script>
 
 <script lang="ts">
@@ -54,8 +58,10 @@
     ) as unknown as (typeof log)[number]['changes'];
 
     for (const version of versions) {
-      for (const category of ORDER_CHANGELOG_CATEGORIES)
+      for (const category of ORDER_CHANGELOG_CATEGORIES) {
+        if (CHANGELOG_MODAL_IGNORED_CATEGORIES.includes(category)) continue;
         byCategory[category].push(...version.changes[category]);
+      }
     }
 
     return [...Object.entries(byCategory)] as Array<

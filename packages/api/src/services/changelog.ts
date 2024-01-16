@@ -14,7 +14,10 @@ class ChurrosRelease extends KeepAChangelog.Release {
   ) {
     super(version, date, changes);
     this.changes = new Map(
-      ['corrections', 'améliorations', 'nouveautés', 'sécurité', 'autres'].map((t) => [t, []]),
+      ['corrections', 'améliorations', 'nouveautés', 'sécurité', 'technique', 'autres'].map((t) => [
+        t,
+        [],
+      ]),
     );
   }
 }
@@ -33,6 +36,7 @@ class ReleaseChangesMap {
   added!: ReleaseChange[];
   security!: ReleaseChange[];
   other!: ReleaseChange[];
+  technical!: ReleaseChange[];
 
   constructor(
     fixed: ReleaseChange[] = [],
@@ -40,12 +44,14 @@ class ReleaseChangesMap {
     added: ReleaseChange[] = [],
     security: ReleaseChange[] = [],
     other: ReleaseChange[] = [],
+    technical: ReleaseChange[] = [],
   ) {
     this.fixed = fixed;
     this.improved = improved;
     this.added = added;
     this.security = security;
     this.other = other;
+    this.technical = technical;
   }
 }
 
@@ -107,6 +113,10 @@ class ChangelogRelease {
           }
           case 'sécurité': {
             changes.security.push(releaseChange);
+            break;
+          }
+          case 'technique': {
+            changes.technical.push(releaseChange);
             break;
           }
           default: {
@@ -171,6 +181,10 @@ export const ReleaseChangesMapType = builder.objectType(ReleaseChangesMap, {
       description: 'Security changes',
     }),
     other: t.expose('other', { type: [ReleaseChangeType], description: 'Miscalleanous changes' }),
+    technical: t.expose('technical', {
+      type: [ReleaseChangeType],
+      description: 'Technical changes',
+    }),
   }),
 });
 

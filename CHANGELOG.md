@@ -7,6 +7,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - `Améliorations` pour les améliorations de fonctionnalités existantes.
 - `Autres` pour les changements qui ne sont pas des nouvelles fonctionnalités ou des corrections de bugs.
 - `Sécurité` pour les mises à jour de sécurité.
+- `Technique` pour les changements techniques. Il n'apparaîtront pas dans la popup de notes de mises à jour.
 
 ## [Unreleased]
 
