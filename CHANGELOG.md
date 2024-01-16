@@ -15,6 +15,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 - Les services sont maintenant triés par importance
 
+### Technique
+
+- `/health` renvoie un code 500 si l'API n'est pas joignable, même si ses checks ont certains composants qui fail. L'idée est que le front devrait être servi même sans par exemple l'accès au LDAP ou au serveur Redis. C'est aussi psk le check de notre LDAP fail pour une raison inconnue. 
+
 ## [1.43.1] - 2024-01-16
 
 ### Technique

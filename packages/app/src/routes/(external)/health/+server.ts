@@ -72,23 +72,8 @@ function vibeCheckDatWebsocket() {
   });
 }
 
-function deepFlatten(
-  o: Record<string, boolean | Record<string, unknown>>,
-): Record<string, boolean> {
-  return Object.fromEntries(
-    Object.entries(o).flatMap(([k, v]) =>
-      typeof v === 'boolean'
-        ? [[k, v]]
-        : Object.entries(deepFlatten(v as Record<string, boolean>)).map(([k2, v2]) => [
-            k2 ? `${k}_${k2}` : k,
-            v2,
-          ]),
-    ),
-  );
-}
-
 export async function GET({ fetch }) {
-  const { healthcheck } = await loadQuery(
+  const { healthcheck: backendChecks } = await loadQuery(
     {
       healthcheck: {
         database: { prisma: true },
@@ -98,33 +83,26 @@ export async function GET({ fetch }) {
       },
     },
     { fetch },
-  )
-    .then((checks) => {
-      return {
-        healthcheck: {
-          '': true,
-          ...checks.healthcheck,
-        },
-      };
-    })
-    .catch(() => {
-      return {
-        healthcheck: {
-          '': false,
-          'database': { prisma: false },
-          'ldap': { internal: false, school: false },
-          'mail': { smtp: false },
-          'redis': { publish: false, subscribe: false },
-        },
-      };
-    });
+  ).catch(() => {
+    return {
+      healthcheck: {
+        database: { prisma: false },
+        ldap: { internal: false, school: false },
+        mail: { smtp: false },
+        redis: { publish: false, subscribe: false },
+      },
+    };
+  });
 
   const checks = {
     app: true,
-    websocket: await vibeCheckDatWebsocket().catch(() => false),
-    ...deepFlatten({
-      api: healthcheck,
+    websocket: await vibeCheckDatWebsocket().catch((error) => {
+      console.error(error);
+      return false;
     }),
+    // critical checks only for the api health
+    api: backendChecks.database.prisma,
+    backend: backendChecks,
   };
 
   return new Response(
@@ -136,7 +114,7 @@ export async function GET({ fetch }) {
       headers: {
         'Content-Type': 'application/json',
       },
-      status: Object.values(checks).every(Boolean) ? 200 : 500,
+      status: checks.api ? 200 : 500,
     },
   );
 }
