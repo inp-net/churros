@@ -10,7 +10,7 @@
 </script>
 
 <div class="content">
-  <h1><ButtonBack /> Ajout d'un service</h1>
+  <h1><ButtonBack go="../.." /> Ajout d'un service</h1>
 
   <FormService {service} />
 </div>
