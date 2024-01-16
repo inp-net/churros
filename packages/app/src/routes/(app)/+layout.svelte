@@ -19,12 +19,13 @@
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ModalChangelog from '$lib/components/ModalChangelog.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
   import TopBar from '$lib/components/NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
+  import { subscribe } from '$lib/subscriptions';
   import { theme } from '$lib/theme.js';
-  import { zeus } from '$lib/zeus';
   import { onMount } from 'svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { writable, type Writable } from 'svelte/store';
@@ -32,7 +33,6 @@
   import Snowflake from '~icons/mdi/snowflake';
   import '../../design/app.scss';
   import type { PageData, Snapshot } from './$types';
-  import ModalChangelog from '$lib/components/ModalChangelog.svelte';
 
   export let data: PageData;
   let scrollableArea: HTMLElement;
@@ -89,25 +89,33 @@
 
   afterNavigate(async () => {
     scrollableArea.scrollTo(0, $scrollPositions[$page.url.pathname] ?? 0);
-
-    const { announcementsNow } = await $zeus.query({
-      announcementsNow: [
-        { now: new Date() },
-        {
-          title: true,
-          bodyHtml: true,
-          warning: true,
-          id: true,
-        },
-      ],
-    });
-    announcements = announcementsNow;
   });
   onMount(() => {
     const scrollableArea = document.querySelector('#scrollable-area');
     scrollableArea!.addEventListener('scroll', () => {
       scrolled = scrollableArea!.scrollTop >= 3;
     });
+
+    $subscribe(
+      {
+        announcementsNow: {
+          id: true,
+          title: true,
+          bodyHtml: true,
+          warning: true,
+        },
+      },
+      async (data) => {
+        const freshData = await data;
+        if ('errors' in freshData) return;
+        announcements = freshData.announcementsNow.filter(Boolean) as Array<{
+          title: string;
+          bodyHtml: string;
+          warning: boolean;
+          id: string;
+        }>;
+      },
+    );
   });
 
   export const snapshot: Snapshot<number> = {

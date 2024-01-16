@@ -1,4 +1,4 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma } from '#lib';
+import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, publish } from '#lib';
 import { PaymentMethod as PaymentMethodPrisma, type Registration, type User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { isFuture, isPast } from 'date-fns';
@@ -7,6 +7,7 @@ import { createTransport } from 'nodemailer';
 import * as qrcodeGeneratorLib from 'qr-code-generator-lib';
 import qrcode from 'qrcode';
 import { yearTier } from '../date.js';
+import { fullTextSearch, type SearchResult } from '../search.js';
 import {
   LydiaTransactionState,
   checkLydiaTransaction,
@@ -17,7 +18,6 @@ import {
   finishPaypalPayment,
   payEventRegistrationViaPaypal,
 } from '../services/paypal.js';
-import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { log } from './logs.js';
 import { actualPrice } from './promotions.js';
@@ -271,6 +271,13 @@ builder.queryField('registrationsOfEvent', (t) =>
       groupUid: t.arg.string(),
       eventUid: t.arg.string(),
     },
+    async subscribe(subscriptions, _, { groupUid, eventUid }) {
+      const { id } = await prisma.event.findFirstOrThrow({
+        where: { uid: eventUid, group: { uid: groupUid } },
+      });
+
+      subscriptions.register(id);
+    },
     async authScopes(_, { eventUid, groupUid }, { user }) {
       const { managers } = await prisma.event.findFirstOrThrow({
         where: { uid: eventUid, group: { uid: groupUid } },
@@ -345,29 +352,28 @@ builder.queryField('registrationsOfUserForEvent', (t) =>
   }),
 );
 
-export class RegistrationSearch {
-  registration!: Registration;
-  id!: string;
-  rank!: number | null;
-  similarity!: number;
-}
-
-export const RegistrationSearchType = builder.objectType(RegistrationSearch, {
-  name: 'RegistrationSearch',
-  fields: (t) => ({
-    id: t.exposeID('id'),
-    registration: t.prismaField({
-      type: 'Registration',
-      resolve: (_, { registration }) => registration,
+export const RegistrationSearchResultType = builder
+  .objectRef<SearchResult<{ registration: Registration }, ['beneficiary']>>(
+    'RegistrationSearchResult',
+  )
+  .implement({
+    fields: (t) => ({
+      id: t.exposeID('id'),
+      registration: t.prismaField({
+        type: 'Registration',
+        resolve: (_, { registration }) => registration,
+      }),
+      rank: t.exposeFloat('rank', { nullable: true }),
+      similarity: t.exposeFloat('similarity'),
+      highlightedBeneficiary: t.string({
+        resolve: ({ highlights }) => highlights.beneficiary,
+      }),
     }),
-    rank: t.exposeFloat('rank', { nullable: true }),
-    similarity: t.exposeFloat('similarity'),
-  }),
-});
+  });
 
 builder.queryField('searchRegistrations', (t) =>
   t.field({
-    type: [RegistrationSearch],
+    type: [RegistrationSearchResultType],
     args: {
       groupUid: t.arg.string(),
       eventUid: t.arg.string(),
@@ -385,20 +391,20 @@ builder.queryField('searchRegistrations', (t) =>
       });
       return eventManagedByUser(event, user, {});
     },
-    async resolve(_, { eventUid, groupUid, q }) {
-      const matches = await fullTextSearch('Registration', q, {
+    async resolve(_, { q, eventUid, groupUid }) {
+      return fullTextSearch('Registration', q, {
         fuzzy: ['beneficiary'],
         highlight: ['beneficiary'],
+        htmlHighlights: [],
+        property: 'registration',
+        resolveObjects: (ids) =>
+          prisma.registration.findMany({
+            where: {
+              id: { in: ids },
+              ticket: { event: { uid: eventUid, group: { uid: groupUid } } },
+            },
+          }),
       });
-      const events = await prisma.registration.findMany({
-        where: {
-          id: { in: matches.map((m) => m.id) },
-          ticket: { event: { uid: eventUid, group: { uid: groupUid } } },
-        },
-      });
-      return highlightProperties(sortWithMatches(events, matches), matches).map(
-        ({ object, ...match }) => ({ registration: object, ...match }),
-      );
     },
   }),
 );
@@ -842,6 +848,7 @@ builder.mutationField('upsertRegistration', (t) =>
         registration.id,
         user,
       );
+      publish(ticket.event.id, 'created', registration);
       if (creating) {
         await log(
           'registration',
@@ -1047,13 +1054,17 @@ builder.mutationField('cancelRegistration', (t) =>
       return true;
     },
     async resolve(_, { id }, { user }) {
-      await prisma.registration.update({
+      const {
+        ticket: { eventId },
+      } = await prisma.registration.update({
         where: { id },
         data: {
           cancelledAt: new Date(),
           cancelledBy: { connect: { id: user?.id } },
         },
+        include: { ticket: true },
       });
+      publish(eventId, 'deleted', id);
       return true;
     },
   }),

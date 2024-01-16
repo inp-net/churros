@@ -105,7 +105,13 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
         },
       ],
       codeContributors: {
-        uid: true,
+        '__typename': true,
+        '...on QueryCodeContributorsSuccess': {
+          data: { uid: true },
+        },
+        '...on Error': {
+          message: true,
+        },
       },
     },
     { fetch, parent },
@@ -117,6 +123,9 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
       ...data.user,
       groups: data.user.groups.sort(byMemberGroupTitleImportance),
     },
-    isDeveloper: data.codeContributors.some((c) => c.uid === data.user.uid),
+    isDeveloper:
+      data.codeContributors.__typename === 'QueryCodeContributorsSuccess'
+        ? data.codeContributors.data.some((c) => c.uid === data.user.uid)
+        : false,
   };
 };

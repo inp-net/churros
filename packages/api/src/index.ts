@@ -7,10 +7,12 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { type Request, type Response } from 'express';
 import { GraphQLError } from 'graphql';
+import * as GraphQLWS from 'graphql-ws/lib/use/ws';
 import { createYoga } from 'graphql-yoga';
 import helmet from 'helmet';
 import multer from 'multer';
 import { fileURLToPath } from 'node:url';
+import { WebSocketServer } from 'ws';
 import { ZodError, z } from 'zod';
 import { generateThirdPartyToken } from './auth.js';
 import { context } from './context.js';
@@ -20,6 +22,7 @@ import { log } from './objects/logs.js';
 import { schema, writeSchema } from './schema.js';
 import { markAsContributor } from './services/ldap.js';
 import { lydiaSignature, verifyLydiaTransaction } from './services/lydia.js';
+import { rescheduleNotifications } from './services/notifications.js';
 import { generatePDF } from './services/pdf.js';
 
 z.setErrorMap(customErrorMap);
@@ -30,6 +33,8 @@ const yoga = createYoga({
   cors: false,
   context,
   graphiql: {
+    title: 'Churros API',
+    subscriptionsProtocol: 'WS',
     defaultQuery: /* GraphQL */ `
       query {
         homepage {
@@ -287,12 +292,20 @@ api.get('/', (_req, res) => {
 </html>`);
 });
 
-api.listen(4000, () => {
+const apiServer = api.listen(4000, () => {
   console.info(`Serving static content from ${process.env.STORAGE}`);
   console.info('API ready at http://localhost:4000');
+  const apiWebsocket = new WebSocketServer({
+    server: apiServer,
+    path: '/graphql',
+  });
+
+  GraphQLWS.useServer({ schema, context }, apiWebsocket);
+  console.info('Websocket ready at ws://localhost:4000');
 });
 
 await writeSchema();
+await rescheduleNotifications({ dryRun: true });
 
 const webhook = express();
 const upload: multer.Multer = multer();
@@ -303,6 +316,9 @@ webhook.get('/lydia-webhook/alive', (_, res) => {
 });
 
 webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response) => {
+  webhook.get('/lydia-webhook/alive', (_, res) => {
+    res.sendStatus(200);
+  });
   // Retrieve the params from the request
   const { request_id, amount, currency, sig, signed, transaction_identifier, vendor_token } =
     req.body as {

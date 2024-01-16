@@ -8,6 +8,7 @@ export const _articleQuery = Selector('Article')({
   bodyHtml: true,
   visibility: true,
   publishedAt: true,
+  notifiedAt: true,
   group: {
     id: true,
     uid: true,

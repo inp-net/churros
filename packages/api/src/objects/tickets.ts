@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, subscriptionName } from '#lib';
 import { PaymentMethod } from '@prisma/client';
 import dichotomid from 'dichotomid';
 import slug from 'slug';
@@ -71,20 +71,17 @@ export const TicketType = builder.prismaNode('Ticket', {
     }),
     capacity: t.exposeInt('capacity'),
     registrations: t.relation('registrations', {
+      authScopes: { loggedIn: true },
       query(_, { user }) {
-        if (user?.admin) return {};
-        if (!user) {
-          return {
-            where: { id: '' },
-          };
-        }
+        if (!user) throw `unreachable`;
+        if (user.admin) return {};
 
         return {
           where: {
             OR: [
-              { author: { uid: user?.uid } },
-              { beneficiary: user?.uid },
-              { ticket: { event: { managers: { some: { user: { uid: user?.uid } } } } } },
+              { author: { uid: user.uid } },
+              { beneficiary: user.uid },
+              { ticket: { event: { managers: { some: { user: { uid: user.uid } } } } } },
             ],
           },
         };
@@ -144,6 +141,9 @@ export const TicketType = builder.prismaNode('Ticket', {
       },
     }),
     placesLeft: t.int({
+      subscribe(subs, { id }) {
+        subs.register(subscriptionName(id));
+      },
       async resolve({ id }) {
         const ticket = await prisma.ticket.findUnique({
           where: { id },

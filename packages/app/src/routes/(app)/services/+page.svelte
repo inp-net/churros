@@ -10,7 +10,7 @@
 
   export let data: PageData;
 
-  const { userServices } = data;
+  const { userServices, codeContributors } = data;
 </script>
 
 <div class="content">
@@ -57,10 +57,16 @@
         alt="net7"
       />
     </a>
-    <span class="credits">
-      Développé par <a href="/credits">{data.codeContributors.length} personnes</a> à
-      <a href="https://net7.dev">net7</a>
-    </span>
+    {#if codeContributors.__typename === 'Error'}
+      <span class="credits">
+        Impossible de récupérer les contributeurs: {codeContributors.message}
+      </span>
+    {:else}
+      <span class="credits">
+        Développé par <a href="/credits">{codeContributors.data.length} personnes</a> à
+        <a href="https://net7.dev">net7</a>
+      </span>
+    {/if}
     <code>
       <a href="/changelog#v{CURRENT_VERSION}">v{CURRENT_VERSION}</a>
       · built against {#if CURRENT_COMMIT}<a

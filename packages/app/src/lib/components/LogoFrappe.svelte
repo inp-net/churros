@@ -1,6 +1,6 @@
 <script lang="ts">
   export let current = false;
-  export let textColor = current? 'var(--primary-link)' : 'var(--text)';
+  export let textColor = current ? 'var(--primary-link)' : 'var(--text)';
 </script>
 
 <svg

@@ -1,6 +1,7 @@
 <script lang="ts">
   import BadgeVisibility from '$lib/components/BadgeVisibility.svelte';
   import { env } from '$env/dynamic/public';
+  import IconNotifications from '~icons/mdi/bell-outline';
   import IconGear from '~icons/mdi/gear-outline';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { formatEventDates } from '$lib/dates';
@@ -13,11 +14,13 @@
   import IconHeart from '~icons/mdi/heart-outline';
   import IconHeartFilled from '~icons/mdi/heart';
   import IconInfo from '~icons/mdi/information-outline';
-  import { isFuture, intlFormatDistance } from 'date-fns';
+  import { isFuture, intlFormatDistance, formatDistance } from 'date-fns';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import { zeus } from '$lib/zeus';
   import { toasts } from '$lib/toasts';
+  import fr from 'date-fns/locale/fr/index.js';
+  import { tooltip } from '$lib/tooltip';
 
   export let data: PageData;
   let {
@@ -33,6 +36,7 @@
     comments,
     myReactions,
     reactionCounts,
+    notifiedAt,
   } = data.article;
 
   let liked = myReactions['❤️'];
@@ -70,6 +74,20 @@
       <span class="date">
         {intlFormatDistance(publishedAt, new Date())}
       </span>
+      {#if notifiedAt && canEditThisArticle}
+        <span
+          class="notified"
+          use:tooltip={`Notifications envoyées ${formatDistance(notifiedAt, new Date(), {
+            locale: fr,
+            addSuffix: true,
+          })}`}
+        >
+          <IconNotifications></IconNotifications>
+          {intlFormatDistance(notifiedAt, new Date(), {
+            style: 'short',
+          })}</span
+        >
+      {/if}
       <BadgeVisibility {visibility} />
     </section>
     {#if event}

@@ -15,6 +15,8 @@
   import IconCalendar from '~icons/mdi/calendar-export-outline';
   import { onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
+  import { subscribe } from '$lib/subscriptions';
+  import { page } from '$app/stores';
 
   export let data: PageData;
 
@@ -25,13 +27,34 @@
     coOrganizers,
     contactMail,
     articles,
-    placesLeft,
-    // capacity,
+    capacity,
     reactionCounts,
     myReactions,
   } = data.event;
 
-  const tickets = data.ticketsOfEvent;
+  $: placesLeft = data.event.placesLeft;
+  $: tickets = data.ticketsOfEvent;
+
+  onMount(() => {
+    $subscribe(
+      {
+        event: [
+          { groupUid: $page.params.group, uid: $page.params.uid },
+          { placesLeft: true, tickets: { placesLeft: true, id: true } },
+        ],
+      },
+      async (eventData) => {
+        const freshData = await eventData;
+        if ('errors' in freshData) return;
+        if (!freshData.event) return;
+        data.event.placesLeft = freshData.event.placesLeft;
+        data.ticketsOfEvent = data.ticketsOfEvent.map((t) => {
+          const freshTicket = freshData.event?.tickets.find((t2) => t2?.id === t.id) ?? {};
+          return { ...t, ...freshTicket };
+        });
+      },
+    );
+  });
 
   $: usersRegistration = tickets
     .flatMap((t) => t.registrations)
@@ -92,9 +115,9 @@
         {#if placesLeft === Number.POSITIVE_INFINITY || placesLeft === -1}
           illimitées
         {:else}
-          <!-- <span class="left">{placesLeft} restante{placesLeft > 1 ? 's' : ''}</span><span
+          <span class="left">{placesLeft} restante{placesLeft > 1 ? 's' : ''}</span><span
             class="capacity">{capacity}</span
-          > -->
+          >
         {/if}
       </span>
     </h2>
@@ -205,23 +228,23 @@
     margin: 0 1rem;
   }
 
-  // .places .left::after {
-  //   display: inline-block;
-  //   height: 1.25em;
-  //   margin: 0.3em;
-  //   margin-bottom: -0.25em;
-  //   content: '';
-  //   background: var(--text);
-  //   transform: rotate(30deg);
-  // }
+  .places .left::after {
+    display: inline-block;
+    height: 1.25em;
+    margin: 0.3em;
+    margin-bottom: -0.25em;
+    content: '';
+    background: var(--text);
+    transform: rotate(30deg);
+  }
 
-  // h2 .places .left::after {
-  //   width: 3px;
-  // }
+  h2 .places .left::after {
+    width: 3px;
+  }
 
-  // .ticket .places .left::after {
-  //   width: 1px;
-  // }
+  .ticket .places .left::after {
+    width: 1px;
+  }
 
   .add-to-calendar .options {
     display: flex;

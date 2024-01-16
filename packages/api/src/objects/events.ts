@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, subscriptionName } from '#lib';
 import {
   EventFrequency,
   GroupType,
@@ -33,7 +33,6 @@ import dichotomid from 'dichotomid';
 import slug from 'slug';
 import type { Context } from '../context.js';
 import { htmlToText, toHtml } from '../services/markdown.js';
-import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { ManagerOfEventInput } from './event-managers.js';
 import { LinkInput } from './links.js';
 import { BooleanMapScalar, CountsScalar, DateTimeScalar, FileScalar } from './scalars.js';
@@ -537,6 +536,9 @@ export const EventType = builder.prismaNode('Event', {
       },
     }),
     placesLeft: t.int({
+      subscribe: (subs, { id }) => {
+        subs.register(subscriptionName(id));
+      },
       async resolve({ id }) {
         const registrations = await prisma.registration.findMany({
           where: { ticket: { event: { id } } },
@@ -565,6 +567,9 @@ export const EventType = builder.prismaNode('Event', {
     }),
     registrationsCounts: t.field({
       type: RegistrationsCountsType,
+      subscribe: (subs, { id }) => {
+        subs.register(subscriptionName(id));
+      },
       async resolve({ id }) {
         const results = await prisma.registration.findMany({
           where: { ticket: { event: { id } } },
@@ -618,6 +623,7 @@ builder.queryField('event', (t) =>
       uid: t.arg.string(),
       groupUid: t.arg.string(),
     },
+    smartSubscription: true,
     async authScopes(_, { uid, groupUid }, { user }) {
       const event = await prisma.event.findFirstOrThrow({
         where: { uid, group: { uid: groupUid } },
@@ -1185,7 +1191,7 @@ builder.mutationField('upsertEvent', (t) =>
         },
       });
 
-      if (shotgunChanged) await scheduleShotgunNotifications(finalEvent);
+      if (shotgunChanged) await scheduleShotgunNotifications(finalEvent, { dryRun: false });
 
       return result;
     },
@@ -1296,51 +1302,6 @@ export function eventManagedByUser(
       }),
   );
 }
-
-builder.queryField('searchEvents', (t) =>
-  t.prismaField({
-    type: [EventType],
-    args: {
-      q: t.arg.string(),
-      groupUid: t.arg.string({ required: false }),
-    },
-    async resolve(query, _, { q, groupUid }, { user }) {
-      const group = groupUid
-        ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid }, select: { id: true } })
-        : undefined;
-
-      const matches = await fullTextSearch('Event', q, {
-        fuzzy: ['title'],
-        highlight: ['description', 'title'],
-        additionalClauses: group ? { groupId: group.id } : {},
-      });
-
-      const events = await prisma.event.findMany({
-        ...query,
-        where: {
-          AND: [
-            {
-              id: { in: matches.map(({ id }) => id) },
-            },
-            visibleEventsPrismaQuery(user),
-          ],
-        },
-        include: {
-          coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
-          group: { include: { studentAssociation: { include: { school: true } } } },
-          managers: {
-            include: {
-              user: true,
-            },
-          },
-        },
-      });
-      return sortWithMatches(highlightProperties(events, matches, ['description']), matches).map(
-        ({ object }) => object,
-      );
-    },
-  }),
-);
 
 export async function createUid({ title, groupId }: { title: string; groupId: string }) {
   const base = slug(title);

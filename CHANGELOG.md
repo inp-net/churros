@@ -13,6 +13,13 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Corrections
 
 - Les non-cotisants ne peuvent maintenant plus rejoindre un groupe qui demande à être cotisant (#791)
+- Le formulaire d'ajout de document sur la Frappe est de nouveau entouré des barres de navigations
+
+### Améliorations
+
+- Le nombre de places restantes est de nouveau visible, et est maintenant _mis à jour en temps réel!_
+- Le nombre de réservations sur la page de gestion des évènements est également mis à jour en temps réel.
+- Le nouveau logo de la frappe est maintenant visible depuis la page des autres services
 
 ## [1.42.2] - 2024-01-14
 
