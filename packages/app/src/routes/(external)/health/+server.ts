@@ -36,14 +36,35 @@ function vibeCheckDatWebsocket() {
           __typename: true,
         },
       },
-      async (eventData) => {
+      async (eventData, close) => {
         try {
           const freshData = await eventData;
-          if ('errors' in freshData) return;
-          if (!freshData.announcementsNow) return;
+          if ('errors' in freshData) {
+            console.error(`websocket vibe check: ` + JSON.stringify(freshData.errors));
+            close();
+            resolve(false);
+            return;
+          }
+          if (!freshData.announcementsNow) {
+            console.error(`websocket vibe check: no data for announcementsNow`);
+            close();
+            resolve(false);
+            return;
+          }
           ok = Array.isArray(freshData.announcementsNow);
+          if (!ok) {
+            console.error(
+              `websocket vibe check: announcementsNow is not an array, it's ${JSON.stringify(
+                freshData.announcementsNow,
+              )}`,
+            );
+          }
+          close();
           resolve(ok);
-        } catch {
+        } catch (error) {
+          console.error(`websocket vibe check: error while parsing data: `);
+          console.error(error);
+          close();
           resolve(false);
         }
       },

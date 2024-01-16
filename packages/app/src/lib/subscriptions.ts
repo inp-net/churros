@@ -49,20 +49,26 @@ export function _suscribeWithToken<Query extends ValueTypes['Subscription']>(
   // putting Awaited<...> here causes an infinite type recursion
   callback: (
     data: { errors: Array<{ message: string }> } | ReturnType<typeof chainedSubscriptions<Query>>,
+    close: () => void,
   ) => MaybePromise<void>,
 ) => void {
   return async (query, callback) => {
-    const subscription = subscriptionsClient(token, websocket).iterate({
+    const client = subscriptionsClient(token, websocket);
+    const subscription = client.iterate({
       query: 'subscription { ' + renderQuery(query) + ' }',
     });
+
+    const closeFunction = async () => {
+      await client.dispose();
+    };
 
     try {
       for await (const { data } of subscription) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await callback(new Promise((resolve) => resolve(data as any)));
+        await callback(new Promise((resolve) => resolve(data as any)), closeFunction);
       }
     } catch (error) {
-      await callback(new Promise((_, reject) => reject(error)));
+      await callback(new Promise((_, reject) => reject(error)), closeFunction);
     }
   };
 }
