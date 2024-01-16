@@ -9,6 +9,7 @@
 import { prisma } from '#lib';
 import { CredentialType, GroupType, LogoSourceType, Visibility, type Prisma } from '@prisma/client';
 import { hash } from 'argon2';
+import { exit } from 'node:process';
 import slug from 'slug';
 import { createUid } from './services/registration.js';
 
@@ -817,3 +818,5 @@ await prisma.thirdPartyApp.create({
     owner: { connect: { id: ski.id } },
   },
 });
+
+exit(0);
