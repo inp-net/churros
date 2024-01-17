@@ -300,6 +300,7 @@ __metadata:
     "@pothos/core": "npm:3.40.1"
     "@pothos/plugin-complexity": "npm:^3.13.0"
     "@pothos/plugin-dataloader": "npm:^3.17.2"
+    "@pothos/plugin-directives": "npm:^3.10.2"
     "@pothos/plugin-errors": "npm:^3.11.1"
     "@pothos/plugin-prisma": "npm:^3.62.0"
     "@pothos/plugin-relay": "npm:^3.45.1"
@@ -339,6 +340,7 @@ __metadata:
     execa: "npm:^8.0.1"
     express: "npm:^4.18.2"
     graphql: "npm:^16.8.1"
+    graphql-rate-limit-directive: "npm:^2.0.5"
     graphql-scalars: "npm:^1.22.4"
     graphql-ws: "npm:^5.14.3"
     graphql-yoga: "npm:^5.0.2"
@@ -361,6 +363,7 @@ __metadata:
     prisma: "npm:5.7.0"
     qr-code-generator-lib: "patch:qr-code-generator-lib@npm%3A1.0.1#~/.yarn/patches/qr-code-generator-lib-npm-1.0.1-14a65cb2e0.patch"
     qrcode: "npm:^1.5.3"
+    rate-limiter-flexible: "npm:^4.0.0"
     rehype-highlight: "npm:^7.0.0"
     rehype-katex: "npm:^7.0.0"
     rehype-sanitize: "npm:^5.0.1"
@@ -2341,6 +2344,15 @@ __metadata:
     dataloader: 2
     graphql: ">=15.1.0"
   checksum: 5f7dd8ab4a3bc640408b0c7620deb14aed38bfbf5f90eeeddf9941a7e9e7705c8e53c6ced4bd78ed18b3424e4174a0ef01be4ec456ad0b2a499b69e848760628
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-directives@npm:^3.10.2":
+  version: 3.10.2
+  resolution: "@pothos/plugin-directives@npm:3.10.2"
+  peerDependencies:
+    graphql: ">=15.1.0"
+  checksum: 8292366cb5f4e75582cc3c90f2427f3fe632606a2cc99bfdfb14e01a8364bf2960b6f8383f7b077934b458a0bab0235e6f1de55a0b767f4d8a232db6635e004b
   languageName: node
   linkType: hard
 
@@ -7739,6 +7751,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphql-rate-limit-directive@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "graphql-rate-limit-directive@npm:2.0.5"
+  peerDependencies:
+    "@graphql-tools/utils": ^8.0.0 || ^9.0.0 || ^10.0.0
+    graphql: ^16.0.0
+    rate-limiter-flexible: ^2.0.0 || ^3.0.0 || ^4.0.0
+  checksum: fb0ca7b26987c5a8296d23bd81b1abb2bbde6dfa0905e3877e5607b30475b3d4204a9ec443851c2fdec234a0cb7cb474172b929b70071cad13d78c9d1f31753d
+  languageName: node
+  linkType: hard
+
 "graphql-scalars@npm:^1.22.4":
   version: 1.22.4
   resolution: "graphql-scalars@npm:1.22.4"
@@ -12386,6 +12409,13 @@ __metadata:
   version: 1.2.1
   resolution: "range-parser@npm:1.2.1"
   checksum: 96c032ac2475c8027b7a4e9fe22dc0dfe0f6d90b85e496e0f016fbdb99d6d066de0112e680805075bd989905e2123b3b3d002765149294dce0c1f7f01fcc2ea0
+  languageName: node
+  linkType: hard
+
+"rate-limiter-flexible@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "rate-limiter-flexible@npm:4.0.0"
+  checksum: 026cfe5ca2dae62c006587591cee08a036a3f233d71fbbeb004f52f501c7518e0ad3ec53b197fb6d04e79adfb2a47e57d7fb8380a0fd63f5363715148c175fb0
   languageName: node
   linkType: hard
 

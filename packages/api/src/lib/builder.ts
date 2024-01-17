@@ -1,6 +1,7 @@
 import SchemaBuilder, { type BuiltinScalarRef } from '@pothos/core';
 import ComplexityPlugin from '@pothos/plugin-complexity';
 import DataloaderPlugin from '@pothos/plugin-dataloader';
+import DirectivePlugin from '@pothos/plugin-directives';
 import ErrorsPlugin from '@pothos/plugin-errors';
 import PrismaPlugin from '@pothos/plugin-prisma';
 import type PrismaTypes from '@pothos/plugin-prisma/generated';
@@ -108,6 +109,12 @@ export const builder = new SchemaBuilder<{
     Counts: { Input: Record<string, number>; Output: Record<string, number> };
     BooleanMap: { Input: Record<string, boolean>; Output: Record<string, boolean> };
   };
+  Directives: {
+    rateLimit: {
+      locations: 'OBJECT' | 'FIELD_DEFINITION';
+      args: { limit: number; duration: number };
+    };
+  };
 }>({
   plugins: [
     ComplexityPlugin,
@@ -120,6 +127,7 @@ export const builder = new SchemaBuilder<{
     TracingPlugin,
     ValidationPlugin,
     SmartSubscriptionsPlugin,
+    DirectivePlugin,
   ],
   authScopes,
   complexity: { limit: { complexity: 30_000, depth: 7, breadth: 200 } },
@@ -162,9 +170,23 @@ export const builder = new SchemaBuilder<{
   },
 });
 
-builder.queryType({});
-builder.mutationType({});
-builder.subscriptionType({});
+builder.queryType({
+  directives: {
+    rateLimit: { limit: 3, duration: 1 },
+  },
+});
+
+builder.mutationType({
+  directives: {
+    rateLimit: { limit: 5, duration: 10 },
+  },
+});
+
+builder.subscriptionType({
+  directives: {
+    rateLimit: { limit: 10, duration: 30 },
+  },
+});
 
 // Parse GraphQL IDs as strings
 const id = (builder.configStore.getInputTypeRef('ID') as BuiltinScalarRef<string, string>).type;
