@@ -195,8 +195,20 @@ body {
   margin: 0;
 }
 
-[data-user-html] > p {
-  margin-bottom: 1em;
+[data-user-html] > {
+  p {
+    margin-bottom: 1em;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+  }
 }
 
 ul,
