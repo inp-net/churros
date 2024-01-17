@@ -1,19 +1,23 @@
-import uniqBy from 'lodash.uniqby';
-import { builder } from '../builder.js';
-import { UserType } from '../objects/users.js';
-import { prisma } from '../prisma.js';
-import { DateTimeScalar } from '../objects/scalars.js';
-import { toHtml } from './markdown.js';
+import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
+import uniqBy from 'lodash.uniqby';
+import { DateTimeScalar } from '../objects/scalars.js';
+import { UserType } from '../objects/users.js';
+import { toHtml } from './markdown.js';
 
 builder.queryField('codeContributors', (t) =>
   t.prismaField({
     type: [UserType],
+    errors: {},
     authScopes: () => true,
     async resolve() {
       const codeContributors = (await fetch(
         `https:///git.inpt.fr/api/v4/projects/${process.env.GITLAB_PROJECT_ID}/repository/contributors`,
-      ).then(async (r) => r.json())) as Array<{
+      )
+        .then(async (r) => r.json())
+        .catch(() => {
+          throw new GraphQLError('Connexion à git.inpt.fr impossible');
+        })) as Array<{
         name: string;
         email: string;
         commits: number;
@@ -46,27 +50,10 @@ builder.queryField('codeContributors', (t) =>
   }),
 );
 
-async function renderGitlabMarkdown(markdown: string): Promise<string> {
-  return toHtml(
-    markdown.replaceAll(
-      /(?<=^|\W|\s)([\w/-]*)([!#])(\d+)(?=\s|\W|$)/g,
-      (ref: string, project: string, sigil: string, issue: string) => {
-        const page = { '!': 'merge_requests', '#': 'issues' }[sigil] ?? 'issues';
-        if (project.includes('/'))
-          // issue references for other projects outside inp-net
-          return `[${ref}](https://git.inpt.fr/${project}/-/${page}/${issue})`;
-        if (project)
-          // issue references for other projects in inp-net
-          return `[${ref}](https://git.inpt.fr/inp-net/${project}/-/${page}/${issue})`;
-        // issue references
-        return `[${ref}](https://git.inpt.fr/inp-net/churros/-/${page}/${issue})`;
-      },
-    ),
-    { linkifyUserMentions: false },
-  );
-}
-
-const ISSUE_IMPORTANCE_LABELS_MAP_UNBOUNDED = {
+/**
+ * Maps importance label names to their value, from 0 (lowest) and then increasing.
+ */
+const ISSUE_IMPORTANCE_LABELS = {
   'importance:rockbottom': 0,
   'importance:low': 1,
   'importance:medium': 2,
@@ -74,7 +61,10 @@ const ISSUE_IMPORTANCE_LABELS_MAP_UNBOUNDED = {
   'importance:urgent': 4,
 };
 
-const ISSUE_DIFFICULTY_LABELS_MAP_UNBOUNDED = {
+/**
+ * Maps difficulty label names to their value, from 0 (easiest) and then increasing.
+ */
+const ISSUE_DIFFICULTY_LABELS = {
   'difficulty:braindead': 0,
   'difficulty:easy': 1,
   'difficulty:moderate': 2,
@@ -88,46 +78,38 @@ enum IssueState {
   Deployed,
 }
 
-class IssueComment {
-  body!: string;
-  authorName!: string;
-  authorAvatarUrl!: string;
-  authorGitlabUrl!: string;
-  addedAt!: Date;
+type IssueComment = {
+  body: string;
+  authorName: string;
+  authorAvatarUrl: string;
+  authorGitlabUrl: string;
+  addedAt: Date;
+};
 
-  constructor(args: IssueComment) {
-    Object.assign(this, args);
-  }
-}
+type Issue = {
+  title: string;
+  state: IssueState;
+  body: string;
+  submittedAt: Date;
+  importance: number | null;
+  difficulty: number | null;
+  number: number;
+  deployedIn: string;
+  duplicatedFrom: number | null;
+  comments: IssueComment[];
+};
 
-class Issue {
-  title!: string;
-  state!: IssueState;
-  body!: string;
-  submittedAt!: Date;
-  importance!: number | null;
-  difficulty!: number | null;
-  number!: number;
-  deployedIn!: string;
-  duplicatedFrom!: number | null;
-  comments!: IssueComment[];
-
-  constructor(args: Issue) {
-    Object.assign(this, args);
-  }
-}
 export const IssueStateType = builder.enumType(IssueState, {
   name: 'IssueState',
 });
 
-export const IssueCommentType = builder.objectType(IssueComment, {
-  name: 'IssueComment',
+export const IssueCommentType = builder.objectRef<IssueComment>('IssueComment').implement({
   description: 'A Gitlab issue comment',
   fields: (t) => ({
     body: t.exposeString('body'),
     bodyHtml: t.string({
       async resolve({ body }) {
-        return renderGitlabMarkdown(body);
+        return toHtml(body, { linkifyGitlabItems: true, linkifyUserMentions: false });
       },
     }),
     authorName: t.exposeString('authorName'),
@@ -140,8 +122,7 @@ export const IssueCommentType = builder.objectType(IssueComment, {
   }),
 });
 
-export const IssueType = builder.objectType(Issue, {
-  name: 'Issue',
+export const IssueType = builder.objectRef<Issue>('Issue').implement({
   description: 'A Gitlab issue',
   fields: (t) => ({
     title: t.exposeString('title'),
@@ -149,7 +130,7 @@ export const IssueType = builder.objectType(Issue, {
     body: t.exposeString('body'),
     bodyHtml: t.string({
       async resolve({ body }) {
-        return renderGitlabMarkdown(body);
+        return toHtml(body, { linkifyGitlabItems: true, linkifyUserMentions: false });
       },
     }),
     submittedAt: t.expose('submittedAt', {
@@ -211,10 +192,10 @@ const issueQuery = `
   state
   description
   updatedAt
-  iid 
-  labels { nodes { title }} 
+  iid
+  labels { nodes { title }}
   title
-  discussions { nodes { notes { nodes { 
+  discussions { nodes { notes { nodes {
     body
     system
     internal
@@ -239,11 +220,11 @@ function makeIssue(
   { state, description, updatedAt, iid, labels, title, discussions }: GitlabIssue,
   duplicatedFrom: number | undefined,
 ) {
-  return new Issue({
+  return {
     title,
     body: description,
-    difficulty: difficultyOrImportanceFromLabel(ISSUE_DIFFICULTY_LABELS_MAP_UNBOUNDED, labels),
-    importance: difficultyOrImportanceFromLabel(ISSUE_IMPORTANCE_LABELS_MAP_UNBOUNDED, labels),
+    difficulty: difficultyOrImportanceFromLabel(ISSUE_DIFFICULTY_LABELS, labels),
+    importance: difficultyOrImportanceFromLabel(ISSUE_IMPORTANCE_LABELS, labels),
     number: iid,
     state: state === 'closed' ? IssueState.Closed : IssueState.Open,
     submittedAt: new Date(updatedAt),
@@ -261,7 +242,7 @@ function makeIssue(
           addedAt: new Date(node.createdAt),
         })),
     ),
-  });
+  };
 }
 
 builder.queryField('issue', (t) =>
@@ -271,30 +252,32 @@ builder.queryField('issue', (t) =>
       number: t.arg.int(),
     },
     async resolve(_, { number }) {
-      const data = await fetch(`https://git.inpt.fr/api/graphql`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: `query {
-          project(fullPath: "inp-net/churros") {
-            issue(iid: "${number}") {
-              ${issueQuery}, closedAsDuplicateOf { ${issueQuery} }
+      let data: null | (GitlabIssue & { closedAsDuplicateOf: null | GitlabIssue });
+      try {
+        data = await fetch(`https://git.inpt.fr/api/graphql`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: `query {
+            project(fullPath: "inp-net/churros") {
+              issue(iid: "${number}") {
+                ${issueQuery}, closedAsDuplicateOf { ${issueQuery} }
+              }
             }
-          }
-        }`,
-        }),
-      })
-        .then(async (r) => r.json())
-        .then(
-          /* eslint-disable unicorn/no-null, @typescript-eslint/no-unsafe-member-access */
-          (j) =>
-            (j.data?.project?.issue ?? null) as
-              | null
-              | (GitlabIssue & { closedAsDuplicateOf: null | GitlabIssue }),
-          /* eslint-enable unicorn/no-null, @typescript-eslint/no-unsafe-member-access */
-        );
+          }`,
+          }),
+        })
+          .then(async (r) => r.json())
+          .then(
+            /* eslint-disable unicorn/no-null, @typescript-eslint/no-unsafe-member-access */
+            (j) => j.data?.project?.issue ?? null,
+            /* eslint-enable unicorn/no-null, @typescript-eslint/no-unsafe-member-access */
+          );
+      } catch {
+        throw new GraphQLError('Connexion à git.inpt.fr impossible');
+      }
 
       if (!data) throw new GraphQLError('Signalement non trouvé');
 
@@ -344,7 +327,10 @@ builder.queryField('issuesByUser', (t) =>
                   fromGitlabUsers: [],
                 }) as GitlabAPIResponse,
           /* eslint-enable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
-        );
+        )
+        .catch(() => {
+          throw new GraphQLError('Connexion à git.inpt.fr impossible');
+        });
 
       const allIssues = [...fromIssuebot, ...fromGitlabUsers];
 
@@ -367,9 +353,11 @@ builder.mutationField('createGitlabIssue', (t) =>
     async resolve(_, { title, description, isBug }, { user }) {
       let hasGitlabAccount = false;
       if (user) {
-        const data = (await fetch(`https://git.inpt.fr/api/v4/users?username=${user.uid}`).then(
-          async (r) => r.json(),
-        )) as unknown as unknown[];
+        const data = (await fetch(`https://git.inpt.fr/api/v4/users?username=${user.uid}`)
+          .then(async (r) => r.json())
+          .catch(() => {
+            throw new GraphQLError('Connexion à git.inpt.fr impossible');
+          })) as unknown as unknown[];
         hasGitlabAccount = data.length > 0;
       }
 

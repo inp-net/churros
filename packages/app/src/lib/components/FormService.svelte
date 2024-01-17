@@ -8,6 +8,7 @@
   import InputGroups from './InputGroups.svelte';
   import InputSchools from './InputSchools.svelte';
   import InputStudentAssociations from './InputStudentAssociations.svelte';
+  import InputNumber from './InputNumber.svelte';
 
   export let service: {
     id?: string;
@@ -19,7 +20,15 @@
     school?: { uid: string; name: string; id: string };
     studentAssociation?: { uid?: string; name: string; id: string };
     group?: { id: string; uid: string; name: string; pictureFile: string; pictureFileDark: string };
-  } = { name: '', description: '', url: '', logo: '', logoSourceType: LogoSourceType.Icon };
+    importance: number;
+  } = {
+    name: '',
+    description: '',
+    url: '',
+    logo: '',
+    logoSourceType: LogoSourceType.Icon,
+    importance: 0,
+  };
 
   let serverError = '';
 
@@ -40,9 +49,10 @@
             groupUid: service.group?.uid,
             schoolUid: service.school?.uid,
             studentAssociationUid: service.studentAssociation?.uid,
+            importance: service.importance,
           },
           {
-            __typename: true,
+            '__typename': true,
             '...on Error': { message: true },
             '...on MutationUpsertServiceSuccess': {
               data: {
@@ -52,6 +62,7 @@
                 description: true,
                 logo: true,
                 logoSourceType: true,
+                importance: true,
                 group: {
                   id: true,
                   uid: true,
@@ -88,6 +99,11 @@
     <InputText required label="Nom" bind:value={service.name} maxlength={255} />
     <InputText required label="URL" bind:value={service.url} maxlength={255} />
     <InputText label="Description" bind:value={service.description} maxlength={255} />
+    <InputNumber
+      hint="Les services plus importants sont montrés plus haut dans la liste"
+      label="Importance"
+      bind:value={service.importance}
+    ></InputNumber>
     <InputSelectOne
       label="Type de logo"
       bind:value={service.logoSourceType}

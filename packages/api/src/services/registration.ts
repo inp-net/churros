@@ -1,3 +1,4 @@
+import { prisma } from '#lib';
 import {
   CredentialType,
   type Major,
@@ -8,13 +9,12 @@ import {
 import dichotomid from 'dichotomid';
 import { nanoid } from 'nanoid';
 import { createTransport } from 'nodemailer';
-import { prisma } from '../prisma.js';
-import { findSchoolUser } from './ldap-school.js';
 import slug from 'slug';
-import { queryLdapUser } from './ldap.js';
 import { fromYearTier } from '../date.js';
+import { findSchoolUser } from './ldap-school.js';
+import { queryLdapUser } from './ldap.js';
 
-const transporter = createTransport(process.env.SMTP_URL);
+const makeTransporter = () => createTransport(process.env.SMTP_URL);
 
 export const register = async (email: string): Promise<boolean> => {
   const schoolUser = await findSchoolUser({ email });
@@ -57,7 +57,7 @@ export const register = async (email: string): Promise<boolean> => {
   const url = new URL('/register/continue', process.env.FRONTEND_ORIGIN);
   url.searchParams.append('token', token);
 
-  await transporter.sendMail({
+  await makeTransporter().sendMail({
     to: email,
     from: process.env.PUBLIC_SUPPORT_EMAIL,
     subject: `Finaliser mon inscription sur Churros`,
@@ -173,7 +173,7 @@ export const saveUser = async ({
   await prisma.userCandidate.delete({ where: { id } });
 
   const url = new URL('/welcome/', process.env.FRONTEND_ORIGIN);
-  await transporter.sendMail({
+  await makeTransporter().sendMail({
     subject: `Bienvenue sur Churros!`,
     to: email,
     from: process.env.PUBLIC_SUPPORT_EMAIL,

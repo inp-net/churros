@@ -1,6 +1,5 @@
+import { builder, prisma } from '#lib';
 import type { Major } from '@prisma/client';
-import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
 import { MajorType } from './majors.js';
 
 export const SchoolType = builder.prismaObject('School', {
@@ -13,6 +12,7 @@ export const SchoolType = builder.prismaObject('School', {
     description: t.exposeString('description'),
     address: t.exposeString('address'),
     services: t.relation('services'),
+    internalMailDomain: t.exposeString('internalMailDomain'),
   }),
 });
 

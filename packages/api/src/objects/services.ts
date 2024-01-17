@@ -1,6 +1,5 @@
-import { builder } from '../builder.js';
+import { builder, prisma } from '#lib';
 import { LogoSourceType } from '@prisma/client';
-import { prisma } from '../prisma.js';
 import { GraphQLError } from 'graphql';
 
 export const LogoSourceTypeEnum = builder.enumType(LogoSourceType, { name: 'LogoSourceType' });
@@ -18,6 +17,7 @@ export const ServiceType = builder.prismaObject('Service', {
     group: t.relation('group', { nullable: true }),
     school: t.relation('school', { nullable: true }),
     studentAssociation: t.relation('studentAssociation', { nullable: true }),
+    importance: t.exposeInt('importance'),
   }),
 });
 
@@ -64,6 +64,7 @@ builder.queryField('services', (t) =>
           group: { uid: groupUid ?? undefined },
           studentAssociation: { uid: studentAssociationUid },
         },
+        orderBy: [{ importance: 'desc' }, { name: 'asc' }],
       });
       return services;
     },
@@ -90,6 +91,7 @@ builder.queryField('userServices', (t) =>
         include: {
           group: true,
         },
+        orderBy: [{ importance: 'desc' }, { name: 'asc' }],
       });
       return services;
     },
@@ -110,6 +112,7 @@ builder.mutationField('upsertService', (t) =>
       schoolUid: t.arg.string({ required: false }),
       groupUid: t.arg.string({ required: false }),
       studentAssociationUid: t.arg.string({ required: false }),
+      importance: t.arg.int({ required: false, defaultValue: 0, validate: { min: 0 } }),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin);
@@ -127,6 +130,7 @@ builder.mutationField('upsertService', (t) =>
         schoolUid,
         groupUid,
         studentAssociationUid,
+        importance,
       },
       { user },
     ) {
@@ -145,6 +149,7 @@ builder.mutationField('upsertService', (t) =>
           studentAssociation: studentAssociationUid
             ? { connect: { uid: studentAssociationUid } }
             : undefined,
+          importance: importance ?? 0,
         },
         update: {
           name,
@@ -157,6 +162,7 @@ builder.mutationField('upsertService', (t) =>
           studentAssociation: studentAssociationUid
             ? { connect: { uid: studentAssociationUid } }
             : { disconnect: true },
+          importance: importance ?? 0,
         },
       });
 

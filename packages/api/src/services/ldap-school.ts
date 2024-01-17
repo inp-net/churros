@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
-import ldap from 'ldapjs';
-import '../context.js';
-import { nanoid } from 'nanoid';
-import { fromYearTier } from '../date.js';
-import { builder } from '../builder.js';
+import { builder } from '#lib';
 import bunyan from 'bunyan';
+import ldap from 'ldapjs';
+import { nanoid } from 'nanoid';
+import '../context.js';
+import { fromYearTier } from '../date.js';
 
 const logger = bunyan.createLogger({ name: 'CRI INP ldap', level: 'debug' });
 
@@ -15,7 +15,7 @@ export interface LdapUser {
   lastName?: string;
 }
 
-const settings = JSON.parse(process.env.LDAP_SCHOOL) as {
+export const settings = JSON.parse(process.env.LDAP_SCHOOL) as {
   servers: Record<
     string,
     { url: string; filterAttribute: string; wholeEmail: boolean; attributesMap: LdapUser }

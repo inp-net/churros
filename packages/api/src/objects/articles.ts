@@ -1,17 +1,16 @@
-import slug from 'slug';
-import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
-import { htmlToText, toHtml } from '../services/markdown.js';
-import { DateTimeScalar, FileScalar } from './scalars.js';
-import { LinkInput } from './links.js';
+import { builder, prisma, publish, subscriptionName } from '#lib';
+import { Visibility, type Article, type Prisma } from '@prisma/client';
 import { dichotomid } from 'dichotomid';
 import { unlink } from 'node:fs/promises';
-import { VisibilityEnum } from './events.js';
-import { type Prisma, Visibility } from '@prisma/client';
-import { scheduleNewArticleNotification } from '../services/notifications.js';
-import { updatePicture } from '../pictures.js';
 import { join } from 'node:path';
-import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
+import slug from 'slug';
+import { updatePicture } from '../pictures.js';
+import { fullTextSearch, type SearchResult } from '../search.js';
+import { htmlToText, toHtml } from '../services/markdown.js';
+import { scheduleNewArticleNotification } from '../services/notifications.js';
+import { VisibilityEnum } from './events.js';
+import { LinkInput } from './links.js';
+import { DateTimeScalar, FileScalar } from './scalars.js';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
@@ -35,6 +34,7 @@ export const ArticleType = builder.prismaNode('Article', {
     published: t.exposeBoolean('published'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
+    notifiedAt: t.expose('notifiedAt', { type: DateTimeScalar, nullable: true }),
     publishedAt: t.expose('publishedAt', { type: DateTimeScalar }),
     pictureFile: t.exposeString('pictureFile'),
     author: t.relation('author', { nullable: true }),
@@ -73,6 +73,11 @@ export const ArticleType = builder.prismaNode('Article', {
       cursor: 'id',
       query: {
         orderBy: { createdAt: 'asc' },
+      },
+      subscribe(subscriptions, { id }) {
+        subscriptions.register(subscriptionName('Comment', 'created', id));
+        subscriptions.register(subscriptionName('Comment', 'updated', id));
+        subscriptions.register(subscriptionName('Comment', 'deleted', id));
       },
     }),
     event: t.relation('event', { nullable: true }),
@@ -174,6 +179,7 @@ export function visibleArticlesPrismaQuery(
 builder.queryField('article', (t) =>
   t.prismaField({
     type: ArticleType,
+    smartSubscription: true,
     args: {
       groupUid: t.arg.string(),
       uid: t.arg.string(),
@@ -195,6 +201,10 @@ builder.queryField('homepage', (t) =>
     description: 'Gets the homepage articles, customized if the user is logged in.',
     type: ArticleType,
     cursor: 'id',
+    smartSubscription: true,
+    subscribe(subs) {
+      subs.register(subscriptionName('Article', 'created'));
+    },
     async resolve(query, _, {}, { user }) {
       if (!user) {
         return prisma.article.findMany({
@@ -305,6 +315,7 @@ builder.mutationField('upsertArticle', (t) =>
           event: eventId ? { connect: { id: eventId } } : { disconnect: true },
         },
       });
+      publish(result.id, id ? 'updated' : 'created', result);
       await prisma.logEntry.create({
         data: {
           area: 'article',
@@ -314,11 +325,22 @@ builder.mutationField('upsertArticle', (t) =>
           user: user ? { connect: { id: user.id } } : undefined,
         },
       });
-      await scheduleNewArticleNotification({
-        ...result,
+      const visibilitiesByVerbosity = [
+        Visibility.Private,
+        Visibility.Unlisted,
+        Visibility.GroupRestricted,
+        Visibility.SchoolRestricted,
+        Visibility.Public,
+      ];
+      void scheduleNewArticleNotification(result, {
         // Only post the notification immediately if the article was not already published before.
         // This prevents notifications if the content of the article is changed after its publication; but allows to send notifications immediately if the article was previously set to be published in the future and the author changes their mind and decides to publish it now.
-        eager: !old || old.publishedAt > new Date(),
+        eager:
+          !old ||
+          old.publishedAt > new Date() ||
+          // send new notifications when changing visibility of article to a more public one (e.g. from private to school-restricted)
+          visibilitiesByVerbosity.indexOf(result.visibility) >
+            visibilitiesByVerbosity.indexOf(old.visibility),
       });
       return result;
     },
@@ -359,36 +381,51 @@ builder.mutationField('deleteArticle', (t) =>
           user: user ? { connect: { id: user.id } } : undefined,
         },
       });
+      publish(id, 'deleted', id);
       return true;
     },
   }),
 );
 
+export const ArticleSearchResultType = builder
+  .objectRef<SearchResult<{ article: Article }, ['body', 'title']>>('ArticleSearchResultType')
+  .implement({
+    fields: (t) => ({
+      article: t.prismaField({
+        type: 'Article',
+        resolve: (_, { article }) => article,
+      }),
+      id: t.exposeID('id'),
+      similarity: t.exposeFloat('similarity'),
+      rank: t.exposeFloat('rank', { nullable: true }),
+      highlightedTitle: t.string({
+        resolve: ({ highlights }) => highlights.title,
+      }),
+    }),
+  });
+
 builder.queryField('searchArticles', (t) =>
-  t.prismaField({
-    type: [ArticleType],
+  t.field({
+    type: [ArticleSearchResultType],
     args: {
       q: t.arg.string(),
       groupUid: t.arg.string({ required: false }),
     },
-    async resolve(query, _, { q, groupUid }, { user }) {
+    async resolve(_, { q, groupUid }, { user }) {
       const group = groupUid
         ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } })
         : undefined;
-      const matches = await fullTextSearch('Article', q, {
+      return fullTextSearch('Article', q, {
+        property: 'article',
+        resolveObjects: (ids) =>
+          prisma.article.findMany({
+            where: { AND: [{ id: { in: ids } }, visibleArticlesPrismaQuery(user, 'can')] },
+          }),
         fuzzy: ['title', 'body'],
         highlight: ['title', 'body'],
+        htmlHighlights: ['title', 'body'],
         additionalClauses: group ? { groupId: group.id } : {},
       });
-      const articles = await prisma.article.findMany({
-        ...query,
-        where: {
-          AND: [{ id: { in: matches.map((m) => m.id) } }, visibleArticlesPrismaQuery(user, 'can')],
-        },
-      });
-      return sortWithMatches(highlightProperties(articles, matches, ['body']), matches).map(
-        ({ object }) => object,
-      );
     },
   }),
 );

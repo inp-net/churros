@@ -168,7 +168,7 @@
             cededImageRightsToTVn7,
           },
           {
-            __typename: true,
+            '__typename': true,
             '...on Error': { message: true },
             '...on MutationUpdateUserSuccess': { data: userQuery },
           },

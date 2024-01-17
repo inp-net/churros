@@ -9,6 +9,7 @@
     "typescript": "^5.3.3"
   },
   "exports": {
+    "types": "./index.ts",
     "development": "./index.ts",
     "default": "./build/index.js"
   },
@@ -26,5 +27,9 @@
   "type": "module",
   "volta": {
     "extends": "../../package.json"
+  },
+  "release-it": {
+    "git": false,
+    "npm": false
   }
 }
