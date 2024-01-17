@@ -43,6 +43,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             treasurer: true,
             vicePresident: true,
             secretary: true,
+            member: { lastName: true },
           },
           links: { name: true, value: true, computedValue: true },
           minor: {

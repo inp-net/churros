@@ -39,9 +39,12 @@
   let confirmingDelete = false;
   let newBannedUser: (typeof event)['bannedUsers'][number] | undefined;
 
-  $:endsAtAfterStartsAt = (event.startsAt===undefined || event.endsAt===undefined) ? true : (event.startsAt.getTime() < event.endsAt.getTime());
-  $:pastDateStart = event.startsAt===undefined ? false : (isPast(event.startsAt));
-  $:isNotValidDate = !endsAtAfterStartsAt || pastDateStart;
+  $: endsAtAfterStartsAt =
+    event.startsAt === undefined || event.endsAt === undefined
+      ? true
+      : event.startsAt.getTime() < event.endsAt.getTime();
+  $: pastDateStart = event.startsAt === undefined ? false : isPast(event.startsAt);
+  $: isNotValidDate = !endsAtAfterStartsAt || pastDateStart;
 
   $: canEditManagers =
     !event.uid ||
@@ -815,9 +818,7 @@
           }}>Rendre privé</ButtonSecondary
         >
       {:else}
-        <ButtonPrimary submits disabled={isNotValidDate}>
-          Enregistrer
-        </ButtonPrimary>
+        <ButtonPrimary submits disabled={isNotValidDate}>Enregistrer</ButtonPrimary>
         {#if event.id}
           <ButtonSecondary
             danger
@@ -840,7 +841,6 @@
     <Alert theme="danger">
       Impossible de programmer l'événement : La date indiquée est déjà passé.
     </Alert>
-
   {/if}
 </section>
 
