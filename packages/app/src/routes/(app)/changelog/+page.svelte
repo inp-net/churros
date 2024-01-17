@@ -19,8 +19,8 @@
     const isDev = $me?.groups.some((g) => g.group.uid === 'devs');
     // @ts-expect-error classic case of Object.entries being too dumb. using a "as" cast causes a syntax error for the Svelte parser for some reason
     return Object.entries(version.changes)
-      .filter(([_, changes]) => changes.length > 0)
-      .map(([category, changes]) => [category, category !== 'technical' || isDev ? changes : []]);
+      .map(([category, changes]) => [category, category !== 'technical' || isDev ? changes : []])
+      .filter(([_, changes]) => changes.length > 0);
   }
 </script>
 
