@@ -17,12 +17,16 @@ import { LinkInput } from './links.js';
 import { log } from './logs.js';
 import { FileScalar } from './scalars.js';
 
-export function userIsInBureauOf(user: Context['user'], groupUid: string): boolean {
+export function userIsOnBoardOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
     user?.groups.some(
       ({ group: { uid }, ...permissions }) => uid === groupUid && onBoard(permissions),
     ),
   );
+}
+
+export function userIsMemberOf(user: Context['user'], groupUid: string): boolean {
+  return Boolean(user?.groups.some(({ group: { uid } }) => uid === groupUid));
 }
 
 export function userIsPresidentOf(user: Context['user'], groupUid: string): boolean {
@@ -78,6 +82,7 @@ export const GroupType = builder.prismaNode('Group', {
     pictureFile: t.exposeString('pictureFile'),
     pictureFileDark: t.exposeString('pictureFileDark'),
     ldapUid: t.exposeString('ldapUid'),
+    roomIsOpen: t.exposeBoolean('roomIsOpen', { authScopes: { student: true } }),
     articles: t.relation('articles', {
       query(_, { user }) {
         return {
@@ -534,6 +539,32 @@ builder.mutationField('deleteGroupPicture', (t) =>
         },
       });
       return true;
+    },
+  }),
+);
+
+builder.mutationField('updateRoomOpenState', (t) =>
+  t.field({
+    type: 'Boolean',
+    description: "Changer si la salle d'un groupe est fermé ou ouvert",
+    args: {
+      groupUid: t.arg.string({ description: "L'uid du groupe" }),
+      openRoom: t.arg.boolean({
+        description: 'Vrai si on veut indiquer que le local est maintenant ouvert ',
+      }),
+    },
+    authScopes(_, { groupUid }, { user }) {
+      return Boolean(user?.canEditGroups || userIsMemberOf(user, groupUid));
+    },
+    async resolve(_, { groupUid, openRoom }, { user }) {
+      const { roomIsOpen } = await prisma.group.update({
+        where: { uid: groupUid },
+        data: { roomIsOpen: openRoom },
+      });
+
+      await log('groups', 'set-room', { open: true }, groupUid, user);
+
+      return roomIsOpen;
     },
   }),
 );

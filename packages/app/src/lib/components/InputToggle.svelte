@@ -5,7 +5,7 @@
 
 <label class="switch-container">
   <div class="switch">
-    <input type="checkbox" bind:checked={value} />
+    <input type="checkbox" on:change bind:checked={value} />
     <span class="slider" />
   </div>
   {label}

@@ -23,6 +23,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
           pictureFile: true,
           pictureFileDark: true,
           description: true,
+          ...(me ? { roomIsOpen: true } : {}), //peut être faut le tej ???
           type: true,
           studentAssociation: {
             uid: true,
