@@ -7,6 +7,10 @@ declare namespace NodeJS {
      */
     DATABASE_URL: string;
     /**
+     * Redis connection string.
+     */
+    REDIS_URL: string;
+    /**
      * Public frontend origin.
      *
      * @example

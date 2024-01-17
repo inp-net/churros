@@ -23,6 +23,9 @@
       element.closest('form')?.requestSubmit();
     }
   }
+
+  $: valueLength = value.length;
+  export let maxlength: number | undefined = undefined;
 </script>
 
 {#if rich && label}
@@ -37,6 +40,7 @@
     on:input
     cols="30"
     rows="10"
+    {maxlength}
     {...$$restProps}
     placeholder={placeholder + (submitShortcut ? '\nCtrl-Entrer pour envoyer' : '')}
   />
@@ -47,6 +51,11 @@
       }}
       icon={IconHelp}>Aide sur markdown</ButtonInk
     >
+  {/if}
+  {#if maxlength}
+    <div class="count">
+      {valueLength} / {maxlength}
+    </div>
   {/if}
 </InputField>
 
@@ -66,5 +75,11 @@
     color: var(--hover-text);
     background: var(--hover-bg);
     border-color: var(--hover-border);
+  }
+
+  .count {
+    float: right;
+    padding: 0 0.6667rem;
+    color: var(--muted);
   }
 </style>

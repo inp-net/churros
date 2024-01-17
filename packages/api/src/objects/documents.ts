@@ -1,17 +1,16 @@
+import { builder, prisma } from '#lib';
+import { DocumentType as DocumentTypePrisma, type Document } from '@prisma/client';
 import dichotomid from 'dichotomid';
-import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
-import { toHtml } from '../services/markdown.js';
-import { CommentType } from './comments.js';
-import { DateTimeScalar, FileScalar } from './scalars.js';
-import { type Document, DocumentType as DocumentTypePrisma } from '@prisma/client';
-import slug from 'slug';
 import { GraphQLError } from 'graphql';
-import { basename, dirname, join, relative } from 'node:path';
 import { mkdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { rename, rm, rmdir } from 'node:fs/promises';
+import { basename, dirname, join, relative } from 'node:path';
+import slug from 'slug';
+import { fullTextSearch, type SearchResult } from '../search.js';
+import { toHtml } from '../services/markdown.js';
+import { CommentType } from './comments.js';
 import { log } from './logs.js';
-import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
+import { DateTimeScalar, FileScalar } from './scalars.js';
 
 export const DocumentEnumType = builder.enumType(DocumentTypePrisma, {
   name: 'DocumentType',
@@ -164,25 +163,19 @@ builder.queryField('documentsOfSubject', (t) =>
   }),
 );
 
-export class DocumentSearch {
-  document!: Document;
-  id!: string;
-  rank!: number | null;
-  similarity!: number;
-}
-
-export const DocumentSearchType = builder.objectType(DocumentSearch, {
-  name: 'DocumentSearch',
-  fields: (t) => ({
-    document: t.prismaField({
-      type: 'Document',
-      resolve: (_, { document }) => document,
+export const DocumentSearchType = builder
+  .objectRef<SearchResult<{ document: Document }>>('DocumentSearchResult')
+  .implement({
+    fields: (t) => ({
+      document: t.prismaField({
+        type: 'Document',
+        resolve: (_, { document }) => document,
+      }),
+      id: t.exposeID('id'),
+      rank: t.expose('rank', { type: 'Int', nullable: true }),
+      similarity: t.exposeFloat('similarity'),
     }),
-    id: t.exposeID('id'),
-    rank: t.expose('rank', { type: 'Int', nullable: true }),
-    similarity: t.exposeFloat('similarity'),
-  }),
-});
+  });
 
 builder.queryField('searchDocuments', (t) =>
   t.field({
@@ -195,31 +188,28 @@ builder.queryField('searchDocuments', (t) =>
       q: t.arg.string(),
     },
     async resolve(_, { majorUid, yearTier, forApprentices, q }) {
-      const matches = await fullTextSearch('Document', q, {
+      return fullTextSearch('Document', q, {
+        property: 'document',
+        resolveObjects: (ids) =>
+          prisma.document.findMany({
+            where: {
+              subject: {
+                // eslint-disable-next-line unicorn/no-null
+                OR: [{ yearTier }, { yearTier: null }],
+                forApprentices,
+                majors: {
+                  some: {
+                    uid: majorUid,
+                  },
+                },
+              },
+              id: { in: ids },
+            },
+          }),
         fuzzy: ['title'],
         highlight: ['title', 'description'],
+        htmlHighlights: ['description'],
       });
-      const documents = await prisma.document.findMany({
-        where: {
-          subject: {
-            // eslint-disable-next-line unicorn/no-null
-            OR: [{ yearTier }, { yearTier: null }],
-            forApprentices,
-            majors: {
-              some: {
-                uid: majorUid,
-              },
-            },
-          },
-          id: { in: matches.map(({ id }) => id) },
-        },
-      });
-      return highlightProperties(sortWithMatches(documents, matches), matches).map(
-        ({ object, ...match }) => ({
-          document: object,
-          ...match,
-        }),
-      );
     },
   }),
 );

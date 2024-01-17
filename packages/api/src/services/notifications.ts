@@ -1,23 +1,23 @@
+import { prisma } from '#lib';
+import type { MaybePromise } from '@pothos/core';
 import {
-  type Group,
-  type NotificationSubscription,
-  type Ticket,
-  type User,
+  NotificationChannel,
+  Prisma,
   Visibility,
+  type Group,
   type GroupMember,
   type Major,
+  type NotificationSubscription,
   type School,
-  NotificationChannel,
+  type Ticket,
+  type User,
 } from '@prisma/client';
-import { prisma } from '../prisma.js';
-import webpush, { WebPushError } from 'web-push';
-import { Cron } from 'croner';
-import type { MaybePromise } from '@pothos/core';
-import { Prisma } from '@prisma/client';
-import { format, subMinutes } from 'date-fns';
-import { fullName } from '../objects/users.js';
 import { mappedGetAncestors } from 'arborist';
+import { Cron } from 'croner';
+import { format, subMinutes } from 'date-fns';
 import { nanoid } from 'nanoid';
+import webpush, { WebPushError } from 'web-push';
+import { fullName } from '../objects/users.js';
 
 if (
   process.env.PUBLIC_CONTACT_EMAIL &&
@@ -52,17 +52,24 @@ export type PushNotification = {
   };
 };
 
-export async function scheduleNewArticleNotification({
-  id,
-  publishedAt,
-  eager,
-  notifiedAt,
-}: {
-  id: string;
-  publishedAt: Date;
-  notifiedAt: Date | null;
-  eager: boolean;
-}): Promise<Cron | boolean> {
+export async function scheduleNewArticleNotification(
+  {
+    id,
+    publishedAt,
+    notifiedAt,
+  }: {
+    id: string;
+    publishedAt: Date;
+    notifiedAt: Date | null;
+  },
+  {
+    eager,
+    dryRun = false,
+  }: {
+    eager: boolean;
+    dryRun?: boolean;
+  },
+): Promise<Cron | boolean> {
   if (notifiedAt) return false;
 
   return scheduleNotification(
@@ -121,6 +128,9 @@ export async function scheduleNewArticleNotification({
           goto: `/posts/${article.group.uid}/${article.uid}`,
         },
         async afterSent() {
+          console.info(
+            `[${new Date().toISOString()}] Setting notifiedAt for article ${article.id}`,
+          );
           await prisma.article.update({
             where: { id: article.id },
             data: {
@@ -133,19 +143,23 @@ export async function scheduleNewArticleNotification({
     {
       at: publishedAt,
       eager,
+      dryRun,
     },
   );
 }
 
-export async function scheduleShotgunNotifications({
-  id,
-  tickets,
-  notifiedAt,
-}: {
-  id: string;
-  tickets: Ticket[];
-  notifiedAt: Date | null;
-}): Promise<[Cron | boolean, Cron | boolean] | undefined> {
+export async function scheduleShotgunNotifications(
+  {
+    id,
+    tickets,
+    notifiedAt,
+  }: {
+    id: string;
+    tickets: Ticket[];
+    notifiedAt: Date | null;
+  },
+  { dryRun = false }: { dryRun: boolean },
+): Promise<[Cron | boolean, Cron | boolean] | undefined> {
   if (tickets.length === 0) return;
   if (notifiedAt) return;
   const soonDate = (date: Date) => subMinutes(date, 10);
@@ -250,17 +264,6 @@ export async function scheduleShotgunNotifications({
         if (registration) return;
       }
 
-      const setNotifiedAt = async () => {
-        const { id } = await prisma.event.update({
-          where: { id: event.id },
-          data: {
-            notifiedAt: new Date(),
-          },
-        });
-
-        console.info(`Set notifiedAt to ${id}`);
-      };
-
       const notification: PushNotification = {
         title: '',
         body: '',
@@ -302,7 +305,15 @@ export async function scheduleShotgunNotifications({
 
       return {
         ...notification,
-        afterSent: setNotifiedAt,
+        async afterSent() {
+          console.info(`[${new Date()}] Set notifiedAt on ${event.id}`);
+          await prisma.event.update({
+            where: { id: event.id },
+            data: {
+              notifiedAt: new Date(),
+            },
+          });
+        },
       };
     };
 
@@ -310,10 +321,12 @@ export async function scheduleShotgunNotifications({
     await scheduleNotification(makeNotification('Opening'), {
       at: soonDate(opensAt),
       eager: true,
+      dryRun,
     }),
     await scheduleNotification(makeNotification('Closing'), {
       at: soonDate(closesAt),
       eager: true,
+      dryRun,
     }),
   ];
 }
@@ -327,6 +340,7 @@ export async function scheduleShotgunNotifications({
  * @param options.at Date at which the notification should be sent
  * @param options.eager If true, the notification will be sent immediately if `options.at` is in the
  *   past
+ * @param option.dryRun print to the console but don't send anything
  * @returns The created job, false if no notification was sent and true if notifications were sent
  *   eagerly
  */
@@ -340,9 +354,11 @@ export async function scheduleNotification(
   {
     at,
     eager = false,
+    dryRun = false,
   }: {
     at: Date;
     eager?: boolean;
+    dryRun?: boolean;
   },
 ): Promise<Cron | boolean> {
   const id = nanoid();
@@ -365,8 +381,26 @@ export async function scheduleNotification(
       `[cron ${id}] Sending notification immediately (time is ${at.toISOString()} and now is ${new Date().toISOString()})`,
     );
     // Start the promise in the background, don't wait for all notifications to be sent out, it takes approx 30 secondes in a real scenario to notify all users for e.g. a public article
-    void notifyInBulk(id, users, notification);
+    if (dryRun) {
+      console.info(
+        `[cron ${id}] (dry run) would schedule ${JSON.stringify(notification)} to ${
+          users.length
+        } users (${users.map(({ uid }) => `@${uid}`).join(' ')})`,
+      );
+      return false;
+    }
+
+    await notifyInBulk(id, users, notification);
     return true;
+  }
+
+  if (dryRun) {
+    console.info(
+      `[cron ${id}] (dry run) would schedule at ${at.toISOString()} <${JSON.stringify(
+        notification,
+      )}> to ${users.length} users (${users.map(({ uid }) => `@${uid}`).join(' ')})`,
+    );
+    return false;
   }
 
   console.info(`[cron ${id}] Starting cron job for ${at.toISOString()}`);
@@ -395,15 +429,19 @@ export async function scheduleNotification(
 export async function notifyInBulk<U extends User>(
   jobId: string,
   users: U[],
-  notification: (user: U) => MaybePromise<PushNotification | undefined>,
+  notification: (
+    user: U,
+  ) => MaybePromise<(PushNotification & { afterSent: () => Promise<void> }) | undefined>,
 ) {
   for (const user of users) {
     const notificationToSend = await notification(user);
     if (notificationToSend) {
+      const { afterSent, ...notificationData } = notificationToSend;
       console.info(
-        `[cron ${jobId} @ ${user.uid}] Sending notification ${JSON.stringify(notificationToSend)}`,
+        `[cron ${jobId} @ ${user.uid}] Sending notification ${JSON.stringify(notificationData)}`,
       );
-      await notify([user], notificationToSend);
+      await notify([user], notificationData);
+      await afterSent();
     }
   }
 }
@@ -543,7 +581,7 @@ export function canSendNotificationToUser(
   );
 }
 
-export async function rescheduleNotifications() {
+export async function rescheduleNotifications({ dryRun = false }) {
   const unnotifiedEvents = await prisma.event.findMany({
     // eslint-disable-next-line unicorn/no-null
     where: { notifiedAt: null },
@@ -560,9 +598,9 @@ export async function rescheduleNotifications() {
   );
 
   await Promise.all([
-    ...unnotifiedEvents.map(async (event) => scheduleShotgunNotifications(event)),
+    ...unnotifiedEvents.map(async (event) => scheduleShotgunNotifications(event, { dryRun })),
     ...unnotifiedArticles.map(async (article) =>
-      scheduleNewArticleNotification({ ...article, eager: true }),
+      scheduleNewArticleNotification(article, { eager: true, dryRun }),
     ),
   ]);
 }

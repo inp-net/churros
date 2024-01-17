@@ -1,0 +1,15 @@
+diff --git a/package.json b/package.json
+index df8ac532dc234005c4b6a9df89bb58e59e148955..64ea7f71f5be5889e008952aa7d9891b11d84aba 100644
+--- a/package.json
++++ b/package.json
+@@ -23,10 +23,6 @@
+     "types": "tsc index.ts --declaration --downlevelIteration --emitDeclarationOnly --esModuleInterop --outDir dist/types",
+     "gh": "node publish.js"
+   },
+-  "exports": {
+-    "require": "./dist/qr-code-generator-lib.cjs",
+-    "default": "./dist/qr-code-generator-lib.mjs"
+-  },
+   "files": [
+     "dist"
+   ],

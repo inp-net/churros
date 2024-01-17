@@ -22,6 +22,7 @@ export const sessionUserQuery = () =>
     yearTier: true,
     apprentice: true,
     graduationYear: true,
+    latestVersionSeenInChangelog: true,
     groups: {
       group: { uid: true, id: true, name: true, pictureFile: true, pictureFileDark: true },
       title: true,

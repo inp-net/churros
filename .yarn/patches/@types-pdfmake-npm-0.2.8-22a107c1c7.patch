@@ -1,0 +1,20 @@
+diff --git a/package.json b/package.json
+index c24e3bdaa029163e7c8efba6ab88f4f37eaa31e1..f04690b45d2cc8ee6f412161e37b92126941fd98 100644
+--- a/package.json
++++ b/package.json
+@@ -53,6 +53,14 @@
+         "@types/node": "*",
+         "@types/pdfkit": "*"
+     },
++    "exports": {
++        ".": {
++            "types": "./index.d.ts"
++        },
++        "./interfaces": {
++            "types": "./interfaces.d.ts"
++        }
++    },
+     "typesPublisherContentHash": "4a4d89ccdd862d40e7ccd3fe7a3d452d3d9aa54709d9931fb0d9288468f5c070",
+     "typeScriptVersion": "4.5"
+ }
+\ No newline at end of file

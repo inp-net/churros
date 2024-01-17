@@ -1,9 +1,19 @@
 {
-  "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
+  "extends": [
+    "@tsconfig/esm/tsconfig",
+    "@tsconfig/node18/tsconfig",
+    "@tsconfig/strictest/tsconfig"
+  ],
   "compilerOptions": {
     // Waiting for https://github.com/prisma/prisma/issues/10894 to be fixed
     "exactOptionalPropertyTypes": false,
+    "ignoreDeprecations": "5.0",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": "./build",
-    "ignoreDeprecations": "5.0"
+    "rootDir": ".",
+    "paths": {
+      "#lib": ["./src/lib/index.js"]
+    }
   }
 }

@@ -1,6 +1,6 @@
+import { prisma } from '#lib';
 import { PayPalTransactionStatus } from '@prisma/client';
 import { log } from '../objects/logs.js';
-import { prisma } from '../prisma.js';
 
 const { PUBLIC_PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PUBLIC_PAYPAL_API_BASE_URL } = process.env;
 
@@ -9,7 +9,7 @@ async function accessToken() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${Buffer.from(
+      'Authorization': `Basic ${Buffer.from(
         `${PUBLIC_PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`,
       ).toString('base64')}`,
     },
@@ -36,7 +36,7 @@ async function initiatePaypalPayment(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${await accessToken()}`,
+      'Authorization': `Bearer ${await accessToken()}`,
     },
     body: JSON.stringify({
       intent: 'CAPTURE',
@@ -75,7 +75,7 @@ export async function finishPaypalPayment(orderId: string) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${await accessToken()}`,
+        'Authorization': `Bearer ${await accessToken()}`,
       },
     },
   );
@@ -124,7 +124,7 @@ export async function checkPaypalPayment(
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${await accessToken()}`,
+        'Authorization': `Bearer ${await accessToken()}`,
       },
     },
   );

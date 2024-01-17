@@ -1,18 +1,16 @@
+import { builder, prisma } from '#lib';
 import { addDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { phone as parsePhoneNumber } from 'phone';
-import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
 import { yearTier } from '../date.js';
 import { FamilyTree, getFamilyTree } from '../godchildren-tree.js';
 import { updatePicture } from '../pictures.js';
-import { prisma } from '../prisma.js';
 import { markAsContributor, queryLdapUser } from '../services/ldap.js';
 import { toHtml } from '../services/markdown.js';
 import { createUid } from '../services/registration.js';
-import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { ContributionOptionType } from './contribution-options.js';
 import { requestEmailChange } from './email-changes.js';
 import { LinkInput } from './links.js';
@@ -20,7 +18,6 @@ import { log } from './logs.js';
 import { NotificationChannel } from './notifications.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
 import { StudentAssociationType } from './student-associations.js';
-import type { User } from '@prisma/client';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -69,6 +66,7 @@ export const UserType = builder.prismaNode('User', {
         return !majorId;
       },
     }),
+    latestVersionSeenInChangelog: t.exposeString('latestVersionSeenInChangelog'),
 
     // Profile details
     address: t.exposeString('address', { authScopes: { student: true, $granted: 'me' } }),
@@ -199,43 +197,19 @@ export const UserType = builder.prismaNode('User', {
   }),
 });
 
-export class UserSearchResult {
-  user!: User;
-  id!: string;
-  similarity!: number;
-  rank!: number | null;
-}
-
-export const UserSearchResultType = builder.objectType(UserSearchResult, {
-  name: 'UserSearchResult',
-  fields: (t) => ({
-    user: t.prismaField({
-      type: 'User',
-      resolve: (_, { user }) => user,
-    }),
-    id: t.exposeID('id'),
-    similarity: t.exposeFloat('similarity'),
-    rank: t.exposeFloat('rank', { nullable: true }),
-  }),
-});
-
 /** Returns the current user. */
 builder.queryField('me', (t) =>
-  // We use `prismaField` instead of `field` to leverage the nesting
-  // mechanism of the resolver
-  t.prismaField({
+  t.withAuth({ loggedIn: true }).prismaField({
     type: UserType,
-    authScopes: { loggedIn: true },
-    resolve: (_query, _, {}, { user }) => user!,
+    resolve: (_query, _, {}, { user }) => user,
   }),
 );
 
 /** Gets a user from its id. */
 builder.queryField('user', (t) =>
-  t.prismaField({
+  t.withAuth({ loggedIn: true }).prismaField({
     type: UserType,
     args: { uid: t.arg.string() },
-    authScopes: { loggedIn: true },
     async resolve(query, _, { uid }) {
       const user = await prisma.user.findUnique({ ...query, where: { uid } });
       if (!user) throw new GraphQLError('Utilisateur·ice introuvable');
@@ -258,7 +232,7 @@ builder.queryField('userByEmail', (t) =>
 );
 
 builder.queryField('allUsers', (t) =>
-  t.prismaConnection({
+  t.withAuth({ student: true }).prismaConnection({
     type: UserType,
     async resolve(query) {
       return prisma.user.findMany({
@@ -270,40 +244,15 @@ builder.queryField('allUsers', (t) =>
   }),
 );
 
-/** Searches for user on all text fields. */
-builder.queryField('searchUsers', (t) =>
-  t.field({
-    type: [UserSearchResultType],
-    args: { q: t.arg.string(), similarityCutoff: t.arg.float({ required: false }) },
-    authScopes: { student: true },
-    async resolve(_, { q, similarityCutoff }) {
-      const matches = await fullTextSearch('User', q, {
-        similarityCutoff: similarityCutoff ?? 0.08,
-        fuzzy: ['firstName', 'lastName', 'nickname', 'email', 'uid'],
-        highlight: ['description'],
-      });
-
-      const users = await prisma.user.findMany({
-        where: { id: { in: matches.map(({ id }) => id) } },
-      });
-
-      return sortWithMatches(highlightProperties(users, matches, ['description']), matches).map(
-        ({ object, ...match }) => ({ user: object, ...match }),
-      );
-    },
-  }),
-);
-
 /** Gets the people that were born today */
 builder.queryField('birthdays', (t) =>
-  t.prismaField({
+  t.withAuth({ student: true }).prismaField({
     type: [UserType],
     args: {
       now: t.arg({ type: DateTimeScalar, required: false }),
       activeOnly: t.arg({ type: 'Boolean', required: false }),
       width: t.arg({ type: 'Int', required: false }),
     },
-    authScopes: { student: true },
     async resolve(query, _, { now, activeOnly, width }, { user }) {
       now = now ?? new Date();
       activeOnly = activeOnly ?? true;
@@ -334,22 +283,19 @@ builder.queryField('birthdays', (t) =>
         ...query,
         where: {
           uid: { in: usersNonflat.flat().map((u) => u.uid) },
-          ...(user
-            ? {
-                major: {
-                  schools: {
-                    some: {
-                      uid: {
-                        in: user.major?.schools.map((s) => s.uid) ?? [],
-                        not: 'inp',
-                      },
-                    },
-                  },
+          major: {
+            schools: {
+              some: {
+                uid: {
+                  in: user.major?.schools.map((s) => s.uid) ?? [],
+                  not: 'inp',
                 },
-              }
-            : {}),
+              },
+            },
+          },
         },
       });
+
       if (activeOnly)
         return users.filter(({ graduationYear }) => [1, 2, 3].includes(yearTier(graduationYear)));
       return users;
@@ -359,198 +305,191 @@ builder.queryField('birthdays', (t) =>
 
 /** Updates a user. */
 builder.mutationField('updateUser', (t) =>
-  t.prismaField({
-    type: UserType,
-    errors: {},
-    args: {
-      uid: t.arg.string(),
-      firstName: t.arg.string(),
-      lastName: t.arg.string(),
-      majorId: t.arg.id({ required: false }),
-      minorId: t.arg.id({ required: false }),
-      graduationYear: t.arg.int({ required: false }),
-      email: t.arg.string(),
-      otherEmails: t.arg.stringList(),
-      birthday: t.arg({ type: DateTimeScalar, required: false }),
-      address: t.arg.string({ validate: { maxLength: 255 } }),
-      phone: t.arg.string({ validate: { maxLength: 255 } }),
-      nickname: t.arg.string({ validate: { maxLength: 255 } }),
-      description: t.arg.string({ validate: { maxLength: 255 } }),
-      links: t.arg({ type: [LinkInput] }),
-      cededImageRightsToTVn7: t.arg.boolean(),
-      apprentice: t.arg.boolean(),
-      godparentUid: t.arg.string({
-        required: false,
-        description:
-          'An empty string removes the godparent. Passing null (or undefined) does not update the godparent. An uid sets the godparent to that uid.',
-      }),
-      contributesWith: t.arg({ type: ['ID'], required: false }),
-    },
-    authScopes(_, { uid }, { user }) {
-      const result = Boolean(user?.canEditUsers || uid === user?.uid);
-      if (!result) {
-        console.error(
-          `Cannot edit profile: ${uid} =?= ${user?.uid ?? '<none>'} OR ${JSON.stringify(
-            user?.canEditUsers,
-          )}`,
-        );
-      }
-
-      return result;
-    },
-    async resolve(
-      query,
-      _,
-      {
-        uid,
-        majorId,
-        minorId,
-        email,
-        otherEmails,
-        graduationYear,
-        nickname,
-        description,
-        links,
-        address,
-        phone,
-        birthday,
-        godparentUid,
-        contributesWith,
-        cededImageRightsToTVn7,
-        apprentice,
-        firstName,
-        lastName,
+  t
+    .withAuth({
+      canEditUsers: true,
+      $granted: 'me',
+    })
+    .prismaField({
+      type: UserType,
+      errors: {},
+      args: {
+        uid: t.arg.string(),
+        firstName: t.arg.string(),
+        lastName: t.arg.string(),
+        majorId: t.arg.id({ required: false }),
+        minorId: t.arg.id({ required: false }),
+        graduationYear: t.arg.int({ required: false }),
+        email: t.arg.string(),
+        otherEmails: t.arg.stringList(),
+        birthday: t.arg({ type: DateTimeScalar, required: false }),
+        address: t.arg.string({ validate: { maxLength: 255 } }),
+        phone: t.arg.string({ validate: { maxLength: 255 } }),
+        nickname: t.arg.string({ validate: { maxLength: 255 } }),
+        description: t.arg.string({ validate: { maxLength: 10_000 } }),
+        links: t.arg({ type: [LinkInput] }),
+        cededImageRightsToTVn7: t.arg.boolean(),
+        apprentice: t.arg.boolean(),
+        godparentUid: t.arg.string({
+          required: false,
+          description:
+            'An empty string removes the godparent. Passing null (or undefined) does not update the godparent. An uid sets the godparent to that uid.',
+        }),
+        contributesWith: t.arg({ type: ['ID'], required: false }),
       },
-      { user },
-    ) {
-      if (!user) throw new GraphQLError('Not logged in');
-
-      const targetUser = await prisma.user.findUniqueOrThrow({ where: { uid } });
-
-      if (phone) {
-        const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
-        if (isValid) {
-          phone = phoneNumber;
-        } else {
-          const { isValid, phoneNumber } = parsePhoneNumber(phone);
-          if (!isValid) throw new Error('Numéro de téléphone invalide');
-          phone = phoneNumber;
-        }
-      }
-
-      const {
-        email: oldEmail,
-        graduationYear: oldGraduationYear,
-        contributions: oldContributions,
-      } = await prisma.user.findUniqueOrThrow({
-        where: { uid },
-        include: { contributions: true },
-      });
-
-      const changingEmail = email !== oldEmail;
-      const changingGraduationYear = graduationYear !== oldGraduationYear;
-      let changingContributesWith = false;
-      if (contributesWith) {
-        changingContributesWith =
-          JSON.stringify(
-            oldContributions
-              .filter((c) => c.paid)
-              .map(({ optionId }) => optionId)
-              .sort(),
-          ) !== JSON.stringify(contributesWith.sort());
-      }
-
-      if (changingEmail) {
-        // Check if new email is available
-        const existingUser = await prisma.user.findUnique({ where: { email } });
-        if (existingUser) throw new GraphQLError('Cet e-mail est déjà utilisé');
-        // Delete all pending password resets for user
-        await prisma.passwordReset.deleteMany({
-          where: {
-            user: {
-              email: { in: [email, oldEmail] },
-            },
-          },
-        });
-        // Send a validation email
-        await requestEmailChange(email, targetUser.id);
-      }
-
-      if (!(user.canEditUsers || user.admin) && changingGraduationYear)
-        throw new GraphQLError('Not authorized to change graduation year');
-
-      purgeUserSessions(uid);
-      if (changingContributesWith && contributesWith && (user.canEditUsers || user.admin)) {
-        await prisma.contribution.deleteMany({
-          where: {
-            user: { uid },
-            option: {
-              id: {
-                notIn: contributesWith,
-              },
-            },
-          },
-        });
-        for (const optionId of contributesWith) {
-          await prisma.contribution.upsert({
-            where: { optionId_userId: { optionId, userId: targetUser.id } },
-            update: {
-              paid: true,
-            },
-            create: {
-              option: { connect: { id: optionId } },
-              user: { connect: { id: targetUser.id } },
-              paid: true,
-            },
-          });
-        }
-      }
-
-      const userUpdated = await prisma.user.update({
-        ...query,
-        where: { uid },
-        data: {
-          major: majorId ? { connect: { id: majorId } } : { disconnect: true },
-          minor: minorId ? { connect: { id: minorId } } : { disconnect: true },
-          graduationYear: graduationYear ?? undefined,
+      grantScopes: (_, { uid }, { user }) => (uid === user?.uid ? ['me'] : []),
+      async resolve(
+        query,
+        _,
+        {
+          uid,
+          majorId,
+          minorId,
+          email,
+          otherEmails,
+          graduationYear,
           nickname,
           description,
+          links,
           address,
           phone,
           birthday,
-          firstName: user.canEditUsers || user.admin ? firstName : targetUser.firstName,
-          lastName: user.canEditUsers || user.admin ? lastName : targetUser.lastName,
+          godparentUid,
+          contributesWith,
           cededImageRightsToTVn7,
           apprentice,
-          links: { deleteMany: {}, createMany: { data: links } },
-          otherEmails: { set: otherEmails.filter(Boolean) },
-          godparent:
-            godparentUid === ''
-              ? { disconnect: true }
-              : godparentUid
-                ? { connect: { uid: godparentUid } }
-                : {},
+          firstName,
+          lastName,
         },
-      });
+        { user },
+      ) {
+        if (!user) throw new GraphQLError('Connexion requise');
+        const targetUser = await prisma.user.findUniqueOrThrow({ where: { uid } });
 
-      try {
-        await markAsContributor(userUpdated.uid);
-      } catch (error) {
-        await log('ldap-sync', 'mark as contributor', { err: error }, userUpdated.uid);
-      }
+        if (phone) {
+          const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
+          if (isValid) {
+            phone = phoneNumber;
+          } else {
+            const { isValid, phoneNumber } = parsePhoneNumber(phone);
+            if (!isValid) throw new Error('Numéro de téléphone invalide');
+            phone = phoneNumber;
+          }
+        }
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'user',
-          action: 'update',
-          target: userUpdated.id,
-          message: `Updated user ${userUpdated.uid}`,
-          user: { connect: { id: user.id } },
-        },
-      });
-      return userUpdated;
-    },
-  }),
+        const {
+          email: oldEmail,
+          graduationYear: oldGraduationYear,
+          contributions: oldContributions,
+        } = await prisma.user.findUniqueOrThrow({
+          where: { uid },
+          include: { contributions: true },
+        });
+
+        const changingEmail = email !== oldEmail;
+        const changingGraduationYear = graduationYear !== oldGraduationYear;
+        let changingContributesWith = false;
+        if (contributesWith) {
+          changingContributesWith =
+            JSON.stringify(
+              oldContributions
+                .filter((c) => c.paid)
+                .map(({ optionId }) => optionId)
+                .sort(),
+            ) !== JSON.stringify(contributesWith.sort());
+        }
+
+        if (changingEmail) {
+          // Check if new email is available
+          const existingUser = await prisma.user.findUnique({ where: { email } });
+          if (existingUser) throw new GraphQLError('Cet e-mail est déjà utilisé');
+          // Delete all pending password resets for user
+          await prisma.passwordReset.deleteMany({
+            where: {
+              user: {
+                email: { in: [email, oldEmail] },
+              },
+            },
+          });
+          // Send a validation email
+          await requestEmailChange(email, targetUser.id);
+        }
+
+        if (!(user.canEditUsers || user.admin) && changingGraduationYear)
+          throw new GraphQLError('Not authorized to change graduation year');
+
+        purgeUserSessions(uid);
+        if (changingContributesWith && contributesWith && (user.canEditUsers || user.admin)) {
+          await prisma.contribution.deleteMany({
+            where: {
+              user: { uid },
+              option: {
+                id: {
+                  notIn: contributesWith,
+                },
+              },
+            },
+          });
+          for (const optionId of contributesWith) {
+            await prisma.contribution.upsert({
+              where: { optionId_userId: { optionId, userId: targetUser.id } },
+              update: {
+                paid: true,
+              },
+              create: {
+                option: { connect: { id: optionId } },
+                user: { connect: { id: targetUser.id } },
+                paid: true,
+              },
+            });
+          }
+        }
+
+        const userUpdated = await prisma.user.update({
+          ...query,
+          where: { uid },
+          data: {
+            major: majorId ? { connect: { id: majorId } } : { disconnect: true },
+            minor: minorId ? { connect: { id: minorId } } : { disconnect: true },
+            graduationYear: graduationYear ?? undefined,
+            nickname,
+            description,
+            address,
+            phone,
+            birthday,
+            firstName: user.canEditUsers || user.admin ? firstName : targetUser.firstName,
+            lastName: user.canEditUsers || user.admin ? lastName : targetUser.lastName,
+            cededImageRightsToTVn7,
+            apprentice,
+            links: { deleteMany: {}, createMany: { data: links } },
+            otherEmails: { set: otherEmails.filter(Boolean) },
+            godparent:
+              godparentUid === ''
+                ? { disconnect: true }
+                : godparentUid
+                  ? { connect: { uid: godparentUid } }
+                  : {},
+          },
+        });
+
+        try {
+          await markAsContributor(userUpdated.uid);
+        } catch (error) {
+          await log('ldap-sync', 'mark as contributor', { err: error }, userUpdated.uid);
+        }
+
+        await prisma.logEntry.create({
+          data: {
+            area: 'user',
+            action: 'update',
+            target: userUpdated.id,
+            message: `Updated user ${userUpdated.uid}`,
+            user: { connect: { id: user.id } },
+          },
+        });
+        return userUpdated;
+      },
+    }),
 );
 
 builder.mutationField('syncUserLdap', (t) =>

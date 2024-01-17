@@ -6,10 +6,11 @@
  * @module
  */
 
-import { CredentialType, Visibility, GroupType, type Prisma, LogoSourceType } from '@prisma/client';
+import { prisma } from '#lib';
+import { CredentialType, GroupType, LogoSourceType, Visibility, type Prisma } from '@prisma/client';
 import { hash } from 'argon2';
+import { exit } from 'node:process';
 import slug from 'slug';
-import { prisma } from './prisma.js';
 import { createUid } from './services/registration.js';
 
 function* range(start: number, end: number): Generator<number> {
@@ -776,3 +777,46 @@ await prisma.barWeek.create({
     },
   },
 });
+
+const alamaternitei = await prisma.user.findUniqueOrThrow({
+  where: { uid: 'alamaternitei' },
+});
+
+const ski = await prisma.group.findUniqueOrThrow({
+  where: { uid: 'ski' },
+});
+
+await prisma.groupMember.upsert({
+  where: {
+    groupId_memberId: {
+      groupId: ski.id,
+      memberId: alamaternitei.id,
+    },
+  },
+  update: {
+    vicePresident: true,
+  },
+  create: {
+    vicePresident: true,
+    title: 'Membre',
+    group: { connect: { id: ski.id } },
+    member: { connect: { id: alamaternitei.id } },
+  },
+});
+
+await prisma.thirdPartyApp.create({
+  data: {
+    name: 'TVn7',
+    description: 'TVn7',
+    secret: await hash('chipichipi'),
+    id: 'app:chapachapa',
+    active: true,
+    website: 'https://wiki.inpt.fr',
+    allowedRedirectUris: {
+      set: ['https://wiki.inpt.fr', 'http://localhost:5000/login'],
+    },
+    owner: { connect: { id: ski.id } },
+  },
+});
+
+exit(0);

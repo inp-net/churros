@@ -1,5 +1,4 @@
-import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
+import { builder, prisma } from '#lib';
 import { log } from './logs.js';
 import { DateTimeScalar } from './scalars.js';
 

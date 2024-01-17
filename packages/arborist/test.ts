@@ -4,8 +4,8 @@ import {
   createForest,
   getAncestors,
   getDescendants,
-  mappedGetAncestors,
   hasCycle,
+  mappedGetAncestors,
 } from './index.js';
 
 await describe('arborist', async () => {

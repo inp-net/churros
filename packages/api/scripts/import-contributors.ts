@@ -1,4 +1,4 @@
-import { LydiaTransaction, PrismaClient } from '@prisma/client';
+import { PrismaClient, type LydiaTransaction } from '@prisma/client';
 import { readFileSync } from 'fs';
 
 const p = new PrismaClient();

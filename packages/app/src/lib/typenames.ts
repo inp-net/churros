@@ -1,4 +1,4 @@
-/* @generated from schema by /packages/api/build/scripts/update-id-prefix-to-typename-map.js */
+/* @generated from schema by /packages/api/scripts/update-id-prefix-to-typename-map.ts */
 const ID_PREFIXES_TO_TYPENAMES = {
   u: 'User',
   godparentreq: 'GodparentRequest',
@@ -11,6 +11,8 @@ const ID_PREFIXES_TO_TYPENAMES = {
   minor: 'Minor',
   school: 'School',
   credential: 'Credential',
+  token: 'ThirdPartyCredential',
+  app: 'ThirdPartyApp',
   ae: 'StudentAssociation',
   contribution: 'Contribution',
   contributionoption: 'ContributionOption',
@@ -33,6 +35,8 @@ const ID_PREFIXES_TO_TYPENAMES = {
   doc: 'Document',
   comment: 'Comment',
   reac: 'Reaction',
+  promocode: 'PromotionCode',
+  promo: 'Promotion',
 } as const;
 /* end @generated from schema */
 

@@ -1,9 +1,8 @@
-import { createTransport } from 'nodemailer';
-import { prisma } from '../prisma.js';
-import { ID_PREFIXES_TO_TYPENAMES, builder } from '../builder.js';
+import { ID_PREFIXES_TO_TYPENAMES, builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
-import { DateTimeScalar } from './scalars.js';
+import { createTransport } from 'nodemailer';
 import { purgeUserSessions } from '../context.js';
+import { DateTimeScalar } from './scalars.js';
 
 const TYPENAMES_TO_ID_PREFIX = Object.fromEntries(
   Object.entries(ID_PREFIXES_TO_TYPENAMES).map(([k, v]) => [v, k]),
@@ -21,8 +20,8 @@ export const EmailChangeType = builder.prismaObject('EmailChange', {
   }),
 });
 
-const transporter = createTransport(process.env.SMTP_URL);
 export async function requestEmailChange(email: string, userId: string): Promise<void> {
+  const transporter = createTransport(process.env.SMTP_URL);
   const request = await prisma.emailChange.create({
     data: {
       user: { connect: { id: userId } },

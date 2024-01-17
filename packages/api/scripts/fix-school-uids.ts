@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { readFileSync } from 'node:fs';
-import type { LDAPTypes } from './ldap-types';
+import type { LDAPTypes } from './ldap-types.js';
 
 const p = new PrismaClient();
 

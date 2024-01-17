@@ -1,6 +1,6 @@
+import dotenv from 'dotenv';
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import dotenv from 'dotenv';
 
 const here = path.dirname(import.meta.url.replace(/^file:/, ''));
 
