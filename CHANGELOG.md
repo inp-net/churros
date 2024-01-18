@@ -13,6 +13,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [1.43.3] - 2024-01-17
 
+### Sécurité
+
+- Il n'est plus possible de spammer l'API, il y a maintenant du _rate-limiting_
+
 ### Corrections
 
 - Tenter d'imprimmer en .pdf un évènement avec des emojis dans le titre ne fais plus planter l'application (#776)
