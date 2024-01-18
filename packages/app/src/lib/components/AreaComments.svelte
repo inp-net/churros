@@ -30,7 +30,6 @@
     comment: { body: string; inReplyToId: string } | undefined = undefined,
   ) {
     const { upsertComment } = await $zeus.mutate({
-      groupRoomIsOpen: [{ groupUid: 'net7-n7' }, true],
       upsertComment: [
         {
           ...connection,

@@ -136,14 +136,15 @@
   };
 
   const updateRoom = async () => {
-    data.group.roomIsOpen = !data.group.roomIsOpen;
     if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
     try {
+      data.group.roomIsOpen = !data.group.roomIsOpen;
       await $zeus.mutate({
         updateRoomOpenState: [{ groupUid: data.group.uid, openRoom: data.group.roomIsOpen }, true],
       });
       //window.location.reload();
     } catch (error: unknown) {
+      data.group.roomIsOpen = !data.group.roomIsOpen;
       toasts.error(`Impossible d'ouvrir la salle ${group.address}`, error?.toString());
     }
   };

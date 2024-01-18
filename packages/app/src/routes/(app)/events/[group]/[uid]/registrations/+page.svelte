@@ -77,9 +77,9 @@
         if ('errors' in freshData) return;
         const freshCounts = freshData.event?.registrationsCounts;
         if (!freshCounts) return;
-        if (freshCounts.total > initialRegistrationsTotalCount) 
+        if (freshCounts.total > initialRegistrationsTotalCount)
           newRegistrationsSinceLoad = freshCounts.total - initialRegistrationsTotalCount;
-        
+
         data.event.registrationsCounts = freshCounts;
       },
     );
