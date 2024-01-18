@@ -11,8 +11,6 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
-## [1.43.4] - 2024-01-18
-
 ### Sécurité
 
 - Il n'est plus possible de spammer l'API, il y a maintenant du _rate-limiting_
