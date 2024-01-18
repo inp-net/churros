@@ -16,6 +16,7 @@
   export let value: Array<{ name: string; value: string }> = [];
   export let newValue: { name: string; value: string } = { name: '', value: '' };
   export let computed = true;
+  export let linkNotEmpty = false;
 
   let editingComputedLink: undefined | string;
   let replacements: Record<string, string> = {};
@@ -51,6 +52,7 @@
   }
 
   $: newLinkBothFieldsAreFilled = newValue.name.length > 0 && newValue.value.length > 0;
+  $: linkNotEmpty = value.length > 0;
 
   function newLinkHandleBlur() {
     if (newLinkBothFieldsAreFilled) addLink();
@@ -93,8 +95,13 @@
               {/if}
             </div>
             <div class="inputs">
-              <input placeholder="Nom de l'action" bind:value={link.name} />
-              <input type="url" placeholder="Adresse du site" bind:value={link.value} />
+              <input required placeholder="Nom de l'action" bind:value={link.name} />
+              <input
+                type="url"
+                pattern="^https?\:\/\/.+\..+"
+                placeholder="Adresse du site"
+                bind:value={link.value}
+              />
             </div>
 
             {#if computed && url?.hostname === 'docs.google.com' && url?.pathname.startsWith('/forms')}
