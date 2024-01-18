@@ -11,6 +11,8 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [1.43.4] - 2024-01-18
+
 ### Sécurité
 
 - Il n'est plus possible de spammer l'API, il y a maintenant du _rate-limiting_
@@ -91,6 +93,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
 [unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.43.4...main
+[1.43.4]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.4
 [1.43.4]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.4
 [1.43.3]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.3
 [1.43.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.2
