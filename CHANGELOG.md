@@ -20,6 +20,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Corrections
 
 - Tenter d'imprimmer en .pdf un évènement avec des emojis dans le titre ne fais plus planter l'application (#776)
+- Correction d'un bug qui empêchait de modifier son propre profil
 
 ## [1.43.3] - 2024-01-17
 
