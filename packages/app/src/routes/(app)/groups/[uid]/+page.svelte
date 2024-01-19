@@ -278,8 +278,9 @@
     {@const hasSubgroups = (group.root?.children.length ?? 0) > 0}
     <section class="subgroups">
       <h2>
-        Sous-groupes {#if hasSubgroups}<ButtonSecondary icon={IconAdd} href="./subgroups/create"
-            >Créer</ButtonSecondary
+        Sous-groupes {#if hasSubgroups && meOnClubBoard}<ButtonSecondary
+            icon={IconAdd}
+            href="./subgroups/create">Créer</ButtonSecondary
           >{/if}
       </h2>
 
