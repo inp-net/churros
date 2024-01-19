@@ -1,48 +1,49 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
-  import IconAdd from '~icons/mdi/plus';
-  import IconCheck from '~icons/mdi/check';
-  import IconPeople from '~icons/mdi/account-group';
-  import IconGear from '~icons/mdi/gear-outline';
-  import IconJoinGroup from '~icons/mdi/account-plus';
-  import IconQuitGroup from '~icons/mdi/account-cancel-outline';
-  import { me } from '$lib/session.js';
-  import type { PageData } from './$types';
-  import { zeus } from '$lib/zeus';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import Badge from '$lib/components/Badge.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonInk from '$lib/components/ButtonInk.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import CardArticle from '$lib/components/CardArticle.svelte';
+  import CardFeedEvent from '$lib/components/CardFeedEvent.svelte';
+  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
+  import InputToggle from '$lib/components/InputToggle.svelte';
+  import Modal from '$lib/components/Modal.svelte';
+  import TreeGroups from '$lib/components/TreeGroups.svelte';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
-  import IconFacebook from '~icons/mdi/facebook-box';
+  import { groupLogoSrc } from '$lib/logos';
+  import { isOnClubBoard, roleEmojis } from '$lib/permissions';
+  import { me } from '$lib/session.js';
+  import { byMemberGroupTitleImportance } from '$lib/sorting';
+  import { isDark } from '$lib/theme';
+  import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
+  import { zeus } from '$lib/zeus';
   import { onMount, type SvelteComponent } from 'svelte';
-  import IconInstagram from '~icons/mdi/instagram';
-  import IconTwitter from '~icons/mdi/twitter';
-  import IconAnilist from '~icons/simple-icons/anilist';
-  import IconLinkedin from '~icons/mdi/linkedin';
-  import IconGithub from '~icons/mdi/github';
-  import IconHackernews from '~icons/mdi/hackernews';
+  import type { Writable } from 'svelte/store';
+  import { queryParam } from 'sveltekit-search-params';
+  import IconQuitGroup from '~icons/mdi/account-cancel-outline';
+  import IconPeople from '~icons/mdi/account-group';
+  import IconJoinGroup from '~icons/mdi/account-plus';
+  import IconCheck from '~icons/mdi/check';
   import IconDiscord from '~icons/mdi/discord';
   import IconWebsite from '~icons/mdi/earth';
-  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import ButtonInk from '$lib/components/ButtonInk.svelte';
-  import CardArticle from '$lib/components/CardArticle.svelte';
-  import TreeGroups from '$lib/components/TreeGroups.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
-  import Badge from '$lib/components/Badge.svelte';
-  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
-  import { isDark } from '$lib/theme';
-  import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import { isOnClubBoard, roleEmojis } from '$lib/permissions';
-  import { byMemberGroupTitleImportance } from '$lib/sorting';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import { tooltip } from '$lib/tooltip';
-  import { groupLogoSrc } from '$lib/logos';
-  import { toasts } from '$lib/toasts';
-  import CardFeedEvent from '$lib/components/CardFeedEvent.svelte';
-  import { queryParam } from 'sveltekit-search-params';
-  import type { Writable } from 'svelte/store';
-  import Modal from '$lib/components/Modal.svelte';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import { browser } from '$app/environment';
+  import IconFacebook from '~icons/mdi/facebook-box';
+  import IconGear from '~icons/mdi/gear-outline';
+  import IconGithub from '~icons/mdi/github';
+  import IconHackernews from '~icons/mdi/hackernews';
+  import IconInstagram from '~icons/mdi/instagram';
+  import IconLinkedin from '~icons/mdi/linkedin';
+  import IconAdd from '~icons/mdi/plus';
+  import IconTwitter from '~icons/mdi/twitter';
+  import IconAnilist from '~icons/simple-icons/anilist';
+  import type { PageData } from './$types';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -134,6 +135,20 @@
     }
   };
 
+  const updateRoom = async () => {
+    if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
+    try {
+      data.group.roomIsOpen = !data.group.roomIsOpen;
+      await $zeus.mutate({
+        updateRoomOpenState: [{ groupUid: data.group.uid, openRoom: data.group.roomIsOpen }, true],
+      });
+      //window.location.reload();
+    } catch (error: unknown) {
+      data.group.roomIsOpen = !data.group.roomIsOpen;
+      toasts.error(`Impossible d'ouvrir la salle ${group.address}`, error?.toString());
+    }
+  };
+
   let joinModal: HTMLDialogElement;
 </script>
 
@@ -166,7 +181,6 @@
     <div class="identity">
       <h1>
         {group.name}
-
         <ButtonShare />
         {#if canEditDetails}
           <ButtonGhost help="Modifier les infos" href="./edit"><IconGear /></ButtonGhost>
@@ -209,7 +223,27 @@
       <dl>
         {#if group.address}
           <dt>Salle</dt>
-          <dd>{group.address}</dd>
+          <dd>
+            {group.address}
+            {#if $me && !$me.external}
+              <!-- Pour éviter que les gens exté voient l'ouverture des salles. -->
+              {#if $me?.canEditGroups || $me?.groups.some((g) => g.group.uid === group.uid)}
+                <InputToggle
+                  label={group.roomIsOpen ? 'Ouverte' : 'Fermée'}
+                  value={group.roomIsOpen}
+                  on:change={async () => updateRoom()}
+                ></InputToggle>
+              {:else}
+                <Badge inline theme={group.roomIsOpen ? 'success' : 'danger'}>
+                  {#if group.roomIsOpen}
+                    Ouvert
+                  {:else}
+                    Fermé
+                  {/if}
+                </Badge>
+              {/if}
+            {/if}
+          </dd>
         {/if}
         {#if group.website}
           <dt>Site web</dt>
@@ -385,17 +419,23 @@
   }
 
   header dt {
+    grid-column-start: 1;
+    padding-top: 0.3em;
     font-weight: bold;
+  }
+
+  header dd {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.8rem;
+    align-items: center;
+    margin-left: 0;
   }
 
   header dl {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto 1fr 2fr;
     column-gap: 0.5rem;
-  }
-
-  header dd {
-    margin-left: 0;
   }
 
   header .social-links {
