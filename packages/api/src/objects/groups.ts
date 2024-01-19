@@ -562,7 +562,7 @@ builder.mutationField('updateRoomOpenState', (t) =>
         data: { roomIsOpen: openRoom },
       });
 
-      await log('groups', 'set-room', { open: true }, groupUid, user);
+      await log('groups', 'set-room', { open: openRoom }, groupUid, user);
 
       return roomIsOpen;
     },
