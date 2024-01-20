@@ -80,11 +80,11 @@
     transition: background-color 0.5s ease;
   }
 
-  @media (max-width: 1000px) {
+  /* @media (max-width: 1000px) {
     dialog {
       border-radius: 0;
     }
-  }
+  } */
 
   @keyframes pop-up {
     from {

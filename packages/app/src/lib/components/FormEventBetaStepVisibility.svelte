@@ -28,7 +28,7 @@
 </script>
 
 <section class="inputs">
-  <InputVisibilityRadios label="Visibilité" bind:visibility />
+  <InputVisibilityRadios label="Qui peut voir l'évènement?" bind:visibility />
 </section>
 <section class="preview">
   <FormEventBetaPreviewCard

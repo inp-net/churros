@@ -18,6 +18,7 @@
   import Pill from './Pill.svelte';
   import PillRemovable from './PillRemovable.svelte';
   import InputLinks from './InputLinks.svelte';
+  import Modal from './Modal.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -345,7 +346,6 @@
     flex-grow: 0;
     gap: 1rem;
     width: 100%;
-    background: var(--muted-bg);
     border-radius: var(--radius-block);
     overflow-y: scroll;
     max-height: 100%;
@@ -376,6 +376,10 @@
     gap: 0.5rem;
     align-items: center;
     margin-left: 0.5rem;
+  }
+
+  .add-constraints :global(.pill), .applied-constraints :global(.pill) {
+    --bg: var(--muted-bg)
   }
 
   .new-constraint-input {

@@ -28,8 +28,7 @@
     autojoinGroups: [],
     // eslint-disable-next-line unicorn/no-null
     openToApprentices: null,
-    // eslint-disable-next-line unicorn/no-null
-    ticketGroupId: null,
+    ticketGroupId: undefined,
     id,
   });
   export function shadowId() {
@@ -296,7 +295,8 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    justify-content: space-between;
+    /* justify-content: space-between; */
+    justify-content: center;
   }
 
   section.top.scrolled {
@@ -317,6 +317,21 @@
     width: 100%;
     /* margin: 0 auto; */
     overflow: hidden auto;
+  }
+
+  @media (max-width: 700px) {
+    .inputs-and-preview {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .steps {
+      display: none;
+    }
+    
+    .inputs-and-preview :global(.preview) {
+      display: none;
+    }
   }
 
   .navigate-steps {

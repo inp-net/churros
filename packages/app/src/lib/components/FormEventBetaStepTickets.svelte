@@ -9,6 +9,8 @@
   import FormTicketBeta from './FormTicketBeta.svelte';
   import InputNumber from './InputNumber.svelte';
   import InputText from './InputText.svelte';
+  import Modal from './Modal.svelte';
+  import { toasts } from '$lib/toasts';
   const dispatch = createEventDispatcher();
 
   export let tickets: Ticket[];
@@ -17,7 +19,8 @@
   export let startsAt: Date | undefined = undefined;
   export let endsAt: Date | undefined = undefined;
 
-  let expandedTicketId = '';
+  let editingTicket: Ticket | undefined;
+  let ticketEditModalElement: HTMLDialogElement;
   let movingTicketId = '';
 
   // list of IDs
@@ -57,14 +60,7 @@
   $: tickets.sort((a, b) => ticketsOrdering.indexOf(a.id) - ticketsOrdering.indexOf(b.id));
 
   $: hasGroups = ticketGroups.length > 0;
-
-  function handleShortcuts(event: KeyboardEvent) {
-    if (event.key === 'ArrowUp' || event.key === 'K')
-      expandedTicketId = tickets[tickets.findIndex((t) => t.id === expandedTicketId) - 1]?.id;
-  }
 </script>
-
-<svelte:window on:keypress={handleShortcuts} />
 
 <ul class="tickets">
   {#each ticketsByGroup as [groupId, ticketsOfGroup] (groupId)}
@@ -134,9 +130,10 @@
       >
         <button
           on:click={() => {
-            expandedTicketId = expandedTicketId === ticket.id ? '' : ticket.id;
+            // Preserve unsaved data from editingTicket when re-editing the same
+            if (editingTicket?.id !== ticket.id) editingTicket = { ...ticket };
+            ticketEditModalElement.showModal();
           }}
-          class:highlighted={ticket.id === expandedTicketId}
           class:dragging={ticket.id === movingTicketId}
           class:indented={hasGroups}
           class="ticket"
@@ -182,7 +179,8 @@
           if (groupId) newTicket.ticketGroupId = groupId;
           tickets = [...tickets, newTicket];
           ticketsOrdering = [...ticketsOrdering, newTicket.id];
-          expandedTicketId = newTicket.id;
+          editingTicket = { ...newTicket };
+          ticketEditModalElement.showModal();
         }}
         >Nouveau billet {#if group}
           dans {group.name || 'groupe sans nom'}{/if}</button
@@ -204,24 +202,25 @@
     >
   </li>
 </ul>
-<section class="editing-ticket">
-  {#if expandedTicketId}
-    <div class="editing-ticket-transition-wrapper" transition:fly={{ duration: 200, x: 50 }}>
-      <FormTicketBeta
-        bind:ticket={tickets[tickets.findIndex((t) => t.id === expandedTicketId)]}
-        on:save={({ detail: ticket }) => {
-          expandedTicketId = '';
-          dispatch('save', ticket);
-        }}
-        on:delete={({ detail: ticket }) => {
-          expandedTicketId = '';
-          tickets = tickets.filter((t) => t.id !== ticket.id);
-          dispatch('save', ticket);
-        }}
-      ></FormTicketBeta>
-    </div>
+<Modal noPadding bind:element={ticketEditModalElement} maxWidth="400px">
+  {#if editingTicket}
+    <FormTicketBeta
+      bind:ticket={editingTicket}
+      on:save={({ detail: ticket }) => {
+        tickets[tickets.findIndex((t) => t.id === ticket.id)] = { ...ticket };
+        dispatch('save', ticket);
+        ticketEditModalElement.close();
+        toasts.success("Billet sauvegardé")
+      }}
+      on:delete={({ detail: ticket }) => {
+        tickets = tickets.filter((t) => t.id !== ticket.id);
+        dispatch('save', ticket);
+        ticketEditModalElement.close();
+        toasts.success("Billet supprimé")
+      }}
+    ></FormTicketBeta>
   {/if}
-</section>
+</Modal>
 
 <style>
   .editing-ticket {
@@ -262,6 +261,8 @@
     border-radius: var(--radius-block);
     box-shadow: none;
     transition: margin 0.25s ease;
+    flex-wrap: wrap;
+    text-align: left;
   }
 
   .ticket.new {
