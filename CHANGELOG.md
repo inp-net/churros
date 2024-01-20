@@ -15,6 +15,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 - Les membres d'un groupe ayant un local peuvent le marquer comme ouvert ou fermé (!95) (@soyerb)
 
+### Corrections
+
+- Rentrer des lettres dans les champs demandant des nombres (eg: prix d'un billet) ne renverront plus (NaN) mais 0 (!97) (@bardete)
+
 ## [1.43.4] - 2024-01-18
 
 ### Sécurité
