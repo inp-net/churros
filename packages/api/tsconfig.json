@@ -2,7 +2,7 @@
   "extends": [
     "@tsconfig/esm/tsconfig",
     "@tsconfig/node18/tsconfig",
-    "@tsconfig/strictest/tsconfig"
+    "@tsconfig/strictest/tsconfig",
   ],
   "compilerOptions": {
     // Waiting for https://github.com/prisma/prisma/issues/10894 to be fixed
@@ -13,7 +13,9 @@
     "outDir": "./build",
     "rootDir": ".",
     "paths": {
-      "#lib": ["./src/lib/index.js"]
-    }
-  }
+      "#lib": ["./src/lib/index.js"],
+      "#modules/*": ["./src/modules/*/index.js"],
+      "#permissions": ["./src/permissions/index.js"],
+    },
+  },
 }

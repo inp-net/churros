@@ -11,6 +11,10 @@ module.exports = {
     extraFileExtensions: ['.svelte'],
   },
   env: { browser: true, es2017: true, node: true },
+  globals: {
+    $$Generic: 'readonly', // see https://github.com/sveltejs/svelte-eslint-parser/issues/306
+    App: 'readonly',
+  },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
@@ -48,6 +52,8 @@ module.exports = {
     'unicorn/no-document-cookie': 'off',
     'unicorn/prefer-top-level-await': 'off',
     'unicorn/prevent-abbreviations': 'off',
+    'unicorn/no-empty-file': 'warn',
+    'unicorn/prefer-spread': process.argv.includes('--fix') ? 'off' : 'warn',
   },
   overrides: [
     {

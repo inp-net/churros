@@ -22,6 +22,7 @@
 <InputField {hint} {errors} {label} {required}>
   <BaseInputText
     type="number"
+    inputmode="numeric"
     bind:value
     on:input
     on:change

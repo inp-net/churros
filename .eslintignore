@@ -4,6 +4,8 @@ build/
 node_modules/
 zeus/
 
+# root .ts scripts would need a tsconfig.json at the root, idk if it would be a good idea
+scripts/ 
 *.cjs
 *.config.js
 

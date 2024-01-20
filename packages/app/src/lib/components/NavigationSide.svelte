@@ -2,6 +2,7 @@
   import IconHomeOutline from '~icons/mdi/home-outline';
   import IconPeople from '~icons/mdi/account-add-outline';
   import IconPeopleFilled from '~icons/mdi/account-add';
+  import IconSettings from '~icons/mdi/cog-outline';
   import IconLogout from '~icons/mdi/logout';
   import IconHome from '~icons/mdi/home';
   import IconAddCircleOutline from '~icons/mdi/plus-circle-outline';
@@ -15,19 +16,18 @@
   import IconBarWeek from '~icons/mdi/beer-outline';
   import IconAnnouncement from '~icons/mdi/bullhorn-outline';
   import IconAnnouncementFilled from '~icons/mdi/bullhorn';
-  import IconDocument from '~icons/mdi/file-outline';
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
-  import IconDocumentFilled from '~icons/mdi/file';
   import IconTerminal from '~icons/mdi/console';
   import IconBugOutline from '~icons/mdi/bug-outline';
   import IconBug from '~icons/mdi/bug';
   import { beforeNavigate } from '$app/navigation';
   import { me } from '$lib/session';
   import { page } from '$app/stores';
-  import type { DESKTOP_NAVIGATION_TABS } from '../../routes/+layout.svelte';
+  import type { DESKTOP_NAVIGATION_TABS } from '../../routes/(app)/+layout.svelte';
   import { scrollToTop } from '$lib/scroll';
   import FormEventBeta from './FormEventBeta.svelte';
+  import LogoFrappe from './LogoFrappe.svelte';
 
   export let current: (typeof DESKTOP_NAVIGATION_TABS)[number];
   let flyoutOpen = false;
@@ -117,9 +117,9 @@
       class:disabled={flyoutOpen}
     >
       {#if current === 'documents'}
-        <IconDocumentFilled />
+        <LogoFrappe current={true} />
       {:else}
-        <IconDocument />
+        <LogoFrappe />
       {/if}
       <span>La Frappe</span>
     </a>
@@ -194,12 +194,24 @@
     </a>
   {/if}
 
-  {#if $me}
-    <a href="/logout?token={$page.data.token}" class="navigation-item" class:disabled={flyoutOpen}>
-      <IconLogout></IconLogout>
-      <span>Se déconnecter</span>
-    </a>
-  {/if}
+  <section class="bottom">
+    {#if $me}
+      <a
+        href="/logout?token={$page.data.token}"
+        class="navigation-item"
+        class:disabled={flyoutOpen}
+      >
+        <IconLogout></IconLogout>
+        <span>Se déconnecter</span>
+      </a>
+    {/if}
+    {#if $me}
+      <a href="/users/{$me.uid}/edit" class="navigation-item">
+        <IconSettings></IconSettings>
+        <span>Réglages</span>
+      </a>
+    {/if}
+  </section>
 </nav>
 
 <svelte:window
@@ -245,8 +257,8 @@
       </a>
     {/if}
 
-    <a class="button" href="/documents/create">
-      <IconDocument />
+    <a href="/documents/create">
+      <LogoFrappe />
       <span>Frappe</span>
     </a>
 
@@ -269,6 +281,10 @@
     gap: 0.25rem;
     padding: 1rem;
     background: var(--bg);
+  }
+
+  nav .bottom {
+    margin-top: auto;
   }
 
   button {

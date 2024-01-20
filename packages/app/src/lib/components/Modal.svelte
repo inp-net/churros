@@ -6,6 +6,7 @@
   export let element: HTMLDialogElement;
   export let open = false;
   export let noPadding = false;
+  export let maxWidth = 'unset';
 
   onMount(() => {
     if (open) element.showModal();
@@ -39,6 +40,7 @@
   class="{$isDark ? 'dark' : 'light'} {$$restProps.class}"
   class:no-padding={noPadding}
   bind:this={element}
+  style:max-width={maxWidth}
 >
   <slot />
 </dialog>
@@ -74,6 +76,7 @@
   dialog[open]::backdrop {
     overscroll-behavior: contain;
     background-color: var(--backdrop);
+    backdrop-filter: blur(10px);
     transition: background-color 0.5s ease;
   }
 
@@ -96,10 +99,12 @@
   @keyframes fade-in {
     from {
       background-color: transparent;
+      backdrop-filter: blur(0);
     }
 
     to {
       background-color: var(--backdrop);
+      backdrop-filter: blur(10px);
     }
   }
 </style>

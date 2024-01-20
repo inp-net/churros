@@ -12,6 +12,7 @@
     "extract-files": "^13.0.0",
     "fuse.js": "^7.0.0",
     "graphql": "^16.8.1",
+    "graphql-ws": "^5.14.3",
     "html-to-text": "^9.0.5",
     "html5-qrcode": "^2.3.8",
     "ics": "^3.7.1",
@@ -47,6 +48,7 @@
     "@types/lodash.groupby": "^4.6.9",
     "@types/ua-parser-js": "^0.7.39",
     "dotenv": "^16.3.1",
+    "git-root-path": "^1.0.0",
     "graphql-zeus": "^5.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -61,9 +63,11 @@
     "svelte-store2storage": "^1.0.0",
     "sveltekit-search-params": "^1.0.18",
     "tslib": "^2.6.2",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "unplugin-icons": "^0.18.1",
     "vite": "^5.0.9",
+    "ws": "^8.16.0",
     "zod": "^3.22.4"
   },
   "private": true,
@@ -71,14 +75,17 @@
     "build": "node src/scripts/generate-dotenv-service-worker.js && svelte-kit sync & yarn zeus && yarn check --threshold warning && vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "clean": "git clean -Xdf .",
-    "dev": "yarn mock-buildinfo && yarn zeus && vite dev --host",
-    "mock-buildinfo": "echo 'export const CURRENT_VERSION=\"dev\"; export const CURRENT_COMMIT=\"dev\";' > src/lib/buildinfo.ts",
+    "dev": "yarn run -T generate-buildinfo && yarn zeus && vite dev --host",
     "preview": "vite preview",
     "start": "ORIGIN=http://app node ./build/index.js",
-    "zeus": "zeus ../api/build/schema.graphql ./src --es"
+    "zeus": "zeus ../api/build/schema.graphql ./src --es --subscriptions"
   },
   "type": "module",
   "volta": {
     "extends": "../../package.json"
+  },
+  "release-it": {
+    "git": false,
+    "npm": false
   }
 }

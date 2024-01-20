@@ -11,6 +11,8 @@ dialog {
     --primary-bg: #{$blue-900};
     --primary-text: #{$slate-100};
     --primary-shadow: 0 0.25rem 0.5rem #{$black};
+    --primary-disabled-bg: #{$neutral-800};
+    --primary-disabled-text: #{$neutral-400};
     --loading-bg: #{$blue-900};
     --hover-bg: #{$neutral-700};
     --hover-text: #{$neutral-200};
@@ -36,6 +38,8 @@ dialog {
     --primary-link: var(--link);
     --primary-text: #fff;
     --primary-shadow: 0 0.25rem 0.5rem #{$black};
+    --primary-disabled-bg: var(--card-bg);
+    --primary-disabled-text: #c6f6d5;
     --loading-bg: #0d6e2c;
     --hover-bg: #010703;
     --hover-text: #{$neutral-200};
@@ -91,6 +95,8 @@ dialog {
     --primary-bg: #{$green-900};
     --primary-text: #{$neutral-200};
     --primary-shadow: 0 0.25rem 0.5rem #{$black};
+    --primary-disabled-text: #{$neutral-200};
+    --primary-disabled-bg: #{$neutral-800};
     --loading-bg: repeating-linear-gradient(
       45deg,
       rgb(255 241 242),

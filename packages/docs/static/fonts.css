@@ -1,0 +1,79 @@
+@font-face {
+	font-family: 'Space Mono';
+	font-style: italic;
+	font-weight: normal;
+	src:
+		url('SpaceMono-Italic.woff2') format('woff2'),
+		url('SpaceMono-Italic.woff') format('woff');
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Space Mono';
+	font-style: italic;
+	font-weight: bold;
+	src:
+		url('SpaceMono-BoldItalic.woff2') format('woff2'),
+		url('SpaceMono-BoldItalic.woff') format('woff');
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Space Mono';
+	font-style: normal;
+	font-weight: bold;
+	src:
+		url('SpaceMono-Bold.woff2') format('woff2'),
+		url('SpaceMono-Bold.woff') format('woff');
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Space Grotesk';
+	font-style: normal;
+	font-weight: normal;
+	src:
+		url('SpaceGroteskLight-Regular.woff2') format('woff2'),
+		url('SpaceGroteskLight-Regular.woff') format('woff');
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Space Mono';
+	font-style: normal;
+	font-weight: normal;
+	src:
+		url('SpaceMono-Regular.woff2') format('woff2'),
+		url('SpaceMono-Regular.woff') format('woff');
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Space Grotesk';
+	font-style: normal;
+	font-weight: 600;
+	src:
+		url('SpaceGroteskLight-Medium.woff2') format('woff2'),
+		url('SpaceGroteskLight-Medium.woff') format('woff');
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Space Grotesk';
+	font-style: normal;
+	font-weight: 700;
+	src:
+		url('SpaceGroteskLight-Bold.woff2') format('woff2'),
+		url('SpaceGroteskLight-Bold.woff') format('woff');
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Space Grotesk';
+	font-style: normal;
+	font-weight: 300;
+	src:
+		url('SpaceGrotesk-Light.woff2') format('woff2'),
+		url('SpaceGrotesk-Light.woff') format('woff');
+	font-display: swap;
+}

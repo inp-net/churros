@@ -31,12 +31,20 @@
   import InputGroups from './InputGroups.svelte';
   import InputLydiaAccounts from './InputLydiaAccounts.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
+  import { isPast } from 'date-fns';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
   let loading = false;
   let confirmingDelete = false;
   let newBannedUser: (typeof event)['bannedUsers'][number] | undefined;
+
+  $: endsAtAfterStartsAt =
+    event.startsAt === undefined || event.endsAt === undefined
+      ? true
+      : event.startsAt.getTime() < event.endsAt.getTime();
+  $: pastDateStart = event.startsAt === undefined ? false : isPast(event.startsAt);
+  $: isNotValidDate = !endsAtAfterStartsAt || pastDateStart;
 
   $: canEditManagers =
     !event.uid ||
@@ -513,6 +521,7 @@
       <InputLongText rich label="Description" bind:value={event.description} />
       <InputLinks label="Liens" bind:value={event.links} />
       <div class="side-by-side">
+        <!-- -->
         <DateInput required label="Début" time bind:value={event.startsAt} />
         <DateInput required label="Fin" time bind:value={event.endsAt} />
       </div>
@@ -809,7 +818,7 @@
           }}>Rendre privé</ButtonSecondary
         >
       {:else}
-        <ButtonPrimary submits {loading}>Enregistrer</ButtonPrimary>
+        <ButtonPrimary submits {loading} disabled={isNotValidDate}>Enregistrer</ButtonPrimary>
         {#if event.id}
           <ButtonSecondary
             danger
@@ -822,6 +831,18 @@
     </section>
   {/await}
 </form>
+<section class="errors">
+  {#if !endsAtAfterStartsAt}
+    <Alert theme="danger">
+      Impossible de programmer l'évenement : La date de fin est avant celle du début.
+    </Alert>
+  {/if}
+  {#if pastDateStart}
+    <Alert theme="danger">
+      Impossible de programmer l'événement : La date indiquée est déjà passé.
+    </Alert>
+  {/if}
+</section>
 
 <style lang="scss">
   form {
@@ -948,6 +969,12 @@
     align-items: center;
     justify-content: center;
     margin-top: 2rem;
+  }
+
+  .errors {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   p.empty {
