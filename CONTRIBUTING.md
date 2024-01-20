@@ -43,3 +43,31 @@ yarn dev
 ### Développement
 
 [Voir le wiki](https://git.inpt.fr/inp-net/churros/-/wikis) pour se familiariser avec l'architecture du projet.
+
+### Conventions de commits
+
+Churros utilise la convention des [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/). Les messages de commit doivent donc être de la forme suivante :
+
+```
+<type>(<scope optionnel>): <description> <issues(s) fermées>
+```
+
+Où:
+
+- `<type>` est un des types suivants :
+  - `build`: changements qui affectent le système de build
+  - `ci`: changements concernant les fichiers et scripts d'intégration continue
+  - `docs`: changements concernant la documentation
+  - `feat`: ajout d'une nouvelle fonctionnalité
+  - `fix`: correction d'un bug
+  - `perf`: amélioration des performances
+  - `refactor`: modification du code qui ne change pas son comportement
+  - `style`: modifications d'apparence du site
+  - `test`: ajout ou modification de tests
+- `<scope optionnel>` est un élément optionnel précisant la portée du commit (ex: frappe, events, login, oauth...). **Quand il n'y a pas de scope, ne pas mettre de parenthèses.**
+- `<description>` est une description courte du changement, sous forme de phrase à l'infinif. Pour les fix de bugs, on peut mettre une phrase au passé qui décrit le comportement avant le fix. (ex: `fix(login): login button redirected to wrong page`)
+- `<issues(s) fermées>` est une liste optionnelle d'issues fermées par ce commit. Il faut mettre `(closes #<numéro de l'issue>)` pour chaque issue fermée. Si le commit ne ferme pas d'issue, ne pas mettre cette partie. Par exemple: `fix(changelog): fix typo (closes #123)`
+
+L'important et surtout de ne pas passer 3 ans à nommer son commit. Si vous ne savez pas quel type de commit utiliser, utilisez `feat` dans le doute.
+
+Même si l'anglais est préférable, vous pouvez écrire les messages de commits en français, c'est pas très grave.
