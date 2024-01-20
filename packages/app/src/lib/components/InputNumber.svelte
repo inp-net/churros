@@ -32,7 +32,6 @@
     {errorMessage}
     {placeholder}
     {required}
-    {...$$restProps}
     {actionIcon}
   >
     <slot name="before" slot="before" />
