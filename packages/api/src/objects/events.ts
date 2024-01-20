@@ -29,6 +29,7 @@ import {
   startOfWeek,
   weeksToDays,
 } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 import dichotomid from 'dichotomid';
 import slug from 'slug';
 import type { Context } from '../context.js';
@@ -67,7 +68,7 @@ export const EventFrequencyType = builder.enumType(EventFrequency, {
 });
 
 function findNextRecurringEvent(event: EventPrisma): EventPrisma {
-  const today = new Date();
+  const today = utcToZonedTime(new Date(), 'Europe/Berlin');
   const { startsAt, endsAt, frequency } = event;
   let newStartsAt = startsAt;
   switch (frequency) {
