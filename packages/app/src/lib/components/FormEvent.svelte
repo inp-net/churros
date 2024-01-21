@@ -482,7 +482,7 @@
 
 <form class="event" on:submit|preventDefault={async () => saveChanges()}>
   {#await groupInputsOptions()}
-    <section class:loading>
+    <section class="loading">
       <LoadingSpinner></LoadingSpinner>
       Chargement des groupes…
     </section>
@@ -818,7 +818,7 @@
           }}>Rendre privé</ButtonSecondary
         >
       {:else}
-        <ButtonPrimary submits disabled={isNotValidDate}>Enregistrer</ButtonPrimary>
+        <ButtonPrimary submits {loading} disabled={isNotValidDate}>Enregistrer</ButtonPrimary>
         {#if event.id}
           <ButtonSecondary
             danger
