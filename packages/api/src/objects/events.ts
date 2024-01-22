@@ -14,16 +14,20 @@ import {
 import { mappedGetAncestors } from 'arborist';
 import {
   addDays,
+  addMonths,
+  addWeeks,
   differenceInDays,
   differenceInWeeks,
   endOfDay,
   endOfWeek,
   getDay,
   getMonth,
+  getWeek,
   getYear,
   isBefore,
   setDay,
   setMonth,
+  setWeek,
   setYear,
   startOfDay,
   startOfWeek,
@@ -73,41 +77,39 @@ function findNextRecurringEvent(event: EventPrisma): EventPrisma {
   let newStartsAt = startsAt;
   switch (frequency) {
     case EventFrequency.Weekly: {
-      const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
-      const dayDelta = differenceInDays(todayWeek, startsAt);
-      newStartsAt = addDays(startsAt, dayDelta);
-      const correctedDelta = isBefore(today, newStartsAt) ? dayDelta : dayDelta + 7;
+      newStartsAt = setWeek(startsAt, getWeek(today, { weekStartsOn: 1 }));
+      if (newStartsAt.getFullYear() !== today.getFullYear())
+        newStartsAt = setYear(newStartsAt, today.getFullYear());
       return {
         ...event,
-        startsAt: addDays(startsAt, correctedDelta),
-        endsAt: addDays(endsAt, correctedDelta),
+        startsAt: newStartsAt,
+        endsAt: setDay(endsAt, newStartsAt.getDay()),
       };
     }
 
     case EventFrequency.Biweekly: {
-      // move event from its original startsAt to today's week.
-      const todayWeek = setDay(today, getDay(startsAt), { weekStartsOn: 1 });
-      const weekDelta = differenceInWeeks(todayWeek, startsAt);
-      const tempStartsAt = addDays(startsAt, weeksToDays(weekDelta));
-      const correctedDelta = isBefore(today, tempStartsAt) ? weekDelta : weekDelta + 2;
-      const newStartsAt = addDays(startsAt, weeksToDays(correctedDelta));
-      const newEndsAt = addDays(endsAt, weeksToDays(correctedDelta));
-      return { ...event, startsAt: newStartsAt, endsAt: newEndsAt };
+      newStartsAt = setWeek(startsAt, getWeek(today, { weekStartsOn: 1 }));
+      if (isBefore(newStartsAt, today)) newStartsAt = addWeeks(newStartsAt, 2);
+      if (differenceInWeeks(newStartsAt, startsAt) % 2 !== 0)
+        newStartsAt = addWeeks(newStartsAt, 1);
+      if (newStartsAt.getFullYear() !== today.getFullYear())
+        newStartsAt = setYear(newStartsAt, today.getFullYear());
+      return {
+        ...event,
+        startsAt: newStartsAt,
+        endsAt: setDay(endsAt, newStartsAt.getDay()),
+      };
     }
 
     case EventFrequency.Monthly: {
-      const monthCorrect =
-        getMonth(today) === getMonth(endOfWeek(today, { weekStartsOn: 1 })) ? 0 : 1;
-      const yearCorrect = getYear(today) === getYear(endOfWeek(today, { weekStartsOn: 1 })) ? 0 : 1;
-
-      const tempStartsAt = setMonth(startsAt, getMonth(today) + monthCorrect);
-      const correctedDelta = isBefore(today, tempStartsAt) ? monthCorrect : monthCorrect + 1;
-      const newStartsAt = setMonth(startsAt, getMonth(today) + correctedDelta);
-      const newEndsAt = setMonth(endsAt, getMonth(today) + correctedDelta);
+      newStartsAt = setMonth(startsAt, getMonth(today));
+      if (isBefore(newStartsAt, today)) newStartsAt = addMonths(newStartsAt, 1);
+      if (newStartsAt.getFullYear() !== today.getFullYear())
+        newStartsAt = setYear(newStartsAt, today.getFullYear());
       return {
         ...event,
-        startsAt: setYear(newStartsAt, getYear(today) + yearCorrect),
-        endsAt: setYear(newEndsAt, getYear(today) + yearCorrect),
+        startsAt: newStartsAt,
+        endsAt: setDay(endsAt, newStartsAt.getDay()),
       };
     }
 
