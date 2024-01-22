@@ -46,6 +46,11 @@
 </div>
 
 <style>
+  input {
+    background: transparent;
+    border: none;
+  }
+
   .pill {
     display: flex;
     gap: 0.5rem;
@@ -59,6 +64,10 @@
     &.empty {
       background: transparent;
       border-color: var(--border);
+    }
+
+    & input {
+      color: var(--text);
     }
 
     &:hover {
@@ -76,11 +85,6 @@
     display: flex;
     gap: 0.5em;
     align-items: center;
-  }
-
-  input {
-    background: transparent;
-    border: none;
   }
 
   .pill:not(.empty) input {
