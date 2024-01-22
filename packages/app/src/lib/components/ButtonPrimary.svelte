@@ -13,7 +13,7 @@
   {id}
   class:loading
   {href}
-  class="button-primary typo-big-button"
+  class="button-primary typo-big-button primary"
   class:smaller
   disabled={disabled || loading}
   on:click
@@ -39,14 +39,20 @@
     align-items: center;
     justify-content: center;
     padding: 0.75rem 1.75rem;
-    color: var(--primary-text);
+    color: var(--text);
     cursor: pointer;
-    background: var(--primary-bg);
+    background-color: var(--bg);
     border: none;
     border-radius: 1000px;
 
     &.loading .content {
       opacity: 0;
+    }
+
+    &[disabled] {
+      color: var(--disabled-text);
+      cursor: default;
+      background: var(--disabled-bg);
     }
   }
 
@@ -54,10 +60,10 @@
     padding: 0.5rem 1rem;
   }
 
-  .button-primary:hover,
-  .button-primary:focus-visible {
-    color: var(--primary-hover-text);
-    background: var(--primary-hover-bg);
+  .button-primary:hover:not([disabled]),
+  .button-primary:focus-visible:not([disabled]) {
+    color: var(--hover-text);
+    background: var(--hover-bg);
   }
 
   .button-primary .loading {

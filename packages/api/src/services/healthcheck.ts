@@ -71,6 +71,12 @@ export const HealthCheck = builder.objectRef<HealthCheck>('HealthCheck').impleme
 builder.queryField('healthcheck', (t) =>
   t.field({
     type: HealthCheck,
+    directives: {
+      rateLimit: {
+        duration: 1,
+        limit: 5,
+      },
+    },
     async resolve() {
       return {
         redis: {

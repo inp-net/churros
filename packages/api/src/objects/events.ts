@@ -889,6 +889,7 @@ builder.mutationField('upsertEvent', (t) =>
   t.prismaField({
     type: EventType,
     errors: {},
+    validate: ({ startsAt, endsAt }) => isBefore(startsAt, endsAt),
     args: {
       id: t.arg.string({ required: false }),
       ticketGroups: t.arg({ type: [TicketGroupInput] }),

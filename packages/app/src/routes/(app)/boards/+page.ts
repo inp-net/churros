@@ -23,6 +23,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
               uid: true,
               fullName: true,
               pictureFile: true,
+              lastName: true,
             },
           },
         }),

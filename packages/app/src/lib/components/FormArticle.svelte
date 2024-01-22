@@ -21,7 +21,7 @@
   import ButtonBack from './ButtonBack.svelte';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
-  import { isFuture } from 'date-fns';
+  import { isFuture, isPast } from 'date-fns';
   import Modal from './Modal.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
   import BadgeVisibility from './BadgeVisibility.svelte';
@@ -90,6 +90,8 @@
   let publishLater: Date | undefined = isFuture(data.article.publishedAt)
     ? data.article.publishedAt
     : undefined;
+
+  $: pastDate = publishLater === undefined ? false : isPast(publishLater);
 
   let loading = false;
   const updateArticle = async () => {
@@ -210,7 +212,6 @@
       {HELP_VISIBILITY_DYNAMIC([group, ...group.children])[visibility]}
     </p>
   </div>
-
   <section class="pills">
     {#await $zeus.query( { eventsOfGroup: [{ groupUid: group.uid }, { edges: { node: _articleQuery.event } }] }, )}
       <ButtonSecondary loading icon={IconEvent}>Évènement</ButtonSecondary>
@@ -229,9 +230,15 @@
       >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert
     >
   {/if}
+  {#if pastDate}
+    <Alert theme="danger"
+      >Impossible de programmer une publication à cette date <br /><strong>{serverError}</strong
+      ></Alert
+    >
+  {/if}
   <section class="submit">
     {#if id === ''}
-      <ButtonPrimary {loading} submits>Poster</ButtonPrimary>
+      <ButtonPrimary {loading} submits disabled={pastDate}>Publier</ButtonPrimary>
     {:else if confirmingDelete}
       <h2>Es-tu sûr·e ?</h2>
       <ButtonSecondary
@@ -283,7 +290,7 @@
         }}>Rendre privé</ButtonSecondary
       >
     {:else}
-      <ButtonPrimary submits {loading}>Enregistrer</ButtonPrimary>
+      <ButtonPrimary {loading} submits disabled={pastDate}>Enregistrer</ButtonPrimary>
       {#if data.article.id}
         <ButtonSecondary
           danger
