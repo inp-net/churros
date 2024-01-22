@@ -18,8 +18,6 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Corrections
 
 - Rentrer des lettres dans les champs demandant des nombres (eg: prix d'un billet) ne renverront plus (NaN) mais 0 (!97) (@bardete)
-<<<<<<< CHANGELOG.md
-=======
 - Les listes de membres affiché dans un groupe sont désormais bien trié par ordre alphabétiques selon les noms de famille (#492) (!96) (@soyerb)
 - Tenter de faire un lien vers un site sans donner d'URL dans la créationd'un post/évent est désormais impossible. (#558) (!96) (@soyerb)
 - Le bouton de création d'un sous club sur la page d'un club devient bien invisible si on a pas les droits (#537) (!96) (@soyerb)
@@ -30,7 +28,6 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Autres
 
 - Suppression de la notification sur l'application pour indiquer où se situe désormais le bouton "Recherche" (#797) (!96) (@soyerb)
->>>>>>> CHANGELOG.md
 
 ## [1.43.4] - 2024-01-18
 
