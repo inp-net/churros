@@ -131,7 +131,7 @@ builder.mutationField('selfJoinGroup', (t) =>
         (await prisma.contribution.count({
           where: {
             userId: me?.id,
-            option: { paysFor: { some: { groups: { some: { groupId: group.id } } } } },
+            option: { paysFor: { some: { id: group.studentAssociation?.id } } },
           },
         })) <= 0
       )
