@@ -240,12 +240,16 @@
         {...event}
         bind:title={event.title}
         bind:description={event.description}
-        bind:startsAt={event.startsAt}
-        bind:endsAt={event.endsAt}
         bind:location={event.location}
       ></FormEventBetaStepDetails>
     {:else if currentStep === 'situation'}
-      <FormEventBetaStepSituation {...event}></FormEventBetaStepSituation>
+      <FormEventBetaStepSituation
+        {...event}
+        bind:location={event.location}
+        bind:frequency={event.frequency}
+        bind:recurringUntil={event.recurringUntil}
+        bind:pictureFile={event.pictureFile}
+      ></FormEventBetaStepSituation>
     {:else if currentStep === 'organization'}
       {#await $zeus.query( { lydiaAccounts: { id: true, name: true, group: { pictureFile: true, pictureFileDark: true, name: true } } }, )}
         <LoadingSpinner></LoadingSpinner>
@@ -254,6 +258,7 @@
           availableLydiaAccounts={lydiaAccounts}
           {...event}
           bind:lydiaAccount={event.beneficiary}
+          bind:contactMail={event.contactMail}
         ></FormEventBetaStepOrganization>
       {/await}
     {:else if currentStep === 'tickets'}
@@ -328,7 +333,7 @@
     .steps {
       display: none;
     }
-    
+
     .inputs-and-preview :global(.preview) {
       display: none;
     }

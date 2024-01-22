@@ -378,8 +378,9 @@
     margin-left: 0.5rem;
   }
 
-  .add-constraints :global(.pill), .applied-constraints :global(.pill) {
-    --bg: var(--muted-bg)
+  .add-constraints :global(.pill),
+  .applied-constraints :global(.pill) {
+    --bg: var(--muted-bg);
   }
 
   .new-constraint-input {

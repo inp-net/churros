@@ -1,9 +1,8 @@
 <script lang="ts">
   import { Selector, zeus } from '$lib/zeus';
   import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
-  import FormPicture from './FormPicture.svelte';
+  import InputDateRange from './InputDateRange.svelte';
   import InputGroups from './InputGroups.svelte';
-  import InputLinks from './InputLinks.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputText from './InputText.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
@@ -17,9 +16,9 @@
     pictureFile: string;
     pictureFileDark: string;
   };
-  export let pictureFile: string;
-  export let uid: string;
-  export let links: Array<{ name: string; value: string }>;
+  export let location: string;
+  export let startsAt: Date | undefined = undefined;
+  export let endsAt: Date | undefined = undefined;
 
   export let eventQuery = Selector('Event')({
     coOrganizers: {
@@ -89,23 +88,14 @@
     <InputText required label="Titre" bind:value={title}></InputText>
     <InputLongText rich label="Description" bind:value={description}></InputLongText>
   </section>
-  <InputLinks label="Liens" bind:value={links}></InputLinks>
-  <section class="thumbnail">
-    <h2>Miniature</h2>
-    <FormPicture
-      object={{
-        id: 'event',
-        uid,
-        pictureFile,
-      }}
-      objectName="Event"
-      dark
-    ></FormPicture>
-  </section>
+  <InputText label="Lieu" bind:value={location}></InputText>
+  <InputDateRange time required label="Date" bind:start={startsAt} bind:end={endsAt}
+  ></InputDateRange>
 </section>
 
 <section class="preview">
-  <FormEventBetaPreviewCard {...$$props}></FormEventBetaPreviewCard>
+  <FormEventBetaPreviewCard {...{ title, description, location, startsAt, endsAt, group }}
+  ></FormEventBetaPreviewCard>
 </section>
 
 <style>

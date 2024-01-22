@@ -1,10 +1,12 @@
 import { builder, prisma, subscriptionName } from '#lib';
 import { PaymentMethod } from '@prisma/client';
 import dichotomid from 'dichotomid';
+import { GraphQLError } from 'graphql';
 import slug from 'slug';
 import { toHtml } from '../services/markdown.js';
 import { eventAccessibleByUser, eventManagedByUser } from './events.js';
 import { LinkInput } from './links.js';
+import { log } from './logs.js';
 import { actualPrice } from './promotions.js';
 import { PaymentMethodEnum } from './registrations.js';
 import { DateTimeScalar } from './scalars.js';
@@ -77,7 +79,11 @@ export const TicketType = builder.prismaNode('Ticket', {
     basePrice: t.exposeFloat('price'),
     price: t.float({
       async resolve({ price, id }, _, { user }) {
-        return actualPrice({ price, id }, user);
+        const { event } = await prisma.ticket.findUniqueOrThrow({
+          where: { id },
+          include: { event: { include: { group: true } } },
+        });
+        return actualPrice({ price, id, event }, user);
       },
     }),
     capacity: t.exposeInt('capacity'),
@@ -193,7 +199,6 @@ export const TicketInput = builder.inputType('TicketInput', {
     openToSchools: t.field({ type: ['String'] }),
     openToMajors: t.field({ type: ['String'] }),
     openToApprentices: t.boolean({ required: false }),
-    id: t.id({ required: false }),
     autojoinGroups: t.field({ type: ['String'] }),
     groupName: t.string({ required: false }),
   }),
@@ -233,18 +238,183 @@ builder.queryField('ticket', (t) =>
 
 builder.prismaObjectField('Event', 'ticket', (t) =>
   t.prismaField({
+    description: "Un billet de l'évènement",
     type: TicketType,
     args: {
-      uid: t.arg.string(),
-    },
-    async authScopes(event, { uid }, {user}) {
-      return eventAccessibleByUser(event, user);
+      uid: t.arg.string({ description: 'Son uid' }),
     },
     resolve: async (query, { id: eventId }, { uid }) =>
       prisma.ticket.findFirstOrThrow({
         ...query,
         where: { uid, eventId },
       }),
+  }),
+);
+
+builder.mutationField('upsertTicket', (t) =>
+  t.prismaField({
+    type: TicketType,
+    description: 'Créer ou modifier un billet',
+    args: {
+      eventId: t.arg.id({
+        description: "L'identifiant de l'évènement sur lequel créer ou modifier un billet",
+      }),
+      ticketGroupId: t.arg.id({
+        description:
+          "Le groupe de billet dans lequel (dé)placer le billet. Ne pas spécifier l'argument revient à retirer (ou ne pas placer) le billet dans un groupe",
+        required: false,
+      }),
+      id: t.arg.id({
+        required: false,
+        description:
+          "Laisser vide pour créer un billet, donner l'id du billet à modifier pour le modifier",
+      }),
+      ticket: t.arg({ type: TicketInput }),
+    },
+    async authScopes(_, { eventId }, { user }) {
+      const event = await prisma.event.findUnique({
+        where: { id: eventId },
+        include: { managers: { include: { user: true } } },
+      });
+      if (!event) return false;
+      return eventManagedByUser(event, user, { canEdit: true });
+    },
+    async resolve(query, _, { eventId, id, ticket, ticketGroupId }, { user }) {
+      if (!user) throw new GraphQLError('Non connecté');
+      const ticketGroup = ticketGroupId
+        ? await prisma.ticketGroup.findUnique({ where: { id: ticketGroupId, eventId } })
+        : undefined;
+
+      if (ticketGroupId && !ticketGroup) throw new GraphQLError('Groupe de billets non trouvé');
+
+      const connectOnUids = (uids: Array<string>) => ({
+        connect: uids.map((uid) => ({ uid })),
+      });
+
+      await log('events', `${id ? 'update' : 'create'}-ticket`, { ticket }, id, user);
+      return prisma.ticket.upsert({
+        ...query,
+        where: { id: id ?? '' },
+        create: {
+          ...ticket,
+          eventId,
+          uid: await createUid({
+            name: ticket.name,
+            eventId,
+            ticketGroupId,
+            ticketGroupName: ticketGroup?.name,
+          }),
+          links: { createMany: { data: ticket.links, skipDuplicates: true } },
+          openToSchools: connectOnUids(ticket.openToSchools),
+          openToGroups: connectOnUids(ticket.openToGroups),
+          openToMajors: connectOnUids(ticket.openToMajors),
+          autojoinGroups: connectOnUids(ticket.autojoinGroups),
+        },
+        update: {
+          ...ticket,
+          links: { deleteMany: {}, createMany: { data: ticket.links, skipDuplicates: true } },
+          openToSchools: connectOnUids(ticket.openToSchools),
+          openToGroups: connectOnUids(ticket.openToGroups),
+          openToMajors: connectOnUids(ticket.openToMajors),
+          autojoinGroups: connectOnUids(ticket.autojoinGroups),
+        },
+      });
+    },
+  }),
+);
+
+enum TicketMove {
+  MoveAfter,
+  MoveBefore,
+}
+
+builder.enumType(TicketMove, {
+  name: 'TicketMove',
+  values: {
+    MoveAfter: { description: 'placer après un autre billet' },
+    MoveBefore: { description: 'placer avant un autre billet' },
+  },
+});
+
+builder.mutationField('moveTicket', (t) =>
+  t.int({
+    description:
+      "Déplacer un billet avant ou apès un autre, et dans ou en dehors d'un groupe de billets",
+    args: {
+      eventId: t.arg.id({ description: "identifiant de l'évènement où sont les billets" }),
+      uid: t.arg.string({ description: 'uid du billet à déplacer' }),
+      other: t.arg.string({ description: "uid de l'autre billet" }),
+      move: t.arg({ type: TicketMove, description: "Où placer le billet par rapport à l'autre" }),
+      inside: t.arg.string({
+        required: false,
+        description: 'uid du groupe de billet dans lequel placer le billet',
+      }),
+      outside: t.arg.string({
+        required: false,
+        description: 'uid du groupe de billet duquel sortir le billet',
+      }),
+    },
+    validate({ inside, outside }) {
+      return Boolean(!(inside && outside) || (inside && !outside) || (outside && !inside));
+    },
+    async resolve(_, { uid, other, move, eventId, outside, inside }, { user }) {
+      const otherTicket = await prisma.ticket.findFirstOrThrow({
+        where: { uid: other, eventId },
+      });
+      const ticketToMove = await prisma.ticket.findFirstOrThrow({
+        where: { uid, eventId },
+      });
+
+      await log('events', 'move-ticket', { uid, other, move, eventId }, eventId, user);
+
+      const groupToDisconnect = outside
+        ? await prisma.ticketGroup.findFirstOrThrow({ where: { uid: outside } })
+        : undefined;
+      const groupToConnect = inside
+        ? await prisma.ticketGroup.findFirstOrThrow({ where: { uid: inside } })
+        : undefined;
+
+      const result = await prisma.ticket.update({
+        where: { id: ticketToMove.id },
+        data: {
+          order: otherTicket.order + (move === TicketMove.MoveAfter ? +1 : -1),
+          group: groupToDisconnect
+            ? { disconnect: { id: groupToDisconnect.id } }
+            : groupToConnect
+              ? { connect: { id: groupToConnect.id } }
+              : undefined,
+        },
+      });
+
+      return result.order;
+    },
+  }),
+);
+
+builder.mutationField('deleteTicket', (t) =>
+  t.boolean({
+    description:
+      'Supprimer un billet. Attention, seul un·e administrateur·ice peut supprimer un billet ayant déjà des réservations',
+    args: {
+      id: t.arg.id({ description: "L'identifiant du billet" }),
+    },
+    async authScopes(_, { id }, { user }) {
+      const events = await prisma.event.findMany({
+        where: { tickets: { some: { id } } },
+        include: { managers: { include: { user: true } } },
+      });
+      return events.every((event) => eventManagedByUser(event, user, { canEdit: true }));
+    },
+    async resolve(_, { id }, { user }) {
+      const ticket = await prisma.ticket.delete({ where: { id } });
+      await log('events', 'delete-ticket', { ticket }, id, user);
+      // Remove ticket groups that are empty
+      const deletedTicketGroups = await prisma.ticketGroup.deleteMany({
+        where: { eventId: ticket.eventId, tickets: { none: {} } },
+      });
+      await log('events', 'cleanup-empty-ticket-groups', { deletedTicketGroups }, id, user);
+      return true;
+    },
   }),
 );
 
@@ -462,37 +632,6 @@ builder.queryField('ticketsOfEvent', (t) =>
         : undefined;
 
       return allTickets.filter((ticket) => userCanSeeTicket(ticket, userWithContributesTo));
-    },
-  }),
-);
-
-builder.mutationField('deleteTicket', (t) =>
-  t.field({
-    type: 'Boolean',
-    args: {
-      id: t.arg.id(),
-    },
-    async authScopes(_, { id }, { user }) {
-      const ticket = await prisma.ticket.findUnique({
-        where: { id },
-        include: {
-          event: {
-            include: {
-              managers: {
-                include: {
-                  user: true,
-                },
-              },
-            },
-          },
-        },
-      });
-      if (!ticket) return false;
-      return eventManagedByUser(ticket.event, user, { canEdit: true });
-    },
-    async resolve(_, { id }) {
-      await prisma.ticket.delete({ where: { id } });
-      return true;
     },
   }),
 );

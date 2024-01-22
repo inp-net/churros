@@ -11,11 +11,16 @@
   import InputText from './InputText.svelte';
   import Modal from './Modal.svelte';
   import { toasts } from '$lib/toasts';
+  import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
   const dispatch = createEventDispatcher();
 
   export let tickets: Ticket[];
   export let ticketGroups: Array<{ id: string; name: string; capacity: number }>;
 
+  export let title: string;
+  export let description: string;
+  export let group: { uid: string };
+  export let location: string;
   export let startsAt: Date | undefined = undefined;
   export let endsAt: Date | undefined = undefined;
 
@@ -202,6 +207,10 @@
     >
   </li>
 </ul>
+<section class="preview">
+  <FormEventBetaPreviewCard {...{ title, description, location, startsAt, endsAt, group }}
+  ></FormEventBetaPreviewCard>
+</section>
 <Modal noPadding bind:element={ticketEditModalElement} maxWidth="400px">
   {#if editingTicket}
     <FormTicketBeta
@@ -210,13 +219,13 @@
         tickets[tickets.findIndex((t) => t.id === ticket.id)] = { ...ticket };
         dispatch('save', ticket);
         ticketEditModalElement.close();
-        toasts.success("Billet sauvegardé")
+        toasts.success('Billet sauvegardé');
       }}
       on:delete={({ detail: ticket }) => {
         tickets = tickets.filter((t) => t.id !== ticket.id);
         dispatch('save', ticket);
         ticketEditModalElement.close();
-        toasts.success("Billet supprimé")
+        toasts.success('Billet supprimé');
       }}
     ></FormTicketBeta>
   {/if}

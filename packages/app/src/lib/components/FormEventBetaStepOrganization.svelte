@@ -7,23 +7,6 @@
   export let contactMail: string;
   export let title: string;
   export let description: string;
-  // export let group: {
-  //   id: string;
-  //   uid: string;
-  //   name: string;
-  //   pictureFile: string;
-  //   pictureFileDark: string;
-  // };
-  // export let pictureFile: string;
-  // export let uid: string;
-  // export let links: Array<{ name: string; value: string }>;
-  // export let coOrganizers: Array<{
-  //   id: string;
-  //   uid: string;
-  //   name: string;
-  //   pictureFile: string;
-  //   pictureFileDark: string;
-  // }>;
   export let startsAt: Date | undefined = undefined;
   export let endsAt: Date | undefined = undefined;
   export let location: string;

@@ -4,11 +4,13 @@
   import IconDelete from '~icons/mdi/backspace-outline';
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
+  import InputText from './InputText.svelte';
   const dispatch = createEventDispatcher<{
     input: { value: Date | null | undefined };
   }>();
 
   export let value: Date | undefined | null;
+  export let error: string | undefined = undefined;
   export let time = false;
   export let name: string | undefined = undefined;
   export let initial: Date | undefined = undefined;
@@ -43,6 +45,14 @@
     value = dateValue && timeValue ? new Date(`${dateValue}T${timeValue}`) : undefined;
     dispatch('input', { value });
   }
+
+  let inputDate: HTMLInputElement;
+  let inputTime: HTMLInputElement;
+
+  $: {
+    inputDate?.setCustomValidity(error ?? '');
+    inputTime?.setCustomValidity(error ?? '');
+  }
 </script>
 
 <InputField {label} {required}>
@@ -51,12 +61,14 @@
       <input
         {required}
         type="date"
+        bind:this={inputDate}
         name={name ? `${name}-date` : undefined}
         bind:value={dateValue}
       />
       <div class="separator"></div>
       <input
         {required}
+        bind:this={inputTime}
         type="time"
         name={name ? `${name}-time` : undefined}
         bind:value={timeValue}

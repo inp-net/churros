@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isBefore } from 'date-fns';
   import InputDate from './InputDate.svelte';
   import InputField from './InputField.svelte';
 
@@ -7,13 +8,17 @@
   export let label: string;
   export let time = false;
   export let required = false;
+
+  $: startBeforeEnd = !(start && end && isBefore(end, start));
+
+  $: error = !startBeforeEnd ? 'La date de début doit être avant la date de fin' : undefined;
 </script>
 
-<InputField {required} {label}>
+<InputField {required} {label} errors={error ? [error] : []}>
   <div class="date-range">
-    <InputDate {time} {required} label="" bind:value={start}></InputDate>
+    <InputDate {error} {time} {required} label="" bind:value={start}></InputDate>
     <span class="separator">à</span>
-    <InputDate {time} {required} label="" bind:value={end}></InputDate>
+    <InputDate {error} {time} {required} label="" bind:value={end}></InputDate>
   </div>
 </InputField>
 

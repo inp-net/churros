@@ -421,8 +421,9 @@ model Group {
   joinedByBookingTickets Ticket[]       @relation("autojoin")
 
   // For full-text search
-  search         Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
-  thirdPartyApps ThirdPartyApp[]
+  search              Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  thirdPartyApps      ThirdPartyApp[]
+  subjectToPromotions Promotion[]
 
   @@index([search], type: Gin)
 }
@@ -484,6 +485,10 @@ enum EventFrequency {
   Biweekly
 }
 
+enum EventDraftStep {
+  Draft,
+}
+
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
   id             String         @id @default(dbgenerated("nanoid('e:')"))
@@ -498,6 +503,7 @@ model Event {
   endsAt         DateTime
   notifiedAt     DateTime?      @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
   location       String         @default("") @db.VarChar(255)
+  draft          Boolean        @default(true)
   visibility     Visibility
   frequency      EventFrequency @default(Once)
   recurringUntil DateTime?
@@ -515,7 +521,8 @@ model Event {
   reactions      Reaction[]
 
   // For full-text search
-  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  search              Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  subjectToPromotions Promotion[]
 
   @@unique([groupId, uid])
   @@index([search], type: Gin)
@@ -548,6 +555,7 @@ model TicketGroup {
   id      String @id @default(dbgenerated("nanoid('tg:')"))
   eventId String
   name    String @db.VarChar(255)
+  uid     String @db.VarChar(255)
 
   capacity Int      @default(0) // 0 means unlimited, capacity is on the sum of sub-tickets registrations
   tickets  Ticket[]
@@ -562,6 +570,7 @@ model Ticket {
   uid                   String
   eventId               String
   ticketGroupId         String?
+  order                 Int             @default(0)
   name                  String          @db.VarChar(255)
   description           String          @db.VarChar(255)
   opensAt               DateTime?
@@ -908,13 +917,15 @@ model PromotionCode {
 }
 
 model Promotion {
-  id         String          @id @default(dbgenerated("nanoid('promo:')"))
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
-  validUntil DateTime?
-  type       PromotionType
-  codes      PromotionCode[]
-  validOn    Ticket[]
+  id             String          @id @default(dbgenerated("nanoid('promo:')"))
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  validUntil     DateTime?
+  type           PromotionType
+  codes          PromotionCode[]
+  validOnTickets Ticket[]
+  validOnEvents  Event[] // Valid on all tickets of these events
+  validOnGroups  Group[] // Valid on all events of these groups
 
   priceOverride Int
 }

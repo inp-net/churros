@@ -2,11 +2,11 @@
   import { DISPLAY_EVENT_FREQUENCY } from '$lib/display';
   import { EventFrequency } from '$lib/zeus';
   import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
+  import FormPicture from './FormPicture.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputDate from './InputDate.svelte';
-  import InputDateRange from './InputDateRange.svelte';
+  import InputLinks from './InputLinks.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
-  import InputText from './InputText.svelte';
 
   export let title: string;
   export let description: string;
@@ -15,12 +15,25 @@
   export let location: string;
   export let frequency: EventFrequency;
   export let recurringUntil: Date | undefined = undefined;
+  export let pictureFile: string;
+  export let uid: string;
+  export let links: Array<{ name: string; value: string }>;
 </script>
 
 <section class="inputs">
-  <InputText label="Lieu" bind:value={location}></InputText>
-  <InputDateRange time required label="Date" bind:start={startsAt} bind:end={endsAt}
-  ></InputDateRange>
+  <InputLinks label="Liens" bind:value={links}></InputLinks>
+  <section class="thumbnail">
+    <h2>Miniature</h2>
+    <FormPicture
+      object={{
+        id: 'event',
+        uid,
+        pictureFile,
+      }}
+      objectName="Event"
+      dark
+    ></FormPicture>
+  </section>
   <section class="recurrence">
     <h2>Récurrence</h2>
     <InputCheckbox

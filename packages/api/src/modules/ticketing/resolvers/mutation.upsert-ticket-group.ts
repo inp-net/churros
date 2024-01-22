@@ -65,6 +65,7 @@ builder.mutationField('upsertTicketGroup', (t) =>
         where: { id: id ?? '' },
         create: {
           ...data,
+          uid: slug(name),
           tickets: { connect: tickets.map((id) => ({ id })) },
         },
         update: {
