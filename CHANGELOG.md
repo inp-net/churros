@@ -18,6 +18,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Corrections
 
 - Rentrer des lettres dans les champs demandant des nombres (eg: prix d'un billet) ne renverront plus (NaN) mais 0 (!97) (@bardete)
+- Les évènements récurrents s'affichent désormais à la bonne date dans le planning (!98) (@bardete)
 
 ## [1.43.4] - 2024-01-18
 
