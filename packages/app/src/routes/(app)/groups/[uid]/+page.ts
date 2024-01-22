@@ -24,6 +24,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               website: true,
               email: true,
               groupId: true,
+              roomIsOpen: true,
               related: {
                 uid: true,
                 name: true,

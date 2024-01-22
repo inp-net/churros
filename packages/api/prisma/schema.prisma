@@ -383,6 +383,7 @@ model Group {
   type                 GroupType
   color                String    @db.VarChar(7)
   selfJoinable         Boolean   @default(false)
+  roomIsOpen           Boolean   @default(false)
 
   address         String @default("") @db.VarChar(255)
   description     String @default("") @db.VarChar(255)

@@ -251,7 +251,11 @@ api.get('/print-booking/:pseudoID', async (req, res) => {
     include: {
       ticket: {
         include: {
-          event: true,
+          event: {
+            include: {
+              group: true,
+            },
+          },
         },
       },
       author: true,
@@ -262,11 +266,10 @@ api.get('/print-booking/:pseudoID', async (req, res) => {
 
   const pdf = generatePDF(registration);
 
+  const filestem = `${registration.ticket.event.group.name} ${registration.ticket.event.title} - ${registration.ticket.name}`;
+
   res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader(
-    'Content-Disposition',
-    `filename="${registration.ticket.event.title} - ${registration.ticket.name}.pdf"`,
-  );
+  res.setHeader('Content-Disposition', `filename="${encodeURIComponent(filestem)}.pdf"`);
   pdf.pipe(res);
   pdf.end();
 

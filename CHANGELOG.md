@@ -18,8 +18,6 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Corrections
 
 - Rentrer des lettres dans les champs demandant des nombres (eg: prix d'un billet) ne renverront plus (NaN) mais 0 (!97) (@bardete)
-- Tenter d'imprimmer en .pdf un évènement avec des emojis dans le titre ne fais plus planter l'application (#776)
-- Correction d'un bug qui empêchait de modifier son propre profil
 - Les listes de membres affiché dans un groupe sont désormais bien trié par ordre alphabétiques selon les noms de famille (#492) (!96) (@soyerb)
 - Tenter de faire un lien vers un site sans donner d'URL dans la créationd'un post/évent est désormais impossible. (#558) (!96) (@soyerb)
 - Le bouton de création d'un sous club sur la page d'un club devient bien invisible si on a pas les droits (#537) (!96) (@soyerb)
@@ -35,6 +33,11 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Sécurité
 
 - Il n'est plus possible de spammer l'API, il y a maintenant du _rate-limiting_
+
+### Corrections
+
+- Tenter d'imprimmer en .pdf un évènement avec des emojis dans le titre ne fais plus planter l'application (#776)
+- Correction d'un bug qui empêchait de modifier son propre profil
 
 ## [1.43.3] - 2024-01-17
 
@@ -107,7 +110,9 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.43.3...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.43.4...main
+[1.43.4]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.4
+[1.43.4]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.4
 [1.43.3]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.3
 [1.43.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.2
 [1.43.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.1

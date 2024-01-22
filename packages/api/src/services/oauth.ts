@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { generateThirdPartyToken } from '../auth.js';
 import type { Context } from '../context.js';
 import { isLocalNetwork } from '../lib/urls.js';
-import { userIsInBureauOf } from '../objects/groups.js';
+import { userIsOnBoardOf } from '../objects/groups.js';
 import { log } from '../objects/logs.js';
 
 export const CLIENT_SECRET_LENGTH = 30;
@@ -184,7 +184,7 @@ builder.mutationField('registerApp', (t) =>
       ownerGroupUid: t.arg.string({ description: 'The UID of  the group that made this app' }),
     },
     authScopes(_, { ownerGroupUid }, { user }) {
-      return Boolean(user?.canEditGroups || userIsInBureauOf(user, ownerGroupUid));
+      return Boolean(user?.canEditGroups || userIsOnBoardOf(user, ownerGroupUid));
     },
     async resolve(_, { ownerGroupUid, ...data }) {
       const secretClear = nanoid(CLIENT_SECRET_LENGTH);

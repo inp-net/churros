@@ -46,7 +46,10 @@
   function fromStringifiedValue(valueString: string): typeof value {
     switch (type) {
       case 'number': {
-        return Number(valueString.replace(',', '.'));
+        const number = Number(valueString.replace(',', '.'));
+        if (Number.isNaN(number)) return 0;
+
+        return number;
       }
 
       case 'date':

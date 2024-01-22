@@ -59,6 +59,17 @@ export const TicketType = builder.prismaNode('Ticket', {
     uid: t.exposeString('uid'),
     ticketGroupId: t.exposeID('ticketGroupId', { nullable: true }),
     name: t.exposeString('name'),
+    fullName: t.string({
+      description: "Full name, including the ticket group's name if any",
+      async resolve({ name, ticketGroupId }) {
+        let group: { name: string } | undefined;
+        if (ticketGroupId) {
+          group =
+            (await prisma.ticketGroup.findUnique({ where: { id: ticketGroupId } })) ?? undefined;
+        }
+        return group ? `${group.name} - ${name}` : name;
+      },
+    }),
     description: t.exposeString('description'),
     descriptionHtml: t.string({ resolve: async ({ description }) => toHtml(description) }),
     opensAt: t.expose('opensAt', { type: DateTimeScalar, nullable: true }),
