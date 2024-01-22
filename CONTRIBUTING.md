@@ -12,6 +12,8 @@
 
 1. Cloner le dépôt
 
+> **NOTE:** Si vous souhaitez travailler sur le code et proposer des changements, faites un _fork_ et clonez celui-ci plutôt. (Voir [Merge requests](#merge-requests))
+
 ```
 git clone https://git.inpt.fr/inp-net/churros.git
 ```
@@ -34,15 +36,30 @@ yarn build
 yarn reset
 ```
 
-5. Démarrer les serveurs de développement (l'application est sur <http://localhost:5173>, l'API sur <http://localhost:4000>)
+5. Démarrer les serveurs de développement
 
 ```
 yarn dev
 ```
 
+Parmis d'autres choses, sont notamment lancés:
+
+- <http://localhost:5173>: l'application
+- <http://localhost:4000>: l'API
+- <http://localhost:8025>: un serveur mail de test reçevant tout les mails envoyés par l'application
+
 ### Développement
 
 [Voir le wiki](https://git.inpt.fr/inp-net/churros/-/wikis) pour se familiariser avec l'architecture du projet.
+
+### Merge requests
+
+Pour effectuer vos changements puis les proposer:
+
+1. [Créez un _fork_ de ce dépôt](https://git.inpt.fr/inp-net/churros/-/forks/new)
+2. Clonez ce _fork_ sur votre machine
+3. Faites vos commits sur ce _fork_
+4. Faites une _merge request_, demandant à intégrer les changements de _votre fork_ vers ce dépôt
 
 ### Conventions de commits
 
@@ -61,7 +78,7 @@ Où:
   - `feat`: ajout d'une nouvelle fonctionnalité
   - `fix`: correction d'un bug
   - `perf`: amélioration des performances
-  - `refactor`: modification du code qui ne change pas son comportement
+  - `refactor`: réorganisation du code, qui ne change pas son comportement
   - `style`: modifications d'apparence du site
   - `test`: ajout ou modification de tests
 - `<scope optionnel>` est un élément optionnel précisant la portée du commit (ex: frappe, events, login, oauth...). **Quand il n'y a pas de scope, ne pas mettre de parenthèses.**
