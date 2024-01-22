@@ -212,7 +212,6 @@
       {HELP_VISIBILITY_DYNAMIC([group, ...group.children])[visibility]}
     </p>
   </div>
-
   <section class="pills">
     {#await $zeus.query( { eventsOfGroup: [{ groupUid: group.uid }, { edges: { node: _articleQuery.event } }] }, )}
       <ButtonSecondary loading icon={IconEvent}>Évènement</ButtonSecondary>
