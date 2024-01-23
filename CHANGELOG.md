@@ -23,6 +23,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Le bouton de création d'un sous club sur la page d'un club devient bien invisible si on a pas les droits (#537) (!96) (@soyerb)
 - Il est plus possible de faire un post/event avec une date de début ou fin qui est dans le passé (#669) (@soyerb) (!85)
 - Impossible de créer un post/event avec une date de fin avant celle de début (#428) (!85) (@soyerb)
+- Correction d'un bug empêchant les cotisants d'une AE de rejoindre un club via l'inscription libre (!99) (@bardete)
 
 ### Autres
 
