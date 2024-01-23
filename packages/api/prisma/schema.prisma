@@ -486,38 +486,42 @@ enum EventFrequency {
 }
 
 enum EventDraftStep {
-  Draft,
+  Infos
+  Communication
+  Tickets
+  Organisation
+  Visibility
 }
 
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
-  id             String         @id @default(dbgenerated("nanoid('e:')"))
+  id             String          @id @default(dbgenerated("nanoid('e:')"))
   authorId       String?
   groupId        String
   contactMail    String
-  beneficiary    LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
-  description    String         @db.Text
-  uid            String         @db.VarChar(255)
-  title          String         @db.VarChar(255)
+  beneficiary    LydiaAccount?   @relation(fields: [lydiaAccountId], references: [id])
+  description    String          @db.Text
+  uid            String          @db.VarChar(255)
+  title          String          @db.VarChar(255)
   startsAt       DateTime
   endsAt         DateTime
-  notifiedAt     DateTime?      @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
-  location       String         @default("") @db.VarChar(255)
-  draft          Boolean        @default(true)
+  notifiedAt     DateTime?
+  location       String          @default("") @db.VarChar(255)
+  draftStep      EventDraftStep?
   visibility     Visibility
-  frequency      EventFrequency @default(Once)
+  frequency      EventFrequency  @default(Once)
   recurringUntil DateTime?
-  pictureFile    String         @default("") @db.VarChar(255)
+  pictureFile    String          @default("") @db.VarChar(255)
   managers       EventManager[]
-  author         User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  group          Group          @relation(fields: [groupId], references: [id])
-  coOrganizers   Group[]        @relation("coOrganizer")
+  author         User?           @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  group          Group           @relation(fields: [groupId], references: [id])
+  coOrganizers   Group[]         @relation("coOrganizer")
   tickets        Ticket[]
   ticketGroups   TicketGroup[]
   articles       Article[]
   lydiaAccountId String?
   links          Link[]
-  bannedUsers    User[]         @relation("bannedFromEvents")
+  bannedUsers    User[]          @relation("bannedFromEvents")
   reactions      Reaction[]
 
   // For full-text search

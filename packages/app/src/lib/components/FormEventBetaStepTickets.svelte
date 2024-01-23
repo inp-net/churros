@@ -1,6 +1,6 @@
 <script lang="ts">
+  import { toasts } from '$lib/toasts';
   import { createEventDispatcher } from 'svelte';
-  import { fly } from 'svelte/transition';
   import IconDelete from '~icons/mdi/delete-outline';
   import IconAdd from '~icons/mdi/plus';
   import ButtonGhost from './ButtonGhost.svelte';
@@ -10,17 +10,10 @@
   import InputNumber from './InputNumber.svelte';
   import InputText from './InputText.svelte';
   import Modal from './Modal.svelte';
-  import { toasts } from '$lib/toasts';
-  import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
   const dispatch = createEventDispatcher();
 
   export let tickets: Ticket[];
   export let ticketGroups: Array<{ id: string; name: string; capacity: number }>;
-
-  export let title: string;
-  export let description: string;
-  export let group: { uid: string };
-  export let location: string;
   export let startsAt: Date | undefined = undefined;
   export let endsAt: Date | undefined = undefined;
 
@@ -207,11 +200,8 @@
     >
   </li>
 </ul>
-<section class="preview">
-  <FormEventBetaPreviewCard {...{ title, description, location, startsAt, endsAt, group }}
-  ></FormEventBetaPreviewCard>
-</section>
-<Modal noPadding bind:element={ticketEditModalElement} maxWidth="400px">
+
+<Modal noPadding bind:element={ticketEditModalElement} maxWidth="600px">
   {#if editingTicket}
     <FormTicketBeta
       bind:ticket={editingTicket}
@@ -232,10 +222,6 @@
 </Modal>
 
 <style>
-  .editing-ticket {
-    width: 400px;
-  }
-
   .group {
     display: flex;
     align-items: center;
@@ -251,7 +237,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    width: 400px;
+    /* width: 400px; */
     list-style: none;
   }
 
@@ -286,10 +272,6 @@
 
   .ticket:hover {
     background-color: var(--hover-bg);
-  }
-
-  .ticket.highlighted {
-    border-color: var(--primary-border);
   }
 
   .ticket.dragging {

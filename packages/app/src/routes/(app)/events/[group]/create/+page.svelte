@@ -56,8 +56,7 @@
 </script>
 
 <div class="content">
-  <!-- <FormEvent {redirectAfterSave} bind:event availableLydiaAccounts={data.lydiaAccounts} /> -->
-  <FormEventBeta bind:event />
+  <FormEventBeta bind:event group={event.group} />
 </div>
 
 <style>

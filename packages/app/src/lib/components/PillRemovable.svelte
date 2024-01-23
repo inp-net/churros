@@ -9,7 +9,7 @@
   const dispatch = createEventDispatcher();
 </script>
 
-<Pill {image}>
+<Pill {image} {...$$restProps}>
   <slot />
   <div class="actions" slot="actions">
     <ButtonGhost

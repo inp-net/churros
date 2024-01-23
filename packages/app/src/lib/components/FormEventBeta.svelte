@@ -1,4 +1,14 @@
 <script lang="ts" context="module">
+  const steps = [
+    ['details', 'Infos'],
+    ['situation', 'Comm'],
+    ['tickets', 'Billets'],
+    ['organization', 'Organisation'],
+    ['visibility', 'Visibilité'],
+  ] as const;
+
+  export type FormEventStep = (typeof steps)[number][0];
+
   export const defaultTicket: (
     event: Pick<Event, 'tickets' | 'startsAt' | 'endsAt'>,
     id: string,
@@ -164,18 +174,22 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import ButtonPrimary from './ButtonPrimary.svelte';
-  import FormEventBetaStepDetails from './FormEventBetaStepDetails.svelte';
+  import FormEventBetaStepInfos from './FormEventBetaStepInfos.svelte';
   import FormEventBetaStepOrganization from './FormEventBetaStepOrganization.svelte';
-  import FormEventBetaStepSituation from './FormEventBetaStepSituation.svelte';
+  import FormEventBetaStepCommunication from './FormEventBetaStepCommunication.svelte';
   import FormEventBetaStepTickets from './FormEventBetaStepTickets.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
   import NavigationSteps from './NavigationSteps.svelte';
   import FormEventBetaStepVisibility from './FormEventBetaStepVisibility.svelte';
+  import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
 
   let dispatch = createEventDispatcher();
   let scrollableAreaElement: HTMLElement;
 
+  export let group: Event['group'];
+
   export let event: Event = {
+    group,
     title: 'Quoicoubaka',
     description: '',
     startsAt: new Date(),
@@ -200,22 +214,15 @@
     ],
   };
 
-  const steps: Array<readonly [string, string]> = [
-    ['details', 'Détails'],
-    ['situation', 'Situation'],
-    ['tickets', 'Billets'],
-    ['organization', 'Organisation'],
-    ['visibility', 'Visibilité'],
-  ];
-
   const stepIndex = (id: string) => steps.findIndex(([href, _]) => href === id);
 
-  let currentStep = 'tickets';
+  let currentStep: FormEventStep = 'tickets';
   const statusMessage = writable('');
 
-  function nextStepOrSubmit() {
+  function nextStepOrSubmit({ submitter }: SubmitEvent) {
+    const step = (submitter?.dataset['step'] ?? undefined) as FormEventStep | undefined;
     if (currentStep === 'visibility') dispatch('submit');
-    else currentStep = steps[stepIndex(currentStep) + 1][0];
+    else currentStep = step ?? steps[stepIndex(currentStep) + 1][0];
   }
 
   let scrolled = false;
@@ -235,39 +242,49 @@
     </div>
   </section>
   <div class="inputs-and-preview" bind:this={scrollableAreaElement}>
-    {#if currentStep === 'details'}
-      <FormEventBetaStepDetails
-        {...event}
-        bind:title={event.title}
-        bind:description={event.description}
-        bind:location={event.location}
-      ></FormEventBetaStepDetails>
-    {:else if currentStep === 'situation'}
-      <FormEventBetaStepSituation
-        {...event}
-        bind:location={event.location}
-        bind:frequency={event.frequency}
-        bind:recurringUntil={event.recurringUntil}
-        bind:pictureFile={event.pictureFile}
-      ></FormEventBetaStepSituation>
-    {:else if currentStep === 'organization'}
-      {#await $zeus.query( { lydiaAccounts: { id: true, name: true, group: { pictureFile: true, pictureFileDark: true, name: true } } }, )}
-        <LoadingSpinner></LoadingSpinner>
-      {:then { lydiaAccounts }}
-        <FormEventBetaStepOrganization
-          availableLydiaAccounts={lydiaAccounts}
+    <section class="inputs">
+      {#if currentStep === 'details'}
+        <FormEventBetaStepInfos
+          bind:group={event.group}
+          bind:title={event.title}
+          bind:location={event.location}
+          bind:startsAt={event.startsAt}
+          bind:endsAt={event.endsAt}
+          bind:frequency={event.frequency}
+          bind:recurringUntil={event.recurringUntil}
+        ></FormEventBetaStepInfos>
+      {:else if currentStep === 'situation'}
+        <FormEventBetaStepCommunication
+          uid={event.uid}
+          bind:description={event.description}
+          bind:pictureFile={event.pictureFile}
+          bind:links={event.links}
+        ></FormEventBetaStepCommunication>
+      {:else if currentStep === 'organization'}
+        {#await $zeus.query( { lydiaAccounts: { id: true, name: true, group: { pictureFile: true, pictureFileDark: true, name: true } } }, )}
+          <LoadingSpinner></LoadingSpinner>
+        {:then { lydiaAccounts }}
+          <FormEventBetaStepOrganization
+            availableLydiaAccounts={lydiaAccounts}
+            {...event}
+            bind:lydiaAccount={event.beneficiary}
+            bind:contactMail={event.contactMail}
+          ></FormEventBetaStepOrganization>
+        {/await}
+      {:else if currentStep === 'tickets'}
+        <FormEventBetaStepTickets
           {...event}
-          bind:lydiaAccount={event.beneficiary}
-          bind:contactMail={event.contactMail}
-        ></FormEventBetaStepOrganization>
-      {/await}
-    {:else if currentStep === 'tickets'}
-      <FormEventBetaStepTickets bind:ticketGroups={event.ticketGroups} bind:tickets={event.tickets}
-      ></FormEventBetaStepTickets>
-    {:else if currentStep === 'visibility'}
-      <FormEventBetaStepVisibility {...event} bind:visibility={event.visibility}
-      ></FormEventBetaStepVisibility>
-    {/if}
+          bind:ticketGroups={event.ticketGroups}
+          bind:tickets={event.tickets}
+        ></FormEventBetaStepTickets>
+      {:else if currentStep === 'visibility'}
+        <FormEventBetaStepVisibility {...event} bind:visibility={event.visibility}
+        ></FormEventBetaStepVisibility>
+      {/if}
+    </section>
+    <section class="preview">
+      <FormEventBetaPreviewCard {currentStep} {...event}></FormEventBetaPreviewCard>
+    </section>
   </div>
   <nav class="navigate-steps">
     <p class="status">
@@ -320,7 +337,9 @@
     min-height: 0;
     padding: 1rem 1.5rem;
     width: 100%;
-    /* margin: 0 auto; */
+  }
+
+  .inputs {
     overflow: hidden auto;
   }
 

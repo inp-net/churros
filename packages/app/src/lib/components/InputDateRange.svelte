@@ -16,16 +16,26 @@
 
 <InputField {required} {label} errors={error ? [error] : []}>
   <div class="date-range">
-    <InputDate {error} {time} {required} label="" bind:value={start}></InputDate>
-    <span class="separator">à</span>
-    <InputDate {error} {time} {required} label="" bind:value={end}></InputDate>
+    <div class="start">
+      <InputDate {error} {time} {required} label="" bind:value={start}></InputDate>
+    </div>
+    <div class="end">
+      <span class="separator">à</span>
+      <InputDate {error} {time} {required} label="" bind:value={end}></InputDate>
+    </div>
   </div>
 </InputField>
 
 <style>
-  .date-range {
+  .date-range, .date-range > div {
     display: flex;
     gap: 0.5rem;
     align-items: center;
+  }
+
+  .date-range {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
   }
 </style>

@@ -4,6 +4,8 @@
   import { formatEventDates } from '$lib/dates';
   import { EventFrequency, Visibility } from '../../zeus';
   import BadgeVisibility from './BadgeVisibility.svelte';
+  import type { FormEventStep } from './FormEventBeta.svelte';
+  export let currentStep: FormEventStep;
   export let title = '';
   export let description = '';
   export let startsAt: Date | undefined = undefined;
@@ -21,7 +23,7 @@
       <p class:empty={!title} class="title">
         {title || 'Pas de titre'}
       </p>
-      {#if visibility}
+      {#if visibility && currentStep === 'visibility'}
         <BadgeVisibility {visibility} />
       {/if}
     </div>

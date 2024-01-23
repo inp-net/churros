@@ -1,17 +1,8 @@
 <script lang="ts">
-  import { EventFrequency } from '$lib/zeus';
-  import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
   import InputLydiaAccounts from './InputLydiaAccounts.svelte';
   import InputText from './InputText.svelte';
 
   export let contactMail: string;
-  export let title: string;
-  export let description: string;
-  export let startsAt: Date | undefined = undefined;
-  export let endsAt: Date | undefined = undefined;
-  export let location: string;
-  export let frequency: EventFrequency = EventFrequency.Once;
-  export let recurringUntil: Date | undefined = undefined;
 
   export let lydiaAccount:
     | undefined
@@ -59,11 +50,7 @@
   <section class="managers"></section>
 </section>
 
-<section class="preview">
-  <FormEventBetaPreviewCard
-    {...{ title, description, endsAt, startsAt, frequency, location, recurringUntil }}
-  ></FormEventBetaPreviewCard>
-</section>
+
 
 <style>
   .inputs section {

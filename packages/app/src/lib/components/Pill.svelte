@@ -1,7 +1,13 @@
 <script lang="ts">
+  import { crossfade } from 'svelte/transition';
+
   export let image = '';
   export let imageAlt = '';
   export let clickable = false;
+
+  export let transitionKey: string | undefined = undefined;
+  export let transitionPair: ReturnType<typeof crossfade> | undefined = undefined;
+  const [transitionSend, transitionReceive] = transitionPair ?? [() => ({}), () => ({})];
 </script>
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
@@ -12,6 +18,8 @@
   class="pill"
   type="button"
   class:clickable
+  in:transitionReceive={{ key: transitionKey }}
+  out:transitionSend={{ key: transitionKey }}
 >
   {#if image}
     <img src={image} alt={imageAlt} class="logo" />

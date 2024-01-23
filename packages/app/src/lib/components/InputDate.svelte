@@ -117,6 +117,14 @@
     border-radius: var(--radius-block);
   }
 
+  .date-and-time input[type=date] {
+    min-width: 17ch;
+  }
+
+  .date-and-time input[type=time] {
+    min-width: 12ch;
+  }
+
   .date-and-time input:first-child {
     border-right: none;
     border-top-right-radius: 0;

@@ -1,6 +1,9 @@
 <script lang="ts">
   import IconCheck from '~icons/mdi/check';
   import ButtonGhost from './ButtonGhost.svelte';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
 
   export let steps: ReadonlyArray<readonly [string, string]>;
   export let currentStep: string;
@@ -18,8 +21,11 @@
       {#each steps as [id, label]}
         <li class="progress-step" class:current={id === currentStep} class:done={stepIsDone(id)}>
           <ButtonGhost
+            data-step={id}
+            type={stepIsDone(id) ? 'button' : 'submit'}
             on:click={() => {
-              currentStep = id;
+              if (stepIsDone(id)) currentStep = id;
+              else dispatch('submit', { step: id });
             }}
           >
             <div class="button-inner">

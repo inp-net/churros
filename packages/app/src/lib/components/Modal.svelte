@@ -40,7 +40,7 @@
   class="{$isDark ? 'dark' : 'light'} {$$restProps.class}"
   class:no-padding={noPadding}
   bind:this={element}
-  style:max-width={maxWidth}
+  style:max-width={`calc(min(100vw, ${maxWidth}))`}
 >
   <slot />
 </dialog>
@@ -55,6 +55,7 @@
     background: var(--bg);
     border: none;
     border-radius: var(--radius-block);
+    min-width: 0;
   }
 
   dialog.no-padding {

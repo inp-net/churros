@@ -19,6 +19,27 @@
   import PillRemovable from './PillRemovable.svelte';
   import InputLinks from './InputLinks.svelte';
   import Modal from './Modal.svelte';
+  import { fromYearTier } from '$lib/dates';
+  import { uniq, uniqBy } from 'lodash';
+  import { crossfade, fly, slide } from 'svelte/transition';
+  import { quintOut } from 'svelte/easing';
+
+  const transitionPair = crossfade({
+    duration: (d) => Math.sqrt(d * 50),
+    fallback(node, _params) {
+      const style = getComputedStyle(node);
+      const transform = style.transform === 'none' ? '' : style.transform;
+
+      return {
+        duration: 600,
+        easing: quintOut,
+        css: (t) => `
+				transform: ${transform} scale(${t});
+				opacity: ${t}
+			`,
+      };
+    },
+  });
 
   const dispatch = createEventDispatcher();
 
@@ -39,6 +60,12 @@
     ['external', 'Extés'],
     // ['managers', 'Managers'],
   ];
+
+  // Prevent duplicates
+  $: ticket.openToPromotions = uniq(ticket.openToPromotions.map(Number));
+  $: ticket.openToGroups = uniqBy(ticket.openToGroups, (g) => g.id);
+  $: ticket.openToMajors = uniqBy(ticket.openToMajors, (m) => m.id);
+  $: ticket.openToSchools = uniqBy(ticket.openToSchools, (s) => s.id);
 
   function toAudienceOption(
     ticket: Pick<Ticket, 'openToExternal' | 'openToAlumni' | 'onlyManagersCanProvide'>,
@@ -94,6 +121,7 @@
 >
   <div class="inputs">
     <InputText autofocus required label="Nom" bind:value={ticket.name}></InputText>
+    <InputText label="Description" bind:value={ticket.description}></InputText>
     <!-- <InputText label="Description" bind:value={ticket.description}></InputText> -->
     <InputDateRange time label="Shotgun" bind:start={ticket.opensAt} bind:end={ticket.closesAt}
     ></InputDateRange>
@@ -127,62 +155,14 @@
     {#if toAudienceOption(ticket) !== 'external'}
       <section class="constraints">
         <h2>Limiter à</h2>
-        <div class="applied-constraints">
-          {#if ticket.openToApprentices === true}
-            <PillRemovable
-              on:remove={() => {
-                // eslint-disable-next-line unicorn/no-null
-                ticket.openToApprentices = null;
-              }}>Apprenti·e·s</PillRemovable
-            >
-          {:else if ticket.openToApprentices === false}
-            <PillRemovable
-              on:remove={() => {
-                // eslint-disable-next-line unicorn/no-null
-                ticket.openToApprentices = null;
-              }}>Étudiant·e·s</PillRemovable
-            >
-          {/if}
-          {#each ticket.openToPromotions as graduationYear}
-            <PillRemovable
-              on:remove={() => {
-                ticket.openToPromotions = ticket.openToPromotions.filter(
-                  (year) => year !== graduationYear,
-                );
-              }}>Promo {graduationYear}</PillRemovable
-            >
-          {/each}
-          {#each ticket.openToMajors as major (major.id)}
-            <PillRemovable
-              on:remove={() => {
-                ticket.openToMajors = ticket.openToMajors.filter((m) => m.id !== major.id);
-              }}>{major.shortName}</PillRemovable
-            >
-          {/each}
-          {#each ticket.openToGroups as group (group.id)}
-            <PillRemovable
-              image={groupLogoSrc($isDark, group)}
-              on:remove={() => {
-                ticket.openToGroups = ticket.openToGroups.filter((g) => g.id !== group.id);
-              }}>Membres de {group.name}</PillRemovable
-            >
-          {/each}
-          {#each ticket.openToSchools as school (school.id)}
-            <PillRemovable
-              image="//schools/{school.uid}.png"
-              on:remove={() => {
-                ticket.openToSchools = ticket.openToSchools.filter((s) => s.id !== school.id);
-              }}>{school.name}</PillRemovable
-            >
-          {/each}
-        </div>
-        <hr />
-        <div class="add-constraints">
+        <div class="add-constraints" transition:slide|global>
           {#await $zeus.query( { majors: { id: true, shortName: true, name: true }, groups: [{}, { id: true, uid: true, name: true, pictureFile: true, pictureFileDark: true }] }, )}
             <LoadingSpinner></LoadingSpinner>
           {:then { majors: allMajors, groups: allGroups }}
             {#if ticket.openToApprentices === null || ticket.openToApprentices === undefined}
               <Pill
+                transitionKey="apprentices-only"
+                {transitionPair}
                 clickable
                 on:click={() => {
                   ticket.openToApprentices = true;
@@ -192,6 +172,8 @@
                 Apprenti·e·s</Pill
               >
               <Pill
+                transitionKey="students-only"
+                {transitionPair}
                 clickable
                 on:click={() => {
                   ticket.openToApprentices = false;
@@ -202,6 +184,8 @@
               >
             {/if}
             <Pill
+              transitionKey="year"
+              {transitionPair}
               clickable={!selectingGraduationYearConstraint}
               on:click={() => {
                 selectingGraduationYearConstraint = true;
@@ -234,6 +218,8 @@
               {/if}
             </Pill>
             <Pill
+              transitionKey="major"
+              {transitionPair}
               clickable={!selectingMajorConstraint}
               on:click={() => {
                 selectingMajorConstraint = true;
@@ -276,6 +262,8 @@
             >
               <div class="input-group-pill" slot="input" let:openPicker>
                 <Pill
+                  transitionKey="group"
+                  {transitionPair}
                   clickable
                   on:click={() => {
                     openPicker();
@@ -298,13 +286,104 @@
               }}
             >
               <div class="school-input-pill" slot="input" let:openPicker>
-                <Pill clickable on:click={openPicker}>
+                <Pill clickable on:click={openPicker} transitionKey="school" {transitionPair}>
                   <IconAdd></IconAdd>
                   École
                 </Pill>
               </div>
             </InputSchools>
+            {#if ![1, 2, 3].every((y) => ticket.openToPromotions.includes(fromYearTier(y)))}
+              <Pill
+                {transitionPair}
+                transitionKey="year"
+                clickable
+                on:click={() => {
+                  ticket.openToPromotions = [
+                    ...ticket.openToPromotions,
+                    ...[1, 2, 3].map(fromYearTier),
+                  ];
+                }}
+              >
+                <IconAdd></IconAdd>
+                1As, 2As et 3As
+              </Pill>
+            {/if}
+            {#if !ticket.openToPromotions.includes(fromYearTier(1))}
+              <Pill
+                {transitionPair}
+                transitionKey="year"
+                clickable
+                on:click={() => {
+                  ticket.openToPromotions = [...ticket.openToPromotions, fromYearTier(1)];
+                }}
+              >
+                <IconAdd></IconAdd>
+                1As
+              </Pill>
+            {/if}
           {/await}
+        </div>
+        <hr />
+        <div class="applied-constraints">
+          {#if ticket.openToApprentices === true}
+            <PillRemovable
+              transitionKey="apprentices-only"
+              {transitionPair}
+              on:remove={() => {
+                // eslint-disable-next-line unicorn/no-null
+                ticket.openToApprentices = null;
+              }}>Apprenti·e·s</PillRemovable
+            >
+          {:else if ticket.openToApprentices === false}
+            <PillRemovable
+              transitionKey="students-only"
+              {transitionPair}
+              on:remove={() => {
+                // eslint-disable-next-line unicorn/no-null
+                ticket.openToApprentices = null;
+              }}>Étudiant·e·s</PillRemovable
+            >
+          {/if}
+          {#each ticket.openToPromotions as graduationYear}
+            <PillRemovable
+              transitionKey="year"
+              {transitionPair}
+              on:remove={() => {
+                ticket.openToPromotions = ticket.openToPromotions.filter(
+                  (year) => year !== graduationYear,
+                );
+              }}>Promo {graduationYear}</PillRemovable
+            >
+          {/each}
+          {#each ticket.openToMajors as major (major.id)}
+            <PillRemovable
+              transitionKey="major"
+              {transitionPair}
+              on:remove={() => {
+                ticket.openToMajors = ticket.openToMajors.filter((m) => m.id !== major.id);
+              }}>{major.shortName}</PillRemovable
+            >
+          {/each}
+          {#each ticket.openToGroups as group (group.id)}
+            <PillRemovable
+              transitionKey="group"
+              {transitionPair}
+              image={groupLogoSrc($isDark, group)}
+              on:remove={() => {
+                ticket.openToGroups = ticket.openToGroups.filter((g) => g.id !== group.id);
+              }}>Membres de {group.name}</PillRemovable
+            >
+          {/each}
+          {#each ticket.openToSchools as school (school.id)}
+            <PillRemovable
+              transitionKey="school"
+              {transitionPair}
+              image="//schools/{school.uid}.png"
+              on:remove={() => {
+                ticket.openToSchools = ticket.openToSchools.filter((s) => s.id !== school.id);
+              }}>{school.name}</PillRemovable
+            >
+          {/each}
         </div>
       </section>
     {/if}
@@ -368,6 +447,10 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+  }
+
+  .add-constraints {
+    align-content: start;
   }
 
   .add-constraints form {
