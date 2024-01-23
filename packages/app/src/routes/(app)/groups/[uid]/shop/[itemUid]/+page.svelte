@@ -109,11 +109,10 @@
       <p>Price: {shopItem.price} €</p>
       <InputNumber
         bind:value={quantity}
-        min="1"
-        {max}
         label="Quantité"
         on:change={() => {
           if (quantity < 0) quantity = 0;
+          if (quantity > max) quantity = max;
         }}
       />
 
