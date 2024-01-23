@@ -24,6 +24,8 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Il est plus possible de faire un post/event avec une date de début ou fin qui est dans le passé (#669) (@soyerb) (!85)
 - Impossible de créer un post/event avec une date de fin avant celle de début (#428) (!85) (@soyerb)
 - Les évènements récurrents s'affichent désormais à la bonne date dans le planning (!98) (@bardete)
+- Correction d'un bug empêchant les cotisants d'une AE de rejoindre un club via l'inscription libre (!99) (@bardete)
+
 
 ### Autres
 
