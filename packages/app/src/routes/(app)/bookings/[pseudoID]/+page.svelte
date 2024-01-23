@@ -135,11 +135,13 @@
     {/if}
   {/if}
 
-  <section class="print">
-    <ButtonSecondary data-sveltekit-reload href="../{code}.pdf" icon={IconDownload}
-      >Imprimer / Télécharger en PDF</ButtonSecondary
-    >
-  </section>
+  {#if !cancelled}
+    <section class="print">
+      <ButtonSecondary data-sveltekit-reload href="../{code}.pdf" icon={IconDownload}
+        >Imprimer / Télécharger en PDF</ButtonSecondary
+      >
+    </section>
+  {/if}
 
   <section class="code">
     {#if cancelled}
