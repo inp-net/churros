@@ -151,14 +151,6 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                   },
                 },
               ],
-              shopItems: {
-                id: true,
-                name: true,
-                price: true,
-                pictures: {
-                  path: true,
-                },
-              },
             }
           : // Unauthenticated query
             {
