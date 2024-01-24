@@ -41,7 +41,7 @@
     },
   });
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ save: Ticket; delete: Ticket }>();
 
   export let ticket: Ticket;
 
@@ -120,280 +120,280 @@
   }}
 >
   <div class="inputs">
-    <InputText autofocus required label="Nom" bind:value={ticket.name}></InputText>
-    <InputText label="Description" bind:value={ticket.description}></InputText>
-    <!-- <InputText label="Description" bind:value={ticket.description}></InputText> -->
-    <InputDateRange time label="Shotgun" bind:start={ticket.opensAt} bind:end={ticket.closesAt}
-    ></InputDateRange>
-    <div class="price-and-capacity">
-      <InputNumber label="Prix" bind:value={ticket.price}></InputNumber>
-      <InputNumber label="Nombre de places" bind:value={ticket.capacity}></InputNumber>
+    <div class="info">
+      <div class="price-and-capacity">
+        <InputNumber label="Prix" bind:value={ticket.price}></InputNumber>
+        <InputNumber label="Nombre de places" bind:value={ticket.capacity}></InputNumber>
+      </div>
+      <InputText required label="Nom" bind:value={ticket.name}></InputText>
+      <InputText label="Description" bind:value={ticket.description}></InputText>
+      <details>
+        <summary>Liens accessibles après réservation…</summary>
+        <InputLinks label="" bind:value={ticket.links}></InputLinks>
+      </details>
+      <InputDateRange time label="Shotgun" bind:start={ticket.opensAt} bind:end={ticket.closesAt}
+      ></InputDateRange>
+      <label class="godchildren">
+        <InputCheckbox
+          on:change={({ target }) => {
+            if (!(target instanceof HTMLInputElement)) return;
+            ticket.godsonLimit = target.checked ? 1 : 0;
+          }}
+          value={ticket.godsonLimit > 0}
+          label=""
+        ></InputCheckbox>
+        <div class:muted={ticket.godsonLimit === 0}>
+          Autoriser jusqu'à <InputNumber inline label="" bind:value={ticket.godsonLimit}
+          ></InputNumber> parrainages
+        </div>
+      </label>
     </div>
     <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="godchildren">
-      <InputCheckbox
-        on:change={({ target }) => {
-          if (!(target instanceof HTMLInputElement)) return;
-          ticket.godsonLimit = target.checked ? 1 : 0;
-        }}
-        value={ticket.godsonLimit > 0}
+    <div class="limits">
+      <InputSelectOne
         label=""
-      ></InputCheckbox>
-      <div class:muted={ticket.godsonLimit === 0}>
-        Autoriser jusqu'à <InputNumber inline label="" bind:value={ticket.godsonLimit}
-        ></InputNumber> parrainages
-      </div>
-    </label>
-    <InputSelectOne
-      label=""
-      options={audienceOptions}
-      value={toAudienceOption(ticket)}
-      on:input={({ detail: value }) => {
-        fromAudienceOption(value);
-      }}
-    ></InputSelectOne>
-    {#if toAudienceOption(ticket) !== 'external'}
-      <section class="constraints">
-        <h2>Limiter à</h2>
-        <div class="add-constraints" transition:slide|global>
-          {#await $zeus.query( { majors: { id: true, shortName: true, name: true }, groups: [{}, { id: true, uid: true, name: true, pictureFile: true, pictureFileDark: true }] }, )}
-            <LoadingSpinner></LoadingSpinner>
-          {:then { majors: allMajors, groups: allGroups }}
-            {#if ticket.openToApprentices === null || ticket.openToApprentices === undefined}
-              <Pill
-                transitionKey="apprentices-only"
-                {transitionPair}
-                clickable
-                on:click={() => {
-                  ticket.openToApprentices = true;
-                }}
-              >
-                <IconAdd></IconAdd>
-                Apprenti·e·s</Pill
-              >
-              <Pill
-                transitionKey="students-only"
-                {transitionPair}
-                clickable
-                on:click={() => {
-                  ticket.openToApprentices = false;
-                }}
-              >
-                <IconAdd></IconAdd>
-                Étudiant·e·s</Pill
-              >
-            {/if}
-            <Pill
-              transitionKey="year"
-              {transitionPair}
-              clickable={!selectingGraduationYearConstraint}
-              on:click={() => {
-                selectingGraduationYearConstraint = true;
-              }}
-            >
-              <IconAdd></IconAdd>
-              Promo
-              {#if selectingGraduationYearConstraint}
-                <form
-                  on:submit|preventDefault={() => {
-                    if (!selectedGraduationYearConstraint) return;
-                    ticket.openToPromotions = [
-                      ...ticket.openToPromotions,
-                      selectedGraduationYearConstraint,
-                    ];
-                    selectingGraduationYearConstraint = false;
-                  }}
-                >
-                  <!-- svelte-ignore a11y-autofocus -->
-                  <input
-                    autofocus
-                    class="new-constraint-input"
-                    pattern="[0-9]+"
-                    type="text"
-                    placeholder="Année"
-                    bind:value={selectedGraduationYearConstraint}
-                  />
-                  <ButtonInk submits>OK</ButtonInk>
-                </form>
-              {/if}
-            </Pill>
-            <Pill
-              transitionKey="major"
-              {transitionPair}
-              clickable={!selectingMajorConstraint}
-              on:click={() => {
-                selectingMajorConstraint = true;
-              }}
-            >
-              <IconAdd></IconAdd>
-              Filière
-              {#if selectingMajorConstraint}
-                <form
-                  on:submit|preventDefault={() => {
-                    if (!selectedMajorConstraint) return;
-                    const selectedMajor = allMajors.find(
-                      ({ id }) => id === selectedMajorConstraint,
-                    );
-                    if (!selectedMajor) return;
-                    ticket.openToMajors = [...ticket.openToMajors, selectedMajor];
-                    selectingMajorConstraint = false;
-                  }}
-                >
-                  <select bind:value={selectedMajorConstraint}>
-                    {#each allMajors as major}
-                      <option value={major.id}>{major.shortName}</option>
-                    {/each}
-                  </select>
-                  <ButtonInk submits>OK</ButtonInk>
-                </form>
-              {/if}
-            </Pill>
-            <InputGroups
-              on:close={() => {
-                if (selectedGroupMemberConstraint)
-                  ticket.openToGroups = [...ticket.openToGroups, selectedGroupMemberConstraint];
-                selectedGroupMemberConstraint = undefined;
-              }}
-              label=""
-              options={allGroups}
-              disallowed={ticket.openToGroups}
-              disallowedExplanation={() => 'Déjà dans les contraintes'}
-              bind:group={selectedGroupMemberConstraint}
-            >
-              <div class="input-group-pill" slot="input" let:openPicker>
+        options={audienceOptions}
+        value={toAudienceOption(ticket)}
+        on:input={({ detail: value }) => {
+          fromAudienceOption(value);
+        }}
+      ></InputSelectOne>
+      {#if toAudienceOption(ticket) !== 'external'}
+        <section class="constraints">
+          <h2>Limiter à</h2>
+          <div class="add-constraints" transition:slide|global>
+            {#await $zeus.query( { majors: { id: true, shortName: true, name: true }, groups: [{}, { id: true, uid: true, name: true, pictureFile: true, pictureFileDark: true }] }, )}
+              <LoadingSpinner></LoadingSpinner>
+            {:then { majors: allMajors, groups: allGroups }}
+              {#if ticket.openToApprentices === null || ticket.openToApprentices === undefined}
                 <Pill
-                  transitionKey="group"
+                  transitionKey="apprentices-only"
                   {transitionPair}
                   clickable
                   on:click={() => {
-                    openPicker();
+                    ticket.openToApprentices = true;
                   }}
                 >
                   <IconAdd></IconAdd>
-                  Groupe
-                </Pill>
-              </div>
-            </InputGroups>
-            <InputSchools
-              label=""
-              bind:school={selectedSchoolConstraint}
-              disallowed={ticket.openToSchools}
-              disallowedExplanation={() => 'Déjà dans les contraintes du billet'}
-              on:close={() => {
-                if (selectedSchoolConstraint)
-                  ticket.openToSchools = [...ticket.openToSchools, selectedSchoolConstraint];
-                selectedSchoolConstraint = undefined;
-              }}
-            >
-              <div class="school-input-pill" slot="input" let:openPicker>
-                <Pill clickable on:click={openPicker} transitionKey="school" {transitionPair}>
+                  Apprenti·e·s</Pill
+                >
+                <Pill
+                  transitionKey="students-only"
+                  {transitionPair}
+                  clickable
+                  on:click={() => {
+                    ticket.openToApprentices = false;
+                  }}
+                >
                   <IconAdd></IconAdd>
-                  École
+                  Étudiant·e·s</Pill
+                >
+              {/if}
+              <Pill
+                transitionKey="year"
+                {transitionPair}
+                clickable={!selectingGraduationYearConstraint}
+                on:click={() => {
+                  selectingGraduationYearConstraint = true;
+                }}
+              >
+                <IconAdd></IconAdd>
+                Promo
+                {#if selectingGraduationYearConstraint}
+                  <form
+                    on:submit|preventDefault={() => {
+                      if (!selectedGraduationYearConstraint) return;
+                      ticket.openToPromotions = [
+                        ...ticket.openToPromotions,
+                        selectedGraduationYearConstraint,
+                      ];
+                      selectingGraduationYearConstraint = false;
+                    }}
+                  >
+                    <!-- svelte-ignore a11y-autofocus -->
+                    <input
+                      autofocus
+                      class="new-constraint-input"
+                      pattern="[0-9]+"
+                      type="text"
+                      placeholder="Année"
+                      bind:value={selectedGraduationYearConstraint}
+                    />
+                    <ButtonInk submits>OK</ButtonInk>
+                  </form>
+                {/if}
+              </Pill>
+              <Pill
+                transitionKey="major"
+                {transitionPair}
+                clickable={!selectingMajorConstraint}
+                on:click={() => {
+                  selectingMajorConstraint = true;
+                }}
+              >
+                <IconAdd></IconAdd>
+                Filière
+                {#if selectingMajorConstraint}
+                  <form
+                    on:submit|preventDefault={() => {
+                      if (!selectedMajorConstraint) return;
+                      const selectedMajor = allMajors.find(
+                        ({ id }) => id === selectedMajorConstraint,
+                      );
+                      if (!selectedMajor) return;
+                      ticket.openToMajors = [...ticket.openToMajors, selectedMajor];
+                      selectingMajorConstraint = false;
+                    }}
+                  >
+                    <select bind:value={selectedMajorConstraint}>
+                      {#each allMajors as major}
+                        <option value={major.id}>{major.shortName}</option>
+                      {/each}
+                    </select>
+                    <ButtonInk submits>OK</ButtonInk>
+                  </form>
+                {/if}
+              </Pill>
+              <InputGroups
+                on:close={() => {
+                  if (selectedGroupMemberConstraint)
+                    ticket.openToGroups = [...ticket.openToGroups, selectedGroupMemberConstraint];
+                  selectedGroupMemberConstraint = undefined;
+                }}
+                label=""
+                options={allGroups}
+                disallowed={ticket.openToGroups}
+                disallowedExplanation={() => 'Déjà dans les contraintes'}
+                bind:group={selectedGroupMemberConstraint}
+              >
+                <div class="input-group-pill" slot="input" let:openPicker>
+                  <Pill
+                    transitionKey="group"
+                    {transitionPair}
+                    clickable
+                    on:click={() => {
+                      openPicker();
+                    }}
+                  >
+                    <IconAdd></IconAdd>
+                    Groupe
+                  </Pill>
+                </div>
+              </InputGroups>
+              <InputSchools
+                label=""
+                bind:school={selectedSchoolConstraint}
+                disallowed={ticket.openToSchools}
+                disallowedExplanation={() => 'Déjà dans les contraintes du billet'}
+                on:close={() => {
+                  if (selectedSchoolConstraint)
+                    ticket.openToSchools = [...ticket.openToSchools, selectedSchoolConstraint];
+                  selectedSchoolConstraint = undefined;
+                }}
+              >
+                <div class="school-input-pill" slot="input" let:openPicker>
+                  <Pill clickable on:click={openPicker} transitionKey="school" {transitionPair}>
+                    <IconAdd></IconAdd>
+                    École
+                  </Pill>
+                </div>
+              </InputSchools>
+              {#if ![1, 2, 3].every((y) => ticket.openToPromotions.includes(fromYearTier(y)))}
+                <Pill
+                  {transitionPair}
+                  transitionKey="year"
+                  clickable
+                  on:click={() => {
+                    ticket.openToPromotions = [
+                      ...ticket.openToPromotions,
+                      ...[1, 2, 3].map(fromYearTier),
+                    ];
+                  }}
+                >
+                  <IconAdd></IconAdd>
+                  1As, 2As et 3As
                 </Pill>
-              </div>
-            </InputSchools>
-            {#if ![1, 2, 3].every((y) => ticket.openToPromotions.includes(fromYearTier(y)))}
-              <Pill
+              {/if}
+              {#if !ticket.openToPromotions.includes(fromYearTier(1))}
+                <Pill
+                  {transitionPair}
+                  transitionKey="year"
+                  clickable
+                  on:click={() => {
+                    ticket.openToPromotions = [...ticket.openToPromotions, fromYearTier(1)];
+                  }}
+                >
+                  <IconAdd></IconAdd>
+                  1As
+                </Pill>
+              {/if}
+            {/await}
+          </div>
+          <hr />
+          <div class="applied-constraints">
+            {#if ticket.openToApprentices === true}
+              <PillRemovable
+                transitionKey="apprentices-only"
                 {transitionPair}
-                transitionKey="year"
-                clickable
-                on:click={() => {
-                  ticket.openToPromotions = [
-                    ...ticket.openToPromotions,
-                    ...[1, 2, 3].map(fromYearTier),
-                  ];
-                }}
+                on:remove={() => {
+                  // eslint-disable-next-line unicorn/no-null
+                  ticket.openToApprentices = null;
+                }}>Apprenti·e·s</PillRemovable
               >
-                <IconAdd></IconAdd>
-                1As, 2As et 3As
-              </Pill>
-            {/if}
-            {#if !ticket.openToPromotions.includes(fromYearTier(1))}
-              <Pill
+            {:else if ticket.openToApprentices === false}
+              <PillRemovable
+                transitionKey="students-only"
                 {transitionPair}
-                transitionKey="year"
-                clickable
-                on:click={() => {
-                  ticket.openToPromotions = [...ticket.openToPromotions, fromYearTier(1)];
-                }}
+                on:remove={() => {
+                  // eslint-disable-next-line unicorn/no-null
+                  ticket.openToApprentices = null;
+                }}>Étudiant·e·s</PillRemovable
               >
-                <IconAdd></IconAdd>
-                1As
-              </Pill>
             {/if}
-          {/await}
-        </div>
-        <hr />
-        <div class="applied-constraints">
-          {#if ticket.openToApprentices === true}
-            <PillRemovable
-              transitionKey="apprentices-only"
-              {transitionPair}
-              on:remove={() => {
-                // eslint-disable-next-line unicorn/no-null
-                ticket.openToApprentices = null;
-              }}>Apprenti·e·s</PillRemovable
-            >
-          {:else if ticket.openToApprentices === false}
-            <PillRemovable
-              transitionKey="students-only"
-              {transitionPair}
-              on:remove={() => {
-                // eslint-disable-next-line unicorn/no-null
-                ticket.openToApprentices = null;
-              }}>Étudiant·e·s</PillRemovable
-            >
-          {/if}
-          {#each ticket.openToPromotions as graduationYear}
-            <PillRemovable
-              transitionKey="year"
-              {transitionPair}
-              on:remove={() => {
-                ticket.openToPromotions = ticket.openToPromotions.filter(
-                  (year) => year !== graduationYear,
-                );
-              }}>Promo {graduationYear}</PillRemovable
-            >
-          {/each}
-          {#each ticket.openToMajors as major (major.id)}
-            <PillRemovable
-              transitionKey="major"
-              {transitionPair}
-              on:remove={() => {
-                ticket.openToMajors = ticket.openToMajors.filter((m) => m.id !== major.id);
-              }}>{major.shortName}</PillRemovable
-            >
-          {/each}
-          {#each ticket.openToGroups as group (group.id)}
-            <PillRemovable
-              transitionKey="group"
-              {transitionPair}
-              image={groupLogoSrc($isDark, group)}
-              on:remove={() => {
-                ticket.openToGroups = ticket.openToGroups.filter((g) => g.id !== group.id);
-              }}>Membres de {group.name}</PillRemovable
-            >
-          {/each}
-          {#each ticket.openToSchools as school (school.id)}
-            <PillRemovable
-              transitionKey="school"
-              {transitionPair}
-              image="//schools/{school.uid}.png"
-              on:remove={() => {
-                ticket.openToSchools = ticket.openToSchools.filter((s) => s.id !== school.id);
-              }}>{school.name}</PillRemovable
-            >
-          {/each}
-        </div>
-      </section>
-    {/if}
-    <section class="links">
-      <details>
-        <summary>Liens</summary>
-        <p>Acessibles après réservation</p>
-        <InputLinks label="" bind:value={ticket.links}></InputLinks>
-      </details>
-    </section>
+            {#each ticket.openToPromotions as graduationYear}
+              <PillRemovable
+                transitionKey="year"
+                {transitionPair}
+                on:remove={() => {
+                  ticket.openToPromotions = ticket.openToPromotions.filter(
+                    (year) => year !== graduationYear,
+                  );
+                }}>Promo {graduationYear}</PillRemovable
+              >
+            {/each}
+            {#each ticket.openToMajors as major (major.id)}
+              <PillRemovable
+                transitionKey="major"
+                {transitionPair}
+                on:remove={() => {
+                  ticket.openToMajors = ticket.openToMajors.filter((m) => m.id !== major.id);
+                }}>{major.shortName}</PillRemovable
+              >
+            {/each}
+            {#each ticket.openToGroups as group (group.id)}
+              <PillRemovable
+                transitionKey="group"
+                {transitionPair}
+                image={groupLogoSrc($isDark, group)}
+                on:remove={() => {
+                  ticket.openToGroups = ticket.openToGroups.filter((g) => g.id !== group.id);
+                }}>Membres de {group.name}</PillRemovable
+              >
+            {/each}
+            {#each ticket.openToSchools as school (school.id)}
+              <PillRemovable
+                transitionKey="school"
+                {transitionPair}
+                image="//schools/{school.uid}.png"
+                on:remove={() => {
+                  ticket.openToSchools = ticket.openToSchools.filter((s) => s.id !== school.id);
+                }}>{school.name}</PillRemovable
+              >
+            {/each}
+          </div>
+        </section>
+      {/if}
+    </div>
   </div>
   <footer>
     <ButtonSecondary
@@ -481,8 +481,25 @@
 
   .inputs {
     display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .inputs > div {
+    display: flex;
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
   }
+
+  .inputs .info {
+    max-width: 500px;
+    flex-grow: 1.2;
+  }
+  .inputs .limits {
+    max-width: 500px;
+  }
+  
 </style>

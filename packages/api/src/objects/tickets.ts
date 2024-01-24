@@ -259,11 +259,6 @@ builder.mutationField('upsertTicket', (t) =>
       eventId: t.arg.id({
         description: "L'identifiant de l'évènement sur lequel créer ou modifier un billet",
       }),
-      ticketGroupId: t.arg.id({
-        description:
-          "Le groupe de billet dans lequel (dé)placer le billet. Ne pas spécifier l'argument revient à retirer (ou ne pas placer) le billet dans un groupe",
-        required: false,
-      }),
       id: t.arg.id({
         required: false,
         description:
@@ -279,13 +274,8 @@ builder.mutationField('upsertTicket', (t) =>
       if (!event) return false;
       return eventManagedByUser(event, user, { canEdit: true });
     },
-    async resolve(query, _, { eventId, id, ticket, ticketGroupId }, { user }) {
+    async resolve(query, _, { eventId, id, ticket }, { user }) {
       if (!user) throw new GraphQLError('Non connecté');
-      const ticketGroup = ticketGroupId
-        ? await prisma.ticketGroup.findUnique({ where: { id: ticketGroupId, eventId } })
-        : undefined;
-
-      if (ticketGroupId && !ticketGroup) throw new GraphQLError('Groupe de billets non trouvé');
 
       const connectOnUids = (uids: Array<string>) => ({
         connect: uids.map((uid) => ({ uid })),
@@ -298,12 +288,7 @@ builder.mutationField('upsertTicket', (t) =>
         create: {
           ...ticket,
           eventId,
-          uid: await createUid({
-            name: ticket.name,
-            eventId,
-            ticketGroupId,
-            ticketGroupName: ticketGroup?.name,
-          }),
+          uid: await createUid({ name: ticket.name, eventId }),
           links: { createMany: { data: ticket.links, skipDuplicates: true } },
           openToSchools: connectOnUids(ticket.openToSchools),
           openToGroups: connectOnUids(ticket.openToGroups),
@@ -326,6 +311,7 @@ builder.mutationField('upsertTicket', (t) =>
 enum TicketMove {
   MoveAfter,
   MoveBefore,
+  MoveToGroup,
 }
 
 builder.enumType(TicketMove, {
@@ -336,14 +322,33 @@ builder.enumType(TicketMove, {
   },
 });
 
+// builder.mutationField('moveTicketToGroup', t => t.int({
+//   directives: {
+//     rateLimit: { duration: 1, limit: 5 },
+//   },
+//   description: "Déplacer un billet à la fin d'un groupe de billets",
+//   args: {
+//     eventId: t.arg.id({ description: "identifiant de l'évènement où sont les billets" }),
+//     uid: t.arg.string({ description: 'uid du billet à déplacer' }),
+//     groupUid: t.arg.string({ description: "uid du groupe de billets où placer le billet" }),
+//     position: t.arg.int({ required: false, description: "position du billet dans le groupe. Ne pas préciser pour le placer à la fin" }),
+//   }
+// }))
+
 builder.mutationField('moveTicket', (t) =>
   t.int({
+    directives: {
+      rateLimit: {
+        duration: 1,
+        limit: 5,
+      },
+    },
     description:
-      "Déplacer un billet avant ou apès un autre, et dans ou en dehors d'un groupe de billets",
+      "Déplacer un billet avant ou apès un autre",
     args: {
       eventId: t.arg.id({ description: "identifiant de l'évènement où sont les billets" }),
       uid: t.arg.string({ description: 'uid du billet à déplacer' }),
-      other: t.arg.string({ description: "uid de l'autre billet" }),
+      other: t.arg.string({ required: false, description: "uid de l'autre billet" }),
       move: t.arg({ type: TicketMove, description: "Où placer le billet par rapport à l'autre" }),
       inside: t.arg.string({
         required: false,
@@ -374,10 +379,16 @@ builder.mutationField('moveTicket', (t) =>
         ? await prisma.ticketGroup.findFirstOrThrow({ where: { uid: inside } })
         : undefined;
 
+      const orderDeltaByMoveType: Record<TicketMove, number> = {
+        [TicketMove.MoveAfter]: 1,
+        [TicketMove.MoveBefore]: -1,
+        [TicketMove.MoveToGroup]: 0,
+      };
+
       const result = await prisma.ticket.update({
         where: { id: ticketToMove.id },
         data: {
-          order: otherTicket.order + (move === TicketMove.MoveAfter ? +1 : -1),
+          order: otherTicket.order + orderDeltaByMoveType[move],
           group: groupToDisconnect
             ? { disconnect: { id: groupToDisconnect.id } }
             : groupToConnect
@@ -636,24 +647,13 @@ builder.queryField('ticketsOfEvent', (t) =>
   }),
 );
 
-export async function createUid({
-  name,
-  eventId,
-  ticketGroupId,
-  ticketGroupName,
-}: {
-  name: string;
-  eventId: string;
-  ticketGroupId: null | undefined | string;
-  ticketGroupName: null | undefined | string;
-}) {
-  const base = ticketGroupName ? `${slug(ticketGroupName)}--${slug(name)}` : slug(name);
+export async function createUid({ name, eventId }: { name: string; eventId: string }) {
+  const base = slug(name);
   const n = await dichotomid(
     async (n) =>
       !(await prisma.ticket.findFirst({
         where: {
           eventId,
-          ticketGroupId,
           name: `${base}${n > 1 ? `-${n}` : ''}`,
         },
       })),

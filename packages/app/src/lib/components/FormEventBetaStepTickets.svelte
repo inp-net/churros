@@ -5,78 +5,108 @@
   import IconAdd from '~icons/mdi/plus';
   import ButtonGhost from './ButtonGhost.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
-  import { defaultTicket, shadowId, type Ticket } from './FormEventBeta.svelte';
+  import { defaultTicket, isShadowValue, shadowValue, type Ticket } from './FormEventBeta.svelte';
   import FormTicketBeta from './FormTicketBeta.svelte';
   import InputNumber from './InputNumber.svelte';
   import InputText from './InputText.svelte';
   import Modal from './Modal.svelte';
+  import { TicketMove, zeus } from '$lib/zeus';
+  import { omit } from 'lodash';
   const dispatch = createEventDispatcher();
 
+  export let eventId: string;
   export let tickets: Ticket[];
-  export let ticketGroups: Array<{ id: string; name: string; capacity: number }>;
+  export let ticketGroups: Array<{ uid: string; name: string; capacity: number }>;
   export let startsAt: Date | undefined = undefined;
   export let endsAt: Date | undefined = undefined;
 
   let editingTicket: Ticket | undefined;
   let ticketEditModalElement: HTMLDialogElement;
-  let movingTicketId = '';
+  let movingTicketUid = '';
 
   // list of IDs
-  let ticketsOrdering = tickets.map((t) => t.id);
+  let ticketsOrdering = tickets.sort((a, b) => a.order - b.order).map((t) => t.uid);
   let ticketsOrderingBeforeDragStart = structuredClone(ticketsOrdering);
 
+  function listOfUids(o: Array<{ uid: string }>) {
+    return o.map((o) => o.uid);
+  }
+
   function compareTickets(ticketsOrdering: string[]): (t1: Ticket, t2: Ticket) => number {
-    return (t1, t2) => ticketsOrdering.indexOf(t1.id) - ticketsOrdering.indexOf(t2.id);
+    return (t1, t2) => ticketsOrdering.indexOf(t1.uid) - ticketsOrdering.indexOf(t2.uid);
   }
 
-  function moveTicketBefore(id: string) {
-    ticketsOrdering = ticketsOrdering.filter((t) => t !== movingTicketId);
+  async function moveTicketBefore(uid: string) {
+    ticketsOrdering = ticketsOrdering.filter((t) => t !== movingTicketUid);
     ticketsOrdering = [
-      ...ticketsOrdering.slice(0, ticketsOrdering.indexOf(id) - 1),
-      movingTicketId,
-      ...ticketsOrdering.slice(ticketsOrdering.indexOf(id)),
+      ...ticketsOrdering.slice(0, ticketsOrdering.indexOf(uid) - 1),
+      movingTicketUid,
+      ...ticketsOrdering.slice(ticketsOrdering.indexOf(uid)),
     ];
+    await $zeus.mutate({
+      moveTicket: [
+        {
+          eventId,
+          move: TicketMove.MoveBefore,
+          other: uid,
+          uid: movingTicketUid,
+        },
+        true,
+      ],
+    });
   }
 
-  function moveTicketAfter(id: string) {
-    ticketsOrdering = ticketsOrdering.filter((t) => t !== movingTicketId);
+  async function moveTicketAfter(uid: string | undefined) {
+    if (!uid) return;
+    ticketsOrdering = ticketsOrdering.filter((t) => t !== movingTicketUid);
     ticketsOrdering = [
-      ...ticketsOrdering.slice(0, ticketsOrdering.indexOf(id)),
-      movingTicketId,
-      ...ticketsOrdering.slice(ticketsOrdering.indexOf(id) + 1),
+      ...ticketsOrdering.slice(0, ticketsOrdering.indexOf(uid)),
+      movingTicketUid,
+      ...ticketsOrdering.slice(ticketsOrdering.indexOf(uid) + 1),
     ];
+    await $zeus.mutate({
+      moveTicket: [
+        {
+          eventId,
+          move: TicketMove.MoveAfter,
+          other: uid,
+          uid: movingTicketUid,
+        },
+        true,
+      ],
+    });
   }
 
   $: ticketsByGroup = [
-    ['', tickets.filter((t) => !t.ticketGroupId).sort(compareTickets(ticketsOrdering))],
+    ['', tickets.filter((t) => !t.group?.uid).sort(compareTickets(ticketsOrdering))],
     ...ticketGroups.map((g) => [
-      g.id,
-      tickets.filter((t) => t.ticketGroupId === g.id).sort(compareTickets(ticketsOrdering)),
+      g.uid,
+      tickets.filter((t) => t.group?.uid === g.uid).sort(compareTickets(ticketsOrdering)),
     ]),
   ] as Array<[string, Ticket[]]>;
 
-  $: tickets.sort((a, b) => ticketsOrdering.indexOf(a.id) - ticketsOrdering.indexOf(b.id));
+  $: tickets.sort((a, b) => ticketsOrdering.indexOf(a.uid) - ticketsOrdering.indexOf(b.uid));
 
   $: hasGroups = ticketGroups.length > 0;
 </script>
 
 <ul class="tickets">
-  {#each ticketsByGroup as [groupId, ticketsOfGroup] (groupId)}
-    {@const group = ticketGroups.find((g) => g.id === groupId)}
+  {#each ticketsByGroup as [groupUid, ticketsOfGroup] (groupUid)}
+    {@const group = ticketGroups.find((g) => g.uid === groupUid)}
     {#if group}
       <li class="group">
         <div class="data">
           <InputText
             inline
             label=""
-            bind:value={ticketGroups[ticketGroups.findIndex((g) => g.id === groupId)].name}
+            bind:value={ticketGroups[ticketGroups.findIndex((g) => g.uid === groupUid)].name}
             placeholder="Groupe sans nom"
           />
           &middot;
           <InputNumber
             inline
             label=""
-            bind:value={ticketGroups[ticketGroups.findIndex((g) => g.id === groupId)].capacity}
+            bind:value={ticketGroups[ticketGroups.findIndex((g) => g.uid === groupUid)].capacity}
           />
           place{#if group.capacity > 1}s{/if}
         </div>
@@ -84,8 +114,8 @@
           danger
           type="button"
           on:click={() => {
-            tickets = tickets.filter((t) => t.ticketGroupId !== groupId);
-            ticketGroups = ticketGroups.filter((g) => g.id !== groupId);
+            tickets = tickets.filter((t) => t.group?.uid !== groupUid);
+            ticketGroups = ticketGroups.filter((g) => g.uid !== groupUid);
           }}
         >
           <IconDelete></IconDelete>
@@ -100,30 +130,29 @@
         class="ticket-draggable-wrapper"
         draggable="true"
         on:dragstart={() => {
-          movingTicketId = ticket.id;
+          movingTicketUid = ticket.uid;
         }}
         on:dragenter={() => {
           // if dragging over moving ticket, do nothing
-          if (movingTicketId === ticket.id) return;
+          if (movingTicketUid === ticket.uid) return;
           if (
-            ticketsOrdering.indexOf(ticket.id) === ticketsOrdering.length - 1 &&
-            ticketsOrderingBeforeDragStart.indexOf(movingTicketId) <
-              ticketsOrderingBeforeDragStart.indexOf(ticket.id)
+            ticketsOrdering.indexOf(ticket.uid) === ticketsOrdering.length - 1 &&
+            ticketsOrderingBeforeDragStart.indexOf(movingTicketUid) <
+              ticketsOrderingBeforeDragStart.indexOf(ticket.uid)
           ) {
             // if this ticket is the last, move it after the last
-            ticketsOrdering = ticketsOrdering.filter((t) => t !== movingTicketId);
-            ticketsOrdering = [...ticketsOrdering, movingTicketId];
+            moveTicketAfter(ticketsOrdering.at(-1));
           } else {
             // Move moving ticket before this ticket only if moving ticket was before this ticket before dragging started
-            moveTicketBefore(ticket.id);
+            moveTicketBefore(ticket.uid);
           }
         }}
         on:dragend={() => {
-          movingTicketId = '';
+          movingTicketUid = '';
           ticketsOrderingBeforeDragStart = structuredClone(ticketsOrdering);
         }}
         on:drop={() => {
-          movingTicketId = '';
+          movingTicketUid = '';
         }}
       >
         <button
@@ -132,7 +161,7 @@
             if (editingTicket?.id !== ticket.id) editingTicket = { ...ticket };
             ticketEditModalElement.showModal();
           }}
-          class:dragging={ticket.id === movingTicketId}
+          class:dragging={ticket.uid === movingTicketUid}
           class:indented={hasGroups}
           class="ticket"
           type="button"
@@ -150,33 +179,39 @@
         class="new ticket"
         type="button"
         on:dragend={() => {
-          movingTicketId = '';
+          movingTicketUid = '';
           ticketsOrderingBeforeDragStart = structuredClone(ticketsOrdering);
         }}
         on:drop={() => {
-          movingTicketId = '';
+          movingTicketUid = '';
           ticketsOrderingBeforeDragStart = structuredClone(ticketsOrdering);
         }}
         on:dragenter={() => {
           // Move moving ticket to this group if it's not the moving ticket's current group
-          const movingTicket = tickets.find((t) => t.id === movingTicketId);
+          const movingTicket = tickets.find((t) => t.uid === movingTicketUid);
           if (!movingTicket) return;
-          if (groupId === movingTicket.ticketGroupId) {
+          if (groupUid === movingTicket.group?.uid) {
             moveTicketAfter(
               Object.fromEntries(ticketsByGroup)
-                [groupId ?? ''].sort(compareTickets(ticketsOrdering))
-                .reverse()[0].id,
+                [groupUid ?? ''].sort(compareTickets(ticketsOrdering))
+                .reverse()[0].uid,
             );
           } else {
-            tickets[tickets.findIndex((t) => t.id === movingTicketId)].ticketGroupId =
-              groupId || undefined;
+            tickets[tickets.findIndex((t) => t.uid === movingTicketUid)].group = groupUid
+              ? { uid: groupUid }
+              : undefined;
           }
         }}
         on:click={() => {
-          const newTicket = defaultTicket({ tickets, startsAt, endsAt }, shadowId());
-          if (groupId) newTicket.ticketGroupId = groupId;
+          const newTicket = defaultTicket(
+            { tickets, startsAt, endsAt },
+            shadowValue(),
+            shadowValue(),
+            ticketsOrdering.length,
+          );
+          if (groupUid) newTicket.group = { uid: groupUid };
           tickets = [...tickets, newTicket];
-          ticketsOrdering = [...ticketsOrdering, newTicket.id];
+          ticketsOrdering = [...ticketsOrdering, newTicket.uid];
           editingTicket = { ...newTicket };
           ticketEditModalElement.showModal();
         }}
@@ -191,7 +226,8 @@
       icon={IconAdd}
       on:click={() => {
         const group = {
-          id: shadowId(),
+          id: shadowValue(),
+          uid: shadowValue(),
           capacity: 0,
           name: '',
         };
@@ -201,20 +237,56 @@
   </li>
 </ul>
 
-<Modal noPadding bind:element={ticketEditModalElement} maxWidth="600px">
+<Modal noPadding bind:element={ticketEditModalElement} maxWidth="1300px">
   {#if editingTicket}
     <FormTicketBeta
       bind:ticket={editingTicket}
-      on:save={({ detail: ticket }) => {
-        tickets[tickets.findIndex((t) => t.id === ticket.id)] = { ...ticket };
+      on:save={async ({ detail: ticket }) => {
+        tickets[tickets.findIndex((t) => t.uid === ticket.uid)] = { ...ticket };
         dispatch('save', ticket);
         ticketEditModalElement.close();
+        const{upsertTicket} = await $zeus.mutate({
+          upsertTicket: [
+            {
+              id: isShadowValue(ticket.id) ? undefined : ticket.id,
+              eventId,
+              ticket: {
+                ...omit(ticket, ['id', 'uid', 'group']),
+                autojoinGroups: ticket.autojoinGroups.map((g) => g.uid),
+                openToGroups: listOfUids(ticket.openToGroups),
+                openToMajors: listOfUids(ticket.openToMajors),
+                openToSchools: listOfUids(ticket.openToSchools),
+              },
+            },
+            {
+              id: true,
+              uid: true
+            },
+          ],
+        });
+        if (ticket.group) {
+          const{upsertTicketGroup} = await $zeus.mutate({
+            moveTicket: [
+              {
+                eventId,
+                move: TicketMove.MoveToGroup,
+
+              },
+              {
+                id: true,
+              },
+            ],
+          });
+        }
         toasts.success('Billet sauvegardé');
       }}
-      on:delete={({ detail: ticket }) => {
+      on:delete={async ({ detail: ticket }) => {
         tickets = tickets.filter((t) => t.id !== ticket.id);
         dispatch('save', ticket);
         ticketEditModalElement.close();
+        await $zeus.mutate({
+          deleteTicket: [{ id: ticket.id }, true],
+        });
         toasts.success('Billet supprimé');
       }}
     ></FormTicketBeta>

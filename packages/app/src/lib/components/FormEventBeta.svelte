@@ -11,8 +11,11 @@
 
   export const defaultTicket: (
     event: Pick<Event, 'tickets' | 'startsAt' | 'endsAt'>,
+    uid: string,
     id: string,
-  ) => Ticket = (event, id) => ({
+    order: number,
+  ) => Ticket = (event,uid, id, order) => ({
+    order,
     allowedPaymentMethods: ['Cash', 'Lydia'] as PaymentMethod[],
     capacity: 0,
     price: 0,
@@ -25,6 +28,7 @@
     godsonLimit: 0,
     links: [],
     name: '',
+    uid,
     onlyManagersCanProvide: false,
     // eslint-disable-next-line unicorn/no-null
     openToAlumni: null,
@@ -41,19 +45,26 @@
     ticketGroupId: undefined,
     id,
   });
-  export function shadowId() {
+  export function shadowValue() {
     return '::' + nanoid(10);
   }
 
-  export function eraseShadowIds(...things: Array<{ id: string }>) {
+  export function isShadowValue(id: string) {
+    return id.startsWith('::');
+  }
+
+  export function eraseShadowValues(...things: Array<{ id: string; uid?: string }>) {
     return things.map((t) => ({
       ...t,
-      id: t.id.startsWith('::') ? '' : t.id,
+      id: isShadowValue(t.id) ? '' : t.id,
+      ...(t.uid ? { uid: isShadowValue(t.uid) ? '' : t.uid } : {}),
     }));
   }
   export type Ticket = {
     id: string;
-    ticketGroupId: string | undefined;
+    uid: string;
+    order: number;
+    group?: { uid: string } | undefined;
     name: string;
     description: string;
     price: number;
@@ -73,7 +84,7 @@
       pictureFile: string;
       pictureFileDark: string;
     }>;
-    openToMajors: Array<{ name: string; shortName: string; id: string }>;
+    openToMajors: Array<{ name: string; shortName: string; id: string; uid: string }>;
     openToContributors?: boolean | null | undefined;
     openToApprentices?: boolean | null | undefined;
     godsonLimit: number;
@@ -159,16 +170,22 @@
     }>;
     tickets: Ticket[];
     ticketGroups: Array<{
-      id: string;
+      uid: string;
       name: string;
       capacity: number;
-      tickets: Ticket[];
     }>;
   };
 </script>
 
 <script lang="ts">
-  import { EventFrequency, Visibility, zeus, type PaymentMethod } from '$lib/zeus';
+  import {
+    EventFrequency,
+    Visibility,
+    zeus,
+    type PaymentMethod,
+    type ZeusArgsType,
+    type ValueTypes,
+  } from '$lib/zeus';
   import { addDays } from 'date-fns';
   import { nanoid } from 'nanoid';
   import { createEventDispatcher, onMount } from 'svelte';
@@ -182,11 +199,21 @@
   import NavigationSteps from './NavigationSteps.svelte';
   import FormEventBetaStepVisibility from './FormEventBetaStepVisibility.svelte';
   import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
+  import { toasts } from '$lib/toasts';
+  import { fade } from 'svelte/transition';
 
   let dispatch = createEventDispatcher();
   let scrollableAreaElement: HTMLElement;
+  let bottomBarMessage = '';
 
   export let group: Event['group'];
+
+  function signalSavedChanges(message: string) {
+    bottomBarMessage = message;
+    setTimeout(() => {
+      bottomBarMessage = '';
+    }, 3000);
+  }
 
   export let event: Event = {
     group,
@@ -200,14 +227,16 @@
       {
         ...defaultTicket(
           { tickets: [], startsAt: new Date(), endsAt: addDays(new Date(), 1) },
-          shadowId(),
+          shadowValue(),
+          shadowValue(),
         ),
         name: 'ogziogrjoirz',
       },
       {
         ...defaultTicket(
           { tickets: [], startsAt: new Date(), endsAt: addDays(new Date(), 1) },
-          shadowId(),
+          shadowValue(),
+          shadowValue(),
         ),
         name: 'greoigjroiger',
       },
@@ -216,13 +245,95 @@
 
   const stepIndex = (id: string) => steps.findIndex(([href, _]) => href === id);
 
-  let currentStep: FormEventStep = 'tickets';
-  const statusMessage = writable('');
+  let currentStep: FormEventStep = 'details';
 
-  function nextStepOrSubmit({ submitter }: SubmitEvent) {
-    const step = (submitter?.dataset['step'] ?? undefined) as FormEventStep | undefined;
-    if (currentStep === 'visibility') dispatch('submit');
-    else currentStep = step ?? steps[stepIndex(currentStep) + 1][0];
+  async function nextStepOrSubmit({ submitter }: SubmitEvent) {
+    let targetStep = (submitter?.dataset['step'] ??
+      steps[stepIndex(currentStep) + 1][0]) as FormEventStep;
+
+    switch (currentStep) {
+      case 'details': {
+        if (!event.endsAt || !event.startsAt) {
+          toasts.error('Renseignes une date de début et de fin');
+          return;
+        }
+
+        // Save first draft
+        const { upsertEvent } = await $zeus.mutate({
+          upsertEvent: [
+            {
+              id: event.id,
+              input: {
+                endsAt: event.endsAt!,
+                startsAt: event.startsAt!,
+                coOrganizers: event.coOrganizers.map((c) => c.uid),
+                group: event.group.uid,
+                location: event.location,
+                frequency: event.frequency,
+                title: event.title,
+                recurringUntil: event.recurringUntil,
+              } as NonNullable<ValueTypes['Mutation']['upsertEvent']>[0]['input'],
+            },
+            {
+              '__typename': true,
+              '...on Error': { message: true },
+              '...on MutationUpsertEventSuccess': { data: { id: true, uid: true } },
+            },
+          ],
+        });
+        if (upsertEvent.__typename === 'Error') {
+          toasts.error(upsertEvent.message);
+        } else {
+          signalSavedChanges(
+            event.id !== upsertEvent.data.id
+              ? "Brouillon d'évènement créé."
+              : 'Changements sauvegardés.',
+          );
+          event.id = upsertEvent.data.id;
+          event.uid = upsertEvent.data.uid;
+          currentStep = targetStep;
+        }
+
+        break;
+      }
+
+      case 'situation': {
+        const { upsertEvent } = await $zeus.mutate({
+          upsertEvent: [
+            {
+              id: event.id,
+              input: {
+                title: event.title,
+                startsAt: event.startsAt,
+                endsAt: event.endsAt,
+                group: event.group.uid,
+                description: event.description,
+                links: event.links,
+              } as NonNullable<ValueTypes['Mutation']['upsertEvent']>[0]['input'],
+            },
+            {
+              '__typename': true,
+              '...on Error': { message: true },
+              '...on MutationUpsertEventSuccess': {
+                data: {
+                  id: true,
+                },
+              },
+            },
+          ],
+        });
+
+        if (upsertEvent.__typename === 'Error') {
+          toasts.error("Impossible de sauvegarder l'évènement", upsertEvent.message);
+        } else {
+          signalSavedChanges('Changements sauvegardés.');
+          currentStep = targetStep;
+        }
+      }
+
+      case 'tickets': {
+      }
+    }
   }
 
   let scrolled = false;
@@ -236,7 +347,6 @@
 
 <form class="content" on:submit|self|preventDefault={nextStepOrSubmit}>
   <section class="top" class:scrolled>
-    <h1>Créer un évènement</h1>
     <div class="steps">
       <NavigationSteps {steps} bind:currentStep></NavigationSteps>
     </div>
@@ -245,6 +355,7 @@
     <section class="inputs">
       {#if currentStep === 'details'}
         <FormEventBetaStepInfos
+          bind:coOrganizers={event.coOrganizers}
           bind:group={event.group}
           bind:title={event.title}
           bind:location={event.location}
@@ -255,7 +366,8 @@
         ></FormEventBetaStepInfos>
       {:else if currentStep === 'situation'}
         <FormEventBetaStepCommunication
-          uid={event.uid}
+          eventUid={event.uid}
+          eventId={event.id}
           bind:description={event.description}
           bind:pictureFile={event.pictureFile}
           bind:links={event.links}
@@ -274,6 +386,7 @@
       {:else if currentStep === 'tickets'}
         <FormEventBetaStepTickets
           {...event}
+          eventId={event.id}
           bind:ticketGroups={event.ticketGroups}
           bind:tickets={event.tickets}
         ></FormEventBetaStepTickets>
@@ -287,8 +400,8 @@
     </section>
   </div>
   <nav class="navigate-steps">
-    <p class="status">
-      {$statusMessage}
+    <p class="status" transition:fade>
+      {bottomBarMessage}
     </p>
     <ButtonPrimary smaller submits>
       {#if currentStep === 'visibility'}

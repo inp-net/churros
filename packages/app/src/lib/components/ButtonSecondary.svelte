@@ -104,6 +104,7 @@
     justify-content: center;
     width: 1.15em;
     height: 1.15em;
+    flex-shrink: 0;
   }
 
   .icon > :global(svg) {

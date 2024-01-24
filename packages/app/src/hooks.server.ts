@@ -52,6 +52,6 @@ export const handleFetch: HandleFetch = async ({ request, fetch }) => {
   });
 };
 
-export const handleError: HandleServerError = ({ error }) => {
+export const handleError: HandleServerError = ({ error}) => {
   console.error(error);
 };

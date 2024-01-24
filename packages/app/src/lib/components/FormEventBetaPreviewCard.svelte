@@ -5,6 +5,7 @@
   import { EventFrequency, Visibility } from '../../zeus';
   import BadgeVisibility from './BadgeVisibility.svelte';
   import type { FormEventStep } from './FormEventBeta.svelte';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
   export let currentStep: FormEventStep;
   export let title = '';
   export let description = '';
@@ -14,16 +15,21 @@
   export let frequency: EventFrequency = EventFrequency.Once;
   export let recurringUntil: Date | undefined = undefined;
   export let visibility: Visibility | undefined = undefined;
+  export let pictureFile: string | undefined = undefined;
 </script>
 
 <article class="preview-card">
-  <img alt="Pas de miniature" class="thumb" />
+  {#if pictureFile}
+    <img src="{PUBLIC_STORAGE_URL}/{pictureFile}" alt="Miniature de l'évènement" class="thumb" />
+  {:else}
+    <img alt="Pas de miniature" class="thumb" />
+  {/if}
   <div class="content">
     <div class="title-and-visiblity">
       <p class:empty={!title} class="title">
         {title || 'Pas de titre'}
       </p>
-      {#if visibility && currentStep === 'visibility'}
+      {#if visibility && (currentStep === 'visibility' || visibility !== Visibility.Private)}
         <BadgeVisibility {visibility} />
       {/if}
     </div>
@@ -65,6 +71,7 @@
     color: #eee;
     text-align: center;
     background: #000;
+    object-fit: cover;
   }
 
   article .content {

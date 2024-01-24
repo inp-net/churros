@@ -4,6 +4,7 @@
   import FormEventBeta from '$lib/components/FormEventBeta.svelte';
   import { me } from '$lib/session';
   import { EventFrequency, Visibility } from '$lib/zeus';
+  import { addDays } from 'date-fns';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -14,7 +15,6 @@
     tickets: [],
     group: data.group,
     description: '',
-    endsAt: undefined,
     groupUid: $page.params.uid,
     contactMail: data.group?.email,
     beneficiary:
@@ -34,8 +34,9 @@
         ]
       : [],
     slug: '',
-    startsAt: undefined,
-    title: '',
+    startsAt: new Date(),
+    endsAt: addDays(new Date(), 1),
+    title: 'test',
     visibility: Visibility.Private,
     frequency: EventFrequency.Once,
     recurringUntil: undefined,

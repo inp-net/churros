@@ -5,22 +5,24 @@
 
   export let description: string;
   export let pictureFile: string;
-  export let uid: string;
+  export let eventUid: string;
+  export let eventId: string;
   export let links: Array<{ name: string; value: string }>;
+
+  let pictureObject = {
+    id: eventId,
+    uid: eventUid,
+    pictureFile,
+  };
+
+  $: pictureFile = pictureObject.pictureFile;
 </script>
 
 <InputLinks label="Liens" bind:value={links}></InputLinks>
 <InputLongText rich label="Description" bind:value={description}></InputLongText>
 <section class="thumbnail">
   <h2>Miniature</h2>
-  <FormPicture
-    object={{
-      id: 'event',
-      uid,
-      pictureFile,
-    }}
-    objectName="Event"
-  ></FormPicture>
+  <FormPicture bind:object={pictureObject} objectName="Event"></FormPicture>
 </section>
 
 <style>

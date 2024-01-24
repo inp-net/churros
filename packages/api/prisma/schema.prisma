@@ -523,6 +523,7 @@ model Event {
   links          Link[]
   bannedUsers    User[]          @relation("bannedFromEvents")
   reactions      Reaction[]
+  showPlacesLeft Boolean         @default(true)
 
   // For full-text search
   search              Unsupported("tsvector") @default(dbgenerated("''::tsvector"))

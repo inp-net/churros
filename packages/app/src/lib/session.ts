@@ -88,9 +88,13 @@ export function aled(...o: unknown[]) {
 
 /** Returns a temporary redirect object. */
 export const redirectToLogin = (to: string, searchParams: Record<string, string> = {}) =>
-  redirect(307, `/login?${new URLSearchParams({ to, ...searchParams }).toString()}`);
+  redirect(307, redirectToLoginURL(to, searchParams));
 
 export const me = derived(page, ($page) => {
   aled('session.ts: me = derived(page, $page)', $page.data);
   return $page.data.me;
 });
+
+export function redirectToLoginURL(to: string, searchParams: Record<string, string>): string | URL {
+  return `/login?${new URLSearchParams({ to, ...searchParams }).toString()}`;
+}

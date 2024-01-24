@@ -1,8 +1,10 @@
 <script lang="ts">
   import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { onDestroy, onMount } from 'svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { me, redirectToLoginURL } from '$lib/session';
+  import { onDestroy, onMount } from 'svelte';
 
   let error: App.Error | null;
   let status: number;
@@ -10,6 +12,14 @@
   $: ({ error, status } = $page);
 
   onMount(() => {
+    if (!$me && error?.message === "Tu n'es pas autorisé à effectuer cette action.") {
+      goto(
+        redirectToLoginURL(
+          $page.url.pathname,
+          Object.fromEntries($page.url.searchParams.entries()),
+        ),
+      );
+    }
     if (browser) {
       if (status === 404) document.documentElement.classList.add('error-404');
       document.documentElement.classList.add('errored');
