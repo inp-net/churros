@@ -14,6 +14,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Nouveautés
 
 - Les membres d'un groupe ayant un local peuvent le marquer comme ouvert ou fermé (!95) (@soyerb)
+- L'écran de chargement est affiché pendant que l'appli charge (@simonh)
 
 ### Corrections
 
