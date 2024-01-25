@@ -1,0 +1,16 @@
+query Toaster {
+    birthdays {
+        fullName
+        pictureFile
+        uid
+        birthday
+        yearTier
+        major {
+            name
+            shortName
+            schools {
+                uid
+            }
+        }
+    }
+}

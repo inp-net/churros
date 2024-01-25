@@ -57,7 +57,7 @@ Here is what the classic "todo" exercise looks like in Svelte:
 
 [SvelteKit](https://kit.svelte.dev/) is a framework that allows building web applications with Svelte. It handles routing, hydration, server-side rendering, and more.
 
-**+page.ts** is in charge of providing data to the page:
+**+page.ts.old** is in charge of providing data to the page:
 
 ```ts
 import type { PageLoad } from './$types';
