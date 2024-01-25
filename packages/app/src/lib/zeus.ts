@@ -1,7 +1,6 @@
 import { page } from '$app/stores';
 import { env } from '$env/dynamic/public';
-import type { LayoutServerData } from '../../.svelte-kit/types/src/routes/$types';
-import { error, type LoadEvent } from '@sveltejs/kit';
+import { error, type LoadEvent, type NumericRange } from '@sveltejs/kit';
 import {
   Thunder,
   ZeusScalars,
@@ -39,11 +38,15 @@ export class ZeusError extends Error {
       const errors = response.errors.map(
         ({ message, ...options }) => new GraphQLError(message, options),
       );
-      super(
-        `${response.errors.length} GraphQL error${response.errors.length === 1 ? '' : 's'}\n${errors
-          .map((error) => `\t${error.message} ${JSON.stringify(error.extensions)}`)
-          .join('\n')}`,
-      );
+      if (response.errors.length === 1) {
+        super(errors[0]!.message);
+      } else {
+        super(
+          `${response.errors.length} GraphQL errors\n${errors
+            .map((error) => `\t${error.message} ${JSON.stringify(error.extensions)}`)
+            .join('\n')}`,
+        );
+      }
       this.errors = errors;
     }
   }
@@ -72,11 +75,10 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
     }
     /* eslint-enable */
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const response = await fetch(env.PUBLIC_API_URL as string, { body, method: 'POST', headers });
+    const response = await fetch(new URL(env.PUBLIC_API_URL), { body, method: 'POST', headers });
 
     // If we received an HTTP error, propagate it
-    if (!response.ok) throw error(response.status);
+    if (!response.ok) throw error(response.status as NumericRange<400, 599>);
 
     return response
       .json()
@@ -90,7 +92,7 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
   });
 };
 
-const scalars = ZeusScalars({
+export const scalars = ZeusScalars({
   DateTime: {
     decode: (value: unknown): Date => new Date(value as string),
     encode: (value: unknown): string => JSON.stringify(value),
@@ -109,7 +111,7 @@ const scalars = ZeusScalars({
 
 export const zeus = derived(page, ({ data }) => {
   aled('zeus.ts: inside derived store $zeus', data);
-  const chained = chain(fetch, { token: (data as LayoutServerData).token });
+  const chained = chain(fetch, { token: data.token });
   return {
     query: chained('query', { scalars }),
     mutate: chained('mutation', { scalars }),
@@ -118,18 +120,32 @@ export const zeus = derived(page, ({ data }) => {
 
 export const loadQuery = async <Query extends ValueTypes['Query']>(
   query: Query,
-  { fetch, parent }: { fetch: LoadEvent['fetch']; parent?: () => Promise<LayoutServerData> },
+  {
+    fetch,
+    parent,
+    token,
+  }: {
+    fetch: LoadEvent['fetch'];
+    parent?: () => Promise<{ token?: string | undefined }>;
+    token?: string | undefined;
+  },
 ) => {
-  const parentData = parent ? await parent() : { token: undefined };
-  aled('zeus.ts: loadQuery with parent data', { parentData, query });
-  return chain(fetch, { token: parentData.token })('query', { scalars })(query);
+  ({ token } = parent ? await parent() : { token });
+  return chain(fetch, { token })('query', { scalars })(query);
 };
 
 export const makeMutation = async <Mutation extends ValueTypes['Mutation']>(
   mutation: Mutation,
-  { fetch, parent }: { fetch: LoadEvent['fetch']; parent?: () => Promise<LayoutServerData> },
+  {
+    fetch,
+    parent,
+    token,
+  }: {
+    fetch: LoadEvent['fetch'];
+    parent?: () => Promise<{ token?: string | undefined }>;
+    token?: string | undefined;
+  },
 ) => {
-  const parentData = parent ? await parent() : { token: undefined };
-  aled('zeus.ts: makeMutation with parent data', { parentData, mutation });
-  return chain(fetch, { token: parentData.token })('mutation', { scalars })(mutation);
+  ({ token } = parent ? await parent() : { token });
+  return chain(fetch, { token })('mutation', { scalars })(mutation);
 };

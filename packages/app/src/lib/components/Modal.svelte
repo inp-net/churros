@@ -1,9 +1,15 @@
 <script lang="ts">
   import { isDark } from '$lib/theme';
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   const dispatch = createEventDispatcher();
 
   export let element: HTMLDialogElement;
+  export let open = false;
+  export let maxWidth = 'unset';
+
+  onMount(() => {
+    if (open) element.showModal();
+  });
 </script>
 
 <svelte:window
@@ -30,6 +36,7 @@
   }}
   class={$isDark ? 'dark' : 'light'}
   bind:this={element}
+  style:max-width={maxWidth}
 >
   <slot />
 </dialog>
@@ -61,6 +68,7 @@
   dialog[open]::backdrop {
     overscroll-behavior: contain;
     background-color: var(--backdrop);
+    backdrop-filter: blur(10px);
     transition: background-color 0.5s ease;
   }
 
@@ -83,10 +91,12 @@
   @keyframes fade-in {
     from {
       background-color: transparent;
+      backdrop-filter: blur(0);
     }
 
     to {
       background-color: var(--backdrop);
+      backdrop-filter: blur(10px);
     }
   }
 </style>

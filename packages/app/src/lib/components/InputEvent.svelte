@@ -30,16 +30,20 @@
       searchEvents: [
         { q: query, groupUid },
         {
-          uid: true,
-          id: true,
-          title: true,
-          pictureFile: true,
-          startsAt: true,
-          visibility: true,
+          event: {
+            uid: true,
+            id: true,
+            title: true,
+            pictureFile: true,
+            startsAt: true,
+            visibility: true,
+          },
         },
       ],
     });
-    return searchEvents.filter(({ uid }) => allowed(uid)).map((item) => ({ item }));
+    return searchEvents
+      .filter(({ event: { uid } }) => allowed(uid))
+      .map(({ event }) => ({ item: event }));
   }
 </script>
 

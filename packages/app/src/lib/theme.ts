@@ -9,8 +9,8 @@ export const theme = writable('system', (set) => {
   if (!browser) return;
 
   // Force Noël theme if not re-set to sth else by the user
-  if (localStorage.getItem('user_does_not_like_noel_theme') === null) {
-    set('noel');
+  if (localStorage.getItem('theme') === 'noel') {
+    set('system');
   } else {
     // Try to load the theme from sessionStorage or fallback to a media query
     set(localStorage.getItem('theme') ?? 'system');

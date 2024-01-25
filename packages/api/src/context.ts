@@ -1,6 +1,8 @@
+import { prisma } from '#lib';
 import type { YogaInitialContext } from '@graphql-yoga/node';
 import {
   CredentialType,
+  ThirdPartyCredentialType,
   type Event,
   type EventManager,
   type Group,
@@ -10,11 +12,11 @@ import {
   type User,
 } from '@prisma/client';
 import { GraphQLError } from 'graphql';
-import { prisma } from './prisma.js';
-import { fullName } from './objects/users.js';
+import { isThirdPartyToken, onBoard } from './auth.js';
 import { yearTier } from './date.js';
+import { fullName } from './objects/users.js';
 
-const getToken = ({ headers }: Request) => {
+const getToken = (headers: Headers) => {
   const auth = headers.get('Authorization');
   if (!auth) return;
   return auth.slice('Bearer '.length);
@@ -33,6 +35,41 @@ const sessions = new Map<
 /** Deletes the session cache for a given user id. */
 export const purgeUserSessions = (uid: User['uid']) => {
   for (const [token, user] of sessions) if (user.uid === uid) sessions.delete(token);
+};
+
+export const getUserFromThirdPartyToken = async (token: string) => {
+  const credential = await prisma.thirdPartyCredential
+    .findFirstOrThrow({
+      where: { value: token, type: ThirdPartyCredentialType.AccessToken },
+      include: {
+        owner: {
+          include: {
+            groups: { include: { group: true } },
+            managedEvents: { include: { event: { include: { group: true } } } },
+            major: { include: { schools: true } },
+          },
+        },
+      },
+    })
+    .catch(() => {
+      throw new GraphQLError('Invalid token.');
+    });
+
+  // If the session expired, delete it
+  if (credential.expiresAt !== null && credential.expiresAt < new Date()) {
+    await prisma.thirdPartyCredential.delete({ where: { id: credential.id } });
+    throw new GraphQLError('Session expired.');
+  }
+
+  const { owner } = credential;
+
+  normalizePermissions(owner);
+
+  return {
+    ...owner,
+    fullName: fullName(owner),
+    yearTier: yearTier(owner.graduationYear),
+  };
 };
 
 /** Returns the user associated with `token` or throws. */
@@ -74,8 +111,7 @@ const getUser = async (token: string) => {
   const { user } = credential;
 
   // Normalize permissions
-  user.canEditGroups ||= user.admin;
-  user.canEditUsers ||= user.admin;
+  normalizePermissions(user);
 
   // When the in memory store grows too big, delete some sessions
   if (sessions.size > 10_000)
@@ -97,8 +133,50 @@ const getUser = async (token: string) => {
 export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;
 
 /** The request context, made available in all resolvers. */
-export const context = async ({ request }: YogaInitialContext) => {
-  const token = getToken(request);
+export const context = async ({ request, ...rest }: YogaInitialContext) => {
+  const headers =
+    request && 'headers' in request
+      ? request.headers
+      : 'connectionParams' in rest
+        ? new Headers((rest.connectionParams as { headers: Headers }).headers)
+        : new Headers();
+
+  if (headers.get('Authorization')?.startsWith('Basic ')) return {};
+
+  const token = getToken(headers);
   if (!token) return {};
-  return { token, user: await getUser(token) };
+  return {
+    token,
+    user: await (isThirdPartyToken(token) ? getUserFromThirdPartyToken : getUser)(token),
+  };
 };
+
+/**
+ * Normalizes the permissions of a user based on its roles.
+ * @param user the user to modify in-place
+ */
+function normalizePermissions(user: {
+  groups: {
+    president: boolean;
+    treasurer: boolean;
+    vicePresident: boolean;
+    secretary: boolean;
+    canEditMembers: boolean;
+    canEditArticles: boolean;
+    canScanEvents: boolean;
+  }[];
+  admin: boolean;
+  canEditUsers: boolean;
+  canEditGroups: boolean;
+  canAccessDocuments: boolean;
+}): void {
+  if (!user) return;
+  user.canEditGroups ||= user.admin;
+  user.canEditUsers ||= user.admin;
+  user.groups = user.groups.map((membership) => ({
+    ...membership,
+    canEditMembers: membership.canEditMembers || onBoard(membership),
+    canEditArticles: membership.canEditArticles || onBoard(membership),
+    canScanEvents: membership.canScanEvents || onBoard(membership),
+  }));
+}

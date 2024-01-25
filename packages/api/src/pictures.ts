@@ -1,10 +1,10 @@
+import { prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 import type { ImageFileExtension } from 'image-type';
 import imageType from 'image-type';
-import sharp from 'sharp';
-import { prisma } from './prisma.js';
 import { mkdir, unlink } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
+import sharp from 'sharp';
 
 export const supportedExtensions = [
   'png',

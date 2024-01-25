@@ -1,7 +1,7 @@
 <script lang="ts">
   import { GroupType, zeus } from '$lib/zeus';
-  import type { PageData } from '../../routes/groups/[uid]/edit/$types';
-  import { _clubQuery as clubQuery } from '../../routes/groups/[uid]/edit/+page';
+  import type { PageData } from '../../routes/(app)/groups/[uid]/edit/$types';
+  import { _clubQuery as clubQuery } from '../../routes/(app)/groups/[uid]/edit/+page';
   import Alert from '$lib/components/Alert.svelte';
   import { goto } from '$app/navigation';
   import InputSelectOne from './InputSelectOne.svelte';
@@ -75,7 +75,7 @@
             studentAssociationUid: studentAssociation?.uid,
           },
           {
-            __typename: true,
+            '__typename': true,
             '...on Error': { message: true },
             '...on MutationUpsertGroupSuccess': { data: clubQuery },
           },

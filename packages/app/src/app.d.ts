@@ -19,6 +19,15 @@ declare module 'simple-svelte-autocomplete';
 
 declare module 'ics-service';
 
+declare module 'arborist' {
+  function createForest<
+    T extends { [P in V]: U } & { [P in W]?: U | undefined | null },
+    U extends PropertyKey = PropertyKey,
+    V extends PropertyKey = 'id',
+    W extends PropertyKey = 'parentId',
+  >(list: T[], keys: { idKey?: V; parentIdKey?: W }): Array<Tree<T>>;
+}
+
 declare namespace svelteHTML {
   interface HTMLAttributes<T> {
     'on:pan'?: (event: CustomEvent<{ x: number; y: number; target: EventTarget & T }>) => void;
@@ -53,4 +62,26 @@ declare namespace svelteHTML {
     'on:pressdown'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressmove'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
   }
+}
+
+declare interface Window {
+  umami: {
+    track:
+      | (() => void)
+      | ((
+          payloadOrEventOrCallback:
+            | string
+            | Record<string, unknown>
+            | ((defaultPayload: {
+                hostname: string;
+                language: string;
+                referrer: string;
+                screen: string;
+                title: string;
+                url: string;
+                width: number;
+              }) => void),
+        ) => void)
+      | ((event: string, payload?: Record<string, unknown>) => void);
+  };
 }

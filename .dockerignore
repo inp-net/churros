@@ -26,6 +26,7 @@ packages/api/scripts/*.json
 packages/api/scripts/*.tar.gz
 packages/api/storage/
 packages/api/scripts/frappe-documents/
+packages/*/build/
 
 visual-identity/
 packages/api/scripts/.venv/

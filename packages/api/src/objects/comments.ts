@@ -1,11 +1,10 @@
+import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, publish } from '#lib';
 import { NotificationChannel, type User } from '@prisma/client';
-import { TYPENAMES_TO_ID_PREFIXES, builder } from '../builder.js';
-import { prisma } from '../prisma.js';
+import { yearTier } from '../date.js';
 import { toHtml } from '../services/markdown.js';
 import { notify } from '../services/notifications.js';
 import { log } from './logs.js';
 import { DateTimeScalar } from './scalars.js';
-import { yearTier } from '../date.js';
 
 export const CommentType = builder.prismaNode('Comment', {
   id: { field: 'id' },
@@ -25,40 +24,6 @@ export const CommentType = builder.prismaNode('Comment', {
     authorId: t.exposeID('authorId', { nullable: true }),
   }),
 });
-
-builder.queryField('comments', (t) =>
-  t.prismaConnection({
-    type: CommentType,
-    cursor: 'id',
-    authScopes(_, {}, { user }) {
-      return Boolean(user);
-    },
-    async resolve(query) {
-      return prisma.comment.findMany({
-        ...query,
-        orderBy: { createdAt: 'asc' },
-      });
-    },
-  }),
-);
-
-builder.queryField('comment', (t) =>
-  t.prismaField({
-    type: CommentType,
-    args: {
-      id: t.arg.id(),
-    },
-    authScopes(_, {}, { user }) {
-      return Boolean(user);
-    },
-    async resolve(query, _, { id }) {
-      return prisma.comment.findUniqueOrThrow({
-        ...query,
-        where: { id },
-      });
-    },
-  }),
-);
 
 builder.mutationField('upsertComment', (t) =>
   t.prismaField({
@@ -111,12 +76,18 @@ builder.mutationField('upsertComment', (t) =>
           article: { include: { group: true, author: true } },
         },
       });
+      publish(
+        comment.id,
+        id ? 'updated' : 'created',
+        comment,
+        comment.articleId ?? comment.documentId ?? undefined,
+      );
 
       const commentedOn: { title: string; author: User | null } | undefined = comment.document
         ? { title: comment.document.title, author: comment.document.uploader }
         : comment.article
-        ? { title: comment.article.title, author: comment.article.author }
-        : undefined;
+          ? { title: comment.article.title, author: comment.article.author }
+          : undefined;
 
       // TODO factor out code to get URL to the comment (or use /[globalId])
       const documentMajor =
@@ -186,17 +157,22 @@ builder.mutationField('deleteComment', (t) =>
     async resolve(_query, { id }) {
       const repliesCount = await prisma.comment.count({ where: { inReplyToId: id } });
       await log('comments', 'delete', { repliesCount }, id);
-      // eslint-disable-next-line unicorn/prefer-ternary
+
+      let articleId: string | null | undefined;
+      let documentId: string | null | undefined;
+
       if (repliesCount > 0) {
-        await prisma.comment.update({
+        ({ articleId, documentId } = await prisma.comment.update({
           where: { id },
           data: { body: '_Commentaire supprimé_', author: { disconnect: true } },
-        });
+        }));
       } else {
-        await prisma.comment.delete({
+        ({ articleId, documentId } = await prisma.comment.delete({
           where: { id },
-        });
+        }));
       }
+
+      publish(id, 'deleted', id, articleId ?? documentId ?? undefined);
 
       return true;
     },

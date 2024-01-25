@@ -1,4 +1,5 @@
-import { type Group, GroupType as GroupPrismaType } from '@prisma/client';
+import { builder, prisma } from '#lib';
+import { GroupType as GroupPrismaType } from '@prisma/client';
 import { getDescendants, hasCycle, mappedGetAncestors } from 'arborist';
 import dichotomid from 'dichotomid';
 import { GraphQLError } from 'graphql';
@@ -6,12 +7,9 @@ import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import slug from 'slug';
 import { onBoard } from '../auth.js';
-import { builder } from '../builder.js';
 import { purgeUserSessions, type Context } from '../context.js';
 import { updatePicture } from '../pictures.js';
-import { prisma } from '../prisma.js';
 import { toHtml } from '../services/markdown.js';
-import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { visibleArticlesPrismaQuery } from './articles.js';
 import { EventType, visibleEventsPrismaQuery } from './events.js';
 import { membersNeedToPayForTheStudentAssociation } from './group-members.js';
@@ -19,12 +17,16 @@ import { LinkInput } from './links.js';
 import { log } from './logs.js';
 import { FileScalar } from './scalars.js';
 
-export function userIsInBureauOf(user: Context['user'], groupUid: string): boolean {
+export function userIsOnBoardOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
     user?.groups.some(
       ({ group: { uid }, ...permissions }) => uid === groupUid && onBoard(permissions),
     ),
   );
+}
+
+export function userIsMemberOf(user: Context['user'], groupUid: string): boolean {
+  return Boolean(user?.groups.some(({ group: { uid } }) => uid === groupUid));
 }
 
 export function userIsPresidentOf(user: Context['user'], groupUid: string): boolean {
@@ -80,6 +82,7 @@ export const GroupType = builder.prismaNode('Group', {
     pictureFile: t.exposeString('pictureFile'),
     pictureFileDark: t.exposeString('pictureFileDark'),
     ldapUid: t.exposeString('ldapUid'),
+    roomIsOpen: t.exposeBoolean('roomIsOpen', { authScopes: { student: true } }),
     articles: t.relation('articles', {
       query(_, { user }) {
         return {
@@ -240,50 +243,6 @@ builder.queryField('group', (t) =>
     args: { uid: t.arg.string() },
     resolve: async (query, _, { uid }) =>
       prisma.group.findUniqueOrThrow({ ...query, where: { uid } }),
-  }),
-);
-
-export class GroupSearchResult {
-  group!: Group;
-  rank!: number | null;
-  similarity!: number;
-  id!: string;
-}
-
-export const GroupSearchResultType = builder.objectType(GroupSearchResult, {
-  name: 'GroupSearchResult',
-  fields: (t) => ({
-    id: t.exposeID('id'),
-    group: t.prismaField({
-      type: 'Group',
-      resolve: (_, { group }) => group,
-    }),
-    rank: t.exposeFloat('rank', { nullable: true }),
-    similarity: t.exposeFloat('similarity'),
-  }),
-});
-
-builder.queryField('searchGroups', (t) =>
-  t.field({
-    type: [GroupSearchResultType],
-    args: { q: t.arg.string(), similarityCutoff: t.arg.float({ required: false }) },
-    authScopes: { loggedIn: true },
-    async resolve(_, { q, similarityCutoff }) {
-      const matches = await fullTextSearch('Group', q, {
-        similarityCutoff: similarityCutoff ?? 0.2,
-        fuzzy: ['name', 'uid'],
-        highlight: ['description'],
-      });
-
-      const groups = await prisma.group.findMany({
-        where: { id: { in: matches.map(({ id }) => id) } },
-      });
-
-      // Order by their index in newResults
-      return sortWithMatches(highlightProperties(groups, matches), matches).map(
-        ({ object, ...match }) => ({ ...match, group: object }),
-      );
-    },
   }),
 );
 
@@ -580,6 +539,32 @@ builder.mutationField('deleteGroupPicture', (t) =>
         },
       });
       return true;
+    },
+  }),
+);
+
+builder.mutationField('updateRoomOpenState', (t) =>
+  t.field({
+    type: 'Boolean',
+    description: "Changer si la salle d'un groupe est fermé ou ouvert",
+    args: {
+      groupUid: t.arg.string({ description: "L'uid du groupe" }),
+      openRoom: t.arg.boolean({
+        description: 'Vrai si on veut indiquer que le local est maintenant ouvert ',
+      }),
+    },
+    authScopes(_, { groupUid }, { user }) {
+      return Boolean(user?.canEditGroups || userIsMemberOf(user, groupUid));
+    },
+    async resolve(_, { groupUid, openRoom }, { user }) {
+      const { roomIsOpen } = await prisma.group.update({
+        where: { uid: groupUid },
+        data: { roomIsOpen: openRoom },
+      });
+
+      await log('groups', 'set-room', { open: openRoom }, groupUid, user);
+
+      return roomIsOpen;
     },
   }),
 );

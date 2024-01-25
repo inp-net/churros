@@ -1,18 +1,16 @@
+import { builder, prisma } from '#lib';
 import { addDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { phone as parsePhoneNumber } from 'phone';
-import { builder } from '../builder.js';
 import { purgeUserSessions } from '../context.js';
 import { yearTier } from '../date.js';
 import { FamilyTree, getFamilyTree } from '../godchildren-tree.js';
 import { updatePicture } from '../pictures.js';
-import { prisma } from '../prisma.js';
 import { markAsContributor, queryLdapUser } from '../services/ldap.js';
 import { toHtml } from '../services/markdown.js';
 import { createUid } from '../services/registration.js';
-import { fullTextSearch, highlightProperties, sortWithMatches } from '../services/search.js';
 import { ContributionOptionType } from './contribution-options.js';
 import { requestEmailChange } from './email-changes.js';
 import { LinkInput } from './links.js';
@@ -20,7 +18,6 @@ import { log } from './logs.js';
 import { NotificationChannel } from './notifications.js';
 import { DateTimeScalar, FileScalar } from './scalars.js';
 import { StudentAssociationType } from './student-associations.js';
-import type { User } from '@prisma/client';
 
 builder.objectType(FamilyTree, {
   name: 'FamilyTree',
@@ -69,6 +66,7 @@ export const UserType = builder.prismaNode('User', {
         return !majorId;
       },
     }),
+    latestVersionSeenInChangelog: t.exposeString('latestVersionSeenInChangelog'),
 
     // Profile details
     address: t.exposeString('address', { authScopes: { student: true, $granted: 'me' } }),
@@ -199,43 +197,22 @@ export const UserType = builder.prismaNode('User', {
   }),
 });
 
-export class UserSearchResult {
-  user!: User;
-  id!: string;
-  similarity!: number;
-  rank!: number | null;
-}
-
-export const UserSearchResultType = builder.objectType(UserSearchResult, {
-  name: 'UserSearchResult',
-  fields: (t) => ({
-    user: t.prismaField({
-      type: 'User',
-      resolve: (_, { user }) => user,
-    }),
-    id: t.exposeID('id'),
-    similarity: t.exposeFloat('similarity'),
-    rank: t.exposeFloat('rank', { nullable: true }),
-  }),
-});
-
 /** Returns the current user. */
 builder.queryField('me', (t) =>
-  // We use `prismaField` instead of `field` to leverage the nesting
-  // mechanism of the resolver
-  t.prismaField({
+  t.withAuth({ loggedIn: true }).prismaField({
+    directives: {
+      rateLimit: { duration: 1, limit: 5 },
+    },
     type: UserType,
-    authScopes: { loggedIn: true },
-    resolve: (_query, _, {}, { user }) => user!,
+    resolve: (_query, _, {}, { user }) => user,
   }),
 );
 
 /** Gets a user from its id. */
 builder.queryField('user', (t) =>
-  t.prismaField({
+  t.withAuth({ loggedIn: true }).prismaField({
     type: UserType,
     args: { uid: t.arg.string() },
-    authScopes: { loggedIn: true },
     async resolve(query, _, { uid }) {
       const user = await prisma.user.findUnique({ ...query, where: { uid } });
       if (!user) throw new GraphQLError('Utilisateur·ice introuvable');
@@ -258,7 +235,7 @@ builder.queryField('userByEmail', (t) =>
 );
 
 builder.queryField('allUsers', (t) =>
-  t.prismaConnection({
+  t.withAuth({ student: true }).prismaConnection({
     type: UserType,
     async resolve(query) {
       return prisma.user.findMany({
@@ -270,40 +247,15 @@ builder.queryField('allUsers', (t) =>
   }),
 );
 
-/** Searches for user on all text fields. */
-builder.queryField('searchUsers', (t) =>
-  t.field({
-    type: [UserSearchResultType],
-    args: { q: t.arg.string(), similarityCutoff: t.arg.float({ required: false }) },
-    authScopes: { student: true },
-    async resolve(_, { q, similarityCutoff }) {
-      const matches = await fullTextSearch('User', q, {
-        similarityCutoff: similarityCutoff ?? 0.08,
-        fuzzy: ['firstName', 'lastName', 'nickname', 'email', 'uid'],
-        highlight: ['description'],
-      });
-
-      const users = await prisma.user.findMany({
-        where: { id: { in: matches.map(({ id }) => id) } },
-      });
-
-      return sortWithMatches(highlightProperties(users, matches, ['description']), matches).map(
-        ({ object, ...match }) => ({ user: object, ...match }),
-      );
-    },
-  }),
-);
-
 /** Gets the people that were born today */
 builder.queryField('birthdays', (t) =>
-  t.prismaField({
+  t.withAuth({ student: true }).prismaField({
     type: [UserType],
     args: {
       now: t.arg({ type: DateTimeScalar, required: false }),
       activeOnly: t.arg({ type: 'Boolean', required: false }),
       width: t.arg({ type: 'Int', required: false }),
     },
-    authScopes: { student: true },
     async resolve(query, _, { now, activeOnly, width }, { user }) {
       now = now ?? new Date();
       activeOnly = activeOnly ?? true;
@@ -334,22 +286,19 @@ builder.queryField('birthdays', (t) =>
         ...query,
         where: {
           uid: { in: usersNonflat.flat().map((u) => u.uid) },
-          ...(user
-            ? {
-                major: {
-                  schools: {
-                    some: {
-                      uid: {
-                        in: user.major?.schools.map((s) => s.uid) ?? [],
-                        not: 'inp',
-                      },
-                    },
-                  },
+          major: {
+            schools: {
+              some: {
+                uid: {
+                  in: user.major?.schools.map((s) => s.uid) ?? [],
+                  not: 'inp',
                 },
-              }
-            : {}),
+              },
+            },
+          },
         },
       });
+
       if (activeOnly)
         return users.filter(({ graduationYear }) => [1, 2, 3].includes(yearTier(graduationYear)));
       return users;
@@ -375,7 +324,7 @@ builder.mutationField('updateUser', (t) =>
       address: t.arg.string({ validate: { maxLength: 255 } }),
       phone: t.arg.string({ validate: { maxLength: 255 } }),
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
-      description: t.arg.string({ validate: { maxLength: 255 } }),
+      description: t.arg.string({ validate: { maxLength: 10_000 } }),
       links: t.arg({ type: [LinkInput] }),
       cededImageRightsToTVn7: t.arg.boolean(),
       apprentice: t.arg.boolean(),
@@ -387,16 +336,7 @@ builder.mutationField('updateUser', (t) =>
       contributesWith: t.arg({ type: ['ID'], required: false }),
     },
     authScopes(_, { uid }, { user }) {
-      const result = Boolean(user?.canEditUsers || uid === user?.uid);
-      if (!result) {
-        console.error(
-          `Cannot edit profile: ${uid} =?= ${user?.uid ?? '<none>'} OR ${JSON.stringify(
-            user?.canEditUsers,
-          )}`,
-        );
-      }
-
-      return result;
+      return user?.canEditUsers || uid === user?.uid;
     },
     async resolve(
       query,
@@ -423,8 +363,7 @@ builder.mutationField('updateUser', (t) =>
       },
       { user },
     ) {
-      if (!user) throw new GraphQLError('Not logged in');
-
+      if (!user) throw new GraphQLError('Connexion requise');
       const targetUser = await prisma.user.findUniqueOrThrow({ where: { uid } });
 
       if (phone) {
@@ -528,8 +467,8 @@ builder.mutationField('updateUser', (t) =>
             godparentUid === ''
               ? { disconnect: true }
               : godparentUid
-              ? { connect: { uid: godparentUid } }
-              : {},
+                ? { connect: { uid: godparentUid } }
+                : {},
         },
       });
 

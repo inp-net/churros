@@ -1,14 +1,13 @@
-import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
-import { toHtml } from '../services/markdown.js';
-import { PaymentMethodEnum } from './registrations.js';
-import { eventAccessibleByUser, eventManagedByUser } from './events.js';
-import { DateTimeScalar } from './scalars.js';
-import { LinkInput } from './links.js';
-import slug from 'slug';
-import dichotomid from 'dichotomid';
+import { builder, prisma, subscriptionName } from '#lib';
 import { PaymentMethod } from '@prisma/client';
+import dichotomid from 'dichotomid';
+import slug from 'slug';
+import { toHtml } from '../services/markdown.js';
+import { eventAccessibleByUser, eventManagedByUser } from './events.js';
+import { LinkInput } from './links.js';
 import { actualPrice } from './promotions.js';
+import { PaymentMethodEnum } from './registrations.js';
+import { DateTimeScalar } from './scalars.js';
 
 export const placesLeft = (ticket: {
   name: string;
@@ -60,6 +59,17 @@ export const TicketType = builder.prismaNode('Ticket', {
     uid: t.exposeString('uid'),
     ticketGroupId: t.exposeID('ticketGroupId', { nullable: true }),
     name: t.exposeString('name'),
+    fullName: t.string({
+      description: "Full name, including the ticket group's name if any",
+      async resolve({ name, ticketGroupId }) {
+        let group: { name: string } | undefined;
+        if (ticketGroupId) {
+          group =
+            (await prisma.ticketGroup.findUnique({ where: { id: ticketGroupId } })) ?? undefined;
+        }
+        return group ? `${group.name} - ${name}` : name;
+      },
+    }),
     description: t.exposeString('description'),
     descriptionHtml: t.string({ resolve: async ({ description }) => toHtml(description) }),
     opensAt: t.expose('opensAt', { type: DateTimeScalar, nullable: true }),
@@ -72,20 +82,17 @@ export const TicketType = builder.prismaNode('Ticket', {
     }),
     capacity: t.exposeInt('capacity'),
     registrations: t.relation('registrations', {
+      authScopes: { loggedIn: true },
       query(_, { user }) {
-        if (user?.admin) return {};
-        if (!user) {
-          return {
-            where: { id: '' },
-          };
-        }
+        if (!user) throw `unreachable`;
+        if (user.admin) return {};
 
         return {
           where: {
             OR: [
-              { author: { uid: user?.uid } },
-              { beneficiary: user?.uid },
-              { ticket: { event: { managers: { some: { user: { uid: user?.uid } } } } } },
+              { author: { uid: user.uid } },
+              { beneficiary: user.uid },
+              { ticket: { event: { managers: { some: { user: { uid: user.uid } } } } } },
             ],
           },
         };
@@ -145,6 +152,9 @@ export const TicketType = builder.prismaNode('Ticket', {
       },
     }),
     placesLeft: t.int({
+      subscribe(subs, { id }) {
+        subs.register(subscriptionName(id));
+      },
       async resolve({ id }) {
         const ticket = await prisma.ticket.findUnique({
           where: { id },

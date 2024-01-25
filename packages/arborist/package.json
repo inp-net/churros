@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
-    "@types/node": "^20.8.9",
+    "@types/node": "^20.10.4",
     "c8": "^8.0.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   },
   "exports": {
+    "types": "./index.ts",
     "development": "./index.ts",
     "default": "./build/index.js"
   },
@@ -26,5 +27,9 @@
   "type": "module",
   "volta": {
     "extends": "../../package.json"
+  },
+  "release-it": {
+    "git": false,
+    "npm": false
   }
 }

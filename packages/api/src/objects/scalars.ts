@@ -1,6 +1,6 @@
+import { builder } from '#lib';
 import { GraphQLError } from 'graphql';
 import { DateTimeResolver } from 'graphql-scalars';
-import { builder } from '../builder.js';
 
 export const DateTimeScalar = builder.addScalarType('DateTime', DateTimeResolver, {});
 
@@ -36,4 +36,13 @@ export const BooleanMapScalar = builder.scalarType('BooleanMap', {
       throw new GraphQLError('Record must a plain object');
     return parsed as Record<string, boolean>;
   },
+});
+
+export enum SortDirection {
+  Ascending,
+  Descending,
+}
+
+export const SortDirectionEnum = builder.enumType(SortDirection, {
+  name: 'SortDirection',
 });

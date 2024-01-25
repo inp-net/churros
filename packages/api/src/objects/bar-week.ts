@@ -1,10 +1,9 @@
-import slug from 'slug';
-import { builder } from '../builder.js';
-import { prisma } from '../prisma.js';
-import { toHtml } from '../services/markdown.js';
-import { DateTimeScalar } from './scalars.js';
-import { userIsInBureauOf } from './groups.js';
+import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
+import slug from 'slug';
+import { toHtml } from '../services/markdown.js';
+import { userIsOnBoardOf } from './groups.js';
+import { DateTimeScalar } from './scalars.js';
 
 export const BarWeekType = builder.prismaNode('BarWeek', {
   id: { field: 'id' },
@@ -78,7 +77,7 @@ builder.mutationField('upsertBarWeek', (t) =>
     authScopes(_, {}, { user }) {
       // Only members of a certain group(s) can upsert a bar week
       const foyGroupsUids = process.env['FOY_GROUPS']?.split(',') ?? [];
-      return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
+      return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsOnBoardOf(user, uid)));
     },
     async resolve(query, _, { id, startsAt, endsAt, description, groupsUids }, { user }) {
       // Check if ends at date is after starts at date
@@ -138,7 +137,7 @@ builder.mutationField('deleteBarWeek', (t) =>
     authScopes(_, {}, { user }) {
       // Only members of a certain group(s) can upsert a bar week
       const foyGroupsUids = process.env['FOY_GROUPS']?.split(',') ?? [];
-      return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsInBureauOf(user, uid)));
+      return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsOnBoardOf(user, uid)));
     },
     async resolve(_, { id }, { user }) {
       await prisma.barWeek.delete({ where: { id } });

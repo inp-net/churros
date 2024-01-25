@@ -1,7 +1,6 @@
-import { builder } from '../builder.js';
-import { DateTimeScalar } from './scalars.js';
-import { prisma } from '../prisma.js';
+import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
+import { DateTimeScalar } from './scalars.js';
 
 export const LogType = builder.prismaNode('LogEntry', {
   id: { field: 'id' },
@@ -19,7 +18,7 @@ export async function log(
   area: string,
   action: string,
   message: Record<string, unknown>,
-  target?: string,
+  target?: string | null,
   user?: { uid: string },
 ) {
   // eslint-disable-next-line no-console

@@ -1,24 +1,23 @@
-import { copyFile, mkdir, readFile, stat } from 'fs/promises';
-import YAML from 'yaml';
-import { PrismaClient } from '@prisma/client';
-import slug from 'slug';
+import { DocumentType, PrismaClient } from '@prisma/client';
 import dichotomid from 'dichotomid';
-import { Convert } from './frappe-types';
+import { copyFile, mkdir, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
-import { DocumentType } from '@prisma/client';
+import slug from 'slug';
+import YAML from 'yaml';
+import { Convert } from './frappe-types.js';
 
 const TAG_TO_SUBJECT_AND_IS_SOLUTION = {
-  TD: [DocumentType.Exercises, false],
+  'TD': [DocumentType.Exercises, false],
   'BE Corrigé': [DocumentType.GradedExercises, true],
-  TP: [DocumentType.Practical, false],
+  'TP': [DocumentType.Practical, false],
   'BE Sujet': [DocumentType.GradedExercises, false],
-  Examen: [DocumentType.Exam, false],
-  Fiche: [DocumentType.Summary, false],
+  'Examen': [DocumentType.Exam, false],
+  'Fiche': [DocumentType.Summary, false],
   'TD Corrigé': [DocumentType.Exercises, true],
   'TP Corrigé': [DocumentType.Practical, true],
   'Examen Corrigé': [DocumentType.Exam, true],
-  Cours: [DocumentType.CourseNotes, false],
-  PowerPoint: [DocumentType.CourseSlides, false],
+  'Cours': [DocumentType.CourseNotes, false],
+  'PowerPoint': [DocumentType.CourseSlides, false],
   'Correction Exam': [DocumentType.Exam, true],
   "Sujet d'annale": [DocumentType.Exam, false],
   'Enoncé TD': [DocumentType.Exercises, false],
@@ -390,8 +389,8 @@ for (const [subjectId, oldSubjectIds] of OLD_FRAPPE_MAPPING.entries()) {
             subject.forApprentices === undefined
               ? 'fisea'
               : subject.forApprentices
-              ? 'fisa'
-              : 'fise'
+                ? 'fisa'
+                : 'fise'
           }/${subject.yearTier ?? 'anyone'}/${subject.uid}/${slug(oldDocument.nom)}/${
             parseFloat(ordre) + 1
           }-${basename}${extension}`;

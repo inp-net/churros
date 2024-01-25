@@ -1,23 +1,31 @@
-import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import { htmlToText as convertHtmlToText } from 'html-to-text';
+import linkifyHtml from 'linkify-html';
+import 'linkify-plugin-mention';
+import rehypeHighlight from 'rehype-highlight';
+import rehypeKatex from 'rehype-katex';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
+import remarkBreaks from 'remark-breaks';
+//@ts-expect-error Untyped library
+import remarkGitlab from 'remark-gitlab';
+import remarkMath from 'remark-math';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
-import remarkBreaks from 'remark-breaks';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import rehypeHighlight from 'rehype-highlight';
-import linkifyHtml from 'linkify-html';
-import 'linkify-plugin-mention';
 
 /** Converts markdown to HTML. */
-export const toHtml = async (body: string, options?: { linkifyUserMentions: boolean }) =>
+export const toHtml = async (
+  body: string,
+  options?: { linkifyUserMentions: boolean; linkifyGitlabItems: boolean },
+) =>
   linkifyHtml(
     await unified()
       .use(remarkParse)
       .use(remarkMath)
       .use(remarkBreaks)
+      .use(options?.linkifyGitlabItems ? remarkGitlab : () => {}, {
+        repository: 'https://git.inpt.fr/inp-net/churros',
+      })
       // Downlevel titles (h1 -> h3)
       .use(() => ({ children }) => {
         for (const child of children)
@@ -36,7 +44,14 @@ export const toHtml = async (body: string, options?: { linkifyUserMentions: bool
       .use(rehypeHighlight)
       .use(rehypeStringify)
       .process(body)
-      .then(String),
+      .then((s) =>
+        options?.linkifyGitlabItems
+          ? String(s).replaceAll(
+              /https:\/\/git.inpt.fr\/inp-net\/(?:churros|centraverse)\/(?:-\/)?issues\/(\d+)/g,
+              '/reports/$1',
+            )
+          : String(s),
+      ),
     {
       defaultProtocol: 'https',
       attributes: {
