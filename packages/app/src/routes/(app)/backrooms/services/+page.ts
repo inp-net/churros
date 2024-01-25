@@ -9,18 +9,21 @@ export const load: PageLoad = async ({ fetch, parent }) => {
   if (!data.me.admin) throw redirect(307, '/');
   return loadQuery(
     {
-      services: {
-        id: true,
-        name: true,
-        url: true,
-        description: true,
-        logo: true,
-        logoSourceType: true,
-        group: {
-          pictureFile: true,
-          pictureFileDark: true,
+      services: [
+        {},
+        {
+          id: true,
+          name: true,
+          url: true,
+          description: true,
+          logo: true,
+          logoSourceType: true,
+          group: {
+            pictureFile: true,
+            pictureFileDark: true,
+          },
         },
-      },
+      ],
     },
     { fetch, parent },
   );
