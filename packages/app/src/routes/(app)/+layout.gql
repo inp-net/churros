@@ -1,0 +1,60 @@
+query AppLayout($myUid: String!) {
+  combinedChangelog(sort: Descending) {
+    __typename
+    ... on QueryCombinedChangelogSuccess {
+      data {
+        version
+        date
+        description
+        changes {
+          added {
+            authors
+            issues
+            mergeRequests
+            reporters
+            html
+          }
+          fixed {
+            authors
+            issues
+            mergeRequests
+            reporters
+            html
+          }
+          improved {
+            authors
+            issues
+            mergeRequests
+            reporters
+            html
+          }
+          other {
+            authors
+            issues
+            mergeRequests
+            reporters
+            html
+          }
+          security {
+            authors
+            issues
+            mergeRequests
+            reporters
+            html
+          }
+        }
+      }
+    }
+    ... on Error {
+      message
+    }
+  }
+
+  registrationsOfUser(userUid: $myUid, forUserOnly: true, first: 1) {
+    edges {
+      node {
+        ...QuickBooking
+      }
+    }
+  }
+}

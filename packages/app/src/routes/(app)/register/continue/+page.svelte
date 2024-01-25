@@ -3,7 +3,7 @@
   import Alert from '$lib/components/Alert.svelte';
 
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
-  import { saveSessionToken, sessionUserQuery } from '$lib/session.js';
+  import { saveSessionToken } from '$lib/session.js';
   import { zeus } from '$lib/zeus.js';
   import type { ZodFormattedError } from 'zod';
   import type { PageData } from './$types';

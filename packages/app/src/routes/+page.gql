@@ -151,7 +151,7 @@
 #}
 
 query HomeQuery {
-    homepage(first: 30) @paginate {
+    homepage(first: 30) @loading(count: 10) @paginate {
         edges {
             node {
                 id

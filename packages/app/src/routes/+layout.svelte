@@ -4,20 +4,22 @@
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
   import Toast from '$lib/components/Toast.svelte';
   import { debugging } from '$lib/debugging';
-  import { isPWA } from '$lib/pwa';
   import { me } from '$lib/session';
   import { isDark, theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
   import '../design/app.scss';
+  import { isPWA } from '$lib/pwa';
+  import {get} from 'svelte/store';
+  import { load_UserSession } from '$houdini';
 
-  onMount(() => {
-    if (!$me && !localStorage.getItem('isReallyLoggedout')) {
-      localStorage.setItem('isReallyLoggedout', 'true');
-      window.location.reload();
-    } else if ($me) {
-      localStorage.removeItem('isReallyLoggedout');
-    }
+  let showInitialSpinner = true;
+
+  onMount(async () => {
+    const { UserSession } = await load_UserSession();
+    const userStore = get(UserSession)
+    console.log(`setting $me to ${userStore.data?.me}`);
+    me.set(userStore.data?.me);
 
     debugging.subscribe(($debugging) => {
       document.documentElement.classList.toggle('rainbow-logo', $debugging);

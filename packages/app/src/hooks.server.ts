@@ -5,7 +5,7 @@ import cookie from 'cookie';
 
 type User = UserSession$result & { token: string };
 
-async function autheticateUser(event: RequestEvent): Promise<User | undefined> {
+async function authenticateUser(event: RequestEvent): Promise<User | undefined> {
   const { token } = cookie.parse(event.request.headers.get('cookie') ?? '');
 
   if (!token) return undefined; // no token, no user
@@ -21,7 +21,7 @@ async function autheticateUser(event: RequestEvent): Promise<User | undefined> {
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
-  const user = await autheticateUser(event);
+  const user = await authenticateUser(event);
 
   setSession(event, { me: user?.me, token: user?.token });
 

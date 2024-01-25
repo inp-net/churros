@@ -10,6 +10,7 @@
   import IconClose from '~icons/mdi/close';
   import ButtonGhost from './ButtonGhost.svelte';
   import CardTicket from './CardTicket.svelte';
+  import { fragment, graphql, type QuickBooking } from '$houdini';
 
   type Registration = {
     id: string;
@@ -28,7 +29,35 @@
     };
   };
 
-  export let registrationsOfUser: { edges: Array<{ node: Registration }> };
+  export let registrationsOfUser: QuickBooking;
+  $: info = fragment(
+    registrationsOfUser,
+    graphql(`#graphql
+    fragment QuickBooking on Registration {
+            id
+            code
+            beneficiary
+            authorIsBeneficiary
+            paid
+            cancelled
+            author {
+              fullName
+            }
+            authorEmail
+            beneficiaryUser {
+              fullName
+            }
+            ticket {
+              name
+              event {
+                pictureFile
+                title
+                startsAt
+                endsAt
+              }
+          }
+    }`),
+  );
   export let now: Date;
 
   function shouldShowBooking(hiddens: string[], registration: Registration): boolean {

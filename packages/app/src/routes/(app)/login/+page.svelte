@@ -8,7 +8,7 @@
   import IconEye from '~icons/mdi/eye';
   import IconEyeOff from '~icons/mdi/eye-off';
 
-  import { me, saveSessionToken, sessionUserQuery } from '$lib/session';
+  import { me, saveSessionToken } from '$lib/session';
   import { zeus } from '$lib/zeus';
   import { onMount } from 'svelte';
 
@@ -59,14 +59,6 @@
       loading = false;
     }
   };
-
-  onMount(async () => {
-    // Client-side redirect to avoid login detection
-    if ($me) {
-      window.localStorage.removeItem('isReallyLoggedout');
-      await redirect();
-    }
-  });
 
   $: linkParams = email ? `?${new URLSearchParams({ email }).toString()}` : '';
 </script>

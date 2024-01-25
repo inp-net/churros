@@ -32,9 +32,12 @@
   import IconClose from '~icons/mdi/close';
   import Snowflake from '~icons/mdi/snowflake';
   import '../../design/app.scss';
-  import type { PageData, Snapshot } from './$types';
+  import type { Snapshot } from './$types';
+  import ModalChangelog from '$lib/components/ModalChangelog.svelte';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
+  $: ({ AppLayout } = data)
   let scrollableArea: HTMLElement;
 
   let scrolled = false;
@@ -129,13 +132,13 @@
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
 </script>
 
-{#if data.combinedChangelog.length > 0}
+{#if $AppLayout.data?.combinedChangelog?.__typename === "QueryCombinedChangelogSuccess"}
   <ModalChangelog
     on:acknowledge={() => {
-      data.combinedChangelog = [];
+      $AppLayout.data.combinedChangelog = []
     }}
     open
-    log={data.combinedChangelog}
+    log={$AppLayout.data.combinedChangelog}
   />
 {/if}
 

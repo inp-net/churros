@@ -70,7 +70,6 @@
 
   async function logout() {
     const cookies = cookie.parse(document.cookie);
-    window.localStorage.setItem('isReallyLoggedout', 'true');
     await goto(`/logout/?token=${cookies.token}`);
   }
 
