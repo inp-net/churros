@@ -3,19 +3,20 @@
   import type { PageData } from './$houdini';
   import { env } from '$env/dynamic/public';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
-  import { me } from '$lib/session';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { onMount } from 'svelte';
   import { PendingValue } from '$houdini';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
   export let data: PageData;
   $: ({ HomeQuery } = data);
 
   let selectedBirthdaysYearTier = 'all';
   onMount(async () => {
-    selectedBirthdaysYearTier = $me ? ($me.yearTier <= 3 ? $me.yearTier.toString() : 'all') : 'all';
+    const yearTier = $HomeQuery.data?.me?.yearTier;
+    selectedBirthdaysYearTier = yearTier ? (yearTier <= 3 ? yearTier.toString() : 'all') : 'all';
   });
 </script>
 
@@ -26,13 +27,13 @@
 <!--<p>{$IndexQuery.data}</p>-->
 
 <section class="groups">
-  {#if $me?.groups}
-    <CarouselGroups groups={$me.groups.map(({ group }) => group)} />
+  {#if $HomeQuery?.data?.me?.groups}
+    <CarouselGroups groups={$HomeQuery?.data?.me?.groups?.map((g) => g.group)} />
   {/if}
 </section>
 
 {#if $HomeQuery.fetching}
-  Chargement...
+  <LoadingSpinner></LoadingSpinner>
 {:else}
   <section class="birthdays">
     <h2>
@@ -45,7 +46,7 @@
       <ButtonSecondary href="/birthdays">Autres jours</ButtonSecondary>
     </h2>
     <ul class="nobullet">
-      {#each $HomeQuery.data?.birthdays.filter((u) => selectedBirthdaysYearTier === 'all' || u.yearTier === Number.parseFloat(selectedBirthdaysYearTier)) ?? [] as { uid, major, birthday, ...user } (uid)}
+      {#each $HomeQuery.data?.birthdays?.filter((u) => selectedBirthdaysYearTier === 'all' || u.yearTier === Number.parseFloat(selectedBirthdaysYearTier)) ?? [] as { uid, major, birthday, ...user } (uid)}
         <li>
           <AvatarPerson
             href="/users/{uid}"
@@ -65,38 +66,28 @@
       {/each}
     </ul>
   </section>
-{/if}
 
-{#if $HomeQuery.fetching}
-  Chargement...
-{:else}
   <section class="articles">
-    {#if $HomeQuery.data?.homepage === PendingValue}
-      Chargement…
-    {:else}
-      {#each $HomeQuery.data?.homepage.edges ?? [] as edge (edge?.node.id)}
-        {#if edge?.node}
-          {@const { id, uid, pictureFile, group, reactionCounts, myReactions, event, ...rest } =
-            edge.node}
-          <CardArticle
-            {...rest}
-            {id}
-            {group}
-            likes={reactionCounts['❤️'] ?? 0}
-            liked={myReactions['❤️']}
-            event={event
-              ? { href: `/events/${event.group.uid}/${event.uid}`, ...event }
-              : undefined}
-            href="/posts/{group.uid}/{uid}/"
-            img={pictureFile ? { src: `${env.PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
-          />
-        {/if}
-      {/each}
-    {/if}
+    {#each $HomeQuery.data?.homepage.edges ?? [] as edge (edge?.node.id)}
+      {#if edge?.node}
+        {@const { id, uid, pictureFile, group, reactionCounts, myReactions, event, ...rest } =
+          edge.node}
+        <CardArticle
+          {...rest}
+          {id}
+          {group}
+          likes={reactionCounts['❤️'] ?? 0}
+          liked={myReactions['❤️']}
+          event={event ? { href: `/events/${event.group.uid}/${event.uid}`, ...event } : undefined}
+          href="/posts/{group.uid}/{uid}/"
+          img={pictureFile ? { src: `${env.PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
+        />
+      {/if}
+    {/each}
   </section>
 {/if}
 
-{#if $HomeQuery.pageInfo.hasNextPage}-->
+{#if $HomeQuery.pageInfo.hasNextPage}
   <section class="see-more">
     <ButtonSecondary on:click={() => HomeQuery.loadNextPage()}>Voir plus</ButtonSecondary>
   </section>

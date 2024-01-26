@@ -27,9 +27,9 @@
   let currentEvent: undefined | { title: string; startsAt: Date } = undefined;
   let reportIssueDialogElement: HTMLDialogElement;
 
-  export let meStore: NavigationTopMe | undefined;
-  $: me = fragment(
-    meStore,
+  export let me: NavigationTopMe | undefined;
+  $: Me = fragment(
+    me,
     graphql`
       fragment NavigationTopMe on User {
         uid
@@ -96,7 +96,7 @@
         }}
         style="color:red"><IconIssue /></ButtonGhost
       >
-      {#if $me}
+      {#if $Me}
         <ButtonGhost href="/notifications/" help="Notifications">
           {#if $page.url.pathname === '/notifications/'}
             <IconNotifFilled />
@@ -104,9 +104,9 @@
             <IconNotif />{/if}</ButtonGhost
         >
         <ButtonGhost href="/search/" help="Rechercher"><IconSearch /></ButtonGhost>
-        <ButtonGhost href="/users/{$me?.uid}" help="Mon profil">
-          {#if $me.pictureFile}
-            <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
+        <ButtonGhost href="/users/{$Me?.uid}" help="Mon profil">
+          {#if $Me.pictureFile}
+            <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$Me.pictureFile}" alt="Profil" />
           {:else}
             <IconAccount />
           {/if}

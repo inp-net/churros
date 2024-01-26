@@ -7,9 +7,9 @@
   export let href: string;
   export let ticket: { name: string; event: { pictureFile: string; title: string } };
   export let beneficiary: string;
-  export let beneficiaryUser: undefined | { fullName: string } = undefined;
+  export let beneficiaryUser: undefined | null | { fullName: string } = undefined;
   export let authorIsBeneficiary: boolean;
-  export let author: undefined | { fullName: string } = undefined;
+  export let author: undefined | null | { fullName: string } = undefined;
   export let authorEmail: string;
   export let paid: boolean;
   export let cancelled: boolean;

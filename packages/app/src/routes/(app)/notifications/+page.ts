@@ -1,4 +1,3 @@
-import { redirectToLogin } from '$lib/session';
 import { Selector, loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
@@ -28,9 +27,7 @@ export const _notificationsQuery = Selector('Notification')({
   },
 });
 
-export const load: PageLoad = async ({ fetch, parent, url }) => {
-  const { me } = await parent();
-  if (!me) throw redirectToLogin(url.pathname);
+export const load: PageLoad = async ({ fetch, parent }) => {
   return loadQuery(
     {
       notificationSubscriptions: Selector('NotificationSubscription')({

@@ -1,5 +1,5 @@
-import type { HandleClientError } from "@sveltejs/kit";
+import type { HandleClientError } from '@sveltejs/kit';
 
-export const handleError: HandleClientError = ({ error }) => {
+export const handleError: HandleClientError = ({ error, event: { url } }) => {
   console.error(error);
 };

@@ -20,9 +20,19 @@ const isLoggedIn: ClientPlugin = () => {
   };
 };
 
+const unauthorizedErrorHandler: ClientPlugin = () => {
+  return {
+    end(ctx, { value, resolve  }) {
+      console.log(value.errors)
+
+      resolve(ctx)
+    }
+  }
+}
+
 export default new HoudiniClient({
   url: env.PUBLIC_API_URL,
-  plugins: [isLoggedIn],
+  plugins: [isLoggedIn, unauthorizedErrorHandler],
   fetchParams({ session, variables }) {
     console.log(
       `fetching client params from token ${JSON.stringify(

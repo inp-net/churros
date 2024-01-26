@@ -91,3 +91,12 @@ builder.queryField('healthcheck', (t) =>
     },
   }),
 );
+
+builder.queryField('echo', (t) =>
+  t.string({
+    args: {
+      text: t.arg.string({ required: true }),
+    },
+    resolve: (_, { text }) => text,
+  }),
+);

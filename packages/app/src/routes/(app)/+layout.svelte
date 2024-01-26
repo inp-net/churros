@@ -47,6 +47,11 @@
     id: string;
   }>;
 
+  $: changelogLogs =
+    $AppLayout.data?.combinedChangelog?.__typename === 'QueryCombinedChangelogSuccess'
+      ? $AppLayout.data.combinedChangelog.data
+      : [];
+
   const now = new Date();
 
   function currentTabDesktop(url: URL): (typeof DESKTOP_NAVIGATION_TABS)[number] {
@@ -131,23 +136,23 @@
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
 </script>
 
-{#if $AppLayout.data?.combinedChangelog?.__typename === 'QueryCombinedChangelogSuccess'}
+{#if changelogLogs.length > 0}
   <ModalChangelog
     on:acknowledge={() => {
-      $AppLayout.data.combinedChangelog = [];
+      changelogLogs = [];
     }}
     open
-    log={$AppLayout.data.combinedChangelog.data}
+    log={changelogLogs}
   />
 {/if}
 
-{#if $AppLayout.data?.registrationsOfUser}
-  <OverlayQuickBookings {now} registrationsOfUser={$AppLayout.data.registrationsOfUser}
+{#if $AppLayout.data?.registrationsOfUser?.edges[0]?.node}
+  <OverlayQuickBookings {now} quickBooking={$AppLayout.data.registrationsOfUser.edges[0]?.node}
   ></OverlayQuickBookings>
 {/if}
 
 <div class="layout">
-  <TopBar meStore={$AppLayout.data?.me} {scrolled} />
+  <TopBar me={$AppLayout.data?.me} {scrolled} />
 
   {#if $theme === 'noel'}
     {#each { length: 100 } as _}
@@ -158,7 +163,7 @@
   {/if}
 
   <div class="page-and-sidenav">
-    <NavigationSide current={currentTabDesktop($page.url)} />
+    <NavigationSide me={$AppLayout.data?.me} current={currentTabDesktop($page.url)} />
     <div
       id="scrollable-area"
       class="contents-and-announcements"

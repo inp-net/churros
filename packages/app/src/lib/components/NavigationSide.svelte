@@ -22,14 +22,24 @@
   import IconBugOutline from '~icons/mdi/bug-outline';
   import IconBug from '~icons/mdi/bug';
   import { beforeNavigate } from '$app/navigation';
-  import { me } from '$lib/session';
   import { page } from '$app/stores';
   import type { DESKTOP_NAVIGATION_TABS } from '../../routes/(app)/+layout.svelte';
   import { scrollToTop } from '$lib/scroll';
   import LogoFrappe from './LogoFrappe.svelte';
+  import { fragment, graphql, type NavigationSideMe } from '$houdini';
 
   export let current: (typeof DESKTOP_NAVIGATION_TABS)[number];
   let flyoutOpen = false;
+
+  export let me: NavigationSideMe | undefined;
+  $: Me = fragment(
+    me,
+    graphql`
+      fragment NavigationSideMe on User {
+        uid, external, canAccessDocuments, canEditUsers, admin
+      }
+    `,
+  );
 
   beforeNavigate(() => {
     flyoutOpen = false;
@@ -76,7 +86,7 @@
     <span>Clubs</span>
   </a>
 
-  {#if $me && !$me.external}
+  {#if $Me && !$Me.external}
     <button
       class="navigation-item"
       class:current={flyoutOpen}
@@ -106,7 +116,7 @@
     {/if}
     <span>Événements</span>
   </a>
-  {#if $me?.canAccessDocuments}
+  {#if $Me?.canAccessDocuments}
     <a
       class="navigation-item"
       href="/frappe"
@@ -121,7 +131,7 @@
       <span>La Frappe</span>
     </a>
   {/if}
-  {#if $me}
+  {#if $Me}
     <a
       href="/reports"
       class="navigation-item"
@@ -151,7 +161,7 @@
     <span>Les autres services</span>
   </a>
 
-  {#if $me?.admin || $me?.canEditUsers}
+  {#if $Me?.admin || $Me?.canEditUsers}
     <a
       href="/signups"
       class="navigation-item"
@@ -166,7 +176,7 @@
       <span>Inscriptions</span>
     </a>
   {/if}
-  {#if $me?.admin}
+  {#if $Me?.admin}
     <a
       href="/announcements"
       class="navigation-item"
@@ -192,7 +202,7 @@
   {/if}
 
   <section class="bottom">
-    {#if $me}
+    {#if $Me}
       <a
         href="/logout?token={$page.data.token}"
         class="navigation-item"
@@ -202,8 +212,8 @@
         <span>Se déconnecter</span>
       </a>
     {/if}
-    {#if $me}
-      <a href="/users/{$me.uid}/edit" class="navigation-item">
+    {#if $Me}
+      <a href="/users/{$Me.uid}/edit" class="navigation-item">
         <IconSettings></IconSettings>
         <span>Réglages</span>
       </a>
@@ -233,21 +243,21 @@
   role="presentation"
 >
   <section class="flyout" class:open={flyoutOpen}>
-    {#if $me?.admin}
+    {#if $Me?.admin}
       <a href="/bar-weeks">
         <IconBarWeek />
         <span>Semaine de bar</span>
       </a>
     {/if}
 
-    {#if $me?.admin || $me?.canEditGroups}
+    {#if $Me?.admin || $Me?.canEditGroups}
       <a href="/groups/create">
         <IconGroupOutline />
         <span>Groupe</span>
       </a>
     {/if}
 
-    {#if $me?.admin}
+    {#if $Me?.admin}
       <a href="/announcements/create">
         <IconAnnouncement />
         <span>Annonce</span>

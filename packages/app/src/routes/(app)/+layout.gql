@@ -1,5 +1,5 @@
-query AppLayout($myUid: String!) {
-  combinedChangelog(sort: Descending) {
+query AppLayout($myUid: String!, $loggedIn: Boolean!) {
+  combinedChangelog(sort: Descending) @include(if: $loggedIn) {
     __typename
     ... on QueryCombinedChangelogSuccess {
       data {
@@ -42,6 +42,13 @@ query AppLayout($myUid: String!) {
             reporters
             html
           }
+          technical {
+            authors
+            issues
+            mergeRequests
+            reporters
+            html
+          }
         }
       }
     }
@@ -50,11 +57,14 @@ query AppLayout($myUid: String!) {
     }
   }
 
-  me {
+  echo(text: "loggedin!!!!") @include(if: $loggedIn)
+
+  me @include(if: $loggedIn) {
     ...NavigationTopMe
+    ...NavigationSideMe
   }
 
-  registrationsOfUser(userUid: $myUid, forUserOnly: true, first: 1) {
+  registrationsOfUser(userUid: $myUid, forUserOnly: true, first: 1) @include(if: $loggedIn) {
     edges {
       node {
         ...QuickBooking

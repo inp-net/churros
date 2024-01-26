@@ -39,7 +39,7 @@
 
   export let open: boolean;
   export let log: Array<{
-    date?: Date|null;
+    date: Date|null;
     version: string;
     description: string;
     changes: Record<

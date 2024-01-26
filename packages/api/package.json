@@ -136,6 +136,10 @@
   "volta": {
     "extends": "../../package.json"
   },
+  "exports": {
+    "types": "./index.ts",
+    "development": "./index.ts"
+  },
   "release-it": {
     "git": false,
     "npm": false

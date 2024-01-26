@@ -1,219 +1,75 @@
-#query IndexQuery {
-##    homepage(first: 30) @paginate {
-##        edges {
-##            node {
-##                id
-##                uid
-##                title
-##                bodyHtml
-##                bodyPreview
-##                body
-##                visibility
-##                publishedAt
-##                pictureFile
-##                reactionCounts
-##                myReactions
-##                group {
-##                    uid
-##                    name
-##                    pictureFile
-##                    pictureFileDark
-##                }
-##                author {
-##                    uid
-##                    pictureFile
-##                    fullName
-##                }
-##                links {
-##                    value
-##                    computedValue
-##                    name
-##                }
-##                event {
-##                    group {
-##                        uid
-##                    }
-##                    title
-##                    pictureFile
-##                    uid
-##                    location
-##                    startsAt
-##                    endsAt
-##                    frequency
-##                    recurringUntil
-##                }
-##            }
-##        }
-##    }homepage(first: 30) @paginate {
-##        edges {
-##            node {
-##                id
-##                uid
-##                title
-##                bodyHtml
-##                bodyPreview
-##                body
-##                visibility
-##                publishedAt
-##                pictureFile
-##                reactionCounts
-##                myReactions
-##                group {
-##                    uid
-##                    name
-##                    pictureFile
-##                    pictureFileDark
-##                }
-##                author {
-##                    uid
-##                    pictureFile
-##                    fullName
-##                }
-##                links {
-##                    value
-##                    computedValue
-##                    name
-##                }
-##                event {
-##                    group {
-##                        uid
-##                    }
-##                    title
-##                    pictureFile
-##                    uid
-##                    location
-##                    startsAt
-##                    endsAt
-##                    frequency
-##                    recurringUntil
-##                }
-##            }
-##        }
-##    }
-#
-##    events(first: 30, noLinkedArticles: true, past: true) @paginate {
-##        edges {
-##            node {
-##                id
-##                myReactions
-##                reactionCounts
-##                title
-##                uid
-##                location
-##                startsAt
-##                endsAt
-##                visibility
-##                links {
-##                    value
-##                    computedValue
-##                    name
-##                }
-##                descriptionPreview
-##                group {
-##                    uid
-##                    name
-##                    pictureFile
-##                    pictureFileDark
-##                }
-##                coOrganizers {
-##                    uid
-##                    name
-##                    pictureFile
-##                    pictureFileDark
-##                }
-##                tickets {
-##                    name
-##                    price
-##                    uid
-##                    opensAt
-##                    closesAt
-##                    placesLeft
-##                    capacity
-##                }
-##            }
-##        }
-##    }
-#
-#    birthdays {
-#        fullName
-#        pictureFile
-#        uid
-#        birthday
-#        yearTier
-#        major {
-#            name
-#            shortName
-#            schools {
-#                uid
-#            }
-#        }
-#    }
-#}
-
-query HomeQuery {
-    me {
-        ...NavigationTopMe
-    }
-
-    homepage(first: 30) @loading(count: 10) @paginate {
-        edges {
-            node {
-                id
-                uid
-                title
-                bodyHtml
-                bodyPreview
-                body
-                visibility
-                publishedAt
-                pictureFile
-                reactionCounts
-                myReactions
-                group {
-                    uid
-                    name
-                    pictureFile
-                    pictureFileDark
-                }
-                author {
-                    uid
-                    pictureFile
-                    fullName
-                }
-                links {
-                    value
-                    computedValue
-                    name
-                }
-                event {
-                    group {
-                        uid
-                    }
-                    title
-                    pictureFile
-                    uid
-                    location
-                    startsAt
-                    endsAt
-                    frequency
-                    recurringUntil
-                }
-            }
-        }
-    }
-
-    birthdays {
-        fullName
+query HomeQuery($loggedIn: Boolean!) {
+  me @include(if: $loggedIn) {
+    yearTier
+    groups {
+      group {
         pictureFile
+        pictureFileDark
         uid
-        birthday
-        yearTier
-        major {
-            name
-            shortName
-            schools {
-                uid
-            }
-        }
+        name
+      }
     }
+  }
+
+  homepage(first: 30) @paginate {
+    edges {
+      node {
+        id
+        uid
+        title
+        bodyHtml
+        bodyPreview
+        body
+        visibility
+        publishedAt
+        pictureFile
+        reactionCounts
+        myReactions
+        group {
+          uid
+          name
+          pictureFile
+          pictureFileDark
+        }
+        author {
+          uid
+          pictureFile
+          fullName
+        }
+        links {
+          value
+          computedValue
+          name
+        }
+        event {
+          group {
+            uid
+          }
+          title
+          pictureFile
+          uid
+          location
+          startsAt
+          endsAt
+          frequency
+          recurringUntil
+        }
+      }
+    }
+  }
+
+  birthdays @include(if: $loggedIn) {
+    fullName
+    pictureFile
+    uid
+    birthday
+    yearTier
+    major {
+      name
+      shortName
+      schools {
+        uid
+      }
+    }
+  }
 }
