@@ -43,7 +43,7 @@
     "format": "prettier . --write --ignore-unknown",
     "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
     "lintfix": "eslint --fix . & stylelint --fix '**/*.{css,scss,svelte}' &",
-    "migration": "yarn prisma migrate dev --name",
+    "migration": "docker compose up -d && yarn prisma migrate dev --name",
     "postinstall": "husky install",
     "prisma": "yarn workspace @centraverse/api run prisma",
     "reset": "docker compose up -d && NODE_ENV=development yarn prisma migrate reset --force",
