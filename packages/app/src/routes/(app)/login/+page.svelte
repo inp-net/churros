@@ -8,9 +8,8 @@
   import IconEye from '~icons/mdi/eye';
   import IconEyeOff from '~icons/mdi/eye-off';
 
-  import { me, saveSessionToken } from '$lib/session';
+  import { saveSessionToken } from '$lib/session';
   import { zeus } from '$lib/zeus';
-  import { onMount } from 'svelte';
 
   let email = '';
   let password = '';

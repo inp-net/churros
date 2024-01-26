@@ -32,12 +32,11 @@
   import IconClose from '~icons/mdi/close';
   import Snowflake from '~icons/mdi/snowflake';
   import '../../design/app.scss';
-  import type { Snapshot } from './$types';
-  import ModalChangelog from '$lib/components/ModalChangelog.svelte';
   import type { PageData } from './$houdini';
+  import type { Snapshot } from './$types';
 
   export let data: PageData;
-  $: ({ AppLayout } = data)
+  $: ({ AppLayout } = data);
   let scrollableArea: HTMLElement;
 
   let scrolled = false;
@@ -132,17 +131,20 @@
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
 </script>
 
-{#if $AppLayout.data?.combinedChangelog?.__typename === "QueryCombinedChangelogSuccess"}
+{#if $AppLayout.data?.combinedChangelog?.__typename === 'QueryCombinedChangelogSuccess'}
   <ModalChangelog
     on:acknowledge={() => {
-      $AppLayout.data.combinedChangelog = []
+      $AppLayout.data.combinedChangelog = [];
     }}
     open
-    log={$AppLayout.data.combinedChangelog}
+    log={$AppLayout.data.combinedChangelog.data}
   />
 {/if}
 
-<OverlayQuickBookings {now} registrationsOfUser={data.registrationsOfUser}></OverlayQuickBookings>
+{#if $AppLayout.data?.registrationsOfUser}
+  <OverlayQuickBookings {now} registrationsOfUser={$AppLayout.data.registrationsOfUser}
+  ></OverlayQuickBookings>
+{/if}
 
 <div class="layout">
   <TopBar {scrolled} />

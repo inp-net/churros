@@ -29,38 +29,47 @@
     };
   };
 
-  export let registrationsOfUser: QuickBooking;
-  $: info = fragment(
-    registrationsOfUser,
-    graphql(`#graphql
-    fragment QuickBooking on Registration {
-            id
-            code
-            beneficiary
-            authorIsBeneficiary
-            paid
-            cancelled
-            author {
-              fullName
-            }
-            authorEmail
-            beneficiaryUser {
-              fullName
-            }
-            ticket {
-              name
-              event {
-                pictureFile
-                title
-                startsAt
-                endsAt
-              }
+  export let quickBookingStore: QuickBooking;
+  $: quickBooking = fragment(
+    quickBookingStore,
+    graphql`
+      fragment QuickBooking on Registration {
+        id
+        code
+        beneficiary
+        authorIsBeneficiary
+        paid
+        cancelled
+        author {
+          fullName
+        }
+        authorEmail
+        beneficiaryUser {
+          fullName
+        }
+        ticket {
+          name
+          event {
+            pictureFile
+            title
+            startsAt
+            endsAt
           }
-    }`),
+        }
+      }
+    `,
   );
+
   export let now: Date;
 
-  function shouldShowBooking(hiddens: string[], registration: Registration): boolean {
+  function shouldShowBooking(
+    hiddens: string[],
+    registration: {
+      id: string;
+      cancelled: boolean;
+      ticket: { event: { startsAt: Date; endsAt: Date } };
+    },
+  ): boolean {
     try {
       return (
         !hiddens.includes(registration.id) &&
@@ -83,13 +92,12 @@
   const touchAction = 'pan-y pinch-zoom' as unknown as 'pan-y';
 </script>
 
-{#if registrationsOfUser?.edges.length > 0 && !$page.url.pathname.startsWith('/bookings')}
-  {@const registration = registrationsOfUser.edges[0].node}
+{#if !$page.url.pathname.startsWith('/bookings') && quickBooking}
   <!-- If the quick booking is not hidden and:
       - it starts in less than 30 mins; or
       - it ongoing; or 
       - was finished less than 2 hours ago -->
-  {#if shouldShowBooking($hiddenBookings, registration)}
+  {#if shouldShowBooking($hiddenBookings, $quickBooking)}
     <section
       in:slide={{ axis: 'y', duration: 100 }}
       use:swipe={{ touchAction }}
@@ -107,29 +115,29 @@
 
         target.style.transform = `translateX(${movementX > 0 ? '+' : '-'}100vw)`;
         setTimeout(() => {
-          $hiddenBookings = [...$hiddenBookings, registration.id];
+          $hiddenBookings = [...$hiddenBookings, $quickBooking.id];
         }, 500);
       }}
       class="quick-booking"
     >
       <p class="hint">
         <strong>
-          C'est {#if isFuture(registration.ticket.event.startsAt)}
-            dans {formatDistanceToNow(registration.ticket.event.startsAt, {
+          C'est {#if isFuture($quickBooking.ticket.event.startsAt)}
+            dans {formatDistanceToNow($quickBooking.ticket.event.startsAt, {
               locale: fr,
             }).replace('environ ', '')}{:else}maintenant{/if}! Voici ta place
         </strong>
         <span class="dismiss">
           <ButtonGhost
             on:click={() => {
-              $hiddenBookings = [...$hiddenBookings, registration.id];
+              $hiddenBookings = [...$hiddenBookings, $quickBooking.id];
             }}
           >
             <IconClose></IconClose>
           </ButtonGhost>
         </span>
       </p>
-      <CardTicket floating href="/bookings/{registration.code}" {...registration}></CardTicket>
+      <CardTicket floating href="/bookings/{$quickBooking.code}" {...$quickBooking}></CardTicket>
     </section>
   {/if}
 {/if}
