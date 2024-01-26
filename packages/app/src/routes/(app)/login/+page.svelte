@@ -10,6 +10,8 @@
 
   import { saveSessionToken } from '$lib/session';
   import { zeus } from '$lib/zeus';
+  import { graphql } from '$houdini';
+  import { env } from '$env/dynamic/public';
 
   let email = '';
   let password = '';
@@ -34,18 +36,35 @@
     try {
       loading = true;
       errorMessages = undefined;
-      const { login } = await $zeus.mutate({
-        login: [
-          { email, password },
-          {
-            '__typename': true,
-            '...on Error': { message: true },
-            '...on MutationLoginSuccess': {
-              data: { token: true, expiresAt: true, user: sessionUserQuery() },
-            },
+      const {
+        data: { login },
+      } = await fetch(env.PUBLIC_API_URL, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+        mutation Login($email: String!, $password: String!) {
+          login(email: $email, password: $password) {
+            ... on Error {
+              message
+            }
+            ... on MutationLoginSuccess {
+              data {
+                token
+                expiresAt
+              }
+            }
+          }
+        }
+      `,
+          variables: {
+            email,
+            password,
           },
-        ],
-      });
+        }),
+      }).then((r) => r.json());
 
       if (login.__typename === 'Error') {
         errorMessages = [login.message];

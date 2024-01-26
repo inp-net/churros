@@ -20,7 +20,12 @@ const isLoggedIn: ClientPlugin = () => {
 export default new HoudiniClient({
   url: env.PUBLIC_API_URL,
   plugins: [isLoggedIn],
-  fetchParams({ session }) {
+  fetchParams({ session, variables }) {
+    console.log(
+      `fetching client params from token ${JSON.stringify(
+        session.token,
+      )}, varaibles ${JSON.stringify(variables)}`,
+    );
     return {
       headers: {
         Authorization: `Bearer ${session?.token}`,
