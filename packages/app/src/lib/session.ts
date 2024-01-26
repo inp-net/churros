@@ -1,7 +1,7 @@
-import type { UserSession$result } from '$houdini';
+import { page } from '$app/stores';
 import { redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
-import { writable } from 'svelte/store';
+import { derived } from 'svelte/store';
 
 /** Saves `token` as a cookie. */
 export const saveSessionToken = (
@@ -31,4 +31,4 @@ export function aled(...o: unknown[]) {
 export const redirectToLogin = (to: string, searchParams: Record<string, string> = {}) =>
   redirect(307, `/login?${new URLSearchParams({ to, ...searchParams }).toString()}`);
 
-export const me = writable<UserSession$result['me'] | undefined>();
+export const me = derived(page, ($page) => $page.data.me);

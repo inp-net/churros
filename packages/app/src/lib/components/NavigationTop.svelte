@@ -1,23 +1,23 @@
 <script lang="ts">
-  import IconIssue from '~icons/mdi/chat-alert-outline';
-  import IconNotif from '~icons/mdi/bell-outline';
-  import IconNotifFilled from '~icons/mdi/bell';
-  import IconSearch from '~icons/mdi/search';
   import IconAccount from '~icons/mdi/account-circle-outline';
+  import IconNotifFilled from '~icons/mdi/bell';
+  import IconNotif from '~icons/mdi/bell-outline';
+  import IconIssue from '~icons/mdi/chat-alert-outline';
+  import IconSearch from '~icons/mdi/search';
 
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import { me } from '$lib/session';
-  import { env } from '$env/dynamic/public';
+  import { browser } from '$app/environment';
+  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
+  import { env } from '$env/dynamic/public';
+  import { fragment, graphql, type NavigationTopMe } from '$houdini';
+  import { formatDate } from '$lib/dates';
+  import { theme } from '$lib/theme';
   import { zeus } from '$lib/zeus';
   import ButtonBack from './ButtonBack.svelte';
-  import { formatDate } from '$lib/dates';
   import ButtonGhost from './ButtonGhost.svelte';
-  import { afterNavigate } from '$app/navigation';
+  import ButtonSecondary from './ButtonSecondary.svelte';
   import LogoChurros from './LogoChurros.svelte';
-  import { browser } from '$app/environment';
   import ModalReportIssue from './ModalReportIssue.svelte';
-  import { theme } from '$lib/theme';
 
   export let scrolled = false;
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
@@ -26,6 +26,17 @@
 
   let currentEvent: undefined | { title: string; startsAt: Date } = undefined;
   let reportIssueDialogElement: HTMLDialogElement;
+
+  export let meStore: NavigationTopMe | undefined;
+  $: me = fragment(
+    meStore,
+    graphql`
+      fragment NavigationTopMe on User {
+        uid
+        pictureFile
+      }
+    `,
+  );
 
   afterNavigate(async () => {
     if ($page.url.pathname.endsWith('/scan/')) {

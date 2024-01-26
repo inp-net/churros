@@ -5,11 +5,14 @@ import { HoudiniClient } from '$houdini';
 const isLoggedIn: ClientPlugin = () => {
   return {
     start(ctx, { next }) {
-      console.log(ctx.session);
-      ctx.variables = { ...ctx.variables, loggedIn: !!ctx.session?.me };
+      ctx.variables = { ...ctx.variables, loggedIn: !!ctx.session?.token };
 
       // log the variables
-      console.log(ctx.variables);
+      console.log(
+        `isLoggedIn plugin: session ${JSON.stringify(ctx.session)}, vars ${JSON.stringify(
+          ctx.variables,
+        )}`,
+      );
 
       // move onto the next step in the pipeline
       next(ctx);
@@ -23,7 +26,7 @@ export default new HoudiniClient({
   fetchParams({ session, variables }) {
     console.log(
       `fetching client params from token ${JSON.stringify(
-        session.token,
+        session?.token,
       )}, varaibles ${JSON.stringify(variables)}`,
     );
     return {

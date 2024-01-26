@@ -50,6 +50,10 @@ query AppLayout($myUid: String!) {
     }
   }
 
+  me {
+    ...NavigationTopMe
+  }
+
   registrationsOfUser(userUid: $myUid, forUserOnly: true, first: 1) {
     edges {
       node {

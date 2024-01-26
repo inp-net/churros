@@ -1,31 +1,23 @@
-import type { UserSession$result } from '$houdini';
-import { UserSessionStore, setSession } from '$houdini';
+import { setSession } from '$houdini';
 import type { Handle, HandleFetch, HandleServerError, RequestEvent } from '@sveltejs/kit';
 import cookie from 'cookie';
 
-type User = UserSession$result & { token: string };
+type Token = { token: string };
 
-async function authenticateUser(event: RequestEvent): Promise<User | undefined> {
+async function authenticateUser(event: RequestEvent): Promise<Token | undefined> {
   const { token } = cookie.parse(event.request.headers.get('cookie') ?? '');
+  console.log(`authenticaing user with token ${token}`);
 
   if (!token) return undefined; // no token, no user
 
-  // temporarily set the token will be overwritten by result of query
-  setSession(event, { me: undefined, token });
-
-  // fetch the user
-  const UserSessionQuery = new UserSessionStore();
-  const { data } = await UserSessionQuery.fetch({ event });
-
-  return data?.me ? { ...data, token } : undefined;
+  return { token };
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
   const user = await authenticateUser(event);
 
-  setSession(event, { me: user?.me, token: user?.token });
+  setSession(event, { token: user?.token });
 
-  event.locals.me = user?.me;
   event.locals.token = user?.token;
 
   event.locals.mobile = Boolean(

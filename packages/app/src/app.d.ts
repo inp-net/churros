@@ -9,7 +9,6 @@ declare namespace App {
   }
 
   interface Session {
-    me?: UserSession$result['me'];
     token?: string;
   }
 

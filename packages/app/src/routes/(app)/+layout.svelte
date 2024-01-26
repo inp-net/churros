@@ -147,7 +147,7 @@
 {/if}
 
 <div class="layout">
-  <TopBar {scrolled} />
+  <TopBar meStore={$AppLayout.data?.me} {scrolled} />
 
   {#if $theme === 'noel'}
     {#each { length: 100 } as _}
