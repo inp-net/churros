@@ -73,50 +73,37 @@ export const EventFrequencyType = builder.enumType(EventFrequency, {
 
 function findNextRecurringEvent(event: EventPrisma): EventPrisma {
   const today = utcToZonedTime(new Date(), 'Europe/Berlin');
-  const { startsAt, endsAt, frequency } = event;
+  const { startsAt, endsAt, frequency, recurringUntil } = event;
   let newStartsAt = startsAt;
   switch (frequency) {
     case EventFrequency.Weekly: {
-      newStartsAt = setWeek(startsAt, getWeek(today, { weekStartsOn: 1 }));
-      if (newStartsAt.getFullYear() !== today.getFullYear())
+      if (startsAt.getFullYear() !== today.getFullYear())
         newStartsAt = setYear(newStartsAt, today.getFullYear());
-      return {
-        ...event,
-        startsAt: newStartsAt,
-        endsAt: setDay(endsAt, newStartsAt.getDay()),
-      };
+      newStartsAt = setWeek(startsAt, getWeek(today, { weekStartsOn: 1 }));
+      break;
     }
 
     case EventFrequency.Biweekly: {
+      if (startsAt.getFullYear() !== today.getFullYear())
+        newStartsAt = setYear(newStartsAt, today.getFullYear());
       newStartsAt = setWeek(startsAt, getWeek(today, { weekStartsOn: 1 }));
       if (isBefore(newStartsAt, today)) newStartsAt = addWeeks(newStartsAt, 2);
       if (differenceInWeeks(newStartsAt, startsAt) % 2 !== 0)
         newStartsAt = addWeeks(newStartsAt, 1);
-      if (newStartsAt.getFullYear() !== today.getFullYear())
-        newStartsAt = setYear(newStartsAt, today.getFullYear());
-      return {
-        ...event,
-        startsAt: newStartsAt,
-        endsAt: setDay(endsAt, newStartsAt.getDay()),
-      };
+      break;
     }
 
     case EventFrequency.Monthly: {
+      if (startsAt.getFullYear() !== today.getFullYear())
+        newStartsAt = setYear(newStartsAt, today.getFullYear());
       newStartsAt = setMonth(startsAt, getMonth(today));
       if (isBefore(newStartsAt, today)) newStartsAt = addMonths(newStartsAt, 1);
-      if (newStartsAt.getFullYear() !== today.getFullYear())
-        newStartsAt = setYear(newStartsAt, today.getFullYear());
-      return {
-        ...event,
-        startsAt: newStartsAt,
-        endsAt: setDay(endsAt, newStartsAt.getDay()),
-      };
-    }
-
-    default: {
-      return event;
+      break;
     }
   }
+  if (recurringUntil !== null && isBefore(newStartsAt, recurringUntil))
+    return { ...event, startsAt: newStartsAt, endsAt: setDay(endsAt, newStartsAt.getDay()) };
+  return { ...event };
 }
 
 export function visibleEventsPrismaQuery(
