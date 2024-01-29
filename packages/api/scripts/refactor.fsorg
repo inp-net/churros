@@ -173,7 +173,7 @@ new-src {
             }
         }
         changelogs {
-            PUT src/services/changelogs.ts AS old.ts
+            PUT src/services/changelog.ts AS old.ts
             WRITE README.md {
                 Changelogs
                 ==========
@@ -510,7 +510,7 @@ new-src {
                     // from old.ts
                 }
                 
-                PUT src/object/group-members.ts AS old-group-members.ts
+                PUT src/objects/group-members.ts AS old-group-members.ts
 
                 WRITE group-members {
                     // from ./old-group-members.ts
@@ -656,7 +656,7 @@ new-src {
             }
         }
         logs {
-            PUT src/services/logs.ts AS old.ts
+            PUT src/objects/logs.ts AS old.ts
 
             WRITE README.md {
                 Logs
@@ -936,7 +936,7 @@ new-src {
         }
         # everything related to third party apps (oauth clients)
         oauth {
-            PUT src/objects/oauth.ts AS old.ts
+            PUT src/services/oauth.ts AS old.ts
 
             WRITE README.md {
                 Applications tierces (OAuth)
@@ -957,7 +957,7 @@ new-src {
                 }
 
                 WRITE errors.ts {
-                    // from ./old.ts : OAuth2Error{,Code}
+                    // from ./old.ts : OAuth2Error and OAuth2ErrorCode
                 }
             }
 
