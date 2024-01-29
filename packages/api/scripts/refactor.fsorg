@@ -173,7 +173,7 @@ new-src {
             }
         }
         changelogs {
-            PUT src/objects/changelogs.ts AS old.ts
+            PUT src/services/changelogs.ts AS old.ts
             WRITE README.md {
                 Changelogs
                 ==========
@@ -263,6 +263,20 @@ new-src {
                 =====
 
                 Représente les personnes utilisant l'application.
+
+                Inscription
+                -----------
+
+                L'Inscription se fait en deux ou trois parties: la première consiste à donner simplement une adresse e-mail et à la valider.
+                Ensuite, on rentre le reste des informations.
+                Enfin, si la personne déclare appartenir à une école mais que l'e-mail n'est pas dans le domaine de l'école (ce qui prouve automatiquement que la personne est étudiante), il faut qu'n admin confirme manuellement.
+
+                Ce n'est qu'après cette validation (quand elle est nécéssaire) que l'objet `UserCandidate` est tranformé en `User`.
+
+                Connexion
+                ---------
+
+                La mutation `login` permet la connexion.
             }
 
             WRITE index.ts {
@@ -273,11 +287,12 @@ new-src {
                 WRITE user.ts {
                     // from old.ts
                 }
-                WRITE credential.ts {
-                    // from old.ts
-                }
                 WRITE user-candidate.ts {
                     // from old.ts
+                }
+                WRITE credential.ts {
+                    // from old.ts
+                    // TODO rename to Token (password are not exposed in the API anyway)
                 }
             }
 
@@ -299,26 +314,213 @@ new-src {
                     // from old.ts
                     // also userCandidateByEmail (combine into a single query)
                 }
+                WRITE mutation.login.ts {
+                    // from old.ts
+                }
+                WRITE mutation.logout.ts {
+                    // from old.ts
+                    // also deleteToken (combine into a single mutation, with an optional token argument)
+                }
+                WRITE mutation.update-user.ts {
+                    // from old.ts
+                }
+                WRITE mutation.complete-registration.ts {
+                    // from old.ts
+                    // TODO rename registration to signup
+                }
+                WRITE mutation.rename-session.ts {
+                    // from old.ts
+                    // TODO third party apps also have tokens, a "Session" type should be created
+                    // so that third party apps' sessions (authorizations) can also be revoked
+                }
+                WRITE mutation.delete-user.ts {
+                    // TODO
+                }
+                WRITE mutation.accept-registration.ts {
+                    // from old.ts
+                    // TODO rename registration to user-candidate
+                }
             }
         }
-        health-checks
-        documents
-        events
-        godparents
-        groups
-        gitlab
-        links
-        logs
+        health-checks {
+            PUT src/services/healthcheck.ts AS old.ts
+
+            WRITE README.md {
+                Health Checks
+                =============
+
+                Représente les différents "health checks" de l'application.
+                Les health checks sont des tests permettant de vérifier que l'application fonctionne correctement.
+                Ils sont utilisés pour monitorer que l'application est en bonne santé, et permet aussi d'exposer un endpoint /health dans l'application web.
+            }
+
+            WRITE index.ts {
+                // Barrel file
+            }
+
+            types {
+                WRITE health-check.ts {
+                    // from old.ts
+                }
+            }
+
+            resolvers {
+                WRITE query.health-check.ts {
+                    // from old.ts
+                }
+            }
+        }
+        documents {
+            WRITE README.md {
+                Documents (La Frappe)
+                =========
+
+                Représente les différents documents publiés dans des [matières](../curriculum).
+
+                Nommé "La Frappe" au sein des écoles de Toulouse INP.
+            }
+
+            WRITE index.ts {
+                // Barrel file
+            }
+
+            types {
+                WRITE document.ts {
+                    // from old.ts
+                }
+            }
+
+            resolvers {
+                WRITE query.document.ts {
+                    // from old.ts
+                }
+                WRITE query.documents.ts {
+                    // from old.ts
+                }
+                WRITE query.search-documents.ts {
+                    // from old.ts maybe?
+                }
+                WRITE mutation.upsert-document.ts {
+                    // from old.ts
+                }
+                WRITE mutation.upload-document-file.ts {
+                    // from old.ts
+                }
+                WRITE mutation.delete-document.ts {
+                    // from old.ts
+                }
+                WRITE subject.documents.ts {
+                    // TODO
+                }
+            }
+        }
+        events {
+            PUT src/objects/events.ts AS old.ts
+
+            WRITE README.md {
+                Évènements
+                ======
+
+                Les différents évènements organisés par des [groupes](../groups).
+
+                Un évènement peut, ou non, avoir des billets (et donc un système de billetterie).
+
+                Voir [Billetterie](../ticketing) pour tout ce qui est billest et réservations.
+            }
+
+            WRITE index.ts {
+                // Barrel file
+            }
+
+            types {
+                WRITE event.ts {
+                    // from old.ts
+                }
+
+                WRITE event-manager.ts {
+                    // from old.ts
+                }
+            }
+
+            resolvers {
+                WRITE query.event.ts {
+                    // from old.ts
+                }
+
+                WRITE query.events.ts {
+                    // from old.ts
+                }
+
+                WRITE query.events-in-week.ts {
+                    // from old.ts
+                    // TODO rework to events-in-range, and merge with events
+                }
+
+                WRITE query.search-events.ts {
+                    // from old.ts maybe?
+                }
+
+                WRITE mutation.upsert-event.ts {
+                    // from old.ts
+                }
+
+                WRITE mutation.delete-event.ts {
+                    // from old.ts
+                }
+
+                WRITE mutation.upsert-event-manager.ts {
+                    // from old.ts
+                }
+
+                WRITE mutation.delete-event-manager.ts {
+                    // from old.ts
+                }
+
+                WRITE group.events.ts {
+                    // TODO
+                }
+
+                WRITE event.managers.ts {
+                    // TODO
+                }
+            }
+        }
+        groups {
+            
+        }
+        gitlab {
+
+        }
+        links {
+
+        }
+        logs {
+
+        }
         # subjects, majors, minors, teaching units
-        curriculum 
+        curriculum  {
+
+        }
         # tickets, bookings, qrcode type, bookings, registration verifications, profits breakdown etc
-        ticketing
+        ticketing {
+
+        }
         # everything related to third party apps (oauth clients)
-        oauth
-        reactions
+        oauth {
+
+        }
+        reactions {
+
+        }
         # external services
-        services
-        student-associations
-        schools
+        services {
+
+        }
+        student-associations {
+
+        }
+        schools {
+
+        }
     }
 }
