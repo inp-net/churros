@@ -1,2 +1,1 @@
-// from ./old.ts : OAuth2Error{
-,Code
+// from ./old.ts : OAuth2Error and OAuth2ErrorCode
