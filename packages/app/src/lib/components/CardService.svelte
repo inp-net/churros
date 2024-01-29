@@ -21,6 +21,7 @@
   import IconStatus from '~icons/mdi/checkbox-marked-circle-outline';
   import IconHistory from '~icons/mdi/history';
   import IconBugCheck from '~icons/mdi/bug-check';
+  import IconServices from '~icons/mdi/hammer-screwdriver';
 
   import type { SvelteComponent } from 'svelte';
 
@@ -43,6 +44,7 @@
     'status': IconStatus,
     'history': IconHistory,
     'bug-check': IconBugCheck,
+    'services': IconServices,
   };
 
   export let service: {
