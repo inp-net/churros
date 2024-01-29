@@ -1,0 +1,324 @@
+ROOT /mnt/datacore/projects/centraverse/packages/api
+
+new-src {
+    WRITE index.ts {
+        // barrel
+    }
+    PUT scripts/post-build.ts AS post-build.ts
+    PUT src/schema.ts AS schema.ts 
+    server {
+        # include websocket in yoga?
+        WRITE index.ts {
+            // barrel
+        }
+        WRITE yoga.ts {
+            // from old index.ts
+        }
+        WRITE lydia.ts {
+            // from old index.ts
+        }
+        WRITE oauth.ts {
+            // from old index.ts
+        }
+        WRITE storage.ts {
+            // from old index.ts
+        }
+        WRITE maintenance.ts {
+            // from old index.ts
+        }
+        WRITE pdf.ts {
+            // from old index.ts
+        }
+        WRITE log.ts {
+            // from old index.ts
+        }
+    }
+    lib {
+        RUN cp $SRC/lib/* .
+        RUN cp $SRC/*.ts .
+        RUN cp $SRC/*.sql .
+    }
+    modules {
+        announcements {
+            PUT src/objects/announcements.ts AS old.ts
+            WRITE README.md {
+                Announcements
+                =============
+
+                Annonces effectuées par les administrateur·ice·s de l'application.
+                À afficher à tout le monde (connecté ou non) de manière visible au travers de toute l'application.
+            }
+            WRITE index.ts {
+                // Barrel file
+            }
+            WRITE types/announcement.ts {
+                // from old.ts
+            }
+            resolvers {
+                WRITE query.announcement.ts {
+                    // from old.ts
+                }
+                WRITE query.announcements.ts {
+                    // from old.ts
+                }
+                WRITE query.announcements-now.ts {
+                    // from old.ts
+                }
+                WRITE mutation.upsert-announcement.ts {
+                    // from old.ts
+                }
+                WRITE mutation.delete-announcement.ts {
+                    // from old.ts
+                }
+            }
+            permissions {
+                WRITE announcement.ts {
+                    export const userCanEditAnnouncements = (user: undefined | {admin: boolean}): boolean =>
+                        user?.admin
+                }
+            }
+        }
+        posts {
+            PUT src/objects/articles.ts AS old.ts
+            WRITE README.md {
+                Posts
+                =====
+
+                Appelés _Articles_ dans le code pour des soucis de rétro-compabilité.
+                Sera renommé en _Post_ partout dans le futur.
+
+                Représente les différents posts publiés par les différents [groupes](../groups)
+            }
+            WRITE index.ts {
+                // Barrel file
+            }
+            WRITE types/article.ts {
+                // from old.ts
+            }
+            resolvers {
+                WRITE query.article.ts {
+                    // from old.ts
+                }
+                WRITE query.homepage.ts {
+                    // TODO rename to articles
+                    // from old.ts
+                }
+                WRITE query.search-articles.ts {
+                    // from old.ts maybe??
+                }
+                WRITE mutation.upsert-article.ts {
+                    // from old.ts
+                }
+                WRITE mutation.delete-article.ts {
+                    // from old.ts
+                }
+                WRITE group.articles.ts {
+                    // TODO
+                }
+                WRITE group.articles.ts {
+                    // TODO
+                }
+            }
+            permissions {
+                WRITE article.ts {
+                    // from old.ts
+                }
+            }
+        }
+        bar-weeks {
+            PUT src/objects/bar-week.ts AS old.ts
+            WRITE README.md {
+                Semaines de bar
+                ===============
+
+                Spécifique à l'AEn7, représente une semaine où un club organise des activités et staff pour le bar du Foyer.
+                Les personnes ayant la permissions d'en créer sont les administrateur·ice·s, responsables des clubs (permission `canEditGroups`) et membres du bureau du Foyer (configurés avec la variable d'environnement `FOY_GROUPS`, liste séparée par des virgules d'uids de groupes)
+            }
+            WRITE index.ts {
+                // Barrel file
+            }
+            WRITE types/bar-week.ts {
+                // from old.ts
+            }
+            resolvers {
+                WRITE query.bar-week.ts {
+                    // from old.ts
+                }
+                WRITE query.bar-week-now.ts {
+                    // from old.ts
+                }
+                WRITE query.bar-weeks.ts {
+                    // from old.ts
+                }
+                WRITE mutation.upsert-bar-week.ts {
+                    // from old.ts
+                }
+                WRITE mutation.delete-bar-week.ts {
+                    // from old.ts
+                }
+                WRITE group.bar-weeks.ts {
+                    // TODO
+                }
+            }
+            permissions {
+                WRITE bar-week.ts {
+                    export const userCanEditBarWeeks = (user: User): boolean =>
+                        user?.admin || user?.canEditGroups || (process.env.FOY_GROUPS?.split(',') ?? []).some(uid => userIsOnBoardOf(uid, user))
+                    
+
+                    export const userCanSeeBarWeek = (user: User, group: Group): boolean  =>
+                        userIsStudentOfSchool(user, group.school.uid)
+                    
+                }
+            }
+        }
+        changelogs {
+            PUT src/objects/changelogs.ts AS old.ts
+            WRITE README.md {
+                Changelogs
+                ==========
+
+                Représente les différents "changelogs", c'est à dire l'historique des versions de l'application.
+                Les changelogs représentent les changements dans l'application web officielle également, et ne sépare pas les changements de l'API seul de ceux concernant l'application web.
+            }
+
+            WRITE index.ts {
+                // Barrel file
+            }
+            types {
+                WRITE changelog-release.ts {
+                    // from old.ts
+                }
+                WRITE release-changes-map.ts {
+                    // from old.ts
+                }
+                WRITE release-change.ts {
+                    // from old.ts
+                }
+            }
+            resolvers {
+                WRITE query.changelog.ts {
+                    // from old.ts
+                }
+                WRITE query.combined-changelog.ts {
+                    // from old.ts
+                }
+                WRITE query.upcoming-changelog.ts {
+                    // from old.ts
+                }
+            }
+            permissions {
+                # empty, for now
+            }
+        }
+        comments {
+            PUT src/objects/comments.ts AS old.ts
+            WRITE README.md {
+                Comments
+                ========
+
+                Représente les différents commentaires postés.
+                Les commentaires peuvent être reliés à des [posts](../posts) ou des [documents](../documents)
+            }
+
+            WRITE index.ts {
+                // Barrel file
+            }
+
+            types {
+                WRITE comment.ts {
+                    // from old.ts
+                }
+            }
+
+            resolvers {
+                WRITE query.comment.ts {
+                    // from old.ts
+                }
+                WRITE query.comments.ts {
+                    // from old.ts
+                }
+                WRITE mutation.upsert-comment.ts {
+                    // from old.ts
+                }
+                WRITE mutation.delete-comment.ts {
+                    // from old.ts
+                }
+                WRITE post.comments.ts {
+                    // TODO
+                }
+                WRITE document.comments.ts {
+                    // TODO
+                }
+                WRITE comment.replies.ts {
+                    // TODO
+                }
+            }
+        }
+        # includes user candidates, credentials
+        users {
+            PUT src/objects/users.ts AS old.ts
+            WRITE README.md {
+                Users
+                =====
+
+                Représente les personnes utilisant l'application.
+            }
+
+            WRITE index.ts {
+                // Barrel file
+            }
+
+            types {
+                WRITE user.ts {
+                    // from old.ts
+                }
+                WRITE credential.ts {
+                    // from old.ts
+                }
+                WRITE user-candidate.ts {
+                    // from old.ts
+                }
+            }
+
+            resolvers {
+                WRITE query.user.ts {
+                    // from old.ts
+                    // also userByEmail (combine into a single query)
+                }
+                WRITE query.users.ts {
+                    // from old.ts
+                }
+                WRITE query.search-users.ts {
+                    // from old.ts
+                }
+                WRITE query.user-candidates.ts {
+                    // from old.ts
+                }
+                WRITE query.user-candidate.ts {
+                    // from old.ts
+                    // also userCandidateByEmail (combine into a single query)
+                }
+            }
+        }
+        health-checks
+        documents
+        events
+        godparents
+        groups
+        gitlab
+        links
+        logs
+        # subjects, majors, minors, teaching units
+        curriculum 
+        # tickets, bookings, qrcode type, bookings, registration verifications, profits breakdown etc
+        ticketing
+        # everything related to third party apps (oauth clients)
+        oauth
+        reactions
+        # external services
+        services
+        student-associations
+        schools
+    }
+}
