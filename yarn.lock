@@ -488,6 +488,7 @@ __metadata:
     tslib: "npm:^2.4.1"
     typescript: "npm:^5.0.0"
     unified: "npm:^11.0.4"
+    vfile-matter: "npm:^5.0.0"
     vite: "npm:^5.0.3"
   languageName: unknown
   linkType: soft
@@ -16133,6 +16134,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vfile-matter@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "vfile-matter@npm:5.0.0"
+  dependencies:
+    vfile: "npm:^6.0.0"
+    yaml: "npm:^2.0.0"
+  checksum: 48cc17cdc83b07a77888f2881a0c60e052531af5a23ab6e589683848129d1672031a85578d7c48c2260b9c18d838bf3799cff591b2d4b54dc7e01a66c5d79806
+  languageName: node
+  linkType: hard
+
 "vfile-message@npm:^2.0.4":
   version: 2.0.4
   resolution: "vfile-message@npm:2.0.4"
@@ -16681,7 +16692,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:2.3.4, yaml@npm:^2.3.4":
+"yaml@npm:2.3.4, yaml@npm:^2.0.0, yaml@npm:^2.3.4":
   version: 2.3.4
   resolution: "yaml@npm:2.3.4"
   checksum: cf03b68f8fef5e8516b0f0b54edaf2459f1648317fc6210391cf606d247e678b449382f4bd01f77392538429e306c7cba8ff46ff6b37cac4de9a76aff33bd9e1
