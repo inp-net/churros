@@ -1,18 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import HashLink from '$lib/HashLink.svelte';
-	import Pill from '$lib/Pill.svelte';
+	import LiveIndicator from '$lib/LiveIndicator.svelte';
 	import { pascalToKebab } from '$lib/casing';
 	import { markdownToHtml } from '$lib/markdown';
 	import type { Arg, Field } from '$lib/schema';
 	import { onMount } from 'svelte';
 	import ArgType from './ArgType.svelte';
-	import LiveIndicator from '$lib/LiveIndicator.svelte';
 
 	export let query: Field | (Arg & { args: [] });
 	export let kind: 'query' | 'mutation' | 'subscription' | 'field';
 	export let hasAvailableSubscription = false;
-	export let showReturnType = false;
+	// export let showReturnType = false;
 	export let typeIsEnumAndWasExpanded = false;
 
 	let mobile = false;
@@ -65,7 +64,7 @@
 			>
 		{:else}
 			<code class="no-color"
-				>{query.name}({#if !mobile}&#8203;{/if}{#if query.args && query.args.length >= (mobile ? 3 : 8)}<span
+				>{query.name}({#if !mobile}&#8203;{/if}{#if query.args && query.args.length >= (mobile ? 3 : 5)}<span
 						class="too-many-args">...</span
 					>{:else}{#each Object.entries(query.args) as [i, { name, type, defaultValue }]}{name}{#if !mobile}:&nbsp;<ArgType
 								noExpandEnums={Boolean(defaultValue)}
@@ -80,6 +79,7 @@
 	{#if query.description}
 		<section class="doc">
 			{#await markdownToHtml(query.description, $page.data.allResolvers) then doc}
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 				{@html doc}
 			{:catch error}
 				<p>Impossible de rendre la documentation pour {query.name}: {error}</p>
@@ -111,6 +111,7 @@
 						{#if arg.description}
 							<div class="doc">
 								{#await markdownToHtml(arg.description, $page.data.allResolvers) then doc}
+									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 									{@html doc}
 								{:catch error}
 									<p>
@@ -142,26 +143,26 @@
 
 <style>
 	.literal.string {
-		color: rgb(31, 218, 109);
+		color: var(--green);
 	}
 
 	.literal.enum {
-		color: yellow;
+		color: var(--yellow);
 	}
 
 	.literal.int,
 	.literal.float {
-		color: orange;
+		color: var(--orange);
 	}
 
 	.too-many-args {
-		color: rgb(255, 92, 241);
+		color: var(--pink);
 	}
 
 	.subtitle {
-		font-weight: bold;
-		color: #536686;
 		margin-top: 1rem;
+		font-weight: bold;
+		color: var(--muted);
 	}
 
 	.doc {

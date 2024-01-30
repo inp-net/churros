@@ -1,12 +1,27 @@
-<script>
+<script lang="ts">
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import TableOfContents from '$lib/TableOfContents.svelte';
 	import { CURRENT_COMMIT, CURRENT_VERSION } from '@centraverse/api/new-src/lib/buildinfo';
+	import { onMount } from 'svelte';
+
+	let colorNames: string[] = [];
+	onMount(() => {
+		if (!browser) return;
+
+		const colorsStylesheet = [...document.styleSheets].find((d) => d.href?.endsWith('colors.css'));
+
+		const colorsRootCssRule = [...(colorsStylesheet?.cssRules ?? [])].find(
+			(r) => r instanceof CSSStyleRule && r.selectorText === ':root'
+		) as CSSStyleRule;
+
+		colorNames = [...colorsRootCssRule.style].map((n) => n.replace(/^--/, ''));
+	});
 </script>
 
 <svelte:head>
 	<link rel="stylesheet" href="/fonts.css" />
+	<link rel="stylesheet" href="/colors.css" />
 </svelte:head>
 
 <main>
@@ -36,6 +51,11 @@
 				>Made with <span style:color="red"><strong>&lt;3</strong></span> by
 				<img src="https://churros.inpt.fr/storage/groups/dark/net7-n7.png" alt="net7" /></a
 			>
+			<div class="swatches">
+				{#each colorNames as color}
+					<div class="swatch" style:background-color="var(--{color})"></div>
+				{/each}
+			</div>
 		</footer>
 	</div>
 </main>
@@ -44,27 +64,42 @@
 	:root {
 		--side-padding: 2rem;
 	}
+
 	main {
 		display: grid;
-		--toc-width: 250px;
 		grid-template-columns: var(--toc-width) 1fr;
-		--toc-li-hover-color: aqua;
-		--toc-active-bg: white;
-		--toc-active-color: #050d1b;
-		--toc-mobile-bg: #0a192f;
-		max-width: 1000px;
 		gap: 2rem;
-		margin: 0 auto;
+		max-width: 1000px;
 		padding: 0 var(--side-padding);
+		margin: 0 auto;
+
+		--toc-width: 250px;
+		--toc-li-hover-color: var(--cyan);
+		--toc-active-bg: var(--fg);
+		--toc-active-color: var(--bg);
+		--toc-mobile-bg: var(--bg);
+	}
+
+	.swatches {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1ch 1ch;
+		justify-content: center;
+		margin-top: 3rem;
+	}
+
+	.swatch {
+		width: 1em;
+		height: 1em;
 	}
 
 	footer {
-		border-top: #0a192f 5px solid;
 		/* border-radius: 10000px; */
 		padding: 5rem;
 		padding-bottom: 1rem;
 		margin-top: 5rem;
 		text-align: center;
+		border-top: var(--shadow) 5px solid;
 	}
 
 	footer img {
@@ -73,21 +108,21 @@
 
 	.net7 {
 		display: flex;
-		margin-top: 5rem;
-		align-items: center;
-		column-gap: 1ch;
 		flex-wrap: wrap;
+		column-gap: 1ch;
+		align-items: center;
 		justify-content: center;
+		margin-top: 5rem;
+		font-family: 'Space Mono', monospace;
+		color: var(--fg);
 		text-decoration: none;
-		color: white;
-		font-family: 'Space Mono';
-		transition: box-shadow 0.2s ease;
 		border-radius: 2rem;
+		transition: box-shadow 0.2s ease;
 	}
 
 	.net7:hover,
 	.net7:focus-visible {
-		box-shadow: 0 0 50px 3px color-mix(in oklab, white 15%, #0a192f);
+		box-shadow: 0 0 50px 3px color-mix(in oklab, var(--fg) 15%, var(--shadow));
 	}
 
 	.net7 img {
@@ -96,16 +131,17 @@
 	}
 
 	:global(a) {
-		color: rgb(40, 212, 235);
+		color: var(--cyan);
 	}
 
 	:global(a:hover, a:focus-visible) {
-		color: rgb(231, 78, 236);
+		color: var(--pink);
 	}
 
 	:global(pre) {
 		overflow-x: auto;
 	}
+
 	.content {
 		max-width: calc(100vw - 2 * var(--side-padding));
 	}
@@ -117,9 +153,9 @@
 	}
 
 	:global(body) {
-		background: #050d1b;
-		color: white;
-		font-family: 'Space Grotesk', 'Roboto', sans-serif;
+		font-family: 'Space Grotesk', Roboto, sans-serif;
+		color: var(--fg);
+		background: var(--bg);
 	}
 
 	:global(code, pre) {
@@ -127,26 +163,26 @@
 	}
 
 	:global(code:not(.no-color)) {
-		color: #ff449c;
+		color: var(--pink);
 	}
 
 	:global(h4) {
 		margin: 0.5rem 0;
 	}
+
 	:global(p) {
 		margin: 0.125rem 0;
 	}
 
 	:global(article) {
 		padding: 1rem;
-		border-radius: 1.5rem;
-		/* background: #0a192f; */
 		margin: 2rem 0;
+		border-radius: 1.5rem;
 	}
 
 	:global(article.error) {
-		background: #460808;
-		color: #f39d9d;
+		color: color-mix(in oklab, var(--red) 50%, var(--fg));
 		text-align: center;
+		background: color-mix(in oklab, var(--red) 20%, var(--bg));
 	}
 </style>

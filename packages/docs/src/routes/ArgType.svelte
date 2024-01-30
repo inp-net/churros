@@ -90,43 +90,42 @@
 
 <style>
 	.connection {
-		color: rgb(177, 91, 226);
+		color: var(--magenta);
 	}
 
 	.scalar {
-		color: rgb(231, 128, 43);
+		color: var(--orange);
 	}
 
 	.enum {
-		color: rgb(231, 211, 31);
+		color: var(--yellow);
 	}
 
 	.enum.enum-value-separator {
-		color: white;
 		font-weight: bold;
+		color: var(--fg);
 	}
 
 	.object {
-		color: rgb(0, 174, 255);
+		color: var(--blue);
 	}
 
 	.union {
-		color: rgb(241, 99, 194);
+		color: var(--pink);
 	}
 
 	.errorable,
-	.nullable,
-	.errorable {
-		color: rgb(230, 50, 44);
+	.nullable {
 		font-weight: bold;
+		color: var(--red);
 	}
 
 	.array {
-		color: rgb(255, 255, 255);
 		font-weight: bold;
+		color: var(--fg);
 	}
 
 	.input {
-		color: cyan;
+		color: var(--cyan);
 	}
 </style>
