@@ -83,11 +83,11 @@ new-src {
             WRITE README.md {
                 Posts
                 =====
+                
+                Les différents posts publiés par les différents [groupes](../groups)
 
                 Appelés _Articles_ dans le code pour des soucis de rétro-compabilité.
                 Sera renommé en _Post_ partout dans le futur.
-
-                Représente les différents posts publiés par les différents [groupes](../groups)
             }
             WRITE index.ts {
                 // Barrel file
@@ -178,7 +178,7 @@ new-src {
                 Changelogs
                 ==========
 
-                Représente les différents "changelogs", c'est à dire l'historique des versions de l'application.
+                L'historique des versions de l'application.
                 Les changelogs représentent les changements dans l'application web officielle également, et ne sépare pas les changements de l'API seul de ceux concernant l'application web.
             }
 
@@ -214,12 +214,13 @@ new-src {
         comments {
             PUT src/objects/comments.ts AS old.ts
             WRITE README.md {
-                Comments
-                ========
+                Commentaires
+                ============
 
-                Représente les différents commentaires postés.
+                Les différents commentaires postés.
                 Les commentaires peuvent être reliés à des [posts](../posts) ou des [documents](../documents)
             }
+
 
             WRITE index.ts {
                 // Barrel file
@@ -262,7 +263,7 @@ new-src {
                 Users
                 =====
 
-                Représente les personnes utilisant l'application.
+                Les personnes utilisant l'application.
 
                 Inscription
                 -----------
@@ -351,8 +352,7 @@ new-src {
                 Health Checks
                 =============
 
-                Représente les différents "health checks" de l'application.
-                Les health checks sont des tests permettant de vérifier que l'application fonctionne correctement.
+                Différents "health checks" de l'application, des tests permettant de vérifier que l'application fonctionne correctement.
                 Ils sont utilisés pour monitorer que l'application est en bonne santé, et permet aussi d'exposer un endpoint /health dans l'application web.
             }
 
@@ -377,7 +377,7 @@ new-src {
                 Documents (La Frappe)
                 =========
 
-                Représente les différents documents publiés dans des [matières](../curriculum).
+                Documents publiés dans des [matières](../curriculum).
 
                 Nommé "La Frappe" au sein des écoles de Toulouse INP.
             }
@@ -428,6 +428,17 @@ new-src {
                 Un évènement peut, ou non, avoir des billets (et donc un système de billetterie).
 
                 Voir [Billetterie](../ticketing) pour tout ce qui est billest et réservations.
+
+                URLs additionnelles
+                -------------------
+
+                <article>
+                ### `GET /print-bookings/:code`
+
+                Renvoie un billet PDF d'une réservation ayant pour code `:code`.
+
+                </article>
+
             }
 
             WRITE index.ts {
@@ -493,12 +504,10 @@ new-src {
             PUT src/objects/groups.ts AS old.ts
 
             WRITE README.md {
-                Groupes
+                Groupes 
                 =======
 
-                Représente les différents groupes de l'application.
-
-                Un groupe peut être un club, une association, un bureau d'[AE](../student-associations), un groupe d'intégration ou un simple groupe (parfois dit "groupe informel").
+                Groupes de personnnes: peut être un club, une association, un bureau d'[AE](../student-associations), un groupe d'intégration ou un simple groupe (parfois dit "groupe informel").
             }
 
             WRITE index.ts {
@@ -586,6 +595,8 @@ new-src {
                 Gitlab
                 ======
 
+                Rapports utilisateurs et crédits.
+
                 Churros est interconnecté avec son dépôt pour tout ce qui concerne:
                 
                 - la gestion de rapports utilisateurs (signalement de bugs et propositions de fonctionnalités).
@@ -633,10 +644,10 @@ new-src {
                 Liens
                 =====
 
-                Représente des liens nommés, utilisés dans beaucoup de ressources différentes.
+                Liens nommés, utilisés dans beaucoup de ressources différentes.
 
-                Code
-                ----
+                Organisation du code source
+                ---------------------------
 
                 Le code des résolveurs respectifs sont dans chacun des modules concernés, et non ici.
             }
@@ -662,7 +673,7 @@ new-src {
                 Logs
                 ====
 
-                Représente les logs de l'application, accessible uniquement par les administrateur·ice·s.
+                Logs de l'application, accessible uniquement par les administrateur·ice·s.
             }
 
             WRITE index.ts {
@@ -670,7 +681,7 @@ new-src {
             }
 
             types {
-                WRITE log.ts {
+                WRITE log-entry.ts {
                     // from old.ts
                 }
             }
@@ -692,7 +703,7 @@ new-src {
                 Curriculum
                 ==========
 
-                Représente les différentes matières enseignées dans les écoles, et leur organisation au sein de celle-ci.
+                Différentes matières enseignées dans les écoles, et leur organisation au sein de celle-ci.
 
                 La hiérarchie est la suivante:
 
@@ -798,7 +809,7 @@ new-src {
                 Billetterie
                 ===========
 
-                Représente les différents billets et réservations de l'application.
+                Billets et réservations de places sur des [évènements](/events).
             }
 
             WRITE index.ts {
@@ -945,6 +956,14 @@ new-src {
                 Churros fourni un service de provider OAuth.
 
                 Des applications tierces peuvent utiliser l'API de Churros au nom d'une personne, si celle-ci autorise l'application.
+
+                Endpoints utiles
+                ----------------
+
+                - **URL d'autorisation**: `https://churros.inpt.fr/authorize`
+                - **URL d'obtention d'un token**: `https://churros.inpt.fr/token`
+
+                Pour en savoir plus, voir la [documentation OAuth2 de Churros](https://wiki.inpt.fr/inp-net/public/oauth-churros)
             }
 
             WRITE index.ts {
@@ -974,6 +993,11 @@ new-src {
                 WRITE query.all-apps.ts {
                     // from ./old.ts
                     // TODO rename to all-third-party-apps
+                }
+
+                WRITE mutation.authorize.ts {
+                    // from ./old.ts
+                    // TODO rename to authorize-third-party-app
                 }
 
                 WRITE mutation.register-app.ts {
@@ -1015,7 +1039,7 @@ new-src {
                 Réactions
                 =========
 
-                Représente les différentes réactions (likes, etc) sur les différents objets de l'application (évènements, posts, etc)
+                Réactions (likes, etc) sur les différents objets de l'application (évènements, posts, etc)
             }
 
             WRITE index.ts {
@@ -1074,7 +1098,7 @@ new-src {
                 Services
                 ========
 
-                Représente les différents services externes proposés par une [AE](../student-associations), une [école](../schools) ou un [groupe](../groups).
+                Services externes proposés par une [AE](../student-associations), une [école](../schools) ou un [groupe](../groups).
             }
 
             WRITE index.ts {
@@ -1117,7 +1141,7 @@ new-src {
                 Associations étudiantes
                 =======================
 
-                Représente les différentes associations étudiantes des écoles.
+                Associations Étudiantes de chaque [école](/schools). Il n'y a qu'une seule _AE_ par école.
             }
 
             WRITE index.ts {
@@ -1156,7 +1180,7 @@ new-src {
                 Écoles
                 ======
 
-                Représente les différentes écoles.
+                Écoles présentes sur l'application.
             }
 
             WRITE index.ts {
