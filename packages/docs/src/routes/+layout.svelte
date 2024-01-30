@@ -4,8 +4,8 @@
 	import TableOfContents from '$lib/TableOfContents.svelte';
 	import { CURRENT_COMMIT, CURRENT_VERSION } from '@centraverse/api/new-src/lib/buildinfo';
 	import { onMount } from 'svelte';
+	import { colorNames } from '$lib/colors';
 
-	let colorNames: string[] = [];
 	onMount(() => {
 		if (!browser) return;
 
@@ -15,7 +15,7 @@
 			(r) => r instanceof CSSStyleRule && r.selectorText === ':root'
 		) as CSSStyleRule;
 
-		colorNames = [...colorsRootCssRule.style].map((n) => n.replace(/^--/, ''));
+		$colorNames = [...colorsRootCssRule.style].map((n) => n.replace(/^--/, ''));
 	});
 </script>
 
@@ -54,7 +54,7 @@
 				<img src="https://churros.inpt.fr/storage/groups/dark/net7-n7.png" alt="net7" /></a
 			>
 			<div class="swatches">
-				{#each colorNames as color}
+				{#each $colorNames as color}
 					<div class="swatch" style:background-color="var(--{color})"></div>
 				{/each}
 			</div>

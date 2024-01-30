@@ -1,9 +1,7 @@
-Liens
-=====
+# Liens
 
-Représente des liens nommés, utilisés dans beaucoup de ressources différentes.
+Liens nommés, utilisés dans beaucoup de ressources différentes.
 
-Code
-----
+## Organisation du code source
 
 Le code des résolveurs respectifs sont dans chacun des modules concernés, et non ici.

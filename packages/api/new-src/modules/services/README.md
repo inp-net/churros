@@ -1,4 +1,3 @@
-Services
-========
+# Services
 
-Représente les différents services externes proposés par une [AE](../student-associations), une [école](../schools) ou un [groupe](../groups).
+Services externes proposés par une [AE](../student-associations), une [école](../schools) ou un [groupe](../groups).

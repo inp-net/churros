@@ -1,33 +1,39 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-	import GraphQlModules from '../GraphQLModules.svelte';
 	import EditIcon from '$lib/EditIcon.svelte';
+	import GraphQlModules from '../GraphQLModules.svelte';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 </script>
 
 <svelte:head>
-	<title>{data.module.displayName}—Churros API</title>
+	<title>{data.modules.length === 1 ? `${data.modules[0].displayName}—` : ''}Churros API</title>
 </svelte:head>
+<h1>
+	{#if data.modules.length === 1}
+		{data.modules[0].displayName}
+		<a
+			class="link-to-source"
+			href="https://git.inpt.fr/inp-net/churros/-/blob/main/packages/api/src/modules/{data
+				.modules[0].name}/README.md"
+		>
+			<EditIcon></EditIcon> Un problème sur la doc?
+		</a>
+	{:else}
+		Documentation
+	{/if}
+</h1>
 
-<h1>{data.module.displayName}
-<a
-	class="link-to-source"
-	href="https://git.inpt.fr/inp-net/churros/-/blob/main/packages/api/src/modules/{data
-		.module.name}/README.md"
->
-	<EditIcon></EditIcon> Un problème sur la doc?
-</a></h1>
-
-<GraphQlModules schema={data.schema} modules={[data.module]}></GraphQlModules>
+<GraphQlModules {...data}></GraphQlModules>
 
 <style>
 	h1 {
-		margin-bottom: 0;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		margin-bottom: 0;
 	}
+
 	.link-to-source {
 		font-size: 1rem;
 		text-decoration: none;

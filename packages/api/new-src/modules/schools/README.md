@@ -1,4 +1,3 @@
-Écoles
-======
+# Écoles
 
-Représente les différentes écoles.
+Écoles présentes sur l'application.

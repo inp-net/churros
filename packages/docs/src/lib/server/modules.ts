@@ -4,12 +4,14 @@ import * as path from 'path';
 import { kebabToCamel, kebabToPascal } from '../casing';
 import { markdownToHtml, type ResolverFromFilesystem } from '../markdown';
 import { loadSchema } from './schema-loader';
+import { MODULES_ORDER } from '$lib/ordering';
 
 export type Module = {
 	name: string;
 	displayName: string;
 	rawDocs: string;
 	renderedDocs: string;
+	shortDescription: string;
 	queries: string[];
 	mutations: string[];
 	subscriptions: string[];
@@ -26,6 +28,18 @@ async function readdirNotExistOk(directory: string): Promise<string[]> {
 		console.warn(`WARN: ${directory} is empty.`);
 	}
 	return files;
+}
+
+function ellipsis(text: string, maxWords: number) {
+	const words = text.split(' ');
+	if (words.length <= maxWords) {
+		return text;
+	}
+	return words.slice(0, maxWords).join(' ') + '...';
+}
+
+function firstSentence(text: string) {
+	return text.split(/\.(\s|$)/)[0];
 }
 
 export async function getModule(directory: string): Promise<Module> {
@@ -45,6 +59,7 @@ export async function getModule(directory: string): Promise<Module> {
 		name: directory,
 		displayName: parsedDocs('h1').first().text(),
 		rawDocs: docs,
+		shortDescription: ellipsis(firstSentence(docsWithoutHeading('p').first().text()), 15),
 		renderedDocs: docsWithoutHeading.html() ?? '',
 		types: (await readdir(path.join(folder, 'types'))).map((file) =>
 			kebabToPascal(path.basename(file, '.ts'))
@@ -92,6 +107,14 @@ export async function getModule(directory: string): Promise<Module> {
 	}
 
 	return module;
+}
+
+export async function getAllModules() {
+	return (
+		await Promise.all(
+			(await readdir('../api/new-src/modules')).map(async (folder) => getModule(folder))
+		)
+	).sort((a, b) => MODULES_ORDER.indexOf(a.name) - MODULES_ORDER.indexOf(b.name));
 }
 
 let allResolvers: ResolverFromFilesystem[] = [];
@@ -153,6 +176,7 @@ export async function indexModule(): Promise<Module> {
 				?.fields?.map((field) => field.name) ?? [],
 		rawDocs: 'Le schéma GraphQL entier',
 		renderedDocs: 'Le schéma GraphQL entier',
+		shortDescription: 'Le schéma GraphQL entier',
 		types: schema.types
 			.map((t) => t.name)
 			.filter(
