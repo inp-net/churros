@@ -1,4 +1,3 @@
-Billetterie
-===========
+# Billetterie
 
-Représente les différents billets et réservations de l'application.
+Billets et réservations de places sur des [évènements](/events).

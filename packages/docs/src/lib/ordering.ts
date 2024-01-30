@@ -1,0 +1,22 @@
+export const MODULES_ORDER = [
+	'users',
+	'groups',
+	'posts',
+	'events',
+	'ticketing',
+	'documents',
+	'services',
+	'bar-weeks',
+	'student-associations',
+	'schools',
+	'curriculum',
+	'comments',
+	'reactions',
+	'links',
+	'oauth',
+	'announcements',
+	'gitlab',
+	'changelogs',
+	'logs',
+	'health-checks'
+];
