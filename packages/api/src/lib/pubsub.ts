@@ -1,7 +1,7 @@
 import { createRedisEventTarget } from '@graphql-yoga/redis-event-target';
 import { createPubSub } from 'graphql-yoga';
 import { Redis } from 'ioredis';
-import { splitID } from './builder.js';
+import { splitID } from './global-id.js';
 
 const REDIS_URL = new URL(process.env.REDIS_URL);
 

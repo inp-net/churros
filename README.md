@@ -1,46 +1,30 @@
-# Centraverse
+# Churros
 
-Centraverse aims to smooth the organization of student life at Centrale Toulouse schools. The project is currently in development.
+La plateforme d'organisation de la vie étudiante.
 
-The planned features of the application are the following:
+## Fonctionnalités
 
-- A mobile-friendly and desktop-friendly website
-- A calendar of events
-- A list of clubs and associations
-- Clubs and associations can create events, publish pictures and articles
-- A shop for clubs and associations to sell tickets for their events and other products
-- A directory to store courses and exams
+- Des comptes pour les étudiant·e·s
+- Des clubs, assos, bureaux de l'AE, et listes qui peuvent:
+  - Faire des posts
+  - Organiser des événements, avec optionnellement:
+    - Des _shotguns_ (réservations de places en temps et capacité limité, sur le principe du "premier arrivé, premier servi")
+- Un système de billetterie pour payer des places sur ces évènements, et scanner lesdites places à l'entrée
+- Une plateforme de partage de documents de cours (annales, notes de cours, TDs, etc.), appelée _La Frappe_
+- Des liens vers d'autres services fournis par l'AE
+- Un [API GraphQL](https://api-docs.churros.inpt.fr) pour interragir avec la plateforme depuis d'autres services
 
-[A detailed roadmap is available on the wiki.](https://git.inpt.fr/inp-net/centraverse/-/wikis/Roadmap)
+## Développement
 
-## Technical details
+Voir [CONTRIBUTING.md](CONTRIBUTING.md).
 
-This project is made of two parts:
+## Stack technique et structure du code
 
-- [A GraphQL API](./packages/api/README.md) written in TypeScript
-- [A web application](./packages/app/README.md) written in Svelte
+Voir [le wiki](https://git.inpt.fr/inp-net/churros/-/wikis/home)
 
-You'll find more information in the READMEs of each package.
+## Remerciements
 
-## Development
-
-You'll need to install [Docker](https://www.docker.com/get-started/) and [Volta](https://volta.sh/) to develop this project.
-
-Once installed, get started by running:
-
-```bash
-# Clone the repo
-git clone https://git.inpt.fr/inp-net/centraverse.git # or git@git.inpt.fr:inp-net/centraverse.git
-
-# Install dependencies (Volta will take care of Node and Yarn for you)
-yarn install
-
-# Build the project
-yarn build
-
-# Create a fresh database container
-yarn reset
-
-# Start the dev servers (frontend on localhost:5173, backend on localhost:4000)
-yarn dev
-```
+- [Gautier Ben Aïm](https://gauben.github.io/) pour le lancement inital du projet et de précieux conseils sur les choix du bibliothèques et l'organisation du code
+- [Antonin Litschgy](https://www.instagram.com/antonin_litschgy) pour l'idée du nom, et ses contributions à quelques composants du frontend
+- [Guilhem Mangenot](https://github.com/guilhemmgt) pour continuer à encore et toujours trouver autant de bugs aussi vite
+- [Tout les développeur·euse·s](https://git.inpt.fr/inp-net/churros/-/graphs/main) qui ont contribué au projet

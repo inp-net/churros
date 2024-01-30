@@ -78,6 +78,8 @@
         } = searchUsers[0]);
       }
 
+      if (!uid) throw new Error(`Utilisateur·ice introuvable`);
+
       const { addGroupMember } = await $zeus.mutate({
         addGroupMember: [
           {

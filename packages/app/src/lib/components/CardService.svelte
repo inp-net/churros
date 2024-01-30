@@ -5,23 +5,27 @@
   import { LogoSourceType } from '$lib/zeus';
 
   import IconAdd from '~icons/mdi/add';
+  import IconBookshelf from '~icons/mdi/bookshelf';
+  import IconBugCheck from '~icons/mdi/bug-check';
+  import IconCalendar from '~icons/mdi/calendar-multiselect-outline';
   import IconCar from '~icons/mdi/car';
-  import IconDefisInte from '~icons/mdi/sword-cross';
-  import IconHand from '~icons/mdi/hand-heart';
   import IconCarrot from '~icons/mdi/carrot';
+  import IconStatus from '~icons/mdi/checkbox-marked-circle-outline';
+  import IconCoupon from '~icons/mdi/coupon';
+  import IconDomainSwitch from '~icons/mdi/domain-switch';
+  import IconGear from '~icons/mdi/gear';
+  import IconGearOutline from '~icons/mdi/gear-outline';
+  import IconGit from '~icons/mdi/git';
+  import IconServices from '~icons/mdi/hammer-screwdriver';
+  import IconHand from '~icons/mdi/hand-heart';
+  import IconHistory from '~icons/mdi/history';
+  import IconLogs from '~icons/mdi/pulse';
+  import IconDefisInte from '~icons/mdi/sword-cross';
   import IconTerminal from '~icons/mdi/terminal';
   import IconWebsite from '~icons/mdi/web';
-  import IconLogs from '~icons/mdi/pulse';
-  import IconDomainSwitch from '~icons/mdi/domain-switch';
-  import IconBookshelf from '~icons/mdi/bookshelf';
-  import IconGit from '~icons/mdi/git';
-  import IconCalendar from '~icons/mdi/calendar-multiselect-outline';
   import LogoFrappe from './LogoFrappe.svelte';
-  import IconCoupon from '~icons/mdi/coupon';
-  import IconStatus from '~icons/mdi/checkbox-marked-circle-outline';
-  import IconHistory from '~icons/mdi/history';
-  import IconBugCheck from '~icons/mdi/bug-check';
 
+  import { me } from '$lib/session';
   import type { SvelteComponent } from 'svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,6 +47,7 @@
     'status': IconStatus,
     'history': IconHistory,
     'bug-check': IconBugCheck,
+    'services': IconServices,
   };
 
   export let service: {
@@ -54,14 +59,33 @@
       pictureFile: string;
       pictureFileDark: string;
     };
+    id?: string;
     description?: string;
   };
 
+  let hover: boolean = false;
   export let small = false;
   export let dashedBorder = false;
 </script>
 
 <a class="card-service" href={service.url} class:dashed-border={dashedBorder} class:small>
+  {#if ($me?.admin ?? false) && service.id}
+    <a
+      class="edit-icon"
+      href="/services/{service?.id}/edit/"
+      on:mouseover={() => (hover = true)}
+      on:focus={() => (hover = true)}
+      on:mouseleave={() => (hover = false)}
+      on:blur={() => (hover = false)}
+    >
+      {#if hover}
+        <IconGear />
+      {:else}
+        <IconGearOutline />
+      {/if}
+    </a>
+  {/if}
+
   {#if service.logoSourceType === LogoSourceType.ExternalLink}
     <img src={service.logo} alt={service.name} class="logo" class:small />
   {:else if service.logoSourceType === LogoSourceType.InternalLink}
@@ -83,7 +107,7 @@
   </p>
 </a>
 
-<style>
+<style lang="scss">
   .card-service {
     --size: 10rem;
 
@@ -102,11 +126,24 @@
     --size: 7rem;
   }
 
+  .edit-icon {
+    position: absolute;
+    display: none;
+    align-self: flex-end;
+    justify-self: unset;
+    transform: translate(0, -3.7rem);
+  }
+
   .card-service:hover,
   .card-service:focus-visible {
     color: var(--hover-text);
     background: var(--hover-bg);
     border-color: var(--hover-border);
+
+    .edit-icon {
+      display: inherit;
+      color: var(--text);
+    }
   }
 
   .card-service:not(:hover, :focus-visible).dashed-border {

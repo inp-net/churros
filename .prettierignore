@@ -4,3 +4,4 @@ build/
 node_modules/
 packages/api/scripts/*.json
 packages/api/storage/
+.venv/

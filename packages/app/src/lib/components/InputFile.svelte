@@ -25,8 +25,11 @@
   class:dragging
   on:drop|preventDefault={({ dataTransfer }) => {
     dragging = false;
-    if (dataTransfer)
-      files = multiple ? fileListOf([...(files ?? []), ...dataTransfer.files]) : dataTransfer.files;
+    if (dataTransfer) {
+      files = multiple
+        ? fileListOf([...Array.from(files ?? []), ...Array.from(dataTransfer.files)])
+        : dataTransfer.files;
+    }
   }}
   on:dragover|preventDefault={(e) => {
     dragging = true;

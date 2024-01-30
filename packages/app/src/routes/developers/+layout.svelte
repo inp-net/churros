@@ -2,12 +2,17 @@
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import LogoChurros from '$lib/components/LogoChurros.svelte';
   import IconBack from '~icons/mdi/arrow-left';
+  import IconDocs from '~icons/mdi/book-open-page-variant';
+  import IconApps from '~icons/mdi/apps';
 </script>
 
 <header>
   <nav>
     <ButtonInk href="/" icon={IconBack}>Retour à Churros</ButtonInk>
-    <ButtonInk href="/developers/apps">Mes applications</ButtonInk>
+    <ButtonInk href="/developers/apps" icon={IconApps}>Mes applications</ButtonInk>
+    <ButtonInk href="https://api-docs.churros.inpt.fr" target="_blank" icon={IconDocs}
+      >Documentation</ButtonInk
+    >
   </nav>
   <div class="logo">
     <LogoChurros wordmark></LogoChurros>

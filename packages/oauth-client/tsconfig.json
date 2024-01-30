@@ -2,6 +2,6 @@
   "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
   "compilerOptions": {
     "outDir": "./build",
-    "ignoreDeprecations": "5.0"
-  }
+    "ignoreDeprecations": "5.0",
+  },
 }
