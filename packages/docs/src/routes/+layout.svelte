@@ -29,7 +29,7 @@
 			<p>
 				Churros API, version {CURRENT_VERSION} (at
 				<a href="https://git.inpt.fr/inp-net/churros/-/commit/{CURRENT_COMMIT}">
-					<code>{CURRENT_COMMIT.slice(0, 10)}</code>
+					<code class="no-color">{CURRENT_COMMIT.slice(0, 10).trim()}</code>
 				</a>)
 			</p>
 			<a class="net7" href="https://net7.dev"
@@ -87,7 +87,7 @@
 
 	.net7:hover,
 	.net7:focus-visible {
-		box-shadow: 0 0 50px 3px color-mix(in oklab, white 15%, #0a192f );
+		box-shadow: 0 0 50px 3px color-mix(in oklab, white 15%, #0a192f);
 	}
 
 	.net7 img {
@@ -122,8 +122,12 @@
 		font-family: 'Space Grotesk', 'Roboto', sans-serif;
 	}
 
-	:global(code) {
+	:global(code, pre) {
 		font-family: 'Space Mono', monospace;
+	}
+
+	:global(code:not(.no-color)) {
+		color: #ff449c;
 	}
 
 	:global(h4) {

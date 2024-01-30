@@ -56,7 +56,7 @@
 					<article>
 						<section class="doc">
 							<HashLink element={renderTitle ? 'h4' : 'h3'} hash={typeName}>
-								<code>{typeName}</code>
+								<code class="no-color">{typeName}</code>
 							</HashLink>
 							{#await markdownToHtml(type.description ?? '', $page.data.allResolvers) then doc}
 								{@html doc}
@@ -75,7 +75,7 @@
 						</section>
 					</article>
 				{:else if dev}
-					<article class="error"><code>{typeName}</code> non trouvée dans le schéma.</article>
+					<article class="error"><code class="no-color">{typeName}</code> non trouvée dans le schéma.</article>
 				{/if}
 			{/each}
 		{/if}
@@ -90,7 +90,7 @@
 						hasAvailableSubscription={isImplicitSubscription(queryName)}
 					/>
 				{:else if dev}
-					<article class="error"><code>{queryName}</code> non trouvée dans le schéma.</article>
+					<article class="error"><code class="no-color">{queryName}</code> non trouvée dans le schéma.</article>
 				{/if}
 			{/each}
 		{/if}
@@ -103,7 +103,7 @@
 				{#if query}
 					<Query {query} kind="mutation" />
 				{:else if dev}
-					<article class="error"><code>{mutationName}</code> non trouvée dans le schéma.</article>
+					<article class="error"><code class="no-color">{mutationName}</code> non trouvée dans le schéma.</article>
 				{/if}
 			{/each}
 		{/if}
@@ -116,7 +116,7 @@
 				{#if query}
 					<Query {query} kind="subscription" />
 				{:else if dev}
-					<article class="error"><code>{subscription}</code> non trouvée dans le schéma.</article>
+					<article class="error"><code class="no-color">{subscription}</code> non trouvée dans le schéma.</article>
 				{/if}
 			{/each}
 		{/if}

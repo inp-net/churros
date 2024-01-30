@@ -40,7 +40,7 @@
 
 	$: hash = kind !== 'field' ? `${kind}/${query.name}` : undefined;
 
-	$: headingLevel = $page.url.pathname === "/" ? 'h4' : 'h3'
+	$: headingLevel = $page.url.pathname === '/' ? 'h4' : 'h3';
 </script>
 
 <svelte:window
@@ -55,7 +55,7 @@
 			<LiveIndicator></LiveIndicator>
 		{/if}
 		{#if kind === 'field' && query.args.length === 0}
-			<code
+			<code class="no-color"
 				><svelte:element
 					this={typeIsEnumAndWasExpanded ? 'a' : 'span'}
 					href="#{query.name}"
@@ -64,7 +64,7 @@
 				></ArgType></code
 			>
 		{:else}
-			<code
+			<code class="no-color"
 				>{query.name}({#if !mobile}&#8203;{/if}{#if query.args && query.args.length >= (mobile ? 3 : 8)}<span
 						class="too-many-args">...</span
 					>{:else}{#each Object.entries(query.args) as [i, { name, type, defaultValue }]}{name}{#if !mobile}:&nbsp;<ArgType
@@ -74,7 +74,7 @@
 							></ArgType>{/if}{#if defaultValue !== null}&nbsp;=&nbsp;<span
 								class="literal {pascalToKebab(syntaxHighlightTypeName(type))}">{defaultValue}</span
 							>{/if}{#if Number(i) < query.args.length - 1},&#x20;&#8203;{/if}{/each}{/if})</code
-			>&#x20;&rarr;&nbsp;<code><ArgType inline typ={query.type}></ArgType></code>
+			>&#x20;&rarr;&nbsp;<code class="no-color"><ArgType inline typ={query.type}></ArgType></code>
 		{/if}
 	</HashLink>
 	{#if query.description}
@@ -93,15 +93,15 @@
 			<ul>
 				{#each query.args as arg}
 					<li>
-						<code>{arg.name}: </code>
+						<code class="no-color">{arg.name}: </code>
 						<span class="type">
-							<code>
+							<code class="no-color">
 								<ArgType typ={arg.type} />
 							</code>
 						</span>
 						{#if arg.defaultValue}
 							<span class="default-value">
-								<code>
+								<code class="no-color">
 									= <span class="literal {pascalToKebab(syntaxHighlightTypeName(arg.type))}"
 										>{arg.defaultValue}</span
 									>

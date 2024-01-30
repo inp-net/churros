@@ -670,7 +670,7 @@ new-src {
             }
 
             types {
-                WRITE log.ts {
+                WRITE log-entry.ts {
                     // from old.ts
                 }
             }
