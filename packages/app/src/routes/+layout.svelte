@@ -2,18 +2,14 @@
   import { browser } from '$app/environment';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import Toast from '$lib/components/Toast.svelte';
   import { debugging } from '$lib/debugging';
+  import { isPWA } from '$lib/pwa';
   import { me } from '$lib/session';
   import { isDark, theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
-  import IconLoading from '~icons/mdi/loading';
   import '../design/app.scss';
-  import { isPWA } from '$lib/pwa';
-
-  let showInitialSpinner = true;
 
   onMount(() => {
     if (!$me && !localStorage.getItem('isReallyLoggedout')) {
@@ -21,9 +17,6 @@
       window.location.reload();
     } else if ($me) {
       localStorage.removeItem('isReallyLoggedout');
-      showInitialSpinner = false;
-    } else {
-      showInitialSpinner = false;
     }
 
     debugging.subscribe(($debugging) => {
@@ -111,22 +104,6 @@
   ></script>
 </svelte:head>
 
-<div id="loading-overlay" class:visible={showInitialSpinner}>
-  <img src="/splash-screen.png" alt="AEn7" />
-  <div class="spinner">
-    <IconLoading />
-  </div>
-  <p class="typo-details">Connexion en cours…</p>
-  <p class="troubleshoot">
-    Si ce message reste affiché longtemps: <ButtonSecondary
-      insideProse
-      on:click={() => {
-        window.location.reload();
-      }}>Recharger</ButtonSecondary
-    >
-  </p>
-</div>
-
 {#if browser}
   <section class="toasts">
     {#each $toasts as toast (toast.id)}
@@ -144,50 +121,6 @@
 <slot />
 
 <style lang="scss">
-  #loading-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1000000000000000;
-    display: flex;
-    flex-flow: column wrap;
-    gap: 1.5rem;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary-text);
-    background: var(--primary-bg);
-
-    .spinner {
-      font-size: 2rem;
-      animation: spinner 700ms infinite;
-    }
-
-    img {
-      object-fit: contain;
-      height: 10rem;
-    }
-
-    .troubleshoot {
-      position: absolute;
-      bottom: 4rem;
-
-      --bg: transparent;
-      --border: var(--primary-text);
-      --text: var(--primary-text);
-
-      text-align: center;
-    }
-  }
-
-  #loading-overlay:not(.visible) {
-    display: none;
-  }
-
-  @media not all and (display-mode: standalone) {
-    #loading-overlay {
-      display: none;
-    }
-  }
-
   section.toasts {
     position: fixed;
     bottom: 75px;

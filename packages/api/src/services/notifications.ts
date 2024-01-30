@@ -45,6 +45,9 @@ export type PushNotification = {
   timestamp?: number;
   vibrate?: number[];
   data: {
+    /**
+     * uid of the group to which the notification is related. If undefined, the notification is not related to any group.
+     */
     group: string | undefined;
     channel: NotificationChannel;
     subscriptionName?: string;

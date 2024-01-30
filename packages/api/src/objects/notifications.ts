@@ -1,11 +1,14 @@
 import { builder, prisma } from '#lib';
 import {
   NotificationChannel as NotificationChannelPrisma,
+  ThirdPartyCredentialType,
   Visibility,
   type NotificationSubscription,
 } from '@prisma/client';
 import { GraphQLError } from 'graphql';
-import { notify } from '../services/notifications.js';
+import { isThirdPartyToken } from '../auth.js';
+import { inDevelopment } from '../dev.js';
+import { notify, type PushNotification } from '../services/notifications.js';
 import { VisibilityEnum } from './events.js';
 import { DateTimeScalar } from './scalars.js';
 
@@ -177,6 +180,55 @@ builder.queryField('notificationsSendCountForArticle', (t) =>
           return 0;
         }
       }
+    },
+  }),
+);
+
+builder.mutationField('sendNotification', (t) =>
+  t.boolean({
+    directives: inDevelopment() ? { rateLimit: { duration: 3600, limit: 1 } } : {},
+    description:
+      "Envoie une notification à l'utilisateur connecté. Limité à une notification par heure.",
+    args: {
+      title: t.arg.string(),
+      body: t.arg.string(),
+    },
+    authScopes: { loggedIn: true },
+    async resolve(_, { title, body }, { user, token }) {
+      if (!user || !token) return false;
+
+      const data: PushNotification['data'] = {
+        channel: NotificationChannelPrisma.Other,
+        goto: '/',
+      };
+
+      if (isThirdPartyToken(token)) {
+        const thirdPartyApp = await prisma.thirdPartyApp.findFirstOrThrow({
+          where: {
+            credentials: {
+              some: {
+                value: token,
+                type: ThirdPartyCredentialType.AccessToken,
+              },
+            },
+          },
+          include: {
+            owner: true,
+          },
+        });
+
+        title = `[${thirdPartyApp.name}] ${title}`;
+        const _goto = new URL(thirdPartyApp.website);
+        _goto.searchParams.set('from', 'churros-notification');
+        data.goto = _goto.toString();
+        data.group = thirdPartyApp.owner.uid;
+      }
+      await notify([user], {
+        title,
+        body,
+        data,
+      });
+      return true;
     },
   }),
 );
