@@ -11,6 +11,19 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Lorsqu'un post contient une suite de caractères trop longue (lien par exemple), la page ne se mettra plus en scroll horizontal (#800) (!102) (@ragotc1)
+- Le thème ne changera plus lorsqu'une page "Ma Place" contenant un QR Code est ouverte (#706, #778) (!102) (@ragotc1)
+- Lorsqu'une place est annulée, le bouton pour télécharger le QR Code disparaît (#777) (!102) (@ragotc1)
+- L'arbre de la famille du parrainage n'est plus cassé sur écran de téléphone (#773) (!102) (@ragotc1)
+- Typographie corrigée sur le bouton des trois petits points "Les autres services" sur téléphone (#662) (!102) (@ragotc1)
+- Le texte "Cf." est désormais bien aligné sur la page des crédits (!102) (@ragotc1)
+
+### Améliorations
+
+- Les QR Code sont désormais noirs sur fonds blancs peu importe le thème choisi (#526) (!102) (@ragotc1)
+
 ## [1.44.0] - 2024-01-25
 
 ### Nouveautés
