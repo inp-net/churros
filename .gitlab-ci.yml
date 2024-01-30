@@ -9,3 +9,8 @@ build:
   script:
     - yarn install --immutable
     - yarn build
+
+include:
+  - template: SAST.gitlab-ci.yml
+
+
