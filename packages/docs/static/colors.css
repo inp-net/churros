@@ -19,8 +19,8 @@
 @media (prefers-color-scheme: light) {
 	:root {
 		--fg: #050d1b;
-		--bg: white;
-		--shadow: #ececec;
+		--bg: #e4f5fc;
+		--shadow: white;
 		--muted: #536686;
 		--green: #05b950;
 		--magenta: #b15be2;

@@ -1,15 +1,30 @@
+const acronyms = ['QR'];
+
 export function kebabToCamel(str: string) {
-    return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+	return str
+		.split('-')
+		.map((word, i) =>
+			acronyms.some((a) => a.toLowerCase() === word.toLowerCase())
+				? word.toUpperCase()
+				: i === 0
+					? word
+					: word[0].toUpperCase() + word.slice(1)
+		)
+		.join('');
 }
 
 export function kebabToPascal(str: string) {
-    return kebabToCamel(str).replace(/^[a-z]/, (letter) => letter.toUpperCase());
+	const camel = kebabToCamel(str);
+	return camel[0].toUpperCase() + camel.slice(1);
 }
 
 export function camelToKebab(str: string) {
-    return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
-} 
+	for (const acronym of acronyms) {
+		str = str.replaceAll(acronym.toUpperCase(), `-${acronym.toLowerCase()}`);
+	}
+	return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+}
 
 export function pascalToKebab(str: string) {
-    return camelToKebab(str.replace(/^[A-Z]/, (letter) => letter.toLowerCase()));
+	return camelToKebab(str).toLowerCase();
 }

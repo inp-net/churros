@@ -1,9 +1,11 @@
 import 'linkify-plugin-mention';
 import rehypeStringify from 'rehype-stringify';
+import remarkFrontmatter from 'remark-frontmatter';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import { camelToKebab } from './casing';
+import { matter } from 'vfile-matter';
 
 export type ResolverFromFilesystem = {
 	name: string;
@@ -11,9 +13,23 @@ export type ResolverFromFilesystem = {
 	type: 'query' | 'mutation' | 'subscription';
 };
 
+export async function getFrontmatter(markdown: string) {
+	return await unified()
+		.use(remarkParse)
+		.use(remarkRehype)
+		.use(rehypeStringify)
+		.use(remarkFrontmatter)
+		.use(() => (_, file) => {
+			matter(file);
+		})
+		.process(markdown)
+		.then((file) => (file.data.matter ?? {}) as Record<string, unknown>);
+}
+
 export async function markdownToHtml(
 	markdown: string,
 	allResolvers: ResolverFromFilesystem[] = [],
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	{ downlevelHeadings = true } = {}
 ) {
 	return await unified()
@@ -27,6 +43,7 @@ export async function markdownToHtml(
 		})
 		.use(remarkRehype)
 		.use(rehypeStringify)
+		.use(remarkFrontmatter)
 		.process(markdown)
 		.then(String)
 		.then((html) =>

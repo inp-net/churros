@@ -3,6 +3,8 @@ import { loadSchema } from '$lib/server/schema-loader';
 
 export const prerender = true;
 
+export const trailingSlash = 'always';
+
 export async function load() {
 	const schema = await loadSchema();
 

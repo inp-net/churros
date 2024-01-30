@@ -22,6 +22,11 @@
 <svelte:head>
 	<link rel="stylesheet" href="/fonts.css" />
 	<link rel="stylesheet" href="/colors.css" />
+	<script
+		async
+		src="https://stats.inpt.fr/script.js"
+		data-website-id="cdd61657-b96a-41e4-8934-69bdcf524eed"
+	></script>
 </svelte:head>
 
 <main>

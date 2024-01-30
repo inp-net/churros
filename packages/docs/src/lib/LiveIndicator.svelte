@@ -9,24 +9,24 @@
 	class="live-indicator"
 	title="Disponible aussi comme une subscription"
 >
-	<Pill noInteractions={$page.url.pathname === "/websockets"}><span class="dot"></span> LIVE</Pill>
+	<Pill noInteractions={$page.url.pathname === '/websockets'}><span class="dot"></span> LIVE</Pill>
 </svelte:element>
 
 <style>
 	.live-indicator {
-		color: rgb(255, 49, 118);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		color: rgb(255 49 118);
 		text-decoration: none;
 	}
 
 	.dot::before {
 		display: inline-block;
-		content: '';
-		height: 0.7em;
 		width: 0.7em;
+		height: 0.7em;
+		content: '';
+		background: currentcolor;
 		border-radius: 100000px;
-		background: currentColor;
 	}
 </style>

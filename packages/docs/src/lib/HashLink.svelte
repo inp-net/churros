@@ -1,5 +1,5 @@
 <script lang="ts">
-	import LinkIcon from './LinkIcon.svelte';
+	import LinkIcon from './icons/LinkIcon.svelte';
 
 	export let hash: string | undefined;
 	export let element: string = 'h4';

@@ -1,10 +1,12 @@
 export const MODULES_ORDER = [
+	'.global',
 	'users',
 	'groups',
 	'posts',
 	'events',
 	'ticketing',
 	'documents',
+	'notifications',
 	'services',
 	'bar-weeks',
 	'student-associations',
@@ -15,8 +17,9 @@ export const MODULES_ORDER = [
 	'links',
 	'oauth',
 	'announcements',
+	'payments',
 	'gitlab',
 	'changelogs',
 	'logs',
 	'health-checks'
-];
+] as const;

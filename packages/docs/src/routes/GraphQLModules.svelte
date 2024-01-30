@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
 	import { page } from '$app/stores';
-	import EditIcon from '$lib/EditIcon.svelte';
-	import ExternalLinkIcon from '$lib/ExternalLinkIcon.svelte';
 	import HashLink from '$lib/HashLink.svelte';
+	import ModuleIcon from '$lib/ModuleIcon.svelte';
+	import TypeKindIndicator from '$lib/TypeKindIndicator.svelte';
+	import { MODULES_COLORS } from '$lib/colors';
+	import EditIcon from '$lib/icons/EditIcon.svelte';
+	import ExternalLinkIcon from '$lib/icons/ExternalLinkIcon.svelte';
 	import { markdownToHtml } from '$lib/markdown';
 	import { Kind, type SchemaClass } from '$lib/schema';
 	import {
@@ -29,9 +32,11 @@
 </script>
 
 {#each modules as { name, displayName, renderedDocs, types, queries, mutations, subscriptions }}
-	<section class="module" id={name}>
+	<section class="module" id={name} style:--color="var(--{MODULES_COLORS[name]})">
 		{#if renderTitle}
-			<h2>
+			<h2 data-toc-title={displayName}>
+				<ModuleIcon inline {name}></ModuleIcon>
+
 				{displayName}
 
 				{#if $page.url.pathname !== `/${name}`}
@@ -46,6 +51,10 @@
 				>
 					<EditIcon></EditIcon> Un problème sur la doc?
 				</a>
+				<a
+					href="https://git.inpt.fr/inp-net/churros/-/tree/main/packages/api/src/modules/{name}"
+					class="source-code">Source</a
+				>
 			</h2>
 		{/if}
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -58,8 +67,17 @@
 				{#if type}
 					<article>
 						<section class="doc">
-							<HashLink element={renderTitle ? 'h4' : 'h3'} hash={typeName}>
+							<HashLink
+								data-toc-title={typeName}
+								element={renderTitle ? 'h4' : 'h3'}
+								hash={typeName}
+							>
+								<TypeKindIndicator kind={type.kind}></TypeKindIndicator>
 								<code class="no-color">{typeName}</code>
+								<a
+									href="https://git.inpt.fr/inp-net/churros/-/tree/main/packages/api/src/modules/{name}/types/{typeName}.ts"
+									class="source-code">Source</a
+								>
 							</HashLink>
 							{#await markdownToHtml(type.description ?? '', $page.data.allResolvers) then doc}
 								<!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -184,6 +202,15 @@
 		flex-wrap: wrap;
 		column-gap: 1em;
 		align-items: center;
+	}
+
+	[data-toc-title] {
+		color: color-mix(in oklab, var(--color) 60%, var(--fg));
+	}
+
+	.source-code {
+		margin-left: 2em;
+		font-size: 1rem;
 	}
 
 	h2 > a {

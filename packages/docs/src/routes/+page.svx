@@ -4,10 +4,16 @@
 	import GraphQlModules from './GraphQLModules.svelte';
 	import {page} from '$app/stores';
 	import {colorNames} from '$lib/colors'
+	import {kebabToPascal} from '$lib/casing'
+	import ModuleAllIcon from '$lib/icons/ModuleAllIcon.svelte'
+	import ModulesList from './ModulesList.svelte';
 
-	$: colorfulColors = $colorNames.filter(n => !['bg', 'fg', 'shadow', 'muted'].includes(n))
 	export let data: PageData;
 </script>
+
+<svelte:head>
+	<title>Documentation—Churros API</title>
+</svelte:head>
 
 <h1>Documentation</h1>
 
@@ -127,26 +133,7 @@ Ce type permet enfait l'implémentation du standard [GraphQL Cursor Connections]
 
 ## API GraphQL 
 
-<section class="modules-list">
-	{#each Object.entries(data.modules) as [i, module]}
-		<a
-			style:--color="var(--{colorfulColors[Math.abs(i) % colorfulColors.length]})"
-			href="/{module.name}"
-			class="module-link"
-		>
-			<div class="card">
-				<h4>{module.displayName}</h4>
-				<p>{module.shortDescription}</p>
-			</div>
-		</a>
-	{/each}
-		<a href="/all" class="module-link" style:--color="var(--fg)">
-		<div class="card">
-			<h4>Tout</h4>
-			<p>Tout sur une seule page</p>
-		</div>
-	</a>
-</section>
+<ModulesList modules={data.modules} />
 
 <h3 data-toc-include data-toc-title="Temps réel"> Requêtes en temps réel</h3>	
 
@@ -177,47 +164,3 @@ Renvoie OK. Permet de vérifier que le serveur est en ligne (voir [Health checks
 Un index technique de l'entièreté du schéma GraphQL est disponible à [`/index`](/index).
 
 Attention, la page est lourde et peu ralentir votre navigateur.
-
-<style>
-.modules-list {
-	--card-width: 223px;
-	--card-height: 150px;
-	display: grid;
-	grid-template-columns: repeat(auto-fill, calc(min(var(--card-width), 100%)));
-	gap: 1.5rem;
-	justify-content: center;
-}
-	.card {
-		border: 2px solid var(--color);
-		background-color: var(--shadow);
-		color: color-mix(in oklab,var(--color) 30%, var(--fg));
-		padding: 1rem;
-		border-radius: 0.5rem;
-		/* background-color: var(--shadow); */
-		height: 100%;
-		width: 100%;
-		box-sizing: border-box;
-		overflow: hidden;
-		transition: all 0.2s ease;
-	}
-
-	a:has(.card):hover .card, a:has(.card):focus-within .card {
-		border-color:var(--color);
-		background-color: color-mix(in oklab, var(--color) 40%, var(--shadow));
-	}
-
-	a:has(.card) {
-		display: block;
-		text-decoration: none;
-		color: inherit;
-		width: calc(min(var(--card-width), 100%));
-		height: var(--card-height);
-	}
-	.card h4 {
-		margin-top: .125rem;
-	}
-	.card p {
-		font-size: .85em;
-		text-overlow: ellipsis;
-	}
-</style>

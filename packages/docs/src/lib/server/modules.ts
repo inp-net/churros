@@ -2,7 +2,7 @@ import * as cheerio from 'cheerio';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import * as path from 'path';
 import { kebabToCamel, kebabToPascal } from '../casing';
-import { markdownToHtml, type ResolverFromFilesystem } from '../markdown';
+import { getFrontmatter, markdownToHtml, type ResolverFromFilesystem } from '../markdown';
 import { loadSchema } from './schema-loader';
 import { MODULES_ORDER } from '$lib/ordering';
 
@@ -48,12 +48,18 @@ export async function getModule(directory: string): Promise<Module> {
 		throw new Error(`Module ${directory} does not exist: ${folder} not found.`);
 	const docs = await readFile(path.join(folder, 'README.md'), 'utf-8');
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const metadata: Record<string, any> = await getFrontmatter(docs);
 	const htmlDocs = await markdownToHtml(docs, await getAllResolvers(), {
 		downlevelHeadings: false
 	});
 	const parsedDocs = cheerio.load(htmlDocs);
 	const docsWithoutHeading = cheerio.load(htmlDocs);
 	docsWithoutHeading('h1').remove();
+
+	if (Object.keys(metadata).length > 0) {
+		console.log(`Found metadata for ${directory}: ${JSON.stringify(metadata)}`);
+	}
 
 	const module: Module = {
 		name: directory,
@@ -83,6 +89,21 @@ export async function getModule(directory: string): Promise<Module> {
 			module.subscriptions.push(
 				kebabToCamel(filename.replace(/^subscription\./, '').replace(/\.ts$/, ''))
 			);
+		}
+	}
+
+	if (metadata.manually_include) {
+		for (const query of metadata.manually_include.queries ?? []) {
+			module.queries.push(query);
+		}
+		for (const mutation of metadata.manually_include.mutations ?? []) {
+			module.mutations.push(mutation);
+		}
+		for (const subscription of metadata.manually_include.subscriptions ?? []) {
+			module.subscriptions.push(subscription);
+		}
+		for (const type of metadata.manually_include.types ?? []) {
+			module.types.push(type);
 		}
 	}
 
@@ -136,11 +157,11 @@ export async function getAllResolvers(): Promise<ResolverFromFilesystem[]> {
 					moduleName: path.basename(module),
 					type: path.basename(resolver).split('.')[0] as 'query' | 'mutation' | 'subscription'
 				});
-				console.log(
-					`Found resolver ${path.basename(resolver)} in ${module}: ${JSON.stringify(
-						resolvers.at(-1)
-					)}`
-				);
+				// console.log(
+				// 	`Found resolver ${path.basename(resolver)} in ${module}: ${JSON.stringify(
+				// 		resolvers.at(-1)
+				// 	)}`
+				// );
 			}
 		}
 	}

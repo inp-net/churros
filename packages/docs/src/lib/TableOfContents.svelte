@@ -2,7 +2,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { blur, type BlurParams } from 'svelte/transition';
-	import MenuIcon from './MenuIcon.svelte';
+	import MenuIcon from './icons/MenuIcon.svelte';
 	import { page } from '$app/stores';
 
 	export let activeHeading: HTMLHeadingElement | null = null;
@@ -182,117 +182,124 @@
 
 <style>
 	.suptitle {
-		font-size: 1.2rem;
-		font-weight: bold;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1rem;
+		align-items: center;
 		margin: 0;
 		margin-bottom: 1rem;
-		display: flex;
-		align-items: center;
-		column-gap: 1rem;
-		row-gap: 0.5rem;
-		flex-wrap: wrap;
+		font-size: 1.2rem;
+		font-weight: bold;
 	}
+
 	.suptitle img {
 		height: 1.2em;
 	}
+
 	.back {
+		display: block;
 		font-size: 1rem;
 		font-weight: normal;
-		display: block;
 	}
+
 	aside.toc {
-		box-sizing: border-box;
-		height: max-content;
-		overflow-wrap: break-word;
-		font-size: var(--toc-font-size);
-		min-width: var(--toc-min-width);
-		width: var(--toc-width);
-		z-index: var(--toc-z-index, 1);
 		position: fixed;
+		z-index: var(--toc-z-index, 1);
+		box-sizing: border-box;
+		width: var(--toc-width);
+		min-width: var(--toc-min-width);
+		height: max-content;
+		font-size: var(--toc-font-size);
+		overflow-wrap: break-word;
 	}
+
 	aside.toc > nav {
-		overflow: var(--toc-overflow, auto);
-		overscroll-behavior: contain;
+		position: relative;
 		max-height: var(--toc-max-height, 90vh);
 		padding: var(--toc-padding, 1em 1em 0);
+		overflow: var(--toc-overflow, auto);
+		overscroll-behavior: contain;
 	}
+
 	aside.toc > nav > ol {
-		list-style: var(--toc-ol-list-style, none);
 		padding: var(--toc-ol-padding, 0);
 		margin: var(--toc-ol-margin);
+		list-style: var(--toc-ol-list-style, none);
 	}
+
 	.toc-title {
 		padding: var(--toc-title-padding);
 		margin: var(--toc-title-margin);
 	}
+
 	aside.toc > nav > ol > li {
-		cursor: pointer;
+		padding: 0.5em 1em;
+		margin: var(--toc-li-margin);
 		color: var(--toc-li-color);
+		cursor: pointer;
 		border: var(--toc-li-border);
 		border-radius: var(--toc-li-border-radius);
-		margin: var(--toc-li-margin);
-		padding: 0.5em 1em;
 	}
+
 	aside.toc > nav > ol > li:hover {
 		color: var(--toc-li-hover-color, cornflowerblue);
 		background: var(--toc-li-hover-bg);
 	}
+
 	aside.toc > nav > ol > li.active {
-		background: var(--toc-active-bg, cornflowerblue);
-		color: var(--toc-active-color, white);
 		font-weight: var(--toc-active-font-weight);
+		color: var(--toc-active-color, white);
+		background: var(--toc-active-bg, cornflowerblue);
 		border: var(--toc-active-border);
 		border-width: var(--toc-active-border-width);
 		border-radius: var(--toc-active-border-radius, 2pt);
 	}
+
 	aside.toc > button {
-		border: none;
-		bottom: 0;
-		cursor: pointer;
-		font-size: 2em;
-		line-height: 0;
 		position: absolute;
 		right: 0;
+		bottom: 0;
 		z-index: 2;
 		padding: var(--toc-mobile-btn-padding, 2pt 3pt);
-		border-radius: var(--toc-mobile-btn-border-radius, 4pt);
-		background: var(--toc-mobile-btn-bg, rgba(255, 255, 255, 0.2));
+		font-size: 2em;
+		line-height: 0;
 		color: var(--toc-mobile-btn-color, black);
+		cursor: pointer;
+		background: var(--toc-mobile-btn-bg, rgb(255 255 255 / 20%));
+		border: none;
+		border-radius: var(--toc-mobile-btn-border-radius, 4pt);
 	}
-	aside.toc > nav {
-		position: relative;
-	}
+
 	aside.toc > nav > .toc-title {
 		margin-top: 0;
 	}
 
 	aside.toc.mobile {
 		position: fixed;
-		bottom: var(--toc-mobile-bottom, 1em);
 		right: var(--toc-mobile-right, 1em);
+		bottom: var(--toc-mobile-bottom, 1em);
 	}
+
 	aside.toc.mobile > nav {
-		border-radius: 3pt;
 		right: 0;
 		z-index: -1;
 		box-sizing: border-box;
-		background: var(--toc-mobile-bg, white);
 		width: var(--toc-mobile-width, 18em);
-		box-shadow: var(--toc-mobile-shadow);
+		background: var(--toc-mobile-bg, white);
 		border: var(--toc-mobile-border);
+		border-radius: 3pt;
+		box-shadow: var(--toc-mobile-shadow);
 	}
 
 	aside.toc.desktop {
-		margin: var(--toc-desktop-aside-margin);
-	}
-	aside.toc.desktop {
-		right: 0;
 		position: sticky;
 		top: 0;
+		top: var(--toc-desktop-sticky-top, 2em);
+		right: 0;
+		max-width: var(--toc-desktop-max-width);
+		margin: var(--toc-desktop-nav-margin);
+
 		/* max-width: 200px; */
 		background: var(--toc-desktop-bg);
-		margin: var(--toc-desktop-nav-margin);
-		max-width: var(--toc-desktop-max-width);
-		top: var(--toc-desktop-sticky-top, 2em);
 	}
 </style>
