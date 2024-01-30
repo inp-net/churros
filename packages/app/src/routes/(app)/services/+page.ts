@@ -10,6 +10,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
         description: true,
         logo: true,
         logoSourceType: true,
+        id: true,
         group: {
           pictureFile: true,
           pictureFileDark: true,
