@@ -1,4 +1,5 @@
-# Curriculum
+Curriculum
+==========
 
 Différentes matières enseignées dans les écoles, et leur organisation au sein de celle-ci.
 
@@ -9,7 +10,7 @@ La hiérarchie est la suivante:
     - Parcours (ou mineure): objet `Minor`
       - "UE" (Unité d'enseignement): objet `TeachingUnit`
         - Matière: objet `Subject`
-
+                
 Cependant, afin de rendre les différents cas particuliers des écoles représentables, cette représentation se doit d'être la plus flexible possible.
 
 En conséquence, une matière peut être reliée à:

@@ -39,11 +39,55 @@ new-src {
         RUN cp $SRC/*.sql .
     }
     modules {
+        # not sure about the name
+        .global {
+            WRITE README.md {
+                ---
+                inline_types_from: [ZodError]
+                manually_include:
+                    queries: [node, nodes]
+                    types: [Node, PageInfo]
+                ---
+                Types globaux
+                =============
+
+                Types utilisés au travers de tout l'API.
+            }
+
+            types {
+                WRITE sort-direction.ts {
+                    // from idk
+                }
+
+                WRITE date-time.ts {
+                    // from idk
+                }
+
+                WRITE visibility.ts {
+                    // from idk
+                }
+
+                WRITE zod-error.ts {
+                    // from idk
+                }
+                
+                WRITE mixed-search-result.ts {
+                    // from idk
+                    // TODO rename to search result and make it an interface instead.
+                }
+            }
+
+            resolvers {
+                WRITE query.search.ts {
+                    // from idk
+                }
+            }
+        }
         announcements {
             PUT src/objects/announcements.ts AS old.ts
             WRITE README.md {
-                Announcements
-                =============
+                Annonces
+                ========
 
                 Annonces effectuées par les administrateur·ice·s de l'application.
                 À afficher à tout le monde (connecté ou non) de manière visible au travers de toute l'application.
@@ -95,6 +139,10 @@ new-src {
             WRITE types/article.ts {
                 // from old.ts
             }
+            WRITE types/article-search-result-type.ts {
+                // from old.ts
+                // TODO rename to article-search-result
+            }
             resolvers {
                 WRITE query.article.ts {
                     // from old.ts
@@ -110,6 +158,12 @@ new-src {
                     // from old.ts
                 }
                 WRITE mutation.delete-article.ts {
+                    // from old.ts
+                }
+                WRITE mutation.delete-article-picture.ts {
+                    // from old.ts
+                }
+                WRITE mutation.update-article-picture.ts {
                     // from old.ts
                 }
                 WRITE group.articles.ts {
@@ -206,6 +260,9 @@ new-src {
                 WRITE query.upcoming-changelog.ts {
                     // from old.ts
                 }
+                WRITE mutation.acknowledge-changelog.ts {
+                    // from old.ts
+                }
             }
             permissions {
                 # empty, for now
@@ -233,12 +290,13 @@ new-src {
             }
 
             resolvers {
-                WRITE query.comment.ts {
-                    // from old.ts
-                }
-                WRITE query.comments.ts {
-                    // from old.ts
-                }
+                # are these useful? don't really think so
+                # WRITE query.comment.ts {
+                #     // TODO
+                # }
+                # WRITE query.comments.ts {
+                #     // TODO
+                # }
                 WRITE mutation.upsert-comment.ts {
                     // from old.ts
                 }
@@ -288,6 +346,10 @@ new-src {
                 WRITE user.ts {
                     // from old.ts
                 }
+                
+                WRITE user-search-result.ts {
+                    // from old.ts
+                }
                 PUT src/objects/user-candidates.ts AS old-user-candidates.ts
                 WRITE user-candidate.ts {
                     // from ./old-user-candidates.ts
@@ -297,15 +359,47 @@ new-src {
                     // from ./old-credentials.ts
                     // TODO rename to Token (password are not exposed in the API anyway)
                 }
+                WRITE credential-type.ts {
+                    // from ./old-credentials.ts
+                }
+                PUT src/objects/email-changes.ts AS old-email-changes.ts
+                WRITE email-change.ts {
+                    // from ./old-email-changes.ts
+                }
+
+                PUT src/objects/password-resets.ts AS old-password-resets.ts
+                WRITE password-reset.ts {
+                    // from ./old-password-resets.ts
+                    // TODO, not exposed in the API as a type
+                }
+
+                WRITE family-tree.ts {
+                    // from old.ts
+                }
+
+                PUT src/objects/godparent-requests.ts AS old-godparent-requests.ts
+                WRITE godparent-request.ts {
+                    // from ./old-godparent-requests.ts
+                }
             }
 
             resolvers {
+                WRITE query.me.ts {
+                    // from old.ts
+                }
                 WRITE query.user.ts {
                     // from old.ts
-                    // also userByEmail (combine into a single query)
                 }
-                WRITE query.users.ts {
+                WRITE query.user-by-email.ts {
                     // from old.ts
+                    // TODO merge with query.user
+                }
+                WRITE query.birthdays.ts {
+                    // from old.ts
+                }
+                WRITE query.all-users.ts {
+                    // from old.ts
+                    // TODO maybe rename to query.users.ts ?
                 }
                 WRITE query.search-users.ts {
                     // from old.ts
@@ -315,14 +409,20 @@ new-src {
                 }
                 WRITE query.user-candidate.ts {
                     // from old.ts
-                    // also userCandidateByEmail (combine into a single query)
+                }
+                WRITE query.user-candidate-by-email.ts {
+                    // from old.ts
+                    // TODO merge with query.user-candidate
                 }
                 WRITE mutation.login.ts {
                     // from old.ts
                 }
                 WRITE mutation.logout.ts {
                     // from old.ts
-                    // also deleteToken (combine into a single mutation, with an optional token argument)
+                }
+                WRITE mutation.delete-token.ts {
+                    // from old.ts
+                    // TODO merge with mutation.logout
                 }
                 WRITE mutation.update-user.ts {
                     // from old.ts
@@ -341,8 +441,67 @@ new-src {
                 }
                 WRITE mutation.accept-registration.ts {
                     // from old.ts
-                    // TODO rename registration to user-candidate
+                    // TODO rename to accept-user-candidate
                 }
+                WRITE mutation.refuse-registration.ts {
+                    // from old.ts
+                    // TODO rename registration to reject-user-candidate
+                }
+
+                WRITE mutation.update-user-candidate.ts {
+                    // from old.ts
+                }
+                WRITE mutation.update-user-permissions.ts {
+                    // from old.ts
+                }
+                WRITE mutation.update-user-picture.ts {
+                    // from old.ts
+                }
+
+                WRITE query.exists-in-school-ldap.ts {
+                    // from old.ts
+                    // TODO maybe create a LDAP module?
+                }
+
+                WRITE query.godparent-request.ts {
+                    // from old.ts
+                }
+
+                WRITE query.godparent-requests.ts {
+                    // from old.ts
+                }
+
+                WRITE mutation.create-password-reset.ts {
+                    // from old-password-resets.ts
+                    // TODO rename to request-password-reset
+                }
+
+                WRITE mutation.reset-password.ts {
+                    // from idk
+                    // TODO rename to change-password
+                }
+
+                WRITE mutation.request-email-change.ts {
+                    // from old-email-changes.ts
+                }
+
+                WRITE mutation.sync-user-ldap.ts {
+                    // from old.ts
+                    // TODO rename to sync-user-with-ldap
+                    // maybe make a LDAP module
+                }
+                WRITE mutation.update-notification-settings.ts {
+                    // from old.ts
+                }
+                WRITE mutation.use-password-reset.ts {
+                    // from old.ts
+                    // TODO maybe rename to reset-password
+                    // OR merge with mutation.change-password
+                }
+                WRITE mutation.validate-email.ts {
+                    // from old.ts
+                }
+
             }
         }
         health-checks {
@@ -367,13 +526,18 @@ new-src {
             }
 
             resolvers {
-                WRITE query.health-check.ts {
+                WRITE query.healthcheck.ts {
                     // from old.ts
+                    // TODO maybe rename to query.check-health ?
                 }
             }
         }
         documents {
             WRITE README.md {
+                ---
+                inline_types_from: [HealthCheck]
+                ---
+
                 Documents (La Frappe)
                 =========
 
@@ -390,6 +554,12 @@ new-src {
                 WRITE document.ts {
                     // from old.ts
                 }
+                WRITE document-search-result.ts {
+                    // from old.ts
+                }
+                WRITE document-type.ts {
+                    // from old.ts
+                }
             }
 
             resolvers {
@@ -398,6 +568,10 @@ new-src {
                 }
                 WRITE query.documents.ts {
                     // from old.ts
+                }
+                WRITE query.documents-of-subject.ts {
+                    // from old.ts
+                    // TODO rename to subject.documents
                 }
                 WRITE query.search-documents.ts {
                     // from old.ts maybe?
@@ -408,11 +582,22 @@ new-src {
                 WRITE mutation.upload-document-file.ts {
                     // from old.ts
                 }
+
                 WRITE mutation.delete-document.ts {
                     // from old.ts
                 }
-                WRITE subject.documents.ts {
-                    // TODO
+
+                WRITE mutation.delete-document-file.ts {
+                    // from old.ts
+                }
+
+                WRITE mutation.merge-documents.ts {
+                    // from old.ts
+                }
+
+                WRITE mutation.set-document-file-is-solution {
+                    // from old.ts
+                    // TODO find a better name, idk what
                 }
             }
         }
@@ -455,6 +640,25 @@ new-src {
                 WRITE event-manager.ts {
                     // from ./old-event-managers.ts
                 }
+
+                WRITE manager-of-event-input.ts {
+                    // from ./old-event-managers.ts
+                    // TODO remove, use event-manager-power-level and user's uid instead.
+                }
+
+                WRITE event-manager-power-level.ts {
+                    // from ./old-event-managers.ts
+                }
+
+                WRITE even-search-result.ts {
+                    // from old.ts
+                    // TODO rename to event-search-result (typo in production, lmao)
+                }
+
+                WRITE event-frequency.ts {
+                    // from old.ts
+                }
+
             }
 
             resolvers {
@@ -483,16 +687,27 @@ new-src {
                     // from old.ts
                 }
 
-                WRITE mutation.upsert-event-manager.ts {
+                WRITE mutation.upsert-managers-of-event.ts {
                     // from old.ts
+                    // TODO remove
+                }
+
+                WRITE mutation.upsert-event-manager.ts {
+                    // TODO 
                 }
 
                 WRITE mutation.delete-event-manager.ts {
                     // from old.ts
                 }
 
-                WRITE group.events.ts {
-                    // TODO
+                WRITE query.events-of-group.ts {
+                    // from old.ts
+                    // TODO rename to group.events
+                }
+
+                WRITE query.event-manager.ts {
+                    // from old.ts
+                    // TODO rename to event.manager
                 }
 
                 WRITE event.managers.ts {
@@ -521,9 +736,17 @@ new-src {
                 
                 PUT src/objects/group-members.ts AS old-group-members.ts
 
-                WRITE group-members {
+                WRITE group-member {
                     // from ./old-group-members.ts
                     // TODO maybe rename membership ? 
+                }
+
+                WRITE group-search-result.ts {
+                    // from old.ts
+                }
+
+                WRITE group-type.ts {
+                    // from old.ts
                 }
             }
 
@@ -544,21 +767,25 @@ new-src {
                     // from old.ts
                 }
 
-                WRITE mutation.upsert-group-picture.ts {
-                    // from old.ts
-                }
-
                 WRITE mutation.delete-group.ts {
                     // TODO
+                }
+
+                WRITE mutation.update-group-picture.ts {
+                    // from old.ts
                 }
 
                 WRITE mutation.delete-group-picture.ts {
                     // from old.ts
                 }
 
-                WRITE mutation.upsert-group-member.ts {
+                WRITE mutation.add-group-member.ts {
                     // from old.ts
                 }
+
+                # WRITE mutation.update-group-member.ts {
+                #     // from old.ts
+                # }
 
                 WRITE mutation.delete-group-member.ts {
                     // from old.ts
@@ -615,6 +842,10 @@ new-src {
                 WRITE issue-comment.ts {
                     // from old.ts
                 }
+
+                WRITE issue-state.ts {
+                    // from old.ts
+                }
             }
 
             resolvers {
@@ -633,6 +864,10 @@ new-src {
                 }
 
                 WRITE issue.comments.ts {
+                    // from old.ts
+                }
+
+                WRITE query.code-contributors.ts {
                     // from old.ts
                 }
             }
@@ -693,11 +928,12 @@ new-src {
             }
         }
         # subjects, majors, minors, teaching units
-        curriculum  {
+        curriculum {
             PUT src/objects/subjects.ts AS old-subjects.ts
             PUT src/objects/majors.ts AS old-majors.ts
             PUT src/objects/minors.ts AS old-minors.ts
             PUT src/objects/teaching-units.ts AS old-teaching-units.ts
+            PUT src/services/ade.ts AS old-ade.ts
 
             WRITE README.md {
                 Curriculum
@@ -763,7 +999,15 @@ new-src {
             }
 
             resolvers {
+                WRITE mutation.update-subjects-exam-dates {
+                    // from ./old-ade.ts
+                    // maybe delete, and call the associated resolver function in the backend w/o giving access to this. it's kinda pointless
+                }
                 WRITE query.subjects.ts {
+                    // from ./old-subjects.ts
+                }
+
+                WRITE query.subject.ts {
                     // from ./old-subjects.ts
                 }
 
@@ -781,7 +1025,15 @@ new-src {
                     // from ./old-majors.ts
                 }
 
+                WRITE query.major.ts {
+                    // from ./old-majors.ts
+                }
+
                 WRITE query.minors.ts {
+                    // from ./old-minors.ts
+                }
+
+                WRITE query.minor.ts {
                     // from ./old-minors.ts
                 }
 
@@ -821,14 +1073,47 @@ new-src {
                     // from ./old-ticket.ts
                 }
 
+                WRITE ticket-input.ts {
+                    // from ./old-ticket.ts
+                }
+
                 WRITE registration.ts {
                     // from ./old-registrations.ts
                     // TODO rename to booking
                 }
 
+                WRITE registration-search-result.ts {
+                    // from ./old-registrations.ts
+                    // TODO rename to booking-search-result
+                }
+
+                WRITE registration-verification-result.ts {
+                    // from ./old-registrations.ts
+                    // TODO rename to booking-verification-result
+                }
+
+                WRITE registration-verification-state.ts {
+                    // from ./old-registrations.ts
+                    // TODO rename to booking-verification-state
+                }
+
+                WRITE registration-counts.ts {
+                    // from ./old-registrations.ts
+                    // TODO rename to booking-counts
+                }
+
                 WRITE ticket-group.ts {
                     // from ./old-ticket-groups.ts
                 }
+
+                WRITE ticket-group-input.ts {
+                    // from ./old-ticket-groups.ts
+                }
+
+                WRITE qr-code.ts{
+                    // from ./old-ticket.ts
+                }
+                
             }
 
             resolvers {
@@ -877,6 +1162,11 @@ new-src {
                 WRITE mutation.paid-registration.ts {
                     // from ./old-registrations.ts
                     // TODO rename to pay-booking.ts
+                }
+
+                WRITE mutation.check-if-registration-is-paid.ts {
+                    // from ./old-registrations.ts
+                    // TODO rename to check-if-booking-is-paid.ts
                 }
 
                 WRITE mutation.finish-paypal-registration-payment.ts {
@@ -950,6 +1240,9 @@ new-src {
             PUT src/services/oauth.ts AS old.ts
 
             WRITE README.md {
+                ---
+                inline_types: [ThirdPartyAppResponse]
+                ---
                 Applications tierces (OAuth)
                 ============================
 
@@ -975,8 +1268,18 @@ new-src {
                     // from ./old.ts
                 }
 
-                WRITE errors.ts {
-                    // from ./old.ts : OAuth2Error and OAuth2ErrorCode
+                # WRITE errors.ts {
+                #     // from ./old.ts : OAuth2Error and OAuth2ErrorCode
+                # }
+
+                WRITE o-auth2-error.ts {
+                    // from ./old.ts
+                    // TODO rename to oauth2-error
+                }
+
+                WRITE o-auth2-error-code.ts {
+                    // from ./old.ts
+                    // TODO rename to oauth2-error-code
                 }
             }
 
@@ -1047,12 +1350,14 @@ new-src {
             }
 
             types {
-                WRITE reaction-counts.ts {
-                    // from CountsScalar in objects/scalars.ts
+                WRITE counts.ts {
+                    // from objects/scalars.ts
+                    // TODO rename to reaction-counts
                 }
 
-                WRITE users-reactions.ts {
-                    // from BooleanMapScalar in objects/scalars.ts
+                WRITE boolean-map.ts {
+                    // from objects/scalars.ts
+                    // TODO rename to selected-reactions
                 }
             }
 
@@ -1088,6 +1393,10 @@ new-src {
                     // from old.ts
                     // TODO rename to mutation.react and mutation.remove-reaction (or mutation.unreact ?)
                 }
+
+                WRITE mutation.toggle-reaction.ts {
+                    // from old.ts
+                }
             }
         }
         # external services
@@ -1107,6 +1416,10 @@ new-src {
 
             types {
                 WRITE service.ts {
+                    // from old.ts
+                }
+
+                WRITE logo-source-type.ts {
                     // from old.ts
                 }
             }
@@ -1152,6 +1465,10 @@ new-src {
                 WRITE student-association.ts {
                     // from old.ts
                 }
+
+                WRITE contribution-option.ts {
+                    // from old.ts
+                }
             }
 
             resolvers {
@@ -1170,6 +1487,10 @@ new-src {
 
                 WRITE mutation.cancel-pending-contribution.ts {
                     // from old.ts
+                }
+
+                WRITE query.contribution-options.ts {
+                    // from idk
                 }
             }
         }
@@ -1191,6 +1512,15 @@ new-src {
                 WRITE school.ts {
                     // from old.ts
                 }
+
+                WRITE school-input.ts {
+                    // from old.ts
+                }
+
+                WRITE school-group.ts {
+                    // from old.ts
+                    // TODO remove or rename at least, don't really know what it's supposed to represent
+                }
             }
 
             resolvers {
@@ -1208,6 +1538,150 @@ new-src {
 
                 WRITE query.school-groups.ts {
                     // TODO remove or rename at least, don't really know what it's supposed to reprensent
+                }
+            }
+        }
+
+        notifications {
+            PUT src/objects/notifications.ts AS old.ts
+            PUT src/services/notifications.ts AS old-service.ts
+
+            WRITE README.md {
+                Notifications
+                =============
+
+                Notifications envoyées aux utilisateurs.
+            }
+
+            WRITE index.ts {
+                // Barrel file
+            }
+
+            types {
+                WRITE notification.ts {
+                    // from old.ts
+                }
+
+                WRITE notification-channel.ts {
+                    // from old.ts
+                }
+
+                WRITE notification-subscription.ts {
+                    // from old.ts
+                }
+
+                WRITE notification-subscription-keys-input {
+                    // from old.ts
+                    // TODO remove
+                }
+            }
+
+            resolvers {
+                WRITE query.notification.ts {
+                    // from old.ts
+                }
+
+                WRITE query.notifications.ts {
+                    // from old.ts
+                }
+
+                WRITE query.notification-subscriptions {
+                    // from old.ts
+                }
+
+                WRITE query.notification-subscription.ts {
+                    // from old.ts
+                }
+
+                WRITE mutation.upsert-notification-subscription.ts {
+                    // from old.ts
+                    // TODO rename to mutation.subscribe-to-notifications
+                }
+
+                WRITE mutation.delete-notification-subscription.ts {
+                    // from old.ts
+                    // TODO rename to mutation.unsubscribe-from-notifications
+                }
+
+                WRITE mutation.test-notification.ts {
+                    // from old.ts
+                }
+
+                WRITE query.notifications-send-count-for-article.ts {
+                    // from old.ts
+                    // TODO rename to article.notification-send-count
+                }
+            }
+        }
+
+        payments {
+            PUT src/services/lydia.ts AS old-lydia.ts
+
+            WRITE README.md {
+                ---
+                inline_types_from: [ProfitsBreakdown]
+                ---
+                Paiements
+                =========
+
+                Intégrations avec différents prestataires de paiements, notamment [Lydia](https://lydia-app.com) et [PayPal](https://paypal.com).
+            }
+
+            WRITE index.ts {
+                // Barrel file
+            }
+
+            types {
+                WRITE lydia-account.ts {
+                    // from old-lydia.ts
+                }
+
+                WRITE payment-method.ts {
+                    // from old event maybe???
+                }
+
+                WRITE profits-breakdown.ts {
+                    // from old event 
+                    // not in ticketing cuz it'll be re-used for shops maybe?
+                    // although the byTicket is specific to ticketing so... idk
+                    // maybe do an interface instead, and have EventProfitsBreakdown extend it by adding byTicket, and ShopProfitsBreakdown extend it by adding byProduct or sth like that
+                }
+
+                PUT src/objects/promotions.ts AS old-promotions.ts
+                WRITE promotion.ts {
+                    // TODO, not exposed in the API yet
+                }
+                WRITE promotion-type.ts {
+                    // from ./old-promotions.ts
+                }
+            }
+
+            utils {
+                PUT src/services/lydia.ts AS old-lydia.ts
+                PUT src/services/paypal.ts AS old-paypal.ts
+
+                WRITE query.lydia-account {
+                    // from ./old-lydia.ts
+                }
+
+                WRITE query.lydia-accounts {
+                    // from ./old-lydia.ts
+                    // TODO remove, getting _all_ lydia accounts is useless
+                }
+
+                WRITE query.lydia-accounts-of-group {
+                    // from ./old-lydia.ts
+                    // TODO rename to group.lydia-accounts
+                }
+
+                WRITE mutationfinish-paypal-registration-payment.ts {
+                    // from ./old-paypal.ts
+                    // TODO rename to mutation.finish-paypal-booking-payment
+                }
+
+                PUT src/objects/promotions.ts AS old-promotions.ts
+                WRITE mutation.claim-promotion-code.ts {
+                    // from ./old-promotions.ts
                 }
             }
         }

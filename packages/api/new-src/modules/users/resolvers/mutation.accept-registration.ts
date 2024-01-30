@@ -1,2 +1,2 @@
 // from old.ts
-// TODO rename registration to user-candidate
+// TODO rename to accept-user-candidate

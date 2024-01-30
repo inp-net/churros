@@ -1,4 +1,9 @@
-# Documents (La Frappe)
+---
+inline_types_from: [HealthCheck]
+---
+
+Documents (La Frappe)
+=========
 
 Documents publiés dans des [matières](../curriculum).
 
