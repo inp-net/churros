@@ -20,7 +20,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Typographie corrigée sur le bouton des trois petits points "Les autres services" sur téléphone (#662) (!102) (@ragotc1)
 - Le texte "Cf." est désormais bien aligné sur la page des crédits (!102) (@ragotc1)
 
-### Amélioration
+### Améliorations
 
 - Les QR Code sont désormais noirs sur fonds blancs peu importe le thème choisi (#526) (!102) (@ragotc1)
 
