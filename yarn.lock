@@ -464,6 +464,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@centraverse/docs@workspace:packages/docs"
   dependencies:
+    "@centraverse/api": "workspace:^"
     "@sveltejs/adapter-static": "npm:^3.0.0"
     "@sveltejs/kit": "npm:^2.0.0"
     "@sveltejs/vite-plugin-svelte": "npm:^3.0.0"

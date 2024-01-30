@@ -1,21 +1,23 @@
 <script lang="ts">
-	import type { Schema } from '$lib/schema';
-	import type { Module } from '$lib/server/modules';
+	import { dev } from '$app/environment';
+	import { page } from '$app/stores';
+	import EditIcon from '$lib/EditIcon.svelte';
+	import ExternalLinkIcon from '$lib/ExternalLinkIcon.svelte';
 	import HashLink from '$lib/HashLink.svelte';
 	import { markdownToHtml } from '$lib/markdown';
+	import type { Schema } from '$lib/schema';
 	import {
 		findMutationInSchema,
 		findQueryInSchema,
 		findSubscriptionInSchema,
 		findTypeInSchema
 	} from '$lib/schema-utils';
+	import type { Module } from '$lib/server/modules';
 	import Query from './Query.svelte';
-	import { dev } from '$app/environment';
-	import ExternalLinkIcon from '$lib/ExternalLinkIcon.svelte';
-	import { page } from '$app/stores';
 
 	export let schema: Schema;
 	export let modules: Module[];
+	export let renderTitle: boolean = modules.length > 1;
 
 	function isImplicitSubscription(queryName: string) {
 		return modules.some(
@@ -25,31 +27,38 @@
 	}
 </script>
 
-{#each modules as { name, docs, types, queries, mutations, subscriptions }}
+{#each modules as { name, displayName, renderedDocs, types, queries, mutations, subscriptions }}
 	<section class="module" id={name}>
-		{#await markdownToHtml(docs) then rendered}
-			{@html rendered}
-		{:catch error}
-			<p>Impossible de rendre la documentation pour {name}: {error}</p>
-		{/await}
-		{#if $page.url.pathname === '/'}
-			<p>
-				<a href="/{name}" class="link-to-page">
-					<ExternalLinkIcon></ExternalLinkIcon> Page
+		{#if renderTitle}
+			<h2>
+				{displayName}
+
+				{#if $page.url.pathname !== `/${name}`}
+					<a href="/{name}" class="link-to-page">
+						<ExternalLinkIcon></ExternalLinkIcon> Page
+					</a>
+				{/if}
+
+				<a
+					class="link-to-source"
+					href="https://git.inpt.fr/inp-net/churros/-/blob/main/packages/api/src/modules/{name}/README.md"
+				>
+					<EditIcon></EditIcon> Un problème sur la doc?
 				</a>
-			</p>
+			</h2>
 		{/if}
+		{@html renderedDocs}
 		{#if types.length > 0}
-			<h3 id="{name}/types">Types</h3>
+			<svelte:element this={renderTitle ? 'h3' : 'h2'} id="{name}/types">Types</svelte:element>
 			{#each types as typeName}
 				{@const type = findTypeInSchema(schema, typeName)}
 				{#if type}
 					<article>
 						<section class="doc">
-							<HashLink hash={typeName}>
+							<HashLink element={renderTitle ? 'h4' : 'h3'} hash={typeName}>
 								<code>{typeName}</code>
 							</HashLink>
-							{#await markdownToHtml(type.description ?? '') then doc}
+							{#await markdownToHtml(type.description ?? '', $page.data.allResolvers) then doc}
 								{@html doc}
 							{:catch error}
 								<p>Impossible de rendre la documentation pour {typeName}: {error}</p>
@@ -71,7 +80,7 @@
 			{/each}
 		{/if}
 		{#if queries.length > 0}
-			<h3 id="{name}/queries">Queries</h3>
+			<svelte:element this={renderTitle ? 'h3' : 'h2'} id="{name}/queries">Queries</svelte:element>
 			{#each queries as queryName}
 				{@const query = findQueryInSchema(schema, queryName)}
 				{#if query}
@@ -86,7 +95,9 @@
 			{/each}
 		{/if}
 		{#if mutations.length > 0}
-			<h3 id="{name}/mutations">Mutations</h3>
+			<svelte:element this={renderTitle ? 'h3' : 'h2'} id="{name}/mutations"
+				>Mutations</svelte:element
+			>
 			{#each mutations as mutationName}
 				{@const query = findMutationInSchema(schema, mutationName)}
 				{#if query}
@@ -97,7 +108,9 @@
 			{/each}
 		{/if}
 		{#if subscriptions.length > 0}
-			<h3 id="{name}/subscriptions">Subscriptions</h3>
+			<svelte:element this={renderTitle ? 'h3' : 'h2'} id="{name}/subscriptions"
+				>Subscriptions</svelte:element
+			>
 			{#each subscriptions as subscription}
 				{@const query = findSubscriptionInSchema(schema, subscription)}
 				{#if query}
@@ -109,3 +122,22 @@
 		{/if}
 	</section>
 {/each}
+
+<style>
+	h2 {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		column-gap: 1em;
+	}
+
+	h2 > a {
+		font-size: 1rem;
+		text-decoration: none;
+	}
+	h2 .link-to-source {
+		margin-left: auto;
+	}
+
+
+</style>

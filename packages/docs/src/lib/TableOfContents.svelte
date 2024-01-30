@@ -15,7 +15,7 @@
 	export let getHeadingIds = (node: HTMLHeadingElement): string => node.id;
 	export let getHeadingLevels = (node: HTMLHeadingElement): number => Number(node.nodeName[1]); // get the number from H1, H2, ...
 	export let getHeadingTitles = (node: HTMLHeadingElement): string =>
-		node.getAttribute('data-toc-title') ?? node.textContent ?? ``;
+		node.dataset.tocTitle || node.firstChild?.textContent || node?.textContent || ``;
 	// the result of document.querySelectorAll(headingSelector). can be useful for binding
 	export let headings: HTMLHeadingElement[] = [];
 	export let headingSelector: string = `:is(h2, [data-toc-include]):not(.toc-exclude)`;
@@ -32,7 +32,7 @@
 	export let tocItems: HTMLLIElement[] = [];
 	export let warnOnEmpty: boolean = true;
 	export let blurParams: BlurParams | undefined = { duration: 200 };
-	export let title = 'Churros API';
+	export let title = 'Accueil';
 
 	let window_width: number;
 
@@ -146,11 +146,10 @@
 	{#if open || (desktop && headings.length >= minItems)}
 		<nav transition:blur={blurParams} bind:this={nav}>
 			<p class="suptitle">
+				<img src="https://churros.inpt.fr/logo-masked.png" alt="Churros Logo" />
+				Churros API
 				{#if $page.url.pathname !== '/'}
 					<a class="back" href="/">← Retour</a>
-				{/if}
-				{#if title !== 'Churros API'}
-					Churros API
 				{/if}
 			</p>
 			{#if title}
@@ -187,6 +186,14 @@
 		font-weight: bold;
 		margin: 0;
 		margin-bottom: 1rem;
+		display: flex;
+		align-items: center;
+		column-gap: 1rem;
+		row-gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+	.suptitle img {
+		height: 1.2em;
 	}
 	.back {
 		font-size: 1rem;

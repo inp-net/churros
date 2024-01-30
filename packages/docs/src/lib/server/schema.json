@@ -7686,7 +7686,7 @@
         },
         {
           "name": "registerApp",
-          "description": "Register a third-party OAuth2 client. Returns the client secret. The client secret cannot be retrieved at any other time. Use refreshAppSecret to rotate your client secret.",
+          "description": "Register a third-party OAuth2 client. Returns the client secret. The client secret cannot be retrieved at any other time. Use rotateAppSecret to rotate your client secret.",
           "args": [
             {
               "name": "allowedRedirectUris",

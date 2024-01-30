@@ -1,5 +1,5 @@
 import { Convert } from '$lib/schema';
-import { getModule } from '$lib/server/modules';
+import { getAllResolvers, getModule } from '$lib/server/modules';
 import { readFile, readdir } from 'node:fs/promises';
 
 export const prerender = true;
@@ -21,6 +21,7 @@ export async function load() {
 		enumTypes: Object.fromEntries(
 			schema.types.filter((type) => type.kind === 'ENUM').map((t) => [t.name, t.enumValues])
 		),
-		types: Object.fromEntries(schema.types.map((t) => [t.name, t]))
+		types: Object.fromEntries(schema.types.map((t) => [t.name, t])),
+		allResolvers: await getAllResolvers()
 	};
 }

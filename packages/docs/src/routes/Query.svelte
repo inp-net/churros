@@ -38,7 +38,9 @@
 
 	$: ({ types } = $page.data);
 
-	$: hash = kind !== 'field' ? query.name : undefined;
+	$: hash = kind !== 'field' ? `${kind}/${query.name}` : undefined;
+
+	$: headingLevel = $page.url.pathname === "/" ? 'h4' : 'h3'
 </script>
 
 <svelte:window
@@ -48,7 +50,7 @@
 />
 
 <svelte:element this={kind === 'field' ? 'div' : 'article'} data-kind={kind}>
-	<HashLink data-toc-title={query.name} {hash} element={kind === 'field' ? 'span' : 'h4'}>
+	<HashLink data-toc-title={query.name} {hash} element={kind === 'field' ? 'span' : headingLevel}>
 		{#if hasAvailableSubscription}
 			<LiveIndicator></LiveIndicator>
 		{/if}
@@ -77,7 +79,7 @@
 	</HashLink>
 	{#if query.description}
 		<section class="doc">
-			{#await markdownToHtml(query.description) then doc}
+			{#await markdownToHtml(query.description, $page.data.allResolvers) then doc}
 				{@html doc}
 			{:catch error}
 				<p>Impossible de rendre la documentation pour {query.name}: {error}</p>
@@ -108,7 +110,7 @@
 						{/if}
 						{#if arg.description}
 							<div class="doc">
-								{#await markdownToHtml(arg.description) then doc}
+								{#await markdownToHtml(arg.description, $page.data.allResolvers) then doc}
 									{@html doc}
 								{:catch error}
 									<p>
@@ -155,7 +157,6 @@
 	.too-many-args {
 		color: rgb(255, 92, 241);
 	}
-
 
 	.subtitle {
 		font-weight: bold;

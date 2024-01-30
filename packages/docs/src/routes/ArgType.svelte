@@ -64,7 +64,7 @@
 			typ={typ.ofType}
 		/>{:else if typ.kind === 'OBJECT'}{#if typ.name?.endsWith('Connection') && underlyingType}<span
 				class="type connection"
-				><a class="type connection" href="#types/special/connection">Connection</a>&lt;<svelte:self
+				><a class="type connection" href="/#types/special/connection">Connection</a>&lt;<svelte:self
 					{noExpandEnums}
 					{inline}
 					{nullable}
@@ -74,7 +74,7 @@
 			>{/if}{:else if typ.kind === 'SCALAR'}<span class="type scalar">{typ.name}</span
 		>{:else if typ.kind === 'UNION'}{#if typ.name?.endsWith('Result') && underlyingType}<span
 				class="type errorable"
-				><a class="type errorable" href="#types/special/results-type">Result</a>&lt;<svelte:self
+				><a class="type errorable" href="/#types/special/results-type">Result</a>&lt;<svelte:self
 					{inline}
 					{noExpandEnums}
 					{nullable}

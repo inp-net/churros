@@ -976,6 +976,11 @@ new-src {
                     // TODO rename to all-third-party-apps
                 }
 
+                WRITE mutation.authorize.ts {
+                    // from ./old.ts
+                    // TODO rename to authorize-third-party-app
+                }
+
                 WRITE mutation.register-app.ts {
                     // from ./old.ts
                     // TODO rename register-third-party-app

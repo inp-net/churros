@@ -84,6 +84,38 @@ Authorization: Bearer <token>
 
 où `<token>` est le token d'authentification.
 
+## Types spéciaux
+
+<h3 data-toc-include data-toc-title="Result<T>" id="types/special/result">Result&lt;<code>T</code>&gt;</h3>
+
+Ce type représente une réponse de l'API qui pourrait être une erreur. C'est un union constitué de:
+
+- `QueryNomDeLaQuerySuccess`: si la requête réussie. Contient un champ `data` de type `T` qui contient les données de la requête
+- `Error`: si la requête échoue. Contient un champ `message` de type `String` qui contient le message d'erreur.
+- Potentiellement d'autres types d'erreur (par exemple pour la mutation [`authorize`](/oauth#mutation/authorize))
+
+<h3 data-toc-include data-toc-title="Connection<T>" id="types/special/connection">Connection&lt;<code>T</code>&gt;</h3>
+
+Ces types représentent des réponses paginées de l'API: en effet, il est irréaliste de vouloir renvoyer d'un coup un très grand nombre d'objets, donc l'API n'envoie que les _n_ premiers objets, et fourni un moyen d'avoir accès aux objets suivants si l'on souhaite avoir la liste complète. 
+
+Dans l'API GraphQL, ces type/Resuls portent comme nom `QueryNomDeLaQueryConnection`, et sont composés de:
+
+- `pageInfo`: informations sur la page courante:
+   - `hasNextPage`: `true` si il y a une page suivante, `false` sinon
+   - `hasPreviousPage`: `true` si il y a une page précédente, `false` sinon
+   - `startCursor`: le curseur du premier élément de la page courante
+   - `endCursor`: le curseur du dernier élément de la page courante
+- `edges`: la liste des éléments de la page courante, sous la forme d'une liste d'objets avec les champs suivants:
+   - `node`: élément de type `T`
+   - `cursor`: le curseur de l'élément
+
+Pour récupérer la page suivante, il suffit de ré-appeler la _query_ renvoyant la Connection en question, en fournissant comme argument `after` le champ `endCursor` de la page courante. Par exemple, pour récupérer la page suivante de la liste des groupes:
+
+#### En savoir plus
+
+Ce type permet enfait l'implémentation du standard [GraphQL Cursor Connections](https://relay.dev/graphql/connections.htm). 
+
+
 ---
 
 Ce qui suit est la documentation entière de l'API GraphQL, qui est garantie d'être à jour car [elle est automatiquement générée à partir du code](https://git.inpt.fr/inp-net/churros/-/tree/main/packages/docs)

@@ -24,8 +24,8 @@
 		color: white;
 		margin-bottom: -0.25em;
 	}
-	h4:hover .hash-link,
-	h4:focus-visible .hash-link {
+	:not(span):hover .hash-link,
+	:not(span):focus-visible .hash-link {
 		opacity: 1;
 		color: white;
 	}
