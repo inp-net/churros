@@ -11,7 +11,6 @@ build:
     - yarn build
 
 pages:
-  stage: deploy
   before_script:
     - apt-get update && apt-get install -y curl git
     - export VOLTA_HOME=/root/.volta
@@ -20,6 +19,7 @@ pages:
   script:
     - yarn workspace @centraverse/docs install --immutable
     - yarn workspace @centraverse/docs build
+    - mv packages/docs/build public
   artifacts:
     paths:
-      - packages/docs/build
+      - public
