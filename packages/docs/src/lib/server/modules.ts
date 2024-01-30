@@ -14,9 +14,14 @@ export type Module = {
 	types: string[];
 };
 
+async function readdirNotExistOk(directory: string): Promise<string[]> {
+	if (!(await stat(directory).catch(() => false))) return [];
+	return (await readdir(directory)).map((file) => path.join(directory, file));
+}
+
 export async function getModule(directory: string): Promise<Module> {
 	const folder = path.join('../api/new-src/modules', directory);
-	if (!(await stat(folder).catch((e) => false)))
+	if (!(await stat(folder).catch(() => false)))
 		throw new Error(`Module ${directory} does not exist: ${folder} not found.`);
 	const docs = await readFile(path.join(folder, 'README.md'), 'utf-8');
 
@@ -34,7 +39,7 @@ export async function getModule(directory: string): Promise<Module> {
 		subscriptions: []
 	};
 
-	for (const filename of await readdir(path.join(folder, 'resolvers'))) {
+	for (const filename of await readdirNotExistOk(path.join(folder, 'resolvers'))) {
 		if (filename.startsWith('query')) {
 			module.queries.push(kebabToCamel(filename.replace(/^query\./, '').replace(/\.ts$/, '')));
 		}
