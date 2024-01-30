@@ -17,7 +17,7 @@
 		>
 			<div class="card">
 				<h4>
-					<ModuleIcon name={module.name}></ModuleIcon>
+					<ModuleIcon big name={module.name}></ModuleIcon>
 					{module.displayName}
 				</h4>
 				<p>{module.shortDescription}</p>
@@ -61,6 +61,8 @@
 		border: 2px solid var(--color);
 		border-radius: 0.5rem;
 		transition: all 0.2s ease;
+
+		--icon-color: color-mix(in oklab, var(--color) 70%, var(--fg));
 	}
 
 	a:has(.card):hover .card,
@@ -79,11 +81,6 @@
 
 	.card h4 {
 		margin-top: 0.125rem;
-	}
-
-	.card .icon {
-		font-size: 1.5em;
-		color: color-mix(in oklab, var(--color) 70%, var(--fg));
 	}
 
 	.card p {
