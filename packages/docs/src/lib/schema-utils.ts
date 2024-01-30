@@ -1,6 +1,6 @@
-import type { Schema } from './schema';
+import type { SchemaClass } from './schema';
 
-export function findQueryInSchema(schema: Schema, name: string) {
+export function findQueryInSchema(schema: SchemaClass, name: string) {
 	const field = schema.types
 		.find((type) => type.name === schema.queryType.name)
 		?.fields?.find((field) => field.name === name);
@@ -10,31 +10,30 @@ export function findQueryInSchema(schema: Schema, name: string) {
 	return field;
 }
 
-export function findMutationInSchema(schema: Schema, name: string) {
-    const field = schema.types
-        .find((type) => type.name === schema.mutationType.name)
-        ?.fields?.find((field) => field.name === name);
+export function findMutationInSchema(schema: SchemaClass, name: string) {
+	const field = schema.types
+		.find((type) => type.name === (schema.mutationType ?? { name: '' }).name)
+		?.fields?.find((field) => field.name === name);
 
-    // if (!field) throw new Error(`Mutation ${name} not found in schema.`);
+	// if (!field) throw new Error(`Mutation ${name} not found in schema.`);
 
-    return field;
+	return field;
 }
 
-export function findSubscriptionInSchema(schema: Schema, name: string) {
-    const field = schema.types
-        .find((type) => type.name === schema.subscriptionType.name)
-        ?.fields?.find((field) => field.name === name);
+export function findSubscriptionInSchema(schema: SchemaClass, name: string) {
+	const field = schema.types
+		.find((type) => type.name === (schema.subscriptionType ?? { name: '' }).name)
+		?.fields?.find((field) => field.name === name);
 
-    // if (!field) throw new Error(`Subscription ${name} not found in schema.`);
+	// if (!field) throw new Error(`Subscription ${name} not found in schema.`);
 
-    return field;
+	return field;
 }
 
+export function findTypeInSchema(schema: SchemaClass, name: string) {
+	const type = schema.types.find((type) => type.name === name);
 
-export function findTypeInSchema(schema: Schema, name: string) {
-    const type = schema.types.find((type) => type.name === name);
+	// if (!type) throw new Error(`Type ${name} not found in schema.`);
 
-    // if (!type) throw new Error(`Type ${name} not found in schema.`);
-
-    return type;
+	return type;
 }

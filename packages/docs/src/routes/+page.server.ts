@@ -1,6 +1,6 @@
 import { getModule } from '$lib/server/modules';
-import { Convert } from '$lib/schema';
-import { readFile, readdir } from 'node:fs/promises';
+import { loadSchema } from '$lib/server/schema-loader';
+import { readdir } from 'node:fs/promises';
 
 const MODULES_ORDER = [
 	'users',
@@ -26,8 +26,9 @@ const MODULES_ORDER = [
 ];
 
 export async function load() {
+	const schema = await loadSchema();
 	return {
-		schema: Convert.toSchema(await readFile('src/lib/server/schema.json', 'utf-8')),
+		schema,
 		modules: (
 			await Promise.all(
 				(await readdir('../api/new-src/modules')).map(async (folder) => getModule(folder))

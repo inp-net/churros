@@ -1,13 +1,12 @@
-import { Convert } from '$lib/schema';
-import { getModule } from '$lib/server/modules';
-import { readFile } from 'node:fs/promises';
+import { getModule, indexModule } from '$lib/server/modules';
+import { loadSchema } from '$lib/server/schema-loader';
 import { error } from '@sveltejs/kit';
 
 export async function load({ params }) {
 	try {
-		const module = await getModule(params.module);
+		const module = params.module === 'index' ? await indexModule() : await getModule(params.module);
 		return {
-			schema: Convert.toSchema(await readFile('src/lib/server/schema.json', 'utf-8')),
+			schema: await loadSchema(),
 			module
 		};
 	} catch (err) {

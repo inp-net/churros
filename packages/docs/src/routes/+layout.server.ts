@@ -1,11 +1,10 @@
-import { Convert } from '$lib/schema';
-import { getAllResolvers, getModule } from '$lib/server/modules';
-import { readFile, readdir } from 'node:fs/promises';
+import { getAllResolvers } from '$lib/server/modules';
+import { loadSchema } from '$lib/server/schema-loader';
 
 export const prerender = true;
 
 export async function load() {
-	const schema = Convert.toSchema(await readFile('src/lib/server/schema.json', 'utf-8'));
+	const schema = await loadSchema();
 
 	return {
 		successTypes: Object.fromEntries(

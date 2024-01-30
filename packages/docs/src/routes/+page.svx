@@ -144,3 +144,9 @@ Endpoint pour recevoir les acquittements de paiement Lydia.
 Renvoie OK. Permet de vérifier que le serveur est en ligne (voir [Health checks](#health-checks) pour des checks plus complets).
 
 </article>
+
+## Index
+
+Un index de l'entièreté du schéma GraphQL est disponible à [`/index`](/index).
+
+Attention, la page est lourde et peu ralentir votre navigateur.

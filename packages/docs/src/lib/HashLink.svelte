@@ -18,28 +18,28 @@
 
 <style>
 	.hash-link {
+		margin-bottom: -0.25em;
+		font-size: 1.2em;
+		color: var(--fg);
 		opacity: 0.25;
 		transition: opacity 0.2s ease;
-		font-size: 1.2em;
-		color: white;
-		margin-bottom: -0.25em;
 	}
+
 	:not(span):hover .hash-link,
 	:not(span):focus-visible .hash-link {
+		color: var(--fg);
 		opacity: 1;
-		color: white;
 	}
 
 	.header {
 		display: flex;
-		align-items: center;
 		gap: 1em;
+		align-items: center;
 	}
 
 	@media (max-width: 1000px) {
 		.header-content {
-			overflow-x: auto;
-			overflow-y: hidden;
+			overflow: auto hidden;
 		}
 	}
 </style>

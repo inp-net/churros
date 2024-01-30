@@ -25,18 +25,20 @@
 </svelte:head>
 
 <main>
-	<TableOfContents
-		title={$page.url.pathname === '/'
-			? undefined
-			: browser
-				? document.title.split('—')[0].trim()
-				: $page.route.id === '/[module]'
-					? $page.params.module
-					: 'Churros API'}
-		headingSelector={$page.url.pathname === '/'
-			? `:is(h2, [data-toc-include]):not(.toc-exclude)`
-			: `:is(h2, h3, h4, [data-toc-include]):not(.toc-exclude)`}
-	></TableOfContents>
+	<div class="toc">
+		<TableOfContents
+			title={$page.url.pathname === '/'
+				? undefined
+				: browser
+					? document.title.split('—')[0].trim()
+					: $page.route.id === '/[module]'
+						? $page.params.module
+						: 'Churros API'}
+			headingSelector={$page.url.pathname === '/'
+				? `:is(h2, [data-toc-include]):not(.toc-exclude)`
+				: `:is(h2, h3, h4, [data-toc-include]):not(.toc-exclude)`}
+		></TableOfContents>
+	</div>
 	<div class="content">
 		<slot />
 		<footer>
@@ -144,6 +146,7 @@
 
 	.content {
 		max-width: calc(100vw - 2 * var(--side-padding));
+		overflow-x: auto;
 	}
 
 	@media (max-width: 1000px) {

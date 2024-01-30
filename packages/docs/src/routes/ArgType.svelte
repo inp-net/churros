@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { Arg } from '$lib/schema';
+	import { Kind, type Arg, type EnumValue, type InterfaceElement } from '$lib/schema';
 
 	export let typ: Arg['type'];
 	export let inline = false;
@@ -24,16 +24,37 @@
 		}
 	}
 
-	function getEnumValues(t: Arg['type']) {
-		if (t.kind === 'ENUM') return enumTypes[t.name ?? ''];
-		return undefined;
+	function getEnumValues(t: Arg['type']): EnumValue[] {
+		try {
+			if (t.kind === 'ENUM') return enumTypes[t.name ?? ''] ?? [];
+		} catch {
+			return [];
+		}
+		return [];
+	}
+
+	function getUnionValues(t: Arg['type']): InterfaceElement[] {
+		try {
+			if (t.kind === 'UNION') return $page.data.types[t.name ?? '']?.possibleTypes ?? [];
+		} catch {
+			return [];
+		}
+		return [];
 	}
 
 	function willExpandEnum(t: Arg['type']) {
+		const valuesCount =
+			t.kind === Kind.Enum
+				? getEnumValues(t).length
+				: t.kind === Kind.Union
+					? getUnionValues(t).length
+					: 0;
 		return Boolean(
-			t.kind === 'ENUM' &&
+			(t.kind === 'ENUM' || t.kind === 'UNION') &&
 				enumValues &&
-				!(noExpandEnums || (inline && (getEnumValues(t)?.length ?? 0) > 3) || !enumValues)
+				!noExpandEnums &&
+				(inline ? valuesCount <= 3 : true) &&
+				valuesCount <= 10
 		);
 	}
 </script>
@@ -80,8 +101,14 @@
 					{nullable}
 					typ={underlyingType}
 				></svelte:self>&gt;</span
-			>{:else}<type class="union">{typ.name}</type>{/if}{:else}<span class="type unknown"
-			>{typ.name}</span
+			>{:else}
+			{#if willExpandEnum(typ)}{#if nullable}({/if}<span class="type union">
+					{#each Object.entries(getUnionValues(typ)) as [i, value]}
+						<svelte:self nullable={false} noExpandEnums {inline} typ={value}
+						></svelte:self>{#if Number(i) < getUnionValues(typ).length - 1}&nbsp;<strong>|</strong
+							>&nbsp;{/if}{/each}</span
+				>{#if nullable}){/if}{:else}<a href="#{typ.name}">{typ.name}</a>{/if}{/if}{:else}<span
+			class="type unknown">{typ.name}</span
 		>{/if}<span class:nullable class:non-nullable={typ.kind === 'NON_NULL'}
 		>{#if invertNullabilitySign}{#if typ.kind !== 'NON_NULL' && nullable}{#if explicitNullabilitySign}&nbsp;|&#x20;null{:else}<span
 						title="Peut être null">?</span

@@ -3,6 +3,7 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import * as path from 'path';
 import { kebabToCamel, kebabToPascal } from '../casing';
 import { markdownToHtml, type ResolverFromFilesystem } from '../markdown';
+import { loadSchema } from './schema-loader';
 
 export type Module = {
 	name: string;
@@ -33,7 +34,9 @@ export async function getModule(directory: string): Promise<Module> {
 		throw new Error(`Module ${directory} does not exist: ${folder} not found.`);
 	const docs = await readFile(path.join(folder, 'README.md'), 'utf-8');
 
-	const htmlDocs = await markdownToHtml(docs, await getAllResolvers(), {downlevelHeadings: false});
+	const htmlDocs = await markdownToHtml(docs, await getAllResolvers(), {
+		downlevelHeadings: false
+	});
 	const parsedDocs = cheerio.load(htmlDocs);
 	const docsWithoutHeading = cheerio.load(htmlDocs);
 	docsWithoutHeading('h1').remove();
@@ -41,7 +44,7 @@ export async function getModule(directory: string): Promise<Module> {
 	const module: Module = {
 		name: directory,
 		displayName: parsedDocs('h1').first().text(),
-		docs,
+		rawDocs: docs,
 		renderedDocs: docsWithoutHeading.html() ?? '',
 		types: (await readdir(path.join(folder, 'types'))).map((file) =>
 			kebabToPascal(path.basename(file, '.ts'))
@@ -127,4 +130,42 @@ export async function getAllResolvers(): Promise<ResolverFromFilesystem[]> {
 
 	allResolvers = resolvers;
 	return resolvers;
+}
+
+const BUILTIN_TYPES = ['String', 'Boolean', 'Int', 'Float'];
+
+export async function indexModule(): Promise<Module> {
+	const schema = await loadSchema();
+	return {
+		displayName: 'Index',
+		name: 'index',
+		mutations:
+			schema.types
+				.find((type) => type.name === (schema.mutationType ?? { name: '' }).name)
+				?.fields?.map((field) => field.name) ?? [],
+		queries:
+			schema.types
+				.find((type) => type.name === schema.queryType.name)
+				?.fields?.map((field) => field.name) ?? [],
+		subscriptions:
+			schema.types
+				.find((type) => type.name === (schema.subscriptionType ?? { name: '' })?.name)
+				?.fields?.map((field) => field.name) ?? [],
+		rawDocs: 'Le schéma GraphQL entier',
+		renderedDocs: 'Le schéma GraphQL entier',
+		types: schema.types
+			.map((t) => t.name)
+			.filter(
+				(n) =>
+					![
+						schema.queryType.name,
+						(schema.mutationType ?? { name: '' }).name,
+						(schema.subscriptionType ?? { name: '' })?.name
+					].includes(n) &&
+					!BUILTIN_TYPES.includes(n) /* &&
+					!/(Connection|Edge|Success)$/.test(n) */ &&
+					!n.startsWith('__') /* &&
+					!/^(Query|Mutation|Subscription)\w+(Result|Success)$/.test(n) */
+			)
+	} as Module;
 }
