@@ -4,7 +4,8 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
-		"build": "cp .env packages/docs/.env && vite build",
+		"create-dotenv": "echo PUBLIC_API_WEBSOCKET_URL=\"$PUBLIC_API_WEBSOCKET_URL\" >> packages/docs/.env && echo PUBLIC_API_URL=\"$PUBLIC_API_URL\" >> packages/docs/.env",
+		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
