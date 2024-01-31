@@ -2,6 +2,9 @@ from node:20-bullseye
 
 WORKDIR /app
 
+# jq is required for the barrel files generation
+run apt-get update && apt-get install -y jq 
+
 copy package.json /app/
 copy packages/api/package.json /app/packages/api/
 copy packages/app/package.json /app/packages/app/
