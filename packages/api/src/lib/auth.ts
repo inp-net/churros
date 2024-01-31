@@ -25,21 +25,6 @@ export const authScopes = ({ user }: Context) => ({
   canAccessDocuments: Boolean(user?.admin || user?.canAccessDocuments),
 });
 
-export function onBoard(
-  permissions:
-    | { president: boolean; treasurer: boolean; vicePresident: boolean; secretary: boolean }
-    | undefined
-    | null,
-): boolean {
-  if (!permissions) return false;
-  return (
-    permissions.president ||
-    permissions.treasurer ||
-    permissions.vicePresident ||
-    permissions.secretary
-  );
-}
-
 export function isThirdPartyToken(token: string): boolean {
   return token.startsWith('churros_');
 }
