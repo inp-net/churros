@@ -3,6 +3,7 @@
  */
 
 export * from './mutation.delete-notification-subscription.js';
+export * from './mutation.send-notification.js';
 export * from './mutation.test-notification.js';
 export * from './mutation.upsert-notification-subscription.js';
 export * from './query.notification-subscription.js';
