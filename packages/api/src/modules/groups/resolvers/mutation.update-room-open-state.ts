@@ -1,4 +1,4 @@
-import { builder, prisma, log } from '#lib';
+import { builder, log, prisma } from '#lib';
 import {} from '#modules/global';
 import { userIsMemberOf } from '#permissions';
 // TODO rename to update-group-room-open-state

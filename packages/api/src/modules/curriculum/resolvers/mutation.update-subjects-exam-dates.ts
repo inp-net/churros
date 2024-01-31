@@ -1,4 +1,4 @@
-import { builder, prisma, log } from '#lib';
+import { builder, log, prisma } from '#lib';
 import { nextExamDates } from '../index.js';
 // maybe delete, and call the associated resolver function in the backend w/o giving access to this. it's kinda pointless
 

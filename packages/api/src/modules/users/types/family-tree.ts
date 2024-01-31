@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import { } from '#modules/global';
+import {} from '#modules/global';
 import type { User } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { UserType } from '../index.js';

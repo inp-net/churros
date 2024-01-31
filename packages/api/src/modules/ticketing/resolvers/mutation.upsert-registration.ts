@@ -1,14 +1,13 @@
-import { builder, prisma, publish } from '#lib';
-import { eventAccessibleByUser, eventManagedByUser, userCanSeeTicket } from '#permissions';
+import { builder, log, prisma, publish } from '#lib';
 import {} from '#modules/global';
-import { log } from '#lib';
 import { PaymentMethodEnum } from '#modules/payments';
+import { eventAccessibleByUser, eventManagedByUser, userCanSeeTicket } from '#permissions';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { isFuture, isPast } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { createTransport } from 'nodemailer';
+import * as qrcode from 'qrcode';
 import { RegistrationType, placesLeft } from '../index.js';
-import * as qrcode from 'qrcode'
 // TODO rename to book.ts
 
 builder.mutationField('upsertRegistration', (t) =>

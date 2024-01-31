@@ -1,6 +1,6 @@
-import { builder, prisma } from '#lib'
-import {} from '#modules/global'
-import { GodparentRequestType } from '../index.js'
+import { builder, prisma } from '#lib';
+import {} from '#modules/global';
+import { GodparentRequestType } from '../index.js';
 
 builder.queryField('godparentRequests', (t) =>
   t.prismaField({

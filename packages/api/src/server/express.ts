@@ -4,8 +4,8 @@ import express from 'express';
 import * as GraphQLWS from 'graphql-ws/lib/use/ws';
 import helmet from 'helmet';
 import { WebSocketServer } from 'ws';
-import { rescheduleNotifications } from './notifications-rescheduler.js';
 import { schema, writeSchema } from '../schema.js';
+import { rescheduleNotifications } from './notifications-rescheduler.js';
 
 export const api = express();
 

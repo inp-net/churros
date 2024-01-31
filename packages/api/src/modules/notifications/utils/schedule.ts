@@ -1,17 +1,9 @@
 import { prisma } from '#lib';
 import type { MaybePromise } from '@pothos/core';
-import {
-    type Group,
-    type GroupMember,
-    type Major,
-    type School,
-    type User
-} from '@prisma/client';
+import { type Group, type GroupMember, type Major, type School, type User } from '@prisma/client';
 import { Cron } from 'croner';
 import { nanoid } from 'nanoid';
 import { notify, notifyInBulk, type PushNotification } from './send.js';
-
-
 
 /**
  * @param notification A function that returns a PushNotification to send, or undefined to send
@@ -107,4 +99,3 @@ export async function scheduleNotification(
   );
   return job;
 }
-

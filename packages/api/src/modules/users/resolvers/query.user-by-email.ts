@@ -1,7 +1,7 @@
-import { builder, prisma } from '#lib'
-import {} from '#modules/global'
+import { builder, prisma } from '#lib';
+import {} from '#modules/global';
 import { GraphQLError } from 'graphql';
-import { UserType } from '../index.js'
+import { UserType } from '../index.js';
 // TODO merge with query.user
 
 builder.queryField('userByEmail', (t) =>

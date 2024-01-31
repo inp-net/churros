@@ -1,7 +1,6 @@
-import { builder } from '#lib'
-import { DateTimeScalar } from '#modules/global'
-import {} from '../index.js'
-
+import { builder } from '#lib';
+import { DateTimeScalar } from '#modules/global';
+import {} from '../index.js';
 
 export const GodparentRequestType = builder.prismaObject('GodparentRequest', {
   fields: (t) => ({

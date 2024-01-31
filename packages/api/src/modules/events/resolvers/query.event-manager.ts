@@ -1,6 +1,6 @@
-import { EventManagerType } from '../index.js';
-import {} from '#modules/global';
 import { builder, prisma } from '#lib';
+import {} from '#modules/global';
+import { EventManagerType } from '../index.js';
 // TODO rename to event.manager
 
 builder.queryField('eventManager', (t) =>

@@ -1,7 +1,7 @@
-import { builder, prisma } from '#lib'
-import { DateTimeScalar } from '#modules/global'
+import { builder, prisma } from '#lib';
+import { DateTimeScalar } from '#modules/global';
 import { ZodError } from 'zod';
-import { saveUser } from '../index.js'
+import { saveUser } from '../index.js';
 
 builder.mutationField('updateUserCandidate', (t) =>
   t.field({

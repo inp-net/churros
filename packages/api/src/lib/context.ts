@@ -1,6 +1,6 @@
 import { prisma } from '#lib';
-import { onBoard } from '#permissions';
 import { fullName } from '#modules/users';
+import { onBoard } from '#permissions';
 import type { YogaInitialContext } from '@graphql-yoga/node';
 import {
   CredentialType,

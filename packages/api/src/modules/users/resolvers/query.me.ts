@@ -1,6 +1,6 @@
-import { builder } from '#lib'
-import {} from '#modules/global'
-import { UserType } from '../index.js'
+import { builder } from '#lib';
+import {} from '#modules/global';
+import { UserType } from '../index.js';
 
 /** Returns the current user. */
 builder.queryField('me', (t) =>

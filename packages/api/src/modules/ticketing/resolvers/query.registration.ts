@@ -1,6 +1,6 @@
-import { builder, prisma } from '#lib'
-import {} from '#modules/global'
-import { RegistrationType } from '../index.js'
+import { builder, prisma } from '#lib';
+import {} from '#modules/global';
+import { RegistrationType } from '../index.js';
 // TODO rename to booking
 
 builder.queryField('registration', (t) =>

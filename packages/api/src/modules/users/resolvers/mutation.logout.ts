@@ -1,7 +1,7 @@
-import { builder, prisma, purgeUserSessions } from '#lib'
-import {} from '#modules/global'
-import {} from '../index.js'
+import { builder, prisma, purgeUserSessions } from '#lib';
+import {} from '#modules/global';
 import { CredentialType as CredentialPrismaType } from '@prisma/client';
+import {} from '../index.js';
 builder.mutationField('logout', (t) =>
   t.authField({
     description: 'Logs a user out and invalidates the session token.',

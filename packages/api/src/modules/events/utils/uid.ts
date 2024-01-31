@@ -1,6 +1,6 @@
+import { prisma } from '#lib';
 import dichotomid from 'dichotomid';
 import slug from 'slug';
-import { prisma } from '#lib';
 
 export async function createUid({ title, groupId }: { title: string; groupId: string }) {
   const base = slug(title);

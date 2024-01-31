@@ -1,7 +1,7 @@
-import { builder, prisma } from '#lib'
-import {} from '#modules/global'
+import { builder, prisma } from '#lib';
+import {} from '#modules/global';
 import { NotificationChannel } from '@prisma/client';
-import {} from '../index.js'
+import {} from '../index.js';
 
 builder.mutationField('updateNotificationSettings', (t) =>
   t.field({

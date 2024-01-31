@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
-import { eventManagedByUser } from '#permissions';
 import {} from '#modules/global';
+import { eventManagedByUser } from '#permissions';
 import { RegistrationType } from '../index.js';
 // TODO rename to user.bookings-for-event; and also create a query event.bookings-of-user
 // maybe there's a better way to do this kind of "triple coupling", idk.

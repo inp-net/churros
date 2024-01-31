@@ -1,7 +1,7 @@
-import { NotificationSubscriptionType } from '../index.js';
-import {} from '#modules/global';
 import { builder, prisma } from '#lib';
+import {} from '#modules/global';
 import { GraphQLError } from 'graphql';
+import { NotificationSubscriptionType } from '../index.js';
 
 builder.queryField('notificationSubscriptions', (t) =>
   t.prismaField({

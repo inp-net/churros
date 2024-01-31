@@ -1,6 +1,6 @@
-import { builder, prisma } from '#lib'
-import {} from '#modules/global'
-import { TicketGroupType } from '../index.js'
+import { builder, prisma } from '#lib';
+import {} from '#modules/global';
+import { TicketGroupType } from '../index.js';
 // TODO rename to event.ticket-group
 
 builder.queryField('ticketGroup', (t) =>

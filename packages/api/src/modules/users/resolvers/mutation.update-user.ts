@@ -1,10 +1,9 @@
-import { builder, markAsContributor, prisma, purgeUserSessions } from '#lib';
+import { builder, log, markAsContributor, prisma, purgeUserSessions } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import { GraphQLError } from 'graphql';
 import { LinkInput } from '#modules/links';
-import { log } from '#lib';
-import { UserType, requestEmailChange } from '../index.js';
+import { GraphQLError } from 'graphql';
 import { phone as parsePhoneNumber } from 'phone';
+import { UserType, requestEmailChange } from '../index.js';
 
 /** Updates a user. */
 builder.mutationField('updateUser', (t) =>

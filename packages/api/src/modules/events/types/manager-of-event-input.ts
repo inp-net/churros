@@ -1,6 +1,6 @@
-import {} from '../index.js';
-import {} from '#modules/global';
 import { builder } from '#lib';
+import {} from '#modules/global';
+import {} from '../index.js';
 // TODO remove, use event-manager-power-level and user's uid instead.
 
 export const ManagerOfEventInput = builder.inputType('ManagerOfEventInput', {

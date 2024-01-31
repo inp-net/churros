@@ -1,13 +1,12 @@
-import { builder, prisma } from '#lib';
-import { eventAccessibleByUser, eventManagedByUser } from '#permissions';
+import { builder, log, prisma } from '#lib';
 import {} from '#modules/global';
-import { log } from '#lib';
 import {
   PaymentMethodEnum,
   priceWithPromotionsApplied as actualPrice,
   payEventRegistrationViaLydia,
   payEventRegistrationViaPaypal,
 } from '#modules/payments';
+import { eventAccessibleByUser, eventManagedByUser } from '#permissions';
 import { PaymentMethod as PaymentMethodPrisma } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { placesLeft } from '../index.js';

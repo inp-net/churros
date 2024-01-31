@@ -1,7 +1,7 @@
-import { NotificationSubscriptionType } from '../index.js';
-import { DateTimeScalar } from '#modules/global';
 import { builder, prisma } from '#lib';
+import { DateTimeScalar } from '#modules/global';
 import { GraphQLError } from 'graphql';
+import { NotificationSubscriptionType } from '../index.js';
 // TODO rename to mutation.subscribe-to-notifications
 builder.mutationField('upsertNotificationSubscription', (t) =>
   t.prismaField({

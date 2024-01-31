@@ -1,6 +1,6 @@
-import { builder } from '#lib'
-import {} from '#modules/global'
-import {} from '../index.js'
+import { builder } from '#lib';
+import {} from '#modules/global';
+import {} from '../index.js';
 // TODO rename to booking-verification-state
 
 export enum RegistrationVerificationState {

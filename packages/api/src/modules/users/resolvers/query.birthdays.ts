@@ -1,7 +1,7 @@
-import { builder, prisma, yearTier } from '#lib'
-import { DateTimeScalar } from '#modules/global'
+import { builder, prisma, yearTier } from '#lib';
+import { DateTimeScalar } from '#modules/global';
 import { addDays } from 'date-fns';
-import { UserType } from '../index.js'
+import { UserType } from '../index.js';
 
 /** Gets the people that were born today */
 builder.queryField('birthdays', (t) =>

@@ -1,9 +1,9 @@
 // TODO rename to articles
 import { builder, prisma, subscriptionName } from '#lib';
 import {} from '#modules/global';
+import { visibleArticlesPrismaQuery } from '#permissions';
 import { Visibility } from '@prisma/client';
 import { ArticleType } from '../index.js';
-import { visibleArticlesPrismaQuery } from '#permissions';
 
 builder.queryField('homepage', (t) =>
   t.prismaConnection({

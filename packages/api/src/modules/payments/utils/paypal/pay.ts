@@ -1,5 +1,4 @@
-import { prisma } from '#lib';
-import { log } from '#lib';
+import { log, prisma } from '#lib';
 import { checkPaypalPayment, initiatePaypalPayment } from '../../index.js';
 
 export async function payEventRegistrationViaPaypal(

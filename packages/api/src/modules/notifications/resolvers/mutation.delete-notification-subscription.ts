@@ -1,7 +1,7 @@
-import {} from '../index.js';
-import {} from '#modules/global';
 import { builder, prisma } from '#lib';
+import {} from '#modules/global';
 import { GraphQLError } from 'graphql';
+import {} from '../index.js';
 // TODO rename to mutation.unsubscribe-from-notifications
 builder.mutationField('deleteNotificationSubscription', (t) =>
   t.field({

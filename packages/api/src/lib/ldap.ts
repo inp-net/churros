@@ -1,8 +1,8 @@
 /* eslint-disable complexity */
+import { log } from '#lib';
 import type { Group, GroupMember, Major, School, StudentAssociation, User } from '@prisma/client';
 import ldap from 'ldapjs';
 import crypto from 'node:crypto';
-import { log } from '#lib';
 
 const LDAP_URL = process.env.OLD_LDAP_URL || 'ldap://localhost:389';
 const LDAP_BASE_DN = process.env.LDAP_BASE_DN || 'dc=example,dc=com';

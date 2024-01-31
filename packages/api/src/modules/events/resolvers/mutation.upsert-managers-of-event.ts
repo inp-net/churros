@@ -1,6 +1,6 @@
-import { EventManagerType, ManagerOfEventInput } from '../index.js';
+import { builder, prisma } from '#lib';
 import {} from '#modules/global';
-import { builder, prisma } from '#lib'
+import { EventManagerType, ManagerOfEventInput } from '../index.js';
 // TODO remove
 
 builder.mutationField('upsertManagersOfEvent', (t) =>

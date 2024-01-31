@@ -1,6 +1,6 @@
-import {} from '../index.js';
-import {} from '#modules/global';
 import { builder } from '#lib';
+import {} from '#modules/global';
+import {} from '../index.js';
 
 export enum EventManagerPowerLevel {
   ReadOnly,

@@ -5,9 +5,9 @@ import {} from '../index.js';
 // TODO rename to booking-search-result
 
 export const RegistrationSearchResultType = builder
-  .objectRef<
-    SearchResult<{ registration: Registration }, ['beneficiary']>
-  >('RegistrationSearchResult')
+  .objectRef<SearchResult<{ registration: Registration }, ['beneficiary']>>(
+    'RegistrationSearchResult',
+  )
   .implement({
     fields: (t) => ({
       id: t.exposeID('id'),

@@ -1,5 +1,6 @@
 import { prisma } from '#lib';
 import {} from '#modules/global';
+import { canSendNotificationToUser } from '#permissions';
 import type { MaybePromise } from '@pothos/core';
 import {
   NotificationChannel as NotificationChannelPrisma,
@@ -9,7 +10,6 @@ import {
 } from '@prisma/client';
 import webpush, { WebPushError } from 'web-push';
 import { setVapidDetails } from '../index.js';
-import { canSendNotificationToUser } from '#permissions';
 
 export type PushNotification = {
   title: string;

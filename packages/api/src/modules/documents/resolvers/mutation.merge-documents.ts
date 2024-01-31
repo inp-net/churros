@@ -1,9 +1,8 @@
-import { builder, prisma } from '#lib';
+import { builder, log, prisma } from '#lib';
 import {} from '#modules/global';
-import { log } from '#lib';
 import { GraphQLError } from 'graphql';
 import { rename } from 'node:fs/promises';
-import { basename, relative, join } from 'node:path';
+import { basename, join, relative } from 'node:path';
 import { DocumentType, documentFilePath } from '../index.js';
 
 builder.mutationField('mergeDocuments', (t) =>

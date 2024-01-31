@@ -1,9 +1,9 @@
 import { builder, prisma, removeIdPrefix } from '#lib';
 import {} from '#modules/global';
+import { userIsOnBoardOf } from '#permissions';
 import { hash } from 'argon2';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
-import { userIsOnBoardOf } from '#permissions';
 import { CLIENT_SECRET_LENGTH } from '../index.js';
 // TODO rename register-third-party-app
 

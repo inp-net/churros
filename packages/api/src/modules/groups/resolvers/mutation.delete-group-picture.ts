@@ -1,8 +1,8 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
 import { unlink } from 'node:fs/promises';
+import path from 'node:path';
 import {} from '../index.js';
-import path from 'node:path'
 
 /** Delete the club's picture */
 builder.mutationField('deleteGroupPicture', (t) =>

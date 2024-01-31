@@ -1,7 +1,7 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
-import { join } from 'node:path';
 import { unlink } from 'node:fs/promises';
+import { join } from 'node:path';
 import {} from '../index.js';
 
 builder.mutationField('deleteEventPicture', (t) =>

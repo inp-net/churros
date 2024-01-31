@@ -1,6 +1,6 @@
-import {} from '../index.js';
-import {} from '#modules/global';
 import { builder } from '#lib';
+import {} from '#modules/global';
+import {} from '../index.js';
 
 export const NotificationSubscriptionType = builder.prismaObject('NotificationSubscription', {
   fields: (t) => ({

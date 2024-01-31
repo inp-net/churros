@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
-import { eventAccessibleByUser, userCanSeeTicket } from '#permissions';
 import {} from '#modules/global';
+import { eventAccessibleByUser, userCanSeeTicket } from '#permissions';
 import { TicketType } from '../index.js';
 // TODO rename to event.tickets
 

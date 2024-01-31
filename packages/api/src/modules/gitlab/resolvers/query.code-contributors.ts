@@ -1,8 +1,8 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
+import { UserType } from '#modules/users';
 import { GraphQLError } from 'graphql';
 import uniqBy from 'lodash.uniqby';
-import { UserType } from '#modules/users';
 import {} from '../index.js';
 
 builder.queryField('codeContributors', (t) =>
