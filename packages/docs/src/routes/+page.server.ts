@@ -9,7 +9,7 @@ export async function load() {
 		schema,
 		modules: (
 			await Promise.all(
-				(await readdir('../api/new-src/modules')).map(async (folder) => getModule(folder))
+				(await readdir('../api/src/modules')).map(async (folder) => getModule(folder))
 			)
 		).sort((a, b) => MODULES_ORDER.indexOf(a.name) - MODULES_ORDER.indexOf(b.name))
 	};

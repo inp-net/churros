@@ -30,6 +30,12 @@ async function readdirNotExistOk(directory: string): Promise<string[]> {
 	return files;
 }
 
+async function typescriptFilesWithoutBarrels(directory: string): Promise<string[]> {
+	return (await readdirNotExistOk(directory)).filter(
+		(file) => file.endsWith('.ts') && !file.endsWith('.d.ts') && path.basename(file) !== 'index.ts'
+	);
+}
+
 function ellipsis(text: string, maxWords: number) {
 	const words = text.split(' ');
 	if (words.length <= maxWords) {
@@ -43,7 +49,7 @@ function firstSentence(text: string) {
 }
 
 export async function getModule(directory: string): Promise<Module> {
-	const folder = path.join('../api/new-src/modules', directory);
+	const folder = path.join('../api/src/modules', directory);
 	if (!(await stat(folder).catch(() => false)))
 		throw new Error(`Module ${directory} does not exist: ${folder} not found.`);
 	const docs = await readFile(path.join(folder, 'README.md'), 'utf-8');
@@ -67,7 +73,7 @@ export async function getModule(directory: string): Promise<Module> {
 		rawDocs: docs,
 		shortDescription: ellipsis(firstSentence(docsWithoutHeading('p').first().text()), 15),
 		renderedDocs: docsWithoutHeading.html() ?? '',
-		types: (await readdir(path.join(folder, 'types'))).map((file) =>
+		types: (await typescriptFilesWithoutBarrels(path.join(folder, 'types'))).map((file) =>
 			kebabToPascal(path.basename(file, '.ts'))
 		),
 		queries: [],
@@ -75,7 +81,7 @@ export async function getModule(directory: string): Promise<Module> {
 		subscriptions: []
 	};
 
-	for (const filepath of await readdirNotExistOk(path.join(folder, 'resolvers'))) {
+	for (const filepath of await typescriptFilesWithoutBarrels(path.join(folder, 'resolvers'))) {
 		const filename = path.basename(filepath);
 		if (filename.startsWith('query')) {
 			module.queries.push(kebabToCamel(filename.replace(/^query\./, '').replace(/\.ts$/, '')));
@@ -117,10 +123,10 @@ export async function getModule(directory: string): Promise<Module> {
 			`WARN: ${directory} has no types nor resolvers. Files found...\n\tIn ${path.join(
 				folder,
 				'types'
-			)}: ${(await readdirNotExistOk(path.join(folder, 'types')))
+			)}: ${(await typescriptFilesWithoutBarrels(path.join(folder, 'types')))
 				.map((f) => path.basename(f))
 				.join(', ')}\n\tIn ${path.join(folder, 'resolvers')}: ${(
-				await readdirNotExistOk(path.join(folder, 'resolvers'))
+				await typescriptFilesWithoutBarrels(path.join(folder, 'resolvers'))
 			)
 				.map((f) => path.basename(f))
 				.join(', ')}`
@@ -133,7 +139,7 @@ export async function getModule(directory: string): Promise<Module> {
 export async function getAllModules() {
 	return (
 		await Promise.all(
-			(await readdir('../api/new-src/modules')).map(async (folder) => getModule(folder))
+			(await readdir('../api/src/modules')).map(async (folder) => getModule(folder))
 		)
 	).sort((a, b) => MODULES_ORDER.indexOf(a.name) - MODULES_ORDER.indexOf(b.name));
 }
@@ -144,10 +150,10 @@ export async function getAllResolvers(): Promise<ResolverFromFilesystem[]> {
 	if (allResolvers.length > 0) {
 		return allResolvers;
 	}
-	const modules = await readdirNotExistOk('../api/new-src/modules');
+	const modules = await readdirNotExistOk('../api/src/modules');
 	const resolvers: ResolverFromFilesystem[] = [];
 	for (const module of modules) {
-		for (const resolver of await readdirNotExistOk(path.join(module, 'resolvers'))) {
+		for (const resolver of await typescriptFilesWithoutBarrels(path.join(module, 'resolvers'))) {
 			const rootResolverPrefix = /^(query|mutation|subscription)\./;
 			if (rootResolverPrefix.test(path.basename(resolver))) {
 				resolvers.push({

@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import TableOfContents from '$lib/TableOfContents.svelte';
-	import { CURRENT_COMMIT, CURRENT_VERSION } from '@centraverse/api/new-src/lib/buildinfo';
+	import { CURRENT_COMMIT, CURRENT_VERSION } from '@centraverse/api/src/lib/buildinfo';
 	import { onMount } from 'svelte';
 	import { colorNames } from '$lib/colors';
 
