@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Required until https://github.com/bencoveney/barrelsby/issues/178 is closed
+
 shopt -s globstar
 if [ $(pwd) != $(git rev-parse --show-toplevel)/packages/api ]; then
   echo "Please run this script from packages/api"

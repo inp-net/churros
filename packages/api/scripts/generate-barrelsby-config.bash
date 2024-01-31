@@ -5,7 +5,7 @@ if [ "$(pwd)" != "$(git rev-parse --show-toplevel)/packages/api" ]; then
   exit 1
 fi
 
-echo '{ "structure": "flat", "delete": true, "location": "all" }' > barrelsby.config.json
+echo '{ "structure": "flat", "delete": true, "location": "all", "singleQuotes": true }' > barrelsby.config.json
 
 for dir in src/{lib,server,modules/*}; do
     if [ ! -d "$dir" ]; then

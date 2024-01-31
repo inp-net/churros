@@ -2,6 +2,7 @@
   "structure": "flat",
   "delete": true,
   "location": "all",
+  "singleQuotes": true,
   "directory": [
     "./src/lib",
     "./src/server",
