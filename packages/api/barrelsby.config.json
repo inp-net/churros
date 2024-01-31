@@ -1,5 +1,32 @@
 {
-    "directory": ["./src"],
-    "location": "all",
-    "structure": "flat"
+  "structure": "flat",
+  "delete": true,
+  "location": "all",
+  "directory": [
+    "./src/lib",
+    "./src/server",
+    "./src/modules/announcements",
+    "./src/modules/bar-weeks",
+    "./src/modules/changelogs",
+    "./src/modules/comments",
+    "./src/modules/curriculum",
+    "./src/modules/documents",
+    "./src/modules/events",
+    "./src/modules/gitlab",
+    "./src/modules/global",
+    "./src/modules/groups",
+    "./src/modules/health-checks",
+    "./src/modules/links",
+    "./src/modules/logs",
+    "./src/modules/notifications",
+    "./src/modules/oauth",
+    "./src/modules/payments",
+    "./src/modules/posts",
+    "./src/modules/reactions",
+    "./src/modules/schools",
+    "./src/modules/services",
+    "./src/modules/student-associations",
+    "./src/modules/ticketing",
+    "./src/modules/users"
+  ]
 }

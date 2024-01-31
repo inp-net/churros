@@ -1,5 +1,4 @@
 import { builder, toHtml } from '#lib';
-import {} from '#modules';
 
 export type ReleaseChange = {
   text: string;

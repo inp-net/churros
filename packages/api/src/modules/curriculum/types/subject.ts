@@ -1,5 +1,5 @@
-import { builder, prisma } from '#lib'
-import { DateTimeScalar } from '#modules'
+import { builder, prisma } from '#lib';
+import { DateTimeScalar } from '#modules/global';
 
 export const SubjectType = builder.prismaObject('Subject', {
   fields: (t) => ({
@@ -19,7 +19,7 @@ export const SubjectType = builder.prismaObject('Subject', {
     yearTier: t.exposeInt('yearTier', { nullable: true }),
     forApprentices: t.exposeBoolean('forApprentices'),
     documents: t.relatedConnection('documents', {
-      type: DocumentType,
+      type: 'Document',
       cursor: 'id',
     }),
     documentsCount: t.int({

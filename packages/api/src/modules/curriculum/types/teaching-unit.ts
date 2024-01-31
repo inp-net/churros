@@ -1,5 +1,5 @@
 import { builder } from '#lib'
-import {} from '#modules'
+import {} from '../index.js'
 
 export const TeachingUnitType = builder.prismaObject('TeachingUnit', {
   fields: (t) => ({

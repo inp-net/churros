@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib'
-import { MajorType } from '#modules'
+import { MajorType } from '../index.js'
 builder.queryField('major', (t) =>
   t.prismaField({
     type: MajorType,

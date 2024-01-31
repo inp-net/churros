@@ -98,7 +98,7 @@
   },
   "imports": {
     "#lib": "./build/src/lib/index.js",
-    "#modules": "./build/src/modules/index.js"
+    "#modules/*": "./build/src/modules/*/index.js"
   },
   "prisma": {
     "seed": "tsx ./src/seed.ts"
@@ -113,9 +113,7 @@
     "mock-buildinfo": "echo 'export const CURRENT_VERSION=\"1.41.0\"; export const CURRENT_COMMIT=\"dev\";' > src/lib/buildinfo.ts",
     "migrate-old-data": "cd scripts && yarn tsc import-old-data.ts --lib es2021,DOM --module es2022 --target es2022 --moduleResolution node --allowSyntheticDefaultImports && yarn node import-old-data.js",
     "start": "node ./build/src/index.js",
-    "barrelize": "barrelsby --delete --config barrelsby.config.json && scripts/fix-extensionless-barrel-imports.bash",
-    "# refactor": "test -d old-src || mv src old-src && SRC=$(realpath ./old-src) fsorg scripts/refactor.fsorg --replace=src && yarn barrelize && sd '(\\bfrom\\s+[\\'\"]\\..*)([\"\\'])' '$1.js$2' src/**/index.ts",
-    "refactor": "test -d old-src || mv src old-src && SRC=$(realpath ./old-src) fsorg scripts/refactor.fsorg --replace=src && yarn barrelize"
+    "barrelize": "scripts/generate-barrelsby-config.bash && barrelsby --delete --config barrelsby.config.json && scripts/fix-extensionless-barrel-imports.bash"
   },
   "type": "module",
   "volta": {

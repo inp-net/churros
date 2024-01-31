@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib'
-import { MinorType } from '#modules'
+import { MinorType } from '../index.js'
 
 
 

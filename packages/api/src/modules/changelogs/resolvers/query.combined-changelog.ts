@@ -1,11 +1,10 @@
 import { CURRENT_VERSION, builder, prisma } from '#lib';
+import { SortDirection, SortDirectionEnum } from '#modules/global';
 import {
   ChangelogRelease,
   ChangelogReleaseType,
-  SortDirection,
-  SortDirectionEnum,
   changelogFromFile,
-} from '#modules';
+} from '../index.js';
 import { GraphQLError } from 'graphql';
 import * as SemVer from 'semver';
 

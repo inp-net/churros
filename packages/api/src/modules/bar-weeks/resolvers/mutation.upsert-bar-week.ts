@@ -1,7 +1,9 @@
-import { builder, prisma } from '#lib'
-import { BarWeekType, DateTimeScalar, userIsOnBoardOf } from '#modules'
+import { builder, prisma } from '#lib';
+import { DateTimeScalar } from '#modules/global';
+import { userIsOnBoardOf } from '#modules/groups';
 import { GraphQLError } from 'graphql';
 import slug from 'slug';
+import { BarWeekType } from '../index.js';
 
 builder.mutationField('upsertBarWeek', (t) =>
   t.prismaField({

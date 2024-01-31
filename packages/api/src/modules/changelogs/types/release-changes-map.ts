@@ -1,5 +1,5 @@
 import { builder } from '#lib'
-import { ReleaseChangeType, type ReleaseChange } from '#modules'
+import { ReleaseChangeType, type ReleaseChange } from '../index.js'
 
 export class ReleaseChangesMap {
   fixed!: ReleaseChange[];

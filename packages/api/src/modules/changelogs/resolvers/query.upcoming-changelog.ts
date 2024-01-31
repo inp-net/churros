@@ -4,7 +4,7 @@ import {
   ChangelogReleaseType,
   UpcomingVersion,
   changelogFromFile,
-} from '#modules';
+} from '../index.js';
 
 builder.queryField('upcomingChangelog', (t) =>
   t.field({

@@ -1,5 +1,5 @@
 import { builder, toHtml } from "#lib";
-import { DateTimeScalar } from "#modules";
+import { DateTimeScalar } from "#modules/global";
 
 export const BarWeekType = builder.prismaNode('BarWeek', {
   id: { field: 'id' },

@@ -1,5 +1,4 @@
 import { CURRENT_VERSION, builder, prisma } from '#lib';
-import {} from '#modules';
 import { GraphQLError } from 'graphql';
 import * as SemVer from 'semver';
 

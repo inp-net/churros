@@ -1,10 +1,10 @@
 import { builder, toHtml } from '#lib';
+import { DateTimeScalar } from '#modules/global';
 import {
-  DateTimeScalar,
   ReleaseChangesMap,
   ReleaseChangesMapType,
   UpcomingVersion,
-} from '#modules';
+} from '../index.js';
 import * as KeepAChangelog from 'keep-a-changelog';
 
 export class ChangelogRelease {

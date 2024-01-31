@@ -1,5 +1,5 @@
 import { builder, toHtml } from "#lib";
-import { DateTimeScalar } from "#modules";
+import { DateTimeScalar } from "#modules/global";
 
 // from old.ts
 export const AnnouncementType = builder.prismaNode('Announcement', {

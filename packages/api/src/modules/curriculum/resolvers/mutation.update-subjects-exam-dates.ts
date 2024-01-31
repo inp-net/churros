@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import { log, nextExamDates } from '#modules';
+import { log, nextExamDates } from '../index.js';
 // maybe delete, and call the associated resolver function in the backend w/o giving access to this. it's kinda pointless
 
 builder.mutationField('updateSubjectsExamDates', (t) =>

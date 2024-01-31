@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import { AnnouncementType } from '#modules';
+import { AnnouncementType } from '../index.js';
 
 builder.queryField('announcement', (t) =>
   t.prismaField({
