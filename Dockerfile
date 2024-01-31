@@ -2,8 +2,8 @@ from node:20-bullseye
 
 WORKDIR /app
 
-# jq is required for the barrel files generation
-run apt-get update && apt-get install -y jq 
+# jq and sponge are required for the barrel files generation
+run apt-get update && apt-get install -y jq moreutils
 
 copy package.json /app/
 copy packages/api/package.json /app/packages/api/
