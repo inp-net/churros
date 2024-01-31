@@ -1,7 +1,9 @@
+import { builder, prisma } from '#lib';
+import {} from '#modules/global';
 import { PromotionType } from '@prisma/client';
 import { isFuture } from 'date-fns';
 import { GraphQLError } from 'graphql';
-import { builder, prisma } from '../lib/index.js';
+import {} from '../index.js';
 
 builder.mutationField('claimPromotionCode', (t) =>
   t.boolean({
@@ -68,30 +70,3 @@ builder.mutationField('claimPromotionCode', (t) =>
     },
   }),
 );
-
-export async function actualPrice(
-  ticket: { price: number; id: string },
-  user: { id: string } | undefined,
-) {
-  if (!user) return ticket.price;
-  const promotionCode = await prisma.promotionCode.findFirst({
-    where: {
-      claimedBy: {
-        id: user.id,
-      },
-      promotion: {
-        validUntil: {
-          gte: new Date(),
-        },
-        validOn: {
-          some: { id: ticket.id },
-        },
-      },
-    },
-    include: { promotion: true },
-  });
-
-  if (promotionCode && promotionCode.promotion.priceOverride < ticket.price)
-    return promotionCode.promotion.priceOverride;
-  return ticket.price;
-}
