@@ -3,5 +3,6 @@
  */
 
 export * from './notification-channel.js';
+export * from './notification-subscription-keys-input.js';
 export * from './notification-subscription.js';
 export * from './notification.js';

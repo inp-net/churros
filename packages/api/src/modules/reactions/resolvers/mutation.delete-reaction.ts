@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
-import { log } from '#modules/logs';
+import { log } from '#lib';
 import {} from '../index.js';
 
 builder.mutationField('deleteReaction', (t) =>

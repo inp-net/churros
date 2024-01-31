@@ -1,12 +1,10 @@
-import { ensureHasIdPrefix, prisma } from '#lib';
+import { ensureHasIdPrefix, isLocalNetwork, log, prisma } from '#lib';
+import { generateThirdPartyToken } from '#modules/oauth';
 import { ThirdPartyCredentialType } from '@prisma/client';
 import { verify } from 'argon2';
 import bodyParser from 'body-parser';
 import { z } from 'zod';
-import { generateThirdPartyToken } from './auth.js';
 import { api } from './express.js';
-import { isLocalNetwork } from './lib/urls.js';
-import { log } from './objects/logs.js';
 
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use('/token', async (request, response) => {

@@ -1,10 +1,10 @@
 import { builder, prisma } from '#lib';
-import { eventAccessibleByUser, eventManagedByUser } from '#modules/events';
+import { eventAccessibleByUser, eventManagedByUser } from '#permissions';
 import {} from '#modules/global';
-import { log } from '#modules/logs';
+import { log } from '#lib';
 import {
   PaymentMethodEnum,
-  actualPrice,
+  priceWithPromotionsApplied as actualPrice,
   payEventRegistrationViaLydia,
   payEventRegistrationViaPaypal,
 } from '#modules/payments';

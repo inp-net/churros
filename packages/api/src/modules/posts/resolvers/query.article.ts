@@ -1,6 +1,7 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
-import { ArticleType, visibleArticlesPrismaQuery } from '../index.js';
+import { visibleArticlesPrismaQuery } from '#permissions';
+import { ArticleType } from '../index.js';
 
 builder.queryField('article', (t) =>
   t.prismaField({

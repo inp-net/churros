@@ -2,7 +2,7 @@ import { builder, prisma, purgeUserSessions } from '#lib';
 import {} from '#modules/global';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { GraphQLError } from 'graphql';
-import { fullName } from '../../users/old.js';
+import { fullName } from '#modules/users';
 import { GroupMemberType, membersNeedToPayForTheStudentAssociation } from '../index.js';
 
 /** Adds a member to a group. */

@@ -1,6 +1,4 @@
-import { type Context } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
+import type { Context } from '#lib';
 
 export function onBoard(
   permissions:

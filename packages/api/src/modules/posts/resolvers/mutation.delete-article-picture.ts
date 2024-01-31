@@ -1,8 +1,8 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
-import { join } from 'lodash';
 import { unlink } from 'node:fs/promises';
 import {} from '../index.js';
+import path from 'node:path';
 
 builder.mutationField('deleteArticlePicture', (t) =>
   t.field({
@@ -36,7 +36,7 @@ builder.mutationField('deleteArticlePicture', (t) =>
 
       const root = new URL(process.env.STORAGE).pathname;
 
-      if (pictureFile) await unlink(join(root, pictureFile));
+      if (pictureFile) await unlink(path.join(root, pictureFile));
       await prisma.article.update({ where: { id }, data: { pictureFile: '' } });
       await prisma.logEntry.create({
         data: {

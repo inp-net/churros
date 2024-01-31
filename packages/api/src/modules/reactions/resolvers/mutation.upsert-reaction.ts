@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
-import { log } from '../../logs/utils/logger.js';
+import { log } from '../../../lib/logger.js';
 import {} from '../index.js';
 // TODO rename to mutation.react and mutation.remove-reaction (or mutation.unreact ?)
 

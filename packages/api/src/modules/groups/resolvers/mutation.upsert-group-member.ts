@@ -1,7 +1,8 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
 import {} from '#modules/global';
+import { onBoard } from '#permissions';
 import { createTransport } from 'nodemailer';
-import { GroupMemberType, onBoard } from '../index.js';
+import { GroupMemberType } from '../index.js';
 
 // TODO centralize the mailer object in #lib instead of creating it here
 

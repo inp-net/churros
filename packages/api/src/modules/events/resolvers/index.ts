@@ -3,6 +3,9 @@
  */
 
 export * from './event.managers.js';
+export * from './group.co-organized-events.js';
+export * from './group.events.js';
+export * from './group.own-events.js';
 export * from './mutation.delete-event-manager.js';
 export * from './mutation.delete-event-picture.js';
 export * from './mutation.delete-event.js';

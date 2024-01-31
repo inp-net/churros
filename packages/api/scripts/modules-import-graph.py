@@ -6,7 +6,7 @@ from pathlib import Path
 from networkx import DiGraph, simple_cycles
 from networkx.drawing.nx_pydot import write_dot
 
-IGNORE_MODULES = ["global"]
+IGNORE_MODULES = ["global", ]
 
 here = Path(__file__).parent
 
@@ -26,7 +26,7 @@ def get_imports(directory: Path):
                 if match.group(1) in IGNORE_MODULES:
                     continue
                 print(
-                    f"{directory.relative_to(Path.cwd())} imports {match.group(1)} in {file.relative_to(Path.cwd())}:{i+1}"
+                    f"{directory.name:25} imports {match.group(1):25} in {file.relative_to(Path.cwd())}:{i+1}"
                 )
                 imported_modules.add(match.group(1))
     return imported_modules
@@ -41,12 +41,6 @@ for module_directory in modules_directory.glob("*"):
         import_graph.add_edge(module_name, imported_module)
 
 write_dot(import_graph, here / "modules-import-graph.dot")
-
-# for cycle in cycles:
-#     if f"{cycle[0]} -> {cycle[1]}" in printed_cycles:
-#         continue
-#     print(f"\033[1;31mCycle detected: {cycle[0]} -> {cycle[1]}\033[0m")
-#     printed_cycles.add(f"{cycle[0]} -> {cycle[1]}")
 
 for cycle in simple_cycles(import_graph):
     print(f"\033[1;31mCycle detected: {' -> '.join(cycle)}\033[0m")

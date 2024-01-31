@@ -2,8 +2,9 @@ import { builder, prisma } from '#lib';
 import {} from '#modules/global';
 import { hash } from 'argon2';
 import { nanoid } from 'nanoid';
-import { log } from '../../logs/utils/logger.js';
-import { CLIENT_SECRET_LENGTH, canEditApp } from '../index.js';
+import { log } from '../../../lib/logger.js';
+import { CLIENT_SECRET_LENGTH } from '../index.js';
+import { canEditApp } from '#permissions';
 // TODO rename rotate-app-client-secret
 
 builder.mutationField('rotateAppSecret', (t) =>

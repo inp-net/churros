@@ -3,7 +3,6 @@ import { fromYearTier } from '#lib';
 import bunyan from 'bunyan';
 import ldap from 'ldapjs';
 import { nanoid } from 'nanoid';
-import '../context.js';
 
 const logger = bunyan.createLogger({ name: 'CRI INP ldap', level: 'debug' });
 

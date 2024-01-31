@@ -1,5 +1,5 @@
 import { builder, prisma, yearTier } from '#lib';
-import { eventManagedByUser } from '#modules/events';
+import { eventManagedByUser } from '#permissions';
 import {} from '#modules/global';
 import { fullName } from '#modules/users';
 import {} from '../index.js';

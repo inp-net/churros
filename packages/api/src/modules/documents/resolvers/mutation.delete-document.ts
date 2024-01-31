@@ -1,9 +1,7 @@
-import { builder, prisma } from '#lib';
+import { builder, log, prisma } from '#lib';
 import {} from '#modules/global';
-import { join } from 'lodash';
 import { rm, rmdir } from 'node:fs/promises';
-import { dirname } from 'node:path';
-import { log } from '../../logs/old.js';
+import path, { dirname } from 'node:path';
 import {} from '../index.js';
 
 builder.mutationField('deleteDocument', (t) =>
@@ -28,11 +26,13 @@ builder.mutationField('deleteDocument', (t) =>
       await prisma.comment.deleteMany({ where: { documentId: id } });
       // Delete all files on disk
       await Promise.all(
-        paths.map(async (path) => await rm(join(new URL(process.env.STORAGE).pathname, path))),
+        paths.map(
+          async (filepath) => await rm(path.join(new URL(process.env.STORAGE).pathname, filepath)),
+        ),
       );
       try {
         if (paths.length > 0)
-          await rmdir(dirname(join(new URL(process.env.STORAGE).pathname, paths[0]!)));
+          await rmdir(dirname(path.join(new URL(process.env.STORAGE).pathname, paths[0]!)));
       } catch {}
 
       await prisma.document.delete({

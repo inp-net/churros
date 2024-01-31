@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
-import { eventAccessibleByUser } from '../../events/permissions/visible.js';
+import { eventAccessibleByUser } from '#permissions';
 import { TicketType } from '../index.js';
 
 builder.queryField('ticket', (t) =>

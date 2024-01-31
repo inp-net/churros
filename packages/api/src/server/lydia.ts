@@ -1,14 +1,7 @@
-import { prisma } from '#lib';
+import { log, markAsContributor, prisma } from '#lib';
+import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
 import express, { type Request, type Response } from 'express';
 import multer from 'multer';
-import { log } from './objects/logs.js';
-import { writeSchema } from './schema.js';
-import { markAsContributor } from './services/ldap.js';
-import { lydiaSignature, verifyLydiaTransaction } from './services/lydia.js';
-import { rescheduleNotifications } from './services/notifications.js';
-
-await writeSchema();
-await rescheduleNotifications({ dryRun: true });
 
 const webhook = express();
 const upload: multer.Multer = multer();

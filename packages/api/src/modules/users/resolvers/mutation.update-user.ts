@@ -2,7 +2,7 @@ import { builder, markAsContributor, prisma, purgeUserSessions } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { GraphQLError } from 'graphql';
 import { LinkInput } from '#modules/links';
-import { log } from '#modules/logs';
+import { log } from '#lib';
 import { UserType, requestEmailChange } from '../index.js';
 import { phone as parsePhoneNumber } from 'phone';
 

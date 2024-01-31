@@ -1,6 +1,6 @@
-import {} from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
+import { builder, toHtml } from '#lib';
+import { DateTimeScalar } from '#modules/global';
+import { IssueCommentType, IssueState, IssueStateType, type IssueComment } from '../index.js';
 
 type Issue = {
   title: string;

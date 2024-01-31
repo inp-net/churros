@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import { eventManagedByUser } from '#modules/events';
+import { eventManagedByUser } from '#permissions';
 import {} from '#modules/global';
 import { RegistrationType } from '../index.js';
 // TODO rename to user.bookings-for-event; and also create a query event.bookings-of-user

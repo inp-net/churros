@@ -1,8 +1,8 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
-import { log } from '../../logs/utils/logger.js';
+import { log } from '../../../lib/logger.js';
 import {} from '../index.js';
-import { canEditApp } from '../permissions/apps.js';
+import { canEditApp } from '#permissions';
 // TODO rename update-third-party-app
 
 builder.mutationField('editApp', (t) =>

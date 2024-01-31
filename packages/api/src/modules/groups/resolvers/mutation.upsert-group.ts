@@ -1,6 +1,6 @@
-import { builder, prisma, purgeUserSessions } from '#lib';
+import { builder, log, prisma, purgeUserSessions } from '#lib';
 import { LinkInput } from '#modules/links';
-import { log } from '#modules/logs';
+import { onBoard } from '#permissions';
 import * as PrismaTypes from '@prisma/client';
 import { getDescendants, hasCycle } from 'arborist';
 import { GraphQLError } from 'graphql';
@@ -9,7 +9,6 @@ import {
   GroupType,
   createGroupUid,
   membersNeedToPayForTheStudentAssociation,
-  onBoard,
 } from '../index.js';
 
 /** Upserts a group. */

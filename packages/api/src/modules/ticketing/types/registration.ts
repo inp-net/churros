@@ -1,7 +1,7 @@
 import { TYPENAMES_TO_ID_PREFIXES, builder, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import { PaymentMethodEnum } from '../../../index.js';
-import { UserType, fullName } from '../../users/old.js';
+import { PaymentMethodEnum } from '#modules/payments';
+import { UserType, fullName } from '#modules/users';
 import { authorIsBeneficiary } from '../index.js';
 // TODO rename to booking
 

@@ -1,10 +1,10 @@
 {
   "structure": "flat",
-  "delete": true,
   "location": "all",
   "singleQuotes": true,
   "directory": [
     "./src/lib",
+    "./src/permissions",
     "./src/server",
     "./src/modules/announcements",
     "./src/modules/bar-weeks",

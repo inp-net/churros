@@ -1,6 +1,7 @@
 import { builder, fullTextSearch, prisma } from '#lib';
 import {} from '#modules/global';
-import { ArticleSearchResultType, visibleArticlesPrismaQuery } from '../index.js';
+import { visibleArticlesPrismaQuery } from '#permissions';
+import { ArticleSearchResultType } from '../index.js';
 
 builder.queryField('searchArticles', (t) =>
   t.field({

@@ -1,6 +1,6 @@
 import { builder, prisma, subscriptionName, toHtml } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import { PaymentMethodEnum, actualPrice } from '#modules/payments';
+import { PaymentMethodEnum, priceWithPromotionsApplied as actualPrice } from '#modules/payments';
 import { PaymentMethod } from '@prisma/client';
 import { placesLeft } from '../index.js';
 

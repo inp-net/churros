@@ -1,9 +1,8 @@
 import { builder, prisma, publish } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
-import { scheduleNewArticleNotification } from '#modules/notifications';
 import { Visibility } from '@prisma/client';
-import { ArticleType, createUid } from '../index.js';
+import { ArticleType, createUid, scheduleNewArticleNotification } from '../index.js';
 
 builder.mutationField('upsertArticle', (t) =>
   t.prismaField({

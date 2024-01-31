@@ -7,3 +7,6 @@ export * from './mutation.contribute.js';
 export * from './query.contribution-options.js';
 export * from './query.student-association.js';
 export * from './query.student-associations.js';
+export * from './user.contributes-to.js';
+export * from './user.contributes-with.js';
+export * from './user.pending-contributions.js';

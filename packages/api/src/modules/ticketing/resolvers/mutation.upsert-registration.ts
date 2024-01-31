@@ -1,13 +1,13 @@
 import { builder, prisma, publish } from '#lib';
-import { eventAccessibleByUser, eventManagedByUser } from '#modules/events';
+import { eventAccessibleByUser, eventManagedByUser, userCanSeeTicket } from '#permissions';
 import {} from '#modules/global';
-import { log } from '#modules/logs';
+import { log } from '#lib';
 import { PaymentMethodEnum } from '#modules/payments';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { isFuture, isPast } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { createTransport } from 'nodemailer';
-import { RegistrationType, placesLeft, userCanSeeTicket } from '../index.js';
+import { RegistrationType, placesLeft } from '../index.js';
 import * as qrcode from 'qrcode'
 // TODO rename to book.ts
 

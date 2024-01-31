@@ -6,12 +6,49 @@
  * @module
  */
 
-import { prisma } from '#lib';
-import { CredentialType, GroupType, LogoSourceType, Visibility, type Prisma } from '@prisma/client';
+// We can't use #-imports here because it makes this script require a lot of stuff that only works when the API server is running.
+import {
+  CredentialType,
+  GroupType,
+  LogoSourceType,
+  PrismaClient,
+  Visibility,
+  type Prisma,
+} from '@prisma/client';
 import { hash } from 'argon2';
+import dichotomid from 'dichotomid';
 import { exit } from 'node:process';
 import slug from 'slug';
-import { createUid } from './services/registration.js';
+
+const prisma = new PrismaClient();
+
+const createUid = async ({ firstName, lastName }: { firstName: string; lastName: string }) => {
+  const toAscii = (x: string) =>
+    slug(x.toLocaleLowerCase(), {
+      charmap: {
+        é: 'e',
+        è: 'e',
+        ê: 'e',
+        ë: 'e',
+        à: 'a',
+        â: 'a',
+        ä: 'a',
+        ô: 'o',
+        ö: 'o',
+        û: 'u',
+        ü: 'u',
+        ï: 'i',
+        ç: 'c',
+      },
+    }).replaceAll('-', '');
+  const base = toAscii(lastName).slice(0, 16) + toAscii(firstName).charAt(0);
+  const n = await dichotomid(async (n) => {
+    const uid = `${base}${n > 1 ? n : ''}`;
+    const existDB = Boolean(await prisma.user.findFirst({ where: { uid } }));
+    return !existDB;
+  });
+  return `${base}${n > 1 ? n : ''}`;
+};
 
 function* range(start: number, end: number): Generator<number> {
   for (let i = start; i < end; i++) yield i;

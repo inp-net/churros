@@ -3,6 +3,5 @@
  */
 
 export * from './contributions.js';
-export * from './membership.js';
 export * from './tree.js';
 export * from './uid.js';

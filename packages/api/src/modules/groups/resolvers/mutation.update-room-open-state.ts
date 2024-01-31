@@ -1,7 +1,6 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, log } from '#lib';
 import {} from '#modules/global';
-import { log } from '../../logs/old.js';
-import { userIsMemberOf } from '../index.js';
+import { userIsMemberOf } from '#permissions';
 // TODO rename to update-group-room-open-state
 
 builder.mutationField('updateRoomOpenState', (t) =>

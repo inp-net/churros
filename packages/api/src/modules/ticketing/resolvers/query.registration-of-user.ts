@@ -1,7 +1,7 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
 import { GraphQLError } from 'graphql';
-import { fullName } from '../../users/old.js';
+import { fullName } from '#modules/users';
 import { RegistrationType, authorIsBeneficiary } from '../index.js';
 // TODO rename to user.booking
 builder.queryField('registrationOfUser', (t) =>

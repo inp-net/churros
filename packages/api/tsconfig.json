@@ -15,6 +15,7 @@
     "paths": {
       "#lib": ["./src/lib/index.js"],
       "#modules/*": ["./src/modules/*/index.js"],
+      "#permissions": ["./src/permissions/index.js"],
     },
   },
 }

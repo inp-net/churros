@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import { eventManagedByUser } from '#modules/events';
+import { eventManagedByUser } from '#permissions';
 import {} from '#modules/global';
 import {} from '../index.js';
 // TODO rename to oppose-booking.ts

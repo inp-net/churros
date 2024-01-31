@@ -1,7 +1,6 @@
 import { builder, prisma, toHtml } from '#lib';
-import { EventType, visibleEventsPrismaQuery } from '#modules/events';
 import {} from '#modules/global';
-import { visibleArticlesPrismaQuery } from '#modules/posts';
+import { visibleArticlesPrismaQuery } from '#permissions';
 import { GroupEnumType } from '../index.js';
 
 export const GroupType = builder.prismaNode('Group', {
@@ -89,37 +88,6 @@ export const GroupType = builder.prismaNode('Group', {
     studentAssociation: t.relation('studentAssociation', { nullable: true }),
     parent: t.relation('parent', { nullable: true }),
     selfJoinable: t.exposeBoolean('selfJoinable'),
-    ownEvents: t.relation('events', {
-      query(_, { user }) {
-        return {
-          where: visibleEventsPrismaQuery(user),
-          orderBy: { startsAt: 'desc' },
-        };
-      },
-    }),
-    events: t.prismaConnection({
-      type: EventType,
-      cursor: 'id',
-      async resolve(_, { id }, {}, { user }) {
-        return prisma.event.findMany({
-          where: {
-            AND: [
-              { ...visibleEventsPrismaQuery(user) },
-              { OR: [{ groupId: id }, { coOrganizers: { some: { id } } }] },
-            ],
-          },
-          orderBy: { startsAt: 'desc' },
-        });
-      },
-    }),
-    coOrganizedEvents: t.relation('coOrganizedEvents', {
-      query(_, { user }) {
-        return {
-          where: visibleEventsPrismaQuery(user),
-          orderBy: { startsAt: 'desc' },
-        };
-      },
-    }),
     children: t.relation('children'),
     root: t.relation('familyRoot', { nullable: true }),
     familyChildren: t.relation('familyChildren'),

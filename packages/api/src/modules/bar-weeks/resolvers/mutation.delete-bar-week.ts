@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import { userIsOnBoardOf } from '#modules/groups';
+import { userIsOnBoardOf } from '#permissions';
 
 builder.mutationField('deleteBarWeek', (t) =>
   t.field({

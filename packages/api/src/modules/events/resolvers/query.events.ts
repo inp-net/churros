@@ -2,7 +2,8 @@ import { builder, prisma } from '#lib';
 import {} from '#modules/global';
 import { Visibility, type Prisma } from '@prisma/client';
 import { endOfDay, startOfDay } from 'date-fns';
-import { EventType, findNextRecurringEvent, visibleEventsPrismaQuery } from '../index.js';
+import { EventType, findNextRecurringEvent } from '../index.js';
+import { visibleEventsPrismaQuery } from '#permissions';
 
 builder.queryField('events', (t) =>
   t.prismaConnection({

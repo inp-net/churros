@@ -1,5 +1,6 @@
 import { builder, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
+import { visibleEventsPrismaQuery } from '#permissions';
 import { EventFrequency, Visibility, type Event } from '@prisma/client';
 import {
   addDays,
@@ -18,7 +19,7 @@ import {
   startOfWeek,
   weeksToDays,
 } from 'date-fns';
-import { EventType, visibleEventsPrismaQuery } from '../index.js';
+import { EventType } from '../index.js';
 // TODO rework to events-in-range, and merge with events
 
 builder.queryField('eventsInWeek', (t) =>

@@ -361,6 +361,7 @@ __metadata:
     nodemailer: "npm:^6.9.7"
     pdfmake: "npm:^0.2.8"
     phone: "npm:^3.1.41"
+    prettier: "npm:^3.2.4"
     prisma: "npm:5.7.0"
     qr-code-generator-lib: "patch:qr-code-generator-lib@npm%3A1.0.1#~/.yarn/patches/qr-code-generator-lib-npm-1.0.1-14a65cb2e0.patch"
     qrcode: "npm:^1.5.3"
@@ -12811,6 +12812,15 @@ __metadata:
   bin:
     prettier: bin/prettier.cjs
   checksum: facc944ba20e194ff4db765e830ffbcb642803381f0d2033ed397e79904fa4ccc877dc25ad68f42d36985c01d051c990ca1b905fb83d2d7d65fe69e4386fa1a3
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^3.2.4":
+  version: 3.2.4
+  resolution: "prettier@npm:3.2.4"
+  bin:
+    prettier: bin/prettier.cjs
+  checksum: 88dfeb78ac6096522c9a5b81f1413d875f568420d9bb6a5e5103527912519b993f2bcdcac311fcff5718d5869671d44e4f85827d3626f3a6ce32b9abc65d88e0
   languageName: node
   linkType: hard
 

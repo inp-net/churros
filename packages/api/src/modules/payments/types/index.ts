@@ -3,7 +3,6 @@
  */
 
 export * from './lydia-account.js';
-export * from './old-promotions.js';
 export * from './payment-method.js';
 export * from './profits-breakdown.js';
 export * from './promotion-type.js';

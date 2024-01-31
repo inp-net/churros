@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import { userIsOnBoardOf } from '#modules/groups';
+import { userIsOnBoardOf } from '#permissions';
 import { GraphQLError } from 'graphql';
 import slug from 'slug';
 import { BarWeekType } from '../index.js';

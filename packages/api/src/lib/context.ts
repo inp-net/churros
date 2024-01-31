@@ -1,4 +1,6 @@
 import { prisma } from '#lib';
+import { onBoard } from '#permissions';
+import { fullName } from '#modules/users';
 import type { YogaInitialContext } from '@graphql-yoga/node';
 import {
   CredentialType,
@@ -12,9 +14,8 @@ import {
   type User,
 } from '@prisma/client';
 import { GraphQLError } from 'graphql';
-import { isThirdPartyToken, onBoard } from './auth.js';
+import { isThirdPartyToken } from './auth.js';
 import { yearTier } from './date.js';
-import { fullName } from './objects/users.js';
 
 const getToken = (headers: Headers) => {
   const auth = headers.get('Authorization');

@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
-import { join } from 'lodash';
+import { join } from 'node:path';
 import { unlink } from 'node:fs/promises';
 import {} from '../index.js';
 

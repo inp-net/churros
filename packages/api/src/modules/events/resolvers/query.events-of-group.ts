@@ -1,7 +1,8 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
 import { Visibility } from '@prisma/client';
-import { EventType, visibleEventsPrismaQuery } from '../index.js';
+import { EventType } from '../index.js';
+import { visibleEventsPrismaQuery } from '#permissions';
 // TODO rename to group.events
 
 builder.queryField('eventsOfGroup', (t) =>

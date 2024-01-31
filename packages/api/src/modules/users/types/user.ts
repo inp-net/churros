@@ -1,8 +1,7 @@
-import { FamilyTree, builder, getFamilyTree, prisma, toHtml, yearTier } from '#lib';
+import { builder, toHtml, yearTier } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import { StudentAssociationType } from '#modules/student-associations';
 import { NotificationChannel } from '@prisma/client';
-import { fullName } from '../index.js';
+import { FamilyTree, fullName, getFamilyTree } from '../index.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -96,61 +95,6 @@ export const UserType = builder.prismaNode('User', {
     enabledNotificationChannels: t.expose('enabledNotificationChannels', {
       type: [NotificationChannel],
       authScopes: { student: true, $granted: 'me' },
-    }),
-    contributesWith: t.field({
-      type: ['ContributionOption'],
-      async resolve({ id }) {
-        return prisma.contributionOption.findMany({
-          where: {
-            contributions: {
-              some: {
-                user: {
-                  id,
-                },
-                paid: true,
-              },
-            },
-          },
-        });
-      },
-    }),
-    contributesTo: t.field({
-      type: [StudentAssociationType],
-      async resolve({ id }) {
-        return prisma.studentAssociation.findMany({
-          where: {
-            contributionOptions: {
-              some: {
-                contributions: {
-                  some: {
-                    user: {
-                      id,
-                    },
-                    paid: true,
-                  },
-                },
-              },
-            },
-          },
-        });
-      },
-    }),
-    pendingContributions: t.field({
-      type: ['ContributionOption'],
-      async resolve({ id }) {
-        return prisma.contributionOption.findMany({
-          where: {
-            contributions: {
-              some: {
-                user: {
-                  id,
-                },
-                paid: false,
-              },
-            },
-          },
-        });
-      },
     }),
     godparent: t.relation('godparent', { nullable: true }),
     godchildren: t.relation('godchildren'),

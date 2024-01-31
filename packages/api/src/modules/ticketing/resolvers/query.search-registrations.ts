@@ -1,6 +1,6 @@
 import { builder, fullTextSearch, prisma } from '#lib'
 import {} from '#modules/global'
-import { eventManagedByUser } from '#modules/events';
+import { eventManagedByUser } from '#permissions';
 import { RegistrationSearchResultType } from '../index.js'
 // TODO rename to event.search-bookings
 

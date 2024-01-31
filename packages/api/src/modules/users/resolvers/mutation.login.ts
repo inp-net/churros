@@ -14,7 +14,7 @@ import bunyan from 'bunyan';
 import { GraphQLError } from 'graphql';
 import { authenticate as ldapAuthenticate } from 'ldap-authentication';
 import { nanoid } from 'nanoid';
-import { log } from '../../logs/utils/logger.js';
+import { log } from '../../../lib/logger.js';
 import { CredentialType } from '../index.js';
 
 builder.mutationField('login', (t) =>

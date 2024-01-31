@@ -1,6 +1,6 @@
 import { builder } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import { onBoard } from '../index.js';
+import { onBoard } from '#permissions';
 // TODO maybe rename membership ?
 
 export const GroupMemberType = builder.prismaObject('GroupMember', {

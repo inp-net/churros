@@ -1,9 +1,9 @@
-import { builder, getFamilyTree, prisma } from '#lib';
+import { builder, prisma } from '#lib';
 import {} from '#modules/global';
 import { notify } from '#modules/notifications';
 import { NotificationChannel } from '@prisma/client';
 import { GraphQLError } from 'graphql';
-import { GodparentRequestType, fullName } from '../index.js';
+import { GodparentRequestType, fullName, getFamilyTree } from '../index.js';
 
 builder.mutationField('upsertGodparentRequest', (t) =>
   t.prismaField({

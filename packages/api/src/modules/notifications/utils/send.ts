@@ -8,7 +8,8 @@ import {
   type User,
 } from '@prisma/client';
 import webpush, { WebPushError } from 'web-push';
-import { canSendNotificationToUser, setVapidDetails } from '../index.js';
+import { setVapidDetails } from '../index.js';
+import { canSendNotificationToUser } from '#permissions';
 
 export type PushNotification = {
   title: string;

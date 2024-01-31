@@ -1,6 +1,6 @@
 import { builder, markAsContributor, prisma, queryLdapUser } from '#lib';
 import {} from '#modules/global';
-import { log } from '../../logs/utils/logger.js';
+import { log } from '../../../lib/logger.js';
 import { createUid } from '../index.js';
 // TODO rename to sync-user-with-ldap
 // maybe make a LDAP module

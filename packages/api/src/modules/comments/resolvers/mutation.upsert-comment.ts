@@ -1,6 +1,7 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, publish, yearTier } from '#lib';
-import type { User } from '@prisma/client';
-import { CommentType, NotificationChannel, log, notify } from '../index.js';
+import { TYPENAMES_TO_ID_PREFIXES, builder, log, prisma, publish, yearTier } from '#lib';
+import { notify } from '#modules/notifications';
+import { NotificationChannel, type User } from '@prisma/client';
+import { CommentType } from '../index.js';
 
 builder.mutationField('upsertComment', (t) =>
   t.prismaField({

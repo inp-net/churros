@@ -1,8 +1,8 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
-import { join } from 'lodash';
 import { unlink } from 'node:fs/promises';
 import {} from '../index.js';
+import path from 'node:path'
 
 /** Delete the club's picture */
 builder.mutationField('deleteGroupPicture', (t) =>
@@ -18,7 +18,7 @@ builder.mutationField('deleteGroupPicture', (t) =>
 
       const root = new URL(process.env.STORAGE).pathname;
 
-      if (pictureFile) await unlink(join(root, pictureFile));
+      if (pictureFile) await unlink(path.join(root, pictureFile));
 
       await prisma.group.update({
         where: { uid },

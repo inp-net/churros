@@ -1,7 +1,7 @@
 import { builder, prisma } from '#lib';
 import {} from '#modules/global';
 import { GraphQLError } from 'graphql';
-import { eventManagedByUser } from '../../events/permissions/manager.js';
+import { eventManagedByUser } from '#permissions';
 import { RegistrationVerificationResultType, RegistrationVerificationState } from '../index.js';
 // TODO rename to verify-booking.ts
 

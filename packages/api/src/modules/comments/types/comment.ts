@@ -1,5 +1,5 @@
 import { builder, toHtml } from '#lib';
-import { DateTimeScalar } from '../index.js';
+import { DateTimeScalar } from '#modules/global';
 
 export const CommentType = builder.prismaNode('Comment', {
   id: { field: 'id' },
