@@ -3,8 +3,7 @@
   import type { PageData } from './$types';
   import BackButton from '$lib/components/ButtonBack.svelte';
   import { onMount } from 'svelte';
-  import { theme } from '$lib/theme';
-  import { beforeNavigate, goto } from '$app/navigation';
+  import { goto } from '$app/navigation';
   import IconCancel from '~icons/mdi/cancel';
   import IconDownload from '~icons/mdi/download-outline';
   import Alert from '$lib/components/Alert.svelte';
@@ -18,22 +17,13 @@
   import { toasts } from '$lib/toasts';
   import AreaPaypalPayRegistration from '$lib/components/AreaPaypalPayRegistration.svelte';
 
-  let actualTheme: string;
   let confirmingCancellation = false;
   let paymentLoading = false;
   let serverError = '';
   let paying = false;
 
   onMount(() => {
-    // For this page only, force light theme
-    actualTheme = $theme;
-    $theme = 'light';
-
     if (data.markedAsPaid) toasts.success('Place payée', 'Ta place a bien été payée.');
-  });
-
-  beforeNavigate(() => {
-    $theme = actualTheme;
   });
 
   async function cancelRegistration() {
@@ -145,20 +135,24 @@
     {/if}
   {/if}
 
-  <section class="print">
-    <ButtonSecondary data-sveltekit-reload href="../{code}.pdf" icon={IconDownload}
-      >Imprimer / Télécharger en PDF</ButtonSecondary
-    >
-  </section>
+  {#if !cancelled}
+    <section class="print">
+      <ButtonSecondary data-sveltekit-reload href="../{code}.pdf" icon={IconDownload}
+        >Imprimer / Télécharger en PDF</ButtonSecondary
+      >
+    </section>
+  {/if}
 
   <section class="code">
     {#if cancelled}
       <div class="qrcode cancelled">Place<br />annulée</div>
     {:else}
-      <svg class="qrcode" viewBox={qrcodeViewbox} stroke="var(--text)" stroke-width="1.05">
-        <path d={qrcodePath} fill="black" />
-      </svg>
-      <p class="registration-code">{code}</p>
+      <div class="qrcode-box">
+        <svg class="qrcode" viewBox={qrcodeViewbox} stroke="#000" stroke-width="1.05">
+          <path d={qrcodePath} fill="black" />
+        </svg>
+        <p class="registration-code">{code}</p>
+      </div>
     {/if}
   </section>
 
@@ -243,6 +237,14 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    margin: 0 auto;
+  }
+
+  div.qrcode-box {
+    padding: 1rem;
+    color: #000;
+    background-color: #fff;
+    border-radius: var(--radius-block);
   }
 
   h1 {

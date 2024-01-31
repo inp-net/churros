@@ -11,15 +11,16 @@
   <h1>Crédits</h1>
   <section class="devs">
     <h2>Développeur·euse·s</h2>
-    <p>
-      Cf. <AvatarPerson
+    <div class="cf">
+      <p>Cf.</p>
+      <AvatarPerson
         href="/groups/devs"
         pictureFile={$isDark ? '/groups/dark/devs.png' : '/groups/devs.png'}
         fullName="Devs"
         inline
         small
       ></AvatarPerson>
-    </p>
+    </div>
     <ul class="nobullet">
       {#each codeContributors as contributor (contributor.uid)}
         <li>
@@ -38,5 +39,11 @@
     gap: 1rem;
     max-width: 600px;
     margin: 0 auto;
+  }
+
+  .cf {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 </style>

@@ -447,11 +447,17 @@
   }
 
   .family {
-    display: flex;
+    display: grid;
     flex-flow: column wrap;
+    place-content: start center;
     align-items: center;
-    justify-content: center;
     overflow: auto;
+  }
+
+  @media (max-width: 415px) {
+    .family {
+      padding-left: 5rem;
+    }
   }
 
   .articles {
