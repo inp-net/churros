@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { userIsPresidentOf, userIsTreasurerOf } from '#permissions';
 import { LydiaAccountType, checkLydiaAccount } from '../index.js';
 

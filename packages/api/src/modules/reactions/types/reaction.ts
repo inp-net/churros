@@ -1,6 +1,5 @@
 import { builder } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import {} from '../index.js';
 
 export const ReactionType = builder.prismaNode('Reaction', {
   id: { field: 'id' },

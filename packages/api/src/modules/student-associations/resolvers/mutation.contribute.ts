@@ -1,8 +1,7 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { cancelLydiaTransaction, sendLydiaPaymentRequest } from '#modules/payments';
 import { GraphQLError } from 'graphql';
-import {} from '../index.js';
 
 builder.mutationField('contribute', (t) =>
   t.field({

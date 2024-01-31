@@ -1,5 +1,5 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
-import {} from '#modules/global';
+
 import { onBoard } from '#permissions';
 import { createTransport } from 'nodemailer';
 import { GroupMemberType } from '../index.js';

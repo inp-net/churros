@@ -1,7 +1,7 @@
 import { builder } from '#lib';
-import {} from '#modules/global';
+
 import { GraphQLError } from 'graphql';
-import {} from '../index.js';
+
 // TODO rename to submit-issue
 
 builder.mutationField('createGitlabIssue', (t) =>

@@ -1,5 +1,5 @@
 import { builder } from '#lib';
-import {} from '#modules/global';
+
 import { GraphQLError } from 'graphql';
 import { IssueType, gitlabAPIIssueQuery, makeIssue, type GitlabIssue } from '../index.js';
 

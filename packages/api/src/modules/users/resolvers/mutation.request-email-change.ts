@@ -1,8 +1,7 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { GraphQLError } from 'graphql';
 import { createTransport } from 'nodemailer';
-import {} from '../index.js';
 
 export async function requestEmailChange(email: string, userId: string): Promise<void> {
   const transporter = createTransport(process.env.SMTP_URL);

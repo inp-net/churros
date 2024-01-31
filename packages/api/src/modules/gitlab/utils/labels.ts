@@ -1,5 +1,3 @@
-import {} from '#lib';
-import {} from '#modules/global';
 import { type GitlabIssue } from '../index.js';
 /**
  * Maps importance label names to their value, from 0 (lowest) and then increasing.

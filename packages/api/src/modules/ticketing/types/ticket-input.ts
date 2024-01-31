@@ -2,7 +2,6 @@ import { builder } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { PaymentMethodEnum } from '#modules/payments';
-import {} from '../index.js';
 
 export const TicketInput = builder.inputType('TicketInput', {
   fields: (t) => ({

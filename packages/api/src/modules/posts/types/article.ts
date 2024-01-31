@@ -1,6 +1,5 @@
 import { builder, htmlToText, prisma, subscriptionName, toHtml } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
-import {} from '../index.js';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },

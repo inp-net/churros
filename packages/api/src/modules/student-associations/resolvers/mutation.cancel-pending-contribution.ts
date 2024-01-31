@@ -1,7 +1,6 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { cancelLydiaTransaction } from '#modules/payments';
-import {} from '../index.js';
 
 // TODO maybe query to get list of all contributors of a student association
 builder.mutationField('cancelPendingContribution', (t) =>

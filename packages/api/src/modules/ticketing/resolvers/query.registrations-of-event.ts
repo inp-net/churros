@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { RegistrationType } from '../index.js';
 // TODO rename to event.bookings
 

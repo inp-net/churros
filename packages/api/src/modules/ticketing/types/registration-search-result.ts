@@ -1,7 +1,7 @@
 import { builder, type SearchResult } from '#lib';
-import {} from '#modules/global';
+
 import type { Registration } from '@prisma/client';
-import {} from '../index.js';
+
 // TODO rename to booking-search-result
 
 export const RegistrationSearchResultType = builder

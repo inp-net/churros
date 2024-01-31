@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { ServiceType } from '../index.js';
 // TODO split into  group.services, student-association.services, school.services and query.all-services for admins
 

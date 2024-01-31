@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { visibleEventsPrismaQuery } from '#permissions';
 import { Visibility, type Prisma } from '@prisma/client';
 import { endOfDay, startOfDay } from 'date-fns';

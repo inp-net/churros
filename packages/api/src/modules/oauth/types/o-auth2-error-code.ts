@@ -1,6 +1,5 @@
 import { builder } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
+
 // TODO rename to oauth2-error-code
 
 // All OAuth2 errors from RFC 6749

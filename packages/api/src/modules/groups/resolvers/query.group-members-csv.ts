@@ -1,6 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
+
 // TODO rename to group.members-csv
 
 builder.queryField('groupMembersCsv', (t) =>

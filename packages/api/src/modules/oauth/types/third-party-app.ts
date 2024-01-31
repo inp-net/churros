@@ -1,5 +1,5 @@
 import { builder, prisma, removeIdPrefix } from '#lib';
-import {} from '#modules/global';
+
 import { LogoScrape } from '@lyuboslavlyubenov/logo-scrape';
 import { ThirdPartyCredentialType } from '@prisma/client';
 import { CLIENT_SECRET_LENGTH } from '../index.js';

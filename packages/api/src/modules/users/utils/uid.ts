@@ -1,8 +1,7 @@
 import { prisma, queryLdapUser } from '#lib';
-import {} from '#modules/global';
+
 import dichotomid from 'dichotomid';
 import slug from 'slug';
-import {} from '../index.js';
 
 export const createUid = async ({
   firstName,

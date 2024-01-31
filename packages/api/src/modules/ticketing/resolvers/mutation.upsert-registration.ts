@@ -1,5 +1,5 @@
 import { builder, log, prisma, publish } from '#lib';
-import {} from '#modules/global';
+
 import { PaymentMethodEnum } from '#modules/payments';
 import { eventAccessibleByUser, eventManagedByUser, userCanSeeTicket } from '#permissions';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';

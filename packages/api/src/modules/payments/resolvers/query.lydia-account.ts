@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { LydiaAccountType } from '../index.js';
 
 builder.queryField('lydiaAccount', (t) =>

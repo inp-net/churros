@@ -1,6 +1,4 @@
 import { builder } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
 
 type HealthCheck = {
   redis: { publish: boolean; subscribe: boolean };

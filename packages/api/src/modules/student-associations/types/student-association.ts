@@ -1,6 +1,5 @@
 import { builder } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import {} from '../index.js';
 
 export const StudentAssociationType = builder.prismaObject('StudentAssociation', {
   fields: (t) => ({

@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { SchoolGroup } from '../index.js';
 // TODO remove or rename at least, don't really know what it's supposed to reprensent
 

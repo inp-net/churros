@@ -1,7 +1,7 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { CredentialType as CredentialPrismaType } from '@prisma/client';
-import {} from '../index.js';
+
 // TODO third party apps also have tokens, a "Session" type should be created
 // so that third party apps' sessions (authorizations) can also be revoked
 

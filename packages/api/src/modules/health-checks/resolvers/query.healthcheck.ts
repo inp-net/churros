@@ -6,7 +6,7 @@ import {
   schoolLdapSettings,
   subscribeClient,
 } from '#lib';
-import {} from '#modules/global';
+
 import ldap from 'ldapjs';
 import { createTransport } from 'nodemailer';
 import { HealthCheck } from '../index.js';

@@ -1,5 +1,5 @@
 import { builder } from '#lib';
-import {} from '#modules/global';
+
 import type { Registration, User } from '@prisma/client';
 import {
   RegistrationType,

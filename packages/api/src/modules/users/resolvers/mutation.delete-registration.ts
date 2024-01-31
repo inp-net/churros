@@ -1,6 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
+
 builder.mutationField('deleteRegistration', (t) =>
   t.field({
     type: 'Boolean',

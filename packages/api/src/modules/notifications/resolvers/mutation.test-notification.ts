@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { NotificationChannel as NotificationChannelPrisma } from '@prisma/client';
 import { notify } from '../index.js';
 

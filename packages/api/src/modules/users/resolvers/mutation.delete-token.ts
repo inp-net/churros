@@ -1,7 +1,7 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
-import {} from '#modules/global';
+
 import { CredentialType as CredentialPrismaType } from '@prisma/client';
-import {} from '../index.js';
+
 // TODO merge with mutation.logout
 
 builder.mutationField('deleteToken', (t) =>

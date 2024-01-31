@@ -1,6 +1,5 @@
 import { prisma } from '#lib';
-import {} from '#modules/global';
-import {} from '../modules/logs/index.js';
+
 export async function log(
   area: string,
   action: string,

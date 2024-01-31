@@ -1,6 +1,4 @@
 import { builder, ensureHasIdPrefix, prisma } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
 
 builder.queryField('thirdPartyApp', (t) =>
   t.prismaField({

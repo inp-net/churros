@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import {} from '#modules/global';
+
 import { canSendNotificationToUser } from '#permissions';
 import type { MaybePromise } from '@pothos/core';
 import {

@@ -1,5 +1,5 @@
 import { builder, prisma, purgeUserSessions, resetLdapUserPassword } from '#lib';
-import {} from '#modules/global';
+
 import { CredentialType as PrismaCredentialType } from '@prisma/client';
 import { hash, verify } from 'argon2';
 import { GraphQLError } from 'graphql';

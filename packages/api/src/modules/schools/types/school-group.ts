@@ -1,8 +1,8 @@
 import { builder } from '#lib';
 import { MajorType } from '#modules/curriculum';
-import {} from '#modules/global';
+
 import type { Major } from '@prisma/client';
-import {} from '../index.js';
+
 // TODO remove or rename at least, don't really know what it's supposed to represent
 
 /**

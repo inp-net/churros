@@ -8,7 +8,6 @@ export * from './buildinfo.js';
 export * from './context.js';
 export * from './date.js';
 export * from './errors.js';
-export * from './godchildren-tree.js';
 export * from './ldap-school.js';
 export * from './ldap.js';
 export * from './logger.js';

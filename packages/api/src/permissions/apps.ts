@@ -1,6 +1,4 @@
 import { prisma, type Context } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
 
 export async function canEditApp(
   _: unknown,

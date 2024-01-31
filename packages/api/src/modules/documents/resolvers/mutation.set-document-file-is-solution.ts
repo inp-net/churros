@@ -1,6 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
+
 // TODO find a better name, idk what
 
 builder.mutationField('setDocumentFileIsSolution', (t) =>

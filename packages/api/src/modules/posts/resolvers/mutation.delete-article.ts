@@ -1,6 +1,4 @@
 import { builder, prisma, publish } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
 
 builder.mutationField('deleteArticle', (t) =>
   t.field({

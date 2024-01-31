@@ -1,6 +1,5 @@
 import { builder } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import {} from '../index.js';
 
 export const EmailChangeType = builder.prismaObject('EmailChange', {
   fields: (t) => ({

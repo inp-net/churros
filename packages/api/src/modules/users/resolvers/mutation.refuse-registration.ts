@@ -1,7 +1,7 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { createTransport } from 'nodemailer';
-import {} from '../index.js';
+
 // TODO rename registration to reject-user-candidate
 
 builder.mutationField('refuseRegistration', (t) =>

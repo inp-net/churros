@@ -1,5 +1,5 @@
 import { builder, fullTextSearch, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { DocumentSearchResultType } from '../index.js';
 
 builder.queryField('searchDocuments', (t) =>

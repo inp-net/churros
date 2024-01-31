@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import {} from '#modules/global';
+
 import type { PushNotification } from '#modules/notifications';
 import { scheduleNotification } from '#modules/notifications';
 import { fullName } from '#modules/users';
@@ -15,7 +15,6 @@ import {
 } from '@prisma/client';
 import type Cron from 'croner';
 import { format, subMinutes } from 'date-fns';
-import {} from '../index.js';
 
 export async function scheduleShotgunNotifications(
   {

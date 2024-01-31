@@ -1,6 +1,4 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
 
 /** Removes a member from a group. */
 builder.mutationField('deleteGroupMember', (t) =>

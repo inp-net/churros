@@ -1,6 +1,5 @@
 import { builder, prisma, publish } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
+
 // TODO rename to cancel-booking.ts
 
 builder.mutationField('cancelRegistration', (t) =>

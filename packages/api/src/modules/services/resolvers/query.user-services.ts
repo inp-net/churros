@@ -1,6 +1,6 @@
 // TODO rename to user.services (services available to a user)
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { ServiceType } from '../index.js';
 
 builder.queryField('userServices', (t) =>

@@ -1,6 +1,6 @@
 import { builder, toHtml } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import {} from '../index.js';
+
 export type IssueComment = {
   body: string;
   authorName: string;

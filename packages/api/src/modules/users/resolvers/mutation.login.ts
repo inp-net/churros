@@ -6,7 +6,7 @@ import {
   prisma,
   queryLdapUser,
 } from '#lib';
-import {} from '#modules/global';
+
 import type { Prisma } from '@prisma/client';
 import { CredentialType as CredentialPrismaType } from '@prisma/client';
 import * as argon2 from 'argon2';

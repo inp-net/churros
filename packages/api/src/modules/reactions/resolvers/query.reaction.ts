@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { ReactionType } from '../index.js';
 // TODO split into event.reaction, post.reaction, etc
 // or remove it maybe

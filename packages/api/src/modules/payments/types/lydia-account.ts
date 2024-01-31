@@ -1,6 +1,4 @@
 import { builder } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
 
 export const LydiaAccountType = builder.prismaObject('LydiaAccount', {
   fields: (t) => ({

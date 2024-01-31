@@ -1,7 +1,6 @@
 import { prisma } from '#lib';
-import {} from '#modules/global';
+
 import { mappedGetAncestors } from 'arborist';
-import {} from '../index.js';
 
 export async function ancestorsOfGroup<T extends { familyId?: string | null; id: string }>(
   ...groups: T[]

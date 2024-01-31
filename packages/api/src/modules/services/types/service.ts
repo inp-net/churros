@@ -1,5 +1,5 @@
 import { builder } from '#lib';
-import {} from '#modules/global';
+
 import { LogoSourceTypeEnum } from '../index.js';
 
 export const ServiceType = builder.prismaObject('Service', {

@@ -1,6 +1,5 @@
 import { builder, log, prisma } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
+
 // TODO rename activate-third-party-app
 
 builder.mutationField('activateApp', (t) =>

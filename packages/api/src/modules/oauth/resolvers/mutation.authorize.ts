@@ -1,5 +1,5 @@
 import { builder, ensureHasIdPrefix, isLocalNetwork, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { ThirdPartyCredentialType } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { OAuth2Error, OAuth2ErrorCode, generateThirdPartyToken } from '../index.js';

@@ -1,6 +1,5 @@
 import { builder, prisma, updatePicture } from '#lib';
 import { FileScalar } from '#modules/global';
-import {} from '../index.js';
 
 /** Update the club's picture */
 builder.mutationField('updateGroupPicture', (t) =>

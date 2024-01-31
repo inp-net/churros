@@ -1,7 +1,7 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { eventManagedByUser } from '#permissions';
-import {} from '../index.js';
+
 // TODO rename to oppose-booking.ts
 
 builder.mutationField('opposeRegistration', (t) =>

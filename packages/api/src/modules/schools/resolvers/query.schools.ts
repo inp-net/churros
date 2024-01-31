@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { SchoolType } from '../index.js';
 
 builder.queryField('schools', (t) =>

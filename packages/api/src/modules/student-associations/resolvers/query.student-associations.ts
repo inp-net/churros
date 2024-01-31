@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { StudentAssociationType } from '../index.js';
 // TODO split into user.student-associations, school.student-associations, and query.all-student-associations for admins
 

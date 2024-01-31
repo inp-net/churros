@@ -1,6 +1,5 @@
 import { builder, findSchoolUser } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
+
 // TODO maybe create a LDAP module?
 
 builder.queryField('existsInSchoolLdap', (t) =>

@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { canEditApp } from '#permissions';
 import { hash } from 'argon2';
 import { nanoid } from 'nanoid';

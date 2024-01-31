@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { UserCandidateType } from '../index.js';
 // TODO merge with query.user-candidate
 

@@ -1,5 +1,5 @@
 import { builder } from '#lib';
-import {} from '#modules/global';
+
 import { OAuth2ErrorCode } from '../index.js';
 // TODO rename to oauth2-error
 

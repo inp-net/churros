@@ -1,8 +1,8 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { addSeconds } from 'date-fns';
 import { createTransport } from 'nodemailer';
-import {} from '../index.js';
+
 import { PASSWORD_RESET_EXPIRES_AFTER } from '../utils/password-resets.js';
 // TODO rename to request-password-reset
 

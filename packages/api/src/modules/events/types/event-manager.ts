@@ -1,5 +1,5 @@
 import { builder } from '#lib';
-import {} from '#modules/global';
+
 import { EventManagerPowerLevel, EventManagerPowerLevelType } from '../index.js';
 
 export const EventManagerType = builder.prismaObject('EventManager', {

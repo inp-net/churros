@@ -1,7 +1,6 @@
 import { builder, type SearchResult } from '#lib';
-import {} from '#modules/global';
+
 import type { Group } from '@prisma/client';
-import {} from '../index.js';
 
 export const GroupSearchResultType = builder
   .objectRef<SearchResult<{ group: Group }, ['description']>>('GroupSearchResult')

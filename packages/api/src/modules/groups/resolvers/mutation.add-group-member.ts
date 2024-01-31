@@ -1,5 +1,5 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
-import {} from '#modules/global';
+
 import { fullName } from '#modules/users';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { GraphQLError } from 'graphql';

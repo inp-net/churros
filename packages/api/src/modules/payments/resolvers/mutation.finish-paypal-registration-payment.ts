@@ -1,5 +1,5 @@
 import { builder } from '#lib';
-import {} from '#modules/global';
+
 import { finishPaypalPayment } from '../index.js';
 // TODO rename to mutation.finish-paypal-booking-payment
 

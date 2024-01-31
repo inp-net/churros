@@ -1,7 +1,6 @@
 import { type Context } from '#lib';
-import {} from '#modules/global';
+
 import type { Event } from '@prisma/client';
-import {} from '../index.js';
 
 export function eventManagedByUser(
   event: Event & {

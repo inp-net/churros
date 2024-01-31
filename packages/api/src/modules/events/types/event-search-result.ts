@@ -1,7 +1,6 @@
 import { builder, type SearchResult } from '#lib';
-import {} from '#modules/global';
+
 import type { Event } from '@prisma/client';
-import {} from '../index.js';
 
 export const EventSearchResultType = builder
   .objectRef<SearchResult<{ event: Event }, ['description', 'title']>>('EvenSearchResult')

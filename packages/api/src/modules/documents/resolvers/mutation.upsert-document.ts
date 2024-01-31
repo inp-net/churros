@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import dichotomid from 'dichotomid';
 import { GraphQLError } from 'graphql';
 import slug from 'slug';

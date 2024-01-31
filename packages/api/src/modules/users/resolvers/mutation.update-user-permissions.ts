@@ -1,5 +1,5 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
-import {} from '#modules/global';
+
 import { UserType } from '../index.js';
 
 builder.mutationField('updateUserPermissions', (t) =>

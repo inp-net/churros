@@ -1,5 +1,5 @@
 import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, resetLdapUserPassword } from '#lib';
-import {} from '#modules/global';
+
 import { CredentialType as PrismaCredentialType } from '@prisma/client';
 import { hash } from 'argon2';
 // TODO maybe rename to reset-password

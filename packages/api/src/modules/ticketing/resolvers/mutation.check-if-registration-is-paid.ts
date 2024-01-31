@@ -1,11 +1,11 @@
 import { builder, log, prisma } from '#lib';
-import {} from '#modules/global';
+
 import {
   LydiaTransactionState,
   checkLydiaTransaction,
   checkPaypalPayment,
 } from '#modules/payments';
-import {} from '../index.js';
+
 // TODO rename to check-if-booking-is-paid.ts
 
 builder.mutationField('checkIfRegistrationIsPaid', (t) =>

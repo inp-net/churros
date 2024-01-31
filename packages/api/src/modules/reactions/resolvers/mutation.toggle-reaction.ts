@@ -1,7 +1,6 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { log } from '../../../lib/logger.js';
-import {} from '../index.js';
 
 builder.mutationField('toggleReaction', (t) =>
   t.boolean({

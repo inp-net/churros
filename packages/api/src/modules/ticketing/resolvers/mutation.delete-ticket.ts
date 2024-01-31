@@ -1,7 +1,6 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { eventManagedByUser } from '#permissions';
-import {} from '../index.js';
 
 builder.mutationField('deleteTicket', (t) =>
   t.field({

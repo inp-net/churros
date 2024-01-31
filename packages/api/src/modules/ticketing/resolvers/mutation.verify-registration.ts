@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { eventManagedByUser } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { RegistrationVerificationResultType, RegistrationVerificationState } from '../index.js';

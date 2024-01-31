@@ -1,8 +1,7 @@
 import { builder, log, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { rm, rmdir } from 'node:fs/promises';
 import path, { dirname } from 'node:path';
-import {} from '../index.js';
 
 builder.mutationField('deleteDocument', (t) =>
   t.field({

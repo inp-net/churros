@@ -1,5 +1,5 @@
 import { builder, fullTextSearch, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { visibleArticlesPrismaQuery } from '#permissions';
 import { ArticleSearchResultType } from '../index.js';
 

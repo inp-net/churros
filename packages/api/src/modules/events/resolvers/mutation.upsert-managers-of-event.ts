@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { EventManagerType, ManagerOfEventInput } from '../index.js';
 // TODO remove
 

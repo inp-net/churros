@@ -1,5 +1,5 @@
 import { builder, fullTextSearch, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { GroupSearchResultType } from '../index.js';
 
 builder.queryField('searchGroups', (t) =>

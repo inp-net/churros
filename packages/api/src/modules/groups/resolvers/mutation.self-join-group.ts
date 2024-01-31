@@ -1,5 +1,5 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
-import {} from '#modules/global';
+
 import { GraphQLError } from 'graphql';
 import { GroupMemberType, membersNeedToPayForTheStudentAssociation } from '../index.js';
 

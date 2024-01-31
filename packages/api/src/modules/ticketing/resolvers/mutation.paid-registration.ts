@@ -1,5 +1,5 @@
 import { builder, log, prisma } from '#lib';
-import {} from '#modules/global';
+
 import {
   PaymentMethodEnum,
   priceWithPromotionsApplied as actualPrice,

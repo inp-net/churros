@@ -1,6 +1,4 @@
 import { builder } from '#lib';
-import {} from '#modules/global';
-import {} from '../index.js';
 
 export const LinkInput = builder.inputType('LinkInput', {
   fields: (t) => ({

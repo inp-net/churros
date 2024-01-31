@@ -1,5 +1,5 @@
 import { builder, findSchoolUser, fromYearTier, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { nanoid } from 'nanoid';
 import { createTransport } from 'nodemailer';
 import { ZodError } from 'zod';

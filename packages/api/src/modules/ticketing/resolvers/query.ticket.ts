@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { eventAccessibleByUser } from '#permissions';
 import { TicketType } from '../index.js';
 

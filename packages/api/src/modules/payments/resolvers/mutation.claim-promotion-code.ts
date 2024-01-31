@@ -1,9 +1,8 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { PromotionType } from '@prisma/client';
 import { isFuture } from 'date-fns';
 import { GraphQLError } from 'graphql';
-import {} from '../index.js';
 
 builder.mutationField('claimPromotionCode', (t) =>
   t.boolean({

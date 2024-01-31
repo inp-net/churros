@@ -1,5 +1,5 @@
 import { builder, log, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { GraphQLError } from 'graphql';
 import { rename } from 'node:fs/promises';
 import { basename, join, relative } from 'node:path';

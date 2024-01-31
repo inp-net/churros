@@ -1,7 +1,7 @@
 import { builder } from '#lib';
-import {} from '#modules/global';
+
 import { PaymentMethod } from '@prisma/client';
-import {} from '../index.js';
+
 // TODO not in ticketing cuz it'll be re-used for shops maybe?
 // although the byTicket is specific to ticketing so... idk
 // maybe do an interface instead, and have EventProfitsBreakdown extend it by adding byTicket, and ShopProfitsBreakdown extend it by adding byProduct or sth like that

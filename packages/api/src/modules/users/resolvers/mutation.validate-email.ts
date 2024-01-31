@@ -1,7 +1,6 @@
 import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, purgeUserSessions } from '#lib';
-import {} from '#modules/global';
+
 import { GraphQLError } from 'graphql';
-import {} from '../index.js';
 
 builder.mutationField('validateEmail', (t) =>
   t.field({

@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { GraphQLError } from 'graphql';
 import { LogoSourceTypeEnum, ServiceType } from '../index.js';
 

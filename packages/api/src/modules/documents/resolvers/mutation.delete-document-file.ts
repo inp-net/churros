@@ -1,8 +1,7 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { unlinkSync } from 'node:fs';
 import { join } from 'node:path';
-import {} from '../index.js';
 
 builder.mutationField('deleteDocumentFile', (t) =>
   t.field({

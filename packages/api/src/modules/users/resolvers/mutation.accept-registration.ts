@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import {} from '#modules/global';
+
 import { saveUser } from '../index.js';
 // TODO rename to accept-user-candidate
 

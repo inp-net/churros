@@ -1,8 +1,8 @@
 import { builder, prisma, yearTier } from '#lib';
-import {} from '#modules/global';
+
 import { fullName } from '#modules/users';
 import { eventManagedByUser } from '#permissions';
-import {} from '../index.js';
+
 // TODO rename to event.bookings-csv
 
 builder.queryField('registrationsCsv', (t) =>

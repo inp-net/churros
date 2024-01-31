@@ -1,7 +1,7 @@
 import { builder, type SearchResult } from '#lib';
-import {} from '#modules/global';
+
 import type { Article } from '@prisma/client';
-import {} from '../index.js';
+
 // TODO rename to article-search-result
 
 export const ArticleSearchResultType = builder

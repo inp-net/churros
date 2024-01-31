@@ -1,5 +1,5 @@
 import { builder, prisma, toHtml } from '#lib';
-import {} from '#modules/global';
+
 import { visibleArticlesPrismaQuery } from '#permissions';
 import { GroupEnumType } from '../index.js';
 
