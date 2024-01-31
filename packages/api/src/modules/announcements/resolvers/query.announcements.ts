@@ -1,5 +1,5 @@
-import { builder, prisma } from "#lib";
-import { AnnouncementType } from "../index.js";
+import { builder, prisma } from '#lib';
+import { AnnouncementType } from '../index.js';
 
 // from old.ts
 builder.queryField('announcements', (t) =>

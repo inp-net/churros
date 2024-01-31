@@ -1,12 +1,11 @@
-import { builder, htmlToText, prisma, soonest, subscriptionName, toHtml } from '#lib'
-import { DateTimeScalar, VisibilityEnum } from '#modules/global'
-import { PaymentMethod } from '@prisma/client';
-import { ProfitsBreakdownType } from '#modules/payments';
+import { builder, htmlToText, prisma, soonest, subscriptionName, toHtml } from '#lib';
 import { visibleArticlesPrismaQuery } from '#modules/articles';
+import { DateTimeScalar, VisibilityEnum } from '#modules/global';
+import { ProfitsBreakdownType } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar } from '#modules/reactions';
-import { TicketType, userCanSeeTicket } from '#modules/ticketing';
-import { RegistrationsCountsType } from '#modules/ticketing';
-import { EventFrequencyType, eventCapacity } from '../index.js'
+import { RegistrationsCountsType, TicketType, userCanSeeTicket } from '#modules/ticketing';
+import { PaymentMethod } from '@prisma/client';
+import { EventFrequencyType, eventCapacity } from '../index.js';
 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },

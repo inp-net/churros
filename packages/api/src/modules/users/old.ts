@@ -1,4 +1,3 @@
-import { builder, prisma } from '../lib/index.js';
 import { addDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
@@ -7,6 +6,7 @@ import { phone as parsePhoneNumber } from 'phone';
 import { purgeUserSessions } from '../context.js';
 import { yearTier } from '../date.js';
 import { FamilyTree, getFamilyTree } from '../godchildren-tree.js';
+import { builder, prisma } from '../lib/index.js';
 import { updatePicture } from '../pictures.js';
 import { markAsContributor, queryLdapUser } from '../services/ldap.js';
 import { toHtml } from '../services/markdown.js';

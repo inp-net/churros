@@ -1,7 +1,7 @@
-import { ID_PREFIXES_TO_TYPENAMES, builder, prisma } from '../lib/index.js';
 import { GraphQLError } from 'graphql';
 import { createTransport } from 'nodemailer';
 import { purgeUserSessions } from '../context.js';
+import { ID_PREFIXES_TO_TYPENAMES, builder, prisma } from '../lib/index.js';
 import { DateTimeScalar } from './scalars.js';
 
 const TYPENAMES_TO_ID_PREFIX = Object.fromEntries(

@@ -1,10 +1,10 @@
-import { builder, prisma } from '../lib/index.js';
 import { GroupType } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { GraphQLError } from 'graphql';
 import { createTransport } from 'nodemailer';
 import { onBoard } from '../auth.js';
 import { purgeUserSessions } from '../context.js';
+import { builder, prisma } from '../lib/index.js';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';
 

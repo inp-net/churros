@@ -1,4 +1,4 @@
-import { builder } from "#lib";
+import { builder } from '#lib';
 
 export enum SortDirection {
   Ascending,

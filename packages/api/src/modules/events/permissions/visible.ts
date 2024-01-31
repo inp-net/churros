@@ -1,6 +1,6 @@
 import type { Context } from '#lib';
 import { prisma } from '#lib';
-import { } from '#modules/global';
+import {} from '#modules/global';
 import type { Prisma } from '@prisma/client';
 import * as PrismaTypes from '@prisma/client';
 import { mappedGetAncestors } from 'arborist';

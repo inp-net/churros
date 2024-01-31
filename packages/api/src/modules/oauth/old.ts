@@ -1,4 +1,3 @@
-import { builder, ensureHasIdPrefix, prisma, removeIdPrefix } from '../lib/index.js';
 import { LogoScrape } from '@lyuboslavlyubenov/logo-scrape';
 import { ThirdPartyCredentialType } from '@prisma/client';
 import { hash } from 'argon2';
@@ -7,6 +6,7 @@ import { nanoid } from 'nanoid';
 import { z } from 'zod';
 import { generateThirdPartyToken } from '../auth.js';
 import type { Context } from '../context.js';
+import { builder, ensureHasIdPrefix, prisma, removeIdPrefix } from '../lib/index.js';
 import { isLocalNetwork } from '../lib/urls.js';
 import { userIsOnBoardOf } from '../objects/groups.js';
 import { log } from '../objects/logs.js';

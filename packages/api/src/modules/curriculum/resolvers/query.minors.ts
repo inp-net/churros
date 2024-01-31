@@ -1,5 +1,5 @@
-import { builder, prisma } from '#lib'
-import { MinorType } from '../index.js'
+import { builder, prisma } from '#lib';
+import { MinorType } from '../index.js';
 
 builder.queryField('minors', (t) =>
   t.prismaConnection({

@@ -1,4 +1,3 @@
-import { builder, prisma } from '../lib/index.js';
 import { CredentialType as CredentialPrismaType, Prisma } from '@prisma/client';
 import argon2 from 'argon2';
 import bunyan from 'bunyan';
@@ -6,9 +5,10 @@ import { GraphQLError } from 'graphql';
 import { authenticate as ldapAuthenticate } from 'ldap-authentication';
 import { nanoid } from 'nanoid';
 import { purgeUserSessions } from '../context.js';
-import { log } from './logs.js';
+import { builder, prisma } from '../lib/index.js';
 import { findSchoolUser } from '../services/ldap-school.js';
 import { createLdapUser, markAsContributor, queryLdapUser } from '../services/ldap.js';
+import { log } from './logs.js';
 import { DateTimeScalar } from './scalars.js';
 
 export const CredentialEnumType = builder.enumType(CredentialPrismaType, {

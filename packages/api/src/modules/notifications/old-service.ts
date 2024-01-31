@@ -1,4 +1,3 @@
-import { prisma } from '../lib/index.js';
 import type { MaybePromise } from '@pothos/core';
 import {
   NotificationChannel,
@@ -17,6 +16,7 @@ import { Cron } from 'croner';
 import { format, subMinutes } from 'date-fns';
 import { nanoid } from 'nanoid';
 import webpush, { WebPushError } from 'web-push';
+import { prisma } from '../lib/index.js';
 import { fullName } from '../objects/users.js';
 
 if (

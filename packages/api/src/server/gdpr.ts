@@ -1,6 +1,6 @@
-import { api } from './express.js';
 import { prisma } from '#lib';
 import { CredentialType } from '@prisma/client';
+import { api } from './express.js';
 // Poor man's GDPR data download
 api.use('/dump', async (req, res) => {
   const token = String(req.query['token']);

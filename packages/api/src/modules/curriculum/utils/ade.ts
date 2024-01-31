@@ -1,4 +1,4 @@
-import { log } from "#modules";
+import { log } from '#modules';
 
 export async function nextExamDates(user: {
   schoolUid: string | null;

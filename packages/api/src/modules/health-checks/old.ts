@@ -1,6 +1,6 @@
-import { builder, prisma, publishClient, subscribeClient } from '../lib/index.js';
 import ldap from 'ldapjs';
 import { createTransport } from 'nodemailer';
+import { builder, prisma, publishClient, subscribeClient } from '../lib/index.js';
 import { settings as schoolLdapSettings } from './ldap-school.js';
 import { connectLdap } from './ldap.js';
 

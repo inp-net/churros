@@ -1,7 +1,7 @@
 // from objects/scalars.ts
 
-import { builder } from "#lib";
-import { GraphQLError } from "graphql";
+import { builder } from '#lib';
+import { GraphQLError } from 'graphql';
 
 // TODO rename to reaction-counts
 export const CountsScalar = builder.scalarType('Counts', {

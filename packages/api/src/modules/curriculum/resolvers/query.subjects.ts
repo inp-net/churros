@@ -1,5 +1,5 @@
-import { builder, prisma } from '#lib'
-import { SubjectType } from '../index.js'
+import { builder, prisma } from '#lib';
+import { SubjectType } from '../index.js';
 builder.queryField('subjects', (t) =>
   t.prismaField({
     type: [SubjectType],

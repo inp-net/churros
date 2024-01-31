@@ -1,15 +1,14 @@
 ---
 inline_types: [ThirdPartyAppResponse]
 ---
-Applications tierces (OAuth)
-============================
+
+# Applications tierces (OAuth)
 
 Churros fourni un service de provider OAuth.
 
 Des applications tierces peuvent utiliser l'API de Churros au nom d'une personne, si celle-ci autorise l'application.
 
-Endpoints utiles
-----------------
+## Endpoints utiles
 
 - **URL d'autorisation**: `https://churros.inpt.fr/authorize`
 - **URL d'obtention d'un token**: `https://churros.inpt.fr/token`

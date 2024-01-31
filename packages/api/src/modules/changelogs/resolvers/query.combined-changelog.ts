@@ -1,12 +1,8 @@
 import { CURRENT_VERSION, builder, prisma } from '#lib';
 import { SortDirection, SortDirectionEnum } from '#modules/global';
-import {
-  ChangelogRelease,
-  ChangelogReleaseType,
-  changelogFromFile,
-} from '../index.js';
 import { GraphQLError } from 'graphql';
 import * as SemVer from 'semver';
+import { ChangelogRelease, ChangelogReleaseType, changelogFromFile } from '../index.js';
 
 builder.queryField('combinedChangelog', (t) =>
   t.field({

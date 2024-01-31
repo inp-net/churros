@@ -1,6 +1,5 @@
-Posts
-=====
-                
+# Posts
+
 Les différents posts publiés par les différents [groupes](../groups)
 
 Appelés _Articles_ dans le code pour des soucis de rétro-compabilité.

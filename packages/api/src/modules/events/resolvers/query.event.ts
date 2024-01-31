@@ -1,6 +1,6 @@
-import { builder, prisma } from '#lib'
-import {} from '#modules/global'
-import { EventType, eventAccessibleByUser } from '../index.js'
+import { builder, prisma } from '#lib';
+import {} from '#modules/global';
+import { EventType, eventAccessibleByUser } from '../index.js';
 
 builder.queryField('event', (t) =>
   t.prismaField({

@@ -1,6 +1,6 @@
 // from old.ts
-import { builder, prisma } from '#lib'
-import { BarWeekType } from '../index.js'
+import { builder, prisma } from '#lib';
+import { BarWeekType } from '../index.js';
 
 builder.queryField('barWeeks', (t) =>
   t.prismaField({

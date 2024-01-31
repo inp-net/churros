@@ -1,7 +1,7 @@
 import { builder, type SearchResult } from '#lib';
-import { } from '#modules/global';
+import {} from '#modules/global';
 import { type Document } from '@prisma/client';
-import { } from '../index.js';
+import {} from '../index.js';
 
 export const DocumentSearchResultType = builder
   .objectRef<SearchResult<{ document: Document }>>('DocumentSearchResult')

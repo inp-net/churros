@@ -1,6 +1,6 @@
 import { CURRENT_VERSION, builder } from '#lib';
-import { ChangelogRelease, ChangelogReleaseType, changelogFromFile } from '../index.js';
 import * as SemVer from 'semver';
+import { ChangelogRelease, ChangelogReleaseType, changelogFromFile } from '../index.js';
 
 builder.queryField('changelog', (t) =>
   t.field({

@@ -1,4 +1,4 @@
-import { builder } from '#lib'
+import { builder } from '#lib';
 
 export const MajorType = builder.prismaObject('Major', {
   fields: (t) => ({

@@ -1,11 +1,11 @@
+import { context } from '#lib';
+import { rescheduleNotifications } from '#modules/notifications';
 import cors from 'cors';
 import express from 'express';
 import * as GraphQLWS from 'graphql-ws/lib/use/ws';
 import helmet from 'helmet';
 import { WebSocketServer } from 'ws';
 import { schema, writeSchema } from '../schema.js';
-import { context } from '#lib';
-import { rescheduleNotifications } from '#modules/notifications';
 
 export const api = express();
 

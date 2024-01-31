@@ -1,7 +1,7 @@
 ---
 inline_types_from: [ProfitsBreakdown]
 ---
-Paiements
-=========
+
+# Paiements
 
 Intégrations avec différents prestataires de paiements, notamment [Lydia](https://lydia-app.com) et [PayPal](https://paypal.com).

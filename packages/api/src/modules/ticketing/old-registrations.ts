@@ -1,4 +1,3 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, publish } from '../lib/index.js';
 import { PaymentMethod as PaymentMethodPrisma, type Registration, type User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { isFuture, isPast } from 'date-fns';
@@ -7,6 +6,7 @@ import { createTransport } from 'nodemailer';
 import * as qrcodeGeneratorLib from 'qr-code-generator-lib';
 import qrcode from 'qrcode';
 import { yearTier } from '../date.js';
+import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, publish } from '../lib/index.js';
 import { fullTextSearch, type SearchResult } from '../search.js';
 import {
   LydiaTransactionState,
@@ -351,9 +351,9 @@ builder.queryField('registrationsOfUserForEvent', (t) =>
 );
 
 export const RegistrationSearchResultType = builder
-  .objectRef<SearchResult<{ registration: Registration }, ['beneficiary']>>(
-    'RegistrationSearchResult',
-  )
+  .objectRef<
+    SearchResult<{ registration: Registration }, ['beneficiary']>
+  >('RegistrationSearchResult')
   .implement({
     fields: (t) => ({
       id: t.exposeID('id'),

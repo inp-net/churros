@@ -1,8 +1,6 @@
-import { builder, prisma } from '#lib'
-import { MinorType } from '../index.js'
+import { builder, prisma } from '#lib';
+import { MinorType } from '../index.js';
 // TODO rename to major.minors
-
-
 
 builder.queryField('minorsOfMajor', (t) =>
   t.prismaConnection({

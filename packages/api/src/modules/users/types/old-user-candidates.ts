@@ -1,9 +1,9 @@
-import { builder, prisma } from '../lib/index.js';
 import { NotificationChannel, type Major, type UserCandidate } from '@prisma/client';
 import { hash } from 'argon2';
 import { createTransport } from 'nodemailer';
 import { ZodError } from 'zod';
 import { yearTier } from '../date.js';
+import { builder, prisma } from '../lib/index.js';
 import { createLdapUser } from '../services/ldap.js';
 import { notify } from '../services/notifications.js';
 import { completeRegistration, register, saveUser } from '../services/registration.js';

@@ -1,5 +1,5 @@
-import { builder, prisma } from '#lib'
-import { SubjectType } from '../index.js'
+import { builder, prisma } from '#lib';
+import { SubjectType } from '../index.js';
 // TODO rename to minor.subjects
 builder.queryField('subjectsOfMinor', (t) =>
   t.prismaField({

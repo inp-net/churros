@@ -1,20 +1,17 @@
+import { EventFrequency, type Event as EventPrisma } from '@prisma/client';
 import {
-    EventFrequency,
-    type Event as EventPrisma
-} from '@prisma/client';
-import {
-    addDays,
-    differenceInDays,
-    differenceInWeeks,
-    endOfWeek,
-    getDay,
-    getMonth,
-    getYear,
-    isBefore,
-    setDay,
-    setMonth,
-    setYear,
-    weeksToDays
+  addDays,
+  differenceInDays,
+  differenceInWeeks,
+  endOfWeek,
+  getDay,
+  getMonth,
+  getYear,
+  isBefore,
+  setDay,
+  setMonth,
+  setYear,
+  weeksToDays,
 } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 

@@ -91,6 +91,7 @@
     "cli-progress": "^3.12.0",
     "execa": "^8.0.1",
     "lodash.omit": "^4.5.0",
+    "prettier": "^3.2.4",
     "prisma": "5.7.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
@@ -105,6 +106,7 @@
   },
   "private": true,
   "scripts": {
+    "format": "prettier --write . --ignore-unknown",
     "add-fulltextsearch": "python scripts/add-fulltextsearch.py",
     "build": "prisma generate && yarn copy-changelog && tsx ./scripts/update-id-prefix-to-typename-map.ts && tsx ./scripts/inject-current-commit-hash.ts && tsc && tsx ./scripts/post-build.ts",
     "copy-changelog": "cp ../../CHANGELOG.md ./static/CHANGELOG.md",

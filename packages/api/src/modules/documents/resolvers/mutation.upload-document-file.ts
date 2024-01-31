@@ -1,8 +1,7 @@
-import { builder, prisma } from '#lib'
-import { FileScalar } from '#modules/global'
+import { builder, prisma } from '#lib';
+import { FileScalar } from '#modules/global';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, relative } from 'node:path';
-import {} from '../index.js'
 import { documentFilePath } from '../index.js';
 
 builder.mutationField('uploadDocumentFile', (t) =>

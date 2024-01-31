@@ -1,10 +1,10 @@
-import { ID_PREFIXES_TO_TYPENAMES, builder, prisma } from '../lib/index.js';
 import { CredentialType } from '@prisma/client';
 import { hash, verify } from 'argon2';
 import { addSeconds } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { createTransport } from 'nodemailer';
 import { purgeUserSessions } from '../context.js';
+import { ID_PREFIXES_TO_TYPENAMES, builder, prisma } from '../lib/index.js';
 import { resetLdapUserPassword } from '../services/ldap.js';
 
 const TYPENAMES_TO_ID_PREFIXES = Object.fromEntries(

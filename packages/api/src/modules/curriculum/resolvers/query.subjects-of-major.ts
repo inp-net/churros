@@ -1,7 +1,6 @@
-import { builder, prisma } from '#lib'
-import { SubjectType } from '../index.js'
+import { builder, prisma } from '#lib';
+import { SubjectType } from '../index.js';
 // TODO rename to major.subjects
-
 
 builder.queryField('subjectsOfMajor', (t) =>
   t.prismaField({

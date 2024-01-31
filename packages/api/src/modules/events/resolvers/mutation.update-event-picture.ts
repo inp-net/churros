@@ -1,6 +1,6 @@
-import { builder, prisma, updatePicture } from '#lib'
-import { FileScalar } from '#modules/global'
-import {} from '../index.js'
+import { builder, prisma, updatePicture } from '#lib';
+import { FileScalar } from '#modules/global';
+import {} from '../index.js';
 
 builder.mutationField('updateEventPicture', (t) =>
   t.field({

@@ -1,4 +1,3 @@
-Notifications
-=============
+# Notifications
 
 Notifications envoyées aux utilisateurs.

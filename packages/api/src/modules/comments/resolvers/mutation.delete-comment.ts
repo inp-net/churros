@@ -1,5 +1,5 @@
-import { builder, prisma, publish } from '#lib'
-import { log } from '../index.js'
+import { builder, prisma, publish } from '#lib';
+import { log } from '../index.js';
 
 builder.mutationField('deleteComment', (t) =>
   t.field({

@@ -1,10 +1,10 @@
-import { builder, prisma } from '../lib/index.js';
 import {
   NotificationChannel as NotificationChannelPrisma,
   Visibility,
   type NotificationSubscription,
 } from '@prisma/client';
 import { GraphQLError } from 'graphql';
+import { builder, prisma } from '../lib/index.js';
 import { notify } from '../services/notifications.js';
 import { VisibilityEnum } from './events.js';
 import { DateTimeScalar } from './scalars.js';

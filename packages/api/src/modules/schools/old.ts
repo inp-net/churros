@@ -1,5 +1,5 @@
-import { builder, prisma } from '../lib/index.js';
 import type { Major } from '@prisma/client';
+import { builder, prisma } from '../lib/index.js';
 import { MajorType } from './majors.js';
 
 export const SchoolType = builder.prismaObject('School', {

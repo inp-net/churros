@@ -1,4 +1,3 @@
-import { builder, prisma } from '../lib/index.js';
 import { GroupType as GroupPrismaType } from '@prisma/client';
 import { getDescendants, hasCycle, mappedGetAncestors } from 'arborist';
 import dichotomid from 'dichotomid';
@@ -8,6 +7,7 @@ import { join } from 'node:path';
 import slug from 'slug';
 import { onBoard } from '../auth.js';
 import { purgeUserSessions, type Context } from '../context.js';
+import { builder, prisma } from '../lib/index.js';
 import { updatePicture } from '../pictures.js';
 import { toHtml } from '../services/markdown.js';
 import { visibleArticlesPrismaQuery } from './articles.js';

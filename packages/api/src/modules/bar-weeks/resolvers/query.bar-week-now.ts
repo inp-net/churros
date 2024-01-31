@@ -1,6 +1,6 @@
-import { builder, prisma } from '#lib'
+import { builder, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import { BarWeekType } from '../index.js'
+import { BarWeekType } from '../index.js';
 
 builder.queryField('barWeekNow', (t) =>
   t.prismaField({

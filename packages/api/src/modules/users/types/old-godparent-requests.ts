@@ -1,7 +1,7 @@
-import { builder, prisma } from '../lib/index.js';
 import { NotificationChannel } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { getFamilyTree } from '../godchildren-tree.js';
+import { builder, prisma } from '../lib/index.js';
 import { notify } from '../services/notifications.js';
 import { DateTimeScalar } from './scalars.js';
 import { fullName } from './users.js';

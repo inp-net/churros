@@ -3,12 +3,12 @@ import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { scheduleShotgunNotifications } from '#modules/notifications';
 import { TicketGroupInput, TicketInput } from '#modules/ticketing';
+import * as PrismaTypes from '@prisma/client';
 import { EventFrequency, GroupType } from '@prisma/client';
 import { isBefore } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { omit } from 'lodash';
 import { EventFrequencyType, EventType, ManagerOfEventInput, createUid } from '../index.js';
-import * as PrismaTypes from '@prisma/client';
 
 builder.mutationField('upsertEvent', (t) =>
   t.prismaField({

@@ -1,5 +1,5 @@
-import { builder } from '#lib'
-import { ReleaseChangeType, type ReleaseChange } from '../index.js'
+import { builder } from '#lib';
+import { ReleaseChangeType, type ReleaseChange } from '../index.js';
 
 export class ReleaseChangesMap {
   fixed!: ReleaseChange[];
@@ -25,7 +25,6 @@ export class ReleaseChangesMap {
     this.technical = technical;
   }
 }
-
 
 export const ReleaseChangesMapType = builder.objectType(ReleaseChangesMap, {
   name: 'ReleaseChangesMap',

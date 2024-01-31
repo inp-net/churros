@@ -1,6 +1,6 @@
-import { builder, prisma, publish } from "#lib";
-import { DateTimeScalar } from "#modules/global";
-import { AnnouncementType } from "../index.js";
+import { builder, prisma, publish } from '#lib';
+import { DateTimeScalar } from '#modules/global';
+import { AnnouncementType } from '../index.js';
 
 builder.mutationField('upsertAnnouncement', (t) =>
   t.prismaField({

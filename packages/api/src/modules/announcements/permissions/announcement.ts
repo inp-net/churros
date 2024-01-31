@@ -1,2 +1,2 @@
-export const userCanEditAnnouncements = (user: undefined | {admin: boolean}): boolean =>
-    user?.admin
+export const userCanEditAnnouncements = (user: undefined | { admin: boolean }): boolean =>
+  user?.admin;
