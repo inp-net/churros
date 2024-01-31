@@ -2,35 +2,10 @@ import { prisma } from '#lib';
 
 import { canSendNotificationToUser } from '#permissions';
 import type { MaybePromise } from '@pothos/core';
-import {
-  NotificationChannel as NotificationChannelPrisma,
-  Prisma,
-  type NotificationSubscription,
-  type User,
-} from '@prisma/client';
+import { Prisma, type NotificationSubscription, type User } from '@prisma/client';
 import webpush, { WebPushError } from 'web-push';
 import { setVapidDetails } from '../index.js';
-
-export type PushNotification = {
-  title: string;
-  actions?: Array<{ action: string; title: string; icon?: string }>;
-  badge?: string;
-  icon?: string;
-  image?: string;
-  body: string;
-  renotify?: boolean;
-  requireInteraction?: boolean;
-  silent?: boolean;
-  tag?: string;
-  timestamp?: number;
-  vibrate?: number[];
-  data: {
-    group: string | undefined;
-    channel: NotificationChannelPrisma;
-    subscriptionName?: string;
-    goto: string;
-  };
-};
+import type { PushNotification } from './push-notification.js';
 
 export async function notifyInBulk<U extends User>(
   jobId: string,
