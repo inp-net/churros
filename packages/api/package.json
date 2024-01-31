@@ -70,6 +70,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@clack/prompts": "^0.7.0",
     "@tsconfig/esm": "^1.0.5",
     "@tsconfig/node18": "^18.2.2",
     "@tsconfig/strictest": "^2.0.2",
@@ -107,7 +108,8 @@
   },
   "private": true,
   "scripts": {
-    "format": "prettier --write . --ignore-unknown",
+    "format-at": "prettier --write --ignore-unknown",
+    "format": "yarn format-at .",
     "add-fulltextsearch": "python scripts/add-fulltextsearch.py",
     "build": "prisma generate && yarn barrelize && yarn copy-changelog && tsx ./scripts/update-id-prefix-to-typename-map.ts && tsx ./scripts/inject-current-commit-hash.ts && tsc && tsx ./scripts/post-build.ts",
     "copy-changelog": "cp ../../CHANGELOG.md ./static/CHANGELOG.md",
@@ -116,7 +118,9 @@
     "mock-buildinfo": "echo 'export const CURRENT_VERSION=\"1.41.0\"; export const CURRENT_COMMIT=\"dev\";' > src/lib/buildinfo.ts",
     "migrate-old-data": "cd scripts && yarn tsc import-old-data.ts --lib es2021,DOM --module es2022 --target es2022 --moduleResolution node --allowSyntheticDefaultImports && yarn node import-old-data.js",
     "start": "node ./build/src/index.js",
-    "barrelize": "scripts/generate-barrelsby-config.bash && echo Running barrelsby && barrelsby --config barrelsby.config.json && scripts/fix-extensionless-barrel-imports.bash"
+    "barrelize": "scripts/generate-barrelsby-config.bash && echo Running barrelsby && barrelsby --config barrelsby.config.json && scripts/fix-extensionless-barrel-imports.bash && echo Formatting barrels for consistency && yarn format-at ./src/modules/**/index.ts --log-level silent",
+    "new-module": "tsx ./scripts/new-module.ts",
+    "migration": "cd .. && yarn migration"
   },
   "type": "module",
   "volta": {
