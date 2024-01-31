@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.11"
 ldif = "^4.2.2"
 parse = "^1.19.1"
+networkx = "^3.2.1"
 
 
 [tool.poetry.group.dev.dependencies]
