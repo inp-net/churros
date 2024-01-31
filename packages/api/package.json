@@ -86,6 +86,7 @@
     "@types/slug": "^5.0.7",
     "@types/web-push": "^3.6.3",
     "@types/ws": "^8.5.10",
+    "barrelsby": "^2.8.1",
     "bunyan": "^1.8.15",
     "cli-progress": "^3.12.0",
     "execa": "^8.0.1",
@@ -110,7 +111,10 @@
     "dev": "yarn mock-buildinfo && NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
     "mock-buildinfo": "echo 'export const CURRENT_VERSION=\"1.41.0\"; export const CURRENT_COMMIT=\"dev\";' > src/lib/buildinfo.ts",
     "migrate-old-data": "cd scripts && yarn tsc import-old-data.ts --lib es2021,DOM --module es2022 --target es2022 --moduleResolution node --allowSyntheticDefaultImports && yarn node import-old-data.js",
-    "start": "node ./build/src/index.js"
+    "start": "node ./build/src/index.js",
+    "barrelize": "barrelsby --delete --config barrelsby.config.json && scripts/fix-extensionless-barrel-imports.bash",
+    "# refactor": "test -d old-src || mv src old-src && SRC=$(realpath ./old-src) fsorg scripts/refactor.fsorg --replace=src && yarn barrelize && sd '(\\bfrom\\s+[\\'\"]\\..*)([\"\\'])' '$1.js$2' src/**/index.ts",
+    "refactor": "test -d old-src || mv src old-src && SRC=$(realpath ./old-src) fsorg scripts/refactor.fsorg --replace=src && yarn barrelize"
   },
   "type": "module",
   "volta": {

@@ -9,7 +9,7 @@ import { Readable } from 'node:stream';
 import { finished } from 'node:stream/promises';
 import type { ReadableStream } from 'node:stream/web';
 import slug from 'slug';
-import { onBoard } from '../src/auth.js';
+import { onBoard } from '../old-src/auth.js';
 import * as Ldap from './ldap-types.js';
 const prisma = new PrismaClient();
 

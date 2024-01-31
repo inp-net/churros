@@ -1,12 +1,13 @@
 ROOT /mnt/datacore/projects/centraverse/packages/api
 
-new-src {
+src {
     WRITE index.ts {
         // barrel
     }
     PUT scripts/post-build.ts AS post-build.ts
-    PUT src/schema.ts AS schema.ts 
+    PUT old-src/schema.ts AS schema.ts 
     server {
+        PUT old-src/index.ts AS old.ts
         # include websocket in yoga?
         WRITE index.ts {
             // barrel
@@ -84,7 +85,7 @@ new-src {
             }
         }
         announcements {
-            PUT src/objects/announcements.ts AS old.ts
+            PUT old-src/objects/announcements.ts AS old.ts
             WRITE README.md {
                 Annonces
                 ========
@@ -123,7 +124,7 @@ new-src {
             }
         }
         posts {
-            PUT src/objects/articles.ts AS old.ts
+            PUT old-src/objects/articles.ts AS old.ts
             WRITE README.md {
                 Posts
                 =====
@@ -180,7 +181,7 @@ new-src {
             }
         }
         bar-weeks {
-            PUT src/objects/bar-week.ts AS old.ts
+            PUT old-src/objects/bar-week.ts AS old.ts
             WRITE README.md {
                 Semaines de bar
                 ===============
@@ -227,7 +228,7 @@ new-src {
             }
         }
         changelogs {
-            PUT src/services/changelog.ts AS old.ts
+            PUT old-src/services/changelog.ts AS old.ts
             WRITE README.md {
                 Changelogs
                 ==========
@@ -269,7 +270,7 @@ new-src {
             }
         }
         comments {
-            PUT src/objects/comments.ts AS old.ts
+            PUT old-src/objects/comments.ts AS old.ts
             WRITE README.md {
                 Commentaires
                 ============
@@ -316,7 +317,7 @@ new-src {
         }
         # includes user candidates, credentials
         users {
-            PUT src/objects/users.ts AS old.ts
+            PUT old-src/objects/users.ts AS old.ts
             WRITE README.md {
                 Users
                 =====
@@ -350,11 +351,11 @@ new-src {
                 WRITE user-search-result.ts {
                     // from old.ts
                 }
-                PUT src/objects/user-candidates.ts AS old-user-candidates.ts
+                PUT old-src/objects/user-candidates.ts AS old-user-candidates.ts
                 WRITE user-candidate.ts {
                     // from ./old-user-candidates.ts
                 }
-                PUT src/objects/credentials.ts AS old-credentials.ts
+                PUT old-src/objects/credentials.ts AS old-credentials.ts
                 WRITE credential.ts {
                     // from ./old-credentials.ts
                     // TODO rename to Token (password are not exposed in the API anyway)
@@ -362,12 +363,12 @@ new-src {
                 WRITE credential-type.ts {
                     // from ./old-credentials.ts
                 }
-                PUT src/objects/email-changes.ts AS old-email-changes.ts
+                PUT old-src/objects/email-changes.ts AS old-email-changes.ts
                 WRITE email-change.ts {
                     // from ./old-email-changes.ts
                 }
 
-                PUT src/objects/password-resets.ts AS old-password-resets.ts
+                PUT old-src/objects/password-resets.ts AS old-password-resets.ts
                 WRITE password-reset.ts {
                     // from ./old-password-resets.ts
                     // TODO, not exposed in the API as a type
@@ -377,7 +378,7 @@ new-src {
                     // from old.ts
                 }
 
-                PUT src/objects/godparent-requests.ts AS old-godparent-requests.ts
+                PUT old-src/objects/godparent-requests.ts AS old-godparent-requests.ts
                 WRITE godparent-request.ts {
                     // from ./old-godparent-requests.ts
                 }
@@ -505,7 +506,7 @@ new-src {
             }
         }
         health-checks {
-            PUT src/services/healthcheck.ts AS old.ts
+            PUT old-src/services/healthcheck.ts AS old.ts
 
             WRITE README.md {
                 Health Checks
@@ -602,7 +603,7 @@ new-src {
             }
         }
         events {
-            PUT src/objects/events.ts AS old.ts
+            PUT old-src/objects/events.ts AS old.ts
 
             WRITE README.md {
                 Évènements
@@ -635,7 +636,7 @@ new-src {
                     // from old.ts
                 }
 
-                PUT src/objects/event-managers.ts AS old-event-managers.ts
+                PUT old-src/objects/event-managers.ts AS old-event-managers.ts
 
                 WRITE event-manager.ts {
                     // from ./old-event-managers.ts
@@ -716,7 +717,7 @@ new-src {
             }
         }
         groups {
-            PUT src/objects/groups.ts AS old.ts
+            PUT old-src/objects/groups.ts AS old.ts
 
             WRITE README.md {
                 Groupes 
@@ -734,9 +735,9 @@ new-src {
                     // from old.ts
                 }
                 
-                PUT src/objects/group-members.ts AS old-group-members.ts
+                PUT old-src/objects/group-members.ts AS old-group-members.ts
 
-                WRITE group-member {
+                WRITE group-member.ts {
                     // from ./old-group-members.ts
                     // TODO maybe rename membership ? 
                 }
@@ -816,7 +817,7 @@ new-src {
             }
         }
         gitlab {
-            PUT src/services/gitlab.ts AS old.ts
+            PUT old-src/services/gitlab.ts AS old.ts
 
             WRITE README.md {
                 Gitlab
@@ -873,7 +874,7 @@ new-src {
             }
         }
         links {
-            PUT src/objects/links.ts AS old.ts
+            PUT old-src/objects/links.ts AS old.ts
 
             WRITE README.md {
                 Liens
@@ -902,7 +903,7 @@ new-src {
             }
         }
         logs {
-            PUT src/objects/logs.ts AS old.ts
+            PUT old-src/objects/logs.ts AS old.ts
 
             WRITE README.md {
                 Logs
@@ -929,11 +930,11 @@ new-src {
         }
         # subjects, majors, minors, teaching units
         curriculum {
-            PUT src/objects/subjects.ts AS old-subjects.ts
-            PUT src/objects/majors.ts AS old-majors.ts
-            PUT src/objects/minors.ts AS old-minors.ts
-            PUT src/objects/teaching-units.ts AS old-teaching-units.ts
-            PUT src/services/ade.ts AS old-ade.ts
+            PUT old-src/objects/subjects.ts AS old-subjects.ts
+            PUT old-src/objects/majors.ts AS old-majors.ts
+            PUT old-src/objects/minors.ts AS old-minors.ts
+            PUT old-src/objects/teaching-units.ts AS old-teaching-units.ts
+            PUT old-src/services/ade.ts AS old-ade.ts
 
             WRITE README.md {
                 Curriculum
@@ -1053,9 +1054,9 @@ new-src {
         }
         # tickets, bookings, qrcode type, bookings, registration verifications, profits breakdown etc
         ticketing {
-            PUT src/objects/tickets.ts AS old-ticket.ts
-            PUT src/objects/registrations.ts AS old-registrations.ts
-            PUT src/objects/ticket-groups.ts AS old-ticket-groups.ts
+            PUT old-src/objects/tickets.ts AS old-ticket.ts
+            PUT old-src/objects/registrations.ts AS old-registrations.ts
+            PUT old-src/objects/ticket-groups.ts AS old-ticket-groups.ts
 
             WRITE README.md {
                 Billetterie
@@ -1237,7 +1238,7 @@ new-src {
         }
         # everything related to third party apps (oauth clients)
         oauth {
-            PUT src/services/oauth.ts AS old.ts
+            PUT old-src/services/oauth.ts AS old.ts
 
             WRITE README.md {
                 ---
@@ -1336,7 +1337,7 @@ new-src {
             }
         }
         reactions {
-            PUT src/objects/reactions.ts AS old.ts
+            PUT old-src/objects/reactions.ts AS old.ts
 
             WRITE README.md {
                 Réactions
@@ -1401,7 +1402,7 @@ new-src {
         }
         # external services
         services {
-            PUT src/objects/services.ts AS old.ts
+            PUT old-src/objects/services.ts AS old.ts
 
             WRITE README.md {
                 Services
@@ -1448,7 +1449,7 @@ new-src {
             }
         }
         student-associations {
-            PUT src/objects/student-associations.ts AS old.ts
+            PUT old-src/objects/student-associations.ts AS old.ts
 
             WRITE README.md {
                 Associations étudiantes
@@ -1495,7 +1496,7 @@ new-src {
             }
         }
         schools {
-            PUT src/objects/schools.ts AS old.ts
+            PUT old-src/objects/schools.ts AS old.ts
 
             WRITE README.md {
                 Écoles
@@ -1543,8 +1544,8 @@ new-src {
         }
 
         notifications {
-            PUT src/objects/notifications.ts AS old.ts
-            PUT src/services/notifications.ts AS old-service.ts
+            PUT old-src/objects/notifications.ts AS old.ts
+            PUT old-src/services/notifications.ts AS old-service.ts
 
             WRITE README.md {
                 Notifications
@@ -1615,7 +1616,7 @@ new-src {
         }
 
         payments {
-            PUT src/services/lydia.ts AS old-lydia.ts
+            PUT old-src/services/lydia.ts AS old-lydia.ts
 
             WRITE README.md {
                 ---
@@ -1647,7 +1648,7 @@ new-src {
                     // maybe do an interface instead, and have EventProfitsBreakdown extend it by adding byTicket, and ShopProfitsBreakdown extend it by adding byProduct or sth like that
                 }
 
-                PUT src/objects/promotions.ts AS old-promotions.ts
+                PUT old-src/objects/promotions.ts AS old-promotions.ts
                 WRITE promotion.ts {
                     // TODO, not exposed in the API yet
                 }
@@ -1657,8 +1658,8 @@ new-src {
             }
 
             utils {
-                PUT src/services/lydia.ts AS old-lydia.ts
-                PUT src/services/paypal.ts AS old-paypal.ts
+                PUT old-src/services/lydia.ts AS old-lydia.ts
+                PUT old-src/services/paypal.ts AS old-paypal.ts
 
                 WRITE query.lydia-account {
                     // from ./old-lydia.ts
@@ -1679,7 +1680,7 @@ new-src {
                     // TODO rename to mutation.finish-paypal-booking-payment
                 }
 
-                PUT src/objects/promotions.ts AS old-promotions.ts
+                PUT old-src/objects/promotions.ts AS old-promotions.ts
                 WRITE mutation.claim-promotion-code.ts {
                     // from ./old-promotions.ts
                 }
