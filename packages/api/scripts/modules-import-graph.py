@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 import re
+import subprocess
 from operator import le
 from pathlib import Path
 
 from networkx import DiGraph, simple_cycles
 from networkx.drawing.nx_pydot import write_dot
 
-IGNORE_MODULES = ["global", ]
+IGNORE_MODULES = ["global"]
 
 here = Path(__file__).parent
 
@@ -44,3 +45,5 @@ write_dot(import_graph, here / "modules-import-graph.dot")
 
 for cycle in simple_cycles(import_graph):
     print(f"\033[1;31mCycle detected: {' -> '.join(cycle)}\033[0m")
+
+subprocess.run(["dot", "-Tpng", here/"modules-import-graph.dot", "-o", here/"modules-import-graph.png"])
