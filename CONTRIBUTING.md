@@ -88,3 +88,9 @@ Où:
 L'important et surtout de ne pas passer 3 ans à nommer son commit. Si vous ne savez pas quel type de commit utiliser, utilisez `feat` dans le doute.
 
 Même si l'anglais est préférable, vous pouvez écrire les messages de commits en français, c'est pas très grave.
+
+### Quelques autres conventions
+
+- Évitez d'avoir le mot "type" dans le nom d'un type (API) ou d'une table ou enum (Prisma)
+- Ne pas utiliser le nom de variable "path" quand on travaille sur des chemins de fichiers, car on utilise déjà `path` pour le module `path` de NodeJS
+- Pour les fonctions utilitaires de [lodash](https://lodash.com/docs/4.17.15), préférer installer séparément les bibliothèques `lodash.*` (ex. `lodash.omit`) plutôt que d'installer `lodash` en entier
