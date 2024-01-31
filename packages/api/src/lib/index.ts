@@ -9,6 +9,8 @@ export * from './context.js';
 export * from './date.js';
 export * from './errors.js';
 export * from './godchildren-tree.js';
+export * from './ldap-school.js';
+export * from './ldap.js';
 export * from './markdown.js';
 export * from './pictures.js';
 export * from './prisma.js';
