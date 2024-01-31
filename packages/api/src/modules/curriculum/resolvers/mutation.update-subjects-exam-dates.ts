@@ -1,25 +1,6 @@
-import { builder, prisma } from '../lib/index.js';
-import { log } from '../objects/logs.js';
-
-export async function nextExamDates(user: {
-  schoolUid: string | null;
-}): Promise<Record<string, Date>> {
-  if (!user.schoolUid) return {};
-  const exams = (await fetch(`https://calendrier-n7.inpt.fr/${user.schoolUid}/next-exams`).then(
-    async (response) => {
-      if (response.status !== 200) {
-        await log('ADE', 'error', { error: await response.text() });
-        return {};
-      }
-
-      return response.json();
-    },
-  )) as Record<string, { starts_at: string }>;
-
-  return Object.fromEntries(
-    Object.entries(exams).map(([code, exam]) => [code, new Date(exam.starts_at)]),
-  );
-}
+import { builder, prisma } from '#lib';
+import { log, nextExamDates } from '#modules';
+// maybe delete, and call the associated resolver function in the backend w/o giving access to this. it's kinda pointless
 
 builder.mutationField('updateSubjectsExamDates', (t) =>
   t.boolean({

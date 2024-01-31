@@ -13,7 +13,8 @@
     "outDir": "./build",
     "rootDir": ".",
     "paths": {
-      "#lib": ["old-src/lib/index.js"]
+      "#lib": ["./src/lib/index.js"],
+      "#modules": ["./src/modules/index.js"],
     }
   }
 }

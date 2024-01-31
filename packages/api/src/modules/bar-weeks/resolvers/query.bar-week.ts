@@ -1,1 +1,11 @@
-// from old.ts
+import { builder, prisma } from "#lib";
+import { BarWeekType } from "#modules";
+
+builder.queryField('barWeek', (t) =>
+  t.prismaField({
+    type: BarWeekType,
+    args: { uid: t.arg.string() },
+    resolve: async (query, {}, { uid }) =>
+      prisma.barWeek.findFirstOrThrow({ ...query, where: { uid }, orderBy: { startsAt: 'desc' } }),
+  }),
+);

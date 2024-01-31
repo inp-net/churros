@@ -5,6 +5,7 @@
   "cssvar.postcssSyntax": { "postcss-scss": ["scss", "svelte"] },
   "scss.lint.unknownAtRules": "ignore",
   "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
   "sql-formatter.dialect": "pl/sql",
   "sql-formatter.uppercase": true
 }

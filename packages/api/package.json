@@ -97,7 +97,8 @@
     "yaml": "^2.3.4"
   },
   "imports": {
-    "#lib": "./build/src/lib/index.js"
+    "#lib": "./build/src/lib/index.js",
+    "#modules": "./build/src/modules/index.js"
   },
   "prisma": {
     "seed": "tsx ./src/seed.ts"

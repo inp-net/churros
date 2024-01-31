@@ -4,6 +4,7 @@
 
 export * from "./major.teaching-units.js";
 export * from "./minor.teaching-units.js";
+export * from "./mutation.update-subjects-exam-dates.js";
 export * from "./query.major.js";
 export * from "./query.majors.js";
 export * from "./query.minor.js";
