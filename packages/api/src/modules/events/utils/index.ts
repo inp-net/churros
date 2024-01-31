@@ -4,3 +4,4 @@
 
 export * from './places.js';
 export * from './recurrence.js';
+export * from './uid.js';

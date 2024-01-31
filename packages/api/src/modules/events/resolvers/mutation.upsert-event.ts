@@ -1,8 +1,9 @@
-import { builder, onBoard, prisma } from '#lib';
+import { builder, prisma } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
+import { onBoard } from '#modules/groups';
 import { LinkInput } from '#modules/links';
 import { scheduleShotgunNotifications } from '#modules/notifications';
-import { TicketGroupInput, TicketInput } from '#modules/ticketing';
+import { TicketGroupInput, TicketInput, createTicketUid } from '#modules/ticketing';
 import * as PrismaTypes from '@prisma/client';
 import { EventFrequency, GroupType } from '@prisma/client';
 import { isBefore } from 'date-fns';

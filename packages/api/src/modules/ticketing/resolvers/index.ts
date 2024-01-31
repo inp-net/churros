@@ -6,7 +6,6 @@ export * from './mutation.cancel-registration.js';
 export * from './mutation.check-if-registration-is-paid.js';
 export * from './mutation.delete-ticket-group.js';
 export * from './mutation.delete-ticket.js';
-export * from './mutation.finish-paypal-registration-payment.js';
 export * from './mutation.oppose-registration.js';
 export * from './mutation.paid-registration.js';
 export * from './mutation.upsert-registration.js';

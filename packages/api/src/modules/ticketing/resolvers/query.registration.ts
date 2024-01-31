@@ -1,2 +1,25 @@
-// from ./old-registrations.ts
+import { builder, prisma } from '#lib'
+import {} from '#modules/global'
+import { RegistrationType } from '../index.js'
 // TODO rename to booking
+
+builder.queryField('registration', (t) =>
+  t.prismaField({
+    type: RegistrationType,
+    errors: {},
+    args: {
+      id: t.arg.id(),
+    },
+    async resolve(query, _, { id }) {
+      return prisma.registration.findFirstOrThrow({
+        ...query,
+        where: {
+          id: id.toLowerCase(),
+        },
+        include: {
+          lydiaTransaction: true,
+        },
+      });
+    },
+  }),
+);

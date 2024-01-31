@@ -1,1 +1,12 @@
-// from old.ts
+import { builder, prisma } from '#lib'
+import {} from '#modules/global'
+import { UserCandidateType } from '../index.js'
+
+builder.queryField('userCandidate', (t) =>
+  t.prismaField({
+    type: UserCandidateType,
+    args: { token: t.arg.string() },
+    resolve: async (query, _, { token }) =>
+      prisma.userCandidate.findUniqueOrThrow({ ...query, where: { token } }),
+  }),
+);

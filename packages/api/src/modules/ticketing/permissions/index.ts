@@ -3,3 +3,4 @@
  */
 
 export * from './registration.js';
+export * from './tickets.js';

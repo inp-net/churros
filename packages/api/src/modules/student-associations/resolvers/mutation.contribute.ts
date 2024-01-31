@@ -33,6 +33,7 @@ builder.mutationField('contribute', (t) =>
       if (!contributionOption.offeredIn.majors.some((major) => user.major?.id === major.id))
         throw new GraphQLError("Cette option de cotisation n'est pas offerte à votre école");
 
+      // eslint-disable-next-line prefer-const
       let { transaction, ...contribution } = await prisma.contribution.upsert({
         where: {
           optionId_userId: {

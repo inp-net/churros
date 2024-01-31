@@ -2,12 +2,26 @@ import { prisma } from '#lib';
 import dichotomid from 'dichotomid';
 import slug from 'slug';
 
-export async function createUid({ title, groupId }: { title: string; groupId: string }) {
-  const base = slug(title);
+export async function createTicketUid({
+  name,
+  eventId,
+  ticketGroupId,
+  ticketGroupName,
+}: {
+  name: string;
+  eventId: string;
+  ticketGroupId: null | undefined | string;
+  ticketGroupName: null | undefined | string;
+}) {
+  const base = ticketGroupName ? `${slug(ticketGroupName)}--${slug(name)}` : slug(name);
   const n = await dichotomid(
     async (n) =>
-      !(await prisma.event.findUnique({
-        where: { groupId_uid: { groupId, uid: `${base}${n > 1 ? `-${n}` : ''}` } },
+      !(await prisma.ticket.findFirst({
+        where: {
+          eventId,
+          ticketGroupId,
+          name: `${base}${n > 1 ? `-${n}` : ''}`,
+        },
       })),
   );
   return `${base}${n > 1 ? `-${n}` : ''}`;
