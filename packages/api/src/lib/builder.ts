@@ -150,6 +150,7 @@ export const builder = new SchemaBuilder<{
         id: globalID,
       };
     },
+    nodesOnConnection: true,
   },
   tracing: {
     default: (config) => isRootField(config),
