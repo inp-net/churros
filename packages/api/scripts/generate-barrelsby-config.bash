@@ -16,6 +16,9 @@ for dir in src/{lib,permissions,server,modules/*/*}; do
     if [ ! -d "$dir" ]; then
         continue
     fi
+    if [ -z "$(ls -A "$dir")" ]; then
+	continue
+    fi
     jq < barrelsby.config.json ".directory = .directory + [\"./$dir\"]" | sponge barrelsby.config.json
 done
 
