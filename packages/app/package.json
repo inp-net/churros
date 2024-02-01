@@ -75,8 +75,7 @@
     "build": "node src/scripts/generate-dotenv-service-worker.js && svelte-kit sync & yarn zeus && yarn check --threshold warning && vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "clean": "git clean -Xdf .",
-    "dev": "yarn mock-buildinfo && yarn zeus && vite dev --host",
-    "mock-buildinfo": "echo 'export const CURRENT_VERSION=\"1.41.0\"; export const CURRENT_COMMIT=\"dev\";' > src/lib/buildinfo.ts",
+    "dev": "yarn run -T generate-buildinfo && yarn zeus && vite dev --host",
     "preview": "vite preview",
     "start": "ORIGIN=http://app node ./build/index.js",
     "zeus": "zeus ../api/build/schema.graphql ./src --es --subscriptions"

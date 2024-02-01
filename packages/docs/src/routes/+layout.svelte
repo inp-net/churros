@@ -2,9 +2,9 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import TableOfContents from '$lib/TableOfContents.svelte';
-	import { CURRENT_COMMIT, CURRENT_VERSION } from '@centraverse/api/src/lib/buildinfo';
 	import { onMount } from 'svelte';
 	import { colorNames } from '$lib/colors';
+	import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
 
 	onMount(() => {
 		if (!browser) return;
@@ -51,8 +51,8 @@
 			<p>
 				Churros API, version {CURRENT_VERSION} (at
 				<a href="https://git.inpt.fr/inp-net/churros/-/commit/{CURRENT_COMMIT}">
-					<code class="no-color">{CURRENT_COMMIT.slice(0, 10).trim()}</code>
-				</a>)
+					<code class="no-color">{CURRENT_COMMIT.slice(0, 11).trim()}</code></a
+				>)
 			</p>
 			<a class="net7" href="https://net7.dev"
 				>Made with <span style:color="red"><strong>&lt;3</strong></span> by

@@ -16,6 +16,7 @@ const tag = await git(
 for (const relativePath of [
   'packages/app/src/lib/buildinfo.ts',
   'packages/api/src/lib/buildinfo.ts',
+  'packages/docs/src/lib/buildinfo.ts',
 ]) {
   const filepath = path.join(toplevel.trim(), relativePath);
   console.log(`Injecting CURRENT_COMMIT="${hash}" into ${filepath}`);

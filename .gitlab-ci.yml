@@ -22,10 +22,13 @@ pages:
   script:
     - yarn workspace @centraverse/docs install --immutable
     - yarn workspace @centraverse/docs create-dotenv
+    - echo "export const CURRENT_COMMIT='$CI_COMMIT_SHORT_SHA';" > packages/docs/src/lib/buildinfo.ts
+    - bash -c 'LATEST_TAG=$(git describe --tags --abbrev=0); echo "export const CURRENT_VERSION=\'${LATEST_TAG#v}\';" >> packages/docs/src/lib/buildinfo.ts'
     - yarn workspace @centraverse/docs build
     - mv packages/docs/build public
   artifacts:
     paths:
       - public
+
 include:
   - template: SAST.gitlab-ci.yml
