@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Ajout d'une page pour pouvoir gérer les services depuis l'appli pour les admins
+
 ## [1.44.0] - 2024-01-25
 
 ### Nouveautés
