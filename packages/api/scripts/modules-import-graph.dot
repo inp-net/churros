@@ -1,0 +1,38 @@
+strict digraph  {
+documents;
+comments;
+schools;
+curriculum;
+"student-associations";
+payments;
+ticketing;
+links;
+users;
+groups;
+events;
+notifications;
+reactions;
+posts;
+gitlab;
+documents -> comments;
+comments -> notifications;
+schools -> curriculum;
+curriculum -> documents;
+"student-associations" -> payments;
+ticketing -> links;
+ticketing -> payments;
+ticketing -> users;
+users -> notifications;
+users -> links;
+groups -> links;
+groups -> users;
+events -> links;
+events -> notifications;
+events -> users;
+events -> payments;
+events -> ticketing;
+events -> reactions;
+posts -> notifications;
+posts -> links;
+gitlab -> users;
+}

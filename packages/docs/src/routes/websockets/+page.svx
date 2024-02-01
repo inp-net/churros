@@ -1,0 +1,18 @@
+<script>
+	import { PUBLIC_API_WEBSOCKET_URL } from '$env/static/public';
+    import LiveIndicator from '$lib/LiveIndicator.svelte';
+</script>
+
+<svelte:head>
+    <title>WebSockets—Churros API</title>
+</svelte:head>
+
+# WebSockets
+
+## Introduction
+
+Les queries avec  <LiveIndicator />, ainsi que les _subscriptions_, peuvent être récupérées via le standard [GraphQL over WebSocket](https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md).
+
+## Endpoint
+
+L'endpoint pour requêtes GraphQL par WebSockets est <code>{PUBLIC_API_WEBSOCKET_URL}</code>.

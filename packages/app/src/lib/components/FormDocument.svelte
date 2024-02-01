@@ -84,7 +84,7 @@
 
     if (files) {
       await Promise.all(
-        [...files].map(async (file) => {
+        Array.from(files).map(async (file) => {
           await $zeus.mutate(
             {
               uploadDocumentFile: [
@@ -105,7 +105,7 @@
     }
 
     await Promise.all(
-      [...filesToDelete].map(async (path) => {
+      Array.from(filesToDelete).map(async (path) => {
         await $zeus.mutate({
           deleteDocumentFile: [
             {
@@ -186,7 +186,7 @@
         bind:files
       >
         <ul class="new-files nobullet">
-          {#each files ? [...files] : [] as file}
+          {#each Array.from(files ?? []) as file}
             <li class="existing-file">
               <span class="filename">{file.name}</span>
               <InputCheckbox
@@ -196,7 +196,8 @@
               ></InputCheckbox>
               <ButtonGhost
                 on:click={() => {
-                  files = fileListOf([...(files ?? [])].filter((f) => f.name !== file.name));
+                  // eslint-disable-next-line unicorn/prefer-spread
+                  files = fileListOf(Array.from(files ?? []).filter((f) => f.name !== file.name));
                 }}
                 danger
                 help="Supprimer"><IconDelete></IconDelete></ButtonGhost

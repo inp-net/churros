@@ -88,7 +88,7 @@
   // Date actuelle mise à jour toutes les secondes
   $: now = new Date();
 
-  let interval: NodeJS.Timeout;
+  let interval: ReturnType<typeof setInterval>;
 
   const updateTime = () => {
     now = new Date();

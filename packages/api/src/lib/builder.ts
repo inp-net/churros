@@ -1,3 +1,5 @@
+import type { Context } from '#lib';
+import { authScopes, type AuthContexts, type AuthScopes } from '#lib';
 import SchemaBuilder, { type BuiltinScalarRef } from '@pothos/core';
 import ComplexityPlugin from '@pothos/plugin-complexity';
 import DataloaderPlugin from '@pothos/plugin-dataloader';
@@ -14,8 +16,6 @@ import SmartSubscriptionsPlugin, {
 import TracingPlugin, { isRootField, wrapResolver } from '@pothos/plugin-tracing';
 import ValidationPlugin from '@pothos/plugin-validation';
 import { GraphQLError, Kind } from 'graphql';
-import { authScopes, type AuthContexts, type AuthScopes } from '../auth.js';
-import type { Context } from '../context.js';
 import { prisma } from './prisma.js';
 import { pubsub } from './pubsub.js';
 

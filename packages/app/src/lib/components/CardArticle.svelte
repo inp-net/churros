@@ -184,6 +184,7 @@
   .content {
     flex-grow: 1;
     grid-column: 2;
+    min-width: 0;
   }
 
   .group-logo {
