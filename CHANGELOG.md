@@ -11,6 +11,11 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+
+### Technique
+
+- Ajout d'une page pour pouvoir gérer les services depuis l'appli pour les admins
+
 ### Corrections
 
 - Lorsqu'un post contient une suite de caractères trop longue (lien par exemple), la page ne se mettra plus en scroll horizontal (#800) (!102) (@ragotc1)
@@ -23,6 +28,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Améliorations
 
 - Les QR Code sont désormais noirs sur fonds blancs peu importe le thème choisi (#526) (!102) (@ragotc1)
+
 
 ## [1.44.0] - 2024-01-25
 
