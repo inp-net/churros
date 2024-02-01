@@ -26,6 +26,16 @@
         }}
       />
     </li>
+    <li>
+      <CardService
+        service={{
+          name: 'Manage Services',
+          logo: 'services',
+          logoSourceType: 'Icon',
+          url: '/backrooms/services',
+        }}
+      />
+    </li>
   </ul>
 
   <div class="goto">
