@@ -72,6 +72,6 @@ function updateInFile(filename: string, exported: boolean): void {
   writeFileSync(writeTo, writeToLines.join('\n'));
 }
 
-updateInFile('../src/lib/builder.ts', true);
+updateInFile('../src/lib/global-id.ts', true);
 updateInFile('../../app/src/routes/(app)/bookings/[pseudoID]/+page.server.ts', false);
 updateInFile('../../app/src/lib/typenames.ts', false);
