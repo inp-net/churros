@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import { z } from 'zod';
 import { api } from './express.js';
 
+console.info(`Serving OAuth code-token exchange endpoint on /token`);
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use('/token', async (request, response) => {
   async function error(text: string, code = 401) {

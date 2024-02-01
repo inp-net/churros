@@ -1,6 +1,6 @@
 import express from 'express';
 
-const maintenance = express();
+export const maintenance = express();
 
 maintenance.get('/', (_, res) => {
   console.info(`Hit maintenance page`);
@@ -9,8 +9,4 @@ maintenance.get('/', (_, res) => {
 
 maintenance.get('/*', (_, res) => {
   res.redirect('/');
-});
-
-maintenance.listen(4002, () => {
-  console.info('Maintenance page server listening at http://localhost:4002');
 });

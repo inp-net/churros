@@ -6,7 +6,6 @@
   "directory": [
     "./src/lib",
     "./src/permissions",
-    "./src/server",
     "./src/modules/announcements/resolvers",
     "./src/modules/announcements/types",
     "./src/modules/bar-weeks/resolvers",
