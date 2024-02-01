@@ -11,8 +11,10 @@ build:
     - yarn build
 
 pages:
+  # will fail before the query buildInfo gets added to the publicly-accessible repo
+  allow_failure: true
   before_script:
-    - apt-get update && apt-get install -y curl git
+    - apt-get update && apt-get install -y curl git jq
     - export VOLTA_HOME=/root/.volta
     - export PATH=$VOLTA_HOME/bin:$PATH
     - curl https://get.volta.sh | bash -s -- --skip-setup
@@ -22,8 +24,9 @@ pages:
   script:
     - yarn workspace @centraverse/docs install --immutable
     - yarn workspace @centraverse/docs create-dotenv
-    - echo "export const CURRENT_COMMIT='$CI_COMMIT_SHORT_SHA';" > packages/docs/src/lib/buildinfo.ts
-    - bash -c 'LATEST_TAG=$(git describe --tags --abbrev=0); echo "export const CURRENT_VERSION=\'${LATEST_TAG#v}\';" >> packages/docs/src/lib/buildinfo.ts'
+      # magnifique non?
+    - >
+      curl -X POST -H 'Content-Type: application/json' -d '{ "query": "query { buildInfo { commit, version } } "}' $PUBLIC_API_URL | jq --raw-output '"export const CURRENT_COMMIT = `" + .data.buildInfo.commit + "`,\nexport const CURRENT_VERSION = `" + .data.buildInfo.version + "`;"' > packages/docs/src/lib/buildinfo.ts
     - yarn workspace @centraverse/docs build
     - mv packages/docs/build public
   artifacts:
