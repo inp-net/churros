@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { CURRENT_VERSION, prisma } from '#lib';
 import {
   CredentialType,
   type Major,
@@ -45,6 +45,7 @@ export const saveUser = async ({
       schoolUid,
       cededImageRightsToTVn7,
       apprentice,
+      latestVersionSeenInChangelog: CURRENT_VERSION,
       credentials: { create: { type: CredentialType.Password, value: password } },
       links: { create: [] },
       canAccessDocuments: Boolean(majorId), // TODO behavior should be different for ensat

@@ -84,7 +84,7 @@ builder.mutationField('paidRegistration', (t) =>
 
       const ticket = await prisma.ticket.findUnique({
         where: { id: registration.ticket.id },
-        include: { event: { include: { beneficiary: true } } },
+        include: { event: { include: { beneficiary: true, group: true } } },
       });
       if (!ticket) throw new GraphQLError('Ticket not found');
       if (!paymentMethod) throw new GraphQLError('Payment method not found');

@@ -1,7 +1,7 @@
 import { prisma } from '#lib';
 
 export async function priceWithPromotionsApplied(
-  ticket: { price: number; id: string },
+  ticket: { price: number; id: string; event: { id: string; group: { id: string } } },
   user: { id: string } | undefined,
 ) {
   if (!user) return ticket.price;
@@ -14,9 +14,11 @@ export async function priceWithPromotionsApplied(
         validUntil: {
           gte: new Date(),
         },
-        validOn: {
-          some: { id: ticket.id },
-        },
+        OR: [
+          { validOnTickets: { some: { id: ticket.id } } },
+          { validOnEvents: { some: { id: ticket.event.id } } },
+          { validOnGroups: { some: { id: ticket.event.group.id } } },
+        ],
       },
     },
     include: { promotion: true },

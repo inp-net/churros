@@ -29,9 +29,14 @@ export const TicketType = builder.prismaNode('Ticket', {
     basePrice: t.exposeFloat('price'),
     price: t.float({
       async resolve({ price, id }, _, { user }) {
-        return actualPrice({ price, id }, user);
+        const { event } = await prisma.ticket.findUniqueOrThrow({
+          where: { id },
+          include: { event: { include: { group: true } } },
+        });
+        return actualPrice({ price, id, event }, user);
       },
     }),
+
     capacity: t.exposeInt('capacity'),
     registrations: t.relation('registrations', {
       authScopes: { loggedIn: true },
@@ -82,6 +87,7 @@ export const TicketType = builder.prismaNode('Ticket', {
     autojoinGroups: t.relation('autojoinGroups'),
     event: t.relation('event'),
     group: t.relation('group', { nullable: true }),
+    order: t.exposeInt('order'),
     remainingGodsons: t.int({
       async resolve({ godsonLimit, eventId }, _, { user }) {
         // No godsons for external users, since godson limits can't be reasonably enforced

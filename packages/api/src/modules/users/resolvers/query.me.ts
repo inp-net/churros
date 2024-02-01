@@ -6,7 +6,7 @@ import { UserType } from '../index.js';
 builder.queryField('me', (t) =>
   t.withAuth({ loggedIn: true }).prismaField({
     directives: {
-      rateLimit: { duration: 1, limit: 5 },
+      rateLimit: { duration: 1, limit: 10 },
     },
     type: UserType,
     resolve: (_query, _, {}, { user }) => user,

@@ -6,23 +6,11 @@ import { PaymentMethod } from '@prisma/client';
 // although the byTicket is specific to ticketing so... idk
 // maybe do an interface instead, and have EventProfitsBreakdown extend it by adding byTicket, and ShopProfitsBreakdown extend it by adding byProduct or sth like that
 
-class ProfitsBreakdown {
-  /* eslint-disable @typescript-eslint/parameter-properties */
+type ProfitsBreakdown = {
   total: number;
   byPaymentMethod: Record<PaymentMethod, number>;
   byTicket: Array<{ id: string; amount: number }>;
-  /* eslint-enable @typescript-eslint/parameter-properties */
-
-  constructor(
-    total: number,
-    byPaymentMethod: Record<PaymentMethod, number>,
-    byTicket: Array<{ id: string; amount: number }>,
-  ) {
-    this.total = total;
-    this.byPaymentMethod = byPaymentMethod;
-    this.byTicket = byTicket;
-  }
-}
+};
 
 export const ProfitsBreakdownType = builder
   .objectRef<ProfitsBreakdown>('ProfitsBreakdown')

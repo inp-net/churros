@@ -1,9 +1,14 @@
 import { builder, prisma } from '#lib';
 
+
 builder.mutationField('deleteEventManager', (t) =>
   t.field({
+    description: 'Supprimer un manager',
     type: 'Boolean',
-    args: { user: t.arg.string(), eventId: t.arg.id() },
+    args: {
+      user: t.arg.string({ description: 'uid de la personne' }),
+      eventId: t.arg.id({ description: "identifiant de l'évènement" }),
+    },
     async authScopes(_, { eventId, user }, { user: currentUser }) {
       const event = await prisma.event.findUnique({
         where: { id: eventId },

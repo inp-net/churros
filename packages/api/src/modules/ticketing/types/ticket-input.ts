@@ -23,8 +23,8 @@ export const TicketInput = builder.inputType('TicketInput', {
     openToSchools: t.field({ type: ['String'] }),
     openToMajors: t.field({ type: ['String'] }),
     openToApprentices: t.boolean({ required: false }),
-    id: t.id({ required: false }),
     autojoinGroups: t.field({ type: ['String'] }),
     groupName: t.string({ required: false }),
+    order: t.int({ required: false }),
   }),
 });
