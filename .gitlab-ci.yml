@@ -26,7 +26,7 @@ pages:
     - yarn workspace @centraverse/docs create-dotenv
       # magnifique non?
     - >
-      curl -X POST -H 'Content-Type: application/json' -d '{ "query": "query { buildInfo { commit, version } } "}' $PUBLIC_API_URL | jq --raw-output '"export const CURRENT_COMMIT = `" + .data.buildInfo.commit + "`,\nexport const CURRENT_VERSION = `" + .data.buildInfo.version + "`;"' > packages/docs/src/lib/buildinfo.ts
+      curl -X POST -H 'Content-Type: application/json' -d '{ "query": "query { buildInfo { commit, version } } "}' $PUBLIC_API_URL | jq --raw-output '"export const CURRENT_COMMIT = `" + .data.buildInfo.commit + "`;\nexport const CURRENT_VERSION = `" + .data.buildInfo.version + "`;"' > packages/docs/src/lib/buildinfo.ts
     - yarn workspace @centraverse/docs build
     - mv packages/docs/build public
   artifacts:
