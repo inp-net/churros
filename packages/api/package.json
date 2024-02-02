@@ -76,6 +76,7 @@
     "@tsconfig/node18": "^18.2.2",
     "@tsconfig/strictest": "^2.0.2",
     "@types/bunyan": "^1.8.11",
+    "@types/cli": "^0.11.25",
     "@types/cli-progress": "^3.11.5",
     "@types/cookie": "^0.6.0",
     "@types/cors": "^2.8.17",
@@ -88,16 +89,20 @@
     "@types/nodemailer": "^6.4.14",
     "@types/slug": "^5.0.7",
     "@types/web-push": "^3.6.3",
+    "@types/which": "^3.0.3",
     "@types/ws": "^8.5.10",
     "barrelsby": "^2.8.1",
     "bunyan": "^1.8.15",
+    "cli": "^1.0.1",
     "cli-progress": "^3.12.0",
     "execa": "^8.0.1",
     "glob": "^10.3.10",
+    "graph-cycles": "^3.0.0",
     "prettier": "^3.2.4",
     "prisma": "5.7.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
+    "which": "^4.0.0",
     "yaml": "^2.3.4"
   },
   "imports": {
@@ -112,7 +117,6 @@
   "scripts": {
     "format-at": "prettier --write --ignore-unknown",
     "format": "yarn format-at .",
-    "add-fulltextsearch": "python scripts/add-fulltextsearch.py",
     "build": "prisma generate &&  yarn copy-changelog && tsx ./scripts/update-id-prefix-to-typename-map.ts && yarn barrelize && tsc && tsx ./src/post-build.ts",
     "copy-changelog": "cp ../../CHANGELOG.md ./static/CHANGELOG.md",
     "clean": "git clean -Xdf .",
@@ -122,7 +126,8 @@
     "barrelize": "tsx scripts/generate-barrelsby-config.ts && echo Running barrelsby && barrelsby --config barrelsby.config.json && tsx scripts/fix-extensionless-barrel-imports.ts && echo Formatting barrels for consistency && yarn format-at ./src/modules/**/index.ts --log-level silent",
     "new-module": "tsx ./scripts/new-module.ts",
     "add-search-support": "tsx ./scripts/add-search-support.ts",
-    "migration": "cd .. && yarn migration"
+    "modules-import-graph": "tsx ./scripts/modules-import-graph.ts --exclude global --png",
+    "migration": "yarn run -T migration"
   },
   "type": "module",
   "volta": {
