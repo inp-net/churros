@@ -214,7 +214,7 @@ const columns: string[] = prismaRuntimeModel.models[tableName].fields
 p.note(
   "Chaque colonne est affectée d'un poids,\nqui va de 'A' (le plus fortement pondéré\n, par exemple un prénom pour une recherche de personnes)\n à 'D' (le moins fortement pondéré)",
 );
-let alreadySelected = [];
+let alreadySelected: string[] = [];
 const aWeightedColumns: string[] = ask(
   await p.multiselect({
     message: "Colonnes à pondérer avec le poids 'A' (le plus important)",
