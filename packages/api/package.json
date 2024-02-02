@@ -98,6 +98,7 @@
     "execa": "^8.0.1",
     "glob": "^10.3.10",
     "graph-cycles": "^3.0.0",
+    "nodemon": "^3.0.3",
     "prettier": "^3.2.4",
     "prisma": "5.7.0",
     "tsx": "^4.7.0",
@@ -127,7 +128,8 @@
     "new-module": "tsx ./scripts/new-module.ts",
     "add-search-support": "tsx ./scripts/add-search-support.ts",
     "modules-import-graph": "tsx ./scripts/modules-import-graph.ts --exclude global --png",
-    "migration": "yarn run -T migration"
+    "migration": "yarn run -T migration",
+    "watch-barrels": "nodemon --exec 'yarn barrelize' --watch src/modules -e ts --ignore 'src/modules/**/index.ts'"
   },
   "type": "module",
   "volta": {
