@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { visibleEventsPrismaQuery } from '#permissions';
+import { prismaQueryVisibleEvents } from '#permissions';
 import { Visibility, type Prisma } from '@prisma/client';
 import { endOfDay, startOfDay } from 'date-fns';
 import { EventType, findNextRecurringEvent } from '../index.js';
@@ -64,7 +64,7 @@ builder.queryField('events', (t) =>
         .findMany({
           ...query,
           where: {
-            AND: [constraints, visibleEventsPrismaQuery(user)],
+            AND: [constraints, prismaQueryVisibleEvents(user)],
           },
           orderBy: { startsAt: 'asc' },
         })

@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { visibleEventsPrismaQuery } from '#permissions';
+import { prismaQueryVisibleEvents } from '#permissions';
 import { Visibility } from '@prisma/client';
 import { EventType } from '../index.js';
 // TODO rename to group.events
@@ -23,7 +23,7 @@ builder.queryField('eventsOfGroup', (t) =>
 
       return prisma.event.findMany({
         ...query,
-        where: visibleEventsPrismaQuery(user),
+        where: prismaQueryVisibleEvents(user),
         orderBy: { startsAt: 'desc' },
       });
     },

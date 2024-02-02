@@ -1,3 +1,5 @@
+import { prisma } from '#lib';
+
 export function userCanSeeTicket(
   {
     event,
@@ -89,4 +91,26 @@ export function userCanSeeTicket(
     return false;
 
   return true;
+}
+
+export async function getTicketsWithConstraints(eventId: string) {
+  return await prisma.ticket.findMany({
+    where: { eventId },
+    include: {
+      openToGroups: true,
+      openToSchools: true,
+      openToMajors: true,
+      event: {
+        include: {
+          managers: { include: { user: true } },
+          bannedUsers: true,
+          group: {
+            include: {
+              studentAssociation: true,
+            },
+          },
+        },
+      },
+    },
+  });
 }

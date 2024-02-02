@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { eventManagedByUser } from '#permissions';
+import { userCanManageEvent } from '#permissions';
 import { RegistrationType } from '../index.js';
 // TODO rename to user.bookings-for-event; and also create a query event.bookings-of-user
 // maybe there's a better way to do this kind of "triple coupling", idk.
@@ -31,7 +31,7 @@ builder.queryField('registrationsOfUserForEvent', (t) =>
         },
       });
       if (!event) return false;
-      return eventManagedByUser(event, user, { canVerifyRegistrations: true });
+      return userCanManageEvent(event, user, { canVerifyRegistrations: true });
     },
     async resolve(query, _, { eventUid, groupUid, userUid }, {}) {
       const user = await prisma.user.findUniqueOrThrow({ where: { uid: userUid } });

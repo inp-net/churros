@@ -1,7 +1,7 @@
 // TODO rename to articles
 import { builder, prisma, subscriptionName } from '#lib';
 
-import { visibleArticlesPrismaQuery } from '#permissions';
+import { prismaQueryAccessibleArticles } from '#permissions';
 import { Visibility } from '@prisma/client';
 import { ArticleType } from '../index.js';
 
@@ -25,7 +25,7 @@ builder.queryField('homepage', (t) =>
 
       return prisma.article.findMany({
         ...query,
-        where: visibleArticlesPrismaQuery(user, 'wants'),
+        where: prismaQueryAccessibleArticles(user, 'wants'),
         orderBy: { publishedAt: 'desc' },
       });
     },
