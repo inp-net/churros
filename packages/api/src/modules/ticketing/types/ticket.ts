@@ -36,7 +36,7 @@ export const TicketType = builder.prismaNode('Ticket', {
     registrations: t.relation('registrations', {
       authScopes: { loggedIn: true },
       query(_, { user }) {
-        if (!user) return {};
+        if (!user) return { where: { none: {} } };
         if (user.admin) return {};
 
         return {
