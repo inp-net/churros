@@ -11,7 +11,6 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
-
 ### Technique
 
 - Ajout d'une page pour pouvoir gérer les services depuis l'appli pour les admins
@@ -29,6 +28,11 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 - Les QR Code sont désormais noirs sur fonds blancs peu importe le thème choisi (#526) (!102) (@ragotc1)
 
+## [1.44.1] - 2024-02-04
+
+### Technique
+
+- Il était impossible de se connecter pour une raison obscure… Anyway, c'est réglé d'une manière obscure aussi (voir 295b6e58572e5c120ca3753332c494fa3578fc64)
 
 ## [1.44.0] - 2024-01-25
 
@@ -134,6 +138,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
 [unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.44.0...main
+[1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
 [1.44.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.0
 [1.43.4]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.4
 [1.43.4]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.4
