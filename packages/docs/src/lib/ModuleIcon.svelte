@@ -23,7 +23,7 @@
 	.icon.inline {
 		width: 1em;
 		height: 1em;
-		margin-right: -0.5em;
+		margin-right: 0.5em;
 	}
 
 	.icon.big {
