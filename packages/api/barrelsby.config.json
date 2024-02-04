@@ -34,6 +34,7 @@
     "./src/modules/groups/utils",
     "./src/modules/health-checks/resolvers",
     "./src/modules/health-checks/types",
+    "./src/modules/links/resolvers",
     "./src/modules/links/types",
     "./src/modules/links/utils",
     "./src/modules/logs/resolvers",
