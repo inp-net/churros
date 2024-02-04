@@ -26,5 +26,5 @@ export function camelToKebab(str: string) {
 }
 
 export function pascalToKebab(str: string) {
-	return camelToKebab(str).toLowerCase();
+	return camelToKebab(str).toLowerCase().replace(/^-/, '');
 }

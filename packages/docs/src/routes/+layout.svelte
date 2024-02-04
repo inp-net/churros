@@ -160,7 +160,7 @@
 		}
 	}
 
-	:global(body) {
+	:global(body, button, input) {
 		font-family: 'Space Grotesk', Roboto, sans-serif;
 		color: var(--fg);
 		background: var(--bg);
@@ -192,5 +192,13 @@
 		color: color-mix(in oklab, var(--red) 50%, var(--fg));
 		text-align: center;
 		background: color-mix(in oklab, var(--red) 20%, var(--bg));
+	}
+
+	:global(hr) {
+		height: 0.5rem;
+		margin: 2rem 0;
+		background: var(--shadow);
+		border: 0;
+		border-radius: 2rem;
 	}
 </style>
