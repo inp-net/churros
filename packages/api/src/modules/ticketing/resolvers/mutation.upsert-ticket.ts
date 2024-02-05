@@ -1,9 +1,8 @@
-import { TicketInput, TicketType } from '../index.js';
-import {} from '#modules/global';
 import { builder, log, prisma } from '#lib';
+import {} from '#modules/global';
+import { userCanManageEvent } from '#permissions';
 import { GraphQLError } from 'graphql';
-import { eventManagedByUser } from '#permissions';
-import { createTicketUid as createUid } from '../index.js';
+import { TicketInput, TicketType, createTicketUid as createUid } from '../index.js';
 
 builder.mutationField('upsertTicket', (t) =>
   t.prismaField({
@@ -26,7 +25,7 @@ builder.mutationField('upsertTicket', (t) =>
         include: { managers: { include: { user: true } } },
       });
       if (!event) return false;
-      return eventManagedByUser(event, user, { canEdit: true });
+      return userCanManageEvent(event, user, { canEdit: true });
     },
     async resolve(query, _, { eventId, id, ticket }, { user }) {
       if (!user) throw new GraphQLError('Non connecté');

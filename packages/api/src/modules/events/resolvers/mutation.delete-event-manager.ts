@@ -1,6 +1,5 @@
 import { builder, prisma } from '#lib';
 
-
 builder.mutationField('deleteEventManager', (t) =>
   t.field({
     description: 'Supprimer un manager',

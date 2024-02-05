@@ -1,6 +1,7 @@
 import { builder, prisma } from '#lib';
 
 import { userCanManageEvent } from '#permissions';
+import slug from 'slug';
 import { TicketGroupType } from '../index.js';
 
 builder.mutationField('upsertTicketGroup', (t) =>

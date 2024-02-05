@@ -1,5 +1,5 @@
 import { builder, log, prisma } from '#lib';
-import { eventManagedByUser } from '#permissions';
+import { userCanManageEvent } from '#permissions';
 import { EventManagerPermissionsInput } from '../index.js';
 
 builder.mutationField('upsertEventManager', (t) =>
@@ -17,7 +17,7 @@ builder.mutationField('upsertEventManager', (t) =>
         where: { id: eventId },
         include: { managers: { include: { user: true } } },
       });
-      return eventManagedByUser(event, user, { canEditPermissions: true });
+      return userCanManageEvent(event, user, { canEditPermissions: true });
     },
     async resolve(query, _, { userUid, eventId, input }, { user }) {
       await log('event', 'add-manager', { userUid, eventId, input }, eventId, user);

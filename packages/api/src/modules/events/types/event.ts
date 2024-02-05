@@ -40,10 +40,10 @@ export const EventType = builder.prismaNode('Event', {
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     managers: t.relation('managers'),
     bannedUsers: t.relation('bannedUsers'),
-    tickets: t.field({
+    tickets: t.prismaField({
       type: [TicketType],
-      async resolve({ id }, _, { user }) {
-        const allTickets = await getTicketsWithConstraints(id);
+      async resolve(query, { id }, _, { user }) {
+        const allTickets = await getTicketsWithConstraints(id, query);
         const userWithContributesTo = user ? await getUserWithContributesTo(user.id) : undefined;
         return allTickets.filter((ticket) => userCanSeeTicket(ticket, userWithContributesTo));
       },

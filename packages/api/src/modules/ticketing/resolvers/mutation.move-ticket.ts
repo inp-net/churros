@@ -1,5 +1,5 @@
 import { builder, log, prisma } from '#lib';
-import { TicketMoveType, TicketMove } from '../types/ticket-move.js';
+import { TicketMove, TicketMoveType } from '../types/ticket-move.js';
 
 builder.mutationField('moveTicket', (t) =>
   t.int({
@@ -9,13 +9,15 @@ builder.mutationField('moveTicket', (t) =>
         limit: 5,
       },
     },
-    description:
-      "Déplacer un billet avant ou apès un autre",
+    description: 'Déplacer un billet avant ou apès un autre',
     args: {
       eventId: t.arg.id({ description: "identifiant de l'évènement où sont les billets" }),
       uid: t.arg.string({ description: 'uid du billet à déplacer' }),
       other: t.arg.string({ description: "uid de l'autre billet" }),
-      move: t.arg({ type: TicketMoveType, description: "Où placer le billet par rapport à l'autre" }),
+      move: t.arg({
+        type: TicketMoveType,
+        description: "Où placer le billet par rapport à l'autre",
+      }),
       inside: t.arg.string({
         required: false,
         description: 'uid du groupe de billet dans lequel placer le billet',

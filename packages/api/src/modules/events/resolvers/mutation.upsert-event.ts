@@ -1,12 +1,6 @@
 import { builder, prisma } from '#lib';
 import { onBoard } from '#permissions';
-import {
-  EventInput,
-  EventType,
-  createUid,
-  scheduleShotgunNotifications
-} from '../index.js';
-
+import { EventInput, EventType, createUid, scheduleShotgunNotifications } from '../index.js';
 
 builder.mutationField('upsertEvent', (t) =>
   t.prismaField({

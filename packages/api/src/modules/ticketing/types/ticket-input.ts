@@ -25,6 +25,6 @@ export const TicketInput = builder.inputType('TicketInput', {
     openToApprentices: t.boolean({ required: false }),
     autojoinGroups: t.field({ type: ['String'] }),
     groupName: t.string({ required: false }),
-    order: t.int({ required: false }),
+    order: t.int({ defaultValue: 0 }),
   }),
 });

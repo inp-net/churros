@@ -1,5 +1,5 @@
-import { TicketType } from '../index.js';
 import { builder, prisma } from '#lib';
+import { TicketType } from '../index.js';
 
 builder.prismaObjectField('Event', 'ticket', (t) =>
   t.prismaField({
