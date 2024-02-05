@@ -12,7 +12,7 @@ fi
 
 jq < barrelsby.config.json ".directory = []" | sponge barrelsby.config.json
 
-for dir in src/{lib,permissions,server,modules/*/*}; do
+for dir in src/{lib,permissions,modules/*/*}; do
     if [ ! -d "$dir" ]; then
         continue
     fi

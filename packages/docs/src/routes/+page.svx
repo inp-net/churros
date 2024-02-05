@@ -120,7 +120,8 @@ Dans l'API GraphQL, ces type/Resuls portent comme nom `QueryNomDeLaQueryConnecti
    - `hasPreviousPage`: `true` si il y a une page précédente, `false` sinon
    - `startCursor`: le curseur du premier élément de la page courante
    - `endCursor`: le curseur du dernier élément de la page courante
-- `edges`: la liste des éléments de la page courante, sous la forme d'une liste d'objets avec les champs suivants:
+- `nodes`: la liste des éléments demandés, de type `T`
+- `edges`: une liste d'objets contenant:
    - `node`: élément de type `T`
    - `cursor`: le curseur de l'élément
 

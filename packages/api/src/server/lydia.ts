@@ -3,16 +3,16 @@ import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
 import express, { type Request, type Response } from 'express';
 import multer from 'multer';
 
-const webhook = express();
+export const lydiaWebhook = express();
 const upload: multer.Multer = multer();
 
 // Lydia webhook
-webhook.get('/lydia-webhook/alive', (_, res) => {
+lydiaWebhook.get('/lydia-webhook/alive', (_, res) => {
   res.sendStatus(200);
 });
 
-webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response) => {
-  webhook.get('/lydia-webhook/alive', (_, res) => {
+lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response) => {
+  lydiaWebhook.get('/lydia-webhook/alive', (_, res) => {
     res.sendStatus(200);
   });
   // Retrieve the params from the request
@@ -171,8 +171,4 @@ webhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response
   } catch {
     return res.status(400).send('Bad request');
   }
-});
-
-webhook.listen(4001, () => {
-  console.info('Webhook ready at http://localhost:4001');
 });

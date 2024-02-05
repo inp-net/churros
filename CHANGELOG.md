@@ -11,6 +11,12 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [1.45.0] - 2024-02-05
+
+### Technique
+
+- Ajout d'une page pour pouvoir gérer les services depuis l'appli pour les admins
+
 ### Corrections
 
 - Lorsqu'un post contient une suite de caractères trop longue (lien par exemple), la page ne se mettra plus en scroll horizontal (#800) (!102) (@ragotc1)
@@ -23,6 +29,12 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Améliorations
 
 - Les QR Code sont désormais noirs sur fonds blancs peu importe le thème choisi (#526) (!102) (@ragotc1)
+
+## [1.44.1] - 2024-02-04
+
+### Technique
+
+- Il était impossible de se connecter pour une raison obscure… Anyway, c'est réglé d'une manière obscure aussi (voir 295b6e58572e5c120ca3753332c494fa3578fc64)
 
 ## [1.44.0] - 2024-01-25
 
@@ -127,7 +139,9 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.44.0...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.45.0...main
+[1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
+[1.45.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.45.0
 [1.44.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.0
 [1.43.4]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.4
 [1.43.4]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.43.4

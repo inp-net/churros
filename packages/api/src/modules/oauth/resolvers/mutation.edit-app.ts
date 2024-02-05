@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { canEditApp } from '#permissions';
+import { userCanEditApp } from '#permissions';
 import { log } from '../../../lib/logger.js';
 
 // TODO rename update-third-party-app
@@ -22,7 +22,7 @@ builder.mutationField('editApp', (t) =>
       }),
       ownerGroupUid: t.arg.string({ required: false }),
     },
-    authScopes: canEditApp,
+    authScopes: userCanEditApp,
     async resolve(query, _, { id, ...data }, { user }) {
       await log('third-party apps', 'edit', data, id, user);
       const { allowedRedirectUris: oldAllowedRedirectUris, website: oldWebsite } =

@@ -6,6 +6,9 @@ import { placesLeft } from '../index.js';
 
 export const TicketType = builder.prismaNode('Ticket', {
   id: { field: 'id' },
+  include: {
+    group: true,
+  },
   fields: (t) => ({
     eventId: t.exposeID('eventId'),
     uid: t.exposeString('uid'),
@@ -13,12 +16,7 @@ export const TicketType = builder.prismaNode('Ticket', {
     name: t.exposeString('name'),
     fullName: t.string({
       description: "Full name, including the ticket group's name if any",
-      async resolve({ name, ticketGroupId }) {
-        let group: { name: string } | undefined;
-        if (ticketGroupId) {
-          group =
-            (await prisma.ticketGroup.findUnique({ where: { id: ticketGroupId } })) ?? undefined;
-        }
+      resolve({ name, group }) {
         return group ? `${group.name} - ${name}` : name;
       },
     }),
@@ -41,7 +39,7 @@ export const TicketType = builder.prismaNode('Ticket', {
     registrations: t.relation('registrations', {
       authScopes: { loggedIn: true },
       query(_, { user }) {
-        if (!user) throw `unreachable`;
+        if (!user) return { where: { NOT: {} } };
         if (user.admin) return {};
 
         return {

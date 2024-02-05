@@ -1,12 +1,12 @@
 <script lang="ts">
-  import CardService from '$lib/components/CardService.svelte';
-  import { me } from '$lib/session';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
-  import type { PageData } from './$types';
+  import CardService from '$lib/components/CardService.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import { debugging } from '$lib/debugging';
+  import { me } from '$lib/session';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 
@@ -84,7 +84,7 @@
   </footer>
 </div>
 
-<style>
+<style lang="scss">
   .content {
     display: flex;
     flex-direction: column;

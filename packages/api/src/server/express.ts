@@ -1,11 +1,11 @@
+/* eslint-disable unicorn/prefer-module */
 import { context } from '#lib';
 import cors from 'cors';
 import express from 'express';
 import * as GraphQLWS from 'graphql-ws/lib/use/ws';
 import helmet from 'helmet';
 import { WebSocketServer } from 'ws';
-import { schema, writeSchema } from '../schema.js';
-import { rescheduleNotifications } from './notifications-rescheduler.js';
+import { schema } from '../schema.js';
 
 export const api = express();
 
@@ -21,17 +21,23 @@ api.use(
   }),
 );
 
-const apiServer = api.listen(4000, () => {
-  console.info(`Serving static content from ${process.env.STORAGE}`);
-  console.info('API ready at http://localhost:4000');
-  const apiWebsocket = new WebSocketServer({
-    server: apiServer,
-    path: '/graphql',
+export function startApiServer() {
+  // Register other routes on the API
+  import('./graphql.js');
+  import('./gdpr.js');
+  import('./log.js');
+  import('./oauth.js');
+  import('./pdf.js');
+  import('./storage.js');
+
+  const apiServer = api.listen(4000, () => {
+    console.info('API ready at http://localhost:4000');
+    const apiWebsocket = new WebSocketServer({
+      server: apiServer,
+      path: '/graphql',
+    });
+
+    GraphQLWS.useServer({ schema, context }, apiWebsocket);
+    console.info('Websocket ready at ws://localhost:4000');
   });
-
-  GraphQLWS.useServer({ schema, context }, apiWebsocket);
-  console.info('Websocket ready at ws://localhost:4000');
-});
-
-await writeSchema();
-await rescheduleNotifications({ dryRun: true });
+}
