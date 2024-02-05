@@ -7,6 +7,7 @@
 	import { useParamStore } from 'svelte-param-store';
 	import { blur, type BlurParams } from 'svelte/transition';
 	import MenuIcon from './icons/MenuIcon.svelte';
+	import { browser } from '$app/environment';
 
 	export let activeHeading: HTMLHeadingElement | null = null;
 	export let activeHeadingScrollOffset: number = 100;
@@ -39,7 +40,7 @@
 
 	let window_width: number;
 
-	let searchQuery = debounced(useParamStore('q'), 20);
+	$: searchQuery = browser ? debounced(useParamStore('q'), 20) : undefined;
 
 	$: levels = headings.map(getHeadingLevels);
 	$: minLevel = Math.min(...levels);
