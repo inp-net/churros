@@ -341,6 +341,7 @@ __metadata:
     dichotomid: "npm:^0.0.3"
     execa: "npm:^8.0.1"
     express: "npm:^4.18.2"
+    glob: "npm:^10.3.10"
     graphql: "npm:^16.8.1"
     graphql-rate-limit-directive: "npm:^2.0.5"
     graphql-scalars: "npm:^1.22.4"
