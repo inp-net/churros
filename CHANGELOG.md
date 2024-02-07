@@ -11,6 +11,11 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- `/identity` tronque maintenant le champ `fullName` à 255 caractères
+- `User` expose maintenant l'identifiant de l'école (`schoolUid`) (résolution interdites aux non-étudiant·e·s)
+
 ## [1.45.0] - 2024-02-05
 
 ### Technique
