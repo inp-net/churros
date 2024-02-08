@@ -2,7 +2,7 @@ import { builder, htmlToText, prisma, soonest, subscriptionName, toHtml } from '
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { ProfitsBreakdownType } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar } from '#modules/reactions';
-import { RegistrationsCountsType, TicketType } from '#modules/ticketing';
+import { RegistrationsCountsType, TicketType, canScanBookings } from '#modules/ticketing';
 import {
   getTicketsWithConstraints,
   getUserWithContributesTo,
@@ -11,9 +11,11 @@ import {
 } from '#permissions';
 import { PaymentMethod } from '@prisma/client';
 import { EventFrequencyType, eventCapacity } from '../index.js';
+import { canEdit, canEditManagers, canSeeBookings } from '../utils/permissions.js';
 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
+  include: { managers: true },
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
@@ -40,10 +42,10 @@ export const EventType = builder.prismaNode('Event', {
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     managers: t.relation('managers'),
     bannedUsers: t.relation('bannedUsers'),
-    tickets: t.field({
+    tickets: t.prismaField({
       type: [TicketType],
-      async resolve({ id }, _, { user }) {
-        const allTickets = await getTicketsWithConstraints(id);
+      async resolve(query, { id }, _, { user }) {
+        const allTickets = await getTicketsWithConstraints(id, query);
         const userWithContributesTo = user ? await getUserWithContributesTo(user.id) : undefined;
         return allTickets.filter((ticket) => userCanSeeTicket(ticket, userWithContributesTo));
       },
@@ -213,6 +215,24 @@ export const EventType = builder.prismaNode('Event', {
           cancelled: results.filter((r) => r.cancelledAt).length,
         };
       },
+    }),
+    canScanBookings: t.boolean({
+      description: "L'utilisateur·ice connecté·e peut scanner les réservations de cet évènement",
+      resolve: (event, _, { user }) => canScanBookings(event, user),
+    }),
+    canEdit: t.boolean({
+      description: "L'utilisateur·ice connecté·e peut modifier cet évènement",
+      resolve: (event, _, { user }) => canEdit(event, user),
+    }),
+    canEditManagers: t.boolean({
+      description:
+        "L'utilisateur·ice connecté·e peut ajouter, enlever ou modifier les droits des managers de cet évènement",
+      resolve: (event, _, { user }) => canEditManagers(event, user),
+    }),
+    canSeeBookings: t.boolean({
+      description:
+        "L'utilisateur·ice connecté·e peut voir toutes les réservations de cet évènement",
+      resolve: (event, _, { user }) => canSeeBookings(event, user),
     }),
     profitsBreakdown: t.field({
       type: ProfitsBreakdownType,

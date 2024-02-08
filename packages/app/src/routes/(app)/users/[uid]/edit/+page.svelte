@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { browser } from '$app/environment';
   import { env } from '$env/dynamic/public';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
@@ -42,6 +43,11 @@
       await $zeus.mutate({ deleteToken: [{ id }, true] });
       data.me.credentials = data.me.credentials.filter((credential) => credential.id !== id);
     }
+  };
+
+  const revokeThirdPartyAppAuthorization = async (clientId: string) => {
+    await $zeus.mutate({ revokeAuthorization: [{ clientId }, true] });
+    data.user.authorizedApps = data.user.authorizedApps.filter((app) => app.clientId !== clientId);
   };
 
   const renameSession = async (id: string, name: string) => {
@@ -243,8 +249,13 @@
             dark: 'Sombre',
             light: 'Clair',
             hacker: 'h4ck3r',
+            pan7on: 'pan7on',
+            ber7ker: 'ber7ker',
           }}
           bind:value={$theme}
+          on:input={() => {
+            if (browser) window.localStorage.setItem('user_does_not_like_gd7t_theme', '');
+          }}
         />
       {/if}
       <h2>Parrainages</h2>
@@ -418,6 +429,43 @@
           {/each}
         </ul>
       </section>
+      <section class="oauth-sessions sessions">
+        <h2>Applications tierces</h2>
+        {#if data.user.authorizedApps.length > 0}
+          <p class="muted typo-details">
+            Ces applications ont accès à ton compte Churros et peuvent agir en ton nom.
+          </p>
+        {/if}
+        <ul class="nobullet">
+          {#each data.user.authorizedApps as { clientId, name, faviconUrl }}
+            <li>
+              <div class="active-indicator">
+                <img src={faviconUrl} alt={name} />
+              </div>
+              <div class="date-and-ua">
+                <div class="date">
+                  <!-- TODO -->
+                </div>
+                <div class="name">
+                  {name}
+                </div>
+              </div>
+              <div class="actions">
+                <ButtonSecondary
+                  danger
+                  on:click={async () => revokeThirdPartyAppAuthorization(clientId)}
+                >
+                  Révoquer
+                </ButtonSecondary>
+              </div>
+            </li>
+          {:else}
+            <li class="empty muted">
+              Aucune application tierce n'est autorisée à accéder ton compte.
+            </li>
+          {/each}
+        </ul>
+      </section>
     {/if}
   </div>
 </div>
@@ -481,7 +529,7 @@
     gap: 0.5rem;
   }
 
-  .sessions li {
+  .sessions li:not(.empty) {
     display: grid;
     grid-template-columns: 2rem 1fr 0.5fr;
     gap: 0.5rem;
@@ -496,6 +544,13 @@
 
   .sessions .active-indicator {
     width: 2rem;
+    height: 2rem;
+  }
+
+  .sessions .active-indicator img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
   .sessions .name {

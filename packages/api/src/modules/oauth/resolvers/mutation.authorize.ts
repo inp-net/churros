@@ -1,8 +1,7 @@
 import { builder, ensureHasIdPrefix, isLocalNetwork, prisma } from '#lib';
-
 import { ThirdPartyCredentialType } from '@prisma/client';
 import { GraphQLError } from 'graphql';
-import { OAuth2Error, OAuth2ErrorCode, generateThirdPartyToken } from '../index.js';
+import { OAuth2Error, OAuth2ErrorCode, generateThirdPartyToken, normalizeUrl } from '../index.js';
 // TODO rename to authorize-third-party-app
 
 builder.mutationField('authorize', (t) =>
@@ -56,19 +55,39 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
         );
       }
 
-      if (!client.allowedRedirectUris.includes(redirectUri))
-        throw new GraphQLError('Invalid redirect URI');
+      if (
+        !client.allowedRedirectUris.some((uri) => normalizeUrl(redirectUri) === normalizeUrl(uri))
+      ) {
+        throw new GraphQLError(
+          `Invalid redirect URI, must be one of ${client.allowedRedirectUris.map((u) => normalizeUrl(u)).join(', ')}`,
+        );
+      }
 
-      const { value } = await prisma.thirdPartyCredential.create({
-        data: {
-          clientId: client.id,
-          value: generateThirdPartyToken(),
-          type: ThirdPartyCredentialType.AuthorizationCode,
-          // Keep the auth code for 7 days
-          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-          ownerId: user.id,
-        },
-      });
+      const [{ value }] = await prisma.$transaction([
+        prisma.thirdPartyCredential.create({
+          data: {
+            clientId: client.id,
+            value: generateThirdPartyToken(),
+            type: ThirdPartyCredentialType.AuthorizationCode,
+            // Keep the auth code for 7 days
+            expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+            ownerId: user.id,
+          },
+        }),
+        prisma.thirdPartyApp.update({
+          where: {
+            id: client.id,
+          },
+          data: {
+            users: {
+              connect: {
+                id: user.id,
+              },
+            },
+          },
+        }),
+      ]);
+
       return value;
     },
   }),

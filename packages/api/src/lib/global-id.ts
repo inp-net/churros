@@ -75,6 +75,10 @@ export function splitID(id: string): [keyof typeof TYPENAMES_TO_ID_PREFIXES, str
   return [ID_PREFIXES_TO_TYPENAMES[prefix as keyof typeof ID_PREFIXES_TO_TYPENAMES], rest];
 }
 
+export function makeGlobalID(typename: keyof typeof TYPENAMES_TO_ID_PREFIXES, localID: string) {
+  return `${TYPENAMES_TO_ID_PREFIXES[typename]}:${localID}`;
+}
+
 export function encodeGlobalID(_typename: string, id: string | number | bigint) {
   return id.toString();
 }

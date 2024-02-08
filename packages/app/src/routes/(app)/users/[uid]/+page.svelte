@@ -207,7 +207,7 @@
             </dd>
           {/if}
           {#if user.birthday}
-            <dt>Anniversaire</dt>
+            <dt>Date de naissance</dt>
             <dd>{dateFormatter.format(user.birthday)}</dd>
             <!-- TODO add to agenda -->
           {/if}
@@ -225,13 +225,13 @@
 
   {#if !$me?.external && $me?.uid === user.uid && ((user.pendingContributions?.length ?? 0) > 0 || (user.contributesTo?.length ?? 0) <= 0)}
     <section class="contribution">
-      <h2>Cotisation</h2>
-      <p class="explain-contribution typo-details">
-        Cotiser, c'est contribuer à l'organisation de la vie associative de ton école. Elle te
-        permet d'être membre de clubs, de lister, d'économiser 60€ pour le WEI, et donne droit à des
-        places à tarif réduit sur tout les évènements de l'AE.
-      </p>
-
+      {#each contributionOptions as option}
+        <h2>Cotiser pour {option.name}</h2>
+        <div data-user-html class="explain-contribution typo-details">
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html option.descriptionHtml}
+        </div>
+      {/each}
       <div class="manage">
         <AreaContribute {contributionOptions} pendingContributions={user.pendingContributions}
         ></AreaContribute>
@@ -292,6 +292,10 @@
     margin-bottom: 5rem;
   }
 
+  .typo-details {
+    margin-bottom: 1rem;
+  }
+
   header {
     display: flex;
     flex-wrap: wrap;
@@ -328,6 +332,7 @@
     flex-shrink: 0;
     width: var(--size);
     height: var(--size);
+    overflow: hidden;
   }
 
   .picture img {
@@ -407,6 +412,7 @@
     column-gap: 0.5rem;
     align-items: center;
     margin-left: 0;
+    word-break: break-word;
   }
 
   dd.is-list {
@@ -493,5 +499,9 @@
     section.articles {
       grid-area: articles;
     }
+  }
+
+  .contribution > h2 {
+    margin-bottom: 0.5rem;
   }
 </style>

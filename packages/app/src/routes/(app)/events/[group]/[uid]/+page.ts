@@ -5,8 +5,8 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ fetch, parent, params, url }) => {
   let claimedCode = false;
   let claimCodeError = '';
+  const { me } = await parent().catch(() => ({ me: undefined }));
   if (url.searchParams.has('claimCode')) {
-    const { me } = await parent().catch(() => ({ me: undefined }));
     if (!me) throw redirectToLogin(url.pathname, { claimCode: url.searchParams.get('claimCode')! });
     try {
       ({ claimPromotionCode: claimedCode } = await makeMutation(
@@ -50,24 +50,30 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
               value: true,
               computedValue: true,
             },
-            registrations: {
-              id: true,
-              beneficiary: true,
-              beneficiaryUser: {
-                uid: true,
-                firstName: true,
-                fullName: true,
-                lastName: true,
-              },
-              authorIsBeneficiary: true,
-              author: {
-                uid: true,
-              },
-              paid: true,
-              ticket: {
-                name: true,
-              },
-            },
+            ...(me
+              ? {
+                  registrations: {
+                    id: true,
+                    opposed: true,
+                    cancelled: true,
+                    beneficiary: true,
+                    beneficiaryUser: {
+                      uid: true,
+                      firstName: true,
+                      fullName: true,
+                      lastName: true,
+                    },
+                    authorIsBeneficiary: true,
+                    author: {
+                      uid: true,
+                    },
+                    paid: true,
+                    ticket: {
+                      name: true,
+                    },
+                  },
+                }
+              : {}),
             openToAlumni: true,
             openToExternal: true,
             openToGroups: {

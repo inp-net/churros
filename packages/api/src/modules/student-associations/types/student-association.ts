@@ -14,5 +14,6 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
     school: t.relation('school'),
     groups: t.relation('groups'),
     contributionOptions: t.relation('contributionOptions'),
+    pictureFile: t.exposeString('pictureFile'),
   }),
 });

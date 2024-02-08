@@ -56,8 +56,12 @@
     );
   });
 
+  function notUndefined<T>(x: T | undefined): x is T {
+    return x !== undefined;
+  }
+
   $: usersRegistration = tickets
-    .flatMap((t) => t.registrations)
+    .flatMap((t) => t.registrations?.filter(notUndefined) ?? [])
     .filter(({ beneficiary, author }) => author?.uid === $me?.uid || beneficiary === $me?.uid);
 
   const bookingURL = (registrationId: string) =>
@@ -75,14 +79,16 @@
 
 {#if usersRegistration.length > 0}
   <ul class="nobullet bookings">
-    {#each usersRegistration as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id }}
-      <li>
-        <ButtonPrimary href={bookingURL(id)}
-          >{#if authorIsBeneficiary || author?.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
-              {beneficiaryUser.lastName}{:else}{beneficiary}{/if}{/if}
-          <span class="ticket-name">{ticket.name}</span></ButtonPrimary
-        >
-      </li>
+    {#each usersRegistration as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id, opposed, cancelled }}
+      {#if !opposed && !cancelled}
+        <li>
+          <ButtonPrimary href={bookingURL(id)}
+            >{#if authorIsBeneficiary || author?.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
+                {beneficiaryUser.lastName}{:else}{beneficiary}{/if}{/if}
+            <span class="ticket-name">{ticket.name}</span></ButtonPrimary
+          >
+        </li>
+      {/if}
     {/each}
   </ul>
 {/if}

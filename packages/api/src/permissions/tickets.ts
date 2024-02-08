@@ -1,4 +1,5 @@
 import { prisma } from '#lib';
+import type { Prisma } from '@prisma/client';
 
 export function userCanSeeTicket(
   {
@@ -93,8 +94,15 @@ export function userCanSeeTicket(
   return true;
 }
 
-export async function getTicketsWithConstraints(eventId: string) {
+export async function getTicketsWithConstraints(
+  eventId: string,
+  query: {
+    include?: Prisma.TicketInclude;
+    select?: Prisma.TicketSelect;
+  } = {},
+) {
   return await prisma.ticket.findMany({
+    ...query,
     where: { eventId },
     include: {
       openToGroups: true,

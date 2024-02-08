@@ -183,6 +183,12 @@
       </section>
       <main>
         <slot />
+        {#if $theme == 'pan7on'}
+          <div class="pan7div"></div>
+        {/if}
+        {#if $theme == 'ber7ker'}
+          <div class="ber7div"></div>
+        {/if}
       </main>
     </div>
   </div>
@@ -210,6 +216,17 @@ The root layout is composed of several elements:
     - the page content
 - the bottom navbar (mobile only)
 */
+  .pan7div {
+    // Si cette div existe encore après les semaines de campagnes, moi Benjamin Soyer
+    // m'engage à laver les ecocups.
+    height: 3rem;
+  }
+
+  .ber7div {
+    // Si cette div existe encore après les semaines de campagnes, moi Benjamin Soyer
+    // je m'engage à trouver quelqu'un de ber7ker.
+    height: 6rem;
+  }
 
   .layout {
     display: grid;
@@ -261,6 +278,7 @@ The root layout is composed of several elements:
     padding: 0.5rem 2rem;
     color: var(--text);
     background: var(--bg);
+    background-image: url('/gd7t-t.jpg');
   }
 
   @media (min-width: 900px) {
