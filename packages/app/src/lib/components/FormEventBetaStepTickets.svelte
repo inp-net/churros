@@ -245,7 +245,8 @@
         tickets[tickets.findIndex((t) => t.uid === ticket.uid)] = { ...ticket };
         dispatch('save', ticket);
         ticketEditModalElement.close();
-        const{upsertTicket} = await $zeus.mutate({
+        console.log("upading ticket")
+        await $zeus.mutate({
           upsertTicket: [
             {
               id: isShadowValue(ticket.id) ? undefined : ticket.id,
@@ -260,17 +261,16 @@
             },
             {
               id: true,
-              uid: true
+              uid: true,
             },
           ],
         });
         if (ticket.group) {
-          const{upsertTicketGroup} = await $zeus.mutate({
+          const { upsertTicketGroup } = await $zeus.mutate({
             moveTicket: [
               {
                 eventId,
                 move: TicketMove.MoveToGroup,
-
               },
               {
                 id: true,

@@ -1,42 +1,69 @@
 <script lang="ts">
-  import CardGroup from '$lib/components/CardGroup.svelte';
-  import { canCreateEvent } from '$lib/permissions';
+  import { page } from '$app/stores';
+  import FormEvent from '$lib/components/FormEvent.svelte';
+  import FormEventBeta from '$lib/components/FormEventBeta.svelte';
   import { me } from '$lib/session';
+  import { EventFrequency, Visibility } from '$lib/zeus';
+  import { addDays } from 'date-fns';
+  import type { PageData } from './$types';
 
-  const go = (uid: string) => `/events/${uid}/create`;
+  export let data: PageData;
+  let event = {
+    id: '',
+    uid: '',
+    ticketGroups: [],
+    tickets: [],
+    group: undefined,
+    description: '',
+    groupUid: $page.params.uid,
+    contactMail: '',
+    beneficiary: undefined,
+    links: [],
+    location: '',
+    managers: $me
+      ? [
+          {
+            user: $me,
+            canEdit: true,
+            canEditPermissions: true,
+            canVerifyRegistrations: true,
+          },
+        ]
+      : [],
+    slug: '',
+    startsAt: new Date(),
+    endsAt: addDays(new Date(), 1),
+    title: 'test',
+    visibility: Visibility.Private,
+    frequency: EventFrequency.Once,
+    recurringUntil: undefined,
+    pictureFile: '',
+    coOrganizers: [],
+    bannedUsers: [],
+  };
+  // export const snapshot: Snapshot = {
+  //   capture: () => ({ event }),
+  //   restore({ event }) {
+  //     $page.params.uid = event.groupUid;
+  //     $page.params.eventUid = event.uid;
+  //     data.group = event.group;
+  //     data.event = event;
+  //   },
+  // };
+  const redirectAfterSave = (uid: string) => $page.url.searchParams.get('back') || `../${uid}`;
 </script>
 
 <div class="content">
-  <h1>Créer un évènement en tant que</h1>
-
-  <section class="groups">
-    {#each $me?.groups
-      .filter((member) => canCreateEvent(member, $me))
-      .map(({ group }) => group) ?? [] as group (group.uid)}
-      <CardGroup
-        href={go(group.uid)}
-        name={group.name}
-        pictureFile={group.pictureFile}
-        pictureFileDark={group.pictureFileDark}
-      />
-    {/each}
-  </section>
+  <FormEventBeta goBackTo="/" bind:event />
 </div>
 
 <style>
+  :global(main) {
+    height: 100%;
+  }
   .content {
-    display: flex;
-    flex-flow: column wrap;
-    gap: 2rem;
-  }
-
-  h1 {
-    text-align: center;
-  }
-
-  .groups {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    max-width: 1200px;
+    height: 100%;
+    margin: 0 auto;
   }
 </style>

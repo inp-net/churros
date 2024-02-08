@@ -23,5 +23,5 @@ export async function rescheduleNotifications({ dryRun = false }) {
     ...unnotifiedArticles.map(async (article) =>
       scheduleNewArticleNotification(article, { eager: true, dryRun }),
     ),
-  ]);
+  ]).catch(console.error);
 }

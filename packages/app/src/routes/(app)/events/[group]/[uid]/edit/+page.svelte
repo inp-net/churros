@@ -8,12 +8,7 @@
 </script>
 
 <div class="content">
-  <FormEventBeta bind:event={data.event}></FormEventBeta>
-  <!-- <FormEvent
-    redirectAfterSave={() => $page.url.searchParams.get('back') || '../'}
-    availableLydiaAccounts={data.lydiaAccounts}
-    bind:event={data.event}
-  /> -->
+  <FormEventBeta creating={false} goBackTo=".." bind:event={data.event}></FormEventBeta>
 </div>
 
 <style>

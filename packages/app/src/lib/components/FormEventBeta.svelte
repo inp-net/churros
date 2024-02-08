@@ -14,7 +14,7 @@
     uid: string,
     id: string,
     order: number,
-  ) => Ticket = (event,uid, id, order) => ({
+  ) => Ticket = (event, uid, id, order) => ({
     order,
     allowedPaymentMethods: ['Cash', 'Lydia'] as PaymentMethod[],
     capacity: 0,
@@ -201,6 +201,7 @@
   import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
   import { toasts } from '$lib/toasts';
   import { fade } from 'svelte/transition';
+  import ButtonBack from '$lib/components/ButtonBack.svelte';
 
   let dispatch = createEventDispatcher();
   let scrollableAreaElement: HTMLElement;
@@ -242,6 +243,9 @@
       },
     ],
   };
+
+  export let creating = !event?.id;
+  export let goBackTo = '';
 
   const stepIndex = (id: string) => steps.findIndex(([href, _]) => href === id);
 
@@ -347,6 +351,16 @@
 
 <form class="content" on:submit|self|preventDefault={nextStepOrSubmit}>
   <section class="top" class:scrolled>
+    <h1>
+      {#if goBackTo}
+        <ButtonBack go={goBackTo}></ButtonBack>
+      {/if}
+      {#if creating}
+        Création d'un évènement
+      {:else}
+        Modification de {event.title}
+      {/if}
+    </h1>
     <div class="steps">
       <NavigationSteps {steps} bind:currentStep></NavigationSteps>
     </div>
@@ -400,9 +414,11 @@
     </section>
   </div>
   <nav class="navigate-steps">
-    <p class="status" transition:fade>
-      {bottomBarMessage}
-    </p>
+    {#key bottomBarMessage}
+      <p class="status" transition:fade>
+        {bottomBarMessage}
+      </p>
+    {/key}
     <ButtonPrimary smaller submits>
       {#if currentStep === 'visibility'}
         {#if [Visibility.Unlisted, Visibility.Private].includes(event.visibility)}Enregistrer{:else}Publier{/if}
@@ -416,6 +432,8 @@
 <style>
   .content {
     height: 100%;
+    width: 100%;
+    max-width: 1200px;
     display: grid;
     flex-grow: 1;
     grid-template-rows: max-content auto max-content;
@@ -430,8 +448,16 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    /* justify-content: space-between; */
-    justify-content: center;
+    justify-content: space-between;
+    justify-items: center;
+    /* justify-content: center; */
+  }
+
+  section.top h1 {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    column-gap: 0.5em;
   }
 
   section.top.scrolled {
@@ -450,6 +476,13 @@
     min-height: 0;
     padding: 1rem 1.5rem;
     width: 100%;
+    container: inputs-and-preview / inline-size;
+  }
+
+  @container (max-width: 700px) {
+    .preview {
+      display: none;
+    }
   }
 
   .inputs {

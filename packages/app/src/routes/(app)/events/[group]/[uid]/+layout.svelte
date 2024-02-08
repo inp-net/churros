@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import type { PageData } from './$types';
+  import ButtonBack from '$lib/components/ButtonBack.svelte';
 
   $: ({ group, uid } = $page.params);
 
@@ -39,7 +40,7 @@
 </script>
 
 <section class="tabs">
-  {#if shownTabs.length > 1}
+  {#if shownTabs.length > 1 && currentTab !== 'edit'}
     <NavigationTabs
       --text={currentTab === 'scan' ? 'white' : 'var(--text)'}
       tabs={shownTabs.map((tab) => ({

@@ -4,6 +4,9 @@ import icons from 'unplugin-icons/vite';
 import { defineConfig, mergeConfig } from 'vite';
 
 export const commonConfig = defineConfig({
+  optimizeDeps: {
+    noDiscovery: true,
+  },
   plugins: [
     icons({
       compiler: 'svelte',
