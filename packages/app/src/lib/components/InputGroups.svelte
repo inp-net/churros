@@ -14,6 +14,8 @@
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import InputPickObjects from './InputPickObjects.svelte';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   export let clearButtonLabel = 'Effacer';
   export let label: string;
@@ -43,7 +45,22 @@
     {options}
     pickerTitle={multiple ? 'Choisir des groupes' : 'Choisir un groupe'}
   >
-    <slot name="input" slot="input" let:openPicker {openPicker} />
+    <slot name="input" slot="input" let:openPicker {openPicker}>
+      <div class="group-input-current">
+        {#if multiple ? groups.length > 0 : group}
+          {#each groups as group}
+            <AvatarPerson
+              pictureFile={groupLogoSrc($isDark, group)}
+              fullName={group.name}
+              href="/groups/{group.uid}"
+            />
+          {/each}
+          <ButtonSecondary on:click={openPicker}>Changer</ButtonSecondary>
+        {:else}
+          Aucun groupe sélectionné <ButtonSecondary on:click={openPicker}>Choisir</ButtonSecondary>
+        {/if}
+      </div>
+    </slot>
     <slot name="thumbnail" slot="thumbnail" let:object>
       <div class="avatar">
         {#if object}
@@ -75,6 +92,13 @@
 </InputField>
 
 <style>
+  .group-input-current {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1rem;
+    align-items: center;
+  }
+
   .avatar img {
     --size: 3rem;
 
