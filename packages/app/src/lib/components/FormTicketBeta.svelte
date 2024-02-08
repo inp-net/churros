@@ -18,10 +18,9 @@
   import Pill from './Pill.svelte';
   import PillRemovable from './PillRemovable.svelte';
   import InputLinks from './InputLinks.svelte';
-  import Modal from './Modal.svelte';
   import { fromYearTier } from '$lib/dates';
   import { uniq, uniqBy } from 'lodash';
-  import { crossfade, fly, slide } from 'svelte/transition';
+  import { crossfade, slide } from 'svelte/transition';
   import { quintOut } from 'svelte/easing';
 
   const transitionPair = crossfade({

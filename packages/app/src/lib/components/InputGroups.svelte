@@ -16,6 +16,7 @@
   import InputPickObjects from './InputPickObjects.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { crossfade, fade } from 'svelte/transition';
 
   export let clearButtonLabel = 'Effacer';
   export let label: string;
@@ -48,13 +49,15 @@
     <slot name="input" slot="input" let:openPicker {openPicker}>
       <div class="group-input-current">
         {#if multiple ? groups.length > 0 : group}
-          {#each groups as group}
-            <AvatarPerson
-              pictureFile={groupLogoSrc($isDark, group)}
-              fullName={group.name}
-              href="/groups/{group.uid}"
-            />
-          {/each}
+          <div class="groups">
+            {#each groups as group (group.uid)}
+              <AvatarPerson
+                pictureFile={groupLogoSrc($isDark, group)}
+                fullName={group.name}
+                href="/groups/{group.uid}"
+              />
+            {/each}
+          </div>
           <ButtonSecondary on:click={openPicker}>Changer</ButtonSecondary>
         {:else}
           Aucun groupe sélectionné <ButtonSecondary on:click={openPicker}>Choisir</ButtonSecondary>
@@ -96,6 +99,11 @@
     display: flex;
     flex-wrap: wrap;
     column-gap: 1rem;
+    align-items: center;
+  }
+
+  .group-input-current .groups {
+    display: flex;
     align-items: center;
   }
 
