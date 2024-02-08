@@ -11,6 +11,7 @@ strict digraph ImportGraph {
     "gitlab" -> "users";
     "groups" -> "links";
     "groups" -> "users";
+    "oauth" -> "users";
     "posts" -> "notifications";
     "posts" -> "links";
     "schools" -> "curriculum";
@@ -20,4 +21,3 @@ strict digraph ImportGraph {
     "ticketing" -> "users";
     "users" -> "notifications";
     "users" -> "links";
-}

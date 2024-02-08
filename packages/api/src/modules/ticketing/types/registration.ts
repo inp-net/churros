@@ -29,6 +29,11 @@ export const RegistrationType = builder.prismaNode('Registration', {
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     verifiedAt: t.expose('verifiedAt', { type: DateTimeScalar, nullable: true }),
     verifiedBy: t.relation('verifiedBy', { nullable: true }),
+    verified: t.boolean({
+      resolve({ verifiedAt, verifiedById }) {
+        return Boolean(verifiedAt && verifiedById);
+      },
+    }),
     paymentMethod: t.expose('paymentMethod', { type: PaymentMethodEnum, nullable: true }),
     paid: t.exposeBoolean('paid'),
     opposedAt: t.expose('opposedAt', { type: DateTimeScalar, nullable: true }),

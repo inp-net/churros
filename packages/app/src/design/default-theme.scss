@@ -15,6 +15,7 @@ dialog,
   --border: #{$gray-400};
   --shadow: 0 0 0.125rem #0004, 0 0.125rem 0.5rem #0001;
   --shadow-big: 0 0 0.5rem #0004, 0 0.5rem 3rem #0001;
+  --shadow-enormous: 0 0 1rem #0004, 0 1rem 6rem #0001;
   --ring: #{rgba($slate-400, 50%)};
   --hover-bg: #{$gray-200};
   --hover-text: #{$slate-700};
@@ -36,6 +37,10 @@ dialog,
   --primary-disabled-bg: #{rgba($blue-600, 50%)};
   --primary-disabled-text: #{$white};
   --primary-disabled-border: #{$zinc-500};
+
+  // Secondary
+  --secondary-bg: #{$gray-400};
+  --secondary-hover-bg: #{$gray-400};
 
   // Success
   --success-bg: #{$emerald-200};
@@ -73,6 +78,7 @@ dialog,
   // Other colors
   --loading-bg: #{$blue-700};
   --backdrop: rgb(0 0 0 / 30%);
+  --nav-text: #{$slate-800};
 
   // Logo colors
   --logo-stroke-width: 7.606;

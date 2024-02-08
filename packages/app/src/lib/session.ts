@@ -32,6 +32,7 @@ export const sessionUserQuery = () =>
       treasurer: true,
       canEditArticles: true,
       canEditMembers: true,
+      isDeveloper: true,
     },
     managedEvents: {
       event: { uid: true, id: true, group: { uid: true } },

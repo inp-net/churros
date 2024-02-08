@@ -32,6 +32,13 @@
   });
 </script>
 
+{#if $theme === 'pan7on' && !$page.url.pathname.endsWith('/scan/')}
+  <img src="/ChurrosPan7onTelBas.png" alt="ChurrosPcPan7on" class="temple" />
+{/if}
+{#if $theme === 'ber7ker' && !$page.url.pathname.endsWith('/scan/')}
+  <img src="/dessinBer7ker.png" alt="illustrationBer7ker" class="ber7kersboat" />
+  <img src="/LogoBer7kerReverse.png" alt="illustrationBer7ker" class="ber7kersboatpc" />
+{/if}
 <nav
   class:flyout-open={flyoutOpen}
   class:transparent={$page.url.pathname.endsWith('/scan/') && !flyoutOpen}
@@ -49,9 +56,9 @@
       use:tooltip={'Mon feed'}
     >
       {#if current === 'home'}
-        <IconHome />
+        <IconHome style="color:var(--nav-text)" />
       {:else}
-        <IconHomeOutline />
+        <IconHomeOutline style="color:var(--nav-text)" />
       {/if}
     </a>
   {/if}
@@ -68,9 +75,9 @@
       use:tooltip={'Clubs'}
     >
       {#if current === 'groups'}
-        <IconGroup />
+        <IconGroup style="color:var(--nav-text)" />
       {:else}
-        <IconGroupOutline />
+        <IconGroupOutline style="color:var(--nav-text)" />
       {/if}
     </a>
   {/if}
@@ -83,9 +90,9 @@
     use:tooltip={'Créer…'}
   >
     {#if flyoutOpen}
-      <IconAddCircle />
+      <IconAddCircle style="color:var(--nav-text)" />
     {:else}
-      <IconAddCircleOutline />
+      <IconAddCircleOutline style="color:var(--nav-text)" />
     {/if}
   </button>
 
@@ -96,9 +103,9 @@
     use:tooltip={'Événements'}
   >
     {#if current === 'events'}
-      <IconCalendar />
+      <IconCalendar style="color:var(--nav-text)" />
     {:else}
-      <IconCalendarOutline />
+      <IconCalendarOutline style="color:var(--nav-text)" />
     {/if}
   </a>
 
@@ -109,9 +116,9 @@
     use:tooltip={'Les autres services'}
   >
     {#if current === 'services'}
-      <IconDotsCircle />
+      <IconDotsCircle style="color:var(--nav-text)" />
     {:else}
-      <IconDotsCircleOutline />
+      <IconDotsCircleOutline style="color:var(--nav-text)" />
     {/if}
   </a>
 </nav>
@@ -192,7 +199,9 @@
     justify-content: space-evenly;
     width: 100%;
     height: 4rem;
-    background: var(--bg);
+    background: var(--nav-bottom-background, var(--bg));
+    background-repeat: repeat-x;
+    background-size: auto 100%;
     border-top: var(--border-block) solid rgb(0 0 0 / 5%);
   }
 
@@ -200,6 +209,15 @@
     background-color: var(--bg);
     background-image: url('/noel-bottombar.png');
     background-size: cover;
+    border-top: none;
+  }
+
+  nav.gd7t {
+    background-color: transparent;
+    background-image: url('/gd7t-bottom.png');
+    background-position: center;
+    background-size: 100% 100%;
+    backdrop-filter: blur(10px);
     border-top: none;
   }
 
@@ -297,6 +315,54 @@
 
   @media (min-width: 900px) {
     nav {
+      display: none;
+    }
+  }
+
+  @media (min-width: 570px) {
+    .temple {
+      display: none;
+    }
+  }
+
+  .temple {
+    position: fixed;
+    bottom: 55px;
+    z-index: 100;
+    color: transparent;
+    pointer-events: none;
+    background: none;
+    background-color: transparent;
+  }
+
+  .ber7kersboat {
+    position: fixed;
+    bottom: 23px;
+    left: -38px;
+    z-index: 1;
+    width: 13rem;
+    color: transparent;
+    pointer-events: none;
+    background: none;
+    background-color: transparent;
+
+    @media (min-width: 570px) {
+      display: none;
+    }
+  }
+
+  .ber7kersboatpc {
+    position: fixed;
+    right: -2rem;
+    bottom: -3rem;
+    z-index: 1;
+    width: 20rem;
+    color: transparent;
+    pointer-events: none;
+    background: none;
+    background-color: transparent;
+
+    @media (max-width: 570px) {
       display: none;
     }
   }

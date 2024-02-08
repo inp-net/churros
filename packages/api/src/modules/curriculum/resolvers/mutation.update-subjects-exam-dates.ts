@@ -4,11 +4,11 @@ import { nextExamDates } from '../index.js';
 
 builder.mutationField('updateSubjectsExamDates', (t) =>
   t.boolean({
-    async resolve(_, {}, { user }) {
+    async resolve(_, {}, { user, token }) {
       if (!user) return false;
       let examDates: Awaited<ReturnType<typeof nextExamDates>>;
       try {
-        examDates = await nextExamDates(user);
+        examDates = await nextExamDates(user, token);
       } catch (error) {
         await log('ADE', 'error', { error: error?.toString() });
         return false;

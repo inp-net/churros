@@ -11,11 +11,11 @@
   import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
   import { me } from '$lib/session';
   import { EventFrequency, PaymentMethod, zeus } from '$lib/zeus';
-  import { onDestroy } from 'svelte';
   import IconPendingPayment from '~icons/mdi/cash-clock';
   import IconCheck from '~icons/mdi/check';
   import Header from '../../Header.svelte';
   import type { PageData } from './$types';
+  import { subscribe } from '$lib/subscriptions';
 
   let done = false;
   $: done = $page.url.searchParams.has('done');
@@ -33,9 +33,6 @@
   const paymentDetails = { phone: $me?.phone ?? '' };
 
   let serverError = '';
-
-  type Timeout = ReturnType<typeof setInterval>;
-  let pollIntervalId: Timeout;
 
   export let data: PageData;
   let beneficiary: string;
@@ -105,10 +102,6 @@
     }
   }
 
-  onDestroy(() => {
-    if (pollIntervalId) clearInterval(pollIntervalId);
-  });
-
   async function redirectIfPaid() {
     const registrationId = $page.url.searchParams.get('done')?.toLowerCase();
     if (!registrationId) return;
@@ -127,6 +120,31 @@
     if (result.registration.__typename === 'QueryRegistrationSuccess') {
       registration = result.registration.data;
       if (registration?.paid) await goto(`/bookings/${registration.id}`);
+      if (registration)
+        {$subscribe(
+          {
+            registration: [
+              { id: registration.id },
+              {
+                '__typename': true,
+                '...on Error': { message: true },
+                '...on SubscriptionRegistrationSuccess': {
+                  data: {
+                    paid: true,
+                    code: true,
+                  },
+                },
+              },
+            ],
+          },
+          async (result) => {
+            const freshData = await result;
+            if ('errors' in freshData) return;
+            if (freshData.registration.__typename !== 'SubscriptionRegistrationSuccess') return;
+            const { paid, code } = freshData.registration.data as { paid: boolean; code: string };
+            if (paid) await goto(`/bookings/${code}`);
+          },
+        );}
     }
   }
 </script>

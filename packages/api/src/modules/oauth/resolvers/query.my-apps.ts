@@ -28,6 +28,9 @@ builder.queryField('myApps', (t) =>
                 {
                   treasurer: true,
                 },
+                {
+                  isDeveloper: true,
+                },
               ],
             },
           },
