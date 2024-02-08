@@ -43,8 +43,9 @@
     event.startsAt === undefined || event.endsAt === undefined
       ? true
       : event.startsAt.getTime() < event.endsAt.getTime();
+  $: creating = !event.id;
   $: pastDateStart = event.startsAt === undefined ? false : isPast(event.startsAt);
-  $: isNotValidDate = !endsAtAfterStartsAt || pastDateStart;
+  $: isNotValidDate = creating && (!endsAtAfterStartsAt || pastDateStart);
 
   $: canEditManagers =
     !event.uid ||
@@ -832,15 +833,17 @@
   {/await}
 </form>
 <section class="errors">
-  {#if !endsAtAfterStartsAt}
-    <Alert theme="danger">
-      Impossible de programmer l'évenement : La date de fin est avant celle du début.
-    </Alert>
-  {/if}
-  {#if pastDateStart}
-    <Alert theme="danger">
-      Impossible de programmer l'événement : La date indiquée est déjà passé.
-    </Alert>
+  {#if creating}
+    {#if !endsAtAfterStartsAt}
+      <Alert theme="danger">
+        Impossible de programmer l'évenement : La date de fin est avant celle du début.
+      </Alert>
+    {/if}
+    {#if pastDateStart}
+      <Alert theme="danger">
+        Impossible de programmer l'événement : La date indiquée est déjà passé.
+      </Alert>
+    {/if}
   {/if}
 </section>
 

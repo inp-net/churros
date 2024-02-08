@@ -1,5 +1,12 @@
 <script lang="ts">
-  import { format, intlFormatDistance, isFuture, isSameDay, isWithinInterval } from 'date-fns';
+  import {
+    format,
+    intlFormatDistance,
+    isBefore,
+    isFuture,
+    isSameDay,
+    isWithinInterval,
+  } from 'date-fns';
   import { Visibility, zeus } from '$lib/zeus';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
@@ -52,6 +59,7 @@
       if (!soonestTicket.opensAt) return ticket;
       return soonestTicket.opensAt < ticket.opensAt ? soonestTicket : ticket;
     }, tickets[0]);
+
   $: lastTicketToClose = (_now: Date) =>
     // eslint-disable-next-line unicorn/no-array-reduce
     tickets.reduce((ticket, lastTicketToClose) => {
@@ -61,11 +69,27 @@
     }, tickets[0]);
 
   $: shotgunning = (now: Date) => {
-    const start = soonestTicket(now).opensAt;
-    const end = lastTicketToClose(now).closesAt;
-    if (!start || !end) return false;
-    return isWithinInterval(now, { start, end });
+    try {
+      const start = soonestTicket(now).opensAt;
+      const end = lastTicketToClose(now).closesAt;
+      if (!start || !end) return false;
+      return isWithinInterval(now, { start, end });
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   };
+
+  let formattedDates = '';
+  $: try {
+    formattedDates = isFuture(startsAt)
+      ? intlFormatDistance(startsAt, new Date())
+      : isFuture(endsAt)
+        ? `Jusqu'à ${isSameDay(endsAt, new Date()) ? format(endsAt, 'HH:mm') : formatDateTime(endsAt)}`
+        : intlFormatDistance(endsAt, new Date());
+  } catch (error) {
+    console.error(error);
+  }
 </script>
 
 <div class="post-outer">
@@ -97,15 +121,7 @@
           {/if}
           <span class="separator">·</span>
           <p class="when">
-            {#if isFuture(startsAt)}
-              {intlFormatDistance(startsAt, new Date())}
-            {:else if isFuture(endsAt)}
-              Jusqu'à {isSameDay(endsAt, new Date())
-                ? format(endsAt, 'HH:mm')
-                : formatDateTime(endsAt)}
-            {:else}
-              {intlFormatDistance(endsAt, new Date())}
-            {/if}
+            {formattedDates}
           </p>
           {#if visibility && ![Visibility.Public, Visibility.SchoolRestricted].includes(visibility)}
             <span class="visibility">
@@ -130,7 +146,7 @@
             {:else}
               {@const start = soonestTicket(now).opensAt}
               {#if start}
-                Shotgun dans {intlFormatDistance(start, now)}
+                Shotgun {isBefore(now, start) ? 'dans' : ''} {intlFormatDistance(start, now)}
               {/if}
             {/if}
           </section>

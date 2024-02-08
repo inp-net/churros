@@ -96,7 +96,10 @@ export function userCanSeeTicket(
 
 export async function getTicketsWithConstraints(
   eventId: string,
-  query: { include?: Prisma.TicketInclude; where?: Prisma.TicketWhereInput } = {},
+  query: {
+    include?: Prisma.TicketInclude;
+    select?: Prisma.TicketSelect;
+  } = {},
 ) {
   return await prisma.ticket.findMany({
     ...query,

@@ -230,7 +230,7 @@
   .wrapper:hover input,
   .wrapper:focus-within,
   .wrapper:focus-within input {
-    color: var(--hover-text);
+    color: var(--primary-hover-text);
     background: var(--hover-bg);
   }
 

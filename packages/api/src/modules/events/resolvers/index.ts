@@ -17,4 +17,5 @@ export * from './query.event.js';
 export * from './query.events-in-week.js';
 export * from './query.events-of-group.js';
 export * from './query.events.js';
+export * from './query.registrations-of-event.js';
 export * from './query.search-events.js';

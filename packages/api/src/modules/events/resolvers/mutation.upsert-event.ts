@@ -1,6 +1,21 @@
 import { builder, prisma } from '#lib';
-import { onBoard } from '#permissions';
-import { EventInput, EventType, createUid, scheduleShotgunNotifications } from '../index.js';
+import { DateTimeScalar, VisibilityEnum } from '#modules/global';
+import { LinkInput } from '#modules/links';
+import { TicketGroupInput, TicketInput, createTicketUid } from '#modules/ticketing';
+import * as PrismaTypes from '@prisma/client';
+import { EventFrequency, GroupType } from '@prisma/client';
+import { isBefore } from 'date-fns';
+import { GraphQLError } from 'graphql';
+import omit from 'lodash.omit';
+import {
+  EventFrequencyType,
+  EventType,
+  ManagerOfEventInput,
+  canCreateEvent,
+  canEdit,
+  createUid,
+  scheduleShotgunNotifications,
+} from '../index.js';
 
 builder.mutationField('upsertEvent', (t) =>
   t.prismaField({
@@ -12,30 +27,17 @@ builder.mutationField('upsertEvent', (t) =>
     },
     async authScopes(_, { id, input: { group: groupUid } }, { user }) {
       const creating = !id;
-      if (!user) return false;
-      if (user.admin) return true;
 
-      const canCreate = Boolean(
-        user.canEditGroups ||
-          onBoard(user.groups.find(({ group }) => group.uid === groupUid)) ||
-          user.groups.some(
-            ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
-          ),
-      );
+      if (creating) {
+        const group = await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } });
+        return canCreateEvent(group, user);
+      }
 
-      if (creating) return canCreate;
-
-      const event = await prisma.event.findUnique({
+      const event = await prisma.event.findUniqueOrThrow({
         where: { id },
-        include: { managers: { include: { user: true } } },
+        include: { managers: true },
       });
-
-      if (!event) return false;
-
-      return Boolean(
-        canCreate ||
-          event.managers.some(({ user: { uid }, canEdit }) => uid === user.uid && canEdit),
-      );
+      return canEdit(event, user);
     },
     async resolve(
       query,

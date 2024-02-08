@@ -65,7 +65,7 @@ export async function updatePicture({
   identifier,
   propertyName = 'pictureFile',
 }: {
-  resource: 'article' | 'event' | 'user' | 'group';
+  resource: 'article' | 'event' | 'user' | 'group' | 'student-association';
   folder: string;
   extension: 'png' | 'jpg';
   file: File;
@@ -111,6 +111,15 @@ export async function updatePicture({
 
     case 'group': {
       const result = await prisma.group.findUniqueOrThrow({
+        where: { uid: identifier },
+        select: { [propertyName]: true },
+      });
+      pictureFile = result[propertyName] as unknown as string;
+      break;
+    }
+
+    case 'student-association': {
+      const result = await prisma.studentAssociation.findUniqueOrThrow({
         where: { uid: identifier },
         select: { [propertyName]: true },
       });

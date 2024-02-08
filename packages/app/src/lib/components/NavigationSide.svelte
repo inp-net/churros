@@ -280,7 +280,6 @@
     flex-direction: column;
     gap: 0.25rem;
     padding: 1rem;
-    background: var(--bg);
   }
 
   nav .bottom {
@@ -322,7 +321,7 @@
 
   .current {
     color: var(--primary-link);
-    background-color: color-mix(in srgb, var(--primary-link) 15%, transparent);
+    background-color: color-mix(in srgb, var(--primary-link) 10%, transparent);
   }
 
   .flyout-backdrop:not(.open) {

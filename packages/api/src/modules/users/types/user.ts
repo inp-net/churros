@@ -13,6 +13,10 @@ export const UserType = builder.prismaNode('User', {
   fields: (t) => ({
     majorId: t.exposeID('majorId', { nullable: true }),
     uid: t.exposeString('uid'),
+    schoolUid: t.exposeString('schoolUid', {
+      nullable: true,
+      authScopes: { student: true, $granted: 'me' },
+    }),
     otherEmails: t.expose('otherEmails', {
       type: ['String'],
       authScopes: { student: true, $granted: 'me' },

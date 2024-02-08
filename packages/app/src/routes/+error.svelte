@@ -44,6 +44,7 @@
   {:else if status === 404}
     <img src="/404.svg" alt="404" />
     <p>Cette page n'existe pas.</p>
+    <ButtonSecondary href="/">Retour à l'accueil</ButtonSecondary>
   {:else if error}
     <h1>Erreur {status}</h1>
     <p class="errortext">{error.message}</p>
@@ -59,6 +60,10 @@
 </div>
 
 <style lang="scss">
+  :global(body) {
+    height: 100vh;
+  }
+
   :global(.errored .page) {
     display: flex;
   }
@@ -67,7 +72,7 @@
     flex: 1;
   }
 
-  [class^='err']:not(.err-404) {
+  [class^='err-']:not(.err-404) {
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -88,7 +93,13 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    background: black;
+    font-family: var(--font-mono);
+    color: var(--text);
+    background-color: var(--bg);
+
+    --bg: black;
+    --text: #3edb46;
+    --border: #107e0e;
 
     img {
       width: 100%;
@@ -98,9 +109,7 @@
 
     p {
       margin: 0 1rem;
-      font-family: var(--font-mono);
       font-size: 1.5rem;
-      color: #25bf22;
       text-align: center;
     }
   }

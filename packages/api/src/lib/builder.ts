@@ -92,21 +92,27 @@ export const builder = new SchemaBuilder<{
   },
 });
 
+// The frontend can sometimes make bursts of requests, so we add a grace window to the rate limits to prevent failures. Real attacks attempt DDOS for longer than this grace window, so it should be safe.
+const rateLimitGraceWindow = 30; /* seconds */
+const rateLimit = (limit: number, duration: number) => ({
+  rateLimit: { limit: limit * rateLimitGraceWindow, duration: duration * rateLimitGraceWindow },
+});
+
 builder.queryType({
   directives: {
-    rateLimit: { limit: 3, duration: 1 },
+    ...rateLimit(3, 1),
   },
 });
 
 builder.mutationType({
   directives: {
-    rateLimit: { limit: 5, duration: 10 },
+    ...rateLimit(5, 10),
   },
 });
 
 builder.subscriptionType({
   directives: {
-    rateLimit: { limit: 10, duration: 30 },
+    ...rateLimit(10, 30),
   },
 });
 
