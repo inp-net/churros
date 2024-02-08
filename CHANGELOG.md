@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Erreur prisma sur `Event.registrations`
+
 ## [1.45.1] - 2024-02-07
 
 ### Technique
