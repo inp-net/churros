@@ -1,6 +1,6 @@
 <script lang="ts">
   import { toasts } from '$lib/toasts';
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, tick } from 'svelte';
   import IconDelete from '~icons/mdi/delete-outline';
   import IconAdd from '~icons/mdi/plus';
   import ButtonGhost from './ButtonGhost.svelte';
@@ -245,7 +245,7 @@
         tickets[tickets.findIndex((t) => t.uid === ticket.uid)] = { ...ticket };
         dispatch('save', ticket);
         ticketEditModalElement.close();
-        console.log("upading ticket")
+        console.log('upading ticket');
         await $zeus.mutate({
           upsertTicket: [
             {
@@ -299,6 +299,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    max-width: 400px;
   }
 
   .group.none {
@@ -309,7 +310,6 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    /* width: 400px; */
     list-style: none;
   }
 
@@ -319,6 +319,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    max-width: 400px;
     padding: 1rem 1.5rem;
     font-size: 1rem;
     cursor: pointer;

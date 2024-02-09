@@ -129,6 +129,6 @@ export async function checkPaypalPayment(
   const { status } = (await response.json()) as { status: string };
   return {
     paid: ['APPROVED', 'COMPLETED'].includes(status),
-    status: paypalPaymentStatus(status),
+    status: status ? paypalPaymentStatus(status) : PayPalTransactionStatus.Voided,
   };
 }

@@ -124,7 +124,7 @@
         <InputNumber label="Prix" bind:value={ticket.price}></InputNumber>
         <InputNumber label="Nombre de places" bind:value={ticket.capacity}></InputNumber>
       </div>
-      <InputText required label="Nom" bind:value={ticket.name}></InputText>
+      <InputText label="Nom" bind:value={ticket.name}></InputText>
       <InputText label="Description" bind:value={ticket.description}></InputText>
       <details>
         <summary>Liens accessibles après réservation…</summary>

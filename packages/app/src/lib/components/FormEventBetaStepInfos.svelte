@@ -85,9 +85,10 @@
     ></InputGroups>
   {/await}
   <InputText required label="Titre" bind:value={title}></InputText>
+  <InputDateRange time required label="Date" bind:start={startsAt} bind:end={endsAt}
+  ></InputDateRange>
+  <InputText label="Lieu" bind:value={location}></InputText>
 </section>
-<InputDateRange time required label="Date" bind:start={startsAt} bind:end={endsAt}></InputDateRange>
-<InputText label="Lieu" bind:value={location}></InputText>
 <section class="recurrence">
   <h2>Récurrence</h2>
   <InputCheckbox
@@ -130,5 +131,15 @@
 
   .recurrence-options.disabled {
     opacity: 0.5;
+  }
+
+  .basic {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .recurrence {
+    margin-top: 2rem;
   }
 </style>

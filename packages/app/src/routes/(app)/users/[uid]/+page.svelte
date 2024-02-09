@@ -218,6 +218,8 @@
           {/if}
           <dt>Identifiant</dt>
           <dd>{user.uid}</dd>
+          <dt>Identifiant Planète</dt>
+          <dd>{user.schoolUid}</dd>
         </dl>
       </div>
     </div>

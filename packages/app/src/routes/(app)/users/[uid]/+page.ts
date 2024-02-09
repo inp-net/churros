@@ -22,6 +22,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           admin: true,
           apprentice: true,
           uid: true,
+          schoolUid: true,
           address: true,
           birthday: true,
           createdAt: true,

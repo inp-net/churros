@@ -18,8 +18,10 @@
   $: pictureFile = pictureObject.pictureFile;
 </script>
 
-<InputLinks label="Liens" bind:value={links}></InputLinks>
-<InputLongText rich label="Description" bind:value={description}></InputLongText>
+<section class="data">
+  <InputLinks label="Liens" bind:value={links}></InputLinks>
+  <InputLongText rich label="Description" bind:value={description}></InputLongText>
+</section>
 <section class="thumbnail">
   <h2>Miniature</h2>
   <FormPicture bind:object={pictureObject} objectName="Event"></FormPicture>
@@ -30,6 +32,10 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    max-width: 400px;
+    max-width: 600px;
+  }
+
+  section.thumbnail {
+    margin-top: 2rem;
   }
 </style>

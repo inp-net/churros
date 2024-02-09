@@ -49,6 +49,7 @@
     <slot name="input" slot="input" let:openPicker {openPicker}>
       <div class="group-input-current">
         {#if multiple ? groups.length > 0 : group}
+          <ButtonSecondary on:click={openPicker}>Changer</ButtonSecondary>
           <div class="groups">
             {#each groups as group (group.uid)}
               <AvatarPerson
@@ -58,9 +59,9 @@
               />
             {/each}
           </div>
-          <ButtonSecondary on:click={openPicker}>Changer</ButtonSecondary>
         {:else}
-          Aucun groupe sélectionné <ButtonSecondary on:click={openPicker}>Choisir</ButtonSecondary>
+          <ButtonSecondary on:click={openPicker}>Choisir</ButtonSecondary>
+          Aucun groupe sélectionné
         {/if}
       </div>
     </slot>
