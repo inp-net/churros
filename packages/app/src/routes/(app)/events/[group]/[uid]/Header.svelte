@@ -1,17 +1,18 @@
 <script lang="ts">
-  import { formatEventDates, formatRecurrence } from '$lib/dates';
-  import BackButton from '$lib/components/ButtonBack.svelte';
-  import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import { onDestroy, onMount } from 'svelte';
   import { browser } from '$app/environment';
-  import IconWhere from '~icons/mdi/location-outline';
-  import IconWhen from '~icons/mdi/calendar-outline';
-  import IconRepeat from '~icons/mdi/repeat';
   import { env } from '$env/dynamic/public';
-  import { EventFrequency, type Visibility } from '$lib/zeus';
-  import { DISPLAY_EVENT_FREQUENCY } from '$lib/display';
-  import { DISPLAY_VISIBILITIES } from '$lib/display';
+  import BackButton from '$lib/components/ButtonBack.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
   import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
+  import { formatEventDates, formatRecurrence } from '$lib/dates';
+  import { DISPLAY_EVENT_FREQUENCY, DISPLAY_VISIBILITIES } from '$lib/display';
+  import { EventFrequency, type Visibility } from '$lib/zeus';
+  import { onDestroy, onMount } from 'svelte';
+  import IconWhen from '~icons/mdi/calendar-outline';
+  import IconWhere from '~icons/mdi/location-outline';
+  import IconEdit from '~icons/mdi/pencil-outline';
+  import IconRepeat from '~icons/mdi/repeat';
 
   export let title: string;
   export let startsAt: Date | undefined = undefined;
@@ -54,6 +55,9 @@
       <BackButton go="../.." white={Boolean(pictureFile)} />
       {title}
       <ButtonShare white={Boolean(pictureFile)} />
+      <ButtonGhost white={Boolean(pictureFile)} href="./edit">
+        <IconEdit></IconEdit>
+      </ButtonGhost>
     </h1>
     {#if frequency !== EventFrequency.Once}
       <p class="recurrence">

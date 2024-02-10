@@ -257,7 +257,7 @@
       </a>
     {/if}
 
-    <a href="/documents/create">
+    <a class="button" href="/documents/create">
       <LogoFrappe />
       <span>Frappe</span>
     </a>

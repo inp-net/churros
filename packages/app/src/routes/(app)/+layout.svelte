@@ -12,6 +12,8 @@
   ] as const;
 
   export const MOBILE_NAVIGATION_TABS = ['home', 'groups', 'events', 'services'] as const;
+
+  export const fullsizePage = writable(false);
 </script>
 
 <script lang="ts">
@@ -66,11 +68,6 @@
     for (const mobileTab of MOBILE_NAVIGATION_TABS) if (mobileTab === tab) return tab;
 
     return 'services';
-  }
-
-  function pageIsFullsize(url: URL) {
-    const fragments = url.pathname.split('/');
-    return fragments[1] === 'club' && fragments[3] === 'event';
   }
 
   function announcementHiddenByUser(id: string): boolean {
@@ -157,7 +154,7 @@
     <div
       id="scrollable-area"
       class="contents-and-announcements"
-      class:fullsize={pageIsFullsize($page.url)}
+      class:fullsize={$fullsizePage}
       bind:this={scrollableArea}
     >
       <section class="announcements fullsize">
@@ -249,14 +246,29 @@ The root layout is composed of several elements:
 
   .contents-and-announcements {
     min-height: 0;
-    padding-top: 1rem;
-    padding-bottom: 2rem;
     overflow-y: scroll;
     scrollbar-width: thin;
   }
 
+  .contents-and-announcements:not(.fullsize) {
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+
   .contents-and-announcements:not(.fullsize) main {
     padding: 0 1rem;
+  }
+
+  #scrollable-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+  }
+
+  main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   :global(*::-webkit-scrollbar *) {

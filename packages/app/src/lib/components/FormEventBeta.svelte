@@ -178,15 +178,10 @@
 </script>
 
 <script lang="ts">
+  import { goto, pushState } from '$app/navigation';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import { toasts } from '$lib/toasts';
-  import {
-    EventFrequency,
-    Visibility,
-    zeus,
-    type PaymentMethod,
-    type ValueTypes
-  } from '$lib/zeus';
+  import { EventFrequency, Visibility, zeus, type PaymentMethod, type ValueTypes } from '$lib/zeus';
   import { addDays } from 'date-fns';
   import { nanoid } from 'nanoid';
   import { createEventDispatcher, onMount } from 'svelte';
@@ -248,17 +243,17 @@
 
   const stepIndex = (id: string) => steps.findIndex(([href, _]) => href === id);
 
-  let currentStep: FormEventStep = 'details';
+  export let currentStep: FormEventStep = 'details';
 
-  async function nextStepOrSubmit({ submitter }: SubmitEvent) {
-    let targetStep = (submitter?.dataset['step'] ??
-      steps[stepIndex(currentStep) + 1][0]) as FormEventStep;
-
+  /**
+   * Returns true if the changes were successfully applied
+   */
+  async function saveChanges(): Promise<boolean> {
     switch (currentStep) {
       case 'details': {
         if (!event.endsAt || !event.startsAt) {
           toasts.error('Renseignes une date de début et de fin');
-          return;
+          return false;
         }
 
         if (!event.group) {
@@ -291,18 +286,11 @@
         });
         if (upsertEvent.__typename === 'Error') {
           toasts.error(upsertEvent.message);
-        } else {
-          signalSavedChanges(
-            event.id !== upsertEvent.data.id
-              ? "Brouillon d'évènement créé."
-              : 'Changements sauvegardés.',
-          );
-          event.id = upsertEvent.data.id;
-          event.uid = upsertEvent.data.uid;
-          currentStep = targetStep;
+          return false;
         }
-
-        break;
+        event.id = upsertEvent.data.id;
+        event.uid = upsertEvent.data.uid;
+        return true;
       }
 
       case 'situation': {
@@ -338,13 +326,48 @@
 
         if (upsertEvent.__typename === 'Error') {
           toasts.error("Impossible de sauvegarder l'évènement", upsertEvent.message);
-        } else {
-          signalSavedChanges('Changements sauvegardés.');
-          currentStep = targetStep;
+          return false;
         }
+        return true;
       }
 
       case 'tickets': {
+        // Nothing to do, tickets were saved on the fly
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  async function nextStepOrSubmit({ submitter }: SubmitEvent) {
+    let targetStep = (submitter?.dataset['step'] ??
+      steps[stepIndex(currentStep) + 1][0]) as FormEventStep;
+
+    const oldEvent = structuredClone(event);
+    const ok = await saveChanges();
+    if (ok) {
+      signalSavedChanges(
+        oldEvent.id !== event.id ? "Brouillon d'évènement créé." : 'Changements sauvegardés.',
+      );
+
+      switch (currentStep) {
+        case 'details': {
+          currentStep = targetStep;
+          // Navigate to edit page so that reloading does not loose progress (in the UI)
+          if (creating)
+            pushState(`/events/${event.group.uid}/${event.uid}/edit?step=${targetStep}`, {});
+
+          break;
+        }
+
+        case 'situation': {
+          currentStep = targetStep;
+        }
+
+        case 'tickets': {
+          currentStep = targetStep;
+        }
       }
     }
   }
@@ -358,7 +381,16 @@
   });
 </script>
 
-<form class="content" on:submit|self|preventDefault={nextStepOrSubmit}>
+<form
+  class="content"
+  on:submit|self|preventDefault={async (e) => {
+    if (creating) nextStepOrSubmit(e);
+    else {
+      saveChanges();
+      await goto(goBackTo);
+    }
+  }}
+>
   <section class="top" class:scrolled>
     <h1>
       {#if goBackTo}
@@ -429,7 +461,9 @@
       </p>
     {/key}
     <ButtonPrimary smaller submits>
-      {#if currentStep === 'visibility'}
+      {#if !creating}
+        Sauvegarder
+      {:else if currentStep === 'visibility'}
         {#if [Visibility.Unlisted, Visibility.Private].includes(event.visibility)}Enregistrer{:else}Publier{/if}
       {:else}
         Continuer

@@ -19,25 +19,20 @@
   import PillRemovable from './PillRemovable.svelte';
   import InputLinks from './InputLinks.svelte';
   import { fromYearTier } from '$lib/dates';
-  import { uniq, uniqBy } from 'lodash';
+  // import uniqBy from 'lodash.uniqby';
   import { crossfade, slide } from 'svelte/transition';
   import { quintOut } from 'svelte/easing';
 
   const transitionPair = crossfade({
     duration: (d) => Math.sqrt(d * 50),
-    fallback(node, _params) {
-      const style = getComputedStyle(node);
-      const transform = style.transform === 'none' ? '' : style.transform;
-
-      return {
-        duration: 600,
-        easing: quintOut,
-        css: (t) => `
-				transform: ${transform} scale(${t});
-				opacity: ${t}
+    fallback: () => ({
+      duration: 600,
+      easing: quintOut,
+      css: (t) => `
+        scale: ${t};
+				opacity: ${t};
 			`,
-      };
-    },
+    }),
   });
 
   const dispatch = createEventDispatcher<{ save: Ticket; delete: Ticket }>();

@@ -6,6 +6,7 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ fetch, parent, params, url }) => {
   const { me } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
+  console.log(`loading data for event edit`)
   const data = await loadQuery(
     {
       lydiaAccounts: {

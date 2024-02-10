@@ -1,8 +1,8 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { fullsizePage } from '$lib/../routes/(app)/+layout.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import type { PageData } from './$types';
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
 
   $: ({ group, uid } = $page.params);
 
@@ -11,7 +11,6 @@
 
   const TABS = {
     '': 'Infos',
-    'edit': 'Modifier',
     'registrations': 'Places',
     'scan': 'Vérifier',
   } as const;
@@ -40,7 +39,7 @@
 </script>
 
 <section class="tabs">
-  {#if shownTabs.length > 1 && currentTab !== 'edit'}
+  {#if shownTabs.length > 1}
     <NavigationTabs
       --text={currentTab === 'scan' ? 'white' : 'var(--text)'}
       tabs={shownTabs.map((tab) => ({

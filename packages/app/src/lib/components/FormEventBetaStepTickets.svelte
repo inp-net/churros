@@ -11,7 +11,7 @@
   import InputText from './InputText.svelte';
   import Modal from './Modal.svelte';
   import { TicketMove, zeus } from '$lib/zeus';
-  import { omit } from 'lodash';
+  // import omit from 'lodash.omit';
   const dispatch = createEventDispatcher();
 
   export let eventId: string;
@@ -253,6 +253,7 @@
               eventId,
               ticket: {
                 ...omit(ticket, ['id', 'uid', 'group']),
+                name: ticket.name || undefined,
                 autojoinGroups: ticket.autojoinGroups.map((g) => g.uid),
                 openToGroups: listOfUids(ticket.openToGroups),
                 openToMajors: listOfUids(ticket.openToMajors),
