@@ -10,7 +10,7 @@
   import LoadingSpinner from './LoadingSpinner.svelte';
 
   export let title: string;
-  export let group: Group;
+  export let group: Group | undefined;
   export let coOrganizers: Array<Group>;
   export let location: string;
   export let startsAt: Date | undefined = undefined;

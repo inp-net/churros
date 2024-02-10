@@ -1,8 +1,6 @@
 <script lang="ts">
-  import FormEvent from '$lib/components/FormEvent.svelte';
-  import type { PageData } from './$types';
-  import { page } from '$app/stores';
   import FormEventBeta from '$lib/components/FormEventBeta.svelte';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 </script>

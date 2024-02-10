@@ -161,7 +161,7 @@
         <section class="constraints">
           <h2>Limiter à</h2>
           <div class="add-constraints" transition:slide|global>
-            {#await $zeus.query( { majors: { id: true, shortName: true, name: true }, groups: [{}, { id: true, uid: true, name: true, pictureFile: true, pictureFileDark: true }] }, )}
+            {#await $zeus.query( { majors: { id: true, shortName: true, name: true, uid: true }, groups: [{}, { id: true, uid: true, name: true, pictureFile: true, pictureFileDark: true }] }, )}
               <LoadingSpinner></LoadingSpinner>
             {:then { majors: allMajors, groups: allGroups }}
               {#if ticket.openToApprentices === null || ticket.openToApprentices === undefined}
@@ -500,5 +500,4 @@
   .inputs .limits {
     max-width: 500px;
   }
-  
 </style>

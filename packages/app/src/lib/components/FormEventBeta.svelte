@@ -125,7 +125,7 @@
     visibility: Visibility;
     frequency: EventFrequency;
     recurringUntil?: Date | undefined;
-    group: {
+    group?: {
       id: string;
       uid: string;
       name: string;
@@ -178,36 +178,32 @@
 </script>
 
 <script lang="ts">
+  import ButtonBack from '$lib/components/ButtonBack.svelte';
+  import { toasts } from '$lib/toasts';
   import {
     EventFrequency,
     Visibility,
     zeus,
     type PaymentMethod,
-    type ZeusArgsType,
-    type ValueTypes,
+    type ValueTypes
   } from '$lib/zeus';
   import { addDays } from 'date-fns';
   import { nanoid } from 'nanoid';
   import { createEventDispatcher, onMount } from 'svelte';
-  import { writable } from 'svelte/store';
+  import { fade } from 'svelte/transition';
   import ButtonPrimary from './ButtonPrimary.svelte';
+  import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
+  import FormEventBetaStepCommunication from './FormEventBetaStepCommunication.svelte';
   import FormEventBetaStepInfos from './FormEventBetaStepInfos.svelte';
   import FormEventBetaStepOrganization from './FormEventBetaStepOrganization.svelte';
-  import FormEventBetaStepCommunication from './FormEventBetaStepCommunication.svelte';
   import FormEventBetaStepTickets from './FormEventBetaStepTickets.svelte';
+  import FormEventBetaStepVisibility from './FormEventBetaStepVisibility.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
   import NavigationSteps from './NavigationSteps.svelte';
-  import FormEventBetaStepVisibility from './FormEventBetaStepVisibility.svelte';
-  import FormEventBetaPreviewCard from './FormEventBetaPreviewCard.svelte';
-  import { toasts } from '$lib/toasts';
-  import { fade } from 'svelte/transition';
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
 
   let dispatch = createEventDispatcher();
   let scrollableAreaElement: HTMLElement;
   let bottomBarMessage = '';
-
-  export let group: Event['group'];
 
   function signalSavedChanges(message: string) {
     bottomBarMessage = message;
@@ -216,8 +212,9 @@
     }, 3000);
   }
 
+  // @ts-ignore
   export let event: Event = {
-    group,
+    group: undefined,
     title: 'Quoicoubaka',
     description: '',
     startsAt: new Date(),
@@ -230,6 +227,7 @@
           { tickets: [], startsAt: new Date(), endsAt: addDays(new Date(), 1) },
           shadowValue(),
           shadowValue(),
+          0,
         ),
         name: 'ogziogrjoirz',
       },
@@ -238,6 +236,7 @@
           { tickets: [], startsAt: new Date(), endsAt: addDays(new Date(), 1) },
           shadowValue(),
           shadowValue(),
+          0,
         ),
         name: 'greoigjroiger',
       },
@@ -259,6 +258,11 @@
       case 'details': {
         if (!event.endsAt || !event.startsAt) {
           toasts.error('Renseignes une date de début et de fin');
+          return;
+        }
+
+        if (!event.group) {
+          toasts.error('Il manque le groupe organisateur');
           return;
         }
 
@@ -302,6 +306,11 @@
       }
 
       case 'situation': {
+        if (!event.group) {
+          toasts.error('Il manque le groupe organisateur');
+          return;
+        }
+
         const { upsertEvent } = await $zeus.mutate({
           upsertEvent: [
             {

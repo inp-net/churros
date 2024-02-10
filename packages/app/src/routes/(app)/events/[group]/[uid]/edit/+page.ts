@@ -64,6 +64,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             capacity: true,
             opensAt: true,
             closesAt: true,
+            order: true,
             autojoinGroups: {
               id: true,
               uid: true,
@@ -89,6 +90,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
               shortName: true,
               name: true,
               id: true,
+              uid: true,
             },
             openToGroups: {
               id: true,

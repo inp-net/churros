@@ -1,13 +1,10 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import FormEvent from '$lib/components/FormEvent.svelte';
   import FormEventBeta from '$lib/components/FormEventBeta.svelte';
   import { me } from '$lib/session';
   import { EventFrequency, Visibility } from '$lib/zeus';
   import { addDays } from 'date-fns';
-  import type { PageData } from './$types';
 
-  export let data: PageData;
   let event = {
     id: '',
     uid: '',
@@ -50,11 +47,11 @@
   //     data.event = event;
   //   },
   // };
-  const redirectAfterSave = (uid: string) => $page.url.searchParams.get('back') || `../${uid}`;
+  $: goBackTo = $page.url.searchParams.get('back') || `../${event.uid}`;
 </script>
 
 <div class="content">
-  <FormEventBeta goBackTo="/" bind:event />
+  <FormEventBeta creating {goBackTo} bind:event />
 </div>
 
 <style>

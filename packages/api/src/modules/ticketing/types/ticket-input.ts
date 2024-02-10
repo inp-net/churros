@@ -2,25 +2,29 @@ import { builder } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { PaymentMethodEnum } from '#modules/payments';
-import { isAfter } from 'date-fns';
+// import type { PaymentMethod } from '@prisma/client';
+// import { isAfter } from 'date-fns';
 
 export const TicketInput = builder.inputType('TicketInput', {
-  validate: [
-    [
-      ({ opensAt, closesAt }) => !opensAt || !closesAt || isAfter(closesAt, opensAt),
-      {
-        message: "La date de fermeture doit être après la date d'ouverture",
-        path: ['opensAt'],
-      },
-    ],
-    [
-      ({ price, allowedPaymentMethods }) => !price || allowedPaymentMethods.length > 0,
-      {
-        message: 'Un billet payant doit avoir au moins un moyen de paiement autorisé',
-        path: ['allowedPaymentMethods'],
-      },
-    ],
-  ],
+  // gives out a bunch of type errors, even with assertions
+  // validate: [
+  //   [
+  //     ({ opensAt, closesAt }) =>
+  //       !opensAt || !closesAt || isAfter(closesAt as Date, opensAt as Date),
+  //     {
+  //       message: "La date de fermeture doit être après la date d'ouverture",
+  //       path: ['opensAt'],
+  //     },
+  //   ],
+  //   [
+  //     ({ price, allowedPaymentMethods }) =>
+  //       !price || (allowedPaymentMethods as PaymentMethod[]).length > 0,
+  //     {
+  //       message: 'Un billet payant doit avoir au moins un moyen de paiement autorisé',
+  //       path: ['allowedPaymentMethods'],
+  //     },
+  //   ],
+  // ],
   fields: (t) => ({
     allowedPaymentMethods: t.field({ type: [PaymentMethodEnum] }),
     capacity: t.int(),

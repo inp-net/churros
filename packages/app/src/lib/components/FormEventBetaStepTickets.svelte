@@ -266,17 +266,7 @@
           ],
         });
         if (ticket.group) {
-          const { upsertTicketGroup } = await $zeus.mutate({
-            moveTicket: [
-              {
-                eventId,
-                move: TicketMove.MoveToGroup,
-              },
-              {
-                id: true,
-              },
-            ],
-          });
+          //TODO
         }
         toasts.success('Billet sauvegardé');
       }}
