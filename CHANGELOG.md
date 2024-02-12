@@ -11,6 +11,11 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Le rate limiting est maintenant plus sympa
+- Les pages 404 sont maintenant verticalement centrées
+
 ## [1.45.2] - 2024-02-08
 
 ### Technique
