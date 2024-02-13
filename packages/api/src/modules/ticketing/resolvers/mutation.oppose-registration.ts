@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { eventManagedByUser } from '#permissions';
+import { userCanManageEvent } from '#permissions';
 
 // TODO rename to oppose-booking.ts
 
@@ -29,7 +29,7 @@ builder.mutationField('opposeRegistration', (t) =>
         },
       });
       if (!registration) return false;
-      if (!eventManagedByUser(registration.ticket.event, user, { canVerifyRegistrations: true }))
+      if (!userCanManageEvent(registration.ticket.event, user, { canVerifyRegistrations: true }))
         return false;
       return true;
     },

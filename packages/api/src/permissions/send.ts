@@ -1,6 +1,6 @@
 import type { NotificationChannel as NotificationChannelPrisma } from '@prisma/client';
 
-export function canSendNotificationToUser(
+export function serverCanSendNotificationToUser(
   subscriptionOwner: { enabledNotificationChannels: NotificationChannelPrisma[] },
   channel: NotificationChannelPrisma,
 ): boolean {

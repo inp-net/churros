@@ -1,7 +1,12 @@
 import { builder, log, prisma, publish } from '#lib';
 
 import { PaymentMethodEnum } from '#modules/payments';
-import { eventAccessibleByUser, eventManagedByUser, userCanSeeTicket } from '#permissions';
+import {
+  getUserWithContributesTo,
+  userCanAccessEvent,
+  userCanManageEvent,
+  userCanSeeTicket,
+} from '#permissions';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { isFuture, isPast } from 'date-fns';
 import { GraphQLError } from 'graphql';
@@ -71,7 +76,7 @@ builder.mutationField('upsertRegistration', (t) =>
       if (
         ticket.price > 0 &&
         paid &&
-        !(user?.admin || eventManagedByUser(ticket.event, user, { canVerifyRegistrations: true }))
+        !(user?.admin || userCanManageEvent(ticket.event, user, { canVerifyRegistrations: true }))
       ) {
         await logDenial(
           "only managers or admins can mark a registration as paid, ticket's price is not 0 and paid is true",
@@ -82,46 +87,12 @@ builder.mutationField('upsertRegistration', (t) =>
 
       if (creating) {
         // Check that the user can access the event
-        if (!(await eventAccessibleByUser(ticket.event, user))) {
+        if (!(await userCanAccessEvent(ticket.event, user))) {
           await logDenial("user can't access the event the ticket is for", { ticket });
           return false;
         }
 
-        const userWithContributesTo = user
-          ? await prisma.user.findUniqueOrThrow({
-              where: { id: user.id },
-              include: {
-                contributions: {
-                  include: {
-                    option: {
-                      include: {
-                        paysFor: {
-                          include: {
-                            school: true,
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                groups: {
-                  include: {
-                    group: true,
-                  },
-                },
-                managedEvents: {
-                  include: {
-                    event: true,
-                  },
-                },
-                major: {
-                  include: {
-                    schools: true,
-                  },
-                },
-              },
-            })
-          : undefined;
+        const userWithContributesTo = user ? await getUserWithContributesTo(user.id) : undefined;
 
         // Check that the ticket is still open
         if (ticket.closesAt && isPast(ticket.closesAt)) {
@@ -144,7 +115,7 @@ builder.mutationField('upsertRegistration', (t) =>
         // Check for tickets that only managers can provide
         if (
           ticket.onlyManagersCanProvide &&
-          !eventManagedByUser(ticket.event, user, { canVerifyRegistrations: true })
+          !userCanManageEvent(ticket.event, user, { canVerifyRegistrations: true })
         ) {
           await logDenial('only managers can provide this ticket', { ticket });
           return false;
@@ -159,7 +130,7 @@ builder.mutationField('upsertRegistration', (t) =>
         });
 
         // Check for beneficiary limits
-        if (!eventManagedByUser(ticket.event, user, {})) {
+        if (!userCanManageEvent(ticket.event, user, {})) {
           const registrationsByThisAuthor = ticketAndRegistrations!.registrations.filter(
             ({ author, beneficiary }) => author?.uid === user?.uid && beneficiary !== '',
           );
@@ -204,7 +175,7 @@ builder.mutationField('upsertRegistration', (t) =>
       if (!registration) return false;
       if (
         !user?.admin &&
-        !eventManagedByUser(registration.ticket.event, user, { canVerifyRegistrations: true })
+        !userCanManageEvent(registration.ticket.event, user, { canVerifyRegistrations: true })
       )
         return false;
       return true;

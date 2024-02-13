@@ -1,6 +1,6 @@
 import { CURRENT_VERSION, builder } from '#lib';
 import * as SemVer from 'semver';
-import { ChangelogRelease, ChangelogReleaseType, changelogFromFile } from '../index.js';
+import { ChangelogReleaseType, changelogFromFile, findReleaseInChangelog } from '../index.js';
 
 builder.queryField('changelog', (t) =>
   t.field({
@@ -20,7 +20,7 @@ builder.queryField('changelog', (t) =>
       }),
     },
     async resolve(_, { version }) {
-      return ChangelogRelease.findIn(await changelogFromFile(), version ?? CURRENT_VERSION);
+      return findReleaseInChangelog(await changelogFromFile(), version ?? CURRENT_VERSION);
     },
   }),
 );
