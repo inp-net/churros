@@ -19,7 +19,7 @@
   import PillRemovable from './PillRemovable.svelte';
   import InputLinks from './InputLinks.svelte';
   import { fromYearTier } from '$lib/dates';
-  // import uniqBy from 'lodash.uniqby';
+  import uniqBy from 'lodash.uniqby';
   import { crossfade, slide } from 'svelte/transition';
   import { quintOut } from 'svelte/easing';
 
@@ -52,11 +52,11 @@
     ['students', 'Étudiant·e·s'],
     ['alumni', 'Alumnis'],
     ['external', 'Extés'],
-    // ['managers', 'Managers'],
+    ['managers', 'Managers'],
   ];
 
   // Prevent duplicates
-  $: ticket.openToPromotions = uniq(ticket.openToPromotions.map(Number));
+  $: ticket.openToPromotions = uniqBy(ticket.openToPromotions.map(Number), (p) => p);
   $: ticket.openToGroups = uniqBy(ticket.openToGroups, (g) => g.id);
   $: ticket.openToMajors = uniqBy(ticket.openToMajors, (m) => m.id);
   $: ticket.openToSchools = uniqBy(ticket.openToSchools, (s) => s.id);
@@ -152,7 +152,7 @@
           fromAudienceOption(value);
         }}
       ></InputSelectOne>
-      {#if toAudienceOption(ticket) !== 'external'}
+      {#if !['managers', 'external'].includes(toAudienceOption(ticket))}
         <section class="constraints">
           <h2>Limiter à</h2>
           <div class="add-constraints" transition:slide|global>

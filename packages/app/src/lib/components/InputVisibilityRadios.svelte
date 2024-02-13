@@ -19,7 +19,18 @@
   {/if}
   {#each ORDER_VISIBILITIES as value}
     {@const display = DISPLAY_VISIBILITIES[value]}
-    <label class:selected={visibility === value}>
+    <label
+      tabindex="0"
+      on:click={() => {
+        visibility = value;
+      }}
+      on:keypress={(e) => {
+        if (e.key === 'Enter') {
+          visibility = value;
+        }
+      }}
+      class:selected={visibility === value}
+    >
       <input type="radio" name={value} {value} bind:group={visibility} />
       <IndicatorVisibility visibility={value}></IndicatorVisibility>
       {display}

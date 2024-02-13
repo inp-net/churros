@@ -181,7 +181,14 @@
   import { goto, pushState } from '$app/navigation';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import { toasts } from '$lib/toasts';
-  import { EventFrequency, Visibility, zeus, type PaymentMethod, type ValueTypes } from '$lib/zeus';
+  import {
+    EventFrequency,
+    Visibility,
+    zeus,
+    type PaymentMethod,
+    type ValueTypes,
+    EventDraftStep,
+  } from '$lib/zeus';
   import { addDays } from 'date-fns';
   import { nanoid } from 'nanoid';
   import { createEventDispatcher, onMount } from 'svelte';
@@ -258,7 +265,7 @@
 
         if (!event.group) {
           toasts.error('Il manque le groupe organisateur');
-          return;
+          return false;
         }
 
         // Save first draft
@@ -296,7 +303,7 @@
       case 'situation': {
         if (!event.group) {
           toasts.error('Il manque le groupe organisateur');
-          return;
+          return false;
         }
 
         const { upsertEvent } = await $zeus.mutate({
@@ -335,6 +342,67 @@
         // Nothing to do, tickets were saved on the fly
         return true;
       }
+
+      case 'organization': {
+        if (!event.group) {
+          toasts.error('Il manque le groupe organisateur');
+          return false;
+        }
+
+        const { upsertEvent } = await $zeus.mutate({
+          upsertEvent: [
+            {
+              id: event.id,
+              input: {
+                contactMail: event.contactMail,
+                lydiaAccountId: event.beneficiary?.id,
+                bannedUsers: [], // TODO
+                group: event.group.uid,
+                description: event.description,
+                title: event.title,
+                coOrganizers: event.coOrganizers.map((c) => c.uid),
+                frequency: event.frequency,
+                startsAt: event.startsAt,
+                endsAt: event.endsAt,
+                draftStep: EventDraftStep.Organisation,
+                links: event.links,
+                showPlacesLeft: true, // TODO
+                visibility: event.visibility,
+                location: event.location,
+              },
+            },
+            {
+              '__typename': true,
+              '...on Error': { message: true },
+              '...on MutationUpsertEventSuccess': {
+                data: {
+                  contactMail: true,
+                  beneficiary: {
+                    name: true,
+                    id: true,
+                    group: { uid: true, name: true, pictureFile: true, pictureFileDark: true },
+                  },
+                },
+              },
+            },
+          ],
+        });
+
+        // TODO update managers too
+
+        switch (upsertEvent.__typename) {
+          case 'Error': {
+            toasts.error("Impossible de sauvegarder l'évènement", upsertEvent.message);
+            return false;
+          }
+
+          case 'MutationUpsertEventSuccess': {
+            event.contactMail = upsertEvent.data.contactMail;
+            event.beneficiary = upsertEvent.data.beneficiary;
+            return true;
+          }
+        }
+      }
     }
 
     return false;
@@ -345,6 +413,10 @@
       steps[stepIndex(currentStep) + 1][0]) as FormEventStep;
 
     const oldEvent = structuredClone(event);
+    if (!event.group) {
+      toasts.error('Il manque le groupe organisateur');
+      return;
+    }
     const ok = await saveChanges();
     if (ok) {
       signalSavedChanges(
@@ -368,6 +440,15 @@
         case 'tickets': {
           currentStep = targetStep;
         }
+
+        case 'organization': {
+          currentStep = targetStep;
+        }
+
+        case 'visibility': {
+          // Event created!
+          if (creating) pushState(`/events/${event.group.uid}/${event.uid}`, {});
+        }
       }
     }
   }
@@ -384,11 +465,10 @@
 <form
   class="content"
   on:submit|self|preventDefault={async (e) => {
-    if (creating) nextStepOrSubmit(e);
-    else {
-      saveChanges();
-      await goto(goBackTo);
-    }
+    const willGoToNextStep = !creating || Boolean(e.submitter?.dataset['step']);
+
+    if (willGoToNextStep) nextStepOrSubmit(e);
+    else saveChanges();
   }}
 >
   <section class="top" class:scrolled>
