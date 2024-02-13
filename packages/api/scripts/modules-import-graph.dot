@@ -21,3 +21,4 @@ strict digraph ImportGraph {
     "ticketing" -> "users";
     "users" -> "notifications";
     "users" -> "links";
+}
