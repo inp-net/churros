@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, isThirdPartyToken, prisma } from '#lib';
 
 builder.mutationField('revokeAuthorization', (t) =>
   t.boolean({
@@ -7,7 +7,24 @@ builder.mutationField('revokeAuthorization', (t) =>
     args: {
       clientId: t.arg.string({ required: true, description: "Identifiant de l'application" }),
     },
-    authScopes: { loggedIn: true },
+    async authScopes(_, { clientId }, { token, user }) {
+      if (!token || !user) return false;
+      if (isThirdPartyToken(token)) {
+        // Third party apps can only revoke their own authorizations
+        const thirdPartyCredential = await prisma.thirdPartyCredential.findFirst({
+          where: {
+            ownerId: user.id,
+            clientId,
+            type: {
+              in: ['AccessToken', 'AuthorizationCode'],
+            },
+          },
+        });
+        return clientId === thirdPartyCredential?.clientId;
+      }
+
+      return true;
+    },
     async resolve(_, { clientId }, { user }) {
       if (!user) return false;
       await prisma.thirdPartyCredential.deleteMany({
