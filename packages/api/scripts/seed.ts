@@ -850,7 +850,7 @@ await prisma.thirdPartyApp.create({
     active: true,
     website: 'https://wiki.inpt.fr',
     allowedRedirectUris: {
-      set: ['https://wiki.inpt.fr', 'http://localhost:5000/login'],
+      set: ['https://wiki.inpt.fr', 'http://localhost:5000'],
     },
     owner: { connect: { id: ski.id } },
   },

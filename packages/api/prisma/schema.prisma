@@ -79,6 +79,7 @@ model User {
   comments                  Comment[]
   bannedFromEvents          Event[]                    @relation("bannedFromEvents")
   reactions                 Reaction[]
+  allowedApps               ThirdPartyApp[]
 
   // For full-text search
   search                Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -311,6 +312,7 @@ model ThirdPartyApp {
   website             String
   faviconUrl          String                 @default("") @db.VarChar(255) // Computed from website if not provided
   active              Boolean                @default(false)
+  users               User[]
 }
 
 /// There is one student association per school

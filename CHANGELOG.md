@@ -11,6 +11,14 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Améliorations
+
+- Plus besoin de cliquer sur "Autoriser" pour un service tiers qu'on a déjà autorisé
+
+### Nouveautés
+
+- On peut révoquer l'accès à des services tiers qu'on a autorisé, depuis les paramètres
+
 ## [1.45.3] - 2024-02-12
 
 ### Technique

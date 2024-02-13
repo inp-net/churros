@@ -15,6 +15,8 @@ export function onBoard(
   );
 }
 
+// TODO allow  these functions to take a groupId as an alternative to groupUid
+
 export function userIsPresidentOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
     user?.groups.some(({ group: { uid }, president }) => uid === groupUid && president),

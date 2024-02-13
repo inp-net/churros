@@ -59,16 +59,31 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
       if (!client.allowedRedirectUris.includes(redirectUri))
         throw new GraphQLError('Invalid redirect URI');
 
-      const { value } = await prisma.thirdPartyCredential.create({
-        data: {
-          clientId: client.id,
-          value: generateThirdPartyToken(),
-          type: ThirdPartyCredentialType.AuthorizationCode,
-          // Keep the auth code for 7 days
-          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-          ownerId: user.id,
-        },
-      });
+      const [{ value }] = await prisma.$transaction([
+        prisma.thirdPartyCredential.create({
+          data: {
+            clientId: client.id,
+            value: generateThirdPartyToken(),
+            type: ThirdPartyCredentialType.AuthorizationCode,
+            // Keep the auth code for 7 days
+            expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+            ownerId: user.id,
+          },
+        }),
+        prisma.thirdPartyApp.update({
+          where: {
+            id: client.id,
+          },
+          data: {
+            users: {
+              connect: {
+                id: user.id,
+              },
+            },
+          },
+        }),
+      ]);
+
       return value;
     },
   }),
