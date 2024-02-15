@@ -22,6 +22,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Corrections
 
 - La liste des contributeurs sera maintenant complète et triée
+- Les évènements récurrents s'affichent désormais à la bonne date dans le planning (!98) (@bardete)
 
 ## [1.45.3] - 2024-02-12
 
