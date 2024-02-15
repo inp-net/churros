@@ -19,6 +19,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 - On peut révoquer l'accès à des services tiers qu'on a autorisé, depuis les paramètres
 
+### Corrections
+
+- La liste des contributeurs sera maintenant complète et triée
+
 ## [1.45.3] - 2024-02-12
 
 ### Technique
