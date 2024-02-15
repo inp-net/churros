@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Correction
+
+- Correction d'un bug empêchant la révocation d'accès à un service tiers de fonctionner correctment
+
 ## [1.46.0] - 2024-02-15
 
 ### Améliorations

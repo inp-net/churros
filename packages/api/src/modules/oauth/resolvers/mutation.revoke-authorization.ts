@@ -1,4 +1,4 @@
-import { builder, isThirdPartyToken, prisma } from '#lib';
+import { builder, isThirdPartyToken, makeGlobalID, prisma } from '#lib';
 
 builder.mutationField('revokeAuthorization', (t) =>
   t.boolean({
@@ -33,6 +33,16 @@ builder.mutationField('revokeAuthorization', (t) =>
           clientId,
           type: {
             in: ['AccessToken', 'AuthorizationCode'],
+          },
+        },
+      });
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          allowedApps: {
+            disconnect: {
+              id: makeGlobalID('ThirdPartyApp', clientId),
+            },
           },
         },
       });
