@@ -58,6 +58,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - L'arbre de la famille du parrainage n'est plus cassé sur écran de téléphone (#773) (!102) (@ragotc1)
 - Typographie corrigée sur le bouton des trois petits points "Les autres services" sur téléphone (#662) (!102) (@ragotc1)
 - Le texte "Cf." est désormais bien aligné sur la page des crédits (!102) (@ragotc1)
+- Un shotgun passé ne s'affichera plus comme "dans il y a xxx" (#789) (!100) (@bardete)
 
 ### Améliorations
 
