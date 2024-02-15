@@ -11,7 +11,7 @@ builder.queryField('codeContributors', (t) =>
     authScopes: () => true,
     async resolve() {
       const codeContributors = (await fetch(
-        `https:///git.inpt.fr/api/v4/projects/${process.env.GITLAB_PROJECT_ID}/repository/contributors`,
+        `https:///git.inpt.fr/api/v4/projects/${process.env.GITLAB_PROJECT_ID}/repository/contributors?pagination=keyset&per_page=1000&order_by=commits&sort=desc`,
       )
         .then(async (r) => r.json())
         .catch(() => {
