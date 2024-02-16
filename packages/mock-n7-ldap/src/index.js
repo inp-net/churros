@@ -7,7 +7,13 @@ const server = ldap.createServer();
 const asciify = (/** @type {string} */ str) =>
   str.normalize('NFD').replaceAll(/\W/gu, '').toLowerCase();
 
-const emails = ['etu.inp-n7.fr', 'etu.enseeiht.fr', 'etu.toulouse-inp.fr'];
+const emails = [
+  'etu.inp-n7.fr',
+  'etu.enseeiht.fr',
+  'etu.toulouse-inp.fr',
+  'etu.inp-ensiacet.fr',
+  'etu.inp-ensat.fr',
+];
 const pick = (/** @type {any[]} */ arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const users = new Map(

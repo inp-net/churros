@@ -68,14 +68,17 @@
     {/if}
     <InputText
       label="Adresse e-mail"
-      hint="Si vous en avez une, et que vous y avez accès, utilisez votre adresse e-mail universitaire (en @etu.inp-n7.fr)"
+      hint="Si vous en avez une, et que vous y avez accès, utilisez votre adresse e-mail universitaire (en @etu.inp-n7.fr / @etu.inp-ensiacet.fr ou en @etu.inp-ensat.fr)"
       errors={formErrors?.email?._errors}
       type="email"
       bind:value={email}
       on:blur={() => {
         email = email.toLowerCase();
         const [_, domain] = email.split('@');
-        wrongDomain = domain.includes('n7') && domain.trim() !== 'etu.inp-n7.fr';
+        wrongDomain =
+          (domain.includes('n7') && domain.trim() !== 'etu.inp-n7.fr') ||
+          (domain.includes('ensiacet') && domain.trim() !== 'etu.inp-ensiacet.fr') ||
+          (domain.includes('ensat') && domain.trim() !== 'etu.inp-ensat.fr');
       }}
       maxlength={255}
       required
