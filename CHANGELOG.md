@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- OAuth: Ajout d'un champ `groupsNames` sur `/identity`
+
 ## [1.46.1] - 2024-02-16
 
 ### Correction
