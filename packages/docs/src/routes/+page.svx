@@ -84,7 +84,7 @@ On remarque que la réponse est structurée de la même manière que la requête
 
 <h3 data-toc-include>S'authentifier</h3>
 
-La plupart des _queries_ et _mutations_ nécéssitent d'être authentifié.
+La plupart des _queries_ et _mutations_ nécessitent d'être authentifié.
 
 Il y a deux moyens d'authentification:
 
