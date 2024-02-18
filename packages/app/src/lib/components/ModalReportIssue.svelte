@@ -29,7 +29,8 @@
   export let element: HTMLDialogElement;
 
   $: link = issueNumber ? `https://git.inpt.fr/inp-net/churros/-/issues/${issueNumber}` : '';
-
+  $: innerWidth = undefined;
+  $: innerHeight = undefined;
   function formatMetadata(metadata: Record<string, string>): string {
     return Object.entries(metadata)
       .map(([key, value]) => `- **${key}:** ${value}`)
@@ -52,6 +53,7 @@
       'Device': `${ua.device.type ?? 'unknown'} ${ua.device.vendor ?? 'unknown'} ${
         ua.device.model ?? 'unknown'
       } (arch ${ua.cpu.architecture ?? 'unknown'})`,
+      'ScreenSize': `${innerWidth ?? 'unknown'} x ${innerHeight ?? 'unknown'}`,
     };
     try {
       const { createGitlabIssue: number } = await $zeus.mutate({
@@ -84,6 +86,8 @@
     }, 200);
   }
 </script>
+
+<svelte:window bind:innerWidth bind:innerHeight />
 
 <Modal bind:element>
   <div class="content">

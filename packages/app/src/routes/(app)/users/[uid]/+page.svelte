@@ -328,6 +328,7 @@
     flex-shrink: 0;
     width: var(--size);
     height: var(--size);
+    overflow: hidden;
   }
 
   .picture img {
@@ -407,6 +408,7 @@
     column-gap: 0.5rem;
     align-items: center;
     margin-left: 0;
+    word-break: break-word;
   }
 
   dd.is-list {

@@ -20,6 +20,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Correction
 
 - Correction d'un bug empêchant la révocation d'accès à un service tiers de fonctionner correctment
+- Correction de l'affichage dans la page de profil pour éviter le debordement (@vanicottehochmana).
 
 ## [1.46.0] - 2024-02-15
 
