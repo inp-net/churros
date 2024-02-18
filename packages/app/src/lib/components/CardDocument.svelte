@@ -18,7 +18,7 @@
     </header>
     <p class="infos">
       {#if add}
-        <span class="muted">Contribues à la Frappe :)</span>
+        <span class="muted">Contribue à la Frappe :)</span>
       {:else}
         {#if schoolYear}
           <span class="date">{schoolYear}–{schoolYear + 1}</span>
