@@ -59,7 +59,7 @@ export async function login(
           domains.map(domain => uidOrEmail.replace(/@[^@]+$/, `@${domain}`))
 
       },
-    }))]
+    }))]}
   const user = await prisma.user.findFirst({
     where: 
       {OR: prismaClauses},
