@@ -45,16 +45,26 @@ export async function login(
     select?: Prisma.CredentialSelect;
   },
 ) {
+  const schools = await prisma.school.findMany();
+  let schoolDomain = schools.map((school) => [school.uid, [school.internalMailDomain, ...school.aliasMailDomains]]);
+  const schoolDomains = schoolDomain.map(([_, domains]) => domains).flat();
+  const [_, domain] = email.split('@', 2);
   const uidOrEmail = email.trim().toLowerCase();
+  let prismaClauses: Prisma.UserWhereInput['OR'] = [{uid: uidOrEmail}, {email: uidOrEmail}]
+  if (schoolDomains.includes(domain)) {
+    prismaClauses = [...prismaClauses, ...schoolDomain.map(([schoolUid, domains]) => ({
+      major: {schools: { some: { uid: schoolUid }}},
+      email: {
+        in:
+          domains.map(domain => uidOrEmail.replace(/@[^@]+$/, `@${domain}`))
+
+      },
+    }))]
   const user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { email: uidOrEmail },
-        { email: uidOrEmail.replace(`@etu.inp-n7.fr`, '@etu.toulouse-inp.fr') },
-        { email: uidOrEmail.replace('@etu.toulouse-inp.fr', '@etu.inp-n7.fr') },
-        { uid: uidOrEmail },
-      ],
-    },
+    where: 
+      {OR: prismaClauses},
+
+
     include: {
       credentials: {
         where: {
