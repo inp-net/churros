@@ -46,24 +46,29 @@ export async function login(
   },
 ) {
   const schools = await prisma.school.findMany();
-  let schoolDomain = schools.map((school) => [school.uid, [school.internalMailDomain, ...school.aliasMailDomains]]);
-  const schoolDomains = schoolDomain.map(([_, domains]) => domains).flat();
+  const schoolDomain = schools.map((school) => [
+    school.uid,
+    [school.internalMailDomain, ...school.aliasMailDomains],
+  ]);
+  const schoolDomains = schoolDomain.flatMap(([_, domains]) => domains);
   const [_, domain] = email.split('@', 2);
   const uidOrEmail = email.trim().toLowerCase();
-  let prismaClauses: Prisma.UserWhereInput['OR'] = [{uid: uidOrEmail}, {email: uidOrEmail}]
+  let prismaClauses: Prisma.UserWhereInput['OR'] = [{ uid: uidOrEmail }, { email: uidOrEmail }];
   if (schoolDomains.includes(domain)) {
-    prismaClauses = [...prismaClauses, ...schoolDomain.map(([schoolUid, domains]) => ({
-      major: {schools: { some: { uid: schoolUid }}},
-      email: {
-        in:
-          domains.map(domain => uidOrEmail.replace(/@[^@]+$/, `@${domain}`))
-
-      },
-    }))]}
+    prismaClauses = [
+      ...prismaClauses,
+      ...(schoolDomain.map(([schoolUid, domains]) => ({
+        major: { schools: { some: { uid: schoolUid } } },
+        email: {
+          in: Array.isArray(domains)
+            ? domains.map((domain: string) => uidOrEmail.replace(/@[^@]+$/, `@${domain}`))
+            : [uidOrEmail.replace(/@[^@]+$/, `@${domains}`)],
+        },
+      })) as Prisma.UserWhereInput[]),
+    ];
+  }
   const user = await prisma.user.findFirst({
-    where: 
-      {OR: prismaClauses},
-
+    where: { OR: prismaClauses },
 
     include: {
       credentials: {
