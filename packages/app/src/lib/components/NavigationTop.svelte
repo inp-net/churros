@@ -134,6 +134,14 @@
     background-size: contain;
   }
 
+  nav.gd7t {
+    background-color: transparent;
+    background-image: url('/gd7t-top.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+  }
+
   nav.scrolled {
     box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
   }

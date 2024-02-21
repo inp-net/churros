@@ -203,6 +203,15 @@
     border-top: none;
   }
 
+  nav.gd7t {
+    background-color: transparent;
+    background-image: url('/gd7t-bottom.png');
+    background-position: center;
+    background-size: 100% 100%;
+    backdrop-filter: blur(10px);
+    border-top: none;
+  }
+
   nav.transparent {
     color: white;
     background: transparent;
