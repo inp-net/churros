@@ -101,7 +101,7 @@
     </h1>
     <p>
       Après signalement, tu pourras suivre la progression de ton rapport sur la page Tes Rapports
-      (acessible depuis <IconMore></IconMore> )
+      (accessible depuis <IconMore></IconMore> )
     </p>
     <form on:submit|preventDefault={submitIssue}>
       <InputSelectOne
