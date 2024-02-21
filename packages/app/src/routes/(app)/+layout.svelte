@@ -261,6 +261,7 @@ The root layout is composed of several elements:
     padding: 0.5rem 2rem;
     color: var(--text);
     background: var(--bg);
+    background-image: url('/gd7t-t.jpg');
   }
 
   @media (min-width: 900px) {

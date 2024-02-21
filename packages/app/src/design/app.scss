@@ -12,7 +12,9 @@
 :root {
   line-height: 1.5;
   color: var(--text);
-  background: var(--bg);
+
+  // background: var(--bg);
+  background-image: url('/gd7t-bg.jpg');
 
   --font-main: 'Space Grotesk', sans-serif;
   --font-mono: 'Space Mono', monospace;

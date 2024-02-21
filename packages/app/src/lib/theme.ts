@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 
-const DARK_THEMES = new Set(['dark', 'hacker', 'noel']);
+const DARK_THEMES = new Set(['dark', 'hacker', 'noel', 'gd7t']);
 
 /** Current theme, as a writable store. */
 export const theme = writable('system', (set) => {

@@ -248,6 +248,7 @@
             dark: 'Sombre',
             light: 'Clair',
             hacker: 'h4ck3r',
+            gd7t: 'Gd7T',
           }}
           bind:value={$theme}
         />
