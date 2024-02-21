@@ -14,6 +14,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Technique
 
 - OAuth: Ajout d'un champ `groupsNames` sur `/identity`
+- Login & Register: Les emails autorisés ne sont plus hardcodés dans le backend de l'application (étape pour l'ouverture à toulouse-inp)
 
 ## [1.46.1] - 2024-02-16
 
