@@ -225,13 +225,12 @@
 
   {#if !$me?.external && $me?.uid === user.uid && ((user.pendingContributions?.length ?? 0) > 0 || (user.contributesTo?.length ?? 0) <= 0)}
     <section class="contribution">
-      <h2>Cotisation</h2>
-      <p class="explain-contribution typo-details">
-        Cotiser, c'est contribuer à l'organisation de la vie associative de ton école. Elle te
-        permet d'être membre de clubs, de lister, d'économiser 60€ pour le WEI, et donne droit à des
-        places à tarif réduit sur tout les évènements de l'AE.
-      </p>
-
+      {#each contributionOptions as option}
+        <h2>Cotiser pour {option.name}</h2>
+        <p class="explain-contribution typo-details">
+          {option.description}
+        </p>
+      {/each}
       <div class="manage">
         <AreaContribute {contributionOptions} pendingContributions={user.pendingContributions}
         ></AreaContribute>
@@ -290,6 +289,10 @@
 <style lang="scss">
   section {
     margin-bottom: 5rem;
+  }
+
+  .typo-details {
+    margin-bottom: 1rem;
   }
 
   header {
@@ -495,5 +498,9 @@
     section.articles {
       grid-area: articles;
     }
+  }
+
+  .contribution > h2 {
+    margin-bottom: 0.5rem;
   }
 </style>
