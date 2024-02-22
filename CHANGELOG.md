@@ -71,6 +71,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - L'arbre de la famille du parrainage n'est plus cassé sur écran de téléphone (#773) (!102) (@ragotc1)
 - Typographie corrigée sur le bouton des trois petits points "Les autres services" sur téléphone (#662) (!102) (@ragotc1)
 - Le texte "Cf." est désormais bien aligné sur la page des crédits (!102) (@ragotc1)
+- Un shotgun passé ne s'affichera plus comme "dans il y a xxx" (#789) (!100) (@bardete)
 
 ### Améliorations
 
@@ -97,6 +98,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Le bouton de création d'un sous club sur la page d'un club devient bien invisible si on a pas les droits (#537) (!96) (@soyerb)
 - Il est plus possible de faire un post/event avec une date de début ou fin qui est dans le passé (#669) (@soyerb) (!85)
 - Impossible de créer un post/event avec une date de fin avant celle de début (#428) (!85) (@soyerb)
+- Un shotgun passé ne s'affichera plus comme "dans il y a xxx" (#789) (!100) (@bardete)
 - Correction d'un bug empêchant les cotisants d'une AE de rejoindre un club via l'inscription libre (!99) (@bardete)
 
 ### Autres
