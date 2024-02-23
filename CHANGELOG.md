@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Améliorations
+
+- Le thème est forcément le thème de la CL (c'est la dictature ici)
+
 ## [1.47.0] - 2024-02-23
 
 ### Technique
