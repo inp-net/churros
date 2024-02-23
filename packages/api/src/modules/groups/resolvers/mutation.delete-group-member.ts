@@ -1,4 +1,5 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
+import { removeMemberFromGroupMailingList, updateMemberBureauLists } from '#modules/mails/utils';
 
 /** Removes a member from a group. */
 builder.mutationField('deleteGroupMember', (t) =>
@@ -15,10 +16,21 @@ builder.mutationField('deleteGroupMember', (t) =>
           user?.groups.some(({ groupId: id, canEditMembers }) => canEditMembers && groupId === id),
       ),
     async resolve(_, { memberId, groupId }, { user: me }) {
-      const { uid } = await prisma.user.findUniqueOrThrow({
+      const { uid, email } = await prisma.user.findUniqueOrThrow({
         where: { id: memberId },
-        select: { uid: true },
+        select: { uid: true, email: true },
       });
+
+      const { type } = await prisma.group.findUniqueOrThrow({
+        where: { id: groupId },
+        select: { type: true },
+      });
+
+      if (type === 'Club' || type === 'Association' || type === 'StudentAssociationSection') {
+        await removeMemberFromGroupMailingList(groupId, email);
+        await updateMemberBureauLists(memberId);
+      }
+
       purgeUserSessions(uid);
       await prisma.groupMember.delete({ where: { groupId_memberId: { groupId, memberId } } });
       await prisma.logEntry.create({

@@ -1,5 +1,6 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
 
+import { addMemberToGroupMailingList } from '#modules/mails/utils';
 import { fullName } from '#modules/users';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { GraphQLError } from 'graphql';
@@ -54,6 +55,18 @@ builder.mutationField('addGroupMember', (t) =>
             title,
           },
         });
+
+        const { type } = await prisma.group.findUniqueOrThrow({
+          where: { uid: groupUid },
+          select: { type: true },
+        });
+        if (type === 'Club' || type === 'Association') {
+          const { email } = await prisma.user.findUniqueOrThrow({
+            where: { uid },
+            select: { email: true },
+          });
+          await addMemberToGroupMailingList(groupUid, email);
+        }
 
         await prisma.logEntry.create({
           data: {

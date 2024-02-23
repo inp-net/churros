@@ -1,5 +1,6 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
 
+import { addMemberToGroupMailingList } from '#modules/mails/utils';
 import { GraphQLError } from 'graphql';
 import { GroupMemberType, membersNeedToPayForTheStudentAssociation } from '../index.js';
 
@@ -38,6 +39,19 @@ builder.mutationField('selfJoinGroup', (t) =>
           title: 'Membre', // don't allow people to name themselves "Président", for example.
         },
       });
+
+      const { type } = await prisma.group.findUniqueOrThrow({
+        where: { uid: groupUid },
+        select: { type: true },
+      });
+      if (type === 'Club' || type === 'Association') {
+        const { email } = await prisma.user.findUniqueOrThrow({
+          where: { uid },
+          select: { email: true },
+        });
+        await addMemberToGroupMailingList(groupUid, email);
+      }
+
       await prisma.logEntry.create({
         data: {
           area: 'group-member',

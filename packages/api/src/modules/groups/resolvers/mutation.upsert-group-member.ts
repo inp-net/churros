@@ -1,5 +1,6 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
 
+import { updateMemberBureauLists } from '#modules/mails/utils';
 import { onBoard } from '#permissions';
 import { createTransport } from 'nodemailer';
 import { GroupMemberType } from '../index.js';
@@ -102,6 +103,14 @@ builder.mutationField('upsertGroupMember', (t) =>
         update: data,
         include: { member: true },
       });
+
+      if (
+        group.type === 'Club' ||
+        group.type === 'Association' ||
+        group.type === 'StudentAssociationSection'
+      )
+        await updateMemberBureauLists(memberId);
+
       await prisma.logEntry.create({
         data: {
           area: 'group-member',
