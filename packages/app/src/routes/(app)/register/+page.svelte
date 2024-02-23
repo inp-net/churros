@@ -73,7 +73,7 @@
     {/if}
     <InputText
       label="Adresse e-mail"
-      hint="Si vous en avez une, et que vous y avez accès, utilisez votre adresse e-mail universitaire (en @etu.inp-*école*.fr)"
+      hint="Si vous en avez une, et que vous y avez accès, utilisez votre adresse e-mail universitaire (en @etu.***.fr)"
       errors={formErrors?.email?._errors}
       type="email"
       bind:value={email}

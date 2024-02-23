@@ -27,7 +27,7 @@ builder.queryField('codeContributors', (t) =>
         ...new Set(codeContributors.map((contributor) => contributor.email)),
       ];
 
-      //ATTENTION : Ce changement ne fonctionnera pas si churros est déployé sur une autre instance qui n'est pas celle de toulouse inp
+      // TODO Ce changement ne fonctionnera pas si churros est déployé sur une autre instance qui n'est pas celle de toulouse inp
       //(car les écoles ne contiendront pas ENSEEIHT etc) du coup on filtera des adresses enseeiht sur des écoles qui ne contiennent pas enseeiht etc
       const schools = await prisma.school.findMany();
       const schoolNames = schools.flatMap((school) => `@bde.${school.name}.fr`);
