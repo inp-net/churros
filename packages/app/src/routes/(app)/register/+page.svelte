@@ -67,9 +67,7 @@
     </Alert>
 
     {#if !rightDomain}
-      <Alert theme="danger"
-        >Vérifiez l'adresse mail: elle doît terminer par @etu.inp-*école*.fr</Alert
-      >
+      <Alert theme="danger">Vérifiez l'adresse mail: elle doît terminer par @etu.***.fr</Alert>
     {/if}
     <InputText
       label="Adresse e-mail"
