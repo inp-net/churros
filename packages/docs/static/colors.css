@@ -1,0 +1,40 @@
+:root {
+	/* Colors by function */
+	--fg: white;
+	--bg: #050d1b;
+	--shadow: #0a192f;
+	--muted: #536686;
+
+	/* Colors by name */
+	--green: #1fda6d;
+	--magenta: #b15be2;
+	--orange: #e7802b;
+	--yellow: #d1ad0a;
+	--blue: #00aeff;
+	--pink: #f163c2;
+	--red: #e6322c;
+	--cyan: #28d4eb;
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--fg: #050d1b;
+		--bg: #e4f5fc;
+		--shadow: white;
+		--muted: #536686;
+		--green: #05b950;
+		--magenta: #b15be2;
+		--orange: #d36307;
+		--yellow: #cf9800;
+		--blue: #00aeff;
+		--pink: #e22ba5;
+		--red: #e6322c;
+		--cyan: #17a2bb;
+	}
+
+	img[src="https://churros.inpt.fr/logo-masked.png"],
+	img[src="https://churros.inpt.fr/storage/groups/dark/net7-n7.png"]
+	{
+		filter: invert(1);
+	}
+}

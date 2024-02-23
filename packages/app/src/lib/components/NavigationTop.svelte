@@ -16,7 +16,6 @@
   import { afterNavigate } from '$app/navigation';
   import LogoChurros from './LogoChurros.svelte';
   import { browser } from '$app/environment';
-  import { tooltip } from '$lib/tooltip';
   import ModalReportIssue from './ModalReportIssue.svelte';
   import { theme } from '$lib/theme';
 
@@ -93,22 +92,7 @@
           {:else}
             <IconNotif />{/if}</ButtonGhost
         >
-        <div
-          class="button-relocation-help"
-          use:tooltip={$page.url.pathname.startsWith('/search') ||
-          window.localStorage.getItem('hideNewSearchLocationHelp')
-            ? undefined
-            : {
-                content: 'La recherche est maintenant ici! <button>OK</button>',
-                showOnCreate: true,
-                allowHTML: true,
-                onHidden() {
-                  window.localStorage.setItem('hideNewSearchLocationHelp', 'true');
-                },
-              }}
-        >
-          <ButtonGhost href="/search/" help="Rechercher"><IconSearch /></ButtonGhost>
-        </div>
+        <ButtonGhost href="/search/" help="Rechercher"><IconSearch /></ButtonGhost>
         <ButtonGhost href="/users/{$me?.uid}" help="Mon profil">
           {#if $me.pictureFile}
             <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
@@ -148,6 +132,14 @@
     background-image: url('/noel-topbar.png');
     background-repeat: repeat;
     background-size: contain;
+  }
+
+  nav.gd7t {
+    background-color: transparent;
+    background-image: url('/gd7t-top.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
   }
 
   nav.scrolled {

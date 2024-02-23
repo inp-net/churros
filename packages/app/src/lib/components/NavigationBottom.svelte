@@ -13,16 +13,16 @@
 
   import IconBarWeek from '~icons/mdi/beer-outline';
   import IconAnnouncement from '~icons/mdi/bullhorn-outline';
-  import IconDocument from '~icons/mdi/file-outline';
   import IconArticle from '~icons/mdi/newspaper';
   import IconEvent from '~icons/mdi/calendar-plus';
   import { beforeNavigate } from '$app/navigation';
   import { me } from '$lib/session';
   import { page } from '$app/stores';
   import { tooltip } from '$lib/tooltip';
-  import type { MOBILE_NAVIGATION_TABS } from '../../routes/+layout.svelte';
+  import type { MOBILE_NAVIGATION_TABS } from '../../routes/(app)/+layout.svelte';
   import { scrollToTop } from '$lib/scroll';
   import { theme } from '$lib/theme';
+  import LogoFrappe from './LogoFrappe.svelte';
 
   export let current: (typeof MOBILE_NAVIGATION_TABS)[number];
   let flyoutOpen = false;
@@ -106,7 +106,7 @@
     href="/services/"
     class:current={!flyoutOpen && current === 'services'}
     class:disabled={flyoutOpen}
-    use:tooltip={'Les autre services'}
+    use:tooltip={'Les autres services'}
   >
     {#if current === 'services'}
       <IconDotsCircle />
@@ -160,7 +160,7 @@
     {/if}
 
     <a href="/documents/create">
-      <IconDocument />
+      <LogoFrappe />
       <span>Frappe</span>
     </a>
 
@@ -200,6 +200,15 @@
     background-color: var(--bg);
     background-image: url('/noel-bottombar.png');
     background-size: cover;
+    border-top: none;
+  }
+
+  nav.gd7t {
+    background-color: transparent;
+    background-image: url('/gd7t-bottom.png');
+    background-position: center;
+    background-size: 100% 100%;
+    backdrop-filter: blur(10px);
     border-top: none;
   }
 

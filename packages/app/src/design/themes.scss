@@ -10,6 +10,8 @@ dialog {
     --primary-bg: #{$blue-900};
     --primary-text: #{$slate-100};
     --primary-shadow: 0 0.25rem 0.5rem #{$black};
+    --primary-disabled-bg: #{$neutral-800};
+    --primary-disabled-text: #{$neutral-400};
     --loading-bg: #{$blue-900};
     --hover-bg: #{$neutral-700};
     --hover-text: #{$neutral-200};
@@ -34,6 +36,8 @@ dialog {
     --primary-link: var(--link);
     --primary-text: #fff;
     --primary-shadow: 0 0.25rem 0.5rem #{$black};
+    --primary-disabled-bg: var(--card-bg);
+    --primary-disabled-text: #c6f6d5;
     --loading-bg: #0d6e2c;
     --hover-bg: #010703;
     --hover-text: #{$neutral-200};
@@ -89,6 +93,8 @@ dialog {
     --primary-bg: #{$green-900};
     --primary-text: #{$neutral-200};
     --primary-shadow: 0 0.25rem 0.5rem #{$black};
+    --primary-disabled-text: #{$neutral-200};
+    --primary-disabled-bg: #{$neutral-800};
     --loading-bg: repeating-linear-gradient(
       45deg,
       rgb(255 241 242),
@@ -109,5 +115,52 @@ dialog {
     --primary-border: #{$green-900};
     --border: #{$red-700};
     --hover-border: #{$red-500};
+  }
+
+  &.gd7t,
+  &.gd7t::backdrop {
+    $yellow-50: #fffde9;
+    $yellow-100: #fffad2;
+    $yellow-200: #fff8bc;
+    $yellow-300: #fff6a5;
+    $yellow-400: #fff48f;
+    $yellow-500: #fff179;
+    $yellow-600: #ffef62;
+    $yellow-700: #ffed4c;
+    $yellow-800: #ffea35;
+    $yellow-900: #ffe81f;
+    $logo-yellow: #f6c433;
+    $logo-red: #8c1813;
+    $logo-light-red: #c11717;
+    $logo-black: #030304;
+    $white: #fff;
+    $light-yellow: rgb(255 196 77 / 50%);
+    $blue-light-saber: #2e67f8;
+    $red-light-saber: #eb212e;
+
+    --bg: #{$logo-black};
+    --text: #{$neutral-200};
+    --link: #{$indigo-400};
+    --title: #{$neutral-100};
+    --shadow: 0 0.25rem 0.5rem #{$logo-black};
+    --primary-bg: #{$logo-red};
+    --primary-text: #{$neutral-200};
+    --primary-shadow: 0 0.25rem 0.5rem #{$logo-black};
+    --primary-disabled-text: #{$neutral-200};
+    --primary-disabled-bg: #{$neutral-800};
+    --loading-bg: repeating-linear-gradient($logo-light-red, $white 10px);
+    --hover-bg: #{$logo-red};
+    --hover-text: #{$neutral-200};
+    --muted-bg: #{$neutral-800};
+    --muted-text: #{$neutral-400};
+    --muted-border: #{$neutral-700};
+    --muted-link: #{$indigo-400};
+    --backdrop: rgb(0 0 0 / 80%);
+    --primary-ring: #{rgba($logo-light-red, 50%)};
+    --primary-hover-bg: #{$logo-light-red};
+    --primary-link: #{$logo-yellow};
+    --primary-border: #{$logo-red};
+    --border: #{$logo-light-red};
+    --hover-border: #{$logo-light-red};
   }
 }

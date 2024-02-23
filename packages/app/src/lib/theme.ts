@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 
-const DARK_THEMES = new Set(['dark', 'hacker', 'noel']);
+const DARK_THEMES = new Set(['dark', 'hacker', 'noel', 'gd7t']);
 
 /** Current theme, as a writable store. */
 export const theme = writable('system', (set) => {
@@ -9,8 +9,8 @@ export const theme = writable('system', (set) => {
   if (!browser) return;
 
   // Force Noël theme if not re-set to sth else by the user
-  if (localStorage.getItem('user_does_not_like_noel_theme') === null) {
-    set('noel');
+  if (localStorage.getItem('user_does_not_like_gd7t_theme') === null) {
+    set('gd7t');
   } else {
     // Try to load the theme from sessionStorage or fallback to a media query
     set(localStorage.getItem('theme') ?? 'system');

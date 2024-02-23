@@ -1,10 +1,8 @@
 import { loadQuery } from '$lib/zeus';
 import type { LayoutLoad } from './$types';
 
-export const ssr = false;
-
 export const load: LayoutLoad = async ({ fetch, data }) => {
-  const { me, mobile, token } = data;
+  const { me, token } = data;
   if (!me) {
     return {
       ...data,
@@ -47,23 +45,13 @@ export const load: LayoutLoad = async ({ fetch, data }) => {
               authorEmail: true,
               paid: true,
               cancelled: true,
+              opposed: true,
             },
           },
         },
       ],
     },
-    {
-      fetch,
-      async parent() {
-        return new Promise((resolve) => {
-          resolve({
-            me,
-            mobile,
-            token,
-          });
-        });
-      },
-    },
+    { fetch, token },
   );
 
   return { ...data, ...additionalData };

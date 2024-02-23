@@ -213,3 +213,24 @@ export function orderedDisplay<T extends string | number | symbol>(
 ): Array<[T, string]> {
   return order.map((value) => [value, display[value]] as [T, string]);
 }
+
+export const DISPLAY_CHANGELOG_CATEGORIES = new Map<
+  (typeof ORDER_CHANGELOG_CATEGORIES)[number],
+  string
+>([
+  ['added', 'Nouveautés'],
+  ['improved', 'Améliorations'],
+  ['fixed', 'Corrections'],
+  ['security', 'Sécurité'],
+  ['other', 'Autres'],
+  ['technical', 'Technique'],
+]);
+
+export const ORDER_CHANGELOG_CATEGORIES = [
+  'added',
+  'improved',
+  'fixed',
+  'security',
+  'other',
+  'technical',
+] as const;
