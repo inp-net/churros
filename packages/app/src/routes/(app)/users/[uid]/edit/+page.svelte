@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { browser } from '$app/environment';
   import { env } from '$env/dynamic/public';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
@@ -251,6 +252,9 @@
             gd7t: 'Gd7T',
           }}
           bind:value={$theme}
+          on:input={() => {
+            if (browser) window.localStorage.setItem('user_does_not_like_gd7t_theme', '');
+          }}
         />
       {/if}
       <h2>Parrainages</h2>
