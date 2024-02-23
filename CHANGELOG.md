@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug dans le demandes de paiements Lydia quand un code de promotion est actif
+
 ## [1.47.1] - 2024-02-23
 
 ### Améliorations
