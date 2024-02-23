@@ -15,12 +15,26 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 - OAuth: Ajout d'un champ `groupsNames` sur `/identity`
 
+### Corrections
+
+- Correction de l'affichage dans la page de profil pour éviter le debordement (@vanicottehochmana).
+- Correction d'une faute dans l'affichage des shotguns passés (@bardete).
+- Correction d'une faute d'orthographe dans les boutons pour ajouter des documents à la Frappe (@elomarim)
+- Correction d'une faute de frappe dans le dialogue de signalement de bug (@bidaudc)
+
+### Améliorations
+
+- Les places annulées et opposées n'apparaissent plus sur la page de l'évènement (@bardete).
+
+### Nouveautés
+
+- Le thème de la CL est là! (@simonh)
+
 ## [1.46.1] - 2024-02-16
 
-### Correction
+### Corrections
 
 - Correction d'un bug empêchant la révocation d'accès à un service tiers de fonctionner correctment
-- Correction de l'affichage dans la page de profil pour éviter le debordement (@vanicottehochmana).
 
 ## [1.46.0] - 2024-02-15
 
