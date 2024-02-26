@@ -26,6 +26,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Technique
 
 - OAuth: Ajout d'un champ `groupsNames` sur `/identity`
+- Login & Register: Les emails autorisés ne sont plus hardcodés dans le backend de l'application (étape pour l'ouverture à toulouse-inp)
+- Les contributeurs sont filtrés selon leur email enseeiht, ensiacet ou ensat et non plus enseeiht
+- Les passations enverront un mail au respo club de l'école concernée et non plus à celui de l'enseeiht
+- Les emails de contact généré par défaut à l'ouverture d'un club seront celles de l'école du créateur du club (aka respo clubs par exemple)
 
 ### Corrections
 
