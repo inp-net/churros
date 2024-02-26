@@ -7,6 +7,9 @@
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { zeus } from '$lib/zeus';
   import type { ZodFormattedError } from 'zod';
+  import type { PageData } from './$types';
+
+  export let data: PageData;
 
   let email = $page.url.searchParams.get('email') ?? '';
   $: args = { email };
@@ -15,7 +18,7 @@
   let loading = false;
   let formErrors: ZodFormattedError<typeof args> | undefined;
   const register = async () => {
-    if (wrongDomain) return;
+    if (!rightDomain) return;
     if (loading) return;
 
     try {
@@ -52,7 +55,7 @@
     }
   };
 
-  let wrongDomain = false;
+  let rightDomain = true;
 </script>
 
 <h1>Inscription</h1>
@@ -63,19 +66,21 @@
       <strong>{(formErrors?._errors ?? []).join(' ')} </strong>
     </Alert>
 
-    {#if wrongDomain}
-      <Alert theme="danger">Vérifiez l'adresse mail: elle doît terminer par @etu.inp-n7.fr</Alert>
+    {#if !rightDomain}
+      <Alert theme="danger">Vérifiez l'adresse mail: elle doît terminer par @etu.***.fr</Alert>
     {/if}
     <InputText
       label="Adresse e-mail"
-      hint="Si vous en avez une, et que vous y avez accès, utilisez votre adresse e-mail universitaire (en @etu.inp-n7.fr)"
+      hint="Si vous en avez une, et que vous y avez accès, utilisez votre adresse e-mail universitaire (en @etu.***.fr)"
       errors={formErrors?.email?._errors}
       type="email"
       bind:value={email}
-      on:blur={() => {
+      on:change={() => {
         email = email.toLowerCase();
         const [_, domain] = email.split('@');
-        wrongDomain = domain.includes('n7') && domain.trim() !== 'etu.inp-n7.fr';
+        rightDomain = data.schools
+          .flatMap((s) => [s.internalMailDomain, ...s.aliasMailDomains])
+          .includes(domain);
       }}
       maxlength={255}
       required

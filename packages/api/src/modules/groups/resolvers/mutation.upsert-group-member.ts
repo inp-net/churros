@@ -125,10 +125,13 @@ builder.mutationField('upsertGroupMember', (t) =>
         group.type === 'Club'
       ) {
         // TODO send notification too
+        const school = await prisma.school.findUnique({
+          where: { id: group.schoolId ?? undefined },
+        });
         const mailer = createTransport(process.env.SMTP_URL);
         await mailer.sendMail({
           from: process.env.PUBLIC_CONTACT_EMAIL,
-          to: 'respos-clubs@bde.enseeiht.fr',
+          to: `respos-clubs@bde.${school?.name.toLowerCase()}.fr`,
           subject: `Bureau de ${group.name} modifié`,
           text: `${groupMember.member.firstName} ${groupMember.member.lastName} (@${
             groupMember.member.uid

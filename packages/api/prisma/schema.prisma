@@ -248,6 +248,7 @@ model School {
   name               String @db.VarChar(255)
   color              String @db.VarChar(7)
   internalMailDomain String @default("") @db.VarChar(255)
+  aliasMailDomains   String[] @default([]) @db.VarChar(255)
   description        String @default("") @db.Text
   address            String @default("") @db.VarChar(255)
 
