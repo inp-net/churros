@@ -6,6 +6,13 @@
 
 - Être sous Linux, MacOS, ou Windows, **mais via [WSL](https://learn.microsoft.com/fr-fr/windows/wsl/install) uniquement**
 - [Docker](https://docs.docker.com/engine/install/) avec le plugin [Docker Compose](https://docs.docker.com/compose/)
+  - Après installation, donnez-vous les droits de lancer des containers Docker avec
+    
+    ```
+    sudo usermod -aG docker $USER
+    ```
+
+    puis fermez et réouvrez votre session (ou redémarrez votre ordinateur si ça marche pas)
 - [Volta](https://volta.sh) (ou [NodeJS](https://nodejs.org/en/) et [Yarn](https://yarnpkg.com/), avec les bonnes versions, telles que spéficiées dans `volta` dans [package.json](/package.json))
 
 ### Installation
