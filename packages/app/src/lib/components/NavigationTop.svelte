@@ -134,6 +134,13 @@
     background-size: contain;
   }
 
+  nav.pan7on {
+    background-color: transparent;
+    background-image: url('/ChurrosPcPan7on.png');
+    background-repeat: repeat-x;
+    background-size: auto 100%;
+  }
+
   nav.scrolled {
     box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
   }
