@@ -19,7 +19,6 @@
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
   import { groupLogoSrc } from '$lib/logos';
   import { isOnClubBoard, roleEmojis } from '$lib/permissions';
-  import { me } from '$lib/session.js';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
@@ -43,7 +42,7 @@
   import IconAdd from '~icons/mdi/plus';
   import IconTwitter from '~icons/mdi/twitter';
   import IconAnilist from '~icons/simple-icons/anilist';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -69,6 +68,8 @@
   };
 
   export let data: PageData;
+  $: ({ GroupProfile } = data);
+  $: ({ group, me } = $GroupProfile.data ?? { group: undefined, me: undefined });
 
   let confirmingGroupQuit = false;
   const promptJoinGroup = queryParam<boolean>('join', {
@@ -77,8 +78,8 @@
   }) as Writable<boolean>;
 
   onMount(() => {
-    if (browser && $promptJoinGroup) {
-      if (group?.members?.find(({ member }) => member.uid === $me?.uid)) {
+    if (browser && $promptJoinGroup && group) {
+      if (group.members?.find(({ member }) => member.uid === me?.uid)) {
         toasts.success(`Tu es déjà membre de ${group.name}`);
         $promptJoinGroup = false;
       } else if (group.selfJoinable) {
@@ -90,31 +91,30 @@
     }
   });
 
-  $: clubBoard = group.members?.filter((m) => isOnClubBoard(m));
-  $: meOnClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
+  $: clubBoard = group?.members?.filter((m) => isOnClubBoard(m));
+  $: meOnClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === me?.uid));
 
-  $: myPermissions = $me?.groups?.find(({ group: { uid } }) => uid === group.uid);
-
-  $: ({ group } = data);
+  $: myPermissions = me?.groups?.find(({ group: { uid } }) => uid === group?.uid);
 
   $: canEditDetails = Boolean(
-    $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups,
+    me?.admin || clubBoard?.some(({ member }) => member.uid === me?.uid) || me?.canEditGroups,
   );
-  $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || meOnClubBoard);
+  $: canEditArticles = Boolean(me?.admin || myPermissions?.canEditArticles || meOnClubBoard);
   $: canEditEvents = canEditArticles;
   $: canEditMembers = Boolean(
-    $me?.admin ||
+    me?.admin ||
       myPermissions?.canEditMembers ||
       meOnClubBoard ||
-      $me?.canEditGroups ||
-      $me?.canEditUsers,
+      me?.canEditGroups ||
+      me?.canEditUsers,
   );
 
   const joinGroup = async (groupUid: string) => {
-    if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
+    if (!group) return;
+    if (!me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
     try {
       await $zeus.mutate({
-        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }],
+        selfJoinGroup: [{ groupUid, uid: me.uid }, { groupId: true }],
       });
       window.location.reload();
     } catch (error: unknown) {
@@ -123,11 +123,12 @@
   };
 
   const quitGroup = async () => {
-    if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
+    if (!group) return;
+    if (!me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
     try {
       confirmingGroupQuit = false;
       await $zeus.mutate({
-        deleteGroupMember: [{ groupId: data.group.id, memberId: $me.id }, true],
+        deleteGroupMember: [{ groupId: group.id, memberId: me.id }, true],
       });
       window.location.reload();
     } catch (error: unknown) {
@@ -136,15 +137,18 @@
   };
 
   const updateRoom = async () => {
-    if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
+    if (!group || group.roomIsOpen === undefined) return;
+    if (!me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
     try {
-      data.group.roomIsOpen = !data.group.roomIsOpen;
+      // TODO houdinify this optimistic response
+      // group.roomIsOpen = !group.roomIsOpen;
       await $zeus.mutate({
-        updateRoomOpenState: [{ groupUid: data.group.uid, openRoom: data.group.roomIsOpen }, true],
+        updateRoomOpenState: [{ groupUid: group.uid, openRoom: group.roomIsOpen }, true],
       });
       //window.location.reload();
     } catch (error: unknown) {
-      data.group.roomIsOpen = !data.group.roomIsOpen;
+      // TODO houdinify this optimistic response
+      // group.roomIsOpen = !group.roomIsOpen;
       toasts.error(`Impossible d'ouvrir la salle ${group.address}`, error?.toString());
     }
   };
@@ -152,223 +156,234 @@
   let joinModal: HTMLDialogElement;
 </script>
 
-<Modal bind:element={joinModal}>
-  <h1>Rejoindre {group.name}?</h1>
-  <div class="modal-actions">
-    <ButtonSecondary
-      on:click={() => {
-        joinModal.close();
-        $promptJoinGroup = false;
-      }}>Annuler</ButtonSecondary
-    >
-    <ButtonPrimary
-      smaller
-      on:click={() => {
-        void joinGroup(group.uid);
-        joinModal.close();
-        $promptJoinGroup = false;
-      }}>Rejoindre</ButtonPrimary
-    >
-  </div>
-</Modal>
-
-<div class="content">
-  <header>
-    <div class="picture">
-      <img src={groupLogoSrc($isDark, group)} alt={group.name} />
+{#if !group}
+  <p>Chargement…</p>
+{:else}
+  <Modal bind:element={joinModal}>
+    <h1>Rejoindre {group.name}?</h1>
+    <div class="modal-actions">
+      <ButtonSecondary
+        on:click={() => {
+          joinModal.close();
+          $promptJoinGroup = false;
+        }}>Annuler</ButtonSecondary
+      >
+      <ButtonPrimary
+        smaller
+        on:click={() => {
+          if (!group) return;
+          void joinGroup(group.uid);
+          joinModal.close();
+          $promptJoinGroup = false;
+        }}>Rejoindre</ButtonPrimary
+      >
     </div>
+  </Modal>
 
-    <div class="identity">
-      <h1>
-        {group.name}
-        <ButtonShare />
-        {#if canEditDetails}
-          <ButtonGhost help="Modifier les infos" href="./edit"><IconGear /></ButtonGhost>
-        {/if}
+  <div class="content">
+    <header>
+      <div class="picture">
+        <img src={groupLogoSrc($isDark, group)} alt={group.name} />
+      </div>
 
-        {#if group?.members?.find(({ member: { uid } }) => uid === $me?.uid)}
-          <Badge theme="success">Membre</Badge>
-          {#if confirmingGroupQuit}
-            <p>Sur·e de toi?</p>
-            <ButtonSecondary icon={IconCheck} on:click={async () => quitGroup()}
-              >Oui</ButtonSecondary
-            >
-          {:else}
+      <div class="identity">
+        <h1>
+          {group.name}
+          <ButtonShare />
+          {#if canEditDetails}
+            <ButtonGhost help="Modifier les infos" href="./edit"><IconGear /></ButtonGhost>
+          {/if}
+
+          {#if group?.members?.find(({ member: { uid } }) => uid === me?.uid)}
+            <Badge theme="success">Membre</Badge>
+            {#if confirmingGroupQuit}
+              <p>Sur·e de toi?</p>
+              <ButtonSecondary icon={IconCheck} on:click={async () => quitGroup()}
+                >Oui</ButtonSecondary
+              >
+            {:else}
+              <ButtonSecondary
+                icon={IconQuitGroup}
+                on:click={() => {
+                  confirmingGroupQuit = true;
+                }}>Quitter</ButtonSecondary
+              >
+            {/if}
+          {:else if group.selfJoinable}
             <ButtonSecondary
-              icon={IconQuitGroup}
-              on:click={() => {
-                confirmingGroupQuit = true;
-              }}>Quitter</ButtonSecondary
+              icon={IconJoinGroup}
+              on:click={async () => (group ? joinGroup(group.uid) : undefined)}
+              >Rejoindre</ButtonSecondary
             >
           {/if}
-        {:else if group.selfJoinable}
-          <ButtonSecondary icon={IconJoinGroup} on:click={async () => joinGroup(group.uid)}
-            >Rejoindre</ButtonSecondary
+        </h1>
+
+        <p>
+          {DISPLAY_GROUP_TYPES[group.type]}
+          {#if group.studentAssociation?.school}· <a
+              href="/schools/{group.studentAssociation.school.uid}"
+              >{group.studentAssociation.school.name}</a
+            >{/if}
+          {#if group.studentAssociation}· <a
+              href="/student-associations/{group.studentAssociation?.uid}"
+              >{group.studentAssociation?.name}</a
+            >{/if}
+        </p>
+
+        <dl>
+          {#if group.address}
+            <dt>Salle</dt>
+            <dd>
+              {group.address}
+              {#if me && !me.external}
+                <!-- Pour éviter que les gens exté voient l'ouverture des salles. -->
+                {#if (group.roomIsOpen !== undefined && me?.canEditGroups) || me?.groups.some((g) => g.group.uid === group?.uid)}
+                  <InputToggle
+                    label={group.roomIsOpen ? 'Ouverte' : 'Fermée'}
+                    value={group.roomIsOpen ?? false}
+                    on:change={async () => updateRoom()}
+                  ></InputToggle>
+                {:else}
+                  <Badge inline theme={group.roomIsOpen ? 'success' : 'danger'}>
+                    {#if group.roomIsOpen}
+                      Ouvert
+                    {:else}
+                      Fermé
+                    {/if}
+                  </Badge>
+                {/if}
+              {/if}
+            </dd>
+          {/if}
+          {#if group.website}
+            <dt>Site web</dt>
+            <dd><a href={group.website} target="_blank" rel="noopener">{group.website}</a></dd>
+          {/if}
+          {#if group.email}
+            <dt>Email</dt>
+            <dd><a href="mailto:{group.email}">{group.email}</a></dd>
+          {/if}
+        </dl>
+
+        <ul class="social-links nobullet">
+          {#each group?.links.filter(({ value }) => Boolean(value)) as { name, value }}
+            <li>
+              <a href={value} use:tooltip={DISPLAY_SOCIAL_NETWORK[name]}>
+                <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
+              </a>
+            </li>
+          {/each}
+        </ul>
+      </div>
+    </header>
+
+    <section class="description" data-user-html>
+      {#if group?.longDescriptionHtml.trim().length}
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+        {@html group?.longDescriptionHtml}
+      {:else}
+        {group?.description}
+      {/if}
+    </section>
+
+    <section class="board">
+      <h2>
+        Bureau {#if canEditMembers}
+          <ButtonSecondary href="./edit/members" icon={IconGear}>Gérer</ButtonSecondary>{/if}
+      </h2>
+
+      {#if clubBoard}
+        <ul class="nobullet">
+          {#each clubBoard.sort(byMemberGroupTitleImportance) as { member, title, ...permissions } (member.uid)}
+            <li>
+              <span class="emojis">{roleEmojis(permissions)}</span>
+              <AvatarPerson role={title} {...member} href="/users/{member.uid}" />
+            </li>
+          {/each}
+        </ul>
+
+        <div class="more">
+          <ButtonInk icon={IconPeople} href="./members">Voir tous les membres</ButtonInk>
+        </div>
+      {:else if !clubBoard}
+        <Alert theme="warning"
+          >{#if me?.external}
+            Il faut être un élève pour voir les membres du groupe{:else}
+            Connectez-vous pour voir les membres du groupe <ButtonSecondary
+              insideProse
+              href="/login?{new URLSearchParams({ to: $page.url.pathname }).toString()}"
+              >Se connecter</ButtonSecondary
+            >{/if}
+        </Alert>
+      {/if}
+    </section>
+
+    {#if (group.root && (group.root.children.length ?? 0) > 0) || meOnClubBoard}
+      {@const hasSubgroups = (group.root?.children.length ?? 0) > 0}
+      <section class="subgroups">
+        <h2>
+          Sous-groupes {#if hasSubgroups && meOnClubBoard}<ButtonSecondary
+              icon={IconAdd}
+              href="./subgroups/create">Créer</ButtonSecondary
+            >{/if}
+        </h2>
+
+        {#if group.root && hasSubgroups}
+          <TreeGroups highlightUid={group.uid} group={group.root} />
+        {:else}
+          <ButtonSecondary icon={IconAdd} href="./subgroups/create"
+            >Créer un sous-groupe</ButtonSecondary
           >
         {/if}
-      </h1>
-
-      <p>
-        {DISPLAY_GROUP_TYPES[group.type]}
-        {#if group.studentAssociation?.school}· <a
-            href="/schools/{group.studentAssociation.school.uid}"
-            >{group.studentAssociation.school.name}</a
-          >{/if}
-        {#if group.studentAssociation}· <a
-            href="/student-associations/{group.studentAssociation?.uid}"
-            >{group.studentAssociation?.name}</a
-          >{/if}
-      </p>
-
-      <dl>
-        {#if group.address}
-          <dt>Salle</dt>
-          <dd>
-            {group.address}
-            {#if $me && !$me.external}
-              <!-- Pour éviter que les gens exté voient l'ouverture des salles. -->
-              {#if $me?.canEditGroups || $me?.groups.some((g) => g.group.uid === group.uid)}
-                <InputToggle
-                  label={group.roomIsOpen ? 'Ouverte' : 'Fermée'}
-                  value={group.roomIsOpen}
-                  on:change={async () => updateRoom()}
-                ></InputToggle>
-              {:else}
-                <Badge inline theme={group.roomIsOpen ? 'success' : 'danger'}>
-                  {#if group.roomIsOpen}
-                    Ouvert
-                  {:else}
-                    Fermé
-                  {/if}
-                </Badge>
-              {/if}
-            {/if}
-          </dd>
-        {/if}
-        {#if group.website}
-          <dt>Site web</dt>
-          <dd><a href={group.website} target="_blank" rel="noopener">{group.website}</a></dd>
-        {/if}
-        {#if group.email}
-          <dt>Email</dt>
-          <dd><a href="mailto:{group.email}">{group.email}</a></dd>
-        {/if}
-      </dl>
-
-      <ul class="social-links nobullet">
-        {#each group?.links.filter(({ value }) => Boolean(value)) as { name, value }}
-          <li>
-            <a href={value} use:tooltip={DISPLAY_SOCIAL_NETWORK[name]}>
-              <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
-            </a>
-          </li>
-        {/each}
-      </ul>
-    </div>
-  </header>
-
-  <section class="description" data-user-html>
-    {#if group?.longDescriptionHtml.trim().length}
-      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html group?.longDescriptionHtml}
-    {:else}
-      {group?.description}
+      </section>
     {/if}
-  </section>
 
-  <section class="board">
-    <h2>
-      Bureau {#if canEditMembers}
-        <ButtonSecondary href="./edit/members" icon={IconGear}>Gérer</ButtonSecondary>{/if}
-    </h2>
-
-    {#if clubBoard}
-      <ul class="nobullet">
-        {#each clubBoard.sort(byMemberGroupTitleImportance) as { member, title, ...permissions } (member.uid)}
-          <li>
-            <span class="emojis">{roleEmojis(permissions)}</span>
-            <AvatarPerson role={title} {...member} href="/users/{member.uid}" />
-          </li>
-        {/each}
-      </ul>
-
-      <div class="more">
-        <ButtonInk icon={IconPeople} href="./members">Voir tous les membres</ButtonInk>
-      </div>
-    {:else if !clubBoard}
-      <Alert theme="warning"
-        >{#if $me?.external}
-          Il faut être un élève pour voir les membres du groupe{:else}
-          Connectez-vous pour voir les membres du groupe <ButtonSecondary
-            insideProse
-            href="/login?{new URLSearchParams({ to: $page.url.pathname }).toString()}"
-            >Se connecter</ButtonSecondary
-          >{/if}
-      </Alert>
-    {/if}
-  </section>
-
-  {#if (group.root && (group.root.children.length ?? 0) > 0) || meOnClubBoard}
-    {@const hasSubgroups = (group.root?.children.length ?? 0) > 0}
-    <section class="subgroups">
+    <section class="posts">
       <h2>
-        Sous-groupes {#if hasSubgroups && meOnClubBoard}<ButtonSecondary
-            icon={IconAdd}
-            href="./subgroups/create">Créer</ButtonSecondary
+        Posts {#if canEditArticles}<ButtonSecondary href="/posts/{group.uid}/create/" icon={IconAdd}
+            >Nouveau</ButtonSecondary
           >{/if}
       </h2>
 
-      {#if group.root && hasSubgroups}
-        <TreeGroups highlightUid={group.uid} group={group.root} />
-      {:else}
-        <ButtonSecondary icon={IconAdd} href="./subgroups/create"
-          >Créer un sous-groupe</ButtonSecondary
-        >
-      {/if}
+      <ul class="nobullet">
+        {#each group.articles.slice(0, 3) as { uid, ...article } (article.id)}
+          <CardArticle hideGroup {group} href="/posts/{group.uid}/{uid}" {...article} />
+        {/each}
+      </ul>
     </section>
-  {/if}
 
-  <section class="posts">
-    <h2>
-      Posts {#if canEditArticles}<ButtonSecondary href="/posts/{group.uid}/create/" icon={IconAdd}
-          >Nouveau</ButtonSecondary
-        >{/if}
-    </h2>
+    <section class="events">
+      <h2>
+        Évènements {#if canEditEvents}
+          <ButtonSecondary href="/events/{group.uid}/create/" icon={IconAdd}
+            >Nouveau</ButtonSecondary
+          >
+        {/if}
+      </h2>
 
-    <ul class="nobullet">
-      {#each group.articles.slice(0, 3) as { uid, ...article } (article.id)}
-        <CardArticle hideGroup {group} href="/posts/{group.uid}/{uid}" {...article} />
-      {/each}
-    </ul>
-  </section>
-
-  <section class="events">
-    <h2>
-      Évènements {#if canEditEvents}
-        <ButtonSecondary href="/events/{group.uid}/create/" icon={IconAdd}>Nouveau</ButtonSecondary>
-      {/if}
-    </h2>
-
-    <ul class="nobullet">
-      {#each group.events.edges.slice(0, 3) as { node } (node.id)}
-        <CardFeedEvent
-          likes={node.reactionCounts['❤️']}
-          liked={node.myReactions['❤']}
-          {...node}
-          href="/events/{node.group.uid}/{node.uid}"
-        />
-      {/each}
-    </ul>
-  </section>
-
-  {#if group.related?.length > 0}
-    <section class="related">
-      <h2>Voir aussi</h2>
-
-      <CarouselGroups groups={group.related} />
+      <ul class="nobullet">
+        {#each group.events.nodes.slice(0, 3).filter(Boolean) as node (node?.id)}
+          {#if node}
+            <CardFeedEvent
+              likes={node.reactionCounts['❤️'].valueOf()}
+              liked={node.myReactions['❤']}
+              {...node}
+              href="/events/{node.group.uid}/{node.uid}"
+            />
+          {/if}
+        {/each}
+      </ul>
     </section>
-  {/if}
-</div>
+
+    {#if group.related?.length > 0}
+      <section class="related">
+        <h2>Voir aussi</h2>
+
+        <CarouselGroups groups={group.related} />
+      </section>
+    {/if}
+  </div>
+{/if}
 
 <style lang="scss">
   .content {

@@ -7,7 +7,7 @@
     isSameDay,
     isWithinInterval,
   } from 'date-fns';
-  import { Visibility, zeus } from '$lib/zeus';
+  import { zeus, Visibility as VisibilityEnum } from '$lib/zeus';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
   import { groupLogoSrc } from '$lib/logos';
@@ -19,6 +19,7 @@
   import ButtonGhost from './ButtonGhost.svelte';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
+  import { type Visibility$options, Visibility } from '$houdini';
 
   export let id: string;
   export let likes: number | undefined = undefined;
@@ -28,7 +29,7 @@
   export let location: string;
   export let startsAt: Date;
   export let endsAt: Date;
-  export let visibility: Visibility | undefined = undefined;
+  export let visibility: VisibilityEnum | Visibility$options | undefined = undefined;
   export let descriptionPreview: string;
   export let links: Array<{ value: string; name: string; computedValue: string }> = [];
   export let group: { uid: string; name: string; pictureFile: string; pictureFileDark: string };
@@ -37,8 +38,8 @@
     name: string;
     price: number;
     uid: string;
-    opensAt?: Date;
-    closesAt?: Date;
+    opensAt?: Date | null;
+    closesAt?: Date | null;
     placesLeft: number;
     capacity: number;
   }>;
@@ -123,7 +124,7 @@
           <p class="when">
             {formattedDates}
           </p>
-          {#if visibility && ![Visibility.Public, Visibility.SchoolRestricted].includes(visibility)}
+          {#if visibility && !Object.keys(Visibility).includes(visibility)}
             <span class="visibility">
               <IndicatorVisibility {visibility}></IndicatorVisibility>
               {DISPLAY_VISIBILITIES[visibility]}

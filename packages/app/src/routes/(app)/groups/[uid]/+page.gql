@@ -1,0 +1,166 @@
+query GroupProfile($uid: String!, $isStudent: Boolean!) {
+  me {
+    uid
+    id
+    admin
+    canEditGroups
+    canEditUsers
+    groups {
+      group {
+        uid
+      }
+      canEditArticles
+      canEditMembers
+    }
+    external
+  }
+  group(uid: $uid) {
+    id
+    uid
+    type
+    name
+    pictureFile
+    pictureFileDark
+    address @include(if: $isStudent)
+    color
+    description
+    longDescriptionHtml
+    website
+    email
+    groupId
+    roomIsOpen @include(if: $isStudent)
+    related {
+      uid
+      name
+      pictureFile
+      pictureFileDark
+    }
+    root {
+      groupId
+      description
+      uid
+      name
+      pictureFile
+      pictureFileDark
+      children {
+        groupId
+        description
+        uid
+        name
+        pictureFile
+        pictureFileDark
+        children {
+          groupId
+          uid
+          name
+          pictureFile
+          pictureFileDark
+          description
+          children {
+            groupId
+            uid
+            name
+            pictureFile
+            pictureFileDark
+            description
+          }
+        }
+      }
+    }
+    selfJoinable
+    ancestors {
+      uid
+      name
+      pictureFile
+    }
+    articles {
+      id
+      visibility
+      uid
+      title
+      bodyHtml
+      bodyPreview
+      pictureFile
+      author @include(if: $isStudent) {
+        firstName
+        lastName
+        uid
+        fullName
+        pictureFile
+      }
+      publishedAt
+    }
+    studentAssociation {
+      name
+      uid
+      school {
+        name
+        color
+        uid
+      }
+    }
+    links {
+      name
+      value
+      computedValue
+    }
+    members @include(if: $isStudent) {
+      member {
+        uid
+        firstName
+        lastName
+        pictureFile
+        fullName
+      }
+      title
+      president
+      treasurer
+      vicePresident
+      secretary
+    }
+    events {
+      nodes {
+        id
+        descriptionHtml
+        descriptionPreview
+        uid
+        frequency
+        recurringUntil
+        myReactions
+        reactionCounts
+        links {
+          name
+          value
+          computedValue
+        }
+        title
+        startsAt
+        endsAt
+        pictureFile
+        visibility
+        location
+        tickets {
+          name
+          price
+          uid
+          opensAt
+          closesAt
+          placesLeft
+          capacity
+        }
+        group {
+          uid
+          pictureFile
+          pictureFileDark
+          name
+        }
+        coOrganizers {
+          uid
+          pictureFile
+          pictureFileDark
+          name
+        }
+      }
+    }
+  }
+}

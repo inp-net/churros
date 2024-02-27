@@ -37,7 +37,7 @@
   export let publishedAt: Date;
   export let links: Array<{ value: string; name: string; computedValue: string }> = [];
   export let group: { uid: string; name: string; pictureFile: string; pictureFileDark: string };
-  export let author: { uid: string; fullName: string; pictureFile: string } | undefined = undefined;
+  export let author: { uid: string; fullName: string; pictureFile: string } | undefined | null = undefined;
   export let img: { src: string; alt?: string; width?: number; height?: number } | undefined =
     undefined;
   export let hideGroup = false;
