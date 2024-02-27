@@ -7,7 +7,7 @@ const CLIENT_ID = process.env.CLIENT_ID || 'chapachapa';
 const CLIENT_SECRET = process.env.CLIENT_SECRET || 'chipichipi';
 const AUTHORIZATION_ENDPOINT = 'http://localhost:5173/authorize';
 const TOKEN_ENDPOINT = 'http://localhost:4000/token';
-const REDIRECT_URI = 'http://localhost:5000/login';
+const REDIRECT_URI = 'http://localhost:5000/';
 // const SCOPE = '';
 
 // Function to initiate authorization flow
@@ -22,7 +22,7 @@ function initiateAuthorization() {
 
   console.log(`Please visit the following URL to authorize:\n${authorizationUrl}`);
 
-  execSync(`firefox "${authorizationUrl}"`); // Opens default browser
+  execSync(`firefox "${authorizationUrl}"`);
 }
 
 // Function to exchange authorization code for access token
