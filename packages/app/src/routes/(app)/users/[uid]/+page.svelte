@@ -7,8 +7,6 @@
   import IconLogout from '~icons/mdi/logout-variant';
   import IconWebsite from '~icons/mdi/earth';
   import { dateFormatter } from '$lib/dates.js';
-  import { me } from '$lib/session.js';
-  import type { PageData } from './$types';
   import IconFacebook from '~icons/mdi/facebook-box';
   import type { SvelteComponent } from 'svelte';
   import IconInstagram from '~icons/mdi/instagram';
@@ -30,6 +28,8 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { tooltip } from '$lib/tooltip';
   import AreaContribute from '$lib/components/AreaContribute.svelte';
+  import type { PageData } from './$houdini';
+  import { PendingValue } from '$houdini';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -46,27 +46,33 @@
   };
 
   export let data: PageData;
+  $: ({ UserProfile, isDeveloper } = data);
+  $: ({ contributionOptions, me, user } = $UserProfile.data ?? {
+    contributionOptions: undefined,
+    me: undefined,
+    user: undefined,
+  });
 
-  type Nesting = [string, Nesting[]];
-  $: familyNesting = JSON.parse(data.user.familyTree.nesting) as Nesting;
-  type UserTree = (typeof data.user.familyTree.users)[number] & { children: UserTree[] };
-  function makeFamilyTree(nesting: Nesting): UserTree {
-    const findUser = (uid: string) => data.user.familyTree.users.find((u) => u.uid === uid);
+  type UserTree = NonNullable<typeof user>['familyTree']['users'][number] & {
+    children: UserTree[];
+  };
 
-    const [rootUid, children] = nesting;
-    return {
-      ...findUser(rootUid)!,
-      children: children.map((child) =>
-        typeof child === 'string' ? { ...findUser(child)!, children: [] } : makeFamilyTree(child),
-      ),
-    };
+  function makeFamilyTree(familyTree: NonNullable<typeof user>['familyTree']): UserTree {
+    const findUser = (uid: string) => familyTree.users.find((u) => u.uid === uid);
+
+    type Nesting = [string, Nesting[]];
+
+    function resolveNesting([rootUid, children]: Nesting): UserTree {
+      return {
+        ...findUser(rootUid)!,
+        children: children.map((child) =>
+          typeof child === 'string' ? { ...findUser(child)!, children: [] } : resolveNesting(child),
+        ),
+      };
+    }
+
+    return resolveNesting(JSON.parse(familyTree.nesting) as Nesting);
   }
-
-  $: familyTree = makeFamilyTree(familyNesting);
-
-  $: ({ user, contributionOptions, isDeveloper } = data);
-
-  // $: contributesToEverything = contributionOptions
 
   async function logout() {
     const cookies = cookie.parse(document.cookie);
@@ -87,203 +93,214 @@
     return president ? '👑' : treasurer ? '💰' : vicePresident ? '🌟' : secretary ? '📜' : '';
   }
 
-  $: roleBadge = user.groups.some(({ president }) => president)
+  $: roleBadge = user?.groups.some(({ president }) => president)
     ? '👑'
-    : user.groups.some(({ treasurer }) => treasurer)
+    : user?.groups.some(({ treasurer }) => treasurer)
       ? '💰'
-      : user.groups.some(({ vicePresident }) => vicePresident)
+      : user?.groups.some(({ vicePresident }) => vicePresident)
         ? '🌟'
-        : user.groups.some(({ secretary }) => secretary)
+        : user?.groups.some(({ secretary }) => secretary)
           ? '📜'
           : '';
 
   const formatPhoneNumber = (phone: string) =>
     phone.replace(/^\+33(\d)(\d\d)(\d\d)(\d\d)(\d\d)$/, '0$1 $2 $3 $4 $5');
 
-  $: pictureFile = user.pictureFile ? `${env.PUBLIC_STORAGE_URL}${user.pictureFile}` : '';
+  $: pictureFile = user?.pictureFile ? `${env.PUBLIC_STORAGE_URL}${user.pictureFile}` : '';
 </script>
 
 <div class="content">
-  <header>
-    <div class="picture">
-      {#if roleBadge}
-        <div class="role-badge">
-          {roleBadge}
-        </div>
-      {/if}
+  {#if !user}
+    <p>Chargement…</p>
+  {:else}
+    <header>
+      <div class="picture">
+        {#if roleBadge}
+          <div class="role-badge">
+            {roleBadge}
+          </div>
+        {/if}
 
-      <img src={pictureFile} alt={user.fullName} />
-    </div>
+        <img src={pictureFile} alt={user.fullName} />
+      </div>
 
-    <div class="identity">
-      <h1>
-        <div class="text">
-          {user.firstName}
-          {user.lastName}
-          {#if user.admin}<Badge title="Possède tous les droits" theme="info"><IconAdmin /></Badge>
-          {/if}
-          {#if isDeveloper}<Badge title="A écrit du code pour Churros" theme="info">
-              <IconCode></IconCode>
-            </Badge>{/if}
-        </div>
+      <div class="identity">
+        <h1>
+          <div class="text">
+            {user.firstName}
+            {user.lastName}
+            {#if user.admin}<Badge title="Possède tous les droits" theme="info"><IconAdmin /></Badge
+              >
+            {/if}
+            {#if isDeveloper}<Badge title="A écrit du code pour Churros" theme="info">
+                <IconCode></IconCode>
+              </Badge>{/if}
+          </div>
 
-        <div class="actions">
-          <ButtonShare />
-          {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
-            <ButtonGhost help="Modifier" href="/users/{user.uid}/edit/"><IconGear /></ButtonGhost>
-          {/if}
-          {#if $me?.uid === user.uid}
-            <ButtonGhost help="Se déconnecter" on:click={logout}><IconLogout /></ButtonGhost>
-          {/if}
-        </div>
-      </h1>
-      <p class="username">
-        @{user.uid}
-      </p>
-      <p class="major">
-        {user.yearTier}A ({user.graduationYear}) ·
-        {#if user.major}
-          <a href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}/"
-            ><abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr></a
-          >
-          {#if user.minor}
-            ·
-            <a
-              href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice
-                ? '-fisa'
-                : ''}#{user.minor.uid}"
-              ><abbr title="" use:tooltip={user.minor.name}>{user.minor.shortName}</abbr></a
+          <div class="actions">
+            <ButtonShare />
+            {#if me?.uid === user.uid || me?.admin || me?.canEditUsers}
+              <ButtonGhost help="Modifier" href="/users/{user.uid}/edit/"><IconGear /></ButtonGhost>
+            {/if}
+            {#if me?.uid === user.uid}
+              <ButtonGhost help="Se déconnecter" on:click={logout}><IconLogout /></ButtonGhost>
+            {/if}
+          </div>
+        </h1>
+        <p class="username">
+          @{user.uid}
+        </p>
+        <p class="major">
+          {user.yearTier}A ({user.graduationYear}) ·
+          {#if user.major}
+            <a href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}/"
+              ><abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr></a
             >
-          {/if}
-          · {#each user.major.schools as school}
-            <a class="school" href="/schools/{school.uid}">{school.name}</a>
+            {#if user.minor}
+              ·
+              <a
+                href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice
+                  ? '-fisa'
+                  : ''}#{user.minor.uid}"
+                ><abbr title="" use:tooltip={user.minor.name}>{user.minor.shortName}</abbr></a
+              >
+            {/if}
+            · {#each user.major.schools as school}
+              <a class="school" href="/schools/{school.uid}">{school.name}</a>
+            {/each}
+          {:else}Exté{/if}
+          {user.apprentice ? 'FISA' : ''}
+        </p>
+        <ul class="social-links nobullet">
+          {#each user.links as { name, value }}
+            <li>
+              <ButtonGhost href={value} title={name}>
+                <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
+              </ButtonGhost>
+            </li>
           {/each}
-        {:else}Exté{/if}
-        {user.apprentice ? 'FISA' : ''}
-      </p>
-      <ul class="social-links nobullet">
-        {#each user.links as { name, value }}
-          <li>
-            <ButtonGhost href={value} title={name}>
-              <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
-            </ButtonGhost>
-          </li>
+        </ul>
+        <p class="bio" data-user-html>
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html user.descriptionHtml}
+        </p>
+        <div class="info">
+          <dl>
+            {#if user.nickname}
+              <dt>Surnom</dt>
+              <dd>{user.nickname}</dd>
+            {/if}
+            {#if user.contributesTo}
+              <dt>Cotisant·e</dt>
+              {#if user.contributesTo.length > 0}
+                <dd>
+                  {user.contributesTo
+                    .filter((c) => c !== undefined)
+                    .map((c) => c?.name)
+                    .join(', ')}
+                </dd>
+              {:else}
+                <dd>Non</dd>
+              {/if}
+            {/if}
+            <dt>Email{user.otherEmails.length > 0 ? 's' : ''}</dt>
+            <dd class="is-list">
+              {#each [user.email, ...user.otherEmails] as email}
+                <a href="mailto:{email}">{email}</a>
+              {/each}
+            </dd>
+            {#if user.phone}
+              <dt>Téléphone</dt>
+              <dd>
+                <a href="tel:{user.phone}">{formatPhoneNumber(user.phone)}</a>
+              </dd>
+            {/if}
+            {#if user.birthday}
+              <dt>Anniversaire</dt>
+              <dd>{dateFormatter.format(user.birthday)}</dd>
+              <!-- TODO add to agenda -->
+            {/if}
+            {#if user.address}
+              <dt>Adresse</dt>
+              <dd>{user.address}</dd>
+              <!-- TODO go here with gmaps? -->
+            {/if}
+            <dt>Identifiant</dt>
+            <dd>{user.uid}</dd>
+          </dl>
+        </div>
+      </div>
+    </header>
+
+    {#if !me?.external && me?.uid === user.uid && ((user.pendingContributions?.length ?? 0) > 0 || (user.contributesTo?.length ?? 0) <= 0)}
+      <section class="contribution">
+        <h2>Cotisation</h2>
+        <p class="explain-contribution typo-details">
+          Cotiser, c'est contribuer à l'organisation de la vie associative de ton école. Elle te
+          permet d'être membre de clubs, de lister, d'économiser 60€ pour le WEI, et donne droit à
+          des places à tarif réduit sur tout les évènements de l'AE.
+        </p>
+
+        {#if contributionOptions && user.pendingContributions}
+          <div class="manage">
+            <AreaContribute {contributionOptions} pendingContributions={user.pendingContributions}
+            ></AreaContribute>
+          </div>
+        {/if}
+
+        <p class="typo-details">
+          Tu peux aussi payer par chèque ou espèces. Renseigne-toi auprès du BDE.
+        </p>
+      </section>
+    {/if}
+
+    {#if user.groups.length}
+      <section class="groups">
+        <h2>{user.groups.length === 1 ? 'Groupe' : 'Groupes'}</h2>
+        <CarouselGroups
+          groups={user.groups.map(({ group, title, ...roles }) => ({
+            ...group,
+
+            role: `${rolesBadge(roles)} ${title}`,
+          }))}
+        />
+      </section>
+    {:else if !me?.external && me?.uid === user.uid}
+      <section class="groups">
+        <h2>Groupes</h2>
+        <p class="typo-details">Tu n'es dans aucun groupe... 😢</p>
+        <ButtonSecondary href="/groups">Découvre les clubs de l'n7 !</ButtonSecondary>
+      </section>
+    {/if}
+
+    {#if user.familyTree.users.length >= 2}
+      <section class="family">
+        <h2>Famille</h2>
+
+        <div class="tree">
+          <TreePersons user={makeFamilyTree(user.familyTree)} highlightUid={user.uid} />
+        </div>
+      </section>
+    {/if}
+
+    <section class="articles">
+      <h2>Posts</h2>
+
+      <ul class="nobullet">
+        {#each user.articles.nodes as article}
+          {#if article}
+            <li>
+              <CardArticle href="/posts/{article.group.uid}/{article.uid}" {...article} />
+            </li>
+          {:else}
+            <li class="loading">Chargement…</li>
+          {/if}
+        {:else}
+          <li>Aucun post</li>
         {/each}
       </ul>
-      <p class="bio" data-user-html>
-        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-        {@html user.descriptionHtml}
-      </p>
-      <div class="info">
-        <dl>
-          {#if user.nickname}
-            <dt>Surnom</dt>
-            <dd>{user.nickname}</dd>
-          {/if}
-          {#if user.contributesTo}
-            <dt>Cotisant·e</dt>
-            {#if user.contributesTo.length > 0}
-              <dd>
-                {user.contributesTo
-                  .filter((c) => c !== undefined)
-                  .map((c) => c?.name)
-                  .join(', ')}
-              </dd>
-            {:else}
-              <dd>Non</dd>
-            {/if}
-          {/if}
-          <dt>Email{user.otherEmails.length > 0 ? 's' : ''}</dt>
-          <dd class="is-list">
-            {#each [user.email, ...user.otherEmails] as email}
-              <a href="mailto:{email}">{email}</a>
-            {/each}
-          </dd>
-          {#if user.phone}
-            <dt>Téléphone</dt>
-            <dd>
-              <a href="tel:{user.phone}">{formatPhoneNumber(user.phone)}</a>
-            </dd>
-          {/if}
-          {#if user.birthday}
-            <dt>Anniversaire</dt>
-            <dd>{dateFormatter.format(user.birthday)}</dd>
-            <!-- TODO add to agenda -->
-          {/if}
-          {#if user.address}
-            <dt>Adresse</dt>
-            <dd>{user.address}</dd>
-            <!-- TODO go here with gmaps? -->
-          {/if}
-          <dt>Identifiant</dt>
-          <dd>{user.uid}</dd>
-        </dl>
-      </div>
-    </div>
-  </header>
-
-  {#if !$me?.external && $me?.uid === user.uid && ((user.pendingContributions?.length ?? 0) > 0 || (user.contributesTo?.length ?? 0) <= 0)}
-    <section class="contribution">
-      <h2>Cotisation</h2>
-      <p class="explain-contribution typo-details">
-        Cotiser, c'est contribuer à l'organisation de la vie associative de ton école. Elle te
-        permet d'être membre de clubs, de lister, d'économiser 60€ pour le WEI, et donne droit à des
-        places à tarif réduit sur tout les évènements de l'AE.
-      </p>
-
-      <div class="manage">
-        <AreaContribute {contributionOptions} pendingContributions={user.pendingContributions}
-        ></AreaContribute>
-      </div>
-
-      <p class="typo-details">
-        Tu peux aussi payer par chèque ou espèces. Renseigne-toi auprès du BDE.
-      </p>
     </section>
   {/if}
-
-  {#if user.groups.length}
-    <section class="groups">
-      <h2>{user.groups.length === 1 ? 'Groupe' : 'Groupes'}</h2>
-      <CarouselGroups
-        groups={user.groups.map(({ group, title, ...roles }) => ({
-          ...group,
-
-          role: `${rolesBadge(roles)} ${title}`,
-        }))}
-      />
-    </section>
-  {:else if !$me?.external && $me?.uid === user.uid}
-    <section class="groups">
-      <h2>Groupes</h2>
-      <p class="typo-details">Tu n'es dans aucun groupe... 😢</p>
-      <ButtonSecondary href="/groups">Découvre les clubs de l'n7 !</ButtonSecondary>
-    </section>
-  {/if}
-
-  {#if data.user.familyTree.users.length >= 2}
-    <section class="family">
-      <h2>Famille</h2>
-
-      <div class="tree">
-        <TreePersons user={familyTree} highlightUid={user.uid} />
-      </div>
-    </section>
-  {/if}
-
-  <section class="articles">
-    <h2>Posts</h2>
-
-    <ul class="nobullet">
-      {#each data.user.articles.edges.map(({ node }) => node) as article}
-        <li>
-          <CardArticle href="/posts/{article.group.uid}/{article.uid}" {...article} />
-        </li>
-      {:else}
-        <li>Aucun post</li>
-      {/each}
-    </ul>
-  </section>
 </div>
 
 <style lang="scss">

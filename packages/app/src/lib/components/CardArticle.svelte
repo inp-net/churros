@@ -1,6 +1,6 @@
 <script lang="ts">
   import { intlFormatDistance, isFuture } from 'date-fns';
-  import { Visibility, type EventFrequency, zeus } from '$lib/zeus';
+  import { type EventFrequency, zeus } from '$lib/zeus';
   import IconInfo from '~icons/mdi/information-outline';
   import IconHeart from '~icons/mdi/heart-outline';
   import IconHeartFilled from '~icons/mdi/heart';
@@ -13,6 +13,7 @@
   import { DISPLAY_VISIBILITIES } from '$lib/display';
   import ButtonGhost from './ButtonGhost.svelte';
   import { toasts } from '$lib/toasts';
+  import { Visibility, type Visibility$options } from '$houdini';
 
   export let id: string;
   export let likes: number | undefined = undefined;
@@ -29,7 +30,7 @@
         recurringUntil?: Date | undefined;
       }
     | undefined = undefined;
-  export let visibility: Visibility | undefined = undefined;
+  export let visibility: Visibility$options | undefined = undefined;
   export let title: string;
   export let href: string;
   export let bodyPreview: string;
@@ -79,7 +80,7 @@
           <span class="date">
             {intlFormatDistance(publishedAt, new Date())}
           </span>
-          {#if visibility && ![Visibility.Public, Visibility.SchoolRestricted].includes(visibility)}
+          {#if visibility && !Object.keys(Visibility).includes(visibility)}
             <span class="visibility">
               <IndicatorVisibility {visibility}></IndicatorVisibility>
               {DISPLAY_VISIBILITIES[visibility]}

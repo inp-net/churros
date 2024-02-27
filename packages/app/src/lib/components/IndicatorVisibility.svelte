@@ -7,9 +7,10 @@
   import IconLinkLock from '~icons/mdi/link-lock';
   import IconGlobe from '~icons/mdi/web';
   import { tooltip } from '$lib/tooltip';
+  import type { Visibility$options } from '$houdini';
 
   export let showTooltip = false;
-  export let visibility: Visibility | undefined;
+  export let visibility: Visibility | Visibility$options | undefined;
 </script>
 
 <span

@@ -1,0 +1,145 @@
+query UserProfile($uid: String!, $isMe: Boolean!, $showContributions: Boolean!) {
+  contributionOptions {
+    name
+    price
+    id
+    paysFor {
+      name
+      id
+      uid
+    }
+    offeredIn {
+      name
+      id
+      uid
+    }
+  }
+
+  me {
+    uid
+    canEditUsers
+    external
+    admin
+  }
+
+  user(uid: $uid) {
+    admin
+    apprentice
+    uid
+    address
+    birthday
+    createdAt
+    description
+    descriptionHtml
+    firstName
+    graduationYear
+    yearTier
+    lastName
+    fullName
+    nickname
+    email
+    otherEmails
+    phone
+    pictureFile
+    groups {
+      group {
+        uid
+        name
+        color
+        pictureFile
+        pictureFileDark
+      }
+      member {
+        lastName
+      }
+      title
+      president
+      treasurer
+      vicePresident
+      secretary
+    }
+
+    links {
+      name
+      value
+      computedValue
+    }
+
+    minor {
+      name
+      shortName
+      uid
+    }
+
+    major {
+      uid
+      name
+      shortName
+      schools {
+        uid
+        name
+        color
+        studentAssociations {
+          id
+          name
+        }
+      }
+    }
+
+    familyTree {
+      nesting
+      users {
+        uid
+        firstName
+        lastName
+        fullName
+        pictureFile
+        graduationYear
+      }
+    }
+
+    pendingContributions @include(if: $isMe) {
+      name
+      id
+    }
+    contributesTo @include(if: $showContributions) {
+      name
+      id
+    }
+
+    articles {
+      nodes {
+        id
+        title
+        uid
+        group {
+          uid
+          name
+          pictureFile
+          pictureFileDark
+        }
+        bodyHtml
+        bodyPreview
+        publishedAt
+        links {
+          name
+          value
+          computedValue
+        }
+        visibility
+      }
+    }
+  }
+
+  codeContributors {
+    __typename
+    ... on QueryCodeContributorsSuccess {
+      data {
+        uid
+      }
+    }
+    ... on Error {
+      message
+    }
+  }
+}

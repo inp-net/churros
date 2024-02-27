@@ -60,6 +60,7 @@ query AppLayout($myUid: String!, $loggedIn: Boolean!) {
   echo(text: "loggedin!!!!") @include(if: $loggedIn)
 
   me @include(if: $loggedIn) {
+    uid, canEditUsers, canEditGroups
     ...NavigationTopMe
     ...NavigationSideMe
   }
