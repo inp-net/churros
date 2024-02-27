@@ -9,6 +9,8 @@ build:
   script:
     - yarn install --immutable
     - yarn build
+  rules:
+    - if: ($CI_COMMIT_TITLE !~ /^WIP:/) && ($CI_COMMIT_TITLE !~ /^\w+\(wip\):/)
 
 pages:
   # will fail before the query buildInfo gets added to the publicly-accessible repo
