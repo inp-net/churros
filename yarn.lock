@@ -366,6 +366,7 @@ __metadata:
     nanoid: "npm:^5.0.4"
     nodemailer: "npm:^6.9.7"
     nodemon: "npm:^3.0.3"
+    normalize-url: "npm:^8.0.0"
     pdfmake: "npm:^0.2.8"
     phone: "npm:^3.1.41"
     prettier: "npm:^3.2.4"

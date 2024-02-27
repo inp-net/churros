@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- OAuth: les URIs de redirection autorisées sont maintenant normalisées avant d'être comparées: utiliser une URI avec un `/` à la fin quand la liste contient la même sans ce `/` final fonctionne.
+
 ### Corrections
 
 - Correction d'un bug dans le demandes de paiements Lydia quand un code de promotion est actif
