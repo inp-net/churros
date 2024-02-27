@@ -1,4 +1,5 @@
 import type { Context } from '#lib';
+import { UNAUTHORIZED_ERROR_MESSAGE } from '@inp-net/churros-client'
 import {
   authScopes,
   decodeGlobalID,
@@ -64,7 +65,7 @@ export const builder = new SchemaBuilder<{
   errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma, exposeDescriptions: true },
   scopeAuthOptions: {
-    unauthorizedError: () => new GraphQLError("Tu n'es pas autorisé à effectuer cette action."),
+    unauthorizedError: () => new GraphQLError(UNAUTHORIZED_ERROR_MESSAGE),
   },
   relayOptions: {
     clientMutationId: 'omit',

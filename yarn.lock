@@ -335,6 +335,7 @@ __metadata:
     "@envelop/core": "npm:^5.0.0"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.0"
+    "@inp-net/churros-client": "workspace:^"
     "@lyuboslavlyubenov/logo-scrape": "npm:^1.2.0"
     "@pothos/core": "npm:3.40.1"
     "@pothos/plugin-complexity": "npm:^3.13.0"
@@ -446,6 +447,7 @@ __metadata:
     "@iconify-json/material-symbols": "npm:^1.1.68"
     "@iconify-json/mdi": "npm:^1.1.63"
     "@iconify-json/simple-icons": "npm:^1.1.84"
+    "@inp-net/churros-client": "workspace:^"
     "@paypal/paypal-js": "npm:^7.1.1"
     "@sveltejs/adapter-node": "npm:^2.0.0"
     "@sveltejs/kit": "npm:^2.0.0"
@@ -2018,7 +2020,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inp-net/churros-client@workspace:packages/oauth-client":
+"@inp-net/churros-client@workspace:^, @inp-net/churros-client@workspace:packages/oauth-client":
   version: 0.0.0-use.local
   resolution: "@inp-net/churros-client@workspace:packages/oauth-client"
   dependencies:

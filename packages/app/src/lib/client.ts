@@ -1,6 +1,9 @@
+import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import type { ClientPlugin } from '$houdini';
 import { HoudiniClient } from '$houdini';
+import { redirectToLogin } from '$lib/session';
+import { UNAUTHORIZED_ERROR_MESSAGE } from '@inp-net/churros-client';
 
 const isLoggedIn: ClientPlugin = () => {
   return {
@@ -22,13 +25,20 @@ const isLoggedIn: ClientPlugin = () => {
 
 const unauthorizedErrorHandler: ClientPlugin = () => {
   return {
-    end(ctx, { value, resolve  }) {
-      console.log(value.errors)
+    end(ctx, { value: { errors }, resolve }) {
+      if (
+        browser &&
+        !ctx.variables?.loggedIn &&
+        errors?.some((e) => e.message === UNAUTHORIZED_ERROR_MESSAGE)
+      ) {
+        const url = new URL(window.location.href);
+        throw redirectToLogin(url.pathname, Object.fromEntries(url.searchParams.entries()));
+      }
 
-      resolve(ctx)
-    }
-  }
-}
+      resolve(ctx);
+    },
+  };
+};
 
 export default new HoudiniClient({
   url: env.PUBLIC_API_URL,
