@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import IconSearch from '~icons/mdi/magnify';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import BaseInputText from '$lib/components/BaseInputText.svelte';
   import CardGroup from '$lib/components/CardGroup.svelte';
   import CardPerson from '$lib/components/CardPerson.svelte';
@@ -9,12 +9,16 @@
   import { debugging } from '$lib/debugging';
 
   export let data: PageData;
+  $: ({ SearchResults } = data);
+  $: ({ searchUsers, searchGroups } = $SearchResults.data ?? {
+    searchGroups: [],
+    searchUsers: [],
+  });
+  $: totalResultsCount = searchUsers.length + searchGroups.length;
 
   $: initialQ = $page.params.q ?? '';
   let q = initialQ;
   const similarityCutoff = $page.url.searchParams.get('sim') ?? undefined;
-
-  $: results = [...data.searchUsers, ...data.searchGroups];
 
   const submitSearchQuery = async () => {
     await goto(
@@ -37,16 +41,16 @@
 
 {#if !initialQ}
   <p class="empty">Pas de question, pas de réponse</p>
-{:else if results.length === 0}
+{:else if totalResultsCount === 0}
   <p class="empty">Aucun résultat</p>
 {:else}
-  {#if data.searchUsers.length > 0}
+  {#if searchUsers.length > 0}
     <h2>Personnes</h2>
     <p class="typo-details results-count">
-      {data.searchUsers.length} résultat{data.searchUsers.length > 1 ? 's' : ''}
+      {searchUsers.length} résultat{searchUsers.length > 1 ? 's' : ''}
     </p>
     <ul class="nobullet">
-      {#each data.searchUsers as { user: { uid, ...rest }, rank, similarity }}
+      {#each searchUsers as { user: { uid, ...rest }, rank, similarity }}
         <li data-rank={rank ?? 'null'} data-similarity={similarity}>
           {#if $debugging}
             <pre>rank {rank} <br />sim {similarity}</pre>
@@ -56,13 +60,13 @@
       {/each}
     </ul>
   {/if}
-  {#if data.searchGroups.length > 0}
+  {#if searchGroups.length > 0}
     <h2>Groupes</h2>
     <p class="typo-details results-count">
-      {data.searchGroups.length} résultat{data.searchGroups.length > 1 ? 's' : ''}
+      {searchGroups.length} résultat{searchGroups.length > 1 ? 's' : ''}
     </p>
     <ul class="nobullet">
-      {#each data.searchGroups as { group: { uid, ...rest }, rank, similarity }}
+      {#each searchGroups as { group: { uid, ...rest }, rank, similarity }}
         <li data-rank={rank ?? 'null'} data-similarity={similarity}>
           {#if $debugging}
             <pre>rank {rank} <br />sim {similarity}</pre>

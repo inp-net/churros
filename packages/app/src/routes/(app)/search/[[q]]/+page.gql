@@ -1,0 +1,24 @@
+query SearchResults($q: String!, $cutoff: Float) {
+    searchUsers(q: $q, similarityCutoff: $cutoff) {
+        similarity
+        rank
+        user {
+            uid
+            firstName
+            lastName
+            pictureFile
+            fullName
+        }
+    }
+
+    searchGroups(q: $q, similarityCutoff: $cutoff) {
+        similarity
+        rank
+        group {
+            uid
+            name
+            pictureFile
+            pictureFileDark
+        }
+    }
+}

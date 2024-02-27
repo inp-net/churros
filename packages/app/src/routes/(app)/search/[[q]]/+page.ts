@@ -1,35 +1,17 @@
-import { redirectToLogin } from '$lib/session';
-import { loadQuery } from '$lib/zeus';
-import type { PageLoad } from './$types';
+import type { BeforeLoadEvent, SearchResultsVariables } from './$houdini';
 
-export const load: PageLoad = async ({ fetch, parent, url, params: { q } }) => {
-  const { me } = await parent();
-  if (!me) throw redirectToLogin(url.pathname + url.search);
-  if (!q) return { searchUsers: [], searchGroups: [], searchEvents: [], searchArticles: [] };
+export function _houdini_beforeLoad({ params }: BeforeLoadEvent) {
+  if (!params.q) {
+    return {
+      SearchResults: {
+        searchUsers: [],
+        searchGroups: [],
+      },
+    };
+  }
+}
 
-  const similarityCutoff = url.searchParams.get('sim')
-    ? Number.parseFloat(url.searchParams.get('sim')!)
-    : undefined;
-
-  return loadQuery(
-    {
-      searchUsers: [
-        { q, similarityCutoff },
-        {
-          similarity: true,
-          rank: true,
-          user: { uid: true, firstName: true, lastName: true, pictureFile: true, fullName: true },
-        },
-      ],
-      searchGroups: [
-        { q, similarityCutoff },
-        {
-          similarity: true,
-          rank: true,
-          group: { uid: true, name: true, pictureFile: true, pictureFileDark: true },
-        },
-      ],
-    },
-    { fetch, parent },
-  );
-};
+export const _SearchResultsVariables: SearchResultsVariables = ({ params, url }) => ({
+  q: params.q ?? '',
+  cutoff: url.searchParams.get('sim') ? Number.parseFloat(url.searchParams.get('sim')!) : undefined,
+});
