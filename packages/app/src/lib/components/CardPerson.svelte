@@ -1,13 +1,26 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
+  import { fragment, graphql, type CardPersonUser } from '$houdini';
   import IconAccount from '~icons/mdi/account';
 
-  export let href: string;
-  export let fullName: string;
-  export let pictureFile: string;
+  export let user: CardPersonUser;
+  $: User = fragment(
+    user,
+    graphql`
+      fragment CardPersonUser on User {
+        uid
+        fullName
+        pictureFile
+      }
+    `,
+  );
+
+  $: ({ fullName, pictureFile, uid } = $User);
+
+  export let href = '';
 </script>
 
-<a {href} class="person" draggable="false" on:click>
+<a href={href || `/users/${uid}`} class="person" draggable="false" on:click>
   <div class="img">
     {#if pictureFile}
       <img src={`${env.PUBLIC_STORAGE_URL}${pictureFile}`} alt={fullName} draggable="false" />

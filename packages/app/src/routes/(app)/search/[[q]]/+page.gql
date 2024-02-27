@@ -1,24 +1,30 @@
 query SearchResults($q: String!, $cutoff: Float) {
-    searchUsers(q: $q, similarityCutoff: $cutoff) {
-        similarity
-        rank
-        user {
-            uid
-            firstName
-            lastName
-            pictureFile
-            fullName
-        }
+  me {
+    major {
+      schools {
+        uid
+      }
     }
+  }
 
-    searchGroups(q: $q, similarityCutoff: $cutoff) {
-        similarity
-        rank
-        group {
-            uid
-            name
-            pictureFile
-            pictureFileDark
-        }
+  searchUsers(q: $q, similarityCutoff: $cutoff) {
+    similarity
+    rank
+    user {
+      ...CardPersonUser
     }
+  }
+
+  searchGroups(q: $q, similarityCutoff: $cutoff) {
+    similarity
+    rank
+    group {
+      ...CardGroupGroup
+      studentAssociation {
+        school {
+          uid
+        }
+      }
+    }
+  }
 }

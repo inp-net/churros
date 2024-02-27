@@ -25,6 +25,13 @@
       `/search/${encodeURIComponent(q)}` + (similarityCutoff ? `?sim=${similarityCutoff}` : ''),
     );
   };
+
+  // Only show a group's school if it's not a school we are in, or if there are multiple schools in the search results
+  $: showGroupSchool = (group: { studentAssociation: null | { school: { uid: string } } }) =>
+    new Set(searchGroups.map((g) => g.group.studentAssociation?.school.uid)).size > 1 ||
+    !$SearchResults.data?.me.major?.schools.some(
+      (s) => s.uid === group.studentAssociation?.school.uid,
+    );
 </script>
 
 <form class="query" method="get" on:submit|preventDefault={submitSearchQuery}>
@@ -50,12 +57,12 @@
       {searchUsers.length} résultat{searchUsers.length > 1 ? 's' : ''}
     </p>
     <ul class="nobullet">
-      {#each searchUsers as { user: { uid, ...rest }, rank, similarity }}
+      {#each searchUsers as { user, rank, similarity }}
         <li data-rank={rank ?? 'null'} data-similarity={similarity}>
           {#if $debugging}
             <pre>rank {rank} <br />sim {similarity}</pre>
           {/if}
-          <CardPerson href="/users/{uid}" {...rest} />
+          <CardPerson {user} />
         </li>
       {/each}
     </ul>
@@ -66,12 +73,12 @@
       {searchGroups.length} résultat{searchGroups.length > 1 ? 's' : ''}
     </p>
     <ul class="nobullet">
-      {#each searchGroups as { group: { uid, ...rest }, rank, similarity }}
+      {#each searchGroups as { group, rank, similarity }}
         <li data-rank={rank ?? 'null'} data-similarity={similarity}>
           {#if $debugging}
             <pre>rank {rank} <br />sim {similarity}</pre>
           {/if}
-          <CardGroup href="/groups/{uid}" {...rest} />
+          <CardGroup {group} showSchool={showGroupSchool(group)} />
         </li>
       {/each}
     </ul>

@@ -1,16 +1,33 @@
 <script lang="ts">
+  import { fragment, graphql, type CardGroupGroup } from '$houdini';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
 
-  export let href: string;
-  export let name: string;
-  export let pictureFile: string;
-  export let pictureFileDark: string;
+  export let group: CardGroupGroup;
+  $: Group = fragment(
+    group,
+    graphql`
+      fragment CardGroupGroup on Group {
+        uid
+        name
+        pictureFile
+        pictureFileDark
+        studentAssociation {
+          school {
+            name
+          }
+        }
+      }
+    `,
+  );
+
+  $: ({ uid, name, pictureFile, pictureFileDark, studentAssociation } = $Group);
   export let role = '';
-  export let school: { name: string } | undefined = undefined;
+  export let href = '';
+  export let showSchool = false;
 </script>
 
-<a {href} title={name} class="group" draggable="false" on:click>
+<a href={href || `/groups/${uid}`} title={name} class="group" draggable="false" on:click>
   <div class="img">
     <img
       src={groupLogoSrc($isDark, { pictureFile, pictureFileDark })}
@@ -22,8 +39,8 @@
   {#if role}
     <p class="role">{role}</p>
   {/if}
-  {#if school}
-    <p class="school">{school.name}</p>
+  {#if studentAssociation && showSchool}
+    <p class="school">{studentAssociation.school.name}</p>
   {/if}
 </a>
 
