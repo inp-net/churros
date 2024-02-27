@@ -11,8 +11,10 @@ build:
     - yarn build
 
 pages:
-  # will fail before the query buildInfo gets added to the publicly-accessible repo
-  allow_failure: true
+  only:
+    - tags
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   before_script:
     - apt-get update && apt-get install -y curl git jq
     - export VOLTA_HOME=/root/.volta
