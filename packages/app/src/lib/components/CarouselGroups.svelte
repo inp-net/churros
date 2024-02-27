@@ -1,18 +1,15 @@
 <script lang="ts">
+  import { type CardGroupGroup } from '$houdini';
   import { onMount } from 'svelte';
-  import IconForward from '~icons/mdi/chevron-right';
   import IconBackward from '~icons/mdi/chevron-left';
+  import IconForward from '~icons/mdi/chevron-right';
   import CardGroup from './CardGroup.svelte';
-  export let groups: Array<{
-    name: string;
-    pictureFile: string;
-    pictureFileDark: string;
-    uid: string;
-    role?: string;
-  }>;
+
+  export let groups: (CardGroupGroup & { role?: string })[];
+
+  $: console.log({ groups });
 
   let nbGroups: number;
-  export let go: (groupUid: string) => string = (uid) => `/groups/${uid}`;
 
   let groupsWidth = 0;
   let nbVisibles = 0;
@@ -114,8 +111,8 @@
     role="listbox"
     tabindex="-1"
   >
-    {#each groups as { uid, ...rest }}
-      <CardGroup on:click={handleClick} href={go(uid)} {...rest} />
+    {#each groups as { role, ...group }}
+      <CardGroup on:click={handleClick} {role} {group} />
     {/each}
   </div>
   {#if offset > 0}

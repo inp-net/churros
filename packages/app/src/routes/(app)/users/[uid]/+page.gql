@@ -44,10 +44,7 @@ query UserProfile($uid: String!, $isMe: Boolean!, $showContributions: Boolean!) 
     groups {
       group {
         uid
-        name
-        color
-        pictureFile
-        pictureFileDark
+        ...CardGroupGroup
       }
       member {
         lastName
