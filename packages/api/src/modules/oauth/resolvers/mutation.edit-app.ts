@@ -29,7 +29,7 @@ builder.mutationField('editApp', (t) =>
       const { allowedRedirectUris: oldAllowedRedirectUris, website: oldWebsite } =
         await prisma.thirdPartyApp.findUniqueOrThrow({ where: { id } });
 
-      data.allowedRedirectUris = data.allowedRedirectUris.map((uri) => normalizeUrl(uri));
+      data.allowedRedirectUris = data.allowedRedirectUris?.map((uri) => normalizeUrl(uri));
 
       const allowedURIsWillChange =
         data.allowedRedirectUris !== undefined &&
