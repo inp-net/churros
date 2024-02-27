@@ -49,7 +49,7 @@
       opacity: 0;
     }
 
-    &[disabled] {
+    &[disabled='true'] {
       color: var(--disabled-text);
       cursor: default;
       background: var(--disabled-bg);
