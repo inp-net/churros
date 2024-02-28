@@ -3,7 +3,7 @@ import { prisma } from '#lib';
 const apiUrl = process.env.MAILMAN_API_URL as unknown as string;
 const apiToken = process.env.MAILMAN_API_TOKEN as unknown as string;
 
-const mailingAllBureau = 'all_bureau@list.bde.enseeiht.fr';
+const mailingAllBoard = 'all_bureau@list.bde.enseeiht.fr';
 const mailingAllPrez = 'all_prez@list.bde.enseeiht.fr';
 const mailingAllTrez = 'all_trez@list.bde.enseeiht.fr';
 
@@ -11,12 +11,12 @@ export async function removeMemberFromGroupMailingList(groupId: string, email: s
   const group = await prisma.group.findUniqueOrThrow({
     where: { id: groupId },
     select: {
-      ldapUid: true,
+      uid: true,
       studentAssociation: { select: { school: { select: { internalMailDomain: true } } } },
     },
   });
 
-  const mailing = `${group.ldapUid}@list.${group.studentAssociation?.school.internalMailDomain}`;
+  const mailing = `${group.uid.replace(/-n7\b/, '')}@list.${group.studentAssociation?.school.internalMailDomain}`;
   await removeMemberFromMailingList(mailing, email);
 }
 
@@ -28,7 +28,7 @@ async function removeMemberFromMailingList(mailing: string, email: string) {
   });
 }
 
-export async function updateMemberBureauLists(memberID: string) {
+export async function updateMemberBoardLists(memberID: string) {
   const { email } = await prisma.user.findUniqueOrThrow({
     where: { id: memberID },
     select: {
@@ -36,7 +36,7 @@ export async function updateMemberBureauLists(memberID: string) {
     },
   });
 
-  const nbBureau = await prisma.user.count({
+  const nbBoard = await prisma.user.count({
     where: {
       id: memberID,
       groups: {
@@ -69,8 +69,8 @@ export async function updateMemberBureauLists(memberID: string) {
     },
   });
 
-  if (nbBureau === 0) removeMemberFromMailingList(mailingAllBureau, email);
-  else if (nbBureau >= 1) addMemberToMailingList(mailingAllBureau, email);
+  if (nbBoard === 0) removeMemberFromMailingList(mailingAllBoard, email);
+  else if (nbBoard >= 1) addMemberToMailingList(mailingAllBoard, email);
 
   if (nbPrez === 0) removeMemberFromMailingList(mailingAllPrez, email);
   else if (nbPrez >= 1) addMemberToMailingList(mailingAllPrez, email);
@@ -81,14 +81,14 @@ export async function updateMemberBureauLists(memberID: string) {
 
 export async function addMemberToGroupMailingList(groupId: string, email: string) {
   const group = await prisma.group.findUniqueOrThrow({
-    where: { id: groupId },
+    where: { uid: groupId },
     select: {
-      ldapUid: true,
+      uid: true,
       studentAssociation: { select: { school: { select: { internalMailDomain: true } } } },
     },
   });
 
-  const mailingId = `${group.ldapUid}.list.${group.studentAssociation?.school.internalMailDomain}`;
+  const mailingId = `${group.uid.replace(/-n7\b/, '')}.list.${group.studentAssociation?.school.internalMailDomain}`;
   await addMemberToMailingList(mailingId, email);
 }
 

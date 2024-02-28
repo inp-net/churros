@@ -1,6 +1,6 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
 
-import { addMemberToGroupMailingList } from '#modules/mails/utils';
+import { addMemberToGroupMailingList } from '#modules/mails';
 import { fullName } from '#modules/users';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { GraphQLError } from 'graphql';

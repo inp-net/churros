@@ -1,5 +1,5 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
-import { removeMemberFromGroupMailingList, updateMemberBureauLists } from '#modules/mails/utils';
+import { removeMemberFromGroupMailingList, updateMemberBoardLists } from '#modules/mails';
 
 /** Removes a member from a group. */
 builder.mutationField('deleteGroupMember', (t) =>
@@ -28,7 +28,7 @@ builder.mutationField('deleteGroupMember', (t) =>
 
       if (type === 'Club' || type === 'Association' || type === 'StudentAssociationSection') {
         await removeMemberFromGroupMailingList(groupId, email);
-        await updateMemberBureauLists(memberId);
+        await updateMemberBoardLists(memberId);
       }
 
       purgeUserSessions(uid);
