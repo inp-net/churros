@@ -1,0 +1,9 @@
+query FrappeRedirect {
+  me {
+    major {
+      uid
+    }
+    apprentice
+    yearTier
+  }
+}
