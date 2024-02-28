@@ -32,7 +32,7 @@
   });
 </script>
 
-<img src="/ChurrosPan7onTelBas.png" alt="ChurrosPcPan7on" class="temple"/>
+<img src="/ChurrosPan7onTelBas.png" alt="ChurrosPcPan7on" class="temple" />
 <nav
   class:flyout-open={flyoutOpen}
   class:transparent={$page.url.pathname.endsWith('/scan/') && !flyoutOpen}
@@ -303,20 +303,23 @@
   }
 
   @media (min-width: 900px) {
-    nav{
+    nav {
       display: none;
     }
   }
 
-  @media (min-width: 550px) {
+  @media (min-width: 570px) {
     .temple {
       display: none;
     }
   }
 
   .temple {
+    position: fixed;
+    bottom: 55px;
     z-index: 100;
     background: none;
+    background-color: transparent;
+    color: transparent;
   }
-
 </style>
