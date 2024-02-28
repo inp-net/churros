@@ -48,20 +48,18 @@ query Document(
       fullName
     }
     comments(first: 100) {
-      edges {
-        node {
-          id
-          author {
-            uid
-            fullName
-            pictureFile
-          }
-          bodyHtml
-          body
-          inReplyToId
-          createdAt
-          updatedAt
+      nodes {
+        id
+        author {
+          uid
+          fullName
+          pictureFile
         }
+        bodyHtml
+        body
+        inReplyToId
+        createdAt
+        updatedAt
       }
     }
   }

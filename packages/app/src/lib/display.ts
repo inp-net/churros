@@ -155,6 +155,48 @@ export const DISPLAY_EVENT_FREQUENCY: Record<EventFrequency, string> = {
   Once: 'Une seule fois',
 };
 
+export function documentType(key: string): DocumentType {
+  switch (key) {
+    case 'CourseNotes': {
+      return DocumentType.CourseNotes;
+    }
+
+    case 'CourseSlides': {
+      return DocumentType.CourseSlides;
+    }
+
+    case 'Exam': {
+      return DocumentType.Exam;
+    }
+
+    case 'Exercises': {
+      return DocumentType.Exercises;
+    }
+
+    case 'GradedExercises': {
+      return DocumentType.GradedExercises;
+    }
+
+    case 'Miscellaneous': {
+      return DocumentType.Miscellaneous;
+    }
+
+    case 'Practical': {
+      return DocumentType.Practical;
+    }
+
+    case 'PracticalExam': {
+      return DocumentType.PracticalExam;
+    }
+
+    case 'Summary': {
+      return DocumentType.Summary;
+    }
+  }
+
+  throw new Error(`Unknown document type: ${key}`);
+}
+
 export const DISPLAY_DOCUMENT_TYPES = new Map<DocumentType, string>([
   [DocumentType.CourseNotes, 'Notes de cours'],
   [DocumentType.CourseSlides, 'Diapositives du cours'],

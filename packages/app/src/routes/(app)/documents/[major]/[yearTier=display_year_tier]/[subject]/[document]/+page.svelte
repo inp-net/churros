@@ -4,7 +4,7 @@
   import IconDelete from '~icons/mdi/delete-outline';
   import IconEdit from '~icons/mdi/edit-outline';
   import IconBack from '~icons/mdi/undo-variant';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import Breadcrumb from '$lib/components/Breadcrumb.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import { page } from '$app/stores';
@@ -20,12 +20,42 @@
   import { me } from '$lib/session';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import { goto } from '$app/navigation';
-  import { ICONS_DOCUMENT_TYPES } from '$lib/display';
+  import { ICONS_DOCUMENT_TYPES, documentType } from '$lib/display';
   import { toasts } from '$lib/toasts';
 
   const { PUBLIC_STORAGE_URL } = env;
 
   export let data: PageData;
+  $: ({ Document } = data);
+  $: ({ major, subject, document } = $Document.data ?? {
+    document: undefined,
+    major: undefined,
+    subject: undefined,
+  });
+
+  $: ({
+    title,
+    schoolYear,
+    descriptionHtml,
+    createdAt,
+    updatedAt,
+    uploader,
+    comments,
+    solutionPaths,
+    paperPaths,
+    type,
+  } = document ?? {
+    title: '',
+    schoolYear: undefined,
+    descriptionHtml: '',
+    createdAt: undefined,
+    updatedAt: undefined,
+    uploader: undefined,
+    comments: { nodes: [] },
+    solutionPaths: [],
+    paperPaths: [],
+    type: undefined,
+  });
 
   let newComment = {
     body: '',
@@ -44,6 +74,7 @@
   async function addComment(
     comment: { body: string; inReplyToId: string } | undefined = undefined,
   ) {
+    if (!document) return;
     const { upsertComment } = await $zeus.mutate({
       upsertComment: [
         {
@@ -61,7 +92,8 @@
         },
       ],
     });
-    data.document.comments.edges = [...data.document.comments.edges, { node: upsertComment }];
+    // TODO use houdini for optimistic responses
+    // document.comments.edges = [...document.comments.edges, { node: upsertComment }];
     if (!comment) {
       newComment = {
         body: '',
@@ -75,6 +107,7 @@
     window.location.reload();
   }
   async function editComment(id: string, body: string) {
+    if (!document) return;
     const { upsertComment } = await $zeus.mutate({
       upsertComment: [
         {
@@ -93,9 +126,10 @@
         },
       ],
     });
-    data.document.comments.edges = data.document.comments.edges.map(({ node }) =>
-      node.id === upsertComment.id ? { node: upsertComment } : { node },
-    );
+    // TODO use houdini for optimistic responses
+    // document.comments.edges = document.comments.edges.map(({ node }) =>
+    //   node.id === upsertComment.id ? { node: upsertComment } : { node },
+    // );
   }
   async function reply() {
     if (!replyingTo) return;
@@ -103,65 +137,60 @@
     replyingTo = { body: '', inReplyToId: '' };
   }
 
-  $: ({
-    major,
-    subject,
-    document,
-    document: {
-      title,
-      schoolYear,
-      descriptionHtml,
-      createdAt,
-      updatedAt,
-      uploader,
-      comments,
-      solutionPaths,
-      paperPaths,
-      type,
-    },
-  } = data);
+  function notNull<T>(val: T): val is NonNullable<T> {
+    return Boolean(val);
+  }
   $: emptyDocument = solutionPaths.length + paperPaths.length === 0;
 </script>
 
-<SEO
-  title="{subject.shortName || subject.name} - {title}"
-  description="La Frappe sur Churros: Sauve tes partiels!\n{descriptionHtml}"
-  applicationName="Churros"
-  keywords="{subject.uid}, document, cours"
-></SEO>
+{#if subject}
+  <SEO
+    title="{subject.shortName || subject.name} - {title}"
+    description="La Frappe sur Churros: Sauve tes partiels!\n{descriptionHtml}"
+    applicationName="Churros"
+    keywords="{subject.uid}, document, cours"
+  ></SEO>
+{/if}
 
 <Breadcrumbs root="/documents">
-  <Breadcrumb href="../../..">{major.shortName}</Breadcrumb>
-  <Breadcrumb href="../..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
-  <Breadcrumb href="..">
-    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
-    {subject.shortName || subject.name}</Breadcrumb
-  >
+  {#if subject && major}
+    <Breadcrumb href="../../..">{major.shortName}</Breadcrumb>
+    <Breadcrumb href="../..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
+    <Breadcrumb href="..">
+      {subject.emoji ? `${subject.emoji} ` : ''}
+      {subject.shortName || subject.name}</Breadcrumb
+    >
+  {/if}
   <Breadcrumb>
-    <span class="breadcrumb-icon">
-      <svelte:component this={ICONS_DOCUMENT_TYPES.get(type)}></svelte:component>
-    </span>
+    {#if type}
+      <span class="breadcrumb-icon">
+        <svelte:component this={ICONS_DOCUMENT_TYPES.get(documentType(type))}></svelte:component>
+      </span>
+    {/if}
     {title} <span class="muted">&nbsp;({schoolYear})</span></Breadcrumb
   >
 </Breadcrumbs>
 
 <article class="document">
   <section class="dates-and-actions">
-    <p class="dates">
-      Année scolaire {schoolYear}–{schoolYear + 1}
-      <br />
-      {#if !isSameDay(createdAt, updatedAt)}
-        Modifié le {formatDate(updatedAt)}
-        {#if !uploader}
-          Mis en ligne le {formatDate(createdAt)}
+    {#if schoolYear && createdAt && updatedAt}
+      <p class="dates">
+        Année scolaire {schoolYear}–{schoolYear + 1}
+        <br />
+        {#if !isSameDay(createdAt, updatedAt)}
+          Modifié le {formatDate(updatedAt)}
+          {#if !uploader}
+            Mis en ligne le {formatDate(createdAt)}
+          {/if}
         {/if}
-      {/if}
-    </p>
+      </p>
+    {/if}
     <div class="actions">
       {#if confirmingDelete}
         <p><strong>Sûr·e ?</strong></p>
         <ButtonInk
           on:click={async () => {
+            if (!document) return;
             try {
               await $zeus.mutate({
                 deleteDocument: [{ id: document.id }, true],
@@ -205,9 +234,11 @@
     {@html descriptionHtml}
   </div>
   <div class:muted={emptyDocument} class="files">
-    {#if emptyDocument}
+    {#if !document}
+      <p>Chargement…</p>
+    {:else if emptyDocument}
       <p>Ce document n'a aucun fichier… Plutôt cringe</p>
-    {:else if documentTypesWithSolutions.has(document.type)}
+    {:else if documentTypesWithSolutions.has(documentType(document.type))}
       {#if paperPaths.length > 0}
         <h3 class="typo-field-label">Sujets</h3>
         <ul>
@@ -258,7 +289,9 @@
       </div>
     {/if}
     <div class="id typo-details">
-      <code>{document.id.replace(/^doc:/, '')}</code>
+      {#if document}
+        <code>{document.id.replace(/^doc:/, '')}</code>
+      {/if}
     </div>
   </div>
 </article>
@@ -283,24 +316,31 @@
   </form>
 
   <ul class="nobullet comments">
-    {#each comments.edges.filter(({ node: { inReplyToId } }) => !inReplyToId) as { node }}
-      <li class="comment">
-        <CardComment
-          bind:replyingTo
-          on:reply={reply}
-          on:edit={async ({ detail }) => {
-            await editComment(node.id, detail);
-          }}
-          on:delete={async ({ detail: id }) => {
-            await removeComment(id);
-          }}
-          {...node}
-          replies={comments.edges
-            .filter(({ node: { inReplyToId } }) => inReplyToId === node.id)
-            .map((c) => c.node)}
-        ></CardComment>
-      </li>
-    {/each}
+    {#if !comments}
+      <li class="loading">Chargement…</li>
+    {:else}
+      {#each comments.nodes.filter((node) => node && !node.inReplyToId) as node}
+        {#if node}
+          <li class="comment">
+            <CardComment
+              bind:replyingTo
+              on:reply={reply}
+              on:edit={async ({ detail }) => {
+                if (!node) return;
+                await editComment(node.id, detail);
+              }}
+              on:delete={async ({ detail: id }) => {
+                await removeComment(id);
+              }}
+              {...node}
+              replies={comments.nodes
+                .filter((node) => node?.inReplyToId === node?.id)
+                .filter(notNull)}
+            ></CardComment>
+          </li>
+        {/if}
+      {/each}
+    {/if}
   </ul>
 </section>
 
