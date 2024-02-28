@@ -1,0 +1,68 @@
+query Document(
+  $yearTier: Int!
+  $forApprentices: Boolean!
+  $major: String!
+  $document: String!
+  $subject: String!
+) {
+  major(uid: $major) {
+    name
+    shortName
+    uid
+  }
+  subject(uid: $subject, yearTier: $yearTier, forApprentices: $forApprentices) {
+    name
+    shortName
+    uid
+    id
+    emoji
+  }
+  document(
+    subjectUid: $subject
+    subjectYearTier: $yearTier
+    subjectForApprentices: $forApprentices
+    documentUid: $document
+  ) {
+    title
+    id
+    type
+    schoolYear
+    descriptionHtml
+    solutionPaths
+    paperPaths
+    createdAt
+    updatedAt
+    subject {
+      name
+      uid
+      minors {
+        uid
+      }
+      majors {
+        uid
+      }
+    }
+    uploader {
+      uid
+      pictureFile
+      fullName
+    }
+    comments(first: 100) {
+      edges {
+        node {
+          id
+          author {
+            uid
+            fullName
+            pictureFile
+          }
+          bodyHtml
+          body
+          inReplyToId
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  }
+}

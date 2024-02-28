@@ -1,0 +1,7 @@
+query DocumentsOfMajor($major: String!) {
+  major(uid: $major) {
+    name
+    shortName
+    uid
+  }
+}

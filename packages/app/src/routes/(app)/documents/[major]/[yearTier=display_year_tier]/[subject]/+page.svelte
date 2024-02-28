@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import Breadcrumb from '$lib/components/Breadcrumb.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import { page } from '$app/stores';
@@ -10,6 +10,12 @@
   import WipMigrationNotice from '../../WIPMigrationNotice.svelte';
 
   export let data: PageData;
+  $: ({ DocumentsOfSubject } = data);
+  $: ({ documentsOfSubject, subject, major } = $DocumentsOfSubject.data ?? {
+    subject: undefined,
+    documentsOfSubject: { edges: [] },
+    major: undefined,
+  });
 
   const documentTypesWithSolutions = new Set<DocumentType>([
     DocumentType.Exam,
@@ -19,31 +25,32 @@
     DocumentType.PracticalExam,
   ]);
 
-  const documentsByType = ORDER_DOCUMENT_TYPES.map((type) => [
+  $: documentsByType = ORDER_DOCUMENT_TYPES.map((type) => [
     type,
-    data.documentsOfSubject.edges.filter(({ node }) => node.type === type).map((e) => e.node),
+    documentsOfSubject?.edges.filter((e) => e?.node.type === type).map((e) => e?.node),
   ]).sort(
-    ([_, aDocs], [__, bDocs]) => Number(bDocs.length > 0) - Number(aDocs.length > 0),
-  ) as unknown as Array<
-    [DocumentType, Array<(typeof data.documentsOfSubject.edges)[number]['node']>]
-  >;
+    ([_, aDocs], [__, bDocs]) => Number(bDocs?.length > 0 ?? 0) - Number(aDocs?.length > 0 ?? 0),
+  );
 </script>
 
 <Breadcrumbs root="/documents">
-  <Breadcrumb href="../..">{data.major.shortName}</Breadcrumb>
+  {#if major}
+    <Breadcrumb href="../..">{major.shortName}</Breadcrumb>
+  {/if}
   <Breadcrumb href="..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
-  <Breadcrumb
-    >{data.subject.emoji ? `${data.subject.emoji} ` : ''}{data.subject.shortName ||
-      data.subject.name}</Breadcrumb
-  >
+  {#if subject}
+    <Breadcrumb
+      >{subject.emoji ? `${subject.emoji} ` : ''}{subject.shortName || subject.name}</Breadcrumb
+    >
+  {/if}
 </Breadcrumbs>
 
 <WipMigrationNotice></WipMigrationNotice>
 
-{#if data.subject.links.length > 0}
+{#if subject && subject.links.length > 0}
   <section class="links">
     <ul class="nobullet">
-      {#each data.subject.links as { name, computedValue }}
+      {#each subject.links as { name, computedValue }}
         <li>
           <ButtonSecondary href={computedValue}>{name}</ButtonSecondary>
         </li>
@@ -52,7 +59,7 @@
   </section>
 {/if}
 
-{#if data.documentsOfSubject.edges.length > 0}
+{#if documentsByType && documentsOfSubject && documentsOfSubject.edges.length > 0}
   {#each documentsByType as [type, documents]}
     <section class={type.toLowerCase()}>
       <h2 class="typo-field-label">

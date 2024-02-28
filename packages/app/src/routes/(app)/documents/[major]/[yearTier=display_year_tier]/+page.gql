@@ -1,0 +1,28 @@
+query DocumentsOfMajorOfYearTier($major: String!, $yearTier: Int!, $forApprentices: Boolean!) {
+  major(uid: $major) {
+    name
+    shortName
+    uid
+  }
+  subjectsOfMajor(uid: $major, yearTier: $yearTier, forApprentices: $forApprentices) {
+    id
+    uid
+    name
+    semester
+    ...CardSubject
+    minors {
+      name
+      uid
+      id
+    }
+    unit {
+      shortName
+      name
+      subjects {
+        uid
+        id
+        ...CardSubject
+      }
+    }
+  }
+}

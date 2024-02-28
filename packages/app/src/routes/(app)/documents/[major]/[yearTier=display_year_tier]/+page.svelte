@@ -7,18 +7,25 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import CardSubject from '$lib/components/CardSubject.svelte';
   import { me } from '$lib/session';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import groupBy from 'lodash.groupby';
   import WipMigrationNotice from '../WIPMigrationNotice.svelte';
 
   export let data: PageData;
+  $: ({ DocumentsOfMajorOfYearTier } = data);
+  $: ({ subjectsOfMajor, major } = $DocumentsOfMajorOfYearTier.data ?? {
+    subjectsOfMajor: [],
+    major: undefined,
+  });
 
   const minors = Object.values(
-    Object.fromEntries(data.subjectsOfMajor.flatMap(({ minors }) => minors).map((m) => [m.uid, m])),
+    Object.fromEntries(
+      subjectsOfMajor?.flatMap(({ minors }) => minors).map((m) => [m.uid, m]) ?? [],
+    ),
   );
 
   function subjectsOfMinor(minor: undefined | { uid: string }) {
-    return data.subjectsOfMajor
+    return subjectsOfMajor
       .filter(({ minors }) =>
         minor === undefined ? minors.length === 0 : minors.some((m) => m.uid === minor.uid),
       )
@@ -44,7 +51,9 @@
 </script>
 
 <Breadcrumbs root="/documents">
-  <Breadcrumb href="..">{data.major.shortName}</Breadcrumb>
+  {#if major}
+    <Breadcrumb href="..">{major.shortName}</Breadcrumb>
+  {/if}
   <Breadcrumb>{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
 </Breadcrumbs>
 
@@ -64,7 +73,7 @@
       {/if}
       {#each subjects as subject (subject.uid)}
         <li>
-          <CardSubject href="./{subject.uid}" {...subject} unit={undefined}></CardSubject>
+          <CardSubject href="./{subject.uid}" {subject}></CardSubject>
         </li>
       {/each}
     {:else}
@@ -72,7 +81,7 @@
     {/each}
   </ul>
   <hr />
-{:else if !$me?.external && (!$me?.minor || $me?.major?.uid !== data.major.uid) && browser && localStorage.getItem('ignoreDefineYourMinor') !== 'true'}
+{:else if !$me?.external && (!$me?.minor || $me?.major?.uid !== major?.uid) && browser && localStorage.getItem('ignoreDefineYourMinor') !== 'true'}
   <div class="define-your-minor">
     <p class="muted">
       Marre de scroll pour avoir son parcours? Définis ton parcours dans <a href="/me"
@@ -97,7 +106,7 @@
       {/if}
       {#each subjectsOfUnit as subject (subject.id)}
         <li>
-          <CardSubject href="./{subject.uid}" {...subject} unit={undefined}></CardSubject>
+          <CardSubject href="./{subject.uid}" {subject}></CardSubject>
         </li>
       {/each}
     {/each}
@@ -118,7 +127,7 @@
       {/if}
       {#each subjectsOfUnit as subject (subject.id)}
         <li>
-          <CardSubject href="./{subject.uid}" {...subject} unit={undefined}></CardSubject>
+          <CardSubject href="./{subject.uid}" {subject}></CardSubject>
         </li>
       {/each}
     {/each}

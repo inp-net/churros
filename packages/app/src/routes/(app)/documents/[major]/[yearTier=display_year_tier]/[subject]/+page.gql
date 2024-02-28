@@ -1,0 +1,52 @@
+query DocumentsOfSubject(
+  $subject: String!
+  $yearTier: Int!
+  $forApprentices: Boolean!
+  $major: String!
+) {
+  major(uid: $major) {
+    shortName
+  }
+  subject(uid: $subject, yearTier: $yearTier, forApprentices: $forApprentices) {
+    id
+    name
+    emoji
+    shortName
+    semester
+    uid
+    nextExamAt
+    yearTier
+    unit {
+      shortName
+      name
+    }
+    minors {
+      name
+      uid
+      id
+    }
+    documentsCount
+    links {
+      name
+      computedValue
+    }
+  }
+  documentsOfSubject(subjectUid: $subject, yearTier: $yearTier, forApprentices: $forApprentices) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        id
+        title
+        uid
+        schoolYear
+        solutionPaths
+        paperPaths
+        type
+        createdAt
+      }
+    }
+  }
+}
