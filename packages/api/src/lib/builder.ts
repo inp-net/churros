@@ -2,6 +2,7 @@ import type { Context } from '#lib';
 import { UNAUTHORIZED_ERROR_MESSAGE } from '@inp-net/churros-client'
 import {
   authScopes,
+  context,
   decodeGlobalID,
   encodeGlobalID,
   type AuthContexts,
@@ -20,10 +21,11 @@ import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
 import SmartSubscriptionsPlugin, {
   subscribeOptionsFromIterator,
 } from '@pothos/plugin-smart-subscriptions';
-import TracingPlugin, { isRootField, wrapResolver } from '@pothos/plugin-tracing';
+import TracingPlugin, { isRootField, runFunction } from '@pothos/plugin-tracing';
 import ValidationPlugin from '@pothos/plugin-validation';
 import { GraphQLError, Kind } from 'graphql';
 import { prisma } from './prisma.js';
+import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
 
 export const builder = new SchemaBuilder<{
@@ -73,17 +75,34 @@ export const builder = new SchemaBuilder<{
     encodeGlobalID,
     decodeGlobalID,
     nodesOnConnection: true,
+    nodeQueryOptions: false,
+    nodesQueryOptions: false,
   },
   tracing: {
     default: (config) => isRootField(config),
-    wrap: (resolver, _options, config) =>
-      wrapResolver(resolver, (_error, duration) => {
-        console.info(
-          `Executed \u001B[36;1m${config.parentType}.${
-            config.name
-          }\u001B[0m in \u001B[36;1m${Number(duration.toPrecision(3))} ms\u001B[0m`,
-        );
-      }),
+    wrap: (resolver, _options, config) => async (source, args, ctx, info) => {
+      return runFunction(
+        () => resolver(source, args, ctx, info),
+        (_error, duration) => {
+          console.info(
+            `Executed \u001B[36;1m${config.parentType}.${
+              config.name
+            }\u001B[0m in \u001B[36;1m${Number(duration.toPrecision(3))} ms\u001B[0m`,
+          );
+          // Do not wait for prometheus counters before sending the response!
+          (async () => {
+            const { token, user } = await context(ctx);
+            updateQueryUsage({
+              queryType: config.parentType,
+              queryName: config.name,
+              token,
+              user: user?.id,
+              duration,
+            }).catch(console.error);
+          })();
+        },
+      );
+    },
   },
   smartSubscriptions: {
     ...subscribeOptionsFromIterator((name) => {

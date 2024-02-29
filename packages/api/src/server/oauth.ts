@@ -1,5 +1,5 @@
 import { ensureHasIdPrefix, isLocalNetwork, log, prisma } from '#lib';
-import { generateThirdPartyToken, normalizeUrl } from '#modules/oauth';
+import { OAuth2ErrorCode, generateThirdPartyToken, normalizeUrl } from '#modules/oauth';
 import { ThirdPartyCredentialType } from '@prisma/client';
 import { verify } from 'argon2';
 import bodyParser from 'body-parser';
@@ -9,13 +9,30 @@ import { api } from './express.js';
 console.info(`Serving OAuth code-token exchange endpoint on /token`);
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use('/token', async (request, response) => {
-  async function error(text: string, code = 401) {
-    await log('oauth', 'token/error', { err: text, code });
-    return response
-      .status(code)
-      .send(
-        `${text}\n\nSee the documentation of the 'authorize' mutation for more information: <a href="${process.env.FRONTEND_ORIGIN}/graphql">${process.env.FRONTEND_ORIGIN}/graphql</a>`,
-      );
+  async function error(
+    text: string,
+    {
+      clientId,
+      authorizationCode,
+      ...otherData
+    }: {
+      clientId: string;
+      authorizationCode: string | undefined;
+      [otherData: string]: unknown;
+    },
+  ) {
+    await log(
+      'oauth',
+      'token/error',
+      { err: text, authorizationCode: authorizationCode, ...otherData },
+      ensureHasIdPrefix(clientId, 'ThirdPartyApp'),
+    );
+    return response.status(401).send(
+      JSON.stringify({
+        code: OAuth2ErrorCode.invalid_request,
+        message: `${text}\n\nSee the documentation of the 'authorize' mutation for more information: <a href="${process.env.FRONTEND_ORIGIN}/graphql">${process.env.FRONTEND_ORIGIN}/graphql</a>`,
+      }),
+    );
   }
   let authorization = request.headers['authorization'];
   let clientId = '',
@@ -30,8 +47,6 @@ api.use('/token', async (request, response) => {
   }
 
   const formData = request.body;
-
-  await log('oauth', 'token', request.body, clientId);
 
   let authorizationCode, redirectUri: string;
   let client_id, client_secret: string | undefined;
@@ -52,15 +67,26 @@ api.use('/token', async (request, response) => {
       })
       .parseAsync(formData));
   } catch (error_) {
-    return error('Invalid request body: ' + error_?.toString() ?? '');
+    return error('Invalid request body: ' + error_?.toString() ?? '', {
+      clientId: client_id || clientId,
+      authorizationCode,
+      formData,
+    });
   }
 
   if (client_id) clientId = client_id;
   if (client_secret) clientSecret = client_secret;
 
+  await log('oauth', 'token/request', request.body, ensureHasIdPrefix(clientId, 'ThirdPartyApp'));
+
   if (!clientId || !clientSecret) {
     return error(
       'Missing client_id/client_secret pair. Put in in the Authorization header as "Basic [base64(client_id:client_secret)]" or in the request body as "client_id" and "client_secret"',
+      {
+        clientId,
+        authorizationCode,
+        formData,
+      },
     );
   }
 
@@ -68,20 +94,25 @@ api.use('/token', async (request, response) => {
     where: { value: authorizationCode },
     include: { client: true },
   });
-  if (!credential) return error('Invalid access code');
+  if (!credential) return error('Invalid access code', { clientId, authorizationCode, formData });
   if (credential.type !== ThirdPartyCredentialType.AuthorizationCode)
-    return error('Invalid access code');
+    return error('Invalid access code', { clientId, authorizationCode, formData });
   if (credential.expiresAt && credential.expiresAt < new Date())
-    return error('Access code expired');
+    return error('Access code expired', { clientId, authorizationCode, formData });
   if (
     credential.client.id !== ensureHasIdPrefix(clientId, 'ThirdPartyApp') ||
     !(await verify(credential.client.secret, clientSecret))
   )
-    return error('Invalid client_id/client_secret pair');
+    return error('Invalid client_id/client_secret pair', { clientId, authorizationCode, formData });
 
   if (!credential.client.active && !isLocalNetwork(redirectUri)) {
     return error(
       `This app is not active yet. Please try again later. Contact ${process.env.PUBLIC_CONTACT_EMAIL} if your app takes more than a week to get activated.`,
+      {
+        clientId,
+        authorizationCode,
+        formData,
+      },
     );
   }
   if (
@@ -89,7 +120,7 @@ api.use('/token', async (request, response) => {
       (uri) => normalizeUrl(uri) === normalizeUrl(redirectUri),
     )
   )
-    return error('Invalid redirect URI');
+    return error('Invalid redirect URI', { clientId, authorizationCode, formData });
   await prisma.thirdPartyCredential.deleteMany({ where: { value: authorizationCode } });
   const accessToken = await prisma.thirdPartyCredential.create({
     data: {
@@ -102,10 +133,19 @@ api.use('/token', async (request, response) => {
     },
   });
 
-  return response.json({
+  const token = {
     access_token: accessToken.value,
     token_type: 'bearer',
     // seconds left until token expires
     expires_in: Math.floor(((accessToken.expiresAt ?? new Date()).getTime() - Date.now()) / 1000),
-  });
+  };
+
+  await log(
+    'oauth',
+    'token/ok',
+    { ...token, code: authorizationCode },
+    ensureHasIdPrefix(clientId, 'ThirdPartyApp'),
+  );
+
+  return response.json(token);
 });

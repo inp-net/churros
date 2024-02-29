@@ -72,7 +72,7 @@
 
   textarea:hover,
   textarea:focus-within {
-    color: var(--hover-text);
+    color: var(--primary-hover-text);
     background: var(--hover-bg);
     border-color: var(--hover-border);
   }

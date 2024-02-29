@@ -1,8 +1,11 @@
 <script lang="ts">
   import { tooltip } from '$lib/tooltip';
+  import type { SvelteComponent } from 'svelte';
   export let theme: 'danger' | 'warning' | 'success' | 'info' = 'info';
   export let title: string | undefined = undefined;
   export let inline = false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export let icon: typeof SvelteComponent<any> | undefined = undefined;
   import IconCheck from '~icons/mdi/check';
   import IconError from '~icons/mdi/error-outline';
   import IconWarning from '~icons/mdi/warning-outline';
@@ -14,7 +17,9 @@
   class:inline
   class="badge {theme === 'info' ? 'primary' : theme}"
 >
-  {#if theme === 'success'}
+  {#if icon}
+    <svelte:component this={icon}></svelte:component>
+  {:else if theme === 'success'}
     <IconCheck />
   {:else if theme === 'warning'}
     <IconWarning />

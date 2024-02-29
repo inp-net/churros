@@ -248,7 +248,8 @@
             dark: 'Sombre',
             light: 'Clair',
             hacker: 'h4ck3r',
-            gd7t: 'Gd7T',
+            pan7on: 'pan7on',
+            ber7ker: 'ber7ker',
           }}
           bind:value={$theme}
           on:input={() => {

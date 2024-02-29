@@ -21,6 +21,7 @@ builder.mutationField('upsertGroupMember', (t) =>
       canEditMembers: t.arg.boolean(),
       canEditArticles: t.arg.boolean(),
       canScanEvents: t.arg.boolean(),
+      isDeveloper: t.arg.boolean(),
     },
     authScopes: (_, { groupId }, { user }) =>
       Boolean(
@@ -41,6 +42,7 @@ builder.mutationField('upsertGroupMember', (t) =>
         canEditArticles,
         canEditMembers,
         canScanEvents,
+        isDeveloper,
       },
       { user: me },
     ) {
@@ -93,6 +95,7 @@ builder.mutationField('upsertGroupMember', (t) =>
           : canScanEvents || onBoard({ president, treasurer, vicePresident, secretary }),
         vicePresident,
         secretary,
+        isDeveloper,
       };
 
       const groupMember = await prisma.groupMember.upsert({
