@@ -12,7 +12,6 @@
   import { createEventDispatcher } from 'svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputLongText from './InputLongText.svelte';
-  import { me } from '$lib/session';
   import ButtonGhost from './ButtonGhost.svelte';
   import { removeIdPrefix } from '$lib/typenames';
 
@@ -84,7 +83,9 @@
         </div>
       {/if}
     </div>
-    {#if !readonly && ($me?.admin || author?.uid === $me?.uid)}
+    <!-- {#if !readonly && ($me?.admin || author?.uid === $me?.uid)} -->
+    <!-- TODO fragmentize -->
+    {#if !readonly}
       <div class="actions">
         {#if creating}
           <ButtonGhost

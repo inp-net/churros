@@ -2,7 +2,7 @@ import { builder, log, prisma, publish } from '#lib';
 
 builder.mutationField('deleteComment', (t) =>
   t.field({
-    type: 'Boolean',
+    type: 'ID',
     args: {
       id: t.arg.id(),
     },
@@ -30,7 +30,7 @@ builder.mutationField('deleteComment', (t) =>
 
       publish(id, 'deleted', id, articleId ?? documentId ?? undefined);
 
-      return true;
+      return id;
     },
   }),
 );

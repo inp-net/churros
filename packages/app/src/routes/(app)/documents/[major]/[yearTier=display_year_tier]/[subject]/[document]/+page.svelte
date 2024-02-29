@@ -22,6 +22,7 @@
   import { goto } from '$app/navigation';
   import { ICONS_DOCUMENT_TYPES, documentType } from '$lib/display';
   import { toasts } from '$lib/toasts';
+  import { graphql } from '$houdini';
 
   const { PUBLIC_STORAGE_URL } = env;
 
@@ -72,59 +73,52 @@
   ]);
 
   async function addComment(
-    comment: { body: string; inReplyToId: string } | undefined = undefined,
+    comment: { body: string; inReplyToId?: string } | undefined = undefined,
   ) {
-    if (!document) return;
-    const { upsertComment } = await $zeus.mutate({
-      upsertComment: [
-        {
-          documentId: document.id,
-          ...(comment ?? newComment),
-        },
-        {
-          id: true,
-          bodyHtml: true,
-          body: true,
-          createdAt: true,
-          updatedAt: true,
-          inReplyToId: true,
-          author: { uid: true, fullName: true, pictureFile: true },
-        },
-      ],
-    });
-    // TODO use houdini for optimistic responses
-    // document.comments.edges = [...document.comments.edges, { node: upsertComment }];
-    if (!comment) {
-      newComment = {
-        body: '',
-      };
-    }
+    if (!document || !comment) return;
+    console.log({ addComment: comment });
+    const AddComment = graphql(`
+      mutation AddComment($id: ID!, $body: String!, $replyTo: ID) {
+        upsertComment(documentId: $id, body: $body, inReplyToId: $replyTo) {
+          ...Document_Comments_insert @prepend
+        }
+      }
+    `);
+
+    AddComment.mutate(
+      {
+        id: document.id,
+        body: comment.body,
+        replyTo: comment.inReplyToId,
+      },
+      {},
+    );
+
+    newComment = {
+      body: '',
+    };
   }
   async function removeComment(id: string) {
-    await $zeus.mutate({
-      deleteComment: [{ id }, true],
-    });
-    window.location.reload();
+    const RemoveComment = graphql(`
+      mutation RemoveComment($id: ID!) {
+        deleteComment(id: $id) @Comment_delete
+      }
+    `);
+    RemoveComment.mutate({ id });
   }
   async function editComment(id: string, body: string) {
     if (!document) return;
-    const { upsertComment } = await $zeus.mutate({
-      upsertComment: [
-        {
-          id,
-          documentId: document.id,
-          body,
-        },
-        {
-          id: true,
-          bodyHtml: true,
-          body: true,
-          createdAt: true,
-          updatedAt: true,
-          inReplyToId: true,
-          author: { uid: true, fullName: true, pictureFile: true },
-        },
-      ],
+    const EditComment = graphql(`
+      mutation EditComment($id: ID!, $documentId: ID!, $body: String!) {
+        upsertComment(documentId: $documentId, id: $id, body: $body) {
+          ...Document_Comments_toggle
+        }
+      }
+    `);
+    EditComment.mutate({
+      id,
+      body,
+      documentId: document.id,
     });
     // TODO use houdini for optimistic responses
     // document.comments.edges = document.comments.edges.map(({ node }) =>
@@ -300,7 +294,7 @@
 
   <form
     on:submit={async () => {
-      await addComment();
+      await addComment(newComment);
     }}
     class="new-comment"
   >
@@ -325,9 +319,9 @@
             <CardComment
               bind:replyingTo
               on:reply={reply}
-              on:edit={async ({ detail }) => {
+              on:edit={async ({ detail: [id, body] }) => {
                 if (!node) return;
-                await editComment(node.id, detail);
+                await editComment(id, body);
               }}
               on:delete={async ({ detail: id }) => {
                 await removeComment(id);

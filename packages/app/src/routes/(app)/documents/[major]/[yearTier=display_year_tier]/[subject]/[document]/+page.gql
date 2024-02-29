@@ -48,7 +48,7 @@ query Document(
       fullName
     }
     comments(first: 100) {
-      nodes {
+      nodes @list(name: "Document_Comments") {
         id
         author {
           uid
