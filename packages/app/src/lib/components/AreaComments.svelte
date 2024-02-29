@@ -1,29 +1,33 @@
 <script lang="ts">
-  import { zeus } from '$lib/zeus';
-  import CardComment from '$lib/components/CardComment.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import { me } from '$lib/session';
-  import Alert from './Alert.svelte';
   import { page } from '$app/stores';
+  import { fragment, graphql, type AreaComments, CardCommentStore } from '$houdini';
+  import CardComment from '$lib/components/CardComment.svelte';
+  import { me } from '$lib/session';
+  import { zeus } from '$lib/zeus';
+  import Alert from './Alert.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
-  export let comments: {
-    edges: Array<{
-      node: {
-        id: string;
-        bodyHtml: string;
-        author?: null | undefined | { uid: string; fullName: string; pictureFile: string };
-        createdAt: Date;
-        updatedAt: Date | undefined | null;
-        body: string;
-        inReplyToId?: string | undefined | null;
-      };
-    }>;
-  };
+  export let comments: AreaComments;
+  $: Comments = fragment(
+    comments,
+    graphql`
+      fragment AreaComments on CommentsConnection {
+        nodes {
+          id
+          inReplyToId
+          ...CardComment
+        }
+      }
+    `,
+  );
+  $: commentNodes = $Comments.nodes.filter(notNull);
+
   export let connection: { documentId: string } | { articleId: string };
 
-  let newComment = {
-    body: '',
-  };
+  let NewComment = new CardCommentStore();
+  // let newComment = {
+  //   body: '',
+  // };
   let replyingTo: { body: string; inReplyToId: string } = { body: '', inReplyToId: '' };
 
   async function addComment(
@@ -87,23 +91,18 @@
     await addComment(replyingTo);
     replyingTo = { body: '', inReplyToId: '' };
   }
+
+  function notNull<T>(value: T | null): value is T {
+    return value !== null;
+  }
 </script>
 
 {#if $me}
-  <CardComment
-    bodyHtml=""
-    bind:body={newComment.body}
-    author={$me}
-    id=""
-    canReply={false}
-    createdAt={new Date()}
-    updatedAt={undefined}
-    creating
-    on:edit={async () => addComment()}
+  <CardComment comment={NewComment} canReply={false} creating on:edit={async () => addComment()}
   ></CardComment>
 
   <ul class="nobullet comments">
-    {#each comments.edges.filter(({ node: { inReplyToId } }) => !inReplyToId) as { node }}
+    {#each commentNodes.filter(({ inReplyToId }) => !inReplyToId) as node}
       <li class="comment">
         <CardComment
           bind:replyingTo
@@ -114,10 +113,7 @@
           on:delete={async ({ detail: id }) => {
             await removeComment(id);
           }}
-          {...node}
-          replies={comments.edges
-            .filter(({ node: { inReplyToId } }) => inReplyToId === node.id)
-            .map((c) => c.node)}
+          comment={node}
         />
       </li>
     {/each}

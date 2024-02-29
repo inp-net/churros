@@ -1,7 +1,8 @@
 strict digraph ImportGraph {
+    "comments" -> "posts";
     "comments" -> "notifications";
+    "comments" -> "documents";
     "curriculum" -> "documents";
-    "documents" -> "comments";
     "events" -> "notifications";
     "events" -> "users";
     "events" -> "payments";

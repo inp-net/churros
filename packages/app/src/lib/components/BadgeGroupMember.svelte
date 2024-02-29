@@ -1,31 +1,33 @@
 <script lang="ts">
+  import { fragment, type BadgeGroupMember, graphql } from '$houdini';
+
   export let href = '';
-  export let groupMember: {
-    group: { name: string; color: string };
-    title: string;
-    president: boolean;
-    treasurer: boolean;
-    vicePresident: boolean;
-    secretary: boolean;
-  };
-  $: roleBadge = groupMember.president
-    ? '👑'
-    : groupMember.treasurer
-      ? '💰'
-      : groupMember.vicePresident
-        ? '🌟'
-        : groupMember.secretary
-          ? '📜'
-          : '';
+
+  export let groupMember: BadgeGroupMember;
+  $: GroupMember = fragment(
+    groupMember,
+    graphql`
+      fragment BadgeGroupMember on GroupMember {
+        group {
+          name
+          color
+        }
+        title
+        emoji
+      }
+    `,
+  );
+
+  $: ({ group, title, emoji } = $GroupMember);
 </script>
 
 <svelte:element this={href ? 'a' : 'span'} {href} class="badge">
-  {#if roleBadge}
-    <span class="role-badge">{roleBadge}</span>
+  {#if emoji}
+    <span class="role-badge">{emoji}</span>
   {/if}
-  <span>{groupMember.group.name}</span>
-  {#if groupMember.title.toLowerCase() !== 'membre'}
-    <span class="title">({groupMember.title})</span>
+  <span>{group.name}</span>
+  {#if title.toLowerCase() !== 'membre'}
+    <span class="title">({title})</span>
   {/if}
 </svelte:element>
 

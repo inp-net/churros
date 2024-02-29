@@ -1,4 +1,4 @@
-import { builder, htmlToText, prisma, subscriptionName, toHtml } from '#lib';
+import { builder, htmlToText, prisma, toHtml } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 
 export const ArticleType = builder.prismaNode('Article', {
@@ -58,17 +58,7 @@ export const ArticleType = builder.prismaNode('Article', {
         );
       },
     }),
-    comments: t.relatedConnection('comments', {
-      cursor: 'id',
-      query: {
-        orderBy: { createdAt: 'asc' },
-      },
-      subscribe(subscriptions, { id }) {
-        subscriptions.register(subscriptionName('Comment', 'created', id));
-        subscriptions.register(subscriptionName('Comment', 'updated', id));
-        subscriptions.register(subscriptionName('Comment', 'deleted', id));
-      },
-    }),
+
     event: t.relation('event', { nullable: true }),
   }),
 });

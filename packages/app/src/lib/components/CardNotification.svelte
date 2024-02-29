@@ -1,15 +1,30 @@
 <script lang="ts">
-  import type { NotificationChannel } from '$lib/zeus';
+  import { fragment, graphql, type CardNotification } from '$houdini';
+  import { ICONS_NOTIFICATION_CHANNELS } from '$lib/display';
   import { formatDistanceToNow } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
-  import { ICONS_NOTIFICATION_CHANNELS } from '$lib/display';
 
   export let href: string;
-  export let channel: NotificationChannel;
-  export let title: string;
-  export let body: string;
-  export let timestamp: Date | undefined = undefined;
-  export let actions: Array<{ name: string; value: string }>;
+
+  export let notification: CardNotification;
+  $: Notification = fragment(
+    notification,
+    graphql`
+      fragment CardNotification on Notification {
+        channel
+        title
+        body
+        timestamp
+        actions {
+          name
+          value
+        }
+      }
+    `,
+  );
+
+  $: ({ channel, title, body, timestamp, actions } = $Notification);
+
   const date = timestamp
     ? formatDistanceToNow(timestamp, { addSuffix: true, locale: fr })
     : undefined;

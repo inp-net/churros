@@ -1,7 +1,20 @@
 <script lang="ts">
+  import { fragment, graphql, type CardMajor } from '$houdini';
+
   export let href: string;
-  export let name: string;
-  export let shortName = '';
+
+  export let major: CardMajor;
+  $: Major = fragment(
+    major,
+    graphql`
+      fragment CardMajor on Major {
+        name
+        shortName
+      }
+    `,
+  );
+
+  $: ({ name, shortName } = $Major);
 </script>
 
 <a {href}>

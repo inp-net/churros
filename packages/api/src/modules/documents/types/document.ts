@@ -1,7 +1,6 @@
 import { builder, toHtml } from '#lib';
-import { CommentType } from '#modules/comments';
 import { DateTimeScalar } from '#modules/global';
-import { DocumentTypeEnum } from '../index.js';
+import { DOCUMENT_TYPES_WITH_SOLUTIONS, DocumentTypeEnum } from '../index.js';
 
 export const DocumentType = builder.prismaNode('Document', {
   id: { field: 'id' },
@@ -25,14 +24,17 @@ export const DocumentType = builder.prismaNode('Document', {
     solutionPaths: t.exposeStringList('solutionPaths', {
       description: 'Liste de chemins vers les fichiers représentant la correction.',
     }),
-    uploader: t.relation('uploader', { nullable: true }),
-    uploaderId: t.exposeID('uploaderId', { nullable: true }),
-    comments: t.relatedConnection('comments', {
-      cursor: 'id',
-      type: CommentType,
-      query: {
-        orderBy: { createdAt: 'asc' },
+    hasSolution: t.boolean({
+      nullable: true,
+      description:
+        "Vrai si le document a une correction de disponible. Null si cette information n'est pas applicable pour ce document (par exemple, les fiches de révision ne peuvent pas avoir de correction)",
+      resolve({ solutionPaths, type }) {
+        // eslint-disable-next-line unicorn/no-null
+        if (!DOCUMENT_TYPES_WITH_SOLUTIONS.has(type)) return null;
+        return solutionPaths.length > 0;
       },
     }),
+    uploader: t.relation('uploader', { nullable: true }),
+    uploaderId: t.exposeID('uploaderId', { nullable: true }),
   }),
 });

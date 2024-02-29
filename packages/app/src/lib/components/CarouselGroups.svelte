@@ -7,8 +7,6 @@
 
   export let groups: (CardGroupGroup & { role?: string })[];
 
-  $: console.log({ groups });
-
   let nbGroups: number;
 
   let groupsWidth = 0;

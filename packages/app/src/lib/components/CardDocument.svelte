@@ -2,13 +2,24 @@
   import IconCheck from '~icons/mdi/check-circle';
   import IconWarning from '~icons/mdi/alert-circle';
   import { formatDate } from '$lib/dates';
+  import { fragment, graphql, type CardDocument } from '$houdini';
 
-  export let href: string;
-  export let hasSolution: boolean | undefined = undefined;
-  export let title: string;
-  export let createdAt: Date;
-  export let schoolYear: number | undefined | null = undefined;
   export let add = false;
+  export let href: string;
+  export let document: CardDocument;
+  $: Document = fragment(
+    document,
+    graphql`
+      fragment CardDocument on Document {
+        title
+        createdAt
+        schoolYear
+        hasSolution
+      }
+    `,
+  );
+
+  $: ({ title, createdAt, schoolYear, hasSolution } = $Document);
 </script>
 
 <a {href}>
@@ -25,7 +36,7 @@
         {:else}
           <span class="date">{formatDate(createdAt)}</span>
         {/if}
-        {#if hasSolution !== undefined}
+        {#if hasSolution !== null}
           <span class="separator">·</span>
           <span class:warning={!hasSolution} class:success={hasSolution} class="has-solution">
             {#if hasSolution}<IconCheck></IconCheck>
