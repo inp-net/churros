@@ -1,3 +1,4 @@
+import type { EventFrequency$options } from '$houdini';
 import { EventFrequency } from '$lib/zeus';
 import { format, isMonday, previousMonday } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
@@ -57,10 +58,10 @@ export function closestMonday(date: Date): Date {
 }
 
 export function formatEventDates(
-  frequency: EventFrequency,
+  frequency: EventFrequency | EventFrequency$options,
   startsAt: Date,
   endsAt: Date,
-  recurringUntil: Date | undefined,
+  recurringUntil: Date | undefined | null,
 ): string {
   try {
     switch (frequency) {
@@ -85,7 +86,11 @@ export function formatEventDates(
   }
 }
 
-export function formatRecurrence(frequency: EventFrequency, startsAt: Date, endsAt: Date): string {
+export function formatRecurrence(
+  frequency: EventFrequency | EventFrequency$options,
+  startsAt: Date,
+  endsAt: Date,
+): string {
   switch (frequency) {
     case EventFrequency.Biweekly: {
       return `Toutes les deux semaines de ${format(startsAt, 'HH:mm')} à ${format(

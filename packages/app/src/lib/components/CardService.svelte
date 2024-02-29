@@ -27,6 +27,7 @@
 
   import { me } from '$lib/session';
   import type { SvelteComponent } from 'svelte';
+  import { fragment, graphql, type CardService } from '$houdini';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -50,29 +51,35 @@
     'services': IconServices,
   };
 
-  export let service: {
-    name: string;
-    url: string;
-    logo: string;
-    logoSourceType: 'ExternalLink' | 'InternalLink' | 'Icon' | 'GroupLogo';
-    group?: {
-      pictureFile: string;
-      pictureFileDark: string;
-    };
-    id?: string;
-    description?: string;
-  };
+  export let service: CardService;
+  $: Service = fragment(
+    service,
+    graphql`
+      fragment CardService on Service {
+        id
+        name
+        url
+        logo
+        logoSourceType
+        description
+        group {
+          pictureFile
+          pictureFileDark
+        }
+      }
+    `,
+  );
 
   let hover: boolean = false;
   export let small = false;
   export let dashedBorder = false;
 </script>
 
-<a class="card-service" href={service.url} class:dashed-border={dashedBorder} class:small>
-  {#if ($me?.admin ?? false) && service.id}
+<a class="card-service" href={$Service.url} class:dashed-border={dashedBorder} class:small>
+  {#if ($me?.admin ?? false) && $Service.id}
     <a
       class="edit-icon"
-      href="/services/{service?.id}/edit/"
+      href="/services/{$Service?.id}/edit/"
       on:mouseover={() => (hover = true)}
       on:focus={() => (hover = true)}
       on:mouseleave={() => (hover = false)}
@@ -86,24 +93,29 @@
     </a>
   {/if}
 
-  {#if service.logoSourceType === LogoSourceType.ExternalLink}
-    <img src={service.logo} alt={service.name} class="logo" class:small />
-  {:else if service.logoSourceType === LogoSourceType.InternalLink}
-    <img src={env.PUBLIC_STORAGE_URL + service.logo} alt={service.name} class="logo" class:small />
-  {:else if service.logoSourceType === LogoSourceType.GroupLogo && service.group}
-    <img src={groupLogoSrc($isDark, service.group)} alt={service.name} class="logo" class:small />
-  {:else if service.logoSourceType === LogoSourceType.Icon}
+  {#if $Service.logoSourceType === LogoSourceType.ExternalLink}
+    <img src={$Service.logo} alt={$Service.name} class="logo" class:small />
+  {:else if $Service.logoSourceType === LogoSourceType.InternalLink}
+    <img
+      src={env.PUBLIC_STORAGE_URL + $Service.logo}
+      alt={$Service.name}
+      class="logo"
+      class:small
+    />
+  {:else if $Service.logoSourceType === LogoSourceType.GroupLogo && $Service.group}
+    <img src={groupLogoSrc($isDark, $Service.group)} alt={$Service.name} class="logo" class:small />
+  {:else if $Service.logoSourceType === LogoSourceType.Icon}
     <svelte:component
-      this={NAME_TO_ICON?.[service.logo.toLowerCase()] ?? IconWebsite}
+      this={NAME_TO_ICON?.[$Service.logo.toLowerCase()] ?? IconWebsite}
       class="logo"
     />
   {:else}
-    <span>{service.logo}</span>
+    <span>{$Service.logo}</span>
   {/if}
-  <p class="name" class:small>{service.name}</p>
+  <p class="name" class:small>{$Service.name}</p>
   <p class="description typo-details" data-user-html>
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-    {@html service.description ?? ''}
+    {@html $Service.description ?? ''}
   </p>
 </a>
 

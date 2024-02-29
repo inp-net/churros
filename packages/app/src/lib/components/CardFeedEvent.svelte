@@ -19,30 +19,72 @@
   import ButtonGhost from './ButtonGhost.svelte';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
-  import { type Visibility$options, Visibility } from '$houdini';
+  import {
+    type Visibility$options,
+    Visibility,
+    fragment,
+    graphql,
+    type CardFeedEvent,
+  } from '$houdini';
 
-  export let id: string;
   export let likes: number | undefined = undefined;
   export let liked = false;
-  export let title: string;
   export let href: string;
-  export let location: string;
-  export let startsAt: Date;
-  export let endsAt: Date;
-  export let visibility: VisibilityEnum | Visibility$options | undefined = undefined;
-  export let descriptionPreview: string;
-  export let links: Array<{ value: string; name: string; computedValue: string }> = [];
-  export let group: { uid: string; name: string; pictureFile: string; pictureFileDark: string };
-  export let coOrganizers: Array<typeof group> = [];
-  export let tickets: Array<{
-    name: string;
-    price: number;
-    uid: string;
-    opensAt?: Date | null;
-    closesAt?: Date | null;
-    placesLeft: number;
-    capacity: number;
-  }>;
+  export let event: CardFeedEvent;
+
+  $: Event = fragment(
+    event,
+    graphql`
+      fragment CardFeedEvent on Event {
+        id
+        title
+        descriptionPreview
+        startsAt
+        endsAt
+        location
+        visibility
+        group {
+          name
+          uid
+          pictureFile
+          pictureFileDark
+        }
+        coOrganizers {
+          name
+          uid
+          pictureFile
+          pictureFileDark
+        }
+        links {
+          name
+          computedValue
+        }
+        tickets {
+          uid
+          name
+          price
+          opensAt
+          closesAt
+          placesLeft
+          capacity
+        }
+      }
+    `,
+  );
+
+  $: ({
+    descriptionPreview,
+    endsAt,
+    visibility,
+    id,
+    links,
+    location,
+    coOrganizers,
+    startsAt,
+    tickets,
+    title,
+    group,
+  } = $Event);
 
   $: authorSrc = (g: typeof group) => groupLogoSrc($isDark, g);
 

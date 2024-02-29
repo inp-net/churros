@@ -5,13 +5,14 @@
   import IconCanEditPosts from '~icons/mdi/text-box-edit-outline';
   import IconCanScanEvents from '~icons/mdi/qrcode';
   import IconIsDeveloper from '~icons/mdi/code-braces';
+  import { fragment, graphql } from '$houdini';
   export let small = false;
   export let inline = false;
-  export let fullName: string;
   export let role = '';
-  export let pictureFile: string;
   export let href: string;
   export let highlighted = false;
+  export let fullName: string;
+  export let pictureFile: string;
   export let permissions:
     | undefined
     | {

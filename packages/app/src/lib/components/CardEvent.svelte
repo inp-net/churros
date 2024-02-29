@@ -14,66 +14,90 @@
   import ButtonInk from './ButtonInk.svelte';
   import IconDots from '~icons/mdi/dots-horizontal';
   import { EventFrequency } from '../../zeus';
+  import { fragment, graphql, type CardEvent } from '$houdini';
 
+  export let href: string;
+  export let canEdit: boolean | undefined = false;
   export let collapsible = false;
   export let expandedEventId: string | undefined = undefined;
-  export let id: string;
   $: collapsed = collapsible && expandedEventId !== id;
-  export let pictureFile: string;
-  export let title: string;
-  export let descriptionPreview: string;
-  export let startsAt: Date;
-  export let endsAt: Date;
-  export let location: string;
-  export let capacity: number;
-  export let placesLeft: number;
-  export let frequency: EventFrequency;
-  export let recurringUntil: Date | undefined = undefined;
-  export let tickets: Array<{
-    name: string;
-    price: number;
-    uid: string;
-    opensAt?: Date;
-    closesAt?: Date;
-    placesLeft: number;
-    capacity: number;
-  }>;
-  export let href: string;
-  export let author:
-    | {
-        uid: string;
-        pictureFile: string;
-        fullName: string;
-        groups: Array<{
-          title: string;
-          group: {
-            name: string;
-            uid: string;
-          };
-        }>;
+
+  export let event: CardEvent;
+  $: Event = fragment(
+    event,
+    graphql`
+      fragment CardEvent on Event {
+        id
+        pictureFile
+        title
+        descriptionPreview
+        startsAt
+        endsAt
+        location
+        capacity
+        placesLeft
+        frequency
+        recurringUntil
+        tickets {
+          uid
+          name
+          price
+          opensAt
+          closesAt
+          placesLeft
+          capacity
+        }
+        author {
+          uid
+          pictureFile
+          fullName
+          groups {
+            title
+            group {
+              name
+              uid
+            }
+          }
+        }
+        group {
+          name
+          uid
+          pictureFile
+        }
       }
-    | undefined = undefined;
-  export let group: {
-    name: string;
-    uid: string;
-    pictureFile: string;
-  };
-  export let canEdit: boolean | undefined = false;
+    `,
+  );
+  $: ({
+    author,
+    capacity,
+    descriptionPreview,
+    endsAt,
+    frequency,
+    group,
+    id,
+    location,
+    pictureFile,
+    placesLeft,
+    recurringUntil,
+    startsAt,
+    tickets,
+    title,
+  } = $Event);
 
-  let shotgunsStart: Date | undefined;
-  let shotgunsEnd: Date | undefined;
+  let shotgunsStart: Date | null;
+  let shotgunsEnd: Date | null;
 
-  if (tickets[0]) shotgunsStart = tickets[0].opensAt;
+  $: if (tickets[0]) shotgunsStart = tickets[0].opensAt;
 
-  for (const ticket of tickets) {
-    if (ticket.opensAt && (shotgunsStart === undefined || ticket.opensAt < shotgunsStart))
+  $: for (const ticket of tickets) {
+    if (ticket.opensAt && (shotgunsStart === null || ticket.opensAt < shotgunsStart))
       shotgunsStart = ticket.opensAt;
   }
 
-  if (tickets[0]) shotgunsEnd = tickets[0].closesAt;
+  $: if (tickets[0]) shotgunsEnd = tickets[0].closesAt;
 
-  for (const ticket of tickets) {
-    if (ticket.closesAt && (shotgunsEnd === undefined || ticket.closesAt > shotgunsEnd))
+  $: for (const ticket of tickets) {
+    if (ticket.closesAt && (shotgunsEnd === null || ticket.closesAt > shotgunsEnd))
       shotgunsEnd = ticket.closesAt;
   }
 

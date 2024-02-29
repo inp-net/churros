@@ -14,6 +14,7 @@
   import InputLongText from './InputLongText.svelte';
   import ButtonGhost from './ButtonGhost.svelte';
   import { removeIdPrefix } from '$lib/typenames';
+  import { fragment, graphql, type CardComment } from '$houdini';
 
   const dispatch = createEventDispatcher();
 
@@ -21,23 +22,41 @@
   export let readonly = false;
   export let creating = false;
   export let canReply = !readonly;
-  export let id: string;
-  export let bodyHtml: string;
-  export let author:
-    | null
-    | undefined
-    | { uid: string; fullName: string; pictureFile: string; externalHref?: string } = undefined;
-  export let createdAt: Date;
-  export let updatedAt: Date | undefined | null = undefined;
-  export let body: string;
+  export let authorExternalHref: string | undefined = undefined;
   export let replyingTo = { body: '', inReplyToId: '' };
-  export let replies: Array<{
-    id: string;
-    bodyHtml: string;
-    author?: undefined | null | { uid: string; fullName: string; pictureFile: string };
-    createdAt: Date;
-    updatedAt: Date | undefined | null;
-  }> = [];
+
+  export let comment: CardComment;
+  $: Comment = fragment(
+    comment,
+    graphql`
+      fragment CardComment on Comment {
+        id
+        bodyHtml
+        author {
+          uid
+          fullName
+          pictureFile
+        }
+        createdAt
+        updatedAt
+        body
+        inReplyToId
+        replies {
+          id
+          bodyHtml
+          author {
+            uid
+            fullName
+            pictureFile
+          }
+          createdAt
+          updatedAt
+        }
+      }
+    `,
+  );
+
+  $: ({ author, id, updatedAt, createdAt, body, bodyHtml, replies } = $Comment);
 </script>
 
 <div class="comment-jump-to-anchor" id="comment-{removeIdPrefix('Comment', id)}" />
@@ -45,7 +64,7 @@
 <article class="comment" class:creating>
   <div class="metadata">
     {#if author}
-      <AvatarPerson small href={author.externalHref ?? `/users/${author.uid}`} {...author} />
+      <AvatarPerson small href={authorExternalHref ?? `/users/${author.uid}`} {...author} />
     {:else}
       <AvatarPerson small pictureFile="" href="" fullName="???" />
     {/if}

@@ -1,43 +1,64 @@
 <script lang="ts">
-  import { intlFormatDistance, isFuture } from 'date-fns';
-  import { type EventFrequency, zeus } from '$lib/zeus';
-  import IconInfo from '~icons/mdi/information-outline';
-  import IconHeart from '~icons/mdi/heart-outline';
-  import IconHeartFilled from '~icons/mdi/heart';
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import IndicatorVisibility from './IndicatorVisibility.svelte';
-  import { groupLogoSrc } from '$lib/logos';
-  import { isDark } from '$lib/theme';
   import { env } from '$env/dynamic/public';
+  import { Visibility, fragment, graphql, type CardArticle } from '$houdini';
   import { formatEventDates } from '$lib/dates';
   import { DISPLAY_VISIBILITIES } from '$lib/display';
-  import ButtonGhost from './ButtonGhost.svelte';
+  import { groupLogoSrc } from '$lib/logos';
+  import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
-  import { Visibility, type Visibility$options } from '$houdini';
+  import { zeus } from '$lib/zeus';
+  import { intlFormatDistance, isFuture } from 'date-fns';
+  import IconHeartFilled from '~icons/mdi/heart';
+  import IconHeart from '~icons/mdi/heart-outline';
+  import IconInfo from '~icons/mdi/information-outline';
+  import ButtonGhost from './ButtonGhost.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import IndicatorVisibility from './IndicatorVisibility.svelte';
 
-  export let id: string;
-  export let likes: number | undefined = undefined;
-  export let liked = false;
-  export let event:
-    | {
-        title: string;
-        href: string;
-        pictureFile: string;
-        location: string;
-        startsAt: Date;
-        endsAt: Date;
-        frequency: EventFrequency;
-        recurringUntil?: Date | undefined;
-      }
-    | undefined = undefined;
-  export let visibility: Visibility$options | undefined = undefined;
-  export let title: string;
+  export let likes: number | undefined;
+  export let liked: boolean | undefined;
   export let href: string;
-  export let bodyPreview: string;
-  export let publishedAt: Date;
-  export let links: Array<{ value: string; name: string; computedValue: string }> = [];
-  export let group: { uid: string; name: string; pictureFile: string; pictureFileDark: string };
-  export let author: { uid: string; fullName: string; pictureFile: string } | undefined | null = undefined;
+  export let eventHref: string;
+  export let article: CardArticle;
+  $: Article = fragment(
+    article,
+    graphql`
+      fragment CardArticle on Article {
+        id
+        title
+        bodyPreview
+        publishedAt
+        links {
+          name
+          computedValue
+        }
+        group {
+          uid
+          name
+          pictureFile
+          pictureFileDark
+        }
+        author {
+          uid
+          fullName
+          pictureFile
+        }
+        visibility
+        event {
+          title
+          pictureFile
+          location
+          startsAt
+          endsAt
+          frequency
+          recurringUntil
+        }
+      }
+    `,
+  );
+
+  $: ({ author, bodyPreview, event, group, id, links, publishedAt, title, visibility } = $Article);
+
   export let img: { src: string; alt?: string; width?: number; height?: number } | undefined =
     undefined;
   export let hideGroup = false;
@@ -93,7 +114,7 @@
         </p>
         {#if event}
           <a
-            href={event.href}
+            href={eventHref}
             class="event"
             style:background-image="url({env.PUBLIC_STORAGE_URL}{event.pictureFile})"
           >

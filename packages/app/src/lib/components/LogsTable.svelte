@@ -1,23 +1,35 @@
 <script lang="ts">
+  import { fragment, graphql, type LogsTableEntry } from '$houdini';
   import { formatDateTime } from '$lib/dates';
   import JSONTree from 'svelte-json-tree';
 
   let openedLogId = '';
 
-  interface logEntry {
-    id: string;
-    happenedAt: Date;
-    area: string;
-    action: string;
-    target?: string;
-    message: string;
-    user?: {
-      uid: string;
-      fullName: string;
-    };
+  function notNull<T>(value: T | null): value is T {
+    return value !== null;
   }
 
-  export let logs: logEntry[] = [];
+  // export let logs: logEntry[] = [];
+  export let logs: LogsTableEntry;
+  $: Logs = fragment(
+    logs,
+    graphql`
+      fragment LogsTableEntry on QueryLogsConnection {
+        nodes {
+          id
+          happenedAt
+          area
+          action
+          target
+          message
+          user {
+            uid
+            fullName
+          }
+        }
+      }
+    `,
+  );
 </script>
 
 <div class="table-scroller">
@@ -32,7 +44,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each logs as log (log.id)}
+      {#each $Logs.nodes.filter(notNull) as log (log.id)}
         <tr
           on:click={() => {
             openedLogId = openedLogId === log.id ? '' : log.id;
