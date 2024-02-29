@@ -7,9 +7,15 @@
 
 {#if $theme === 'noel'}
   {#if wordmark}
-    <img src="/noel-wordmark.png" alt="Churros" class="wordmark" />
+    <img src="/noel-wordmark.png" alt="Churros" class="wordmark pan7on" />
   {:else}
-    <img src="/noel-logo.png" alt="Churros" class="wordmark" />
+    <img src="/noel-logo.png" alt="Churros" class="wordmark pan7on" />
+  {/if}
+{:else if $theme === 'pan7on'}
+  {#if wordmark}
+    <img src="/ChurrosPan7onWordmark.png" alt="Churros" class="wordmark" />
+  {:else}
+    <img src="/ChurrosPan7on.png" alt="Churros" class="wordmark" />
   {/if}
 {:else if $theme === 'gd7t'}
   {#if wordmark}
@@ -151,12 +157,12 @@
   </svg>
 {/if}
 
-<style>
+<style lang="scss">
   .wordmark {
     display: flex;
     align-items: start;
     width: auto;
-    height: 3rem;
+    height: 3.5rem; // A été edit pour le theme pan7on, taille de base : 3rem.
     object-fit: cover;
   }
 </style>

@@ -38,3 +38,9 @@ export function userIsOnBoardOf(user: Context['user'], groupUid: string): boolea
 export function userIsMemberOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(user?.groups.some(({ group: { uid } }) => uid === groupUid));
 }
+
+export function userIsDeveloperOf(user: Context['user'], groupUid: string): boolean {
+  return Boolean(
+    user?.groups.some(({ group: { uid }, isDeveloper }) => groupUid === uid && isDeveloper),
+  );
+}

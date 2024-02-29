@@ -311,6 +311,10 @@
     margin-bottom: 5rem;
   }
 
+  .typo-details {
+    margin-bottom: 1rem;
+  }
+
   header {
     display: flex;
     flex-wrap: wrap;
@@ -514,5 +518,9 @@
     section.articles {
       grid-area: articles;
     }
+  }
+
+  .contribution > h2 {
+    margin-bottom: 0.5rem;
   }
 </style>

@@ -11,6 +11,22 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [1.49.0] - 2024-03-09
+
+### Nouveautés
+
+- Le thème de Pan7on est là! (@soyerb)
+
+### Corrections
+
+- Correction d'un bug qui affiché une place comme grisée sur la page d'un évènement (!121) (@bardete)
+
+### Technique
+
+- Les options de cotisations à une AE ne sont plus hardcodées dans le code de churros (!119) (@bardete)
+
+## [1.48.0] - 2024-03-01
+
 ### Technique
 
 - OAuth: les URIs de redirection autorisées sont maintenant normalisées avant d'être comparées: utiliser une URI avec un `/` à la fin quand la liste contient la même sans ce `/` final fonctionne.
@@ -18,6 +34,14 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Corrections
 
 - Correction d'un bug dans le demandes de paiements Lydia quand un code de promotion est actif
+
+### Nouveautés
+
+- On peut désigner les développeur·euse·s d'un groupe pour leur donner accès à la gestion des applications tierces du groupe
+
+### Améliorations
+
+- On peut maintenant chercher par numéro de téléphone (#841)
 
 ## [1.47.1] - 2024-02-23
 
@@ -221,8 +245,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.47.1...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.49.0...main
 [1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
+[1.49.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.49.0
+[1.48.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.48.0
 [1.47.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.47.1
 [1.47.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.47.0
 [1.46.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.46.1

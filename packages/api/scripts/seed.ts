@@ -555,6 +555,8 @@ for (const group of groups) {
     {
       groupId: group.id,
       memberId: randomUserIDs[4],
+      title: 'Respo net7',
+      isDeveloper: true,
     },
     {
       groupId: group.id,
