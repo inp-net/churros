@@ -33,9 +33,6 @@
     pictureFileDark: string;
   }>;
 
-  export let ticket;
-  $: 
-
   let stateUpdateInterval: number | undefined = undefined;
 
   let shotgunning = isShotgunning();

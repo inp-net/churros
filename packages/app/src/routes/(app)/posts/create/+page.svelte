@@ -1,22 +1,25 @@
 <script lang="ts">
+  import { fragment, graphql } from '$houdini';
   import CardGroup from '$lib/components/CardGroup.svelte';
   import { canCreateArticle } from '$lib/permissions';
-  import { me } from '$lib/session';
+  import type { PageData } from './$houdini';
+
+  export let data: PageData;
+
+  $: ({ MyGroupMemberships } = data);
+  $: ({
+    me: { groups },
+  } = $MyGroupMemberships.data ?? {
+    me: { groups: [] },
+  });
 </script>
 
 <div class="content">
   <h1>Écrire un post en tant que</h1>
 
   <section class="groups">
-    {#each $me?.groups
-      .filter((m) => canCreateArticle(m, $me))
-      .map(({ group }) => group) ?? [] as group (group.uid)}
-      <CardGroup
-        href="/posts/{group.uid}/create"
-        name={group.name}
-        pictureFile={group.pictureFile}
-        pictureFileDark={group.pictureFileDark}
-      />
+    {#each groups as { group } (group.uid)}
+      <CardGroup href="/posts/{group.uid}/create" {group} />
     {/each}
   </section>
 </div>

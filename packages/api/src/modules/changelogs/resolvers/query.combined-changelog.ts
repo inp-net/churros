@@ -1,12 +1,13 @@
 import { CURRENT_VERSION, builder, prisma } from '#lib';
 import { SortDirection, SortDirectionEnum } from '#modules/global';
+import { resolveOffsetConnection } from '@pothos/plugin-relay';
 import { GraphQLError } from 'graphql';
 import * as SemVer from 'semver';
 import { ChangelogReleaseType, changelogFromFile, findReleaseInChangelog } from '../index.js';
 
 builder.queryField('combinedChangelog', (t) =>
-  t.field({
-    type: [ChangelogReleaseType],
+  t.connection({
+    type: ChangelogReleaseType,
     errors: {},
     description: `A changelog for multiple versions. 
 Be careful, this range is (from, to]. I.e. **the first version is excluded, and the last is included**. 
@@ -36,7 +37,7 @@ This is way more useful for querying a range of versions for a changelog, but no
         defaultValue: CURRENT_VERSION,
       }),
     },
-    async resolve(_, { from, to, sort }, { user }) {
+    async resolve(_, { from, to, sort, ...connectionArgs }, { user }) {
       if (!from) {
         if (!user) {
           throw new GraphQLError(
@@ -65,7 +66,13 @@ This is way more useful for querying a range of versions for a changelog, but no
       if (selectedReleases.length === 0)
         throw new GraphQLError(`Aucune version entre ${from} et ${to}.`);
 
-      return selectedReleases.map((release) => findReleaseInChangelog(changelog, release.version!));
+      const allReleases = selectedReleases.map((release) =>
+        findReleaseInChangelog(changelog, release.version!),
+      );
+
+      return resolveOffsetConnection({ args: connectionArgs }, ({ limit, offset }) =>
+        allReleases.slice(offset, offset + limit),
+      );
     },
   }),
 );

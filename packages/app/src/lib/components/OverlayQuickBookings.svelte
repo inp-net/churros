@@ -10,48 +10,20 @@
   import IconClose from '~icons/mdi/close';
   import ButtonGhost from './ButtonGhost.svelte';
   import CardTicket from './CardTicket.svelte';
-  import { fragment, graphql, type QuickBooking } from '$houdini';
+  import { fragment, graphql, type OverlayQuickBooking } from '$houdini';
 
-  type Registration = {
-    id: string;
-    code: unknown;
-    beneficiary: string;
-    authorIsBeneficiary: boolean;
-    paid: boolean;
-    cancelled: boolean;
-    opposed: boolean;
-    author?: { fullName: string } | undefined;
-    authorEmail: string;
-    beneficiaryUser?: { fullName: string } | undefined;
-    ticket: {
-      name: string;
-      event: { pictureFile: string; title: string; startsAt: Date; endsAt: Date };
-    };
-  };
-
-  export let quickBookingStore: QuickBooking;
-  $: quickBooking = fragment(
-    quickBookingStore,
+  export let booking: OverlayQuickBooking;
+  $: QuickBooking = fragment(
+    booking,
     graphql`
-      fragment QuickBooking on Registration {
+      fragment OverlayQuickBooking on Registration {
+        ...CardTicket
         id
-        code
-        beneficiary
-        authorIsBeneficiary
-        paid
         cancelled
-        author {
-          fullName
-        }
-        authorEmail
-        beneficiaryUser {
-          fullName
-        }
+        code
+        opposed
         ticket {
-          name
           event {
-            pictureFile
-            title
             startsAt
             endsAt
           }
@@ -67,6 +39,7 @@
     registration: {
       id: string;
       cancelled: boolean;
+      opposed: boolean;
       ticket: { event: { startsAt: Date; endsAt: Date } };
     },
   ): boolean {
@@ -92,12 +65,12 @@
   const touchAction = 'pan-y pinch-zoom' as unknown as 'pan-y';
 </script>
 
-{#if !$page.url.pathname.startsWith('/bookings') && quickBooking}
+{#if !$page.url.pathname.startsWith('/bookings') && QuickBooking}
   <!-- If the quick booking is not hidden and:
       - it starts in less than 30 mins; or
       - it ongoing; or 
       - was finished less than 2 hours ago -->
-  {#if shouldShowBooking($hiddenBookings, $quickBooking)}
+  {#if shouldShowBooking($hiddenBookings, $QuickBooking)}
     <section
       in:slide={{ axis: 'y', duration: 100 }}
       use:swipe={{ touchAction }}
@@ -115,29 +88,29 @@
 
         target.style.transform = `translateX(${movementX > 0 ? '+' : '-'}100vw)`;
         setTimeout(() => {
-          $hiddenBookings = [...$hiddenBookings, $quickBooking.id];
+          $hiddenBookings = [...$hiddenBookings, $QuickBooking.id];
         }, 500);
       }}
       class="quick-booking"
     >
       <p class="hint">
         <strong>
-          C'est {#if isFuture($quickBooking.ticket.event.startsAt)}
-            dans {formatDistanceToNow($quickBooking.ticket.event.startsAt, {
+          C'est {#if isFuture($QuickBooking.ticket.event.startsAt)}
+            dans {formatDistanceToNow($QuickBooking.ticket.event.startsAt, {
               locale: fr,
             }).replace('environ ', '')}{:else}maintenant{/if}! Voici ta place
         </strong>
         <span class="dismiss">
           <ButtonGhost
             on:click={() => {
-              $hiddenBookings = [...$hiddenBookings, $quickBooking.id];
+              $hiddenBookings = [...$hiddenBookings, $QuickBooking.id];
             }}
           >
             <IconClose></IconClose>
           </ButtonGhost>
         </span>
       </p>
-      <CardTicket floating href="/bookings/{$quickBooking.code}" {...$quickBooking}></CardTicket>
+      <CardTicket floating href="/bookings/{$QuickBooking.code}" booking={$QuickBooking}></CardTicket>
     </section>
   {/if}
 {/if}
