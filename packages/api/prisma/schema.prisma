@@ -324,6 +324,7 @@ model StudentAssociation {
   schoolId    String
   name        String  @unique @db.VarChar(255)
   links       Link[]
+  pictureFile String  @default("") @db.VarChar(255)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
