@@ -1,14 +1,13 @@
 <script lang="ts">
-  import CardArticle from '$lib/components/CardArticle.svelte';
-  import type { PageData } from './$houdini';
   import { env } from '$env/dynamic/public';
-  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { onMount } from 'svelte';
-  import { PendingValue } from '$houdini';
+  import CardArticle from '$lib/components/CardArticle.svelte';
+  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
+  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import { onMount } from 'svelte';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
   $: ({ HomeQuery } = data);
@@ -28,7 +27,7 @@
 
 <section class="groups">
   {#if $HomeQuery?.data?.me?.groups}
-    <CarouselGroups groups={$HomeQuery?.data?.me?.groups?.map((g) => g.group)} />
+    <CarouselGroups groups={$HomeQuery.data.me.groups.map((g) => g.group)} />
   {/if}
 </section>
 
@@ -70,15 +69,12 @@
   <section class="articles">
     {#each $HomeQuery.data?.homepage.edges ?? [] as edge (edge?.node.id)}
       {#if edge?.node}
-        {@const { id, uid, pictureFile, group, reactionCounts, myReactions, event, ...rest } =
-          edge.node}
+        {@const { reactionCounts, myReactions, event, group, pictureFile, uid } = edge.node}
         <CardArticle
-          {...rest}
-          {id}
-          {group}
-          likes={reactionCounts['❤️'] ?? 0}
+          article={edge.node}
+          likes={reactionCounts['❤️']?.valueOf() ?? 0}
           liked={myReactions['❤️']}
-          event={event ? { href: `/events/${event.group.uid}/${event.uid}`, ...event } : undefined}
+          eventHref={event ? `/events/${event.group.uid}/${event.uid}` : undefined}
           href="/posts/{group.uid}/{uid}/"
           img={pictureFile ? { src: `${env.PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
         />

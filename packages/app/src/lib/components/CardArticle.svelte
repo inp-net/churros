@@ -18,7 +18,7 @@
   export let likes: number | undefined;
   export let liked: boolean | undefined;
   export let href: string;
-  export let eventHref: string;
+  export let eventHref: string|undefined;
   export let article: CardArticle;
   $: Article = fragment(
     article,

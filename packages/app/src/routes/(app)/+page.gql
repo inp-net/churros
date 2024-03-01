@@ -3,10 +3,7 @@ query HomeQuery($loggedIn: Boolean!) {
     yearTier
     groups {
       group {
-        pictureFile
-        pictureFileDark
-        uid
-        name
+        ...CardGroupGroup
       }
     }
   }
@@ -15,45 +12,20 @@ query HomeQuery($loggedIn: Boolean!) {
     edges {
       node {
         id
-        uid
-        title
-        bodyHtml
-        bodyPreview
-        body
-        visibility
-        publishedAt
-        pictureFile
+        ...CardArticle
         reactionCounts
         myReactions
         group {
           uid
-          name
-          pictureFile
-          pictureFileDark
         }
-        author {
-          uid
-          pictureFile
-          fullName
-        }
-        links {
-          value
-          computedValue
-          name
-        }
+        uid
         event {
+          uid
           group {
             uid
           }
-          title
-          pictureFile
-          uid
-          location
-          startsAt
-          endsAt
-          frequency
-          recurringUntil
         }
+        pictureFile
       }
     }
   }

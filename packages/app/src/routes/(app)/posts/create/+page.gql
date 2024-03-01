@@ -1,0 +1,10 @@
+query MyGroupMemberships {
+  me {
+    groups {
+      group {
+        uid
+        ...CardGroupGroup
+      }
+    }
+  }
+}

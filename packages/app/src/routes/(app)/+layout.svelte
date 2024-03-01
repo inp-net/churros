@@ -49,8 +49,8 @@
 
   $: changelogLogs =
     $AppLayout.data?.combinedChangelog?.__typename === 'QueryCombinedChangelogSuccess'
-      ? $AppLayout.data.combinedChangelog.data
-      : [];
+      ? $AppLayout.data.combinedChangelog
+      : { data: [] };
 
   const now = new Date();
 
@@ -142,12 +142,12 @@
       changelogLogs = [];
     }}
     open
-    log={changelogLogs}
+    changelog={changelogLogs}
   />
 {/if}
 
-{#if $AppLayout.data?.registrationsOfUser?.edges[0]?.node}
-  <OverlayQuickBookings {now} quickBooking={$AppLayout.data.registrationsOfUser.edges[0]?.node}
+{#if $AppLayout.data?.registrationsOfUser?.nodes[0]}
+  <OverlayQuickBookings {now} booking={$AppLayout.data.registrationsOfUser.nodes[0]}
   ></OverlayQuickBookings>
 {/if}
 

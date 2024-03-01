@@ -34,22 +34,50 @@
   import { zeus } from '$lib/zeus';
   import { createEventDispatcher } from 'svelte';
   import { toasts } from '$lib/toasts';
+  import { fragment, graphql, type ModalChangelogRelease } from '$houdini';
 
   const dispatch = createEventDispatcher();
 
   export let open: boolean;
-  export let log: Array<{
-    date: Date|null;
-    version: string;
-    description: string;
-    changes: Record<
-      (typeof ORDER_CHANGELOG_CATEGORIES)[number],
-      Array<{
-        html: string;
-        issues: number[];
-      }>
-    >;
-  }>;
+  export let changelog: ModalChangelogRelease[];
+  $: Log = fragment(
+    changelog,
+    graphql`
+      fragment ModalChangelogRelease on ChangelogRelease {
+          date
+          version
+          description
+          changes {
+            added {
+              html
+              issues
+            }
+            fixed {
+              html
+              issues
+            }
+            improved {
+              html
+              issues
+            }
+            other {
+              html
+              issues
+            }
+            security {
+              html
+              issues
+            }
+            technical {
+              html
+              issues
+            }
+          }
+      }
+    `,
+  );
+  $: log = $Log.data;
+
   let element: HTMLDialogElement;
 
   function flattenVersions(versions: typeof log) {

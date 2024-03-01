@@ -3,53 +3,7 @@ query AppLayout($myUid: String!, $loggedIn: Boolean!) {
     __typename
     ... on QueryCombinedChangelogSuccess {
       data {
-        version
-        date
-        description
-        changes {
-          added {
-            authors
-            issues
-            mergeRequests
-            reporters
-            html
-          }
-          fixed {
-            authors
-            issues
-            mergeRequests
-            reporters
-            html
-          }
-          improved {
-            authors
-            issues
-            mergeRequests
-            reporters
-            html
-          }
-          other {
-            authors
-            issues
-            mergeRequests
-            reporters
-            html
-          }
-          security {
-            authors
-            issues
-            mergeRequests
-            reporters
-            html
-          }
-          technical {
-            authors
-            issues
-            mergeRequests
-            reporters
-            html
-          }
-        }
+        ...ModalChangelogRelease
       }
     }
     ... on Error {
@@ -66,10 +20,8 @@ query AppLayout($myUid: String!, $loggedIn: Boolean!) {
   }
 
   registrationsOfUser(userUid: $myUid, forUserOnly: true, first: 1) @include(if: $loggedIn) {
-    edges {
-      node {
-        ...QuickBooking
-      }
+    nodes {
+      ...OverlayQuickBooking
     }
   }
 }

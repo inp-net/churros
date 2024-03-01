@@ -87,7 +87,15 @@ export const UserType = builder.prismaNode('User', {
     }),
     groups: t.relation('groups', {
       // authScopes: { loggedIn: true, $granted: 'me' },
-      query: { orderBy: { group: { name: 'asc' } } },
+      args: {
+        canEditArticles: t.arg.boolean({ required: false }),
+      },
+      query: ({ canEditArticles }) => ({
+        where: {
+          canEditArticles: canEditArticles ?? undefined,
+        },
+        orderBy: { group: { name: 'asc' } },
+      }),
     }),
     credentials: t.relation('credentials', {
       authScopes: { $granted: 'me' },
