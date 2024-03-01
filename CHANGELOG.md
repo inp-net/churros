@@ -23,6 +23,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 - On peut désigner les développeur·euse·s d'un groupe pour leur donner accès à la gestion des applications tierces du groupe
 
+### Améliorations
+
+- On peut maintenant chercher par numéro de téléphone (#841)
+
 ## [1.47.1] - 2024-02-23
 
 ### Améliorations
