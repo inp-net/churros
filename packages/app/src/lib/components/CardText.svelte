@@ -1,9 +1,10 @@
 <script lang="ts">
   export let href: string;
+  export let dashed = false;
 </script>
 
 <a {href}>
-  <article class="document">
+  <article class="document" class:dashed>
     <header>
       <h3><slot name="header" /></h3>
     </header>
@@ -18,6 +19,10 @@
     padding: 0.5em 1em;
     border: var(--border-block) solid var(--muted-border);
     border-radius: 0.5em;
+  }
+
+  a:not(:hover, :focus-visible) article.dashed {
+    border-style: dashed;
   }
 
   a:hover,

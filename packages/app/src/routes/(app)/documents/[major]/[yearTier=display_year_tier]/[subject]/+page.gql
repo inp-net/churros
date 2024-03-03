@@ -36,17 +36,11 @@ query DocumentsOfSubject(
       hasNextPage
       endCursor
     }
-    edges {
-      node {
-        id
-        title
-        uid
-        schoolYear
-        solutionPaths
-        paperPaths
-        type
-        createdAt
-      }
+    nodes {
+      id
+      uid
+      type
+      ...CardDocument
     }
   }
 }
