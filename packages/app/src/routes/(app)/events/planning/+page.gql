@@ -1,0 +1,22 @@
+query EventsPlanning {
+  events(future: true, upcomingShotguns: true) {
+    pageInfo {
+      hasNextPage
+      startCursor
+    }
+    nodes {
+      id
+      startsAt
+      mySoonestShotgunOpensAt
+      uid
+      title
+      group {
+        name
+        uid
+        pictureFile
+        pictureFileDark
+      }
+      ...CardEvent
+    }
+  }
+}

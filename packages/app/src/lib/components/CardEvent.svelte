@@ -22,51 +22,54 @@
   export let expandedEventId: string | undefined = undefined;
   $: collapsed = collapsible && expandedEventId !== id;
 
-  export let event: CardEvent;
-  $: Event = fragment(
-    event,
-    graphql`
-      fragment CardEvent on Event {
-        id
-        pictureFile
-        title
-        descriptionPreview
-        startsAt
-        endsAt
-        location
-        capacity
-        placesLeft
-        frequency
-        recurringUntil
-        tickets {
-          uid
-          name
-          price
-          opensAt
-          closesAt
-          placesLeft
-          capacity
-        }
-        author {
-          uid
-          pictureFile
-          fullName
-          groups {
+  // TODO understand why /events/planning sometimes passes down null for the event prop
+  export let event: CardEvent | undefined;
+  $: Event = !event
+    ? undefined
+    : fragment(
+        event,
+        graphql`
+          fragment CardEvent on Event {
+            id
+            pictureFile
             title
+            descriptionPreview
+            startsAt
+            endsAt
+            location
+            capacity
+            placesLeft
+            frequency
+            recurringUntil
+            tickets {
+              uid
+              name
+              price
+              opensAt
+              closesAt
+              placesLeft
+              capacity
+            }
+            author {
+              uid
+              pictureFile
+              fullName
+              groups {
+                title
+                group {
+                  name
+                  uid
+                }
+              }
+            }
             group {
               name
               uid
+              pictureFile
             }
           }
-        }
-        group {
-          name
-          uid
-          pictureFile
-        }
-      }
-    `,
-  );
+        `,
+      );
   $: ({
     author,
     capacity,
@@ -82,7 +85,22 @@
     startsAt,
     tickets,
     title,
-  } = $Event);
+  } = $Event ?? {
+    author: null,
+    capacity: 0,
+    descriptionPreview: '',
+    endsAt: new Date(),
+    frequency: EventFrequency.Once,
+    group: { name: '', uid: '' },
+    id: '',
+    location: '',
+    pictureFile: '',
+    placesLeft: 0,
+    recurringUntil: null,
+    startsAt: new Date(),
+    tickets: [],
+    title: '',
+  });
 
   let shotgunsStart: Date | null;
   let shotgunsEnd: Date | null;

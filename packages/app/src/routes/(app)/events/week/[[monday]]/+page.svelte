@@ -4,8 +4,7 @@
   import IconGear from '~icons/mdi/cog-outline';
   import IconForward from '~icons/mdi/chevron-right';
   import { addDays, startOfWeek, isSameDay, previousMonday, nextMonday, formatISO } from 'date-fns';
-  import type { PageData } from './$types';
-  import { me } from '$lib/session';
+  import type { PageData } from './$houdini';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { isDark } from '$lib/theme';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
@@ -18,9 +17,19 @@
 
   export let data: PageData;
 
-  let barWeek: typeof data.barWeekNow;
-  let events: typeof data.eventsInWeek;
-  $: ({ barWeekNow: barWeek, eventsInWeek: events } = data);
+  $: ({ EventsOfWeek } = data);
+  $: ({
+    barWeekNow: barWeek,
+    eventsInWeek: events,
+    me,
+  } = $EventsOfWeek.data ?? {
+    barWeekNow: {
+      descriptionHtml: '',
+      groups: [],
+    },
+    eventsInWeek: [],
+    me: undefined,
+  });
 
   let daysOfWeek: Date[] = [];
   $: daysOfWeek = Array.from({ length: 7 })
@@ -30,8 +39,8 @@
   let expandedEventId: string | undefined = undefined;
 
   const canChangeBarWeek = Boolean(
-    $me?.admin ||
-      $me?.groups?.some(({ group: { uid } }) => env.PUBLIC_FOY_GROUPS?.split(',').includes(uid)),
+    me?.admin ||
+      me?.groups?.some(({ group: { uid } }) => env.PUBLIC_FOY_GROUPS?.split(',').includes(uid)),
   );
 
   afterNavigate(() => {
@@ -116,7 +125,7 @@
                 collapsible
                 bind:expandedEventId
                 href="/events/{event.group.uid}/{event.uid}"
-                {...event}
+                {event}
               />
             {/each}
           </div>
