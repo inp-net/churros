@@ -3,7 +3,9 @@ query AppLayout($myUid: String!, $loggedIn: Boolean!) {
     __typename
     ... on QueryCombinedChangelogSuccess {
       data {
-        ...ModalChangelogRelease
+        nodes {
+          ...ModalChangelogRelease
+        }
       }
     }
     ... on Error {
@@ -14,7 +16,10 @@ query AppLayout($myUid: String!, $loggedIn: Boolean!) {
   echo(text: "loggedin!!!!") @include(if: $loggedIn)
 
   me @include(if: $loggedIn) {
-    uid, canEditUsers, canEditGroups, external
+    uid
+    canEditUsers
+    canEditGroups
+    external
     ...NavigationTopMe
     ...NavigationSideMe
   }

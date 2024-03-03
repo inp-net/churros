@@ -1,6 +1,6 @@
 import { CURRENT_VERSION, builder, prisma } from '#lib';
 import { SortDirection, SortDirectionEnum } from '#modules/global';
-import { resolveOffsetConnection } from '@pothos/plugin-relay';
+import { resolveArrayConnection } from '@pothos/plugin-relay';
 import { GraphQLError } from 'graphql';
 import * as SemVer from 'semver';
 import { ChangelogReleaseType, changelogFromFile, findReleaseInChangelog } from '../index.js';
@@ -51,7 +51,7 @@ This is way more useful for querying a range of versions for a changelog, but no
         from = latestVersionSeenInChangelog ?? '0.0.0';
       }
 
-      if (SemVer.gte(from, to)) return [];
+      if (SemVer.gte(from, to)) return resolveArrayConnection({ args: connectionArgs }, []);
 
       const changelog = await changelogFromFile();
       const selectedReleases = changelog.releases
@@ -70,9 +70,7 @@ This is way more useful for querying a range of versions for a changelog, but no
         findReleaseInChangelog(changelog, release.version!),
       );
 
-      return resolveOffsetConnection({ args: connectionArgs }, ({ limit, offset }) =>
-        allReleases.slice(offset, offset + limit),
-      );
+      return resolveArrayConnection({ args: connectionArgs }, allReleases);
     },
   }),
 );
