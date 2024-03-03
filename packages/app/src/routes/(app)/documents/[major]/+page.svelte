@@ -1,11 +1,11 @@
 <script lang="ts">
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import { page } from '$app/stores';
   import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import CardText from '$lib/components/CardText.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import type { PageData } from './$houdini';
-  import CardMajor from '$lib/components/CardMajor.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { page } from '$app/stores';
   import WipMigrationNotice from './WIPMigrationNotice.svelte';
 
   export let data: PageData;
@@ -43,33 +43,32 @@
     <WipMigrationNotice></WipMigrationNotice>
 
     <section class="fise">
-      <h2 class="typo-field-label">Étudiants</h2>
+      <h2 class="typo-field-label">Étudiant·e·s (FISE)</h2>
       <ul class="nobullet">
         <li>
-          <CardMajor name="FISE" shortName="1A" href="./1a-fise" />
+          <CardText href="./1a-fise">1A</CardText>
         </li>
         <li>
-          <CardMajor name="FISE" shortName="2A" href="./2a-fise" />
-        </li>
-        <li>
-          <CardMajor name="3A" href="./3a" />
+          <CardText href="./2a-fise">2A</CardText>
         </li>
       </ul>
     </section>
 
     <section class="fisa">
-      <h2 class="typo-field-label">Apprentis</h2>
+      <h2 class="typo-field-label">Apprentis (FISA)</h2>
       <ul class="nobullet">
         <li>
-          <CardMajor name="FISA" shortName="1A" href="./1a-fisa" />
+          <CardText href="./1a-fisa">1A</CardText>
         </li>
         <li>
-          <CardMajor name="FISA" shortName="2A" href="./2a-fisa" />
-        </li>
-        <li>
-          <CardMajor name="3A" href="./3a" />
+          <CardText href="./2a-fisa">2A</CardText>
         </li>
       </ul>
+    </section>
+
+    <section class="both">
+      <h2 class="typo-field-label">3e Année</h2>
+      <CardText href="./3a">3A</CardText>
     </section>
   {/if}
 {/if}

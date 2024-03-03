@@ -7,22 +7,12 @@ query Documents {
     }
   }
 
-  majors {
-    id
-    name
-    shortName
-    uid
-    schools {
-      uid
-      name
-    }
-    subjects {
-      id
-    }
-  }
-
   schools {
     uid
     name
+    majors {
+      uid
+      ...CardMajor
+    }
   }
 }
