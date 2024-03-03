@@ -1,43 +1,24 @@
-import { loadQuery } from '$lib/zeus';
-import type { PageLoad } from './$types';
+import { notNull } from '$lib/typing';
+import { format } from 'date-fns';
+import groupBy from 'lodash.groupby';
+import type { AfterLoadEvent } from './$houdini';
+export function _houdini_afterLoad({ data }: AfterLoadEvent) {
+  const events = data.EventsPlanning.events.nodes.filter(notNull);
 
-export const load: PageLoad = async ({ fetch, parent }) =>
-  loadQuery(
-    {
-      events: [
-        { future: true, upcomingShotguns: true },
-        {
-          pageInfo: { hasNextPage: true, startCursor: true },
-          edges: {
-            node: {
-              id: true,
-              uid: true,
-              group: { uid: true, pictureFile: true, name: true, pictureFileDark: true },
-              title: true,
-              location: true,
-              pictureFile: true,
-              startsAt: true,
-              endsAt: true,
-              frequency: true,
-              recurringUntil: true,
-              descriptionHtml: true,
-              descriptionPreview: true,
-              placesLeft: true,
-              capacity: true,
-              mySoonestShotgunOpensAt: true,
-              tickets: {
-                name: true,
-                opensAt: true,
-                closesAt: true,
-                price: true,
-                placesLeft: true,
-                capacity: true,
-                uid: true,
-              },
-            },
-          },
-        },
-      ],
-    },
-    { fetch, parent },
-  );
+  return {
+    ...data,
+    eventsByDate: Object.fromEntries(
+      Object.entries(
+        groupBy(events, (e) => (e.startsAt ? format(e.startsAt, 'yyyy-MM-dd') : '')),
+      ).map(([date, events]) => [date, events.map((e) => e.id)]),
+    ),
+    eventsByShotgun: Object.fromEntries(
+      Object.entries(
+        groupBy(
+          events.filter((e) => e.mySoonestShotgunOpensAt),
+          (e) => (e.mySoonestShotgunOpensAt ? format(e.mySoonestShotgunOpensAt, 'yyyy-MM-dd') : ''),
+        ),
+      ).map(([date, events]) => [date, events.map((e) => e.id)]),
+    ),
+  };
+}

@@ -55,6 +55,7 @@ module.exports = {
     'unicorn/no-empty-file': 'warn',
     'unicorn/no-array-callback-reference': 'warn',
     'unicorn/prefer-spread': process.argv.includes('--fix') ? 'off' : 'warn',
+    'unicorn/no-array-callback-reference': 'warn',
   },
   overrides: [
     {

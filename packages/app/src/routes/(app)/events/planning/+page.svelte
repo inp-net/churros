@@ -1,29 +1,24 @@
 <script lang="ts">
-  import groupBy from 'lodash.groupby';
-  import IconChevronDown from '~icons/mdi/chevron-down';
-  import type { PageData } from './$types';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import CalendarDay from '$lib/components/CalendarDay.svelte';
-  import { compareAsc, format, isFuture, isToday, parse, parseISO } from 'date-fns';
-  import { closestMonday } from '$lib/dates';
-  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
-  import { Gif } from 'svelte-tenor';
+  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+  import { closestMonday } from '$lib/dates';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import { notNull, notUndefined } from '$lib/typing';
+  import { compareAsc, format, isFuture, isToday, parse, parseISO } from 'date-fns';
+  import { Gif } from 'svelte-tenor';
+  import IconChevronDown from '~icons/mdi/chevron-down';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
+  $: ({ EventsPlanning, eventsByDate, eventsByShotgun } = data);
+  $: events = $EventsPlanning.data?.events ? $EventsPlanning.data.events.nodes.filter(notNull) : [];
+
   let expandedEventId: string | undefined = undefined;
 
-  $: events = data.events?.edges.map((e) => e?.node);
-
-  $: groupedByDate = groupBy(events, (e) => (e?.startsAt ? format(e?.startsAt, 'yyyy-MM-dd') : ''));
-
-  $: groupedByShotgun = groupBy(events, (e) =>
-    e.mySoonestShotgunOpensAt ? format(e.mySoonestShotgunOpensAt, 'yyyy-MM-dd') : '',
-  );
-
-  $: shownDays = [...new Set([...Object.keys(groupedByDate), ...Object.keys(groupedByShotgun)])]
+  $: shownDays = [...new Set([...Object.keys(eventsByDate), ...Object.keys(eventsByShotgun)])]
     .filter((dateString) => {
       if (!dateString) return false;
       const date = parse(dateString, 'yyyy-MM-dd', new Date());
@@ -67,15 +62,19 @@
       </div>
     {/if}
     {#each shownDays as day}
-      {@const eventsOfDay = groupedByDate[day]}
+      {@const eventsOfDay = eventsByDate[day]
+        .map((id) => events.find((e) => e.id === id))
+        .filter(notUndefined)}
       <section class="day">
         <CalendarDay
           showMonth={parseISO(day).getMonth() !== new Date().getMonth()}
           day={parseISO(day)}
         />
         <div class="shotguns-and-events">
-          {#if groupedByShotgun[day]?.length > 0}
-            {@const shotguns = groupedByShotgun[day]}
+          {#if eventsByShotgun[day]?.length > 0}
+            {@const shotguns = eventsByShotgun[day]
+              .map((id) => events.find((e) => e.id === id))
+              .filter(notUndefined)}
             <div class="shotguns" class:open={openedShotgunsList === day}>
               <!-- svelte-ignore a11y-click-events-have-key-events -->
               <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -130,14 +129,16 @@
           {#if eventsOfDay?.length > 0}
             <ul class="nobullet events-of-day">
               {#each eventsOfDay.sort( (a, b) => compareAsc(a.startsAt, b.startsAt), ) as event (event.id)}
-                <li>
-                  <CardEvent
-                    bind:expandedEventId
-                    collapsible
-                    href="/events/{event.group.uid}/{event.uid}"
-                    {...event}
-                  />
-                </li>
+                {#if event}
+                  <li>
+                    <CardEvent
+                      bind:expandedEventId
+                      collapsible
+                      href="/events/{event.group.uid}/{event.uid}"
+                      {event}
+                    />
+                  </li>
+                {/if}
               {/each}
             </ul>
           {/if}

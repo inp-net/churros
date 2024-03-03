@@ -1,0 +1,25 @@
+query EventsOfWeek($monday: DateTime!) {
+  me {
+    admin
+    groups {
+      group {
+        uid
+      }
+    }
+  }
+  eventsInWeek(today: $monday) {
+    id
+    uid, group{uid}
+    startsAt
+    ...CardEvent
+  }
+  barWeekNow(now: $monday) {
+    descriptionHtml
+    groups {
+      uid
+      pictureFile
+      pictureFileDark
+      name
+    }
+  }
+}

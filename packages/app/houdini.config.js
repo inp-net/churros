@@ -20,7 +20,8 @@ const config = {
       },
       // turn the value into something the API can use
       marshal(date) {
-        return date && date.getTime();
+        if (typeof date === "string") return date
+        return date && date.toISOString();
       },
     },
     Counts: {
