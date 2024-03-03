@@ -1,0 +1,21 @@
+query ReportDetails($number: Int!) {
+  issue(number: $number) {
+    number
+    body
+    title
+    state
+    importance
+    difficulty
+    duplicatedFrom
+    url
+    bodyHtml
+    comments {
+      authorName
+      bodyHtml
+      body
+      addedAt
+      authorAvatarUrl
+      authorGitlabUrl
+    }
+  }
+}

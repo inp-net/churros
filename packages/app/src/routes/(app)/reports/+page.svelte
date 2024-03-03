@@ -4,19 +4,21 @@
   import IconComments from '~icons/mdi/comment-multiple-outline';
   import Badge from '$lib/components/Badge.svelte';
   import { IssueState } from '$lib/zeus';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import { CURRENT_VERSION } from '$lib/buildinfo';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   export let data: PageData;
+  $: ({ ReportsList } = data);
+  $: ({ issuesByUser } = $ReportsList.data ?? { issuesByUser: [] });
 </script>
 
 <div class="content">
   <h1><ButtonBack></ButtonBack> Tes rapports</h1>
 
   <ul class="nobullet reports">
-    {#each data.issuesByUser as { number, title, state, duplicatedFrom, comments } (duplicatedFrom ?? number)}
+    {#each issuesByUser as { number, title, state, duplicatedFrom, comments } (duplicatedFrom ?? number)}
       <li>
         <a href="./{number}">
           <span class="number">#{duplicatedFrom ?? number}</span>
@@ -46,7 +48,7 @@
     {/each}
   </ul>
 
-  {#if data.issuesByUser.length >= 20}
+  {#if issuesByUser.length >= 20}
     <p>
       Note: seuls tes derniers 20 signalements sont affichés. Pour voir des plus anciens, rends-toi
       sur <ButtonSecondary insideProse href="https://git.inpt.fr/inp-net/churros/-/issues"
