@@ -2,6 +2,7 @@ import { builder, prisma } from '#lib';
 
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
+import { canEditEvent } from '../utils/permissions.js';
 
 builder.mutationField('deleteEventPicture', (t) =>
   t.field({
@@ -12,17 +13,9 @@ builder.mutationField('deleteEventPicture', (t) =>
     async authScopes(_, { id }, { user }) {
       const event = await prisma.event.findUniqueOrThrow({
         where: { id },
+        include: { managers: true },
       });
-
-      return Boolean(
-        // Who can edit this event?
-        // The author
-        user?.id === event.authorId ||
-          // Other authors of the group
-          user?.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId,
-          ),
-      );
+      return canEditEvent(user, event);
     },
     async resolve(_, { id }) {
       const { pictureFile } = await prisma.event.findUniqueOrThrow({

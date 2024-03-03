@@ -1,12 +1,23 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { fragment, graphql, type AreaComments, CardCommentStore } from '$houdini';
+  import { fragment, graphql, type AreaComments, type AreaCommentsMe } from '$houdini';
   import CardComment from '$lib/components/CardComment.svelte';
-  import { me } from '$lib/session';
   import { notNull } from '$lib/typing';
   import { zeus } from '$lib/zeus';
   import Alert from './Alert.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
+
+  export let me: AreaCommentsMe | undefined;
+  $: Me = !me
+    ? undefined
+    : fragment(
+        me,
+        graphql`
+          fragment AreaCommentsMe on User {
+            ...CardCommentAuthor
+          }
+        `,
+      );
 
   export let comments: AreaComments;
   $: Comments = fragment(
@@ -17,6 +28,9 @@
           id
           inReplyToId
           ...CardComment
+          author {
+            ...CardCommentAuthor
+          }
         }
       }
     `,
@@ -25,21 +39,12 @@
 
   export let connection: { documentId: string } | { articleId: string };
 
-  let NewComment = new CardCommentStore();
-  // let newComment = {
-  //   body: '',
-  // };
   let replyingTo: { body: string; inReplyToId: string } = { body: '', inReplyToId: '' };
 
-  async function addComment(
-    comment: { body: string; inReplyToId: string } | undefined = undefined,
-  ) {
-    const { upsertComment } = await $zeus.mutate({
+  async function addComment(comment: { body: string; inReplyToId?: string }) {
+    await $zeus.mutate({
       upsertComment: [
-        {
-          ...connection,
-          ...(comment ?? newComment),
-        },
+        { ...connection, ...comment },
         {
           id: true,
           bodyHtml: true,
@@ -51,12 +56,12 @@
         },
       ],
     });
-    comments.edges = [...comments.edges, { node: upsertComment }];
-    if (!comment) {
-      newComment = {
-        body: '',
-      };
-    }
+    // comments.edges = [...comments.edges, { node: upsertComment }];
+    // if (!comment) {
+    //   newComment = {
+    //     body: '',
+    //   };
+    // }
   }
   async function removeComment(id: string) {
     await $zeus.mutate({
@@ -65,7 +70,7 @@
     window.location.reload();
   }
   async function editComment(id: string, body: string) {
-    const { upsertComment } = await $zeus.mutate({
+    await $zeus.mutate({
       upsertComment: [
         {
           id,
@@ -83,20 +88,23 @@
         },
       ],
     });
-    comments.edges = comments.edges.map(({ node }) =>
-      node.id === upsertComment.id ? { node: upsertComment } : { node },
-    );
+    // comments.edges = comments.edges.map(({ node }) =>
+    //   node.id === upsertComment.id ? { node: upsertComment } : { node },
+    // );
   }
   async function reply() {
     if (!replyingTo) return;
     await addComment(replyingTo);
     replyingTo = { body: '', inReplyToId: '' };
   }
-
 </script>
 
-{#if $me}
-  <CardComment comment={NewComment} canReply={false} creating on:edit={async () => addComment()}
+{#if $Me}
+  <CardComment
+    author={$Me}
+    comment={undefined}
+    canReply={false}
+    on:edit={async ({ detail: [_id, body] }) => addComment({ body })}
   ></CardComment>
 
   <ul class="nobullet comments">
@@ -111,6 +119,7 @@
           on:delete={async ({ detail: id }) => {
             await removeComment(id);
           }}
+          author={node.author}
           comment={node}
         />
       </li>

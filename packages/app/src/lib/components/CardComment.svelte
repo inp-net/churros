@@ -14,57 +14,84 @@
   import InputLongText from './InputLongText.svelte';
   import ButtonGhost from './ButtonGhost.svelte';
   import { removeIdPrefix } from '$lib/typenames';
-  import { fragment, graphql, type CardComment } from '$houdini';
+  import { fragment, graphql, type CardComment, type CardCommentAuthor } from '$houdini';
 
   const dispatch = createEventDispatcher();
 
   let editing = false;
   export let readonly = false;
-  export let creating = false;
   export let canReply = !readonly;
   export let authorExternalHref: string | undefined = undefined;
   export let replyingTo = { body: '', inReplyToId: '' };
+  $: creating = !comment;
 
-  export let comment: CardComment;
-  $: Comment = fragment(
-    comment,
-    graphql`
-      fragment CardComment on Comment {
-        id
-        bodyHtml
-        author {
-          uid
-          fullName
-          pictureFile
-        }
-        createdAt
-        updatedAt
-        body
-        inReplyToId
-        replies {
-          id
-          bodyHtml
-          author {
+  export let author: CardCommentAuthor | undefined | null;
+  $: CommentAuthor = !author
+    ? undefined
+    : fragment(
+        author,
+        graphql`
+          fragment CardCommentAuthor on User {
             uid
             fullName
             pictureFile
           }
-          createdAt
-          updatedAt
-        }
-      }
-    `,
-  );
+        `,
+      );
 
-  $: ({ author, id, updatedAt, createdAt, body, bodyHtml, replies } = $Comment);
+  export let comment: CardComment | undefined;
+  $: Comment = !comment
+    ? undefined
+    : fragment(
+        comment,
+        graphql`
+          fragment CardComment on Comment {
+            id
+            bodyHtml
+            createdAt
+            updatedAt
+            body
+            inReplyToId
+            author {
+              ...CardCommentAuthor
+            }
+            replies {
+              id
+              bodyHtml
+              author {
+                uid
+                fullName
+                pictureFile
+              }
+              createdAt
+              updatedAt
+            }
+          }
+        `,
+      );
+
+  $: ({ id, updatedAt, createdAt, body, bodyHtml, replies } = $Comment ?? {
+    id: null,
+    updatedAt: null,
+    createdAt: new Date(),
+    body: '',
+    bodyHtml: '',
+    replies: [],
+  });
 </script>
 
-<div class="comment-jump-to-anchor" id="comment-{removeIdPrefix('Comment', id)}" />
+{#if id}
+  <div class="comment-jump-to-anchor" id="comment-{removeIdPrefix('Comment', id)}" />
+{/if}
 
 <article class="comment" class:creating>
   <div class="metadata">
-    {#if author}
-      <AvatarPerson small href={authorExternalHref ?? `/users/${author.uid}`} {...author} />
+    {#if $CommentAuthor}
+      <AvatarPerson
+        small
+        href={authorExternalHref ?? `/users/${$CommentAuthor.uid}`}
+        {...$CommentAuthor}
+      />
     {:else}
       <AvatarPerson small pictureFile="" href="" fullName="???" />
     {/if}
@@ -152,12 +179,12 @@
     </div>
   {/each}
 </ul>
-{#if canReply}
+{#if canReply && !creating}
   <div class="reply-area" class:has-replies={replies.length > 0}>
     {#if replyingTo.inReplyToId !== id}
       <ButtonInk
         on:click={() => {
-          replyingTo = { body: '', inReplyToId: id };
+          replyingTo = { body: '', inReplyToId: id ?? '' };
         }}
         icon={IconReply}>Répondre</ButtonInk
       >

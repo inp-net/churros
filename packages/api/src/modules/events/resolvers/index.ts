@@ -3,6 +3,7 @@
  */
 
 export * from './event.managers.js';
+export * from './group.can-create-events.js';
 export * from './group.co-organized-events.js';
 export * from './group.events.js';
 export * from './group.own-events.js';

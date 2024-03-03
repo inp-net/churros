@@ -92,22 +92,6 @@
   });
 
   $: clubBoard = group?.members?.filter((m) => isOnClubBoard(m));
-  $: meOnClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === me?.uid));
-
-  $: myPermissions = me?.groups?.find(({ group: { uid } }) => uid === group?.uid);
-
-  $: canEditDetails = Boolean(
-    me?.admin || clubBoard?.some(({ member }) => member.uid === me?.uid) || me?.canEditGroups,
-  );
-  $: canEditArticles = Boolean(me?.admin || myPermissions?.canEditArticles || meOnClubBoard);
-  $: canEditEvents = canEditArticles;
-  $: canEditMembers = Boolean(
-    me?.admin ||
-      myPermissions?.canEditMembers ||
-      meOnClubBoard ||
-      me?.canEditGroups ||
-      me?.canEditUsers,
-  );
 
   const joinGroup = async (groupUid: string) => {
     if (!group) return;
@@ -190,7 +174,7 @@
         <h1>
           {group.name}
           <ButtonShare />
-          {#if canEditDetails}
+          {#if group.canEditDetails}
             <ButtonGhost help="Modifier les infos" href="./edit"><IconGear /></ButtonGhost>
           {/if}
 
@@ -287,10 +271,7 @@
     </section>
 
     <section class="board">
-      <h2>
-        Bureau {#if canEditMembers}
-          <ButtonSecondary href="./edit/members" icon={IconGear}>Gérer</ButtonSecondary>{/if}
-      </h2>
+      <h2>Bureau</h2>
 
       {#if clubBoard}
         <ul class="nobullet">
@@ -304,6 +285,9 @@
 
         <div class="more">
           <ButtonInk icon={IconPeople} href="./members">Voir tous les membres</ButtonInk>
+          {#if group.canEditMembers}
+            <ButtonInk href="./edit/members" icon={IconGear}>Gérer les membres</ButtonInk>
+          {/if}
         </div>
       {:else if !clubBoard}
         <Alert theme="warning"
@@ -318,11 +302,11 @@
       {/if}
     </section>
 
-    {#if (group.root && (group.root.children.length ?? 0) > 0) || meOnClubBoard}
+    {#if (group.root && (group.root.children.length ?? 0) > 0) || group.canCreateSubgroups}
       {@const hasSubgroups = (group.root?.children.length ?? 0) > 0}
       <section class="subgroups">
         <h2>
-          Sous-groupes {#if hasSubgroups && meOnClubBoard}<ButtonSecondary
+          Sous-groupes {#if hasSubgroups && group.canCreateSubgroups}<ButtonSecondary
               icon={IconAdd}
               href="./subgroups/create">Créer</ButtonSecondary
             >{/if}
@@ -340,21 +324,22 @@
 
     <section class="posts">
       <h2>
-        Posts {#if canEditArticles}<ButtonSecondary href="/posts/{group.uid}/create/" icon={IconAdd}
-            >Nouveau</ButtonSecondary
+        Posts {#if group.canCreateArticles}<ButtonSecondary
+            href="/posts/{group.uid}/create/"
+            icon={IconAdd}>Nouveau</ButtonSecondary
           >{/if}
       </h2>
 
       <ul class="nobullet">
         {#each group.articles.slice(0, 3) as { uid, ...article } (article.id)}
-          <CardArticle hideGroup {group} href="/posts/{group.uid}/{uid}" {...article} />
+          <CardArticle hideGroup href="/posts/{group.uid}/{uid}" {article} />
         {/each}
       </ul>
     </section>
 
     <section class="events">
       <h2>
-        Évènements {#if canEditEvents}
+        Évènements {#if group.canCreateEvents}
           <ButtonSecondary href="/events/{group.uid}/create/" icon={IconAdd}
             >Nouveau</ButtonSecondary
           >
@@ -365,9 +350,9 @@
         {#each group.events.nodes.slice(0, 3).filter(Boolean) as node (node?.id)}
           {#if node}
             <CardFeedEvent
-              likes={node.reactionCounts['❤️'].valueOf()}
+              likes={node.reactionCounts['❤️']?.valueOf() ?? 0}
               liked={node.myReactions['❤']}
-              {...node}
+              event={node}
               href="/events/{node.group.uid}/{node.uid}"
             />
           {/if}

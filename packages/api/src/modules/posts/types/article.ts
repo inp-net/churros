@@ -1,9 +1,15 @@
 import { builder, htmlToText, prisma, toHtml } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
+import { canEditArticle } from '../utils/permissions.js';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
   fields: (t) => ({
+    canEdit: t.boolean({
+      async resolve(article, {}, { user }) {
+        return canEditArticle(user, article);
+      },
+    }),
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
     eventId: t.exposeID('eventId', { nullable: true }),
