@@ -2,23 +2,20 @@
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import CardMajor from '$lib/components/CardMajor.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-  import groupBy from 'lodash.groupby';
   import type { PageData } from './$houdini';
 
   export let data: PageData;
   $: ({ Documents } = data);
 
-  const majorsBySchool = (
-    majors: Array<{ subjects: Array<{}>; schools: Array<{ uid: string }> }>,
-  ) =>
-    Object.entries(groupBy(majors, (m) => m.schools[0]?.uid))
-      .map(([schoolUid, majors]) => [schoolUid, majors.filter((m) => m.subjects.length > 0)])
-      .filter(([_, majors]) => majors.length > 0)
-      .sort(([schoolUid]) => {
-        // Put schools of the user first
-        if ($Documents.data?.me?.major?.schools.some((s) => s.uid === schoolUid)) return -1;
-        return 1;
-      }) as Array<[string, typeof majors]>;
+  function mySchoolsFirst(a: { uid: string }, b: { uid: string }) {
+    if ($Documents.data?.me.major?.schools.some((s) => s.uid === a.uid)) {
+      return -1;
+    }
+    if ($Documents.data?.me.major?.schools.some((s) => s.uid === b.uid)) {
+      return 1;
+    }
+    return 0;
+  }
 </script>
 
 <Breadcrumbs root="/documents/"></Breadcrumbs>
@@ -26,19 +23,13 @@
 {#if !$Documents.data}
   <LoadingSpinner></LoadingSpinner> Chargement
 {:else}
-  {@const majors = $Documents.data.majors}
-  {#each majorsBySchool(majors) as [schoolUid, majorsOfSchool]}
-    {@const school = $Documents.data.schools.find((s) => s.uid === schoolUid)}
+  {#each $Documents.data.schools.sort(mySchoolsFirst) as school}
     <section class="majors-of-school">
-      {#if school}
-        <h2 class="typo-field-label">{school.name}</h2>
-      {:else}
-        <pre>{schoolUid}</pre>
-      {/if}
+      <h2 class="typo-field-label">{school.name}</h2>
       <ul class="nobullet">
-        {#each majors as major}
+        {#each school.majors as major}
           <li>
-            <CardMajor href="./{major.uid}" {...major}></CardMajor>
+            <CardMajor href="./{major.uid}" {major}></CardMajor>
           </li>
         {/each}
       </ul>

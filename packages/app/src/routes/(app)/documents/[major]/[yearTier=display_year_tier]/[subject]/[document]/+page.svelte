@@ -1,28 +1,29 @@
 <script lang="ts">
   //@ts-expect-error Untyped lib
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { env } from '$env/dynamic/public';
+  import { graphql } from '$houdini';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import ButtonInk from '$lib/components/ButtonInk.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import CardComment from '$lib/components/CardComment.svelte';
+  import InputLongText from '$lib/components/InputLongText.svelte';
+  import { formatDate } from '$lib/dates';
+  import { ICONS_DOCUMENT_TYPES, documentType } from '$lib/display';
+  import { me } from '$lib/session';
+  import { toasts } from '$lib/toasts';
+  import { DocumentType, zeus } from '$lib/zeus';
+  import { isSameDay } from 'date-fns';
   import SEO from 'svelte-seo';
   import IconDelete from '~icons/mdi/delete-outline';
   import IconEdit from '~icons/mdi/edit-outline';
   import IconBack from '~icons/mdi/undo-variant';
   import type { PageData } from './$houdini';
-  import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import { page } from '$app/stores';
-  import { formatDate } from '$lib/dates';
-  import { isSameDay } from 'date-fns';
-  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import { zeus, DocumentType } from '$lib/zeus';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import CardComment from '$lib/components/CardComment.svelte';
-  import InputLongText from '$lib/components/InputLongText.svelte';
-  import { env } from '$env/dynamic/public';
-  import ButtonInk from '$lib/components/ButtonInk.svelte';
-  import { me } from '$lib/session';
-  import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import { goto } from '$app/navigation';
-  import { ICONS_DOCUMENT_TYPES, documentType } from '$lib/display';
-  import { toasts } from '$lib/toasts';
-  import { graphql } from '$houdini';
+  import { notNull } from '$lib/typing';
 
   const { PUBLIC_STORAGE_URL } = env;
 
@@ -131,9 +132,6 @@
     replyingTo = { body: '', inReplyToId: '' };
   }
 
-  function notNull<T>(val: T): val is NonNullable<T> {
-    return Boolean(val);
-  }
   $: emptyDocument = solutionPaths.length + paperPaths.length === 0;
 </script>
 
@@ -313,26 +311,21 @@
     {#if !comments}
       <li class="loading">Chargement…</li>
     {:else}
-      {#each comments.nodes.filter((node) => node && !node.inReplyToId) as node}
-        {#if node}
-          <li class="comment">
-            <CardComment
-              bind:replyingTo
-              on:reply={reply}
-              on:edit={async ({ detail: [id, body] }) => {
-                if (!node) return;
-                await editComment(id, body);
-              }}
-              on:delete={async ({ detail: id }) => {
-                await removeComment(id);
-              }}
-              {...node}
-              replies={comments.nodes
-                .filter((node) => node?.inReplyToId === node?.id)
-                .filter(notNull)}
-            ></CardComment>
-          </li>
-        {/if}
+      {#each comments.nodes.filter((node) => !node?.inReplyToId).filter(notNull) as node}
+        <li class="comment">
+          <CardComment
+            bind:replyingTo
+            on:reply={reply}
+            on:edit={async ({ detail: [id, body] }) => {
+              if (!node) return;
+              await editComment(id, body);
+            }}
+            on:delete={async ({ detail: id }) => {
+              await removeComment(id);
+            }}
+            comment={node}
+          ></CardComment>
+        </li>
       {/each}
     {/if}
   </ul>

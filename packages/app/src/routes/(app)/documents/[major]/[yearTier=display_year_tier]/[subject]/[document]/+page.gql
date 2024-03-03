@@ -50,16 +50,8 @@ query Document(
     comments(first: 100) {
       nodes @list(name: "Document_Comments") {
         id
-        author {
-          uid
-          fullName
-          pictureFile
-        }
-        bodyHtml
-        body
         inReplyToId
-        createdAt
-        updatedAt
+        ...CardComment
       }
     }
   }
