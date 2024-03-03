@@ -1,0 +1,15 @@
+query ReportsList {
+  issuesByUser {
+    number
+    body
+    title
+    state
+    importance
+    difficulty
+    url
+    duplicatedFrom
+    comments {
+      addedAt
+    }
+  }
+}
