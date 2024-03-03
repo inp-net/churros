@@ -1,30 +1,35 @@
 <script lang="ts">
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import { me } from '$lib/session';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import AppsList from './AppsList.svelte';
 
   export let data: PageData;
 
-  const { apps, otherApps } = data;
+  $: ({ ThirdPartyAppsListPage } = data);
+  $: me = $ThirdPartyAppsListPage.data?.me ?? undefined;
 </script>
 
 <main>
   <h1>Mes applications</h1>
 
-  <ul class="apps">
-    <AppsList {apps} />
-  </ul>
-  <section class="create">
-    <ButtonPrimary href="./create">Créer une application</ButtonPrimary>
-  </section>
-
-  {#if $me?.admin}
-    <hr />
-    <h2>Autres applications</h2>
+  {#if !$ThirdPartyAppsListPage.data}
+    Chargement…
+  {:else}
+    {@const { myApps, otherApps } = $ThirdPartyAppsListPage.data}
     <ul class="apps">
-      <AppsList apps={otherApps}></AppsList>
+      <AppsList apps={myApps} />
     </ul>
+    <section class="create">
+      <ButtonPrimary href="./create">Créer une application</ButtonPrimary>
+    </section>
+
+    {#if me?.admin && otherApps}
+      <hr />
+      <h2>Autres applications</h2>
+      <ul class="apps">
+        <AppsList apps={otherApps}></AppsList>
+      </ul>
+    {/if}
   {/if}
 </main>
 

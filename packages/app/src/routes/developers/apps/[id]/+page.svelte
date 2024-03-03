@@ -26,15 +26,27 @@
   import IconScrollUnlocked from '~icons/mdi/lock-open-outline';
   import ButtonToggleActiveApp from '../ButtonToggleActiveApp.svelte';
   import FormApp from '../FormApp.svelte';
-  import type { PageData } from './$types';
-  import { _query } from './+page';
-  import { tooltip } from '$lib/tooltip';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
-  let logSectionElement: HTMLElement;
-  let logDetailsModalElement: HTMLDialogElement;
+  $: ({ ThirdPartyAppDetails } = data);
+
   let loading = false;
-  let {
+  $: app = $ThirdPartyAppDetails.data?.thirdPartyApp ?? {
+    id: '',
+    name: '',
+    description: '',
+    allowedRedirectUris: [],
+    createdAt: '',
+    faviconUrl: '',
+    clientId: '',
+    active: false,
+    owner: null,
+    website: '',
+    secretLength: 0,
+    usersCount: 0
+  };
+  $: ({
     name,
     description,
     allowedRedirectUris,
@@ -45,7 +57,7 @@
     owner,
     website,
     secretLength,
-  } = data.thirdPartyApp;
+  } = app);
 
   $: logs = data.thirdPartyApp.logs.nodes;
 
@@ -110,6 +122,7 @@
   }
 
   async function rotateSecret() {
+    if (!app) return;
     toasts.info('Es-tu sûr·e?', "L'ancien secret ne sera plus valide", {
       async action({ data: { id }, id: toastId }) {
         ({ rotateAppSecret: clientSecret } = await $zeus
@@ -129,7 +142,7 @@
       },
       lifetime: Number.POSITIVE_INFINITY,
       data: {
-        id: data.thirdPartyApp.id,
+        id: app.id,
       },
     });
   }
@@ -139,37 +152,38 @@
   }
 
   async function updateApp() {
-    if (!app.ownerGroup) return;
+    if (!app || !app.owner) return;
+    // if (!app.ownerGroup) return;
     const { editApp } = await $zeus.mutate({
       editApp: [
         {
-          id: data.thirdPartyApp.id,
-          allowedRedirectUris: app.allowedRedirectUris.split(' '),
+          id: app.id,
+          allowedRedirectUris: app.allowedRedirectUris,
           description: app.description,
           name: app.name,
-          ownerGroupUid: app.ownerGroup.uid,
+          ownerGroupUid: app.owner.uid,
           website: app.website,
         },
-        _query,
+        {__typename: true}
       ],
     });
 
-    if (active && !editApp.active) {
-      await toasts.warn(
-        'Validation nécéssaire',
-        "L'application est de nouveau en attente de validation",
-      );
-    }
+    // if (active && !editApp.active) {
+    //   await toasts.warn(
+    //     'Validation nécéssaire',
+    //     "L'application est de nouveau en attente de validation",
+    //   );
+    // }
 
-    ({ name, description, allowedRedirectUris, createdAt, faviconUrl, active, owner, website } =
-      editApp);
+    // ({ name, description, allowedRedirectUris, createdAt, faviconUrl, active, owner, website } =
+    //   editApp);
 
-    app = {
-      ...app,
-      ...editApp,
-      allowedRedirectUris: allowedRedirectUris.join(' '),
-      ownerGroup: owner,
-    };
+    // app = {
+    //   ...app,
+    //   ...editApp,
+    //   allowedRedirectUris: allowedRedirectUris.join(' '),
+    //   ownerGroup: owner,
+    // };
   }
 
   function prettyLogMessage(log: { message: string; action: string }): {
@@ -280,11 +294,11 @@
       >
     </div>
     {#if $me?.admin}
-      <ButtonToggleActiveApp {...data.thirdPartyApp}></ButtonToggleActiveApp>
+      <ButtonToggleActiveApp {...app}></ButtonToggleActiveApp>
     {/if}
     <div class="users">
       <IconUsers></IconUsers>
-      {data.thirdPartyApp.usersCount} utilisateur·ice·s
+      {app.usersCount} utilisateur·ice·s
     </div>
     <div class="date"><IconCalendar></IconCalendar> Créée le {formatDateTime(createdAt)}</div>
   </section>

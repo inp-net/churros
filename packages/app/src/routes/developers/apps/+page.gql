@@ -1,0 +1,17 @@
+query ThirdPartyAppsListPage($isAdmin: Boolean!) {
+  me {
+    admin
+  }
+  myApps {
+    nodes {
+      id
+    }
+    ...ThirdPartyAppsList
+  }
+  otherApps: allApps(mine: false) @include(if: $isAdmin) {
+    nodes {
+      id
+    }
+    ...ThirdPartyAppsList
+  }
+}

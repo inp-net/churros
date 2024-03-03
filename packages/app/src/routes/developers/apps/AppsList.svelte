@@ -1,19 +1,29 @@
 <script lang="ts">
+  import { fragment, graphql, type ThirdPartyAppsList } from '$houdini';
   import Badge from '$lib/components/Badge.svelte';
   import { tooltip } from '$lib/tooltip';
+  import { notNull } from '$lib/typing';
   import IconUsers from '~icons/mdi/account-multiple-outline';
 
-  export let apps: Array<{
-    name: string;
-    faviconUrl: string;
-    id: string;
-    clientId: string;
-    active: boolean;
-    usersCount: number;
-  }>;
+  export let apps: ThirdPartyAppsList;
+  $: Apps = fragment(
+    apps,
+    graphql`
+      fragment ThirdPartyAppsList on ThirdPartyAppsConnection {
+        nodes {
+          name
+          faviconUrl
+          id
+          clientId
+          active
+          usersCount
+        }
+      }
+    `,
+  );
 </script>
 
-{#each apps as { name, faviconUrl, id, clientId, active, usersCount } (id)}
+{#each $Apps.nodes.filter(notNull) as { name, faviconUrl, id, clientId, active, usersCount } (id)}
   <li>
     <a href={`./${clientId}`}>
       <span class="name">
