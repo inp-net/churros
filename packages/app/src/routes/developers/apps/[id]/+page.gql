@@ -1,0 +1,22 @@
+query ThirdPartyAppDetails($id: ID!) {
+  thirdPartyApp(id: $id) {
+    id
+    name
+    description
+    allowedRedirectUris
+    createdAt
+    faviconUrl
+    clientId
+    active
+    website
+    secretLength
+    usersCount
+    owner {
+      id
+      uid
+      name
+      pictureFile
+      pictureFileDark
+    }
+  }
+}
