@@ -1,36 +1,21 @@
 <script lang="ts">
-  import type { PageData } from './$houdini';
+  import { page } from '$app/stores';
   import Breadcrumb from '$lib/components/Breadcrumb.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import { page } from '$app/stores';
-  import CardDocument from '$lib/components/CardDocument.svelte';
-  import { DISPLAY_DOCUMENT_TYPES, ICONS_DOCUMENT_TYPES, ORDER_DOCUMENT_TYPES } from '$lib/display';
-  import { DocumentType } from '$lib/zeus';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import CardDocument from '$lib/components/CardDocument.svelte';
+  import CardText from '$lib/components/CardText.svelte';
+  import { DISPLAY_DOCUMENT_TYPES, ICONS_DOCUMENT_TYPES } from '$lib/display';
+  import { notNull } from '$lib/typing';
   import WipMigrationNotice from '../../WIPMigrationNotice.svelte';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
-  $: ({ DocumentsOfSubject } = data);
-  $: ({ documentsOfSubject, subject, major } = $DocumentsOfSubject.data ?? {
+  $: ({ DocumentsOfSubject, documentsByType } = data);
+  $: ({ subject, major } = $DocumentsOfSubject.data ?? {
     subject: undefined,
-    documentsOfSubject: { edges: [] },
     major: undefined,
   });
-
-  const documentTypesWithSolutions = new Set<DocumentType>([
-    DocumentType.Exam,
-    DocumentType.Exercises,
-    DocumentType.GradedExercises,
-    DocumentType.Practical,
-    DocumentType.PracticalExam,
-  ]);
-
-  $: documentsByType = ORDER_DOCUMENT_TYPES.map((type) => [
-    type,
-    documentsOfSubject?.edges.filter((e) => e?.node.type === type).map((e) => e?.node),
-  ]).sort(
-    ([_, aDocs], [__, bDocs]) => Number(bDocs?.length > 0 ?? 0) - Number(aDocs?.length > 0 ?? 0),
-  );
 </script>
 
 <Breadcrumbs root="/documents">
@@ -59,37 +44,31 @@
   </section>
 {/if}
 
-{#if documentsByType && documentsOfSubject && documentsOfSubject.edges.length > 0}
-  {#each documentsByType as [type, documents]}
-    <section class={type.toLowerCase()}>
-      <h2 class="typo-field-label">
-        <svelte:component this={ICONS_DOCUMENT_TYPES.get(type)}></svelte:component>
-        {DISPLAY_DOCUMENT_TYPES.get(type)}
-      </h2>
-      <ul class="nobullet">
-        {#each documents as { solutionPaths, uid, ...rest }}
-          <li>
-            <CardDocument
-              href="./{uid}"
-              hasSolution={documentTypesWithSolutions.has(type)
-                ? solutionPaths.length > 0
-                : undefined}
-              {...rest}
-            ></CardDocument>
-          </li>
-        {/each}
-        <li class="new">
-          <CardDocument createdAt={new Date()} add href="./create?type={type}" title="Ajouter"
-          ></CardDocument>
+{#each documentsByType as [type, documents]}
+  <section class={type.toLowerCase()}>
+    <h2 class="typo-field-label">
+      <svelte:component this={ICONS_DOCUMENT_TYPES.get(type)}></svelte:component>
+      {DISPLAY_DOCUMENT_TYPES.get(type)}
+    </h2>
+    <ul class="nobullet">
+      {#each documents.filter(notNull) as document (document.id)}
+        <li>
+          <CardDocument href="./{document.uid}" {document}></CardDocument>
         </li>
-      </ul>
-    </section>
-  {/each}
+      {/each}
+      <li class="new">
+        <CardText dashed href="./create?type={type}">
+          <svelte:fragment slot="header">Ajouter</svelte:fragment>
+          <span class="muted">Contribue à la Frappe :)</span>
+        </CardText>
+      </li>
+    </ul>
+  </section>
 {:else}
   <div class="no-docs">
     Aucun document… <br /><ButtonSecondary href="./create">Ajouter un document ❤️</ButtonSecondary>
   </div>
-{/if}
+{/each}
 
 <style lang="scss">
   ul {

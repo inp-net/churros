@@ -1,3 +1,4 @@
+import type { DocumentType$options } from '$houdini';
 import {
   DocumentType,
   IssueState,
@@ -197,7 +198,7 @@ export function documentType(key: string): DocumentType {
   throw new Error(`Unknown document type: ${key}`);
 }
 
-export const DISPLAY_DOCUMENT_TYPES = new Map<DocumentType, string>([
+export const DISPLAY_DOCUMENT_TYPES = new Map<DocumentType | DocumentType$options, string>([
   [DocumentType.CourseNotes, 'Notes de cours'],
   [DocumentType.CourseSlides, 'Diapositives du cours'],
   [DocumentType.Exam, 'Partiel'],
@@ -209,8 +210,11 @@ export const DISPLAY_DOCUMENT_TYPES = new Map<DocumentType, string>([
   [DocumentType.Summary, 'Fiche'],
 ]);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const ICONS_DOCUMENT_TYPES = new Map<DocumentType, typeof SvelteComponent<any>>([
+export const ICONS_DOCUMENT_TYPES = new Map<
+  DocumentType | DocumentType$options,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  typeof SvelteComponent<any>
+>([
   [DocumentType.CourseNotes, IconFileDocumentOutline],
   [DocumentType.CourseSlides, IconPlayBoxOutline],
   [DocumentType.Exam, IconCalendarEndOutline],
