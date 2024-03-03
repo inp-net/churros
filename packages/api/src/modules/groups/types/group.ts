@@ -1,7 +1,7 @@
 import { builder, prisma, toHtml } from '#lib';
-
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { GroupEnumType } from '../index.js';
+import { canCreateSubgroups, canEditDetails, canEditMembers } from '../utils/permissions.js';
 
 export const GroupType = builder.prismaNode('Group', {
   id: { field: 'id' },
@@ -92,5 +92,17 @@ export const GroupType = builder.prismaNode('Group', {
     root: t.relation('familyRoot', { nullable: true }),
     familyChildren: t.relation('familyChildren'),
     related: t.relation('related'),
+    canCreateSubgroups: t.boolean({
+      description: 'Vrai si la personne connectée peut créer des sous-groupes de ce groupe',
+      resolve: (group, _, { user }) => canCreateSubgroups(user, group),
+    }),
+    canEditMembers: t.boolean({
+      description: 'Vrai si la personne connectée peut éditer les membres de ce groupe',
+      resolve: (group, _, { user }) => canEditMembers(user, group),
+    }),
+    canEditDetails: t.boolean({
+      description: 'Vrai si la personne connectée peut éditer les détails de ce groupe',
+      resolve: (group, _, { user }) => canEditDetails(user, group),
+    }),
   }),
 });

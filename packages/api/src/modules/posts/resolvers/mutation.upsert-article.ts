@@ -3,6 +3,7 @@ import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { Visibility } from '@prisma/client';
 import { ArticleType, createUid, scheduleNewArticleNotification } from '../index.js';
+import { canCreateArticles, canEditArticle } from '../utils/permissions.js';
 
 builder.mutationField('upsertArticle', (t) =>
   t.prismaField({
@@ -21,36 +22,9 @@ builder.mutationField('upsertArticle', (t) =>
     },
     async authScopes(_, { id, authorId, groupId }, { user }) {
       const creating = !id;
-      if (!user) return false;
-      if (user.canEditGroups) return true;
 
-      if (creating) {
-        if (!groupId) return false;
-        return Boolean(
-          user.groups.some(
-            ({ group: { id }, canEditArticles }) => canEditArticles && groupId === id,
-          ),
-        );
-      }
-
-      const article = await prisma.article.findUniqueOrThrow({ where: { id } });
-
-      return (
-        // Spoofing is disallowed
-        ((authorId === user.id &&
-          // To set their-self or remove the author, the user must be allowed to write articles
-          authorId === article.authorId) ||
-          user.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
-          )) &&
-        // Who can edit this article?
-        // The author
-        (user.id === article.authorId ||
-          // Other authors of the group
-          user.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
-          ))
-      );
+      if (creating) return canCreateArticles(user, { id: groupId });
+      return canEditArticle(user, { authorId, groupId });
     },
     async resolve(
       query,

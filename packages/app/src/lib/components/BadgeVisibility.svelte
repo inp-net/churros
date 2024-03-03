@@ -1,10 +1,11 @@
 <script lang="ts">
+  import { type Visibility$options } from '$houdini';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
   import { tooltip } from '$lib/tooltip';
   import type { Visibility } from '$lib/zeus';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
 
-  export let visibility: Visibility;
+  export let visibility: Visibility | Visibility$options;
   export let inline = false;
 </script>
 

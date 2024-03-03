@@ -28,6 +28,7 @@ export function userIsTreasurerOf(user: Context['user'], groupUid: string): bool
     user?.groups.some(({ group: { uid }, treasurer }) => uid === groupUid && treasurer),
   );
 }
+// TODO also accept group.id
 export function userIsOnBoardOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
     user?.groups.some(
@@ -43,4 +44,8 @@ export function userIsDeveloperOf(user: Context['user'], groupUid: string): bool
   return Boolean(
     user?.groups.some(({ group: { uid }, isDeveloper }) => groupUid === uid && isDeveloper),
   );
+}
+
+export function membership(user: Context['user'], groupUid: string) {
+  return user?.groups.find(({ group: { uid } }) => uid === groupUid);
 }

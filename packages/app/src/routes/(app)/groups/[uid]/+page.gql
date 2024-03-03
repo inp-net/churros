@@ -21,6 +21,11 @@ query GroupProfile($uid: String!, $isStudent: Boolean!) {
     name
     pictureFile
     pictureFileDark
+    canCreateArticles
+    canCreateEvents
+    canCreateSubgroups
+    canEditMembers
+    canEditDetails
     address @include(if: $isStudent)
     color
     description
@@ -30,10 +35,7 @@ query GroupProfile($uid: String!, $isStudent: Boolean!) {
     groupId
     roomIsOpen @include(if: $isStudent)
     related {
-      uid
-      name
-      pictureFile
-      pictureFileDark
+      ...CardGroupGroup
     }
     root {
       groupId
@@ -75,20 +77,11 @@ query GroupProfile($uid: String!, $isStudent: Boolean!) {
     }
     articles {
       id
-      visibility
       uid
-      title
-      bodyHtml
-      bodyPreview
-      pictureFile
-      author @include(if: $isStudent) {
-        firstName
-        lastName
+      group {
         uid
-        fullName
-        pictureFile
       }
-      publishedAt
+      ...CardArticle
     }
     studentAssociation {
       name
@@ -121,45 +114,13 @@ query GroupProfile($uid: String!, $isStudent: Boolean!) {
     events {
       nodes {
         id
-        descriptionHtml
-        descriptionPreview
         uid
-        frequency
-        recurringUntil
         myReactions
         reactionCounts
-        links {
-          name
-          value
-          computedValue
-        }
-        title
-        startsAt
-        endsAt
-        pictureFile
-        visibility
-        location
-        tickets {
-          name
-          price
-          uid
-          opensAt
-          closesAt
-          placesLeft
-          capacity
-        }
         group {
           uid
-          pictureFile
-          pictureFileDark
-          name
         }
-        coOrganizers {
-          uid
-          pictureFile
-          pictureFileDark
-          name
-        }
+        ...CardFeedEvent
       }
     }
   }

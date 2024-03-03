@@ -9,12 +9,14 @@ strict digraph ImportGraph {
     "events" -> "reactions";
     "events" -> "ticketing";
     "events" -> "links";
+    "events" -> "groups";
     "gitlab" -> "users";
     "groups" -> "links";
     "groups" -> "users";
     "oauth" -> "users";
     "posts" -> "notifications";
     "posts" -> "links";
+    "posts" -> "groups";
     "schools" -> "curriculum";
     "student-associations" -> "payments";
     "ticketing" -> "payments";
