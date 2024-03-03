@@ -15,10 +15,10 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
 
-  export let likes: number | undefined;
-  export let liked: boolean | undefined;
+  export let likes: number | undefined = undefined;
+  export let liked: boolean | undefined = undefined;
   export let href: string;
-  export let eventHref: string|undefined;
+  export let eventHref: string | undefined = undefined;
   export let article: CardArticle;
   $: Article = fragment(
     article,

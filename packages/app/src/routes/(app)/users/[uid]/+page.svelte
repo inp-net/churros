@@ -293,7 +293,7 @@
         {#each user.articles.nodes as article}
           {#if article}
             <li>
-              <CardArticle href="/posts/{article.group.uid}/{article.uid}" {...article} />
+              <CardArticle href="/posts/{article.group.uid}/{article.uid}" {article} />
             </li>
           {:else}
             <li class="loading">Chargement…</li>
