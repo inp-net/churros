@@ -5,18 +5,24 @@
     COLOR_THEME_BY_CHANGELOG_CATEGORY,
     BULLET_EMOJI_BY_CHANGELOG_CATEGORY,
   } from '$lib/components/ModalChangelog.svelte';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import Alert from '$lib/components/Alert.svelte';
-  import { me } from '$lib/session';
+  import { notNull } from '$lib/typing';
 
   export let data: PageData;
+  $: ({ ChangelogPage } = data);
+  $: ({ me } = $ChangelogPage.data ?? { me: null });
+  $: combinedChangelog =
+    $ChangelogPage.data?.combinedChangelog.__typename === 'QueryCombinedChangelogSuccess'
+      ? $ChangelogPage.data.combinedChangelog.data.nodes.filter(notNull)
+      : [];
 
   type Category = (typeof ORDER_CHANGELOG_CATEGORIES)[number];
 
-  function changesByCategory(
-    version: Omit<(typeof data.combinedChangelog)[number], 'description'>,
-  ): Array<[Category, (typeof data.combinedChangelog)[number]['changes'][Category]]> {
-    const isDev = $me?.groups.some((g) => g.group.uid === 'devs');
+  function changesByCategory(version: {
+    changes: Record<string, Array<{ html: string }>>;
+  }): Array<[Category, Array<{ html: string }>]> {
+    const isDev = me?.groups.some((g) => g.group.uid === 'devs' || g.isDeveloper);
     // @ts-expect-error classic case of Object.entries being too dumb. using a "as" cast causes a syntax error for the Svelte parser for some reason
     return Object.entries(version.changes)
       .map(([category, changes]) => [category, category !== 'technical' || isDev ? changes : []])
@@ -27,11 +33,12 @@
 <main>
   <h1>Changelog</h1>
 
-  {#if data.upcomingChangelog && changesByCategory(data.upcomingChangelog).length > 0}
+  {#if $ChangelogPage.data?.upcomingChangelog.__typename === 'QueryUpcomingChangelogSuccess' && changesByCategory($ChangelogPage.data.upcomingChangelog.data).length > 0}
+    {@const upcomingChangelog = $ChangelogPage.data.upcomingChangelog.data}
     <Alert theme="default">
       <details>
         <summary> Prochainement </summary>
-        {#each changesByCategory(data.upcomingChangelog) as [category, changes]}
+        {#each changesByCategory(upcomingChangelog) as [category, changes]}
           <h3 class={COLOR_THEME_BY_CHANGELOG_CATEGORY[category]}>
             {DISPLAY_CHANGELOG_CATEGORIES.get(category)}
           </h3>
@@ -53,7 +60,7 @@
     </Alert>
   {/if}
 
-  {#each data.combinedChangelog as version}
+  {#each combinedChangelog as version}
     <h2 id="v{version.version}">
       Version {version.version}
       {#if version.date}
