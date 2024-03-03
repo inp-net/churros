@@ -3,6 +3,7 @@
   import { fragment, graphql, type AreaComments, CardCommentStore } from '$houdini';
   import CardComment from '$lib/components/CardComment.svelte';
   import { me } from '$lib/session';
+  import { notNull } from '$lib/typing';
   import { zeus } from '$lib/zeus';
   import Alert from './Alert.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
@@ -92,9 +93,6 @@
     replyingTo = { body: '', inReplyToId: '' };
   }
 
-  function notNull<T>(value: T | null): value is T {
-    return value !== null;
-  }
 </script>
 
 {#if $me}

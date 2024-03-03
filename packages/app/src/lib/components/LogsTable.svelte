@@ -1,15 +1,11 @@
 <script lang="ts">
   import { fragment, graphql, type LogsTableEntry } from '$houdini';
   import { formatDateTime } from '$lib/dates';
+  import { notNull } from '$lib/typing';
   import JSONTree from 'svelte-json-tree';
 
   let openedLogId = '';
 
-  function notNull<T>(value: T | null): value is T {
-    return value !== null;
-  }
-
-  // export let logs: logEntry[] = [];
   export let logs: LogsTableEntry;
   $: Logs = fragment(
     logs,
