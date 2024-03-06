@@ -136,7 +136,7 @@
 
   nav.pan7on {
     background-color: transparent;
-    background-image: url('/ChurrosPcPan7on.png');
+    background-image: url('/ChurrosPan7onv6.png');
     background-repeat: repeat-x;
     background-size: auto 100%;
   }
