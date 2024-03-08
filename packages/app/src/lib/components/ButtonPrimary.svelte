@@ -15,7 +15,7 @@
   {href}
   class="button-primary typo-big-button primary"
   class:smaller
-  disabled={disabled || loading}
+  disabled={disabled || loading || undefined}
   on:click
   type={submits ? 'submit' : 'button'}
   role="button"
@@ -49,7 +49,7 @@
       opacity: 0;
     }
 
-    &[disabled='true'] {
+    &[disabled] {
       color: var(--disabled-text);
       cursor: default;
       background: var(--disabled-bg);
