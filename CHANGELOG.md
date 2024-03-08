@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug qui affiché une place comme grisée sur la page d'un évènement (!121) (@bardete)
+
 ## [1.48.0] - 2024-03-01
 
 ### Technique
