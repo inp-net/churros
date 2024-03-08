@@ -15,6 +15,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 - Correction d'un bug qui affiché une place comme grisée sur la page d'un évènement (!121) (@bardete)
 
+### Technique
+
+- Les options de cotisations à une AE ne sont plus hardcodées dans le code de churros (!119) (@bardete)
+
 ## [1.48.0] - 2024-03-01
 
 ### Technique
