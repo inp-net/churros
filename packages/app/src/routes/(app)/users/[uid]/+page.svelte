@@ -227,9 +227,10 @@
     <section class="contribution">
       {#each contributionOptions as option}
         <h2>Cotiser pour {option.name}</h2>
-        <p class="explain-contribution typo-details">
-          {option.description}
-        </p>
+        <div class="explain-contribution typo-details data-user-html">
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html option.descriptionHtml}
+        </div>
       {/each}
       <div class="manage">
         <AreaContribute {contributionOptions} pendingContributions={user.pendingContributions}
