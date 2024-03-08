@@ -227,7 +227,7 @@
     <section class="contribution">
       {#each contributionOptions as option}
         <h2>Cotiser pour {option.name}</h2>
-        <div class="explain-contribution typo-details data-user-html">
+        <div data-user-html class="explain-contribution typo-details">
           <!-- eslint-disable-next-line svelte/no-at-html-tags -->
           {@html option.descriptionHtml}
         </div>
