@@ -140,6 +140,16 @@ CREATE TABLE "FormSection" (
 );
 
 -- CreateTable
+CREATE TABLE "FormJump" (
+    "id" TEXT NOT NULL DEFAULT nanoid('formjump:'),
+    "questionId" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "targetId" TEXT NOT NULL,
+
+    CONSTRAINT "FormJump_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Question" (
     "id" TEXT NOT NULL DEFAULT nanoid('question:'),
     "sectionId" TEXT NOT NULL,
@@ -172,7 +182,13 @@ CREATE TABLE "Answer" (
 );
 
 -- CreateTable
-CREATE TABLE "_goToSection" (
+CREATE TABLE "_completedForms" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_partiallyCompletedForms" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
@@ -193,10 +209,16 @@ CREATE UNIQUE INDEX "Question_sectionId_order_key" ON "Question"("sectionId", "o
 CREATE UNIQUE INDEX "Answer_bookingId_key" ON "Answer"("bookingId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_goToSection_AB_unique" ON "_goToSection"("A", "B");
+CREATE UNIQUE INDEX "_completedForms_AB_unique" ON "_completedForms"("A", "B");
 
 -- CreateIndex
-CREATE INDEX "_goToSection_B_index" ON "_goToSection"("B");
+CREATE INDEX "_completedForms_B_index" ON "_completedForms"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_partiallyCompletedForms_AB_unique" ON "_partiallyCompletedForms"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_partiallyCompletedForms_B_index" ON "_partiallyCompletedForms"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_restrictedTo_AB_unique" ON "_restrictedTo"("A", "B");
@@ -214,6 +236,12 @@ ALTER TABLE "Form" ADD CONSTRAINT "Form_eventId_fkey" FOREIGN KEY ("eventId") RE
 ALTER TABLE "FormSection" ADD CONSTRAINT "FormSection_formId_fkey" FOREIGN KEY ("formId") REFERENCES "Form"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "FormJump" ADD CONSTRAINT "FormJump_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "Question"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FormJump" ADD CONSTRAINT "FormJump_targetId_fkey" FOREIGN KEY ("targetId") REFERENCES "FormSection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Question" ADD CONSTRAINT "Question_sectionId_fkey" FOREIGN KEY ("sectionId") REFERENCES "FormSection"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -226,10 +254,16 @@ ALTER TABLE "Answer" ADD CONSTRAINT "Answer_answeredById_fkey" FOREIGN KEY ("ans
 ALTER TABLE "Answer" ADD CONSTRAINT "Answer_bookingId_fkey" FOREIGN KEY ("bookingId") REFERENCES "Registration"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_goToSection" ADD CONSTRAINT "_goToSection_A_fkey" FOREIGN KEY ("A") REFERENCES "FormSection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_completedForms" ADD CONSTRAINT "_completedForms_A_fkey" FOREIGN KEY ("A") REFERENCES "Form"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_goToSection" ADD CONSTRAINT "_goToSection_B_fkey" FOREIGN KEY ("B") REFERENCES "Question"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_completedForms" ADD CONSTRAINT "_completedForms_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_partiallyCompletedForms" ADD CONSTRAINT "_partiallyCompletedForms_A_fkey" FOREIGN KEY ("A") REFERENCES "Form"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_partiallyCompletedForms" ADD CONSTRAINT "_partiallyCompletedForms_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_restrictedTo" ADD CONSTRAINT "_restrictedTo_A_fkey" FOREIGN KEY ("A") REFERENCES "FormSection"("id") ON DELETE CASCADE ON UPDATE CASCADE;

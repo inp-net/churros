@@ -3,6 +3,7 @@
  */
 
 export * from './event.forms.js';
+export * from './form-section.next-section.js';
 export * from './form.answers-csv.js';
 export * from './mutation.answer-file-question.js';
 export * from './mutation.answer-question.js';

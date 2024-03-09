@@ -1,15 +1,16 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, toHtml } from '#lib';
+import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, toHtml } from '#lib';
 import {
   canSeeAllAnswers,
   canSeeForm,
   requiredIncludesForPermissions,
 } from '../utils/permissions.js';
+import { FormSectionType } from './form-section.js';
 import { QuestionKindType } from './question-kind.js';
 
 export const QuestionType = builder.prismaInterface('Question', {
   description: 'Une question dans un formulaire',
   include: {
-    goToSection: true,
+    jumps: true,
     section: {
       include: {
         form: {
@@ -35,6 +36,7 @@ export const QuestionType = builder.prismaInterface('Question', {
     section: t.relation('section', {
       description: 'Section du formulaire dans laquelle est la question',
     }),
+
     title: t.exposeString('title', { description: 'Titre de la question' }),
     description: t.exposeString('description', {
       nullable: true,
@@ -48,7 +50,6 @@ export const QuestionType = builder.prismaInterface('Question', {
     mandatory: t.exposeBoolean('mandatory', {
       description: 'Indique si la question est obligatoire',
     }),
-
     answers: t.relatedConnection('answers', {
       authScopes(
         {

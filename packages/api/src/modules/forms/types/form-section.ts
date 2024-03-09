@@ -53,10 +53,6 @@ export const FormSectionType = builder.prismaObject('FormSection', {
           ],
         }),
     }),
-    fromQuestions: t.relation('fromQuestions', {
-      description:
-        'Questions qui servent de condition pour éventuellement aller à cette section ou non. Voir `goToSections` sur [`Question`](#Question)',
-    }),
     restrictedToGroups: t.relation('restrictedToGroups', {
       description:
         'Si non vide, seul·e·s les membres des groupes spécifiés peuvent accéder à cette section. ',

@@ -82,6 +82,8 @@ model User {
   allowedApps               ThirdPartyApp[]
   formAnswers               Answer[]
   createdForms              Form[]
+  completedForms            Form[]                     @relation("completedForms")
+  partiallyCompletedForms   Form[]                     @relation("partiallyCompletedForms")
 
   // For full-text search
   search                Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -522,10 +524,10 @@ model Event {
   links          Link[]
   bannedUsers    User[]         @relation("bannedFromEvents")
   reactions      Reaction[]
+  forms          Form[]
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
-  Form   Form[]
 
   @@unique([groupId, uid])
   @@index([search], type: Gin)
@@ -940,28 +942,40 @@ model Form {
   event   Event?  @relation(fields: [eventId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   eventId String?
 
-  opensAt     DateTime?
-  closesAt    DateTime?
-  title       String        @db.VarChar(255)
-  description String        @db.Text
-  sections    FormSection[]
+  opensAt             DateTime?
+  closesAt            DateTime?
+  title               String        @db.VarChar(255)
+  description         String        @db.Text
+  sections            FormSection[]
+  answeredBy          User[]        @relation("completedForms")
+  partiallyAnsweredBy User[]        @relation("partiallyCompletedForms")
 }
 
 model FormSection {
-  id            String     @id @default(dbgenerated("nanoid('formsection:')"))
-  order         Int
-  form          Form       @relation(fields: [formId], references: [id], onDelete: Cascade)
-  formId        String
-  title         String     @db.VarChar(255)
-  description   String     @db.Text
-  questions     Question[]
-  fromQuestions Question[] @relation("goToSection")
+  id          String     @id @default(dbgenerated("nanoid('formsection:')"))
+  order       Int
+  form        Form       @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId      String
+  title       String     @db.VarChar(255)
+  description String     @db.Text
+  questions   Question[]
 
   /// Conditions
 
-  restrictedToGroups Group[] @relation("restrictedTo")
+  restrictedToGroups Group[]    @relation("restrictedTo")
+  jumps              FormJump[]
 
   @@unique([formId, order])
+}
+
+/// Represent a jump condition: answering a certain value of a certain question changes what section of the form is shown next
+model FormJump {
+  id         String      @id @default(dbgenerated("nanoid('formjump:')"))
+  question   Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId String
+  value      String
+  target     FormSection @relation(fields: [targetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  targetId   String
 }
 
 model Question {
@@ -975,15 +989,14 @@ model Question {
   type        QuestionKind
   mandatory   Boolean      @default(false)
 
-  options          String[]      @default([])
-  // Maps options to sections to jump to if chosen
-  goToSection      FormSection[] @relation("goToSection")
+  options          String[] @default([])
   scaleStart       Int?
   scaleEnd         Int?
-  allowOptionOther Boolean       @default(false)
-  allowedFiletypes String[]      @default([]) // empty means all
+  allowOptionOther Boolean  @default(false)
+  allowedFiletypes String[] @default([]) // empty means all
 
   answers Answer[]
+  jumps   FormJump[]
 
   @@unique([sectionId, order])
 }

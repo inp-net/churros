@@ -1,4 +1,5 @@
-import { builder } from '#lib';
+import { builder, prisma } from '#lib';
+import { FormSectionType } from './form-section.js';
 import { QuestionType } from './question.js';
 
 export const QuestionScaleType = builder.prismaObject('Question', {
@@ -74,18 +75,20 @@ export const QuestionSelectOneType = builder.prismaObject('Question', {
   description: 'Question de type `SelectOne`',
   fields: (t) => ({
     ...fieldsForSelectTypes(t),
-    jumpTo: t.id({
-      nullable: true,
+    jumps: t.prismaField({
+      type: [FormSectionType],
+      nullable: { items: true, list: false },
       description:
-        "Section à aller selon la réponse à cette question. Uniquement pertinent pour les questions de type `SelectOne`. Si null, la réponse n'a pas d'effet sur la section suivante.",
-      args: {
-        answer: t.arg.string({
-          description: 'Réponse à la question',
-        }),
-      },
-      resolve({ goToSection, type, options }, { answer }) {
-        if (type !== 'SelectOne') return null;
-        return goToSection[options.indexOf(answer)];
+        "Correspondances entre les réponses à cette question et les sections du formulaire à sauter vers. Dans le même ordre que `options`. Quand un élément est null, la section suivante n'est pas modifiée",
+      async resolve(query, { jumps, options }) {
+        const jumpIds = options.map((option) => jumps.find((jump) => jump.value === option)?.id);
+        const resolvedJumps = await prisma.formJump.findMany({
+          include: {
+            target: query,
+          },
+          where: { id: { in: jumpIds.filter(Boolean) as string[] } },
+        });
+        return jumpIds.map((id) => resolvedJumps.find((jump) => jump.id === id)?.target);
       },
     }),
   }),
