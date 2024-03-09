@@ -32,6 +32,9 @@
   });
 </script>
 
+{#if $theme == 'pan7on'}
+  <img src="/ChurrosPan7onTelBas.png" alt="ChurrosPcPan7on" class="temple" />
+{/if}
 <nav
   class:flyout-open={flyoutOpen}
   class:transparent={$page.url.pathname.endsWith('/scan/') && !flyoutOpen}
@@ -196,6 +199,12 @@
     border-top: var(--border-block) solid rgb(0 0 0 / 5%);
   }
 
+  nav.pan7on {
+    background-color: var(--hover-bg);
+    background-size: cover;
+    border-top: none;
+  }
+
   nav.noel {
     background-color: var(--bg);
     background-image: url('/noel-bottombar.png');
@@ -308,5 +317,20 @@
     nav {
       display: none;
     }
+  }
+
+  @media (min-width: 570px) {
+    .temple {
+      display: none;
+    }
+  }
+
+  .temple {
+    position: fixed;
+    bottom: 55px;
+    z-index: 100;
+    background: none;
+    background-color: transparent;
+    color: transparent;
   }
 </style>

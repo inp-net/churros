@@ -134,12 +134,11 @@
     background-size: contain;
   }
 
-  nav.gd7t {
+  nav.pan7on {
     background-color: transparent;
-    background-image: url('/gd7t-top.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 100% 100%;
+    background-image: url('/ChurrosPan7onv6.png');
+    background-repeat: repeat-x;
+    background-size: auto 100%;
   }
 
   nav.scrolled {

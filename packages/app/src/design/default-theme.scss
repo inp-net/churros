@@ -37,6 +37,10 @@ dialog,
   --primary-disabled-text: #{$white};
   --primary-disabled-border: #{$zinc-500};
 
+  // Secondary
+  --secondary-bg: #{$gray-400};
+  --secondary-hover-bg: #{$gray-400};
+
   // Success
   --success-bg: #{$emerald-200};
   --success-text: #{$slate-800};

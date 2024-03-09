@@ -38,6 +38,8 @@ dialog {
     --primary-shadow: 0 0.25rem 0.5rem #{$black};
     --primary-disabled-bg: var(--card-bg);
     --primary-disabled-text: #c6f6d5;
+    --secondary-bg: #0b5221;
+    --secondary-hover-bg: #37e06c;
     --loading-bg: #0d6e2c;
     --hover-bg: #010703;
     --hover-text: #{$neutral-200};
@@ -117,50 +119,96 @@ dialog {
     --hover-border: #{$red-500};
   }
 
-  &.gd7t,
-  &.gd7t::backdrop {
-    $yellow-50: #fffde9;
-    $yellow-100: #fffad2;
-    $yellow-200: #fff8bc;
-    $yellow-300: #fff6a5;
-    $yellow-400: #fff48f;
-    $yellow-500: #fff179;
-    $yellow-600: #ffef62;
-    $yellow-700: #ffed4c;
-    $yellow-800: #ffea35;
-    $yellow-900: #ffe81f;
-    $logo-yellow: #f6c433;
-    $logo-red: #8c1813;
-    $logo-light-red: #c11717;
-    $logo-black: #030304;
-    $white: #fff;
-    $light-yellow: rgb(255 196 77 / 50%);
-    $blue-light-saber: #2e67f8;
-    $red-light-saber: #eb212e;
+  &.pan7on,
+  &.pan7on::backdrop {
+    --bg: #fff;
+    --text: #{$slate-800};
+    --title: #{$slate-900};
+    --muted: #{$slate-500};
+    --error: #{$red-800};
+    --link: #e79e00;
+    --border: #{$gray-400};
+    --shadow: 0 0 0.125rem #0004, 0 0.125rem 0.5rem #0001;
+    --shadow-big: 0 0 0.5rem #0004, 0 0.5rem 3rem #0001;
+    --ring: #{rgba($slate-400, 50%)};
+    --hover-bg: #fff8e7;
+    --hover-text: #{$neutral-700};
+    --hover-border: #{$gray-500};
+    --disabled-bg: #{$gray-100};
+    --disabled-text: #{$slate-600};
+    --disabled-border: #{$gray-200};
 
-    --bg: #{$logo-black};
-    --text: #{$neutral-200};
-    --link: #{$indigo-400};
-    --title: #{$neutral-100};
-    --shadow: 0 0.25rem 0.5rem #{$logo-black};
-    --primary-bg: #{$logo-red};
-    --primary-text: #{$neutral-200};
-    --primary-shadow: 0 0.25rem 0.5rem #{$logo-black};
-    --primary-disabled-text: #{$neutral-200};
-    --primary-disabled-bg: #{$neutral-800};
-    --loading-bg: repeating-linear-gradient($logo-light-red, $white 10px);
-    --hover-bg: #{$logo-red};
-    --hover-text: #{$neutral-200};
-    --muted-bg: #{$neutral-800};
-    --muted-text: #{$neutral-400};
-    --muted-border: #{$neutral-700};
-    --muted-link: #{$indigo-400};
-    --backdrop: rgb(0 0 0 / 80%);
-    --primary-ring: #{rgba($logo-light-red, 50%)};
-    --primary-hover-bg: #{$logo-light-red};
-    --primary-link: #{$logo-yellow};
-    --primary-border: #{$logo-red};
-    --border: #{$logo-light-red};
-    --hover-border: #{$logo-light-red};
+    // Primary
+    --primary-bg: #ffd57a;
+    --primary-text: #{$neutral-800};
+    --primary-link: #ffc400;
+    --primary-border: #{$gray-400};
+    --primary-shadow: 0 0.25rem 0.5rem #{rgba($zinc-800, 20%)};
+    --primary-ring: #{rgba($blue-400, 50%)};
+    --primary-hover-bg: #ffc31d;
+    --primary-hover-text: #{$neutral-800};
+    --primary-hover-border: #{$blue-600};
+    --primary-disabled-bg: #{rgba(#ffd57a, 50%)};
+    --primary-disabled-text: #{$white};
+    --primary-disabled-border: #{$zinc-500};
+
+    // Secondary
+    --secondary-bg: #{$amber-300};
+    --secondary-hover-bg: #{$amber-300};
+
+    // Success
+    --success-bg: #{$emerald-200};
+    --success-text: #{$slate-800};
+    --success-link: #{$emerald-800};
+    --success-border: #{$emerald-300};
+    --success-disabled-bg: #{$emerald-100};
+    --success-disabled-text: #{$slate-500};
+    --success-disabled-border: #{$slate-300};
+
+    // Danger
+    --danger-bg: #{$rose-200};
+    --danger-text: #{$slate-800};
+    --danger-link: #{$rose-800};
+    --danger-border: #{$rose-300};
+    --danger-disabled-bg: #{$rose-100};
+    --danger-disabled-text: #{$slate-600};
+    --danger-disabled-border: #{$stone-300};
+
+    // Warning
+    --warning-bg: #{$amber-200};
+    --warning-text: #{$stone-800};
+    --warning-link: #{$amber-800};
+    --warning-border: #{$stone-600};
+    --warning-disabled-bg: #{$amber-50};
+    --warning-disabled-text: #{$stone-500};
+    --warning-disabled-border: #{$stone-200};
+
+    // Muted
+    --muted-bg: #{$gray-100};
+    --muted-text: #{$slate-400};
+    --muted-link: #{$slate-500};
+    --muted-border: #{$gray-200};
+
+    // Other colors
+    --loading-bg: #{$blue-700};
+    --backdrop: rgb(0 0 0 / 30%);
+
+    // Logo colors
+    --logo-stroke-width: 7.606;
+    --logo-highlight: #fbbe1f;
+    --logo-base: #ca7e17;
+    --logo-shadows: #843e2a;
+    --logo-highlight-fill: var(--logo-highlight);
+    --logo-highlight-stroke: var(--logo-highlight);
+    --logo-base-fill: var(--logo-base);
+    --logo-base-stroke: var(--logo-base);
+    --logo-shadows-fill: var(--logo-shadows);
+    --logo-shadows-stroke: var(--logo-shadows);
+
+    // === Other props ===
+    --border-inline: 1px;
+    --border-block: 2px;
+    --radius-inline: 0.25rem;
+    --radius-block: 0.5rem;
   }
 }
