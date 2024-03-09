@@ -6,7 +6,7 @@ import {
   payEventRegistrationViaLydia,
   payEventRegistrationViaPaypal,
 } from '#modules/payments';
-import { eventAccessibleByUser, eventManagedByUser } from '#permissions';
+import { userCanAccessEvent, userCanManageEvent } from '#permissions';
 import { PaymentMethod as PaymentMethodPrisma } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { placesLeft } from '../index.js';
@@ -47,13 +47,13 @@ builder.mutationField('paidRegistration', (t) =>
 
       if (creating) {
         // Check that the user can access the event
-        if (!(await eventAccessibleByUser(registration.ticket.event, user)))
+        if (!(await userCanAccessEvent(registration.ticket.event, user)))
           throw new GraphQLError("Vous n'avez pas accès à cet événement");
 
         // Check for tickets that only managers can provide
         if (
           registration.ticket.onlyManagersCanProvide &&
-          !eventManagedByUser(registration.ticket.event, user, { canVerifyRegistrations: true })
+          !userCanManageEvent(registration.ticket.event, user, { canVerifyRegistrations: true })
         )
           throw new GraphQLError('Seul un·e manager peut donner cette place');
 

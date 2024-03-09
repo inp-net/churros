@@ -17,6 +17,12 @@
   {:else}
     <img src="/ChurrosPan7on.png" alt="Churros" class="wordmark" />
   {/if}
+{:else if $theme === 'gd7t'}
+  {#if wordmark}
+    <img src="/gd7t-wordmark.png" alt="Churros" class="wordmark" />
+  {:else}
+    <img src="/gd7t-logo.png" alt="Churros" class="wordmark" />
+  {/if}
 {:else}
   <svg
     height="100%"

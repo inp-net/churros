@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { eventManagedByUser } from '#permissions';
+import { userCanManageEvent } from '#permissions';
 
 builder.mutationField('deleteTicket', (t) =>
   t.field({
@@ -24,7 +24,7 @@ builder.mutationField('deleteTicket', (t) =>
         },
       });
       if (!ticket) return false;
-      return eventManagedByUser(ticket.event, user, { canEdit: true });
+      return userCanManageEvent(ticket.event, user, { canEdit: true });
     },
     async resolve(_, { id }) {
       await prisma.ticket.delete({ where: { id } });

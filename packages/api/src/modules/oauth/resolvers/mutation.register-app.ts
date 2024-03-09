@@ -1,6 +1,6 @@
 import { builder, prisma, removeIdPrefix } from '#lib';
 
-import { userIsOnBoardOf } from '#permissions';
+import { userIsDeveloperOf, userIsOnBoardOf } from '#permissions';
 import { hash } from 'argon2';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
@@ -29,7 +29,11 @@ builder.mutationField('registerApp', (t) =>
       ownerGroupUid: t.arg.string({ description: 'The UID of  the group that made this app' }),
     },
     authScopes(_, { ownerGroupUid }, { user }) {
-      return Boolean(user?.canEditGroups || userIsOnBoardOf(user, ownerGroupUid));
+      return Boolean(
+        user?.canEditGroups ||
+          userIsOnBoardOf(user, ownerGroupUid) ||
+          userIsDeveloperOf(user, ownerGroupUid),
+      );
     },
     async resolve(_, { ownerGroupUid, ...data }) {
       const secretClear = nanoid(CLIENT_SECRET_LENGTH);

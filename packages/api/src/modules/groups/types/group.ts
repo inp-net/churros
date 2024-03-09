@@ -1,6 +1,6 @@
 import { builder, prisma, toHtml } from '#lib';
 
-import { visibleArticlesPrismaQuery } from '#permissions';
+import { prismaQueryAccessibleArticles } from '#permissions';
 import { GroupEnumType } from '../index.js';
 
 export const GroupType = builder.prismaNode('Group', {
@@ -29,7 +29,7 @@ export const GroupType = builder.prismaNode('Group', {
     articles: t.relation('articles', {
       query(_, { user }) {
         return {
-          where: visibleArticlesPrismaQuery(user, 'wants'),
+          where: prismaQueryAccessibleArticles(user, 'wants'),
           orderBy: { publishedAt: 'desc' },
         };
       },

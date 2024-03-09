@@ -9,6 +9,7 @@ export * from './context.js';
 export * from './date.js';
 export * from './env.js';
 export * from './errors.js';
+export * from './global-id.js';
 export * from './ldap-school.js';
 export * from './ldap.js';
 export * from './logger.js';

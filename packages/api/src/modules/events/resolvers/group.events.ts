@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { visibleEventsPrismaQuery } from '#permissions';
+import { prismaQueryVisibleEvents } from '#permissions';
 import { EventType } from '../index.js';
 
 builder.prismaObjectField('Group', 'events', (t) =>
@@ -11,7 +11,7 @@ builder.prismaObjectField('Group', 'events', (t) =>
       return prisma.event.findMany({
         where: {
           AND: [
-            { ...visibleEventsPrismaQuery(user) },
+            { ...prismaQueryVisibleEvents(user) },
             { OR: [{ groupId: id }, { coOrganizers: { some: { id } } }] },
           ],
         },

@@ -18,6 +18,7 @@
     authorIsBeneficiary: boolean;
     paid: boolean;
     cancelled: boolean;
+    opposed: boolean;
     author?: { fullName: string } | undefined;
     authorEmail: string;
     beneficiaryUser?: { fullName: string } | undefined;
@@ -38,7 +39,8 @@
           start: subMinutes(registration.ticket.event.startsAt, 30),
           end: addHours(registration.ticket.event.endsAt, 2),
         }) &&
-        !registration.cancelled
+        !registration.cancelled &&
+        !registration.opposed
       );
     } catch {
       return false;

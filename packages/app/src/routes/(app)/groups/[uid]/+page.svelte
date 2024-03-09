@@ -189,7 +189,7 @@
         {#if group?.members?.find(({ member: { uid } }) => uid === $me?.uid)}
           <Badge theme="success">Membre</Badge>
           {#if confirmingGroupQuit}
-            <p>Sur de toi?</p>
+            <p>Sur·e de toi?</p>
             <ButtonSecondary icon={IconCheck} on:click={async () => quitGroup()}
               >Oui</ButtonSecondary
             >

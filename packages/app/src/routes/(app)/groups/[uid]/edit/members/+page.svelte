@@ -33,6 +33,7 @@
     canEditArticles: boolean;
     canEditMembers: boolean;
     canScanEvents: boolean;
+    isDeveloper: boolean;
   } = {
     memberId: '',
     president: false,
@@ -43,6 +44,7 @@
     canEditArticles: false,
     canEditMembers: false,
     canScanEvents: false,
+    isDeveloper: false,
   };
 
   let serverError = '';
@@ -92,6 +94,7 @@
               canEditMembers: true,
               canEditArticles: true,
               canScanEvents: true,
+              isDeveloper: true,
               member: {
                 uid: true,
                 firstName: true,
@@ -148,6 +151,7 @@
             canEditArticles: updateData.canEditArticles,
             canEditMembers: updateData.canEditMembers,
             canScanEvents: updateData.canScanEvents,
+            isDeveloper: updateData.isDeveloper,
           },
           {
             title: true,
@@ -158,6 +162,7 @@
             canEditArticles: true,
             canEditMembers: true,
             canScanEvents: true,
+            isDeveloper: true,
           },
         ],
       });
@@ -194,6 +199,8 @@
     if (!a.canScanEvents && b.canScanEvents) return 1;
     if (a.canEditArticles && !b.canEditArticles) return -1;
     if (!a.canEditArticles && b.canEditArticles) return 1;
+    if (a.isDeveloper && !b.isDeveloper) return -1;
+    if (!a.isDeveloper && b.isDeveloper) return 1;
     return isBefore(a.createdAt, b.createdAt) ? 1 : -1;
   }
 
@@ -252,7 +259,7 @@
 </section>
 
 <ul class="nobullet members">
-  {#each shownMembers(search, promo, data.group.members) as { memberId, member, president, treasurer, vicePresident, secretary, title, canEditArticles, canEditMembers, canScanEvents } (memberId)}
+  {#each shownMembers(search, promo, data.group.members) as { memberId, member, president, treasurer, vicePresident, secretary, title, canEditArticles, canEditMembers, canScanEvents, isDeveloper } (memberId)}
     <li>
       <div class="item" data-id={member.uid}>
         <AvatarPerson
@@ -267,7 +274,7 @@
           role={title}
           permissions={isOnClubBoard({ president, treasurer, vicePresident, secretary })
             ? undefined
-            : { canEditArticles, canEditMembers, canScanEvents }}
+            : { canEditArticles, canEditMembers, canScanEvents, isDeveloper }}
         >
           {title}
           {#if data.group.studentAssociation && !member.contributesTo.some((c) => c.uid === data.group.studentAssociation?.uid)}
@@ -294,6 +301,7 @@
                   canEditArticles,
                   canEditMembers,
                   canScanEvents,
+                  isDeveloper,
                   title,
                   memberId,
                 };
@@ -347,6 +355,7 @@
                 label="Peut scanner tous les billets"
                 bind:value={updatingMember.canScanEvents}
               />
+              <InputCheckbox label="Est développeur·euse" bind:value={updatingMember.isDeveloper} />
             </div>
           </InputField>
         </div>

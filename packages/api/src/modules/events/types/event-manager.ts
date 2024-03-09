@@ -1,6 +1,6 @@
 import { builder } from '#lib';
 
-import { EventManagerPowerLevel, EventManagerPowerLevelType } from '../index.js';
+import { EventManagerPowerLevelType, permissionsToPowerlevel } from '../index.js';
 
 export const EventManagerType = builder.prismaObject('EventManager', {
   fields: (t) => ({
@@ -11,12 +11,8 @@ export const EventManagerType = builder.prismaObject('EventManager', {
     user: t.relation('user'),
     power: t.field({
       type: EventManagerPowerLevelType,
-      resolve({ canVerifyRegistrations, canEdit, canEditPermissions }) {
-        if (canVerifyRegistrations && canEdit && canEditPermissions)
-          return EventManagerPowerLevel.EditPermissions;
-        if (canVerifyRegistrations && canEdit) return EventManagerPowerLevel.Edit;
-        if (canVerifyRegistrations) return EventManagerPowerLevel.ScanTickets;
-        return EventManagerPowerLevel.ReadOnly;
+      resolve(permissions) {
+        return permissionsToPowerlevel(permissions);
       },
     }),
   }),

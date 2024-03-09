@@ -1,6 +1,6 @@
 import { builder, fullTextSearch, prisma } from '#lib';
 import {} from '#modules/global';
-import { visibleEventsPrismaQuery } from '../../../permissions/visible.js';
+import { prismaQueryVisibleEvents } from '../../../permissions/events.js';
 import { EventSearchResultType } from '../index.js';
 
 builder.queryField('searchEvents', (t) =>
@@ -16,7 +16,7 @@ builder.queryField('searchEvents', (t) =>
         async resolveObjects(ids) {
           return prisma.event.findMany({
             where: {
-              AND: [{ id: { in: ids } }, visibleEventsPrismaQuery(user)],
+              AND: [{ id: { in: ids } }, prismaQueryVisibleEvents(user)],
             },
           });
         },

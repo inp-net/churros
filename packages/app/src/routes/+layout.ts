@@ -45,6 +45,7 @@ export const load: LayoutLoad = async ({ fetch, data }) => {
               authorEmail: true,
               paid: true,
               cancelled: true,
+              opposed: true,
             },
           },
         },

@@ -1,12 +1,12 @@
 import type { Context } from '#lib';
 import { prisma } from '#lib';
 
-import { eventManagedByUser } from '#permissions';
+import { userCanManageEvent } from '#permissions';
 import type { Prisma } from '@prisma/client';
 import * as PrismaTypes from '@prisma/client';
 import { mappedGetAncestors } from 'arborist';
 
-export function visibleEventsPrismaQuery(
+export function prismaQueryVisibleEvents(
   user: { uid: string } | undefined,
 ): Prisma.EventWhereInput {
   return {
@@ -117,7 +117,7 @@ export function visibleEventsPrismaQuery(
   };
 }
 
-export async function eventAccessibleByUser(
+export async function userCanAccessEvent(
   event:
     | (PrismaTypes.Event & {
         coOrganizers: Array<{
@@ -152,7 +152,7 @@ export async function eventAccessibleByUser(
 
     case PrismaTypes.Visibility.SchoolRestricted: {
       if (!user) return false;
-      if (eventManagedByUser(event, user, {})) return true;
+      if (userCanManageEvent(event, user, {})) return true;
       return Boolean(
         [event.group, ...event.coOrganizers]
           .map((g) => g.studentAssociation?.school.uid)
@@ -164,7 +164,7 @@ export async function eventAccessibleByUser(
     case PrismaTypes.Visibility.GroupRestricted: {
       if (!user) return false;
       // All managers can see the event, no matter their permissions
-      if (eventManagedByUser(event, user, {})) return true;
+      if (userCanManageEvent(event, user, {})) return true;
 
       const ancestors = await prisma.group
         .findMany({
@@ -183,7 +183,7 @@ export async function eventAccessibleByUser(
 
     case PrismaTypes.Visibility.Private: {
       // All managers can see the event, no matter their permissions
-      return eventManagedByUser(event, user, {});
+      return userCanManageEvent(event, user, {});
     }
 
     default: {

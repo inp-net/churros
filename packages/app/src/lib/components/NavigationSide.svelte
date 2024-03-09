@@ -277,7 +277,6 @@
     flex-direction: column;
     gap: 0.25rem;
     padding: 1rem;
-    background: var(--bg);
   }
 
   nav .bottom {

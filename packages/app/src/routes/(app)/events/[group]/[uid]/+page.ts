@@ -52,6 +52,8 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             },
             registrations: {
               id: true,
+              opposed: true,
+              cancelled: true,
               beneficiary: true,
               beneficiaryUser: {
                 uid: true,

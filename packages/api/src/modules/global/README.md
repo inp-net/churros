@@ -2,7 +2,7 @@
 inline_types_from: [ZodError]
 manually_include:
   queries: [node, nodes]
-  types: [Node, PageInfo]
+  types: [Node, PageInfo, BuildInfo]
 ---
 
 # Types globaux

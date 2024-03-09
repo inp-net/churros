@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { eventManagedByUser } from '#permissions';
+import { userCanManageEvent } from '#permissions';
 
 builder.mutationField('deleteTicketGroup', (t) =>
   t.field({
@@ -27,7 +27,7 @@ builder.mutationField('deleteTicketGroup', (t) =>
 
       if (!ticketGroup) return false;
 
-      return eventManagedByUser(ticketGroup.event, user, {
+      return userCanManageEvent(ticketGroup.event, user, {
         canEdit: true,
       });
     },

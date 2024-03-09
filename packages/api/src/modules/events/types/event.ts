@@ -3,7 +3,12 @@ import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { ProfitsBreakdownType } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar } from '#modules/reactions';
 import { RegistrationsCountsType, TicketType } from '#modules/ticketing';
-import { userCanSeeTicket, visibleArticlesPrismaQuery } from '#permissions';
+import {
+  getTicketsWithConstraints,
+  getUserWithContributesTo,
+  prismaQueryAccessibleArticles,
+  userCanSeeTicket,
+} from '#permissions';
 import { PaymentMethod } from '@prisma/client';
 import { EventFrequencyType, eventCapacity } from '../index.js';
 
@@ -35,70 +40,17 @@ export const EventType = builder.prismaNode('Event', {
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     managers: t.relation('managers'),
     bannedUsers: t.relation('bannedUsers'),
-    tickets: t.field({
+    tickets: t.prismaField({
       type: [TicketType],
-      async resolve({ id }, _, { user }) {
-        const allTickets = await prisma.ticket.findMany({
-          where: { event: { id } },
-          include: {
-            openToGroups: {
-              include: {
-                studentAssociation: true,
-              },
-            },
-            openToSchools: true,
-            event: {
-              include: {
-                bannedUsers: true,
-                managers: { include: { user: true, event: true } },
-                group: {
-                  include: {
-                    studentAssociation: true,
-                  },
-                },
-              },
-            },
-            openToMajors: true,
-            group: true,
-          },
-        });
-        const userWithContributesTo = user
-          ? await prisma.user.findUniqueOrThrow({
-              where: { id: user.id },
-              include: {
-                contributions: {
-                  include: {
-                    option: {
-                      include: {
-                        offeredIn: true,
-                        paysFor: {
-                          include: {
-                            school: true,
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                groups: {
-                  include: {
-                    group: true,
-                  },
-                },
-                major: {
-                  include: {
-                    schools: true,
-                  },
-                },
-              },
-            })
-          : undefined;
+      async resolve(query, { id }, _, { user }) {
+        const allTickets = await getTicketsWithConstraints(id, query);
+        const userWithContributesTo = user ? await getUserWithContributesTo(user.id) : undefined;
         return allTickets.filter((ticket) => userCanSeeTicket(ticket, userWithContributesTo));
       },
     }),
     ticketGroups: t.relation('ticketGroups'),
     articles: t.relation('articles', {
-      query: (_, { user }) => ({ where: visibleArticlesPrismaQuery(user, 'wants') }),
+      query: (_, { user }) => ({ where: prismaQueryAccessibleArticles(user, 'wants') }),
     }),
     group: t.relation('group'),
     coOrganizers: t.relation('coOrganizers'),

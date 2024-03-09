@@ -2,7 +2,7 @@ import { type Context } from '#lib';
 
 import type { Event } from '@prisma/client';
 
-export function eventManagedByUser(
+export function userCanManageEvent(
   event: Event & {
     managers: Array<{
       user: { uid: string };

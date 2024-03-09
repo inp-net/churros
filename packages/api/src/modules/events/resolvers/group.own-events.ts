@@ -1,11 +1,11 @@
 import { builder } from '#lib';
-import { visibleEventsPrismaQuery } from '#permissions';
+import { prismaQueryVisibleEvents } from '#permissions';
 
 builder.prismaObjectField('Group', 'ownEvents', (t) =>
   t.relation('events', {
     query(_, { user }) {
       return {
-        where: visibleEventsPrismaQuery(user),
+        where: prismaQueryVisibleEvents(user),
         orderBy: { startsAt: 'desc' },
       };
     },

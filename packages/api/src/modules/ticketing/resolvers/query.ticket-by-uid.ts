@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { eventAccessibleByUser } from '#permissions';
+import { userCanAccessEvent } from '#permissions';
 import { TicketType } from '../index.js';
 // TODO merge into query.ticket
 
@@ -30,7 +30,7 @@ builder.queryField('ticketByUid', (t) =>
           },
         },
       });
-      return eventAccessibleByUser(ticket.event, user);
+      return userCanAccessEvent(ticket.event, user);
     },
     resolve: async (query, _, { uid, eventUid }) =>
       prisma.ticket.findFirstOrThrow({ ...query, where: { uid, event: { uid: eventUid } } }),

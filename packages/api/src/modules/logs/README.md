@@ -1,3 +1,3 @@
 # Logs
 
-Logs de l'application, accessible uniquement par les administrateur·ice·s.
+Logs de l'application, accessibles uniquement par les administrateur·ice·s.

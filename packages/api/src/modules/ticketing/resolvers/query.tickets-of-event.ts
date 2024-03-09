@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { eventAccessibleByUser, userCanSeeTicket } from '#permissions';
+import { getUserWithContributesTo, userCanAccessEvent, userCanSeeTicket } from '#permissions';
 import { TicketType } from '../index.js';
 // TODO rename to event.tickets
 
@@ -27,7 +27,7 @@ builder.queryField('ticketsOfEvent', (t) =>
         },
       });
       if (!event) return false;
-      return eventAccessibleByUser(event, user);
+      return userCanAccessEvent(event, user);
     },
     async resolve(query, _, { eventUid, groupUid }, { user }) {
       const allTickets = await prisma.ticket.findMany({
@@ -55,41 +55,7 @@ builder.queryField('ticketsOfEvent', (t) =>
           group: true,
         },
       });
-      const userWithContributesTo = user
-        ? await prisma.user.findUniqueOrThrow({
-            where: { id: user.id },
-            include: {
-              contributions: {
-                include: {
-                  option: {
-                    include: {
-                      paysFor: {
-                        include: {
-                          school: true,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              groups: {
-                include: {
-                  group: true,
-                },
-              },
-              managedEvents: {
-                include: {
-                  event: true,
-                },
-              },
-              major: {
-                include: {
-                  schools: true,
-                },
-              },
-            },
-          })
-        : undefined;
+      const userWithContributesTo = user ? await getUserWithContributesTo(user.id) : undefined;
 
       return allTickets.filter((ticket) => userCanSeeTicket(ticket, userWithContributesTo));
     },

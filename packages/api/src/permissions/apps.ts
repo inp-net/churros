@@ -1,6 +1,6 @@
 import { prisma, type Context } from '#lib';
 
-export async function canEditApp(
+export async function userCanEditApp(
   _: unknown,
   { id }: { id: string },
   { user }: { user?: Context['user'] | undefined },
@@ -28,6 +28,9 @@ export async function canEditApp(
                 },
                 {
                   treasurer: true,
+                },
+                {
+                  isDeveloper: true,
                 },
               ],
             },

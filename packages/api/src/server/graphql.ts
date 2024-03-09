@@ -79,6 +79,7 @@ const yoga = createYoga({
   },
 });
 
+console.info(`Serving GraphQL API on /graphql`);
 api.use('/graphql', async (req, res) => yoga(req, res));
 
 api.get('/', (_req, res) => {

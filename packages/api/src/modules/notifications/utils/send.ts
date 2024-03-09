@@ -1,6 +1,6 @@
 import { prisma } from '#lib';
 
-import { canSendNotificationToUser } from '#permissions';
+import { serverCanSendNotificationToUser } from '#permissions';
 import type { MaybePromise } from '@pothos/core';
 import { Prisma, type NotificationSubscription, type User } from '@prisma/client';
 import webpush, { WebPushError } from 'web-push';
@@ -59,7 +59,7 @@ export async function notify<U extends User>(
         ...notif,
       };
       notif.data.subscriptionName = subscription.name;
-      if (!canSendNotificationToUser(subscription.owner, notif.data.channel)) {
+      if (!serverCanSendNotificationToUser(subscription.owner, notif.data.channel)) {
         console.info(
           `[${notif.data.channel} on ${notif.data.group ?? 'global'} @ ${
             owner.id

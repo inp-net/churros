@@ -1,7 +1,7 @@
 import { builder, prisma, yearTier } from '#lib';
 
 import { fullName } from '#modules/users';
-import { eventManagedByUser } from '#permissions';
+import { userCanManageEvent } from '#permissions';
 
 // TODO rename to event.bookings-csv
 
@@ -28,7 +28,7 @@ builder.queryField('registrationsCsv', (t) =>
         },
       });
 
-      return eventManagedByUser(event, me, {});
+      return userCanManageEvent(event, me, {});
     },
     async resolve(_, { eventUid, groupUid }) {
       const registrations = await prisma.registration.findMany({

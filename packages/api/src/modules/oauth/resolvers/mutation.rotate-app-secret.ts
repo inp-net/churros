@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { canEditApp } from '#permissions';
+import { userCanEditApp } from '#permissions';
 import { hash } from 'argon2';
 import { nanoid } from 'nanoid';
 import { log } from '../../../lib/logger.js';
@@ -15,7 +15,7 @@ builder.mutationField('rotateAppSecret', (t) =>
         description: "The app's ID",
       }),
     },
-    authScopes: canEditApp,
+    authScopes: userCanEditApp,
     async resolve(_, { id }, { user }) {
       const secretClear = nanoid(CLIENT_SECRET_LENGTH);
       await prisma.thirdPartyApp.update({

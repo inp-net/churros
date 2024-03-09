@@ -27,6 +27,7 @@ export const GroupMemberType = builder.prismaObject('GroupMember', {
         return onBoard(roles) || canScanEvents;
       },
     }),
+    isDeveloper: t.exposeBoolean('isDeveloper'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     member: t.relation('member'),
     group: t.relation('group'),

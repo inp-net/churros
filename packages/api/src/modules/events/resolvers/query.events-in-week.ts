@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import { visibleEventsPrismaQuery } from '#permissions';
+import { prismaQueryVisibleEvents } from '#permissions';
 import { EventFrequency, Visibility, type Event } from '@prisma/client';
 import {
   addDays,
@@ -125,7 +125,7 @@ builder.queryField('eventsInWeek', (t) =>
           ...query,
           where: {
             ...dateCondition,
-            ...visibleEventsPrismaQuery(user),
+            ...prismaQueryVisibleEvents(user),
           },
           orderBy: { startsAt: 'asc' },
         })

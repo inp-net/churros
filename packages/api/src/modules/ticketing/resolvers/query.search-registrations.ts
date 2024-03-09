@@ -1,6 +1,6 @@
 import { builder, fullTextSearch, prisma } from '#lib';
 
-import { eventManagedByUser } from '#permissions';
+import { userCanManageEvent } from '#permissions';
 import { RegistrationSearchResultType } from '../index.js';
 // TODO rename to event.search-bookings
 
@@ -22,7 +22,7 @@ builder.queryField('searchRegistrations', (t) =>
           managers: { include: { user: true } },
         },
       });
-      return eventManagedByUser(event, user, {});
+      return userCanManageEvent(event, user, {});
     },
     async resolve(_, { q, eventUid, groupUid }) {
       return fullTextSearch('Registration', q, {

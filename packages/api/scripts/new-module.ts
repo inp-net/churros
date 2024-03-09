@@ -58,10 +58,13 @@ const typename = kebabToPascal(singularModuleName);
 const modulePath = path.join(root, 'packages/api/src/modules', name);
 const relativeModulePath = path.relative(cwd, modulePath);
 
-console.log(`+ ${relativeModulePath}/`);
+p.log.step(`Création de ${relativeModulePath}/`);
 await mkdir(modulePath);
-console.log(`+ ${relativeModulePath}/resolvers/`);
+p.log.step(`Création de ${relativeModulePath}/resolvers/`);
 await mkdir(path.join(modulePath, 'resolvers'));
+p.log.step(`Génération de ${relativeModulePath}/types/`);
+await mkdir(path.join(modulePath, 'types'));
+p.log.step("Génération d'un type et d'une query d'exemple");
 await writeFile(
   path.join(modulePath, `resolvers/query.${name}.ts`),
   `
@@ -74,8 +77,6 @@ builder.queryField('${name}', (t) => t.prismaField({
 })
 `,
 );
-console.log(`+ ${relativeModulePath}/types/`);
-await mkdir(path.join(modulePath, 'types'));
 await writeFile(
   path.join(modulePath, `types/${singularModuleName}.ts`),
   `
@@ -91,7 +92,7 @@ export const ${typename}Type = builder.prismaObject('${typename}', {
 });
 `,
 );
-console.log(`+ ${relativeModulePath}/README.md`);
+p.log.step(`Génération du README.md`);
 await writeFile(
   path.join(modulePath, 'README.md'),
   `# ${displayName}
@@ -100,10 +101,11 @@ TODO: Écrire la documentation du module
 `,
 );
 
-console.log(`$ yarn workspace @centraverse/api barrelize`);
+p.log.step('Génération des barrels (fichiers index.ts)');
+p.log.info(`$ yarn workspace @centraverse/api barrelize`);
 execSync(`yarn workspace @centraverse/api barrelize`);
 
-console.log(`> packages/api/src/schema.ts`);
+p.log.step('Mise à jour de packages/api/src/schema.ts');
 await writeFile(
   path.join(root, 'packages/api/src/schema.ts'),
   (await readFile(path.join(root, 'packages/api/src/schema.ts')))

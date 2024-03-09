@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { visibleArticlesPrismaQuery } from '#permissions';
+import { prismaQueryAccessibleArticles } from '#permissions';
 import { ArticleType } from '../index.js';
 
 builder.queryField('article', (t) =>
@@ -15,7 +15,7 @@ builder.queryField('article', (t) =>
       prisma.article.findFirstOrThrow({
         ...query,
         where: {
-          ...visibleArticlesPrismaQuery(user, 'can'),
+          ...prismaQueryAccessibleArticles(user, 'can'),
           uid,
           group: { uid: groupUid },
         },

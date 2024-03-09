@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { redirectToLogin } from '$lib/session.js';
-import { loadQuery } from '$lib/zeus';
+import { loadQuery, makeMutation } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
 
 type OAuth2AuthorizeError =
@@ -32,7 +32,10 @@ export async function load({ parent, url, fetch }) {
   if (responseType !== 'code')
     throw _errorRedirect('unsupported_response_type', callbackUri, csrfState);
 
-  const { thirdPartyApp } = await loadQuery(
+  const {
+    thirdPartyApp,
+    me: { allowedApps },
+  } = await loadQuery(
     {
       thirdPartyApp: [
         { id: clientId },
@@ -50,9 +53,53 @@ export async function load({ parent, url, fetch }) {
           },
         },
       ],
+      me: {
+        allowedApps: {
+          clientId: true,
+        },
+      },
     },
     { fetch, parent },
   );
+
+  if (allowedApps.some((app) => app.clientId === clientId)) {
+    const { authorize } = await makeMutation(
+      {
+        authorize: [
+          {
+            clientId,
+            redirectUri: callbackUri,
+          },
+          {
+            '__typename': true,
+            '...on Error': {
+              message: true,
+            },
+            '...on OAuth2Error': {
+              code: true,
+              message: true,
+            },
+            '...on MutationAuthorizeSuccess': {
+              data: true,
+            },
+          },
+        ],
+      },
+      { fetch, parent },
+    );
+
+    const redirectTo = new URL(callbackUri);
+    redirectTo.search = new URLSearchParams({
+      ...(authorize.__typename === 'OAuth2Error'
+        ? { error: authorize.code, error_description: authorize.message }
+        : authorize.__typename === 'Error'
+          ? { error: 'server_error', error_description: authorize.message }
+          : { code: authorize.data }),
+      state: csrfState,
+    }).toString();
+
+    return redirect(302, redirectTo);
+  }
 
   return { app: thirdPartyApp, csrfState };
 }

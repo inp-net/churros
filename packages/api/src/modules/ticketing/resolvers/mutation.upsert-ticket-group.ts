@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { eventManagedByUser } from '#permissions';
+import { userCanManageEvent } from '#permissions';
 import { TicketGroupType } from '../index.js';
 
 builder.mutationField('upsertTicketGroup', (t) =>
@@ -49,10 +49,10 @@ builder.mutationField('upsertTicketGroup', (t) =>
 
       return (
         events.every((event) =>
-          eventManagedByUser(event! /* legal since we removed potential nulls */, user, {
+          userCanManageEvent(event! /* legal since we removed potential nulls */, user, {
             canEdit: true,
           }),
-        ) && eventManagedByUser(event!, user, { canEdit: true })
+        ) && userCanManageEvent(event!, user, { canEdit: true })
       );
     },
     async resolve(_, {}, { id, name, capacity, tickets, eventId }) {

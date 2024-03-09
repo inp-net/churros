@@ -2,7 +2,7 @@ import { CURRENT_VERSION, builder, prisma } from '#lib';
 import { SortDirection, SortDirectionEnum } from '#modules/global';
 import { GraphQLError } from 'graphql';
 import * as SemVer from 'semver';
-import { ChangelogRelease, ChangelogReleaseType, changelogFromFile } from '../index.js';
+import { ChangelogReleaseType, changelogFromFile, findReleaseInChangelog } from '../index.js';
 
 builder.queryField('combinedChangelog', (t) =>
   t.field({
@@ -65,9 +65,7 @@ This is way more useful for querying a range of versions for a changelog, but no
       if (selectedReleases.length === 0)
         throw new GraphQLError(`Aucune version entre ${from} et ${to}.`);
 
-      return selectedReleases.map((release) =>
-        ChangelogRelease.findIn(changelog, release.version!),
-      );
+      return selectedReleases.map((release) => findReleaseInChangelog(changelog, release.version!));
     },
   }),
 );

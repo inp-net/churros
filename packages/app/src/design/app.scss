@@ -43,6 +43,10 @@
   --weight-big-button: 700;
 }
 
+:root.gd7t {
+  background-image: url('/gd7t-bg.jpg');
+}
+
 .primary {
   --bg: var(--primary-bg);
   --text: var(--primary-text);

@@ -29,7 +29,8 @@
   export let element: HTMLDialogElement;
 
   $: link = issueNumber ? `https://git.inpt.fr/inp-net/churros/-/issues/${issueNumber}` : '';
-
+  $: innerWidth = undefined;
+  $: innerHeight = undefined;
   function formatMetadata(metadata: Record<string, string>): string {
     return Object.entries(metadata)
       .map(([key, value]) => `- **${key}:** ${value}`)
@@ -52,6 +53,7 @@
       'Device': `${ua.device.type ?? 'unknown'} ${ua.device.vendor ?? 'unknown'} ${
         ua.device.model ?? 'unknown'
       } (arch ${ua.cpu.architecture ?? 'unknown'})`,
+      'ScreenSize': `${innerWidth ?? 'unknown'} x ${innerHeight ?? 'unknown'}`,
     };
     try {
       const { createGitlabIssue: number } = await $zeus.mutate({
@@ -85,6 +87,8 @@
   }
 </script>
 
+<svelte:window bind:innerWidth bind:innerHeight />
+
 <Modal bind:element>
   <div class="content">
     <h1>
@@ -97,7 +101,7 @@
     </h1>
     <p>
       Après signalement, tu pourras suivre la progression de ton rapport sur la page Tes Rapports
-      (acessible depuis <IconMore></IconMore> )
+      (accessible depuis <IconMore></IconMore> )
     </p>
     <form on:submit|preventDefault={submitIssue}>
       <InputSelectOne

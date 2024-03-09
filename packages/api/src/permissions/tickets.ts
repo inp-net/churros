@@ -1,3 +1,6 @@
+import { prisma } from '#lib';
+import type { Prisma } from '@prisma/client';
+
 export function userCanSeeTicket(
   {
     event,
@@ -89,4 +92,33 @@ export function userCanSeeTicket(
     return false;
 
   return true;
+}
+
+export async function getTicketsWithConstraints(
+  eventId: string,
+  query: {
+    include?: Prisma.TicketInclude;
+    select?: Prisma.TicketSelect;
+  } = {},
+) {
+  return await prisma.ticket.findMany({
+    ...query,
+    where: { eventId },
+    include: {
+      openToGroups: true,
+      openToSchools: true,
+      openToMajors: true,
+      event: {
+        include: {
+          managers: { include: { user: true } },
+          bannedUsers: true,
+          group: {
+            include: {
+              studentAssociation: true,
+            },
+          },
+        },
+      },
+    },
+  });
 }

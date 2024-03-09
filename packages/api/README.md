@@ -35,7 +35,7 @@ Utilisez `import { ... } from '#modules/module-name'` pour importer des types et
 
 - Ne créez jamais de dépendances circulaires entre les modules. Vous pouvez vérifier les dépendances en exécutant `scripts/modules-import-graph.py` (cela nécessite Python 3.11+ avec le package `networkx` installé, et la commande `dot` du package `graphviz` si vous souhaitez générer une image du graphe des dépendances).
 
-- Le module `global` peut être importé par n'importe quel module et n'importe quel module n'importe quel module lui-même. Il contient des types ubiquitaires tels que le scalaire `DateTime`.
+- Le module `global` peut être importé par n'importe quel module et n'importe aucun module lui-même. Il contient des types ubiquitaires tels que le scalaire `DateTime`.
 
 #### Graphe des dépendances entre les modules
 
@@ -48,4 +48,5 @@ Un module est une collection d'un ou plusieurs types (et de leurs résolveurs as
 1. Définissez la ou les tables de base de données nécessaires (et les énumérations) dans `prisma/schema.prisma`
    1. Assurez-vous que la ligne immédiatement après la déclaration du modèle (`model MyName {`) définit l'identifiant de la ressource
    1. Utilisez `@default(dbgenerated("nanoid('prefix:')"))` pour définir la valeur par défaut de l'identifiant, où `prefix` est un court préfixe correspondant au nom de votre ressource en tant que valeur par défaut de l'identifiant
-   1. Exécutez `node scripts/update-id-prefix-to-typename-map.js` pour mettre à jour la carte du préfixe d'identifiant vers le nom du type dans `src/lib/builder
+   1. Exécutez `node scripts/update-id-prefix-to-typename-map.js` pour mettre à jour la carte du préfixe d'identifiant vers le nom du type dans `src/lib/builder`
+

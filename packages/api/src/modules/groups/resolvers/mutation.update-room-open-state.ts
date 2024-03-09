@@ -6,7 +6,7 @@ import { userIsMemberOf } from '#permissions';
 builder.mutationField('updateRoomOpenState', (t) =>
   t.field({
     type: 'Boolean',
-    description: "Changer si la salle d'un groupe est fermé ou ouvert",
+    description: "Changer si la salle d'un groupe est fermée ou ouvert",
     args: {
       groupUid: t.arg.string({ description: "L'uid du groupe" }),
       openRoom: t.arg.boolean({

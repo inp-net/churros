@@ -84,12 +84,12 @@ On remarque que la réponse est structurée de la même manière que la requête
 
 <h3 data-toc-include>S'authentifier</h3>
 
-La plupart des _queries_ et _mutations_ nécéssitent d'être authentifié.
+La plupart des _queries_ et _mutations_ nécessitent d'être authentifié.
 
 Il y a deux moyens d'authentification:
 
-1. En se connectant avec un compte utilisateur par son mot de passe directement (déconseillé): Voir la [mutation `login`](#login)
-2. Avec une application créée sur Churros (recommandé): Voir la documentation sur l'[OAuth](#oauth)
+1. En se connectant avec un compte utilisateur par son mot de passe directement (déconseillé): Voir la [mutation `login`](/users#mutation/login)
+2. Avec une application créée sur Churros (recommandé): Voir la documentation sur l'[OAuth](/oauth)
 
 Dans les deux cas, on obtient un token d'authentification. Ce token est à fournir à chaque requête dans le header `Authorization` de la requête HTTP:
 
@@ -120,7 +120,8 @@ Dans l'API GraphQL, ces type/Resuls portent comme nom `QueryNomDeLaQueryConnecti
    - `hasPreviousPage`: `true` si il y a une page précédente, `false` sinon
    - `startCursor`: le curseur du premier élément de la page courante
    - `endCursor`: le curseur du dernier élément de la page courante
-- `edges`: la liste des éléments de la page courante, sous la forme d'une liste d'objets avec les champs suivants:
+- `nodes`: la liste des éléments demandés, de type `T`
+- `edges`: une liste d'objets contenant:
    - `node`: élément de type `T`
    - `cursor`: le curseur de l'élément
 
@@ -155,7 +156,7 @@ Endpoint pour recevoir les acquittements de paiement Lydia.
 
 #### `GET /lydia-webhook/health`
 
-Renvoie OK. Permet de vérifier que le serveur est en ligne (voir [Health checks](#health-checks) pour des checks plus complets).
+Renvoie OK. Permet de vérifier que le serveur est en ligne (voir [Health checks](/health-checks) pour des checks plus complets).
 
 </article>
 

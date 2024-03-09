@@ -1,6 +1,6 @@
 import { builder, fullTextSearch, prisma } from '#lib';
 
-import { visibleArticlesPrismaQuery } from '#permissions';
+import { prismaQueryAccessibleArticles } from '#permissions';
 import { ArticleSearchResultType } from '../index.js';
 
 builder.queryField('searchArticles', (t) =>
@@ -18,7 +18,7 @@ builder.queryField('searchArticles', (t) =>
         property: 'article',
         resolveObjects: (ids) =>
           prisma.article.findMany({
-            where: { AND: [{ id: { in: ids } }, visibleArticlesPrismaQuery(user, 'can')] },
+            where: { AND: [{ id: { in: ids } }, prismaQueryAccessibleArticles(user, 'can')] },
           }),
         fuzzy: ['title', 'body'],
         highlight: ['title', 'body'],

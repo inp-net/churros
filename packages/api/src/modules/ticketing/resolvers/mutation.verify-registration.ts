@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { eventManagedByUser } from '#permissions';
+import { userCanManageEvent } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { RegistrationVerificationResultType, RegistrationVerificationState } from '../index.js';
 // TODO rename to verify-booking.ts
@@ -26,7 +26,7 @@ builder.mutationField('verifyRegistration', (t) =>
         },
       });
       if (!event) return false;
-      return eventManagedByUser(event, user, { canVerifyRegistrations: true });
+      return userCanManageEvent(event, user, { canVerifyRegistrations: true });
     },
     async resolve(query, { id, eventUid, groupUid }, { user }) {
       async function log(message: string, target?: string) {
