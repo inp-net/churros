@@ -18,3 +18,4 @@ export function documentFilePath(
     `${document[solution ? 'solutionPaths' : 'paperPaths'].length}-${file.name}`,
   );
 }
+

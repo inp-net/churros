@@ -1,0 +1,65 @@
+import { builder, prisma, toHtml } from '#lib';
+import {
+  canSeeAllAnswers,
+  canSeeForm,
+  requiredIncludesForPermissions,
+} from '../utils/permissions.js';
+import { AnswerType } from './answer.js';
+
+export const FormSectionType = builder.prismaObject('FormSection', {
+  description:
+    "Une section d'un formulaire. Les sections sont utiles pour séparer les questions en plusieurs parties, dont certaines peuvent être affichées selon des réponses à des questions précédentes",
+  include: {
+    form: {
+      include: requiredIncludesForPermissions,
+    },
+  },
+  authScopes({ form: { createdById, event } }, { user }) {
+    return canSeeForm({ createdById }, event, user);
+  },
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    form: t.relation('form', { description: 'Formulaire auquel appartient la section' }),
+    title: t.exposeString('title', { description: 'Titre de la section' }),
+    description: t.exposeString('description', {
+      nullable: true,
+      description: 'Description en Markdown de la section',
+    }),
+    descriptionHtml: t.string({
+      resolve: ({ description }) => toHtml(description),
+      description: 'Description en HTML de la section',
+    }),
+    questions: t.relation('questions', {
+      description: 'Questions dans section',
+      query: {
+        orderBy: { order: 'asc' },
+      },
+    }),
+    answers: t.prismaConnection({
+      type: AnswerType,
+      cursor: 'id',
+      description: 'Réponses à cette section',
+      authScopes({ form: { createdById, event } }, {}, { user }) {
+        return canSeeAllAnswers({ createdById }, event, user);
+      },
+      resolve: (query, { id }) =>
+        prisma.answer.findMany({
+          ...query,
+          where: { question: { sectionId: id } },
+          orderBy: [
+            {
+              questionId: 'asc',
+            },
+          ],
+        }),
+    }),
+    fromQuestions: t.relation('fromQuestions', {
+      description:
+        'Questions qui servent de condition pour éventuellement aller à cette section ou non. Voir `goToSections` sur [`Question`](#Question)',
+    }),
+    restrictedToGroups: t.relation('restrictedToGroups', {
+      description:
+        'Si non vide, seul·e·s les membres des groupes spécifiés peuvent accéder à cette section. ',
+    }),
+  }),
+});

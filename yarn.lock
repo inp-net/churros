@@ -408,6 +408,7 @@ __metadata:
     "@pothos/plugin-smart-subscriptions": "npm:^3.7.2"
     "@pothos/plugin-tracing": "npm:^0.5.8"
     "@pothos/plugin-validation": "npm:^3.10.1"
+    "@pothos/plugin-with-input": "npm:^3.10.1"
     "@prisma/client": "npm:5.11.0"
     "@tsconfig/esm": "npm:^1.0.5"
     "@tsconfig/node18": "npm:^18.2.2"
@@ -2299,6 +2300,16 @@ __metadata:
     graphql: ">=15.1.0"
     zod: "*"
   checksum: 10c0/d6d4315dbfcb30c47d481b5a0124a83101cd3312e2634eb879b7fd668a7f3d8ef2249ad6d646a91a25dc87b92d6d34995671106651163e9e9b44f80df194252a
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-with-input@npm:^3.10.1":
+  version: 3.10.1
+  resolution: "@pothos/plugin-with-input@npm:3.10.1"
+  peerDependencies:
+    "@pothos/core": "*"
+    graphql: ">=15.1.0"
+  checksum: 10c0/c16daa5610ac2933274619e064abc3586cf7326c5e0ac82fbb579afaa245a0211d7fb67bc0384a62e406609e998c8b0c0de7fe532c1334dfd5ac10432b19453a
   languageName: node
   linkType: hard
 

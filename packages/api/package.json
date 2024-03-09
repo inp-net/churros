@@ -17,6 +17,7 @@
     "@pothos/plugin-smart-subscriptions": "^3.7.2",
     "@pothos/plugin-tracing": "^0.5.8",
     "@pothos/plugin-validation": "^3.10.1",
+    "@pothos/plugin-with-input": "^3.10.1",
     "@prisma/client": "5.11.0",
     "@types/qrcode": "^1.5.5",
     "arborist": "workspace:^",

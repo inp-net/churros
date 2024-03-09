@@ -30,6 +30,7 @@ import '#modules/services';
 import '#modules/student-associations';
 import '#modules/ticketing';
 import '#modules/users';
+import '#modules/forms';
 
 const { rateLimitDirectiveTransformer } = rateLimitDirective({
   keyGenerator: (dargs, src, args, ctx: Context, info) => {

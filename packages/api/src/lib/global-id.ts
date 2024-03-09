@@ -41,6 +41,10 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   reac: 'Reaction',
   promocode: 'PromotionCode',
   promo: 'Promotion',
+  form: 'Form',
+  formsection: 'FormSection',
+  question: 'Question',
+  answer: 'Answer',
 } as const;
 /* end @generated from schema */
 

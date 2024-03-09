@@ -2,6 +2,7 @@ import { prisma } from '#lib';
 import { fakerFR } from '@faker-js/faker';
 import { CredentialType, GroupType, LogoSourceType, Visibility, type Prisma } from '@prisma/client';
 import { hash } from 'argon2';
+import { addDays } from 'date-fns';
 import dichotomid from 'dichotomid';
 import { exit } from 'node:process';
 import slug from 'slug';
@@ -850,6 +851,74 @@ await prisma.thirdPartyApp.create({
       set: ['https://wiki.inpt.fr', 'http://localhost:5000'],
     },
     owner: { connect: { id: thirdPartyAppClub.id } },
+  },
+});
+
+const form1 = await prisma.form.create({
+  data: {
+    title: 'Formulaire de ski',
+    description: 'Le **formulaire** wouhou',
+    createdById: alamaternitei.id,
+    opensAt: new Date(),
+    closesAt: addDays(new Date(), 7),
+    eventId: event1.id,
+  },
+});
+
+await prisma.formSection.create({
+  data: {
+    formId: form1.id,
+    order: 1,
+    title: 'Section 1',
+    description: 'Description de la section 1',
+    questions: {
+      createMany: {
+        data: [
+          {
+            description: 'Description de la question 1',
+            order: 1,
+            title: 'Question 1',
+            type: 'Text',
+            mandatory: true,
+          },
+          {
+            description: 'Description de la question 2\n\nAvec un retour à la ligne',
+            order: 2,
+            title: 'Question 2',
+            type: 'SelectOne',
+            allowOptionOther: true,
+            options: ['Option 1', 'Option 2', 'Option 3'],
+            mandatory: true,
+          },
+          {
+            description: 'Description de la question 3',
+            order: 3,
+            title: 'Question 3',
+            type: 'SelectMultiple',
+            allowOptionOther: false,
+            options: ['Option 1', 'Option 2', 'Option 3'],
+          },
+          {
+            description: 'Description de la question 4',
+            order: 4,
+            title: 'Question 4',
+            type: 'FileUpload',
+            mandatory: false,
+            allowedFiletypes: ['application/pdf'],
+          },
+          {
+            description: 'Description de la question 5',
+            order: 5,
+            title: 'Question 5',
+            type: 'Scale',
+            mandatory: true,
+            scaleEnd: 7,
+            scaleStart: 1,
+            options: ['Pas du tout', 'À la folie'],
+          },
+        ],
+      },
+    },
   },
 });
 

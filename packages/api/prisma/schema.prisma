@@ -80,6 +80,8 @@ model User {
   bannedFromEvents          Event[]                    @relation("bannedFromEvents")
   reactions                 Reaction[]
   allowedApps               ThirdPartyApp[]
+  formAnswers               Answer[]
+  createdForms              Form[]
 
   // For full-text search
   search                Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -410,15 +412,16 @@ model Group {
   related   Group[] @relation("related")
   relatedTo Group[] @relation("related")
 
-  articles           Article[]
-  members            GroupMember[]
-  studentAssociation StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
-  events             Event[]
-  coOrganizedEvents  Event[]             @relation("coOrganizer")
-  lyiaAccounts       LydiaAccount[]
-  tickets            Ticket[]            @relation("openTo")
-  barWeeks           BarWeek[]
-  services           Service[]
+  articles               Article[]
+  members                GroupMember[]
+  studentAssociation     StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  events                 Event[]
+  coOrganizedEvents      Event[]             @relation("coOrganizer")
+  lyiaAccounts           LydiaAccount[]
+  tickets                Ticket[]            @relation("openTo")
+  barWeeks               BarWeek[]
+  services               Service[]
+  restrictedFormSections FormSection[]       @relation("restrictedTo")
 
   notifications          Notification[]
   groupId                String?
@@ -522,6 +525,7 @@ model Event {
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  Form   Form[]
 
   @@unique([groupId, uid])
   @@index([search], type: Gin)
@@ -624,6 +628,7 @@ model Registration {
   opposedAt         DateTime?
   cancelledBy       User?              @relation(name: "cancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull, onUpdate: Cascade)
   cancelledAt       DateTime?
+  formAnswer        Answer?
 
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
@@ -923,4 +928,98 @@ model Promotion {
   validOn    Ticket[]
 
   priceOverride Int
+}
+
+model Form {
+  id          String   @id @default(dbgenerated("nanoid('form:')"))
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  createdById String?
+
+  event   Event?  @relation(fields: [eventId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  eventId String?
+
+  opensAt     DateTime?
+  closesAt    DateTime?
+  title       String        @db.VarChar(255)
+  description String        @db.Text
+  sections    FormSection[]
+}
+
+model FormSection {
+  id            String     @id @default(dbgenerated("nanoid('formsection:')"))
+  order         Int
+  form          Form       @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId        String
+  title         String     @db.VarChar(255)
+  description   String     @db.Text
+  questions     Question[]
+  fromQuestions Question[] @relation("goToSection")
+
+  /// Conditions
+
+  restrictedToGroups Group[] @relation("restrictedTo")
+
+  @@unique([formId, order])
+}
+
+model Question {
+  id        String      @id @default(dbgenerated("nanoid('question:')"))
+  section   FormSection @relation(fields: [sectionId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  sectionId String
+  order     Int
+
+  title       String       @db.VarChar(255)
+  description String       @db.Text
+  type        QuestionKind
+  mandatory   Boolean      @default(false)
+
+  options          String[]      @default([])
+  // Maps options to sections to jump to if chosen
+  goToSection      FormSection[] @relation("goToSection")
+  scaleStart       Int?
+  scaleEnd         Int?
+  allowOptionOther Boolean       @default(false)
+  allowedFiletypes String[]      @default([]) // empty means all
+
+  answers Answer[]
+
+  @@unique([sectionId, order])
+}
+
+enum QuestionKind {
+  Text
+  LongText
+  SelectOne
+  SelectMultiple
+  FileUpload
+  // In scale, options has two values, the labels of the start and end of the scale
+  Scale
+  Number
+  Date
+  Time
+}
+
+model Answer {
+  id         String   @id @default(dbgenerated("nanoid('answer:')"))
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  answeredBy   User?   @relation(fields: [answeredById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  answeredById String?
+
+  /// Used for Text, LongText, Date (YYYY-mm-dd), Time (HH:mm:ss), FileUpload (path relative to storage root URL), SelectOne, SelectMultiple
+  /// Only the first value is considered for all types except SelectMultiple.
+  /// Can be empty if the user didn't answer the question (when it wasn't mandatory, for example)
+  answer String[]
+  /// Used for Number, Scale (stored from 0 to 1)
+  number Float?
+
+  /// Data to link back to an event booking
+  booking   Registration? @relation(fields: [bookingId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  bookingId String?       @unique
 }

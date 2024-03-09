@@ -1,0 +1,238 @@
+-- CreateEnum
+CREATE TYPE "QuestionKind" AS ENUM ('Text', 'LongText', 'SelectOne', 'SelectMultiple', 'FileUpload', 'Scale', 'Number', 'Date', 'Time');
+
+-- AlterTable
+ALTER TABLE "Announcement" ALTER COLUMN "id" SET DEFAULT nanoid('ann:');
+
+-- AlterTable
+ALTER TABLE "Article" ALTER COLUMN "id" SET DEFAULT nanoid('a:');
+
+-- AlterTable
+ALTER TABLE "BarWeek" ALTER COLUMN "id" SET DEFAULT nanoid('barweek:');
+
+-- AlterTable
+ALTER TABLE "Comment" ALTER COLUMN "id" SET DEFAULT nanoid('comment:');
+
+-- AlterTable
+ALTER TABLE "Contribution" ALTER COLUMN "id" SET DEFAULT nanoid('contribution:');
+
+-- AlterTable
+ALTER TABLE "ContributionOption" ALTER COLUMN "id" SET DEFAULT nanoid('contributionoption:');
+
+-- AlterTable
+ALTER TABLE "Credential" ALTER COLUMN "id" SET DEFAULT nanoid('credential:');
+
+-- AlterTable
+ALTER TABLE "Document" ALTER COLUMN "id" SET DEFAULT nanoid('doc:');
+
+-- AlterTable
+ALTER TABLE "EmailChange" ALTER COLUMN "id" SET DEFAULT nanoid('emailchange:');
+
+-- AlterTable
+ALTER TABLE "Event" ALTER COLUMN "id" SET DEFAULT nanoid('e:');
+
+-- AlterTable
+ALTER TABLE "GodparentRequest" ALTER COLUMN "id" SET DEFAULT nanoid('godparentreq:');
+
+-- AlterTable
+ALTER TABLE "Group" ALTER COLUMN "id" SET DEFAULT nanoid('g:');
+
+-- AlterTable
+ALTER TABLE "Link" ALTER COLUMN "id" SET DEFAULT nanoid('link:');
+
+-- AlterTable
+ALTER TABLE "LogEntry" ALTER COLUMN "id" SET DEFAULT nanoid('log:');
+
+-- AlterTable
+ALTER TABLE "LydiaAccount" ALTER COLUMN "id" SET DEFAULT nanoid('lydia:');
+
+-- AlterTable
+ALTER TABLE "LydiaTransaction" ALTER COLUMN "id" SET DEFAULT nanoid('lydiapayment:');
+
+-- AlterTable
+ALTER TABLE "Major" ALTER COLUMN "id" SET DEFAULT nanoid('major:');
+
+-- AlterTable
+ALTER TABLE "Minor" ALTER COLUMN "id" SET DEFAULT nanoid('minor:');
+
+-- AlterTable
+ALTER TABLE "Notification" ALTER COLUMN "id" SET DEFAULT nanoid('notif:');
+
+-- AlterTable
+ALTER TABLE "NotificationSubscription" ALTER COLUMN "id" SET DEFAULT nanoid('notifsub:');
+
+-- AlterTable
+ALTER TABLE "PasswordReset" ALTER COLUMN "id" SET DEFAULT nanoid('passreset:');
+
+-- AlterTable
+ALTER TABLE "PaypalTransaction" ALTER COLUMN "id" SET DEFAULT nanoid('paypalpayment:');
+
+-- AlterTable
+ALTER TABLE "Promotion" ALTER COLUMN "id" SET DEFAULT nanoid('promo:');
+
+-- AlterTable
+ALTER TABLE "PromotionCode" ALTER COLUMN "id" SET DEFAULT nanoid('promocode:');
+
+-- AlterTable
+ALTER TABLE "Reaction" ALTER COLUMN "id" SET DEFAULT nanoid('reac:');
+
+-- AlterTable
+ALTER TABLE "Registration" ALTER COLUMN "id" SET DEFAULT nanoid('r:');
+
+-- AlterTable
+ALTER TABLE "School" ALTER COLUMN "id" SET DEFAULT nanoid('school:'),
+ALTER COLUMN "aliasMailDomains" SET DEFAULT ARRAY[]::VARCHAR(255)[];
+
+-- AlterTable
+ALTER TABLE "Service" ALTER COLUMN "id" SET DEFAULT nanoid('service:');
+
+-- AlterTable
+ALTER TABLE "StudentAssociation" ALTER COLUMN "id" SET DEFAULT nanoid('ae:');
+
+-- AlterTable
+ALTER TABLE "Subject" ALTER COLUMN "id" SET DEFAULT nanoid('subj:');
+
+-- AlterTable
+ALTER TABLE "TeachingUnit" ALTER COLUMN "id" SET DEFAULT nanoid('ue:');
+
+-- AlterTable
+ALTER TABLE "ThirdPartyApp" ALTER COLUMN "id" SET DEFAULT nanoid('app:', 30);
+
+-- AlterTable
+ALTER TABLE "ThirdPartyCredential" ALTER COLUMN "id" SET DEFAULT nanoid('token:');
+
+-- AlterTable
+ALTER TABLE "Ticket" ALTER COLUMN "id" SET DEFAULT nanoid('t:');
+
+-- AlterTable
+ALTER TABLE "TicketGroup" ALTER COLUMN "id" SET DEFAULT nanoid('tg:');
+
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "id" SET DEFAULT nanoid('u:');
+
+-- AlterTable
+ALTER TABLE "UserCandidate" ALTER COLUMN "id" SET DEFAULT nanoid('candidate:');
+
+-- CreateTable
+CREATE TABLE "Form" (
+    "id" TEXT NOT NULL DEFAULT nanoid('form:'),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdById" TEXT,
+    "eventId" TEXT,
+    "opensAt" TIMESTAMP(3),
+    "closesAt" TIMESTAMP(3),
+    "title" VARCHAR(255) NOT NULL,
+    "description" TEXT NOT NULL,
+
+    CONSTRAINT "Form_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "FormSection" (
+    "id" TEXT NOT NULL DEFAULT nanoid('formsection:'),
+    "order" INTEGER NOT NULL,
+    "formId" TEXT NOT NULL,
+    "title" VARCHAR(255) NOT NULL,
+    "description" TEXT NOT NULL,
+
+    CONSTRAINT "FormSection_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Question" (
+    "id" TEXT NOT NULL DEFAULT nanoid('question:'),
+    "sectionId" TEXT NOT NULL,
+    "order" INTEGER NOT NULL,
+    "title" VARCHAR(255) NOT NULL,
+    "description" TEXT NOT NULL,
+    "type" "QuestionKind" NOT NULL,
+    "mandatory" BOOLEAN NOT NULL DEFAULT false,
+    "options" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "scaleStart" INTEGER,
+    "scaleEnd" INTEGER,
+    "allowOptionOther" BOOLEAN NOT NULL DEFAULT false,
+    "allowedFiletypes" TEXT[] DEFAULT ARRAY[]::TEXT[],
+
+    CONSTRAINT "Question_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Answer" (
+    "id" TEXT NOT NULL DEFAULT nanoid('answer:'),
+    "questionId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "answeredById" TEXT,
+    "answer" TEXT[],
+    "number" DOUBLE PRECISION,
+    "bookingId" TEXT,
+
+    CONSTRAINT "Answer_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_goToSection" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_restrictedTo" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "FormSection_formId_order_key" ON "FormSection"("formId", "order");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Question_sectionId_order_key" ON "Question"("sectionId", "order");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Answer_bookingId_key" ON "Answer"("bookingId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_goToSection_AB_unique" ON "_goToSection"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_goToSection_B_index" ON "_goToSection"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_restrictedTo_AB_unique" ON "_restrictedTo"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_restrictedTo_B_index" ON "_restrictedTo"("B");
+
+-- AddForeignKey
+ALTER TABLE "Form" ADD CONSTRAINT "Form_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Form" ADD CONSTRAINT "Form_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FormSection" ADD CONSTRAINT "FormSection_formId_fkey" FOREIGN KEY ("formId") REFERENCES "Form"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Question" ADD CONSTRAINT "Question_sectionId_fkey" FOREIGN KEY ("sectionId") REFERENCES "FormSection"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Answer" ADD CONSTRAINT "Answer_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "Question"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Answer" ADD CONSTRAINT "Answer_answeredById_fkey" FOREIGN KEY ("answeredById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Answer" ADD CONSTRAINT "Answer_bookingId_fkey" FOREIGN KEY ("bookingId") REFERENCES "Registration"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_goToSection" ADD CONSTRAINT "_goToSection_A_fkey" FOREIGN KEY ("A") REFERENCES "FormSection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_goToSection" ADD CONSTRAINT "_goToSection_B_fkey" FOREIGN KEY ("B") REFERENCES "Question"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_restrictedTo" ADD CONSTRAINT "_restrictedTo_A_fkey" FOREIGN KEY ("A") REFERENCES "FormSection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_restrictedTo" ADD CONSTRAINT "_restrictedTo_B_fkey" FOREIGN KEY ("B") REFERENCES "Group"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -27,28 +27,27 @@ const main = () => {
   const generateBarrelsByConfig = (dirPath: string) => {
     const dirs = glob.sync(dirPath);
     for (const dir of dirs) {
-      const fullPath = `${dirPath}/${dir}`;
-
-      if (!existsSync(fullPath)) {
+      if (!existsSync(dir)) {
         continue;
       }
 
-      if (!statSync(fullPath).isDirectory()) {
+      if (!statSync(dir).isDirectory()) {
         continue;
       }
 
-      if (!readdirSync(fullPath).length) {
+      if (!readdirSync(dir).length) {
         continue;
       }
 
-      barrelsbyConfig.directory.push(`./${fullPath}`);
-      writeFileSync(barrelsbyConfigPath, JSON.stringify(barrelsbyConfig, undefined, 2));
+      barrelsbyConfig.directory.push(`./${dir}`);
     }
   };
 
   generateBarrelsByConfig('src/lib');
   generateBarrelsByConfig('src/permissions');
   generateBarrelsByConfig('src/modules/*/*');
+  barrelsbyConfig.directory = Array.from(new Set(barrelsbyConfig.directory)).sort();
+  writeFileSync(barrelsbyConfigPath, JSON.stringify(barrelsbyConfig, undefined, 2));
 
   console.log('Updated barrelsby.config.json');
 
