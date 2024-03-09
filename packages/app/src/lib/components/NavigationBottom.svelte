@@ -32,7 +32,9 @@
   });
 </script>
 
-<img src="/ChurrosPan7onTelBas.png" alt="ChurrosPcPan7on" class="temple" />
+{#if $theme == 'pan7on'}
+  <img src="/ChurrosPan7onTelBas.png" alt="ChurrosPcPan7on" class="temple" />
+{/if}
 <nav
   class:flyout-open={flyoutOpen}
   class:transparent={$page.url.pathname.endsWith('/scan/') && !flyoutOpen}
