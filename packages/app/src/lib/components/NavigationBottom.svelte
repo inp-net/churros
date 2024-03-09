@@ -329,8 +329,9 @@
     position: fixed;
     bottom: 55px;
     z-index: 100;
+    color: transparent;
+    pointer-events: none;
     background: none;
     background-color: transparent;
-    color: transparent;
   }
 </style>
