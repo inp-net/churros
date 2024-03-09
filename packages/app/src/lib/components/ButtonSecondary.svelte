@@ -96,7 +96,8 @@
   .button-secondary:not(:disabled):hover,
   .button-secondary:not(:disabled):focus-visible {
     /* color: var(--bg); */
-    background: var(--border);
+    background: var(--secondary-bg);
+    border: var(--border-block) solid var(--secondary-hover-bg);
   }
 
   .icon {
