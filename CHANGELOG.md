@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Le thème de Pan7on est là! (@soyerb)
+
 ### Corrections
 
 - Correction d'un bug qui affiché une place comme grisée sur la page d'un évènement (!121) (@bardete)
