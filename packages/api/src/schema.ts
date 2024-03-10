@@ -14,6 +14,7 @@ import '#modules/comments';
 import '#modules/curriculum';
 import '#modules/documents';
 import '#modules/events';
+import '#modules/forms';
 import '#modules/gitlab';
 import '#modules/global';
 import '#modules/groups';
@@ -30,7 +31,6 @@ import '#modules/services';
 import '#modules/student-associations';
 import '#modules/ticketing';
 import '#modules/users';
-import '#modules/forms';
 
 const { rateLimitDirectiveTransformer } = rateLimitDirective({
   keyGenerator: (dargs, src, args, ctx: Context, info) => {

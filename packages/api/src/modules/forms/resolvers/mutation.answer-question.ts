@@ -149,7 +149,7 @@ Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'
       const { type, scaleStart, scaleEnd } = await prisma.question.findUniqueOrThrow({
         where: { id: question },
       });
-      return prisma.answer.create({
+      return prisma.answer.upsert({
         ...query,
         data: {
           questionId: question,

@@ -1,13 +1,9 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, toHtml } from '#lib';
-import {
-  canSeeAllAnswers,
-  canSeeForm,
-  requiredIncludesForPermissions,
-} from '../utils/permissions.js';
-import { FormSectionType } from './form-section.js';
+import { TYPENAMES_TO_ID_PREFIXES, builder, toHtml } from '#lib';
+import { canSeeForm, requiredIncludesForPermissions } from '../utils/permissions.js';
 import { QuestionKindType } from './question-kind.js';
 
 export const QuestionType = builder.prismaInterface('Question', {
+  name: 'Question',
   description: 'Une question dans un formulaire',
   include: {
     jumps: true,
@@ -29,6 +25,25 @@ export const QuestionType = builder.prismaInterface('Question', {
   ) {
     return canSeeForm({ createdById }, event, user);
   },
+  resolveType({ type }) {
+    switch (type) {
+      case 'SelectOne': {
+        return 'QuestionSelectOne';
+      }
+      case 'SelectMultiple': {
+        return 'QuestionSelectMultiple';
+      }
+      case 'FileUpload': {
+        return 'QuestionFileUpload';
+      }
+      case 'Scale': {
+        return 'QuestionScale';
+      }
+      default: {
+        return 'QuestionScalar';
+      }
+    }
+  },
   fields: (t) => ({
     id: t.exposeID('id', {
       description: `Préfixe d'identifiant: ${TYPENAMES_TO_ID_PREFIXES.Question}:`,
@@ -36,7 +51,6 @@ export const QuestionType = builder.prismaInterface('Question', {
     section: t.relation('section', {
       description: 'Section du formulaire dans laquelle est la question',
     }),
-
     title: t.exposeString('title', { description: 'Titre de la question' }),
     description: t.exposeString('description', {
       nullable: true,
@@ -49,20 +63,6 @@ export const QuestionType = builder.prismaInterface('Question', {
     type: t.expose('type', { description: 'Type de la question', type: QuestionKindType }),
     mandatory: t.exposeBoolean('mandatory', {
       description: 'Indique si la question est obligatoire',
-    }),
-    answers: t.relatedConnection('answers', {
-      authScopes(
-        {
-          section: {
-            form: { createdById, event },
-          },
-        },
-        {},
-        { user },
-      ) {
-        return canSeeAllAnswers({ createdById }, event, user);
-      },
-      cursor: 'id',
     }),
   }),
 });

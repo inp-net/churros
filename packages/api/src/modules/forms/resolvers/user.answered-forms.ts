@@ -11,7 +11,7 @@ builder.prismaObjectField(UserType, 'answeredForms', (t) =>
       return user?.admin || user?.id === id;
     },
     resolve(query, { id }) {
-        // FIXME does not work since some sections could be skipped for this user
+      // FIXME does not work since some sections could be skipped for this user
       return prisma.form.findMany({
         ...query,
         where: {

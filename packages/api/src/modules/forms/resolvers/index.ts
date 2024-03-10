@@ -8,5 +8,6 @@ export * from './form.answers-csv.js';
 export * from './mutation.answer-file-question.js';
 export * from './mutation.answer-question.js';
 export * from './query.forms.js';
+export * from './question.answers.js';
 export * from './user.answered-forms.js';
 export * from './user.partially-answered-forms.js';

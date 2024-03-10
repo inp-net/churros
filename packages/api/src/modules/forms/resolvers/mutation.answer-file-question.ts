@@ -2,8 +2,7 @@ import { builder, prisma } from '#lib';
 import { FileScalar } from '#modules/global';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { AnswerFileUploadType } from '../types/answer-variants.js';
-import { formAnswerFilePath } from '../utils/paths.js';
+import { AnswerFileUploadType, formAnswerFilePath } from '../index.js';
 
 builder.mutationField('answerFileQuestion', (t) =>
   t.field({

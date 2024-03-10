@@ -939,6 +939,8 @@ model Form {
   createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull, onUpdate: Cascade)
   createdById String?
 
+  // TODO: add a way to prevent multiple responses by the same user
+
   event   Event?  @relation(fields: [eventId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   eventId String?
 

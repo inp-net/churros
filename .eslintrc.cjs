@@ -67,6 +67,7 @@ module.exports = {
             allow: ['warn', 'error', 'info', 'group', 'groupEnd'],
           },
         ],
+        'unicorn/no-null': 'off',
       },
     },
     {
@@ -86,6 +87,7 @@ module.exports = {
         'unicorn/consistent-destructuring': 'off',
         'unicorn/no-useless-undefined': 'off',
         'unicorn/filename-case': 'off',
+        'unicorn/no-null': 'off',
         'no-console': [
           'error',
           {

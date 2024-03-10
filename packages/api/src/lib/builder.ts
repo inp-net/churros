@@ -63,7 +63,7 @@ export const builder = new SchemaBuilder<{
     WithInputPlugin,
   ],
   authScopes,
-  complexity: { limit: { complexity: 30_000, depth: 7, breadth: 200 } },
+  complexity: { limit: { complexity: 50_000, depth: 10, breadth: 200 } },
   defaultInputFieldRequiredness: true,
   withInput: {},
   errorOptions: { defaultTypes: [Error] },
