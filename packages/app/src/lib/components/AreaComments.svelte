@@ -8,16 +8,16 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
 
   export let me: AreaCommentsMe | undefined;
-  $: Me = !me
-    ? undefined
-    : fragment(
+  $: Me = me
+    ? fragment(
         me,
         graphql`
           fragment AreaCommentsMe on User {
             ...CardCommentAuthor
           }
         `,
-      );
+      )
+    : undefined;
 
   export let comments: AreaComments;
   $: Comments = fragment(

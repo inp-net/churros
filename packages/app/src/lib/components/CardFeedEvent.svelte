@@ -7,7 +7,7 @@
     isSameDay,
     isWithinInterval,
   } from 'date-fns';
-  import { zeus, Visibility as VisibilityEnum } from '$lib/zeus';
+  import { zeus } from '$lib/zeus';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
   import { groupLogoSrc } from '$lib/logos';
@@ -20,7 +20,6 @@
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
   import {
-    type Visibility$options,
     Visibility,
     fragment,
     graphql,

@@ -5,6 +5,7 @@
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { saveSessionToken } from '$lib/session.js';
   import { zeus } from '$lib/zeus.js';
+  import { graphql } from '$houdini';
   import type { ZodFormattedError } from 'zod';
   import type { PageData } from './$types';
   import InputField from '$lib/components/InputField.svelte';
@@ -55,6 +56,21 @@
   let loading = false;
   let isStudent = Boolean(data.userCandidate.schoolUid);
   let formErrors: ZodFormattedError<typeof args> | undefined;
+  $: Login = graphql(`
+    mutation Login($email: String!, $password: String!) {
+      login(email: $email, password: $password) {
+        ... on MutationLoginSuccess {
+          data {
+            token
+            expiresAt
+          }
+        }
+        ... on Error {
+          message
+        }
+      }
+    }
+  `);
   const register = async () => {
     if (loading) return;
 
@@ -85,21 +101,12 @@
       result = completeRegistration.data;
 
       if (result) {
-        const { login } = await $zeus.mutate({
-          login: [
-            { email: data.userCandidate.email, password },
-            {
-              '__typename': true,
-              '...on Error': { message: true },
-              '...on MutationLoginSuccess': {
-                data: { token: true, expiresAt: true, user: sessionUserQuery() },
-              },
-            },
-          ],
+        const login = await Login.mutate({
+          email: data.userCandidate.email,
+          password,
         });
-
-        if (login.__typename === 'MutationLoginSuccess') {
-          saveSessionToken(document, login.data);
+        if (login.data?.login.__typename === 'MutationLoginSuccess') {
+          saveSessionToken(document, login.data.login.data);
           // Hard refresh (invalidating is not possible because UserCandidate
           // is deleted after registration, throwing a ZeusError)
           location.href = '/welcome/';

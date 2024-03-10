@@ -24,9 +24,8 @@
 
   // TODO understand why /events/planning sometimes passes down null for the event prop
   export let event: CardEvent | undefined;
-  $: Event = !event
-    ? undefined
-    : fragment(
+  $: Event = event
+    ? fragment(
         event,
         graphql`
           fragment CardEvent on Event {
@@ -69,7 +68,8 @@
             }
           }
         `,
-      );
+      )
+    : undefined;
   $: ({
     author,
     capacity,

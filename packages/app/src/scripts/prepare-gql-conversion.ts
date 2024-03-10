@@ -2,7 +2,7 @@
 // Loop through each file of process.argv
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import * as path from 'node:path';
 
 for (const directory of process.argv.slice(2)) {

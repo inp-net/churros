@@ -5,7 +5,6 @@
   import IconCanEditPosts from '~icons/mdi/text-box-edit-outline';
   import IconCanScanEvents from '~icons/mdi/qrcode';
   import IconIsDeveloper from '~icons/mdi/code-braces';
-  import { fragment, graphql } from '$houdini';
   export let small = false;
   export let inline = false;
   export let role = '';

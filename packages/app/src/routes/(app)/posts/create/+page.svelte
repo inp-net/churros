@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { fragment, graphql } from '$houdini';
   import CardGroup from '$lib/components/CardGroup.svelte';
-  import { canCreateArticle } from '$lib/permissions';
   import type { PageData } from './$houdini';
 
   export let data: PageData;

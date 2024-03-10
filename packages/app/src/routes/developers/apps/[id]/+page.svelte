@@ -48,14 +48,10 @@
   };
   $: ({
     name,
-    description,
-    allowedRedirectUris,
     createdAt,
     faviconUrl,
     clientId,
     active,
-    owner,
-    website,
     secretLength,
   } = app);
 
@@ -154,7 +150,7 @@
   async function updateApp() {
     if (!app || !app.owner) return;
     // if (!app.ownerGroup) return;
-    const { editApp } = await $zeus.mutate({
+    await $zeus.mutate({
       editApp: [
         {
           id: app.id,

@@ -26,9 +26,8 @@
   $: creating = !comment;
 
   export let author: CardCommentAuthor | undefined | null;
-  $: CommentAuthor = !author
-    ? undefined
-    : fragment(
+  $: CommentAuthor = author
+    ? fragment(
         author,
         graphql`
           fragment CardCommentAuthor on User {
@@ -37,12 +36,12 @@
             pictureFile
           }
         `,
-      );
+      )
+    : undefined;
 
   export let comment: CardComment | undefined;
-  $: Comment = !comment
-    ? undefined
-    : fragment(
+  $: Comment = comment
+    ? fragment(
         comment,
         graphql`
           fragment CardComment on Comment {
@@ -68,7 +67,8 @@
             }
           }
         `,
-      );
+      )
+    : undefined;
 
   $: ({ id, updatedAt, createdAt, body, bodyHtml, replies } = $Comment ?? {
     id: null,

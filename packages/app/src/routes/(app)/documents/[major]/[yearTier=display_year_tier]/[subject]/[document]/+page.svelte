@@ -77,7 +77,6 @@
     comment: { body: string; inReplyToId?: string } | undefined = undefined,
   ) {
     if (!document || !comment) return;
-    console.log({ addComment: comment });
     const AddComment = graphql(`
       mutation AddComment($id: ID!, $body: String!, $replyTo: ID) {
         upsertComment(documentId: $id, body: $body, inReplyToId: $replyTo) {

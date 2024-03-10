@@ -9,8 +9,6 @@
   import IconEyeOff from '~icons/mdi/eye-off';
 
   import { saveSessionToken } from '$lib/session';
-  import { zeus } from '$lib/zeus';
-  import { graphql } from '$houdini';
   import { env } from '$env/dynamic/public';
 
   let email = '';
