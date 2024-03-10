@@ -41,8 +41,8 @@ export const QuestionScaleType = builder.prismaObject('Question', {
       description: 'Liste des labels pour les valeurs possibles',
       resolve({ scaleStart, scaleEnd, options }) {
         return Array.from({ length: scaleEnd! - scaleStart! + 1 }, (_, i) => {
-          if (i === 0) return options[0];
-          if (i === scaleEnd! - scaleStart!) return options.at(-1);
+          if (i === 0) return options[0] ?? '';
+          if (i === scaleEnd! - scaleStart!) return options.at(-1) ?? '';
           return '';
         });
       },
