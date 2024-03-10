@@ -4,9 +4,11 @@
 
 export * from './event.forms.js';
 export * from './form-section.next-section.js';
-export * from './form.answers-csv.js';
+export * from './form.answers.js';
+export * from './form.export-answers.js';
 export * from './mutation.answer-file-question.js';
 export * from './mutation.answer-question.js';
+export * from './query.form.js';
 export * from './query.forms.js';
 export * from './question.answers.js';
 export * from './user.answered-forms.js';
