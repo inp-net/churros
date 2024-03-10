@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, publish } from '#lib';
 import { parse } from 'date-fns';
 import { AnswerType } from '../types/answer.js';
 
@@ -145,25 +145,30 @@ Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'
         },
       ],
     ],
-    async resolve(query, _, { question, answer }, { user }) {
-      const { type, scaleStart, scaleEnd } = await prisma.question.findUniqueOrThrow({
-        where: { id: question },
+    async resolve(query, _, { question: questionId, answer: value }, { user }) {
+      const { type, scaleStart, scaleEnd, ...question } = await prisma.question.findUniqueOrThrow({
+        where: { id: questionId },
+        include: { section: { include: { form: true } } },
       });
-      return prisma.answer.create({
+      const answer = prisma.answer.create({
         ...query,
         data: {
-          questionId: question,
+          questionId: questionId,
           answeredById: user?.id,
-          answer,
-          number: answer[0]
+          answer: value,
+          number: value[0]
             ? type === 'Number'
-              ? Number.parseFloat(answer[0])
+              ? Number.parseFloat(value[0])
               : type === 'Scale'
-                ? Number.parseInt(answer[0]) / (scaleEnd! - scaleStart!)
+                ? Number.parseInt(value[0]) / (scaleEnd! - scaleStart!)
                 : undefined
             : undefined,
         },
       });
+      publish(questionId, 'created', answer);
+      publish(question.sectionId, 'created', answer);
+      publish(question.section.formId, 'created', answer);
+      return answer;
     },
   }),
 );

@@ -1,4 +1,4 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, toHtml } from '#lib';
+import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, subscriptionName, toHtml } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import {
   canAnswerForm,
@@ -7,7 +7,6 @@ import {
   canSeeForm,
   requiredIncludesForPermissions,
 } from '../utils/permissions.js';
-import { AnswerType } from './answer.js';
 
 export const FormType = builder.prismaNode('Form', {
   description: 'Un formulaire',
@@ -99,30 +98,11 @@ export const FormType = builder.prismaNode('Form', {
         });
       },
     }),
-    answers: t.prismaConnection({
-      description: 'Réponses au formulaire',
-      type: AnswerType,
-      cursor: 'id',
-      authScopes({ event, createdById }, {}, { user }) {
-        return canSeeAllAnswers({ createdById }, event, user);
-      },
-      resolve: async (query, { id }) => {
-        return prisma.answer.findMany({
-          ...query,
-          where: { question: { section: { formId: id } } },
-          orderBy: [
-            {
-              questionId: 'asc',
-            },
-          ],
-        });
-      },
-    }),
     answerCount: t.int({
-      authScopes({ event, createdById }, {}, { user }) {
-        return canSeeAllAnswers({ createdById }, event, user);
-      },
       description: 'Nombre de réponses au formulaire',
+      subscribe(subs, { id }) {
+        subs.register(subscriptionName(id));
+      },
       resolve: async ({ id }) => {
         return prisma.answer.count({ where: { question: { section: { formId: id } } } });
       },

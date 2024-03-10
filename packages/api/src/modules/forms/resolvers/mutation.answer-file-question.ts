@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, publish } from '#lib';
 import { FileScalar } from '#modules/global';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -38,7 +38,7 @@ builder.mutationField('answerFileQuestion', (t) =>
       });
       const buffer = await file.arrayBuffer().then((array) => Buffer.from(array));
       const root = new URL(process.env.STORAGE).pathname;
-      const answer = await prisma.answer.create({
+      let answer = await prisma.answer.create({
         data: {
           questionId,
           answeredById: user?.id,
@@ -55,12 +55,16 @@ builder.mutationField('answerFileQuestion', (t) =>
         );
         mkdirSync(path.dirname(filepath), { recursive: true });
         writeFileSync(filepath, buffer);
-        return prisma.answer.update({
+        answer = await prisma.answer.update({
           where: { id: answer.id },
           data: {
             answer: [path.relative(root, filepath)],
           },
         });
+        publish(questionId, 'created', answer);
+        publish(question.sectionId, 'created', answer);
+        publish(question.section.formId, 'created', answer);
+        return answer;
       } catch (error) {
         await prisma.answer.delete({ where: { id: answer.id } });
         throw error;
