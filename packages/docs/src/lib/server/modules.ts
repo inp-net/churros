@@ -5,6 +5,8 @@ import { kebabToCamel, kebabToPascal } from '../casing';
 import { getFrontmatter, markdownToHtml, type ResolverFromFilesystem } from '../markdown';
 import { loadSchema } from './schema-loader';
 import { MODULES_ORDER } from '$lib/ordering';
+import { findTypeInSchema } from '$lib/schema-utils';
+import type { SchemaClass } from '$lib/schema';
 
 export type Module = {
 	name: string;
@@ -48,6 +50,51 @@ function firstSentence(text: string) {
 	return text.split(/\.(\s|$)/)[0];
 }
 
+/**
+ * Sort types such that a type comes before another if it is used by the other.
+ */
+function typesTopologicalSorter(
+	schema: SchemaClass
+): (aName: Module['types'][number], bName: Module['types'][number]) => -1 | 0 | 1 {
+	return (aName, bName) => {
+		if (aName === bName) {
+			return 0;
+		}
+		const a = findTypeInSchema(schema, aName);
+		const b = findTypeInSchema(schema, bName);
+		if (!a || !b) {
+			console.warn(`WARN: could not find types ${aName} and/or ${bName} in schema.`);
+			return 0;
+		}
+		const aUsedByB =
+			b.fields?.some((field) =>
+				[field.type.name, field.type.ofType?.name, field.type?.ofType?.ofType?.name].includes(
+					a.name
+				)
+			) || b.interfaces?.some((i) => i.name === a.name);
+		const bUsedByA =
+			a.fields?.some((field) =>
+				[field.type.name, field.type.ofType?.name, field.type?.ofType?.ofType?.name].includes(
+					b.name
+				)
+			) || a.interfaces?.some((i) => i.name === b.name);
+
+		if (aUsedByB && bUsedByA) {
+			return 0;
+		}
+
+		if (aUsedByB) {
+			return 1;
+		}
+
+		if (bUsedByA) {
+			return -1;
+		}
+
+		return 0;
+	};
+}
+
 export async function getModule(directory: string): Promise<Module> {
 	const folder = path.join('../api/src/modules', directory);
 	if (!(await stat(folder).catch(() => false)))
@@ -73,9 +120,9 @@ export async function getModule(directory: string): Promise<Module> {
 		rawDocs: docs,
 		shortDescription: ellipsis(firstSentence(docsWithoutHeading('p').first().text()), 15),
 		renderedDocs: docsWithoutHeading.html() ?? '',
-		types: (await typescriptFilesWithoutBarrels(path.join(folder, 'types'))).map((file) =>
-			kebabToPascal(path.basename(file, '.ts'))
-		),
+		types: (await typescriptFilesWithoutBarrels(path.join(folder, 'types')))
+			.map((file) => kebabToPascal(path.basename(file, '.ts')))
+			.sort(typesTopologicalSorter(await loadSchema())),
 		queries: [],
 		mutations: [],
 		subscriptions: []
