@@ -2,7 +2,7 @@
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
   import CardService from '$lib/components/CardService.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
-  import { debugging } from '$lib/debugging';
+  import { debugging, themeDebugger } from '$lib/debugging';
   import { me } from '$lib/session';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
@@ -73,12 +73,22 @@
           href="https://git.inpt.fr/inp-net/churros/-/commit/{CURRENT_COMMIT}"
           >{CURRENT_COMMIT.slice(0, 8)}</a
         >
-      {:else}trunk{/if} · <InputCheckbox
+      {:else}trunk{/if}
+    </code>
+    <code>
+      <InputCheckbox
         on:change={() => {
           toasts.info(`Debug mode ${$debugging ? 'off' : 'on'}`);
         }}
         bind:value={$debugging}
         label="Mode debug"
+      ></InputCheckbox>
+      <InputCheckbox
+        on:change={() => {
+          toasts.info(`Theme debugger ${$themeDebugger ? 'off' : 'on'}`);
+        }}
+        bind:value={$themeDebugger}
+        label="Theme debugger"
       ></InputCheckbox>
     </code>
   </footer>

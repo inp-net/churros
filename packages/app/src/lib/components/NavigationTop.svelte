@@ -123,22 +123,10 @@
     width: 100%;
     padding: 1rem 1.5rem;
     margin: 0;
-    background-color: var(--bg);
-    transition: box-shadow 0.25s ease;
-  }
-
-  nav.noel {
-    background-color: transparent;
-    background-image: url('/noel-topbar.png');
-    background-repeat: repeat;
-    background-size: contain;
-  }
-
-  nav.pan7on {
-    background-color: transparent;
-    background-image: url('/ChurrosPan7onv6.png');
+    background: var(--nav-top-background, var(--bg));
     background-repeat: repeat-x;
     background-size: auto 100%;
+    transition: box-shadow 0.25s ease;
   }
 
   nav.scrolled {

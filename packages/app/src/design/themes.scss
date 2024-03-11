@@ -59,6 +59,9 @@ dialog {
     --logo-base-stroke: var(--text);
     --logo-shadows-stroke: var(--text);
     --logo-stroke-width: 20;
+    --font-main: 'Space Mono', monospace;
+    --radius-block: 0;
+    --radius-inline: 0;
   }
 
   &.pride,
@@ -210,5 +213,7 @@ dialog {
     --border-block: 2px;
     --radius-inline: 0.25rem;
     --radius-block: 0.5rem;
+    --nav-top-background: url('/ChurrosPan7onv6.png');
+    --nav-bottom-background: var(--hover-bg);
   }
 }

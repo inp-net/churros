@@ -195,14 +195,10 @@
     justify-content: space-evenly;
     width: 100%;
     height: 4rem;
-    background: var(--bg);
+    background: var(--nav-bottom-background, var(--bg));
+    background-repeat: repeat-x;
+    background-size: auto 100%;
     border-top: var(--border-block) solid rgb(0 0 0 / 5%);
-  }
-
-  nav.pan7on {
-    background-color: var(--hover-bg);
-    background-size: cover;
-    border-top: none;
   }
 
   nav.noel {
