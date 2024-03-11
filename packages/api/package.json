@@ -32,6 +32,8 @@
     "express": "^4.18.3",
     "extract-files": "^13.0.0",
     "glob": "^10.3.10",
+    "google-auth-library": "^9.6.3",
+    "googleapis": "105",
     "graphql": "^16.8.1",
     "graphql-rate-limit-directive": "^2.0.5",
     "graphql-scalars": "^1.23.0",

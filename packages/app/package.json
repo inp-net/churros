@@ -12,6 +12,7 @@
     "date-fns": "^2.30.0",
     "extract-files": "^13.0.0",
     "fuse.js": "^7.0.0",
+    "google-auth-library": "^9.6.3",
     "graphql": "^16.8.1",
     "graphql-ws": "^5.15.0",
     "html-to-text": "^9.0.5",

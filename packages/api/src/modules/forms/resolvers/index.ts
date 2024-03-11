@@ -8,6 +8,7 @@ export * from './form.answers.js';
 export * from './form.export-answers.js';
 export * from './mutation.answer-file-question.js';
 export * from './mutation.answer-question.js';
+export * from './mutation.create-linked-google-sheet.js';
 export * from './mutation.upsert-form-section.js';
 export * from './mutation.upsert-form.js';
 export * from './mutation.upsert-question.js';
