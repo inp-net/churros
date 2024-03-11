@@ -38,6 +38,7 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
         refresh_token: googleCredential.refresh,
       });
 
+      // @ts-expect-error googleapi is typed weirdly
       const sheets = google.sheets({
         version: 'v4',
         auth: authClient,
@@ -59,12 +60,14 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
       if (!spreadsheetId) {
         spreadsheetId = await sheets.spreadsheets
           .create({
+            // @ts-expect-error googleapi is typed weirdly
             resource: {
               properties: {
                 title: `Réponses au formulaire ${form.title}`,
               },
             },
           })
+          // @ts-expect-error googleapi is typed weirdly
           .then((response) => response.data.spreadsheetId);
 
         await prisma.form.update({
@@ -90,6 +93,7 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
         const rowRange = (rowNumber: number) =>
           `A${rowNumber}:${String.fromCodePoint(65 + header.length - 1)}${rowNumber}`;
 
+        // @ts-expect-error googleapi is typed weirdly
         await sheets.spreadsheets.values.update({
           spreadsheetId,
           range: rowRange(1),
@@ -110,9 +114,10 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
         for (const [userId, answers] of Object.entries(answersSheets)) {
           answersSheets[userId] = Object.values(
             groupBy(answers, (answer) => answer.questionId),
-          ).map((answers) =>
-            answers.sort((a, b) => a.createdAt.valueOf() - b.createdAt.valueOf()).at(-1),
-          )!;
+          ).map(
+            (answers) =>
+              answers.sort((a, b) => a.createdAt.valueOf() - b.createdAt.valueOf()).at(-1)!,
+          );
         }
 
         const answerValue = (answer: Answer) =>
@@ -134,6 +139,7 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
             ];
           });
 
+        // @ts-expect-error googleapi is typed weirdly
         await sheets.spreadsheets.values.append({
           spreadsheetId,
           range: 'A1',
@@ -144,9 +150,9 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
         });
       }
 
-      return await sheets.spreadsheets
+      return (await sheets.spreadsheets
         .get({ spreadsheetId })
-        .then((response) => response.data.spreadsheetUrl);
+        .then((response) => response.data.spreadsheetUrl)) as string;
     },
   }),
 );
