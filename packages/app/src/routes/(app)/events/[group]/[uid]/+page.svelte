@@ -56,8 +56,12 @@
     );
   });
 
+  function notUndefined<T>(x: T | undefined): x is T {
+    return x !== undefined;
+  }
+
   $: usersRegistration = tickets
-    .flatMap((t) => t.registrations)
+    .flatMap((t) => t.registrations?.filter(notUndefined) ?? [])
     .filter(({ beneficiary, author }) => author?.uid === $me?.uid || beneficiary === $me?.uid);
 
   const bookingURL = (registrationId: string) =>
