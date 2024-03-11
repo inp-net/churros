@@ -39,6 +39,7 @@ const ID_PREFIXES_TO_TYPENAMES = {
   promo: 'Promotion',
   form: 'Form',
   formsection: 'FormSection',
+  formjump: 'FormJump',
   question: 'Question',
   answer: 'Answer',
 } as const;
