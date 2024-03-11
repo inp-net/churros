@@ -43,7 +43,19 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
         auth: authClient,
       });
 
-      // let sheet: sheets_v4.Schema$Spreadsheet;
+      if (spreadsheetId) {
+        // check if the spreadsheet exists
+        try {
+          await sheets.spreadsheets.get({ spreadsheetId });
+        } catch {
+          spreadsheetId = null;
+          await prisma.form.update({
+            where: { id: formId },
+            data: { linkedGoogleSheetId: null },
+          });
+        }
+      }
+
       if (!spreadsheetId) {
         spreadsheetId = await sheets.spreadsheets
           .create({
@@ -62,13 +74,16 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
 
         if (!spreadsheetId) throw new GraphQLError('No spreadsheet');
 
+        //TODO more data (linked event booking, etc)
         const header = [
           'Identifiant (NE PAS MODIFIER)',
           'Date de réponse',
           'Nom',
           'Prénom',
           ...form.sections.flatMap((section) =>
-            section.questions.map((question) => question.title),
+            section.questions.map((question) =>
+              section.title.length > 0 ? `${section.title} > ${question.title}` : question.title,
+            ),
           ),
         ];
 
