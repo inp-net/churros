@@ -11,6 +11,14 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un problème qui empêchait l'affichage de billets ouverts aux extés pour des personnes non connectées sur un évènement non répertorié
+
+### Nouveautés
+
+- Ajout d'un débuggeur de thème pour créer plus facilement des thèmes pour Churros. Voir en bas de la page Autre services, la case "Theme debugger"
+
 ## [1.49.0] - 2024-03-09
 
 ### Nouveautés
