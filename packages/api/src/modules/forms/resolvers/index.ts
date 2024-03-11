@@ -6,6 +6,7 @@ export * from './event.forms.js';
 export * from './form-section.next-section.js';
 export * from './form.answers.js';
 export * from './form.export-answers.js';
+export * from './form.linked-google-sheet-url.js';
 export * from './mutation.answer-file-question.js';
 export * from './mutation.answer-question.js';
 export * from './mutation.create-linked-google-sheet.js';

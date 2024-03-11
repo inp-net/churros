@@ -8,7 +8,7 @@ import groupBy from 'lodash.groupby';
 builder.mutationField('createLinkedGoogleSheet', (t) =>
   t.string({
     description:
-      "Crée une feuille Google Sheets qui contiendra les réponses au formulaire (et sera mise à jour automatiquement). Renvoie l'URL de la feuille Google Sheets. Si la feuille existe déjà, une nouvelle n'est pas créée",
+      "Crée une feuille Google Sheets (si elle n'existe pas déjà) qui contiendra les réponses au formulaire (et sera mise à jour automatiquement). Renvoie l'URL de la feuille Google Sheets.",
     args: {
       form: t.arg.id({ description: "L'identifiant du formulaire" }),
     },
