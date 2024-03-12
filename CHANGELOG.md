@@ -20,6 +20,8 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Corrections
 
 - Correction d'un problème qui empêchait l'affichage de billets ouverts aux extés pour des personnes non connectées sur un évènement non répertorié
+- La date de naissance n'est pas indiquée comme "Anniversaire" sur le profil (@litschan)
+- Certains contributeur·ice·s étaient manquant de la liste (@litschan)
 
 ### Nouveautés
 
