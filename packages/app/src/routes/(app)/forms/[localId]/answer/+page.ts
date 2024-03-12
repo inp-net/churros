@@ -25,7 +25,8 @@ export async function load({ fetch, parent, params }) {
               '...on QuestionScale': {
                 maximum: true,
                 minimum: true,
-                labels: true,
+                maximumLabel: true,
+                minimumLabel: true,
               },
               '...on QuestionSelectMultiple': {
                 options: true,
