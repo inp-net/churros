@@ -13,7 +13,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ### Corrections
 
-- Correction d'un problème qui empêchait les extés à se créer un compte via le formulaire d'inscription (!126)(@bardete)
+- Correction d'un problème qui empêchait les extés à se créer un compte via le formulaire d'inscription (!126)(@bardete)(#857)
 
 ## [1.50.0] - 2024-03-12
 
