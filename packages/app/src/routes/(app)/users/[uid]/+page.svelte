@@ -207,7 +207,7 @@
             </dd>
           {/if}
           {#if user.birthday}
-            <dt>Anniversaire</dt>
+            <dt>Date de naissance</dt>
             <dd>{dateFormatter.format(user.birthday)}</dd>
             <!-- TODO add to agenda -->
           {/if}
