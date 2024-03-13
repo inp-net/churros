@@ -25,6 +25,7 @@ builder.mutationField('upsertShopItem', (t) =>
 
     async authScopes(_, { groupUid }, { user }) {
       if (!user) return false;
+      if (user.admin) return true;
 
       const group = await prisma.group.findFirst({
         where: {

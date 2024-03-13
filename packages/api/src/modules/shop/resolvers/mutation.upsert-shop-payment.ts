@@ -17,7 +17,7 @@ builder.mutationField('upsertShopPayment', (t) =>
     },
     async authScopes(_, { shopItemId }, { user }) {
       if (!user) return false;
-
+      if (user.admin) return true;
       const shopItem = await prisma.shopItem.findUniqueOrThrow({
         where: { id: shopItemId },
         include: {
