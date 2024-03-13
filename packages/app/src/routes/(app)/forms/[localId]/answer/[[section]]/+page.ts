@@ -1,14 +1,15 @@
 import { loadQuery } from '$lib/zeus';
 
 export async function load({ fetch, parent, params }) {
-  return loadQuery(
+  const { form } = loadQuery(
     {
       form: [
         params,
         {
           title: true,
           descriptionHtml: true,
-          sections: {
+	  hasSections: true,
+          section: [{ id: params.section }, {
             id: true,
             descriptionHtml: true,
             title: true,
@@ -37,10 +38,15 @@ export async function load({ fetch, parent, params }) {
                 allowOptionsOther: true,
               },
             },
-          },
+          }],
         },
       ],
     },
     { fetch, parent },
   );
+
+  if (form?.hasSections) {
+	  redirect(302, `./${form?.sections[0].id.replace(/^formsection:/, '')}`)
+  }
+  return { form }
 }

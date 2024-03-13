@@ -76,6 +76,11 @@ export const FormType = builder.prismaNode('Form', {
         orderBy: { order: 'asc' },
       },
     }),
+    section: t.prismaField({
+	description: "Une section du formulaire.",
+	args: { id: t.arg.id() },
+	query: async ({ id: formId }, { id }) => prisma.formSection.findFirst({ where: { formId, id }})
+    }),
     questions: t.prismaConnection({
       type: 'Question',
       description:
@@ -107,5 +112,9 @@ export const FormType = builder.prismaNode('Form', {
         return prisma.answer.count({ where: { question: { section: { formId: id } } } });
       },
     }),
+    hasSections: t.boolean({
+    description: "Vrai si le formulaire comporte des sections",
+    resolve: async ({ id }) => (await prisma.section.count({ where: { formId: id, title: { not: '' } } })) > 0 
+    })
   }),
 });

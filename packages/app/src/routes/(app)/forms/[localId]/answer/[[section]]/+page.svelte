@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
+  import InputField from '$lib/components/InputField.svelte';
 
   export let data: PageData;
 </script>
@@ -24,8 +25,7 @@
           </div>
         {/if}
         {#each questions as { title, mandatory, descriptionHtml, type, __typename, id, ...question } (id)}
-          <article>
-            <h3>{title}</h3>
+          <InputField label={title} required={mandatory}>
             <div data-user-html="">
               <!-- eslint-disable-next-line svelte/no-at-html-tags -->
               {@html descriptionHtml}
@@ -74,7 +74,7 @@
               />
               <span class="label-max">{question.maximumLabel}</span>
             {/if}
-          </article>
+          </InputField>
         {/each}
       </section>
     {/each}
