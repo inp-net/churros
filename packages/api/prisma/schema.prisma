@@ -420,7 +420,7 @@ model Group {
   tickets            Ticket[]            @relation("openTo")
   barWeeks           BarWeek[]
   services           Service[]
-  shopeItems         ShopItem[]
+  shopItems         ShopItem[]
 
   notifications          Notification[]
   groupId                String?

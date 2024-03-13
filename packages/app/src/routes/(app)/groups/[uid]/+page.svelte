@@ -44,11 +44,6 @@
   import IconTwitter from '~icons/mdi/twitter';
   import IconAnilist from '~icons/simple-icons/anilist';
   import IconStore from '~icons/mdi/store';
-  import { me } from '$lib/session.js';
-  import type { PageData } from './$types';
-  import { zeus } from '$lib/zeus';
-  import { DISPLAY_GROUP_TYPES } from '$lib/display';
-  import { onMount, type SvelteComponent } from 'svelte';
   import type { PageData } from './$types';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

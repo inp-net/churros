@@ -7,7 +7,7 @@
 
   export let data: PageData;
 
-  const { shopItems } = data;
+  const { shopItems } = data.group;
 
   let warningToastId: string;
 

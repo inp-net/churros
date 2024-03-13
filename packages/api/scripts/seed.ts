@@ -881,3 +881,5 @@ await prisma.shopItem.create({
     group: { connect: { uid: 'ski' } },
   },
 });
+
+exit(0);

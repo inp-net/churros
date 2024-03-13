@@ -49,4 +49,3 @@ Un module est une collection d'un ou plusieurs types (et de leurs résolveurs as
    1. Assurez-vous que la ligne immédiatement après la déclaration du modèle (`model MyName {`) définit l'identifiant de la ressource
    1. Utilisez `@default(dbgenerated("nanoid('prefix:')"))` pour définir la valeur par défaut de l'identifiant, où `prefix` est un court préfixe correspondant au nom de votre ressource en tant que valeur par défaut de l'identifiant
    1. Exécutez `node scripts/update-id-prefix-to-typename-map.js` pour mettre à jour la carte du préfixe d'identifiant vers le nom du type dans `src/lib/builder`
-

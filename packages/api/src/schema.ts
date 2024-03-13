@@ -23,13 +23,10 @@ import '#modules/posts';
 import '#modules/reactions';
 import '#modules/schools';
 import '#modules/services';
+import '#modules/shop';
 import '#modules/student-associations';
 import '#modules/ticketing';
 import '#modules/users';
-import './objects/pictures.js';
-import './objects/shop-items.js';
-import './objects/shop-payment.js';
-
 
 const { rateLimitDirectiveTransformer } = rateLimitDirective({
   keyGenerator: (dargs, src, args, ctx: Context, info) => {

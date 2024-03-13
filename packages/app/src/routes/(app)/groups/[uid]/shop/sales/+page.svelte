@@ -7,7 +7,7 @@
 
   export let data: PageData;
 
-  const { shopItems } = data;
+  const { shopItems } = data.group;
 
   let warningToastId: string;
 
@@ -25,7 +25,7 @@
 <h1>Gestion de la boutique</h1>
 
 <div class="content">
-  {#if shopItems.length === 0}
+  {#if shopItems?.length === 0}
     <ButtonPrimary href="create">Ajouter un produit</ButtonPrimary>
   {/if}
   <ShopItemTable {shopItems} />

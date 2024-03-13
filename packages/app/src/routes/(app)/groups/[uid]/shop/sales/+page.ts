@@ -4,19 +4,21 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ fetch, params, parent }) =>
   loadQuery(
     {
-      shopItems: [
+      group: [
         {
-          groupUid: params.uid,
+          uid: params.uid,
         },
         {
-          id: true,
-          name: true,
-          price: true,
-          max: true,
-          description: true,
-          stock: true,
-          stockLeft: true,
-          group: { uid: true },
+          shopItems: {
+            id: true,
+            name: true,
+            price: true,
+            max: true,
+            description: true,
+            stock: true,
+            stockLeft: true,
+            group: { uid: true },
+          },
         },
       ],
     },
