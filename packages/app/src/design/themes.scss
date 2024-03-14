@@ -217,8 +217,43 @@ dialog {
     --nav-bottom-background: var(--hover-bg);
   }
 
-  &.ber7ker,
-  &.ber7ker::backdrop {
-    --primary-bg: #{$amber-700};
+    &.ber7ker,
+    &.ber7ker::backdrop {
+    // Default
+    --bg: #fffbf9;
+    --text: #{$slate-800};
+    --title: #{$slate-900};
+    --muted: #{$slate-500};
+    --error: #{$red-800};
+    --link: #{$red-800};
+    --border: #85431a;
+    --shadow: 0 0 0.125rem #0004, 0 0.125rem 0.5rem #0001;
+    --shadow-big: 0 0 0.5rem #0004, 0 0.5rem 3rem #0001;
+    --shadow-enormous: 0 0 1rem #0004, 0 1rem 6rem #0001;
+    --ring: #{rgba($slate-400, 50%)};
+    --hover-bg: #f4e5dd;
+    --hover-text: #{$slate-700};
+    --hover-border: #{$gray-500};
+    --disabled-bg: #e9dad9;
+    --disabled-text: #{$slate-600};
+    --disabled-border: #{$gray-200};
+
+    // Primary
+    --primary-bg: #87381f;
+    --primary-text: #{$white};
+    --primary-link: #361a08;
+    --primary-border: #361a08;
+    --primary-shadow: 0 0.25rem 0.5rem #{rgba($zinc-800, 20%)};
+    --primary-ring: #{rgba($blue-400, 50%)};
+    --primary-hover-bg: #6d2915;
+    --primary-hover-text: #{$slate-50};
+    --primary-hover-border: #{$blue-600};
+    --primary-disabled-bg: #{rgba($blue-600, 50%)};
+    --primary-disabled-text: #{$white};
+    --primary-disabled-border: #{$zinc-500};
+
+    // Secondary
+    --secondary-bg: #7c5132;
+    --secondary-hover-bg: #361a08;
+    }
   }
-}
