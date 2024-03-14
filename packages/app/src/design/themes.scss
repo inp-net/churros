@@ -216,4 +216,9 @@ dialog {
     --nav-top-background: url('/ChurrosPan7onv6.png');
     --nav-bottom-background: var(--hover-bg);
   }
+
+  &.ber7ker,
+  &.ber7ker::backdrop {
+    --primary-bg: #{$amber-700};
+  }
 }
