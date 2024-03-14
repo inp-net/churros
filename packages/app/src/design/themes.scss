@@ -255,5 +255,13 @@ dialog {
     // Secondary
     --secondary-bg: #7c5132;
     --secondary-hover-border: #361a08;
+
+    // === Other props ===
+    --border-inline: 1px;
+    --border-block: 2px;
+    --radius-inline: 0.25rem;
+    --radius-block: 0.5rem;
+    --nav-top-background: url('/b7kheader.png');
+    --nav-bottom-background: var(--hover-bg);
   }
 }
