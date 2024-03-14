@@ -39,7 +39,7 @@ dialog {
     --primary-disabled-bg: var(--card-bg);
     --primary-disabled-text: #c6f6d5;
     --secondary-bg: #0b5221;
-    --secondary-hover-bg: #37e06c;
+    --secondary-hover-border: #37e06c;
     --loading-bg: #0d6e2c;
     --hover-bg: #010703;
     --hover-text: #{$neutral-200};
@@ -157,7 +157,7 @@ dialog {
 
     // Secondary
     --secondary-bg: #{$amber-300};
-    --secondary-hover-bg: #{$amber-300};
+    --secondary-hover-border: #{$amber-300};
 
     // Success
     --success-bg: #{$emerald-200};
@@ -217,8 +217,8 @@ dialog {
     --nav-bottom-background: var(--hover-bg);
   }
 
-    &.ber7ker,
-    &.ber7ker::backdrop {
+  &.ber7ker,
+  &.ber7ker::backdrop {
     // Default
     --bg: #fffbf9;
     --text: #{$slate-800};
@@ -254,6 +254,6 @@ dialog {
 
     // Secondary
     --secondary-bg: #7c5132;
-    --secondary-hover-bg: #361a08;
-    }
+    --secondary-hover-border: #361a08;
   }
+}
