@@ -21,7 +21,7 @@
   {#if wordmark}
     <img src="/ChurrosBer7kerWordmark.png" alt="Churros" class="wordmark ber7ker" />
   {:else}
-    <img src="/ChurrosBer7ker.png" alt="Churros" class="wordmark ber7ker" />
+    <img src="/ChurrosBer7ker.png" alt="Churros" class="Pwordmark ber7ker" />
   {/if}
 {:else if $theme === 'gd7t'}
   {#if wordmark}
@@ -174,7 +174,7 @@
 
   .ber7ker {
     position: fixed;
-    top: 0;
-    height: 5rem;
+    top: 0.5rem;
+    height: 4rem;
   }
 </style>

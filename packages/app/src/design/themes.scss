@@ -20,7 +20,7 @@ dialog {
     --muted-border: #{$neutral-700};
     --muted-link: #{$indigo-400};
     --backdrop: rgb(0 0 0 / 80%);
-    --header-text: #{$neutral-200};
+    --nav-text: #{$neutral-200};
   }
 
   &.hacker,
@@ -63,7 +63,7 @@ dialog {
     --font-main: 'Space Mono', monospace;
     --radius-block: 0;
     --radius-inline: 0;
-    --header-text: #37e06c;
+    --nav-text: #37e06c;
   }
 
   &.pride,
@@ -122,7 +122,7 @@ dialog {
     --primary-border: #{$green-900};
     --border: #{$red-700};
     --hover-border: #{$red-500};
-    --header-text: #{$neutral-200};
+    --nav-text: #{$neutral-200};
   }
 
   &.pan7on,
@@ -198,7 +198,7 @@ dialog {
     // Other colors
     --loading-bg: #{$blue-700};
     --backdrop: rgb(0 0 0 / 30%);
-    --header-text: #{$slate-800};
+    --nav-text: #{$slate-800};
 
     // Logo colors
     --logo-stroke-width: 7.606;
@@ -241,17 +241,17 @@ dialog {
     --disabled-bg: #e9dad9;
     --disabled-text: #{$slate-600};
     --disabled-border: #{$gray-200};
-    --header-text: white;
+    --nav-text: #fffbf9;
 
     // Primary
     --primary-bg: #87381f;
     --primary-text: #{$white};
-    --primary-link: #3b1e0b;
+    --primary-link: #995528;
     --primary-border: #87381f;
     --primary-shadow: 0 0.25rem 0.5rem #{rgba($zinc-800, 20%)};
     --primary-ring: #{rgba($blue-400, 50%)};
     --primary-hover-bg: #6d2915;
-    --primary-hover-text: #{$slate-50};
+    --primary-hover-text: black;
     --primary-hover-border: #{$blue-600};
     --primary-disabled-bg: #{rgba(#87381f, 50%)};
     --primary-disabled-text: #{$white};

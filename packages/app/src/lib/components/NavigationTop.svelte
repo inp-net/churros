@@ -86,16 +86,16 @@
         style="color:red"><IconIssue /></ButtonGhost
       >
       {#if $me}
-        <ButtonGhost href="/notifications/" help="Notifications" style="color:var(--header-text)">
+        <ButtonGhost href="/notifications/" help="Notifications" style="color:var(--nav-text)">
           {#if $page.url.pathname === '/notifications/'}
             <IconNotifFilled />
           {:else}
             <IconNotif />{/if}</ButtonGhost
         >
-        <ButtonGhost href="/search/" help="Rechercher" style="color:var(--header-text)"
+        <ButtonGhost href="/search/" help="Rechercher" style="color:var(--nav-text)"
           ><IconSearch /></ButtonGhost
         >
-        <ButtonGhost href="/users/{$me?.uid}" help="Mon profil" style="color:var(--header-text)">
+        <ButtonGhost href="/users/{$me?.uid}" help="Mon profil" style="color:var(--nav-text)">
           {#if $me.pictureFile}
             <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
           {:else}
