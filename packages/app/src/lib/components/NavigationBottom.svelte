@@ -37,6 +37,7 @@
 {/if}
 {#if $theme === 'ber7ker'}
   <img src="/dessinBer7ker.png" alt="illustrationBer7ker" class="ber7kersboat" />
+  <img src="LogoBer7kerReverse.png" alt="illustrationBer7ker" class="ber7kersboatpc"/>
 {/if}
 <nav
   class:flyout-open={flyoutOpen}
@@ -337,24 +338,34 @@
   .ber7kersboat {
     position: fixed;
     bottom: 20px;
+    left: -60px;
     z-index: 1000;
+    width: 16rem;
     color: transparent;
     pointer-events: none;
     background: none;
     background-color: transparent;
-    width: 16rem;
+
 
     @media (min-width: 570px) {
-      position: fixed;
-      bottom: -3rem;
-      right: -2rem;
-      width: 22rem;
-      transform: rotateY(180deg);
+      display: none;
     }
 
+  }
+
+  .ber7kersboatpc{
+    position: fixed;
+    right: -2rem;
+    bottom: -3rem;
+    z-index: 1000;
+    width: 22rem;
+    color: transparent;
+    pointer-events: none;
+    background: none;
+    background-color: transparent;
+
     @media (max-width: 570px) {
-      left: -60px;
-      bottom: 20px;
+      display: none;
     }
   }
 </style>
