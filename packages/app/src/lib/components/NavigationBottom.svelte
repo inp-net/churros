@@ -32,8 +32,11 @@
   });
 </script>
 
-{#if $theme == 'pan7on'}
+{#if $theme === 'pan7on'}
   <img src="/ChurrosPan7onTelBas.png" alt="ChurrosPcPan7on" class="temple" />
+{/if}
+{#if $theme === 'ber7ker'}
+  <img src="/dessinBer7ker.png" alt="illustrationBer7ker" class="ber7kersboat" />
 {/if}
 <nav
   class:flyout-open={flyoutOpen}
@@ -329,5 +332,29 @@
     pointer-events: none;
     background: none;
     background-color: transparent;
+  }
+
+  .ber7kersboat {
+    position: fixed;
+    bottom: 20px;
+    z-index: 1000;
+    color: transparent;
+    pointer-events: none;
+    background: none;
+    background-color: transparent;
+    width: 16rem;
+
+    @media (min-width: 570px) {
+      position: fixed;
+      bottom: -3rem;
+      right: -2rem;
+      width: 22rem;
+      transform: rotateY(180deg);
+    }
+
+    @media (max-width: 570px) {
+      left: -60px;
+      bottom: 20px;
+    }
   }
 </style>
