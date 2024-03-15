@@ -235,7 +235,7 @@ dialog {
     --shadow-big: 0 0 0.5rem #0004, 0 0.5rem 3rem #0001;
     --shadow-enormous: 0 0 1rem #0004, 0 1rem 6rem #0001;
     --ring: #{rgba($slate-400, 50%)};
-    --hover-bg: #f4e5dd;
+    --hover-bg: #eae4e0;
     --hover-text: white;
     --hover-border: #{$gray-500};
     --disabled-bg: #e9dad9;
@@ -246,8 +246,8 @@ dialog {
     // Primary
     --primary-bg: #87381f;
     --primary-text: #{$white};
-    --primary-link: #361a08;
-    --primary-border: #361a08;
+    --primary-link: #3b1e0b;
+    --primary-border: ;
     --primary-shadow: 0 0.25rem 0.5rem #{rgba($zinc-800, 20%)};
     --primary-ring: #{rgba($blue-400, 50%)};
     --primary-hover-bg: #6d2915;
@@ -258,8 +258,8 @@ dialog {
     --primary-disabled-border: #{$zinc-500};
 
     // Secondary
-    --secondary-bg: #7c5132;
-    --secondary-hover-border: #361a08;
+    --secondary-bg: #87381f;
+    --secondary-hover-border: #87381f;
 
     // === Other props ===
     --border-inline: 1px;
@@ -267,6 +267,6 @@ dialog {
     --radius-inline: 0.25rem;
     --radius-block: 0.5rem;
     --nav-top-background: url('/b7kheader.png');
-    --nav-bottom-background: var(--hover-bg);
+    --nav-bottom-background: #361a08;
   }
 }
