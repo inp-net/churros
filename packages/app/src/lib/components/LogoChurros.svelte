@@ -7,21 +7,21 @@
 
 {#if $theme === 'noel'}
   {#if wordmark}
-    <img src="/noel-wordmark.png" alt="Churros" class="wordmark pan7on" />
+    <img src="/noel-wordmark.png" alt="Churros" class="wordmark" />
   {:else}
-    <img src="/noel-logo.png" alt="Churros" class="wordmark pan7on" />
+    <img src="/noel-logo.png" alt="Churros" class="wordmark" />
   {/if}
 {:else if $theme === 'pan7on'}
   {#if wordmark}
-    <img src="/ChurrosPan7onWordmark.png" alt="Churros" class="wordmark" />
+    <img src="/ChurrosPan7onWordmark.png" alt="Churros" class="wordmark pan7on" />
   {:else}
-    <img src="/ChurrosPan7on.png" alt="Churros" class="wordmark" />
+    <img src="/ChurrosPan7on.png" alt="Churros" class="wordmark pan7on" />
   {/if}
 {:else if $theme === 'ber7ker'}
   {#if wordmark}
-    <img src="/ChurrosBer7kerWordmark.png" alt="Churros" class="wordmark" />
+    <img src="/ChurrosBer7kerWordmark.png" alt="Churros" class="wordmark ber7ker" />
   {:else}
-    <img src="/ChurrosBer7ker.png" alt="Churros" class="wordmark" />
+    <img src="/ChurrosBer7ker.png" alt="Churros" class="wordmark ber7ker" />
   {/if}
 {:else if $theme === 'gd7t'}
   {#if wordmark}
@@ -170,5 +170,11 @@
     width: auto;
     height: 3.5rem; // A été edit pour le theme pan7on, taille de base : 3rem.
     object-fit: cover;
+  }
+
+  .ber7ker {
+    position: fixed;
+    top: 0;
+    height: 5rem;
   }
 </style>
