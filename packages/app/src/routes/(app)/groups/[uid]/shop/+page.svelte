@@ -25,7 +25,7 @@
 <NavigationTabs
   tabs={[
     { name: 'Boutique', href: '.' },
-    { name: 'Mes commandes', href: './orders' },
+    { name: 'Mes commandes', href: './orders/' },
   ]}
 />
 <div class="content">

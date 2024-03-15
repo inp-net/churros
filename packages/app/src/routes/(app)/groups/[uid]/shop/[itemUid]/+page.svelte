@@ -78,6 +78,10 @@
           }).toString(),
       );
     }
+
+    if (upsertShopPayment.__typename === 'MutationUpsertShopPaymentSuccess') 
+      await goto('../orders/');
+    
   }
 
   onMount(() => {

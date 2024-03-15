@@ -12,6 +12,7 @@
   import InputLydiaAccounts from './InputLydiaAccounts.svelte';
   import Alert from './Alert.svelte';
   import { toasts } from '$lib/toasts';
+  import { goto } from '$app/navigation';
 
   let serverError = '';
 
@@ -97,6 +98,10 @@
       serverError = upsertShopItem.message;
       toasts.error(`Impossible de sauvegarder`, serverError);
     }
+
+    if (upsertShopItem.__typename === 'MutationUpsertShopItemSuccess') 
+      await goto('../');
+    
   }
 </script>
 
