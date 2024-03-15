@@ -20,6 +20,7 @@ dialog {
     --muted-border: #{$neutral-700};
     --muted-link: #{$indigo-400};
     --backdrop: rgb(0 0 0 / 80%);
+    --header-text: #{$neutral-200};
   }
 
   &.hacker,
@@ -62,6 +63,7 @@ dialog {
     --font-main: 'Space Mono', monospace;
     --radius-block: 0;
     --radius-inline: 0;
+    --header-text: #37e06c;
   }
 
   &.pride,
@@ -120,6 +122,7 @@ dialog {
     --primary-border: #{$green-900};
     --border: #{$red-700};
     --hover-border: #{$red-500};
+    --header-text: #{$neutral-200};
   }
 
   &.pan7on,
@@ -195,6 +198,7 @@ dialog {
     // Other colors
     --loading-bg: #{$blue-700};
     --backdrop: rgb(0 0 0 / 30%);
+    --header-text: #{$slate-800};
 
     // Logo colors
     --logo-stroke-width: 7.606;
@@ -237,6 +241,7 @@ dialog {
     --disabled-bg: #e9dad9;
     --disabled-text: #{$slate-600};
     --disabled-border: #{$gray-200};
+    --header-text: white;
 
     // Primary
     --primary-bg: #87381f;
