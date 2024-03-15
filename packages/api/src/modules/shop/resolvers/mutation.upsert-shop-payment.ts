@@ -88,6 +88,8 @@ builder.mutationField('upsertShopPayment', (t) =>
         },
       });
 
+      if (quantity === 0) throw new GraphQLError("You can't buy 0 of something");
+
       const stockLeft =
         shopItem.stock - shopItem.shopPayments.reduce((acc, curr) => acc + curr.quantity, 0);
 
