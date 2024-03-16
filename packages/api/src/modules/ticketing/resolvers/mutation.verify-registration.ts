@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, publish } from '#lib';
 
 import { differenceInSeconds } from 'date-fns';
 import { GraphQLError } from 'graphql';
@@ -110,6 +110,7 @@ builder.mutationField('verifyRegistration', (t) =>
             },
           },
         });
+        publish(registration.id, 'updated', registration);
         await log('Scan successful', registration.id);
       } else {
         await log('Scan failed: registration not paid', registration.id);

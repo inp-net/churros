@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, publish } from '#lib';
 
 import { userCanManageEvent } from '#permissions';
 
@@ -41,6 +41,7 @@ builder.mutationField('opposeRegistration', (t) =>
           opposedBy: { connect: { id: user?.id } },
         },
       });
+      publish(id, 'updated', id);
       return true;
     },
   }),
