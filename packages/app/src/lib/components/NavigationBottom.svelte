@@ -32,8 +32,12 @@
   });
 </script>
 
-{#if $theme == 'pan7on'}
+{#if $theme === 'pan7on' && !$page.url.pathname.endsWith('/scan/')}
   <img src="/ChurrosPan7onTelBas.png" alt="ChurrosPcPan7on" class="temple" />
+{/if}
+{#if $theme === 'ber7ker' && !$page.url.pathname.endsWith('/scan/')}
+  <img src="/dessinBer7ker.png" alt="illustrationBer7ker" class="ber7kersboat" />
+  <img src="/LogoBer7kerReverse.png" alt="illustrationBer7ker" class="ber7kersboatpc" />
 {/if}
 <nav
   class:flyout-open={flyoutOpen}
@@ -52,9 +56,9 @@
       use:tooltip={'Mon feed'}
     >
       {#if current === 'home'}
-        <IconHome />
+        <IconHome style="color:var(--nav-text)" />
       {:else}
-        <IconHomeOutline />
+        <IconHomeOutline style="color:var(--nav-text)" />
       {/if}
     </a>
   {/if}
@@ -71,9 +75,9 @@
       use:tooltip={'Clubs'}
     >
       {#if current === 'groups'}
-        <IconGroup />
+        <IconGroup style="color:var(--nav-text)" />
       {:else}
-        <IconGroupOutline />
+        <IconGroupOutline style="color:var(--nav-text)" />
       {/if}
     </a>
   {/if}
@@ -86,9 +90,9 @@
     use:tooltip={'Créer…'}
   >
     {#if flyoutOpen}
-      <IconAddCircle />
+      <IconAddCircle style="color:var(--nav-text)" />
     {:else}
-      <IconAddCircleOutline />
+      <IconAddCircleOutline style="color:var(--nav-text)" />
     {/if}
   </button>
 
@@ -99,9 +103,9 @@
     use:tooltip={'Événements'}
   >
     {#if current === 'events'}
-      <IconCalendar />
+      <IconCalendar style="color:var(--nav-text)" />
     {:else}
-      <IconCalendarOutline />
+      <IconCalendarOutline style="color:var(--nav-text)" />
     {/if}
   </a>
 
@@ -112,9 +116,9 @@
     use:tooltip={'Les autres services'}
   >
     {#if current === 'services'}
-      <IconDotsCircle />
+      <IconDotsCircle style="color:var(--nav-text)" />
     {:else}
-      <IconDotsCircleOutline />
+      <IconDotsCircleOutline style="color:var(--nav-text)" />
     {/if}
   </a>
 </nav>
@@ -329,5 +333,37 @@
     pointer-events: none;
     background: none;
     background-color: transparent;
+  }
+
+  .ber7kersboat {
+    position: fixed;
+    bottom: 23px;
+    left: -38px;
+    z-index: 1;
+    width: 13rem;
+    color: transparent;
+    pointer-events: none;
+    background: none;
+    background-color: transparent;
+
+    @media (min-width: 570px) {
+      display: none;
+    }
+  }
+
+  .ber7kersboatpc {
+    position: fixed;
+    right: -2rem;
+    bottom: -3rem;
+    z-index: 1;
+    width: 20rem;
+    color: transparent;
+    pointer-events: none;
+    background: none;
+    background-color: transparent;
+
+    @media (max-width: 570px) {
+      display: none;
+    }
   }
 </style>

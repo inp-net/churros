@@ -57,10 +57,11 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
 
       if (
         !client.allowedRedirectUris.some((uri) => normalizeUrl(redirectUri) === normalizeUrl(uri))
-      )
-        {throw new GraphQLError(
+      ) {
+        throw new GraphQLError(
           `Invalid redirect URI, must be one of ${client.allowedRedirectUris.map((u) => normalizeUrl(u)).join(', ')}`,
-        );}
+        );
+      }
 
       const [{ value }] = await prisma.$transaction([
         prisma.thirdPartyCredential.create({
