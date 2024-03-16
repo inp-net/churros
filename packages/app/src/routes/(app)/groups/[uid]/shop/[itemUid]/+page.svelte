@@ -79,9 +79,8 @@
       );
     }
 
-    if (upsertShopPayment.__typename === 'MutationUpsertShopPaymentSuccess') 
+    if (upsertShopPayment.__typename === 'MutationUpsertShopPaymentSuccess')
       await goto('../orders/');
-    
   }
 
   onMount(() => {

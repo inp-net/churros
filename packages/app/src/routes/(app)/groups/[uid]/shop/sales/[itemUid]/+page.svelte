@@ -25,7 +25,7 @@
 
 <div class="content">
   {#if shopItem.shopPayments.length === 0}
-    <h2 class="none">Aucun payement ;(</h2>
+    <h2 class="none">Aucune commande ;(</h2>
   {:else}
     <ItemBuyingTable payments={shopItem.shopPayments} />
   {/if}

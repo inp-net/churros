@@ -20,24 +20,35 @@
 
 <div class="content">
   <table>
+    <thead>
+      <tr>
+        <th>Utilisateur</th>
+        <th>Qté</th>
+        <th>Prix total</th>
+        <th>Payé ?</th>
+        <th>Via</th>
+      </tr>
+    </thead>
     <tbody>
       {#each payments as payment}
         <tr>
-          <td
-            ><AvatarPerson
+          <td>
+            <AvatarPerson
               fullName={payment.user.fullName}
               pictureFile={payment.user.pictureFile}
               href={`/users/${payment.user.uid}`}
-            /></td
-          >
+              small={true}
+            />
+          </td>
           <td>x{payment.quantity}</td>
           <td>{payment.totalPrice} €</td>
-          <td class="payicon"
-            ><svelte:component
+          <td>{payment.paid ? 'Oui' : 'Non'}</td>
+          <td class="payicon">
+            <svelte:component
               this={PAYMENT_METHODS_ICONS[payment.paymentMethod ?? 'Other']}
               class="icon"
-            /></td
-          >
+            />
+          </td>
         </tr>
       {/each}
     </tbody>
@@ -46,11 +57,13 @@
 
 <style>
   table {
+    align-items: center;
+    justify-content: center;
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     overflow-y: scroll;
-    border-spacing: 1rem;
+    border-spacing: 0.5rem;
     border-collapse: separate;
   }
 

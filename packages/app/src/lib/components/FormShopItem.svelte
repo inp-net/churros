@@ -99,9 +99,7 @@
       toasts.error(`Impossible de sauvegarder`, serverError);
     }
 
-    if (upsertShopItem.__typename === 'MutationUpsertShopItemSuccess') 
-      await goto('../');
-    
+    if (upsertShopItem.__typename === 'MutationUpsertShopItemSuccess') await goto('../');
   }
 </script>
 
