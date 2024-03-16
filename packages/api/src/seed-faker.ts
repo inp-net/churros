@@ -2,12 +2,12 @@ import { prisma } from '#lib';
 import { fakerFR } from '@faker-js/faker';
 import { CredentialType, GroupType, LogoSourceType, Visibility, type Prisma } from '@prisma/client';
 import { hash } from 'argon2';
+import dichotomid from 'dichotomid';
 import { exit } from 'node:process';
 import slug from 'slug';
-import { createUid } from './services/registration.js';
 
 const faker = fakerFR; //j'avais la flemme de faire des FakerFRFR.machin partout
-faker.seed(6); //seed de génération de la DB, pour générer une DB avec de nouvelles données il suffit juste de changer la valeur de la seed
+faker.seed(5); //seed de génération de la DB, pour générer une DB avec de nouvelles données il suffit juste de changer la valeur de la seed
 
 const numberUserDB: number = 50; //Nombre d'utilisateur dans la DB de test
 
@@ -47,6 +47,34 @@ function randomTime(date: Date, hoursIn: Generator<number>): Date {
     Math.floor(Math.random() * 60),
   );
 }
+
+const createUid = async ({ firstName, lastName }: { firstName: string; lastName: string }) => {
+  const toAscii = (x: string) =>
+    slug(x.toLocaleLowerCase(), {
+      charmap: {
+        é: 'e',
+        è: 'e',
+        ê: 'e',
+        ë: 'e',
+        à: 'a',
+        â: 'a',
+        ä: 'a',
+        ô: 'o',
+        ö: 'o',
+        û: 'u',
+        ü: 'u',
+        ï: 'i',
+        ç: 'c',
+      },
+    }).replaceAll('-', '');
+  const base = toAscii(lastName).slice(0, 16) + toAscii(firstName).charAt(0);
+  const n = await dichotomid(async (n) => {
+    const uid = `${base}${n > 1 ? n : ''}`;
+    const existDB = Boolean(await prisma.user.findFirst({ where: { uid } }));
+    return !existDB;
+  });
+  return `${base}${n > 1 ? n : ''}`;
+};
 
 const schoolsData = [
   {
@@ -293,9 +321,8 @@ const usersData = [
 ];
 
 //ajout d'utilisateur aléatoire par Faker
-for (let i = 0; i < numberUserDB - usersData.length; i++) 
+for (let i = 0; i < numberUserDB - usersData.length; i++)
   usersData.push({ firstName: faker.person.firstName(), lastName: faker.person.lastName() });
-
 
 /* -- Section debug --
 let emailUserList : string[] = [];
@@ -678,8 +705,8 @@ await prisma.article.create({
   },
 });
 
-for (let i = 0; i < 5; i++) {
-  const selectedClub = faker.helpers.arrayElement(groups);
+const selectedClub = faker.helpers.arrayElements(groups, 5);
+for (const element of selectedClub) {
   const eventName = faker.lorem.words(3);
   const capacityEvent = faker.number.int({ min: 30, max: 300 });
   await prisma.event.create({
@@ -690,14 +717,14 @@ for (let i = 0; i < 5; i++) {
       startsAt: new Date(),
       uid: slug(eventName),
       title: eventName,
-      group: { connect: { id: selectedClub.id } },
+      group: { connect: { id: element!.id } },
       visibility: Visibility.Public,
       articles: {
         createMany: {
           data: [
             {
               body: "Ceci est un article d'événement",
-              groupId: selectedClub.id,
+              groupId: element!.id,
               uid: 'ceci-est-un-article-d-evenement',
               title: "Ceci est un article d'événement",
             },
@@ -722,8 +749,8 @@ for (let i = 0; i < 5; i++) {
         createMany: {
           data: [
             {
-              uid: `event-${selectedClub.uid}`,
-              name: `Event ${selectedClub.name}`,
+              uid: `event-${element!.uid}`,
+              name: `Event ${element!.name}`,
               description: 'blablabla ramenez vos culs par pitié je vous en supplie',
               price: faker.number.int({ min: 0, max: 30 }),
               capacity: capacityEvent,
