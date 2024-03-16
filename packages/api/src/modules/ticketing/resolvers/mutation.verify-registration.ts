@@ -1,8 +1,11 @@
 import { builder, prisma } from '#lib';
 
-import { userCanManageEvent } from '#permissions';
 import { GraphQLError } from 'graphql';
-import { RegistrationVerificationResultType, RegistrationVerificationState } from '../index.js';
+import {
+  RegistrationVerificationResultType,
+  RegistrationVerificationState,
+  canScanBookings,
+} from '../index.js';
 // TODO rename to verify-booking.ts
 
 builder.mutationField('verifyRegistration', (t) =>
@@ -15,18 +18,14 @@ builder.mutationField('verifyRegistration', (t) =>
       eventUid: t.arg.string(),
     },
     async authScopes(_, { groupUid, eventUid }, { user }) {
-      const event = await prisma.event.findFirst({
+      const event = await prisma.event.findFirstOrThrow({
         where: { uid: eventUid, group: { uid: groupUid } },
         include: {
-          managers: {
-            include: {
-              user: true,
-            },
-          },
+          managers: true,
         },
       });
       if (!event) return false;
-      return userCanManageEvent(event, user, { canVerifyRegistrations: true });
+      return canScanBookings(event, user);
     },
     async resolve(query, { id, eventUid, groupUid }, { user }) {
       async function log(message: string, target?: string) {

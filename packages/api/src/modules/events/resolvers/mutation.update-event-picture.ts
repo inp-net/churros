@@ -1,5 +1,6 @@
 import { builder, prisma, updatePicture } from '#lib';
 import { FileScalar } from '#modules/global';
+import { canEdit } from '../utils/permissions.js';
 
 builder.mutationField('updateEventPicture', (t) =>
   t.field({
@@ -11,17 +12,9 @@ builder.mutationField('updateEventPicture', (t) =>
     async authScopes(_, { id }, { user }) {
       const event = await prisma.event.findUniqueOrThrow({
         where: { id },
+        include: { managers: true },
       });
-
-      return Boolean(
-        // Who can edit this event?
-        // The author
-        user?.id === event.authorId ||
-          // Other authors of the group
-          user?.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId,
-          ),
-      );
+      return canEdit(event, user);
     },
     async resolve(_, { id, file }) {
       return updatePicture({
