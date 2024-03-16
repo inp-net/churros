@@ -32,10 +32,10 @@
   });
 </script>
 
-{#if $theme === 'pan7on'}
+{#if $theme === 'pan7on' && !$page.url.pathname.endsWith('/scan/')}
   <img src="/ChurrosPan7onTelBas.png" alt="ChurrosPcPan7on" class="temple" />
 {/if}
-{#if $theme === 'ber7ker'}
+{#if $theme === 'ber7ker' && !$page.url.pathname.endsWith('/scan/')}
   <img src="/dessinBer7ker.png" alt="illustrationBer7ker" class="ber7kersboat" />
   <img src="/LogoBer7kerReverse.png" alt="illustrationBer7ker" class="ber7kersboatpc" />
 {/if}
