@@ -28,5 +28,12 @@ packages/api/storage/
 packages/api/scripts/frappe-documents/
 packages/*/build/
 
+packages/mock-n7-ldap/
+packages/oauth-client/
+packages/oauth-client/
+packages/oauth-client-python/
+# packages/docs/
+
+
 visual-identity/
 packages/api/scripts/.venv/
