@@ -4,6 +4,7 @@
   export let image = '';
   export let imageAlt = '';
   export let clickable = false;
+  export let muted  =false;
 
   export let transitionKey: string | undefined = undefined;
   export let transitionPair: ReturnType<typeof crossfade> | undefined = undefined;
@@ -18,6 +19,7 @@
   class="pill"
   type="button"
   class:clickable
+  class:muted
   in:transitionReceive={{ key: transitionKey }}
   out:transitionSend={{ key: transitionKey }}
 >

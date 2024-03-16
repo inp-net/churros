@@ -10,8 +10,7 @@
   import InputNumber from './InputNumber.svelte';
   import InputText from './InputText.svelte';
   import Modal from './Modal.svelte';
-  import { TicketMove, zeus } from '$lib/zeus';
-  // import omit from 'lodash.omit';
+  import { zeus, TicketMove } from '$lib/zeus';
   const dispatch = createEventDispatcher();
 
   export let eventId: string;

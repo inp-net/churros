@@ -4,6 +4,7 @@
   export let name = '';
   export let options: string[] | Record<string, string> | string[][];
   export let selection: string[] = [];
+  export let id: string | undefined = undefined;
 
   let optionsWithDisplay: Array<[string, string]> = [];
   $: optionsWithDisplay = Array.isArray(options)
@@ -11,7 +12,7 @@
     : Object.entries(options);
 </script>
 
-<fieldset>
+<fieldset {id}>
   {#each optionsWithDisplay as [value, display] (value)}
     <label aria-checked={selection.includes(value)}>
       <div class="icon">

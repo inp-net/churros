@@ -1,8 +1,14 @@
 <script lang="ts">
+  import InputSelectMultiple from '$lib/components/InputSelectMultiple.svelte';
+  import { fromYearTier, yearTier } from '$lib/dates';
+  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import { zeus } from '$lib/zeus';
+  import uniqBy from 'lodash.uniqby';
   import { createEventDispatcher } from 'svelte';
+  import { quintOut } from 'svelte/easing';
+  import { crossfade, slide } from 'svelte/transition';
   import IconAdd from '~icons/mdi/plus';
   import ButtonInk from './ButtonInk.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
@@ -10,6 +16,7 @@
   import InputCheckbox from './InputCheckbox.svelte';
   import InputDateRange from './InputDateRange.svelte';
   import InputGroups from './InputGroups.svelte';
+  import InputLinks from './InputLinks.svelte';
   import InputNumber from './InputNumber.svelte';
   import InputSchools from './InputSchools.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
@@ -17,11 +24,6 @@
   import LoadingSpinner from './LoadingSpinner.svelte';
   import Pill from './Pill.svelte';
   import PillRemovable from './PillRemovable.svelte';
-  import InputLinks from './InputLinks.svelte';
-  import { fromYearTier } from '$lib/dates';
-  import uniqBy from 'lodash.uniqby';
-  import { crossfade, slide } from 'svelte/transition';
-  import { quintOut } from 'svelte/easing';
 
   const transitionPair = crossfade({
     duration: (d) => Math.sqrt(d * 50),
@@ -50,7 +52,6 @@
 
   const audienceOptions: Array<[string, string]> = [
     ['students', 'Étudiant·e·s'],
-    ['alumni', 'Alumnis'],
     ['external', 'Extés'],
     ['managers', 'Managers'],
   ];
@@ -60,12 +61,17 @@
   $: ticket.openToGroups = uniqBy(ticket.openToGroups, (g) => g.id);
   $: ticket.openToMajors = uniqBy(ticket.openToMajors, (m) => m.id);
   $: ticket.openToSchools = uniqBy(ticket.openToSchools, (s) => s.id);
+  $: noAppliedConstraints =
+    [
+      ticket.openToPromotions.length,
+      ticket.openToGroups.length,
+      ticket.openToMajors.length,
+      ticket.openToSchools.length,
+    ].every((c) => c === 0) &&
+    [ticket.openToApprentices, ticket.openToContributors].every((c) => c === null);
 
-  function toAudienceOption(
-    ticket: Pick<Ticket, 'openToExternal' | 'openToAlumni' | 'onlyManagersCanProvide'>,
-  ) {
+  function toAudienceOption(ticket: Pick<Ticket, 'openToExternal' | 'onlyManagersCanProvide'>) {
     if (ticket.openToExternal) return 'external';
-    if (ticket.openToAlumni) return 'alumni';
     if (ticket.onlyManagersCanProvide) return 'managers';
     return 'students';
   }
@@ -73,13 +79,6 @@
   function fromAudienceOption(audience: string) {
     switch (audience) {
       case 'students': {
-        ticket.openToAlumni = false;
-        ticket.openToExternal = false;
-        ticket.onlyManagersCanProvide = false;
-        break;
-      }
-
-      case 'alumni': {
         ticket.openToAlumni = true;
         ticket.openToExternal = false;
         ticket.onlyManagersCanProvide = false;
@@ -105,6 +104,41 @@
       }
     }
   }
+
+  function makeSummarySentence(ticket: Ticket) {
+    const fiseFisa =
+      ticket.openToApprentices === null
+        ? ''
+        : `<strong>sous statut ${ticket.openToApprentices ? 'apprenti' : 'étudiant'} seulement</strong>`;
+
+    const schools =
+      ticket.openToSchools.length === 0
+        ? ticket.openToMajors.length === 0
+          ? 'de toutes les écoles'
+          : ''
+        : `de <strong>${ticket.openToSchools.map((s) => s.name).join(', ')}</strong>`;
+
+    const promotions =
+      ticket.openToPromotions.length === 0
+        ? ''
+        : `en <strong>${ticket.openToPromotions.map((year) => yearTier(year) + 'A').join(', ')}</strong>`;
+
+    const majors =
+      ticket.openToMajors.length === 0
+        ? ''
+        : `en <strong>${ticket.openToMajors.map((m) => m.name).join(', ')}</strong>`;
+
+    const groups =
+      ticket.openToGroups.length === 0
+        ? ''
+        : `membres de <strong>${ticket.openToGroups.map((g) => g.name).join(' ou ')}</strong>`;
+
+    const contributors =
+      ticket.openToContributors === true ? `<strong>cotisant à leur AE</strong>` : '';
+
+    return `Ce billet est réservable par les élèves ${schools} ${promotions} ${majors} ${groups} ${fiseFisa} ${contributors}`;
+  }
+  $: summarySentence = makeSummarySentence(ticket);
 </script>
 
 <form
@@ -125,10 +159,24 @@
         <summary>Liens accessibles après réservation…</summary>
         <InputLinks label="" bind:value={ticket.links}></InputLinks>
       </details>
+      {#if ticket.price > 0}
+        <details>
+          <summary
+            >Méthodes de paiement autorisées: {ticket.allowedPaymentMethods
+              .map((method) => DISPLAY_PAYMENT_METHODS[method])
+              .join(', ')}</summary
+          >
+          <InputSelectMultiple
+            bind:selection={ticket.allowedPaymentMethods}
+            options={DISPLAY_PAYMENT_METHODS}
+          />
+        </details>
+      {/if}
       <InputDateRange time label="Shotgun" bind:start={ticket.opensAt} bind:end={ticket.closesAt}
       ></InputDateRange>
-      <label class="godchildren">
+      <label class="godchildren" for="godchildrenLimit">
         <InputCheckbox
+          id="godchildrenLimit"
           on:change={({ target }) => {
             if (!(target instanceof HTMLInputElement)) return;
             ticket.godsonLimit = target.checked ? 1 : 0;
@@ -142,17 +190,23 @@
         </div>
       </label>
     </div>
-    <!-- svelte-ignore a11y-label-has-associated-control -->
     <div class="limits">
       <InputSelectOne
-        label=""
+        label="Ouvert à"
         options={audienceOptions}
         value={toAudienceOption(ticket)}
         on:input={({ detail: value }) => {
           fromAudienceOption(value);
         }}
       ></InputSelectOne>
-      {#if !['managers', 'external'].includes(toAudienceOption(ticket))}
+      {#if toAudienceOption(ticket) === 'managers'}
+        <p>
+          Seul un·e manager de l'évènement peut prendre le billet (pour quelqu'un·e d'autre
+          potentiellement)
+        </p>
+      {:else if toAudienceOption(ticket) === 'external'}
+        <p>Tout le monde peut réserver ce billet, même sans être connecté</p>
+      {:else}
         <section class="constraints">
           <h2>Limiter à</h2>
           <div class="add-constraints" transition:slide|global>
@@ -180,8 +234,21 @@
                   }}
                 >
                   <IconAdd></IconAdd>
-                  Étudiant·e·s</Pill
+                  Étudiant·e·s (FISE)</Pill
                 >
+                {#if ticket.openToContributors !== true}
+                  <Pill
+                    transitionKey="contributors-only"
+                    {transitionPair}
+                    clickable
+                    on:click={() => {
+                      ticket.openToContributors = true;
+                    }}
+                  >
+                    <IconAdd></IconAdd>
+                    Cotisant·e·s</Pill
+                  >
+                {/if}
               {/if}
               <Pill
                 transitionKey="year"
@@ -196,12 +263,12 @@
                 {#if selectingGraduationYearConstraint}
                   <form
                     on:submit|preventDefault={() => {
+                      selectingGraduationYearConstraint = false;
                       if (!selectedGraduationYearConstraint) return;
                       ticket.openToPromotions = [
                         ...ticket.openToPromotions,
                         selectedGraduationYearConstraint,
                       ];
-                      selectingGraduationYearConstraint = false;
                     }}
                   >
                     <!-- svelte-ignore a11y-autofocus -->
@@ -213,7 +280,11 @@
                       placeholder="Année"
                       bind:value={selectedGraduationYearConstraint}
                     />
-                    <ButtonInk submits>OK</ButtonInk>
+                    <ButtonInk submits
+                      >{#if selectedGraduationYearConstraint}OK{:else}
+                        Annuler
+                      {/if}</ButtonInk
+                    >
                   </form>
                 {/if}
               </Pill>
@@ -300,7 +371,7 @@
                   on:click={() => {
                     ticket.openToPromotions = [
                       ...ticket.openToPromotions,
-                      ...[1, 2, 3].map(fromYearTier),
+                      ...[1, 2, 3].map((y) => fromYearTier(y)),
                     ];
                   }}
                 >
@@ -325,6 +396,9 @@
           </div>
           <hr />
           <div class="applied-constraints">
+            {#if noAppliedConstraints}
+              <Pill muted {transitionPair}>Aucune contrainte</Pill>
+            {/if}
             {#if ticket.openToApprentices === true}
               <PillRemovable
                 transitionKey="apprentices-only"
@@ -341,7 +415,7 @@
                 on:remove={() => {
                   // eslint-disable-next-line unicorn/no-null
                   ticket.openToApprentices = null;
-                }}>Étudiant·e·s</PillRemovable
+                }}>Étudiant·e·s (FISE)</PillRemovable
               >
             {/if}
             {#each ticket.openToPromotions as graduationYear}
@@ -384,7 +458,22 @@
                 }}>{school.name}</PillRemovable
               >
             {/each}
+            {#if ticket.openToContributors}
+              <PillRemovable
+                transitionKey="contributors-only"
+                {transitionPair}
+                on:remove={() => {
+                  // eslint-disable-next-line unicorn/no-null
+                  ticket.openToContributors = null;
+                }}>Cotisant·e·s</PillRemovable
+              >
+            {/if}
           </div>
+          <hr />
+          <p>
+            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+            {@html summarySentence}
+          </p>
         </section>
       {/if}
     </div>
@@ -419,9 +508,9 @@
     flex-grow: 0;
     gap: 1rem;
     width: 100%;
-    border-radius: var(--radius-block);
-    overflow-y: scroll;
     max-height: 100%;
+    overflow-y: scroll;
+    border-radius: var(--radius-block);
   }
 
   .constraints h2 {
@@ -475,10 +564,10 @@
 
   .inputs {
     display: flex;
-    gap: 1rem;
-    padding: 1rem;
     flex-wrap: wrap;
+    gap: 1rem;
     justify-content: center;
+    padding: 1rem;
   }
 
   .inputs > div {
@@ -489,9 +578,10 @@
   }
 
   .inputs .info {
-    max-width: 500px;
     flex-grow: 1.2;
+    max-width: 500px;
   }
+
   .inputs .limits {
     max-width: 500px;
   }
