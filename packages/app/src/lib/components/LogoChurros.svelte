@@ -19,9 +19,9 @@
   {/if}
 {:else if $theme === 'ber7ker'}
   {#if wordmark}
-    <img src="/ChurrosBer7kerWordmark.png" alt="Churros" class="wordmark ber7ker" />
+    <img src="/ChurrosBer7kerWordmark.png" alt="Churros" class="wordmark ber7ker uwu" />
   {:else}
-    <img src="/ChurrosBer7ker.png" alt="Churros" class="Pwordmark ber7ker" />
+    <img src="/ChurrosBer7ker.png" alt="Churros" class="wordmark ber7ker" />
   {/if}
 {:else if $theme === 'gd7t'}
   {#if wordmark}
@@ -168,7 +168,7 @@
     display: flex;
     align-items: start;
     width: auto;
-    height: 3.5rem; // A été edit pour le theme pan7on, taille de base : 3rem.
+    height: 3rem; // A été edit pour le theme pan7on, taille de base : 3rem.
     object-fit: cover;
   }
 
@@ -176,5 +176,10 @@
     position: fixed;
     top: 0.5rem;
     height: 4rem;
+  }
+
+  .uwu {
+    height: 3rem !important;
+    margin-top: 0.5rem;
   }
 </style>
