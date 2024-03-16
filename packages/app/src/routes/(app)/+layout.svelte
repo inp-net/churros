@@ -186,6 +186,9 @@
         {#if $theme == 'pan7on'}
           <div class="pan7div"></div>
         {/if}
+        {#if $theme == 'ber7ker'}
+          <div class="ber7div"></div>
+        {/if}
       </main>
     </div>
   </div>
@@ -217,6 +220,12 @@ The root layout is composed of several elements:
     // Si cette div existe encore après les semaines de campagnes, moi Benjamin Soyer
     // m'engage à laver les ecocups.
     height: 3rem;
+  }
+
+  .ber7div {
+    // Si cette div existe encore après les semaines de campagnes, moi Benjamin Soyer
+    // je m'engage à trouver quelqu'un de ber7ker.
+    height: 6rem;
   }
 
   .layout {

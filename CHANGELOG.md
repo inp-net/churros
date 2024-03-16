@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Le thème Ber7ker est enfin disponible! (@elomarim & @soyerb)
+
 ## [1.50.1] - 2024-03-12
 
 ### Corrections
