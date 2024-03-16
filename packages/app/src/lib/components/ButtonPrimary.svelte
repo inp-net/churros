@@ -15,7 +15,7 @@
   {href}
   class="button-primary typo-big-button primary"
   class:smaller
-  disabled={disabled || loading}
+  disabled={disabled || loading || undefined}
   on:click
   type={submits ? 'submit' : 'button'}
   role="button"

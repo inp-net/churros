@@ -21,6 +21,7 @@ builder.mutationField('upsertGroupMember', (t) =>
       canEditMembers: t.arg.boolean(),
       canEditArticles: t.arg.boolean(),
       canScanEvents: t.arg.boolean(),
+      isDeveloper: t.arg.boolean(),
     },
     authScopes: (_, { groupId }, { user }) =>
       Boolean(
@@ -41,6 +42,7 @@ builder.mutationField('upsertGroupMember', (t) =>
         canEditArticles,
         canEditMembers,
         canScanEvents,
+        isDeveloper,
       },
       { user: me },
     ) {
@@ -93,6 +95,7 @@ builder.mutationField('upsertGroupMember', (t) =>
           : canScanEvents || onBoard({ president, treasurer, vicePresident, secretary }),
         vicePresident,
         secretary,
+        isDeveloper,
       };
 
       const groupMember = await prisma.groupMember.upsert({
@@ -125,10 +128,13 @@ builder.mutationField('upsertGroupMember', (t) =>
         group.type === 'Club'
       ) {
         // TODO send notification too
+        const school = await prisma.school.findUnique({
+          where: { id: group.schoolId ?? undefined },
+        });
         const mailer = createTransport(process.env.SMTP_URL);
         await mailer.sendMail({
           from: process.env.PUBLIC_CONTACT_EMAIL,
-          to: 'respos-clubs@bde.enseeiht.fr',
+          to: `respos-clubs@bde.${school?.name.toLowerCase()}.fr`,
           subject: `Bureau de ${group.name} modifié`,
           text: `${groupMember.member.firstName} ${groupMember.member.lastName} (@${
             groupMember.member.uid

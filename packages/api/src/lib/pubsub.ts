@@ -32,9 +32,19 @@ export function publish<T>(
       discriminant ? `@${discriminant}` : ''
     } (${subscriptionName(id, action, discriminant)})`,
   );
-  if (action && discriminant) pubsub.publish(subscriptionName(id, action, discriminant), payload);
-  if (discriminant) pubsub.publish(subscriptionName(typename, undefined, discriminant), payload);
-  if (action) pubsub.publish(subscriptionName(typename, action), payload);
+
+  if (action && discriminant) {
+    pubsub.publish(subscriptionName(id, action, discriminant), payload);
+    pubsub.publish(subscriptionName(typename, action, discriminant), payload);
+  }
+  if (discriminant) {
+    pubsub.publish(subscriptionName(typename, undefined, discriminant), payload);
+    pubsub.publish(subscriptionName(id, undefined, discriminant), payload);
+  }
+  if (action) {
+    pubsub.publish(subscriptionName(id, action), payload);
+    pubsub.publish(subscriptionName(typename, action), payload);
+  }
   pubsub.publish(subscriptionName(id), payload);
 }
 

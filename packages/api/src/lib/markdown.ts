@@ -27,6 +27,7 @@ export const toHtml = async (
         repository: 'https://git.inpt.fr/inp-net/churros',
       })
       // Downlevel titles (h1 -> h3)
+      // @ts-expect-error upgrade to unified 11 broke the type but this still works
       .use(() => ({ children }) => {
         for (const child of children)
           if (child.type === 'heading') child.depth = Math.min(child.depth + 2, 6) as 3 | 4 | 5 | 6;

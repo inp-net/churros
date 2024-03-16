@@ -1,12 +1,13 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
-  import { me } from '$lib/session';
   import type { PageData } from './$types';
 
   $: ({ group, uid } = $page.params);
 
   export let data: PageData;
+  $: ({ ...permissions } = data.event);
+
   const TABS = {
     '': 'Infos',
     'edit': 'Modifier',
@@ -14,39 +15,17 @@
     'scan': 'Vérifier',
   } as const;
 
-  function manager():
-    | undefined
-    | { canEdit: boolean; canEditPermissions: boolean; canVerifyRegistrations: boolean } {
-    return data.event.managers.find((m) => m.user.uid === $me?.uid);
-  }
+  let tabsToShow: Record<keyof typeof TABS, boolean>;
+  $: tabsToShow = {
+    '': true,
+    'edit': permissions.canEdit,
+    'registrations': permissions.canSeeBookings,
+    'scan': permissions.canScanBookings,
+  };
 
-  const shownTabs = ['', 'edit', 'registrations', 'scan'].filter((tab) => {
-    switch (tab) {
-      case '': {
-        return true;
-      }
-
-      case 'edit': {
-        return Boolean($me?.admin || manager()?.canEdit || manager()?.canEditPermissions);
-      }
-
-      case 'scan': {
-        return Boolean(
-          $me?.admin ||
-            manager()?.canVerifyRegistrations ||
-            data.event.group.members.some((m) => m.member.uid === $me?.uid && m.canScanEvents),
-        );
-      }
-
-      case 'registrations': {
-        return Boolean($me?.admin || manager());
-      }
-
-      default: {
-        return false;
-      }
-    }
-  }) as Array<keyof typeof TABS>;
+  $: shownTabs = Object.entries(tabsToShow)
+    .filter(([_, show]) => show)
+    .map(([t]) => t) as Array<keyof typeof TABS>;
 
   let pathLeaf = '';
   $: pathLeaf = $page.url.pathname.replace(/\/$/, '').split('/').pop() || '';

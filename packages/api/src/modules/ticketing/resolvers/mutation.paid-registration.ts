@@ -1,4 +1,4 @@
-import { builder, log, prisma } from '#lib';
+import { builder, log, prisma, publish } from '#lib';
 
 import {
   PaymentMethodEnum,
@@ -118,6 +118,8 @@ builder.mutationField('paidRegistration', (t) =>
           beneficiary: beneficiary ?? '',
         },
       });
+
+      publish(registration.id, 'updated', registration);
 
       if (paymentMethod === PaymentMethodPrisma.PayPal) {
         if (!paypalOrderId)

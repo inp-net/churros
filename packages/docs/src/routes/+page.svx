@@ -88,8 +88,8 @@ La plupart des _queries_ et _mutations_ nécessitent d'être authentifié.
 
 Il y a deux moyens d'authentification:
 
-1. En se connectant avec un compte utilisateur par son mot de passe directement (déconseillé): Voir la [mutation `login`](#login)
-2. Avec une application créée sur Churros (recommandé): Voir la documentation sur l'[OAuth](#oauth)
+1. En se connectant avec un compte utilisateur par son mot de passe directement (déconseillé): Voir la [mutation `login`](/users#mutation/login)
+2. Avec une application créée sur Churros (recommandé): Voir la documentation sur l'[OAuth](/oauth)
 
 Dans les deux cas, on obtient un token d'authentification. Ce token est à fournir à chaque requête dans le header `Authorization` de la requête HTTP:
 
@@ -156,7 +156,7 @@ Endpoint pour recevoir les acquittements de paiement Lydia.
 
 #### `GET /lydia-webhook/health`
 
-Renvoie OK. Permet de vérifier que le serveur est en ligne (voir [Health checks](#health-checks) pour des checks plus complets).
+Renvoie OK. Permet de vérifier que le serveur est en ligne (voir [Health checks](/health-checks) pour des checks plus complets).
 
 </article>
 

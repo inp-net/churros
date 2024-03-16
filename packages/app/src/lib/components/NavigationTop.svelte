@@ -86,14 +86,16 @@
         style="color:red"><IconIssue /></ButtonGhost
       >
       {#if $me}
-        <ButtonGhost href="/notifications/" help="Notifications">
+        <ButtonGhost href="/notifications/" help="Notifications" style="color:var(--nav-text)">
           {#if $page.url.pathname === '/notifications/'}
             <IconNotifFilled />
           {:else}
             <IconNotif />{/if}</ButtonGhost
         >
-        <ButtonGhost href="/search/" help="Rechercher"><IconSearch /></ButtonGhost>
-        <ButtonGhost href="/users/{$me?.uid}" help="Mon profil">
+        <ButtonGhost href="/search/" help="Rechercher" style="color:var(--nav-text)"
+          ><IconSearch /></ButtonGhost
+        >
+        <ButtonGhost href="/users/{$me?.uid}" help="Mon profil" style="color:var(--nav-text)">
           {#if $me.pictureFile}
             <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
           {:else}
@@ -123,23 +125,10 @@
     width: 100%;
     padding: 1rem 1.5rem;
     margin: 0;
-    background-color: var(--bg);
+    background: var(--nav-top-background, var(--bg));
+    background-repeat: repeat-x;
+    background-size: auto 100%;
     transition: box-shadow 0.25s ease;
-  }
-
-  nav.noel {
-    background-color: transparent;
-    background-image: url('/noel-topbar.png');
-    background-repeat: repeat;
-    background-size: contain;
-  }
-
-  nav.gd7t {
-    background-color: transparent;
-    background-image: url('/gd7t-top.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 100% 100%;
   }
 
   nav.scrolled {
@@ -175,8 +164,8 @@
     width: var(--size);
     height: var(--size);
     overflow: hidden;
-    border-radius: 50%;
     object-fit: cover;
+    border-radius: 50%;
 
     /* border: 3px solid var(--text); */
   }

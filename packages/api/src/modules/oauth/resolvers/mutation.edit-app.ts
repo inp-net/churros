@@ -2,6 +2,7 @@ import { builder, prisma } from '#lib';
 
 import { userCanEditApp } from '#permissions';
 import { log } from '../../../lib/logger.js';
+import { normalizeUrl } from '../index.js';
 
 // TODO rename update-third-party-app
 
@@ -27,6 +28,8 @@ builder.mutationField('editApp', (t) =>
       await log('third-party apps', 'edit', data, id, user);
       const { allowedRedirectUris: oldAllowedRedirectUris, website: oldWebsite } =
         await prisma.thirdPartyApp.findUniqueOrThrow({ where: { id } });
+
+      data.allowedRedirectUris = data.allowedRedirectUris?.map((uri) => normalizeUrl(uri));
 
       const allowedURIsWillChange =
         data.allowedRedirectUris !== undefined &&

@@ -3,7 +3,8 @@
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
   import Toast from '$lib/components/Toast.svelte';
-  import { debugging } from '$lib/debugging';
+  import ModalThemeVariables from '$lib/components/ModalThemeVariables.svelte';
+  import { debugging, themeDebugger } from '$lib/debugging';
   import { isPWA } from '$lib/pwa';
   import { me } from '$lib/session';
   import { isDark, theme } from '$lib/theme.js';
@@ -118,6 +119,11 @@
     {/each}
   </section>
 {/if}
+
+{#if $themeDebugger}
+  <ModalThemeVariables />
+{/if}
+
 <slot />
 
 <style lang="scss">

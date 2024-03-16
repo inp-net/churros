@@ -24,7 +24,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
       color: '#aaaaaa',
       address: '',
       description: '',
-      email: 'contact@bde.enseeiht.fr',
+      email: `contact@bde.${me.major?.schools[0].name.toLowerCase()}.fr`,
       longDescription: '',
       website: '',
       links: [],

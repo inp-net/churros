@@ -29,6 +29,9 @@ export async function userCanEditApp(
                 {
                   treasurer: true,
                 },
+                {
+                  isDeveloper: true,
+                },
               ],
             },
           },

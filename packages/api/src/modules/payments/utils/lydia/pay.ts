@@ -4,6 +4,7 @@ import { GraphQLError } from 'graphql';
 import {
   LydiaTransactionState,
   checkLydiaTransaction,
+  priceWithPromotionsApplied,
   sendLydiaPaymentRequest,
 } from '../../index.js';
 
@@ -19,6 +20,7 @@ export async function payEventRegistrationViaLydia(
   const registration = await prisma.registration.findUnique({
     where: { id: registrationId },
     include: {
+      author: true,
       ticket: {
         include: {
           event: {
@@ -77,7 +79,7 @@ export async function payEventRegistrationViaLydia(
 
   const requestDetails = await sendLydiaPaymentRequest(
     registration.ticket.event.title,
-    registration.ticket.price,
+    await priceWithPromotionsApplied(registration.ticket, registration.author ?? undefined),
     phone,
     beneficiaryVendorToken,
   );

@@ -1,5 +1,5 @@
 import { ensureHasIdPrefix, isLocalNetwork, log, prisma } from '#lib';
-import { generateThirdPartyToken } from '#modules/oauth';
+import { generateThirdPartyToken, normalizeUrl } from '#modules/oauth';
 import { ThirdPartyCredentialType } from '@prisma/client';
 import { verify } from 'argon2';
 import bodyParser from 'body-parser';
@@ -84,7 +84,11 @@ api.use('/token', async (request, response) => {
       `This app is not active yet. Please try again later. Contact ${process.env.PUBLIC_CONTACT_EMAIL} if your app takes more than a week to get activated.`,
     );
   }
-  if (!credential.client.allowedRedirectUris.includes(redirectUri))
+  if (
+    !credential.client.allowedRedirectUris.some(
+      (uri) => normalizeUrl(uri) === normalizeUrl(redirectUri),
+    )
+  )
     return error('Invalid redirect URI');
   await prisma.thirdPartyCredential.deleteMany({ where: { value: authorizationCode } });
   const accessToken = await prisma.thirdPartyCredential.create({

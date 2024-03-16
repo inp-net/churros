@@ -12,9 +12,7 @@
 :root {
   line-height: 1.5;
   color: var(--text);
-
-  // background: var(--bg);
-  background-image: url('/gd7t-bg.jpg');
+  background: var(--bg);
 
   --font-main: 'Space Grotesk', sans-serif;
   --font-mono: 'Space Mono', monospace;
@@ -43,6 +41,10 @@
   /* Big button */
   --size-big-button: 1.1rem;
   --weight-big-button: 700;
+}
+
+:root.gd7t {
+  background-image: url('/gd7t-bg.jpg');
 }
 
 .primary {

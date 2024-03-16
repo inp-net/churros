@@ -1,5 +1,12 @@
 <script lang="ts">
-  import { format, intlFormatDistance, isFuture, isSameDay, isWithinInterval } from 'date-fns';
+  import {
+    format,
+    intlFormatDistance,
+    isBefore,
+    isFuture,
+    isSameDay,
+    isWithinInterval,
+  } from 'date-fns';
   import { Visibility, zeus } from '$lib/zeus';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
@@ -139,7 +146,7 @@
             {:else}
               {@const start = soonestTicket(now).opensAt}
               {#if start}
-                Shotgun dans {intlFormatDistance(start, now)}
+                Shotgun {isBefore(now, start) ? 'dans' : ''} {intlFormatDistance(start, now)}
               {/if}
             {/if}
           </section>
@@ -225,10 +232,10 @@
     width: 2rem;
     height: 2rem;
     overflow: hidden;
+    object-fit: contain;
     background: var(--bg);
     border: 2px solid var(--muted-border);
     border-radius: 50%;
-    object-fit: contain;
   }
 
   article:hover .group-logo {

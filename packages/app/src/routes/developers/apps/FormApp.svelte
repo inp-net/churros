@@ -40,7 +40,7 @@
   ></InputText>
   <InputGroups
     required
-    options={$me?.groups.filter((g) => isOnClubBoard(g)).map((g) => g.group) ?? []}
+    options={$me?.groups.filter((g) => isOnClubBoard(g) || g.isDeveloper).map((g) => g.group) ?? []}
     bind:group={app.ownerGroup}
     label="Groupe responsable de l'application"
   ></InputGroups>
