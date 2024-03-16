@@ -50,8 +50,6 @@
   <section class="managers"></section>
 </section>
 
-
-
 <style>
   .inputs section {
     display: flex;

@@ -27,7 +27,8 @@
 </InputField>
 
 <style>
-  .date-range, .date-range > div {
+  .date-range,
+  .date-range > div {
     display: flex;
     gap: 0.5rem;
     align-items: center;
