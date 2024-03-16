@@ -707,6 +707,7 @@ await prisma.article.create({
 });
 
 const selectedClub = faker.helpers.arrayElements(groups, numberEvent);
+const eventDate: Date = new Date();
 for (const element of selectedClub) {
   const eventName = faker.lorem.words(3);
   const capacityEvent = faker.number.int({ min: 30, max: 300 });
@@ -715,7 +716,11 @@ for (const element of selectedClub) {
       contactMail: 'hey@ewen.works',
       description: 'Ceci est un événement',
       endsAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-      startsAt: new Date(),
+      startsAt: new Date(
+        eventDate.getFullYear(),
+        eventDate.getMonth(),
+        eventDate.getDate() + faker.number.int({ min: 0, max: 7 }),
+      ),
       uid: slug(eventName),
       title: eventName,
       group: { connect: { id: element!.id } },
@@ -755,7 +760,11 @@ for (const element of selectedClub) {
               description: 'blablabla ramenez vos culs par pitié je vous en supplie',
               price: faker.number.int({ min: 0, max: 30 }),
               capacity: capacityEvent,
-              opensAt: new Date(),
+              opensAt: new Date(
+                eventDate.getFullYear(),
+                eventDate.getMonth(),
+                eventDate.getDate() + faker.number.int({ min: 0, max: 7 }),
+              ),
               closesAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
               allowedPaymentMethods: ['Cash', 'Lydia', 'Card'],
               openToPromotions: [2024, 2025, 2026],
