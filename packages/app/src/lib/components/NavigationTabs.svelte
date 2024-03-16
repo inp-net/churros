@@ -12,7 +12,7 @@
   ul {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 1rem;
+    gap: 0.5rem 2rem;
     justify-content: space-around;
     max-width: 600px;
     padding: 0.5rem;

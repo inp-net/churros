@@ -20,29 +20,22 @@ builder.mutationField('moveTicket', (t) =>
       }),
       inside: t.arg.string({
         required: false,
-        description: 'uid du groupe de billet dans lequel placer le billet',
-      }),
-      outside: t.arg.string({
-        required: false,
-        description: 'uid du groupe de billet duquel sortir le billet',
+        description:
+          'uid du groupe de billet dans lequel placer le billet. Null pour le placer en dehors de tout groupe',
       }),
     },
-    validate({ inside, outside }) {
-      return Boolean(!(inside && outside) || (inside && !outside) || (outside && !inside));
-    },
-    async resolve(_, { uid, other, move, eventId, outside, inside }, { user }) {
-      const otherTicket = await prisma.ticket.findFirstOrThrow({
-        where: { uid: other, eventId },
-      });
+    async resolve(_, { uid, other, move, eventId, inside }, { user }) {
+      const otherTicket = uid
+        ? await prisma.ticket.findFirstOrThrow({
+            where: { uid: other, eventId },
+          })
+        : undefined;
       const ticketToMove = await prisma.ticket.findFirstOrThrow({
         where: { uid, eventId },
       });
 
-      await log('events', 'move-ticket', { uid, other, move, eventId }, eventId, user);
+      await log('events', 'move-ticket', { uid, other, move, eventId, inside }, eventId, user);
 
-      const groupToDisconnect = outside
-        ? await prisma.ticketGroup.findFirstOrThrow({ where: { uid: outside } })
-        : undefined;
       const groupToConnect = inside
         ? await prisma.ticketGroup.findFirstOrThrow({ where: { uid: inside } })
         : undefined;
@@ -50,18 +43,13 @@ builder.mutationField('moveTicket', (t) =>
       const orderDeltaByMoveType: Record<TicketMove, number> = {
         [TicketMove.MoveAfter]: 1,
         [TicketMove.MoveBefore]: -1,
-        [TicketMove.MoveToGroup]: 0,
       };
 
       const result = await prisma.ticket.update({
         where: { id: ticketToMove.id },
         data: {
-          order: otherTicket.order + orderDeltaByMoveType[move],
-          group: groupToDisconnect
-            ? { disconnect: { id: groupToDisconnect.id } }
-            : groupToConnect
-              ? { connect: { id: groupToConnect.id } }
-              : undefined,
+          order: (otherTicket?.order ?? 0) + orderDeltaByMoveType[move],
+          group: groupToConnect ? { connect: { id: groupToConnect.id } } : { disconnect: {} },
         },
       });
 

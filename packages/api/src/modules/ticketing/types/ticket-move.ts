@@ -3,7 +3,6 @@ import { builder } from '#lib';
 export enum TicketMove {
   MoveAfter,
   MoveBefore,
-  MoveToGroup,
 }
 
 export const TicketMoveType = builder.enumType(TicketMove, {

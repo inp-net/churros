@@ -469,6 +469,7 @@ __metadata:
     lodash.debounce: "npm:^4.0.8"
     lodash.groupby: "npm:^4.6.0"
     lodash.omit: "npm:^4.5.0"
+    lodash.throttle: "npm:^4.1.1"
     nanoid: "npm:^5.0.4"
     party-js: "npm:^2.2.0"
     qr-code-generator-lib: "patch:qr-code-generator-lib@npm%3A1.0.1#~/.yarn/patches/qr-code-generator-lib-npm-1.0.1-14a65cb2e0.patch"

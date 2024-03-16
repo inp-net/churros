@@ -34,7 +34,7 @@ export const TicketInput = builder.inputType('TicketInput', {
     description: t.string(),
     godsonLimit: t.int(),
     links: t.field({ type: [LinkInput] }),
-    name: t.string({ defaultValue: 'Place', validate: { minLength: 1 } }),
+    name: t.string(),
     onlyManagersCanProvide: t.boolean(),
     openToAlumni: t.boolean({ required: false }),
     openToExternal: t.boolean({ required: false }),

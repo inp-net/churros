@@ -115,7 +115,7 @@
           </ul>
         {/if}
         {#if group}{group.name} <IconChevronRight />
-        {/if}{name}
+        {/if}{name || 'Place'}
       </h3>
       <div class="description" data-user-html>
         <!-- eslint-disable-next-line svelte/no-at-html-tags -->

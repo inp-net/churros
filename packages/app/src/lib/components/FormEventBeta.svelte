@@ -2,8 +2,8 @@
   const steps = [
     ['details', 'Infos'],
     ['situation', 'Comm'],
-    ['tickets', 'Billets'],
     ['organization', 'Organisation'],
+    ['tickets', 'Billets'],
     ['visibility', 'Visibilité'],
   ] as const;
 
@@ -170,6 +170,7 @@
     }>;
     tickets: Ticket[];
     ticketGroups: Array<{
+      id: string;
       uid: string;
       name: string;
       capacity: number;
@@ -202,8 +203,8 @@
   import FormEventBetaStepVisibility from './FormEventBetaStepVisibility.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
   import NavigationSteps from './NavigationSteps.svelte';
+  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
 
-  let dispatch = createEventDispatcher();
   let scrollableAreaElement: HTMLElement;
   let bottomBarMessage = '';
 
@@ -338,11 +339,6 @@
         return true;
       }
 
-      case 'tickets': {
-        // Nothing to do, tickets were saved on the fly
-        return true;
-      }
-
       case 'organization': {
         if (!event.group) {
           toasts.error('Il manque le groupe organisateur');
@@ -402,6 +398,11 @@
             return true;
           }
         }
+      }
+
+      case 'tickets': {
+        // Nothing to do, tickets were saved on the fly
+        return true;
       }
     }
 
@@ -483,7 +484,16 @@
       {/if}
     </h1>
     <div class="steps">
-      <NavigationSteps {steps} bind:currentStep></NavigationSteps>
+      {#if creating}
+        <NavigationSteps {steps} bind:currentStep></NavigationSteps>
+      {:else}
+        <NavigationTabs
+          tabs={steps.map(([step, name]) => ({
+            name,
+            href: step === currentStep ? '.' : `./?step=${step}`,
+          }))}
+        ></NavigationTabs>
+      {/if}
     </div>
   </section>
   <div class="inputs-and-preview" bind:this={scrollableAreaElement}>
@@ -521,6 +531,7 @@
       {:else if currentStep === 'tickets'}
         <FormEventBetaStepTickets
           {...event}
+          on:status={({ detail }) => signalSavedChanges(detail)}
           eventId={event.id}
           bind:ticketGroups={event.ticketGroups}
           bind:tickets={event.tickets}

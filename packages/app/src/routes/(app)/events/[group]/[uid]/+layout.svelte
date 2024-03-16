@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { fullsizePage } from '$lib/../routes/(app)/+layout.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import type { PageData } from './$types';
 
@@ -18,7 +17,6 @@
   let tabsToShow: Record<keyof typeof TABS, boolean>;
   $: tabsToShow = {
     '': true,
-    'edit': permissions.canEdit,
     'registrations': permissions.canSeeBookings,
     'scan': permissions.canScanBookings,
   };

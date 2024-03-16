@@ -40,6 +40,7 @@
   const dispatch = createEventDispatcher<{ save: Ticket; delete: Ticket }>();
 
   export let ticket: Ticket;
+  export let creating: boolean;
 
   let selectedGraduationYearConstraint: number | undefined = undefined;
   let selectingGraduationYearConstraint = false;
@@ -469,12 +470,11 @@
               >
             {/if}
           </div>
-          <hr />
-          <p>
-            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-            {@html summarySentence}
-          </p>
         </section>
+        <p>
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html summarySentence}
+        </p>
       {/if}
     </div>
   </div>
@@ -482,7 +482,8 @@
     <ButtonSecondary
       on:click={() => {
         dispatch('delete', ticket);
-      }}>Supprimer</ButtonSecondary
+      }}
+      >{#if creating}Annuler{:else}Supprimer{/if}</ButtonSecondary
     >
     <ButtonSecondary submits>Sauvegarder</ButtonSecondary>
   </footer>
