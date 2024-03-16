@@ -1,5 +1,6 @@
 import { builder, prisma } from '#lib';
 
+import { differenceInSeconds } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import {
   RegistrationVerificationResultType,
@@ -80,7 +81,7 @@ builder.mutationField('verifyRegistration', (t) =>
       }
 
       // we check verifiedAt instead of verifiedBy in case the verifier deleted their account after verifying
-      if (registration.verifiedAt) {
+      if (registration.verifiedAt && differenceInSeconds(new Date(), registration.verifiedAt) > 2) {
         await log('Scan failed: registration already verified', registration.id);
         return {
           state: RegistrationVerificationState.AlreadyVerified,
@@ -93,7 +94,7 @@ builder.mutationField('verifyRegistration', (t) =>
           ...query,
           where: { id },
           data: {
-            verifiedAt: new Date(),
+            verifiedAt: registration.verifiedAt ?? new Date(),
             verifiedBy: { connect: { id: user.id } },
           },
           include: {
