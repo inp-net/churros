@@ -10,6 +10,7 @@ const faker = fakerFR; //j'avais la flemme de faire des FakerFRFR.machin partout
 faker.seed(5); //seed de génération de la DB, pour générer une DB avec de nouvelles données il suffit juste de changer la valeur de la seed
 
 const numberUserDB: number = 50; //Nombre d'utilisateur dans la DB de test
+const numberEvent: number = 5; //Nombre d'événement créer dans la DB
 
 function* range(start: number, end: number): Generator<number> {
   for (let i = start; i < end; i++) yield i;
@@ -705,7 +706,7 @@ await prisma.article.create({
   },
 });
 
-const selectedClub = faker.helpers.arrayElements(groups, 5);
+const selectedClub = faker.helpers.arrayElements(groups, numberEvent);
 for (const element of selectedClub) {
   const eventName = faker.lorem.words(3);
   const capacityEvent = faker.number.int({ min: 30, max: 300 });
@@ -822,6 +823,38 @@ await prisma.ticket.update({
         ],
       },
     },
+  },
+});
+
+const clubForBarWeek = faker.helpers.arrayElement(groups);
+await prisma.barWeek.create({
+  data: {
+    endsAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+    startsAt: new Date(),
+    uid: `${clubForBarWeek.name}-2023`,
+    description: `Semaine de bar de ${clubForBarWeek.name}!`,
+    groups: {
+      connect: [{ uid: clubForBarWeek.uid }],
+    },
+  },
+});
+
+const thirdPartyAppClub = await prisma.group.findUniqueOrThrow({
+  where: { uid: faker.helpers.arrayElement(groups).uid },
+});
+
+await prisma.thirdPartyApp.create({
+  data: {
+    name: 'TVn7',
+    description: 'TVn7',
+    secret: await hash('chipichipi'),
+    id: 'app:chapachapa',
+    active: true,
+    website: 'https://wiki.inpt.fr',
+    allowedRedirectUris: {
+      set: ['https://wiki.inpt.fr', 'http://localhost:5000'],
+    },
+    owner: { connect: { id: thirdPartyAppClub.id } },
   },
 });
 
