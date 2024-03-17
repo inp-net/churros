@@ -30,6 +30,7 @@
     top: 0;
     right: 0;
     left: 0;
+    z-index: 10;
     display: flex;
     gap: 2rem;
     align-items: center;

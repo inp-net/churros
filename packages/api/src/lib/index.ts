@@ -16,6 +16,7 @@ export * from './logger.js';
 export * from './markdown.js';
 export * from './pictures.js';
 export * from './prisma.js';
+export * from './prometheus.js';
 export * from './pubsub.js';
 export * from './search.js';
 export * from './urls.js';
