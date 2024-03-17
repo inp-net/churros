@@ -17,6 +17,8 @@
   import FormApp from '../FormApp.svelte';
   import type { PageData } from './$types';
   import { _query } from './+page';
+  import { LineChart, ScaleTypes } from '@carbon/charts-svelte';
+  import '@carbon/charts-svelte/styles.css';
 
   export let data: PageData;
   let loading = false;
@@ -71,6 +73,10 @@
         id: data.thirdPartyApp.id,
       },
     });
+  }
+
+  function notNull<T>(value: T | null | undefined): value is T {
+    return value !== null;
   }
 
   async function updateApp() {
@@ -169,6 +175,51 @@
       </dd>
     </dl>
   </section>
+  <section class="stats">
+    <h2>Statistiques</h2>
+    <LineChart
+      data={data.thirdPartyApp?.apiUsage?.nodes.filter(notNull).map((node) => ({
+        group: node.queryName,
+        ...node,
+      })) ?? []}
+      options={{
+        title: "Requêtes d'API",
+        axes: {
+          bottom: {
+            title: 'Temps',
+            mapsTo: 'date',
+            scaleType: ScaleTypes.TIME,
+          },
+          left: {
+            title: "Nombre d'appels",
+            mapsTo: 'count',
+            scaleType: ScaleTypes.LINEAR,
+          },
+        },
+      }}
+    />
+    <LineChart
+      data={data.thirdPartyApp?.rateLimitHits?.nodes.filter(notNull).map((node) => ({
+        group: node.queryName,
+        ...node,
+      })) ?? []}
+      options={{
+        title: "Limites d'appels atteintes",
+        axes: {
+          bottom: {
+            title: 'Temps',
+            mapsTo: 'date',
+            scaleType: ScaleTypes.TIME,
+          },
+          left: {
+            title: "Pénalité d'attente (ms)",
+            mapsTo: 'count',
+            scaleType: ScaleTypes.LINEAR,
+          },
+        },
+      }}
+    ></LineChart>
+  </section>
   <section class="edit">
     <h2>Modifier</h2>
     <FormApp
@@ -197,6 +248,15 @@
     gap: 2rem;
     max-width: 800px;
     margin: 2rem auto;
+  }
+
+  :global(.stats) {
+    --cds-charts-font-family: var(--font-main) !important;
+  }
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  :global(.stats .cds--cc--title p.title) {
+    font-family: var(--font-main);
   }
 
   h1 {
