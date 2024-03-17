@@ -35,3 +35,4 @@ pages:
 
 include:
   - template: SAST.gitlab-ci.yml
+  - template: CD.gitlab-ci.yml
