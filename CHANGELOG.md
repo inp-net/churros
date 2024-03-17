@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Application tierces: il y a maintenant les logs pour faciliter le débuggage
+
 ## [1.52.0] - 2024-03-17
 
 ### Nouveautés

@@ -19,26 +19,9 @@ export const _query = Selector('ThirdPartyApp')({
     pictureFile: true,
     pictureFileDark: true,
   },
-  rateLimitHits: [
-    {},
-    {
-      nodes: {
-        date: true,
-        count: true,
-        queryName: true,
-      },
-    },
-  ],
-  apiUsage: [
-    {},
-    {
-      nodes: {
-        date: true,
-        count: true,
-        queryName: true,
-      },
-    },
-  ],
+  logs: [{}, { nodes: { happenedAt: true, message: true, action: true } }],
+  rateLimitHits: [{}, { nodes: { date: true, count: true, queryName: true } }],
+  apiUsage: [{}, { nodes: { date: true, count: true, queryName: true } }],
 });
 export async function load({ parent, fetch, params }) {
   const parentData = await parent();

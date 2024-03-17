@@ -1,6 +1,7 @@
 import {
   builder,
   createLdapUser,
+  ensureHasIdPrefix,
   findSchoolUser,
   markAsContributor,
   prisma,
@@ -29,7 +30,13 @@ builder.mutationField('login', (t) =>
     },
     async resolve(query, _, { email, password, clientId }, { request }) {
       const userAgent = request.headers.get('User-Agent')?.slice(0, 255) ?? '';
-      if (clientId) await log('oauth', 'login', { clientId, email, userAgent });
+      if (clientId)
+        {await log(
+          'oauth',
+          'login',
+          { clientId, email, userAgent },
+          ensureHasIdPrefix(clientId, 'ThirdPartyApp'),
+        );}
 
       return login(email, password, userAgent, query);
     },
