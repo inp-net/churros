@@ -15,6 +15,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 - Application tierces: il y a maintenant les logs pour faciliter le débuggage
 
+  ![](https://git.inpt.fr/inp-net/churros/uploads/01dd72a3fd862a2e4746f42033ae86cd/image.png)
+
+  ![](https://git.inpt.fr/inp-net/churros/uploads/d348a5485f482aa28c7847b4982ac4fd/2024-03-17-220335_hyprshot.png)
+
 ## [1.52.0] - 2024-03-17
 
 ### Nouveautés
