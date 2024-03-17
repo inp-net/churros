@@ -11,6 +11,24 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Applications tierces: il y a maintenant des graphiques qui montrent l'utilisation de l'API et les atteintes au rate limiting
+
+### Corrections
+
+- Correction d'un bug qui empêchait de modifier un évènement une fois qu'il avait commencé
+- Un deuxième scan d'un même billet n'est plus considéré comme invalide si le premier scan a été effectué il y a moins de 2 secondes
+- Correction d'un bug qui empêchait parfois les non-managers avec permissions adéquates de voir l'onglet "Vérifier" sur la page d'un évènement (pas sûr que ça marche)
+
+### Améliorations
+
+- Le statut "Scanné" s'affiche maintenant sur les billets scannés
+
+### Technique
+
+- Churros fournit maintenant un [exporter Prometheus](https://prometheus.io/docs/instrumenting/exporters/) (non exposé à Internet, mais accessible dans le réseau du cluster kubernetes sur le port 9999 de l'API)
+
 ## [1.51.0] - 2024-03-16
 
 ### Nouveautés
