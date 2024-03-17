@@ -1,4 +1,4 @@
-import { builder, ensureHasIdPrefix, isLocalNetwork, prisma } from '#lib';
+import { builder, ensureHasIdPrefix, isLocalNetwork, prisma, updateCreatedTokensCount } from '#lib';
 import { ThirdPartyCredentialType } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { OAuth2Error, OAuth2ErrorCode, generateThirdPartyToken, normalizeUrl } from '../index.js';
@@ -87,6 +87,8 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
           },
         }),
       ]);
+
+      void updateCreatedTokensCount({ token: value, user: user.id });
 
       return value;
     },

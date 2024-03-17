@@ -11,6 +11,10 @@ declare namespace NodeJS {
      */
     REDIS_URL: string;
     /**
+     * Prometheus pushgateway URL.
+     */
+    PROMETHEUS_URL: string;
+    /**
      * Public frontend origin.
      *
      * @example

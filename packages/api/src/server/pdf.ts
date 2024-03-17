@@ -110,7 +110,7 @@ export function generatePDF(
                       ]
                     : 'Inconnue',
                   '\n',
-                  registration.ticket.event.startsAt.toLocaleDateString() + '\n',
+                  registration.ticket.event.startsAt.toLocaleDateString('fr-FR') + '\n',
                   registration.ticket.event.location,
                 ],
               },

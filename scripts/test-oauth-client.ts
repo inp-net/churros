@@ -50,6 +50,19 @@ async function exchangeCodeForToken(code: string) {
   return token;
 }
 
+async function gql(query: string, token: string) {
+  return fetch('http://localhost:4000/graphql', {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      query,
+    }),
+  }).then((r) => r.json());
+}
+
 // Create a simple server to handle the callback
 http
   .createServer(async (req, res) => {
@@ -59,17 +72,13 @@ http
     if (query.code) {
       try {
         const { access_token } = await exchangeCodeForToken(query.code as string);
-        const data = await fetch('http://localhost:4000/graphql', {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${access_token}`,
-          },
-          body: JSON.stringify({
-            query: 'query { me { credentials { token, id } } }',
-          }),
-        }).then((r) => r.json());
+        const data = await gql('query { me { uid } }', access_token);
         console.log(data);
+
+        // test rate limit
+        for (let i = 0; i < 10_000; i++) {
+          await gql('query { me { uid } }', access_token);
+        }
       } catch (error) {
         console.error(error);
       } finally {

@@ -1,6 +1,7 @@
 {
   "name": "@centraverse/app",
   "dependencies": {
+    "@carbon/charts-svelte": "^1.15.3",
     "@iconify-json/logos": "^1.1.42",
     "@paypal/paypal-js": "^8.0.2",
     "@swc/core": "^1.4.7",
