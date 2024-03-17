@@ -1,4 +1,11 @@
-import { builder, ensureHasIdPrefix, isLocalNetwork, prisma, updateCreatedTokensCount } from '#lib';
+import {
+  builder,
+  ensureHasIdPrefix,
+  isLocalNetwork,
+  log,
+  prisma,
+  updateCreatedTokensCount,
+} from '#lib';
 import { ThirdPartyCredentialType } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { OAuth2Error, OAuth2ErrorCode, generateThirdPartyToken, normalizeUrl } from '../index.js';
@@ -49,18 +56,17 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
       });
 
       if (!client.active && !isLocalNetwork(redirectUri)) {
-        throw new OAuth2Error(
-          OAuth2ErrorCode.unauthorized_client,
-          `This app is not active yet. Please try again later. Contact ${process.env.PUBLIC_CONTACT_EMAIL} if your app takes more than a week to get activated.`,
-        );
+        const message = `This app is not active yet. Please try again later. Contact ${process.env.PUBLIC_CONTACT_EMAIL} if your app takes more than a week to get activated.`;
+        await log('oauth', 'authorize/error', { message }, client.id);
+        throw new OAuth2Error(OAuth2ErrorCode.unauthorized_client, message);
       }
 
       if (
         !client.allowedRedirectUris.some((uri) => normalizeUrl(redirectUri) === normalizeUrl(uri))
       ) {
-        throw new GraphQLError(
-          `Invalid redirect URI, must be one of ${client.allowedRedirectUris.map((u) => normalizeUrl(u)).join(', ')}`,
-        );
+        const message = `Invalid redirect URI, must be one of ${client.allowedRedirectUris.map((u) => normalizeUrl(u)).join(', ')}`;
+        await log('oauth', 'authorize/error', { message }, client.id);
+        throw new GraphQLError(message);
       }
 
       const [{ value }] = await prisma.$transaction([
@@ -88,6 +94,12 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
         }),
       ]);
 
+      await log(
+        'oauth',
+        'authorize/ok',
+        { userId: user.id, clientId: client.id, redirectUri, code: value },
+        client.id,
+      );
       void updateCreatedTokensCount({ token: value, user: user.id });
 
       return value;

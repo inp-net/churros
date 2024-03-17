@@ -28,6 +28,7 @@
   import FormApp from '../FormApp.svelte';
   import type { PageData } from './$types';
   import { _query } from './+page';
+  import { tooltip } from '$lib/tooltip';
 
   export let data: PageData;
   let logSectionElement: HTMLElement;
@@ -100,9 +101,8 @@
 
   function formatTimeSafe(date: Date): string {
     try {
-      if (typeof date === 'string') 
-        return format(new Date(date), 'HH:mm');
-      
+      if (typeof date === 'string') return format(new Date(date), 'HH:mm');
+
       return format(date, 'HH:mm');
     } catch {
       return '??:??';
@@ -174,28 +174,61 @@
 
   function prettyLogMessage(log: { message: string; action: string }): {
     message: string;
-    theme: 'info' | 'danger';
+    theme: 'info' | 'danger' | 'muted';
+    code?: string;
   } {
     switch (log.action) {
-    case 'token/request': {
-      const { code, redirect_uri } = JSON.parse(log.message);
-      return { message: `Token demandé avec code ${code} pour ${redirect_uri}`, theme: 'info' };
-    }
-    case 'token/ok': {
-      return { message: `Token obtenu`, theme: 'info' };
-    }
-    case 'token/error': {
-      const { err } = JSON.parse(log.message);
-      return { message: `Erreur lors de l'obtention du token: ${err}`, theme: 'danger' };
-    }
-    // No default
+      case 'token/request': {
+        const { code, redirect_uri } = JSON.parse(log.message);
+        return { message: `Token demandé pour ${redirect_uri}`, theme: 'muted', code };
+      }
+      case 'token/ok': {
+        const { code } = JSON.parse(log.message);
+        return { message: `Token obtenu`, theme: 'info', code };
+      }
+      case 'token/error': {
+        const { err, authorizationCode } = JSON.parse(log.message);
+        return {
+          message: `Erreur lors de l'obtention du token: ${err}`,
+          theme: 'danger',
+          code: authorizationCode,
+        };
+      }
+      case 'authorize/error': {
+        const { message } = JSON.parse(log.message);
+        return { message: `Erreur lors de l'autorisation: ${message}`, theme: 'danger' };
+      }
+      case 'authorize/ok': {
+        const { code } = JSON.parse(log.message);
+        return { message: `Autorisation accordée, code donné`, theme: 'info', code };
+      }
+      // No default
     }
     return { message: log.action + ' ' + log.message, theme: 'info' };
+  }
+
+  function flattenObject(obj: Record<string, unknown>): Record<string, string> {
+    const result: Record<string, string> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (typeof value === 'object') {
+        // prefix keys with parent key
+        Object.assign(
+          result,
+          ...Object.entries(flattenObject(value as Record<string, unknown>)).map(([k, v]) => ({
+            [`${key}.${k}`]: v,
+          })),
+        );
+        // Object.assign(result, flattenObject(value as Record<string, unknown>));
+      } else {
+        result[key] = String(value);
+      }
+    }
+    return result;
   }
 </script>
 
 <Modal bind:element={logDetailsModalElement}>
-  <h1>
+  <h1 class="modal-header">
     Détails sur un log
     <ButtonGhost
       on:click={() => {
@@ -204,12 +237,27 @@
     >
   </h1>
   {#if shownLog}
+    {@const obj = JSON.parse(shownLog.message)}
+    <p>
+      {formatDateTime(shownLog.happenedAt)}
+    </p>
+    {#if 'formData' in obj}
+      <h3>Données passées dans la requête en form-data</h3>
+      <dl class="formdata">
+        {#each Object.entries(obj.formData) as [key, value]}
+          <dt class="formdata-key"><pre>{key}</pre></dt>
+          <dd>{value}</dd>
+        {/each}
+      </dl>
+      <hr />
+      <h3>Autres données de débug</h3>
+    {/if}
     <dl>
-      <dt>Date</dt>
-      <dd>{formatDateTime(shownLog.happenedAt)}</dd>
-      {#each Object.entries(JSON.parse(shownLog.message)) as [key, value]}
-        <dt><pre>{key}</pre></dt>
-        <dd>{value}</dd>
+      {#each Object.entries(flattenObject(obj)) as [key, value]}
+        {#if !key.startsWith('formData.')}
+          <dt><pre>{key}</pre></dt>
+          <dd>{value}</dd>
+        {/if}
       {/each}
     </dl>
   {/if}
@@ -283,13 +331,16 @@
       bind:this={logSectionElement}
       on:scroll={() => {
         if (autoscrolling) return;
-        autoscrollLogs = logSectionElement.scrollHeight - logSectionElement.scrollTop <=
-          logSectionElement.clientHeight + 100 ? true : false;
+        autoscrollLogs =
+          logSectionElement.scrollHeight - logSectionElement.scrollTop <=
+          logSectionElement.clientHeight + 100
+            ? true
+            : false;
       }}
     >
       <table>
         {#each logs.reverse() as log}
-          {@const { message, theme } = prettyLogMessage(log)}
+          {@const { message, theme, code } = prettyLogMessage(log)}
           <tr
             class={theme}
             on:click={async () => {
@@ -302,6 +353,11 @@
               >{#if theme === 'danger'}<IconErrorCircle></IconErrorCircle>{/if}
             </td>
             <td class="time">{formatTimeSafe(log.happenedAt)}</td>
+            <td class="requestid" use:tooltip={code ? `Requête pour le code ${code}` : undefined}>
+              {#if code}
+                {code.replace(/^churros_/, '').slice(0, 5)}
+              {/if}
+            </td>
             <td>{message}</td>
           </tr>
         {/each}
@@ -442,6 +498,22 @@
     height: 1.2em;
   }
 
+  h1.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  dt.formdata-key {
+    text-transform: none;
+  }
+
+  dl.formdata {
+    display: grid;
+    grid-template-columns: min-content max-content;
+    align-items: center;
+  }
+
   .logs {
     display: flex;
     flex-direction: column;
@@ -483,7 +555,8 @@
     padding: 0.25rem 0;
   }
 
-  .logs td.time {
+  .logs td.time,
+  .logs td.requestid {
     font-family: var(--font-mono);
   }
 
