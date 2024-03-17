@@ -148,7 +148,12 @@ export const context = async ({ request, ...rest }: YogaInitialContext) => {
   if (!token) return {};
   return {
     token,
-    user: await (isThirdPartyToken(token) ? getUserFromThirdPartyToken : getUser)(token),
+    user: await (isThirdPartyToken(token) ? getUserFromThirdPartyToken : getUser)(token).catch(
+      (error) => {
+        console.error(error);
+        return;
+      },
+    ),
   };
 };
 
