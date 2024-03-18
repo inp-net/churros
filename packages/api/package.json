@@ -118,7 +118,7 @@
     "#permissions": "./build/src/permissions/index.js"
   },
   "prisma": {
-    "seed": "tsx ./scripts/seed.ts"
+    "seed": "tsx ./src/seed.ts"
   },
   "private": true,
   "scripts": {
