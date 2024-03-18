@@ -16,10 +16,12 @@ COPY scripts/ /app/scripts/
 
 # Remove unused packages
 RUN rm -rf packages/mock-n7-ldap pack
+RUN rm -rf packages/docs
+RUN rm -rf packages/oauth-client
 
 RUN yarn install
 RUN yarn generate-buildinfo
-RUN yarn workspaces foreach --exclude @centraverse/docs --interlaced --topological-dev -Apv run build
+RUN yarn build
 
 
 FROM node:20-alpine as base
