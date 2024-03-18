@@ -321,6 +321,18 @@ const usersData = [
   { firstName: 'Rick', lastName: 'Astley' }, //https://www.youtube.com/watch?v=dQw4w9WgXcQ
 ];
 
+//création d'une liste des réseaux sociaux qu'on peut ref sur son profil churros
+const socialMedia = [
+  'Facebook',
+  'Instagram',
+  'Discord',
+  'Twitter',
+  'Linkedin',
+  'Github',
+  'Hackernews',
+  'Anilist',
+];
+
 //ajout d'utilisateur aléatoire par Faker
 for (let i = 0; i < numberUserDB - usersData.length; i++)
   usersData.push({ firstName: faker.person.firstName(), lastName: faker.person.lastName() });
@@ -333,6 +345,9 @@ for (const [_, data] of usersData.entries()) {
   const minor = await prisma.minor.findUniqueOrThrow({
     where: { id: faker.helpers.arrayElement(minors).id },
   });
+
+  const selectedSocialMedia = faker.helpers.arrayElements(socialMedia, 4);
+
   await prisma.user.create({
     data: {
       ...data,
@@ -341,10 +356,10 @@ for (const [_, data] of usersData.entries()) {
       description: faker.lorem.paragraph({ min: 0, max: 50 }),
       links: {
         create: [
-          { name: 'Facebook', value: '#' },
-          { name: 'Instagram', value: '#' },
-          { name: 'Telegram', value: '#' },
-          { name: 'Twitter', value: '#' },
+          { name: selectedSocialMedia[0]!, value: '#' },
+          { name: selectedSocialMedia[1]!, value: '#' },
+          { name: selectedSocialMedia[2]!, value: '#' },
+          { name: selectedSocialMedia[3]!, value: '#' },
         ],
       },
       contributions:
@@ -842,67 +857,5 @@ await prisma.thirdPartyApp.create({
     owner: { connect: { id: thirdPartyAppClub.id } },
   },
 });
-
-/*
-const usersDebug = await prisma.user.findMany();
-const eventDebug = await prisma.event.findMany();
-const groupDebug = await prisma.group.findMany();
-
-//console.log("USER DEBUG -------------------------------");
-//console.log(usersDebug);
-//console.log("EVENT DEBUG -------------------------------");
-//console.log(eventDebug);
-console.log("GROUP DEBUG -------------------------------");
-console.log(groupDebug);
-
-
-for (const [_, data] of groups.entries()) {
-  await prisma.event.create({
-    data: {
-      contactMail: `${data.name}@chipichipichapachpa@mail.com`,
-      description: 'Viens passer la passation TVn7 avec nous !',
-      endsAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-      startsAt: new Date(),
-      uid: 'passation-tvn7',
-      title: 'Passation TVn7',
-      visibility: Visibility.GroupRestricted,
-      author: { connect: { uid: 'deuxtroisq' } },
-      group: { connect: { uid: 'ski' } },
-      links: {
-        createMany: {
-          data: [
-            {
-              name: 'Menu',
-              value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            },
-          ],
-        },
-      },
-      tickets: {
-        createMany: {
-          data: [
-            {
-              name: '',
-              description: '',
-              uid: 'ticket',
-              price: 3.5,
-              capacity: 70,
-              allowedPaymentMethods: ['Lydia'],
-              closesAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-              opensAt: new Date(),
-              godsonLimit: 0,
-              // eslint-disable-next-line unicorn/no-null
-              openToAlumni: null,
-              openToExternal: false,
-              // eslint-disable-next-line unicorn/no-null
-              openToContributors: null,
-              openToPromotions: [],
-            },
-          ],
-        },
-      },
-    },
-  });
-} //en vrai ça on peut l'exploser ??*/
 
 exit(0);
