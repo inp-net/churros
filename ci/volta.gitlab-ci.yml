@@ -1,0 +1,41 @@
+.volta:
+  image: debian:11
+  before_script:
+    - apt-get update && apt-get install -y curl git jq moreutils
+    - export VOLTA_HOME=/root/.volta
+    - export PATH=$VOLTA_HOME/bin:$PATH
+    - curl https://get.volta.sh | bash -s -- --skip-setup
+    - yarn config set enableGlobalCache false
+    - yarn config set enableImmutableInstalls true
+    - yarn install
+
+  cache:
+    paths:
+      - .yarn/cache/
+
+build:
+  stage: build
+  extends: .volta
+  script:
+    - yarn build
+
+pages:
+  stage: deploy
+  extends: .volta
+  needs:
+    - deploy
+  rules:
+    - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH) && $CI_COMMIT_TAG
+  variables:
+    PUBLIC_API_URL: https://churros.inpt.fr/graphql
+    PUBLIC_API_WEBSOCKET_URL: wss://churros.inpt.fr/graphql
+  script:
+    - yarn workspace @centraverse/docs install --immutable
+    - yarn workspace @centraverse/docs create-dotenv
+    - >
+      curl -X POST -H 'Content-Type: application/json' -d '{ "query": "query { buildInfo { commit, version } } "}' $PUBLIC_API_URL | jq --raw-output '"export const CURRENT_COMMIT = `" + .data.buildInfo.commit + "`;\nexport const CURRENT_VERSION = `" + .data.buildInfo.version + "`;"' > packages/docs/src/lib/buildinfo.ts
+    - yarn workspace @centraverse/docs build
+    - mv packages/docs/build public
+  artifacts:
+    paths:
+      - public
