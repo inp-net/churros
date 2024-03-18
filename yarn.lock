@@ -4432,6 +4432,7 @@ __metadata:
   dependencies:
     "@commitlint/cli": "npm:^19.1.0"
     "@commitlint/config-conventional": "npm:^19.1.0"
+    "@faker-js/faker": "npm:^8.4.1"
     "@release-it/keep-a-changelog": "npm:^5.0.0"
     "@sveltejs/vite-plugin-svelte": "npm:^3.0.2"
     "@types/lodash": "npm:^4.17.0"

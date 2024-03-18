@@ -120,8 +120,8 @@
     if (result.registration.__typename === 'QueryRegistrationSuccess') {
       registration = result.registration.data;
       if (registration?.paid) await goto(`/bookings/${registration.id}`);
-      if (registration)
-        {$subscribe(
+      if (registration) {
+        $subscribe(
           {
             registration: [
               { id: registration.id },
@@ -144,7 +144,8 @@
             const { paid, code } = freshData.registration.data as { paid: boolean; code: string };
             if (paid) await goto(`/bookings/${code}`);
           },
-        );}
+        );
+      }
     }
   }
 </script>

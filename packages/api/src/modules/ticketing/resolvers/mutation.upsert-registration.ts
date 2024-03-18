@@ -263,11 +263,9 @@ builder.mutationField('upsertRegistration', (t) =>
         registration.id,
         user,
       );
-      if (creating) 
-        publish(ticket.event.id, 'created', registration);
-       else 
-        publish(id, 'updated', registration);
-      
+      if (creating) publish(ticket.event.id, 'created', registration);
+      else publish(id, 'updated', registration);
+
       if (creating) {
         await log(
           'registration',

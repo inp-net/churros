@@ -4,6 +4,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.1.0",
     "@commitlint/config-conventional": "^19.1.0",
+    "@faker-js/faker": "^8.4.1",
     "@release-it/keep-a-changelog": "^5.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.2",
     "@types/lodash": "^4.17.0",
