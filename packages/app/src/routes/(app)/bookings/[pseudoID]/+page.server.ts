@@ -109,6 +109,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
               paid: true,
               opposed: true,
               cancelled: true,
+              verified: true,
               author: {
                 uid: true,
                 firstName: true,

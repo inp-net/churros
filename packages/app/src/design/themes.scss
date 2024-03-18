@@ -20,6 +20,7 @@ dialog {
     --muted-border: #{$neutral-700};
     --muted-link: #{$indigo-400};
     --backdrop: rgb(0 0 0 / 80%);
+    --nav-text: #{$neutral-200};
   }
 
   &.hacker,
@@ -39,7 +40,7 @@ dialog {
     --primary-disabled-bg: var(--card-bg);
     --primary-disabled-text: #c6f6d5;
     --secondary-bg: #0b5221;
-    --secondary-hover-bg: #37e06c;
+    --secondary-hover-border: #37e06c;
     --loading-bg: #0d6e2c;
     --hover-bg: #010703;
     --hover-text: #{$neutral-200};
@@ -62,6 +63,7 @@ dialog {
     --font-main: 'Space Mono', monospace;
     --radius-block: 0;
     --radius-inline: 0;
+    --nav-text: #37e06c;
   }
 
   &.pride,
@@ -120,6 +122,7 @@ dialog {
     --primary-border: #{$green-900};
     --border: #{$red-700};
     --hover-border: #{$red-500};
+    --nav-text: #{$neutral-200};
   }
 
   &.pan7on,
@@ -157,7 +160,7 @@ dialog {
 
     // Secondary
     --secondary-bg: #{$amber-300};
-    --secondary-hover-bg: #{$amber-300};
+    --secondary-hover-border: #{$amber-300};
 
     // Success
     --success-bg: #{$emerald-200};
@@ -195,6 +198,7 @@ dialog {
     // Other colors
     --loading-bg: #{$blue-700};
     --backdrop: rgb(0 0 0 / 30%);
+    --nav-text: #{$slate-800};
 
     // Logo colors
     --logo-stroke-width: 7.606;
@@ -215,5 +219,54 @@ dialog {
     --radius-block: 0.5rem;
     --nav-top-background: url('/ChurrosPan7onv6.png');
     --nav-bottom-background: var(--hover-bg);
+  }
+
+  &.ber7ker,
+  &.ber7ker::backdrop {
+    // Default
+    --bg: #fffbf9;
+    --text: #{$slate-800};
+    --title: #{$slate-900};
+    --muted: #{$slate-500};
+    --error: #{$red-800};
+    --link: #{$red-800};
+    --border: #85431a;
+    --shadow: 0 0 0.125rem #0004, 0 0.125rem 0.5rem #0001;
+    --shadow-big: 0 0 0.5rem #0004, 0 0.5rem 3rem #0001;
+    --shadow-enormous: 0 0 1rem #0004, 0 1rem 6rem #0001;
+    --ring: #{rgba($slate-400, 50%)};
+    --hover-bg: #eae4e0;
+    --hover-text: white;
+    --hover-border: #85431a;
+    --disabled-bg: #e9dad9;
+    --disabled-text: #{$slate-600};
+    --disabled-border: #{$gray-200};
+    --nav-text: #fffbf9;
+
+    // Primary
+    --primary-bg: #87381f;
+    --primary-text: #{$white};
+    --primary-link: #995528;
+    --primary-border: #87381f;
+    --primary-shadow: 0 0.25rem 0.5rem #{rgba($zinc-800, 20%)};
+    --primary-ring: #{rgba($blue-400, 50%)};
+    --primary-hover-bg: #6d2915;
+    --primary-hover-text: black;
+    --primary-hover-border: #{$blue-600};
+    --primary-disabled-bg: #{rgba(#87381f, 50%)};
+    --primary-disabled-text: #{$white};
+    --primary-disabled-border: #{$zinc-500};
+
+    // Secondary
+    --secondary-bg: #87381f;
+    --secondary-hover-border: #87381f;
+
+    // === Other props ===
+    --border-inline: 1px;
+    --border-block: 2px;
+    --radius-inline: 0.25rem;
+    --radius-block: 0.5rem;
+    --nav-top-background: url('/b7kheader.png');
+    --nav-bottom-background: #361a08;
   }
 }

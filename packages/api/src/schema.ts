@@ -1,6 +1,10 @@
-import { builder, type Context } from '#lib';
+import { builder, updateRateLimitHit, type Context } from '#lib';
 import { printSchema } from 'graphql';
-import { defaultKeyGenerator, rateLimitDirective } from 'graphql-rate-limit-directive';
+import {
+  defaultKeyGenerator,
+  defaultOnLimit,
+  rateLimitDirective,
+} from 'graphql-rate-limit-directive';
 import { writeFile } from 'node:fs/promises';
 
 import '#modules/announcements';
@@ -31,6 +35,16 @@ import '#modules/users';
 const { rateLimitDirectiveTransformer } = rateLimitDirective({
   keyGenerator: (dargs, src, args, ctx: Context, info) => {
     return `${ctx.user?.uid}:${defaultKeyGenerator(dargs, src, args, ctx, info)}`;
+  },
+  onLimit(response, dargs, src, args, ctx, info) {
+    updateRateLimitHit({
+      queryName: info.fieldName,
+      queryType: info.parentType.name,
+      token: ctx.token,
+      user: ctx.user?.id,
+      tryAgainInMs: response.msBeforeNext,
+    });
+    defaultOnLimit(response, dargs, src, args, ctx, info);
   },
 });
 

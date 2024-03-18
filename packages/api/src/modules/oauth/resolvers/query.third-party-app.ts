@@ -8,6 +8,7 @@ builder.queryField('thirdPartyApp', (t) =>
         description: "The third party app's client_id. The 'app:' id prefix is optional.",
       }),
     },
+    smartSubscription: true,
     async resolve(query, _, { id }) {
       return prisma.thirdPartyApp.findUniqueOrThrow({
         ...query,

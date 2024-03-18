@@ -11,6 +11,40 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Application tierces: il y a maintenant les logs pour faciliter le débuggage
+
+  ![](https://git.inpt.fr/inp-net/churros/uploads/01dd72a3fd862a2e4746f42033ae86cd/image.png)
+
+  ![](https://git.inpt.fr/inp-net/churros/uploads/d348a5485f482aa28c7847b4982ac4fd/2024-03-17-220335_hyprshot.png)
+
+## [1.52.0] - 2024-03-17
+
+### Nouveautés
+
+- Applications tierces: il y a maintenant des graphiques qui montrent l'utilisation de l'API et les atteintes au rate limiting
+
+### Corrections
+
+- Correction d'un bug qui empêchait de modifier un évènement une fois qu'il avait commencé
+- Un deuxième scan d'un même billet n'est plus considéré comme invalide si le premier scan a été effectué il y a moins de 2 secondes
+- Correction d'un bug qui empêchait parfois les non-managers avec permissions adéquates de voir l'onglet "Vérifier" sur la page d'un évènement (pas sûr que ça marche)
+
+### Améliorations
+
+- Le statut "Scanné" s'affiche maintenant sur les billets scannés
+
+### Technique
+
+- Churros fournit maintenant un [exporter Prometheus](https://prometheus.io/docs/instrumenting/exporters/) (non exposé à Internet, mais accessible dans le réseau du cluster kubernetes sur le port 9999 de l'API)
+
+## [1.51.0] - 2024-03-16
+
+### Nouveautés
+
+- Le thème Ber7ker est enfin disponible! (@elomarim & @soyerb)
+
 ## [1.50.1] - 2024-03-12
 
 ### Corrections
@@ -263,8 +297,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.50.1...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.52.0...main
 [1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
+[1.52.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.52.0
+[1.51.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.51.0
 [1.50.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.50.1
 [1.50.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.50.0
 [1.49.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.49.0
