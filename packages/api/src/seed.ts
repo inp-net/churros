@@ -346,21 +346,16 @@ for (const [_, data] of usersData.entries()) {
     where: { id: faker.helpers.arrayElement(minors).id },
   });
 
-  const selectedSocialMedia = faker.helpers.arrayElements(socialMedia, 4);
-
   await prisma.user.create({
     data: {
       ...data,
       uid: await createUid(data),
-      email: faker.internet.email({ firstName: data.firstName, lastName: data.firstName }),
+      email: faker.internet.email({ firstName: data.firstName, lastName: data.lastName }),
       description: faker.lorem.paragraph({ min: 0, max: 50 }),
       links: {
-        create: [
-          { name: selectedSocialMedia[0]!, value: '#' },
-          { name: selectedSocialMedia[1]!, value: '#' },
-          { name: selectedSocialMedia[2]!, value: '#' },
-          { name: selectedSocialMedia[3]!, value: '#' },
-        ],
+        create: faker.helpers
+          .arrayElements(socialMedia, { min: 2, max: 6 })
+          .map((name) => ({ name, value: '#' })),
       },
       contributions:
         faker.number.int({ min: 0, max: 10 }) % 10 === 0 //génération d'une majorité de cotissant
@@ -394,7 +389,6 @@ for (const [_, data] of usersData.entries()) {
     },
   });
 }
-
 const users = await prisma.user.findMany();
 
 const numberSubject: number = 10;
@@ -504,20 +498,20 @@ for (const [_, group] of clubsData.entries()) {
   });
 }
 
-let Intégration2022 = await prisma.group.create({
+let IntégrationGroup = await prisma.group.create({
   data: {
-    name: 'Intégration 2022',
+    name: `Intégration ${new Date().getFullYear()}`,
     type: GroupType.Group,
-    uid: 'integration-2022',
+    uid: `integration-${new Date().getFullYear()}`,
     color: '#ff0000',
     links: { create: [] },
   },
 });
 
-Intégration2022 = await prisma.group.update({
-  where: { id: Intégration2022.id },
+IntégrationGroup = await prisma.group.update({
+  where: { id: IntégrationGroup.id },
   data: {
-    familyRoot: { connect: { id: Intégration2022.id } },
+    familyRoot: { connect: { id: IntégrationGroup.id } },
   },
 });
 /*
@@ -540,8 +534,8 @@ await prisma.group.create({
     type: GroupType.Integration,
     uid: 'groupe-2',
     color: '#0000ff',
-    parent: { connect: { id: Intégration2022.id } },
-    familyRoot: { connect: { id: Intégration2022.familyId! } },
+    parent: { connect: { id: IntégrationGroup.id } },
+    familyRoot: { connect: { id: IntégrationGroup.familyId! } },
     links: { create: [] },
     // members: { createMany: { data: [{ memberId: 5 }, { memberId: 6 }, { memberId: 7 }] } },
   },
@@ -553,6 +547,7 @@ const groupMembers: Prisma.GroupMemberCreateManyInput[] = [];
 
 for (const group of groups) {
   const randomUserIDs = faker.helpers.arrayElements(users, { min: 10, max: 30 });
+  //répartition des roles dans le club entre les membres
   groupMembers.push(
     {
       groupId: group.id,
@@ -673,7 +668,7 @@ await prisma.article.create({
     body: `début de l'inté, vous allez devenir alcoolique et vomir partout`,
     uid: 'cest-le-debut-de-l-inte',
     group: {
-      connect: { id: Intégration2022.id },
+      connect: { id: IntégrationGroup.id },
     },
     published: true,
     links: {
@@ -688,7 +683,7 @@ await prisma.article.create({
     body: `début de l'inté, vous allez devenir alcoolique et vomir partout`,
     uid: 'le-nouveau-seeding-semble-ok',
     group: {
-      connect: { id: Intégration2022.id },
+      connect: { id: IntégrationGroup.id },
     },
     published: true,
     links: {
