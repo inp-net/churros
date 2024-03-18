@@ -113,7 +113,7 @@
     "#permissions": "./build/src/permissions/index.js"
   },
   "prisma": {
-    "seed": "tsx ./src/seed-faker.ts"
+    "seed": "tsx ./src/seed.ts"
   },
   "private": true,
   "scripts": {
