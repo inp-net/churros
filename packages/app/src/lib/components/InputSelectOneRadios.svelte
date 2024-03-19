@@ -20,7 +20,8 @@
   export let hint: string | undefined = undefined;
   export let allowOther = false;
 
-  $: otherOptionIsSelected = value === OPTION_OTHER_VALUE;
+  $: otherOptionIsSelected =
+    value === OPTION_OTHER_VALUE || !optionsWithDisplay.some(([option]) => option === value);
   let errorMessage = '';
   let showEmptyErrors = false;
   $: errorMessage = required && value === undefined && showEmptyErrors ? 'Ce champ est requis' : '';
@@ -63,7 +64,7 @@
           <slot name="other">Autre</slot>
           <InputText
             on:focus={() => {
-              value = OPTION_OTHER_VALUE;
+              if (!otherOptionIsSelected) value = OPTION_OTHER_VALUE;
             }}
             value=""
             label=""
