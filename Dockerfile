@@ -16,7 +16,6 @@ COPY scripts/ /app/scripts/
 
 # Remove unused packages
 RUN rm -rf packages/mock-n7-ldap pack
-RUN rm -rf packages/docs
 RUN rm -rf packages/oauth-client
 
 RUN yarn install
