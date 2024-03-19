@@ -1,16 +1,18 @@
 <script lang="ts">
-  import type { PageData } from './$types';
-  import { onDestroy, onMount } from 'svelte';
-  import { toasts } from '$lib/toasts';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
-  import { PaymentMethod, zeus } from '$lib/zeus';
-  import { me } from '$lib/session';
   import { goto } from '$app/navigation';
-  import InputText from '$lib/components/InputText.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputNumber from '$lib/components/InputNumber.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
+  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
+  import { me } from '$lib/session';
+  import { toasts } from '$lib/toasts';
+  import { PaymentMethod, zeus } from '$lib/zeus';
+  import { onDestroy, onMount } from 'svelte';
+  import IconEdit from '~icons/mdi/pencil';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 
@@ -101,7 +103,12 @@
         <ShopImageCaroussel url={shopItem.pictures.map((p) => p.path)} />
       </div>
       <div class="mid">
-        <h2>{shopItem.name}</h2>
+        <div class="name-header">
+          <h2>{shopItem.name}</h2>
+          {#if $me?.admin || $me?.uid === shopItem.group.boardMembers.find((m) => m.member.uid === $me?.uid)?.member.uid}
+            <ButtonGhost href="./edit/"><IconEdit /></ButtonGhost>
+          {/if}
+        </div>
         <p>{shopItem.description}</p>
       </div>
     </div>
@@ -239,6 +246,12 @@
     align-items: center;
     justify-content: center;
     margin-top: 0.5em;
+  }
+
+  .name-header {
+    display: flex;
+    gap: 1em;
+    align-items: center;
   }
 
   @media only screen and (max-width: 1100px) {

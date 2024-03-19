@@ -19,7 +19,14 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
             path: true,
             position: true,
           },
-          group: { uid: true },
+          group: {
+            uid: true,
+            boardMembers: {
+              member: {
+                uid: true,
+              },
+            },
+          },
         },
       ],
     },
