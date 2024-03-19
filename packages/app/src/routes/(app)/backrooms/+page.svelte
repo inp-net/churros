@@ -16,13 +16,13 @@
     <li>
       <CardService
         service={{
-          name: $page.url.hostname === 'staging-churros.inpt.fr' ? 'Go to prod' : 'Go to staging',
+          name: $page.url.hostname === 'staging.churros.inpt.fr' ? 'Go to prod' : 'Go to staging',
           logo: 'domainSwitch',
           logoSourceType: 'Icon',
           url:
-            $page.url.hostname === 'staging-churros.inpt.fr'
+            $page.url.hostname === 'staging.churros.inpt.fr'
               ? 'https://churros.inpt.fr'
-              : 'https://staging-churros.inpt.fr',
+              : 'https://staging.churros.inpt.fr',
         }}
       />
     </li>

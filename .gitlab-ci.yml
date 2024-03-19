@@ -12,7 +12,7 @@ build:
 
 pages:
   rules:
-    - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH) && ($CI_COMMIT_TAG =~ /^v.+$/)
+    - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH) && ($CI_COMMIT_TITLE =~ /^chore\(release\):$/)
   before_script:
     - apt-get update && apt-get install -y curl git jq
     - export VOLTA_HOME=/root/.volta
