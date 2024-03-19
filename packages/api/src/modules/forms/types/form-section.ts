@@ -14,15 +14,14 @@ export const FormSectionType = builder.prismaObject('FormSection', {
       include: requiredIncludesForPermissions,
     },
   },
-  authScopes({ form: { createdById, event } }, { user }) {
-    return canSeeForm({ createdById }, event, user);
+  authScopes({ form, form: { event } }, { user }) {
+    return canSeeForm(form, event, user);
   },
   fields: (t) => ({
     id: t.exposeID('id'),
     form: t.relation('form', { description: 'Formulaire auquel appartient la section' }),
     title: t.exposeString('title', { description: 'Titre de la section' }),
     description: t.exposeString('description', {
-      nullable: true,
       description: 'Description en Markdown de la section',
     }),
     descriptionHtml: t.string({
@@ -39,8 +38,8 @@ export const FormSectionType = builder.prismaObject('FormSection', {
       type: AnswerType,
       cursor: 'id',
       description: 'Réponses à cette section',
-      authScopes({ form: { createdById, event } }, {}, { user }) {
-        return canSeeAllAnswers({ createdById }, event, user);
+      authScopes({ form: { createdById, event, group } }, {}, { user }) {
+        return canSeeAllAnswers({ createdById, group }, event, user);
       },
       resolve: (query, { id }) =>
         prisma.answer.findMany({

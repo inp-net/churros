@@ -1,6 +1,13 @@
 <script lang="ts">
   import type { PageData } from './$types';
+  import CardQuestion from './CardQuestion.svelte';
+  import InputLongText from '$lib/components/InputLongText.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
+  import InputSelectMultiple from '$lib/components/InputSelectMultiple.svelte';
   import InputField from '$lib/components/InputField.svelte';
+  import InputScale from '$lib/components/InputScale.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
 
   export let data: PageData;
 </script>
@@ -8,75 +15,62 @@
 {#if !data.form}
   <p>Chargement…</p>
 {:else}
-  {@const { title, descriptionHtml, sections } = data.form}
+  {@const {
+    title,
+    descriptionHtml,
+    section,
+    section: { questions },
+  } = data.form}
   <form action="">
     <h1>{title}</h1>
     <div data-user-html="">
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html descriptionHtml}
     </div>
-    {#each sections as { title, descriptionHtml, questions, id } (id)}
-      <section>
-        {#if title}
-          <h2>{title}</h2>
-          <div data-user-html="">
-            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-            {@html descriptionHtml}
-          </div>
-        {/if}
-        {#each questions as { title, mandatory, descriptionHtml, type, __typename, id, ...question } (id)}
-          <InputField label={title} required={mandatory}>
-            <div data-user-html="">
-              <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-              {@html descriptionHtml}
-            </div>
-            <pre>{type}</pre>
-            {#if __typename === 'QuestionScalar'}
-              {#if type === 'LongText'}
-                <textarea name={id} {id} cols="30" rows="10"></textarea>
-              {:else}
-                <input type={type.toLowerCase()} name={id} {id} />
-              {/if}
-            {:else if ['QuestionSelectOne', 'QuestionSelectMultiple'].includes(__typename)}
-              {#each question.options as option}
-                <label for="{id}:{option}">
-                  <input
-                    type={type === 'SelectOne' ? 'radio' : 'checkbox'}
-                    name={id}
-                    id="{id}:{option}"
-                    value={option}
-                  />
-                  {option}
-                </label>
-              {/each}
-              {#if question.allowOptionsOther}
-                <label for="{id}::other"
-                  ><input
-                    type={type === 'SelectOne' ? 'radio' : 'checkbox'}
-                    name={id}
-                    id="{id}::other"
-                    value=""
-                  />Autre
-                  <input type="text" name="{id}::other-value" id="{id}::other-value" />
-                </label>
-              {/if}
-            {:else if __typename === 'QuestionFileUpload'}
-              <input type="file" name={id} {id} />
-            {:else if __typename === 'QuestionScale'}
-              <span class="label-min">{question.minimumLabel}</span>
-              <input
-                type="range"
-                name={id}
-                {id}
-                min={question.minimum}
-                max={question.maximum}
-                step="1"
-              />
-              <span class="label-max">{question.maximumLabel}</span>
+    <section>
+      {#if section.title || section.description}
+        <h2>{section.title}</h2>
+        <div data-user-html="">
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html section.descriptionHtml}
+        </div>
+      {/if}
+      {#each questions as { title, mandatory, descriptionHtml, description, type, id, ...question } (id)}
+        <CardQuestion {descriptionHtml} {description}>
+          {#if question.__typename === 'QuestionScalar'}
+            {#if type === 'LongText'}
+              <InputLongText value="" label={title} required={mandatory}></InputLongText>
+            {:else}
+              <InputText value="" label={title} required={mandatory}></InputText>
             {/if}
-          </InputField>
-        {/each}
-      </section>
-    {/each}
+          {:else if question.__typename === 'QuestionSelectOne'}
+            <InputSelectOne label={title} required={mandatory} options={question.options} value=""
+            ></InputSelectOne>
+          {:else if question.__typename === 'QuestionSelectMultiple'}
+            <InputField label={title} required={mandatory}>
+              <InputSelectMultiple options={question.options}></InputSelectMultiple>
+            </InputField>
+          {:else if question.__typename === 'QuestionFileUpload'}
+            <input type="file" name={id} {id} />
+          {:else if question.__typename === 'QuestionScale'}
+            <InputScale label={title} required={mandatory} value={0} {...question}></InputScale>
+          {:else}
+            <p>Question de type inconnu</p>
+          {/if}
+        </CardQuestion>
+      {/each}
+    </section>
+    <section class="submit">
+      <ButtonPrimary submits>Envoyer</ButtonPrimary>
+    </section>
   </form>
 {/if}
+
+<style>
+  section.submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+  }
+</style>

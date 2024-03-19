@@ -15,15 +15,8 @@ export const QuestionType = builder.prismaInterface('Question', {
       },
     },
   },
-  authScopes(
-    {
-      section: {
-        form: { createdById, event },
-      },
-    },
-    { user },
-  ) {
-    return canSeeForm({ createdById }, event, user);
+  authScopes({ section: { form } }, { user }) {
+    return canSeeForm(form, form.event, user);
   },
   resolveType({ type }) {
     switch (type) {
@@ -53,7 +46,6 @@ export const QuestionType = builder.prismaInterface('Question', {
     }),
     title: t.exposeString('title', { description: 'Titre de la question' }),
     description: t.exposeString('description', {
-      nullable: true,
       description: 'Description en Markdown de la question',
     }),
     descriptionHtml: t.string({

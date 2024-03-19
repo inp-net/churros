@@ -1,6 +1,13 @@
 import { prisma } from '#lib';
 import { fakerFR } from '@faker-js/faker';
-import { CredentialType, GroupType, LogoSourceType, Visibility, type Prisma } from '@prisma/client';
+import {
+  CredentialType,
+  GroupType,
+  LogoSourceType,
+  QuestionKind,
+  Visibility,
+  type Prisma,
+} from '@prisma/client';
 import { hash } from 'argon2';
 import { addDays } from 'date-fns';
 import dichotomid from 'dichotomid';
@@ -48,6 +55,10 @@ function randomTime(date: Date, hoursIn: Generator<number>): Date {
     randomChoice([...hoursIn]),
     Math.floor(Math.random() * 60),
   );
+}
+
+function randomVisiblity(): Visibility {
+  return faker.helpers.arrayElement(Object.values(Visibility));
 }
 
 const createUid = async ({ firstName, lastName }: { firstName: string; lastName: string }) => {
@@ -854,69 +865,107 @@ await prisma.thirdPartyApp.create({
   },
 });
 
-const form1 = await prisma.form.create({
-  data: {
-    title: 'Formulaire de ski',
-    description: 'Le **formulaire** wouhou',
-    createdById: alamaternitei.id,
-    opensAt: new Date(),
-    closesAt: addDays(new Date(), 7),
-    eventId: event1.id,
-  },
-});
+for (let i = 0; i < 10; i++) {
+  const opensAt = i === 0 ? faker.date.soon() : faker.date.anytime();
+  let form = await prisma.form.create({
+    data: {
+      groupId: faker.helpers.arrayElement(groups).id,
+      visibility: randomVisiblity(),
+      title: faker.lorem.sentence(),
+      description: faker.lorem.paragraphs(faker.helpers.rangeToNumber({ min: 1, max: 3 })),
+      createdById: faker.helpers.arrayElement(users).id,
+      opensAt,
+      closesAt: faker.date.future({ refDate: opensAt }),
+      eventId: faker.datatype.boolean(0.3) ? faker.helpers.arrayElement(events).id : undefined,
+    },
+  });
 
-await prisma.formSection.create({
+  for (let ii = 0; ii < faker.number.int({ min: 1, max: 5 }); ii++) {
+    await prisma.formSection.create({
+      data: {
+        formId: form.id,
+        order: ii,
+        title: faker.lorem.sentence(),
+        description: faker.lorem.paragraph(),
+        questions: {
+          createMany: {
+            data: new Array(faker.helpers.rangeToNumber({ min: 1, max: 5 })).fill(0).map((_, i) => {
+              const type = faker.helpers.arrayElement(Object.values(QuestionKind));
+
+              let scaleOptions: Partial<{ scaleStart: number; scaleEnd: number }> =
+                type === 'Scale' ? { scaleStart: faker.number.int({ min: 1, max: 5 }) } : {};
+              scaleOptions.scaleEnd =
+                type === 'Scale' ? faker.number.int({ min: scaleOptions.scaleStart, max: 10 }) : 0;
+
+              return {
+                description: faker.lorem.paragraph(),
+                order: i,
+                title: faker.lorem.sentence(),
+                mandatory: faker.datatype.boolean(0.75),
+                type,
+                options: ['SelectOne', 'SelectMultiple'].includes(type)
+                  ? new Array(faker.helpers.rangeToNumber({ min: 2, max: 5 }))
+                      .fill(0)
+                      .map(() => faker.lorem.word())
+                  : type === 'Scale'
+                    ? [faker.lorem.word(), faker.lorem.word()]
+                    : undefined,
+                allowedFiletypes:
+                  type === 'FileUpload'
+                    ? new Array(faker.helpers.rangeToNumber({ min: 1, max: 10 }))
+                        .fill(0)
+                        .map(() => faker.system.mimeType())
+                    : undefined,
+                allowOptionOther:
+                  type === 'SelectOne' || type === 'SelectMultiple'
+                    ? faker.datatype.boolean(0.3)
+                    : undefined,
+                ...scaleOptions,
+              };
+            }),
+          },
+        },
+      },
+    });
+  }
+}
+
+await prisma.form.create({
   data: {
-    formId: form1.id,
-    order: 1,
-    title: 'Section 1',
-    description: 'Description de la section 1',
-    questions: {
-      createMany: {
-        data: [
-          {
-            description: 'Description de la question 1',
-            order: 1,
-            title: 'Question 1',
-            type: 'Text',
-            mandatory: true,
+    title: 'Vote listes AEn7 2024',
+    description: 'Vote pour Gd7T sinon conséquences',
+    groupId: faker.helpers.arrayElement(groups).id,
+    visibility: 'Unlisted',
+    opensAt: new Date(),
+    closesAt: addDays(new Date(), 1),
+    sections: {
+      create: {
+        description: 'Les votes “autres” sont comptabilisés comme des votes nuls',
+        order: 1,
+        title: '',
+        questions: {
+          createMany: {
+            data: [
+              {
+                order: 1,
+                title: 'Liste votante',
+                description: '',
+                type: 'SelectOne',
+                options: ['Guerre des 7toiles', 'Pan7on', 'Ber7ker'],
+                allowOptionOther: true,
+              },
+              {
+                order: 2,
+                title: "T'as trouvé l'année comment?",
+                description: '',
+                type: 'Scale',
+                scaleStart: 1,
+                scaleEnd: 10,
+                options: ['Nul à iech', 'Génialissime'],
+              },
+            ],
           },
-          {
-            description: 'Description de la question 2\n\nAvec un retour à la ligne',
-            order: 2,
-            title: 'Question 2',
-            type: 'SelectOne',
-            allowOptionOther: true,
-            options: ['Option 1', 'Option 2', 'Option 3'],
-            mandatory: true,
-          },
-          {
-            description: 'Description de la question 3',
-            order: 3,
-            title: 'Question 3',
-            type: 'SelectMultiple',
-            allowOptionOther: false,
-            options: ['Option 1', 'Option 2', 'Option 3'],
-          },
-          {
-            description: 'Description de la question 4',
-            order: 4,
-            title: 'Question 4',
-            type: 'FileUpload',
-            mandatory: false,
-            allowedFiletypes: ['application/pdf'],
-          },
-          {
-            description: 'Description de la question 5',
-            order: 5,
-            title: 'Question 5',
-            type: 'Scale',
-            mandatory: true,
-            scaleEnd: 7,
-            scaleStart: 1,
-            options: ['Pas du tout', 'À la folie'],
-          },
-        ],
+        },
       },
     },
   },

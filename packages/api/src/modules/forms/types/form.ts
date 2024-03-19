@@ -1,5 +1,5 @@
 import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, subscriptionName, toHtml } from '#lib';
-import { DateTimeScalar } from '#modules/global';
+import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import {
   canAnswerForm,
   canEditForm,
@@ -7,6 +7,7 @@ import {
   canSeeForm,
   requiredIncludesForPermissions,
 } from '../utils/permissions.js';
+import { FormSectionType } from './form-section.js';
 
 export const FormType = builder.prismaNode('Form', {
   description: 'Un formulaire',
@@ -15,8 +16,8 @@ export const FormType = builder.prismaNode('Form', {
     description: `Préfixe de l'identifiant: \`${TYPENAMES_TO_ID_PREFIXES.Form}:\``,
   },
   include: requiredIncludesForPermissions,
-  authScopes({ createdById, event }, { user }) {
-    return canSeeForm({ createdById }, event, user);
+  authScopes({ createdById, event, group, visibility }, { user }) {
+    return canSeeForm({ createdById, group, visibility }, event, user);
   },
   fields: (t) => ({
     createdAt: t.expose('createdAt', {
@@ -30,6 +31,13 @@ export const FormType = builder.prismaNode('Form', {
     createdBy: t.relation('createdBy', {
       nullable: true,
       description: 'Utilisateur ayant créé le formulaire',
+    }),
+    group: t.relation('group', {
+      description: 'Groupe auquel le formulaire est associé',
+    }),
+    visibility: t.expose('visibility', {
+      type: VisibilityEnum,
+      description: 'Visibilité du formulaire',
     }),
     event: t.relation('event', { nullable: true, description: 'Événement associé au formulaire' }),
     canEdit: t.boolean({
@@ -46,8 +54,8 @@ export const FormType = builder.prismaNode('Form', {
     }),
     canSeeAnswers: t.boolean({
       description: "Indique si l'utilisateur peut voir les réponses au formulaire.",
-      resolve: async ({ createdById, event }, _args, { user }) => {
-        return canSeeAllAnswers({ createdById }, event, user);
+      resolve: async (form, _args, { user }) => {
+        return canSeeAllAnswers(form, form.event, user);
       },
     }),
     opensAt: t.expose('opensAt', {
@@ -77,9 +85,11 @@ export const FormType = builder.prismaNode('Form', {
       },
     }),
     section: t.prismaField({
-	description: "Une section du formulaire.",
-	args: { id: t.arg.id() },
-	query: async ({ id: formId }, { id }) => prisma.formSection.findFirst({ where: { formId, id }})
+      description: 'Une section du formulaire.',
+      type: FormSectionType,
+      args: { id: t.arg.id({ required: false }) },
+      resolve: async (query, { id: formId }, { id }) =>
+        prisma.formSection.findFirstOrThrow({ ...query, where: { formId, id: id ?? undefined } }),
     }),
     questions: t.prismaConnection({
       type: 'Question',
@@ -113,8 +123,9 @@ export const FormType = builder.prismaNode('Form', {
       },
     }),
     hasSections: t.boolean({
-    description: "Vrai si le formulaire comporte des sections",
-    resolve: async ({ id }) => (await prisma.section.count({ where: { formId: id, title: { not: '' } } })) > 0 
-    })
+      description: 'Vrai si le formulaire comporte des sections',
+      resolve: async ({ id }) =>
+        (await prisma.formSection.count({ where: { formId: id, title: { not: '' } } })) > 0,
+    }),
   }),
 });
