@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug qui faisait crash l'appli lors du téléchargement d'un billet en PDF
+
 ## [1.53.0] - 2024-03-18
 
 ### Nouveautés
