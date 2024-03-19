@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type PaymentMethod, type Visibility, zeus } from '$lib/zeus';
+  import { PaymentMethod, type Visibility, zeus } from '$lib/zeus';
   import { DISPLAY_PAYMENT_METHODS, DISPLAY_VISIBILITIES } from '$lib/display';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputDate from './InputDate.svelte';
@@ -52,6 +52,10 @@
 
   async function submit() {
     serverError = '';
+    if (data.paymentMethods.includes(PaymentMethod.Lydia) && !data.lydiaAccount) {
+      serverError = 'Un compte Lydia est requis pour accepter les paiements par Lydia';
+      return;
+    }
     const { upsertShopItem } = await $zeus.mutate({
       upsertShopItem: [
         {
@@ -107,8 +111,8 @@
   <div class="side-by-side">
     <section class="metadata">
       <h2>Infos</h2>
-      <InputText label="Nom" bind:value={data.name} />
-      <InputNumber label="Prix" bind:value={data.price} />
+      <InputText required label="Nom" bind:value={data.name} />
+      <InputNumber required label="Prix" bind:value={data.price} />
       <InputNumber label="Stock" bind:value={data.stock} />
       <InputNumber label="Max" bind:value={data.max} />
       <InputDate time label="Début de la vente" bind:value={data.startsAt} />
@@ -126,6 +130,7 @@
         />
       </InputField>
       <InputLydiaAccounts
+        required={Boolean(data.paymentMethods.includes(PaymentMethod.Lydia))}
         clearable
         bind:account={data.lydiaAccount}
         options={availableLydiaAccounts}
