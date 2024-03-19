@@ -945,8 +945,6 @@ model Form {
   groupId     String
   group       Group      @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  // TODO: add a way to prevent multiple responses by the same user
-
   event   Event?  @relation(fields: [eventId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   eventId String?
 
@@ -1045,4 +1043,7 @@ model Answer {
   /// Data to link back to an event booking
   booking   Registration? @relation(fields: [bookingId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   bookingId String?       @unique
+
+  // For now, users can answer only once to every question
+  @@unique([questionId, answeredById])
 }
