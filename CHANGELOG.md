@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug d'affichage sur firefox (@litschan)
+
 ## [1.53.1] - 2024-03-19
 
 ### Corrections
