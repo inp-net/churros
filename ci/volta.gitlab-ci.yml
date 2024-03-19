@@ -23,7 +23,8 @@ pages:
   stage: deploy
   extends: .volta
   needs:
-    - deploy
+    - deploy_api
+    - deploy_app
   only:
     - tags
   variables:
@@ -32,8 +33,7 @@ pages:
   script:
     - yarn workspace @centraverse/docs install --immutable
     - yarn workspace @centraverse/docs create-dotenv
-    - >
-      curl -X POST -H 'Content-Type: application/json' -d '{ "query": "query { buildInfo { commit, version } } "}' $PUBLIC_API_URL | jq --raw-output '"export const CURRENT_COMMIT = `" + .data.buildInfo.commit + "`;\nexport const CURRENT_VERSION = `" + .data.buildInfo.version + "`;"' > packages/docs/src/lib/buildinfo.ts
+    - yarn generate-buildinfo
     - yarn workspace @centraverse/docs build
     - mv packages/docs/build public
   artifacts:
