@@ -1,4 +1,5 @@
 import { loadQuery } from '$lib/zeus';
+import { error } from '@sveltejs/kit';
 
 export async function load({ fetch, parent, params }) {
   const { form } = await loadQuery(
@@ -49,6 +50,10 @@ export async function load({ fetch, parent, params }) {
     },
     { fetch, parent },
   );
+
+  if (!form) {
+    error(404, { message: 'Formulaire introuvable' });
+  }
 
   return { form };
 }
