@@ -107,8 +107,8 @@
     </div>
     <div class="right">
       <h2>Acheter</h2>
-      <p>Stock: {shopItem.stock}</p>
-      <p>Restant: {shopItem.stockLeft}</p>
+      <p>Stock: {shopItem.stock === 0 ? '+∞' : shopItem.stock}</p>
+      <p>Restant: {shopItem.stock === 0 ? '+∞' : shopItem.stockLeft}</p>
       <p>Price: {shopItem.price} €</p>
       <InputNumber
         bind:value={quantity}
@@ -216,8 +216,8 @@
 
   .left {
     width: 400px;
-    background-color: var(--muted-bg);
     object-fit: contain;
+    background-color: var(--muted-bg);
   }
 
   .mid {

@@ -32,8 +32,12 @@ export const ShopItemType = builder.prismaObject('ShopItem', {
         });
         if (!item) throw new GraphQLError('Item not found');
 
-        const sold = item.shopPayments.reduce((acc, payment) => acc + payment.quantity, 0);
-        return item.stock - sold;
+        const stockLeft =
+          item.stock === 0
+            ? -1
+            : item.stock - item.shopPayments.reduce((acc, payment) => acc + payment.quantity, 0);
+
+        return stockLeft;
       },
     }),
   }),

@@ -70,8 +70,10 @@ builder.mutationField('paidShopPayment', (t) =>
       if (!paymentMethod) throw new GraphQLError('Payment method not found');
 
       const stockLeft =
-        shopPayment.shopItem.stock -
-        shopPayment.shopItem.shopPayments.reduce((acc, curr) => acc + curr.quantity, 0);
+        shopPayment.shopItem.stock === 0
+          ? Number.POSITIVE_INFINITY
+          : shopPayment.shopItem.stock -
+            shopPayment.shopItem.shopPayments.reduce((acc, curr) => acc + curr.quantity, 0);
 
       const userLeft =
         shopPayment.shopItem.max -

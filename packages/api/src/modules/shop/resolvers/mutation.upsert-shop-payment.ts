@@ -91,7 +91,9 @@ builder.mutationField('upsertShopPayment', (t) =>
       if (quantity === 0) throw new GraphQLError("You can't buy 0 of something");
 
       const stockLeft =
-        shopItem.stock - shopItem.shopPayments.reduce((acc, curr) => acc + curr.quantity, 0);
+        shopItem.stock === 0
+          ? Number.POSITIVE_INFINITY
+          : shopItem.stock - shopItem.shopPayments.reduce((acc, curr) => acc + curr.quantity, 0);
 
       const userLeft =
         shopItem.max -
@@ -100,8 +102,9 @@ builder.mutationField('upsertShopPayment', (t) =>
           0,
         );
 
-      if (stockLeft < quantity) throw new GraphQLError('Not enough stock');
-      else if (userLeft < quantity) throw new GraphQLError('Too much quantity');
+      if (stockLeft < quantity && shopItem.stock != 0) throw new GraphQLError('Not enough stock');
+      else if (userLeft < quantity && shopItem.stock != 0)
+        throw new GraphQLError('Too much quantity');
 
       const shopPayment = await prisma.shopPayment.upsert({
         ...query,
