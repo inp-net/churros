@@ -21,7 +21,7 @@ RUN rm -rf packages/oauth-client
 
 RUN yarn install
 RUN yarn generate-buildinfo
-yarn workspaces foreach --exclude @centraverse/docs --interlaced --topological-dev -Apv run build
+RUN yarn workspaces foreach --exclude @centraverse/docs --interlaced --topological-dev -Apv run build
 
 
 FROM node:20-alpine as base
