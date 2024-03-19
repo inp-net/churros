@@ -40,8 +40,9 @@
   "private": true,
   "scripts": {
     "build": "yarn cp-env && yarn generate-buildinfo && yarn workspaces foreach --exclude @centraverse/docs --interlaced --topological-dev -Apv run build",
+    "update-env": "touch empty; git merge-file --theirs .env empty .env.example; rm empty",
     "cp-env": "test -f .env || cp .env.example .env && cp .env packages/api/ && cp .env packages/app/",
-    "dev": "yarn cp-env && docker compose up -d && yarn dotenv -- yarn workspaces foreach -Apiv run dev",
+    "dev": "yarn update-env && yarn cp-env && docker compose up -d && yarn dotenv -- yarn workspaces foreach -Apiv run dev",
     "format": "prettier . --write --ignore-unknown",
     "lint": "eslint . & stylelint '**/*.{css,scss,svelte}' &",
     "lintfix": "eslint --fix . & stylelint --fix '**/*.{css,scss,svelte}' &",
