@@ -45,6 +45,7 @@ WORKDIR /app
 COPY --from=builder /app/packages/api/build/src/ /app/packages/api/build/src/
 COPY --from=builder /app/packages/api/build/schema.graphql /app/packages/api/build/schema.graphql
 COPY --from=builder /app/packages/api/prisma/ /app/packages/api/prisma/
+COPY --from=builder /app/packages/api/static/ /app/packages/api/static/
 COPY --from=builder /app/packages/api/package.json /app/packages/api/
 
 # Install dependencies
