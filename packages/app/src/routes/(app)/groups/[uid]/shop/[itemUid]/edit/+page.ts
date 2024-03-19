@@ -1,5 +1,6 @@
 import { redirectToLogin } from '$lib/session';
 import { loadQuery } from '$lib/zeus.js';
+import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, parent, url }) => {
@@ -24,7 +25,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
     { fetch, parent },
   ); */
 
-  return loadQuery(
+  const data = await loadQuery(
     {
       shopItem: [
         { itemUid: params.itemUid },
@@ -48,6 +49,11 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             name: true,
             pictureFile: true,
             pictureFileDark: true,
+            boardMembers: {
+              member: {
+                uid: true,
+              },
+            },
           },
         },
       ],
@@ -64,4 +70,9 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
     },
     { fetch, parent },
   );
+  if (
+    !(me.admin || data.shopItem.group.boardMembers.some((member) => member.member.uid === me.uid))
+  )
+    throw redirect(307, '..');
+  return data;
 };
