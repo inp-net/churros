@@ -1,7 +1,7 @@
 import { OPTION_OTHER_VALUE } from '$lib/components/InputSelectOneRadios.svelte';
 import { TYPENAMES_TO_ID_PREFIXES } from '$lib/typenames';
 import { makeMutation } from '$lib/zeus.js';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { FORM_SECTION_HIDDEN_INPUT_NAME } from './+page.svelte';
 
 export const actions = {
@@ -33,7 +33,11 @@ export const actions = {
         ],
       },
       { fetch, token: cookies.get('token') },
-    );
+    ).catch((e) => {
+      error(400, { message: e?.toString() });
+    });
+
+    redirect(307, '../answered');
   },
 };
 

@@ -3,5 +3,6 @@
  */
 
 export * from './answers.js';
+export * from './google-sheets.js';
 export * from './paths.js';
 export * from './permissions.js';

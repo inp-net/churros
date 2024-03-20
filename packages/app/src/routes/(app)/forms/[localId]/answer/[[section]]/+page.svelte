@@ -3,19 +3,17 @@
 </script>
 
 <script lang="ts">
+  import { enhance } from '$app/forms';
+  import { page } from '$app/stores';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import InputField from '$lib/components/InputField.svelte';
+  import InputLongText from '$lib/components/InputLongText.svelte';
+  import InputScale from '$lib/components/InputScale.svelte';
+  import InputSelectMultiple from '$lib/components/InputSelectMultiple.svelte';
+  import InputSelectOneRadios from '$lib/components/InputSelectOneRadios.svelte';
+  import InputText from '$lib/components/InputText.svelte';
   import type { PageData } from './$types';
   import CardQuestion from './CardQuestion.svelte';
-  import InputLongText from '$lib/components/InputLongText.svelte';
-  import InputText from '$lib/components/InputText.svelte';
-  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
-  import InputSelectMultiple from '$lib/components/InputSelectMultiple.svelte';
-  import InputField from '$lib/components/InputField.svelte';
-  import InputScale from '$lib/components/InputScale.svelte';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import InputSelectOneRadios from '$lib/components/InputSelectOneRadios.svelte';
-  import { enhance } from '$app/forms';
-  import { makeMutation } from '$lib/zeus';
-  import { page } from '$app/stores';
 
   export let data: PageData;
   const {
@@ -29,6 +27,12 @@
   $: serverError = $page.form;
 </script>
 
+<h1>{title}</h1>
+<div data-user-html="">
+  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+  {@html descriptionHtml}
+</div>
+
 <form
   method="post"
   action="?/postAnswers"
@@ -37,11 +41,6 @@
     submitting = true;
   }}
 >
-  <h1>{title}</h1>
-  <div data-user-html="">
-    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-    {@html descriptionHtml}
-  </div>
   <section>
     <input type="hidden" name={FORM_SECTION_HIDDEN_INPUT_NAME} value={section.id} />
     {#if section.title || section.description}

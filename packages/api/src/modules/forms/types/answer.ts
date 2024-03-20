@@ -98,5 +98,11 @@ export const AnswerType = builder.prismaInterface('Answer', {
       nullable: true,
       description: 'Réservation associée à la réponse',
     }),
+    question: t.relation('question'),
+    answerString: t.string({
+      resolve({ answer, number }) {
+        return number ? number.toString() : answer.join(',');
+      },
+    }),
   }),
 });

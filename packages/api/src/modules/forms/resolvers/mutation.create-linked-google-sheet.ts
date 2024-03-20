@@ -1,9 +1,7 @@
 import { builder, prisma } from '#lib';
-import type { Answer, User } from '@prisma/client';
-import { OAuth2Client } from 'google-auth-library';
-import { google } from 'googleapis';
 import { GraphQLError } from 'graphql';
-import groupBy from 'lodash.groupby';
+import { googleSheetsClient } from '../../../lib/google.js';
+import { appendFormAnswersToGoogleSheets } from '../utils/google-sheets.js';
 
 builder.mutationField('createLinkedGoogleSheet', (t) =>
   t.string({
@@ -15,7 +13,7 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
     authScopes: { loggedIn: true },
     resolve: async (_, { form: formId }, { user }) => {
       if (!user) throw new GraphQLError('User not found');
-      let { linkedGoogleSheetId: spreadsheetId, ...form } = await prisma.form.findUniqueOrThrow({
+      let form = await prisma.form.findUniqueOrThrow({
         where: { id: formId },
         include: {
           sections: {
@@ -23,26 +21,9 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
           },
         },
       });
+      const sheets = await googleSheetsClient(user.id);
 
-      const googleCredential = await prisma.credential.findFirst({
-        where: { userId: user.id, type: 'Google' },
-      });
-
-      if (!googleCredential)
-        throw new GraphQLError('Veuillez lier votre compte Google à Churros avant de continuer');
-
-      const authClient = new OAuth2Client();
-      authClient.setCredentials({
-        access_token: googleCredential.value,
-        expiry_date: googleCredential.expiresAt?.valueOf(),
-        refresh_token: googleCredential.refresh,
-      });
-
-      // @ts-expect-error googleapi is typed weirdly
-      const sheets = google.sheets({
-        version: 'v4',
-        auth: authClient,
-      });
+      let spreadsheetId = form.linkedGoogleSheetId;
 
       if (spreadsheetId) {
         // check if the spreadsheet exists
@@ -103,51 +84,11 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
           },
         });
 
-        // group all answers by user
-        const answersSheets: Record<string, Array<Answer & { answeredBy: null | User }>> = groupBy(
-          form.sections.flatMap((section) =>
-            section.questions.flatMap((question) => question.answers),
-          ),
-          (answer) => answer.answeredById ?? '',
+        await appendFormAnswersToGoogleSheets(
+          form.id,
+          sheets,
+          form.sections.flatMap((s) => s.questions.flatMap((q) => q.answers.map((a) => a.id))),
         );
-        // for each user, only keep the last answer for each question
-        for (const [userId, answers] of Object.entries(answersSheets)) {
-          answersSheets[userId] = Object.values(
-            groupBy(answers, (answer) => answer.questionId),
-          ).map(
-            (answers) =>
-              answers.sort((a, b) => a.createdAt.valueOf() - b.createdAt.valueOf()).at(-1)!,
-          );
-        }
-
-        const answerValue = (answer: Answer) =>
-          answer.number?.toString() ?? answer.answer.join(', ');
-
-        // generate rows, one per user, sorted by last answer date
-        const rows = Object.entries(answersSheets)
-          .sort(([a], [b]) => (a > b ? -1 : 1))
-          .map(([answeredById, answers]) => {
-            const user = answers[0]!.answeredBy;
-            return [
-              answeredById,
-              new Date(
-                Math.max(...answers.map((answer) => answer.createdAt.valueOf())),
-              ).toISOString(),
-              user?.lastName,
-              user?.firstName,
-              ...answers.map((a) => answerValue(a)),
-            ];
-          });
-
-        // @ts-expect-error googleapi is typed weirdly
-        await sheets.spreadsheets.values.append({
-          spreadsheetId,
-          range: 'A1',
-          valueInputOption: 'RAW',
-          resource: {
-            values: rows,
-          },
-        });
       }
 
       return (await sheets.spreadsheets

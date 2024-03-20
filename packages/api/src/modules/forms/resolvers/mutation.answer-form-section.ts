@@ -1,10 +1,13 @@
-import { builder, prisma } from '#lib';
+import { builder, googleSheetsClient, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 import uniqBy from 'lodash.uniqby';
-import { AnswerInput } from '../types/answer-input.js';
-import { AnswerType } from '../types/answer.js';
-import { castAnswer } from '../utils/answers.js';
-import { canAnswerForm, requiredIncludesForPermissions } from '../utils/permissions.js';
+import { AnswerInput, AnswerType } from '../types/index.js';
+import {
+  appendFormAnswersToGoogleSheets,
+  canAnswerForm,
+  castAnswer,
+  requiredIncludesForPermissions,
+} from '../utils/index.js';
 
 builder.mutationField('answerFormSection', (t) =>
   t.prismaField({
@@ -21,6 +24,10 @@ builder.mutationField('answerFormSection', (t) =>
       [
         ({ answers }) => answers.length === uniqBy(answers, 'question').length,
         { message: 'Il y a plusieurs réponses pour la même question', path: ['answers'] },
+      ],
+      [
+        ({ answers }) => answers.length > 0,
+        { message: 'Vous devez répondre à au moins une question', path: ['answers'] },
       ],
       [
         async ({ section, answers }) => {
@@ -70,6 +77,19 @@ builder.mutationField('answerFormSection', (t) =>
           }),
         ),
       );
+
+      void (async () => {
+        const form = await prisma.formSection
+          .findUniqueOrThrow({ where: { id: sectionId } })
+          .form();
+        const sheets = await googleSheetsClient(user.id);
+        await appendFormAnswersToGoogleSheets(
+          form.id,
+          sheets,
+          results.map((r) => r.id),
+        );
+      })();
+
       // Make sure results are sorted the same way as the input
       return answers.map(
         ({ question }) => results.find((result) => result.questionId === question)!,
