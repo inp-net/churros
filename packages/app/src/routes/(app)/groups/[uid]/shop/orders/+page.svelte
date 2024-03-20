@@ -67,6 +67,8 @@
     flex-direction: column;
     gap: 1em;
     align-items: center;
+    width: 18em;
+    max-width: 18em;
     padding: 1em;
     background: var(--muted-bg);
     border-radius: 1em;
@@ -77,6 +79,7 @@
     flex-direction: column;
     gap: 0.5em;
     align-items: start;
+    min-width: 200px;
   }
 
   .text-center {
@@ -86,6 +89,7 @@
   .priceinfo {
     display: flex;
     flex-direction: row;
+    gap: 1em;
     align-items: center;
     justify-content: space-between;
     width: 100%;
