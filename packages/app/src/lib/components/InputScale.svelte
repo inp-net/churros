@@ -3,7 +3,6 @@
 
   export let label: string;
   export let required = false;
-  export let id = '';
   export let hint = '';
   export let errors: string[] = [];
   export let value: number;
@@ -11,12 +10,14 @@
   export let maximum: number;
   export let minimumLabel: string;
   export let maximumLabel: string;
+  export let name = '';
+  export let id = name;
 </script>
 
 <InputField {label} {required} {hint} {errors}>
   <div class="range-input">
     <span class="label-min">{minimumLabel || minimum}</span>
-    <input type="range" bind:value name={id} {id} min={minimum} max={maximum} step="1" />
+    <input type="range" bind:value {name} {id} min={minimum} max={maximum} step="1" />
     <span class="label-max">{maximumLabel || maximum}</span>
     <p class="current-value-hint">{value}/{maximum}</p>
   </div>

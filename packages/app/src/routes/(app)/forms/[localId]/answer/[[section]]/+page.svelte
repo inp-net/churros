@@ -1,3 +1,7 @@
+<script context="module" lang="ts">
+  export const FORM_SECTION_HIDDEN_INPUT_NAME = '__section__';
+</script>
+
 <script lang="ts">
   import type { PageData } from './$types';
   import CardQuestion from './CardQuestion.svelte';
@@ -9,6 +13,9 @@
   import InputScale from '$lib/components/InputScale.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputSelectOneRadios from '$lib/components/InputSelectOneRadios.svelte';
+  import { enhance } from '$app/forms';
+  import { makeMutation } from '$lib/zeus';
+  import { page } from '$app/stores';
 
   export let data: PageData;
   const {
@@ -17,15 +24,26 @@
     section,
     section: { questions },
   } = data.form;
+
+  let submitting = false;
+  $: serverError = $page.form;
 </script>
 
-<form action="">
+<form
+  method="post"
+  action="?/postAnswers"
+  use:enhance
+  on:submit={() => {
+    submitting = true;
+  }}
+>
   <h1>{title}</h1>
   <div data-user-html="">
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html descriptionHtml}
   </div>
   <section>
+    <input type="hidden" name={FORM_SECTION_HIDDEN_INPUT_NAME} value={section.id} />
     {#if section.title || section.description}
       <h2>{section.title}</h2>
       <div data-user-html="">
@@ -37,26 +55,28 @@
       <CardQuestion {descriptionHtml} {description}>
         {#if question.__typename === 'QuestionScalar'}
           {#if type === 'LongText'}
-            <InputLongText value="" label={title} required={mandatory}></InputLongText>
+            <InputLongText name={id} value="" label={title} required={mandatory}></InputLongText>
           {:else}
-            <InputText value="" label={title} required={mandatory}></InputText>
+            <InputText name={id} value="" label={title} required={mandatory}></InputText>
           {/if}
         {:else if question.__typename === 'QuestionSelectOne'}
           <InputSelectOneRadios
             label={title}
             required={mandatory}
+            name={id}
             options={question.options}
             value=""
             allowOther={question.allowOptionsOther}
           ></InputSelectOneRadios>
         {:else if question.__typename === 'QuestionSelectMultiple'}
           <InputField label={title} required={mandatory}>
-            <InputSelectMultiple options={question.options}></InputSelectMultiple>
+            <InputSelectMultiple name={id} options={question.options}></InputSelectMultiple>
           </InputField>
         {:else if question.__typename === 'QuestionFileUpload'}
           <input type="file" name={id} {id} />
         {:else if question.__typename === 'QuestionScale'}
-          <InputScale label={title} required={mandatory} value={0} {...question}></InputScale>
+          <InputScale name={id} label={title} required={mandatory} value={0} {...question}
+          ></InputScale>
         {:else}
           <p>Question de type inconnu</p>
         {/if}

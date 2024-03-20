@@ -1,3 +1,4 @@
+import { ensureIdPrefix } from '$lib/typenames.js';
 import { loadQuery } from '$lib/zeus';
 import { error } from '@sveltejs/kit';
 
@@ -5,13 +6,13 @@ export async function load({ fetch, parent, params }) {
   const { form } = await loadQuery(
     {
       form: [
-        params,
+        { localId: params.localId },
         {
           title: true,
           descriptionHtml: true,
           hasSections: true,
           section: [
-            { id: params.section },
+            { id: params.section ? ensureIdPrefix('FormSection', params.section) : undefined },
             {
               id: true,
               descriptionHtml: true,

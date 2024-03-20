@@ -1,0 +1,79 @@
+import { builder, prisma } from '#lib';
+import { GraphQLError } from 'graphql';
+import uniqBy from 'lodash.uniqby';
+import { AnswerInput } from '../types/answer-input.js';
+import { AnswerType } from '../types/answer.js';
+import { castAnswer } from '../utils/answers.js';
+import { canAnswerForm, requiredIncludesForPermissions } from '../utils/permissions.js';
+
+builder.mutationField('answerFormSection', (t) =>
+  t.prismaField({
+    type: [AnswerType],
+    args: {
+      section: t.arg.id({
+        description: 'ID de la section du formulaire',
+      }),
+      answers: t.arg({
+        type: [AnswerInput],
+      }),
+    },
+    validate: [
+      [
+        ({ answers }) => answers.length === uniqBy(answers, 'question').length,
+        { message: 'Il y a plusieurs réponses pour la même question', path: ['answers'] },
+      ],
+      [
+        async ({ section, answers }) => {
+          const mandatoryQuestions = await prisma.question.findMany({
+            where: { sectionId: section, mandatory: true },
+          });
+          const answeredQuestions = answers.map(({ question }) => question);
+          return mandatoryQuestions.every((q) => answeredQuestions.includes(q.id));
+        },
+        { message: 'Vous devez répondre à toutes les questions obligatoires', path: ['answers'] },
+      ],
+    ],
+    async authScopes(_, { section }, { user }) {
+      const form = await prisma.formSection
+        .findUniqueOrThrow({ where: { id: section } })
+        .form({ include: requiredIncludesForPermissions });
+
+      return canAnswerForm(form, form.event, user);
+    },
+    // TODO use validators from mutation.answer-question.ts
+    async resolve(query, _, { answers, section: sectionId }, { user }) {
+      if (!user) throw new GraphQLError('Vous devez être connecté pour répondre à un formulaire');
+      console.dir(answers);
+      const questions = await prisma.question.findMany({
+        where: { sectionId, id: { in: answers.map((a) => a.question) } },
+      });
+      const questionById = (id: string) => questions.find((q) => q.id === id)!;
+      const results = await prisma.$transaction(
+        answers.map(({ question: questionId, answer }) =>
+          prisma.answer.upsert({
+            ...query,
+            where: {
+              questionId_answeredById: {
+                questionId,
+                answeredById: user.id,
+              },
+              question: { sectionId },
+            },
+            create: {
+              questionId,
+              answeredById: user.id,
+              ...castAnswer(answer, questionById(questionId)),
+            },
+            update: {
+              ...castAnswer(answer, questionById(questionId)),
+            },
+          }),
+        ),
+      );
+      // Make sure results are sorted the same way as the input
+      return answers.map(
+        ({ question }) => results.find((result) => result.questionId === question)!,
+      );
+    },
+  }),
+);

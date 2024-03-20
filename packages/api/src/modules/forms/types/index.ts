@@ -4,6 +4,7 @@
 
 export * from './answer-date.js';
 export * from './answer-file-upload.js';
+export * from './answer-input.js';
 export * from './answer-long-text.js';
 export * from './answer-scale.js';
 export * from './answer-select-multiple.js';

@@ -66,6 +66,7 @@
             on:focus={() => {
               if (!otherOptionIsSelected) value = OPTION_OTHER_VALUE;
             }}
+            name="{name}/other"
             value=""
             label=""
             required={otherOptionIsSelected}

@@ -1,152 +1,18 @@
 import { builder, prisma, publish } from '#lib';
-import { parse } from 'date-fns';
+import { AnswerInput } from '../types/answer-input.js';
 import { AnswerType } from '../types/answer.js';
+import { castAnswer } from '../utils/answers.js';
 
 builder.mutationField('answerQuestion', (t) =>
   t.prismaField({
     type: AnswerType,
     args: {
-      question: t.arg.id({
-        required: true,
-        description: 'ID de la question à laquelle répondre',
-      }),
-      answer: t.arg.stringList({
-        required: true,
-        description: `
-Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
-    
-- Pour les questions de type \`Date\`, utiliser le format \`YYYY-mm-dd\`
-- Pour les questions de type \`Time\`, utiliser le format \`HH:MM:ss\`
-- Pour les questions de type \`FileUpload\`, utiliser la mutation [\`answerFileQuestion\`](#mutation/answerFileQuestion)
-      `,
+      input: t.arg({
+        type: AnswerInput,
       }),
     },
-    validate: [
-      [
-        async ({ question, answer }) => {
-          const { type } = await prisma.question.findUniqueOrThrow({ where: { id: question } });
-          return type === 'SelectMultiple' || answer.length <= 1;
-        },
-        { message: "Cette question n'accepte pas plusieurs réponses" },
-      ],
-      [
-        async ({ question, answer }) => {
-          const { mandatory } = await prisma.question.findUniqueOrThrow({
-            where: { id: question },
-          });
-          return !mandatory || answer.length > 0;
-        },
-        {
-          message: 'Cette question est obligatoire',
-        },
-      ],
-      [
-        async ({ question, answer }) => {
-          const { type, scaleStart, scaleEnd } = await prisma.question.findUniqueOrThrow({
-            where: { id: question },
-          });
-          if (type !== 'Scale') return true;
-          if (answer.length === 0) return true;
-
-          const number = Number.parseFloat(answer[0]!);
-          return number >= scaleStart! && number <= scaleEnd!;
-        },
-        {
-          message: "La réponse doit être entre les bornes de l'échelle.",
-        },
-      ],
-      [
-        async ({ question, answer }) => {
-          const { type } = await prisma.question.findUniqueOrThrow({ where: { id: question } });
-          if (type !== 'Scale') return true;
-          if (answer.length === 0) return true;
-          const numberValue = Number.parseFloat(answer[0]!);
-          return Math.floor(numberValue) === numberValue;
-        },
-        {
-          message: 'La réponse doit être un entier',
-        },
-      ],
-      [
-        async ({ question, answer }) => {
-          const { type, options, allowOptionOther } = await prisma.question.findUniqueOrThrow({
-            where: { id: question },
-          });
-          if (type !== 'SelectOne' && type !== 'SelectMultiple') return true;
-          if (answer.length === 0) return true;
-          return allowOptionOther || answer.every((a) => options.includes(a));
-        },
-        {
-          message: 'Cette réponse n’est pas une option valide',
-        },
-      ],
-      [
-        async ({ question, answer }) => {
-          const { type } = await prisma.question.findUniqueOrThrow({ where: { id: question } });
-          if (!['Number', 'Scale'].includes(type)) return true;
-          if (answer.length === 0) return true;
-          return !Number.isNaN(Number.parseFloat(answer[0]!));
-        },
-        {
-          message: 'Cette réponse doit être un nombre',
-        },
-      ],
-      [
-        async ({ question, answer }) => {
-          const { type } = await prisma.question.findUniqueOrThrow({ where: { id: question } });
-          if (type !== 'Date') return true;
-          if (answer.length === 0) return true;
-          try {
-            parse(answer[0]!, 'yyyy-MM-dd', new Date());
-            return true;
-          } catch {
-            return false;
-          }
-        },
-        {
-          message: 'Cette réponse doit être une date au format YYYY-MM-DD',
-        },
-      ],
-      [
-        async ({ question, answer }) => {
-          const { type } = await prisma.question.findUniqueOrThrow({ where: { id: question } });
-          if (type !== 'Time') return true;
-          if (answer.length === 0) return true;
-          try {
-            parse(answer[0]!, 'HH:mm:ss', new Date());
-            return true;
-          } catch {
-            return false;
-          }
-        },
-        {
-          message: 'Cette réponse doit être une heure au format HH:MM:SS',
-        },
-      ],
-      [
-        async ({ question, answer }) => {
-          const { type } = await prisma.question.findUniqueOrThrow({ where: { id: question } });
-          if (type !== 'Text') return true;
-          if (answer.length === 0) return true;
-          return answer[0]!.length <= 500;
-        },
-        {
-          message: 'Cette réponse doit faire moins de 500 caractères',
-        },
-      ],
-      [
-        async ({ question }) => {
-          const { type } = await prisma.question.findUniqueOrThrow({ where: { id: question } });
-          return type !== 'FileUpload';
-        },
-        {
-          message:
-            'Utilisez la mutation `answerFileQuestion` pour répondre à une question de type `FileUpload`.',
-        },
-      ],
-    ],
-    async resolve(query, _, { question: questionId, answer: value }, { user }) {
-      const { type, scaleStart, scaleEnd, ...question } = await prisma.question.findUniqueOrThrow({
+    async resolve(query, _, { input: { question: questionId, answer: value } }, { user }) {
+      const question = await prisma.question.findUniqueOrThrow({
         where: { id: questionId },
         include: { section: { include: { form: true } } },
       });
@@ -155,14 +21,7 @@ Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'
         data: {
           questionId: questionId,
           answeredById: user?.id,
-          answer: value,
-          number: value[0]
-            ? type === 'Number'
-              ? Number.parseFloat(value[0])
-              : type === 'Scale'
-                ? Number.parseInt(value[0]) / (scaleEnd! - scaleStart!)
-                : undefined
-            : undefined,
+          ...castAnswer(value, question),
         },
       });
       publish(questionId, 'created', answer);
