@@ -74,6 +74,8 @@ export const builder = new SchemaBuilder<{
     encodeGlobalID,
     decodeGlobalID,
     nodesOnConnection: true,
+    nodeQueryOptions: false,
+    nodesQueryOptions: false,
   },
   tracing: {
     default: (config) => isRootField(config),
