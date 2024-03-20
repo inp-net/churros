@@ -79,7 +79,10 @@ export const FormType = builder.prismaNode('Form', {
     }),
     sections: t.relation('sections', {
       description:
-        "Sections du formulaire. Un formulaire contient toujours au moins une section (sauf s'il n'y a aucune question).",
+        "Sections du formulaire. Un formulaire contient toujours au moins une section (sauf s'il n'y a aucune question). Uniquement accessible par celleux qui peuvent modifier le formulaire. Utiliser `nextSection` pour afficher une section dans le but d'y répondre.",
+      authScopes(form, _, { user }) {
+        return canEditForm(form, form.event, user);
+      },
       query: {
         orderBy: { order: 'asc' },
       },
