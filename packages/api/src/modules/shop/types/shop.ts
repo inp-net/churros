@@ -8,9 +8,10 @@ import { GraphQLError } from 'graphql';
 export const ShopItemType = builder.prismaObject('ShopItem', {
   fields: (t) => ({
     id: t.exposeID('id'),
+    uid: t.exposeString('uid'),
     name: t.exposeString('name'),
     description: t.exposeString('description'),
-    price: t.exposeInt('price'),
+    price: t.exposeFloat('price'),
     stock: t.exposeInt('stock'),
     max: t.exposeInt('max'),
     startsAt: t.expose('startsAt', { type: DateTimeScalar, nullable: true }),
