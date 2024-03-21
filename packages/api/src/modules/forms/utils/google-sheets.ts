@@ -2,8 +2,9 @@ import { log, prisma } from '#lib';
 import type { Answer, User } from '@prisma/client';
 import type { sheets_v4 } from 'googleapis';
 import groupBy from 'lodash.groupby';
+import { answerToString } from './answers.js';
 
-export const ANSWERS_SHEET_NAME = 'Réponses au formulaire';
+export const ANSWERS_SHEET_NAME = 'Réponses';
 
 export async function removeAnswersRowsForUser(
   spreadsheetId: string,
@@ -22,6 +23,13 @@ export async function removeAnswersRowsForUser(
     // Identify rows to delete based on the value in the userID
     const rowsToDelete = rows.filter((row) => row[0]?.trim().toLowerCase() === userId);
 
+    if (rowsToDelete.length === 0) return;
+
+    // get sheet id from the sheet name
+    const sheet = await sheets.spreadsheets.get({ spreadsheetId });
+    const sheetId = sheet.data.sheets?.find((s) => s.properties?.title === ANSWERS_SHEET_NAME)
+      ?.properties?.sheetId;
+
     // Create a request to delete rows
     const deleteRequest = {
       spreadsheetId,
@@ -29,7 +37,7 @@ export async function removeAnswersRowsForUser(
         requests: rowsToDelete.map((row) => ({
           deleteDimension: {
             range: {
-              sheetId: 0,
+              sheetId,
               dimension: 'ROWS',
               startIndex: rows.indexOf(row),
               endIndex: rows.indexOf(row) + 1,
@@ -60,7 +68,7 @@ export async function appendFormAnswersToGoogleSheets(
             include: {
               answers: {
                 where: { id: { in: answerIds } },
-                include: { answeredBy: true },
+                include: { createdBy: true },
               },
             },
           },
@@ -74,9 +82,9 @@ export async function appendFormAnswersToGoogleSheets(
   await log('forms', 'update-google-sheets', { answerIds }, form.linkedGoogleSheetId);
 
   // group all answers by user
-  const answersSheets: Record<string, Array<Answer & { answeredBy: null | User }>> = groupBy(
+  const answersSheets: Record<string, Array<Answer & { createdBy: null | User }>> = groupBy(
     form.sections.flatMap((section) => section.questions.flatMap((question) => question.answers)),
-    (answer) => answer.answeredById ?? '',
+    (answer) => answer.createdById ?? '',
   );
   // for each user, only keep the last answer for each question
   for (const [userId, answers] of Object.entries(answersSheets)) {
@@ -85,19 +93,25 @@ export async function appendFormAnswersToGoogleSheets(
     );
   }
 
-  const answerValue = (answer: Answer) => answer.number?.toString() ?? answer.answer.join(', ');
+  const questions = form.sections.flatMap((section) => section.questions);
 
   // generate rows, one per user, sorted by last answer date
   const rows = Object.entries(answersSheets)
     .sort(([a], [b]) => (a > b ? -1 : 1))
     .map(([answeredById, answers]) => {
-      const user = answers[0]!.answeredBy;
+      const user = answers[0]!.createdBy;
       return [
         answeredById,
         new Date(Math.max(...answers.map((answer) => answer.createdAt.valueOf()))).toISOString(),
         user?.lastName,
         user?.firstName,
-        ...answers.map((a) => answerValue(a)),
+        ...answers.map(({ answer, number, questionId }) =>
+          answerToString({
+            answer,
+            number,
+            question: questions.find((q) => q.id === questionId)!,
+          }),
+        ),
       ];
     });
 
@@ -106,7 +120,7 @@ export async function appendFormAnswersToGoogleSheets(
   // @ts-expect-error googleapi is typed weirdly
   await sheets.spreadsheets.values.append({
     spreadsheetId: form.linkedGoogleSheetId,
-    range: `${ANSWERS_SHEET_NAME}!A1`,
+    range: `${ANSWERS_SHEET_NAME}!A1:Z`,
     valueInputOption: 'RAW',
     resource: {
       values: rows,

@@ -1030,8 +1030,8 @@ model Answer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  answeredBy   User?   @relation(fields: [answeredById], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  answeredById String?
+  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  createdById String?
 
   /// Used for Text, LongText, Date (YYYY-mm-dd), Time (HH:mm:ss), FileUpload (path relative to storage root URL), SelectOne, SelectMultiple
   /// Only the first value is considered for all types except SelectMultiple.
@@ -1045,5 +1045,5 @@ model Answer {
   bookingId String?       @unique
 
   // For now, users can answer only once to every question
-  @@unique([questionId, answeredById])
+  @@unique([questionId, createdById])
 }

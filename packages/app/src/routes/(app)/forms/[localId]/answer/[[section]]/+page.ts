@@ -11,6 +11,7 @@ export async function load({ fetch, parent, params }) {
           title: true,
           descriptionHtml: true,
           hasSections: true,
+          linkedGoogleSheetUrl: true,
           section: [
             { id: params.section ? ensureIdPrefix('FormSection', params.section) : undefined },
             {

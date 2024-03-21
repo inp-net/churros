@@ -1,4 +1,4 @@
-import { builder, googleSheetsClient, prisma } from '#lib';
+import { builder, googleSheetsClient, prisma, publish } from '#lib';
 import { GraphQLError } from 'graphql';
 import uniqBy from 'lodash.uniqby';
 import { AnswerInput, AnswerType } from '../types/index.js';
@@ -60,15 +60,15 @@ builder.mutationField('answerFormSection', (t) =>
           prisma.answer.upsert({
             ...query,
             where: {
-              questionId_answeredById: {
+              questionId_createdById: {
                 questionId,
-                answeredById: user.id,
+                createdById: user.id,
               },
               question: { sectionId },
             },
             create: {
               questionId,
-              answeredById: user.id,
+              createdById: user.id,
               ...castAnswer(answer, questionById(questionId)),
             },
             update: {
@@ -78,17 +78,23 @@ builder.mutationField('answerFormSection', (t) =>
         ),
       );
 
+      const form = await prisma.formSection.findUniqueOrThrow({ where: { id: sectionId } }).form();
+
       void (async () => {
-        const form = await prisma.formSection
-          .findUniqueOrThrow({ where: { id: sectionId } })
-          .form();
-        const sheets = await googleSheetsClient(user.id);
-        await appendFormAnswersToGoogleSheets(
-          form.id,
-          sheets,
-          results.map((r) => r.id),
-        ).catch(console.error);
+        if (!form.createdById) return;
+        try {
+          const sheets = await googleSheetsClient(form.createdById);
+          await appendFormAnswersToGoogleSheets(
+            form.id,
+            sheets,
+            results.map((r) => r.id),
+          );
+        } catch (error) {
+          console.error(error);
+        }
       })();
+
+      publish(form.id, 'updated', answers);
 
       // Make sure results are sorted the same way as the input
       return answers.map(

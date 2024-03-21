@@ -10,7 +10,6 @@ export * from './form.linked-google-sheet-url.js';
 export * from './group.forms.js';
 export * from './mutation.answer-file-question.js';
 export * from './mutation.answer-form-section.js';
-export * from './mutation.answer-question.js';
 export * from './mutation.create-linked-google-sheet.js';
 export * from './mutation.mail-answers.js';
 export * from './mutation.upsert-form-section.js';

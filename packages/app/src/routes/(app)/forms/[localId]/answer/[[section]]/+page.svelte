@@ -84,6 +84,11 @@
   </section>
   <section class="submit">
     <ButtonPrimary submits>Envoyer</ButtonPrimary>
+    {#if data.form.linkedGoogleSheetUrl}
+      <p class="notice">
+        Tes réponses seront également transmises à Google, pour les afficher dans un Google Sheet.
+      </p>
+    {/if}
   </section>
 </form>
 

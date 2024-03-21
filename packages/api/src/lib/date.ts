@@ -53,9 +53,19 @@ export function formatDate(
   date: Date | undefined | null,
   style: Intl.DateTimeFormatOptions['dateStyle'] = 'long',
 ): string {
-  if (!date) return '';
-  return new Intl.DateTimeFormat('fr-FR', { dateStyle: style }).format(date);
+  try {
+    if (!date) return '';
+    if (typeof date === 'string') {
+      date = new Date(Date.parse(date));
+    }
+    return new Intl.DateTimeFormat('fr-FR', { dateStyle: style }).format(date);
+  } catch (error) {
+    console.error(error);
+    return '';
+  }
 }
+
+
 
 export function isWithinPartialInterval(
   date: Date,

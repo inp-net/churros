@@ -99,7 +99,7 @@
 
     /* color: var(--bg); */
     background: var(--secondary-bg);
-    border: var(--border-block) solid var(--secondary-hover-border);
+    border: var(--border-block) solid var(--secondary-hover-border, var(--secondary-bg));
   }
 
   .icon {

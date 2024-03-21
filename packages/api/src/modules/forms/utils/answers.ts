@@ -23,3 +23,19 @@ export function castAnswer(
       : undefined,
   };
 }
+
+export function answerToString({
+  answer,
+  number,
+  question: { scaleEnd, scaleStart, type },
+}: {
+  answer: string[];
+  number: number | null;
+  question: { type: QuestionKind; scaleStart: number | null; scaleEnd: number | null };
+}): string {
+  return type === 'Scale'
+    ? `${Math.floor(scaleStart! + number! * (scaleEnd! - scaleStart!))}/${scaleEnd!}`
+    : number
+      ? number.toString()
+      : answer.join(',');
+}

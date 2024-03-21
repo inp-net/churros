@@ -27,13 +27,14 @@ export async function load({ fetch, parent, params: { localId }, url: { searchPa
             {
               pageInfo: { hasNextPage: true, endCursor: true },
               nodes: {
-                createdAt: true,
-                createdBy: { uid: true, fullName: true, pictureFile: true },
+                id: true,
+                updatedAt: true,
+                createdBy: { id: true, uid: true, fullName: true, pictureFile: true },
                 question: {
+                  id: true,
                   title: true,
                   section: { title: true },
                 },
-                __typename: true,
                 answerString: true,
               },
             },
@@ -46,17 +47,9 @@ export async function load({ fetch, parent, params: { localId }, url: { searchPa
 
   if (!form) error(404);
 
-  console.log(form.answers)
+  console.log(form.answers);
 
-  /**
-   * Grouped answers, by user uid then by question ID
-   */
-  let groupedAnswers: Record<string, Record<string, (typeof form.answers.nodes)[number]>> = {};
 
-  const byUser = groupBy(form.answers.nodes, (a) => a.createdBy?.uid);
-  groupedAnswers = Object.fromEntries(
-    Object.entries(byUser).map(([uid, answers]) => [uid, groupBy(answers, (a) => a.question.id)]),
-  );
 
-  return { form, groupedAnswers };
+  return { form };
 }

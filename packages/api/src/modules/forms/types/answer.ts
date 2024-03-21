@@ -1,5 +1,6 @@
 import { TYPENAMES_TO_ID_PREFIXES, builder, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
+import { answerToString } from '../utils/answers.js';
 import { canSeeAllAnswers, requiredIncludesForPermissions } from '../utils/permissions.js';
 
 export const AnswerType = builder.prismaInterface('Answer', {
@@ -20,17 +21,15 @@ export const AnswerType = builder.prismaInterface('Answer', {
   },
   authScopes(
     {
-      answeredById,
+      createdById,
       question: {
-        section: {
-          form: { createdById, event },
-        },
+        section: { form },
       },
     },
     { user },
   ) {
     if (!user) return false;
-    return answeredById === user.id || canSeeAllAnswers({ createdById }, event, user);
+    return createdById === user.id || canSeeAllAnswers(form, form.event, user);
   },
   resolveType({ question: { type } }) {
     switch (type) {
@@ -78,7 +77,7 @@ export const AnswerType = builder.prismaInterface('Answer', {
       type: DateTimeScalar,
       description: 'Date de dernière mise à jour de la réponse',
     }),
-    createdBy: t.relation('answeredBy', {
+    createdBy: t.relation('createdBy', {
       nullable: true,
       description: 'Utilisateur ayant répondu à la question',
     }),
@@ -99,10 +98,6 @@ export const AnswerType = builder.prismaInterface('Answer', {
       description: 'Réservation associée à la réponse',
     }),
     question: t.relation('question'),
-    answerString: t.string({
-      resolve({ answer, number }) {
-        return number ? number.toString() : answer.join(',');
-      },
-    }),
+    answerString: t.string({ resolve: answerToString }),
   }),
 });

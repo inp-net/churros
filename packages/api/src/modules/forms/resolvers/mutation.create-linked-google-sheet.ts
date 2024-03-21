@@ -17,7 +17,7 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
         where: { id: formId },
         include: {
           sections: {
-            include: { questions: { include: { answers: { include: { answeredBy: true } } } } },
+            include: { questions: { include: { answers: { include: { createdBy: true } } } } },
           },
         },
       });
@@ -46,6 +46,13 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
               properties: {
                 title: `Réponses au formulaire ${form.title}`,
               },
+              sheets: [
+                {
+                  properties: {
+                    title: ANSWERS_SHEET_NAME,
+                  },
+                },
+              ],
             },
           })
           // @ts-expect-error googleapi is typed weirdly
