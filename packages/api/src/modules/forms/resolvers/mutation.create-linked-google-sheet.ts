@@ -1,7 +1,7 @@
 import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 import { googleSheetsClient } from '../../../lib/google.js';
-import { appendFormAnswersToGoogleSheets } from '../utils/google-sheets.js';
+import { ANSWERS_SHEET_NAME, appendFormAnswersToGoogleSheets } from '../utils/google-sheets.js';
 
 builder.mutationField('createLinkedGoogleSheet', (t) =>
   t.string({
@@ -72,7 +72,7 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
         ];
 
         const rowRange = (rowNumber: number) =>
-          `A${rowNumber}:${String.fromCodePoint(65 + header.length - 1)}${rowNumber}`;
+          `${ANSWERS_SHEET_NAME}!A${rowNumber}:${String.fromCodePoint(65 + header.length - 1)}${rowNumber}`;
 
         // @ts-expect-error googleapi is typed weirdly
         await sheets.spreadsheets.values.update({

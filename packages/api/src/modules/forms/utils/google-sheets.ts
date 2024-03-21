@@ -3,6 +3,49 @@ import type { Answer, User } from '@prisma/client';
 import type { sheets_v4 } from 'googleapis';
 import groupBy from 'lodash.groupby';
 
+export const ANSWERS_SHEET_NAME = 'Réponses au formulaire';
+
+export async function removeAnswersRowsForUser(
+  spreadsheetId: string,
+  sheets: sheets_v4.Sheets,
+  userId: string,
+) {
+  try {
+    // Retrieve values from the spreadsheet
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `${ANSWERS_SHEET_NAME}!A1:Z`,
+    });
+
+    const rows = response.data.values as string[][];
+
+    // Identify rows to delete based on the value in the userID
+    const rowsToDelete = rows.filter((row) => row[0]?.trim().toLowerCase() === userId);
+
+    // Create a request to delete rows
+    const deleteRequest = {
+      spreadsheetId,
+      resource: {
+        requests: rowsToDelete.map((row) => ({
+          deleteDimension: {
+            range: {
+              sheetId: 0,
+              dimension: 'ROWS',
+              startIndex: rows.indexOf(row),
+              endIndex: rows.indexOf(row) + 1,
+            },
+          },
+        })),
+      },
+    };
+
+    // Execute the request to delete rows
+    await sheets.spreadsheets.batchUpdate(deleteRequest);
+  } catch (err) {
+    console.error('Error deleting rows:', err);
+  }
+}
+
 export async function appendFormAnswersToGoogleSheets(
   formId: string,
   sheets: sheets_v4.Sheets,
@@ -29,7 +72,6 @@ export async function appendFormAnswersToGoogleSheets(
   if (!form?.linkedGoogleSheetId) return;
 
   await log('forms', 'update-google-sheets', { answerIds }, form.linkedGoogleSheetId);
-
 
   // group all answers by user
   const answersSheets: Record<string, Array<Answer & { answeredBy: null | User }>> = groupBy(
@@ -59,10 +101,12 @@ export async function appendFormAnswersToGoogleSheets(
       ];
     });
 
+  if (rows[0]?.[0]) await removeAnswersRowsForUser(form.linkedGoogleSheetId, sheets, rows[0][0]);
+
   // @ts-expect-error googleapi is typed weirdly
   await sheets.spreadsheets.values.append({
     spreadsheetId: form.linkedGoogleSheetId,
-    range: 'A1',
+    range: `${ANSWERS_SHEET_NAME}!A1`,
     valueInputOption: 'RAW',
     resource: {
       values: rows,

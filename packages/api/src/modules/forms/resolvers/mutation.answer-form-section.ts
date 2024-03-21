@@ -87,7 +87,7 @@ builder.mutationField('answerFormSection', (t) =>
           form.id,
           sheets,
           results.map((r) => r.id),
-        );
+        ).catch(console.error);
       })();
 
       // Make sure results are sorted the same way as the input

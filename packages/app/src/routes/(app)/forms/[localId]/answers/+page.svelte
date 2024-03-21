@@ -49,8 +49,10 @@
         } else {
           toasts.error('Impossible de créer le Google Sheet', e.message);
         }
+        creatingLinkedGoogleSheet = false;
         return { createLinkedGoogleSheet: undefined };
       }));
+    creatingLinkedGoogleSheet = false;
   }
 </script>
 
