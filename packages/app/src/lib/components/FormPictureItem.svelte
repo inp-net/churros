@@ -42,7 +42,6 @@
       // Add a timestamp to the URL to force the browser to reload the image
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       object.push(result.updateItemPicture);
-      object.at(-1).path = result.updateItemPicture.path;
     } finally {
       // `updating` is set to false when the image loads
       updating = false;
