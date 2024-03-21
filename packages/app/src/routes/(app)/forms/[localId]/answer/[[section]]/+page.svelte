@@ -85,7 +85,7 @@
   <section class="submit">
     <ButtonPrimary submits>Envoyer</ButtonPrimary>
     {#if data.form.linkedGoogleSheetUrl}
-      <p class="notice">
+      <p class="notice typo-details">
         Tes réponses seront également transmises à Google, pour les afficher dans un Google Sheet.
       </p>
     {/if}
@@ -98,5 +98,10 @@
     justify-content: center;
     align-items: center;
     margin-top: 2rem;
+    flex-direction: column;
+  }
+
+  p.notice {
+    margin-top: 1rem;
   }
 </style>
