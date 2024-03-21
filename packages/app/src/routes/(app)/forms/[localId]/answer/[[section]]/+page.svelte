@@ -5,6 +5,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/stores';
+  import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputField from '$lib/components/InputField.svelte';
   import InputLongText from '$lib/components/InputLongText.svelte';
@@ -27,7 +28,10 @@
   $: serverError = $page.form;
 </script>
 
-<h1>{title}</h1>
+<h1>
+  <ButtonBack />
+  {title}
+</h1>
 <div data-user-html="">
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {@html descriptionHtml}
@@ -41,7 +45,7 @@
     submitting = true;
   }}
 >
-  <section>
+  <section class="questions">
     <input type="hidden" name={FORM_SECTION_HIDDEN_INPUT_NAME} value={section.id} />
     {#if section.title || section.description}
       <h2>{section.title}</h2>
@@ -93,6 +97,11 @@
 </form>
 
 <style>
+  section.questions {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
   section.submit {
     display: flex;
     justify-content: center;
