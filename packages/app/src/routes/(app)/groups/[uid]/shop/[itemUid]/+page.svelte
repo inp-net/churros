@@ -224,7 +224,6 @@
   .left {
     width: 400px;
     object-fit: contain;
-    background-color: var(--muted-bg);
   }
 
   .mid {

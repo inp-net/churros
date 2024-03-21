@@ -1,26 +1,31 @@
 <script lang="ts">
   import IconBackward from '~icons/mdi/chevron-left';
   import IconForward from '~icons/mdi/chevron-right';
+  import { env } from '$env/dynamic/public';
 
   export let url: string[];
+  export let currentIndex = 0;
 
-  let currentIndex = 0;
+  $: urlLeng = url.length;
 
   function nextImage() {
-    currentIndex = (currentIndex + 1) % url.length;
+    currentIndex = (currentIndex + 1) % urlLeng;
   }
 
   function prevImage() {
-    currentIndex = (currentIndex - 1 + url.length) % url.length;
+    currentIndex = (currentIndex - 1 + urlLeng) % urlLeng;
   }
 </script>
 
 <div class="carousel">
   {#each url as image, i}
     {#if i === currentIndex}
-      <img class="carousel-image" src={image} alt="Image {i + 1}" />
+      <img class="carousel-image" src="{env.PUBLIC_STORAGE_URL}{image}" alt="Image {i + 1}" />
     {/if}
   {/each}
+  {#if url.length === 0}
+    <p>Image du produit</p>
+  {/if}
   {#if currentIndex > 0}
     <button class="arrow left" on:click={prevImage}><IconBackward /> </button>
   {/if}
@@ -33,16 +38,21 @@
   .carousel {
     position: relative;
     display: flex;
+    justify-content: center;
     width: 100%;
+    min-width: 250px;
     height: 250px;
     overflow: hidden;
+    color: var(--muted-text);
+    text-align: center;
+    background-color: var(--muted-bg);
   }
 
   .carousel-image {
     flex: 0 0 100%;
     width: 100%;
+    object-fit: contain;
     transition: transform 0.5s;
-    object-fit: cover;
   }
 
   .arrow {
