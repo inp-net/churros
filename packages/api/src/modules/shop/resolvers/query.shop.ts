@@ -14,7 +14,7 @@ builder.queryField('shopItem', (t) =>
       const item = await prisma.shopItem.findFirst({
         ...query,
         where: {
-          id: itemUid,
+          uid: itemUid,
         },
         include: {
           group: {

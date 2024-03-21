@@ -2,6 +2,7 @@
   import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
 
   type ShopItemType = {
+    uid: string;
     name: string;
     price: number;
     max: number;
@@ -21,7 +22,7 @@
   export let shopItem: ShopItemType;
 </script>
 
-<a class="container" href="./{shopItem.id}">
+<a class="container" href="./{shopItem.uid}">
   <ShopImageCaroussel url={shopItem.pictures.map((p) => p.path)} />
   <div class="info">
     <div class="data">

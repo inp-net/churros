@@ -46,7 +46,7 @@
           <p><BadgePaymentStatus paid={order.paid} opposed={false} cancelled={false} /></p>
         </div>
       </div>
-      <ButtonPrimary href="/groups/{order.shopItem.group.uid}/shop/{order.shopItem.id}/"
+      <ButtonPrimary href="/groups/{order.shopItem.group.uid}/shop/{order.shopItem.uid}/"
         >Voir</ButtonPrimary
       >
     </div>

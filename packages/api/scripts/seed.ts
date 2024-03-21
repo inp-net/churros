@@ -860,6 +860,7 @@ await prisma.thirdPartyApp.create({
 
 await prisma.shopItem.create({
   data: {
+    uid: 'boules-quies',
     name: 'Boules quies',
     description: 'Acheter des boules quies pour pas entendre Téo',
     price: 10,
@@ -872,6 +873,7 @@ await prisma.shopItem.create({
 
 await prisma.shopItem.create({
   data: {
+    uid: 'server',
     name: 'Server',
     description: 'Atom 2 duo',
     price: 100000,

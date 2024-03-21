@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
 
   type ShopItemType = {
+    uid: string;
     name: string;
     price: number;
     max: number;
@@ -27,12 +28,12 @@
       </tr>
     </thead>
     <tbody>
-      {#each shopItems as shopItem (shopItem.id)}
-        <tr on:click={async () => goto(`/groups/${shopItem.group.uid}/shop/sales/${shopItem.id}`)}>
+      {#each shopItems as shopItem (shopItem.uid)}
+        <tr on:click={async () => goto(`/groups/${shopItem.group.uid}/shop/sales/${shopItem.uid}`)}>
           <td>{shopItem.name}</td>
           <td>{shopItem.stockLeft}/{shopItem.stock}</td>
           <td class="actions">
-            <ButtonSecondary href={`/groups/${shopItem.group.uid}/shop/${shopItem.id}/edit`}
+            <ButtonSecondary href={`/groups/${shopItem.group.uid}/shop/${shopItem.uid}/edit`}
               >Modifier</ButtonSecondary
             >
           </td>
@@ -79,7 +80,7 @@
     background: var(--hover-bg);
   }
 
-  @media only screen and (width <= 400px) {
+  @media only screen and (max-width: 400px) {
     table {
       width: 100%;
       border-spacing: var(--border-block);

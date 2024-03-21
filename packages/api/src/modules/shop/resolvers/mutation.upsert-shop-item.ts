@@ -2,7 +2,7 @@ import { builder, prisma } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { PaymentMethodEnum } from '#modules/payments';
 import { onBoard } from '#permissions';
-import { ShopItemType } from '../index.js';
+import { ShopItemType, createUid } from '../index.js';
 
 builder.mutationField('upsertShopItem', (t) =>
   t.prismaField({
@@ -11,7 +11,7 @@ builder.mutationField('upsertShopItem', (t) =>
     args: {
       id: t.arg.id({ required: false }),
       name: t.arg.string(),
-      price: t.arg.int(),
+      price: t.arg.float(),
       stock: t.arg.int(),
       max: t.arg.int(),
       description: t.arg.string(),
@@ -70,10 +70,12 @@ builder.mutationField('upsertShopItem', (t) =>
       },
       { user },
     ) {
+      const group = await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } });
       const shopItem = await prisma.shopItem.upsert({
         ...query,
         where: { id: id ?? '' },
         create: {
+          uid: await createUid({ title: name, groupId: group.id }),
           name,
           price,
           stock,

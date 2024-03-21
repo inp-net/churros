@@ -86,7 +86,7 @@
   }
 
   onMount(() => {
-    warningToastId = toasts.warn('Page en bêta', 'Les boutiques sont en cours de fonctionnement', {
+    warningToastId = toasts.warn('Page en bêta', 'Les boutiques sont en cours de développement', {
       lifetime: Number.POSITIVE_INFINITY,
     });
   });
@@ -116,7 +116,7 @@
       <h2>Acheter</h2>
       <p>Stock: {shopItem.stock === 0 ? '+∞' : shopItem.stock}</p>
       <p>Restant: {shopItem.stock === 0 ? '+∞' : shopItem.stockLeft}</p>
-      <p>Price: {shopItem.price} €</p>
+      <p>Prix: {shopItem.price} €</p>
       <InputNumber
         bind:value={quantity}
         label="Quantité"
