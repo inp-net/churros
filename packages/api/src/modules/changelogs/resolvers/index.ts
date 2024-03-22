@@ -4,5 +4,6 @@
 
 export * from './mutation.acknowledge-changelog.js';
 export * from './query.changelog.js';
+export * from './query.changelogs.js';
 export * from './query.combined-changelog.js';
 export * from './query.upcoming-changelog.js';

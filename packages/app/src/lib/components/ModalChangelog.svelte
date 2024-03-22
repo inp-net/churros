@@ -34,83 +34,72 @@
   import { zeus } from '$lib/zeus';
   import { createEventDispatcher } from 'svelte';
   import { toasts } from '$lib/toasts';
-  import { fragment, graphql, type ModalChangelogRelease } from '$houdini';
+  import { fragment, graphql, type ModalChangelog } from '$houdini';
 
   const dispatch = createEventDispatcher();
 
   export let open: boolean;
-  export let changelog: ModalChangelogRelease[];
+  export let changelog: ModalChangelog;
   $: Log = fragment(
     changelog,
     graphql`
-      fragment ModalChangelogRelease on ChangelogRelease {
-          date
-          version
-          description
-          changes {
-            added {
-              html
-              issues
-            }
-            fixed {
-              html
-              issues
-            }
-            improved {
-              html
-              issues
-            }
-            other {
-              html
-              issues
-            }
-            security {
-              html
-              issues
-            }
-            technical {
-              html
-              issues
-            }
+      fragment ModalChangelog on ChangelogCombinedReleases {
+        versions
+        changes {
+          added {
+            html
+            issues
           }
+          fixed {
+            html
+            issues
+          }
+          improved {
+            html
+            issues
+          }
+          other {
+            html
+            issues
+          }
+          security {
+            html
+            issues
+          }
+          technical {
+            html
+            issues
+          }
+        }
       }
     `,
   );
-  $: log = $Log.data;
+
+  type ChangeCategory = keyof typeof log.changes;
+
+  $: log = $Log;
+  $: changesByCategory = Object.entries(log.changes) as Array<
+    [ChangeCategory, (typeof log.changes)[ChangeCategory]]
+  >;
 
   let element: HTMLDialogElement;
 
-  function flattenVersions(versions: typeof log) {
-    const byCategory = Object.fromEntries(
-      ORDER_CHANGELOG_CATEGORIES.map((c) => [c, []]),
-    ) as unknown as (typeof log)[number]['changes'];
-
-    for (const version of versions) {
-      for (const category of ORDER_CHANGELOG_CATEGORIES) {
-        if (CHANGELOG_MODAL_IGNORED_CATEGORIES.includes(category)) continue;
-        byCategory[category].push(...version.changes[category]);
-      }
-    }
-
-    return [...Object.entries(byCategory)] as Array<
-      [(typeof ORDER_CHANGELOG_CATEGORIES)[number], (typeof log)[number]['changes']['added']]
-    >;
+  function totalChangesCount(changes: typeof log.changes) {
+    return Object.values(changes)
+      .map((c) => c.length)
+      .reduce((a, b) => a + b, 0);
   }
 
-  function totalChangesCount(versions: typeof log) {
-    return flattenVersions(versions).reduce((acc, [_, changes]) => acc + changes.length, 0);
-  }
-
-  function versionRange(versions: typeof log): { first: string; last: string } {
+  function versionRange(versions: string[]): { first: string; last: string } {
     return {
-      first: versions.at(-1)?.version ?? '',
-      last: versions[0]?.version ?? '',
+      first: versions.at(-1) ?? '',
+      last: versions[0] ?? '',
     };
   }
 
   async function acknowledge() {
     dispatch('acknowledge');
-    window.umami.track('acknowledge-changelog', { versionRange: versionRange(log) });
+    window.umami.track('acknowledge-changelog', { versionRange: versionRange(log.versions) });
     const {
       me: { latestVersionSeenInChangelog },
     } = await $zeus.query({
@@ -124,7 +113,7 @@
     await $zeus.mutate({
       acknowledgeChangelog: [
         {
-          version: versionRange(log).last,
+          version: versionRange(log.versions).last,
         },
         true,
       ],
@@ -133,12 +122,12 @@
 </script>
 
 <Modal
-  open={open && totalChangesCount(log) > 0}
+  open={open && totalChangesCount(log.changes) > 0}
   maxWidth="800px"
   bind:element
   on:close-by-outside-click={acknowledge}
 >
-  {@const { first, last } = versionRange(log)}
+  {@const { first, last } = versionRange(log.versions)}
   <section class="centered">
     <LogoChurros wordmark />
     <h1>Quoi de neuf?</h1>
@@ -150,7 +139,7 @@
       {/if}
     </p>
   </section>
-  {#each flattenVersions(log) as [category, changes]}
+  {#each changesByCategory as [category, changes]}
     {#if changes.length > 0}
       <h2 class={COLOR_THEME_BY_CHANGELOG_CATEGORY[category]}>
         {DISPLAY_CHANGELOG_CATEGORIES.get(category)}

@@ -3,9 +3,7 @@ query AppLayout($myUid: String!, $loggedIn: Boolean!) {
     __typename
     ... on QueryCombinedChangelogSuccess {
       data {
-        nodes {
-          ...ModalChangelogRelease
-        }
+        ...ModalChangelog
       }
     }
     ... on Error {

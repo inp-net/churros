@@ -1,15 +1,15 @@
-import { CURRENT_VERSION, builder, prisma } from '#lib';
+import { builder, CURRENT_VERSION, prisma } from '#lib';
 import { SortDirection, SortDirectionEnum } from '#modules/global';
+import { resolveArrayConnection } from '@pothos/plugin-relay';
 import { GraphQLError } from 'graphql';
 import * as SemVer from 'semver';
-import { getChangelogsInVersionRange, type ReleaseChangesMap } from '../index.js';
-import { ChangelogCombinedReleasesType } from '../types/changelog-combined-releases.js';
+import { ChangelogReleaseType } from '../types/changelog-release.js';
+import { getChangelogsInVersionRange } from '../utils/changelogs.js';
 
-builder.queryField('combinedChangelog', (t) =>
-  t.field({
-    type: ChangelogCombinedReleasesType,
-    errors: {},
-    description: `A changelog for multiple versions, with all changes combined.
+builder.queryField('changelogs', (t) =>
+  t.connection({
+    type: ChangelogReleaseType,
+    description: `A changelog for multiple versions. 
 Be careful, this range is (from, to]. I.e. **the first version is excluded, and the last is included**. 
 This is way more useful for querying a range of versions for a changelog, but not the usual way ranges are defined.`,
     validate({ from, to }) {
@@ -37,7 +37,7 @@ This is way more useful for querying a range of versions for a changelog, but no
         defaultValue: CURRENT_VERSION,
       }),
     },
-    async resolve(_, { from, to, sort }, { user }) {
+    async resolve(_, { from, to, sort, ...connectionArgs }, { user }) {
       if (!from) {
         if (!user) {
           throw new GraphQLError(
@@ -51,33 +51,10 @@ This is way more useful for querying a range of versions for a changelog, but no
         from = latestVersionSeenInChangelog ?? '0.0.0';
       }
 
-      const allReleases = await getChangelogsInVersionRange(from, to, sort);
-
-      // Merge all changes
-      let mergedChanges: ReleaseChangesMap = {
-        added: [],
-        fixed: [],
-        security: [],
-        improved: [],
-        other: [],
-        technical: [],
-      };
-
-      for (const release of allReleases) {
-        mergedChanges = {
-          added: [...mergedChanges.added, ...release.changes.added],
-          fixed: [...mergedChanges.fixed, ...release.changes.fixed],
-          security: [...mergedChanges.security, ...release.changes.security],
-          improved: [...mergedChanges.improved, ...release.changes.improved],
-          other: [...mergedChanges.other, ...release.changes.other],
-          technical: [...mergedChanges.technical, ...release.changes.technical],
-        };
-      }
-
-      return {
-        versions: allReleases.map((release) => release.version),
-        changes: mergedChanges,
-      };
+      return resolveArrayConnection(
+        { args: connectionArgs },
+        await getChangelogsInVersionRange(from, to, sort),
+      );
     },
   }),
 );

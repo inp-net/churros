@@ -34,6 +34,7 @@
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
   import type { Snapshot } from './$types';
+  import { notNull } from '$lib/typing';
 
   export let data: PageData;
   $: ({ AppLayout } = data);
@@ -46,11 +47,6 @@
     warning: boolean;
     id: string;
   }>;
-
-  $: changelogLogs =
-    $AppLayout.data?.combinedChangelog?.__typename === 'QueryCombinedChangelogSuccess'
-      ? $AppLayout.data.combinedChangelog
-      : { data: [] };
 
   const now = new Date();
 
@@ -136,14 +132,8 @@
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
 </script>
 
-{#if changelogLogs.length > 0}
-  <ModalChangelog
-    on:acknowledge={() => {
-      changelogLogs = [];
-    }}
-    open
-    changelog={changelogLogs}
-  />
+{#if $AppLayout.data?.combinedChangelog?.__typename === 'QueryCombinedChangelogSuccess'}
+  <ModalChangelog open changelog={$AppLayout.data.combinedChangelog.data} />
 {/if}
 
 {#if $AppLayout.data?.registrationsOfUser?.nodes[0]}
@@ -163,7 +153,9 @@
   {/if}
 
   <div class="page-and-sidenav">
-    <NavigationSide me={$AppLayout.data?.me} current={currentTabDesktop($page.url)} />
+    {#if $AppLayout.data?.me}
+      <NavigationSide me={$AppLayout.data.me} current={currentTabDesktop($page.url)} />
+    {/if}
     <div
       id="scrollable-area"
       class="contents-and-announcements"

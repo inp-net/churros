@@ -1,5 +1,7 @@
+import { SortDirection } from '#modules/global';
 import * as KeepAChangelog from 'keep-a-changelog';
 import { readFile } from 'node:fs/promises';
+import * as SemVer from 'semver';
 import { type ChangelogRelease, type ReleaseChangesMap } from '../index.js';
 
 export const UpcomingVersion = Symbol('UpcomingVersion');
@@ -94,4 +96,26 @@ export function findReleaseInChangelog(
     changes: changes,
     description: release.description,
   };
+}
+
+export async function getChangelogsInVersionRange(
+  from: string,
+  to: string,
+  sort: SortDirection,
+): Promise<ChangelogRelease[]> {
+  if (SemVer.gte(from, to)) return [];
+
+  const changelog = await changelogFromFile();
+  const selectedReleases = changelog.releases
+    .filter(
+      (release) =>
+        release.version && SemVer.gt(release.version, from!) && SemVer.lte(release.version, to),
+    )
+    .sort((a, b) => SemVer.compare(a.version!, b.version!));
+
+  if (sort === SortDirection.Descending) selectedReleases.reverse();
+
+  if (selectedReleases.length === 0) throw new Error(`Aucune version entre ${from} et ${to}.`);
+
+  return selectedReleases.map((release) => findReleaseInChangelog(changelog, release.version!));
 }

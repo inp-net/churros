@@ -12,16 +12,20 @@
   export let data: PageData;
   $: ({ ChangelogPage } = data);
   $: ({ me } = $ChangelogPage.data ?? { me: null });
-  $: combinedChangelog =
-    $ChangelogPage.data?.combinedChangelog.__typename === 'QueryCombinedChangelogSuccess'
-      ? $ChangelogPage.data.combinedChangelog.data.nodes.filter(notNull)
-      : [];
+  // $: combinedChangelog =
+  //   $ChangelogPage.data?..__typename === 'QueryCombinedChangelogSuccess'
+  //     ? $ChangelogPage.data.combinedChangelog.nodes.filter(notNull)
+  //     : [];
 
   type Category = (typeof ORDER_CHANGELOG_CATEGORIES)[number];
 
+  type Change = NonNullable<
+    NonNullable<typeof $ChangelogPage.data>['changelogs']['nodes'][number]
+  >['changes'][Category][number];
+
   function changesByCategory(version: {
-    changes: Record<string, Array<{ html: string }>>;
-  }): Array<[Category, Array<{ html: string }>]> {
+    changes: Record<string, Change[]>;
+  }): Array<[Category, Array<Change>]> {
     const isDev = me?.groups.some((g) => g.group.uid === 'devs' || g.isDeveloper);
     // @ts-expect-error classic case of Object.entries being too dumb. using a "as" cast causes a syntax error for the Svelte parser for some reason
     return Object.entries(version.changes)
@@ -60,18 +64,18 @@
     </Alert>
   {/if}
 
-  {#each combinedChangelog as version}
-    <h2 id="v{version.version}">
-      Version {version.version}
-      {#if version.date}
-        <span class="date">{formatDate(version.date)}</span>
+  {#each $ChangelogPage.data?.changelogs.nodes.filter(notNull) ?? [] as changelog}
+    <h2 id="v{changelog.version}">
+      Version {changelog.version}
+      {#if changelog.date}
+        <span class="date">{formatDate(changelog.date)}</span>
       {/if}
     </h2>
     <section class="description data-user-html">
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html version.description}
+      {@html changelog.descriptionHtml}
     </section>
-    {#each changesByCategory(version) as [category, changes]}
+    {#each changesByCategory(changelog) as [category, changes]}
       <h3 class={COLOR_THEME_BY_CHANGELOG_CATEGORY[category]}>
         {DISPLAY_CHANGELOG_CATEGORIES.get(category)}
       </h3>
@@ -89,10 +93,10 @@
         {/each}
       </ul>
     {:else}
-      {#if !version.description}
+      {#if !changelog.descriptionHtml}
         <p class="muted">
           Pas grand chose d'intéréssant pour cette version… <a
-            href="https://git.inpt.fr/inp-net/churros/-/tags/v{version.version}"
+            href="https://git.inpt.fr/inp-net/churros/-/tags/v{changelog.version}"
             >Détails techniques</a
           >
         </p>

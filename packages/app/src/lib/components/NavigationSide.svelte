@@ -36,7 +36,12 @@
     me,
     graphql`
       fragment NavigationSideMe on User {
-        uid, external, canAccessDocuments, canEditUsers, admin
+        uid
+        external
+        canAccessDocuments
+        canEditUsers
+        admin
+        canEditGroups
       }
     `,
   );
