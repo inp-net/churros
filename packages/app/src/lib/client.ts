@@ -3,7 +3,7 @@ import { env } from '$env/dynamic/public';
 import type { ClientPlugin } from '$houdini';
 import { HoudiniClient } from '$houdini';
 import { redirectToLogin } from '$lib/session';
-import { UNAUTHORIZED_ERROR_MESSAGE } from '@inp-net/churros-client';
+import { UNAUTHORIZED_ERROR_MESSAGE } from '../../../api/src/lib/error.js';
 
 const isLoggedIn: ClientPlugin = () => {
   return {

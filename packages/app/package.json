@@ -15,6 +15,7 @@
     "fuse.js": "^7.0.0",
     "graphql": "^16.8.1",
     "graphql-ws": "^5.15.0",
+    "houdini-svelte": "^1.2.45",
     "html-to-text": "^9.0.5",
     "html5-qrcode": "^2.3.8",
     "ics": "^3.7.2",

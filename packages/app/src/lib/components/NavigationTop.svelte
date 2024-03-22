@@ -106,9 +106,9 @@
         <ButtonGhost href="/search/" help="Rechercher" style="color:var(--nav-text)"
           ><IconSearch /></ButtonGhost
         >
-        <ButtonGhost href="/users/{$me?.uid}" help="Mon profil" style="color:var(--nav-text)">
-          {#if $me.pictureFile}
-            <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
+        <ButtonGhost href="/users/{$Me?.uid}" help="Mon profil" style="color:var(--nav-text)">
+          {#if $Me.pictureFile}
+            <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$Me.pictureFile}" alt="Profil" />
           {:else}
             <IconAccount />
           {/if}

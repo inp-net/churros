@@ -12,7 +12,6 @@ import {
 import { PaymentMethod } from '@prisma/client';
 import { EventFrequencyType, eventCapacity } from '../index.js';
 import { canEdit, canEditManagers, canSeeBookings } from '../utils/permissions.js';
-import { EventFrequencyType, canEditEvent, eventCapacity } from '../index.js';
 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
@@ -20,9 +19,6 @@ export const EventType = builder.prismaNode('Event', {
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
-    canEdit: t.boolean({
-      resolve: (event, _, { user }) => canEditEvent(user, event),
-    }),
     contactMail: t.exposeString('contactMail'),
     beneficiary: t.relation('beneficiary', { nullable: true }),
     lydiaAccountId: t.exposeID('lydiaAccountId', { nullable: true }),

@@ -1,5 +1,4 @@
 import type { Context } from '#lib';
-import { UNAUTHORIZED_ERROR_MESSAGE } from '@inp-net/churros-client'
 import {
   authScopes,
   context,
@@ -24,6 +23,7 @@ import SmartSubscriptionsPlugin, {
 import TracingPlugin, { isRootField, runFunction } from '@pothos/plugin-tracing';
 import ValidationPlugin from '@pothos/plugin-validation';
 import { GraphQLError, Kind } from 'graphql';
+import { UNAUTHORIZED_ERROR_MESSAGE } from './error.js';
 import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';

@@ -45,6 +45,7 @@ export function canCreateEvent(group: Group, user: Context['user']) {
   if (onBoard(membership)) return true;
 
   return false;
+}
 
 export function canCreateEvents(user: Context['user'], group: { id: string }) {
   if (!user) return false;
