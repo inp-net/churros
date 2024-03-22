@@ -105,7 +105,7 @@
       <div class="mid">
         <div class="name-header">
           <h2>{shopItem.name}</h2>
-          {#if $me?.admin || $me?.uid === shopItem.group.boardMembers.find((m) => m.member.uid === $me?.uid)?.member.uid}
+          {#if $me?.admin || shopItem.group.boardMembers.find((m) => m.member.uid === $me?.uid)}
             <ButtonGhost href="./edit/"><IconEdit /></ButtonGhost>
           {/if}
         </div>

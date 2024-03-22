@@ -12,3 +12,4 @@ export * from './mutation.delete-item-picture.js';
 export * from './query.orders.js';
 export * from './query.shop.js';
 export * from './query.shop-payments.js';
+export * from './query.shop-by-group.js';

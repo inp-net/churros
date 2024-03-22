@@ -31,7 +31,7 @@
       {#each shopItems as shopItem (shopItem.uid)}
         <tr on:click={async () => goto(`/groups/${shopItem.group.uid}/shop/sales/${shopItem.uid}`)}>
           <td>{shopItem.name}</td>
-          <td>{shopItem.stockLeft}/{shopItem.stock}</td>
+          <td>{shopItem.stock === 0 ? '+∞' : shopItem.stockLeft / shopItem.stock}</td>
           <td class="actions">
             <ButtonSecondary href={`/groups/${shopItem.group.uid}/shop/${shopItem.uid}/edit`}
               >Modifier</ButtonSecondary

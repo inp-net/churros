@@ -3,31 +3,50 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
   const { me } = await parent();
-  const data = await loadQuery(
+  const group = await loadQuery(
     {
       group: [
+        params,
         {
-          uid: params.uid,
-        },
-        {
+          id: true,
+          uid: true,
           name: true,
           boardMembers: {
             member: {
               uid: true,
             },
           },
-          shopItems: {
-            uid: true,
-            id: true,
-            name: true,
-            price: true,
-            stock: true,
-            stockLeft: true,
-            max: true,
-            description: true,
-            group: { uid: true },
-            pictures: {
-              path: true,
+        },
+      ],
+    },
+    { fetch, parent },
+  );
+  const data = await loadQuery(
+    {
+      itemsOfGroup: [
+        {
+          groupId: group.group.id,
+        },
+        {
+          edges: {
+            node: {
+              uid: true,
+              id: true,
+              name: true,
+              price: true,
+              max: true,
+              description: true,
+              stock: true,
+              stockLeft: true,
+              pictures: {
+                id: true,
+                path: true,
+                position: true,
+              },
+              group: {
+                uid: true,
+              },
+              visibility: true,
             },
           },
         },
@@ -36,6 +55,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     { fetch, parent },
   );
   return {
+    ...group,
     ...data,
     me,
   };

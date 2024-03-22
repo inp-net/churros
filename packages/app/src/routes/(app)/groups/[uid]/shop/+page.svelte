@@ -8,10 +8,11 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   export let data: PageData;
 
-  const { shopItems } = data.group;
+  const shopItems = data.itemsOfGroup.edges.flatMap(({ node }) => node);
+  const group = data.group;
 
   const isOnClubBoard = Boolean(
-    data.group.boardMembers.some((s) => s.member.uid === data.me?.uid || data.me?.admin),
+    group.boardMembers.some((s) => s.member.uid === data.me?.uid || data.me?.admin),
   );
 
   let warningToastId: string;
@@ -35,7 +36,7 @@
 />
 
 <div class="shop-header">
-  <h1>Boutique de {data.group.name}</h1>
+  <h1>Boutique de {group.name}</h1>
   <div>
     {#if isOnClubBoard}
       <ButtonSecondary href="./create/">

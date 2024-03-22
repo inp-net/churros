@@ -1,8 +1,12 @@
+import { redirectToLogin } from '$lib/session';
 import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, params, parent }) =>
-  loadQuery(
+export const load: PageLoad = async ({ fetch, params, parent, url }) => {
+  const { me } = await parent();
+  if (!me) throw redirectToLogin(url.pathname);
+
+  const data = await loadQuery(
     {
       shopItem: [
         { itemUid: params.itemUid },
@@ -32,3 +36,5 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
     },
     { fetch, parent },
   );
+  return data;
+};

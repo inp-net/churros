@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import { onBoard } from '#permissions';
+import { userIsOnBoardOf } from '#permissions';
 import { Visibility } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { ShopItemType } from '../index.js';
@@ -38,19 +38,26 @@ builder.queryField('shopItem', (t) =>
       if (user?.admin) return item;
       // Switch case
       switch (item.visibility) {
-        case Visibility.Public:
-        case Visibility.Unlisted: {
-          return item;
-        }
-
-        case Visibility.GroupRestricted: {
-          if (item.group.members.length > 0) return item;
+        case Visibility.Private: {
+          if (userIsOnBoardOf(user, item.group.uid)) return item;
 
           throw new GraphQLError('Not allowed to view item');
         }
 
-        case Visibility.Private: {
-          if (onBoard(item.group.members[0])) return item;
+        case Visibility.Public: {
+          return item;
+        }
+
+        case Visibility.Unlisted: {
+          return item;
+        }
+
+        case Visibility.SchoolRestricted: {
+          if (user?.major?.schools.some((school) => item.group.schoolId === school.id)) return item;
+          throw new GraphQLError('Not allowed to view item');
+        }
+        case Visibility.GroupRestricted: {
+          if (user?.groups.some((s) => s.group.id === item.groupId)) return item;
 
           throw new GraphQLError('Not allowed to view item');
         }
