@@ -110,7 +110,8 @@
           </ButtonGhost>
         </span>
       </p>
-      <CardTicket floating href="/bookings/{$QuickBooking.code}" booking={$QuickBooking}></CardTicket>
+      <CardTicket floating href="/bookings/{$QuickBooking.code}" booking={$QuickBooking}
+      ></CardTicket>
     </section>
   {/if}
 {/if}

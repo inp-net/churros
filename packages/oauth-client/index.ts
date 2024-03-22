@@ -8,7 +8,6 @@ export type UserInfo = {
   ldapInternalEmail: string;
 };
 
-
 export class ChurrosClient {
   public clientId: string;
   public clientSecret: string;

@@ -10,7 +10,7 @@
     "arborist": "workspace:^",
     "calendar-link": "^2.6.0",
     "cookie": "^0.6.0",
-    "date-fns": "^3.6.0",
+    "date-fns": "^2.30.0",
     "extract-files": "^13.0.0",
     "fuse.js": "^7.0.0",
     "graphql": "^16.8.1",

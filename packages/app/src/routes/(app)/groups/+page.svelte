@@ -7,6 +7,7 @@
   import { me } from '$lib/session';
   import { GroupType } from '$lib/zeus';
   import CardGroup from '$lib/components/CardGroup.svelte';
+  import { PUBLIC_STORAGE_URL } from '$env/static/public';
 
   export let data: PageData;
 
@@ -50,12 +51,10 @@
   <ul class="nobullet student-associations">
     {#each assertNoUndefineds(data.studentAssociations) as { name, uid, id } (id)}
       <li>
-        <CardGroup
-          href="/student-associations/{uid}"
+        <a href="/student-associations/{uid}">
+          <img src="{PUBLIC_STORAGE_URL}/student-associations/{uid}.png" alt={uid} />
           {name}
-          pictureFile="//student-associations/{uid}.png"
-          pictureFileDark=""
-        ></CardGroup>
+        </a>
       </li>
     {/each}
   </ul>

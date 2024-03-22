@@ -87,7 +87,7 @@ module.exports = {
         'unicorn/consistent-destructuring': 'off',
         'unicorn/no-useless-undefined': 'off',
         'unicorn/filename-case': 'off',
-	'unicorn/no-null': 'warn',
+        'unicorn/no-null': 'warn',
         'no-console': [
           'error',
           {

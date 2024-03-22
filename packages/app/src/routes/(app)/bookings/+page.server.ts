@@ -1,8 +1,10 @@
+import { getMe } from '$lib/session';
 import { Selector, loadQuery } from '$lib/zeus';
-import type { PageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent }) => {
-  const { me } = await parent();
+export const load: PageServerLoad = async (event) => {
+  const { fetch, parent } = event;
+  const me = await getMe(event);
   if (!me) return {};
 
   return loadQuery(

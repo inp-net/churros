@@ -8,12 +8,10 @@
   $: ({ Documents } = data);
 
   function mySchoolsFirst(a: { uid: string }, b: { uid: string }) {
-    if ($Documents.data?.me.major?.schools.some((s) => s.uid === a.uid)) 
-      return -1;
-    
-    if ($Documents.data?.me.major?.schools.some((s) => s.uid === b.uid)) 
-      return 1;
-    
+    if ($Documents.data?.me.major?.schools.some((s) => s.uid === a.uid)) return -1;
+
+    if ($Documents.data?.me.major?.schools.some((s) => s.uid === b.uid)) return 1;
+
     return 0;
   }
 </script>

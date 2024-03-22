@@ -9,7 +9,10 @@ query EventsOfWeek($monday: DateTime!) {
   }
   eventsInWeek(today: $monday) {
     id
-    uid, group{uid}
+    uid
+    group {
+      uid
+    }
     startsAt
     ...CardEvent
   }

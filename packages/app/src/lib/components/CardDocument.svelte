@@ -61,7 +61,6 @@
     }
   }
 
-
   .infos {
     display: flex;
     flex-wrap: wrap;

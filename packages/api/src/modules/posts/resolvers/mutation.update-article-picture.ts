@@ -13,7 +13,7 @@ builder.mutationField('updateArticlePicture', (t) =>
       const article = await prisma.article.findUniqueOrThrow({
         where: { id },
       });
-      return canEditArticle(user, article)
+      return canEditArticle(user, article);
     },
     async resolve(_, { id, file }, { user }) {
       await prisma.logEntry.create({

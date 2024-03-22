@@ -27,6 +27,7 @@
   import ButtonToggleActiveApp from '../ButtonToggleActiveApp.svelte';
   import FormApp from '../FormApp.svelte';
   import type { PageData } from './$houdini';
+  import { tooltip } from '$lib/tooltip';
 
   export let data: PageData;
   $: ({ ThirdPartyAppDetails } = data);
@@ -44,16 +45,9 @@
     owner: null,
     website: '',
     secretLength: 0,
-    usersCount: 0
+    usersCount: 0,
   };
-  $: ({
-    name,
-    createdAt,
-    faviconUrl,
-    clientId,
-    active,
-    secretLength,
-  } = app);
+  $: ({ name, createdAt, faviconUrl, clientId, active, secretLength } = app);
 
   $: logs = data.thirdPartyApp.logs.nodes;
 
@@ -62,14 +56,8 @@
   let shownLog: (typeof logs)[number] | undefined = undefined;
   let autoscrollLogs = true;
   let autoscrolling = false;
-
-  let app = {
-    name,
-    description,
-    allowedRedirectUris: allowedRedirectUris.join(' '),
-    website,
-    ownerGroup: owner,
-  };
+  let logSectionElement: HTMLDivElement;
+  let logDetailsModalElement: HTMLDialogElement;
 
   onMount(() => {
     $subscribe(
@@ -160,7 +148,7 @@
           ownerGroupUid: app.owner.uid,
           website: app.website,
         },
-        {__typename: true}
+        { __typename: true },
       ],
     });
 

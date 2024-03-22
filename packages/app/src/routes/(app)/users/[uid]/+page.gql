@@ -95,11 +95,11 @@ query UserProfile($uid: String!) {
       }
     }
 
-    pendingContributions  {
+    pendingContributions {
       name
       id
     }
-    contributesTo  {
+    contributesTo {
       name
       id
     }

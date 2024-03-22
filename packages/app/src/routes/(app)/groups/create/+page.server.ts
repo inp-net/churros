@@ -1,9 +1,11 @@
+import { getMe } from '$lib/session';
 import { GroupType, loadQuery } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent }) => {
-  const { me } = await parent();
+export const load: PageServerLoad = async (event) => {
+  const { fetch, parent } = event;
+  const me = await getMe(event);
   if (!me?.canEditGroups) throw redirect(307, '..');
   return {
     ...(await loadQuery(

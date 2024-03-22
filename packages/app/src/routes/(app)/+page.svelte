@@ -19,11 +19,7 @@
   });
 </script>
 
-<!--{@debug $IndexQuery.data}-->
-
 <h1>Mon feed</h1>
-
-<!--<p>{$IndexQuery.data}</p>-->
 
 <section class="groups">
   {#if $HomeQuery?.data?.me?.groups}

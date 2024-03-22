@@ -72,7 +72,7 @@
         />
         <div class="shotguns-and-events">
           {#if eventsByShotgun[day]?.length > 0}
-            {@const shotguns = eventsByShotgun[day]
+            {@const shotguns = (eventsByShotgun[day] ?? [])
               .map((id) => events.find((e) => e.id === id))
               .filter(notUndefined)}
             <div class="shotguns" class:open={openedShotgunsList === day}>

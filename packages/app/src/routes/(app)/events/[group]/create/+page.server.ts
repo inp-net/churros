@@ -1,11 +1,12 @@
 import { isOnClubBoard } from '$lib/permissions';
-import { redirectToLogin } from '$lib/session';
+import { getMe, redirectToLogin } from '$lib/session';
 import { Selector, loadQuery } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent, url, params }) => {
-  const { me } = await parent();
+export const load: PageServerLoad = async (event) => {
+  const { fetch, parent, url, params } = event;
+  const me = await getMe(event);
   if (!me) throw redirectToLogin(url.pathname);
 
   if (

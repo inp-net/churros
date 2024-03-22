@@ -38,7 +38,7 @@
           : sessionStorage.getItem('theme');
       document.documentElement.classList.add(theme);
     </script>
-    <div id="loading-overlay" class="visible">
+    <div id="loading-overlay">
       <img src="/logo-masked.png" alt="AEn7" />
       <div class="spinner">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
@@ -51,11 +51,11 @@
         <button onclick="window.location.reload();">Recharger</button>
       </p>
     </div>
-    <script>
+    <!-- <script>
       window.addEventListener('load', () => {
         document.getElementById('loading-overlay').classList.remove('visible');
       });
-    </script>
+    </script> -->
     <div style="display: contents">%sveltekit.body%</div>
   </body>
 

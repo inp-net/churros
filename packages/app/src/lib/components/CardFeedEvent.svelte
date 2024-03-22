@@ -19,12 +19,7 @@
   import ButtonGhost from './ButtonGhost.svelte';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
-  import {
-    Visibility,
-    fragment,
-    graphql,
-    type CardFeedEvent,
-  } from '$houdini';
+  import { Visibility, fragment, graphql, type CardFeedEvent } from '$houdini';
 
   export let likes: number | undefined = undefined;
   export let liked = false;

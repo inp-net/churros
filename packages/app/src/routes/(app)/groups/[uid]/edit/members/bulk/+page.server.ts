@@ -1,9 +1,10 @@
-import { redirectToLogin } from '$lib/session';
+import { getMe, redirectToLogin } from '$lib/session';
 import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
-export const load: PageLoad = async ({ params, parent, url }) => {
-  const { me } = await parent();
+export const load: PageServerLoad = async (event) => {
+  const { params, parent, url } = event;
+  const me = await getMe(event);
   if (!me) throw redirectToLogin(url.pathname);
 
   if (
