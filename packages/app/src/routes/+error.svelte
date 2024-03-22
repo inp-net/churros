@@ -3,6 +3,7 @@
   import { page } from '$app/stores';
   import { onDestroy, onMount } from 'svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { me } from '$lib/session';
 
   let error: App.Error | null;
   let status: number;
@@ -28,6 +29,11 @@
   {#if status === 401}
     <h1>Erreur 401</h1>
     <p>Vous n'avez pas les droits requis pour accéder à cette page.</p>
+    <p>
+      Essayez de vous <ButtonSecondary href="/login?from={$page.url.pathname}"
+        >connecter</ButtonSecondary
+      > ?
+    </p>
   {:else if status === 403}
     <h1>Erreur 403</h1>
     <p>Accès interdit.</p>

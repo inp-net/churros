@@ -15,6 +15,7 @@ import extractFiles from 'extract-files/extractFiles.mjs';
 import isFile from 'extract-files/isExtractableFile.mjs';
 import { GraphQLError } from 'graphql';
 import { derived } from 'svelte/store';
+import { UNAUTHORIZED_ERROR_MESSAGE } from '../../../api/src/lib/error';
 import { aled } from './session';
 
 export * from '../zeus/index.js';
@@ -86,6 +87,9 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
         throw new Error('The server returned an error.');
       })
       .then((graphqlResponse: GraphQLResponse) => {
+        if (graphqlResponse.errors?.every((e) => e.message === UNAUTHORIZED_ERROR_MESSAGE)) {
+          error(401, { message: UNAUTHORIZED_ERROR_MESSAGE });
+        }
         if (graphqlResponse.errors || !response.ok) throw new ZeusError(graphqlResponse);
         return graphqlResponse.data;
       });

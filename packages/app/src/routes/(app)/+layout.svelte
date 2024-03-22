@@ -34,7 +34,6 @@
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
   import type { Snapshot } from './$types';
-  import { notNull } from '$lib/typing';
 
   export let data: PageData;
   $: ({ AppLayout } = data);
@@ -153,9 +152,7 @@
   {/if}
 
   <div class="page-and-sidenav">
-    {#if $AppLayout.data?.me}
-      <NavigationSide me={$AppLayout.data.me} current={currentTabDesktop($page.url)} />
-    {/if}
+    <NavigationSide me={$AppLayout.data?.me} current={currentTabDesktop($page.url)} />
     <div
       id="scrollable-area"
       class="contents-and-announcements"
