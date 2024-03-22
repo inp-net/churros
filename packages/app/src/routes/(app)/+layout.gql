@@ -1,4 +1,4 @@
-query AppLayout($myUid: String!, $loggedIn: Boolean!) {
+query AppLayout($loggedIn: Boolean!) {
   combinedChangelog(sort: Descending) @include(if: $loggedIn) {
     __typename
     ... on QueryCombinedChangelogSuccess {
@@ -18,13 +18,13 @@ query AppLayout($myUid: String!, $loggedIn: Boolean!) {
     canEditUsers
     canEditGroups
     external
+    admin
     ...NavigationTopMe
     ...NavigationSideMe
-  }
-
-  registrationsOfUser(userUid: $myUid, forUserOnly: true, first: 1) @include(if: $loggedIn) {
-    nodes {
-      ...OverlayQuickBooking
+    bookings(forUserOnly: true, first: 1) {
+      nodes {
+        ...OverlayQuickBooking
+      }
     }
   }
 }

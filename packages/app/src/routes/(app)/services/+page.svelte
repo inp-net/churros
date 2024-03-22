@@ -3,14 +3,17 @@
   import CardService from '$lib/components/CardService.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import { debugging, themeDebugger } from '$lib/debugging';
-  import { me } from '$lib/session';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
-  import type { PageData } from './$types';
+  import IconTerminal from '~icons/mdi/terminal';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
 
-  const { userServices, codeContributors } = data;
+  $: ({ ServicesPage } = data);
+  $: userServices = $ServicesPage?.data?.userServices ?? [];
+  $: codeContributors = $ServicesPage?.data?.codeContributors;
+  $: me = $ServicesPage?.data?.me;
 </script>
 
 <div class="content">
@@ -24,27 +27,29 @@
     {/each}
     <li class="suggest">
       <CardService
-        service={{
-          name: $me?.admin ? 'Ajouter un service' : 'Il manque ...',
-          logo: 'add',
-          logoSourceType: 'Icon',
-
-          description: $me?.admin ? 'Ajouter un service' : 'Proposer un service à ajouter',
-          url: $me?.admin ? '/services/create' : '/services/submit',
-        }}
+        service={undefined}
+        href={me?.admin ? '/services/create' : '/services/submit'}
         dashedBorder
-      />
+      >
+        <svelte:fragment slot="name"
+          >{#if me?.admin}
+            Ajouter un service
+          {:else}
+            Il manque ...
+          {/if}
+        </svelte:fragment>
+        <svelte:fragment slot="description">
+          {#if !me?.admin}
+            Proposer un service à ajouter
+          {/if}
+        </svelte:fragment>
+      </CardService>
     </li>
     <li class="backrooms">
-      {#if $me?.admin}
-        <CardService
-          service={{
-            name: 'Backrooms',
-            logo: 'terminal',
-            logoSourceType: 'Icon',
-            url: '/backrooms',
-          }}
-        />
+      {#if me?.admin}
+        <CardService href="/backrooms" icon={IconTerminal} service={undefined}>
+          <svelte:fragment slot="name">Backrooms</svelte:fragment>
+        </CardService>
       {/if}
     </li>
   </ul>
@@ -57,11 +62,11 @@
         alt="net7"
       />
     </a>
-    {#if codeContributors.__typename === 'Error'}
+    {#if codeContributors?.__typename === 'Error'}
       <span class="credits">
         Impossible de récupérer les contributeurs: {codeContributors.message}
       </span>
-    {:else}
+    {:else if codeContributors}
       <span class="credits">
         Développé par <a href="/credits">{codeContributors.data.length} personnes</a> à
         <a href="https://net7.dev">net7</a>

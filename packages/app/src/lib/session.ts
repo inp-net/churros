@@ -1,7 +1,8 @@
 import { page } from '$app/stores';
-import { redirect } from '@sveltejs/kit';
+import { load_AppLayout } from '$houdini';
+import { redirect, type ServerLoadEvent } from '@sveltejs/kit';
 import * as cookie from 'cookie';
-import { derived } from 'svelte/store';
+import { derived, get } from 'svelte/store';
 
 /** Saves `token` as a cookie. */
 export const saveSessionToken = (
@@ -32,3 +33,11 @@ export const redirectToLogin = (to: string, searchParams: Record<string, string>
   redirect(307, `/login?${new URLSearchParams({ to, ...searchParams }).toString()}`);
 
 export const me = derived(page, ($page) => $page.data.me);
+
+export const getMe = async (event: ServerLoadEvent) => {
+  const { AppLayout } = await load_AppLayout({
+    event,
+    variables: { loggedIn: Boolean(event.cookies.get('token')) },
+  });
+  return get(AppLayout).data?.me;
+};

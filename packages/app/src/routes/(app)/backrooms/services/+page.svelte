@@ -1,32 +1,25 @@
 <script lang="ts">
   import CardService from '$lib/components/CardService.svelte';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
 
-  const { services } = data;
+  $: ({ ServicesManagerPage } = data);
 </script>
 
 <div class="content">
   <h1>Gérer les services</h1>
 
   <ul class="nobullet">
-    {#each services as service}
+    {#each $ServicesManagerPage.data?.services ?? [] as service (service.id)}
       <li>
-        <CardService service={{ ...service, url: `/services/${service?.id}/edit/` }} />
+        <CardService {service} />
       </li>
     {/each}
     <li class="new">
-      <CardService
-        service={{
-          name: 'Ajouter un service',
-          logo: 'add',
-          logoSourceType: 'Icon',
-
-          url: '/services/create',
-        }}
-        dashedBorder
-      />
+      <CardService service={undefined} href="/services/create" dashedBorder>
+        <svelte:fragment slot="name">Ajouter un service</svelte:fragment>
+      </CardService>
     </li>
   </ul>
 </div>

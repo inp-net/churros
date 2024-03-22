@@ -128,16 +128,15 @@
   };
 
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
-  $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
+  $: showingTicket = /\/bookings\/\w+\/$/.test($page.url.pathname);
 </script>
 
 {#if $AppLayout.data?.combinedChangelog?.__typename === 'QueryCombinedChangelogSuccess'}
   <ModalChangelog open changelog={$AppLayout.data.combinedChangelog.data} />
 {/if}
 
-{#if $AppLayout.data?.registrationsOfUser?.nodes[0]}
-  <OverlayQuickBookings {now} booking={$AppLayout.data.registrationsOfUser.nodes[0]}
-  ></OverlayQuickBookings>
+{#if $AppLayout.data?.me?.bookings?.nodes[0]}
+  <OverlayQuickBookings {now} booking={$AppLayout.data.me.bookings.nodes[0]}></OverlayQuickBookings>
 {/if}
 
 <div class="layout">

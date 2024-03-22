@@ -1,0 +1,20 @@
+query ServicesPage {
+  me {
+    admin
+  }
+  userServices {
+    id
+    ...CardService
+  }
+  codeContributors {
+    __typename
+    ... on QueryCodeContributorsSuccess {
+      data {
+        id
+      }
+    }
+    ... on Error {
+      message
+    }
+  }
+}

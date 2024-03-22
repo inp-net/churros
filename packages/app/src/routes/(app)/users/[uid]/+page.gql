@@ -1,4 +1,4 @@
-query UserProfile($uid: String!, $isMe: Boolean!, $showContributions: Boolean!) {
+query UserProfile($uid: String!) {
   contributionOptions {
     name
     price
@@ -95,11 +95,11 @@ query UserProfile($uid: String!, $isMe: Boolean!, $showContributions: Boolean!) 
       }
     }
 
-    pendingContributions @include(if: $isMe) {
+    pendingContributions  {
       name
       id
     }
-    contributesTo @include(if: $showContributions) {
+    contributesTo  {
       name
       id
     }

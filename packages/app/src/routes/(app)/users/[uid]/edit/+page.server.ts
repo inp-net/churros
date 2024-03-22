@@ -1,6 +1,7 @@
+import { getMe } from '$lib/session';
 import { loadQuery, Selector } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
 export const _userQuery = Selector('User')({
   id: true,
@@ -91,8 +92,9 @@ export const _userQuery = Selector('User')({
   enabledNotificationChannels: true,
 });
 
-export const load: PageLoad = async ({ fetch, params, parent }) => {
-  const { me } = await parent();
+export const load: PageServerLoad = async (event) => {
+  const { fetch, params, parent } = event;
+  const me = await getMe(event);
   if (params.uid !== me?.uid && !me?.canEditUsers) throw redirect(307, '..');
 
   const result = await loadQuery(

@@ -51,7 +51,7 @@
     'services': IconServices,
   };
 
-  export let service: CardService;
+  export let service: CardService | undefined;
   $: Service = fragment(
     service,
     graphql`
@@ -71,15 +71,18 @@
   );
 
   let hover: boolean = false;
+  export let icon: typeof SvelteComponent<any> | undefined = undefined;
   export let small = false;
+  export let href = $Service?.url;
+  export let edit = false;
   export let dashedBorder = false;
 </script>
 
-<a class="card-service" href={$Service.url} class:dashed-border={dashedBorder} class:small>
-  {#if ($me?.admin ?? false) && $Service.id}
+<a class="card-service" {href} class:dashed-border={dashedBorder} class:small>
+  {#if edit && $Service}
     <a
       class="edit-icon"
-      href="/services/{$Service?.id}/edit/"
+      href="/services/{$Service.id}/edit/"
       on:mouseover={() => (hover = true)}
       on:focus={() => (hover = true)}
       on:mouseleave={() => (hover = false)}
@@ -93,7 +96,11 @@
     </a>
   {/if}
 
-  {#if $Service.logoSourceType === LogoSourceType.ExternalLink}
+  {#if icon}
+    <svelte:component this={icon} class="logo"></svelte:component>
+  {:else if !$Service}
+    <IconAdd class="logo" />
+  {:else if $Service.logoSourceType === LogoSourceType.ExternalLink}
     <img src={$Service.logo} alt={$Service.name} class="logo" class:small />
   {:else if $Service.logoSourceType === LogoSourceType.InternalLink}
     <img
@@ -112,10 +119,16 @@
   {:else}
     <span>{$Service.logo}</span>
   {/if}
-  <p class="name" class:small>{$Service.name}</p>
+  <p class="name" class:small>
+    <slot name="name">
+      {$Service?.name ?? ''}
+    </slot>
+  </p>
   <p class="description typo-details" data-user-html>
-    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-    {@html $Service.description ?? ''}
+    <slot name="description">
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+      {@html $Service?.description ?? ''}
+    </slot>
   </p>
 </a>
 

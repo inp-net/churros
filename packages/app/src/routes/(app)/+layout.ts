@@ -1,7 +1,7 @@
 import type { AppLayoutVariables } from './$houdini';
 
-export const _AppLayoutVariables: AppLayoutVariables = () => {
+export const _AppLayoutVariables: AppLayoutVariables = async (event) => {
   return {
-    myUid: 'alamaternitei',
+    loggedIn: false,
   };
 };

@@ -30,6 +30,7 @@
   import IconTwitter from '~icons/mdi/twitter';
   import IconAnilist from '~icons/simple-icons/anilist';
   import type { PageData } from './$houdini';
+  import { byMemberGroupTitleImportance } from '$lib/sorting';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -46,12 +47,16 @@
   };
 
   export let data: PageData;
-  $: ({ UserProfile, isDeveloper } = data);
+  $: ({ UserProfile } = data);
   $: ({ contributionOptions, me, user } = $UserProfile.data ?? {
     contributionOptions: undefined,
     me: undefined,
     user: undefined,
   });
+  $: isDeveloper =
+    $UserProfile.data?.codeContributors?.__typename === 'QueryCodeContributorsSuccess'
+      ? $UserProfile.data.codeContributors.data.some((c) => c.uid === user?.uid)
+      : false;
 
   type UserTree = NonNullable<typeof user>['familyTree']['users'][number] & {
     children: UserTree[];
@@ -262,10 +267,12 @@
       <section class="groups">
         <h2>{user.groups.length === 1 ? 'Groupe' : 'Groupes'}</h2>
         <CarouselGroups
-          groups={user.groups.map(({ group, title, ...membership }) => ({
-            ...group,
-            role: `${rolesBadge(membership)} ${title}`,
-          }))}
+          groups={user.groups
+            .sort(byMemberGroupTitleImportance)
+            .map(({ group, title, ...membership }) => ({
+              ...group,
+              role: `${rolesBadge(membership)} ${title}`,
+            }))}
         />
       </section>
     {:else if !me?.external && me?.uid === user.uid}

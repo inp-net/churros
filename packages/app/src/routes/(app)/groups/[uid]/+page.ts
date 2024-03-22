@@ -1,18 +1,21 @@
-import { byMemberGroupTitleImportance } from '$lib/sorting';
+import { load_AppLayout, load_GroupProfile } from '$houdini';
 import { get } from 'svelte/store';
-import type { AfterLoadEvent, GroupProfileVariables } from './$houdini';
 
-export const _GroupProfileVariables: GroupProfileVariables = async ({ params, parent }) => {
-  const { AppLayout } = await parent();
-  // @ts-expect-error TODO fix this
-  const external = (await get(AppLayout).data.me.external) as boolean;
-  return {
-    ...params,
-    isStudent: !external,
-  };
-};
+// export const _GroupProfileVariables: GroupProfileVariables = async (event) => {
+//   return {
+//     ...event.params,
+//     isStudent: !me?.external,
+//   };
+// };
 
-export function _houdini_afterLoad({ data }: AfterLoadEvent) {
-  data.GroupProfile.group.members?.sort(byMemberGroupTitleImportance);
-  return data;
+export async function load(event) {
+  const { AppLayout } = await load_AppLayout({ event });
+  const { me } = get(AppLayout).data ?? { me: undefined };
+  return load_GroupProfile({
+    event,
+    variables: {
+      isStudent: true,
+      uid: event.params.uid,
+    },
+  });
 }
