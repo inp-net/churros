@@ -62,7 +62,7 @@
       </div>
     {/if}
     {#each shownDays as day}
-      {@const eventsOfDay = eventsByDate[day]
+      {@const eventsOfDay = (eventsByDate[day] ?? [])
         .map((id) => events.find((e) => e.id === id))
         .filter(notUndefined)}
       <section class="day">
@@ -72,7 +72,7 @@
         />
         <div class="shotguns-and-events">
           {#if eventsByShotgun[day]?.length > 0}
-            {@const shotguns = (eventsByShotgun[day] ?? [])
+            {@const shotguns = eventsByShotgun[day]
               .map((id) => events.find((e) => e.id === id))
               .filter(notUndefined)}
             <div class="shotguns" class:open={openedShotgunsList === day}>
