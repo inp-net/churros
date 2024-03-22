@@ -1,7 +1,7 @@
 import { loadQuery } from '$lib/zeus';
-import type { PageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent }) =>
+export const load: PageServerLoad = async ({ fetch, cookies }) =>
   loadQuery(
     {
       userCandidates: [
@@ -21,5 +21,5 @@ export const load: PageLoad = async ({ fetch, parent }) =>
         },
       ],
     },
-    { fetch, parent },
+    { fetch, token: cookies.get('token') },
   );
