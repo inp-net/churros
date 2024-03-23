@@ -77,7 +77,7 @@
           '...on Error': { message: true },
           '...on MutationUpsertShopItemSuccess': {
             data: {
-              uid:true,
+              uid: true,
               id: true,
               name: true,
               price: true,
@@ -103,9 +103,9 @@
       serverError = upsertShopItem.message;
       toasts.error(`Impossible de sauvegarder`, serverError);
     }
-    
-    if (upsertShopItem.__typename === 'MutationUpsertShopItemSuccess') await goto(`/groups/${upsertShopItem.data.group.uid}/shop/${upsertShopItem.data.uid}/`);
 
+    if (upsertShopItem.__typename === 'MutationUpsertShopItemSuccess')
+      await goto(`/groups/${upsertShopItem.data.group.uid}/shop/${upsertShopItem.data.uid}/`);
   }
 </script>
 
@@ -114,7 +114,12 @@
     <section class="metadata">
       <h2>Infos</h2>
       <InputText required label="Nom" bind:value={data.name} />
-      <InputNumber required label="Prix" bind:value={data.price} on:change={() => data.price = Number.parseFloat(data.price.toFixed(2))}/>
+      <InputNumber
+        required
+        label="Prix"
+        bind:value={data.price}
+        on:change={() => (data.price = Number.parseFloat(data.price.toFixed(2)))}
+      />
       <InputNumber label="Stock" bind:value={data.stock} />
       <InputNumber label="Max" bind:value={data.max} />
       <InputDate time label="Début de la vente" bind:value={data.startsAt} />

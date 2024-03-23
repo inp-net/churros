@@ -44,14 +44,8 @@
     } finally {
       // `updating` is set to false when the image loads
       updating = false;
-      //@ts-expect-error CF https://dev.to/senichimaro/object-is-possibly-undefinedts2532-k3a
-      //C'est vraiment degueu mais il n'y a pas d'autres solutions, si j'index en liste par Array[], les commits hooks ou whatever
-      //changent ma ligne en .at(-1) et du coup j'ai l'erreur TS2532
-      //Le support microsoft dit que c'est working as Intended ces tocards
-      //ts ignore est littéralement la seule solution
-      //by the way, cette ligne sert à actualiser l'url de l'image en ajoutant un timestamp
-      //côté client qui fait actualiser le composant et qui affiche l'image qui vient d'être uploadée sans reload
-      pictures.at(-1).path += `?v=${Date.now()}`;
+      const lastpic = pictures!.at(-1);
+      lastpic!.path += `?v=${Date.now()}`;
       if (index !== 0) index += 1;
     }
   };
