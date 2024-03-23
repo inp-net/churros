@@ -208,9 +208,10 @@
     display: flex;
     flex-direction: row;
     gap: 1em;
-    align-items: center;
+    align-items: start;
     justify-content: space-between;
     width: 100%;
+    padding: 1em;
   }
 
   .namepic {
@@ -232,7 +233,7 @@
   }
 
   .right {
-    width: 400px;
+    width: 500px;
     padding: 1em;
     background-color: var(--muted-bg);
     border-radius: 10px;
@@ -240,7 +241,7 @@
 
   .payment-methods {
     display: flex;
-    flex-direction: row;
+    flex-flow: row wrap;
     gap: 1em;
     align-items: center;
     justify-content: center;
