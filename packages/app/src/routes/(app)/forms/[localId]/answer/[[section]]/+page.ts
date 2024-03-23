@@ -11,6 +11,14 @@ export async function load({ fetch, parent, params }) {
     descriptionHtml: true,
     hasSections: true,
     linkedGoogleSheetUrl: true,
+    opensAt: true,
+    closesAt: true,
+    group: {
+      uid: true,
+      name: true,
+      pictureFile: true,
+      pictureFileDark: true,
+    },
     section: [
       { id: params.section },
       {
@@ -82,16 +90,17 @@ export async function load({ fetch, parent, params }) {
     ],
   } as unknown as typeof formQuery;
 
-  const { form } = await loadQuery(
+  const data = await loadQuery(
     {
       form: [{ localId: params.localId }, queryWithAliases],
+      groups: [{}, { name: true, uid: true, pictureFile: true, pictureFileDark: true }],
     },
     { fetch, parent },
   );
 
-  if (!form) {
+  if (!data.form) {
     error(404, { message: 'Formulaire introuvable' });
   }
 
-  return { form };
+  return data;
 }

@@ -80,6 +80,19 @@ export function closestMonday(date: Date): Date {
   return previousMonday(date);
 }
 
+/**
+ *
+ * @param startsAt start
+ * @param endsAt end
+ * @returns Formatted date range in the form "du {startsAt} au {endsAt}"
+ */
+export function formatOpenAtRange(startsAt: Date, endsAt: Date): string {
+  const startsAtFormatted = formatDateTime(startsAt);
+  const endsAtFormatted = formatDateTime(endsAt);
+
+  return `du ${startsAtFormatted} au ${endsAtFormatted}`;
+}
+
 export function formatEventDates(
   frequency: EventFrequency,
   startsAt: Date,
@@ -154,7 +167,7 @@ export function parseDisplayYearTierAndForApprentices(param: string): {
 }
 
 export function sortedByDate<
-  K extends string|number,
+  K extends string | number,
   O extends Record<K, Date | string | null | undefined>,
 >(items: O[], dateKey: K): O[] {
   return items.slice().sort((a, b) => {

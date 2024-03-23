@@ -5,6 +5,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/stores';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputField from '$lib/components/InputField.svelte';
@@ -13,6 +14,8 @@
   import InputSelectMultiple from '$lib/components/InputSelectMultiple.svelte';
   import InputSelectOneRadios from '$lib/components/InputSelectOneRadios.svelte';
   import InputText from '$lib/components/InputText.svelte';
+  import { formatRelative } from 'date-fns';
+  import fr from 'date-fns/locale/fr/index.js';
   import type { PageData } from './$types';
   import CardQuestion from './CardQuestion.svelte';
 
@@ -21,6 +24,8 @@
     title,
     descriptionHtml,
     section,
+    group,
+    closesAt,
     section: { questions },
   } = data.form;
 
@@ -47,8 +52,15 @@
 
 <h1>
   <ButtonBack />
+  <AvatarGroup tooltip="Formulaire créé par {group.name}" href="/groups/{group.uid}" {...group}
+  ></AvatarGroup>
   {title}
 </h1>
+<p class="timing typo-details">
+  {#if closesAt}
+    Ouvert aux réponses jusqu'à {formatRelative(closesAt, new Date(), { locale: fr })}
+  {/if}
+</p>
 <div data-user-html="">
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {@html descriptionHtml}
@@ -97,7 +109,17 @@
             options={question.options}
             value={myAnswer?.answerString}
             allowOther={question.allowOptionsOther}
-          ></InputSelectOneRadios>
+          >
+            <svelte:fragment let:option>
+              {@const group = data.groups.find((g) => g.name === option)}
+              <span class="select-one-option">
+                {#if group}
+                  <AvatarGroup href={undefined} {...group}></AvatarGroup>
+                {/if}
+                {option}
+              </span>
+            </svelte:fragment>
+          </InputSelectOneRadios>
         {:else if question.__typename === 'QuestionSelectMultiple'}
           <InputField label={title} required={mandatory}>
             <InputSelectMultiple
@@ -150,6 +172,19 @@
     align-items: center;
     margin-top: 2rem;
     flex-direction: column;
+  }
+
+  .select-one-option {
+    display: flex;
+    align-items: center;
+    column-gap: 0.5em;
+  }
+
+  h1 {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    column-gap: 0.5rem;
   }
 
   p.notice {

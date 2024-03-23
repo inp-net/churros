@@ -16,11 +16,11 @@
 
 <InputField {label} {required} {hint} {errors}>
   <div class="range-input">
-    <span class="label-min">{minimumLabel || minimum}</span>
-    <input type="range" bind:value {name} {id} min={minimum} max={maximum} step="1" />
-    <span class="label-max">{maximumLabel || maximum}</span>
-    <p class="current-value-hint">{value}/{maximum}</p>
+    <span class="label label-min typo-details">{minimumLabel || minimum}</span>
+    <span class="label label-max typo-details">{maximumLabel || maximum}</span>
   </div>
+  <input type="range" bind:value {name} {id} min={minimum} max={maximum} step="1" />
+  <p class="current-value-hint">{value}/{maximum}</p>
 </InputField>
 
 <style>
@@ -32,8 +32,21 @@
     gap: 1rem;
   }
 
+  .label {
+    white-space: pre;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .current-value-hint {
+    width: 4ch;
+    text-align: right;
+    width: 100%;
+  }
+
   input {
     flex: 1;
     min-width: 0;
+    width: 100%;
   }
 </style>
