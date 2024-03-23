@@ -39,7 +39,7 @@
   {id}
   {...$$restProps}
   disabled={loading || disabled || undefined}
-  class:muted={loading || disabled}
+  class:muted={loading || (disabled && !success && !danger)}
   on:click
   role="button"
   {tabindex}
@@ -82,6 +82,10 @@
   .button-secondary:disabled,
   .button-secondary[disabled] {
     cursor: not-allowed;
+  }
+
+  .button-secondary:disabled:not(.muted) {
+    opacity: 0.75;
   }
 
   .button-secondary.circle {

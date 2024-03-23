@@ -65,7 +65,22 @@ export function formatDate(
   }
 }
 
-
+export function formatDateTime(
+  date: Date | undefined | null,
+  dateStyle: Intl.DateTimeFormatOptions['dateStyle'] = 'long',
+  timeStyle: Intl.DateTimeFormatOptions['timeStyle'] = 'medium',
+): string {
+  try {
+    if (!date) return '';
+    if (typeof date === 'string') {
+      date = new Date(Date.parse(date));
+    }
+    return new Intl.DateTimeFormat('fr-FR', { dateStyle, timeStyle }).format(date);
+  } catch (error) {
+    console.error(error);
+    return '';
+  }
+}
 
 export function isWithinPartialInterval(
   date: Date,
