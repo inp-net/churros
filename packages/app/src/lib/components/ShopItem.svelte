@@ -23,7 +23,7 @@
 </script>
 
 <a class="container" class:small href="/groups/{shopItem.group.uid}/shop/{shopItem.uid}/">
-  <ShopImageCaroussel small url={shopItem.pictures.map((p) => p.path)} />
+  <ShopImageCaroussel {small} url={shopItem.pictures.map((p) => p.path)} />
   <div class="info">
     <div class="data">
       <h1 class="name" class:small>{shopItem.name}</h1>
@@ -58,7 +58,7 @@
   .container.small {
     width: 13em;
     max-width: 13em;
-    font-size: 0.70em;
+    font-size: 0.7em;
   }
 
   .container:hover {
@@ -88,7 +88,7 @@
     -webkit-box-orient: vertical;
   }
 
-  .name.small{
+  .name.small {
     display: -webkit-box;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -99,19 +99,15 @@
 
   .price {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
     padding: 1em 0 0;
   }
 
-  @media (min-width: 350px) {
+  @media (max-width: 350px) {
     .container {
       max-width: 15em;
-    }
-
-    .price {
-      flex-direction: column;
     }
   }
 </style>

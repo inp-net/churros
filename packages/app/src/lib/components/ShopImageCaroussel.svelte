@@ -1,6 +1,7 @@
 <script lang="ts">
   import IconBackward from '~icons/mdi/chevron-left';
   import IconForward from '~icons/mdi/chevron-right';
+  import IconNoImage from '~icons/mdi/ImageOffOutline';
   import { env } from '$env/dynamic/public';
 
   export let url: string[];
@@ -30,7 +31,9 @@
     {/if}
   {/each}
   {#if url.length === 0}
-    <p>Image du produit</p>
+    <div class="no-image">
+      <IconNoImage width="75%" height="75%" />
+    </div>
   {/if}
   {#if currentIndex > 0}
     <button class="arrow left" on:click={prevImage}><IconBackward /> </button>
@@ -92,5 +95,10 @@
 
   .arrow.left {
     left: 0.5em;
+  }
+  .no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>

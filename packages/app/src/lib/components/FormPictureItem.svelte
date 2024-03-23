@@ -49,6 +49,7 @@
     } finally {
       // `updating` is set to false when the image loads
       updating = false;
+      index += 1;
     }
   };
 

@@ -50,7 +50,7 @@
     <p class="text-center">Aucun article</p>
   {/if}
   {#each shopItems as shopItem}
-    <ShopItem {shopItem} />
+    <ShopItem {shopItem} small={false} />
   {/each}
 </div>
 
