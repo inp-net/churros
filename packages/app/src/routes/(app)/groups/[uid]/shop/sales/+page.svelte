@@ -2,12 +2,17 @@
   import type { PageData } from './$types';
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ShopItemTable from '$lib/components/ShopItemTable.svelte';
+  import BackButton from '$lib/components/ButtonBack.svelte';
+  import IconAdd from '~icons/mdi/add';
 
   export let data: PageData;
 
   const { shopItems } = data.group;
+  const isOnClubBoard = Boolean(
+    data.group.boardMembers.some((s) => s.member.uid === data.me?.uid || data.me?.admin),
+  );
 
   let warningToastId: string;
 
@@ -22,11 +27,24 @@
   });
 </script>
 
-<h1>Gestion de la boutique</h1>
+<div class="header">
+  <BackButton go="../." />
+  <h1>Gestion de la boutique</h1>
+  {#if isOnClubBoard}
+    <ButtonSecondary href="../create/">
+      Ajouter un article <IconAdd />
+    </ButtonSecondary>
+  {/if}
+</div>
 
 <div class="content">
-  {#if shopItems?.length === 0}
-    <ButtonPrimary href="create">Ajouter un produit</ButtonPrimary>
-  {/if}
   <ShopItemTable {shopItems} />
 </div>
+
+<style>
+  .header {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+  }
+</style>

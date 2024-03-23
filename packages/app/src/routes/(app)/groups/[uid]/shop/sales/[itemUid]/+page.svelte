@@ -3,6 +3,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
   import ItemBuyingTable from '$lib/components/ItemBuyingTable.svelte';
+  import BackButton from '$lib/components/ButtonBack.svelte';
 
   export let data: PageData;
 
@@ -21,7 +22,10 @@
   });
 </script>
 
-<h1>Liste des payements pour {shopItem.name}</h1>
+<div class="header">
+  <BackButton go="../." />
+  <h1>Liste des payements pour {shopItem.name}</h1>
+</div>
 
 <div class="content">
   {#if shopItem.shopPayments.length === 0}
@@ -37,5 +41,12 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 1em;
+  }
+
+  .header {
+    display: flex;
+    gap: 1em;
+    align-items: center;
   }
 </style>

@@ -6,6 +6,7 @@
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import IconAdd from '~icons/mdi/add';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import BackButton from '$lib/components/ButtonBack.svelte';
   export let data: PageData;
 
   const shopItems = data.itemsOfGroup.edges.flatMap(({ node }) => node);
@@ -36,6 +37,7 @@
 />
 
 <div class="shop-header">
+  <BackButton go="../." />
   <h1>Boutique de {group.name}</h1>
   <div>
     {#if isOnClubBoard}

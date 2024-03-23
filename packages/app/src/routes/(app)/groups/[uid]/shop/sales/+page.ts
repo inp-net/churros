@@ -14,6 +14,12 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           uid: params.uid,
         },
         {
+          uid: true,
+          boardMembers: {
+            member: {
+              uid: true,
+            },
+          },
           shopItems: {
             uid: true,
             id: true,
@@ -25,11 +31,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             stockLeft: true,
             group: {
               uid: true,
-              boardMembers: {
-                member: {
-                  uid: true,
-                },
-              },
+              name: true,
             },
           },
         },
@@ -37,14 +39,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
     },
     { fetch, parent },
   );
-  if (
-    !(
-      me.admin ||
-      data.group.shopItems.some((item) =>
-        item.group.boardMembers.some((member) => member.member.uid === me.uid),
-      )
-    )
-  )
+  if (!(me.admin || data.group.boardMembers.some((member) => member.member.uid === me.uid)))
     throw redirect(307, '..');
   return data;
 };

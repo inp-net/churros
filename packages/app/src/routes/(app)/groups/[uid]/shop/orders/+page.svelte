@@ -6,6 +6,7 @@
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
   import BadgePaymentStatus from '$lib/components/BadgePaymentStatus.svelte';
+  import BackButton from '$lib/components/ButtonBack.svelte';
 
   export let data: PageData;
 
@@ -30,8 +31,10 @@
     { name: 'Mes commandes', href: '.' },
   ]}
 />
-<h1>Mes achats</h1>
-
+<div class="header">
+  <BackButton go="../.." />
+  <h1>Mes achats</h1>
+</div>
 <div class="content">
   {#if orders.length === 0}
     <p class="text-center">Aucun article</p>
@@ -54,6 +57,13 @@
 </div>
 
 <style>
+  .header {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    margin: 1em auto;
+  }
+
   .content {
     display: flex;
     flex-flow: row wrap;

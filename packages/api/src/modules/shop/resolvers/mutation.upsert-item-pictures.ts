@@ -15,7 +15,7 @@ builder.mutationField('updateItemPicture', (t) =>
       Boolean(user?.admin || user?.groups.some(({ group }) => group.uid === groupUid)),
     async resolve(_, { itemId, file, groupUid }, { user }) {
       if (!(user?.admin || userIsOnBoardOf(user, groupUid)))
-        throw new GraphQLError('What tf are you trying to do mate ?');
+        throw new GraphQLError('You do not have the rights to update this picture');
       await prisma.logEntry.create({
         data: {
           area: 'shop',

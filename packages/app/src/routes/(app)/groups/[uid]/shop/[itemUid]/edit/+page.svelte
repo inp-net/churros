@@ -2,6 +2,7 @@
   import type { PageData } from './$types';
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
+  import BackButton from '$lib/components/ButtonBack.svelte';
   import FormShopItem from '$lib/components/FormShopItem.svelte';
   import FormPictureItem from '$lib/components/FormPictureItem.svelte';
 
@@ -20,10 +21,21 @@
   });
 </script>
 
-<h1>Nouvel article</h1>
+<div class="header">
+  <BackButton go="../." />
+  <h1>Modifier un article</h1>
+</div>
 <FormPictureItem
   itemId={data.shopItem.id}
   groupUid={data.shopItem.group.uid}
   pictures={data.shopItem.pictures}
 />
 <FormShopItem data={data.shopItem} availableLydiaAccounts={data.lydiaAccounts} />
+
+<style>
+  .header {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+  }
+</style>

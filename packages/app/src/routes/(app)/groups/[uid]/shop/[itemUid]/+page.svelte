@@ -3,6 +3,8 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import BackButton from '$lib/components/ButtonBack.svelte';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
   import InputNumber from '$lib/components/InputNumber.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
@@ -104,7 +106,9 @@
       </div>
       <div class="mid">
         <div class="name-header">
+          <BackButton go="../." />
           <h2>{shopItem.name}</h2>
+          <ButtonShare />
           {#if $me?.admin || shopItem.group.boardMembers.find((m) => m.member.uid === $me?.uid)}
             <ButtonGhost href="./edit/"><IconEdit /></ButtonGhost>
           {/if}

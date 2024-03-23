@@ -16,7 +16,7 @@ builder.mutationField('deleteItemPicture', (t) =>
       Boolean(user?.admin || user?.groups.some(({ group }) => group.uid === groupUid)),
     async resolve(_, { itemId, pictureId, groupUid }, { user }) {
       if (!(user?.admin || userIsOnBoardOf(user, groupUid)))
-        throw new GraphQLError('What tf are you trying to do mate ?');
+        throw new GraphQLError('You do not have the rights to delete this picture');
       const pictureFile = await prisma.picture.findUniqueOrThrow({
         where: { id: pictureId },
         select: { path: true },
