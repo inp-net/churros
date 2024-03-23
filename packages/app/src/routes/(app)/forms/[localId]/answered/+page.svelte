@@ -1,6 +1,8 @@
 <script lang="ts">
   import IconCheck from '~icons/mdi/check';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import IconBack from '~icons/mdi/undo-variant';
+  import IconHome from '~icons/mdi/home-outline';
 </script>
 
 <div class="content">
@@ -10,7 +12,8 @@
   <h1>Et voilà!</h1>
   <p>Merci d'avoir répondu au formulaire :)</p>
   <section class="actions">
-      <ButtonSecondary href="/">Retour à l'accueil</ButtonSecondary>
+    <ButtonSecondary icon={IconBack} href="../answer">Modifier mes réponses</ButtonSecondary>
+    <ButtonSecondary icon={IconHome} href="/">Retour à l'accueil</ButtonSecondary>
   </section>
 </div>
 
@@ -29,5 +32,10 @@
 
   section.actions {
     margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5em 1em;
   }
 </style>
