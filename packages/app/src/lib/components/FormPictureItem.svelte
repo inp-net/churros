@@ -10,10 +10,10 @@
 
   export let itemId = '';
   export let groupUid = '';
-  export let object: { id: string; path: string; position: Number }[];
-  if (object === undefined) object = [];
+  export let pictures: { id: string; path: string; position: Number }[];
+  if (pictures === undefined) pictures = [];
   $: index = 0;
-  $: pictureId = object === undefined ? '' : object[index]?.id;
+  $: pictureId = pictures === undefined ? '' : pictures[index]?.id;
   let files: FileList;
   let inputElement: HTMLInputElement;
   let updating = false;
@@ -42,14 +42,11 @@
 
       // Add a timestamp to the URL to force the browser to reload the image
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      if (object === undefined) 
-        object = [result.updateItemPicture];
-      
-      if (object !== undefined && object.length > 0) {
-        object.push(result.updateItemPicture);
-        if (object !== undefined && object.length > 0) 
-          object.at(-1).path = `${result.updateItemPicture.path}?v=${Date.now()}`;
-        
+      if (pictures === undefined) pictures = [result.updateItemPicture];
+
+      if (pictures !== undefined && pictures.length > 0) {
+        pictures.push(result.updateItemPicture);
+        pictures.at(-1).path = `${result.updateItemPicture.path}?v=${Date.now()}`;
       }
     } finally {
       // `updating` is set to false when the image loads
@@ -73,10 +70,10 @@
           true,
         ],
       });
-      if (deleted) object[index].path = '';
+      if (deleted) pictures[index].path = '';
     } finally {
       deleting = false;
-      object.splice(index, 1);
+      pictures.splice(index, 1);
       index -= 1;
     }
   };
@@ -86,7 +83,7 @@
   <InputField label="Photo de l’article">
     <div class="wrapper">
       <div class="caroussel">
-        <ShopImageCaroussel bind:currentIndex={index} url={object.map((p) => p.path)} />
+        <ShopImageCaroussel bind:currentIndex={index} url={pictures.map((p) => p.path)} />
       </div>
       <div class="actions">
         <FileInput
