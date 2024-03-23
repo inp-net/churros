@@ -18,7 +18,7 @@
   let warningToastId: string;
 
   onMount(() => {
-    warningToastId = toasts.warn('Page en bêta', 'Les boutiques sont en phase de développement', {
+    warningToastId = toasts.warn('Page en bêta', 'Les boutiques sont en phase de test', {
       lifetime: Number.POSITIVE_INFINITY,
     });
   });
