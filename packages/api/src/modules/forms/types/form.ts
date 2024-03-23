@@ -120,17 +120,6 @@ export const FormType = builder.prismaNode('Form', {
         });
       },
     }),
-    answerCount: t.int({
-      description: 'Nombre de réponses au formulaire',
-      subscribe(subs, { id }) {
-        subs.register(subscriptionName(id));
-      },
-      async resolve({ id }) {
-        const result: [{ count: bigint }] =
-          await prisma.$queryRaw`SELECT COUNT(DISTINCT("createdById")) FROM "Answer" WHERE "questionId" IN (SELECT id FROM "Question" WHERE "sectionId" IN (SELECT id FROM "FormSection" WHERE "formId" = ${id}))`;
-        return Number(result[0].count);
-      },
-    }),
     hasSections: t.boolean({
       description: 'Vrai si le formulaire comporte des sections',
       resolve: async ({ id }) =>

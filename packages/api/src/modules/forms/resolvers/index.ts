@@ -4,6 +4,7 @@
 
 export * from './event.forms.js';
 export * from './form-section.next-section.js';
+export * from './form.answer-count.js';
 export * from './form.answers.js';
 export * from './form.export-answers.js';
 export * from './form.linked-google-sheet-url.js';
