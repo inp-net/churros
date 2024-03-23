@@ -38,12 +38,16 @@ builder.queryField('itemsOfGroup', (t) =>
             },
           },
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       });
 
       if (!items) throw new GraphQLError('No item found');
       if (user?.admin) return items;
       const itemsToReturn = [];
       for (const item of items) {
+        if (userIsOnBoardOf(user, item.group.uid)) return items;
         switch (item.visibility) {
           case Visibility.Public: {
             itemsToReturn.push(item);

@@ -36,6 +36,7 @@ builder.queryField('shopItem', (t) =>
 
       if (!item) throw new GraphQLError('Item not found');
       if (user?.admin) return item;
+      if (userIsOnBoardOf(user, item.group.uid)) return item;
       // Switch case
       switch (item.visibility) {
         case Visibility.Private: {
