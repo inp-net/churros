@@ -1,4 +1,4 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, subscriptionName, toHtml } from '#lib';
+import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, splitID, subscriptionName, toHtml } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import {
   canAnswerForm,
@@ -20,6 +20,10 @@ export const FormType = builder.prismaNode('Form', {
     return canSeeForm({ createdById, group, visibility }, event, user);
   },
   fields: (t) => ({
+    localId: t.string({
+      resolve: ({ id }) => splitID(id)[1],
+      description: 'Identifiant local du formulaire',
+    }),
     createdAt: t.expose('createdAt', {
       type: DateTimeScalar,
       description: 'Date de création du formulaire',

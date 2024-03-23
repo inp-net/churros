@@ -956,7 +956,11 @@ model Form {
   answeredBy          User[]        @relation("completedForms")
   partiallyAnsweredBy User[]        @relation("partiallyCompletedForms")
 
+  // For full-text search
+  search              Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
   linkedGoogleSheetId String?
+
+  @@index([search], type: Gin)
 }
 
 model FormSection {

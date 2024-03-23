@@ -219,3 +219,19 @@ uploader_lastName := (
 END $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER update_document_search_trigger before INSERT OR UPDATE ON "Document" FOR EACH ROW EXECUTE PROCEDURE update_document_search();
+
+-- Form
+CREATE OR REPLACE FUNCTION update_form_search() RETURNS TRIGGER AS $$
+DECLARE
+    
+
+BEGIN
+    
+
+
+    NEW."search" := setweight(to_tsvector('french', coalesce(NEW."title"::text, '')), 'A') || setweight(to_tsvector('french', coalesce(NEW."description"::text, '')), 'B') || setweight(to_tsvector('french', coalesce(NEW."createdById"::text, '')), 'C') || setweight(to_tsvector('french', coalesce(NEW."groupId"::text, '')), 'C') || setweight(to_tsvector('french', coalesce(NEW."eventId"::text, '')), 'C') || setweight(to_tsvector('french', coalesce(NEW."linkedGoogleSheetId"::text, '')), 'D');
+
+    RETURN NEW;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_form_search_trigger before INSERT OR UPDATE ON "Form" FOR EACH ROW EXECUTE PROCEDURE update_form_search();

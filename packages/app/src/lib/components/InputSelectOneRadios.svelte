@@ -19,9 +19,12 @@
   export let required = false;
   export let hint: string | undefined = undefined;
   export let allowOther = false;
+  export let tainted = false;
 
-  $: otherOptionIsSelected =
-    value === OPTION_OTHER_VALUE || !optionsWithDisplay.some(([option]) => option === value);
+  $: otherOptionIsSelected = Boolean(
+    (value || tainted) &&
+      (value === OPTION_OTHER_VALUE || !optionsWithDisplay.some(([option]) => option === value)),
+  );
   let errorMessage = '';
   let showEmptyErrors = false;
   $: errorMessage = required && value === undefined && showEmptyErrors ? 'Ce champ est requis' : '';
@@ -60,7 +63,15 @@
       {/each}
       {#if allowOther}
         <label aria-current={otherOptionIsSelected}>
-          <input type="radio" {name} value={OPTION_OTHER_VALUE} bind:group={value} />
+          <input
+            type="radio"
+            {name}
+            value={OPTION_OTHER_VALUE}
+            bind:group={value}
+            on:click={() => {
+              tainted = true;
+            }}
+          />
           <slot name="other">Autre</slot>
           <InputText
             on:focus={() => {
@@ -97,13 +108,16 @@
   }
 
   input[type='radio'] {
-    display: none;
+    opacity: 0;
+    width: 0;
+    height: 0;
   }
 
   label::before {
     --size: 1.4em;
 
     display: inline-block;
+    flex-shrink: 0;
     width: var(--size);
     height: var(--size);
     content: '';
@@ -118,9 +132,14 @@
     border-color: var(--primary-border);
   }
 
+  label:not([aria-current='true']):focus-within::before {
+    box-shadow: 0 0 0 0.25em var(--primary-border);
+  }
+
   label {
     display: flex;
-    column-gap: 0.5em;
+    /* divide gap by two to account for the hidden radio buttons. this'll break if there are other elements */
+    column-gap: calc(0.5em / 2);
     align-items: center;
     cursor: pointer;
   }

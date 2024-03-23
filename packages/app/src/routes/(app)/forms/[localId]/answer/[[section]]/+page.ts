@@ -1,54 +1,90 @@
-import { ensureIdPrefix } from '$lib/typenames.js';
-import { loadQuery } from '$lib/zeus';
+import { loadQuery, Selector } from '$lib/zeus';
 import { error } from '@sveltejs/kit';
 
 export async function load({ fetch, parent, params }) {
-  const { form } = await loadQuery(
-    {
-      form: [
-        { localId: params.localId },
-        {
-          title: true,
-          descriptionHtml: true,
-          hasSections: true,
-          linkedGoogleSheetUrl: true,
-          section: [
-            { id: params.section ? ensureIdPrefix('FormSection', params.section) : undefined },
-            {
-              id: true,
-              descriptionHtml: true,
-              description: true,
-              title: true,
-              questions: {
-                'id': true,
-                'title': true,
-                'descriptionHtml': true,
-                'description': true,
-                'mandatory': true,
-                '__typename': true,
-                'type': true,
-                '...on QuestionFileUpload': {
-                  allowedFileTypes: true,
-                },
-                '...on QuestionScale': {
-                  maximum: true,
-                  minimum: true,
-                  maximumLabel: true,
-                  minimumLabel: true,
-                },
-                '...on QuestionSelectMultiple': {
-                  options: true,
-                  allowOptionsOther: true,
-                },
-                '...on QuestionSelectOne': {
-                  options: true,
-                  allowOptionsOther: true,
+  // Zeus's __alias typing are incorrect inside inline fragments.
+  // the __alias field actually exists and works inside inline fragments, but types suggest the opposite.
+  // to still get typing for the response, we trick typescript into thinking the query is the original query, without those aliases (formQuery) but add them before calling loadQuery.
+
+  const formQuery = Selector('Form')({
+    title: true,
+    descriptionHtml: true,
+    hasSections: true,
+    linkedGoogleSheetUrl: true,
+    section: [
+      { id: params.section },
+      {
+        id: true,
+        descriptionHtml: true,
+        description: true,
+        title: true,
+        questions: {
+          'id': true,
+          'title': true,
+          'descriptionHtml': true,
+          'description': true,
+          'mandatory': true,
+          'myAnswer': {
+            __typename: true,
+            answerString: true,
+          },
+          '__typename': true,
+          'type': true,
+          '...on QuestionFileUpload': {
+            allowedFileTypes: true,
+          },
+          '...on QuestionScale': {
+            maximum: true,
+            minimum: true,
+            maximumLabel: true,
+            minimumLabel: true,
+          },
+          '...on QuestionSelectMultiple': {
+            options: true,
+            allowOptionsOther: true,
+          },
+          '...on QuestionSelectOne': {
+            options: true,
+            allowOptionsOther: true,
+          },
+        },
+      },
+    ],
+  });
+
+  let queryWithAliases = {
+    ...formQuery,
+    section: [
+      formQuery.section[0],
+      {
+        ...formQuery.section[1],
+        questions: {
+          ...formQuery.section[1].questions,
+          myAnswer: {
+            ...formQuery.section[1].questions.myAnswer,
+            '...on AnswerScale': {
+              __alias: {
+                number: {
+                  value: true,
                 },
               },
             },
-          ],
+            '...on AnswerSelectMultiple': {
+              __alias: {
+                selection: {
+                  value: true,
+                },
+              },
+            },
+          },
         },
-      ],
+      },
+    ],
+  } as unknown as typeof formQuery;
+
+  const { form } = await loadQuery(
+    {
+      form: [{ localId: params.localId }, queryWithAliases],
     },
     { fetch, parent },
   );

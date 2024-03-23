@@ -26,6 +26,23 @@
 
   let submitting = false;
   $: serverError = $page.form;
+
+  $: alreadyAnswered = questions.every((q) => q.myAnswer !== null);
+
+  function myAnswerNumber(myAnswer: (typeof questions)[number]['myAnswer']) {
+    if (myAnswer?.__typename === 'AnswerScale') {
+      // @ts-expect-error see +page.ts for explanation
+      return myAnswer.number as number;
+    }
+    return 0;
+  }
+  function myAnswerSelection(myAnswer: (typeof questions)[number]['myAnswer']) {
+    if (myAnswer?.__typename === 'AnswerSelectMultiple') {
+      //@ts-expect-error see +page.ts for explanation
+      return myAnswer.selection as string[];
+    }
+    return [];
+  }
 </script>
 
 <h1>
@@ -54,13 +71,23 @@
         {@html section.descriptionHtml}
       </div>
     {/if}
-    {#each questions as { title, mandatory, descriptionHtml, description, type, id, ...question } (id)}
+    {#each questions as { title, mandatory, descriptionHtml, description, type, id, myAnswer, ...question } (id)}
       <CardQuestion {descriptionHtml} {description}>
         {#if question.__typename === 'QuestionScalar'}
           {#if type === 'LongText'}
-            <InputLongText name={id} value="" label={title} required={mandatory}></InputLongText>
+            <InputLongText
+              name={id}
+              value={myAnswer?.answerString ?? ''}
+              label={title}
+              required={mandatory}
+            ></InputLongText>
           {:else}
-            <InputText name={id} value="" label={title} required={mandatory}></InputText>
+            <InputText
+              name={id}
+              value={myAnswer?.answerString ?? ''}
+              label={title}
+              required={mandatory}
+            ></InputText>
           {/if}
         {:else if question.__typename === 'QuestionSelectOne'}
           <InputSelectOneRadios
@@ -68,17 +95,26 @@
             required={mandatory}
             name={id}
             options={question.options}
-            value=""
+            value={myAnswer?.answerString}
             allowOther={question.allowOptionsOther}
           ></InputSelectOneRadios>
         {:else if question.__typename === 'QuestionSelectMultiple'}
           <InputField label={title} required={mandatory}>
-            <InputSelectMultiple name={id} options={question.options}></InputSelectMultiple>
+            <InputSelectMultiple
+              selection={myAnswerSelection(myAnswer)}
+              name={id}
+              options={question.options}
+            ></InputSelectMultiple>
           </InputField>
         {:else if question.__typename === 'QuestionFileUpload'}
           <input type="file" name={id} {id} />
         {:else if question.__typename === 'QuestionScale'}
-          <InputScale name={id} label={title} required={mandatory} value={0} {...question}
+          <InputScale
+            name={id}
+            label={title}
+            required={mandatory}
+            value={myAnswerNumber(myAnswer)}
+            {...question}
           ></InputScale>
         {:else}
           <p>Question de type inconnu</p>
@@ -87,7 +123,13 @@
     {/each}
   </section>
   <section class="submit">
-    <ButtonPrimary submits>Envoyer</ButtonPrimary>
+    <ButtonPrimary loading={submitting} submits>
+      {#if alreadyAnswered}
+        Modifier mes réponses
+      {:else}
+        Envoyer
+      {/if}
+    </ButtonPrimary>
     {#if data.form.linkedGoogleSheetUrl}
       <p class="notice typo-details">
         Tes réponses seront également transmises à Google, pour les afficher dans un Google Sheet.
