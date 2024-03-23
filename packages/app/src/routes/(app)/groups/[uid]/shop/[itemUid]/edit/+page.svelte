@@ -24,6 +24,6 @@
 <FormPictureItem
   itemId={data.shopItem.id}
   groupUid={data.shopItem.group.uid}
-  object={data.shopItem.pictures}
+  pictures={data.shopItem.pictures}
 />
 <FormShopItem data={data.shopItem} availableLydiaAccounts={data.lydiaAccounts} />
