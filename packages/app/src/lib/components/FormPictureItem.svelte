@@ -40,15 +40,19 @@
       );
       toasts.success(`Photo de l’article mise à jour`);
 
-      // Add a timestamp to the URL to force the browser to reload the image
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       pictures.push(result.updateItemPicture);
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      pictures.at(-1).path = `${result.updateItemPicture.path}?v=${Date.now()}`;
     } finally {
       // `updating` is set to false when the image loads
       updating = false;
-      index += 1;
+      //@ts-expect-error CF https://dev.to/senichimaro/object-is-possibly-undefinedts2532-k3a
+      //C'est vraiment degueu mais il n'y a pas d'autres solutions, si j'index en liste par Array[], les commits hooks ou whatever
+      //changent ma ligne en .at(-1) et du coup j'ai l'erreur TS2532
+      //Le support microsoft dit que c'est working as Intended ces tocards
+      //ts ignore est littéralement la seule solution
+      //by the way, cette ligne sert à actualiser l'url de l'image en ajoutant un timestamp
+      //côté client qui fait actualiser le composant et qui affiche l'image qui vient d'être uploadée sans reload
+      pictures.at(-1).path += `?v=${Date.now()}`;
+      if (index !== 0) index += 1;
     }
   };
 
