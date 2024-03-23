@@ -235,3 +235,61 @@ BEGIN
 END $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER update_form_search_trigger before INSERT OR UPDATE ON "Form" FOR EACH ROW EXECUTE PROCEDURE update_form_search();
+
+-- Answer
+CREATE
+OR REPLACE FUNCTION update_answer_search() RETURNS TRIGGER AS $$
+DECLARE
+    answerer_firstname text := '';
+
+answerer_lastname text := '';
+
+BEGIN
+    answerer_firstname := (
+        SELECT
+            "firstName"
+        FROM
+            "User"
+        WHERE
+            "User"."id" = NEW."createdById"
+    );
+
+answerer_lastname := (
+    SELECT
+        "lastName"
+    FROM
+        "User"
+    WHERE
+        "User"."id" = NEW."createdById"
+);
+
+NEW."search" := setweight(
+    to_tsvector(
+        'french',
+        COALESCE(answerer_firstname :: text, '')
+    ),
+    'A'
+) || setweight(
+    to_tsvector(
+        'french',
+        COALESCE(answerer_lastname :: text, '')
+    ),
+    'A'
+) || setweight(
+    to_tsvector('french', COALESCE(NEW."questionId" :: text, '')),
+    'A'
+) || setweight(
+    to_tsvector(
+        'french',
+        COALESCE(NEW."createdById" :: text, '')
+    ),
+    'A'
+) || setweight(
+    to_tsvector('french', COALESCE(NEW."bookingId" :: text, '')),
+    'B'
+);
+
+
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_answer_search_trigger before INSERT OR UPDATE ON "Answer" FOR EACH ROW EXECUTE PROCEDURE update_answer_search();

@@ -1049,6 +1049,10 @@ model Answer {
   booking   Registration? @relation(fields: [bookingId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   bookingId String?       @unique
 
+  // For full-text search
+  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+
   // For now, users can answer only once to every question
   @@unique([questionId, createdById])
+  @@index([search], type: Gin)
 }
