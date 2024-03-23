@@ -12,7 +12,7 @@
   export let groupUid = '';
   export let pictures: { id: string; path: string; position: Number }[];
   if (pictures === undefined) pictures = [];
-  $: index = 0;
+  $: index = -1;
   $: pictureId = pictures === undefined ? '' : pictures[index]?.id;
   let files: FileList;
   let inputElement: HTMLInputElement;
@@ -44,9 +44,7 @@
     } finally {
       // `updating` is set to false when the image loads
       updating = false;
-      const lastpic = pictures!.at(-1);
-      lastpic!.path += `?v=${Date.now()}`;
-      if (index !== 0) index += 1;
+      index += 1;
     }
   };
 
@@ -69,7 +67,7 @@
     } finally {
       deleting = false;
       pictures.splice(index, 1);
-      index -= 1;
+      if (index > 1) index -= 1;
     }
   };
 </script>
@@ -78,7 +76,9 @@
   <InputField label="Photo de l’article">
     <div class="wrapper">
       <div class="caroussel">
-        <ShopImageCaroussel bind:currentIndex={index} url={pictures.map((p) => p.path)} />
+        {#key index}
+          <ShopImageCaroussel bind:currentIndex={index} url={pictures.map((p) => p.path)} />
+        {/key}
       </div>
       <div class="actions">
         <FileInput
