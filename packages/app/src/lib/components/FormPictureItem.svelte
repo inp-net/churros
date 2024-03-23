@@ -25,7 +25,8 @@
         {
           updateItemPicture: [
             {
-               itemId, groupUid ,
+              itemId,
+              groupUid,
               file: Zvar('file', 'File!'),
             },
             {
@@ -42,6 +43,7 @@
       // Add a timestamp to the URL to force the browser to reload the image
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       object.push(result.updateItemPicture);
+      object.at(-1).path = `${result.updateItemPicture.path}?v=${Date.now()}`;
     } finally {
       // `updating` is set to false when the image loads
       updating = false;
@@ -56,7 +58,9 @@
       const deleted = await $zeus.mutate({
         [`deleteItemPicture`]: [
           {
-             itemId, pictureId, groupUid ,
+            itemId,
+            pictureId,
+            groupUid,
           },
           true,
         ],
@@ -64,6 +68,8 @@
       if (deleted) object[index].path = '';
     } finally {
       deleting = false;
+      object.splice(index, 1);
+      index -= 1;
     }
   };
 </script>

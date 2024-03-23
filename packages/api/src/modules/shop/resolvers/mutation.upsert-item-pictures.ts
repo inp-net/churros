@@ -25,10 +25,10 @@ builder.mutationField('updateItemPicture', (t) =>
           user: user ? { connect: { id: user.id } } : undefined,
         },
       });
-      const picture = await prisma.picture.create({
+      let picture = await prisma.picture.create({
         data: { path: '' },
       });
-      updatePicture({
+      await updatePicture({
         resource: 'photos',
         folder: 'photos',
         extension: 'png',
@@ -46,11 +46,12 @@ builder.mutationField('updateItemPicture', (t) =>
           },
         },
       });
-      return prisma.picture.findFirstOrThrow({
+      picture = await prisma.picture.findFirstOrThrow({
         where: {
           id: picture.id,
         },
       });
+      return picture;
     },
   }),
 );
