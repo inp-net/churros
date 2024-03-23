@@ -5,6 +5,7 @@
 
   export let url: string[];
   export let currentIndex = 0;
+  export let small = false;
 
   $: urlLeng = url.length;
 
@@ -17,10 +18,15 @@
   }
 </script>
 
-<div class="carousel">
+<div class="carousel" class:small>
   {#each url as image, i}
     {#if i === currentIndex}
-      <img class="carousel-image" src="{env.PUBLIC_STORAGE_URL}{image}" alt="Image {i + 1}" />
+      <img
+        class="carousel-image"
+        class:small
+        src="{env.PUBLIC_STORAGE_URL}{image}"
+        alt="Image {i + 1}"
+      />
     {/if}
   {/each}
   {#if url.length === 0}
@@ -53,6 +59,12 @@
     width: 100%;
     object-fit: contain;
     transition: transform 0.5s;
+  }
+
+  .carousel.small {
+    width: 100%;
+    min-width: 100px;
+    height: 50%;
   }
 
   .arrow {

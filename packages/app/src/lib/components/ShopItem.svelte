@@ -22,11 +22,11 @@
   export let shopItem: ShopItemType;
 </script>
 
-<a class="container" href="./{shopItem.uid}">
-  <ShopImageCaroussel url={shopItem.pictures.map((p) => p.path)} />
+<a class="container" class:small href="/groups/{shopItem.group.uid}/shop/{shopItem.uid}/">
+  <ShopImageCaroussel small url={shopItem.pictures.map((p) => p.path)} />
   <div class="info">
     <div class="data">
-      <h1 class="name">{shopItem.name}</h1>
+      <h1 class="name" class:small>{shopItem.name}</h1>
       {#if shopItem.stock !== 0 && !small}
         <p>{shopItem.stockLeft}/{shopItem.stock} restants</p>
       {/if}
@@ -55,6 +55,12 @@
     border-radius: 14px;
   }
 
+  .container.small {
+    width: 13em;
+    max-width: 13em;
+    font-size: 0.70em;
+  }
+
   .container:hover {
     background: var(--hover-bg);
   }
@@ -74,6 +80,15 @@
   }
 
   .description {
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .name.small{
     display: -webkit-box;
     overflow: hidden;
     text-overflow: ellipsis;

@@ -250,11 +250,45 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     },
     { fetch, parent },
   );
+  const itemsOfGroup = await loadQuery(
+    {
+      itemsOfGroup: [
+        {
+          groupId: data.group.id,
+        },
+        {
+          edges: {
+            node: {
+              uid: true,
+              id: true,
+              name: true,
+              price: true,
+              max: true,
+              description: true,
+              stock: true,
+              stockLeft: true,
+              pictures: {
+                id: true,
+                path: true,
+                position: true,
+              },
+              group: {
+                uid: true,
+              },
+              visibility: true,
+            },
+          },
+        },
+      ],
+    },
+    { fetch, parent },
+  );
   return {
     ...data,
     group: {
       ...data.group,
       members: data.group.members?.sort(byMemberGroupTitleImportance),
     },
+    itemsOfGroup: itemsOfGroup.itemsOfGroup.edges.map(({ node }) => node),
   };
 };
