@@ -69,30 +69,27 @@ builder.mutationField('answerFormSection', (t) =>
             create: {
               questionId,
               createdById: user.id,
-              ...castAnswer(answer, questionById(questionId)),
+              ...castAnswer(answer, user.id, questionById(questionId), user),
             },
             update: {
-              ...castAnswer(answer, questionById(questionId)),
+              ...castAnswer(answer, user.id, questionById(questionId), user),
             },
           }),
         ),
       );
 
       const form = await prisma.formSection.findUniqueOrThrow({ where: { id: sectionId } }).form();
+      console.log({ form });
 
-      void (async () => {
-        if (!form.createdById) return;
+      if (form.createdById) {
         try {
           const sheets = await googleSheetsClient(form.createdById);
-          await appendFormAnswersToGoogleSheets(
-            form.id,
-            sheets,
-            results.map((r) => r.id),
-          );
+          console.log('Appending answers to Google Sheets');
+          await appendFormAnswersToGoogleSheets(form.id, sheets, user.id);
         } catch (error) {
           console.error(error);
         }
-      })();
+      }
 
       publish(form.id, 'updated', answers);
 

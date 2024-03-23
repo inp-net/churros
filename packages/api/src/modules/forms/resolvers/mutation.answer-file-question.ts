@@ -41,7 +41,7 @@ builder.mutationField('answerFileQuestion', (t) =>
       let answer = await prisma.answer.create({
         data: {
           questionId,
-          answeredById: user?.id,
+          createdById: user?.id,
           answer: [],
         },
       });

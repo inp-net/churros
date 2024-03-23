@@ -54,7 +54,7 @@ builder.mutationField('mailFormAnswers', (t) =>
   <ul>${answers
     .map(
       (a) => `
-       <li><strong>${a.question.title}</strong>: ${answerToString(a)}</li>
+       <li><strong>${a.question.title}</strong>: ${answerToString(a, user)}</li>
   `,
     )
     .join('')}
@@ -72,7 +72,7 @@ builder.mutationField('mailFormAnswers', (t) =>
   ${answers
     .map(
       (a) => `
-       ${a.question.title}: ${answerToString(a)}
+       ${a.question.title}: ${answerToString(a, user)}
   `,
     )
     .join('')}

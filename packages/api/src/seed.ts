@@ -17,8 +17,8 @@ import slug from 'slug';
 const faker = fakerFR; //j'avais la flemme de faire des FakerFRFR.machin partout
 faker.seed(5); //seed de génération de la DB, pour générer une DB avec de nouvelles données il suffit juste de changer la valeur de la seed
 
-const numberUserDB: number = 50; //Nombre d'utilisateur dans la DB de test
-const numberEvent: number = 5; //Nombre d'événement créer dans la DB
+const numberUserDB: number = 500; //Nombre d'utilisateur dans la DB de test
+const numberEvent: number = 50; //Nombre d'événement créer dans la DB
 
 function* range(start: number, end: number): Generator<number> {
   for (let i = start; i < end; i++) yield i;
@@ -44,6 +44,14 @@ const color = (str: string) => {
 
 function randomChoice<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)]!;
+}
+
+function weightedRandomEnumValue<T extends Record<string | number, string | number>>(
+  probabilities: Record<keyof T, number>,
+): keyof T {
+  return faker.helpers.weightedArrayElement(
+    Object.keys(probabilities).map((key) => ({ weight: probabilities[key]!, value: key })),
+  ) as keyof T;
 }
 
 // randomizes hours and minutes from given date
@@ -463,12 +471,20 @@ const clubsData = [
   { name: 'Zumba' },
 ];
 
-for (const [_, group] of clubsData.entries()) {
+for (const [i, group] of clubsData.entries()) {
   const { id: groupId } = await prisma.group.create({
     data: {
       ...group,
       uid: slug(group.name),
-      type: GroupType.Club,
+      // ensure 3 list groups
+      type:
+        i < 3
+          ? GroupType.List
+          : (weightedRandomEnumValue({
+              [GroupType.Club]: 0.75,
+              [GroupType.Association]: 0.2,
+              [GroupType.Integration]: 0.05,
+            }) as GroupType),
       color: color(group.name),
       address: 'D202',
       email: `${slug(group.name)}@list.example.com`,
@@ -930,44 +946,92 @@ for (let i = 0; i < 10; i++) {
   }
 }
 
-await prisma.form.create({
+// Vote listes
+
+const voteForm = await prisma.form.create({
   data: {
     title: 'Vote listes AEn7 2024',
     description: 'Vote pour Gd7T sinon conséquences',
     groupId: faker.helpers.arrayElement(groups).id,
     visibility: 'Unlisted',
+    eventId: faker.helpers.arrayElement(events).id,
     opensAt: new Date(),
     closesAt: addDays(new Date(), 1),
-    sections: {
+  },
+});
+
+const presentielSection = await prisma.formSection.create({
+  data: {
+    formId: voteForm.id,
+    description: '',
+    title: '',
+    order: 1,
+    questions: {
       create: {
-        description: 'Les votes “autres” sont comptabilisés comme des votes nuls',
+        title: 'Comment veux-tu voter?',
+        description: '',
+        type: 'SelectOne',
+        options: ['Sur place', 'En ligne'],
         order: 1,
-        title: '',
-        questions: {
-          createMany: {
-            data: [
-              {
-                order: 1,
-                title: 'Liste votante',
-                description: '',
-                type: 'SelectOne',
-                options: ['Guerre des 7toiles', 'Pan7on', 'Ber7ker'],
-                allowOptionOther: true,
-              },
-              {
-                order: 2,
-                title: "T'as trouvé l'année comment?",
-                description: '',
-                type: 'Scale',
-                scaleStart: 1,
-                scaleEnd: 10,
-                options: ['Nul à iech', 'Génialissime'],
-              },
-            ],
-          },
-        },
       },
     },
+  },
+  include: {
+    questions: true,
+  },
+});
+
+await prisma.formSection.create({
+  data: {
+    formId: voteForm.id,
+    title: '',
+    description: '',
+    order: 2,
+    questions: {
+      create: {
+        title: "Qui doit prendre l'AE?",
+        description: '',
+        order: 1,
+        type: 'SelectOne',
+        mandatory: true,
+        allowOptionOther: true,
+        anonymous: true,
+        options: faker.helpers
+          .arrayElements(
+            groups.filter((g) => g.type === 'List'),
+            3,
+          )
+          .map((g) => g.name),
+      },
+    },
+  },
+});
+
+const feedbackSection = await prisma.formSection.create({
+  data: {
+    formId: voteForm.id,
+    title: '',
+    description: '',
+    order: 3,
+    questions: {
+      create: {
+        title: "T'as trouvé l'année comment?",
+        description: '',
+        order: 1,
+        type: 'Scale',
+        scaleStart: 1,
+        scaleEnd: 10,
+        anonymous: true,
+      },
+    },
+  },
+});
+
+await prisma.formJump.create({
+  data: {
+    value: 'Sur place',
+    questionId: presentielSection.questions[0]!.id,
+    targetId: feedbackSection.id,
   },
 });
 

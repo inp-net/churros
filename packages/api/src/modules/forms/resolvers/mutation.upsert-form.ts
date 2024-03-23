@@ -1,5 +1,6 @@
 import { builder, prisma } from '#lib';
-import { DateTimeScalar } from '#modules/global';
+import { DateTimeScalar, VisibilityEnum } from '#modules/global';
+import omit from 'lodash.omit';
 import { userCanManageEvent } from '../../../permissions/manager.js';
 import { FormType } from '../types/form.js';
 import { canEditForm, requiredIncludesForPermissions } from '../utils/permissions.js';
@@ -31,17 +32,23 @@ builder.mutationField('upsertForm', (t) =>
         description: "Identifiant de l'événement à associer au formulaire",
         required: false,
       }),
+      visibility: t.input.field({
+        type: VisibilityEnum,
+      }),
+      groupId: t.input.id({
+        description: 'Identifiant du groupe auquel le formulaire est associé',
+      }),
     },
-    async authScopes(_, { input: { id, eventId } }, { user }) {
-      if (id) {
+    async authScopes(_, { input }, { user }) {
+      if (input.id) {
         const form = await prisma.form.findUniqueOrThrow({
-          where: { id },
+          where: { id: input.id },
           include: requiredIncludesForPermissions,
         });
         return canEditForm(form, form.event, user);
-      } else if (eventId) {
+      } else if (input.eventId) {
         const event = await prisma.event.findUniqueOrThrow({
-          where: { id: eventId },
+          where: { id: input.eventId },
           include: requiredIncludesForPermissions.event.include,
         });
         return userCanManageEvent(event, user, { canEdit: true });
@@ -49,13 +56,11 @@ builder.mutationField('upsertForm', (t) =>
         return Boolean(user);
       }
     },
-    async resolve(query, _, { input: { id, ...input } }, { user }) {
-      const data = {
-        ...input,
-      };
+    async resolve(query, _, { input }, { user }) {
+      const data = omit(input, 'id', 'eventId');
       return prisma.form.upsert({
         ...query,
-        where: { id: id ?? '' },
+        where: { id: input.id ?? '' },
         create: {
           ...data,
           createdById: user?.id,

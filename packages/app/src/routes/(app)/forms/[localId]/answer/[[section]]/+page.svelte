@@ -3,7 +3,6 @@
 </script>
 
 <script lang="ts">
-  import { enhance } from '$app/forms';
   import { page } from '$app/stores';
   import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
@@ -14,8 +13,10 @@
   import InputSelectMultiple from '$lib/components/InputSelectMultiple.svelte';
   import InputSelectOneRadios from '$lib/components/InputSelectOneRadios.svelte';
   import InputText from '$lib/components/InputText.svelte';
+  import { tooltip } from '$lib/tooltip';
   import { formatRelative } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
+  import IconAnonymous from '~icons/mdi/anonymous';
   import type { PageData } from './$types';
   import CardQuestion from './CardQuestion.svelte';
 
@@ -69,7 +70,6 @@
 <form
   method="post"
   action="?/postAnswers"
-  use:enhance
   on:submit={() => {
     submitting = true;
   }}
@@ -83,8 +83,8 @@
         {@html section.descriptionHtml}
       </div>
     {/if}
-    {#each questions as { title, mandatory, descriptionHtml, description, type, id, myAnswer, ...question } (id)}
-      <CardQuestion {descriptionHtml} {description}>
+    {#each questions as { title, mandatory, anonymous, descriptionHtml, description, type, id, myAnswer, ...question } (id)}
+      <CardQuestion {descriptionHtml} {description} {anonymous}>
         {#if question.__typename === 'QuestionScalar'}
           {#if type === 'LongText'}
             <InputLongText
@@ -122,6 +122,7 @@
           </InputSelectOneRadios>
         {:else if question.__typename === 'QuestionSelectMultiple'}
           <InputField label={title} required={mandatory}>
+            <span slot="label"> </span>
             <InputSelectMultiple
               selection={myAnswerSelection(myAnswer)}
               name={id}
@@ -147,9 +148,9 @@
   <section class="submit">
     <ButtonPrimary loading={submitting} submits>
       {#if alreadyAnswered}
-        Modifier mes réponses
+        Enregistrer
       {:else}
-        Envoyer
+        Continuer
       {/if}
     </ButtonPrimary>
     {#if data.form.linkedGoogleSheetUrl}

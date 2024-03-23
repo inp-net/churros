@@ -12,15 +12,24 @@ builder.prismaObjectField(FormSectionType, 'nextSection', (t) =>
         ...query,
         where: {
           formId,
-          restrictedToGroups: {
-            some: {
-              members: {
-                some: {
-                  memberId: user?.id,
-                },
-              },
-            },
-          },
+          // OR: [
+          //   {
+          //     restrictedToGroups: {
+          //       some: {
+          //         members: {
+          //           some: {
+          //             memberId: user?.id,
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          //   {
+          //     restrictedToGroups: {
+          //       none: {},
+          //     },
+          //   },
+          // ],
           order: {
             gt: order,
           },
@@ -43,7 +52,7 @@ builder.prismaObjectField(FormSectionType, 'nextSection', (t) =>
               some: {},
             },
           },
-          answeredById: user?.id,
+          createdById: user?.id,
         },
         include: {
           question: {

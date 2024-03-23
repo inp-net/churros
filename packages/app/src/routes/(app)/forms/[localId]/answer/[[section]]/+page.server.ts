@@ -1,16 +1,15 @@
 import { OPTION_OTHER_VALUE } from '$lib/components/InputSelectOneRadios.svelte';
 import { TYPENAMES_TO_ID_PREFIXES } from '$lib/typenames';
-import { makeMutation } from '$lib/zeus.js';
+import { loadQuery, makeMutation } from '$lib/zeus.js';
 import { error, redirect } from '@sveltejs/kit';
 import { FORM_SECTION_HIDDEN_INPUT_NAME } from './+page.svelte';
 
 export const actions = {
-  async postAnswers({ fetch, request, cookies }) {
+  async postAnswers({ fetch, request, cookies, params }) {
     const data = await request.formData();
     const sectionId = data.get(FORM_SECTION_HIDDEN_INPUT_NAME);
     if (!sectionId)
       error(400, { message: 'ID de la section du formulaire manquant dans la requête' });
-
     // Resolve answers from form data, including compounding multiple answers for the same question into arrays
     let answers = gatherAnswers(data);
 
@@ -37,7 +36,24 @@ export const actions = {
       error(400, { message: e?.toString() });
     });
 
-    redirect(307, '../answered');
+    // Get next section, _after_ submitting answers
+    const { form } = await loadQuery(
+      {
+        form: [
+          { localId: params.localId },
+          {
+            section: [{ id: params.section }, { nextSection: { id: true } }],
+          },
+        ],
+      },
+      { fetch, token: cookies.get('token') },
+    );
+
+    if (form?.section.nextSection) {
+      redirect(307, `/forms/${params.localId}/answer/${form.section.nextSection.id}`);
+    }
+
+    redirect(307, `/forms/${params.localId}/answered`);
   },
 };
 
@@ -66,11 +82,6 @@ function handleOtherOptionAnswers(answers: Record<string, string[]>): Record<str
     // otherwise, remove /other from the answers
     if (question.endsWith('/other')) {
       const questionId = question.replace(/\/other$/, '');
-      console.log({
-        questionId,
-        qidans: result[questionId],
-        answer,
-      });
       if (!result[questionId] || isUnanswered(result[questionId])) {
         result[questionId] = answer;
       }

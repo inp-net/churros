@@ -1,6 +1,5 @@
 import { loadQuery } from '$lib/zeus.js';
 import { error } from '@sveltejs/kit';
-import groupBy from 'lodash.groupby';
 
 export async function load({ fetch, parent, params: { localId }, url: { searchParams } }) {
   const { form } = await loadQuery(
@@ -19,6 +18,7 @@ export async function load({ fetch, parent, params: { localId }, url: { searchPa
                 title: true,
                 descriptionHtml: true,
                 id: true,
+                anonymous: true,
               },
             },
           ],
@@ -48,8 +48,6 @@ export async function load({ fetch, parent, params: { localId }, url: { searchPa
   if (!form) error(404);
 
   console.log(form.answers);
-
-
 
   return { form };
 }

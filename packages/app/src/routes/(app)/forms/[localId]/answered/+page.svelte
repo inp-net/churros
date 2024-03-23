@@ -1,13 +1,15 @@
 <script lang="ts">
-  import IconCheck from '~icons/mdi/check';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import IconBack from '~icons/mdi/undo-variant';
-  import IconHome from '~icons/mdi/home-outline';
-  import IconEmail from '~icons/mdi/email-outline';
-  import IconSuccess from '~icons/mdi/check-circle-outline';
-  import type { PageData } from './$types';
-  import { zeus } from '$lib/zeus';
   import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
+  import { zeus } from '$lib/zeus';
+  import IconAnonymous from '~icons/mdi/anonymous';
+  import IconCheck from '~icons/mdi/check';
+  import IconSuccess from '~icons/mdi/check-circle-outline';
+  import IconEmail from '~icons/mdi/email-outline';
+  import IconHome from '~icons/mdi/home-outline';
+  import IconBack from '~icons/mdi/undo-variant';
+  import type { PageData } from './$types';
 
   export let data: PageData;
   $: myAnswers = data.form?.myAnswers ?? [];
@@ -77,7 +79,17 @@
     </h2>
     <dl>
       {#each myAnswers as answer (answer.id)}
-        <dt>{answer.question.title}</dt>
+        <dt>
+          {answer.question.title}
+          {#if answer.question.anonymous}
+            <span
+              class="anonymous-marker"
+              use:tooltip={'Cette question est anonyme. Personne ne pourra connaître votre réponse à cette question (excepté le service technique).'}
+            >
+              <IconAnonymous></IconAnonymous>
+            </span>
+          {/if}
+        </dt>
         <dd>{answer.answerString}</dd>
       {/each}
     </dl>

@@ -98,6 +98,6 @@ export const AnswerType = builder.prismaInterface('Answer', {
       description: 'Réservation associée à la réponse',
     }),
     question: t.relation('question'),
-    answerString: t.string({ resolve: answerToString }),
+    answerString: t.string({ resolve: (answer, {}, { user }) => answerToString(answer, user) }),
   }),
 });

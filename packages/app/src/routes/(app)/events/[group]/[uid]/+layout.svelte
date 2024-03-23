@@ -50,10 +50,16 @@
   {/if}
 </section>
 
-<slot />
+<div class="content">
+  <slot />
+</div>
 
 <style>
   section.tabs {
     margin: 0 1.5rem;
+  }
+
+  .content {
+    margin: 0 auto;
   }
 </style>

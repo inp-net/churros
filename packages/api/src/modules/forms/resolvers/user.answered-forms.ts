@@ -21,7 +21,7 @@ builder.prismaObjectField(UserType, 'answeredForms', (t) =>
                 every: {
                   answers: {
                     some: {
-                      answeredById: id,
+                      createdById: id,
                     },
                   },
                 },

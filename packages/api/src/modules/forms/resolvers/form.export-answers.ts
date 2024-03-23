@@ -8,8 +8,8 @@ import { canSeeAllAnswers } from '../utils/permissions.js';
 
 builder.prismaObjectField(FormType, 'answersExport', (t) =>
   t.string({
-    authScopes({ event, createdById }, {}, { user }) {
-      return canSeeAllAnswers({ createdById }, event, user);
+    authScopes(form, {}, { user }) {
+      return canSeeAllAnswers(form, form.event, user);
     },
     args: {
       format: t.arg({
@@ -22,13 +22,13 @@ builder.prismaObjectField(FormType, 'answersExport', (t) =>
     async resolve({ id }, { format }) {
       const answers = await prisma.answer.findMany({
         where: { question: { section: { formId: id } } },
-        include: { question: true, answeredBy: true },
-        orderBy: [{ answeredById: 'asc' }, { questionId: 'asc' }],
+        include: { question: true, createdBy: true },
+        orderBy: [{ createdById: 'asc' }, { createdAt: 'desc' }, { questionId: 'asc' }],
       });
 
       const tabularHeader = ['Personne', 'Question', 'Réponse', 'Date de réponse'] as const;
-      const tabularData = answers.map(({ answeredBy, answer, number, question, createdAt }) => ({
-        'Personne': answeredBy ? fullName(answeredBy) : '(Anonyme)',
+      const tabularData = answers.map(({ createdBy, answer, number, question, createdAt }) => ({
+        'Personne': createdBy ? fullName(createdBy) : '(Anonyme)',
         'Question': question.title,
         'Réponse': number?.toString() ?? answer.join(','),
         'Date de réponse': createdAt.toISOString(),

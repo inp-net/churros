@@ -32,6 +32,7 @@ export async function load({ fetch, parent, params }) {
           'descriptionHtml': true,
           'description': true,
           'mandatory': true,
+          'anonymous': true,
           'myAnswer': {
             __typename: true,
             answerString: true,

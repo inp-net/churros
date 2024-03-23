@@ -11,7 +11,7 @@ export async function load({ fetch, parent, params }) {
           id: true,
           myAnswers: {
             id: true,
-            question: { title: true },
+            question: { title: true, anonymous: true },
             answerString: true,
           },
         },

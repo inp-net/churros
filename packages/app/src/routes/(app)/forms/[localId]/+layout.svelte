@@ -3,7 +3,7 @@
 
   export let data: LayoutData;
 
-  $: console.log(data.form)
+  $: console.log(data.form);
 </script>
 
 <svelte:head>

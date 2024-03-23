@@ -56,5 +56,9 @@ export const QuestionType = builder.prismaInterface('Question', {
     mandatory: t.exposeBoolean('mandatory', {
       description: 'Indique si la question est obligatoire',
     }),
+    anonymous: t.exposeBoolean('anonymous', {
+      description:
+        "Indique si la réponse à la question est anonyme. Si oui, les personnes pouvant voir les réponses ne pouront jamais savoir la réponse d'une personne à la question",
+    }),
   }),
 });

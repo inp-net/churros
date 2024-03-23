@@ -8,8 +8,8 @@ builder.prismaObjectField(FormType, 'answers', (t) =>
     description: 'Réponses au formulaire',
     type: AnswerType,
     cursor: 'id',
-    authScopes({ event, createdById }, {}, { user }) {
-      return canSeeAllAnswers({ createdById }, event, user);
+    authScopes(form, {}, { user }) {
+      return canSeeAllAnswers(form, form.event, user);
     },
     resolve: async (query, { id }) => {
       return prisma.answer.findMany({

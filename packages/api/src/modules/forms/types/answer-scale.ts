@@ -9,15 +9,13 @@ export const AnswerScaleType = builder.prismaObject('Answer', {
   interfaces: [AnswerType],
   include: { question: true },
   fields: (t) => ({
-    value: t.field({
-      type: 'Int',
+    value: t.int({
       nullable: true,
       description: 'Réponse donnée',
       resolve: ({ number, question: { scaleStart, scaleEnd } }) =>
-        number ? scaleStart! + number * (scaleEnd! - scaleStart!) : null,
+        number ? Math.floor(scaleStart! + number * (scaleEnd! - scaleStart!)) : null,
     }),
-    normalizedValue: t.field({
-      type: 'Float',
+    normalizedValue: t.float({
       nullable: true,
       description: 'Réponse donnée, entre 0 et 1',
       resolve: ({ number }) => number,

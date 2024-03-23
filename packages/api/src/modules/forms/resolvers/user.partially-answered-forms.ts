@@ -24,7 +24,7 @@ builder.prismaObjectField(UserType, 'partiallyAnsweredForms', (t) =>
                     some: {
                       answers: {
                         some: {
-                          answeredById: id,
+                          createdById: id,
                         },
                       },
                     },
@@ -40,7 +40,7 @@ builder.prismaObjectField(UserType, 'partiallyAnsweredForms', (t) =>
                       every: {
                         answers: {
                           some: {
-                            answeredById: id,
+                            createdById: id,
                           },
                         },
                       },

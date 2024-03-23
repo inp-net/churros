@@ -14,17 +14,17 @@ builder.prismaInterfaceField(QuestionType, 'answers', (t) =>
     query({ by }) {
       if (by) {
         return {
-          where: { answeredBy: { uid: by } },
+          where: { createdBy: { uid: by } },
         };
       }
       return {};
     },
     async authScopes({ sectionId }, { by }, { user }) {
-      const { createdById, event } = await prisma.form.findFirstOrThrow({
+      const form = await prisma.form.findFirstOrThrow({
         where: { sections: { some: { id: sectionId } } },
         include: requiredIncludesForPermissions,
       });
-      return (by && user && by === user.uid) || canSeeAllAnswers({ createdById }, event, user);
+      return (by && user && by === user.uid) || canSeeAllAnswers(form, form.event, user);
     },
   }),
 );

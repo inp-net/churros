@@ -1000,6 +1000,7 @@ model Question {
   description String       @db.Text
   type        QuestionKind
   mandatory   Boolean      @default(false)
+  anonymous   Boolean      @default(false)
 
   options          String[] @default([])
   scaleStart       Int?

@@ -82,17 +82,15 @@ export function canSeeForm(
   if (
     form.visibility === Visibility.SchoolRestricted &&
     !user?.major?.schools.some((s) => form.group.studentAssociation?.schoolId === s.id)
-  ) 
+  )
     return false;
-  
 
   // When the form has an associated event, check that the user can see the event
   if (
     associatedEvent &&
     !(userCanAccessEvent(associatedEvent, user) || userCanManageEvent(associatedEvent, user, {}))
-  ) 
+  )
     return false;
-  
 
   return true;
 }
