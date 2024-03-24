@@ -8,13 +8,12 @@ export const theme = writable('system', (set) => {
   // It's not possible to load the theme on the server
   if (!browser) return;
 
-  // Force Noël theme if not re-set to sth else by the user
-  if (localStorage.getItem('user_does_not_like_ber7ker_theme') === null) {
-    set('ber7ker');
-  } else {
-    // Try to load the theme from sessionStorage or fallback to a media query
-    set(localStorage.getItem('theme') ?? 'system');
-  }
+  if (['pan7on', 'ber7ker'].includes(localStorage.getItem('theme') ?? '')) 
+    localStorage.setItem('theme', 'system');
+  
+
+  // Try to load the theme from sessionStorage or fallback to a media query
+  set(localStorage.getItem('theme') ?? 'system');
 });
 
 export const isDark = writable(false);

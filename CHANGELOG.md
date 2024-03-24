@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Autres
+
+- C'est la fin des thèmes de listeux :/ Merci pour ces superbes campagnes!
+
 ## [1.54.0] - 2024-03-24
 
 ### Corrections
