@@ -40,10 +40,11 @@ export const actions = {
         },
         { fetch, token: cookies.get('token') },
       );
-      if (answerFormSection.__typename === 'Error')
+      if (answerFormSection.__typename === 'Error') {
         return fail(400, { message: answerFormSection.message });
-    } catch (error_) {
-      error(400, { message: error_?.toString() ?? '' });
+      }
+    } catch (e) {
+      error(400, { message: e?.toString() ?? '' });
     }
 
     // Get next section, _after_ submitting answers
@@ -59,8 +60,9 @@ export const actions = {
       { fetch, token: cookies.get('token') },
     );
 
-    if (form?.section.nextSection)
+    if (form?.section.nextSection) {
       redirect(302, `/forms/${params.form}/answer/${form.section.nextSection.localId}`);
+    }
 
     redirect(302, `/forms/${params.form}/answered`);
   },
@@ -70,8 +72,11 @@ function gatherAnswers(data: FormData) {
   const answers: Record<string, string[]> = {};
   for (const [name, value] of data.entries()) {
     if (name.startsWith(TYPENAMES_TO_ID_PREFIXES.Question + ':')) {
-      if (answers[name]) answers[name].push(value.toString());
-      else answers[name] = [value.toString()];
+      if (answers[name]) {
+        answers[name].push(value.toString());
+      } else {
+        answers[name] = [value.toString()];
+      }
     }
   }
   return answers;
@@ -88,8 +93,9 @@ function handleOtherOptionAnswers(answers: Record<string, string[]>): Record<str
     // otherwise, remove /other from the answers
     if (question.endsWith('/other')) {
       const questionId = question.replace(/\/other$/, '');
-      if (!result[questionId] || isUnanswered(result[questionId])) result[questionId] = answer;
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      if (!result[questionId] || isUnanswered(result[questionId])) {
+        result[questionId] = answer;
+      }
       delete result[question];
     }
   }

@@ -95,7 +95,7 @@
       </div>
     {/if}
     {#each questions as { title, mandatory, anonymous, descriptionHtml, description, type, id, myAnswer, ...question } (id)}
-      <CardQuestion {descriptionHtml} {description} {anonymous}>
+      <CardQuestion {descriptionHtml} {description} {anonymous} {mandatory}>
         {#if question.__typename === 'QuestionScalar'}
           {#if type === 'LongText'}
             <InputLongText

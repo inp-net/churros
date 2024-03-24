@@ -1,5 +1,5 @@
 <script>
-  export let element = 'div';
+  export let element = 'article';
 </script>
 
 <svelte:element this={element} {...$$restProps} class="card">

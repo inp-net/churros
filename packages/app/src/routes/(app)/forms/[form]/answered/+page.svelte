@@ -94,7 +94,13 @@
             </span>
           {/if}
         </dt>
-        <dd>{answer.answerString}</dd>
+        <dd>
+          {#if answer.answerString}
+            {answer.answerString}
+          {:else}
+            <em>Sans réponse</em>
+          {/if}
+        </dd>
       {/each}
     </dl>
     <div class="actions"></div>

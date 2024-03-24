@@ -17,11 +17,16 @@ export function castAnswer(
     anonymous: boolean;
   },
   user: undefined | { id: string },
-): { answer: string[]; number: number | undefined } {
-  if (anonymous && (!user || createdById !== user.id)) {
-    return {
+): { answer: string[]; number: number | null } {
+  if (anonymous && (!user || createdById !== user.id))
+    {return {
       answer: [REDACTED_ANSWER],
-      number: undefined,
+      number: null,
+    };}
+  if (value.length === 0) {
+    return {
+      answer: [],
+      number: null,
     };
   }
   return {
@@ -31,8 +36,8 @@ export function castAnswer(
         ? Number.parseFloat(value[0])
         : type === 'Scale'
           ? Number.parseInt(value[0]) / (scaleEnd! - scaleStart!)
-          : undefined
-      : undefined,
+          : null
+      : null,
   };
 }
 
@@ -56,6 +61,7 @@ export function answerToString(
   user: undefined | { id: string } = undefined,
 ): string {
   if (anonymous && (!user || createdById !== user.id)) return REDACTED_ANSWER;
+  if (answer.length === 0) return '';
   return type === 'Scale'
     ? `${Math.floor(scaleStart! + number! * (scaleEnd! - scaleStart!))}/${scaleEnd!}`
     : number
