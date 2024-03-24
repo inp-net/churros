@@ -176,6 +176,10 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
               canEditPermissions: true,
               canVerifyRegistrations: true,
             },
+            forms: {
+              localId: true,
+              title: true,
+            },
           }),
         ],
       },

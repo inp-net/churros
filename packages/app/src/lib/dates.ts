@@ -1,5 +1,5 @@
 import { EventFrequency } from '$lib/zeus';
-import { format, isMonday, previousMonday } from 'date-fns';
+import { format, isMonday, isToday, previousMonday } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
 
 export const dateTimeFormatter = new Intl.DateTimeFormat('fr-FR', {
@@ -12,7 +12,31 @@ export const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
 });
 
 export const formatDateTime = (date: unknown) => dateTimeFormatter.format(new Date(date as Date));
-export const formatDate = (date: unknown) => dateFormatter.format(new Date(date as Date));
+export const formatDate = (date: unknown) => {
+  try {
+    return dateFormatter.format(new Date(date as Date));
+  } catch (error) {
+    console.error(error);
+    return '';
+  }
+};
+
+export const formatTime = (date: unknown) =>
+  new Intl.DateTimeFormat('fr-FR', {
+    timeStyle: 'short',
+  }).format(new Date(date as Date));
+
+/**
+ * Show the time only if the date is today, otherwise show the full date
+ * @param date
+ */
+export const formatDateTimeSmart: (date: Date | string) => string = (date) => {
+  if (typeof date === 'string') date = new Date(Date.parse(date));
+  if (isToday(date)) {
+    return formatTime(date);
+  }
+  return formatDate(date);
+};
 
 export const formatDatetimeLocal = (date: Date | string) => {
   if (typeof date === 'string') date = new Date(Date.parse(date));
@@ -54,6 +78,19 @@ export function yearRangeUpTo(end: number, length: number): number[] {
 export function closestMonday(date: Date): Date {
   if (isMonday(date)) return date;
   return previousMonday(date);
+}
+
+/**
+ *
+ * @param startsAt start
+ * @param endsAt end
+ * @returns Formatted date range in the form "du {startsAt} au {endsAt}"
+ */
+export function formatOpenAtRange(startsAt: Date, endsAt: Date): string {
+  const startsAtFormatted = formatDateTime(startsAt);
+  const endsAtFormatted = formatDateTime(endsAt);
+
+  return `du ${startsAtFormatted} au ${endsAtFormatted}`;
 }
 
 export function formatEventDates(
@@ -127,4 +164,15 @@ export function parseDisplayYearTierAndForApprentices(param: string): {
     yearTier: parseYearTier(yearTierDisplay),
     forApprentices: fiseOrFisa === 'fisa',
   };
+}
+
+export function sortedByDate<
+  K extends string | number,
+  O extends Record<K, Date | string | null | undefined>,
+>(items: O[], dateKey: K): O[] {
+  return items.slice().sort((a, b) => {
+    if (!a[dateKey]) return 1;
+    if (!b[dateKey]) return -1;
+    return new Date(a[dateKey] as Date).valueOf() - new Date(b[dateKey] as Date).valueOf();
+  });
 }
