@@ -27,14 +27,21 @@
   onDestroy(async () => {
     await toasts.remove(warningToastId);
   });
-</script>
 
-<NavigationTabs
-  tabs={[
+  let tabs = [
     { name: 'Boutique', href: '.' },
     { name: 'Mes commandes', href: './orders/' },
-  ]}
-/>
+  ];
+  if (isOnClubBoard) {
+    tabs = [
+      { name: 'Boutique', href: '.' },
+      { name: 'Mes commandes', href: './orders/' },
+      { name: 'Gestion', href: './sales/' },
+    ];
+  }
+</script>
+
+<NavigationTabs {tabs} />
 
 <div class="shop-header">
   <BackButton go="../." />
