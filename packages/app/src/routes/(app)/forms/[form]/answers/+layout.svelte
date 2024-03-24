@@ -1,9 +1,7 @@
 <script lang="ts">
   import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
   import type { LayoutData } from './$types';
-  import { page } from '$app/stores';
 
   export let data: LayoutData;
   $: ({ form } = data);
@@ -12,9 +10,6 @@
 {#if form}
   {@const { group, visibility, title } = form}
   <h1>
-    {#if $page.route.id === '/(app)/forms/[form]/answers/analytics'}
-      <ButtonBack go=".."></ButtonBack>
-    {/if}
     <AvatarGroup href="/groups/{group.uid}" {...group}></AvatarGroup> Réponses à {title}
   </h1>
   <p class="visibility">
