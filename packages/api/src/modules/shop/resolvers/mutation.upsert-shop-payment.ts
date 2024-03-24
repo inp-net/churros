@@ -136,7 +136,6 @@ builder.mutationField('upsertShopPayment', (t) =>
           lydiaTransaction: true,
         },
       });
-
       await pay({ shopPayment, phone: phone ?? '' });
 
       await prisma.logEntry.create({
