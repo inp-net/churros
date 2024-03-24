@@ -14,7 +14,8 @@
   <BaseInputText
     actionIcon={q ? IconClear : undefined}
     on:action={() => {
-      q = null;
+      q = '';
+      emit('search', q);
     }}
     type="text"
     {placeholder}

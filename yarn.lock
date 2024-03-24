@@ -421,6 +421,7 @@ __metadata:
     "@types/express": "npm:^4.17.21"
     "@types/ldapjs": "npm:^3.0.6"
     "@types/lodash.omit": "npm:^4.5.9"
+    "@types/lodash.range": "npm:^3.2.9"
     "@types/multer": "npm:^1.4.11"
     "@types/node": "npm:^20.11.30"
     "@types/nodemailer": "npm:^6.4.14"
@@ -464,6 +465,7 @@ __metadata:
     linkify-plugin-mention: "npm:^4.1.3"
     linkifyjs: "npm:^4.1.3"
     lodash.omit: "npm:^4.5.0"
+    lodash.range: "npm:^3.2.0"
     lodash.uniqby: "npm:^4.7.0"
     multer: "npm:^1.4.5-lts.1"
     nanoid: "npm:^5.0.6"
@@ -3120,6 +3122,15 @@ __metadata:
   dependencies:
     "@types/lodash": "npm:*"
   checksum: 10c0/3b60c8ee8e9a691392d9a3ceabb32c85f888784bd3307eac3de01aeb7ff37383dc8899f027fe852641f5e0f56158fb19785cc3d20a4922e85b5810f14cba23f6
+  languageName: node
+  linkType: hard
+
+"@types/lodash.range@npm:^3.2.9":
+  version: 3.2.9
+  resolution: "@types/lodash.range@npm:3.2.9"
+  dependencies:
+    "@types/lodash": "npm:*"
+  checksum: 10c0/d21ed4c18f958aa447520eaf6e5113415bec2c2a7e016a54aa39228f45179ee3523732f4959ea31cffcf8dcf9d28d17c7188e38a835dfad54d5fe3d457d5bcf9
   languageName: node
   linkType: hard
 
@@ -9723,6 +9734,13 @@ __metadata:
   version: 4.5.0
   resolution: "lodash.omit@npm:4.5.0"
   checksum: 10c0/3808b9b6faae35177174b6ab327f1177e29c91f1e98dcbccf13a72a6767bba337306449d537a4e0d8a33d2673f10d39bc732e30c4b803274ea0c1168ea60e549
+  languageName: node
+  linkType: hard
+
+"lodash.range@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "lodash.range@npm:3.2.0"
+  checksum: 10c0/b1db80e6bcd92dd89e1ea42bf9f7ac4f1f04d53bc2e1da9589414f3ce50bb4a8558dbd2848ff800e6b455662ec707eab6aeba3cfebe3443e1712778d16829bae
   languageName: node
   linkType: hard
 

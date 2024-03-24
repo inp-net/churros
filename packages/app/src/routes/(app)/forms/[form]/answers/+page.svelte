@@ -1,25 +1,23 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
+  import InputPillEvent from '$lib/components/InputPillEvent.svelte';
   import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import { formatDateTimeSmart, sortedByDate } from '$lib/dates';
   import { subscribe } from '$lib/subscriptions';
-  import { toasts } from '$lib/toasts';
   import { zeus } from '$lib/zeus';
-  import debounce from 'lodash.debounce';
   import groupBy from 'lodash.groupby';
   import { onMount } from 'svelte';
   import { queryParam } from 'sveltekit-search-params';
   import IconGSheet from '~icons/mdi/google-spreadsheet';
-  import IconOpenInNewTab from '~icons/mdi/open-in-new';
   import IconNewGSheet from '~icons/mdi/table-plus';
+  import IconOpenInNewTab from '~icons/mdi/open-in-new';
   import type { PageData } from './$types';
   import { _answerNodeQuery } from './+page';
+  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
 
   export let data: PageData;
 
@@ -27,22 +25,15 @@
     encode: (v) => v || undefined,
     decode: (v) => v ?? '',
   });
-  let creatingLinkedGoogleSheet = false;
+
+  let searching = false;
 
   $: ({
-    title,
-    visibility,
     answerCount,
     linkedGoogleSheetUrl,
     questions: { nodes: questions },
-    group,
     event,
-    localId,
   } = data.form);
-
-  let groupedAnswers: Record<string, Record<string, (typeof data.form.answers.nodes)[number]>> = {};
-  $: {
-  }
 
   $: answerers = groupBy(
     data.form.answers.nodes.map((a) => a.createdBy),
@@ -81,14 +72,15 @@
         const freshData = await result;
         if ('errors' in freshData) return;
         if (!freshData.form) return;
-        if (!freshData.form.answers) return;
+        if (freshData?.form?.answers) return;
 
-        //@ts-expect-error svelte is dumb
+        //@ts-ignore svelte is dumb
         data.form.answers.nodes = [
           ...data.form.answers.nodes.filter(
-            //@ts-expect-error svelte is dumb
+            //@ts-ignore svelte is dumb
             (a) => !freshData.form.answers.nodes.some((b) => a.id === b.id),
           ),
+          // @ts-expect-error Check of non-nullability was done above
           ...freshData.form.answers.nodes,
         ];
         data.form.answerCount = freshData.form.answerCount;
@@ -107,11 +99,11 @@
           true,
         ],
       })
-      .catch(async (error) => {
-        if (error.message.includes('lier votre compte Google')) {
+      .catch(async (e) => {
+        if (e.message.includes('lier votre compte Google')) {
           toasts.error(
             'Lies ton compte Google à Churros pour créer un Google Sheet lié',
-            error.message,
+            e.message,
             {
               data: {},
               labels: {
@@ -125,7 +117,7 @@
             },
           );
         } else {
-          toasts.error('Impossible de créer le Google Sheet', error.message);
+          toasts.error('Impossible de créer le Google Sheet', e.message);
         }
         creatingLinkedGoogleSheet = false;
         return { createLinkedGoogleSheet: undefined };
@@ -145,7 +137,11 @@
     /**
      * Grouped answers, by user uid then by question ID
      */
-    groupedAnswers = Object.fromEntries(
+    // let groupedAnswers: Record<
+    //   string,
+    //   Record<string, (typeof data.form.answers.nodes)[number]>
+    // > = {};
+    const groupedAnswers = Object.fromEntries(
       Object.entries(byUser).map(([uid, answers]) => [
         uid,
         Object.fromEntries(answers.map((a) => [a.question.id, a])),
@@ -167,92 +163,97 @@
     return sortedByDate(entries, 1);
   }
 
-  const searchAnswers = debounce(
-    async (q) => {
-      if (!q) return [];
-      const { form } = await $zeus.query({
-        form: [
-          { localId: data.form.localId },
-          {
-            searchAnswers: [{ q }, { answer: _answerNodeQuery }],
-          },
-        ],
-      });
+  async function searchAnswers(q: string) {
+    if (!q) return [];
+    const { form } = await $zeus.query({
+      form: [
+        { localId: data.form.localId },
+        {
+          searchAnswers: [{ q }, { answer: _answerNodeQuery }],
+        },
+      ],
+    });
 
-      return form?.searchAnswers.map((a) => a.answer);
-    },
-    1000,
-    { trailing: true },
-  );
+    return form?.searchAnswers.map((a) => a.answer) ?? [];
+  }
 
-  let searchResults: NonNullable<Awaited<ReturnType<typeof searchAnswers>>> = [];
-  $: searchAnswers($q)?.then((results) => {
-    if (results) searchResults = results;
-  });
+  let searchResults: undefined | Awaited<ReturnType<typeof searchAnswers>> = undefined;
 </script>
 
-<h1><AvatarGroup href="/groups/{group.uid}" {...group}></AvatarGroup> Réponses à {title}</h1>
-<p class="visibility">
-  <IndicatorVisibility text {visibility}></IndicatorVisibility>
-</p>
-
-<header>
-  <InputSearchQuery bind:q={$q}></InputSearchQuery>
-  <p>
-    {#if $q}{searchResults?.length} résultats{:else}{answerCount} réponses{/if}
-  </p>
-  <ButtonShare text path="/forms/{localId}/answer"></ButtonShare>
-  <ButtonInk
-    newTab
-    loading={creatingLinkedGoogleSheet}
-    href={creatingLinkedGoogleSheet ? undefined : linkedGoogleSheetUrl}
-    icon={linkedGoogleSheetUrl ? IconGSheet : IconNewGSheet}
-    on:click={linkedGoogleSheetUrl ? undefined : linkToGhseet}
-  >
-    {#if creatingLinkedGoogleSheet}
-      Création du Google Sheet…
-    {:else if !linkedGoogleSheetUrl}
-      Créer un Google Sheet lié
-    {:else}
-      Google Sheet
-    {/if}
-  </ButtonInk>
-  {#if event}
-    <ButtonInk icon={IconOpenInNewTab} newTab href="/events/{event.group.uid}/{event.uid}"
-      >Évènement lié</ButtonInk
-    >
-  {/if}
-</header>
+<Header
+  {searchResults}
+  {linkedGoogleSheetUrl}
+  formId={data.form.id}
+  {answerCount}
+  {searching}
+  linkedEvent={event}
+/>
 
 <section class="table-scroller">
-  {#if answerCount === 0}
-    <p>Aucune réponse pour le moment.</p>
-  {:else}
-    <table>
-      <thead>
-        <tr>
-          <th></th>
-          <th></th>
-          {#each questions as { title, id } (id)}
-            <th>{title}</th>
-          {/each}
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>
+          <div class="search">
+            <InputSearchQuery
+              bind:q={$q}
+              on:search={async () => {
+                if (!$q) {
+                  searchResults = undefined;
+                  return;
+                }
+                searching = true;
+                searchResults = await searchAnswers($q);
+                searching = false;
+              }}
+            ></InputSearchQuery>
+          </div>
+        </th>
+        {#each questions as { title, id } (id)}
+          <th>{title}</th>
+        {/each}
+      </tr>
+    </thead>
+    <tbody>
+      {#if searching}
+        <tr class="empty">
+          <td>??:??</td>
+          <td><AvatarPerson fullName="" pictureFile=""></AvatarPerson></td>
+          <td colspan={questions.length}>
+            <LoadingSpinner></LoadingSpinner>
+            Recherche…
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        {#each sortedAnswers($q ? searchResults : data.form.answers.nodes) as [answerer, date, answersByQuestion] (answerer.uid)}
+      {:else}
+        {#each sortedAnswers(searchResults ?? data.form.answers.nodes) as [answerer, date, answersByQuestion] (Object.values(answersByQuestion)
+          .map((a) => a.id)
+          .join('_'))}
           <tr>
             <td>{formatDateTimeSmart(date)}</td>
             <td>
-              <AvatarPerson href="/users/{answerer.uid}" {...answerer} />
+              {#if answerer}
+                <AvatarPerson href="/users/{answerer.uid}" {...answerer} />
+              {:else}
+                <AvatarPerson fullName="Compte inexistant" pictureFile=""></AvatarPerson>
+              {/if}
             </td>
             {#each questions as { id } (id)}
               <td>{answersByQuestion[id]?.answerString ?? ''}</td>
             {/each}
           </tr>
+        {:else}
+          <tr class="empty">
+            <td>??:??</td>
+            <td><AvatarPerson fullName="" pictureFile=""></AvatarPerson></td>
+            <td colspan={questions.length}
+              >{#if $q}Aucun résultat{:else}Aucune réponse pour le moment{/if}</td
+            >
+          </tr>
         {/each}
-      </tbody>
-    </table>
-  {/if}
+      {/if}
+    </tbody>
+  </table>
 </section>
 
 <style>
@@ -269,24 +270,21 @@
   th {
     text-align: left;
   }
-
   header {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1em 2em;
     align-items: center;
+    gap: 1em 2em;
     padding: 1em;
-    margin: 2em 0;
     background: var(--muted-bg);
     border-radius: var(--radius-block);
+    margin: 2em 0;
+    flex-wrap: wrap;
   }
-
   h1 {
     display: flex;
-    column-gap: 0.5em;
     align-items: center;
+    column-gap: 0.5em;
   }
-
   .visibility {
     margin-top: 1em;
   }

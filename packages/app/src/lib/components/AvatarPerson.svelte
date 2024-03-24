@@ -10,7 +10,7 @@
   export let fullName: string;
   export let role = '';
   export let pictureFile: string;
-  export let href: string;
+  export let href: string | undefined = undefined;
   export let highlighted = false;
   export let permissions:
     | undefined
