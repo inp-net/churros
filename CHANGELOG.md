@@ -19,6 +19,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 - Suppression des queries `node` et `nodes` de l'API
 
+### Nouveautés
+
+- Il y a maintenant un système de formulaires. Toute la partie création de formulaires n'existe pas encore, mais on peut dors et déjà répondre et voir les réponses à un formulaire. On sort déjà la fonctionnalité maintenant pour s'en servir pour les élections de la prochaine AE ^^
+
 ## [1.53.1] - 2024-03-19
 
 ### Corrections
