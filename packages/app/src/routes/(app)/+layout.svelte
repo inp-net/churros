@@ -255,8 +255,19 @@ The root layout is composed of several elements:
     scrollbar-width: thin;
   }
 
+  main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
   .contents-and-announcements:not(.fullsize) main {
     padding: 0 1rem;
+  }
+
+  #scrollable-area {
+    display: flex;
+    flex-direction: column;
   }
 
   :global(*::-webkit-scrollbar *) {

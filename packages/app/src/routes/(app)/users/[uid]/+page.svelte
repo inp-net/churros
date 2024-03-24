@@ -343,9 +343,9 @@
     height: var(--size);
     color: var(--muted-text);
     text-align: center;
+    object-fit: cover;
     background: var(--muted-bg);
     border-radius: 50%;
-    object-fit: cover;
   }
 
   .picture .role-badge {

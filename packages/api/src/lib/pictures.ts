@@ -57,6 +57,16 @@ export async function compressPhoto(
   await operations.toFile(filename);
 }
 
+/**
+ * Stores (or replaces) a picture associated with a resource
+ * @param resource The resource to update the picture for
+ * @param folder Where to store the picture, relative to the storage root
+ * @param extension The extension of the picture
+ * @param file The file to upload
+ * @param identifier The identifier of the resource (most often the UID or the ID of the resource)
+ * @param propertyName The column name in the resource's database table that stores the path to the picture
+ * @returns The path to the picture, relative to the storage root
+ */
 export async function updatePicture({
   resource,
   folder,

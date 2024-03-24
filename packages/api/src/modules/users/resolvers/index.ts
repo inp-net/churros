@@ -14,6 +14,7 @@ export * from './mutation.delete-user.js';
 export * from './mutation.login.js';
 export * from './mutation.logout.js';
 export * from './mutation.refuse-registration.js';
+export * from './mutation.register-google-credential.js';
 export * from './mutation.rename-session.js';
 export * from './mutation.request-email-change.js';
 export * from './mutation.reset-password.js';

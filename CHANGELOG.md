@@ -11,6 +11,34 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [1.54.1] - 2024-03-24
+
+### Autres
+
+- C'est la fin des thèmes de listeux :/ Merci pour ces superbes campagnes!
+
+## [1.54.0] - 2024-03-24
+
+### Corrections
+
+- Correction d'un bug d'affichage sur firefox (@litschan)
+
+### Sécurité
+
+- Suppression des queries `node` et `nodes` de l'API
+
+### Nouveautés
+
+- Il y a maintenant un système de formulaires. Toute la partie création de formulaires n'existe pas encore, mais on peut dors et déjà répondre et voir les réponses à un formulaire. On sort déjà la fonctionnalité maintenant pour s'en servir pour les élections de la prochaine AE ^^
+
+## [1.53.1] - 2024-03-19
+
+### Corrections
+
+- Correction d'un bug qui faisait crash l'appli lors du téléchargement d'un billet en PDF
+
+## [1.53.0] - 2024-03-18
+
 ### Nouveautés
 
 - Application tierces: il y a maintenant les logs pour faciliter le débuggage
@@ -297,8 +325,12 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.52.0...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.54.1...main
 [1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
+[1.54.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.1
+[1.54.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.0
+[1.53.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.53.1
+[1.53.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.53.0
 [1.52.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.52.0
 [1.51.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.51.0
 [1.50.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.50.1
