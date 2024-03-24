@@ -12,6 +12,7 @@ import {
 builder.mutationField('answerFormSection', (t) =>
   t.prismaField({
     type: [AnswerType],
+    errors: {},
     args: {
       section: t.arg.id({
         description: 'ID de la section du formulaire',
@@ -79,12 +80,10 @@ builder.mutationField('answerFormSection', (t) =>
       );
 
       const form = await prisma.formSection.findUniqueOrThrow({ where: { id: sectionId } }).form();
-      console.log({ form });
 
       if (form.createdById) {
         try {
           const sheets = await googleSheetsClient(form.createdById);
-          console.log('Appending answers to Google Sheets');
           await appendFormAnswersToGoogleSheets(form.id, sheets, user.id);
         } catch (error) {
           console.error(error);

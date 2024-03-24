@@ -9,6 +9,7 @@ export * from './form.answers.js';
 export * from './form.export-answers.js';
 export * from './form.linked-google-sheet-url.js';
 export * from './form.my-answers.js';
+export * from './form.search-answers.js';
 export * from './group.forms.js';
 export * from './mutation.answer-file-question.js';
 export * from './mutation.answer-form-section.js';

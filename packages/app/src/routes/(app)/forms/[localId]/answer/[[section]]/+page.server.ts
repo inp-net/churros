@@ -1,7 +1,7 @@
 import { OPTION_OTHER_VALUE } from '$lib/components/InputSelectOneRadios.svelte';
 import { TYPENAMES_TO_ID_PREFIXES } from '$lib/typenames';
 import { loadQuery, makeMutation } from '$lib/zeus.js';
-import { error, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { FORM_SECTION_HIDDEN_INPUT_NAME } from './+page.svelte';
 
 export const actions = {
@@ -16,25 +16,36 @@ export const actions = {
     // Handle "other" option answers
     answers = handleOtherOptionAnswers(answers);
 
-    await makeMutation(
-      {
-        answerFormSection: [
-          {
-            section: sectionId.toString(),
-            answers: Object.entries(answers).map(([question, answer]) => ({
-              question,
-              answer,
-            })),
-          },
-          {
-            __typename: true,
-          },
-        ],
-      },
-      { fetch, token: cookies.get('token') },
-    ).catch((e) => {
-      error(400, { message: e?.toString() });
-    });
+    try {
+      const { answerFormSection } = await makeMutation(
+        {
+          answerFormSection: [
+            {
+              section: sectionId.toString(),
+              answers: Object.entries(answers).map(([question, answer]) => ({
+                question,
+                answer,
+              })),
+            },
+            {
+              '__typename': true,
+              '...on Error': {
+                message: true,
+              },
+              '...on MutationAnswerFormSectionSuccess': {
+                __typename: true,
+              },
+            },
+          ],
+        },
+        { fetch, token: cookies.get('token') },
+      );
+      if (answerFormSection.__typename === 'Error') {
+        return fail(400, { message: answerFormSection.message });
+      }
+    } catch (e) {
+      error(400, { message: e?.toString() ?? '' });
+    }
 
     // Get next section, _after_ submitting answers
     const { form } = await loadQuery(
@@ -50,10 +61,10 @@ export const actions = {
     );
 
     if (form?.section.nextSection) {
-      redirect(307, `/forms/${params.localId}/answer/${form.section.nextSection.id}`);
+      redirect(302, `/forms/${params.localId}/answer/${form.section.nextSection.id}`);
     }
 
-    redirect(307, `/forms/${params.localId}/answered`);
+    redirect(302, `/forms/${params.localId}/answered`);
   },
 };
 

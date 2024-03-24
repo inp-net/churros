@@ -10,7 +10,7 @@
   export let tooltip = '';
 </script>
 
-<svelte:element this={href ? 'a' : 'div'} class="avatar-group" {href} use:tooltip_={tooltip}>
+<svelte:element this={href ? 'a' : 'div'} class="avatar-group" href={href} use:tooltip_={tooltip}>
   <img src={groupLogoSrc($isDark, { pictureFile, pictureFileDark })} alt={name} draggable="false" />
 </svelte:element>
 

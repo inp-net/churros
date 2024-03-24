@@ -3,22 +3,24 @@ import { DateTimeScalar } from '#modules/global';
 import { answerToString } from '../utils/answers.js';
 import { canSeeAllAnswers, requiredIncludesForPermissions } from '../utils/permissions.js';
 
-export const AnswerType = builder.prismaInterface('Answer', {
-  description:
-    'Une réponse à un formulaire. Les réponses peuvent être de plusieurs types différents (en fonction de la question).',
-  include: {
-    question: {
-      include: {
-        section: {
-          include: {
-            form: {
-              include: requiredIncludesForPermissions,
-            },
+export const answerTypePrismaIncludes = {
+  question: {
+    include: {
+      section: {
+        include: {
+          form: {
+            include: requiredIncludesForPermissions,
           },
         },
       },
     },
   },
+};
+
+export const AnswerType = builder.prismaInterface('Answer', {
+  description:
+    'Une réponse à un formulaire. Les réponses peuvent être de plusieurs types différents (en fonction de la question).',
+  include: answerTypePrismaIncludes,
   authScopes(
     {
       createdById,

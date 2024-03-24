@@ -62,7 +62,7 @@ export async function fullTextSearch<
   },
 ): Promise<Array<SearchResult<Record<Property, Model>, Highlights>>> {
   // We select id, rank, similarity, and highlights, which are named highlights_<columns>
-  const selection = `"id", rank, similarity, ${highlightedColumns
+  const selection = `"id", rank, similarity${highlightedColumns.length > 0 ? ',' : ''} ${highlightedColumns
     .map((c) => `highlights_${c}`)
     .join(', ')}`;
 
@@ -94,7 +94,7 @@ export async function fullTextSearch<
       "${table}",
       ${similarityComputation} similarity,
       plainto_tsquery('french', $1) query,
-      nullif(ts_rank_cd("search", query), 0) rank,
+      nullif(ts_rank_cd("search", query), 0) rank${highlightedColumns.length > 0 ? ',' : ''}
       ${highlightsComputations}
     WHERE
       ${additionalFilters ? `(${additionalFilters}) AND ` : ''}

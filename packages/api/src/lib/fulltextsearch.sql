@@ -235,3 +235,41 @@ BEGIN
 END $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER update_form_search_trigger before INSERT OR UPDATE ON "Form" FOR EACH ROW EXECUTE PROCEDURE update_form_search();
+
+-- Answer
+CREATE OR REPLACE FUNCTION update_answer_search() RETURNS TRIGGER AS $$
+DECLARE
+    
+createdby_email text := '';
+createdby_schoolEmail text := '';
+createdby_firstName text := '';
+createdby_lastName text := '';
+BEGIN
+    
+createdby_email = (
+            SELECT "email"
+            FROM "User"
+            WHERE "User"."id" = NEW."createdById"
+        );
+createdby_schoolEmail = (
+            SELECT "schoolEmail"
+            FROM "User"
+            WHERE "User"."id" = NEW."createdById"
+        );
+createdby_firstName = (
+            SELECT "firstName"
+            FROM "User"
+            WHERE "User"."id" = NEW."createdById"
+        );
+createdby_lastName = (
+            SELECT "lastName"
+            FROM "User"
+            WHERE "User"."id" = NEW."createdById"
+        );
+
+    NEW."search" := setweight(to_tsvector('french', coalesce(NEW."createdById"::text, '')), 'A') || setweight(to_tsvector('french', coalesce(NEW."bookingId"::text, '')), 'A') || setweight(to_tsvector('french', coalesce(createdby_email::text, '')), 'A') || setweight(to_tsvector('french', coalesce(createdby_schoolEmail::text, '')), 'A') || setweight(to_tsvector('french', coalesce(NEW."questionId"::text, '')), 'B') || setweight(to_tsvector('french', coalesce(createdby_firstName::text, '')), 'B') || setweight(to_tsvector('french', coalesce(createdby_lastName::text, '')), 'B');
+
+    RETURN NEW;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_answer_search_trigger before INSERT OR UPDATE ON "Answer" FOR EACH ROW EXECUTE PROCEDURE update_answer_search();

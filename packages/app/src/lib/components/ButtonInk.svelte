@@ -10,6 +10,7 @@
   export let danger = false;
   export let loading = false;
   export let disabled = false;
+  export let newTab = false;
 </script>
 
 <svelte:element
@@ -22,6 +23,7 @@
   {...$$restProps}
   on:click
   role="button"
+  target={newTab ? '_blank' : undefined}
   tabindex="0"
   disabled={disabled || loading}
 >

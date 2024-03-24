@@ -3,37 +3,46 @@
 </script>
 
 <script lang="ts">
-  import { page } from '$app/stores';
+  import Alert from '$lib/components/Alert.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
   import InputField from '$lib/components/InputField.svelte';
   import InputLongText from '$lib/components/InputLongText.svelte';
   import InputScale from '$lib/components/InputScale.svelte';
   import InputSelectMultiple from '$lib/components/InputSelectMultiple.svelte';
   import InputSelectOneRadios from '$lib/components/InputSelectOneRadios.svelte';
   import InputText from '$lib/components/InputText.svelte';
-  import { tooltip } from '$lib/tooltip';
   import { formatRelative } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
-  import IconAnonymous from '~icons/mdi/anonymous';
-  import type { PageData } from './$types';
+  import type { ActionData, PageData } from './$types';
   import CardQuestion from './CardQuestion.svelte';
+  import { enhance } from '$app/forms';
+  import { zeus } from '$lib/zeus';
+  import { afterNavigate, goto, invalidateAll } from '$app/navigation';
 
   export let data: PageData;
-  const {
+  $: ({
     title,
     descriptionHtml,
     section,
     group,
     closesAt,
+    visibility,
     section: { questions },
-  } = data.form;
+  } = data.form);
 
   let submitting = false;
-  $: serverError = $page.form;
+  export let form: ActionData;
+  $: serverError = form?.message;
+  $: console.log({ form });
 
   $: alreadyAnswered = questions.every((q) => q.myAnswer !== null);
+
+  afterNavigate(() => {
+    submitting = false;
+  });
 
   function myAnswerNumber(myAnswer: (typeof questions)[number]['myAnswer']) {
     if (myAnswer?.__typename === 'AnswerScale') {
@@ -51,17 +60,20 @@
   }
 </script>
 
-<h1>
-  <ButtonBack />
-  <AvatarGroup tooltip="Formulaire créé par {group.name}" href="/groups/{group.uid}" {...group}
-  ></AvatarGroup>
-  {title}
-</h1>
-<p class="timing typo-details">
-  {#if closesAt}
-    Ouvert aux réponses jusqu'à {formatRelative(closesAt, new Date(), { locale: fr })}
-  {/if}
-</p>
+<header>
+  <h1>
+    <ButtonBack />
+    <AvatarGroup tooltip="Formulaire créé par {group.name}" href="/groups/{group.uid}" {...group}
+    ></AvatarGroup>
+    {title}
+  </h1>
+  <p class="timing">
+    <IndicatorVisibility text {visibility}></IndicatorVisibility>
+    {#if closesAt}
+      · Ouvert aux réponses jusqu'à {formatRelative(closesAt, new Date(), { locale: fr })}
+    {/if}
+  </p>
+</header>
 <div data-user-html="">
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {@html descriptionHtml}
@@ -70,6 +82,7 @@
 <form
   method="post"
   action="?/postAnswers"
+  use:enhance
   on:submit={() => {
     submitting = true;
   }}
@@ -122,7 +135,6 @@
           </InputSelectOneRadios>
         {:else if question.__typename === 'QuestionSelectMultiple'}
           <InputField label={title} required={mandatory}>
-            <span slot="label"> </span>
             <InputSelectMultiple
               selection={myAnswerSelection(myAnswer)}
               name={id}
@@ -146,6 +158,9 @@
     {/each}
   </section>
   <section class="submit">
+    {#if serverError}
+      <Alert theme="danger">{serverError}</Alert>
+    {/if}
     <ButtonPrimary loading={submitting} submits>
       {#if alreadyAnswered}
         Enregistrer
@@ -179,6 +194,16 @@
     display: flex;
     align-items: center;
     column-gap: 0.5em;
+  }
+
+  header {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.25rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--muted-bg);
+    border-radius: var(--radius-block);
   }
 
   h1 {

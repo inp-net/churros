@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, log, prisma } from '#lib';
 import * as Google from 'google-auth-library';
 import { GraphQLError } from 'graphql';
 
@@ -13,11 +13,6 @@ builder.mutationField('registerGoogleCredential', (t) =>
     resolve: async (_, { code }, { user }) => {
       if (!user) throw new GraphQLError('User not found');
 
-      console.log({
-        clientId: process.env.PUBLIC_GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      });
-
       const client = new Google.OAuth2Client({
         clientId: process.env.PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -29,6 +24,8 @@ builder.mutationField('registerGoogleCredential', (t) =>
       });
 
       if (!tokens.access_token) throw new GraphQLError('No access token provided');
+
+      await log('google', 'callback/ok', { tokens }, user.id, user);
 
       await prisma.credential.create({
         data: {

@@ -1,5 +1,17 @@
-import { loadQuery } from '$lib/zeus.js';
+import { loadQuery, Selector } from '$lib/zeus.js';
 import { error } from '@sveltejs/kit';
+
+export const _answerNodeQuery = Selector('Answer')({
+  id: true,
+  updatedAt: true,
+  createdBy: { id: true, uid: true, fullName: true, pictureFile: true },
+  question: {
+    id: true,
+    title: true,
+    section: { title: true },
+  },
+  answerString: true,
+});
 
 export async function load({ fetch, parent, params: { localId }, url: { searchParams } }) {
   const { form } = await loadQuery(
@@ -8,9 +20,22 @@ export async function load({ fetch, parent, params: { localId }, url: { searchPa
         { localId },
         {
           id: true,
+          localId: true,
           title: true,
+          visibility: true,
           answerCount: true,
           linkedGoogleSheetUrl: true,
+          group: {
+            uid: true,
+            pictureFile: true,
+            pictureFileDark: true,
+            name: true,
+          },
+          event: {
+            group: { uid: true },
+            uid: true,
+            title: true,
+          },
           questions: [
             {},
             {
@@ -26,17 +51,7 @@ export async function load({ fetch, parent, params: { localId }, url: { searchPa
             { after: searchParams.get('after') },
             {
               pageInfo: { hasNextPage: true, endCursor: true },
-              nodes: {
-                id: true,
-                updatedAt: true,
-                createdBy: { id: true, uid: true, fullName: true, pictureFile: true },
-                question: {
-                  id: true,
-                  title: true,
-                  section: { title: true },
-                },
-                answerString: true,
-              },
+              nodes: _answerNodeQuery,
             },
           ],
         },
@@ -46,8 +61,6 @@ export async function load({ fetch, parent, params: { localId }, url: { searchPa
   );
 
   if (!form) error(404);
-
-  console.log(form.answers);
 
   return { form };
 }

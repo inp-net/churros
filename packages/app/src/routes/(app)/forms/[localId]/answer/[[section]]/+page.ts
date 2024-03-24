@@ -8,6 +8,8 @@ export async function load({ fetch, parent, params }) {
 
   const formQuery = Selector('Form')({
     title: true,
+    visibility: true,
+    localId: true,
     descriptionHtml: true,
     hasSections: true,
     linkedGoogleSheetUrl: true,
@@ -103,5 +105,5 @@ export async function load({ fetch, parent, params }) {
     error(404, { message: 'Formulaire introuvable' });
   }
 
-  return data;
+  return { ...data, form: data.form! };
 }

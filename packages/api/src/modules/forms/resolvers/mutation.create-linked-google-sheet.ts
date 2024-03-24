@@ -17,7 +17,7 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
         where: { id: formId },
         include: {
           sections: {
-            include: { questions: { include: { answers: { include: { createdBy: true } } } } },
+            include: { questions: { include: { answers: true } } },
           },
         },
       });
@@ -91,10 +91,21 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
           },
         });
 
-        await appendFormAnswersToGoogleSheets(
-          form.id,
-          sheets,
-          form.sections.flatMap((s) => s.questions.flatMap((q) => q.answers.map((a) => a.id))),
+        type Answer = (typeof form)['sections'][number]['questions'][number]['answers'][number];
+
+        await Promise.all(
+          form.sections.flatMap((section) =>
+            section.questions.flatMap((question) =>
+              question.answers
+                .filter(
+                  (answer: Answer): answer is Answer & { createdById: string } =>
+                    answer.createdById !== null,
+                )
+                .map((answer) =>
+                  appendFormAnswersToGoogleSheets(form.id, sheets, answer.createdById),
+                ),
+            ),
+          ),
         );
       }
 

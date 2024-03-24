@@ -5,9 +5,7 @@ import { answerToString } from './answers.js';
 export const ANSWERS_SHEET_NAME = 'Réponses';
 
 function rowRange(questionsCount: number): string {
-  const range = `${ANSWERS_SHEET_NAME}!A1:${String.fromCharCode('A'.charCodeAt(0) + questionsCount)}999`;
-  console.log({ range });
-  return range;
+  return `${ANSWERS_SHEET_NAME}!A1:${String.fromCharCode('A'.charCodeAt(0) + questionsCount)}999`;
 }
 
 export async function removeAnswersRowsForUser(
@@ -96,7 +94,6 @@ export async function appendFormAnswersToGoogleSheets(
   await log('forms', 'update-google-sheets', { userId, formId }, form.linkedGoogleSheetId);
 
   const questions = form.sections.flatMap((section) => section.questions);
-  console.log({ questions });
 
   const latestAnswerDate = new Date(
     Math.max(...questions.flatMap(({ answers }) => answers.map((a) => a.createdAt.valueOf()))),

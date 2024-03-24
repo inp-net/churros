@@ -6,9 +6,11 @@
   import ButtonInk from './ButtonInk.svelte';
   import { toasts } from '$lib/toasts';
   import { browser } from '$app/environment';
+  import { env } from '$env/dynamic/public';
 
   export let white = false;
-  export let href = '';
+  export let url = '';
+  export let path = '';
   export let text = false;
 
   $: canShare = Boolean(browser && navigator.share !== undefined);
@@ -24,16 +26,17 @@
     return url.toString();
   }
 
+  $: finalUrl = url || (path ? new URL(path, $page.url)?.toString() : rewriteUrl($page.url));
+
   async function share() {
     try {
       await navigator.share({
-        url: href || rewriteUrl($page.url),
+        url: finalUrl,
         title: document.title,
         text: document.querySelector('meta[name=description]')?.getAttribute('content') ?? '',
       });
     } catch {
-      const url = href || rewriteUrl($page.url);
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(finalUrl);
       toasts.info('Lien copié dans le presse-papiers');
     }
   }

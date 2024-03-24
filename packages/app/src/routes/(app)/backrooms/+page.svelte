@@ -36,6 +36,16 @@
         }}
       />
     </li>
+    <li>
+      <CardService
+        service={{
+          name: 'Manage forms',
+          logo: 'forms',
+          logoSourceType: 'Icon',
+          url: '/forms',
+        }}
+      />
+    </li>
   </ul>
 
   <div class="goto">
