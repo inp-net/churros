@@ -95,7 +95,7 @@ export async function load({ fetch, parent, params }) {
 
   const data = await loadQuery(
     {
-      form: [{ localId: params.localId }, queryWithAliases],
+      form: [{ localId: params.form }, queryWithAliases],
       groups: [{}, { name: true, uid: true, pictureFile: true, pictureFileDark: true }],
     },
     { fetch, parent },

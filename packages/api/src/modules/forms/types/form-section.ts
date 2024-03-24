@@ -1,4 +1,4 @@
-import { builder, prisma, toHtml } from '#lib';
+import { builder, prisma, splitID, toHtml } from '#lib';
 import {
   canSeeAllAnswers,
   canSeeForm,
@@ -19,6 +19,10 @@ export const FormSectionType = builder.prismaObject('FormSection', {
   },
   fields: (t) => ({
     id: t.exposeID('id'),
+    localId: t.string({
+      resolve: ({ id }) => splitID(id)[1],
+      description: 'Identifiant local de la section du formulaire',
+    }),
     form: t.relation('form', { description: 'Formulaire auquel appartient la section' }),
     title: t.exposeString('title', { description: 'Titre de la section' }),
     description: t.exposeString('description', {

@@ -55,7 +55,7 @@
       {
         form: [
           {
-            localId: $page.params.localId,
+            localId: $page.params.form,
           },
           {
             answerCount: true,

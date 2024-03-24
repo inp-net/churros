@@ -51,9 +51,9 @@ export const actions = {
     const { form } = await loadQuery(
       {
         form: [
-          { localId: params.localId },
+          { localId: params.form },
           {
-            section: [{ id: params.section }, { nextSection: { id: true } }],
+            section: [{ id: params.section }, { nextSection: { localId: true } }],
           },
         ],
       },
@@ -61,10 +61,10 @@ export const actions = {
     );
 
     if (form?.section.nextSection) {
-      redirect(302, `/forms/${params.localId}/answer/${form.section.nextSection.id}`);
+      redirect(302, `/forms/${params.form}/answer/${form.section.nextSection.localId}`);
     }
 
-    redirect(302, `/forms/${params.localId}/answered`);
+    redirect(302, `/forms/${params.form}/answered`);
   },
 };
 

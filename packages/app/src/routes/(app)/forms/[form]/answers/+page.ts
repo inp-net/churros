@@ -13,11 +13,11 @@ export const _answerNodeQuery = Selector('Answer')({
   answerString: true,
 });
 
-export async function load({ fetch, parent, params: { localId }, url: { searchParams } }) {
+export async function load({ fetch, parent, params, url: { searchParams } }) {
   const { form } = await loadQuery(
     {
       form: [
-        { localId },
+        { localId: params.form },
         {
           id: true,
           localId: true,

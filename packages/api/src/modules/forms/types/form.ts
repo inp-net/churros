@@ -1,4 +1,11 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, splitID, toHtml } from '#lib';
+import {
+  TYPENAMES_TO_ID_PREFIXES,
+  builder,
+  ensureHasIdPrefix,
+  prisma,
+  splitID,
+  toHtml,
+} from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import {
   canAnswerForm,
@@ -94,9 +101,17 @@ export const FormType = builder.prismaNode('Form', {
     section: t.prismaField({
       description: 'Une section du formulaire.',
       type: FormSectionType,
-      args: { id: t.arg.id({ required: false }) },
+      args: {
+        id: t.arg.string({
+          required: false,
+          description: 'Identifiant (local ou global) de la section',
+        }),
+      },
       resolve: async (query, { id: formId }, { id }) =>
-        prisma.formSection.findFirstOrThrow({ ...query, where: { formId, id: id ?? undefined } }),
+        prisma.formSection.findFirstOrThrow({
+          ...query,
+          where: { formId, id: id ? ensureHasIdPrefix(id, 'FormSection') : undefined },
+        }),
     }),
     questions: t.prismaConnection({
       type: 'Question',

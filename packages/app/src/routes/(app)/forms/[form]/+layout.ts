@@ -5,7 +5,7 @@ export async function load({ fetch, parent, params }) {
     {
       form: [
         {
-          localId: params.localId,
+          localId: params.form,
         },
         {
           title: true,
