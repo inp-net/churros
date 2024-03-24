@@ -409,7 +409,7 @@ __metadata:
     "@pothos/plugin-tracing": "npm:^0.5.8"
     "@pothos/plugin-validation": "npm:^3.10.1"
     "@pothos/plugin-with-input": "npm:^3.10.1"
-    "@prisma/client": "npm:5.11.0"
+    "@prisma/client": "patch:@prisma/client@npm%3A5.11.0#~/.yarn/patches/@prisma-client-npm-5.11.0-2b6837f715.patch"
     "@tsconfig/esm": "npm:^1.0.5"
     "@tsconfig/node18": "npm:^18.2.2"
     "@tsconfig/strictest": "npm:^2.0.3"
@@ -2326,6 +2326,18 @@ __metadata:
     prisma:
       optional: true
   checksum: 10c0/4c314e5b9d0ae880cd048cfa224a017d5d044a850efadf189e02937abc09a24de764d62738cea7016c8af31dfa18069d5a0f7c4ac99a0b6e454987d5c3afbbfe
+  languageName: node
+  linkType: hard
+
+"@prisma/client@patch:@prisma/client@npm%3A5.11.0#~/.yarn/patches/@prisma-client-npm-5.11.0-2b6837f715.patch":
+  version: 5.11.0
+  resolution: "@prisma/client@patch:@prisma/client@npm%3A5.11.0#~/.yarn/patches/@prisma-client-npm-5.11.0-2b6837f715.patch::version=5.11.0&hash=3ff4af"
+  peerDependencies:
+    prisma: "*"
+  peerDependenciesMeta:
+    prisma:
+      optional: true
+  checksum: 10c0/881115f8d254cd67579686a3289d38d44432f765fd8706723737309f597f61c56de3d975a6ab1a597bbf0ff5d6f83e12414024b971baecccca5d208919aabf89
   languageName: node
   linkType: hard
 
