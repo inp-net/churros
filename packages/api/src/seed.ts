@@ -2,6 +2,7 @@ import { prisma } from '#lib';
 import { fakerFR } from '@faker-js/faker';
 import {
   CredentialType,
+  DocumentType,
   GroupType,
   LogoSourceType,
   QuestionKind,
@@ -421,6 +422,7 @@ for (const [_, minor] of minors.entries()) {
       data: {
         name: title,
         uid: slug(title),
+        minors: { connect: { id: minor.id } },
       },
     });
     await prisma.document.create({
@@ -430,7 +432,7 @@ for (const [_, minor] of minors.entries()) {
         uid: 'un-document',
         schoolYear: faker.number.int({ min: 2015, max: 2024 }),
         subject: { connect: { id: subject.id } },
-        type: 'Exam',
+        type: faker.helpers.enumValue(DocumentType),
         uploader: {
           connect: {
             uid: faker.helpers.arrayElement(users.filter((element) => element.minorId === minor.id))
@@ -883,7 +885,7 @@ await prisma.thirdPartyApp.create({
 
 for (let i = 0; i < 10; i++) {
   const opensAt = i === 0 ? faker.date.soon() : faker.date.anytime();
-  let form = await prisma.form.create({
+  const form = await prisma.form.create({
     data: {
       groupId: faker.helpers.arrayElement(groups).id,
       visibility: randomVisiblity(),
@@ -905,40 +907,44 @@ for (let i = 0; i < 10; i++) {
         description: faker.lorem.paragraph(),
         questions: {
           createMany: {
-            data: new Array(faker.helpers.rangeToNumber({ min: 1, max: 5 })).fill(0).map((_, i) => {
-              const type = faker.helpers.arrayElement(Object.values(QuestionKind));
+            data: Array.from({ length: faker.helpers.rangeToNumber({ min: 1, max: 5 }) })
+              .fill(0)
+              .map((_, i) => {
+                const type = faker.helpers.arrayElement(Object.values(QuestionKind));
 
-              let scaleOptions: Partial<{ scaleStart: number; scaleEnd: number }> =
-                type === 'Scale' ? { scaleStart: faker.number.int({ min: 1, max: 5 }) } : {};
-              scaleOptions.scaleEnd =
-                type === 'Scale' ? faker.number.int({ min: scaleOptions.scaleStart, max: 10 }) : 0;
+                const scaleOptions: Partial<{ scaleStart: number; scaleEnd: number }> =
+                  type === 'Scale' ? { scaleStart: faker.number.int({ min: 1, max: 5 }) } : {};
+                scaleOptions.scaleEnd =
+                  type === 'Scale'
+                    ? faker.number.int({ min: scaleOptions.scaleStart, max: 10 })
+                    : 0;
 
-              return {
-                description: faker.lorem.paragraph(),
-                order: i,
-                title: faker.lorem.sentence(),
-                mandatory: faker.datatype.boolean(0.75),
-                type,
-                options: ['SelectOne', 'SelectMultiple'].includes(type)
-                  ? new Array(faker.helpers.rangeToNumber({ min: 2, max: 5 }))
-                      .fill(0)
-                      .map(() => faker.lorem.word())
-                  : type === 'Scale'
-                    ? [faker.lorem.word(), faker.lorem.word()]
-                    : undefined,
-                allowedFiletypes:
-                  type === 'FileUpload'
-                    ? new Array(faker.helpers.rangeToNumber({ min: 1, max: 10 }))
+                return {
+                  description: faker.lorem.paragraph(),
+                  order: i,
+                  title: faker.lorem.sentence(),
+                  mandatory: faker.datatype.boolean(0.75),
+                  type,
+                  options: ['SelectOne', 'SelectMultiple'].includes(type)
+                    ? Array.from({ length: faker.helpers.rangeToNumber({ min: 2, max: 5 }) })
                         .fill(0)
-                        .map(() => faker.system.mimeType())
-                    : undefined,
-                allowOptionOther:
-                  type === 'SelectOne' || type === 'SelectMultiple'
-                    ? faker.datatype.boolean(0.3)
-                    : undefined,
-                ...scaleOptions,
-              };
-            }),
+                        .map(() => faker.lorem.word())
+                    : type === 'Scale'
+                      ? [faker.lorem.word(), faker.lorem.word()]
+                      : undefined,
+                  allowedFiletypes:
+                    type === 'FileUpload'
+                      ? Array.from({ length: faker.helpers.rangeToNumber({ min: 1, max: 10 }) })
+                          .fill(0)
+                          .map(() => faker.system.mimeType())
+                      : undefined,
+                  allowOptionOther:
+                    type === 'SelectOne' || type === 'SelectMultiple'
+                      ? faker.datatype.boolean(0.3)
+                      : undefined,
+                  ...scaleOptions,
+                };
+              }),
           },
         },
       },
