@@ -35,7 +35,9 @@ builder.mutationField('answerFormSection', (t) =>
           const mandatoryQuestions = await prisma.question.findMany({
             where: { sectionId: section, mandatory: true },
           });
-          const answeredQuestions = new Set(answers.map(({ question }) => question));
+          const answeredQuestions = new Set(answers
+            .filter(({ answer }) => answer.some(Boolean))
+            .map(({ question }) => question));
           return mandatoryQuestions.every((q) => answeredQuestions.has(q.id));
         },
         { message: 'Vous devez répondre à toutes les questions obligatoires', path: ['answers'] },

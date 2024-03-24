@@ -27,6 +27,7 @@ export * from './question-scale.answer-counts.js';
 export * from './question-select-multiple.answer-counts.js';
 export * from './question-select-one.answer-counts.js';
 export * from './question.answers.js';
+export * from './question.default-answer.js';
 export * from './question.my-answer.js';
 export * from './question.total-answers.js';
 export * from './user.answered-forms.js';

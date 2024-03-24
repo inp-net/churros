@@ -1,11 +1,13 @@
 <script lang="ts">
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import InputField from '$lib/components/InputField.svelte';
+  import IconClear from '~icons/mdi/clear-circle-outline';
 
   export let label: string;
   export let required = false;
   export let hint = '';
   export let errors: string[] = [];
-  export let value: number;
+  export let value: number | null;
   export let minimum: number;
   export let maximum: number;
   export let minimumLabel: string;
@@ -19,8 +21,38 @@
     <span class="label label-min typo-details">{minimumLabel || minimum}</span>
     <span class="label label-max typo-details">{maximumLabel || maximum}</span>
   </div>
-  <input type="range" bind:value {name} {id} min={minimum} max={maximum} step="1" />
-  <p class="current-value-hint">{value}/{maximum}</p>
+  {#if value === null}
+    <input type="hidden" name="{name}/no-answer" value="" />
+  {/if}
+  <input
+    type="range"
+    value={value ?? 0}
+    on:input={(e) => {
+      if (!(e.target instanceof HTMLInputElement)) return;
+      value = Number.parseInt(e.target.value, 10);
+    }}
+    {name}
+    {id}
+    min={minimum}
+    max={maximum}
+    step="1"
+  />
+  <p class="current-value-hint">
+    {#if value === null}
+      <em>Sans réponse</em>
+    {:else}
+      {value}/{maximum}
+    {/if}
+    {#if !required}
+      <ButtonGhost
+        help="Effacer la réponse"
+        disabled={value === null}
+        on:click={() => {
+          value = null;
+        }}><IconClear></IconClear></ButtonGhost
+      >
+    {/if}
+  </p>
 </InputField>
 
 <style>
@@ -48,5 +80,6 @@
     flex: 1;
     width: 100%;
     min-width: 0;
+    width: 100%;
   }
 </style>
