@@ -1,5 +1,4 @@
 import { builder } from '#lib';
-import { requiredIncludesForPermissions } from '../utils/permissions.js';
 import { QuestionType } from './question.js';
 
 export const QuestionSelectMultipleType = builder.prismaObject('Question', {
@@ -7,13 +6,6 @@ export const QuestionSelectMultipleType = builder.prismaObject('Question', {
   // @ts-expect-error works even though TS complains, idk why
   interfaces: [QuestionType],
   description: 'Question de type `SelectMultiple`',
-  include: {
-    section: {
-      form: {
-        include: requiredIncludesForPermissions,
-      },
-    },
-  },
   fields: (t) => ({
     options: t.stringList({
       description: `Uniquement pertinent pour les questions de type \`SelectOne\` ou \`SelectMultiple\``,
