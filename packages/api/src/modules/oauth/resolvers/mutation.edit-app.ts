@@ -14,7 +14,7 @@ builder.mutationField('editApp', (t) =>
       id: t.arg.id({
         description: "The app's ID",
       }),
-      website: t.arg.string({ required: false }),
+      website: t.arg.string({ required: false, validate: { url: true } }),
       name: t.arg.string({ required: false }),
       description: t.arg.string({ required: false }),
       allowedRedirectUris: t.arg.stringList({
@@ -49,7 +49,7 @@ builder.mutationField('editApp', (t) =>
           allowedRedirectUris: data.allowedRedirectUris ?? undefined,
           description: data.description ?? undefined,
           name: data.name ?? undefined,
-          website: data.website ?? undefined,
+          website: data.website === null ? '' : data.website,
           owner: data.ownerGroupUid ? { connect: { uid: data.ownerGroupUid } } : undefined,
           active: allowedURIsWillChange ? false : undefined,
           faviconUrl: websiteWillChange ? '' : undefined,

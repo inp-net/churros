@@ -90,9 +90,9 @@
     line-height: var(--size);
     color: var(--muted-text);
     text-align: center;
+    object-fit: contain;
     background: var(--muted-bg);
     border-radius: var(--radius-block);
-    object-fit: contain;
   }
 
   .avatar {
@@ -130,11 +130,11 @@
     overflow: hidden;
     color: var(--muted-text);
     text-align: center;
+    object-fit: contain;
     background: var(--muted-bg);
     border: 0 solid var(--primary-border);
     border-radius: var(--radius-block);
     transition: all 0.25s ease;
-    object-fit: contain;
   }
 
   .suggestion .group-name {

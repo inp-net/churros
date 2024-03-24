@@ -11,9 +11,8 @@ builder.mutationField('mailFormAnswers', (t) =>
     authScopes: { loggedIn: true },
     args: { formId: t.arg.id({ description: 'ID du formulaire' }) },
     async resolve(_, { formId }, { user }) {
-      if (!user) {
+      if (!user)
         throw new GraphQLError('Vous devez être connecté·e pour envoyer vos réponses par email.');
-      }
 
       const form = await prisma.form.findUniqueOrThrow({
         where: { id: formId },

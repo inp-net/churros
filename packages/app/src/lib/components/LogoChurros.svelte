@@ -1,7 +1,7 @@
 <script lang="ts">
   import { theme } from '$lib/theme';
 
-  export let textColor = 'var(--header-text)';
+  export let textColor = 'var(--header-text, var(--text))';
   export let wordmark = false;
 </script>
 

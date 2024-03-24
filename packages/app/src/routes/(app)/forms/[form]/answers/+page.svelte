@@ -5,7 +5,7 @@
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import InputPillEvent from '$lib/components/InputPillEvent.svelte';
+  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
   import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
   import { formatDateTimeSmart, sortedByDate } from '$lib/dates';
   import { subscribe } from '$lib/subscriptions';
@@ -16,15 +16,14 @@
   import { onMount } from 'svelte';
   import { queryParam } from 'sveltekit-search-params';
   import IconGSheet from '~icons/mdi/google-spreadsheet';
-  import IconNewGSheet from '~icons/mdi/table-plus';
   import IconOpenInNewTab from '~icons/mdi/open-in-new';
+  import IconNewGSheet from '~icons/mdi/table-plus';
   import type { PageData } from './$types';
   import { _answerNodeQuery } from './+page';
-  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
 
   export let data: PageData;
 
-  let q = queryParam('q', {
+  const q = queryParam('q', {
     encode: (v) => v || undefined,
     decode: (v) => v ?? '',
   });
@@ -84,14 +83,13 @@
         if (!freshData.form) return;
         if (!freshData.form.answers) return;
 
-        //@ts-ignore svelte is dumb
+        //@ts-expect-error svelte is dumb
         data.form.answers.nodes = [
           ...data.form.answers.nodes.filter(
-            //@ts-ignore svelte is dumb
+            //@ts-expect-error svelte is dumb
             (a) => !freshData.form.answers.nodes.some((b) => a.id === b.id),
           ),
           ...freshData.form.answers.nodes,
-          //@ts-ignore same
         ];
         data.form.answerCount = freshData.form.answerCount;
       },
@@ -109,11 +107,11 @@
           true,
         ],
       })
-      .catch(async (e) => {
-        if (e.message.includes('lier votre compte Google')) {
+      .catch(async (error) => {
+        if (error.message.includes('lier votre compte Google')) {
           toasts.error(
             'Lies ton compte Google à Churros pour créer un Google Sheet lié',
-            e.message,
+            error.message,
             {
               data: {},
               labels: {
@@ -127,7 +125,7 @@
             },
           );
         } else {
-          toasts.error('Impossible de créer le Google Sheet', e.message);
+          toasts.error('Impossible de créer le Google Sheet', error.message);
         }
         creatingLinkedGoogleSheet = false;
         return { createLinkedGoogleSheet: undefined };
@@ -153,7 +151,7 @@
         Object.fromEntries(answers.map((a) => [a.question.id, a])),
       ]),
     );
-    let entries = Object.entries(groupedAnswers).map(([userUid, answersByQuestion]) => {
+    const entries = Object.entries(groupedAnswers).map(([userUid, answersByQuestion]) => {
       const answerer = answerers[userUid]?.[0];
 
       const date = new Date(
@@ -259,31 +257,36 @@
 
 <style>
   table {
+    width: 100%;
     border-collapse: collapse;
-    width: 100%;
   }
+
   .table-scroller {
-    overflow-x: scroll;
     width: 100%;
+    overflow-x: scroll;
   }
+
   th {
     text-align: left;
   }
+
   header {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     gap: 1em 2em;
+    align-items: center;
     padding: 1em;
+    margin: 2em 0;
     background: var(--muted-bg);
     border-radius: var(--radius-block);
-    margin: 2em 0;
-    flex-wrap: wrap;
   }
+
   h1 {
     display: flex;
-    align-items: center;
     column-gap: 0.5em;
+    align-items: center;
   }
+
   .visibility {
     margin-top: 1em;
   }

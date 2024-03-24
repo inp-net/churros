@@ -109,8 +109,8 @@
 
   .gif :global(img) {
     height: 10rem;
-    border-radius: var(--radius-block);
     object-fit: cover;
+    border-radius: var(--radius-block);
   }
 
   .things {

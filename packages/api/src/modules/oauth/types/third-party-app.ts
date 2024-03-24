@@ -4,6 +4,7 @@ import { CLIENT_SECRET_LENGTH } from '../index.js';
 
 export const ThirdPartyApp = builder.prismaObject('ThirdPartyApp', {
   description: 'A third-party OAuth2 client',
+  include: { owner: true },
   fields: (t) => ({
     id: t.exposeID('id'),
     clientId: t.string({

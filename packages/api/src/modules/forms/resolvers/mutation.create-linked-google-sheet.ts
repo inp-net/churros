@@ -13,7 +13,7 @@ builder.mutationField('createLinkedGoogleSheet', (t) =>
     authScopes: { loggedIn: true },
     resolve: async (_, { form: formId }, { user }) => {
       if (!user) throw new GraphQLError('User not found');
-      let form = await prisma.form.findUniqueOrThrow({
+      const form = await prisma.form.findUniqueOrThrow({
         where: { id: formId },
         include: {
           sections: {

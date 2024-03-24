@@ -108,9 +108,9 @@
   }
 
   input[type='radio'] {
-    opacity: 0;
     width: 0;
     height: 0;
+    opacity: 0;
   }
 
   label::before {
@@ -138,6 +138,7 @@
 
   label {
     display: flex;
+
     /* divide gap by two to account for the hidden radio buttons. this'll break if there are other elements */
     column-gap: calc(0.5em / 2);
     align-items: center;
