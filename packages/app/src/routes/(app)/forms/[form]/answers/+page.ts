@@ -21,16 +21,8 @@ export async function load({ fetch, parent, params, url: { searchParams } }) {
         {
           id: true,
           localId: true,
-          title: true,
-          visibility: true,
           answerCount: true,
           linkedGoogleSheetUrl: true,
-          group: {
-            uid: true,
-            pictureFile: true,
-            pictureFileDark: true,
-            name: true,
-          },
           event: {
             group: { uid: true },
             uid: true,

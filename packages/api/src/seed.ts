@@ -2,7 +2,7 @@ import { prisma } from '#lib';
 import { fakerFR } from '@faker-js/faker';
 import { CredentialType, GroupType, LogoSourceType, Visibility, type Prisma } from '@prisma/client';
 import { hash } from 'argon2';
-import { addDays } from 'date-fns';
+import { addDays, format } from 'date-fns';
 import dichotomid from 'dichotomid';
 import { exit } from 'node:process';
 import slug from 'slug';
