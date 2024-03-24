@@ -1,6 +1,8 @@
 import { builder, prisma } from '#lib';
+import { payShopPaymentViaLydia } from '#modules/payments';
 import { onBoard } from '#permissions';
-import { Visibility, type PaymentMethod as PaymentMethodPrisma } from '@prisma/client';
+import type { LydiaAccount, LydiaTransaction, ShopItem, ShopPayment } from '@prisma/client';
+import { PaymentMethod as PaymentMethodPrisma, Visibility } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { ShopPaymentType } from '../index.js';
 
@@ -14,6 +16,7 @@ builder.mutationField('upsertShopPayment', (t) =>
       shopItemId: t.arg.string({ required: true }),
       quantity: t.arg.int({ required: true }),
       paymentMethod: t.arg.string({ required: false }),
+      phone: t.arg.string({ required: false }),
     },
     async authScopes(_, { shopItemId }, { user }) {
       if (!user) return false;
@@ -74,7 +77,7 @@ builder.mutationField('upsertShopPayment', (t) =>
 
       return true;
     },
-    async resolve(query, _, { id, userUid, shopItemId, quantity, paymentMethod }, { user }) {
+    async resolve(query, _, { id, userUid, shopItemId, quantity, paymentMethod, phone }, { user }) {
       const shopItem = await prisma.shopItem.findUniqueOrThrow({
         where: { id: shopItemId },
         include: {
@@ -124,7 +127,17 @@ builder.mutationField('upsertShopPayment', (t) =>
           totalPrice: shopItem.price * quantity,
           paymentMethod: paymentMethod as PaymentMethodPrisma,
         },
+        include: {
+          shopItem: {
+            include: {
+              lydiaAccount: true,
+            },
+          },
+          lydiaTransaction: true,
+        },
       });
+
+      await pay({ shopPayment, phone: phone ?? '' });
 
       await prisma.logEntry.create({
         data: {
@@ -140,3 +153,25 @@ builder.mutationField('upsertShopPayment', (t) =>
     },
   }),
 );
+
+async function pay({
+  shopPayment,
+  phone,
+}: {
+  shopPayment: ShopPayment & {
+    shopItem: ShopItem & { lydiaAccount: LydiaAccount | null };
+    lydiaTransaction: LydiaTransaction | null;
+  };
+  phone: string;
+}): Promise<string | undefined> {
+  switch (shopPayment.paymentMethod) {
+    case PaymentMethodPrisma.Lydia: {
+      if (!phone) throw new GraphQLError('Phone number is required');
+      await payShopPaymentViaLydia(phone, shopPayment);
+      return '';
+    }
+    default: {
+      throw new GraphQLError('Payment method not supported');
+    }
+  }
+}
