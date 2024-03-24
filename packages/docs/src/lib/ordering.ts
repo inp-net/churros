@@ -5,6 +5,7 @@ export const MODULES_ORDER = [
 	'posts',
 	'events',
 	'ticketing',
+	'forms',
 	'documents',
 	'notifications',
 	'services',

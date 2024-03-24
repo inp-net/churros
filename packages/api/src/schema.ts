@@ -14,6 +14,7 @@ import '#modules/comments';
 import '#modules/curriculum';
 import '#modules/documents';
 import '#modules/events';
+import '#modules/forms';
 import '#modules/gitlab';
 import '#modules/global';
 import '#modules/groups';

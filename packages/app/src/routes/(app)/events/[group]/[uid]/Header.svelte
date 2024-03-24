@@ -121,7 +121,6 @@
     flex-direction: column;
     gap: 0.5rem;
     width: calc(min(1000px, 100%));
-    margin: 0 auto;
   }
 
   h1 {
