@@ -5,7 +5,7 @@ import { answerToString } from './answers.js';
 export const ANSWERS_SHEET_NAME = 'Réponses';
 
 function rowRange(questionsCount: number): string {
-  return `${ANSWERS_SHEET_NAME}!A1:${String.fromCharCode('A'.charCodeAt(0) + questionsCount)}999`;
+  return `${ANSWERS_SHEET_NAME}!A1:${String.fromCodePoint('A'.codePointAt(0)! + questionsCount)}999`;
 }
 
 export async function removeAnswersRowsForUser(
@@ -52,8 +52,8 @@ export async function removeAnswersRowsForUser(
 
     // Execute the request to delete rows
     await sheets.spreadsheets.batchUpdate(deleteRequest);
-  } catch (err) {
-    console.error('Error deleting rows:', err);
+  } catch (error) {
+    console.error('Error deleting rows:', error);
   }
 }
 
@@ -111,7 +111,6 @@ export async function appendFormAnswersToGoogleSheets(
               ...answers[0],
               question: questions.find((q) => q.id === answers[0]!.questionId)!,
             },
-            undefined,
           )
         : '',
     ),

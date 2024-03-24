@@ -173,9 +173,9 @@
         width: 3rem;
         height: 3rem;
         color: var(--muted-text);
+        object-fit: contain;
         background: var(--muted-bg);
         border-radius: var(--radius-block);
-        object-fit: contain;
       }
     }
   }

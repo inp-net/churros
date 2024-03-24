@@ -4,6 +4,8 @@
   export let opposed: boolean;
   export let verified: boolean = false;
   export let feminin = false;
+  export let free = false;
+
   import Badge from './Badge.svelte';
   import IconDoubleCheck from '~icons/mdi/check-all';
 
@@ -16,7 +18,9 @@
       : verified
         ? `Scanné${ending}`
         : paid
-          ? `Payé${ending}`
+          ? free
+            ? `Réservé${ending}`
+            : `Payé${ending}`
           : `Non payé${ending}`;
 </script>
 

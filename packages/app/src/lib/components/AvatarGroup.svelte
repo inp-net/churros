@@ -18,20 +18,21 @@
   .avatar-group {
     display: inline-block;
     width: 1.2em;
+    min-width: 2rem;
     height: 1.2em;
+    min-height: 2rem;
     overflow: hidden;
     font-weight: bold;
     color: var(--muted-text);
     text-align: center;
     background-color: var(--muted-bg);
     border-radius: var(--radius-inline);
-    min-width: 2rem;
-    min-height: 2rem;
   }
+
   img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
     font-size: 1rem;
+    object-fit: contain;
   }
 </style>

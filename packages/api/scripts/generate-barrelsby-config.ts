@@ -47,7 +47,7 @@ const main = () => {
   generateBarrelsByConfig('src/permissions');
   generateBarrelsByConfig('src/modules/*/*');
   barrelsbyConfig.directory = Array.from(new Set(barrelsbyConfig.directory)).sort();
-  writeFileSync(barrelsbyConfigPath, JSON.stringify(barrelsbyConfig, undefined, 2));
+  writeFileSync(barrelsbyConfigPath, JSON.stringify(barrelsbyConfig, undefined, 2) + '\n');
 
   console.log('Updated barrelsby.config.json');
 

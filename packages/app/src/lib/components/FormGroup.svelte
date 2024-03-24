@@ -22,8 +22,8 @@
 
   let {
     address,
-    color,
     description,
+    color,
     email,
     longDescription,
     website,

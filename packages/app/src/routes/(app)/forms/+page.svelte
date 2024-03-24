@@ -12,7 +12,7 @@
   import { _formNodeQuery } from './+page';
 
   export let data: PageData;
-  let q = queryParam('q', {
+  const q = queryParam('q', {
     encode: (v) => v || undefined,
     decode: (v) => v ?? '',
   });
@@ -27,10 +27,11 @@
 
   const throttledSearch = throttle(search, 500);
 
-  $: if ($q)
+  $: if ($q) {
     throttledSearch($q)?.then((results) => {
       searchResults = results;
     });
+  }
 </script>
 
 <section class="search">
@@ -65,24 +66,24 @@
 
 <style>
   .forms {
-    max-width: 600px;
     width: 100%;
+    max-width: 600px;
     margin: 0 auto;
   }
 
   .links {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
     gap: 0.5em 1em;
+    align-items: center;
   }
 
   .search {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
-    justify-content: center;
     gap: 0.5em 1em;
+    align-items: center;
+    justify-content: center;
     max-width: 600px;
     margin: 0 auto;
     margin-bottom: 2rem;
@@ -90,7 +91,7 @@
 
   h2 {
     display: flex;
-    align-items: center;
     column-gap: 0.5em;
+    align-items: center;
   }
 </style>

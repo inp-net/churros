@@ -18,11 +18,12 @@ export function castAnswer(
   },
   user: undefined | { id: string },
 ): { answer: string[]; number: number | undefined } {
-  if (anonymous && (!user || createdById !== user.id))
+  if (anonymous && (!user || createdById !== user.id)) {
     return {
       answer: [REDACTED_ANSWER],
       number: undefined,
     };
+  }
   return {
     answer: value,
     number: value[0]
@@ -52,7 +53,7 @@ export function answerToString(
     };
     createdById: string | null;
   },
-  user: undefined | { id: string },
+  user: undefined | { id: string } = undefined,
 ): string {
   if (anonymous && (!user || createdById !== user.id)) return REDACTED_ANSWER;
   return type === 'Scale'

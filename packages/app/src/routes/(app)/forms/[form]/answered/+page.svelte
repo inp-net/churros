@@ -104,10 +104,10 @@
 <style>
   .content {
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
     flex-grow: 1;
+    align-items: center;
+    justify-content: center;
   }
 
   .icon {
@@ -115,18 +115,18 @@
   }
 
   .actions {
-    margin: 2rem 0;
     display: flex;
-    align-items: center;
-    justify-content: center;
     flex-wrap: wrap;
     gap: 0.5em 1em;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem 0;
   }
 
   h2 {
     display: flex;
-    align-items: center;
     column-gap: 1em;
+    align-items: center;
     justify-content: space-between;
   }
 </style>

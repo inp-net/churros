@@ -19,7 +19,7 @@ export const _query = Selector('ThirdPartyApp')({
     pictureFile: true,
     pictureFileDark: true,
   },
-  logs: [{}, { nodes: { happenedAt: true, message: true, action: true } }],
+  logs: [{}, { nodes: { id: true, happenedAt: true, message: true, action: true } }],
   rateLimitHits: [{}, { nodes: { date: true, count: true, queryName: true } }],
   apiUsage: [{}, { nodes: { date: true, count: true, queryName: true } }],
 });

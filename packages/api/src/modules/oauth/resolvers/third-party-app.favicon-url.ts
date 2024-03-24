@@ -1,55 +1,60 @@
-import { builder, prisma } from '#lib';
-import { LogoScrape } from '@lyuboslavlyubenov/logo-scrape';
+import { builder, prisma, splitID } from '#lib';
 import type { ThirdPartyApp as ThirdPartyAppPrisma } from '@prisma/client';
+import { createWriteStream } from 'node:fs';
+import { mkdir } from 'node:fs/promises';
+import * as https from 'node:https';
+import * as path from 'node:path';
 import { ThirdPartyApp } from '../types/third-party-app.js';
-
-async function fetchFavicon(website: string, app: ThirdPartyAppPrisma) {
-  try {
-    let favicons = (await LogoScrape.getLogos(website).catch((error) => {
-      console.error(`While fetching favicon for ${website}:`, error);
-      return [];
-    })) as Array<{
-      url: string;
-      size?: `${number}x${number}`;
-      type: string;
-    }>;
-    if (favicons.length === 0) return '';
-
-    const height = (size: string | undefined) => {
-      if (typeof size === 'string') return Number.parseFloat(size.split('x')[1] ?? '0');
-      return 0;
-    };
-
-    favicons.sort((a, b) => height(a?.size) - height(b?.size)).reverse();
-    // apple-touch-icon.png is usually non-transparent, so we don't want it
-    const noAppleTouchIcons = favicons.filter((f) => !f?.url?.endsWith('apple-touch-icon.png'));
-    if (noAppleTouchIcons.length > 0) favicons = noAppleTouchIcons;
-
-    const favicon = favicons[0]!;
-    await prisma.thirdPartyApp.update({
-      where: { id: app.id },
-      data: {
-        faviconUrl: favicon.url,
-      },
-    });
-    return favicon.url;
-  } catch (error) {
-    console.error(error);
-    return '';
-  }
-}
 
 builder.objectField(ThirdPartyApp, 'faviconUrl', (t) =>
   t.string({
-    async resolve({ website, id }) {
-      if (!website) return '';
+    async resolve({ website, id, owner }) {
+      if (!website) return owner.pictureFile;
 
       const app = await prisma.thirdPartyApp.findUniqueOrThrow({ where: { id } });
       if (app.faviconUrl) return app.faviconUrl;
       console.info(`Fetching favicon for ${website}`);
-      // TODO store them locally
-      fetchFavicon(website, app);
-      return '';
+      return fetchFavicon(new URL(website), app);
     },
   }),
 );
+
+async function fetchFavicon(website: URL, app: ThirdPartyAppPrisma): Promise<string> {
+  const upstreamUrl = new URL(
+    `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${website}&size=128`,
+  );
+  try {
+    const faviconUrl = await downloadFavicon(upstreamUrl, app);
+    await prisma.thirdPartyApp.update({
+      where: { id: app.id },
+      data: {
+        faviconUrl,
+      },
+    });
+    return faviconUrl;
+  } catch {
+    return upstreamUrl.toString();
+  }
+}
+
+/** Download the favicon of the website to /storage/third-party-apps/{id}/logo.png */
+async function downloadFavicon(faviconUrl: URL, app: ThirdPartyAppPrisma): Promise<string> {
+  const relativePath = path.join('third-party-apps', splitID(app.id)[1], 'logo.png');
+  const destination = path.join(new URL(process.env.STORAGE).pathname, relativePath);
+  await mkdir(path.dirname(destination), { recursive: true });
+  // Download app.faviconUrl to destination
+  https.get(faviconUrl, (response) => {
+    const file = createWriteStream(destination);
+    response.pipe(file);
+    file.on('finish', () => {
+      file.close();
+    });
+  });
+
+  const finalURL = new URL(process.env.PUBLIC_STORAGE_URL);
+  finalURL.pathname = path.join(finalURL.pathname, relativePath);
+  // Bust cache when website the favicon is from changes
+  finalURL.searchParams.set('src', app.website);
+
+  return finalURL.toString();
+}

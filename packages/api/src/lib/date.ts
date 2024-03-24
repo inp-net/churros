@@ -55,9 +55,8 @@ export function formatDate(
 ): string {
   try {
     if (!date) return '';
-    if (typeof date === 'string') {
-      date = new Date(Date.parse(date));
-    }
+    if (typeof date === 'string') date = new Date(Date.parse(date));
+
     return new Intl.DateTimeFormat('fr-FR', { dateStyle: style }).format(date);
   } catch (error) {
     console.error(error);
@@ -72,9 +71,8 @@ export function formatDateTime(
 ): string {
   try {
     if (!date) return '';
-    if (typeof date === 'string') {
-      date = new Date(Date.parse(date));
-    }
+    if (typeof date === 'string') date = new Date(Date.parse(date));
+
     return new Intl.DateTimeFormat('fr-FR', { dateStyle, timeStyle }).format(date);
   } catch (error) {
     console.error(error);
