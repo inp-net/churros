@@ -9,6 +9,7 @@
   import IconEmail from '~icons/mdi/email-outline';
   import IconHome from '~icons/mdi/home-outline';
   import IconBack from '~icons/mdi/undo-variant';
+  import IconList from '~icons/mdi/view-list-outline';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -37,7 +38,7 @@
         toasts.success(`Réponses envoyées à ${mailFormAnswers.data}`);
         answersSent = true;
       }
-    } catch (error) {
+    } catch {
       toasts.error(
         "Une erreur est survenue lors de l'envoi du mail. Veuillez réessayer plus tard.",
       );
@@ -57,6 +58,9 @@
   <section class="actions">
     <ButtonSecondary icon={IconBack} href="../answer">Modifier mes réponses</ButtonSecondary>
     <ButtonSecondary icon={IconHome} href="/">Retour à l'accueil</ButtonSecondary>
+    {#if data.form?.canSeeAnswers}
+      <ButtonSecondary icon={IconList} href="../answers">Voir les réponses</ButtonSecondary>
+    {/if}
   </section>
   <section class="my-answers">
     <h2>
