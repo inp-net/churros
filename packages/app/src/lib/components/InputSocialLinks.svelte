@@ -156,11 +156,12 @@
           type="text"
           value={urlToUsername(value[index(name)] ?? { name, value: '' })}
           on:input={({ detail }) => {
+            if (!(detail.target instanceof HTMLInputElement)) return;
             value[index(name)] = {
               ...value[index(name)],
               value: usernameToURL({
                 name,
-                value: detail.target?.value,
+                value: detail.target.value,
               }),
             };
           }}

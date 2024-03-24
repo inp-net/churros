@@ -211,16 +211,16 @@ function mutatePrismaSchema(schemaPath: string, tableName: string) {
 }
 
 function scalarColumnNames(tableName: string) {
-  return prismaRuntimeModel.models[tableName]!.fields
-    .filter((f: { type: string }) => ['String', 'Int', 'Float'].includes(f.type))
-    .map((f: { name: string }) => f.name);
+  return prismaRuntimeModel.models[tableName]!.fields.filter((f: { type: string }) =>
+    ['String', 'Int', 'Float'].includes(f.type),
+  ).map((f: { name: string }) => f.name);
 }
 
 const columns: string[] = scalarColumnNames(tableName);
 
-const userTypedColumns: string[] = prismaRuntimeModel.models[tableName]!.fields
-  .filter((f: { type: string }) => ['User'].includes(f.type))
-  .map((f: { name: string }) => f.name);
+const userTypedColumns: string[] = prismaRuntimeModel.models[tableName]!.fields.filter(
+  (f: { type: string }) => ['User'].includes(f.type),
+).map((f: { name: string }) => f.name);
 
 const eligibleColums = [
   ...columns,

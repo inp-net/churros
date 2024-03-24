@@ -28,7 +28,7 @@
   {:else if visibility === Visibility.SchoolRestricted}
     <IconSchool></IconSchool>
   {/if}
-  {#if text}
+  {#if text && visibility}
     {DISPLAY_VISIBILITIES[visibility]}
   {/if}
 </span>

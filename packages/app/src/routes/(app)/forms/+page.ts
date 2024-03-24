@@ -3,16 +3,17 @@ import { loadQuery, Selector } from '$lib/zeus.js';
 import { error } from '@sveltejs/kit';
 
 export const _formNodeQuery = Selector('Form')({
-localId: true,
-            id: true,
-            title: true,
-            descriptionHtml: true,
-            group: {
-              pictureFile: true,
-              pictureFileDark: true,
-              name: true,
-              uid: true,
-            },})
+  localId: true,
+  id: true,
+  title: true,
+  descriptionHtml: true,
+  group: {
+    pictureFile: true,
+    pictureFileDark: true,
+    name: true,
+    uid: true,
+  },
+});
 
 export async function load({ fetch, parent, url }) {
   const { me } = await parent();

@@ -5,7 +5,7 @@
   import BaseInputText from '$lib/components/BaseInputText.svelte';
 
   export let q: string | null;
-  const emit = createEventDispatcher<{ search: string }>();
+  const emit = createEventDispatcher<{ search: string | null }>();
   export let placeholder = 'Recherche…';
 </script>
 
