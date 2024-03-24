@@ -1,10 +1,9 @@
 import { builder, prisma } from '#lib';
 import { PaymentMethodEnum, payShopPaymentViaLydia } from '#modules/payments';
 import {
-  type Group,
+  PaymentMethod as PaymentMethodPrisma,
   type LydiaAccount,
   type LydiaTransaction,
-  type PaymentMethod as PaymentMethodPrisma,
   type ShopItem,
   type ShopPayment,
 } from '@prisma/client';
@@ -62,24 +61,25 @@ builder.mutationField('paidShopPayment', (t) =>
             shopPayment.shopItem.shopPayments.reduce((acc, curr) => acc + curr.quantity, 0);
 
       const userLeft =
-        shopPayment.shopItem.max -
-        shopPayment.shopItem.shopPayments.reduce(
-          (acc, curr) => acc + (curr.userId === user.uid ? curr.quantity : 0),
-          0,
-        );
+        shopPayment.shopItem.max === 0
+          ? Number.POSITIVE_INFINITY
+          : shopPayment.shopItem.max -
+            shopPayment.shopItem.shopPayments.reduce(
+              (acc, curr) => acc + (curr.userId === user.uid ? curr.quantity : 0),
+              0,
+            );
 
       if (shopPayment.quantity > stockLeft) throw new GraphQLError('Not enough stock');
       else if (shopPayment.quantity > userLeft) throw new GraphQLError('Too much quantity');
 
       // Process payment
-      await pay(user.uid, paymentMethod, shopPayment, phone);
-
+      await pay({ shopPayment, phone: phone ?? '' });
       await prisma.logEntry.create({
         data: {
           area: 'shop payment',
           action: 'update',
           target: shopPaymentId,
-          message: `${shopPayment.shopItem.name} (x${shopPayment.quantity}) for ${user.uid}`,
+          message: `${user.uid} tried to pay for shop payment ${shopPaymentId} with ${paymentMethod}, current state is ${shopPayment.paid}`,
           user: { connect: { id: user.id } },
         },
       });
@@ -95,30 +95,24 @@ builder.mutationField('paidShopPayment', (t) =>
   }),
 );
 
-async function pay(
-  from: string,
-  by: PaymentMethodPrisma,
+async function pay({
+  shopPayment,
+  phone,
+}: {
   shopPayment: ShopPayment & {
-    shopItem: ShopItem & { lydiaAccount: LydiaAccount | null; group: Group };
+    shopItem: ShopItem & { lydiaAccount: LydiaAccount | null };
     lydiaTransaction: LydiaTransaction | null;
-  },
-  phone?: string | null,
-) {
-  switch (by) {
-    case 'Lydia': {
-      if (!phone) throw new GraphQLError('Missing phone number');
+  };
+  phone: string;
+}): Promise<string | undefined> {
+  switch (shopPayment.paymentMethod) {
+    case PaymentMethodPrisma.Lydia: {
+      if (!phone) throw new GraphQLError('Phone number is required');
       await payShopPaymentViaLydia(phone, shopPayment);
-      return;
+      return '';
     }
-
     default: {
-      return new Promise((_resolve, reject) => {
-        reject(
-          new GraphQLError(
-            `Attempt to pay ${shopPayment.shopItem.groupId} ${shopPayment.totalPrice} from ${from} by ${by}: not implemented`,
-          ),
-        );
-      });
+      throw new GraphQLError('Payment method not supported');
     }
   }
 }

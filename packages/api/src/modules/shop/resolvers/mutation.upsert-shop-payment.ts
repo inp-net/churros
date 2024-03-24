@@ -1,7 +1,5 @@
 import { builder, prisma } from '#lib';
-import { payShopPaymentViaLydia } from '#modules/payments';
 import { onBoard } from '#permissions';
-import type { LydiaAccount, LydiaTransaction, ShopItem, ShopPayment } from '@prisma/client';
 import { PaymentMethod as PaymentMethodPrisma, Visibility } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { ShopPaymentType } from '../index.js';
@@ -77,7 +75,7 @@ builder.mutationField('upsertShopPayment', (t) =>
 
       return true;
     },
-    async resolve(query, _, { id, userUid, shopItemId, quantity, paymentMethod, phone }, { user }) {
+    async resolve(query, _, { id, userUid, shopItemId, quantity, paymentMethod }, { user }) {
       const shopItem = await prisma.shopItem.findUniqueOrThrow({
         where: { id: shopItemId },
         include: {
@@ -136,8 +134,6 @@ builder.mutationField('upsertShopPayment', (t) =>
           lydiaTransaction: true,
         },
       });
-      await pay({ shopPayment, phone: phone ?? '' });
-
       await prisma.logEntry.create({
         data: {
           area: 'shop payment',
@@ -152,25 +148,3 @@ builder.mutationField('upsertShopPayment', (t) =>
     },
   }),
 );
-
-async function pay({
-  shopPayment,
-  phone,
-}: {
-  shopPayment: ShopPayment & {
-    shopItem: ShopItem & { lydiaAccount: LydiaAccount | null };
-    lydiaTransaction: LydiaTransaction | null;
-  };
-  phone: string;
-}): Promise<string | undefined> {
-  switch (shopPayment.paymentMethod) {
-    case PaymentMethodPrisma.Lydia: {
-      if (!phone) throw new GraphQLError('Phone number is required');
-      await payShopPaymentViaLydia(phone, shopPayment);
-      return '';
-    }
-    default: {
-      throw new GraphQLError('Payment method not supported');
-    }
-  }
-}

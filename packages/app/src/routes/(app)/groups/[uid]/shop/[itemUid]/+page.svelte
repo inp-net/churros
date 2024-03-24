@@ -35,7 +35,6 @@
 
   async function payBy(method: PaymentMethod | undefined) {
     if ($me?.uid === undefined) await goto('/login');
-
     choosingPaymentMethodLoading = method ?? PaymentMethod.Other;
     const { upsertShopPayment } = await $zeus.mutate({
       upsertShopPayment: [
@@ -64,26 +63,26 @@
 
     if (upsertShopPayment.__typename === 'Error') {
       serverError = upsertShopPayment.message;
-      return;
+      if (method !== PaymentMethod.Lydia) return;
     }
-
+    paying = true;
     serverError = '';
 
     // TODO handle actually going there only when payment has gone through
-    if (method === PaymentMethod.Lydia) {
-      shopPaymentId = upsertShopPayment.data.id;
-      paying = true;
-    } else {
-      await goto(
-        '?' +
-          new URLSearchParams({
-            done: upsertShopPayment.data.id,
-            ...(upsertShopPayment.data.paid ? { paid: '' } : {}),
-          }).toString(),
-      );
-    }
-
     if (upsertShopPayment.__typename === 'MutationUpsertShopPaymentSuccess')
+      {if (method === PaymentMethod.Lydia) {
+        shopPaymentId = upsertShopPayment.data.id;
+      } else {
+        await goto(
+          '?' +
+            new URLSearchParams({
+              done: upsertShopPayment.data.id,
+              ...(upsertShopPayment.data.paid ? { paid: '' } : {}),
+            }).toString(),
+        );
+      }}
+
+    if (upsertShopPayment.__typename === 'MutationUpsertShopPaymentSuccess' && !paying)
       await goto('../orders/');
   }
 
@@ -173,8 +172,14 @@
                   },
                 ],
               });
-              if (paidShopPayment.__typename === 'Error') serverError = paidShopPayment.message;
-              else await goto('?' + new URLSearchParams({ done: shopPaymentId }).toString());
+              if (paidShopPayment.__typename === 'Error') {
+                serverError = paidShopPayment.message;
+                paymentLoading = false;
+                return;
+              } else {
+                await goto('?' + new URLSearchParams({ done: shopPaymentId }).toString());
+                paymentLoading = false;
+              }
             }}
           >
             <InputText
