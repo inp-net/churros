@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Correction de la variable d'env `ORIGIN`, qui était à `http://app`, ce qui empêchait les checks CSRF de SvelteKit sur les soumissions de formulaires de passer
+
 ## [1.54.1] - 2024-03-24
 
 ### Autres

@@ -81,7 +81,7 @@
     "clean": "git clean -Xdf .",
     "dev": "yarn run -T generate-buildinfo && yarn zeus && wait-port 4000 && vite dev --host",
     "preview": "vite preview",
-    "start": "ORIGIN=http://app node ./build/index.js",
+    "start": "node ./build/index.js",
     "zeus": "zeus ../api/build/schema.graphql ./src --es --subscriptions"
   },
   "type": "module",
