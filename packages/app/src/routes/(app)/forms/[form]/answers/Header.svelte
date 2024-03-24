@@ -6,6 +6,7 @@
   import { toasts } from '$lib/toasts';
   import { zeus } from '$lib/zeus';
   import IconAnalytics from '~icons/mdi/chart-bar';
+  import IconDownload from '~icons/mdi/download-outline';
   import IconGSheet from '~icons/mdi/google-spreadsheet';
   import IconOpenInNewTab from '~icons/mdi/open-in-new';
   import IconNewGSheet from '~icons/mdi/table-plus';
@@ -73,6 +74,9 @@
     <ButtonInk href="/forms/{localId}/answers" icon={IconList}>Réponses</ButtonInk>
   {/if}
   <ButtonShare text path="/forms/{localId}/answer"></ButtonShare>
+  <ButtonInk icon={IconDownload} href="/forms/{$page.params.form}/answers.xlsx">
+    Feuille excel
+  </ButtonInk>
   <ButtonInk
     newTab
     loading={creatingLinkedGoogleSheet}
