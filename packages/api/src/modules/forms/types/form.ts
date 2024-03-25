@@ -44,6 +44,7 @@ export const FormType = builder.prismaNode('Form', {
       description: 'Utilisateur ayant créé le formulaire',
     }),
     group: t.relation('group', {
+      nullable: true,
       description: 'Groupe auquel le formulaire est associé',
     }),
     visibility: t.expose('visibility', {

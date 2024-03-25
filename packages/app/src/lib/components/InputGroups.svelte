@@ -19,15 +19,21 @@
   export let label: string;
   export let disallowed: Group[] = [];
   export let required = false;
-  export let group: Group | undefined = undefined;
+  export let group: Group | undefined= undefined;
   export let groups: Group[] = [];
   export let clearable = !required;
   export let multiple = false;
   export let options: Group[];
   export let disallowedExplanation: (g: Group) => string = () => 'Impossible';
+  export let name: string | undefined = undefined;
 
   export let placeholder = '';
 </script>
+
+{#if name && group}
+  <input type="hidden" name="{name}/uid" value={group.uid} />
+  <input type="hidden" name="{name}/id" value={group.id} />
+{/if}
 
 <InputField {label} {required}>
   <InputPickObjects
