@@ -7,12 +7,20 @@
   import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
   import BadgePaymentStatus from '$lib/components/BadgePaymentStatus.svelte';
   import BackButton from '$lib/components/ButtonBack.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import { PAYMENT_METHODS_ICONS } from '$lib/display';
+  import { me } from '$lib/session';
+  import { goto } from '$app/navigation';
+  import { PaymentMethod, zeus } from '$lib/zeus';
 
   export let data: PageData;
 
   const { orders } = data;
 
   let warningToastId: string;
+  let paying = false;
+  let paymentLoading = false;
+  let phone = '';
 
   onMount(() => {
     warningToastId = toasts.warn('Page en bêta', 'Les boutiques sont en phase de test', {
@@ -46,12 +54,71 @@
         <h2>{order.shopItem.name}</h2>
         <div class="priceinfo">
           <p>{order.totalPrice} €</p>
+          <svelte:component
+            this={PAYMENT_METHODS_ICONS[order.paymentMethod ?? 'Other']}
+            class="icon"
+          />
           <p><BadgePaymentStatus paid={order.paid} opposed={false} cancelled={false} /></p>
         </div>
       </div>
-      <ButtonPrimary href="/groups/{order.shopItem.group.uid}/shop/{order.shopItem.uid}/"
-        >Voir</ButtonPrimary
-      >
+      {#if !paying && !order.paid && order.paymentMethod === 'Lydia'}
+        <div class="footer">
+          <ButtonPrimary
+            on:click={() => {
+              paying = true;
+            }}>Payer</ButtonPrimary
+          >
+        </div>
+      {/if}
+      {#if paying}
+        <form
+          class="pay"
+          on:submit|preventDefault={async () => {
+            paymentLoading = true;
+            const { paidShopPayment } = await $zeus.mutate({
+              paidShopPayment: [
+                {
+                  shopPaymentId: order.id,
+                  phone,
+                  paymentMethod: PaymentMethod.Lydia,
+                },
+                {
+                  '__typename': true,
+                  '...on Error': { message: true },
+                  '...on MutationPaidShopPaymentSuccess': {
+                    data: {
+                      __typename: true,
+                    },
+                  },
+                },
+              ],
+            });
+            if (paidShopPayment.__typename === 'Error') {
+              const serverError = paidShopPayment.message;
+              paymentLoading = false;
+              toasts.add('error', serverError);
+              return;
+            } else {
+              await goto('?' + new URLSearchParams({ done: order.id }).toString());
+              paymentLoading = false;
+              toasts.add('success', 'La demande de paiement a été envoyée');
+            }
+          }}
+        >
+          <InputText
+            type="tel"
+            label="Numéro de téléphone"
+            initial={$me?.phone}
+            maxlength={255}
+            bind:value={phone}
+          />
+
+          <section class="submit">
+            <ButtonPrimary loading={paymentLoading} submits>Payer {order.totalPrice}€</ButtonPrimary
+            >
+          </section>
+        </form>
+      {/if}
     </div>
   {/each}
 </div>
@@ -102,6 +169,22 @@
     gap: 1em;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
+  }
+
+  .footer {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    align-items: center;
     width: 100%;
   }
 

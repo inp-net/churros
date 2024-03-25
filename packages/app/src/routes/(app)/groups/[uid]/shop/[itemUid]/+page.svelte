@@ -59,18 +59,18 @@
         },
       ],
     });
-    choosingPaymentMethodLoading = undefined;
 
     if (upsertShopPayment.__typename === 'Error') {
+      choosingPaymentMethodLoading = undefined;
       serverError = upsertShopPayment.message;
-      if (method !== PaymentMethod.Lydia) return;
+      return;
     }
     paying = true;
     serverError = '';
 
     // TODO handle actually going there only when payment has gone through
-    if (upsertShopPayment.__typename === 'MutationUpsertShopPaymentSuccess')
-      {if (method === PaymentMethod.Lydia) {
+    if (upsertShopPayment.__typename === 'MutationUpsertShopPaymentSuccess') {
+      if (method === PaymentMethod.Lydia) {
         shopPaymentId = upsertShopPayment.data.id;
       } else {
         await goto(
@@ -80,7 +80,9 @@
               ...(upsertShopPayment.data.paid ? { paid: '' } : {}),
             }).toString(),
         );
-      }}
+        paying = false;
+      }
+    }
 
     if (upsertShopPayment.__typename === 'MutationUpsertShopPaymentSuccess' && !paying)
       await goto('../orders/');
@@ -177,24 +179,27 @@
                 paymentLoading = false;
                 return;
               } else {
-                await goto('?' + new URLSearchParams({ done: shopPaymentId }).toString());
+                await goto('../orders/');
                 paymentLoading = false;
+                toasts.add('success', 'La demande de paiement a été envoyée');
               }
             }}
           >
-            <InputText
-              type="tel"
-              label="Numéro de téléphone"
-              initial={$me?.phone}
-              maxlength={255}
-              bind:value={phone}
-            />
+            {#if choosingPaymentMethodLoading === PaymentMethod.Lydia}
+              <InputText
+                type="tel"
+                label="Numéro de téléphone"
+                initial={$me?.phone}
+                maxlength={255}
+                bind:value={phone}
+              />
 
-            <section class="submit">
-              <ButtonPrimary loading={paymentLoading} submits
-                >Payer {quantity * shopItem.price}€</ButtonPrimary
-              >
-            </section>
+              <section class="submit">
+                <ButtonPrimary loading={paymentLoading} submits
+                  >Payer {quantity * shopItem.price}€</ButtonPrimary
+                >
+              </section>
+            {/if}
           </form>
         {/if}
       </ul>
@@ -261,6 +266,14 @@
     display: flex;
     gap: 1em;
     align-items: center;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    align-items: center;
+    width: 100%;
   }
 
   @media only screen and (max-width: 1100px) {
