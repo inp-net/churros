@@ -11,6 +11,7 @@
   export let labelNull = 'Inconnu';
   export let alignRight = false;
   export let help = '';
+  export let name: string | undefined = undefined;
   let previousValue: boolean | null | undefined = value;
 
   const getTriState = (target: HTMLInputElement) =>
@@ -41,6 +42,7 @@
   {#if ternary}
     <input
       type="checkbox"
+      {name}
       bind:this={checkboxElement}
       on:change={(event) => {
         event.preventDefault();
