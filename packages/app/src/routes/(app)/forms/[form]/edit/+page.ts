@@ -23,20 +23,34 @@ export async function load({ fetch, parent, params }) {
           sections: {
             order: true,
             title: true,
+            id: true,
             localId: true,
             description: true,
             questions: {
               'id': true,
               'title': true,
               'mandatory': true,
+              'type': true,
               'anonymous': true,
               'description': true,
               'order': true,
-              __typename: true,
-              type: true,
+              '__typename': true,
+              '...on QuestionScale': {
+                minimum: true,
+                minimumLabel: true,
+                maximum: true,
+                maximumLabel: true,
+              },
               '...on QuestionSelectOne': {
                 options: true,
                 allowOptionsOther: true,
+              },
+              '...on QuestionSelectMultiple': {
+                options: true,
+                allowOptionsOther: true,
+              },
+              '...on QuestionScalar': {
+                __typename: true,
               },
             },
           },

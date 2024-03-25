@@ -1,4 +1,6 @@
 <script lang="ts">
+  import FormQuestionScale from './FormQuestionScale.svelte';
+  import { QuestionKind } from '@prisma/client';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { queryParam } from 'sveltekit-search-params';
   import FormBasicDetails from '../../FormBasicDetails.svelte';
@@ -7,9 +9,11 @@
   import InputLongText from '$lib/components/InputLongText.svelte';
   import type { PageData } from './$types';
   import FormQuestion from './FormQuestion.svelte';
-  import FormQuestionSelectOne from './FormQuestionSelectOne.svelte';
+  import FormQuestionChoices from './FormQuestionChoices.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputPickObjects from '$lib/components/InputPickObjects.svelte';
+  import BaseInputText from '$lib/components/BaseInputText.svelte';
 
   export let data: PageData;
 
@@ -28,6 +32,17 @@
     $editingSectionId === 'new'
       ? undefined
       : sections.find((s) => s.localId === $editingSectionId) ?? sections[0];
+
+  let newQuestion = {
+    id: undefined,
+    title: '',
+    description: '',
+    mandatory: true,
+    type: QuestionKind.SelectOne,
+    options: [],
+    allowOptionsOther: false,
+    __typename: 'QuestionSelectOne',
+  }
 </script>
 
 <svelte:head>
@@ -61,12 +76,14 @@
   {/if}
 
   <header class="section-details">
-    <InputText
-      value={editingSection?.title ?? ''}
-      label=""
-      placeholder="Titre de la section (optionnel)"
-      name="new-section.title"
-    ></InputText>
+    <div class="title-and-type">
+      <InputText
+        value={editingSection?.title ?? ''}
+        label=""
+        placeholder="Titre de la section (optionnel)"
+        name="new-section.title"
+      ></InputText>
+    </div>
     <InputLongText
       rows={3}
       value={editingSection?.description ?? ''}
@@ -76,26 +93,11 @@
   </header>
   <section class="questions">
     {#each editingSection?.questions ?? [] as question (question.id)}
-      <FormQuestion id={question.id} initial={question}>
-        {#if question.__typename === 'QuestionSelectOne'}
-          <input type="hidden" name="{question.id}.options" value={question.options.join(',')} />
-          <FormQuestionSelectOne bind:options={question.options}></FormQuestionSelectOne>
-        {/if}
-
-        <div class="additional-options" slot="footer">
-          {#if question.__typename === 'QuestionSelectOne'}
-            <InputCheckbox
-              value={question.allowOptionsOther}
-              label="Autoriser le choix “autres”"
-              name="multiple"
-            ></InputCheckbox>
-          {/if}
-        </div>
-      </FormQuestion>
+      <FormQuestion bind:question />
     {/each}
 
     <hr />
-    <FormQuestion>
+    <FormQuestion bind:question={newQuestion}>
       <h2 slot="header">Nouvelle question</h2>
     </FormQuestion>
   </section>

@@ -14,18 +14,29 @@
   export let maximumLabel: string;
   export let name = '';
   export let id = name;
+  export let disabled = false;
+  export let noHint = false;
 </script>
 
 <InputField {label} {required} {hint} {errors}>
   <div class="range-input">
-    <span class="label label-min typo-details">{minimumLabel || minimum}</span>
-    <span class="label label-max typo-details">{maximumLabel || maximum}</span>
+    <span class="label label-min typo-details">
+      <slot value={minimum} label={minimumLabel} name="minimum">
+        {minimumLabel || minimum}
+      </slot>
+    </span>
+    <span class="label label-max typo-details">
+      <slot value={maximum} label={maximumLabel} name="maximum">
+        {maximumLabel || maximum}
+      </slot>
+    </span>
   </div>
   {#if value === null}
     <input type="hidden" name="{name}/no-answer" value="" />
   {/if}
   <input
     type="range"
+    {disabled}
     value={value ?? 0}
     on:input={(e) => {
       if (!(e.target instanceof HTMLInputElement)) return;
@@ -37,22 +48,24 @@
     max={maximum}
     step="1"
   />
-  <p class="current-value-hint">
-    {#if value === null}
-      <em>Sans réponse</em>
-    {:else}
-      {value}/{maximum}
-    {/if}
-    {#if !required}
-      <ButtonGhost
-        help="Effacer la réponse"
-        disabled={value === null}
-        on:click={() => {
-          value = null;
-        }}><IconClear></IconClear></ButtonGhost
-      >
-    {/if}
-  </p>
+  {#if !noHint}
+    <p class="current-value-hint">
+      {#if value === null}
+        <em>Sans réponse</em>
+      {:else}
+        {value}/{maximum}
+      {/if}
+      {#if !required}
+        <ButtonGhost
+          help="Effacer la réponse"
+          disabled={value === null}
+          on:click={() => {
+            value = null;
+          }}><IconClear></IconClear></ButtonGhost
+        >
+      {/if}
+    </p>
+  {/if}
 </InputField>
 
 <style>

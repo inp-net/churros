@@ -1,87 +1,96 @@
 <script lang="ts">
-  import Card from '$lib/components/Card.svelte';
-  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import { QuestionKind } from '$lib/zeus';
+  import FormQuestionScale from './FormQuestionScale.svelte';
   import InputLongText from '$lib/components/InputLongText.svelte';
-  import InputText from '$lib/components/InputText.svelte';
-  import { tooltip } from '$lib/tooltip';
-  import IconQuestionMark from '~icons/mdi/question-mark-circle-outline';
+  import BaseInputText from '$lib/components/BaseInputText.svelte';
+  import BaseFormQuestion from './BaseFormQuestion.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import FormQuestionChoices from './FormQuestionChoices.svelte';
 
-  export let id: string | undefined = undefined;
-  export let initial: {
+  export let question: {
+    id: string;
     title: string;
     description: string;
     mandatory: boolean;
     anonymous: boolean;
-  } = {
-    title: '',
-    description: '',
-    mandatory: true,
-    anonymous: false,
-  };
+    type: QuestionKind;
+    allowOptionsOther: boolean;
+  } & (
+    | {
+        __typename: 'QuestionSelectOne' | 'QuestionSelectMultiple';
+        options: string[];
+      }
+    | {
+        __typename: 'QuestionScale';
+        minimum: number;
+        maximum: number;
+        minimumLabel: string;
+        maximumLabel: string;
+      }
+    | {
+        __typename: 'QuestionScalar' | 'QuestionFileUpload';
+      }
+  );
 
-  let data = initial;
+  export let sections: Array<{
+    id: string;
+    title: string;
+    localId: string;
+  }>;
+
+  function questionKindToTypename(type: QuestionKind) {
+    const typeToQuestionType = {
+      Text: 'QuestionScalar',
+      LongText: 'QuestionScalar',
+      SelectOne: 'QuestionSelectOne',
+      SelectMultiple: 'QuestionSelectMultiple',
+      FileUpload: 'QuestionFileUpload',
+      Scale: 'QuestionScale',
+      Number: 'QuestionScalar',
+      Date: 'QuestionScalar',
+      Time: 'QuestionScalar',
+    } as const;
+
+    return typeToQuestionType[type];
+  }
 </script>
 
-<Card element="form" method="post">
-  <header>
-    <slot name="header" />
-    <InputText
-      required
-      label=""
-      name="{id ?? 'new-question'}.title"
-      placeholder="Titre de la question"
-      value={data.title}
-    ></InputText>
-    <InputLongText
-      rows={2}
-      value={data.description}
-      label=""
-      placeholder="Ajouter une description… (optionel)"
-      name="{id ?? 'new-question'}.description"
-    ></InputLongText>
-  </header>
-  <slot />
-  <footer>
-    <slot name="footer" />
-    <InputCheckbox
-      value={data.mandatory}
-      label="Obligatoire"
-      name="{id ?? 'new-question'}.mandatory"
-    ></InputCheckbox>
-    <div class="anonymous">
-      <InputCheckbox value={data.anonymous} label="Anonyme" name="{id ?? 'new-question'}.anonymous"
+<BaseFormQuestion
+  id={question.id}
+  initial={question}
+  on:type-change={({ detail: { to } }) => {
+    question.type = to;
+    question.__typename = questionKindToTypename(to);
+  }}
+>
+  <slot name="header" slot="header" />
+  {#if question.__typename === 'QuestionSelectOne' || question.__typename === 'QuestionSelectMultiple'}
+    <input type="hidden" name="{question.id}.options" value={question.options.join(',')} />
+    <FormQuestionChoices {sections} __typename={question.__typename} bind:options={question.options}
+    ></FormQuestionChoices>
+  {:else if question.__typename === 'QuestionScale'}
+    <FormQuestionScale {...question}></FormQuestionScale>
+  {:else if question.__typename === 'QuestionScalar'}
+    {#if question.type === 'LongText'}
+      <InputLongText rows={5} placeholder="Texte long…" label="" disabled value=""></InputLongText>
+    {:else}
+      <BaseInputText
+        placeholder="Texte"
+        value={null}
+        type={question.type.toLowerCase()}
+        disabled
+        label=""
+      ></BaseInputText>
+    {/if}
+  {/if}
+
+  <div class="additional-options" slot="footer">
+    {#if question.__typename === 'QuestionSelectOne' || question.__typename === 'QuestionSelectMultiple'}
+      <InputCheckbox
+        value={question.allowOptionsOther}
+        label="Autoriser le choix “autres”"
+        name="multiple"
       ></InputCheckbox>
-      <div
-        class="action learn-more"
-        use:tooltip={'Personne (excepté le service technique) ne peut connaître les réponses individuelles à des questions anonymes.'}
-      >
-        <IconQuestionMark></IconQuestionMark>
-      </div>
-    </div>
-  </footer>
-</Card>
-
-<style>
-  header {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
-    border-bottom: var(--border-block) dashed var(--muted-border);
-  }
-  footer {
-    display: flex;
-    flex-direction: column;
-    row-gap: 0.5rem;
-    padding-top: 1rem;
-    margin-top: 1rem;
-    border-top: var(--border-block) dashed var(--muted-border);
-  }
-
-  footer > div {
-    display: flex;
-    align-items: center;
-    gap: 2em;
-  }
-</style>
+    {/if}
+  </div>
+</BaseFormQuestion>

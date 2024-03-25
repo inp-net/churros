@@ -21,6 +21,7 @@
   import IconTerminal from '~icons/mdi/console';
   import IconBugOutline from '~icons/mdi/bug-outline';
   import IconBug from '~icons/mdi/bug';
+  import IconForms from '~icons/mdi/format-list-bulleted';
   import { beforeNavigate } from '$app/navigation';
   import { me } from '$lib/session';
   import { page } from '$app/stores';
@@ -267,6 +268,11 @@
     <a href="/events/create">
       <IconEvent />
       <span>Événement</span>
+    </a>
+
+    <a href="/forms/create">
+      <IconForms></IconForms>
+      <span>Formulaire</span>
     </a>
   </section>
 </div>

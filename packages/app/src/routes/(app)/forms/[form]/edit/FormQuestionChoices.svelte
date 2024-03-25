@@ -4,8 +4,13 @@
   import IconDelete from '~icons/mdi/close';
   import IconMoveUp from '~icons/mdi/arrow-up';
   import IconMoveDown from '~icons/mdi/arrow-down';
+  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import InputSelectOneRadios from '$lib/components/InputSelectOneRadios.svelte';
 
+  export let sections: Array<{ title: string; id: string }> = [];
   export let options: string[];
+  export let __typename: 'QuestionSelectOne' | 'QuestionSelectMultiple';
   let newOption = '';
 
   function move(choice: string, indexDelta: number) {
@@ -19,10 +24,28 @@
   }
 </script>
 
-<h3>Choix possibles</h3>
+<h3>
+  Choix possibles
+
+  <InputSelectOne
+    options={{
+      QuestionSelectOne: 'Choix unique',
+      QuestionSelectMultiple: 'Cases à cocher',
+    }}
+    label=""
+    bind:value={__typename}
+  ></InputSelectOne>
+</h3>
 <ul class="nobullet">
   {#each options as option}
     <li class="option">
+      <div class="fake-input">
+        {#if __typename === 'QuestionSelectMultiple'}
+          <InputCheckbox value={false} label="" disabled></InputCheckbox>
+        {:else}
+          <InputSelectOneRadios required options={['']} label="" disabled></InputSelectOneRadios>
+        {/if}
+      </div>
       <InputText label="" value={option} />
       <div class="actions">
         <ButtonGhost
@@ -52,9 +75,13 @@
           <IconMoveDown></IconMoveDown>
         </ButtonGhost>
       </div>
+      <div class="jump">
+        <!-- <InputSelectOne options={sections} label="Aller à la section"></InputSelectOne> -->
+      </div>
     </li>
   {/each}
   <li class="option new">
+    <div class="fake-input"></div>
     <InputText
       on:blur={() => {
         console.log({ newOption, options });
@@ -74,6 +101,15 @@
 <style>
   h3 {
     margin-bottom: 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .fake-input {
+    width: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   ul {
     display: flex;
