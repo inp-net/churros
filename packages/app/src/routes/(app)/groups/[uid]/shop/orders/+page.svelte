@@ -135,7 +135,7 @@
     display: flex;
     flex-flow: row wrap;
     gap: 1em;
-    align-items: end;
+    align-items: stretch;
     margin: 1em auto;
   }
 

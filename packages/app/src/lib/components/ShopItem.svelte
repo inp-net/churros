@@ -8,7 +8,7 @@
     max: number;
     stock: number;
     stockLeft: number;
-    description: string;
+    descriptionHtml: unknown;
     id: string;
     group: {
       uid: string;
@@ -31,7 +31,10 @@
         <p>{shopItem.stockLeft}/{shopItem.stock} restants</p>
       {/if}
       {#if !small}
-        <p class="description">{shopItem.description}</p>
+        <div data-user-html class="item-description typo-details">
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html shopItem.descriptionHtml}
+        </div>
       {/if}
     </div>
 
@@ -79,7 +82,7 @@
     gap: 0.5rem;
   }
 
-  .description {
+  .item-description {
     display: -webkit-box;
     overflow: hidden;
     text-overflow: ellipsis;

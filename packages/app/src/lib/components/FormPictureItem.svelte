@@ -67,7 +67,8 @@
     } finally {
       deleting = false;
       pictures.splice(index, 1);
-      if (index > 1) index -= 1;
+      if (index > 0) index -= 1;
+      if (pictures.length === 0) index = -1;
     }
   };
 </script>

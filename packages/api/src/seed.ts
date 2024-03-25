@@ -1041,7 +1041,6 @@ await prisma.formJump.create({
   },
 });
 
-
 await prisma.shopItem.create({
   data: {
     uid: 'boules-quies',
@@ -1060,11 +1059,25 @@ await prisma.shopItem.create({
     uid: 'server',
     name: 'Server',
     description: 'Atom 2 duo',
-    price: 100000,
+    price: 100_000,
     stock: 1,
     max: 5,
     visibility: Visibility.GroupRestricted,
     group: { connect: { uid: 'ski' } },
+  },
+});
+
+await prisma.shopItem.create({
+  data: {
+    uid: 'rechauffement',
+    name: 'Réchauffement Climatique',
+    description:
+      "Acheter un peu de réchauffement climatique, c'est gratuit et on en a en trop ! ![](https://jancovici.com/wp-content/uploads/2016/10/GES_graph13_en.png)",
+    price: 0,
+    stock: 0,
+    max: 0,
+    visibility: Visibility.Public,
+    group: { connect: { uid: 'bdd-ae-eau-2022' } },
   },
 });
 

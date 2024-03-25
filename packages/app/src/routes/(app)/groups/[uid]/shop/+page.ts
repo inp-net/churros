@@ -35,7 +35,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               name: true,
               price: true,
               max: true,
-              description: true,
+              descriptionHtml: true,
               stock: true,
               stockLeft: true,
               pictures: {
