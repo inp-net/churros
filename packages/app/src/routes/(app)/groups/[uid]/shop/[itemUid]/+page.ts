@@ -17,7 +17,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           stock: true,
           stockLeft: true,
           max: true,
-          description: true,
+          descriptionHtml: true,
           paymentMethods: true,
           pictures: {
             path: true,

@@ -114,7 +114,10 @@
             <ButtonGhost href="./edit/"><IconEdit /></ButtonGhost>
           {/if}
         </div>
-        <p>{shopItem.description}</p>
+        <div data-user-html class="item-description typo-details">
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html shopItem.descriptionHtml}
+        </div>
       </div>
     </div>
     <div class="right">

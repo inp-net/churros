@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, toHtml } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { PaymentMethodEnum } from '#modules/payments';
 import { onBoard } from '#permissions';
@@ -11,6 +11,9 @@ export const ShopItemType = builder.prismaObject('ShopItem', {
     uid: t.exposeString('uid'),
     name: t.exposeString('name'),
     description: t.exposeString('description'),
+    descriptionHtml: t.string({
+      resolve: async ({ description }) => toHtml(description),
+    }),
     price: t.exposeFloat('price'),
     stock: t.exposeInt('stock'),
     max: t.exposeInt('max'),
