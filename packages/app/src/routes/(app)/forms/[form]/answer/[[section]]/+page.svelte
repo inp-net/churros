@@ -61,8 +61,10 @@
 <header>
   <h1>
     <ButtonBack />
-    <AvatarGroup tooltip="Formulaire créé par {group.name}" href="/groups/{group.uid}" {...group}
-    ></AvatarGroup>
+    {#if group}
+      <AvatarGroup tooltip="Formulaire créé par {group.name}" href="/groups/{group.uid}" {...group}
+      ></AvatarGroup>
+    {/if}
     {title}
   </h1>
   <p class="timing">

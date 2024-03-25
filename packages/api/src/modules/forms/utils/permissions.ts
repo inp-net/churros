@@ -30,8 +30,21 @@ export function canEditForm(
   );
 }
 
+export function canCreateForm(
+  associatedGroup: null | { uid: string },
+  associatedEvent: Parameters<typeof userCanManageEvent>[0] | null,
+  user: Context['user'],
+) {
+  if (!user) return false;
+  if (user.admin) return true;
+  if (associatedEvent && !userCanManageEvent(associatedEvent, user, { canEdit: true }))
+    return false;
+  if (associatedGroup && !userIsOnBoardOf(user, associatedGroup.uid)) return false;
+  return true;
+}
+
 export function canSeeAllAnswers(
-  form: { createdById: string | null; group: { uid: string } },
+  form: { createdById: string | null; group: null | { uid: string } },
   associatedEvent: Parameters<typeof userCanManageEvent>[0] | null,
   user: Context['user'],
 ) {
@@ -39,7 +52,7 @@ export function canSeeAllAnswers(
   if (user.admin) return true;
   if (user.id === form.createdById) return true;
   if (associatedEvent && userCanManageEvent(associatedEvent, user, { canEdit: true })) return true;
-  if (userIsOnBoardOf(user, form.group.uid)) return true;
+  if (form.group && userIsOnBoardOf(user, form.group.uid)) return true;
   return false;
 }
 
@@ -59,7 +72,7 @@ export function canSeeForm(
   form: {
     createdById: string | null;
     visibility: Visibility;
-    group: { id: string; studentAssociation: null | { schoolId: string } };
+    group: null | { id: string; studentAssociation: null | { schoolId: string } };
   },
   associatedEvent:
     | (Parameters<typeof userCanAccessEvent>[0] & Parameters<typeof userCanManageEvent>[0])
@@ -74,14 +87,16 @@ export function canSeeForm(
   // When the form is grouprestricted, only members of the group can see it
   if (
     form.visibility === Visibility.GroupRestricted &&
-    !user?.groups?.some((g) => g.group.id === form.group.id)
+    form.group &&
+    !user?.groups?.some((g) => g.group.id === form.group?.id)
   )
     return false;
 
   // When the form is schoolrestricted, only members of the school can see it
   if (
     form.visibility === Visibility.SchoolRestricted &&
-    !user?.major?.schools.some((s) => form.group.studentAssociation?.schoolId === s.id)
+    form.group &&
+    !user?.major?.schools.some((s) => form.group?.studentAssociation?.schoolId === s.id)
   )
     return false;
 

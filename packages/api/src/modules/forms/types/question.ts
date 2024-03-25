@@ -45,6 +45,7 @@ export const QuestionType = builder.prismaInterface('Question', {
       description: 'Section du formulaire dans laquelle est la question',
     }),
     title: t.exposeString('title', { description: 'Titre de la question' }),
+    order: t.exposeInt('order', { description: 'Ordre de la question dans la section' }),
     description: t.exposeString('description', {
       description: 'Description en Markdown de la question',
     }),
