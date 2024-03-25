@@ -7,9 +7,10 @@
   import InputLongText from '$lib/components/InputLongText.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import InputVisibility from '$lib/components/InputVisibility.svelte';
-  import IconCollapse from '~icons/mdi/chevron-up';
-  import IconExpand from '~icons/mdi/chevron-down';
   import { Visibility } from '$lib/zeus';
+  import IconExpand from '~icons/mdi/chevron-down';
+  import IconCollapse from '~icons/mdi/chevron-up';
+
   export let data:
     | {
         id: string;
@@ -46,6 +47,7 @@
   use:enhance={() =>
     ({ update }) => {
       submitting = false;
+      if (collapsible) collapsed = true;
       update();
     }}
   action="/forms?/upsertForm"
@@ -56,7 +58,7 @@
   {/if}
   {#if collapsible}
     <div class="collapse">
-      <h2>Infos générales</h2>
+      <slot name="header-when-collapsible" />
       <ButtonGhost
         help={collapsed ? 'Développer' : 'Réduire'}
         on:click={() => {
@@ -99,10 +101,22 @@
         bind:value={currentData.description}
       ></InputLongText>
     </section>
-    <section class="actions">
-      <ButtonPrimary loading={submitting} submits>{data ? 'Modifier' : 'Créer'}</ButtonPrimary>
-    </section>
   </div>
+  <section class="actions">
+    {#if collapsed}
+      <ButtonPrimary on:click={() => (collapsed = false)}>Modifier</ButtonPrimary>
+    {:else}
+      <ButtonPrimary loading={submitting} submits>
+        {#if data && collapsible}
+          Enregistrer
+        {:else if data}
+          Modifier
+        {:else}
+          Créer
+        {/if}
+      </ButtonPrimary>
+    {/if}
+  </section>
 </form>
 
 <style>
@@ -137,6 +151,8 @@
     opacity: 0;
     height: 0;
     overflow: hidden;
+    /* Compensate for double gap created by 0-height element */
+    margin-bottom: -2em;
   }
 
   .collapse {

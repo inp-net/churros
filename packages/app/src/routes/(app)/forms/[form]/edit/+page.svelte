@@ -6,8 +6,14 @@
   import InputText from '$lib/components/InputText.svelte';
   import InputLongText from '$lib/components/InputLongText.svelte';
   import type { PageData } from './$types';
+  import FormQuestion from './FormQuestion.svelte';
+  import FormQuestionSelectOne from './FormQuestionSelectOne.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   export let data: PageData;
+
+  let basicInfosCollapsed = true;
 
   /**
    * The local id of the section we're currently looking at.
@@ -18,87 +24,100 @@
   });
 
   $: ({ title, sections } = data.form);
-  $: editingSection = sections.find((s) => s.localId === $editingSectionId) ?? sections[0];
+  $: editingSection =
+    $editingSectionId === 'new'
+      ? undefined
+      : sections.find((s) => s.localId === $editingSectionId) ?? sections[0];
 </script>
 
 <svelte:head>
   <title>{title} — Modification du formulaire</title>
 </svelte:head>
 
-<h1>Modifier {title}</h1>
+<div class="content">
+  <FormBasicDetails
+    bind:collapsed={basicInfosCollapsed}
+    collapsible
+    data={data.form}
+    availableGroups={data.me.boardMemberships.map((g) => g.group)}
+  >
+    <div slot="header-when-collapsible">
+      <h1>Modifier {title}</h1>
+    </div>
+  </FormBasicDetails>
 
-<FormBasicDetails
-  collapsed
-  collapsible
-  data={data.form}
-  availableGroups={data.me.boardMemberships.map((g) => g.group)}
-></FormBasicDetails>
+  {#if sections.length > 1}
+    <NavigationTabs
+      tabs={[...sections, { title: 'Nouvelle section', localId: 'new', order: -1 }].map(
+        (section) => ({
+          href:
+            ($editingSectionId ?? sections[0].localId) === section.localId
+              ? '.'
+              : `./?section=${section.localId}`,
+          name: section.title || `Section ${section.order}`,
+        }),
+      )}
+    ></NavigationTabs>
+  {/if}
 
-{#if sections.length > 1}
-  <NavigationTabs
-    tabs={sections.map((section) => ({
-      href:
-        ($editingSectionId ?? sections[0].localId) === section.localId
-          ? '.'
-          : './?' + new URLSearchParams({ section: section.localId }).toString(),
-      name: section.title || `Section ${section.order}`,
-    }))}
-  ></NavigationTabs>
-{/if}
-
-<header class="section-details">
-  <InputText
-    value={editingSection?.title ?? ''}
-    label=""
-    placeholder="Titre de la section (optionnel)"
-    name="new-section.title"
-  ></InputText>
-  <InputLongText
-    rows={3}
-    value={editingSection?.description ?? ''}
-    label="Description"
-    name="new-section.description"
-  ></InputLongText>
-</header>
-
-{#each editingSection?.questions ?? [] as { id, title, description, order } (id)}
-  <Card element="form" method="post">
-    <header>
-      <h2>
-        <InputText
-          required
-          label=""
-          name="{id}.title"
-          placeholder="Titre de la question"
-          value={title}
-        ></InputText>
-      </h2>
-      <InputLongText rows={2} value={description} label="Description" name="{id}.description"
-      ></InputLongText>
-    </header>
-  </Card>
-{/each}
-
-<hr>
-<h2>Nouvelle question</h2>
-<Card element="form" method="post">
-  <header>
-    <h2>
-      <InputText
-        required
-        label=""
-        name="new-question.title"
-        placeholder="Nouvelle question…"
-        value=""
-      ></InputText>
-    </h2>
-    <InputLongText rows={2} value="" label="Description" name="new-question.description"
+  <header class="section-details">
+    <InputText
+      value={editingSection?.title ?? ''}
+      label=""
+      placeholder="Titre de la section (optionnel)"
+      name="new-section.title"
+    ></InputText>
+    <InputLongText
+      rows={3}
+      value={editingSection?.description ?? ''}
+      label="Description"
+      name="new-section.description"
     ></InputLongText>
   </header>
-</Card>
+  <section class="questions">
+    {#each editingSection?.questions ?? [] as question (question.id)}
+      <FormQuestion id={question.id} initial={question}>
+        {#if question.__typename === 'QuestionSelectOne'}
+          <input type="hidden" name="{question.id}.options" value={question.options.join(',')} />
+          <FormQuestionSelectOne bind:options={question.options}></FormQuestionSelectOne>
+        {/if}
+
+        <div class="additional-options" slot="footer">
+          {#if question.__typename === 'QuestionSelectOne'}
+            <InputCheckbox
+              value={question.allowOptionsOther}
+              label="Autoriser le choix “autres”"
+              name="multiple"
+            ></InputCheckbox>
+          {/if}
+        </div>
+      </FormQuestion>
+    {/each}
+
+    <hr />
+    <FormQuestion>
+      <h2 slot="header">Nouvelle question</h2>
+    </FormQuestion>
+  </section>
+</div>
 
 <style>
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+  }
   .section-details {
     margin: 2rem 0;
+  }
+
+  .questions,
+  .section-details {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
   }
 </style>
