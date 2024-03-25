@@ -22,6 +22,7 @@
   export let hint: string | undefined = undefined;
   export let allowOther = false;
   export let tainted = false;
+  export let disabled = false;
   export let unselected = !value;
 
   $: if (value) unselected = false;
@@ -59,14 +60,14 @@
 </script>
 
 <InputField {label} {required} {hint} errors={errorMessage ? [errorMessage] : []}>
-  <div class="wrapper">
+  <div class="wrapper" class:no-label={!label}>
     <fieldset bind:this={fieldsetElement}>
       {#if unselected}
         <input type="hidden" name="{name}/no-answer" />
       {/if}
       {#each optionsWithDisplay as [option, display] (option)}
         <label aria-current={option === value && !otherOptionIsSelected}>
-          <input type="radio" {required} {name} bind:group={value} value={option} />
+          <input {disabled} type="radio" {required} {name} bind:group={value} value={option} />
           <slot {value} {display} {option}>{display}</slot>
         </label>
       {/each}
@@ -127,6 +128,10 @@
     font-size: 1rem;
     font-weight: normal;
     border: none;
+  }
+
+  .wrapper.no-label fieldset {
+    padding-top: 0;
   }
 
   input[type='radio'] {

@@ -1,7 +1,10 @@
 <script lang="ts">
-  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
-  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
-  import type { LayoutData } from './$types';
+	import { page } from '$app/stores';
+	import AvatarGroup from '$lib/components/AvatarGroup.svelte';
+	import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+	import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
+	import IconEdit from '~icons/mdi/pencil-outline';
+	import type { LayoutData } from './$types';
 
   export let data: LayoutData;
   $: ({ form } = data);
@@ -10,7 +13,13 @@
 {#if form}
   {@const { group, visibility, title } = form}
   <h1>
-    <AvatarGroup href="/groups/{group.uid}" {...group}></AvatarGroup> Réponses à {title}
+    {#if group}
+      <AvatarGroup href="/groups/{group.uid}" {...group}></AvatarGroup>
+    {/if}
+    Réponses à {title}
+    {#if $page.route.id !== '/(app)/forms/[form]/edit'}
+      <ButtonGhost href="/forms/{$page.params.form}/edit"><IconEdit></IconEdit></ButtonGhost>
+    {/if}
   </h1>
   <p class="visibility">
     <IndicatorVisibility text {visibility}></IndicatorVisibility>

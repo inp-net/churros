@@ -1,0 +1,183 @@
+<script lang="ts">
+  import Card from '$lib/components/Card.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import InputLongText from '$lib/components/InputLongText.svelte';
+  import InputPickObjects from '$lib/components/InputPickObjects.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import { tooltip } from '$lib/tooltip';
+  import { createEventDispatcher, type SvelteComponent } from 'svelte';
+  import IconQuestionMark from '~icons/mdi/question-mark-circle-outline';
+  import IconRadioButton from '~icons/mdi/radiobox-marked';
+  import IconCheckbox from '~icons/mdi/checkbox-outline';
+  import IconTextShort from '~icons/mdi/text-short';
+  import IconTextLong from '~icons/mdi/text-long';
+  import IconLinearScale from '~icons/mdi/ray-start-vertex-end';
+  import IconDate from '~icons/mdi/calendar-outline';
+  import IconTime from '~icons/mdi/clock-outline';
+  import IconFile from '~icons/mdi/file-outline';
+  import IconNumber from '~icons/mdi/numeric';
+  import { QuestionKind } from '$lib/zeus';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+
+  const dispatch = createEventDispatcher<{
+    'type-change': { from: QuestionKind; to: QuestionKind };
+  }>();
+
+  export let id: string | undefined = undefined;
+  export let initial: {
+    title: string;
+    description: string;
+    mandatory: boolean;
+    anonymous: boolean;
+    type: QuestionKind;
+  } = {
+    title: '',
+    description: '',
+    mandatory: true,
+    anonymous: false,
+    type: QuestionKind.SelectOne,
+  };
+
+  const questionTypeNames: Array<{ id: QuestionKind; label: string }> = [
+    { id: QuestionKind.SelectOne, label: 'Choix unique' },
+    { id: QuestionKind.SelectMultiple, label: 'Cases à cocher' },
+    { id: QuestionKind.LongText, label: 'Texte long' },
+    { id: QuestionKind.Text, label: 'Texte court' },
+    { id: QuestionKind.Scale, label: 'Échelle linéaire' },
+    { id: QuestionKind.Date, label: 'Date' },
+    { id: QuestionKind.Time, label: 'Heure' },
+    { id: QuestionKind.FileUpload, label: 'Fichier' },
+    { id: QuestionKind.Number, label: 'Nombre' },
+  ] as const;
+
+  const questionTypeIcons: Record<QuestionKind, typeof SvelteComponent<any>> = {
+    SelectOne: IconRadioButton,
+    SelectMultiple: IconCheckbox,
+    LongText: IconTextLong,
+    Text: IconTextShort,
+    Scale: IconLinearScale,
+    Date: IconDate,
+    Time: IconTime,
+    FileUpload: IconFile,
+    Number: IconNumber,
+  };
+
+  let data = initial;
+  let currentTypename = questionTypeNames.find((t) => t.id === data.type);
+
+  $: if (currentTypename) {
+    dispatch('type-change', {
+      from: data.type,
+      to: currentTypename.id,
+    });
+    data.type = currentTypename.id;
+  }
+</script>
+
+<Card element="form" method="post">
+  <header>
+    <slot name="header" />
+    <div class="title-and-type">
+      <InputText
+        required
+        label=""
+        name="{id ?? 'new-question'}.title"
+        placeholder="Titre de la question"
+        value={data.title}
+      ></InputText>
+      <InputPickObjects bind:value={currentTypename} options={questionTypeNames}>
+        <div
+          class:selected={item.id === currentTypename?.id}
+          class="question-type-choice"
+          slot="item"
+          let:item
+        >
+          <svelte:component this={questionTypeIcons[item.id]}></svelte:component>
+          {item.label}
+        </div>
+        <div class="typename-picker-open" slot="input" let:value let:openPicker>
+          <ButtonSecondary on:click={openPicker}>
+            {#if value}
+              <svelte:component this={questionTypeIcons[value.id]}></svelte:component>
+              {value.label}
+            {:else}
+              Choisir le type
+            {/if}
+          </ButtonSecondary>
+        </div>
+      </InputPickObjects>
+    </div>
+    <InputLongText
+      rows={2}
+      value={data.description}
+      label=""
+      placeholder="Ajouter une description… (optionel)"
+      name="{id ?? 'new-question'}.description"
+    ></InputLongText>
+  </header>
+  <slot />
+  <footer>
+    <slot name="footer" />
+    <InputCheckbox
+      value={data.mandatory}
+      label="Obligatoire"
+      name="{id ?? 'new-question'}.mandatory"
+    ></InputCheckbox>
+    <div class="anonymous">
+      <InputCheckbox value={data.anonymous} label="Anonyme" name="{id ?? 'new-question'}.anonymous"
+      ></InputCheckbox>
+      <div
+        class="action learn-more"
+        use:tooltip={'Personne (excepté le service technique) ne peut connaître les réponses individuelles à des questions anonymes.'}
+      >
+        <IconQuestionMark></IconQuestionMark>
+      </div>
+    </div>
+  </footer>
+</Card>
+
+<style>
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: var(--border-block) dashed var(--muted-border);
+  }
+  footer {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: var(--border-block) dashed var(--muted-border);
+  }
+  .question-type-choice {
+    --size: 7rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: var(--size);
+    width: var(--size);
+  }
+  .question-type-choice.selected {
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
+    border-radius: var(--radius-block);
+  }
+
+  footer > div {
+    display: flex;
+    align-items: center;
+    gap: 2em;
+  }
+
+  .title-and-type {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>
