@@ -39,9 +39,18 @@
   "devDependencies": {
     "@babel/core": "^7.24.1",
     "@centraverse/api": "workspace:^",
+    "@chromatic-com/storybook": "^1.2.25",
     "@iconify-json/material-symbols": "^1.1.75",
     "@iconify-json/mdi": "^1.1.64",
     "@iconify-json/simple-icons": "^1.1.96",
+    "@storybook/addon-essentials": "^8.0.4",
+    "@storybook/addon-interactions": "^8.0.4",
+    "@storybook/addon-links": "^8.0.4",
+    "@storybook/addon-svelte-csf": "^4.1.2",
+    "@storybook/blocks": "^8.0.4",
+    "@storybook/svelte": "^8.0.4",
+    "@storybook/sveltekit": "^8.0.4",
+    "@storybook/test": "^8.0.4",
     "@sveltejs/adapter-node": "^5.0.1",
     "@sveltejs/kit": "^2.5.4",
     "@types/cookie": "^0.6.0",
@@ -57,6 +66,7 @@
     "react-dom": "^18.2.0",
     "sanitize.css": "^13.0.0",
     "sass": "^1.72.0",
+    "storybook": "^8.0.4",
     "svelte": "^4.2.12",
     "svelte-check": "^3.6.8",
     "svelte-loader": "^3.2.0",
@@ -82,7 +92,9 @@
     "dev": "yarn run -T generate-buildinfo && yarn zeus && wait-port 4000 && vite dev --host",
     "preview": "vite preview",
     "start": "node ./build/index.js",
-    "zeus": "zeus ../api/build/schema.graphql ./src --es --subscriptions"
+    "zeus": "zeus ../api/build/schema.graphql ./src --es --subscriptions",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "type": "module",
   "volta": {

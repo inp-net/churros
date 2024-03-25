@@ -20,6 +20,7 @@ export const commonConfig = defineConfig({
       },
     },
   },
+  
 });
 
 // Add svelte-kit to vite config
