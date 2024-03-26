@@ -24,6 +24,12 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 
 (@bardete & @valliet pour une bonne partie du back-end) (!127)
 
+## [1.54.2] - 2024-03-24
+
+### Technique
+
+- Correction de la variable d'env `ORIGIN`, qui était à `http://app`, ce qui empêchait les checks CSRF de SvelteKit sur les soumissions de formulaires de passer
+
 ## [1.54.1] - 2024-03-24
 
 ### Autres
@@ -338,8 +344,9 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.54.1...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.54.2...main
 [1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
+[1.54.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.2
 [1.54.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.1
 [1.54.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.0
 [1.53.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.53.1
