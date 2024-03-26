@@ -11,6 +11,7 @@
   import { me, saveSessionToken, sessionUserQuery } from '$lib/session';
   import { zeus } from '$lib/zeus';
   import { onMount } from 'svelte';
+  import { startRegistration } from '@simplewebauthn/browser';
 
   let email = '';
   let password = '';
@@ -60,6 +61,17 @@
     }
   };
 
+  async function registerPasskey() {
+    const   =await $zeus.query({
+      passkeyRegistrationOptions: {
+
+      }
+    })
+    const attestation = await startRegistration({
+
+    })
+  }
+
   onMount(async () => {
     // Client-side redirect to avoid login detection
     if ($me) {
@@ -81,7 +93,7 @@
   <Alert theme="danger" closed={errorMessages === undefined}>
     {errorMessages?.join(' ')}
   </Alert>
-  <InputText required label="Adresse e-mail ou nom d'utilisateur" bind:value={email} autofocus />
+  <InputText required label="Adresse e-mail ou nom d'utilisateur" bind:value={email} autofocus autocomplete="username webauthn" />
   <InputText
     required
     type={showingPassword ? 'text' : 'password'}

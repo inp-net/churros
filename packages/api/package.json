@@ -18,6 +18,7 @@
     "@pothos/plugin-validation": "^3.10.1",
     "@pothos/plugin-with-input": "^3.10.1",
     "@prisma/client": "patch:@prisma/client@npm%3A5.11.0#~/.yarn/patches/@prisma-client-npm-5.11.0-2b6837f715.patch",
+    "@simplewebauthn/server": "^9.0.3",
     "@types/qrcode": "^1.5.5",
     "arborist": "workspace:^",
     "argon2": "^0.40.1",
@@ -83,6 +84,7 @@
   },
   "devDependencies": {
     "@clack/prompts": "^0.7.0",
+    "@simplewebauthn/types": "^9.0.1",
     "@tsconfig/esm": "^1.0.5",
     "@tsconfig/node18": "^18.2.2",
     "@tsconfig/strictest": "^2.0.3",

@@ -4,6 +4,7 @@
     "@carbon/charts-svelte": "^1.15.3",
     "@iconify-json/logos": "^1.1.42",
     "@paypal/paypal-js": "^8.0.2",
+    "@simplewebauthn/browser": "^9.0.1",
     "@swc/core": "^1.4.8",
     "@swc/wasm": "^1.4.8",
     "arborist": "workspace:^",

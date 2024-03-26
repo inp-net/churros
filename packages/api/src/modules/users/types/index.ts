@@ -7,6 +7,8 @@ export * from './credential.js';
 export * from './email-change.js';
 export * from './family-tree.js';
 export * from './godparent-request.js';
+export * from './passkey-registration-options.js';
+export * from './passkey.js';
 export * from './password-reset.js';
 export * from './user-candidate.js';
 export * from './user-search-result.js';
