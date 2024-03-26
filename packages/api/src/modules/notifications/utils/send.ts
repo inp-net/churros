@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { ENV, prisma } from '#lib';
 
 import { serverCanSendNotificationToUser } from '#permissions';
 import { Prisma, type NotificationSubscription, type User } from '@churros/db/prisma';
@@ -80,9 +80,9 @@ export async function notify<U extends User>(
           JSON.stringify(notif),
           {
             vapidDetails: {
-              subject: `mailto:${process.env.PUBLIC_CONTACT_EMAIL}`,
-              publicKey: process.env.PUBLIC_VAPID_KEY,
-              privateKey: process.env.VAPID_PRIVATE_KEY,
+              subject: `mailto:${ENV.PUBLIC_CONTACT_EMAIL}`,
+              publicKey: ENV.PUBLIC_VAPID_KEY,
+              privateKey: ENV.VAPID_PRIVATE_KEY,
             },
           },
         );

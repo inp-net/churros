@@ -1,15 +1,12 @@
+import { ENV } from '#lib';
 import webpush from 'web-push';
 
 export function setVapidDetails() {
-  if (
-    process.env.PUBLIC_CONTACT_EMAIL &&
-    process.env.PUBLIC_VAPID_KEY &&
-    process.env.VAPID_PRIVATE_KEY
-  ) {
+  if (ENV.PUBLIC_CONTACT_EMAIL && ENV.PUBLIC_VAPID_KEY && ENV.VAPID_PRIVATE_KEY) {
     webpush.setVapidDetails(
-      `mailto:${process.env.PUBLIC_CONTACT_EMAIL}`,
-      process.env.PUBLIC_VAPID_KEY,
-      process.env.VAPID_PRIVATE_KEY,
+      `mailto:${ENV.PUBLIC_CONTACT_EMAIL}`,
+      ENV.PUBLIC_VAPID_KEY,
+      ENV.VAPID_PRIVATE_KEY,
     );
   }
 }

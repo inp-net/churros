@@ -1,4 +1,4 @@
-import { builder, ensureGlobalId, log, prisma, sendMail } from '#lib';
+import { builder, ensureGlobalId, ENV, log, prisma, sendMail } from '#lib';
 import { Email, UIDScalar, URLScalar } from '#modules/global';
 import { UserCandidateType } from '#modules/users/types';
 import { createUid, hashPassword } from '#modules/users/utils';
@@ -79,11 +79,11 @@ builder.mutationField('startSignup', (t) =>
       if (
         !user?.admin &&
         !user?.adminOfStudentAssociations.length &&
-        process.env.PUBLIC_DEACTIVATE_SIGNUPS === 'true' &&
+        ENV.PUBLIC_DEACTIVATE_SIGNUPS === 'true' &&
         !quickSignupCode
       ) {
         throw new GraphQLError(
-          process.env.PUBLIC_DEACTIVATE_SIGNUPS_MESSAGE || 'Les inscriptions sont désactivées.',
+          ENV.PUBLIC_DEACTIVATE_SIGNUPS_MESSAGE || 'Les inscriptions sont désactivées.',
         );
       }
 

@@ -1,4 +1,4 @@
-import { log } from '#lib';
+import { ENV, log } from '#lib';
 import { GraphQLError } from 'graphql';
 import Handlebars from 'handlebars';
 import { htmlToText } from 'html-to-text';
@@ -20,7 +20,7 @@ const compiledTemplates = await precompileTemplates();
 
 let mailer: ReturnType<typeof initializeMailer>;
 function initializeMailer() {
-  return createTransport(process.env.SMTP_URL || 'smtp://localhost');
+  return createTransport(ENV.SMTP_URL || 'smtp://localhost');
 }
 
 /**
@@ -44,7 +44,7 @@ export async function sendMail<Template extends MailTemplate>(
   to: string | string[],
   data: Template extends keyof MailProps ? MailProps[Template] : Record<string, never>,
   {
-    from = process.env.PUBLIC_SUPPORT_EMAIL,
+    from = ENV.PUBLIC_SUPPORT_EMAIL,
     attachments = {},
     subjectOverride = '',
   }: {

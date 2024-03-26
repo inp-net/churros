@@ -1,5 +1,6 @@
 import { Histogram } from 'prom-client';
 import { PrometheusDriver } from 'prometheus-query';
+import { ENV } from './env.js';
 
 const queriesHistogram = new Histogram({
   name: 'query_duration_ms',
@@ -63,6 +64,6 @@ export async function updateRateLimitHit({
 }
 
 export const prometheusClient = new PrometheusDriver({
-  endpoint: process.env.PROMETHEUS_URL || 'http://localhost:9090',
+  endpoint: ENV.PROMETHEUS_URL || 'http://localhost:9090',
   baseURL: '/api/v1',
 });

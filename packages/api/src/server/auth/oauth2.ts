@@ -1,4 +1,4 @@
-import { getSessionUser } from '#lib';
+import { ENV, getSessionUser } from '#lib';
 import passport from 'passport';
 import OAuth2Strategy, { type VerifyCallback } from 'passport-oauth2';
 import { api } from '../express.js';
@@ -6,12 +6,13 @@ import { AUTHED_VIA_COOKIE_NAME, AuthedViaCookie } from './constants.js';
 
 const oauth2Strategy = new OAuth2Strategy(
   {
-    authorizationURL: process.env.PUBLIC_OAUTH_AUTHORIZE_URL,
-    tokenURL: process.env.PUBLIC_OAUTH_TOKEN_URL,
-    clientID: process.env.PUBLIC_OAUTH_CLIENT_ID,
-    clientSecret: process.env.OAUTH_CLIENT_SECRET,
+    // TODO: _actually_ support not configuring PUBLIC_OAUTH_*
+    authorizationURL: ENV.PUBLIC_OAUTH_AUTHORIZE_URL ?? '',
+    tokenURL: ENV.PUBLIC_OAUTH_TOKEN_URL ?? '',
+    clientID: ENV.PUBLIC_OAUTH_CLIENT_ID ?? '',
+    clientSecret: ENV.OAUTH_CLIENT_SECRET ?? '',
     callbackURL: '/auth/oauth2/callback',
-    scope: process.env.PUBLIC_OAUTH_SCOPES.split(','),
+    scope: ENV.PUBLIC_OAUTH_SCOPES ?? [],
   },
   async function (
     _accessToken: string,
@@ -20,7 +21,12 @@ const oauth2Strategy = new OAuth2Strategy(
     cb: VerifyCallback,
   ) {
     try {
-      const userSession = await getSessionUser(profile[process.env.OAUTH_UID_KEY] as string);
+      if (!ENV.OAUTH_UID_KEY) {
+        cb('OAUTH_UID_KEY is not set', false);
+        return;
+      }
+
+      const userSession = await getSessionUser(profile[ENV.OAUTH_UID_KEY] as string);
 
       if (!userSession) {
         cb('This account is not linked to any user', false);
@@ -38,8 +44,12 @@ oauth2Strategy.userProfile = async function (
   accessToken: string,
   done: (error: unknown, profile: unknown) => void,
 ) {
+  if (!ENV.PUBLIC_OAUTH_USER_INFO_URL) {
+    done('PUBLIC_OAUTH_USER_INFO_URL is not set', {});
+    return;
+  }
   try {
-    const res = await fetch(process.env.PUBLIC_OAUTH_USER_INFO_URL, {
+    const res = await fetch(ENV.PUBLIC_OAUTH_USER_INFO_URL, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -60,7 +70,7 @@ api.get('/auth/oauth2', (req, res, next) => {
     // @ts-expect-error undocumented option
     callbackURL: new URL(
       `/auth/oauth2/callback?${new URLSearchParams({ from: searchParams.get('from') ?? '' })}`,
-      process.env.PUBLIC_API_URL,
+      ENV.PUBLIC_API_URL,
     ).toString(),
   })(req, res, next);
 });
@@ -73,7 +83,7 @@ api.get(
 
     res.cookie(AUTHED_VIA_COOKIE_NAME, AuthedViaCookie.OAUTH2, { httpOnly: false, secure: false });
     res.redirect(
-      `${new URL('/login/done', process.env.PUBLIC_FRONTEND_ORIGIN)}?${new URLSearchParams({
+      `${new URL('/login/done', ENV.PUBLIC_FRONTEND_ORIGIN)}?${new URLSearchParams({
         from: searchParams.get('from') ?? '/',
       })}`,
     );

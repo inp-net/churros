@@ -3,7 +3,7 @@ import { builder, graphinx } from '#lib';
 export type HealthCheck = {
   redis: { publish: boolean; subscribe: boolean };
   database: { prisma: boolean };
-  ldap: { school: boolean; internal: boolean };
+  ldap: { school: boolean | null; internal: boolean };
   mail: { smtp: boolean };
 };
 
@@ -42,7 +42,9 @@ export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').imp
         ...graphinx('health-checks'),
         fields: (t) => ({
           school: t.boolean({
-            description: 'Whether the LDAP school client is ready',
+            description:
+              'Whether the LDAP school client is ready. Null when no LDAP_SCHOOL has been configured.',
+            nullable: true,
             resolve: ({ school }) => school,
           }),
           internal: t.boolean({

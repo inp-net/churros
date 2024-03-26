@@ -1,4 +1,4 @@
-import { builder, log, prisma } from '#lib';
+import { builder, ENV, log, prisma } from '#lib';
 import * as Google from 'google-auth-library';
 import { GraphQLError } from 'graphql';
 
@@ -14,12 +14,9 @@ builder.mutationField('registerGoogleCredential', (t) =>
       if (!user) throw new GraphQLError('User not found');
 
       const client = new Google.OAuth2Client({
-        clientId: process.env.PUBLIC_GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        redirectUri: new URL(
-          '/connect/google/callback',
-          process.env.PUBLIC_FRONTEND_ORIGIN,
-        ).toString(),
+        clientId: ENV.PUBLIC_GOOGLE_CLIENT_ID,
+        clientSecret: ENV.GOOGLE_CLIENT_SECRET,
+        redirectUri: new URL('/connect/google/callback', ENV.PUBLIC_FRONTEND_ORIGIN).toString(),
       });
       const { tokens } = await client.getToken(code.toString()).catch((error_) => {
         console.error(error_);

@@ -1,11 +1,11 @@
-import { builder, log, prisma, publish, sendMail } from '#lib';
+import { builder, ENV, log, prisma, publish, sendMail } from '#lib';
 import { PaymentMethodEnum } from '#modules/payments';
 import { getUserWithContributesTo, userCanAccessEvent, userCanManageEvent } from '#permissions';
 import { PrismaClientKnownRequestError } from '@churros/db/prisma/runtime/library';
 import { isFuture, isPast } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import * as qrcode from 'qrcode';
-import { RegistrationType, canSeeTicket, placesLeft } from '../index.js';
+import { canSeeTicket, placesLeft, RegistrationType } from '../index.js';
 
 // TODO remove, not used by @churros/app anymore
 builder.mutationField('upsertRegistration', (t) =>
@@ -286,10 +286,7 @@ builder.mutationField('upsertRegistration', (t) =>
             beneficiary: beneficiary ?? null,
             bookingCode: pseudoID,
             eventTitle: ticket.event.title,
-            bookingLink: new URL(
-              `/bookings/${pseudoID}`,
-              process.env.PUBLIC_FRONTEND_ORIGIN,
-            ).toString(),
+            bookingLink: new URL(`/bookings/${pseudoID}`, ENV.PUBLIC_FRONTEND_ORIGIN).toString(),
           },
           {
             attachments: {

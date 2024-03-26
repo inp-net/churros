@@ -1,4 +1,4 @@
-import { builder, log, prisma, sendMail } from '#lib';
+import { builder, ENV, log, prisma, sendMail } from '#lib';
 import { emailLoginPrismaClauses } from '#modules/users/utils';
 import { addSeconds } from 'date-fns';
 import { PASSWORD_RESET_EXPIRES_AFTER } from '../utils/password-resets.js';
@@ -34,7 +34,7 @@ builder.mutationField('createPasswordReset', (t) =>
 
       const url = new URL(
         `login/reset/${result.id.split(':', 2)[1]!.toUpperCase()}`,
-        process.env.PUBLIC_FRONTEND_ORIGIN,
+        ENV.PUBLIC_FRONTEND_ORIGIN,
       );
 
       await sendMail(

@@ -1,4 +1,5 @@
 import {
+  ENV,
   TYPENAMES_TO_ID_PREFIXES,
   builder,
   localID,
@@ -85,11 +86,13 @@ builder.mutationField('upsertComment', (t) =>
       return true;
     },
     async resolve(query, _, { id, body, resourceId, inReplyToId }, { user }) {
-      const connection: {} | { articleId: string } | { documentId: string } = resourceId
-        ? {
-            [splitID(resourceId)[0] === 'Document' ? 'documentId' : 'articleId']: resourceId,
-          }
-        : {};
+      let connection: undefined | { articleId: string } | { documentId: string };
+
+      if (resourceId) {
+        connection = {
+          [splitID(resourceId)[0] === 'Document' ? 'documentId' : 'articleId']: resourceId,
+        } as typeof connection;
+      }
 
       await log(
         'comments',
@@ -144,7 +147,7 @@ builder.mutationField('upsertComment', (t) =>
         comment.document?.subject!.minors[0]?.majors[0]?.uid ??
         'unknown';
       const commentUrl =
-        process.env.PUBLIC_FRONTEND_ORIGIN +
+        ENV.PUBLIC_FRONTEND_ORIGIN +
         (comment.document
           ? `/documents/${documentMajor}/${
               comment.document.subject!.minors[0]?.yearTier ??

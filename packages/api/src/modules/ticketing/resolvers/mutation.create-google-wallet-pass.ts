@@ -1,4 +1,4 @@
-import { builder, ensureGlobalId, makeGoogleWalletObject, prisma } from '#lib';
+import { builder, ensureGlobalId, ENV, makeGoogleWalletObject, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken';
 import { ZodError } from 'zod';
@@ -19,10 +19,11 @@ builder.mutationField('createGoogleWalletPass', (t) =>
       });
       if (!booking) throw new GraphQLError('Réservation introuvable');
 
-      const credentials = JSON.parse(process.env.GOOGLE_WALLET_ISSUER_KEY);
+      if (!ENV.GOOGLE_WALLET_ISSUER_KEY)
+        throw new GraphQLError("L'intégration Google Wallet est désactivée.");
 
       const claims = {
-        iss: credentials.client_email,
+        iss: ENV.GOOGLE_WALLET_ISSUER_KEY.client_email,
         aud: 'google',
         origins: [],
         typ: 'savetowallet',
@@ -31,7 +32,9 @@ builder.mutationField('createGoogleWalletPass', (t) =>
         },
       };
 
-      const token = jwt.sign(claims, credentials.private_key, { algorithm: 'RS256' });
+      const token = jwt.sign(claims, ENV.GOOGLE_WALLET_ISSUER_KEY.private_key, {
+        algorithm: 'RS256',
+      });
       return `https://pay.google.com/gp/v/save/${token}`;
     },
   }),

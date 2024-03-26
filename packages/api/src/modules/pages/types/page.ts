@@ -1,4 +1,4 @@
-import { builder, toHtml } from '#lib';
+import { builder, ENV, toHtml } from '#lib';
 import path from 'node:path/posix';
 
 export const PageType = builder.prismaObject('Page', {
@@ -49,7 +49,7 @@ export const PageType = builder.prismaObject('Page', {
       description: 'URLs vers les fichiers inclus sur la page.',
       resolve: async ({ files }) =>
         files.map((file) => {
-          const result = new URL(process.env.PUBLIC_STORAGE_URL);
+          const result = new URL(ENV.PUBLIC_STORAGE_URL);
           result.pathname = path.join(result.pathname, file);
           return result.toString();
         }),

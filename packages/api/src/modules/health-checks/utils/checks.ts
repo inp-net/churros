@@ -1,7 +1,13 @@
 import { Client } from '@inp-net/ldap7';
 import ldap from 'ldapjs';
 import { createTransport } from 'nodemailer';
-import { prisma, publishClient, schoolLdapSettings, subscribeClient } from '../../../lib/index.js';
+import {
+  ENV,
+  prisma,
+  publishClient,
+  schoolLdapSettings,
+  subscribeClient,
+} from '../../../lib/index.js';
 import type { HealthCheck } from '../types/index.js';
 
 export const checkHealth = async (): Promise<HealthCheck> => ({
@@ -22,7 +28,7 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
       .catch(() => false),
   },
   mail: {
-    smtp: await createTransport(process.env.SMTP_URL)
+    smtp: await createTransport(ENV.SMTP_URL)
       .verify()
       .then(() => true)
       .catch(() => false),
@@ -35,11 +41,11 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
         client
           .setup(
             {
-              url: process.env.LDAP_URL,
+              url: ENV.LDAP_URL,
             },
-            process.env.LDAP_BIND_DN,
-            process.env.LDAP_BIND_PASSWORD,
-            process.env.LDAP_BASE_DN,
+            ENV.LDAP_BIND_DN,
+            ENV.LDAP_BIND_PASSWORD,
+            ENV.LDAP_BASE_DN,
           )
           .catch(() => resolve(false))
           .then(() => resolve(true));
@@ -58,26 +64,28 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
 
       setTimeout(() => resolve(false), 1000);
     }),
-    school: (
-      await Promise.all(
-        Object.values(schoolLdapSettings.servers).map(
-          (server) =>
-            new Promise((resolve) => {
-              try {
-                const c = ldap.createClient({ url: server.url });
-                c.on('error', () => resolve(false));
-                c.bind('', '', (err) => {
-                  if (err) resolve(false);
-                  resolve(true);
-                });
-              } catch {
-                resolve(false);
-              }
-            }),
-        ),
-      )
-    )
-      // eslint-disable-next-line unicorn/no-await-expression-member
-      .every(Boolean),
+    school: schoolLdapSettings
+      ? (
+          await Promise.all(
+            Object.values(schoolLdapSettings.servers).map(
+              (server) =>
+                new Promise((resolve) => {
+                  try {
+                    const c = ldap.createClient({ url: server.url });
+                    c.on('error', () => resolve(false));
+                    c.bind('', '', (err) => {
+                      if (err) resolve(false);
+                      resolve(true);
+                    });
+                  } catch {
+                    resolve(false);
+                  }
+                }),
+            ),
+          )
+        )
+          // eslint-disable-next-line unicorn/no-await-expression-member
+          .every(Boolean)
+      : null,
   },
 });

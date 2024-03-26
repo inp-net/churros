@@ -1941,9 +1941,9 @@ type LdapHealthCheck @graphinx(module: "health-checks") {
   """
   internal: Boolean!
   """
-  Whether the LDAP school client is ready
+  Whether the LDAP school client is ready. Null when no LDAP_SCHOOL has been configured.
   """
-  school: Boolean!
+  school: Boolean
 }
 
 """
