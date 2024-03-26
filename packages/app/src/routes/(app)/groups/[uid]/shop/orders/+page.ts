@@ -1,8 +1,9 @@
 import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, params, parent }) =>
-  loadQuery(
+export const load: PageLoad = async ({ fetch, params, parent }) => {
+  const { me } = await parent();
+  const data = await loadQuery(
     {
       orders: [
         {
@@ -29,6 +30,20 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
           },
         },
       ],
+      group: [
+        {
+          uid: params.uid,
+        },
+        {
+          boardMembers: {
+            member: {
+              uid: true,
+            },
+          },
+        },
+      ],
     },
     { fetch, parent },
   );
+  return { me, ...data };
+};

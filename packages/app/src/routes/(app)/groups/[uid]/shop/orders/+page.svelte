@@ -22,6 +22,9 @@
   let paymentLoading = false;
   let phone = '';
 
+  const isOnClubBoard =
+    data.group.boardMembers.some((s) => s.member.uid === data.me?.uid) || data.me?.admin;
+
   onMount(() => {
     warningToastId = toasts.warn('Page en bêta', 'Les boutiques sont en phase de test', {
       lifetime: Number.POSITIVE_INFINITY,
@@ -31,14 +34,20 @@
   onDestroy(async () => {
     await toasts.remove(warningToastId);
   });
+  let tabs = [
+    { name: 'Boutique', href: '../.' },
+    { name: 'Mes commandes', href: '.' },
+  ];
+  if (isOnClubBoard) {
+    tabs = [
+      { name: 'Boutique', href: '../.' },
+      { name: 'Mes commandes', href: '.' },
+      { name: 'Gestion', href: '../sales/' },
+    ];
+  }
 </script>
 
-<NavigationTabs
-  tabs={[
-    { name: 'Boutique', href: '../' },
-    { name: 'Mes commandes', href: '.' },
-  ]}
-/>
+<NavigationTabs {tabs} />
 <div class="header">
   <BackButton go="../.." />
   <h1>Mes achats</h1>
