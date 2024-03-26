@@ -136,7 +136,14 @@
     <BackButton go=".." />
     Ma place
     <div class="payment-status">
-      <BadgePaymentStatus feminin {cancelled} {paid} {opposed} {verified} />
+      <BadgePaymentStatus
+        feminin
+        {cancelled}
+        {paid}
+        {opposed}
+        {verified}
+        free={ticket.basePrice === 0}
+      />
     </div>
   </h1>
 
