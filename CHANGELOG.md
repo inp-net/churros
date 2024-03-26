@@ -11,6 +11,19 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Les boutiques sont enfin là ! Chaque groupe peut vendre les objets qu'il souhaite au prix qu'il souhaite. Vous êtes libre de choisir la méthode de paiement que vous voulez pour vos membres ! (Les paiements par Paypal ne sont pas disponibles pour l'instant mais le seront bientôt). Pour découvrir votre nouveau canal de vente, vous pouvez vous rendre sur la page de votre club puis dans boutique à droite (ou en dessous sur téléphone). Vous pouvez même poster plusieurs images par produit !
+  Un selecteur d'option (pour la taille et les couleurs) arrivera dans une version suivante, en attendant, vous pouvez créer plusieurs items par exemple ou demander par mp ce que veulent vos clients.
+
+Sur ce, voila un avant goût !
+
+![Preview de la boutique](https://git.inpt.fr/inp-net/churros/uploads/81feeb4fa735fea2a812b969f89fa274/image.png)
+
+La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à nous le faire parvenir via la bulle rouge en haut à droite de l'appli en précisant Boutique au début de votre signalement, merci d'avance pour votre contribution :) !
+
+(@bardete & @valliet pour une bonne partie du back-end) (!127)
+
 ## [1.54.1] - 2024-03-24
 
 ### Autres
