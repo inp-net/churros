@@ -1,3 +1,5 @@
+import { zodValidateEnv } from 'zod-validate-env';
+import { environmentSchema } from './lib/env.js';
 import { GOOGLE_WALLET_CLASS, registerGoogleWalletClass } from './lib/google-wallet.js';
 import { writeSchema } from './schema.js';
 import { startApiServer } from './server/express.js';
@@ -5,6 +7,8 @@ import { lydiaWebhook } from './server/lydia.js';
 import { maintenance } from './server/maintenance.js';
 import { rescheduleNotifications } from './server/notifications-rescheduler.js';
 import { prometheusServer } from './server/prometheus.js';
+
+zodValidateEnv({ schema: environmentSchema });
 
 startApiServer();
 
