@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/prefer-module */
-import { context } from '#lib';
+import { context, ENV } from '#lib';
 import { checkHealth } from '#modules/health-checks/utils';
 import cors from 'cors';
 import { minutesToMilliseconds } from 'date-fns';
@@ -40,7 +40,7 @@ api.use(
 
 export async function startApiServer() {
   // load passport strategies
-  if (process.env.PUBLIC_OAUTH_ENABLED.trim() === '1') {
+  if (ENV.PUBLIC_OAUTH_ENABLED.trim() === '1') {
     import('./auth/oauth2.js');
     import('./auth/logout.js');
   }

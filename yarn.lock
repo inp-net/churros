@@ -963,6 +963,7 @@ __metadata:
     yaml: "npm:^2.5.1"
     zod: "npm:^3.23.8"
     zod-i18n-map: "npm:^2.27.0"
+    zod-validate-env: "npm:^0.0.1"
   languageName: unknown
   linkType: soft
 
@@ -23489,7 +23490,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.0.0, zod@npm:^3.23.8":
+"zod-validate-env@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "zod-validate-env@npm:0.0.1"
+  dependencies:
+    zod: "npm:^3.18.0"
+  checksum: 10c0/63af1fa81436f220e18969f6a7df08fb4de3f35da58aa27530bc62910e133c2742416422c43b6379f7e441589f9c7f48be7a8d4e45b085066542656f4e64a8b6
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.0.0, zod@npm:^3.18.0, zod@npm:^3.23.8":
   version: 3.23.8
   resolution: "zod@npm:3.23.8"
   checksum: 10c0/8f14c87d6b1b53c944c25ce7a28616896319d95bc46a9660fe441adc0ed0a81253b02b5abdaeffedbeb23bdd25a0bf1c29d2c12dd919aef6447652dd295e3e69

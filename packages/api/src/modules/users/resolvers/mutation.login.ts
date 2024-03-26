@@ -107,7 +107,7 @@ export async function login(
       //   });
 
       //   throw new Error(
-      //     `Ton adresse email n'est pas encore validée. Vérifie ta boîte mail (${userCandidate.email}), tu a du recevoir un mail de ${process.env.PUBLIC_SUPPORT_EMAIL}.`,
+      //     `Ton adresse email n'est pas encore validée. Vérifie ta boîte mail (${userCandidate.email}), tu a du recevoir un mail de ${ENV.PUBLIC_SUPPORT_EMAIL}.`,
       //   );
       // }
 

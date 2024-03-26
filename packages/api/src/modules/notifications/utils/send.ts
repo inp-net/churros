@@ -1,4 +1,5 @@
-import { prisma } from '#lib';
+import { ENV, prisma } from '#lib';
+
 import { serverCanSendNotificationToUser } from '#permissions';
 import { type NotificationSubscription, type User } from '@churros/db/prisma';
 import type { MaybePromise } from '@pothos/core';

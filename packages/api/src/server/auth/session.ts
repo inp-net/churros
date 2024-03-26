@@ -1,4 +1,4 @@
-import { daysToSeconds, getSessionUser, redisClient } from '#lib';
+import { daysToSeconds, ENV, getSessionUser, redisClient } from '#lib';
 import { type User } from '@churros/db/prisma';
 import RedisStore from 'connect-redis';
 import session from 'express-session';
@@ -30,7 +30,7 @@ const redisStore = new RedisStore({
 
 export default session({
   store: redisStore,
-  secret: process.env.SESSION_SECRET,
+  secret: ENV.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
