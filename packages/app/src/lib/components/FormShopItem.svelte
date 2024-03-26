@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { PaymentMethod, type Visibility, zeus } from '$lib/zeus';
-  import { DISPLAY_PAYMENT_METHODS, DISPLAY_VISIBILITIES } from '$lib/display';
+  import { goto } from '$app/navigation';
+  import { DISPLAY_VISIBILITIES, SHOP_PAYMENT_METHODS } from '$lib/display';
+  import { toasts } from '$lib/toasts';
+  import { PaymentMethod, zeus, type Visibility } from '$lib/zeus';
+  import Alert from './Alert.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputDate from './InputDate.svelte';
+  import InputField from './InputField.svelte';
   import InputLongText from './InputLongText.svelte';
+  import InputLydiaAccounts from './InputLydiaAccounts.svelte';
   import InputNumber from './InputNumber.svelte';
   import InputSelectMultiple from './InputSelectMultiple.svelte';
-  import InputField from './InputField.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
   import InputText from './InputText.svelte';
-  import InputLydiaAccounts from './InputLydiaAccounts.svelte';
-  import Alert from './Alert.svelte';
-  import { toasts } from '$lib/toasts';
-  import { goto } from '$app/navigation';
 
   let serverError = '';
 
@@ -131,10 +131,7 @@
         options={DISPLAY_VISIBILITIES}
       />
       <InputField label="Méthodes de paiement">
-        <InputSelectMultiple
-          bind:selection={data.paymentMethods}
-          options={DISPLAY_PAYMENT_METHODS}
-        />
+        <InputSelectMultiple bind:selection={data.paymentMethods} options={SHOP_PAYMENT_METHODS} />
       </InputField>
       <InputLydiaAccounts
         required={Boolean(data.paymentMethods.includes(PaymentMethod.Lydia))}

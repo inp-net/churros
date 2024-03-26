@@ -44,6 +44,14 @@ export const DISPLAY_PAYMENT_METHODS: Record<PaymentMethod, string> = {
   PayPal: 'PayPal',
 };
 
+export const SHOP_PAYMENT_METHODS = {
+  Cash: 'Espèces',
+  Check: 'Chèque',
+  Transfer: 'Virement',
+  Lydia: 'Lydia',
+  Other: 'Autre',
+};
+
 export const ORDER_VISIBILITIES: Visibility[] = [
   Visibility.Public,
   Visibility.SchoolRestricted,

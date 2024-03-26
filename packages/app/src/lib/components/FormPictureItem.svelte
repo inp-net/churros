@@ -12,7 +12,8 @@
   export let groupUid = '';
   export let pictures: { id: string; path: string; position: Number }[];
   if (pictures === undefined) pictures = [];
-  $: index = -1;
+  $: index = 0;
+  if (pictures.length === 0) index = -1;
   $: pictureId = pictures === undefined ? '' : pictures[index]?.id;
   let files: FileList;
   let inputElement: HTMLInputElement;
