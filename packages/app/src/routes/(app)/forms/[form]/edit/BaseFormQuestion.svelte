@@ -1,23 +1,23 @@
 <script lang="ts">
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import Card from '$lib/components/Card.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import InputLongText from '$lib/components/InputLongText.svelte';
   import InputPickObjects from '$lib/components/InputPickObjects.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import { tooltip } from '$lib/tooltip';
+  import { QuestionKind } from '$lib/zeus';
   import { createEventDispatcher, type SvelteComponent } from 'svelte';
-  import IconQuestionMark from '~icons/mdi/question-mark-circle-outline';
-  import IconRadioButton from '~icons/mdi/radiobox-marked';
-  import IconCheckbox from '~icons/mdi/checkbox-outline';
-  import IconTextShort from '~icons/mdi/text-short';
-  import IconTextLong from '~icons/mdi/text-long';
-  import IconLinearScale from '~icons/mdi/ray-start-vertex-end';
   import IconDate from '~icons/mdi/calendar-outline';
+  import IconCheckbox from '~icons/mdi/checkbox-outline';
   import IconTime from '~icons/mdi/clock-outline';
   import IconFile from '~icons/mdi/file-outline';
   import IconNumber from '~icons/mdi/numeric';
-  import { QuestionKind } from '$lib/zeus';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import IconQuestionMark from '~icons/mdi/question-mark-circle-outline';
+  import IconRadioButton from '~icons/mdi/radiobox-marked';
+  import IconLinearScale from '~icons/mdi/ray-start-vertex-end';
+  import IconTextLong from '~icons/mdi/text-long';
+  import IconTextShort from '~icons/mdi/text-short';
 
   const dispatch = createEventDispatcher<{
     'type-change': { from: QuestionKind; to: QuestionKind };
@@ -62,19 +62,24 @@
     Number: IconNumber,
   };
 
-  let data = initial;
-  let currentTypename = questionTypeNames.find((t) => t.id === data.type);
+  export let title = initial.title;
+  export let description = initial.description;
+  export let mandatory = initial.mandatory;
+  export let anonymous = initial.anonymous;
+  export let type = initial.type;
+
+  let currentTypename = questionTypeNames.find((t) => t.id === type);
 
   $: if (currentTypename) {
     dispatch('type-change', {
-      from: data.type,
+      from: type,
       to: currentTypename.id,
     });
-    data.type = currentTypename.id;
+    type = currentTypename.id;
   }
 </script>
 
-<Card element="form" method="post">
+<Card element="form" method="post" on:submit>
   <header>
     <slot name="header" />
     <div class="title-and-type">
@@ -83,7 +88,7 @@
         label=""
         name="{id ?? 'new-question'}.title"
         placeholder="Titre de la question"
-        value={data.title}
+        bind:value={title}
       ></InputText>
       <InputPickObjects bind:value={currentTypename} options={questionTypeNames}>
         <div
@@ -109,7 +114,7 @@
     </div>
     <InputLongText
       rows={2}
-      value={data.description}
+      bind:value={description}
       label=""
       placeholder="Ajouter une description… (optionel)"
       name="{id ?? 'new-question'}.description"
@@ -118,13 +123,10 @@
   <slot />
   <footer>
     <slot name="footer" />
-    <InputCheckbox
-      value={data.mandatory}
-      label="Obligatoire"
-      name="{id ?? 'new-question'}.mandatory"
+    <InputCheckbox bind:value={mandatory} label="Obligatoire" name="{id ?? 'new-question'}.mandatory"
     ></InputCheckbox>
     <div class="anonymous">
-      <InputCheckbox value={data.anonymous} label="Anonyme" name="{id ?? 'new-question'}.anonymous"
+      <InputCheckbox bind:value={anonymous} label="Anonyme" name="{id ?? 'new-question'}.anonymous"
       ></InputCheckbox>
       <div
         class="action learn-more"
@@ -133,6 +135,7 @@
         <IconQuestionMark></IconQuestionMark>
       </div>
     </div>
+    <slot name="footer-end" />
   </footer>
 </Card>
 

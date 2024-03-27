@@ -1,22 +1,21 @@
 <script lang="ts">
-  import FormQuestionScale from './FormQuestionScale.svelte';
-  import { QuestionKind } from '@prisma/client';
+  import InputLongText from '$lib/components/InputLongText.svelte';
+  import InputText from '$lib/components/InputText.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+  import { QuestionKind } from '$lib/zeus';
   import { queryParam } from 'sveltekit-search-params';
   import FormBasicDetails from '../../FormBasicDetails.svelte';
-  import Card from '$lib/components/Card.svelte';
-  import InputText from '$lib/components/InputText.svelte';
-  import InputLongText from '$lib/components/InputLongText.svelte';
   import type { PageData } from './$types';
   import FormQuestion from './FormQuestion.svelte';
-  import FormQuestionChoices from './FormQuestionChoices.svelte';
-  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import InputPickObjects from '$lib/components/InputPickObjects.svelte';
-  import BaseInputText from '$lib/components/BaseInputText.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import { zeus } from '$lib/zeus';
+  import omit from 'lodash.omit';
+  import { _questionQuery } from './+page';
+  import { toasts } from '$lib/toasts';
 
   export let data: PageData;
 
+  let creatingQuestion = false;
   let basicInfosCollapsed = true;
 
   /**
@@ -33,16 +32,78 @@
       ? undefined
       : sections.find((s) => s.localId === $editingSectionId) ?? sections[0];
 
-  let newQuestion = {
+  $: console.log({ sections, ed: editingSection?.id, newQuestion });
+
+  const EMPTY_QUESTION = {
     id: undefined,
     title: '',
     description: '',
     mandatory: true,
+    anonymous: false,
     type: QuestionKind.SelectOne,
     options: [],
-    allowOptionsOther: false,
+    allowOptionOther: false,
     __typename: 'QuestionSelectOne',
+    minimum: 1,
+    maximum: 10,
+    minimumLabel: '',
+    maximumLabel: '',
+  };
+
+  async function createQuestion() {
+    const { upsertQuestion } = await $zeus.mutate({
+      upsertQuestion: [
+        {
+          input: {
+            ...omit(
+              newQuestion,
+              '__typename',
+              'minimum',
+              'maximum',
+              'minimumLabel',
+              'maximumLabel',
+            ),
+            options: newQuestion.options.map((o) => ({ value: o })),
+            default: [],
+            sectionId: editingSection?.id,
+            formId: data.form.id,
+            ...(newQuestion.__typename === 'QuestionScale'
+              ? {
+                  scale: {
+                    minimum: newQuestion.minimum,
+                    maximum: newQuestion.maximum,
+                    minimumLabel: newQuestion.minimumLabel,
+                    maximumLabel: newQuestion.maximumLabel,
+                  },
+                }
+              : {}),
+          },
+        },
+        _questionQuery,
+      ],
+    });
+
+    data.form.sections = data.form.sections.map((section) => {
+      if (section?.id === editingSection?.id) {
+        return {
+          ...section,
+          questions: [...section.questions, upsertQuestion],
+        };
+      }
+      return section;
+    });
+
+    newQuestion = structuredClone(EMPTY_QUESTION);
   }
+
+  function invalidQuestionMessage(question: typeof newQuestion): string {
+    if (question.title.trim() === '') return 'Le titre de la question ne peut pas être vide';
+    if (question.__typename.startsWith('QuestionSelect') && question.options.length < 1)
+      return 'Il faut au moins une option pour une question à choix';
+    return '';
+  }
+
+  let newQuestion = structuredClone(EMPTY_QUESTION);
 </script>
 
 <svelte:head>
@@ -97,8 +158,28 @@
     {/each}
 
     <hr />
-    <FormQuestion bind:question={newQuestion}>
+    <FormQuestion
+      bind:question={newQuestion}
+      on:submit={async () => {
+        creatingQuestion = true;
+        try {
+          await createQuestion();
+        } catch (error) {
+          toasts.error('Erreur lors de la création de la question', error?.toString());
+        } finally {
+          creatingQuestion = false;
+        }
+      }}
+    >
       <h2 slot="header">Nouvelle question</h2>
+      <section class="submit" slot="footer-end">
+        <ButtonPrimary
+          help={invalidQuestionMessage(newQuestion)}
+          disabled={Boolean(invalidQuestionMessage(newQuestion))}
+          loading={creatingQuestion}
+          submits>Ajouter</ButtonPrimary
+        >
+      </section>
     </FormQuestion>
   </section>
 </div>
@@ -121,5 +202,10 @@
     max-width: 600px;
     margin: 0 auto;
     width: 100%;
+  }
+
+  .questions section.submit {
+    display: flex;
+    justify-content: flex-end;
   }
 </style>

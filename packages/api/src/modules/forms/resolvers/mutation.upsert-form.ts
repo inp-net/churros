@@ -94,6 +94,13 @@ builder.mutationField('upsertForm', (t) =>
         where: { id: input.id ?? '' },
         create: {
           ...data,
+          sections: {
+            create: {
+              title: '',
+              description: '',
+              order: 1,
+            },
+          },
         },
         update: {
           ...data,
