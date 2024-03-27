@@ -8,6 +8,9 @@
 ALTER TABLE "Announcement" ALTER COLUMN "id" SET DEFAULT nanoid('ann:');
 
 -- AlterTable
+ALTER TABLE "Answer" ALTER COLUMN "id" SET DEFAULT nanoid('answer:');
+
+-- AlterTable
 ALTER TABLE "Article" ALTER COLUMN "id" SET DEFAULT nanoid('a:');
 
 -- AlterTable
@@ -33,6 +36,15 @@ ALTER TABLE "EmailChange" ALTER COLUMN "id" SET DEFAULT nanoid('emailchange:');
 
 -- AlterTable
 ALTER TABLE "Event" ALTER COLUMN "id" SET DEFAULT nanoid('e:');
+
+-- AlterTable
+ALTER TABLE "Form" ALTER COLUMN "id" SET DEFAULT nanoid('form:');
+
+-- AlterTable
+ALTER TABLE "FormJump" ALTER COLUMN "id" SET DEFAULT nanoid('formjump:');
+
+-- AlterTable
+ALTER TABLE "FormSection" ALTER COLUMN "id" SET DEFAULT nanoid('formsection:');
 
 -- AlterTable
 ALTER TABLE "GodparentRequest" ALTER COLUMN "id" SET DEFAULT nanoid('godparentreq:');
@@ -69,13 +81,26 @@ ALTER TABLE "NotificationSubscription" ALTER COLUMN "id" SET DEFAULT nanoid('not
 ALTER TABLE "PasswordReset" ALTER COLUMN "id" SET DEFAULT nanoid('passreset:');
 
 -- AlterTable
+ALTER TABLE "PaypalTransaction" ALTER COLUMN "id" SET DEFAULT nanoid('paypalpayment:');
+
+-- AlterTable
+ALTER TABLE "Promotion" ALTER COLUMN "id" SET DEFAULT nanoid('promo:');
+
+-- AlterTable
+ALTER TABLE "PromotionCode" ALTER COLUMN "id" SET DEFAULT nanoid('promocode:');
+
+-- AlterTable
+ALTER TABLE "Question" ALTER COLUMN "id" SET DEFAULT nanoid('question:');
+
+-- AlterTable
 ALTER TABLE "Reaction" ALTER COLUMN "id" SET DEFAULT nanoid('reac:');
 
 -- AlterTable
 ALTER TABLE "Registration" ALTER COLUMN "id" SET DEFAULT nanoid('r:');
 
 -- AlterTable
-ALTER TABLE "School" ALTER COLUMN "id" SET DEFAULT nanoid('school:');
+ALTER TABLE "School" ALTER COLUMN "id" SET DEFAULT nanoid('school:'),
+ALTER COLUMN "aliasMailDomains" SET DEFAULT ARRAY[]::VARCHAR(255)[];
 
 -- AlterTable
 ALTER TABLE "Service" ALTER COLUMN "id" SET DEFAULT nanoid('service:');
@@ -88,6 +113,12 @@ ALTER TABLE "Subject" ALTER COLUMN "id" SET DEFAULT nanoid('subj:');
 
 -- AlterTable
 ALTER TABLE "TeachingUnit" ALTER COLUMN "id" SET DEFAULT nanoid('ue:');
+
+-- AlterTable
+ALTER TABLE "ThirdPartyApp" ALTER COLUMN "id" SET DEFAULT nanoid('app:', 30);
+
+-- AlterTable
+ALTER TABLE "ThirdPartyCredential" ALTER COLUMN "id" SET DEFAULT nanoid('token:');
 
 -- AlterTable
 ALTER TABLE "Ticket" ALTER COLUMN "id" SET DEFAULT nanoid('t:');
@@ -113,6 +144,7 @@ CREATE TABLE "Picture" (
 -- CreateTable
 CREATE TABLE "ShopItem" (
     "id" TEXT NOT NULL DEFAULT nanoid('shopitem:'),
+    "uid" TEXT NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "price" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "stock" INTEGER NOT NULL DEFAULT 0,
@@ -151,6 +183,9 @@ CREATE TABLE "_PictureToShopItem" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ShopItem_groupId_uid_key" ON "ShopItem"("groupId", "uid");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_PictureToShopItem_AB_unique" ON "_PictureToShopItem"("A", "B");
