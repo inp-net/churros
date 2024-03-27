@@ -97,9 +97,6 @@
 
   $: ({ group } = data);
 
-  $: canEditDetails = Boolean(
-    $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups,
-  );
   $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || meOnClubBoard);
   $: canEditEvents = canEditArticles;
   $: canEditMembers = Boolean(
@@ -182,7 +179,7 @@
       <h1>
         {group.name}
         <ButtonShare />
-        {#if canEditDetails}
+        {#if group.canEditDetails}
           <ButtonGhost help="Modifier les infos" href="./edit"><IconGear /></ButtonGhost>
         {/if}
 

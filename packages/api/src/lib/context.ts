@@ -11,6 +11,7 @@ import {
   type GroupMember,
   type Major,
   type School,
+  type StudentAssociation,
   type User,
 } from '@prisma/client';
 import { GraphQLError } from 'graphql';
@@ -30,6 +31,7 @@ const sessions = new Map<
     groups: Array<GroupMember & { group: Group }>;
     major: null | (Major & { schools: School[] });
     managedEvents: Array<EventManager & { event: Event & { group: Group } }>;
+    adminOfStudentAssociations: StudentAssociation[];
   }
 >();
 
@@ -48,6 +50,7 @@ export const getUserFromThirdPartyToken = async (token: string) => {
             groups: { include: { group: true } },
             managedEvents: { include: { event: { include: { group: true } } } },
             major: { include: { schools: true } },
+            adminOfStudentAssociations: true,
           },
         },
       },
@@ -88,6 +91,7 @@ const getUser = async (token: string) => {
             groups: { include: { group: true } },
             managedEvents: { include: { event: { include: { group: true } } } },
             major: { include: { schools: true } },
+            adminOfStudentAssociations: true,
           },
         },
       },

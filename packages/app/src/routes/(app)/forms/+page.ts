@@ -1,6 +1,6 @@
 import { redirectToLogin } from '$lib/session.js';
 import { loadQuery, Selector } from '$lib/zeus.js';
-import { error } from '@sveltejs/kit';
+import uniqBy from 'lodash.uniqby';
 
 export const _formNodeQuery = Selector('Form')({
   localId: true,
@@ -18,16 +18,24 @@ export const _formNodeQuery = Selector('Form')({
 export async function load({ fetch, parent, url }) {
   const { me } = await parent();
   if (!me) redirectToLogin(url.pathname, url.searchParams);
-  if (!me?.admin) error(403, { message: 'Page réservée aux admins' });
-  return loadQuery(
+  const { allForms, myForms } = await loadQuery(
     {
-      allForms: [
-        {},
-        {
-          nodes: _formNodeQuery,
-        },
-      ],
+      ...(me?.admin
+        ? {
+            allForms: [
+              {},
+              {
+                nodes: _formNodeQuery,
+              },
+            ],
+          }
+        : {}),
+      myForms: [{}, { nodes: _formNodeQuery }],
     },
     { fetch, parent },
   );
+
+  return {
+    forms: uniqBy([...(allForms?.nodes ?? []), ...myForms?.nodes], 'id'),
+  };
 }

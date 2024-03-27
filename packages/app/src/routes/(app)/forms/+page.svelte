@@ -16,7 +16,7 @@
     encode: (v) => v || undefined,
     decode: (v) => v ?? '',
   });
-  let searchResults: typeof data.allForms.nodes = [];
+  let searchResults: typeof data.forms = [];
 
   async function search(q: string) {
     const { searchForms } = await $zeus.query({
@@ -35,12 +35,12 @@
 </script>
 
 <section class="search">
-  <h1>Formulaires</h1>
+  <h1>Mes formulaires</h1>
   <InputSearchQuery bind:q={$q} on:search={async () => {}} />
 </section>
 
 <ul class="forms nobullet">
-  {#each $q ? searchResults : data.allForms.nodes as form (form.id)}
+  {#each $q ? searchResults : data.forms as form (form.id)}
     <Card element="li">
       <h2>
         <AvatarGroup href={undefined} {...form.group}></AvatarGroup>

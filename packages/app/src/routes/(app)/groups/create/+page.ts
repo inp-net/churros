@@ -1,10 +1,11 @@
+import { redirectToLogin } from '$lib/session';
 import { GroupType, loadQuery } from '$lib/zeus';
-import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent }) => {
   const { me } = await parent();
-  if (!me?.canEditGroups) throw redirect(307, '..');
+  if (!me) redirectToLogin('/groups/create');
+
   return {
     ...(await loadQuery(
       {

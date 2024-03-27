@@ -55,35 +55,36 @@ model User {
   canAccessDocuments Boolean @default(false)
 
   // Relationships
-  articles                  Article[]
-  groups                    GroupMember[]
-  credentials               Credential[]
-  Reservation               Registration[]             @relation("author")
-  managedEvents             EventManager[]
-  logs                      LogEntry[]
-  events                    Event[]
-  notificationSubscriptions NotificationSubscription[]
-  notifications             Notification[]
-  godparent                 User?                      @relation("mentorship", fields: [godparentId], references: [id]) // Le parrain ou la marraine
-  godchildren               User[]                     @relation("mentorship") // Les filleul(e)s
-  incomingGodparentRequests GodparentRequest[]         @relation("godparent")
-  outgoingGodparentRequests GodparentRequest[]         @relation("godchild")
-  passwordResets            PasswordReset[]
-  emailChanges              EmailChange[]
-  Announcement              Announcement[]
-  contributions             Contribution[]
-  verifications             Registration[]             @relation("verifiedBy")
-  oppositions               Registration[]             @relation("opposedBy")
-  cancellations             Registration[]             @relation("cancelledBy")
-  documents                 Document[]
-  comments                  Comment[]
-  bannedFromEvents          Event[]                    @relation("bannedFromEvents")
-  reactions                 Reaction[]
-  allowedApps               ThirdPartyApp[]
-  formAnswers               Answer[]
-  createdForms              Form[]
-  completedForms            Form[]                     @relation("completedForms")
-  partiallyCompletedForms   Form[]                     @relation("partiallyCompletedForms")
+  articles                   Article[]
+  groups                     GroupMember[]
+  credentials                Credential[]
+  Reservation                Registration[]             @relation("author")
+  managedEvents              EventManager[]
+  logs                       LogEntry[]
+  events                     Event[]
+  notificationSubscriptions  NotificationSubscription[]
+  notifications              Notification[]
+  godparent                  User?                      @relation("mentorship", fields: [godparentId], references: [id]) // Le parrain ou la marraine
+  godchildren                User[]                     @relation("mentorship") // Les filleul(e)s
+  incomingGodparentRequests  GodparentRequest[]         @relation("godparent")
+  outgoingGodparentRequests  GodparentRequest[]         @relation("godchild")
+  passwordResets             PasswordReset[]
+  emailChanges               EmailChange[]
+  Announcement               Announcement[]
+  contributions              Contribution[]
+  verifications              Registration[]             @relation("verifiedBy")
+  oppositions                Registration[]             @relation("opposedBy")
+  cancellations              Registration[]             @relation("cancelledBy")
+  documents                  Document[]
+  comments                   Comment[]
+  bannedFromEvents           Event[]                    @relation("bannedFromEvents")
+  reactions                  Reaction[]
+  allowedApps                ThirdPartyApp[]
+  formAnswers                Answer[]
+  createdForms               Form[]
+  completedForms             Form[]                     @relation("completedForms")
+  partiallyCompletedForms    Form[]                     @relation("partiallyCompletedForms")
+  adminOfStudentAssociations StudentAssociation[]       @relation("studentAssociationAdmins")
 
   // For full-text search
   search                Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -340,6 +341,7 @@ model StudentAssociation {
   lydiaAccounts       LydiaAccount[]
   contributionOptions ContributionOption[]
   services            Service[]
+  admins              User[]               @relation("studentAssociationAdmins")
 }
 
 model Contribution {

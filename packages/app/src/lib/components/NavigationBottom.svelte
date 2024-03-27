@@ -152,7 +152,7 @@
       </a>
     {/if}
 
-    {#if $me?.admin || $me?.canEditGroups}
+    {#if $me?.admin || $me?.canEditGroups || $me?.studentAssociationAdmin}
       <a href="/groups/create">
         <IconGroupOutline />
         <span>Groupe</span>
@@ -181,7 +181,7 @@
       <span>Événement</span>
     </a>
 
-    {#if $me?.admin || $me?.canEditUsers}
+    {#if $me?.admin || $me?.canEditUsers || $me?.studentAssociationAdmin}
       <a href="/signups">
         <IconPeople />
         <span>Inscriptions</span>
