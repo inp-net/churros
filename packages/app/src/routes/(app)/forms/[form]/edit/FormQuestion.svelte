@@ -8,13 +8,13 @@
   import FormQuestionChoices from './FormQuestionChoices.svelte';
 
   export let question: {
-    id: string;
+    id: string | undefined;
     title: string;
     description: string;
     mandatory: boolean;
     anonymous: boolean;
     type: QuestionKind;
-    allowOptionsOther: boolean;
+    allowOptionOther: boolean;
   } & (
     | {
         __typename: 'QuestionSelectOne' | 'QuestionSelectMultiple';
@@ -56,8 +56,13 @@
 </script>
 
 <BaseFormQuestion
+  on:submit
   id={question.id}
   initial={question}
+  bind:title={question.title}
+  bind:description={question.description}
+  bind:mandatory={question.mandatory}
+  bind:anonymous={question.anonymous}
   on:type-change={({ detail: { to } }) => {
     question.type = to;
     question.__typename = questionKindToTypename(to);
@@ -69,7 +74,12 @@
     <FormQuestionChoices {sections} __typename={question.__typename} bind:options={question.options}
     ></FormQuestionChoices>
   {:else if question.__typename === 'QuestionScale'}
-    <FormQuestionScale {...question}></FormQuestionScale>
+    <FormQuestionScale
+      bind:minimum={question.minimum}
+      bind:maximum={question.maximum}
+      bind:minimumLabel={question.minimumLabel}
+      bind:maximumLabel={question.maximumLabel}
+    ></FormQuestionScale>
   {:else if question.__typename === 'QuestionScalar'}
     {#if question.type === 'LongText'}
       <InputLongText rows={5} placeholder="Texte long…" label="" disabled value=""></InputLongText>
@@ -87,10 +97,12 @@
   <div class="additional-options" slot="footer">
     {#if question.__typename === 'QuestionSelectOne' || question.__typename === 'QuestionSelectMultiple'}
       <InputCheckbox
-        value={question.allowOptionsOther}
+        value={question.allowOptionOther}
         label="Autoriser le choix “autres”"
         name="multiple"
       ></InputCheckbox>
     {/if}
   </div>
+
+  <slot name="footer-end" slot="footer-end" />
 </BaseFormQuestion>

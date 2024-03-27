@@ -1,5 +1,33 @@
-import { loadQuery } from '$lib/zeus.js';
+import { loadQuery, Selector } from '$lib/zeus.js';
 import { error } from '@sveltejs/kit';
+
+export const _questionQuery = Selector('Question')({
+  'id': true,
+  'title': true,
+  'mandatory': true,
+  'type': true,
+  'anonymous': true,
+  'description': true,
+  'order': true,
+  '__typename': true,
+  '...on QuestionScale': {
+    minimum: true,
+    minimumLabel: true,
+    maximum: true,
+    maximumLabel: true,
+  },
+  '...on QuestionSelectOne': {
+    options: true,
+    allowOptionsOther: true,
+  },
+  '...on QuestionSelectMultiple': {
+    options: true,
+    allowOptionsOther: true,
+  },
+  '...on QuestionScalar': {
+    __typename: true,
+  },
+});
 
 export async function load({ fetch, parent, params }) {
   const { form, me } = await loadQuery(
@@ -26,33 +54,7 @@ export async function load({ fetch, parent, params }) {
             id: true,
             localId: true,
             description: true,
-            questions: {
-              'id': true,
-              'title': true,
-              'mandatory': true,
-              'type': true,
-              'anonymous': true,
-              'description': true,
-              'order': true,
-              '__typename': true,
-              '...on QuestionScale': {
-                minimum: true,
-                minimumLabel: true,
-                maximum: true,
-                maximumLabel: true,
-              },
-              '...on QuestionSelectOne': {
-                options: true,
-                allowOptionsOther: true,
-              },
-              '...on QuestionSelectMultiple': {
-                options: true,
-                allowOptionsOther: true,
-              },
-              '...on QuestionScalar': {
-                __typename: true,
-              },
-            },
+            questions: _questionQuery,
           },
         },
       ],
