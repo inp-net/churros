@@ -37,16 +37,16 @@
   }
 
   .anonymous-marker {
-    border-top: var(--border-block) dashed var(--muted-border);
-    padding-top: 1rem;
     display: flex;
-    align-items: center;
     gap: 0.5rem;
+    align-items: center;
+    padding-top: 1rem;
     margin-top: 1rem;
+    border-top: var(--border-block) dashed var(--muted-border);
   }
 
   .anonymous-marker .learn-more {
-    cursor: help;
     margin-left: auto;
+    cursor: help;
   }
 </style>

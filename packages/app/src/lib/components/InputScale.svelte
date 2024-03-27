@@ -26,27 +26,27 @@
 <style>
   .range-input {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
     flex-wrap: wrap;
     gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .label {
-    white-space: pre;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: pre;
   }
 
   .current-value-hint {
     width: 4ch;
-    text-align: right;
     width: 100%;
+    text-align: right;
   }
 
   input {
     flex: 1;
-    min-width: 0;
     width: 100%;
+    min-width: 0;
   }
 </style>

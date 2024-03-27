@@ -40,11 +40,10 @@ export const actions = {
         },
         { fetch, token: cookies.get('token') },
       );
-      if (answerFormSection.__typename === 'Error') {
+      if (answerFormSection.__typename === 'Error')
         return fail(400, { message: answerFormSection.message });
-      }
-    } catch (e) {
-      error(400, { message: e?.toString() ?? '' });
+    } catch (error_) {
+      error(400, { message: error_?.toString() ?? '' });
     }
 
     // Get next section, _after_ submitting answers
@@ -60,23 +59,19 @@ export const actions = {
       { fetch, token: cookies.get('token') },
     );
 
-    if (form?.section.nextSection) {
+    if (form?.section.nextSection)
       redirect(302, `/forms/${params.form}/answer/${form.section.nextSection.localId}`);
-    }
 
     redirect(302, `/forms/${params.form}/answered`);
   },
 };
 
-function gatherAnswers(data: any) {
-  let answers: Record<string, string[]> = {};
-  for (let [name, value] of data.entries()) {
+function gatherAnswers(data: FormData) {
+  const answers: Record<string, string[]> = {};
+  for (const [name, value] of data.entries()) {
     if (name.startsWith(TYPENAMES_TO_ID_PREFIXES.Question + ':')) {
-      if (answers[name]) {
-        answers[name].push(value.toString());
-      } else {
-        answers[name] = [value.toString()];
-      }
+      if (answers[name]) answers[name].push(value.toString());
+      else answers[name] = [value.toString()];
     }
   }
   return answers;
@@ -87,15 +82,14 @@ function gatherAnswers(data: any) {
  * - When the "other" option was not selected, the answer is in the form of "questionId", and the "questionId/other" key is in an "unanswered" state (set to a single-element array with an empty string--since the text field is empty). We remove the "questionId/other" key.
  */
 function handleOtherOptionAnswers(answers: Record<string, string[]>): Record<string, string[]> {
-  let result = structuredClone(answers);
-  for (let [question, answer] of Object.entries(result)) {
+  const result = structuredClone(answers);
+  for (const [question, answer] of Object.entries(result)) {
     // replace question with question/other's value if it exists
     // otherwise, remove /other from the answers
     if (question.endsWith('/other')) {
       const questionId = question.replace(/\/other$/, '');
-      if (!result[questionId] || isUnanswered(result[questionId])) {
-        result[questionId] = answer;
-      }
+      if (!result[questionId] || isUnanswered(result[questionId])) result[questionId] = answer;
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete result[question];
     }
   }
