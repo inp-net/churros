@@ -45,5 +45,11 @@ export function databaseToWebauthnKeyId(id: string): Buffer {
  * If the ID is a string, it is assumed to be Base64-encoded.
  */
 export function webauthnToDatabaseKeyId(id: Uint8Array | string): string {
-  return `${TYPENAMES_TO_ID_PREFIXES.Credential}:${Buffer.from(id, 'base64').toString('base64')}`;
+  const base64dID =
+    typeof id === 'string'
+      ? // we re-encode to base64 to ensure padding is present (simplewebauthn sends the ID without padding)
+        Buffer.from(id, 'base64').toString('base64')
+      : Buffer.from(id).toString('base64');
+
+  return `${TYPENAMES_TO_ID_PREFIXES.Credential}:${base64dID}`;
 }

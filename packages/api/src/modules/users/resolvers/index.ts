@@ -18,7 +18,6 @@ export * from './mutation.prepare-passkey-enrollment.js';
 export * from './mutation.prepare-passkey-login.js';
 export * from './mutation.refuse-registration.js';
 export * from './mutation.register-google-credential.js';
-export * from './mutation.register-passkey.js';
 export * from './mutation.rename-session.js';
 export * from './mutation.request-email-change.js';
 export * from './mutation.reset-password.js';
