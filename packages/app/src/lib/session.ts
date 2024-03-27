@@ -19,6 +19,7 @@ export const sessionUserQuery = () =>
     canEditGroups: true,
     canEditUsers: true,
     canAccessDocuments: true,
+    studentAssociationAdmin: true,
     yearTier: true,
     apprentice: true,
     graduationYear: true,

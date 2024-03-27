@@ -100,9 +100,6 @@
   $: ({ group } = data);
   $: ShopItems = data.itemsOfGroup;
 
-  $: canEditDetails = Boolean(
-    $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups,
-  );
   $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || meOnClubBoard);
   $: canEditEvents = canEditArticles;
   $: canEditMembers = Boolean(
@@ -186,7 +183,7 @@
         {group.name}
         <ButtonShare />
         <ButtonGhost help="Accéder à la boutique" href="./shop/"><IconStore /></ButtonGhost>
-        {#if canEditDetails}
+        {#if group.canEditDetails}
           <ButtonGhost help="Modifier les infos" href="./edit/"><IconGear /></ButtonGhost>
         {/if}
 

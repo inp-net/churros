@@ -4,5 +4,6 @@
 
 export * from './names.js';
 export * from './password-resets.js';
+export * from './permissions.js';
 export * from './registration.js';
 export * from './uid.js';

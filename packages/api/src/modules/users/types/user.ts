@@ -10,6 +10,9 @@ export const UserType = builder.prismaNode('User', {
     ...(id === user?.id ? ['me'] : []),
     ...(majorId ? ['student'] : []),
   ],
+  include: {
+    adminOfStudentAssociations: true,
+  },
   fields: (t) => ({
     majorId: t.exposeID('majorId', { nullable: true }),
     uid: t.exposeString('uid'),
@@ -64,9 +67,17 @@ export const UserType = builder.prismaNode('User', {
     cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
     apprentice: t.exposeBoolean('apprentice'),
 
-    // Permissions are only visible to admins
-    admin: t.exposeBoolean('admin', {
-      // authScopes: { admin: true, $granted: 'me' },
+    admin: t.exposeBoolean('admin'),
+    adminOf: t.boolean({
+      description: "Vrai si cette personne est administratrice de l'association étudiante donnée",
+      args: { studentAssociation: t.arg.string({ description: "UID de l'association étudiante" }) },
+      resolve: ({ adminOfStudentAssociations }, { studentAssociation }) =>
+        adminOfStudentAssociations.some((a) => a.uid === studentAssociation),
+    }),
+    studentAssociationAdmin: t.boolean({
+      description:
+        "Vrai si cette personne est administratrice d'au moins une association étudiante",
+      resolve: ({ adminOfStudentAssociations }) => adminOfStudentAssociations.length > 0,
     }),
     canEditGroups: t.boolean({
       resolve: ({ admin, canEditGroups }) => admin || canEditGroups,
