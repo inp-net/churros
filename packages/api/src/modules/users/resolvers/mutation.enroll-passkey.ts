@@ -1,4 +1,4 @@
-import { builder, prisma, TYPENAMES_TO_ID_PREFIXES } from '#lib';
+import { WEBAUTHN_RELYING_PARTY, builder, log, prisma, webauthnToDatabaseKeyId } from '#lib';
 import { verifyRegistrationResponse } from '@simplewebauthn/server';
 import { GraphQLError } from 'graphql';
 
@@ -12,18 +12,33 @@ builder.mutationField('enrollPasskey', (t) =>
       rawId: t.input.string(),
       clientDataJSON: t.input.string(),
       attestationObject: t.input.string(),
-      authenticatorData: t.input.string(),
+      authenticatorData: t.input.string({ required: false }),
       publicKeyAlgorithm: t.input.int(),
       publicKey: t.input.string(),
       authenticatorAttachment: t.input.string({ required: false }),
       type: t.input.string(),
+      transports: t.input.stringList(),
     },
     async resolve(
       _,
-      { input: { id, rawId, authenticatorAttachment, type, ...response } },
+      { input, input: { id, rawId, authenticatorAttachment, type, transports, ...response } },
       { user, token },
     ) {
       if (!user || !token) throw new GraphQLError('Utilisateur·ice non trouvé·e');
+      await log('passkeys', 'enrolling', input, input.id, user);
+      const challenge = await prisma.credential.findFirst({
+        where: {
+          userId: user.id,
+          type: 'PasskeyEnrollmentChallenge',
+          expiresAt: {
+            gte: new Date(),
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+      if (!challenge) throw new GraphQLError('Aucun challenge trouvé');
       const verification = await verifyRegistrationResponse({
         response: {
           id,
@@ -32,39 +47,48 @@ builder.mutationField('enrollPasskey', (t) =>
             | AuthenticatorAttachment
             | undefined,
           type: type as PublicKeyCredentialType,
-          response,
+          response: {
+            ...response,
+            authenticatorData: response.authenticatorData ?? undefined,
+          },
           clientExtensionResults: {},
         },
-        // TODO don't use the token, use  ashort-lived PasskeyEnrollmentChallenge-type credential created by doing startPasskeyEnrollment
-        expectedChallenge: token,
+        expectedChallenge: challenge.value,
         expectedOrigin: process.env.FRONTEND_ORIGIN,
-        expectedRPID: process.env.FRONTEND_ORIGIN,
+        expectedRPID: WEBAUTHN_RELYING_PARTY.id,
         requireUserVerification: true,
+      });
+
+      // Always delete the challenge to prevent replay attacks
+      await prisma.credential.delete({
+        where: {
+          id: challenge.id,
+        },
       });
 
       if (verification.registrationInfo) {
         const { credentialID, credentialDeviceType, counter, credentialPublicKey } =
           verification.registrationInfo;
         // userId is a global ID where the local part is the base64-encoded credentialID
-        const id = `${TYPENAMES_TO_ID_PREFIXES.Credential}:${Buffer.from(credentialID).toString(
-          'base64',
-        )}`;
-        await prisma.credential.upsert({
+        const credential = await prisma.credential.upsert({
           where: { userId: user.id, type: 'PublicKey', id },
           create: {
-            id,
+            id: webauthnToDatabaseKeyId(credentialID),
             userId: user.id,
             type: 'PublicKey',
             userAgent: credentialDeviceType,
             value: Buffer.from(credentialPublicKey).toString('base64'),
+            transports: { set: transports },
             counter,
           },
           update: {
             userAgent: credentialDeviceType,
             value: Buffer.from(credentialPublicKey).toString('base64'),
+            transports: { set: transports },
             counter,
           },
         });
+        await log('passkeys', 'enrolled', credential, credential.id, user);
       }
 
       return verification.verified;

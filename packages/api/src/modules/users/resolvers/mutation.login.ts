@@ -6,10 +6,17 @@ import {
   markAsContributor,
   prisma,
   queryLdapUser,
+  WEBAUTHN_RELYING_PARTY,
+  webauthnToDatabaseKeyId,
 } from '#lib';
 
 import type { Prisma } from '@prisma/client';
 import { CredentialType as CredentialPrismaType } from '@prisma/client';
+import {
+  verifyAuthenticationResponse,
+  type VerifiedAuthenticationResponse,
+} from '@simplewebauthn/server';
+import type { AuthenticatorTransportFuture } from '@simplewebauthn/types';
 import * as argon2 from 'argon2';
 import bunyan from 'bunyan';
 import { GraphQLError } from 'graphql';
@@ -17,6 +24,9 @@ import { authenticate as ldapAuthenticate } from 'ldap-authentication';
 import { nanoid } from 'nanoid';
 import { log } from '../../../lib/logger.js';
 import { CredentialType } from '../index.js';
+import { PasskeyAuthenticationInput } from '../types/passkey-authentication-input.js';
+import { userByEmail } from '../utils/find.js';
+import { createToken } from '../utils/token.js';
 
 builder.mutationField('login', (t) =>
   t.prismaField({
@@ -25,10 +35,20 @@ builder.mutationField('login', (t) =>
     errors: { types: [Error], dataField: { grantScopes: ['me', 'login'] } },
     args: {
       email: t.arg.string(),
-      password: t.arg.string(),
+      password: t.arg.string({ required: false }),
+      passkey: t.arg({ type: PasskeyAuthenticationInput, required: false }),
       clientId: t.arg.string({ required: false }),
     },
-    async resolve(query, _, { email, password, clientId }, { request }) {
+    validate: [
+      [
+        ({ password, passkey }) => Boolean(password || passkey),
+        {
+          message:
+            'Pour se connecter, il faut donner soit un mot de passe, soit un challenge de passkey (“clé de passe”)',
+        },
+      ],
+    ],
+    async resolve(query, _, { email, password, clientId, passkey }, { request }) {
       const userAgent = request.headers.get('User-Agent')?.slice(0, 255) ?? '';
       if (clientId) {
         await log(
@@ -39,7 +59,105 @@ builder.mutationField('login', (t) =>
         );
       }
 
-      return login(email, password, userAgent, query);
+      if (passkey) {
+        await log('login', 'with-passkey/attempt', { email, clientId, ...passkey });
+        const { user } = await userByEmail(email, {
+          credentials: {
+            where: {
+              OR: [
+                {
+                  type: CredentialPrismaType.PasskeyEnrollmentChallenge,
+                  expiresAt: {
+                    gte: new Date(),
+                  },
+                },
+                {
+                  type: CredentialPrismaType.PublicKey,
+                },
+              ],
+            },
+          },
+        });
+        if (!user) throw new GraphQLError('Aucun·e utilisateur·ice associé·e à cette clé de passe');
+
+        const challenge = user.credentials.find(
+          ({ type }) => type === 'PasskeyEnrollmentChallenge',
+        );
+        if (!challenge) throw new GraphQLError('Challenge de la clé de passe introuvable');
+        const authenticator = user.credentials.find(
+          ({ type, id }) => type === 'PublicKey' && id === webauthnToDatabaseKeyId(passkey.id),
+        );
+        if (!authenticator) throw new GraphQLError('Clé de passe invalide');
+        if (authenticator.counter === null || !authenticator.transports) {
+          await prisma.credential.delete({
+            where: { id: authenticator.id },
+          });
+          throw new GraphQLError('Clé de passe corrompue');
+        }
+
+        let response: VerifiedAuthenticationResponse | undefined;
+        try {
+          response = await verifyAuthenticationResponse({
+            response: {
+              // Just removing nulls and asserting some strings as enum values
+              ...passkey,
+              type: passkey.type as PublicKeyCredentialType,
+              authenticatorAttachment:
+                (passkey.authenticatorAttachment as AuthenticatorAttachment | undefined | null) ??
+                undefined,
+              response: {
+                ...passkey.response,
+                userHandle: passkey.response.userHandle ?? undefined,
+              },
+              clientExtensionResults: {
+                appid: passkey.clientExtensionResults.appid ?? undefined,
+                credProps: {
+                  rk: passkey.clientExtensionResults.credProps?.rk ?? undefined,
+                },
+                hmacCreateSecret: passkey.clientExtensionResults.hmacCreateSecret ?? undefined,
+              },
+            },
+            expectedChallenge: challenge.value,
+            expectedOrigin: process.env.FRONTEND_ORIGIN,
+            expectedRPID: WEBAUTHN_RELYING_PARTY.id,
+            authenticator: {
+              counter: authenticator.counter,
+              credentialID: Buffer.from(authenticator.id, 'base64'),
+              credentialPublicKey: Buffer.from(authenticator.value, 'base64'),
+              transports: authenticator.transports as AuthenticatorTransportFuture[],
+            },
+            requireUserVerification: true,
+          });
+        } catch (error) {
+          throw new GraphQLError('Impossible de se connecter ave la clé de passe: ' + error);
+        } finally {
+          // Delete the challenge to prevent replay attacks
+          await prisma.credential.delete({
+            where: { id: challenge.id },
+          });
+
+          // Update the passkey's counter
+          if (response) {
+            await prisma.credential.update({
+              where: { id: authenticator.id },
+              data: {
+                counter: response.authenticationInfo.newCounter,
+              },
+            });
+          }
+        }
+
+        if (response.verified) {
+          await log('login', 'with-passkey/ok', { email, clientId, passkey, response });
+          return createToken(query, user.id, userAgent);
+        } else {
+          throw new GraphQLError('Identifiants (clé de passe) invalides');
+        }
+      }
+
+      if (password) return login(email, password, userAgent, query);
+
+      throw new GraphQLError('Invalid login method');
     },
   }),
 );
@@ -53,53 +171,22 @@ export async function login(
     select?: Prisma.CredentialSelect;
   },
 ) {
-  const schools = await prisma.school.findMany();
-  const schoolDomain = schools.map((school) => [
-    school.uid,
-    [school.internalMailDomain, ...school.aliasMailDomains],
-  ]);
-  const schoolDomains = schoolDomain.flatMap(([_, domains]) => domains);
-  const [_, domain] = email.split('@', 2);
-  const uidOrEmail = email.trim().toLowerCase();
-  //Ici on définit les clauses du prisma pour chercher un utilisateur, soit par uid ou par email dans le cas ou il rentre l'un des deux
-  //De plus si l'utilisateur est dans une école, on cherche aussi par email dans les domaines de l'école ou cas ou il rentre un un alias de son école au lieu du bon mail
-  //Le if sert à vérifier que le premier domaine est inclus dans les écoles (car on ne doit pas remplacer un mail genre @ewen.works ou n'importe quel domaine avec un @etu.inp-n7.fr)
-  let prismaClauses: Prisma.UserWhereInput['OR'] = [{ uid: uidOrEmail }, { email: uidOrEmail }];
-  if (schoolDomains.includes(domain)) {
-    prismaClauses = [
-      ...prismaClauses,
-      ...(schoolDomain.map(([schoolUid, domains]) => ({
-        //ici on map pour chaque école si l'utilisateur est dans l'école et on remplace le mail par TOUS les domaines de l'école
-        //On fait ça pour que si l'utilisateur rentre un alias de son mail, on le trouve quand même
-        major: { schools: { some: { uid: schoolUid } } },
-        email: {
-          in: Array.isArray(domains)
-            ? domains.map((domain: string) => uidOrEmail.replace(/@[^@]+$/, `@${domain}`))
-            : [uidOrEmail.replace(/@[^@]+$/, `@${domains}`)],
-        },
-      })) as Prisma.UserWhereInput[]),
-    ];
-  }
-  const user = await prisma.user.findFirst({
-    where: { OR: prismaClauses },
-
-    include: {
-      credentials: {
-        where: {
-          type: CredentialPrismaType.Password,
-        },
+  const { user, uidOrEmail } = await userByEmail(email, {
+    credentials: {
+      where: {
+        type: CredentialPrismaType.Password,
       },
-      major: {
-        include: {
-          ldapSchool: true,
-        },
+    },
+    major: {
+      include: {
+        ldapSchool: true,
       },
-      contributions: {
-        include: {
-          option: {
-            include: {
-              paysFor: true,
-            },
+    },
+    contributions: {
+      include: {
+        option: {
+          include: {
+            paysFor: true,
           },
         },
       },
@@ -283,17 +370,7 @@ export async function login(
         }
       }
 
-      return prisma.credential.create({
-        ...query,
-        data: {
-          userId,
-          type: CredentialPrismaType.Token,
-          value: nanoid(),
-          userAgent,
-          // Keep the token alive for a year
-          expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-        },
-      });
+      return createToken(query, userId, userAgent);
     }
   }
 

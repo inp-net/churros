@@ -1,3 +1,14 @@
+---
+manually_include:
+  [
+    PasskeyAuthenticatorSelection,
+    PasskeyPublicKeyCredentials,
+    PasskeyExtensions,
+    PasskeyPublicKeyCredentialParameters,
+    PasskeyRelyingParty,
+  ]
+---
+
 # Users
 
 Les personnes utilisant l'application.

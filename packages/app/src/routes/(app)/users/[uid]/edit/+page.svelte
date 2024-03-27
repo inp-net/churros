@@ -18,14 +18,19 @@
   import { formatDate, formatDateTime } from '$lib/dates';
   import { me } from '$lib/session';
   import { theme } from '$lib/theme';
+  import { toasts } from '$lib/toasts';
   import { CredentialType, zeus } from '$lib/zeus';
+  import { startRegistration } from '@simplewebauthn/browser';
+  import { type PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/types';
   import { default as parseUserAgent } from 'ua-parser-js';
   import IconActive from '~icons/mdi/adjust';
   import { default as IconCheck, default as IconFinishEditing } from '~icons/mdi/check';
   import { default as IconCancelEditing, default as IconClose } from '~icons/mdi/close';
   import IconSynchronize from '~icons/mdi/database-sync-outline';
+  import IconCreatePasskey from '~icons/mdi/fingerprint';
   import IconPencil from '~icons/mdi/pencil-outline';
   import type { PageData } from './$types';
+  import omit from 'lodash.omit';
 
   let godparentRequestSendServerError = '';
   let godparentRequestSending = false;
@@ -33,6 +38,7 @@
   let godparentDeleteServerError = '';
   let ldapSyncResult: undefined | boolean = undefined;
   let editingSession: { id: string; oldName: string } | undefined = undefined;
+  let registeringPasskey = false;
 
   const deleteToken = async (id: string, active: boolean) => {
     if (active) {
@@ -55,6 +61,76 @@
     data.me.credentials[idx].name = name;
     editingSession = undefined;
   };
+
+  async function registerPasskey() {
+    const { preparePasskeyEnrollment } = await $zeus.mutate({
+      preparePasskeyEnrollment: {
+        attestation: true,
+        challenge: true,
+        authenticatorSelection: {
+          userVerification: true,
+          authenticatorAttachment: true,
+          requireResidentKey: true,
+          residentKey: true,
+        },
+        excludeCredentials: {
+          id: true,
+          type: true,
+        },
+        extensions: {
+          appid: true,
+          credProps: true,
+          hmacCreateSecret: true,
+        },
+        pubKeyCredParams: {
+          alg: true,
+          type: true,
+        },
+        rp: {
+          id: true,
+          name: true,
+        },
+        timeout: true,
+        user: {
+          id: true,
+          fullName: true,
+          uid: true,
+        },
+      },
+    });
+
+    const attestation = await startRegistration({
+      ...omit(preparePasskeyEnrollment, 'extensions'),
+      user: {
+        id: preparePasskeyEnrollment.user.id,
+        name: '@' + preparePasskeyEnrollment.user.uid,
+        displayName: preparePasskeyEnrollment.user.fullName,
+      },
+    } as PublicKeyCredentialCreationOptionsJSON);
+
+    if (!attestation.response.publicKey) {
+      toasts.error("La clé de passe n'a pas été enregistrée.");
+      return;
+    }
+
+    const { enrollPasskey } = await $zeus.mutate({
+      enrollPasskey: [
+        {
+          input: {
+            ...omit(attestation, 'response', 'clientExtensionResults'),
+            ...attestation.response,
+          },
+        },
+        true,
+      ],
+    });
+
+    if (enrollPasskey) {
+      window.localStorage.setItem('passkeyUserId', data.me.id);
+      window.localStorage.setItem('passkeyUserEmail', data.me.email);
+      toasts.success('Clé de passe enregistrée!');
+    }
+  }
 
   const sendGodparentRequest = async () => {
     if (godparentRequestSending) return;
@@ -217,6 +293,24 @@
         bind:data
       />
       <FormPassword user={data.user} />
+      <p class="typo-details">
+        Marre de devoir se souvenir de ton mot de passe?
+        <ButtonSecondary
+          insideProse
+          icon={IconCreatePasskey}
+          loading={registeringPasskey}
+          on:click={async () => {
+            registeringPasskey = true;
+            try {
+              await registerPasskey();
+            } catch (error) {
+              toasts.error("Erreur lors de l'enregistrement de la clé de passe", error?.toString());
+            } finally {
+              registeringPasskey = false;
+            }
+          }}>crée une clé de passe</ButtonSecondary
+        > pour te connecter avec ton empreinte, ton visage ou une clé de sécurité FIDO2 🤓
+      </p>
     </section>
     <section class="misc">
       {#if $me?.admin}

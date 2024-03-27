@@ -274,18 +274,18 @@ enum CredentialType {
 
 /// A credential is a way to authenticate a user
 model Credential {
-  id        String         @id @default(dbgenerated("nanoid('credential:')"))
-  userId    String
-  name      String         @default("") @db.VarChar(255)
-  type      CredentialType
-  value     String         @db.VarChar(255)
-  // Can be a CredentialDeviceType (singleDevice | multiDevice) when type is PublicKey
-  userAgent String         @default("") @db.VarChar(255)
-  createdAt DateTime       @default(now())
-  expiresAt DateTime?
-  refresh   String?        @db.VarChar(255)
+  id         String         @id @default(dbgenerated("nanoid('credential:')"))
+  userId     String
+  name       String         @default("") @db.VarChar(255)
+  type       CredentialType
+  value      String         @db.VarChar(255)
+  userAgent  String         @default("") @db.VarChar(255)
+  createdAt  DateTime       @default(now())
+  expiresAt  DateTime?
+  refresh    String?        @db.VarChar(255)
   // Used for PublicKeys (WebAuthn)
-  counter   Int?
+  counter    Int?
+  transports String[]
 
   user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

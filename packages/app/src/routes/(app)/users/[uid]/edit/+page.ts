@@ -118,6 +118,8 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
         id: true,
       },
       me: {
+        id: true,
+        email: true,
         uid: true,
         admin: true,
         canEditGroups: true,

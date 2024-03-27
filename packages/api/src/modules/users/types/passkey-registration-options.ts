@@ -54,11 +54,11 @@ export const PasskeyExtensions = builder
     }),
   });
 
-export const PasskeyExcludeCredentials = builder
+export const PublicKeyCredentialDescriptor = builder
   .objectRef<PublicKeyCredentialDescriptorJSON>('PasskeyPublicKeyCredentials')
   .implement({
     fields: (t) => ({
-      id: t.exposeString('id', { nullable: true }),
+      id: t.exposeString('id'),
       type: t.exposeString('type'),
       transports: t.exposeStringList('transports', { nullable: true }),
     }),
@@ -68,9 +68,8 @@ export const PasskeyRegistrationOptionsType = builder
   .objectRef<PublicKeyCredentialCreationOptionsJSON>('PasskeyRegistrationOptions')
   .implement({
     fields: (t) => ({
-      rp: t.field({
+      rp: t.expose('rp', {
         type: PasskeyRelyingParty,
-        resolve: ({ rp }) => rp,
       }),
       user: t.field({
         type: UserType,
@@ -80,26 +79,22 @@ export const PasskeyRegistrationOptionsType = builder
         },
       }),
       challenge: t.exposeString('challenge'),
-      pubKeyCredParams: t.field({
+      pubKeyCredParams: t.expose('pubKeyCredParams', {
         type: [PasskeyPublicKeyCredentialsParams],
-        resolve: ({ pubKeyCredParams }) => pubKeyCredParams,
       }),
       timeout: t.exposeInt('timeout', { nullable: true }),
-      excludeCredentials: t.field({
-        type: [PasskeyExcludeCredentials],
+      excludeCredentials: t.expose('excludeCredentials', {
+        type: [PublicKeyCredentialDescriptor],
         nullable: true,
-        resolve: ({ excludeCredentials }) => excludeCredentials,
       }),
-      authenticatorSelection: t.field({
+      authenticatorSelection: t.expose('authenticatorSelection', {
         type: PasskeyAuthenticatorSelection,
         nullable: true,
-        resolve: ({ authenticatorSelection }) => authenticatorSelection,
       }),
       attestation: t.exposeString('attestation', { nullable: true }),
-      extensions: t.field({
+      extensions: t.expose('extensions', {
         type: PasskeyExtensions,
         nullable: true,
-        resolve: ({ extensions }) => extensions,
       }),
     }),
   });

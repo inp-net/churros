@@ -5,13 +5,15 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
-  import IconEye from '~icons/mdi/eye';
-  import IconEyeOff from '~icons/mdi/eye-off';
-
+  import IconPasskey from '~icons/mdi/fingerprint';
   import { me, saveSessionToken, sessionUserQuery } from '$lib/session';
   import { zeus } from '$lib/zeus';
+  import { startAuthentication } from '@simplewebauthn/browser';
+  import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/types';
   import { onMount } from 'svelte';
-  import { startRegistration } from '@simplewebauthn/browser';
+  import IconEye from '~icons/mdi/eye';
+  import IconEyeOff from '~icons/mdi/eye-off';
+  import { toasts } from '$lib/toasts';
 
   let email = '';
   let password = '';
@@ -29,6 +31,7 @@
   };
 
   let loading = false;
+  let passkeyLoading = false;
   let errorMessages: string[] | undefined;
   const login = async () => {
     if (loading) return;
@@ -61,15 +64,63 @@
     }
   };
 
-  async function registerPasskey() {
-    const   =await $zeus.query({
-      passkeyRegistrationOptions: {
+  async function usePasskey() {
+    const userId = window.localStorage.getItem('passkeyUserId');
+    const userEmail = window.localStorage.getItem('passkeyUserEmail');
+    if (!userId || !userEmail) return;
+    const { preparePasskeyLogin } = await $zeus.mutate({
+      preparePasskeyLogin: [
+        {
+          userId,
+        },
+        {
+          allowCredentials: {
+            id: true,
+            type: true,
+            transports: true,
+          },
+          challenge: true,
+          extensions: {
+            appid: true,
+            credProps: true,
+            hmacCreateSecret: true,
+          },
+          rpId: true,
+          timeout: true,
+          userVerification: true,
+        },
+      ],
+    });
 
-      }
-    })
-    const attestation = await startRegistration({
+    if (!preparePasskeyLogin) return;
 
-    })
+    const response = await startAuthentication({
+      ...preparePasskeyLogin,
+    } as PublicKeyCredentialCreationOptionsJSON);
+
+    const { login } = await $zeus.mutate({
+      login: [
+        {
+          email: userEmail,
+          passkey: response,
+        },
+        {
+          '__typename': true,
+          '...on Error': { message: true },
+          '...on MutationLoginSuccess': {
+            data: { token: true },
+          },
+        },
+      ],
+    });
+
+    if (login.__typename === 'Error') {
+      errorMessages = [login.message];
+      return;
+    }
+
+    saveSessionToken(document, login.data);
+    await redirect();
   }
 
   onMount(async () => {
@@ -93,7 +144,13 @@
   <Alert theme="danger" closed={errorMessages === undefined}>
     {errorMessages?.join(' ')}
   </Alert>
-  <InputText required label="Adresse e-mail ou nom d'utilisateur" bind:value={email} autofocus autocomplete="username webauthn" />
+  <InputText
+    required
+    label="Adresse e-mail ou nom d'utilisateur"
+    bind:value={email}
+    autofocus
+    autocomplete="username webauthn"
+  />
   <InputText
     required
     type={showingPassword ? 'text' : 'password'}
@@ -106,6 +163,20 @@
   />
   <section class="submit">
     <ButtonPrimary submits>Se connecter</ButtonPrimary>
+    <ButtonSecondary
+      loading={passkeyLoading}
+      icon={IconPasskey}
+      on:click={async () => {
+        passkeyLoading = true;
+        try {
+          await usePasskey();
+        } catch (error) {
+          toasts.error('Impossible de se connecter avec la clé de passe', error?.toString());
+        } finally {
+          passkeyLoading = false;
+        }
+      }}>Utiliser une clé de passe</ButtonSecondary
+    >
   </section>
 
   <hr />
@@ -131,6 +202,9 @@
 
   .submit {
     display: flex;
+    flex-direction: column;
+    row-gap: 1em;
+    align-items: center;
     justify-content: center;
   }
 
