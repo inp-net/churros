@@ -49,9 +49,7 @@ export function canSeeAllAnswers(
   user: Context['user'],
 ) {
   if (!user) return false;
-  if (user.admin) return true;
-  if (user.id === form.createdById) return true;
-  if (associatedEvent && userCanManageEvent(associatedEvent, user, { canEdit: true })) return true;
+  if (canEditForm(form, associatedEvent, user)) return true;
   if (form.group && userIsOnBoardOf(user, form.group.uid)) return true;
   return false;
 }

@@ -12,6 +12,7 @@
   import omit from 'lodash.omit';
   import { _questionQuery } from './+page';
   import { toasts } from '$lib/toasts';
+  import { enhance } from '$app/forms';
 
   export let data: PageData;
 
@@ -122,66 +123,79 @@
     </div>
   </FormBasicDetails>
 
-  {#if sections.length > 1}
-    <NavigationTabs
-      tabs={[...sections, { title: 'Nouvelle section', localId: 'new', order: -1 }].map(
-        (section) => ({
-          href:
-            ($editingSectionId ?? sections[0].localId) === section.localId
-              ? '.'
-              : `./?section=${section.localId}`,
-          name: section.title || `Section ${section.order}`,
-        }),
-      )}
-    ></NavigationTabs>
-  {/if}
+  <NavigationTabs
+    tabs={[...sections, { title: 'Nouvelle section', localId: 'new', order: -1 }].map(
+      (section) => ({
+        href:
+          ($editingSectionId ?? sections[0].localId) === section.localId
+            ? '.'
+            : `./?section=${section.localId}`,
+        name: section.title || `Section ${section.order}`,
+      }),
+    )}
+  ></NavigationTabs>
 
-  <header class="section-details">
+  <form class="section-details" use:enhance method="post" action="?/upsertSection">
+    {#if editingSection}
+      <input type="hidden" name="section-id" value={editingSection.id} />
+    {/if}
     <div class="title-and-type">
       <InputText
         value={editingSection?.title ?? ''}
         label=""
         placeholder="Titre de la section (optionnel)"
-        name="new-section.title"
+        name="title"
       ></InputText>
     </div>
     <InputLongText
       rows={3}
       value={editingSection?.description ?? ''}
       label="Description"
-      name="new-section.description"
+      name="description"
     ></InputLongText>
-  </header>
-  <section class="questions">
-    {#each editingSection?.questions ?? [] as question (question.id)}
-      <FormQuestion bind:question />
-    {/each}
+    <section class="submit">
+      <ButtonPrimary submits>
+        {#if $editingSectionId === 'new'}
+          Créer
+        {:else}
+          Enregistrer
+        {/if}
+      </ButtonPrimary>
+    </section>
+  </form>
 
-    <hr />
-    <FormQuestion
-      bind:question={newQuestion}
-      on:submit={async () => {
-        creatingQuestion = true;
-        try {
-          await createQuestion();
-        } catch (error) {
-          toasts.error('Erreur lors de la création de la question', error?.toString());
-        } finally {
-          creatingQuestion = false;
-        }
-      }}
-    >
-      <h2 slot="header">Nouvelle question</h2>
-      <section class="submit" slot="footer-end">
-        <ButtonPrimary
-          help={invalidQuestionMessage(newQuestion)}
-          disabled={Boolean(invalidQuestionMessage(newQuestion))}
-          loading={creatingQuestion}
-          submits>Ajouter</ButtonPrimary
-        >
-      </section>
-    </FormQuestion>
-  </section>
+  {#if $editingSectionId !== 'new'}
+    <section class="questions">
+      {#each editingSection?.questions ?? [] as question (question.id)}
+        <FormQuestion bind:question />
+      {/each}
+
+      <hr />
+      <FormQuestion
+        bind:question={newQuestion}
+        on:submit={async () => {
+          creatingQuestion = true;
+          try {
+            await createQuestion();
+          } catch (error) {
+            toasts.error('Erreur lors de la création de la question', error?.toString());
+          } finally {
+            creatingQuestion = false;
+          }
+        }}
+      >
+        <h2 slot="header">Nouvelle question</h2>
+        <section class="submit" slot="footer-end">
+          <ButtonPrimary
+            help={invalidQuestionMessage(newQuestion)}
+            disabled={Boolean(invalidQuestionMessage(newQuestion))}
+            loading={creatingQuestion}
+            submits>Ajouter</ButtonPrimary
+          >
+        </section>
+      </FormQuestion>
+    </section>
+  {/if}
 </div>
 
 <style>
@@ -195,6 +209,12 @@
   }
   .section-details {
     margin: 2rem 0;
+  }
+
+  .section-details .submit {
+    display: flex;
+    margin-top: 1rem;
+    justify-content: end;
   }
 
   .questions,

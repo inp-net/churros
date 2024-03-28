@@ -10,13 +10,15 @@
   import IconList from '~icons/mdi/list-box-outline';
   import type { PageData } from './$types';
   import { _formNodeQuery } from './+page';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import IconEdit from '~icons/mdi/pencil-outline';
 
   export let data: PageData;
   const q = queryParam('q', {
     encode: (v) => v || undefined,
     decode: (v) => v ?? '',
   });
-  let searchResults: typeof data.allForms.nodes = [];
+  let searchResults: typeof data.forms = [];
 
   async function search(q: string) {
     const { searchForms } = await $zeus.query({
@@ -39,11 +41,17 @@
   <InputSearchQuery bind:q={$q} on:search={async () => {}} />
 </section>
 
+<section class="new">
+  <ButtonPrimary href="/forms/create">Créer</ButtonPrimary>
+</section>
+
 <ul class="forms nobullet">
-  {#each $q ? searchResults : data.allForms.nodes as form (form.id)}
+  {#each $q ? searchResults : data.forms as form (form.id)}
     <Card element="li">
       <h2>
-        <AvatarGroup href={undefined} {...form.group}></AvatarGroup>
+        {#if form.group}
+          <AvatarGroup href={undefined} {...form.group}></AvatarGroup>
+        {/if}
         {form.title}
       </h2>
       <div data-user-html>
@@ -51,12 +59,19 @@
         {@html form.descriptionHtml}
       </div>
       <section class="links">
-        <ButtonSecondary icon={IconList} href="/forms/{form.localId}/answers"
-          >Réponses</ButtonSecondary
-        >
         <ButtonSecondary icon={IconArrowRight} href="/forms/{form.localId}/answer"
           >Répondre</ButtonSecondary
         >
+        {#if form.canSeeAnswers}
+          <ButtonSecondary icon={IconList} href="/forms/{form.localId}/answers"
+            >Réponses</ButtonSecondary
+          >
+        {/if}
+        {#if form.canEdit}
+          <ButtonSecondary icon={IconEdit} href="/forms/{form.localId}/edit"
+            >Modifier</ButtonSecondary
+          >
+        {/if}
       </section>
     </Card>
   {:else}
@@ -76,6 +91,12 @@
     flex-wrap: wrap;
     gap: 0.5em 1em;
     align-items: center;
+  }
+
+  section.new {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .search {

@@ -84,16 +84,25 @@ builder.mutationField('upsertForm', (t) =>
     async resolve(query, _, { input }, { user }) {
       if (!user) throw new GraphQLError('Vous devez être connecté pour effectuer cette action.');
 
-      let data = {
-        ...omit(input, 'id', 'eventId', 'group'),
-        group: input.group ? { connect: { uid: input.group } } : undefined,
-      };
+      let data = omit(input, 'id', 'eventId', 'group');
 
-      return prisma.form.upsert({
+      if (input.id) {
+        return prisma.form.update({
+          ...query,
+          where: { id: input.id },
+          data: {
+            ...data,
+            group: input.group ? { connect: { uid: input.group } } : { disconnect: {} },
+          },
+        });
+      }
+
+      return prisma.form.create({
         ...query,
-        where: { id: input.id ?? '' },
-        create: {
+        data: {
           ...data,
+          group: input.group ? { connect: { uid: input.group } } : undefined,
+          createdBy: { connect: { id: user.id } },
           sections: {
             create: {
               title: '',
@@ -101,9 +110,6 @@ builder.mutationField('upsertForm', (t) =>
               order: 1,
             },
           },
-        },
-        update: {
-          ...data,
         },
       });
     },
