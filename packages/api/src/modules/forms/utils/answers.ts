@@ -53,7 +53,7 @@ export function answerToString(
     };
     createdById: string | null;
   },
-  user: undefined | { id: string },
+  user: undefined | { id: string } = undefined,
 ): string {
   if (anonymous && (!user || createdById !== user.id)) return REDACTED_ANSWER;
   return type === 'Scale'
