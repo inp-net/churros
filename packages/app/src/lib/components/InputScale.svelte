@@ -22,12 +22,22 @@
   <div class="range-input">
     <span class="label label-min typo-details">
       <slot value={minimum} label={minimumLabel} name="minimum">
-        {minimumLabel || minimum}
+        {#if minimumLabel}
+          {minimumLabel}
+          <span class="muted">({minimum})</span>
+        {:else}
+          {minimum}
+        {/if}
       </slot>
     </span>
     <span class="label label-max typo-details">
       <slot value={maximum} label={maximumLabel} name="maximum">
-        {maximumLabel || maximum}
+        {#if maximumLabel}
+          {maximumLabel}
+          <span class="muted">({maximum})</span>
+        {:else}
+          {maximum}
+        {/if}
       </slot>
     </span>
   </div>

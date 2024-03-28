@@ -57,6 +57,12 @@ export async function load({ fetch, parent, params }) {
           '...on QuestionSelectOne': {
             options: true,
             allowOptionsOther: true,
+            groups: {
+              pictureFile: true,
+              pictureFileDark: true,
+              uid: true,
+              name: true,
+            },
           },
         },
       },
@@ -96,7 +102,6 @@ export async function load({ fetch, parent, params }) {
   const data = await loadQuery(
     {
       form: [{ localId: params.form }, queryWithAliases],
-      groups: [{}, { name: true, uid: true, pictureFile: true, pictureFileDark: true }],
     },
     { fetch, parent },
   );

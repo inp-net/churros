@@ -7,17 +7,19 @@ builder.prismaInterfaceField(QuestionType, 'defaultAnswer', (t) =>
     type: AnswerType,
     nullable: true,
     description:
-      'La réponse par défaut à cette question. Si le résultat est bien de type Answer, le champ `id` est vide',
-    async resolve({ defaultAnswer, defaultNumber, id }) {
-      if (defaultAnswer.length === 0 && defaultNumber === null) return null;
+      'La réponse par défaut à cette question. Même si le résultat est bien de type Answer, le champ `id` est vide',
+    async resolve(question) {
+      const { defaultAnswer, id } = question;
+      if (defaultAnswer.length === 0) return null;
       return {
         id: '',
         answer: defaultAnswer,
         bookingId: null,
-        number: defaultNumber,
         createdAt: new Date(),
+        updatedAt: new Date(),
         createdById: null,
         questionId: id,
+        question,
       };
     },
   }),

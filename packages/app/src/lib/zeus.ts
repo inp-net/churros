@@ -74,7 +74,6 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
       body = JSON.stringify({ query, variables });
     }
     /* eslint-enable */
-    console.log(query.replace('\n', ' '));
 
     const response = await fetch(new URL(env.PUBLIC_API_URL), { body, method: 'POST', headers });
 

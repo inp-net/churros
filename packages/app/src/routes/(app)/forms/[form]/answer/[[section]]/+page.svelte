@@ -124,7 +124,7 @@
             allowOther={question.allowOptionsOther}
           >
             <svelte:fragment let:option>
-              {@const group = data.groups.find((g) => g.name === option)}
+              {@const group = question.groups.find((g) => g.name === option)}
               <span class="select-one-option">
                 {#if group}
                   <AvatarGroup href={undefined} {...group}></AvatarGroup>

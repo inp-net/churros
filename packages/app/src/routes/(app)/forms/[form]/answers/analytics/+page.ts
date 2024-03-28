@@ -33,8 +33,12 @@ export async function load({ fetch, parent, params }) {
                     key: true,
                     value: true,
                   },
+                  options: true,
+                  groups: { color: true, name: true },
                 },
                 '...on QuestionScale': {
+                  maximum: true,
+                  minimum: true,
                   answerCounts: {
                     key: true,
                     value: true,

@@ -1010,7 +1010,6 @@ model Question {
 
   // See Answer
   defaultAnswer String[]
-  defaultNumber Float?
 
   answers Answer[]
   jumps   FormJump[]
@@ -1042,12 +1041,9 @@ model Answer {
   createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull, onUpdate: Cascade)
   createdById String?
 
-  /// Used for Text, LongText, Date (YYYY-mm-dd), Time (HH:mm:ss), FileUpload (path relative to storage root URL), SelectOne, SelectMultiple
   /// Only the first value is considered for all types except SelectMultiple.
   /// Can be empty if the user didn't answer the question (when it wasn't mandatory, for example)
   answer String[]
-  /// Used for Number, Scale (stored from 0 to 1)
-  number Float?
 
   /// Data to link back to an event booking
   booking   Registration? @relation(fields: [bookingId], references: [id], onDelete: SetNull, onUpdate: Cascade)
