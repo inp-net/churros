@@ -3,9 +3,6 @@
   import { page } from '$app/stores';
   import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import ButtonInk from '$lib/components/ButtonInk.svelte';
-  import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
   import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
   import { formatDateTimeSmart, sortedByDate } from '$lib/dates';
   import { subscribe } from '$lib/subscriptions';
@@ -15,11 +12,9 @@
   import groupBy from 'lodash.groupby';
   import { onMount } from 'svelte';
   import { queryParam } from 'sveltekit-search-params';
-  import IconGSheet from '~icons/mdi/google-spreadsheet';
-  import IconOpenInNewTab from '~icons/mdi/open-in-new';
-  import IconNewGSheet from '~icons/mdi/table-plus';
   import type { PageData } from './$types';
   import { _answerNodeQuery } from './+page';
+  import Header from './Header.svelte';
 
   export let data: PageData;
 
@@ -95,44 +90,6 @@
       },
     );
   });
-
-  async function linkToGhseet() {
-    creatingLinkedGoogleSheet = true;
-    ({ createLinkedGoogleSheet: linkedGoogleSheetUrl } = await $zeus
-      .mutate({
-        createLinkedGoogleSheet: [
-          {
-            form: data.form.id,
-          },
-          true,
-        ],
-      })
-      .catch(async (error) => {
-        if (error.message.includes('lier votre compte Google')) {
-          toasts.error(
-            'Lies ton compte Google à Churros pour créer un Google Sheet lié',
-            error.message,
-            {
-              data: {},
-              labels: {
-                action: 'Lier mon compte Google',
-              },
-              async action() {
-                await goto(
-                  '/connect/google?' + new URLSearchParams({ from: $page.url.pathname }).toString(),
-                );
-              },
-            },
-          );
-        } else {
-          toasts.error('Impossible de créer le Google Sheet', error.message);
-        }
-        creatingLinkedGoogleSheet = false;
-        return { createLinkedGoogleSheet: undefined };
-      }));
-    if (linkedGoogleSheetUrl) toasts.success('Google Sheet lié créé!');
-    creatingLinkedGoogleSheet = false;
-  }
 
   function sortedAnswers(
     answers: typeof data.form.answers.nodes,
@@ -268,26 +225,5 @@
 
   th {
     text-align: left;
-  }
-
-  header {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1em 2em;
-    align-items: center;
-    padding: 1em;
-    margin: 2em 0;
-    background: var(--muted-bg);
-    border-radius: var(--radius-block);
-  }
-
-  h1 {
-    display: flex;
-    column-gap: 0.5em;
-    align-items: center;
-  }
-
-  .visibility {
-    margin-top: 1em;
   }
 </style>
