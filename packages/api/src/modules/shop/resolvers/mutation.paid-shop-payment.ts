@@ -8,6 +8,7 @@ import {
   type ShopPayment,
 } from '@prisma/client';
 import { GraphQLError } from 'graphql';
+import { userIsOnBoardOf } from '../../../permissions/member.js';
 import { ShopPaymentType } from '../index.js';
 
 builder.mutationField('paidShopPayment', (t) =>
@@ -22,7 +23,7 @@ builder.mutationField('paidShopPayment', (t) =>
     async authScopes(_, { shopPaymentId }, { user }) {
       if (!user) return false;
       const shopPayment = await prisma.shopPayment.findUnique({
-        where: { id: shopPaymentId, paid: false },
+        where: { id: shopPaymentId },
         include: {
           shopItem: {
             include: {
@@ -41,7 +42,7 @@ builder.mutationField('paidShopPayment', (t) =>
       if (!user) throw new GraphQLError('User not found');
 
       const shopPayment = await prisma.shopPayment.findUnique({
-        where: { id: shopPaymentId, paid: false },
+        where: { id: shopPaymentId },
         include: {
           shopItem: {
             include: { group: true, lydiaAccount: true, shopPayments: { where: { paid: true } } },
@@ -51,7 +52,15 @@ builder.mutationField('paidShopPayment', (t) =>
       });
 
       if (!shopPayment) throw new GraphQLError('Shop payment not found');
-
+      if (user?.admin || userIsOnBoardOf(user, shopPayment.shopItem.group.uid)) {
+        await prisma.shopPayment.update({
+          where: { id: shopPaymentId },
+          data: {
+            paid: !shopPayment.paid,
+          },
+        });
+        return shopPayment;
+      }
       if (!paymentMethod) throw new GraphQLError('Payment method not found');
 
       const stockLeft =

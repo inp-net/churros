@@ -1,7 +1,12 @@
 <script lang="ts">
-  import AvatarPerson from './AvatarPerson.svelte';
   import { PAYMENT_METHODS_ICONS } from '$lib/display';
   import type { PaymentMethod } from '$lib/zeus';
+  import AvatarPerson from './AvatarPerson.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import { zeus } from '$lib/zeus';
+  import { toasts } from '$lib/toasts';
+  import IconCash from '~icons/mdi/currency-usd';
+  import IconCashOff from '~icons/mdi/currency-usd-off';
 
   type shopPayments = Array<{
     id: string;
@@ -16,14 +21,40 @@
     totalPrice: number;
   }>;
   export let payments: shopPayments;
+
+  async function updatePaidStatus(paymentId: string) {
+    const { paidShopPayment } = await $zeus.mutate({
+      paidShopPayment: [
+        {
+          shopPaymentId: paymentId,
+        },
+        {
+          '__typename': true,
+          '...on MutationPaidShopPaymentSuccess': {
+            data: {
+              paid: true,
+            },
+          },
+          '...on Error': {
+            message: true,
+          },
+        },
+      ],
+    });
+    if (paidShopPayment.__typename === 'MutationPaidShopPaymentSuccess') 
+      toasts.add('success', 'Le paiement a bien été actualisé');
+     else 
+      toasts.add('error', "Erreur lors de l'actualisation du paiement");
+    
+  }
 </script>
 
-<div class="content">
+<div class="table-scroller">
   <table>
     <thead>
       <tr>
-        <th>Utilisateur</th>
-        <th>Qté</th>
+        <th>User</th>
+        <th>Quantité</th>
         <th>Prix total</th>
         <th>Payé ?</th>
         <th>Via</th>
@@ -49,6 +80,20 @@
               class="icon"
             />
           </td>
+          <td class="actions">
+            <ButtonGhost
+              danger={payment.paid}
+              success={!payment.paid}
+              help={'Marquer comme ' + (payment.paid ? 'non payée' : 'payée')}
+              on:click={async () => updatePaidStatus(payment.id)}
+            >
+              {#if payment.paid}
+                <IconCashOff />
+              {:else}
+                <IconCash />
+              {/if}
+            </ButtonGhost>
+          </td>
         </tr>
       {/each}
     </tbody>
@@ -56,19 +101,50 @@
 </div>
 
 <style>
-  table {
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    overflow-y: scroll;
-    border-spacing: 0.5rem;
-    border-collapse: separate;
-  }
-
   .payicon {
     min-width: 1rem;
     vertical-align: center;
+  }
+
+  .table-scroller {
+    overflow-x: auto;
+  }
+
+  table {
+    --spacing: 0.5rem;
+
+    max-width: 100vw;
+    margin: 0 auto;
+    overflow-y: scroll;
+    border-spacing: calc(max(0.5rem, var(--spacing) / 2));
+    border-collapse: separate;
+  }
+
+  table,
+  th,
+  td {
+    border-color: var(--bg);
+  }
+
+  td,
+  th {
+    padding: calc(max(0.5rem, var(--spacing) / 2));
+    text-align: left;
+  }
+
+  th {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  td {
+    background: var(--muted-bg);
+    border-radius: var(--radius-inline);
+  }
+
+  td.actions {
+    width: max-content;
+    padding: 0.25rem 1rem;
+    background: transparent;
   }
 </style>
