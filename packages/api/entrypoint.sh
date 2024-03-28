@@ -15,10 +15,16 @@ echo '
 
 -------------------------------------------------------------------------------------------------------------------
 '
-
-echo 'Running migrations...'
 yarn prisma generate
-yarn prisma migrate deploy
+if [[ "${NODE_ENV}" == "staging" ]]; then
+	echo 'Running in staging environment: will reset database in 30 seconds...'
+	sleep 30
+	yarn add tsx
+	yarn prisma migrate reset --force
+else
+	echo 'Running migrations...'
+	yarn prisma migrate deploy
+fi;
 echo 'Migrated!'
 
 

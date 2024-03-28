@@ -20,7 +20,7 @@ RUN rm -rf packages/oauth-client
 
 RUN yarn install
 RUN yarn generate-buildinfo
-RUN yarn workspaces foreach --exclude @centraverse/docs --interlaced --topological-dev -Apv run build
+RUN yarn run build 
 
 
 FROM node:20-alpine as base
@@ -46,6 +46,7 @@ COPY --from=builder /app/packages/api/build/schema.graphql /app/packages/api/bui
 COPY --from=builder /app/packages/api/prisma/ /app/packages/api/prisma/
 COPY --from=builder /app/packages/api/static/ /app/packages/api/static/
 COPY --from=builder /app/packages/api/package.json /app/packages/api/
+COPY --from=builder /app/packages/api/src/seed.ts /app/packages/api/src/seed.ts
 
 # Install dependencies
 RUN yarn workspaces focus @centraverse/api --production
