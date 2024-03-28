@@ -65,14 +65,9 @@
   };
 
   async function usePasskey() {
-    const userId = window.localStorage.getItem('passkeyUserId');
-    const userEmail = window.localStorage.getItem('passkeyUserEmail');
-    if (!userId || !userEmail) return;
     const { preparePasskeyLogin } = await $zeus.mutate({
       preparePasskeyLogin: [
-        {
-          userId,
-        },
+        { email },
         {
           allowCredentials: {
             id: true,
@@ -100,10 +95,7 @@
 
     const { login } = await $zeus.mutate({
       login: [
-        {
-          email: userEmail,
-          passkey: response,
-        },
+        { email, passkey: response },
         {
           '__typename': true,
           '...on Error': { message: true },
@@ -119,6 +111,7 @@
       return;
     }
 
+    window.localStorage.setItem('passkeyUserEmail', email);
     saveSessionToken(document, login.data);
     await redirect();
   }
@@ -129,6 +122,8 @@
       window.localStorage.removeItem('isReallyLoggedout');
       await redirect();
     }
+
+    email = window.localStorage.getItem('passkeyUserEmail') ?? '';
   });
 
   $: linkParams = email ? `?${new URLSearchParams({ email }).toString()}` : '';
@@ -148,13 +143,13 @@
     required
     label="Adresse e-mail ou nom d'utilisateur"
     bind:value={email}
-    autofocus
     autocomplete="username webauthn"
   />
   <InputText
     required
     type={showingPassword ? 'text' : 'password'}
     label="Mot de passe"
+    autocomplete="current-password webauthn"
     bind:value={password}
     actionIcon={showingPassword ? IconEyeOff : IconEye}
     on:action={() => {
@@ -172,6 +167,7 @@
           await usePasskey();
         } catch (error) {
           toasts.error('Impossible de se connecter avec la clé de passe', error?.toString());
+          window.localStorage.removeItem('passkeyUserEmail');
         } finally {
           passkeyLoading = false;
         }
