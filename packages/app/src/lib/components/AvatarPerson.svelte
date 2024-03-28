@@ -32,6 +32,7 @@
   class:highlighted
   class="person"
   {href}
+  {...$$restProps}
 >
   <div class="img">
     {#if pictureFile}
