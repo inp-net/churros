@@ -35,7 +35,6 @@
   let submitting = false;
   export let form: ActionData;
   $: serverError = form?.message;
-  $: console.log({ form });
 
   $: alreadyAnswered = questions.every((q) => q.myAnswer !== null);
 
@@ -183,33 +182,33 @@
 
   section.submit {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 2rem;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
   }
 
   .select-one-option {
     display: flex;
-    align-items: center;
     column-gap: 0.5em;
+    align-items: center;
   }
 
   header {
     display: flex;
     flex-direction: column;
     row-gap: 0.25rem;
-    margin-bottom: 1rem;
     padding: 1rem;
+    margin-bottom: 1rem;
     background: var(--muted-bg);
     border-radius: var(--radius-block);
   }
 
   h1 {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
     column-gap: 0.5rem;
+    align-items: center;
   }
 
   p.notice {

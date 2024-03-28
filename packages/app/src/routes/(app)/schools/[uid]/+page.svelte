@@ -136,8 +136,8 @@
     height: var(--size);
     color: var(--muted-text);
     text-align: center;
-    background: var(--muted-bg);
     object-fit: contain;
+    background: var(--muted-bg);
   }
 
   a {

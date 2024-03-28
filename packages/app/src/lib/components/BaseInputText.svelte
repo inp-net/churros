@@ -4,7 +4,7 @@
   import { tooltip } from '$lib/tooltip';
   import { format } from 'date-fns';
   const emit = createEventDispatcher<{
-    action: void;
+    action: undefined;
     input: Event & { currentTarget: HTMLInputElement & EventTarget };
   }>();
 

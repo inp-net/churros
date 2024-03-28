@@ -35,8 +35,8 @@ builder.mutationField('answerFormSection', (t) =>
           const mandatoryQuestions = await prisma.question.findMany({
             where: { sectionId: section, mandatory: true },
           });
-          const answeredQuestions = answers.map(({ question }) => question);
-          return mandatoryQuestions.every((q) => answeredQuestions.includes(q.id));
+          const answeredQuestions = new Set(answers.map(({ question }) => question));
+          return mandatoryQuestions.every((q) => answeredQuestions.has(q.id));
         },
         { message: 'Vous devez répondre à toutes les questions obligatoires', path: ['answers'] },
       ],
@@ -51,7 +51,6 @@ builder.mutationField('answerFormSection', (t) =>
     // TODO use validators from mutation.answer-question.ts
     async resolve(query, _, { answers, section: sectionId }, { user }) {
       if (!user) throw new GraphQLError('Vous devez être connecté pour répondre à un formulaire');
-      console.dir(answers);
       const questions = await prisma.question.findMany({
         where: { sectionId, id: { in: answers.map((a) => a.question) } },
       });

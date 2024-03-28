@@ -32,9 +32,8 @@ export const formatTime = (date: unknown) =>
  */
 export const formatDateTimeSmart: (date: Date | string) => string = (date) => {
   if (typeof date === 'string') date = new Date(Date.parse(date));
-  if (isToday(date)) {
-    return formatTime(date);
-  }
+  if (isToday(date)) return formatTime(date);
+
   return formatDate(date);
 };
 
