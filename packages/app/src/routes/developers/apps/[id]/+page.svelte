@@ -148,7 +148,7 @@
           description: app.description,
           name: app.name,
           ownerGroupUid: app.ownerGroup.uid,
-          website: app.website,
+          website: app.website || null,
         },
         _query,
       ],
