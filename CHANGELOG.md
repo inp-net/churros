@@ -11,6 +11,16 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug qui rendait tout les QR codes reçus par mail invalides
+- Corrections de bugs d'affichages dans le panel de gestion d'un application tierce
+- Correction d'une erreur 500 lors de l'affichage du dialogue d'autorisation d'une application tierce si celle-ci n'a pas de favicon
+
+### Améliorations
+
+- Il y a maintenant un bouton pour tester le processus d'autorisation d'une application tierce
+
 ## [1.54.2] - 2024-03-24
 
 ### Technique
