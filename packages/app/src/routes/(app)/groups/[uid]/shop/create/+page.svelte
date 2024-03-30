@@ -22,7 +22,7 @@
 
 <div class="header">
   <BackButton go="../." />
-  <h1>Nouvel article</h1>
+  <h1>Nouvel article de {data.shopItem.group.name}</h1>
 </div>
 
 <FormShopItem bind:data={data.shopItem} availableLydiaAccounts={data.lydiaAccounts} />

@@ -23,7 +23,7 @@
 
 <div class="header">
   <BackButton go="../." />
-  <h1>Modifier un article</h1>
+  <h1>Modifier un article de {data.shopItem.group.name}</h1>
 </div>
 <FormPictureItem
   itemId={data.shopItem.id}

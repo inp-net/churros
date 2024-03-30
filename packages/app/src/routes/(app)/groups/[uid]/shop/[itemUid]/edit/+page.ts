@@ -31,6 +31,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
         { itemUid: params.itemUid },
         {
           id: true,
+          uid: true,
           name: true,
           price: true,
           stock: true,

@@ -3,6 +3,7 @@
  */
 
 export * from './mutation.delete-item-picture.js';
+export * from './mutation.delete-shop-item.js';
 export * from './mutation.paid-shop-payment.js';
 export * from './mutation.upsert-item-pictures.js';
 export * from './mutation.upsert-shop-item.js';

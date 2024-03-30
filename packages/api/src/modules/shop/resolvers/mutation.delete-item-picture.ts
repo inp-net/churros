@@ -13,7 +13,7 @@ builder.mutationField('deleteItemPicture', (t) =>
       groupUid: t.arg.string(),
     },
     authScopes: (_, { groupUid }, { user }) =>
-      Boolean(user?.admin || user?.groups.some(({ group }) => group.uid === groupUid)),
+      Boolean(user?.admin || userIsOnBoardOf(user, groupUid)),
     async resolve(_, { itemId, pictureId, groupUid }, { user }) {
       if (!(user?.admin || userIsOnBoardOf(user, groupUid)))
         throw new GraphQLError('You do not have the rights to delete this picture');

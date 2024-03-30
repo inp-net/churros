@@ -22,9 +22,9 @@
   export let shopItem: ShopItemType;
 </script>
 
-<a class="container" class:small href="/groups/{shopItem.group.uid}/shop/{shopItem.uid}/">
+<div class="container" class:small>
   <ShopImageCaroussel {small} url={shopItem.pictures.map((p) => p.path)} />
-  <div class="info">
+  <a class="info" href="/groups/{shopItem.group.uid}/shop/{shopItem.uid}/">
     <div class="data">
       <h1 class="name" class:small>{shopItem.name}</h1>
       {#if shopItem.stock !== 0 && !small}
@@ -41,8 +41,8 @@
     <div class="price">
       <h2>{shopItem.price} €</h2>
     </div>
-  </div>
-</a>
+  </a>
+</div>
 
 <style>
   .container {

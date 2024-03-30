@@ -37,6 +37,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   return {
     shopItem: {
       id: '',
+      uid: '',
       name: '',
       price: 0,
       stock: 0,

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { DISPLAY_VISIBILITIES, SHOP_PAYMENT_METHODS } from '$lib/display';
   import { toasts } from '$lib/toasts';
   import { PaymentMethod, zeus, type Visibility } from '$lib/zeus';
@@ -15,9 +16,11 @@
   import InputText from './InputText.svelte';
 
   let serverError = '';
+  let deleting = false;
 
   export let data: {
     id: string;
+    uid: string;
     name: string;
     price: number;
     stock: number;
@@ -144,9 +147,51 @@
     <section class="files"></section>
   </div>
   <section class="submit">
-    <ButtonPrimary submits>Enregistrer</ButtonPrimary>
-    {#if serverError}
-      <Alert theme="danger">{serverError}</Alert>
+    {#if !deleting}
+      {#if data.id !== ''}
+        <ButtonSecondary
+          danger
+          on:click={() => {
+            deleting = true;
+          }}>Supprimer</ButtonSecondary
+        >
+      {/if}
+      <ButtonPrimary submits>Enregistrer</ButtonPrimary>
+      {#if serverError}
+        <Alert theme="danger">{serverError}</Alert>
+      {/if}
+    {:else}
+      <h2>Es-tu sûr·e ?</h2>
+      <ButtonSecondary
+        on:click={() => {
+          deleting = false;
+        }}>Annuler</ButtonSecondary
+      >
+      <ButtonSecondary
+        on:click={async () => {
+          deleting = false;
+          const { deleteShopItem } = await $zeus.mutate({
+            deleteShopItem: [
+              { itemId: data.id, groupUid: data.group.uid },
+              {
+                '__typename': true,
+                '...on Error': { message: true },
+                '...on MutationDeleteShopItemSuccess': { data: true },
+              },
+            ],
+          });
+          if (deleteShopItem.__typename === 'Error') {
+            toasts.error('Impossible de supprimer', deleteShopItem.message);
+          } else {
+            toasts.success('Article supprimé', `L'article ${data.name} a bien été supprimé`, {
+              lifetime: 2500,
+              showLifetime: true,
+            });
+            await goto(`/groups/${data.group.uid}/shop/`);
+          }
+        }}
+        danger>Oui</ButtonSecondary
+      >
     {/if}
   </section>
 </form>
