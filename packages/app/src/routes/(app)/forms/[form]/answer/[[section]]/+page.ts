@@ -63,7 +63,7 @@ export async function load({ fetch, parent, params }) {
     ],
   });
 
-  let queryWithAliases = {
+  const queryWithAliases = {
     ...formQuery,
     section: [
       formQuery.section[0],
@@ -101,9 +101,7 @@ export async function load({ fetch, parent, params }) {
     { fetch, parent },
   );
 
-  if (!data.form) {
-    error(404, { message: 'Formulaire introuvable' });
-  }
+  if (!data.form) error(404, { message: 'Formulaire introuvable' });
 
   return { ...data, form: data.form! };
 }

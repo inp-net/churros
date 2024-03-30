@@ -6,7 +6,6 @@
   import ButtonInk from './ButtonInk.svelte';
   import { toasts } from '$lib/toasts';
   import { browser } from '$app/environment';
-  import { env } from '$env/dynamic/public';
 
   export let white = false;
   export let url = '';
