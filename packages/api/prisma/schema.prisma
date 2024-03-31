@@ -86,9 +86,10 @@ model User {
   partiallyCompletedForms   Form[]                     @relation("partiallyCompletedForms")
 
   // For full-text search
-  search                Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
-  claimedPromotions     PromotionCode[]
-  thirdPartyCredentials ThirdPartyCredential[]
+  search                    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  claimedPromotions         PromotionCode[]
+  thirdPartyCredentials     ThirdPartyCredential[]
+  formsWithMarkedCheckboxes Form[]                  @relation("formsWithMarkedCheckbox")
 
   @@unique([schoolServer, schoolUid])
   @@index([search], type: Gin)
@@ -948,13 +949,17 @@ model Form {
   event   Event?  @relation(fields: [eventId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   eventId String?
 
-  opensAt             DateTime?
-  closesAt            DateTime?
-  title               String        @db.VarChar(255)
-  description         String        @db.Text
-  sections            FormSection[]
-  answeredBy          User[]        @relation("completedForms")
-  partiallyAnsweredBy User[]        @relation("partiallyCompletedForms")
+  opensAt                         DateTime?
+  closesAt                        DateTime?
+  title                           String        @db.VarChar(255)
+  description                     String        @db.Text
+  sections                        FormSection[]
+  answeredBy                      User[]        @relation("completedForms")
+  partiallyAnsweredBy             User[]        @relation("partiallyCompletedForms")
+  allowEditingAnswers             Boolean       @default(true)
+  // Pretty specific use-case: manually marking or un-marking answers from the answer list for each user. Used for votes that can be both online and offline.
+  enableAnswersCompletionCheckbox Boolean       @default(false)
+  markedCheckboxes                User[]        @relation("formsWithMarkedCheckbox")
 
   // For full-text search
   search              Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
