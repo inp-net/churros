@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
   import { formatDateTimeSmart, sortedByDate } from '$lib/dates';
   import { subscribe } from '$lib/subscriptions';
   import { toasts } from '$lib/toasts';
@@ -111,28 +112,33 @@
     return sortedByDate(entries, 1);
   }
 
-  const searchAnswers = debounce(
-    async (q) => {
-      if (!q) return [];
-      const { form } = await $zeus.query({
-        form: [
-          { localId: data.form.localId },
-          {
-            searchAnswers: [{ q }, { answer: _answerNodeQuery }],
-          },
-        ],
-      });
+  const searchAnswers = debounce(async (q) => {
+    if (!q) 
+      return undefined;
+    
+    const { form } = await $zeus.query({
+      form: [
+        { localId: data.form.localId },
+        {
+          searchAnswers: [{ q }, { answer: _answerNodeQuery }],
+        },
+      ],
+    });
 
-      return form?.searchAnswers.map((a) => a.answer);
-    },
-    1000,
-    { trailing: true },
-  );
+    return form?.searchAnswers.map((a) => a.answer);
+  }, 200);
 
-  let searchResults: NonNullable<Awaited<ReturnType<typeof searchAnswers>>> = [];
-  $: searchAnswers($q)?.then((results) => {
-    if (results) searchResults = results;
-  });
+  let searching = false;
+  let searchResults: Awaited<ReturnType<typeof searchAnswers>> = undefined;
+
+  $: ((q) => {
+    if (!q) return;
+    searching = true;
+    searchAnswers(q)?.then((results) => {
+      searching = false;
+      if (results) searchResults = results;
+    });
+  })($q);
 </script>
 
 <Header
@@ -151,7 +157,24 @@
       <thead>
         <tr>
           <th></th>
-          <th></th>
+          <th>
+            <div class="search">
+              <InputSearchQuery
+                {searching}
+                bind:q={$q}
+                on:search={async () => {
+                  if (!$q) {
+                    searchResults = undefined;
+                    return;
+                  }
+                  searching = true;
+                  searchResults = await searchAnswers($q);
+                  searching = false;
+                }}
+              ></InputSearchQuery>
+            </div>
+          </th>
+
           {#if checkboxesAreEnabled}
             <th>Coché</th>
           {/if}
@@ -161,7 +184,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each sortedAnswers($q ? searchResults : data.form.answers.nodes) as [answerer, date, answersByQuestion] (answerer.uid)}
+        {#each sortedAnswers($q && searchResults ? searchResults : data.form.answers.nodes) as [answerer, date, answersByQuestion] (answerer.uid)}
           <tr>
             <td>{formatDateTimeSmart(date)}</td>
             <td>
