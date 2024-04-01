@@ -1,11 +1,7 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import ButtonInk from '$lib/components/ButtonInk.svelte';
-  import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
   import { formatDateTimeSmart, sortedByDate } from '$lib/dates';
   import { subscribe } from '$lib/subscriptions';
@@ -15,11 +11,9 @@
   import groupBy from 'lodash.groupby';
   import { onMount } from 'svelte';
   import { queryParam } from 'sveltekit-search-params';
-  import IconGSheet from '~icons/mdi/google-spreadsheet';
-  import IconOpenInNewTab from '~icons/mdi/open-in-new';
-  import IconNewGSheet from '~icons/mdi/table-plus';
   import type { PageData } from './$types';
   import { _answerNodeQuery } from './+page';
+  import Header from './Header.svelte';
 
   export let data: PageData;
 
@@ -27,22 +21,21 @@
     encode: (v) => v || undefined,
     decode: (v) => v ?? '',
   });
-  let creatingLinkedGoogleSheet = false;
 
   $: ({
-    title,
-    visibility,
     answerCount,
     linkedGoogleSheetUrl,
     questions: { nodes: questions },
-    group,
     event,
-    localId,
+    checkboxesAreEnabled,
+    canSetCheckboxes,
   } = data.form);
 
   let groupedAnswers: Record<string, Record<string, (typeof data.form.answers.nodes)[number]>> = {};
-  $: {
-  }
+
+  $: userCheckboxes = Object.fromEntries(
+    data.form.answers.nodes.map((a) => [a.createdBy?.uid, a.checkboxIsMarked]),
+  );
 
   $: answerers = groupBy(
     data.form.answers.nodes.map((a) => a.createdBy),
@@ -61,17 +54,7 @@
             answers: [
               { last: 100 },
               {
-                nodes: {
-                  id: true,
-                  updatedAt: true,
-                  createdBy: { id: true, uid: true, fullName: true, pictureFile: true },
-                  question: {
-                    id: true,
-                    title: true,
-                    section: { title: true },
-                  },
-                  answerString: true,
-                },
+                nodes: _answerNodeQuery,
               },
             ],
           },
@@ -96,48 +79,10 @@
     );
   });
 
-  async function linkToGhseet() {
-    creatingLinkedGoogleSheet = true;
-    ({ createLinkedGoogleSheet: linkedGoogleSheetUrl } = await $zeus
-      .mutate({
-        createLinkedGoogleSheet: [
-          {
-            form: data.form.id,
-          },
-          true,
-        ],
-      })
-      .catch(async (error) => {
-        if (error.message.includes('lier votre compte Google')) {
-          toasts.error(
-            'Lies ton compte Google à Churros pour créer un Google Sheet lié',
-            error.message,
-            {
-              data: {},
-              labels: {
-                action: 'Lier mon compte Google',
-              },
-              async action() {
-                await goto(
-                  '/connect/google?' + new URLSearchParams({ from: $page.url.pathname }).toString(),
-                );
-              },
-            },
-          );
-        } else {
-          toasts.error('Impossible de créer le Google Sheet', error.message);
-        }
-        creatingLinkedGoogleSheet = false;
-        return { createLinkedGoogleSheet: undefined };
-      }));
-    if (linkedGoogleSheetUrl) toasts.success('Google Sheet lié créé!');
-    creatingLinkedGoogleSheet = false;
-  }
-
   function sortedAnswers(
     answers: typeof data.form.answers.nodes,
   ): [
-    { fullName: string; uid: string; pictureFile: string },
+    { fullName: string; uid: string; pictureFile: string; id: string },
     Date,
     Record<string, (typeof data.form.answers.nodes)[number]>,
   ][] {
@@ -159,7 +104,7 @@
       );
 
       return [answerer, date, answersByQuestion] as [
-        { fullName: string; uid: string; pictureFile: string },
+        { fullName: string; uid: string; pictureFile: string; id: string },
         Date,
         Record<string, (typeof data.form.answers.nodes)[number]>,
       ];
@@ -167,62 +112,41 @@
     return sortedByDate(entries, 1);
   }
 
-  const searchAnswers = debounce(
-    async (q) => {
-      if (!q) return [];
-      const { form } = await $zeus.query({
-        form: [
-          { localId: data.form.localId },
-          {
-            searchAnswers: [{ q }, { answer: _answerNodeQuery }],
-          },
-        ],
-      });
+  const searchAnswers = debounce(async (q) => {
+    if (!q) return undefined;
 
-      return form?.searchAnswers.map((a) => a.answer);
-    },
-    1000,
-    { trailing: true },
-  );
+    const { form } = await $zeus.query({
+      form: [
+        { localId: data.form.localId },
+        {
+          searchAnswers: [{ q }, { answer: _answerNodeQuery }],
+        },
+      ],
+    });
 
-  let searchResults: NonNullable<Awaited<ReturnType<typeof searchAnswers>>> = [];
-  $: searchAnswers($q)?.then((results) => {
-    if (results) searchResults = results;
-  });
+    return form?.searchAnswers.map((a) => a.answer);
+  }, 200);
+
+  let searching = false;
+  let searchResults: Awaited<ReturnType<typeof searchAnswers>> = undefined;
+
+  $: ((q) => {
+    if (!q) return;
+    searching = true;
+    searchAnswers(q)?.then((results) => {
+      searching = false;
+      if (results) searchResults = results;
+    });
+  })($q);
 </script>
 
-<h1><AvatarGroup href="/groups/{group.uid}" {...group}></AvatarGroup> Réponses à {title}</h1>
-<p class="visibility">
-  <IndicatorVisibility text {visibility}></IndicatorVisibility>
-</p>
-
-<header>
-  <InputSearchQuery bind:q={$q}></InputSearchQuery>
-  <p>
-    {#if $q}{searchResults?.length} résultats{:else}{answerCount} réponses{/if}
-  </p>
-  <ButtonShare text path="/forms/{localId}/answer"></ButtonShare>
-  <ButtonInk
-    newTab
-    loading={creatingLinkedGoogleSheet}
-    href={creatingLinkedGoogleSheet ? undefined : linkedGoogleSheetUrl}
-    icon={linkedGoogleSheetUrl ? IconGSheet : IconNewGSheet}
-    on:click={linkedGoogleSheetUrl ? undefined : linkToGhseet}
-  >
-    {#if creatingLinkedGoogleSheet}
-      Création du Google Sheet…
-    {:else if !linkedGoogleSheetUrl}
-      Créer un Google Sheet lié
-    {:else}
-      Google Sheet
-    {/if}
-  </ButtonInk>
-  {#if event}
-    <ButtonInk icon={IconOpenInNewTab} newTab href="/events/{event.group.uid}/{event.uid}"
-      >Évènement lié</ButtonInk
-    >
-  {/if}
-</header>
+<Header
+  {answerCount}
+  formId={data.form.id}
+  {searchResults}
+  linkedEvent={event}
+  {linkedGoogleSheetUrl}
+></Header>
 
 <section class="table-scroller">
   {#if answerCount === 0}
@@ -232,19 +156,72 @@
       <thead>
         <tr>
           <th></th>
-          <th></th>
+          <th>
+            <div class="search">
+              <InputSearchQuery
+                {searching}
+                bind:q={$q}
+                on:search={async () => {
+                  if (!$q) {
+                    searchResults = undefined;
+                    return;
+                  }
+                  searching = true;
+                  searchResults = await searchAnswers($q);
+                  searching = false;
+                }}
+              ></InputSearchQuery>
+            </div>
+          </th>
+
+          {#if checkboxesAreEnabled}
+            <th>Coché</th>
+          {/if}
           {#each questions as { title, id } (id)}
             <th>{title}</th>
           {/each}
         </tr>
       </thead>
       <tbody>
-        {#each sortedAnswers($q ? searchResults : data.form.answers.nodes) as [answerer, date, answersByQuestion] (answerer.uid)}
+        {#each sortedAnswers($q && searchResults ? searchResults : data.form.answers.nodes) as [answerer, date, answersByQuestion] (answerer.uid)}
           <tr>
             <td>{formatDateTimeSmart(date)}</td>
             <td>
               <AvatarPerson href="/users/{answerer.uid}" {...answerer} />
             </td>
+            {#if checkboxesAreEnabled}
+              <td>
+                <InputCheckbox
+                  disabled={!canSetCheckboxes}
+                  label=""
+                  value={userCheckboxes[answerer.uid]}
+                  on:change={async ({ target }) => {
+                    if (!(target instanceof HTMLInputElement)) return;
+                    const beforeChange = userCheckboxes[answerer.uid];
+                    data.form.answers.nodes = data.form.answers.nodes.map((a) => {
+                      if (a.createdBy?.uid === answerer.uid) a.checkboxIsMarked = target.checked;
+
+                      return a;
+                    });
+                    try {
+                      await $zeus.mutate({
+                        setFormAnswersCheckbox: [
+                          { checked: target.checked, form: data.form.id, userId: answerer.id },
+                          { __typename: true },
+                        ],
+                      });
+                    } catch (error) {
+                      toasts.error('Impossible de modifier la case à cocher.', error?.toString());
+                      data.form.answers.nodes = data.form.answers.nodes.map((a) => {
+                        if (a.createdBy?.uid === answerer.uid) a.checkboxIsMarked = beforeChange;
+
+                        return a;
+                      });
+                    }
+                  }}
+                ></InputCheckbox>
+              </td>
+            {/if}
             {#each questions as { id } (id)}
               <td>{answersByQuestion[id]?.answerString ?? ''}</td>
             {/each}
@@ -268,26 +245,5 @@
 
   th {
     text-align: left;
-  }
-
-  header {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1em 2em;
-    align-items: center;
-    padding: 1em;
-    margin: 2em 0;
-    background: var(--muted-bg);
-    border-radius: var(--radius-block);
-  }
-
-  h1 {
-    display: flex;
-    column-gap: 0.5em;
-    align-items: center;
-  }
-
-  .visibility {
-    margin-top: 1em;
   }
 </style>

@@ -56,7 +56,9 @@
   <h1>Et voilà!</h1>
   <p>Merci d'avoir répondu au formulaire :)</p>
   <section class="actions">
-    <ButtonSecondary icon={IconBack} href="../answer">Modifier mes réponses</ButtonSecondary>
+    {#if data.form?.canModifyAnswers}
+      <ButtonSecondary icon={IconBack} href="../answer">Modifier mes réponses</ButtonSecondary>
+    {/if}
     <ButtonSecondary icon={IconHome} href="/">Retour à l'accueil</ButtonSecondary>
     {#if data.form?.canSeeAnswers}
       <ButtonSecondary icon={IconList} href="../answers">Voir les réponses</ButtonSecondary>
@@ -94,7 +96,13 @@
             </span>
           {/if}
         </dt>
-        <dd>{answer.answerString}</dd>
+        <dd>
+          {#if answer.answerString}
+            {answer.answerString}
+          {:else}
+            <em>Sans réponse</em>
+          {/if}
+        </dd>
       {/each}
     </dl>
     <div class="actions"></div>

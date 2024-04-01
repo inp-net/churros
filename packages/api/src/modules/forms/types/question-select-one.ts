@@ -1,4 +1,5 @@
 import { builder, prisma } from '#lib';
+import { GroupType } from '#modules/groups';
 import { FormSectionType } from './form-section.js';
 import { QuestionType } from './question.js';
 
@@ -36,6 +37,24 @@ export const QuestionSelectOneType = builder.prismaObject('Question', {
           where: { id: { in: jumpIds.filter(Boolean) as string[] } },
         });
         return jumpIds.map((id) => resolvedJumps.find((jump) => jump.id === id)?.target);
+      },
+    }),
+    groups: t.prismaField({
+      description:
+        "Dans le même ordre que `options`, contient le groupe si l'option porte exactement le nom du groupe, ou null si aucun groupe ne correspond. Pratique pour les questions où l'on demande à choisir entre plusieurs groupes (comme les votes de listes par ex.)",
+      type: [GroupType],
+      nullable: { items: true, list: false },
+      async resolve(query, { options }) {
+        return Promise.all(
+          options.map((option) => {
+            return prisma.group.findFirst({
+              ...query,
+              where: {
+                name: option,
+              },
+            });
+          }),
+        );
       },
     }),
   }),

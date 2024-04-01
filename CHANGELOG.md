@@ -24,6 +24,42 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 
 (@bardete & @valliet pour une bonne partie du back-end) (!127)
 
+### Corrections
+
+- Correction d'une faute d'orthographe sur la page des rapport de bugs (@litschan)
+
+## [1.56.2] - 2024-04-01
+
+### Technique
+
+- Fix manquait la searchbar dans la liste des réponses
+- Faire en sorte que les managers d'event qui peuvent scanner puisse voir tt les places
+- Fix manquait le fait de pouvoir submit une formsection sans questions
+
+## [1.56.1] - 2024-04-01
+
+### Technique
+
+- Ajout d'une dépendance manquante dans l'API
+
+## [1.56.0] - 2024-04-01
+
+### Améliorations
+
+- Pleins de nouvelles fonctionnalités pour les formulaires. On est prêt pour les votes de l'AE 👀
+
+## [1.55.0] - 2024-03-29
+
+### Corrections
+
+- Correction d'un bug qui rendait tout les QR codes reçus par mail invalides
+- Corrections de bugs d'affichages dans le panel de gestion d'un application tierce
+- Correction d'une erreur 500 lors de l'affichage du dialogue d'autorisation d'une application tierce si celle-ci n'a pas de favicon
+
+### Améliorations
+
+- Il y a maintenant un bouton pour tester le processus d'autorisation d'une application tierce
+
 ## [1.54.2] - 2024-03-24
 
 ### Technique
@@ -344,8 +380,12 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.54.2...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.56.2...main
 [1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
+[1.56.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.2
+[1.56.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.1
+[1.56.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.0
+[1.55.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.55.0
 [1.54.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.2
 [1.54.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.1
 [1.54.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.0

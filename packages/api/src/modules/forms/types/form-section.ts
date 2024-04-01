@@ -23,6 +23,7 @@ export const FormSectionType = builder.prismaObject('FormSection', {
       resolve: ({ id }) => splitID(id)[1],
       description: 'Identifiant local de la section du formulaire',
     }),
+    order: t.exposeInt('order', { description: 'Ordre de la section dans le formulaire' }),
     form: t.relation('form', { description: 'Formulaire auquel appartient la section' }),
     title: t.exposeString('title', { description: 'Titre de la section' }),
     description: t.exposeString('description', {

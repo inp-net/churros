@@ -3,14 +3,18 @@
   import IconChevronDown from '~icons/mdi/chevron-down';
   import type { Visibility } from '$lib/zeus';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
+  import { tooltip } from '$lib/tooltip';
 
   export let value: Visibility;
+  export let name: string | undefined = undefined;
+  export let disabled = false;
+  export let help: string | undefined = undefined;
 </script>
 
-<label class="input-visibility">
+<label use:tooltip={help} class="input-visibility" class:muted={disabled}>
   <IndicatorVisibility visibility={value}></IndicatorVisibility>
   <span class="text">{DISPLAY_VISIBILITIES[value]}</span>
-  <select bind:value>
+  <select {disabled} {name} bind:value>
     {#each ORDER_VISIBILITIES as visibility}
       <option value={visibility}>
         {DISPLAY_VISIBILITIES[visibility]}

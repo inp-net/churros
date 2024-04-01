@@ -101,5 +101,26 @@ export const AnswerType = builder.prismaInterface('Answer', {
     }),
     question: t.relation('question'),
     answerString: t.string({ resolve: (answer, {}, { user }) => answerToString(answer, user) }),
+    checkboxIsMarked: t.boolean({
+      nullable: true,
+      async resolve(
+        {
+          createdById,
+          question: {
+            section: { form },
+          },
+        },
+        {},
+      ) {
+        if (!form.enableAnswersCompletionCheckbox) return null;
+        if (!createdById) return null;
+
+        const { markedCheckboxes } = await prisma.form.findUniqueOrThrow({
+          where: { id: form.id },
+          include: { markedCheckboxes: true },
+        });
+        return markedCheckboxes.some((checkbox) => checkbox.id === createdById);
+      },
+    }),
   }),
 });
