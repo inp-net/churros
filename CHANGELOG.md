@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Bug dans le check de userCanManageEvent
+
 ## [1.56.3] - 2024-04-02
 
 ### Corrections
