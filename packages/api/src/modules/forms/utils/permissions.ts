@@ -5,8 +5,10 @@ import {
   type Contribution,
   type ContributionOption,
   type Form,
+  type FormSection,
   type Group,
   type Prisma,
+  type Question,
   type StudentAssociation,
 } from '@prisma/client';
 import { GraphQLError } from 'graphql';
@@ -103,10 +105,7 @@ export function canAnswerForm(
     }
   }
 
-  return (
-    isWithinPartialInterval(new Date(), { start: form.opensAt, end: form.closesAt }) &&
-    (!associatedEvent || userCanAccessEvent(associatedEvent, user))
-  );
+  return isOpenForAnswers(form) && (!associatedEvent || userCanAccessEvent(associatedEvent, user));
 }
 
 export function canModifyFormAnswers(
@@ -171,4 +170,38 @@ export function canSetFormAnswerCheckboxes(
 ) {
   if (!form.enableAnswersCompletionCheckbox) return false;
   return canSeeAllAnswers(form, associatedEvent, user);
+}
+
+export function canSeeAnswerStats(
+  form: Form & { group: Group | null; sections: Array<FormSection & { questions: Question[] }> },
+  associatedEvent: Parameters<typeof userCanManageEvent>[0] | null,
+  user: Context['user'],
+) {
+  if (!canSeeAllAnswers(form, associatedEvent, user)) return false;
+  // Don't allow showing stats if the form has anonymous questions and is still accepting answers. A "timing attack" could result in someone guessing the answers of a specific person otherwise.
+  if (hasAnonymousQuestions(form) && isOpenForAnswers(form)) return false;
+
+  return true;
+}
+
+export function canSeeAnswerStatsForQuestion(
+  question: Question,
+  form: Form & { group: Group | null },
+  associatedEvent: Parameters<typeof userCanManageEvent>[0] | null,
+  user: Context['user'],
+) {
+  if (!canSeeAllAnswers(form, associatedEvent, user)) return false;
+  // See canSeeAnswerStats for the reasoning behind this
+  if (question.anonymous && isOpenForAnswers(form)) return false;
+  return true;
+}
+
+export function isOpenForAnswers(form: Pick<Form, 'opensAt' | 'closesAt'>) {
+  return isWithinPartialInterval(new Date(), { start: form.opensAt, end: form.closesAt });
+}
+
+export function hasAnonymousQuestions(form: {
+  sections: Array<{ questions: Array<Pick<Question, 'anonymous'>> }>;
+}) {
+  return form.sections.some((section) => section.questions.some((q) => q.anonymous));
 }

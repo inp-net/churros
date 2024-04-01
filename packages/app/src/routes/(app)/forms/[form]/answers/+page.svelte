@@ -29,6 +29,7 @@
     event,
     checkboxesAreEnabled,
     canSetCheckboxes,
+    canSeeAnswerStats,
   } = data.form);
 
   let groupedAnswers: Record<string, Record<string, (typeof data.form.answers.nodes)[number]>> = {};
@@ -113,9 +114,8 @@
   }
 
   const searchAnswers = debounce(async (q) => {
-    if (!q) 
-      return undefined;
-    
+    if (!q) return undefined;
+
     const { form } = await $zeus.query({
       form: [
         { localId: data.form.localId },
@@ -147,6 +147,7 @@
   {searchResults}
   linkedEvent={event}
   {linkedGoogleSheetUrl}
+  {canSeeAnswerStats}
 ></Header>
 
 <section class="table-scroller">

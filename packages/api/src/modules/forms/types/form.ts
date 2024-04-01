@@ -12,6 +12,7 @@ import {
   canEditForm,
   canModifyFormAnswers,
   canSeeAllAnswers,
+  canSeeAnswerStats,
   canSeeForm,
   canSetFormAnswerCheckboxes,
   requiredIncludesForPermissions,
@@ -104,6 +105,21 @@ export const FormType = builder.prismaNode('Form', {
       description: "Indique si l'utilisateur peut voir les réponses au formulaire.",
       resolve: async (form, _args, { user }) => {
         return canSeeAllAnswers(form, form.event, user);
+      },
+    }),
+    canSeeAnswerStats: t.boolean({
+      description:
+        "Indique si l'utilisateur peut voir les statistiques des réponses au formulaire.",
+      resolve: async (form, _args, { user }) => {
+        const formWithQuestions = await prisma.form.findUniqueOrThrow({
+          where: { id: form.id },
+          include: {
+            group: true,
+            sections: { include: { questions: true } },
+          },
+        });
+
+        return canSeeAnswerStats(formWithQuestions, form.event, user);
       },
     }),
     canSetCheckboxes: t.boolean({
