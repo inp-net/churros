@@ -31,14 +31,10 @@ export function canEditForm(
   user: Context['user'],
 ) {
   if (!user) return false;
-  return (
-    user.admin ||
-    user.id === form.createdById ||
-    !associatedEvent ||
-    userCanManageEvent(associatedEvent, user, {
-      canEdit: true,
-    })
-  );
+  if (user.admin) return true;
+  if (user.id === form.createdById) return true;
+  if (associatedEvent && userCanManageEvent(associatedEvent, user, { canEdit: true })) return true;
+  return false;
 }
 
 export function canCreateForm(
