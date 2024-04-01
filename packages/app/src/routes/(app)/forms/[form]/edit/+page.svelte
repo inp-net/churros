@@ -1,18 +1,17 @@
 <script lang="ts">
+  import { enhance } from '$app/forms';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputLongText from '$lib/components/InputLongText.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
-  import { QuestionKind } from '$lib/zeus';
+  import { toasts } from '$lib/toasts';
+  import { QuestionKind, zeus } from '$lib/zeus';
+  import omit from 'lodash.omit';
   import { queryParam } from 'sveltekit-search-params';
   import FormBasicDetails from '../../FormBasicDetails.svelte';
   import type { PageData } from './$types';
-  import FormQuestion from './FormQuestion.svelte';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import { zeus } from '$lib/zeus';
-  import omit from 'lodash.omit';
   import { _questionQuery } from './+page';
-  import { toasts } from '$lib/toasts';
-  import { enhance } from '$app/forms';
+  import FormQuestion from './FormQuestion.svelte';
 
   export let data: PageData;
 
@@ -22,7 +21,7 @@
   /**
    * The local id of the section we're currently looking at.
    */
-  let editingSectionId = queryParam('section', {
+  const editingSectionId = queryParam('section', {
     encode: (v) => v || sections[0].localId,
     decode: (v) => v,
   });
@@ -32,8 +31,6 @@
     $editingSectionId === 'new'
       ? undefined
       : sections.find((s) => s.localId === $editingSectionId) ?? sections[0];
-
-  $: console.log({ sections, ed: editingSection?.id, newQuestion });
 
   const EMPTY_QUESTION = {
     id: undefined,
@@ -105,7 +102,7 @@
 
   function invalidQuestionMessage(question: typeof newQuestion): string {
     if (question.title.trim() === '') return 'Le titre de la question ne peut pas être vide';
-    if (question.__typename.startsWith('QuestionSelect') && question.options.length < 1)
+    if (question.__typename.startsWith('QuestionSelect') && question.options.length === 0)
       return 'Il faut au moins une option pour une question à choix';
     return '';
   }
@@ -173,12 +170,11 @@
   {#if $editingSectionId !== 'new'}
     <section class="questions">
       {#each editingSection?.questions ?? [] as question (question.id)}
-        <FormQuestion sections={data.form.sections} bind:question />
+        <FormQuestion bind:question />
       {/each}
 
       <hr />
       <FormQuestion
-        sections={data.form.sections}
         bind:question={newQuestion}
         on:submit={async () => {
           creatingQuestion = true;
@@ -210,25 +206,26 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    width: 100%;
     max-width: 1000px;
     margin: 0 auto;
-    width: 100%;
   }
+
   .section-details {
     margin: 2rem 0;
   }
 
   .section-details .submit {
     display: flex;
-    margin-top: 1rem;
     justify-content: end;
+    margin-top: 1rem;
   }
 
   .questions,
   .section-details {
+    width: 100%;
     max-width: 600px;
     margin: 0 auto;
-    width: 100%;
   }
 
   .questions section.submit {

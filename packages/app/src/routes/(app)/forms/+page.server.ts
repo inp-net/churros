@@ -6,8 +6,6 @@ export const actions = {
     const formData = await request.formData();
     const data = Object.fromEntries([...formData.entries()].map(([k, v]) => [k, v.toString()]));
 
-    console.log(data);
-
     const {
       upsertForm: { localId },
     } = await makeMutation(

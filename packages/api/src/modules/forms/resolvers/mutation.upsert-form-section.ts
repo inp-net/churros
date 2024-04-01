@@ -39,7 +39,6 @@ builder.mutationField('upsertFormSection', (t) =>
       const formId = ensureHasIdPrefix(formIdRaw, 'Form');
       // Figure out the section's order if we are creating a new section
       const defaultOrder = async () => {
-        console.log('requesting default order');
         // get next available order
         const maxOrderSection = await prisma.formSection.findFirst({
           where: { formId },

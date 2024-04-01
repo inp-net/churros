@@ -25,7 +25,7 @@ builder.mutationField('upsertForm', (t) =>
       ],
       [
         ({ input: { visibility, group } }) =>
-          !group ? !visibility || visibility === Visibility.Unlisted : true,
+          group ? true : !visibility || visibility === Visibility.Unlisted,
         {
           message: 'Les formulaires non associés à un groupe doivent être non répertoriés.',
           path: ['visibility'],
@@ -84,7 +84,7 @@ builder.mutationField('upsertForm', (t) =>
     async resolve(query, _, { input }, { user }) {
       if (!user) throw new GraphQLError('Vous devez être connecté pour effectuer cette action.');
 
-      let data = omit(input, 'id', 'eventId', 'group');
+      const data = omit(input, 'id', 'eventId', 'group');
 
       if (input.id) {
         return prisma.form.update({

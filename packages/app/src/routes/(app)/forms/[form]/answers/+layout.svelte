@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import AvatarGroup from '$lib/components/AvatarGroup.svelte';
-	import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-	import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
-	import IconEdit from '~icons/mdi/pencil-outline';
-	import type { LayoutData } from './$types';
+  import { page } from '$app/stores';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
+  import IconEdit from '~icons/mdi/pencil-outline';
+  import type { LayoutData } from './$types';
 
   export let data: LayoutData;
   $: ({ form } = data);

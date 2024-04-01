@@ -22,7 +22,7 @@
       }
     | undefined = undefined;
 
-  let currentData: Omit<NonNullable<typeof data>, 'id'> = data ?? {
+  const currentData: Omit<NonNullable<typeof data>, 'id'> = data ?? {
     group: undefined,
     title: '',
     visibility: Visibility.Unlisted,
@@ -84,9 +84,9 @@
       <div class="visibility-and-dates">
         <InputVisibility
           disabled={!currentData.group}
-          help={!currentData.group
-            ? 'Vous devez choisir un groupe pour changer la visibilité'
-            : undefined}
+          help={currentData.group
+            ? undefined
+            : 'Vous devez choisir un groupe pour changer la visibilité'}
           name="visibility"
           bind:value={currentData.visibility}
         ></InputVisibility>
@@ -122,16 +122,18 @@
 <style>
   .group-and-title {
     display: grid;
+    flex-wrap: wrap;
     grid-template-columns: min-content 1fr;
     column-gap: 2em;
-    flex-wrap: wrap;
   }
+
   .visibility-and-dates {
-    column-gap: 1em;
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
+    column-gap: 1em;
+    align-items: center;
   }
+
   form {
     display: flex;
     flex-direction: column;
@@ -147,12 +149,13 @@
   }
 
   form.collapsed .collapsible-content {
-    max-height: 0;
-    opacity: 0;
     height: 0;
-    overflow: hidden;
+    max-height: 0;
+
     /* Compensate for double gap created by 0-height element */
     margin-bottom: -2em;
+    overflow: hidden;
+    opacity: 0;
   }
 
   .collapse {
@@ -163,8 +166,8 @@
 
   section.actions {
     display: flex;
-    justify-content: end;
-    align-items: center;
     gap: 1em;
+    align-items: center;
+    justify-content: end;
   }
 </style>

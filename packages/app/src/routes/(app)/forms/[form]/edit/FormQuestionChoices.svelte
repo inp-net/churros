@@ -1,14 +1,13 @@
 <script lang="ts">
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import InputText from '$lib/components/InputText.svelte';
-  import IconDelete from '~icons/mdi/close';
-  import IconMoveUp from '~icons/mdi/arrow-up';
-  import IconMoveDown from '~icons/mdi/arrow-down';
-  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import InputSelectOneRadios from '$lib/components/InputSelectOneRadios.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import IconMoveDown from '~icons/mdi/arrow-down';
+  import IconMoveUp from '~icons/mdi/arrow-up';
+  import IconDelete from '~icons/mdi/close';
 
-  export let sections: Array<{ title: string; id: string }> = [];
   export let options: string[];
   export let __typename: 'QuestionSelectOne' | 'QuestionSelectMultiple';
   let newOption = '';
@@ -84,9 +83,7 @@
     <div class="fake-input"></div>
     <InputText
       on:blur={() => {
-        console.log({ newOption, options });
         if (newOption && !options.includes(newOption)) {
-          console.log('Adding new option', newOption);
           options = [...options, newOption];
           newOption = '';
         }
@@ -100,25 +97,29 @@
 
 <style>
   h3 {
-    margin-bottom: 0.5em;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 0.5em;
   }
+
   .fake-input {
-    width: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 2.5rem;
   }
+
   ul {
     display: flex;
     flex-direction: column;
     row-gap: 0.5em;
   }
+
   .option {
     column-gap: 0.5em;
   }
+
   .option,
   .option .actions {
     display: flex;

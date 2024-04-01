@@ -177,9 +177,8 @@
                     if (!(target instanceof HTMLInputElement)) return;
                     const beforeChange = userCheckboxes[answerer.uid];
                     data.form.answers.nodes = data.form.answers.nodes.map((a) => {
-                      if (a.createdBy?.uid === answerer.uid) 
-                        a.checkboxIsMarked = target.checked;
-                      
+                      if (a.createdBy?.uid === answerer.uid) a.checkboxIsMarked = target.checked;
+
                       return a;
                     });
                     try {
@@ -192,9 +191,8 @@
                     } catch (error) {
                       toasts.error('Impossible de modifier la case à cocher.', error?.toString());
                       data.form.answers.nodes = data.form.answers.nodes.map((a) => {
-                        if (a.createdBy?.uid === answerer.uid) 
-                          a.checkboxIsMarked = beforeChange;
-                        
+                        if (a.createdBy?.uid === answerer.uid) a.checkboxIsMarked = beforeChange;
+
                         return a;
                       });
                     }

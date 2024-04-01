@@ -1,5 +1,4 @@
 <script lang="ts">
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import FormBasicDetails from '../FormBasicDetails.svelte';
 
   import type { PageData } from './$types';
@@ -18,8 +17,8 @@
     display: flex;
     flex-direction: column;
     row-gap: 1em;
+    width: 100%;
     max-width: 600px;
     margin: 0 auto;
-    width: 100%;
   }
 </style>

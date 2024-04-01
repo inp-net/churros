@@ -138,8 +138,13 @@
       <span>Mes signalements</span>
     </a>
 
-    <a href="/forms" class="navigation-item" class:current={!flyoutOpen && current === "forms"} class:disabled={flyoutOpen}>
-      {#if current === "forms"}
+    <a
+      href="/forms"
+      class="navigation-item"
+      class:current={!flyoutOpen && current === 'forms'}
+      class:disabled={flyoutOpen}
+    >
+      {#if current === 'forms'}
         <IconForms></IconForms>
       {:else}
         <IconFormsOutline></IconFormsOutline>

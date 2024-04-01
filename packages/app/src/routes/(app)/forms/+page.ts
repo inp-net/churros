@@ -43,6 +43,6 @@ export async function load({ fetch, parent, url }) {
   );
 
   return {
-    forms: uniqBy([...forms?.nodes, ...(allForms?.nodes ?? [])], 'id'),
+    forms: uniqBy([...(forms?.nodes ?? []), ...(allForms?.nodes ?? [])], 'id'),
   };
 }

@@ -50,6 +50,7 @@
     { id: QuestionKind.Number, label: 'Nombre' },
   ] as const;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const questionTypeIcons: Record<QuestionKind, typeof SvelteComponent<any>> = {
     SelectOne: IconRadioButton,
     SelectMultiple: IconCheckbox,
@@ -123,7 +124,10 @@
   <slot />
   <footer>
     <slot name="footer" />
-    <InputCheckbox bind:value={mandatory} label="Obligatoire" name="{id ?? 'new-question'}.mandatory"
+    <InputCheckbox
+      bind:value={mandatory}
+      label="Obligatoire"
+      name="{id ?? 'new-question'}.mandatory"
     ></InputCheckbox>
     <div class="anonymous">
       <InputCheckbox bind:value={anonymous} label="Anonyme" name="{id ?? 'new-question'}.anonymous"
@@ -148,6 +152,7 @@
     margin-bottom: 1rem;
     border-bottom: var(--border-block) dashed var(--muted-border);
   }
+
   footer {
     display: flex;
     flex-direction: column;
@@ -156,26 +161,29 @@
     margin-top: 1rem;
     border-top: var(--border-block) dashed var(--muted-border);
   }
+
   .question-type-choice {
     --size: 7rem;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    height: var(--size);
     width: var(--size);
+    height: var(--size);
+    text-align: center;
   }
+
   .question-type-choice.selected {
-    background-color: var(--primary-bg);
     color: var(--primary-text);
+    background-color: var(--primary-bg);
     border-radius: var(--radius-block);
   }
 
   footer > div {
     display: flex;
-    align-items: center;
     gap: 2em;
+    align-items: center;
   }
 
   .title-and-type {

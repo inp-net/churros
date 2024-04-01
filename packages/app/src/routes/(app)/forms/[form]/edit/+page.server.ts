@@ -15,8 +15,6 @@ export const actions = {
       })
       .parse(Object.fromEntries(rawData.entries()));
 
-    console.log({ data });
-
     const { upsertFormSection } = await makeMutation(
       {
         upsertFormSection: [

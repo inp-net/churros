@@ -32,12 +32,6 @@
       }
   );
 
-  export let sections: Array<{
-    id: string;
-    title: string;
-    localId: string;
-  }>;
-
   function questionKindToTypename(type: QuestionKind) {
     const typeToQuestionType = {
       Text: 'QuestionScalar',
@@ -71,7 +65,7 @@
   <slot name="header" slot="header" />
   {#if question.__typename === 'QuestionSelectOne' || question.__typename === 'QuestionSelectMultiple'}
     <input type="hidden" name="{question.id}.options" value={question.options.join(',')} />
-    <FormQuestionChoices {sections} __typename={question.__typename} bind:options={question.options}
+    <FormQuestionChoices __typename={question.__typename} bind:options={question.options}
     ></FormQuestionChoices>
   {:else if question.__typename === 'QuestionScale'}
     <FormQuestionScale

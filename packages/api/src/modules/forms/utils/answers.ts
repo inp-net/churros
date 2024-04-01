@@ -43,9 +43,7 @@ export function castAnswer(
   }
 
   // Prevent irrelevant answer types from storing more than one value
-  if (type === 'SelectMultiple') {
-    return { answer: value };
-  }
+  if (type === 'SelectMultiple') return { answer: value };
 
   return {
     answer: [value[0]!],
@@ -80,9 +78,8 @@ export function answerToString(
 
     const scaleWidth = scaleEnd! - scaleStart!;
     const value = Math.floor(normalized * scaleWidth + scaleStart);
-    if (scaleStart === 0 && scaleEnd === 100) {
-      return `${value}%`;
-    }
+    if (scaleStart === 0 && scaleEnd === 100) return `${value}%`;
+
     return `${value}/${scaleEnd}`;
   }
   return answer.join(',');

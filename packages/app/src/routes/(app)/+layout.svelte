@@ -9,7 +9,7 @@
     'signups',
     'announcements',
     'backrooms',
-    'forms'
+    'forms',
   ] as const;
 
   export const MOBILE_NAVIGATION_TABS = ['home', 'groups', 'events', 'services'] as const;

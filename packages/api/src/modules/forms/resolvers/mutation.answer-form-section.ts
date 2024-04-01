@@ -67,9 +67,8 @@ builder.mutationField('answerFormSection', (t) =>
           })
         : [];
 
-      if (userAnswersCount > 0) {
+      if (userAnswersCount > 0)
         return canModifyFormAnswers(form, form.event, user, userContributions);
-      }
 
       return canAnswerForm(form, form.event, user, userContributions);
     },

@@ -13,9 +13,8 @@ const EXTENSIONS_TO_MEDIA_TYPES: Record<SupportedExtension, string> = {
 };
 
 export async function GET({ fetch, cookies, params }) {
-  if (!SUPPORTED_EXTENSIONS.includes(params.extension as SupportedExtension)) 
+  if (!SUPPORTED_EXTENSIONS.includes(params.extension as SupportedExtension))
     error(404, { message: 'Format non supporté' });
-  
 
   const extension: SupportedExtension = params.extension as SupportedExtension;
 
@@ -41,9 +40,7 @@ export async function GET({ fetch, cookies, params }) {
       { fetch, token: cookies.get('token') },
     );
 
-    if (form === undefined) 
-      error(500, { message: "Impossible d'exporter" });
-    
+    if (form === undefined) error(500, { message: "Impossible d'exporter" });
 
     ({ title, answersExport } = form);
   } catch (error_) {

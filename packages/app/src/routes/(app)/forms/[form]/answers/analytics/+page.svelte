@@ -15,7 +15,7 @@
   let absoluteAxes = false;
   $: questions = data.form?.questions.nodes ?? [];
 
-  function displayToNumber(answer: string, minimum: number, maximum: number) {
+  function displayToNumber(answer: string) {
     const [current, _] = answer.replace('%', '').split('/', 2).map(Number.parseFloat) as [
       number,
       number,
@@ -29,16 +29,13 @@
 
   function scaleAnswersData({
     answerCounts,
-    minimum,
-    maximum,
   }: (typeof questions)[number] & { __typename: 'QuestionScale' }): ChartTabularData {
     const ret = answerCounts.flatMap(({ key, value: count }) => {
       return Array.from({ length: count }, () => ({
-        value: displayToNumber(key, minimum, maximum),
+        value: displayToNumber(key),
         group: 'Réponses',
       }));
     });
-    console.log({ ret });
     return ret;
   }
 
@@ -51,7 +48,6 @@
     },
     absoluteAxes: boolean,
   ) {
-    console.log({ q, absoluteAxes });
     return [0, absoluteAxes ? q.totalAnswers : Math.max(...q.answerCounts.map((a) => a.value))];
   }
 </script>
@@ -133,10 +129,11 @@
 <style>
   .charts {
     display: flex;
-    gap: 3rem;
     flex-wrap: wrap;
+    gap: 3rem;
     justify-content: center;
   }
+
   .charts :global(> *) {
     /* width: calc(50% - var(--gap)); */
     max-width: 600px;
