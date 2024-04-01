@@ -156,3 +156,12 @@ export function canSeeForm(
 
   return true;
 }
+
+export function canSetFormAnswerCheckboxes(
+  form: Form & { group: Group | null },
+  associatedEvent: Parameters<typeof userCanManageEvent>[0] | null,
+  user: Context['user'],
+) {
+  if (!form.enableAnswersCompletionCheckbox) return false;
+  return canSeeAllAnswers(form, associatedEvent, user);
+}

@@ -25,6 +25,7 @@ export async function load({ fetch, parent, params, url: { searchParams } }) {
           answerCount: true,
           linkedGoogleSheetUrl: true,
           checkboxesAreEnabled: true,
+          canSetCheckboxes: true,
           event: {
             group: { uid: true },
             uid: true,

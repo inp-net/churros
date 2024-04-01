@@ -13,6 +13,7 @@ import {
   canModifyFormAnswers,
   canSeeAllAnswers,
   canSeeForm,
+  canSetFormAnswerCheckboxes,
   requiredIncludesForPermissions,
 } from '../utils/permissions.js';
 import { FormSectionType } from './form-section.js';
@@ -103,6 +104,13 @@ export const FormType = builder.prismaNode('Form', {
       description: "Indique si l'utilisateur peut voir les réponses au formulaire.",
       resolve: async (form, _args, { user }) => {
         return canSeeAllAnswers(form, form.event, user);
+      },
+    }),
+    canSetCheckboxes: t.boolean({
+      description:
+        "Indique si l'utilisateur peut cocher ou décocher les cases à cocher à côté des réponses au formulaire.",
+      resolve: async (form, _args, { user }) => {
+        return canSetFormAnswerCheckboxes(form, form.event, user);
       },
     }),
     opensAt: t.expose('opensAt', {

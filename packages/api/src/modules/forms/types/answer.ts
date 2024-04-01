@@ -119,7 +119,6 @@ export const AnswerType = builder.prismaInterface('Answer', {
           where: { id: form.id },
           include: { markedCheckboxes: true },
         });
-        console.log({ markedCheckboxes, createdById });
         return markedCheckboxes.some((checkbox) => checkbox.id === createdById);
       },
     }),

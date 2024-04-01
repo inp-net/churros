@@ -1,6 +1,9 @@
 import { builder, ensureHasIdPrefix, log, prisma, publish } from '#lib';
 import { FormType } from '../types/form.js';
-import { canEditForm, requiredIncludesForPermissions } from '../utils/permissions.js';
+import {
+  canSetFormAnswerCheckboxes,
+  requiredIncludesForPermissions,
+} from '../utils/permissions.js';
 
 builder.mutationField('setFormAnswersCheckbox', (t) =>
   t.prismaField({
@@ -18,8 +21,7 @@ builder.mutationField('setFormAnswersCheckbox', (t) =>
         where: { id: formId },
         include: requiredIncludesForPermissions,
       });
-      if (!form.enableAnswersCompletionCheckbox) return false;
-      return canEditForm(form, form.event, user);
+      return canSetFormAnswerCheckboxes(form, form.event, user);
     },
     async resolve(query, _, { form: formId, userId, checked }, { user }) {
       await log('forms', 'set-checkbox', { formId, userId, checked }, userId, user);

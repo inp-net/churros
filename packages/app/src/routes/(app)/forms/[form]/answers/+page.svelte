@@ -27,6 +27,7 @@
     questions: { nodes: questions },
     event,
     checkboxesAreEnabled,
+    canSetCheckboxes,
   } = data.form);
 
   let groupedAnswers: Record<string, Record<string, (typeof data.form.answers.nodes)[number]>> = {};
@@ -34,8 +35,6 @@
   $: userCheckboxes = Object.fromEntries(
     data.form.answers.nodes.map((a) => [a.createdBy?.uid, a.checkboxIsMarked]),
   );
-
-  $: console.log({ userCheckboxes, nodes: data.form.answers.nodes });
 
   $: answerers = groupBy(
     data.form.answers.nodes.map((a) => a.createdBy),
@@ -171,15 +170,16 @@
             {#if checkboxesAreEnabled}
               <td>
                 <InputCheckbox
+                  disabled={!canSetCheckboxes}
                   label=""
                   value={userCheckboxes[answerer.uid]}
                   on:change={async ({ target }) => {
                     if (!(target instanceof HTMLInputElement)) return;
                     const beforeChange = userCheckboxes[answerer.uid];
                     data.form.answers.nodes = data.form.answers.nodes.map((a) => {
-                      if (a.createdBy?.uid === answerer.uid) {
+                      if (a.createdBy?.uid === answerer.uid) 
                         a.checkboxIsMarked = target.checked;
-                      }
+                      
                       return a;
                     });
                     try {
@@ -192,9 +192,9 @@
                     } catch (error) {
                       toasts.error('Impossible de modifier la case à cocher.', error?.toString());
                       data.form.answers.nodes = data.form.answers.nodes.map((a) => {
-                        if (a.createdBy?.uid === answerer.uid) {
+                        if (a.createdBy?.uid === answerer.uid) 
                           a.checkboxIsMarked = beforeChange;
-                        }
+                        
                         return a;
                       });
                     }
