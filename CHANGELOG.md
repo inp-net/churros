@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Améliorations
+
+- Les clubs ne sont plus autorisés à modifier leur type (@litschan)
+
 ## [1.55.0] - 2024-03-29
 
 ### Corrections
