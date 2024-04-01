@@ -1,8 +1,14 @@
 import { prisma } from '#lib';
 import { fakerFR } from '@faker-js/faker';
-import { CredentialType, GroupType, LogoSourceType, Visibility, type Prisma } from '@prisma/client';
+import {
+  CredentialType,
+  DocumentType,
+  GroupType,
+  LogoSourceType,
+  Visibility,
+  type Prisma,
+} from '@prisma/client';
 import { hash } from 'argon2';
-import { addDays, format } from 'date-fns';
 import dichotomid from 'dichotomid';
 import { exit } from 'node:process';
 import slug from 'slug';
@@ -56,10 +62,6 @@ function randomTime(date: Date, hoursIn: Generator<number>): Date {
     randomChoice([...hoursIn]),
     Math.floor(Math.random() * 60),
   );
-}
-
-function randomVisiblity(): Visibility {
-  return faker.helpers.arrayElement(Object.values(Visibility));
 }
 
 const createUid = async ({ firstName, lastName }: { firstName: string; lastName: string }) => {
