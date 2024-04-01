@@ -59,6 +59,11 @@ export function canSeeAllAnswers(
 ) {
   if (!user) return false;
   if (canEditForm(form, associatedEvent, user)) return true;
+  if (
+    associatedEvent &&
+    !userCanManageEvent(associatedEvent, user, { canVerifyRegistrations: true })
+  )
+    return true;
   if (form.group && userIsOnBoardOf(user, form.group.uid)) return true;
   if (form.group && user.groups.some((g) => g.group.uid === form.group?.uid && g.canScanEvents))
     return true;
