@@ -1,6 +1,12 @@
 import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
-import { QuestionKindType, canEditForm, requiredIncludesForPermissions } from '../index.js';
+import omit from 'lodash.omit';
+import {
+  QuestionKindType,
+  canEditForm,
+  castAnswer,
+  requiredIncludesForPermissions,
+} from '../index.js';
 import { QuestionOptionInputType } from '../types/question-option-input.js';
 import { QuestionScaleInput } from '../types/question-scale-input.js';
 
@@ -41,6 +47,10 @@ builder.mutationField('upsertQuestion', (t) =>
         description: 'Indique si la question est obligatoire',
         required: true,
       }),
+      anonymous: t.input.boolean({
+        description: 'Indique si les réponses à la question sont anonymes',
+        required: true,
+      }),
       options: t.input.field({
         type: [QuestionOptionInputType],
         required: { list: false, items: true },
@@ -57,6 +67,10 @@ builder.mutationField('upsertQuestion', (t) =>
       allowedFiletypes: t.input.stringList({
         description: 'Types de fichiers autorisés pour les questions de type `FileUpload`',
         required: false,
+      }),
+      default: t.input.stringList({
+        description: 'Valeur par défaut de la question. Voir `AnswerInput.answer` pour le format.',
+        defaultValue: [],
       }),
     },
     validate: [
@@ -106,7 +120,13 @@ builder.mutationField('upsertQuestion', (t) =>
       });
       return canEditForm(form, form.event, user);
     },
-    async resolve(query, _, { input: { id, sectionId, formId, options, scale, ...input } }) {
+    async resolve(
+      query,
+      _,
+      { input: { id, sectionId, formId, options, scale, ...input } },
+      { user },
+    ) {
+      if (!user) throw new GraphQLError("Vous n'êtes pas connecté·e");
       const ghostSectionId = async () => {
         const { id } = await prisma.formSection.upsert({
           where: { formId_order: { formId: formId!, order: 0 } },
@@ -124,8 +144,14 @@ builder.mutationField('upsertQuestion', (t) =>
         return questions[0]?.order ?? -1;
       };
 
+      const { answer: defaultAnswer } = castAnswer(
+        input['default'],
+        user.id,
+        { ...input, scaleStart: scale?.minimum ?? null, scaleEnd: scale?.maximum ?? null },
+        user,
+      );
       const data = {
-        ...input,
+        ...omit(input, 'default'),
         allowedFiletypes: input.allowedFiletypes ?? [],
         order: input.order ?? (await lastQuestionOrder()) + 1,
         scaleStart: scale?.minimum,
@@ -133,6 +159,7 @@ builder.mutationField('upsertQuestion', (t) =>
         options:
           options?.map(({ value }) => value) ??
           (scale ? [scale?.minimumLabel ?? '', scale?.maximumLabel ?? ''] : undefined),
+        defaultAnswer,
       };
 
       if (formId && sectionId) {

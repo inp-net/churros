@@ -40,3 +40,4 @@ export * from './query.user-candidate-by-email.js';
 export * from './query.user-candidate.js';
 export * from './query.user-candidates.js';
 export * from './query.user.js';
+export * from './user.board-memberships.js';

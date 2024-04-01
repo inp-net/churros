@@ -1,10 +1,11 @@
-import { builder, googleSheetsClient, prisma, publish } from '#lib';
+import { builder, ensureHasIdPrefix, googleSheetsClient, prisma, publish } from '#lib';
 import { GraphQLError } from 'graphql';
 import uniqBy from 'lodash.uniqby';
 import { AnswerInput, AnswerType } from '../types/index.js';
 import {
   appendFormAnswersToGoogleSheets,
   canAnswerForm,
+  canModifyFormAnswers,
   castAnswer,
   requiredIncludesForPermissions,
 } from '../utils/index.js';
@@ -35,20 +36,42 @@ builder.mutationField('answerFormSection', (t) =>
           const mandatoryQuestions = await prisma.question.findMany({
             where: { sectionId: section, mandatory: true },
           });
-          const answeredQuestions = new Set(answers.map(({ question }) => question));
+          const answeredQuestions = new Set(
+            answers.filter(({ answer }) => answer.some(Boolean)).map(({ question }) => question),
+          );
           return mandatoryQuestions.every((q) => answeredQuestions.has(q.id));
         },
         { message: 'Vous devez répondre à toutes les questions obligatoires', path: ['answers'] },
       ],
     ],
     async authScopes(_, { section }, { user }) {
+      section = ensureHasIdPrefix(section, 'FormSection');
+
       const form = await prisma.formSection
         .findUniqueOrThrow({ where: { id: section } })
         .form({ include: requiredIncludesForPermissions });
 
-      return canAnswerForm(form, form.event, user);
+      const userAnswersCount = user
+        ? await prisma.answer.count({
+            where: {
+              createdById: user.id,
+              question: { sectionId: section },
+            },
+          })
+        : 0;
+
+      const userContributions = user
+        ? await prisma.contribution.findMany({
+            where: { userId: user.id },
+            include: { option: { include: { paysFor: true } } },
+          })
+        : [];
+
+      if (userAnswersCount > 0)
+        return canModifyFormAnswers(form, form.event, user, userContributions);
+
+      return canAnswerForm(form, form.event, user, userContributions);
     },
-    // TODO use validators from mutation.answer-question.ts
     async resolve(query, _, { answers, section: sectionId }, { user }) {
       if (!user) throw new GraphQLError('Vous devez être connecté pour répondre à un formulaire');
       const questions = await prisma.question.findMany({

@@ -10,6 +10,7 @@ export async function load({ fetch, parent, params }) {
         {
           id: true,
           canSeeAnswers: true,
+          canModifyAnswers: true,
           myAnswers: {
             id: true,
             question: { title: true, anonymous: true },

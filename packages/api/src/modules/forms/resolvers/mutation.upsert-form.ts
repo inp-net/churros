@@ -1,15 +1,37 @@
 import { builder, prisma } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
+import { Visibility } from '@prisma/client';
+import { GraphQLError } from 'graphql';
 import omit from 'lodash.omit';
-import { userCanManageEvent } from '../../../permissions/manager.js';
 import { FormType } from '../types/form.js';
-import { canEditForm, requiredIncludesForPermissions } from '../utils/permissions.js';
+import {
+  canCreateForm,
+  canEditForm,
+  requiredIncludesForPermissions,
+} from '../utils/permissions.js';
 
 builder.mutationField('upsertForm', (t) =>
   t.prismaFieldWithInput({
     description:
       "Crée ou met à jour un formulaire. À la création, une section de formulaire vide sans titre est automatiquement créée. C'est pratique pour les formulaires sans section.",
     type: FormType,
+    validate: [
+      [
+        ({ input: { visibility, group } }) => (group ? Boolean(visibility) : true),
+        {
+          message: 'La visibilité est requise pour les formulaires associés à un groupe.',
+          path: ['visibility'],
+        },
+      ],
+      [
+        ({ input: { visibility, group } }) =>
+          group ? true : !visibility || visibility === Visibility.Unlisted,
+        {
+          message: 'Les formulaires non associés à un groupe doivent être non répertoriés.',
+          path: ['visibility'],
+        },
+      ],
+    ],
     input: {
       id: t.input.id({
         description:
@@ -34,9 +56,11 @@ builder.mutationField('upsertForm', (t) =>
       }),
       visibility: t.input.field({
         type: VisibilityEnum,
+        defaultValue: Visibility.Unlisted,
       }),
-      groupId: t.input.id({
-        description: 'Identifiant du groupe auquel le formulaire est associé',
+      group: t.input.string({
+        description: 'UID du groupe auquel le formulaire est associé.',
+        required: false,
       }),
     },
     async authScopes(_, { input }, { user }) {
@@ -46,27 +70,46 @@ builder.mutationField('upsertForm', (t) =>
           include: requiredIncludesForPermissions,
         });
         return canEditForm(form, form.event, user);
-      } else if (input.eventId) {
-        const event = await prisma.event.findUniqueOrThrow({
-          where: { id: input.eventId },
-          include: requiredIncludesForPermissions.event.include,
-        });
-        return userCanManageEvent(event, user, { canEdit: true });
-      } else {
-        return Boolean(user);
       }
+
+      const event = input.eventId
+        ? await prisma.event.findUniqueOrThrow({
+            where: { id: input.eventId },
+            include: requiredIncludesForPermissions.event.include,
+          })
+        : null;
+      const group = input.group ? { uid: input.group } : null;
+      return canCreateForm(group, event, user);
     },
     async resolve(query, _, { input }, { user }) {
-      const data = omit(input, 'id', 'eventId');
-      return prisma.form.upsert({
+      if (!user) throw new GraphQLError('Vous devez être connecté pour effectuer cette action.');
+
+      const data = omit(input, 'id', 'eventId', 'group');
+
+      if (input.id) {
+        return prisma.form.update({
+          ...query,
+          where: { id: input.id },
+          data: {
+            ...data,
+            group: input.group ? { connect: { uid: input.group } } : { disconnect: {} },
+          },
+        });
+      }
+
+      return prisma.form.create({
         ...query,
-        where: { id: input.id ?? '' },
-        create: {
+        data: {
           ...data,
-          createdById: user?.id,
-        },
-        update: {
-          ...data,
+          group: input.group ? { connect: { uid: input.group } } : undefined,
+          createdBy: { connect: { id: user.id } },
+          sections: {
+            create: {
+              title: '',
+              description: '',
+              order: 1,
+            },
+          },
         },
       });
     },

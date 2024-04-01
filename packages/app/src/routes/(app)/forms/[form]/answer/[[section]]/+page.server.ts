@@ -89,6 +89,7 @@ function handleOtherOptionAnswers(answers: Record<string, string[]>): Record<str
     if (question.endsWith('/other')) {
       const questionId = question.replace(/\/other$/, '');
       if (!result[questionId] || isUnanswered(result[questionId])) result[questionId] = answer;
+
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete result[question];
     }
