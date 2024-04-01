@@ -19,8 +19,14 @@ export function userCanManageEvent(
   return Boolean(
     user.groups.some(({ groupId, canScanEvents }) => {
       if (groupId !== event.groupId) return false;
-      if (required.canVerifyRegistrations && !canScanEvents) return false;
-      return true;
+      if (
+        required.canVerifyRegistrations &&
+        canScanEvents &&
+        !required.canEdit &&
+        !required.canEditPermissions
+      )
+        return true;
+      return false;
     }) ||
       event.managers.some(({ user: { uid }, ...permissions }) => {
         if (uid !== user.uid) return false;
