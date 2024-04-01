@@ -10,8 +10,10 @@ import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import {
   canAnswerForm,
   canEditForm,
+  canModifyFormAnswers,
   canSeeAllAnswers,
   canSeeForm,
+  canSetFormAnswerCheckboxes,
   requiredIncludesForPermissions,
 } from '../utils/permissions.js';
 import { FormSectionType } from './form-section.js';
@@ -44,6 +46,7 @@ export const FormType = builder.prismaNode('Form', {
       description: 'Utilisateur ayant créé le formulaire',
     }),
     group: t.relation('group', {
+      nullable: true,
       description: 'Groupe auquel le formulaire est associé',
     }),
     visibility: t.expose('visibility', {
@@ -59,14 +62,55 @@ export const FormType = builder.prismaNode('Form', {
     }),
     canAnswer: t.boolean({
       description: "Indique si l'utilisateur peut répondre au formulaire.",
-      resolve: async ({ event, opensAt, closesAt }, {}, { user }) => {
-        return canAnswerForm({ opensAt, closesAt }, event, user);
+      resolve: async (form, {}, { user }) => {
+        const userContributions = user
+          ? await prisma.contribution.findMany({
+              where: {
+                userId: user?.id,
+              },
+              include: {
+                option: {
+                  include: {
+                    paysFor: true,
+                  },
+                },
+              },
+            })
+          : [];
+        return canAnswerForm(form, form.event, user, userContributions);
+      },
+    }),
+    canModifyAnswers: t.boolean({
+      description: "Indique si l'utilisateur·ice peut modifier ses réponses au formulaire.",
+      resolve: async (form, {}, { user }) => {
+        const userContributions = user
+          ? await prisma.contribution.findMany({
+              where: {
+                userId: user?.id,
+              },
+              include: {
+                option: {
+                  include: {
+                    paysFor: true,
+                  },
+                },
+              },
+            })
+          : [];
+        return canModifyFormAnswers(form, form.event, user, userContributions);
       },
     }),
     canSeeAnswers: t.boolean({
       description: "Indique si l'utilisateur peut voir les réponses au formulaire.",
       resolve: async (form, _args, { user }) => {
         return canSeeAllAnswers(form, form.event, user);
+      },
+    }),
+    canSetCheckboxes: t.boolean({
+      description:
+        "Indique si l'utilisateur peut cocher ou décocher les cases à cocher à côté des réponses au formulaire.",
+      resolve: async (form, _args, { user }) => {
+        return canSetFormAnswerCheckboxes(form, form.event, user);
       },
     }),
     opensAt: t.expose('opensAt', {
@@ -140,5 +184,6 @@ export const FormType = builder.prismaNode('Form', {
       resolve: async ({ id }) =>
         (await prisma.formSection.count({ where: { formId: id, title: { not: '' } } })) > 0,
     }),
+    checkboxesAreEnabled: t.exposeBoolean('enableAnswersCompletionCheckbox'),
   }),
 });

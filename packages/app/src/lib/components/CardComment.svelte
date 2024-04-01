@@ -156,7 +156,7 @@
       >
         <InputLongText
           submitShortcut
-          rows="2"
+          rows={2}
           autofocus
           label=""
           rich

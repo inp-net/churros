@@ -274,7 +274,7 @@
     <InputLongText
       submitShortcut
       label=""
-      rows="2"
+      rows={2}
       rich
       bind:value={newComment.body}
       placeholder="Ajouter un commentaire"

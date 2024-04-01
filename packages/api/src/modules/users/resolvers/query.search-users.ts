@@ -12,7 +12,7 @@ builder.queryField('searchUsers', (t) =>
     },
   }),
 );
-async function searchUsers(q: string, similarityCutoff = 0.08) {
+export async function searchUsers(q: string, similarityCutoff = 0.08) {
   return await fullTextSearch('User', q, {
     property: 'user',
     resolveObjects: (ids) => prisma.user.findMany({ where: { id: { in: ids } } }),

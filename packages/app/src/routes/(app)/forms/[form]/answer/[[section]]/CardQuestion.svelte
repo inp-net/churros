@@ -3,10 +3,12 @@
   import { tooltip } from '$lib/tooltip';
   import IconAnonymous from '~icons/mdi/anonymous';
   import IconQuestionMark from '~icons/mdi/question-mark-circle-outline';
+  import IconOptional from '~icons/mdi/checkbox-blank-outline';
 
   export let descriptionHtml: string;
   export let description: string;
   export let anonymous: boolean;
+  export let mandatory: boolean;
 </script>
 
 <Card>
@@ -17,17 +19,27 @@
     </div>
   {/if}
   <slot />
-  {#if anonymous}
-    <div class="anonymous-marker">
-      <IconAnonymous></IconAnonymous>
-      <p class="typo-details">Cette question est anonyme.</p>
-      <div
-        class="learn-more"
-        use:tooltip={'Cette question est anonyme. Personne ne pourra connaître votre réponse à cette question (excepté le service technique).'}
-      >
-        <IconQuestionMark></IconQuestionMark>
-      </div>
-    </div>
+  {#if !mandatory || anonymous}
+    <footer>
+      {#if !mandatory}
+        <div class="marker optional-marker">
+          <IconOptional></IconOptional>
+          <p class="typo-details">Cette question est optionnelle.</p>
+        </div>
+      {/if}
+      {#if anonymous}
+        <div class="marker anonymous-marker">
+          <IconAnonymous></IconAnonymous>
+          <p class="typo-details">Cette question est anonyme.</p>
+          <div
+            class="action learn-more"
+            use:tooltip={'Cette question est anonyme. Personne ne pourra connaître votre réponse à cette question (excepté le service technique).'}
+          >
+            <IconQuestionMark></IconQuestionMark>
+          </div>
+        </div>
+      {/if}
+    </footer>
   {/if}
 </Card>
 
@@ -36,17 +48,27 @@
     margin-bottom: 1rem;
   }
 
-  .anonymous-marker {
+  footer {
     display: flex;
-    gap: 0.5rem;
-    align-items: center;
+    flex-direction: column;
+    row-gap: 0.5rem;
     padding-top: 1rem;
     margin-top: 1rem;
     border-top: var(--border-block) dashed var(--muted-border);
   }
 
-  .anonymous-marker .learn-more {
+  .marker {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .marker .action {
     margin-left: auto;
+    cursor: help;
+  }
+
+  .marker .learn-more {
     cursor: help;
   }
 </style>

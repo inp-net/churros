@@ -1,4 +1,5 @@
 import { builder, prisma } from '#lib';
+import { GraphQLError } from 'graphql';
 import { FormType } from '../types/form.js';
 
 builder.queryField('allForms', (t) =>
@@ -7,6 +8,10 @@ builder.queryField('allForms', (t) =>
     cursor: 'id',
     type: FormType,
     authScopes: { admin: true },
-    resolve: async (query) => prisma.form.findMany(query),
+    resolve: async (query, _, {}, { user }) => {
+      if (!user) throw new GraphQLError("Vous n'êtes pas connecté·e");
+
+      return prisma.form.findMany({ ...query });
+    },
   }),
 );

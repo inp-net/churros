@@ -4,6 +4,7 @@ import { error } from '@sveltejs/kit';
 export const _answerNodeQuery = Selector('Answer')({
   id: true,
   updatedAt: true,
+  checkboxIsMarked: true,
   createdBy: { id: true, uid: true, fullName: true, pictureFile: true },
   question: {
     id: true,
@@ -21,16 +22,10 @@ export async function load({ fetch, parent, params, url: { searchParams } }) {
         {
           id: true,
           localId: true,
-          title: true,
-          visibility: true,
           answerCount: true,
           linkedGoogleSheetUrl: true,
-          group: {
-            uid: true,
-            pictureFile: true,
-            pictureFileDark: true,
-            name: true,
-          },
+          checkboxesAreEnabled: true,
+          canSetCheckboxes: true,
           event: {
             group: { uid: true },
             uid: true,
