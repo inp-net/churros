@@ -11,6 +11,12 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Fix manquait la searchbar dans la liste des réponses
+- Faire en sorte que les managers d'event qui peuvent scanner puisse voir tt les places
+- Fix manquait le fait de pouvoir submit une formsection sans questions
+
 ## [1.56.1] - 2024-04-01
 
 ### Technique
