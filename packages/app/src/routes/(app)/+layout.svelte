@@ -9,6 +9,7 @@
     'signups',
     'announcements',
     'backrooms',
+    'forms',
   ] as const;
 
   export const MOBILE_NAVIGATION_TABS = ['home', 'groups', 'events', 'services'] as const;
@@ -58,6 +59,7 @@
     if (starts('/backrooms') || starts('/logs')) return 'backrooms';
     if (starts('/reports')) return 'reports';
     if (starts('/announcements')) return 'announcements';
+    if (starts('/forms')) return 'forms';
     return 'home';
   }
 

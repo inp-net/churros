@@ -5,12 +5,10 @@ import {
   DocumentType,
   GroupType,
   LogoSourceType,
-  QuestionKind,
   Visibility,
   type Prisma,
 } from '@prisma/client';
 import { hash } from 'argon2';
-import { addDays } from 'date-fns';
 import dichotomid from 'dichotomid';
 import { exit } from 'node:process';
 import slug from 'slug';
@@ -64,10 +62,6 @@ function randomTime(date: Date, hoursIn: Generator<number>): Date {
     randomChoice([...hoursIn]),
     Math.floor(Math.random() * 60),
   );
-}
-
-function randomVisiblity(): Visibility {
-  return faker.helpers.arrayElement(Object.values(Visibility));
 }
 
 const createUid = async ({ firstName, lastName }: { firstName: string; lastName: string }) => {
@@ -880,164 +874,6 @@ await prisma.thirdPartyApp.create({
       set: ['https://wiki.inpt.fr', 'http://localhost:5000'],
     },
     owner: { connect: { id: thirdPartyAppClub.id } },
-  },
-});
-
-for (let i = 0; i < 10; i++) {
-  const opensAt = i === 0 ? faker.date.soon() : faker.date.anytime();
-  const form = await prisma.form.create({
-    data: {
-      groupId: faker.helpers.arrayElement(groups).id,
-      visibility: randomVisiblity(),
-      title: faker.lorem.sentence(),
-      description: faker.lorem.paragraphs(faker.helpers.rangeToNumber({ min: 1, max: 3 })),
-      createdById: faker.helpers.arrayElement(users).id,
-      opensAt,
-      closesAt: faker.date.future({ refDate: opensAt }),
-      eventId: faker.datatype.boolean(0.3) ? faker.helpers.arrayElement(events).id : undefined,
-    },
-  });
-
-  for (let ii = 0; ii < faker.number.int({ min: 1, max: 5 }); ii++) {
-    await prisma.formSection.create({
-      data: {
-        formId: form.id,
-        order: ii,
-        title: faker.lorem.sentence(),
-        description: faker.lorem.paragraph(),
-        questions: {
-          createMany: {
-            data: Array.from({ length: faker.helpers.rangeToNumber({ min: 1, max: 5 }) })
-              .fill(0)
-              .map((_, i) => {
-                const type = faker.helpers.arrayElement(Object.values(QuestionKind));
-
-                const scaleOptions: Partial<{ scaleStart: number; scaleEnd: number }> =
-                  type === 'Scale' ? { scaleStart: faker.number.int({ min: 1, max: 5 }) } : {};
-                scaleOptions.scaleEnd =
-                  type === 'Scale'
-                    ? faker.number.int({ min: scaleOptions.scaleStart, max: 10 })
-                    : 0;
-
-                return {
-                  description: faker.lorem.paragraph(),
-                  order: i,
-                  title: faker.lorem.sentence(),
-                  mandatory: faker.datatype.boolean(0.75),
-                  type,
-                  options: ['SelectOne', 'SelectMultiple'].includes(type)
-                    ? Array.from({ length: faker.helpers.rangeToNumber({ min: 2, max: 5 }) })
-                        .fill(0)
-                        .map(() => faker.lorem.word())
-                    : type === 'Scale'
-                      ? [faker.lorem.word(), faker.lorem.word()]
-                      : undefined,
-                  allowedFiletypes:
-                    type === 'FileUpload'
-                      ? Array.from({ length: faker.helpers.rangeToNumber({ min: 1, max: 10 }) })
-                          .fill(0)
-                          .map(() => faker.system.mimeType())
-                      : undefined,
-                  allowOptionOther:
-                    type === 'SelectOne' || type === 'SelectMultiple'
-                      ? faker.datatype.boolean(0.3)
-                      : undefined,
-                  ...scaleOptions,
-                };
-              }),
-          },
-        },
-      },
-    });
-  }
-}
-
-// Vote listes
-
-const voteForm = await prisma.form.create({
-  data: {
-    title: 'Vote listes AEn7 2024',
-    description: 'Vote pour Gd7T sinon conséquences',
-    groupId: faker.helpers.arrayElement(groups).id,
-    visibility: 'Unlisted',
-    eventId: faker.helpers.arrayElement(events).id,
-    opensAt: new Date(),
-    closesAt: addDays(new Date(), 1),
-  },
-});
-
-const presentielSection = await prisma.formSection.create({
-  data: {
-    formId: voteForm.id,
-    description: '',
-    title: '',
-    order: 1,
-    questions: {
-      create: {
-        title: 'Comment veux-tu voter?',
-        description: '',
-        type: 'SelectOne',
-        options: ['Sur place', 'En ligne'],
-        order: 1,
-      },
-    },
-  },
-  include: {
-    questions: true,
-  },
-});
-
-await prisma.formSection.create({
-  data: {
-    formId: voteForm.id,
-    title: '',
-    description: '',
-    order: 2,
-    questions: {
-      create: {
-        title: "Qui doit prendre l'AE?",
-        description: '',
-        order: 1,
-        type: 'SelectOne',
-        mandatory: true,
-        allowOptionOther: true,
-        anonymous: true,
-        options: faker.helpers
-          .arrayElements(
-            groups.filter((g) => g.type === 'List'),
-            3,
-          )
-          .map((g) => g.name),
-      },
-    },
-  },
-});
-
-const feedbackSection = await prisma.formSection.create({
-  data: {
-    formId: voteForm.id,
-    title: '',
-    description: '',
-    order: 3,
-    questions: {
-      create: {
-        title: "T'as trouvé l'année comment?",
-        description: '',
-        order: 1,
-        type: 'Scale',
-        scaleStart: 1,
-        scaleEnd: 10,
-        anonymous: true,
-      },
-    },
-  },
-});
-
-await prisma.formJump.create({
-  data: {
-    value: 'Sur place',
-    questionId: presentielSection.questions[0]!.id,
-    targetId: feedbackSection.id,
   },
 });
 

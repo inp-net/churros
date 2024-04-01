@@ -6,6 +6,8 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import InputField from './InputField.svelte';
   import InputText from '$lib/components/InputText.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import IconClear from '~icons/mdi/clear-circle-outline';
   const emit = createEventDispatcher();
 
   export let value: string | undefined = undefined;
@@ -20,9 +22,14 @@
   export let hint: string | undefined = undefined;
   export let allowOther = false;
   export let tainted = false;
+  export let disabled = false;
+  export let unselected = !value;
+
+  $: if (value) unselected = false;
 
   $: otherOptionIsSelected = Boolean(
-    (value || tainted) &&
+    !unselected &&
+      (value || tainted) &&
       (value === OPTION_OTHER_VALUE || !optionsWithDisplay.some(([option]) => option === value)),
   );
   let errorMessage = '';
@@ -53,16 +60,19 @@
 </script>
 
 <InputField {label} {required} {hint} errors={errorMessage ? [errorMessage] : []}>
-  <div class="wrapper">
+  <div class="wrapper" class:no-label={!label}>
     <fieldset bind:this={fieldsetElement}>
+      {#if unselected}
+        <input type="hidden" name="{name}/no-answer" />
+      {/if}
       {#each optionsWithDisplay as [option, display] (option)}
         <label aria-current={option === value && !otherOptionIsSelected}>
-          <input type="radio" {required} {name} bind:group={value} value={option} />
+          <input {disabled} type="radio" {required} {name} bind:group={value} value={option} />
           <slot {value} {display} {option}>{display}</slot>
         </label>
       {/each}
       {#if allowOther}
-        <label aria-current={otherOptionIsSelected}>
+        <label aria-current={otherOptionIsSelected && !unselected}>
           <input
             type="radio"
             {name}
@@ -70,6 +80,7 @@
             bind:group={value}
             on:click={() => {
               tainted = true;
+              unselected = false;
             }}
           />
           <slot name="other">Autre</slot>
@@ -88,6 +99,18 @@
           />
         </label>
       {/if}
+      {#if !required}
+        <ButtonGhost
+          help="Effacer le choix"
+          disabled={unselected}
+          on:click={() => {
+            value = '';
+            unselected = true;
+          }}
+        >
+          <IconClear></IconClear>
+        </ButtonGhost>
+      {/if}
     </fieldset>
   </div>
 </InputField>
@@ -105,6 +128,10 @@
     font-size: 1rem;
     font-weight: normal;
     border: none;
+  }
+
+  .wrapper.no-label fieldset {
+    padding-top: 0;
   }
 
   input[type='radio'] {

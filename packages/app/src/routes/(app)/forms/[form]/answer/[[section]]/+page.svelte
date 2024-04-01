@@ -20,6 +20,7 @@
   import fr from 'date-fns/locale/fr/index.js';
   import type { ActionData, PageData } from './$types';
   import CardQuestion from './CardQuestion.svelte';
+  import { page } from '$app/stores';
 
   export let data: PageData;
   $: ({
@@ -29,6 +30,7 @@
     group,
     closesAt,
     visibility,
+    canModifyAnswers,
     section: { questions },
   } = data.form);
 
@@ -60,9 +62,14 @@
 
 <header>
   <h1>
-    <ButtonBack />
-    <AvatarGroup tooltip="Formulaire créé par {group.name}" href="/groups/{group.uid}" {...group}
-    ></AvatarGroup>
+    <!-- Don't show button to go to previous form section when users cannot modify their answers -->
+    {#if !$page.params.section || canModifyAnswers}
+      <ButtonBack />
+    {/if}
+    {#if group}
+      <AvatarGroup tooltip="Formulaire créé par {group.name}" href="/groups/{group.uid}" {...group}
+      ></AvatarGroup>
+    {/if}
     {title}
   </h1>
   <p class="timing">
@@ -72,6 +79,11 @@
     {/if}
   </p>
 </header>
+
+{#if !canModifyAnswers}
+  <Alert theme="warning">Tu ne pourras pas modifier tes réponses à ce formulaire.</Alert>
+{/if}
+
 <div data-user-html="">
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {@html descriptionHtml}
@@ -95,7 +107,7 @@
       </div>
     {/if}
     {#each questions as { title, mandatory, anonymous, descriptionHtml, description, type, id, myAnswer, ...question } (id)}
-      <CardQuestion {descriptionHtml} {description} {anonymous}>
+      <CardQuestion {descriptionHtml} {description} {anonymous} {mandatory}>
         {#if question.__typename === 'QuestionScalar'}
           {#if type === 'LongText'}
             <InputLongText
@@ -122,7 +134,7 @@
             allowOther={question.allowOptionsOther}
           >
             <svelte:fragment let:option>
-              {@const group = data.groups.find((g) => g.name === option)}
+              {@const group = question.groups.find((g) => g?.name === option)}
               <span class="select-one-option">
                 {#if group}
                   <AvatarGroup href={undefined} {...group}></AvatarGroup>

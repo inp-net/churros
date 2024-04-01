@@ -15,6 +15,18 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 - Les clubs ne sont plus autorisés à modifier leur type (@litschan)
 
+## [1.56.1] - 2024-04-01
+
+### Technique
+
+- Ajout d'une dépendance manquante dans l'API
+
+## [1.56.0] - 2024-04-01
+
+### Améliorations
+
+- Pleins de nouvelles fonctionnalités pour les formulaires. On est prêt pour les votes de l'AE 👀
+
 ## [1.55.0] - 2024-03-29
 
 ### Corrections
@@ -347,8 +359,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.55.0...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.56.1...main
 [1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
+[1.56.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.1
+[1.56.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.0
 [1.55.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.55.0
 [1.54.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.2
 [1.54.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.1

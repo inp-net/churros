@@ -1,12 +1,14 @@
 import { redirectToLogin } from '$lib/session.js';
 import { loadQuery, Selector } from '$lib/zeus.js';
-import { error } from '@sveltejs/kit';
+import uniqBy from 'lodash.uniqby';
 
 export const _formNodeQuery = Selector('Form')({
   localId: true,
   id: true,
   title: true,
   descriptionHtml: true,
+  canEdit: true,
+  canSeeAnswers: true,
   group: {
     pictureFile: true,
     pictureFileDark: true,
@@ -18,10 +20,19 @@ export const _formNodeQuery = Selector('Form')({
 export async function load({ fetch, parent, url }) {
   const { me } = await parent();
   if (!me) redirectToLogin(url.pathname, url.searchParams);
-  if (!me?.admin) error(403, { message: 'Page réservée aux admins' });
-  return loadQuery(
+  const { allForms, forms } = await loadQuery(
     {
-      allForms: [
+      ...(me?.admin
+        ? {
+            allForms: [
+              {},
+              {
+                nodes: _formNodeQuery,
+              },
+            ],
+          }
+        : {}),
+      forms: [
         {},
         {
           nodes: _formNodeQuery,
@@ -30,4 +41,8 @@ export async function load({ fetch, parent, url }) {
     },
     { fetch, parent },
   );
+
+  return {
+    forms: uniqBy([...(forms?.nodes ?? []), ...(allForms?.nodes ?? [])], 'id'),
+  };
 }

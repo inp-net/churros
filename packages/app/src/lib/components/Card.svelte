@@ -1,8 +1,8 @@
 <script>
-  export let element = 'div';
+  export let element = 'article';
 </script>
 
-<svelte:element this={element} {...$$restProps} class="card">
+<svelte:element this={element} {...$$restProps} class="card" on:submit|preventDefault>
   <slot name="header" />
   <div class="card-content"><slot /></div>
   <slot name="footer" />

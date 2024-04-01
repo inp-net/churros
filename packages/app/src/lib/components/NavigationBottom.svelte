@@ -10,6 +10,7 @@
   import IconDotsCircle from '~icons/mdi/dots-horizontal-circle';
   import IconGroup from '~icons/mdi/account-group';
   import IconGroupOutline from '~icons/mdi/account-group-outline';
+  import IconForms from '~icons/mdi/format-list-bulleted';
 
   import IconBarWeek from '~icons/mdi/beer-outline';
   import IconAnnouncement from '~icons/mdi/bullhorn-outline';
@@ -179,6 +180,11 @@
     <a href="/events/create">
       <IconEvent />
       <span>Événement</span>
+    </a>
+
+    <a href="/forms/create">
+      <IconForms></IconForms>
+      <span>Formulaire</span>
     </a>
 
     {#if $me?.admin || $me?.canEditUsers}

@@ -14,6 +14,7 @@ Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'
     
 - Pour les questions de type \`Date\`, utiliser le format \`YYYY-mm-dd\`
 - Pour les questions de type \`Time\`, utiliser le format \`HH:MM:ss\`
+- Pour les questions de type \`Scale\`, utiliser simplement le nombre répondu par l'utilisateur·ice
 - Pour les questions de type \`FileUpload\`, utiliser la mutation [\`answerFileQuestion\`](#mutation/answerFileQuestion)
       `,
     }),
@@ -31,7 +32,8 @@ Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'
         const { mandatory } = await prisma.question.findUniqueOrThrow({
           where: { id: question },
         });
-        return !mandatory || answer.length > 0;
+        // filter out empty-string answers
+        return !mandatory || answer.some(Boolean);
       },
       {
         message: 'Cette question est obligatoire',

@@ -11,7 +11,12 @@ export const AnswerNumberType = builder.prismaObject('Answer', {
     value: t.float({
       nullable: true,
       description: 'Réponse donnée',
-      resolve: ({ number }) => number,
+      resolve: ({ answer }) => {
+        if (answer.length === 0) return null;
+        const coerced = Number.parseFloat(answer[0]!);
+        if (Number.isNaN(coerced)) return null;
+        return coerced;
+      },
     }),
     question: t.relation('question', {
       type: QuestionScalarType,

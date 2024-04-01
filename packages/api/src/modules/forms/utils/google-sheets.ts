@@ -106,12 +106,10 @@ export async function appendFormAnswersToGoogleSheets(
     answerer.firstName,
     ...questions.map(({ answers }) =>
       answers[0]
-        ? answerToString(
-            {
-              ...answers[0],
-              question: questions.find((q) => q.id === answers[0]!.questionId)!,
-            },
-          )
+        ? answerToString({
+            ...answers[0],
+            question: questions.find((q) => q.id === answers[0]!.questionId)!,
+          })
         : '',
     ),
   ];

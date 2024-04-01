@@ -24,6 +24,7 @@
     "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
     "lodash.groupby": "^4.6.0",
+    "lodash.omit": "^4.5.0",
     "lodash.throttle": "^4.1.1",
     "nanoid": "^5.0.6",
     "party-js": "^2.2.0",
@@ -34,6 +35,7 @@
     "svelte-tenor": "^0.2.0",
     "sveltejs-tippy": "^3.0.0",
     "ua-parser-js": "^1.0.37",
+    "write-excel-file": "^1.4.30",
     "xss": "^1.0.15"
   },
   "devDependencies": {
