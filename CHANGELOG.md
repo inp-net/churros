@@ -11,10 +11,6 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
-### Améliorations
-
-- Les clubs ne sont plus autorisés à modifier leur type (@litschan)
-
 ## [1.56.6] - 2024-04-03
 
 ### Corrections
@@ -68,6 +64,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Améliorations
 
 - Pleins de nouvelles fonctionnalités pour les formulaires. On est prêt pour les votes de l'AE 👀
+
+### Améliorations
+
+- Les clubs ne sont plus autorisés à modifier leur type (@litschan)
 
 ## [1.55.0] - 2024-03-29
 
