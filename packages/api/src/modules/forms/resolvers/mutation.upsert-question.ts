@@ -144,7 +144,7 @@ builder.mutationField('upsertQuestion', (t) =>
         return questions[0]?.order ?? -1;
       };
 
-      const { answer: defaultAnswer, number: defaultNumber } = castAnswer(
+      const { answer: defaultAnswer } = castAnswer(
         input['default'],
         user.id,
         { ...input, scaleStart: scale?.minimum ?? null, scaleEnd: scale?.maximum ?? null },
@@ -160,7 +160,6 @@ builder.mutationField('upsertQuestion', (t) =>
           options?.map(({ value }) => value) ??
           (scale ? [scale?.minimumLabel ?? '', scale?.maximumLabel ?? ''] : undefined),
         defaultAnswer,
-        defaultNumber,
       };
 
       if (formId && sectionId) {
