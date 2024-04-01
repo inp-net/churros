@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Ajout d'une dépendance manquante dans l'API
+
 ## [1.56.0] - 2024-04-01
 
 ### Améliorations
