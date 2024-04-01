@@ -28,10 +28,6 @@ builder.mutationField('answerFormSection', (t) =>
         { message: 'Il y a plusieurs réponses pour la même question', path: ['answers'] },
       ],
       [
-        ({ answers }) => answers.length > 0,
-        { message: 'Vous devez répondre à au moins une question', path: ['answers'] },
-      ],
-      [
         async ({ section, answers }) => {
           const mandatoryQuestions = await prisma.question.findMany({
             where: { sectionId: section, mandatory: true },
@@ -74,6 +70,7 @@ builder.mutationField('answerFormSection', (t) =>
     },
     async resolve(query, _, { answers, section: sectionId }, { user }) {
       if (!user) throw new GraphQLError('Vous devez être connecté pour répondre à un formulaire');
+      if (answers.length === 0) return [];
       const questions = await prisma.question.findMany({
         where: { sectionId, id: { in: answers.map((a) => a.question) } },
       });
