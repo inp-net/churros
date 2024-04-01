@@ -14,6 +14,11 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Corrections
 
 - Correction d'une faute d'orthographe sur la page des rapport de bugs (@litschan)
+- Correction d'un bug qui empêchait de passer à la section suivante sans modifier sa réponse sur un formulaire qui n'autorise pas à modifier ses réponses
+
+### Sécurité
+
+- Il est maintenant impossible de voir les statistiques de réponses quand un formulaire est toujours ouvert et possède des questions anonymes
 
 ## [1.56.2] - 2024-04-01
 
