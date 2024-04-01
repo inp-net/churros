@@ -43,8 +43,12 @@
     anonymous: false,
     type: QuestionKind.SelectOne,
     options: [],
-    allowOptionOther: false,
-    __typename: 'QuestionSelectOne',
+    allowOptionsOther: false,
+    __typename: 'QuestionSelectOne' as
+      | 'QuestionSelectOne'
+      | 'QuestionSelectMultiple'
+      | 'QuestionScale'
+      | 'QuestionScalar',
     minimum: 1,
     maximum: 10,
     minimumLabel: '',
@@ -63,7 +67,9 @@
               'maximum',
               'minimumLabel',
               'maximumLabel',
+              'allowOptionsOther',
             ),
+            allowOptionOther: newQuestion.allowOptionsOther,
             options: newQuestion.options.map((o) => ({ value: o })),
             default: [],
             sectionId: editingSection?.id,
@@ -167,11 +173,12 @@
   {#if $editingSectionId !== 'new'}
     <section class="questions">
       {#each editingSection?.questions ?? [] as question (question.id)}
-        <FormQuestion bind:question />
+        <FormQuestion sections={data.form.sections} bind:question />
       {/each}
 
       <hr />
       <FormQuestion
+        sections={data.form.sections}
         bind:question={newQuestion}
         on:submit={async () => {
           creatingQuestion = true;

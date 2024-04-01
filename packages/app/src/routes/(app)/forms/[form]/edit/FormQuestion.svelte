@@ -14,11 +14,11 @@
     mandatory: boolean;
     anonymous: boolean;
     type: QuestionKind;
-    allowOptionOther: boolean;
   } & (
     | {
         __typename: 'QuestionSelectOne' | 'QuestionSelectMultiple';
         options: string[];
+        allowOptionsOther: boolean;
       }
     | {
         __typename: 'QuestionScale';
@@ -97,7 +97,7 @@
   <div class="additional-options" slot="footer">
     {#if question.__typename === 'QuestionSelectOne' || question.__typename === 'QuestionSelectMultiple'}
       <InputCheckbox
-        value={question.allowOptionOther}
+        value={question.allowOptionsOther}
         label="Autoriser le choix “autres”"
         name="multiple"
       ></InputCheckbox>

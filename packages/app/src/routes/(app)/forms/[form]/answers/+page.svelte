@@ -1,12 +1,10 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
+  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
   import { formatDateTimeSmart, sortedByDate } from '$lib/dates';
   import { subscribe } from '$lib/subscriptions';
-  import { toasts } from '$lib/toasts';
   import { zeus } from '$lib/zeus';
   import debounce from 'lodash.debounce';
   import groupBy from 'lodash.groupby';
@@ -148,38 +146,20 @@
   });
 </script>
 
-<h1><AvatarGroup href="/groups/{group.uid}" {...group}></AvatarGroup> Réponses à {title}</h1>
+<h1>
+  {#if group}<AvatarGroup href="/groups/{group.uid}" {...group}></AvatarGroup>{/if} Réponses à {title}
+</h1>
 <p class="visibility">
   <IndicatorVisibility text {visibility}></IndicatorVisibility>
 </p>
 
-<header>
-  <InputSearchQuery bind:q={$q}></InputSearchQuery>
-  <p>
-    {#if $q}{searchResults?.length} résultats{:else}{answerCount} réponses{/if}
-  </p>
-  <ButtonShare text path="/forms/{localId}/answer"></ButtonShare>
-  <ButtonInk
-    newTab
-    loading={creatingLinkedGoogleSheet}
-    href={creatingLinkedGoogleSheet ? undefined : linkedGoogleSheetUrl}
-    icon={linkedGoogleSheetUrl ? IconGSheet : IconNewGSheet}
-    on:click={linkedGoogleSheetUrl ? undefined : linkToGhseet}
-  >
-    {#if creatingLinkedGoogleSheet}
-      Création du Google Sheet…
-    {:else if !linkedGoogleSheetUrl}
-      Créer un Google Sheet lié
-    {:else}
-      Google Sheet
-    {/if}
-  </ButtonInk>
-  {#if event}
-    <ButtonInk icon={IconOpenInNewTab} newTab href="/events/{event.group.uid}/{event.uid}"
-      >Évènement lié</ButtonInk
-    >
-  {/if}
-</header>
+<Header
+  {answerCount}
+  formId={data.form.id}
+  {searchResults}
+  linkedEvent={event}
+  {linkedGoogleSheetUrl}
+></Header>
 
 <section class="table-scroller">
   {#if answerCount === 0}
