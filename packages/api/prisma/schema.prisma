@@ -960,6 +960,8 @@ model Form {
   // Pretty specific use-case: manually marking or un-marking answers from the answer list for each user. Used for votes that can be both online and offline.
   enableAnswersCompletionCheckbox Boolean       @default(false)
   markedCheckboxes                User[]        @relation("formsWithMarkedCheckbox")
+  restrictToPromotions            Int[]
+  contributorsOnly                Boolean       @default(false)
 
   // For full-text search
   search              Unsupported("tsvector") @default(dbgenerated("''::tsvector"))

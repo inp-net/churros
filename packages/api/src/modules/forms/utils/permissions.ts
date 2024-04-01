@@ -1,6 +1,15 @@
 import { isWithinPartialInterval, type Context } from '#lib';
 import { userCanAccessEvent, userCanManageEvent, userIsOnBoardOf } from '#permissions';
-import { Visibility, type Prisma } from '@prisma/client';
+import {
+  Visibility,
+  type Contribution,
+  type ContributionOption,
+  type Form,
+  type Group,
+  type Prisma,
+  type StudentAssociation,
+} from '@prisma/client';
+import { GraphQLError } from 'graphql';
 
 export const requiredIncludesForPermissions = {
   group: { include: { studentAssociation: true } },
@@ -55,15 +64,55 @@ export function canSeeAllAnswers(
 }
 
 export function canAnswerForm(
-  form: { opensAt: Date | null; closesAt: Date | null },
+  form: Form & { group: Group | null },
   associatedEvent: Parameters<typeof userCanAccessEvent>[0] | null,
   user: Context['user'],
+  userContributions: Array<
+    Contribution & { option: ContributionOption & { paysFor: StudentAssociation[] } }
+  >,
 ) {
   if (user?.admin) return true;
+  if (
+    form.restrictToPromotions.length > 0 &&
+    (!user || !form.restrictToPromotions.includes(user.graduationYear))
+  ) {
+    console.error(
+      `${user?.uid} cannot modify ${form.id}: graduationYear check failed: ${user?.graduationYear} not in ${form.restrictToPromotions}`,
+    );
+    return false;
+  }
+  if (form.contributorsOnly) {
+    if (!form.group) throw new GraphQLError('Cannot have a contributorsOnly form without a group');
+
+    if (
+      !userContributions.some((c) =>
+        c.option.paysFor.some((p) => p.id === form.group?.studentAssociationId),
+      )
+    ) {
+      console.error(
+        `${user?.uid} cannot answer ${form.id}: not a contributor of ${form.group?.studentAssociationId}`,
+      );
+      return false;
+    }
+  }
+
   return (
     isWithinPartialInterval(new Date(), { start: form.opensAt, end: form.closesAt }) &&
     (!associatedEvent || userCanAccessEvent(associatedEvent, user))
   );
+}
+
+export function canModifyFormAnswers(
+  form: Form & { group: Group | null },
+  associatedEvent: Parameters<typeof userCanAccessEvent>[0] | null,
+  user: Context['user'],
+  userContributions: Array<
+    Contribution & { option: ContributionOption & { paysFor: StudentAssociation[] } }
+  >,
+) {
+  if (!form.allowEditingAnswers) return false;
+  if (!canAnswerForm(form, associatedEvent, user, userContributions)) return false;
+  return true;
 }
 
 export function canSeeForm(

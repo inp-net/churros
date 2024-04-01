@@ -10,6 +10,7 @@ import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import {
   canAnswerForm,
   canEditForm,
+  canModifyFormAnswers,
   canSeeAllAnswers,
   canSeeForm,
   requiredIncludesForPermissions,
@@ -60,8 +61,42 @@ export const FormType = builder.prismaNode('Form', {
     }),
     canAnswer: t.boolean({
       description: "Indique si l'utilisateur peut répondre au formulaire.",
-      resolve: async ({ event, opensAt, closesAt }, {}, { user }) => {
-        return canAnswerForm({ opensAt, closesAt }, event, user);
+      resolve: async (form, {}, { user }) => {
+        const userContributions = user
+          ? await prisma.contribution.findMany({
+              where: {
+                userId: user?.id,
+              },
+              include: {
+                option: {
+                  include: {
+                    paysFor: true,
+                  },
+                },
+              },
+            })
+          : [];
+        return canAnswerForm(form, form.event, user, userContributions);
+      },
+    }),
+    canModifyAnswers: t.boolean({
+      description: "Indique si l'utilisateur·ice peut modifier ses réponses au formulaire.",
+      resolve: async (form, {}, { user }) => {
+        const userContributions = user
+          ? await prisma.contribution.findMany({
+              where: {
+                userId: user?.id,
+              },
+              include: {
+                option: {
+                  include: {
+                    paysFor: true,
+                  },
+                },
+              },
+            })
+          : [];
+        return canModifyFormAnswers(form, form.event, user, userContributions);
       },
     }),
     canSeeAnswers: t.boolean({

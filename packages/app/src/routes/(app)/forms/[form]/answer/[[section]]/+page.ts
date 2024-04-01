@@ -15,6 +15,7 @@ export async function load({ fetch, parent, params }) {
     linkedGoogleSheetUrl: true,
     opensAt: true,
     closesAt: true,
+    canModifyAnswers: true,
     group: {
       uid: true,
       name: true,
