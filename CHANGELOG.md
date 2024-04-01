@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'une faute d'orthographe sur la page des rapport de bugs (@litschan)
+
 ## [1.56.2] - 2024-04-01
 
 ### Technique
