@@ -1,10 +1,10 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import { formatDateTimeSmart, sortedByDate } from '$lib/dates';
   import { subscribe } from '$lib/subscriptions';
+  import { toasts } from '$lib/toasts';
   import { zeus } from '$lib/zeus';
   import debounce from 'lodash.debounce';
   import groupBy from 'lodash.groupby';
@@ -20,22 +20,22 @@
     encode: (v) => v || undefined,
     decode: (v) => v ?? '',
   });
-  let creatingLinkedGoogleSheet = false;
 
   $: ({
-    title,
-    visibility,
     answerCount,
     linkedGoogleSheetUrl,
     questions: { nodes: questions },
-    group,
     event,
-    localId,
+    checkboxesAreEnabled,
   } = data.form);
 
   let groupedAnswers: Record<string, Record<string, (typeof data.form.answers.nodes)[number]>> = {};
-  $: {
-  }
+
+  $: userCheckboxes = Object.fromEntries(
+    data.form.answers.nodes.map((a) => [a.createdBy?.uid, a.checkboxIsMarked]),
+  );
+
+  $: console.log({ userCheckboxes, nodes: data.form.answers.nodes });
 
   $: answerers = groupBy(
     data.form.answers.nodes.map((a) => a.createdBy),
@@ -54,17 +54,7 @@
             answers: [
               { last: 100 },
               {
-                nodes: {
-                  id: true,
-                  updatedAt: true,
-                  createdBy: { id: true, uid: true, fullName: true, pictureFile: true },
-                  question: {
-                    id: true,
-                    title: true,
-                    section: { title: true },
-                  },
-                  answerString: true,
-                },
+                nodes: _answerNodeQuery,
               },
             ],
           },
@@ -92,7 +82,7 @@
   function sortedAnswers(
     answers: typeof data.form.answers.nodes,
   ): [
-    { fullName: string; uid: string; pictureFile: string },
+    { fullName: string; uid: string; pictureFile: string; id: string },
     Date,
     Record<string, (typeof data.form.answers.nodes)[number]>,
   ][] {
@@ -114,7 +104,7 @@
       );
 
       return [answerer, date, answersByQuestion] as [
-        { fullName: string; uid: string; pictureFile: string },
+        { fullName: string; uid: string; pictureFile: string; id: string },
         Date,
         Record<string, (typeof data.form.answers.nodes)[number]>,
       ];
@@ -146,13 +136,6 @@
   });
 </script>
 
-<h1>
-  {#if group}<AvatarGroup href="/groups/{group.uid}" {...group}></AvatarGroup>{/if} Réponses à {title}
-</h1>
-<p class="visibility">
-  <IndicatorVisibility text {visibility}></IndicatorVisibility>
-</p>
-
 <Header
   {answerCount}
   formId={data.form.id}
@@ -170,6 +153,9 @@
         <tr>
           <th></th>
           <th></th>
+          {#if checkboxesAreEnabled}
+            <th>Coché</th>
+          {/if}
           {#each questions as { title, id } (id)}
             <th>{title}</th>
           {/each}
@@ -182,6 +168,40 @@
             <td>
               <AvatarPerson href="/users/{answerer.uid}" {...answerer} />
             </td>
+            {#if checkboxesAreEnabled}
+              <td>
+                <InputCheckbox
+                  label=""
+                  value={userCheckboxes[answerer.uid]}
+                  on:change={async ({ target }) => {
+                    if (!(target instanceof HTMLInputElement)) return;
+                    const beforeChange = userCheckboxes[answerer.uid];
+                    data.form.answers.nodes = data.form.answers.nodes.map((a) => {
+                      if (a.createdBy?.uid === answerer.uid) {
+                        a.checkboxIsMarked = target.checked;
+                      }
+                      return a;
+                    });
+                    try {
+                      await $zeus.mutate({
+                        setFormAnswersCheckbox: [
+                          { checked: target.checked, form: data.form.id, userId: answerer.id },
+                          { __typename: true },
+                        ],
+                      });
+                    } catch (error) {
+                      toasts.error('Impossible de modifier la case à cocher.', error?.toString());
+                      data.form.answers.nodes = data.form.answers.nodes.map((a) => {
+                        if (a.createdBy?.uid === answerer.uid) {
+                          a.checkboxIsMarked = beforeChange;
+                        }
+                        return a;
+                      });
+                    }
+                  }}
+                ></InputCheckbox>
+              </td>
+            {/if}
             {#each questions as { id } (id)}
               <td>{answersByQuestion[id]?.answerString ?? ''}</td>
             {/each}

@@ -176,5 +176,6 @@ export const FormType = builder.prismaNode('Form', {
       resolve: async ({ id }) =>
         (await prisma.formSection.count({ where: { formId: id, title: { not: '' } } })) > 0,
     }),
+    checkboxesAreEnabled: t.exposeBoolean('enableAnswersCompletionCheckbox'),
   }),
 });
