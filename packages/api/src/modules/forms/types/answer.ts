@@ -21,17 +21,19 @@ export const AnswerType = builder.prismaInterface('Answer', {
   description:
     'Une réponse à un formulaire. Les réponses peuvent être de plusieurs types différents (en fonction de la question).',
   include: answerTypePrismaIncludes,
-  authScopes(
-    {
-      createdById,
-      question: {
-        section: { form },
-      },
-    },
-    { user },
-  ) {
+  async authScopes({ createdById, question }, { user }) {
     if (!user) return false;
-    return createdById === user.id || canSeeAllAnswers(form, form.event, user);
+    if (!('section' in question)) {
+      question = await prisma.question.findUniqueOrThrow({
+        // @ts-expect-error TS doesn't know, but question might not have the includes we expect. see form.answers-by-user.ts
+        where: { id: question.id },
+        include: answerTypePrismaIncludes.question.include,
+      });
+    }
+    return (
+      createdById === user.id ||
+      canSeeAllAnswers(question.section.form, question.section.form.event, user)
+    );
   },
   resolveType({ question: { type } }) {
     switch (type) {

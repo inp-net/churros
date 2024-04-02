@@ -1,4 +1,4 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, toHtml } from '#lib';
+import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, toHtml } from '#lib';
 import { canSeeForm, requiredIncludesForPermissions } from '../utils/permissions.js';
 import { QuestionKindType } from './question-kind.js';
 
@@ -15,8 +15,21 @@ export const QuestionType = builder.prismaInterface('Question', {
       },
     },
   },
-  authScopes({ section: { form } }, { user }) {
-    return canSeeForm(form, form.event, user);
+  async authScopes({ section, id }, { user }) {
+    if (!section) {
+      section = await prisma.question
+        .findUniqueOrThrow({
+          where: { id },
+        })
+        .section({
+          include: {
+            form: {
+              include: requiredIncludesForPermissions,
+            },
+          },
+        });
+    }
+    return canSeeForm(section.form, section.form.event, user);
   },
   resolveType({ type }) {
     switch (type) {

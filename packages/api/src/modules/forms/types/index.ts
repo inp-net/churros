@@ -15,6 +15,7 @@ export * from './answer-text.js';
 export * from './answer-time.js';
 export * from './answer.js';
 export * from './answers-export-format.js';
+export * from './answers-of-user.js';
 export * from './form-search-result.js';
 export * from './form-section.js';
 export * from './form.js';
