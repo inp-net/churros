@@ -26,6 +26,7 @@ export async function load({ fetch, parent, params, url: { searchParams } }) {
           linkedGoogleSheetUrl: true,
           checkboxesAreEnabled: true,
           canSetCheckboxes: true,
+          canSeeAnswerStats: true,
           event: {
             group: { uid: true },
             uid: true,

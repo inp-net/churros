@@ -15,9 +15,28 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 - Les clubs ne sont plus autorisés à modifier leur type (@litschan)
 
+## [1.56.5] - 2024-04-02
+
+### Technique
+
+- Bug encore dans le check de userCanManageEvent
+
+## [1.56.4] - 2024-04-02
+
+### Technique
+
+- Bug dans le check de userCanManageEvent
+
+## [1.56.3] - 2024-04-02
+
 ### Corrections
 
 - Correction d'une faute d'orthographe sur la page des rapport de bugs (@litschan)
+- Correction d'un bug qui empêchait de passer à la section suivante sans modifier sa réponse sur un formulaire qui n'autorise pas à modifier ses réponses
+
+### Sécurité
+
+- Il est maintenant impossible de voir les statistiques de réponses quand un formulaire est toujours ouvert et possède des questions anonymes
 
 ## [1.56.2] - 2024-04-01
 
@@ -371,8 +390,11 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.56.2...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.56.5...main
 [1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
+[1.56.5]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.5
+[1.56.4]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.4
+[1.56.3]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.3
 [1.56.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.2
 [1.56.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.1
 [1.56.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.0

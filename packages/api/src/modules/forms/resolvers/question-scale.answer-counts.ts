@@ -5,7 +5,7 @@ import countBy from 'lodash.countby';
 import range from 'lodash.range';
 import { QuestionScaleType } from '../types/question-scale.js';
 import { answerToString } from '../utils/answers.js';
-import { canSeeAllAnswers } from '../utils/permissions.js';
+import { canSeeAnswerStatsForQuestion } from '../utils/permissions.js';
 
 builder.prismaObjectField(QuestionScaleType, 'answerCounts', (t) =>
   t.field({
@@ -13,8 +13,14 @@ builder.prismaObjectField(QuestionScaleType, 'answerCounts', (t) =>
     description:
       "Compte le nombre total de réponses pour chaque option. Retourne un `StringToIntMapping` où les clés sont les options et les valeurs sont le nombre de réponses pour l'option.",
     authScopes: (question, _, { user }) =>
-      // @ts-expect-error seems like TS does not pick up on the includes done by the requiredIncludesForPermissions constant, see QuestionType.
-      canSeeAllAnswers(question.section.form, question.section.form.event, user),
+      canSeeAnswerStatsForQuestion(
+        question,
+        // @ts-expect-error seems like TS does not pick up on the includes done by the requiredIncludesForPermissions constant, see QuestionType.
+        question.section.form,
+        // @ts-expect-error seems like TS does not pick up on the includes done by the requiredIncludesForPermissions constant, see QuestionType.
+        question.section.form.event,
+        user,
+      ),
     resolve: async ({ id, scaleStart, scaleEnd }, _) => {
       if (scaleStart === null || scaleEnd === null)
         throw new GraphQLError('Missing scaleStart or scaleEnd');

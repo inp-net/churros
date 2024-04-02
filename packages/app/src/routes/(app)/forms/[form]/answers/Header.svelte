@@ -4,6 +4,7 @@
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
   import { zeus } from '$lib/zeus';
   import IconAnalytics from '~icons/mdi/chart-bar';
   import IconDownload from '~icons/mdi/download-outline';
@@ -18,6 +19,7 @@
   export let answerCount: number;
   export let linkedEvent: { group: { uid: string }; uid: string } | undefined;
   export let searching = false;
+  export let canSeeAnswerStats = false;
 
   let creatingLinkedGoogleSheet = false;
 
@@ -67,9 +69,18 @@
     {#if searching}{searchResults?.length} résultats{:else}{answerCount} réponses{/if}
   </p>
   {#if $page.route.id === '/(app)/forms/[form]/answers'}
-    <ButtonInk href="/forms/{localId}/answers/analytics" icon={IconAnalytics}
-      >Statistiques</ButtonInk
+    <span
+      class="maybe-tooltip-container"
+      use:tooltip={canSeeAnswerStats
+        ? undefined
+        : `Si le formulaire comporte des questions anonymes, il est impossible de voir les statistiques tant que les réponses sont encore acceptées`}
     >
+      <ButtonInk
+        disabled={!canSeeAnswerStats}
+        href="/forms/{localId}/answers/analytics"
+        icon={IconAnalytics}>Statistiques</ButtonInk
+      >
+    </span>
   {:else}
     <ButtonInk href="/forms/{localId}/answers" icon={IconList}>Réponses</ButtonInk>
   {/if}

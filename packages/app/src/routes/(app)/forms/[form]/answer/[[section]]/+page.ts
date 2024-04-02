@@ -29,6 +29,9 @@ export async function load({ fetch, parent, params }) {
         descriptionHtml: true,
         description: true,
         title: true,
+        nextSection: {
+          localId: true,
+        },
         questions: {
           'id': true,
           'title': true,
