@@ -94,14 +94,14 @@
     src="https://stats.inpt.fr/script.js"
     data-website-id="e3bd5b08-b0a3-47ff-a274-1df9ba831c3e"
     data-domains="churros.inpt.fr"
-    data-event-loggedin={$me ? 'true' : 'false'}
-    data-event-theme={$theme}
-    data-event-darkmode={$isDark ? 'true' : 'false'}
-    data-event-version={CURRENT_VERSION}
-    data-event-commit={CURRENT_COMMIT}
-    data-event-user-major={$me?.major?.shortName ?? '(none)'}
-    data-event-user-year-tier={$me?.yearTier ? `${$me.yearTier}A` : '(none)'}
-    data-event-context={isPWA() ? 'pwa' : 'browser'}
+    data-loggedin={$me ? 'true' : 'false'}
+    data-theme={$theme}
+    data-darkmode={$isDark ? 'true' : 'false'}
+    data-version={CURRENT_VERSION}
+    data-commit={CURRENT_COMMIT}
+    data-user-major={$me?.major?.shortName ?? '(none)'}
+    data-user-year-tier={$me?.yearTier ? `${$me.yearTier}A` : '(none)'}
+    data-context={isPWA() ? 'pwa' : 'browser'}
   ></script>
 </svelte:head>
 
