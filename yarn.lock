@@ -506,6 +506,7 @@ __metadata:
     semver: "npm:^7.6.0"
     sharp: "npm:^0.33.3"
     slug: "npm:^9.0.0"
+    ts-tqdm: "npm:^0.8.6"
     tsx: "npm:^4.7.1"
     typescript: "npm:^5.4.3"
     unified: "npm:^11.0.4"
@@ -15170,6 +15171,13 @@ __metadata:
     ts-node-transpile-only: dist/bin-transpile.js
     ts-script: dist/bin-script-deprecated.js
   checksum: 10c0/5f29938489f96982a25ba650b64218e83a3357d76f7bede80195c65ab44ad279c8357264639b7abdd5d7e75fc269a83daa0e9c62fd8637a3def67254ecc9ddc2
+  languageName: node
+  linkType: hard
+
+"ts-tqdm@npm:^0.8.6":
+  version: 0.8.6
+  resolution: "ts-tqdm@npm:0.8.6"
+  checksum: 10c0/f91574e4ee71a007987bcdbb21036c76499f2141c2190e0c1100bbc7e0908862935bb43762e7df2ab13e2838cba8bd371e5601aa5468098f3872dcea3fe54a0a
   languageName: node
   linkType: hard
 
