@@ -15,6 +15,7 @@
   import { _answerNodeQuery } from './+page';
   import Header from './Header.svelte';
   import { tooltip } from '$lib/tooltip';
+  import { compareDesc } from 'date-fns';
 
   export let data: PageData;
 
@@ -120,6 +121,7 @@
         ...data.form.answersByUser.edges,
         ...form.answersByUser.edges,
       ];
+      data.form.answersByUser.edges.sort((a, b) => compareDesc(a.node.date, b.node.date));
       data.form.answersByUser.pageInfo = form.answersByUser.pageInfo;
     }
     loadingMore = false;
@@ -203,11 +205,12 @@
                     const beforeChange = userCheckboxes[answerer.uid];
                     data.form.answersByUser.edges = data.form.answersByUser.edges.map(
                       ({ node, cursor }) => {
-                        if (node.user?.uid === answerer.uid)
-                          {node.answers = node.answers.map((ans) => ({
+                        if (node.user?.uid === answerer.uid) {
+                          node.answers = node.answers.map((ans) => ({
                             ...ans,
                             checkboxIsMarked: target.checked,
-                          }));}
+                          }));
+                        }
 
                         return { node, cursor };
                       },
@@ -223,11 +226,12 @@
                       toasts.error('Impossible de modifier la case à cocher.', error?.toString());
                       data.form.answersByUser.edges = data.form.answersByUser.edges.map(
                         ({ node, cursor }) => {
-                          if (node.user?.uid === answerer.uid)
-                            {node.answers = node.answers.map((ans) => ({
+                          if (node.user?.uid === answerer.uid) {
+                            node.answers = node.answers.map((ans) => ({
                               ...ans,
                               checkboxIsMarked: beforeChange,
-                            }));}
+                            }));
+                          }
 
                           return { node, cursor };
                         },

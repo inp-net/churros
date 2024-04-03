@@ -60,7 +60,7 @@ builder.prismaObjectField(FormType, 'answersByUser', (t) =>
             .map(({ user, user: { formAnswers } }) => ({
               user,
               answers: formAnswers.filter(propertyIsNotNull('createdBy')),
-              date: new Date(Math.max(...formAnswers.map((a) => a.createdAt.valueOf()))),
+              date: new Date(Math.max(...formAnswers.map((a) => a.updatedAt.valueOf()))),
             })),
         );
       }
@@ -92,7 +92,7 @@ function groupAndSort<T extends Answer & { createdBy: User | null }>(answers: T[
     .map((answers) => ({
       user: answers[0]!.createdBy,
       answers,
-      date: new Date(Math.max(...answers.map((a) => a.createdAt.valueOf()))),
+      date: new Date(Math.max(...answers.map((a) => a.updatedAt.valueOf()))),
     }))
     .sort((a, b) => b.date.valueOf() - a.date.valueOf());
 }
