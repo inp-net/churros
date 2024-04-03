@@ -11,6 +11,15 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction de quelques problèmes d'affichage dans la liste des réponses à un formulaire.
+
+### Améliorations
+
+- Les réponses les plus récentes sont maintenant affichées en premier dans la liste des réponses à un formulaire.
+- Il y a un bouton pour charger les réponses plus anciennes dans la liste des réponses à un formulaire.
+
 ## [1.56.5] - 2024-04-02
 
 ### Technique
