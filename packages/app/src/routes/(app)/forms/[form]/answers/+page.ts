@@ -1,17 +1,19 @@
 import { loadQuery, Selector } from '$lib/zeus.js';
 import { error } from '@sveltejs/kit';
 
-export const _answerNodeQuery = Selector('Answer')({
-  id: true,
-  updatedAt: true,
-  checkboxIsMarked: true,
-  createdBy: { id: true, uid: true, fullName: true, pictureFile: true },
-  question: {
+export const _answerNodeQuery = Selector('AnswersOfUser')({
+  date: true,
+  user: { id: true, uid: true, fullName: true, pictureFile: true },
+  answers: {
     id: true,
-    title: true,
-    section: { title: true },
+    checkboxIsMarked: true,
+    question: {
+      id: true,
+      title: true,
+      section: { title: true },
+    },
+    answerString: true,
   },
-  answerString: true,
 });
 
 export async function load({ fetch, parent, params, url: { searchParams } }) {
@@ -43,11 +45,11 @@ export async function load({ fetch, parent, params, url: { searchParams } }) {
               },
             },
           ],
-          answers: [
+          answersByUser: [
             { after: searchParams.get('after') },
             {
               pageInfo: { hasNextPage: true, endCursor: true },
-              nodes: _answerNodeQuery,
+              edges: { cursor: true, node: _answerNodeQuery },
             },
           ],
         },

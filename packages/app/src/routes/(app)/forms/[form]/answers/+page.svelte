@@ -3,17 +3,18 @@
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
-  import { formatDateTimeSmart, sortedByDate } from '$lib/dates';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { formatDateTime, formatDateTimeSmart } from '$lib/dates';
   import { subscribe } from '$lib/subscriptions';
   import { toasts } from '$lib/toasts';
   import { zeus } from '$lib/zeus';
   import debounce from 'lodash.debounce';
-  import groupBy from 'lodash.groupby';
   import { onMount } from 'svelte';
   import { queryParam } from 'sveltekit-search-params';
   import type { PageData } from './$types';
   import { _answerNodeQuery } from './+page';
   import Header from './Header.svelte';
+  import { tooltip } from '$lib/tooltip';
 
   export let data: PageData;
 
@@ -32,15 +33,11 @@
     canSeeAnswerStats,
   } = data.form);
 
-  let groupedAnswers: Record<string, Record<string, (typeof data.form.answers.nodes)[number]>> = {};
-
   $: userCheckboxes = Object.fromEntries(
-    data.form.answers.nodes.map((a) => [a.createdBy?.uid, a.checkboxIsMarked]),
-  );
-
-  $: answerers = groupBy(
-    data.form.answers.nodes.map((a) => a.createdBy),
-    (u) => u?.uid,
+    data.form.answersByUser.edges.map(({ node }) => [
+      node.user?.uid,
+      node.answers.some((a) => a.checkboxIsMarked),
+    ]),
   );
 
   onMount(async () => {
@@ -52,10 +49,13 @@
           },
           {
             answerCount: true,
-            answers: [
-              { last: 100 },
+            answersByUser: [
+              // passing an empty {} typechecks but creates a query with a syntax error
+              // passing a single object instead of a pair of objects does not typecheck but creates a working query…
+              // thanks Zeus as always
+              { q: null },
               {
-                nodes: _answerNodeQuery,
+                edges: { node: _answerNodeQuery, cursor: true },
               },
             ],
           },
@@ -64,54 +64,23 @@
       async (result) => {
         const freshData = await result;
         if ('errors' in freshData) return;
-        if (!freshData.form) return;
-        if (!freshData.form.answers) return;
 
-        //@ts-expect-error svelte is dumb
-        data.form.answers.nodes = [
-          ...data.form.answers.nodes.filter(
-            //@ts-expect-error svelte is dumb
-            (a) => !freshData.form.answers.nodes.some((b) => a.id === b.id),
-          ),
-          ...freshData.form.answers.nodes,
-        ];
-        data.form.answerCount = freshData.form.answerCount;
+        if (freshData.form?.answersByUser?.edges) {
+          // @ts-expect-error $subscribe has nullables everywhere...
+          data.form.answersByUser.edges = [
+            ...freshData.form.answersByUser.edges,
+            ...data.form.answersByUser.edges.filter(
+              (a) =>
+                !(freshData.form?.answersByUser ?? { edges: [] }).edges.some(
+                  (b) => a.cursor === b?.cursor,
+                ),
+            ),
+          ];
+          data.form.answerCount = freshData.form.answerCount;
+        }
       },
     );
   });
-
-  function sortedAnswers(
-    answers: typeof data.form.answers.nodes,
-  ): [
-    { fullName: string; uid: string; pictureFile: string; id: string },
-    Date,
-    Record<string, (typeof data.form.answers.nodes)[number]>,
-  ][] {
-    const byUser = groupBy(answers, (a) => a.createdBy?.uid);
-    /**
-     * Grouped answers, by user uid then by question ID
-     */
-    groupedAnswers = Object.fromEntries(
-      Object.entries(byUser).map(([uid, answers]) => [
-        uid,
-        Object.fromEntries(answers.map((a) => [a.question.id, a])),
-      ]),
-    );
-    const entries = Object.entries(groupedAnswers).map(([userUid, answersByQuestion]) => {
-      const answerer = answerers[userUid]?.[0];
-
-      const date = new Date(
-        Math.max(...Object.values(answersByQuestion).map((a) => new Date(a.updatedAt).valueOf())),
-      );
-
-      return [answerer, date, answersByQuestion] as [
-        { fullName: string; uid: string; pictureFile: string; id: string },
-        Date,
-        Record<string, (typeof data.form.answers.nodes)[number]>,
-      ];
-    });
-    return sortedByDate(entries, 1);
-  }
 
   const searchAnswers = debounce(async (q) => {
     if (!q) return undefined;
@@ -120,12 +89,40 @@
       form: [
         { localId: data.form.localId },
         {
-          searchAnswers: [{ q }, { answer: _answerNodeQuery }],
+          answersByUser: [{ q }, { edges: { node: _answerNodeQuery, cursor: true } }],
         },
       ],
     });
 
-    return form?.searchAnswers.map((a) => a.answer);
+    return form?.answersByUser.edges;
+  }, 200);
+
+  let loadingMore = false;
+  const loadMore = debounce(async () => {
+    loadingMore = true;
+    const { form } = await $zeus.query({
+      form: [
+        { localId: data.form.localId },
+        {
+          answersByUser: [
+            { after: data.form.answersByUser.pageInfo.endCursor },
+            {
+              edges: { node: _answerNodeQuery, cursor: true },
+              pageInfo: { hasNextPage: true, endCursor: true },
+            },
+          ],
+        },
+      ],
+    });
+
+    if (form?.answersByUser.edges) {
+      data.form.answersByUser.edges = [
+        ...data.form.answersByUser.edges,
+        ...form.answersByUser.edges,
+      ];
+      data.form.answersByUser.pageInfo = form.answersByUser.pageInfo;
+    }
+    loadingMore = false;
   }, 200);
 
   let searching = false;
@@ -148,7 +145,11 @@
   linkedEvent={event}
   {linkedGoogleSheetUrl}
   {canSeeAnswerStats}
-></Header>
+>
+  {#if data.form.answersByUser.pageInfo.hasNextPage}
+    <ButtonSecondary loading={loadingMore} on:click={loadMore}>Charger plus</ButtonSecondary>
+  {/if}
+</Header>
 
 <section class="table-scroller">
   {#if answerCount === 0}
@@ -185,9 +186,9 @@
         </tr>
       </thead>
       <tbody>
-        {#each sortedAnswers($q && searchResults ? searchResults : data.form.answers.nodes) as [answerer, date, answersByQuestion] (answerer.uid)}
+        {#each $q && searchResults ? searchResults : data.form.answersByUser.edges as { node: { user: answerer, answers, date }, cursor } (cursor)}
           <tr>
-            <td>{formatDateTimeSmart(date)}</td>
+            <td use:tooltip={formatDateTime(date)}>{formatDateTimeSmart(date)}</td>
             <td>
               <AvatarPerson href="/users/{answerer.uid}" {...answerer} />
             </td>
@@ -200,11 +201,17 @@
                   on:change={async ({ target }) => {
                     if (!(target instanceof HTMLInputElement)) return;
                     const beforeChange = userCheckboxes[answerer.uid];
-                    data.form.answers.nodes = data.form.answers.nodes.map((a) => {
-                      if (a.createdBy?.uid === answerer.uid) a.checkboxIsMarked = target.checked;
+                    data.form.answersByUser.edges = data.form.answersByUser.edges.map(
+                      ({ node, cursor }) => {
+                        if (node.user?.uid === answerer.uid)
+                          {node.answers = node.answers.map((ans) => ({
+                            ...ans,
+                            checkboxIsMarked: target.checked,
+                          }));}
 
-                      return a;
-                    });
+                        return { node, cursor };
+                      },
+                    );
                     try {
                       await $zeus.mutate({
                         setFormAnswersCheckbox: [
@@ -214,18 +221,24 @@
                       });
                     } catch (error) {
                       toasts.error('Impossible de modifier la case à cocher.', error?.toString());
-                      data.form.answers.nodes = data.form.answers.nodes.map((a) => {
-                        if (a.createdBy?.uid === answerer.uid) a.checkboxIsMarked = beforeChange;
+                      data.form.answersByUser.edges = data.form.answersByUser.edges.map(
+                        ({ node, cursor }) => {
+                          if (node.user?.uid === answerer.uid)
+                            {node.answers = node.answers.map((ans) => ({
+                              ...ans,
+                              checkboxIsMarked: beforeChange,
+                            }));}
 
-                        return a;
-                      });
+                          return { node, cursor };
+                        },
+                      );
                     }
                   }}
                 ></InputCheckbox>
               </td>
             {/if}
             {#each questions as { id } (id)}
-              <td>{answersByQuestion[id]?.answerString ?? ''}</td>
+              <td>{answers.find((a) => a.question.id === id)?.answerString ?? ''}</td>
             {/each}
           </tr>
         {/each}
