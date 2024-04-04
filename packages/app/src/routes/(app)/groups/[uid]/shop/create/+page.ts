@@ -50,6 +50,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
       endsAt: undefined,
       group,
       groupUid: group.uid,
+      itemOptions: [],
     },
     lydiaAccounts,
   };

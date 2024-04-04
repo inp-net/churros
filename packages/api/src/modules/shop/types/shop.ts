@@ -44,6 +44,7 @@ export const ShopItemType = builder.prismaObject('ShopItem', {
         return stockLeft;
       },
     }),
+    itemOptions: t.relation('itemOptions'),
   }),
 });
 

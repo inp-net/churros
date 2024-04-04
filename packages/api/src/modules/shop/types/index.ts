@@ -3,5 +3,8 @@
  */
 
 export * from './pictures.js';
+export * from './shop-answer.js';
+export * from './shop-option-input.js';
+export * from './shop-option.js';
 export * from './shop-payment.js';
 export * from './shop.js';

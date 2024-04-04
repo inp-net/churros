@@ -61,6 +61,11 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             path: true,
             position: true,
           },
+          itemOptions: {
+            id: true,
+            name: true,
+            options: true,
+          },
         },
       ],
       lydiaAccounts: {

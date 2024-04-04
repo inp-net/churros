@@ -17,6 +17,8 @@
 
   let serverError = '';
   let deleting = false;
+  let newOption = '';
+  const optionToDeleteIds:string[] = [];
 
   export let data: {
     id: string;
@@ -30,6 +32,11 @@
     endsAt?: Date | undefined;
     visibility: Visibility;
     paymentMethods: PaymentMethod[];
+    itemOptions : {
+      id: string;
+      name: string;
+      options: string[];
+    }[];
     group: {
       uid: string;
     };
@@ -58,6 +65,17 @@
     if (data.paymentMethods.includes(PaymentMethod.Lydia) && !data.lydiaAccount) {
       serverError = 'Un compte Lydia est requis pour accepter les paiements par Lydia';
       return;
+    }
+    for (const itemOption of data.itemOptions) 
+      itemOption.options = itemOption.options.filter((option) => option !== '');
+    
+    if (optionToDeleteIds.length > 0){
+      await $zeus.mutate({
+        deleteShopOption: [
+          { optionIds: optionToDeleteIds },
+          true,
+        ],
+      });
     }
     const { upsertShopItem } = await $zeus.mutate({
       upsertShopItem: [
@@ -102,6 +120,19 @@
         },
       ],
     });
+
+    await $zeus.mutate({
+      upsertShopOptions: [
+        {
+          shopItemId: data.id,
+          itemOptions: data.itemOptions,
+            // Add missing property 'itemOptions' to the type definition
+            // e.g. itemOptions: string[] | Variable<any, string>;
+          },
+          true,
+        ],
+    });
+
     if (upsertShopItem.__typename === 'Error') {
       serverError = upsertShopItem.message;
       toasts.error(`Impossible de sauvegarder`, serverError);
@@ -128,6 +159,55 @@
       <InputDate time label="Début de la vente" bind:value={data.startsAt} />
       <InputDate time label="Fin de la vente" bind:value={data.endsAt} />
       <InputLongText label="Description" bind:value={data.description} />
+      <div class="options">
+        <ButtonSecondary
+          on:click={() => {
+            data.itemOptions = [
+              ...data.itemOptions,
+              {
+                id: '',
+                name: '',
+                options: [],
+              },
+            ];
+          }}
+        >Ajouter une option
+        </ButtonSecondary>
+        {#each data.itemOptions as itemOption}
+          <InputText label="Nom du choix" bind:value={itemOption.name} required={(itemOption.options.length > 0)} on:focusout={()=> {
+            if (itemOption.options.length === 0&& itemOption.name === '') {
+              optionToDeleteIds.push(itemOption.id);
+              data.itemOptions = data.itemOptions.filter((o) => o !== itemOption);
+            }
+          }}/>
+          <ul class="nobullet">
+            <p>Options possibles</p>
+            {#each itemOption.options as option}
+            <li>
+              <InputText label="" bind:value={option} on:focusout={()=> {
+                if (option === '') 
+                  itemOption.options = itemOption.options.filter((o) => o !== option);
+                
+              }}/>
+            </li>
+            {/each}
+            <li class="option new">
+              <div class="fake-input"></div>
+              <InputText
+                on:blur={() => {
+                  if (newOption && !itemOption.options.includes(newOption)) {
+                    itemOption.options = [...itemOption.options, newOption];
+                    newOption = '';
+                  }
+                }}
+                bind:value={newOption}
+                label=""
+                placeholder="Nouvelle option"
+              />
+            </li>
+          </ul>
+        {/each}
+      </div>
       <InputSelectOne
         label="Visibilité"
         bind:value={data.visibility}
