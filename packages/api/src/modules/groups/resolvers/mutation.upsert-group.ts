@@ -135,6 +135,7 @@ builder.mutationField('upsertGroup', (t) =>
       if (parentUid === oldGroup?.uid) throw new GraphQLError('Group cannot be its own parent');
 
       if (
+        !parentUid &&
         !(user.canEditGroups || user.admin) &&
         (oldGroup?.type != type || oldGroup.studentAssociationId != studentAssociationUid)
       )
