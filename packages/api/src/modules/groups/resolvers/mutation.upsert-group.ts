@@ -139,6 +139,7 @@ builder.mutationField('upsertGroup', (t) =>
         (oldGroup?.type != type || oldGroup.studentAssociationId != studentAssociationUid)
       )
         throw new GraphQLError("Vous n'êtes pas autorisé à modifer ces paramètres.");
+
       const data = {
         type,
         selfJoinable,
