@@ -27,6 +27,8 @@ builder.mutationField('upsertShopOptions', (t) =>
             data: {
               name: itemOption.name,
               options: itemOption.options,
+              required: itemOption.required,
+              otherToggle: itemOption.otherToggle,
             },
           });
           if (!Option) throw new GraphQLError('Failed to update shop item option');
@@ -36,6 +38,8 @@ builder.mutationField('upsertShopOptions', (t) =>
               name: itemOption.name,
               options: itemOption.options,
               shopItem: { connect: { id: shopItemId } },
+              required: itemOption.required,
+              otherToggle: itemOption.otherToggle,
             },
           });
           if (!Option) throw new GraphQLError('Failed to create shop item option');

@@ -65,6 +65,8 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             id: true,
             name: true,
             options: true,
+            required: true,
+            otherToggle: true,
           },
         },
       ],

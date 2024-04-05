@@ -5,5 +5,7 @@ export const ShopItemOptionInput = builder.inputType('ShopItemOptionInput', {
     id: t.string(),
     name: t.string(),
     options: t.stringList(),
+    required: t.boolean(),
+    otherToggle: t.boolean(),
   }),
 });

@@ -998,6 +998,8 @@ model ShopItemOption {
   shopItemId    String
   options       String[] @default([])
   shopItem      ShopItem @relation(fields: [shopItemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  required      Boolean @default(false)
+  otherToggle  Boolean @default(false)
 }
 
 model ShopItemAnswer {
@@ -1005,7 +1007,6 @@ model ShopItemAnswer {
   shopPaymentId     String
   option            String[] @default([])
   shopPayment       ShopPayment      @relation(fields: [shopPaymentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
 }
 
 model Form {

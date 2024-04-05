@@ -134,6 +134,11 @@
         }}
       />
 
+      <div class="options">
+        {#each shopItem.itemOptions as option}
+          <h3>{option.name}</h3>
+        {/each}
+      </div>
       <ul class="nobullet payment-methods">
         {#if !paying}
           <ul class="nobullet payment-methods">
@@ -150,7 +155,8 @@
               </li>
             {:else}
               <li class="no-payment-methods danger">
-                Aucun moyen de paiement disponible. Contactez les managers de l'évènement.
+                Aucun moyen de paiement disponible. Contactez le bureau de {data.shopItem.group
+                  .name}.
               </li>
             {/each}
           </ul>
