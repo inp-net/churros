@@ -14,11 +14,12 @@
   import InputSelectMultiple from './InputSelectMultiple.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
   import InputText from './InputText.svelte';
+  import InputToggle from './InputToggle.svelte';
 
   let serverError = '';
   let deleting = false;
   let newOption = '';
-  const optionToDeleteIds:string[] = [];
+  const optionToDeleteIds: string[] = [];
 
   export let data: {
     id: string;
@@ -32,10 +33,12 @@
     endsAt?: Date | undefined;
     visibility: Visibility;
     paymentMethods: PaymentMethod[];
-    itemOptions : {
+    itemOptions: {
       id: string;
       name: string;
       options: string[];
+      required: boolean;
+      otherToggle: boolean;
     }[];
     group: {
       uid: string;
@@ -66,15 +69,12 @@
       serverError = 'Un compte Lydia est requis pour accepter les paiements par Lydia';
       return;
     }
-    for (const itemOption of data.itemOptions) 
+    for (const itemOption of data.itemOptions)
       itemOption.options = itemOption.options.filter((option) => option !== '');
-    
-    if (optionToDeleteIds.length > 0){
+
+    if (optionToDeleteIds.length > 0) {
       await $zeus.mutate({
-        deleteShopOption: [
-          { optionIds: optionToDeleteIds },
-          true,
-        ],
+        deleteShopOption: [{ optionIds: optionToDeleteIds }, true],
       });
     }
     const { upsertShopItem } = await $zeus.mutate({
@@ -126,11 +126,11 @@
         {
           shopItemId: data.id,
           itemOptions: data.itemOptions,
-            // Add missing property 'itemOptions' to the type definition
-            // e.g. itemOptions: string[] | Variable<any, string>;
-          },
-          true,
-        ],
+          // Add missing property 'itemOptions' to the type definition
+          // e.g. itemOptions: string[] | Variable<any, string>;
+        },
+        true,
+      ],
     });
 
     if (upsertShopItem.__typename === 'Error') {
@@ -159,37 +159,56 @@
       <InputDate time label="Début de la vente" bind:value={data.startsAt} />
       <InputDate time label="Fin de la vente" bind:value={data.endsAt} />
       <InputLongText label="Description" bind:value={data.description} />
-      <div class="options">
-        <ButtonSecondary
-          on:click={() => {
-            data.itemOptions = [
-              ...data.itemOptions,
-              {
-                id: '',
-                name: '',
-                options: [],
-              },
-            ];
-          }}
-        >Ajouter une option
-        </ButtonSecondary>
+      <div class="option-input">
+        <div class="option-header">
+          <p>Options</p>
+          <ButtonSecondary
+            on:click={() => {
+              data.itemOptions = [
+                ...data.itemOptions,
+                {
+                  id: '',
+                  name: '',
+                  options: [],
+                  required: false,
+                  otherToggle: false,
+                },
+              ];
+            }}
+            >Ajouter une option
+          </ButtonSecondary>
+        </div>
         {#each data.itemOptions as itemOption}
-          <InputText label="Nom du choix" bind:value={itemOption.name} required={(itemOption.options.length > 0)} on:focusout={()=> {
-            if (itemOption.options.length === 0&& itemOption.name === '') {
-              optionToDeleteIds.push(itemOption.id);
-              data.itemOptions = data.itemOptions.filter((o) => o !== itemOption);
-            }
-          }}/>
-          <ul class="nobullet">
+          <div class="option-title">
+            <InputText
+              label="Nom du choix"
+              bind:value={itemOption.name}
+              required={itemOption.options.length > 0}
+              on:focusout={() => {
+                if (itemOption.options.length === 0 && itemOption.name === '') {
+                  optionToDeleteIds.push(itemOption.id);
+                  data.itemOptions = data.itemOptions.filter((o) => o !== itemOption);
+                }
+              }}
+            />
+            <div class="toggles">
+              <InputToggle label={'Rendre obligatoire'} bind:value={itemOption.required} />
+              <InputToggle label={"Autoriser champ 'autre'"} bind:value={itemOption.otherToggle} />
+            </div>
+          </div>
+          <ul class="nobullet option">
             <p>Options possibles</p>
             {#each itemOption.options as option}
-            <li>
-              <InputText label="" bind:value={option} on:focusout={()=> {
-                if (option === '') 
-                  itemOption.options = itemOption.options.filter((o) => o !== option);
-                
-              }}/>
-            </li>
+              <li>
+                <InputText
+                  label=""
+                  bind:value={option}
+                  on:focusout={() => {
+                    if (option === '')
+                      itemOption.options = itemOption.options.filter((o) => o !== option);
+                  }}
+                />
+              </li>
             {/each}
             <li class="option new">
               <div class="fake-input"></div>
@@ -305,5 +324,40 @@
     margin: 2rem auto 0;
     margin-top: 2rem;
     text-align: center;
+  }
+
+  .option-input {
+    padding: 1em 0;
+  }
+  .option-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .option-title {
+    display: flex;
+    align-items: end;
+    gap: 1em;
+  }
+
+  .toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .option > li + li {
+    margin-top: 10px;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .option-title {
+      display: block;
+    }
+
+    .toggles {
+      padding: 0.5rem 0;
+    }
   }
 </style>
