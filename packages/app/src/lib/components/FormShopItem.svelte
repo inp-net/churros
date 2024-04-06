@@ -16,11 +16,6 @@
   import InputText from './InputText.svelte';
   import InputToggle from './InputToggle.svelte';
 
-  let serverError = '';
-  let deleting = false;
-  let newOption = '';
-  const optionToDeleteIds: string[] = [];
-
   export let data: {
     id: string;
     uid: string;
@@ -63,6 +58,13 @@
         };
   }>;
 
+  let serverError = '';
+  let deleting = false;
+  const newOption: string[] = [];
+  const optionToDeleteIds: string[] = [];
+
+  for (const _ of data.itemOptions) newOption.push('');
+
   async function submit() {
     serverError = '';
     if (data.paymentMethods.includes(PaymentMethod.Lydia) && !data.lydiaAccount) {
@@ -71,6 +73,11 @@
     }
     for (const itemOption of data.itemOptions)
       itemOption.options = itemOption.options.filter((option) => option !== '');
+    //filter duplicates as well
+    data.itemOptions = data.itemOptions.filter((itemOption, index) => {
+      const firstIndex = data.itemOptions.findIndex((o) => o.name === itemOption.name);
+      return firstIndex === index;
+    });
 
     if (optionToDeleteIds.length > 0) {
       await $zeus.mutate({
@@ -174,16 +181,19 @@
                   otherToggle: false,
                 },
               ];
+              newOption.push('');
             }}
             >Ajouter une option
           </ButtonSecondary>
         </div>
-        {#each data.itemOptions as itemOption}
+        {#each data.itemOptions as itemOption, i}
           <div class="option-title">
             <InputText
               label="Nom du choix"
               bind:value={itemOption.name}
-              required={itemOption.options.length > 0}
+              required={itemOption.options.length > 0 ||
+                itemOption.required ||
+                itemOption.otherToggle}
               on:focusout={() => {
                 if (itemOption.options.length === 0 && itemOption.name === '') {
                   optionToDeleteIds.push(itemOption.id);
@@ -214,14 +224,13 @@
               <div class="fake-input"></div>
               <InputText
                 on:blur={() => {
-                  if (newOption && !itemOption.options.includes(newOption)) {
-                    itemOption.options = [...itemOption.options, newOption];
-                    newOption = '';
-                  }
+                  if (newOption[i] === '' && !itemOption.options.includes(newOption[i])) 
+                    itemOption.options = [...itemOption.options, newOption[i]];
+                  
                 }}
-                bind:value={newOption}
+                bind:value={newOption[i]}
                 label=""
-                placeholder="Nouvelle option"
+                placeholder="Nouvelle valeur de {itemOption.name}"
               />
             </li>
           </ul>
