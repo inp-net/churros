@@ -1,11 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import BackButton from '$lib/components/ButtonBack.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import BackButton from '$lib/components/ButtonBack.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import InputNumber from '$lib/components/InputNumber.svelte';
+  import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
   import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
@@ -29,9 +30,15 @@
   let shopPaymentId = '';
   let phone = '';
   let choosingPaymentMethodLoading: PaymentMethod | undefined = undefined;
-
+  const answers: string[] = [];
+  const dropdown: string[] = [];
   let quantity = 1;
   const max = Math.min(shopItem.max, shopItem.stockLeft);
+
+  for (const _ of data.shopItem.itemOptions) {
+    dropdown.push('');
+    answers.push('');
+  }
 
   async function payBy(method: PaymentMethod | undefined) {
     if ($me?.uid === undefined) await goto('/login');
@@ -44,6 +51,7 @@
           userUid: $me?.uid ?? '',
           shopItemId: shopItem.id,
           quantity,
+          answers,
         },
         {
           '__typename': true,
@@ -65,9 +73,9 @@
       serverError = upsertShopPayment.message;
       return;
     }
-    paying = true;
-    serverError = '';
 
+    serverError = '';
+    if (method === PaymentMethod.Lydia) paying = true;
     // TODO handle actually going there only when payment has gone through
     if (upsertShopPayment.__typename === 'MutationUpsertShopPaymentSuccess') {
       if (method === PaymentMethod.Lydia) {
@@ -83,7 +91,7 @@
         paying = false;
       }
     }
-
+    paying = false;
     if (upsertShopPayment.__typename === 'MutationUpsertShopPaymentSuccess' && !paying)
       await goto('../orders/');
   }
@@ -134,11 +142,22 @@
         }}
       />
 
-      <div class="options">
-        {#each shopItem.itemOptions as option}
-          <h3>{option.name}</h3>
-        {/each}
-      </div>
+      {#if shopItem.itemOptions.length > 0}
+        <div class="options">
+          {#each shopItem.itemOptions as option, i}
+            <InputSelectOneDropdown
+              label={option.name}
+              options={option.options}
+              bind:value={dropdown[i]}
+              required={option.required}
+              other={option.otherToggle}
+            />
+            {#if dropdown[i] === 'Autre'}
+              <InputText label={'Autre'} bind:value={answers[i]} required={option.required} />
+            {/if}
+          {/each}
+        </div>
+      {/if}
       <ul class="nobullet payment-methods">
         {#if !paying}
           <ul class="nobullet payment-methods">
@@ -186,6 +205,7 @@
               if (paidShopPayment.__typename === 'Error') {
                 serverError = paidShopPayment.message;
                 paymentLoading = false;
+
                 return;
               } else {
                 await goto('../orders/');

@@ -15,6 +15,7 @@ builder.mutationField('upsertShopPayment', (t) =>
       quantity: t.arg.int({ required: true }),
       paymentMethod: t.arg.string({ required: false }),
       phone: t.arg.string({ required: false }),
+      answers: t.arg.stringList({ required: true }),
     },
     async authScopes(_, { shopItemId }, { user }) {
       if (!user) return false;
@@ -75,7 +76,12 @@ builder.mutationField('upsertShopPayment', (t) =>
 
       return true;
     },
-    async resolve(query, _, { id, userUid, shopItemId, quantity, paymentMethod }, { user }) {
+    async resolve(
+      query,
+      _,
+      { id, userUid, shopItemId, quantity, paymentMethod, answers },
+      { user },
+    ) {
       const shopItem = await prisma.shopItem.findUniqueOrThrow({
         where: { id: shopItemId },
         include: {
@@ -106,6 +112,18 @@ builder.mutationField('upsertShopPayment', (t) =>
       if (stockLeft < quantity && shopItem.stock != 0) throw new GraphQLError('Not enough stock');
       else if (userLeft < quantity && shopItem.stock != 0)
         throw new GraphQLError('Too much quantity');
+
+      const shopOptions = await prisma.shopItemOption.findMany({
+        where: { shopItemId },
+        select: { required: true },
+      });
+
+      for (const [i, option] of Object.entries(shopOptions)) {
+        if (option.required && answers[Number.parseInt(i)] === '')
+          throw new GraphQLError('Missing required answer');
+      }
+
+      if (answers.some((answer) => answer.length > 255)) throw new GraphQLError('Answer too long');
 
       const shopPayment = await prisma.shopPayment.upsert({
         ...query,
@@ -141,6 +159,12 @@ builder.mutationField('upsertShopPayment', (t) =>
           target: shopPayment.id,
           message: `${shopItem.name} (x${quantity}) for ${userUid}`,
           user: user ? { connect: { id: user.id } } : undefined,
+        },
+      });
+      await prisma.shopItemAnswer.create({
+        data: {
+          shopPayment: { connect: { id: shopPayment.id } },
+          option: answers,
         },
       });
 
