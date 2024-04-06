@@ -115,15 +115,24 @@ builder.mutationField('upsertShopPayment', (t) =>
 
       const shopOptions = await prisma.shopItemOption.findMany({
         where: { shopItemId },
-        select: { required: true },
+        select: {
+          options: true,
+          required: true,
+          otherToggle: true,
+        },
       });
 
       for (const [i, option] of Object.entries(shopOptions)) {
         if (option.required && answers[Number.parseInt(i)] === '')
-          throw new GraphQLError('Missing required answer');
+          throw new GraphQLError('Un champ requis est manquant');
+
+        if (!option.otherToggle && !option.options.includes(answers[Number.parseInt(i)] as string))
+          {throw new GraphQLError(
+            "Petit malin, tu n'as pas le droit d'inventer ta propre réponse ici",
+          );}
       }
 
-      if (answers.some((answer) => answer.length > 255)) throw new GraphQLError('Answer too long');
+      if (answers.some((answer) => answer.length > 255)) throw new GraphQLError('Texte trop long');
 
       const shopPayment = await prisma.shopPayment.upsert({
         ...query,

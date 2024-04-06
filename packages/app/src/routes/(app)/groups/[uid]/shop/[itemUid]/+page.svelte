@@ -71,6 +71,8 @@
     if (upsertShopPayment.__typename === 'Error') {
       choosingPaymentMethodLoading = undefined;
       serverError = upsertShopPayment.message;
+
+      toasts.error('Erreur', serverError, { lifetime: 10_000 });
       return;
     }
 
