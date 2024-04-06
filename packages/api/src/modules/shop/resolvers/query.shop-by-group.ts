@@ -12,13 +12,6 @@ builder.queryField('itemsOfGroup', (t) =>
       groupId: t.arg.string(),
     },
     async resolve(query, _, { groupId }, { user }) {
-      if (!user) {
-        return await prisma.shopItem.findMany({
-          where: {
-            visibility: Visibility.Public,
-          },
-        });
-      }
       const items = await prisma.shopItem.findMany({
         ...query,
         where: { groupId },
