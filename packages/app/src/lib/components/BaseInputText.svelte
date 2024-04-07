@@ -212,7 +212,7 @@
   .wrapper:hover input,
   .wrapper:focus-within,
   .wrapper:focus-within input {
-    color: var(--primary-hover-text);
+    color: var(--text);
     background: var(--hover-bg);
   }
 
