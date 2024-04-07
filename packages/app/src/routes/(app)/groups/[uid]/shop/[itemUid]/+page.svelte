@@ -72,7 +72,7 @@
       choosingPaymentMethodLoading = undefined;
       serverError = upsertShopPayment.message;
 
-      toasts.error('Erreur', serverError, { lifetime: 10_000 });
+      toasts.error('Erreur', serverError, { lifetime: 5000, showLifetime: true });
       return;
     }
 
@@ -153,6 +153,9 @@
               bind:value={dropdown[i]}
               required={option.required}
               other={option.otherToggle}
+              on:input={() => {
+                if (dropdown[i] !== 'Autre') answers[i] = dropdown[i];
+              }}
             />
             {#if dropdown[i] === 'Autre'}
               <InputText label={'Autre'} bind:value={answers[i]} required={option.required} />
