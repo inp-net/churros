@@ -11,6 +11,10 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
         {
           id: true,
           name: true,
+          itemOptions: {
+            name: true,
+            options: true,
+          },
           shopPayments: {
             id: true,
             quantity: true,
@@ -21,6 +25,9 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
               uid: true,
               fullName: true,
               pictureFile: true,
+            },
+            shopItemAnswer: {
+              options: true,
             },
           },
         },

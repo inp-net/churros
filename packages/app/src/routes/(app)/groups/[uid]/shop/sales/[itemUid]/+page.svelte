@@ -31,7 +31,7 @@
   {#if shopItem.shopPayments.length === 0}
     <h2 class="none">Aucune commande ;(</h2>
   {:else}
-    <ItemBuyingTable payments={shopItem.shopPayments} />
+    <ItemBuyingTable payments={shopItem.shopPayments} options={shopItem.itemOptions} />
   {/if}
 </div>
 

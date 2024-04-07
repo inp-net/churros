@@ -19,7 +19,16 @@
     paymentMethod: PaymentMethod;
     quantity: number;
     totalPrice: number;
+    shopItemAnswer: { options: Array<string> };
   }>;
+
+  type shopItemOptions = Array<{
+    name: string;
+    options: Array<string>;
+  }>;
+
+  export let options: shopItemOptions;
+
   export let payments: shopPayments;
 
   async function updatePaidStatus(paymentId: string) {
@@ -41,11 +50,9 @@
         },
       ],
     });
-    if (paidShopPayment.__typename === 'MutationPaidShopPaymentSuccess') 
+    if (paidShopPayment.__typename === 'MutationPaidShopPaymentSuccess')
       toasts.add('success', 'Le paiement a bien été actualisé');
-     else 
-      toasts.add('error', "Erreur lors de l'actualisation du paiement");
-    
+    else toasts.add('error', "Erreur lors de l'actualisation du paiement");
   }
 </script>
 
@@ -56,6 +63,9 @@
         <th>User</th>
         <th>Quantité</th>
         <th>Prix total</th>
+        {#each options as option}
+          <th>{option.name}</th>
+        {/each}
         <th>Payé ?</th>
         <th>Via</th>
       </tr>
@@ -73,6 +83,9 @@
           </td>
           <td>x{payment.quantity}</td>
           <td>{payment.totalPrice} €</td>
+          {#each payment.shopItemAnswer.options as option}
+            <td>{option}</td>
+          {/each}
           <td>{payment.paid ? 'Oui' : 'Non'}</td>
           <td class="payicon">
             <svelte:component

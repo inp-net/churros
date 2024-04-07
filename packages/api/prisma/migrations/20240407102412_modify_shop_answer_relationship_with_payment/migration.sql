@@ -1,3 +1,9 @@
+/*
+  Warnings:
+
+  - A unique constraint covering the columns `[shopPaymentId]` on the table `ShopItemAnswer` will be added. If there are existing duplicate values, this will fail.
+
+*/
 -- AlterTable
 ALTER TABLE "Announcement" ALTER COLUMN "id" SET DEFAULT nanoid('ann:');
 
@@ -141,3 +147,6 @@ ALTER TABLE "User" ALTER COLUMN "id" SET DEFAULT nanoid('u:');
 
 -- AlterTable
 ALTER TABLE "UserCandidate" ALTER COLUMN "id" SET DEFAULT nanoid('candidate:');
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ShopItemAnswer_shopPaymentId_key" ON "ShopItemAnswer"("shopPaymentId");

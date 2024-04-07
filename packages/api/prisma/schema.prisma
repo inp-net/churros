@@ -967,7 +967,7 @@ model ShopItem {
   pictures              Picture[]
   shopPayments          ShopPayment[]
   lydiaAccount          LydiaAccount?   @relation(fields: [lydiaAccountId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  itemOptions               ShopItemOption[]
+  itemOptions           ShopItemOption[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -989,8 +989,8 @@ model ShopPayment {
   shopItem         ShopItem          @relation(fields: [shopItemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   lydiaTransaction LydiaTransaction?
-  shopItemAnswers   ShopItemAnswer[]
-}
+  shopItemAnswer   ShopItemAnswer?    
+  }
 
 model ShopItemOption {
   id            String @id @default(dbgenerated("nanoid('shopitemoption:')"))
@@ -1006,7 +1006,8 @@ model ShopItemAnswer {
   id                String   @id @default(dbgenerated("nanoid('shopitemanswer:')"))
   shopPaymentId     String
   option            String[] @default([])
-  shopPayment       ShopPayment      @relation(fields: [shopPaymentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  shopPayment       ShopPayment @relation(fields: [shopPaymentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@unique([shopPaymentId])
 }
 
 model Form {
