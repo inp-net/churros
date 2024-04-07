@@ -81,7 +81,9 @@
 </header>
 
 {#if !canModifyAnswers}
-  <Alert theme="warning">Tu ne pourras pas modifier tes réponses à ce formulaire.</Alert>
+  <Alert theme="warning"
+    >Tu ne {#if alreadyAnswered}peux{:else}pourras{/if} pas modifier tes réponses à ce formulaire.</Alert
+  >
 {/if}
 
 <div data-user-html="">
@@ -171,13 +173,22 @@
     {#if serverError}
       <Alert theme="danger">{serverError}</Alert>
     {/if}
-    <ButtonPrimary loading={submitting} submits>
-      {#if alreadyAnswered}
-        Enregistrer
-      {:else}
-        Continuer
-      {/if}
-    </ButtonPrimary>
+    {#if alreadyAnswered && !canModifyAnswers}
+      <ButtonPrimary
+        href="/forms/{$page.params.form}/{section.nextSection
+          ? `answer/${section.nextSection.localId}`
+          : 'answered'}"
+        >{#if section.nextSection}Suite{:else}Fin{/if}</ButtonPrimary
+      >
+    {:else}
+      <ButtonPrimary loading={submitting} submits>
+        {#if alreadyAnswered}
+          Enregistrer
+        {:else}
+          Continuer
+        {/if}
+      </ButtonPrimary>
+    {/if}
     {#if data.form.linkedGoogleSheetUrl}
       <p class="notice typo-details">
         Tes réponses seront également transmises à Google, pour les afficher dans un Google Sheet.

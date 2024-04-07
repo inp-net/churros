@@ -5,13 +5,16 @@ import {
   DocumentType,
   GroupType,
   LogoSourceType,
+  QuestionKind,
   Visibility,
   type Prisma,
 } from '@prisma/client';
 import { hash } from 'argon2';
+import { format } from 'date-fns';
 import dichotomid from 'dichotomid';
 import { exit } from 'node:process';
 import slug from 'slug';
+import { tqdm } from 'ts-tqdm';
 
 const faker = fakerFR; //j'avais la flemme de faire des FakerFRFR.machin partout
 faker.seed(5); //seed de génération de la DB, pour générer une DB avec de nouvelles données il suffit juste de changer la valeur de la seed
@@ -22,6 +25,10 @@ const numberEvent: number = 50; //Nombre d'événement créer dans la DB
 function* range(start: number, end: number): Generator<number> {
   for (let i = start; i < end; i++) yield i;
   //js weighted array random
+}
+
+function randomVisiblity(): Visibility {
+  return faker.helpers.arrayElement(Object.values(Visibility));
 }
 
 //const graduationYears = [...range()]
@@ -140,7 +147,8 @@ const servicesData = [
   },
 ];
 
-for (const school of schoolsData) {
+console.info('Creating schools');
+for (const school of tqdm(schoolsData)) {
   await prisma.school.create({
     data: {
       ...school,
@@ -238,7 +246,10 @@ const rezo = await prisma.minor.create({
 
 const minors = [plomberie, chomeur, transistor, cableElec, ia, rezo];
 
-for (const [i, name] of ['AE EAU 2022', 'AE FEU 2022', 'AE TERRE 2022', 'AE AIR 2022'].entries()) {
+console.info('Creating student associations');
+for (const [i, name] of tqdm([
+  ...['AE EAU 2022', 'AE FEU 2022', 'AE TERRE 2022', 'AE AIR 2022'].entries(),
+])) {
   await prisma.studentAssociation.create({
     data: {
       uid: slug(name),
@@ -352,7 +363,8 @@ const socialMedia = [
 for (let i = 0; i < numberUserDB - usersData.length; i++)
   usersData.push({ firstName: faker.person.firstName(), lastName: faker.person.lastName() });
 
-for (const [_, data] of usersData.entries()) {
+console.info('Creating users');
+for (const [_, data] of tqdm([...usersData.entries()])) {
   const major = await prisma.major.findUniqueOrThrow({
     where: { id: faker.helpers.arrayElement(majors).id },
     include: { schools: true },
@@ -409,7 +421,8 @@ const users = await prisma.user.findMany();
 const numberSubject: number = 10;
 //creation de nbSubject pour toute les mineurs des filières possible
 
-for (const [_, minor] of minors.entries()) {
+console.info('Creating minors, subjects and documents');
+for (const [_, minor] of tqdm([...minors.entries()])) {
   for (let j = 0; j < numberSubject; j++) {
     const title: string = faker.lorem.word();
     const subject = await prisma.subject.create({
@@ -467,7 +480,8 @@ const clubsData = [
   { name: 'Zumba' },
 ];
 
-for (const [i, group] of clubsData.entries()) {
+console.info('Creating groups');
+for (const [i, group] of tqdm([...clubsData.entries()])) {
   const { id: groupId } = await prisma.group.create({
     data: {
       ...group,
@@ -684,7 +698,8 @@ for (let i = 0; i < end; i++) {
   });
 }
 
-for (const data of articleData) await prisma.article.create({ data });
+console.info('Creating articles');
+for (const data of tqdm(articleData)) await prisma.article.create({ data });
 
 await prisma.article.create({
   data: {
@@ -718,7 +733,8 @@ await prisma.article.create({
 
 const selectedClub = faker.helpers.arrayElements(groups, numberEvent);
 const eventDate: Date = new Date();
-for (const element of selectedClub) {
+console.info('Creating events');
+for (const element of tqdm(selectedClub)) {
   const eventName = faker.lorem.words(3);
   const capacityEvent = faker.number.int({ min: 30, max: 300 });
   await prisma.event.create({
@@ -807,7 +823,8 @@ const registration = await prisma.registration.create({
   },
 });
 
-for (const i of range(0, 100)) {
+console.info('Creating bookings');
+for (const i of tqdm([...range(0, 100)])) {
   selectedEvent = faker.helpers.arrayElement(events);
   await prisma.registration.create({
     data: {
@@ -916,5 +933,148 @@ await prisma.shopItem.create({
     group: { connect: { uid: 'bdd-ae-eau-2022' } },
   },
 });
+
+for (let i = 0; i < 10; i++) {
+  const opensAt = i === 0 ? faker.date.soon() : faker.date.anytime();
+  const form = await prisma.form.create({
+    data: {
+      groupId: faker.helpers.arrayElement(groups).id,
+      visibility: randomVisiblity(),
+      title: faker.lorem.sentence(),
+      description: faker.lorem.paragraphs(faker.helpers.rangeToNumber({ min: 1, max: 3 })),
+      createdById: faker.helpers.arrayElement(users).id,
+      opensAt,
+      closesAt: faker.date.future({ refDate: opensAt }),
+      eventId: faker.datatype.boolean(0.3) ? faker.helpers.arrayElement(events).id : undefined,
+    },
+  });
+
+  for (let ii = 0; ii < faker.number.int({ min: 1, max: 5 }); ii++) {
+    const section = await prisma.formSection.create({
+      data: {
+        formId: form.id,
+        order: ii,
+        title: faker.lorem.sentence(),
+        description: faker.lorem.paragraph(),
+      },
+    });
+    const questions = Array.from({ length: faker.helpers.rangeToNumber({ min: 1, max: 5 }) })
+      .fill(0)
+      .map((_, i) => {
+        const type = faker.helpers.arrayElement(
+          Object.values(QuestionKind).filter((v) => v !== 'FileUpload'),
+        );
+
+        const scaleOptions: Partial<{ scaleStart: number; scaleEnd: number }> =
+          type === 'Scale' ? { scaleStart: faker.number.int({ min: 1, max: 5 }) } : {};
+        scaleOptions.scaleEnd =
+          type === 'Scale' ? faker.number.int({ min: scaleOptions.scaleStart, max: 10 }) : 0;
+
+        return {
+          sectionId: section.id,
+          description: faker.lorem.paragraph(),
+          order: i,
+          title: faker.lorem.sentence(),
+          mandatory: faker.datatype.boolean(0.75),
+          type,
+          options: ['SelectOne', 'SelectMultiple'].includes(type)
+            ? {
+                set: [
+                  ...new Set(
+                    Array.from({ length: faker.helpers.rangeToNumber({ min: 2, max: 5 }) })
+                      .fill(0)
+                      .map(() => faker.lorem.word()),
+                  ),
+                ],
+              }
+            : type === 'Scale'
+              ? { set: [faker.lorem.word(), faker.lorem.word()] }
+              : undefined,
+          allowedFiletypes:
+            type === 'FileUpload'
+              ? Array.from({ length: faker.helpers.rangeToNumber({ min: 1, max: 10 }) })
+                  .fill(0)
+                  .map(() => faker.system.mimeType())
+              : undefined,
+          allowOptionOther:
+            type === 'SelectOne' || type === 'SelectMultiple'
+              ? faker.datatype.boolean(0.3)
+              : undefined,
+          ...scaleOptions,
+        };
+      });
+
+    for (const question of questions) {
+      await prisma.question.create({
+        data: {
+          ...question,
+          answers: {
+            createMany: {
+              data: faker.helpers.arrayElements(users, { min: 1, max: 10 }).map((user) => {
+                let value: string[] = [];
+
+                switch (question.type) {
+                  case 'Scale': {
+                    value = [
+                      faker.number.int({
+                        min: 0,
+                        max: question.scaleEnd! - question.scaleStart!,
+                      }) +
+                        '/' +
+                        (question.scaleEnd! - question.scaleStart!),
+                    ];
+                    break;
+                  }
+                  case 'SelectOne': {
+                    value = [faker.helpers.arrayElement(question.options!.set)];
+                    break;
+                  }
+                  case 'SelectMultiple': {
+                    value = faker.helpers.arrayElements(question.options!.set, {
+                      min: 1,
+                      max: 3,
+                    });
+                    break;
+                  }
+                  case 'Text': {
+                    value = [faker.lorem.sentence()];
+                    break;
+                  }
+                  case 'FileUpload': {
+                    value = [faker.system.fileName()];
+                    break;
+                  }
+                  case 'LongText': {
+                    value = [faker.lorem.paragraph()];
+                    break;
+                  }
+                  case 'Number': {
+                    value = [faker.number.float({ min: -5, max: 20 }).toString()];
+                    break;
+                  }
+                  case 'Date': {
+                    value = [format(faker.date.past(), 'yyyy-MM-dd')];
+                    break;
+                  }
+                  case 'Time': {
+                    value = [format(faker.date.past(), 'HH:mm:ss')];
+                    break;
+                  }
+                }
+                return {
+                  createdById: user.id,
+                  createdAt: faker.date.recent(),
+                  answer: {
+                    set: value,
+                  },
+                };
+              }),
+            },
+          },
+        },
+      });
+    }
+  }
+}
 
 exit(0);

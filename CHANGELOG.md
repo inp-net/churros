@@ -13,8 +13,8 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ### Nouveautés
 
-- Les boutiques sont enfin là ! Chaque groupe peut vendre les objets qu'il souhaite au prix qu'il souhaite. Vous êtes libre de choisir la méthode de paiement que vous voulez pour vos membres ! (Les paiements par Paypal ne sont pas disponibles pour l'instant mais le seront bientôt). Pour découvrir votre nouveau canal de vente, vous pouvez vous rendre sur la page de votre club puis dans boutique à droite (ou en dessous sur téléphone). Vous pouvez même poster plusieurs images par produit !
-  Un selecteur d'option (pour la taille et les couleurs) arrivera dans une version suivante, en attendant, vous pouvez créer plusieurs items par exemple ou demander par mp ce que veulent vos clients.
+- Les boutiques sont enfin là ! Chaque groupe peut vendre les objets qu'il souhaite au prix qu'il souhaite. Vous êtes libre de choisir la méthode de paiement que vous voulez pour vos membres ! (Les paiements par Paypal ne sont pas disponibles pour l'instant mais le seront peut-être un jour). Pour découvrir votre nouveau canal de vente, vous pouvez vous rendre sur la page de votre club puis dans boutique, à droite (ou en dessous sur téléphone). Vous pouvez poster plusieurs images par produit, créer des items avec la visibilité que vous voulez, etc...
+  Un selecteur d'option (pour la taille et les couleurs par exemple) est disponible, vous avez la possibilité d'ajouter un champ "autre" ou de rendre un champ obligatoire.
 
 Sur ce, voila un avant goût !
 
@@ -22,11 +22,41 @@ Sur ce, voila un avant goût !
 
 La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à nous le faire parvenir via la bulle rouge en haut à droite de l'appli en précisant Boutique au début de votre signalement, merci d'avance pour votre contribution :) !
 
-(@bardete & @valliet pour une bonne partie du back-end) (!127)
+(@bardete & @valliet pour une partie du back-end) (!127)
+
+## [1.56.6] - 2024-04-03
+
+### Corrections
+
+- Correction de quelques problèmes d'affichage dans la liste des réponses à un formulaire.
+
+### Améliorations
+
+- Les réponses les plus récentes sont maintenant affichées en premier dans la liste des réponses à un formulaire.
+- Il y a un bouton pour charger les réponses plus anciennes dans la liste des réponses à un formulaire.
+
+## [1.56.5] - 2024-04-02
+
+### Technique
+
+- Bug encore dans le check de userCanManageEvent
+
+## [1.56.4] - 2024-04-02
+
+### Technique
+
+- Bug dans le check de userCanManageEvent
+
+## [1.56.3] - 2024-04-02
 
 ### Corrections
 
 - Correction d'une faute d'orthographe sur la page des rapport de bugs (@litschan)
+- Correction d'un bug qui empêchait de passer à la section suivante sans modifier sa réponse sur un formulaire qui n'autorise pas à modifier ses réponses
+
+### Sécurité
+
+- Il est maintenant impossible de voir les statistiques de réponses quand un formulaire est toujours ouvert et possède des questions anonymes
 
 ## [1.56.2] - 2024-04-01
 
@@ -380,8 +410,12 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.56.2...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.56.6...main
 [1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
+[1.56.6]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.6
+[1.56.5]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.5
+[1.56.4]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.4
+[1.56.3]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.3
 [1.56.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.2
 [1.56.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.1
 [1.56.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.0
