@@ -224,9 +224,10 @@
               <div class="fake-input"></div>
               <InputText
                 on:blur={() => {
-                  if (newOption[i] === '' && !itemOption.options.includes(newOption[i])) 
+                  if (newOption[i] !== '' && !itemOption.options.includes(newOption[i])) {
                     itemOption.options = [...itemOption.options, newOption[i]];
-                  
+                    newOption[i] = '';
+                  }
                 }}
                 bind:value={newOption[i]}
                 label=""
@@ -338,16 +339,17 @@
   .option-input {
     padding: 1em 0;
   }
+
   .option-header {
     display: flex;
-    align-items: center;
     gap: 1rem;
+    align-items: center;
   }
 
   .option-title {
     display: flex;
-    align-items: end;
     gap: 1em;
+    align-items: end;
   }
 
   .toggles {
