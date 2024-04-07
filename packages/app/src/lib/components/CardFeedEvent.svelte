@@ -171,7 +171,7 @@
             ({ toggleReaction: liked } = await $zeus.mutate({
               toggleReaction: [
                 {
-                  articleId: id,
+                  eventId: id,
                   emoji: '❤️',
                 },
                 true,
