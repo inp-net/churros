@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug qui affiche 0/0 quand il n'y a pas de limites de places sur les tickets d'un event (#885) (!138) (@bardete)
+
 ## [1.56.6] - 2024-04-03
 
 ### Corrections
