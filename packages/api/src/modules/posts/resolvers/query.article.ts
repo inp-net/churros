@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import { prismaQueryAccessibleArticles, userCanAccessEvent } from '#permissions';
+import { prismaQueryAccessibleArticles, prismaQueryVisibleEvents } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { ArticleType } from '../index.js';
 
@@ -18,24 +18,16 @@ builder.queryField('article', (t) =>
           ...prismaQueryAccessibleArticles(user, 'can'),
           uid,
           group: { uid: groupUid },
+          OR: [
+            { eventId: null },
+            {
+              AND: [{ eventId: { not: null } }, { event: prismaQueryVisibleEvents(user) }],
+            },
+          ],
         },
       });
-      if (!article) throw new GraphQLError('Article not found');
-      if (article.eventId === '' || article.eventId === null) {
-        return article;
-      } else {
-        const linkedEvent = await prisma.event.findFirstOrThrow({
-          where: { id: article.eventId },
-          include: {
-            coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
-            group: { include: { studentAssociation: { include: { school: true } } } },
-            managers: { include: { user: true } },
-            tickets: true,
-          },
-        });
-        if (await userCanAccessEvent(linkedEvent, user)) return article;
-        throw new GraphQLError('You do not have permission to see this article');
-      }
+      if (!article) throw new GraphQLError('Post introuvable');
+      return article;
     },
   }),
 );
