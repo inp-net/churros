@@ -14,6 +14,9 @@
     group: data.group,
     description: '',
     endsAt: undefined,
+    registrationsCounts: {
+      total: 0,
+    },
     groupUid: $page.params.uid,
     contactMail: data.group?.email,
     beneficiary:
