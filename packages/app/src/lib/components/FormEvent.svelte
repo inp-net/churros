@@ -52,6 +52,22 @@
     $me?.admin ||
     event.managers?.find(({ user }) => user.uid === $me?.uid)?.canEditPermissions;
 
+  //if undefined, this event do not need ticket, no check are needed.
+  $: numberTicketIsValid = event.ticketGroups[0] === undefined ? true : compareNumberTicketGroup();
+
+  //Check is the number of ticket in a group isn't greater than the number of places allowed for a group
+  function compareNumberTicketGroup() {
+    let validTicketAmount = true;
+    for (const ticketGroup of event.ticketGroups) {
+      for (const ticket of ticketGroup.tickets) {
+        if (ticketGroup.capacity < ticket.capacity) 
+          validTicketAmount = false;
+        
+      }
+    }
+    return validTicketAmount;
+  }
+
   function eraseFakeIds(id: string): string {
     if (id.includes(':fake:')) return '';
 
@@ -819,7 +835,9 @@
           }}>Rendre privé</ButtonSecondary
         >
       {:else}
-        <ButtonPrimary submits {loading} disabled={isNotValidDate}>Enregistrer</ButtonPrimary>
+        <ButtonPrimary submits {loading} disabled={isNotValidDate || !numberTicketIsValid}
+          >Enregistrer</ButtonPrimary
+        >
         {#if event.id}
           <ButtonSecondary
             danger
@@ -842,6 +860,12 @@
     {#if pastDateStart}
       <Alert theme="danger">
         Impossible de programmer l'événement : La date indiquée est déjà passé.
+      </Alert>
+    {/if}
+    {#if !numberTicketIsValid}
+      <Alert theme="danger">
+        Impossible de programmer l'événement : Le nombre de places d'un ticket est supérieur au
+        nombre de places de son groupe.
       </Alert>
     {/if}
   {/if}
