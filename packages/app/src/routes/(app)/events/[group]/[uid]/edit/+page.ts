@@ -31,6 +31,9 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           description: true,
           frequency: true,
           recurringUntil: true,
+          registrationsCounts: {
+            total: true,
+          },
           group: {
             id: true,
             uid: true,

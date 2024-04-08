@@ -355,6 +355,9 @@
     visibility: Visibility;
     frequency: EventFrequency;
     recurringUntil?: Date | undefined;
+    registrationsCounts: {
+      total: number;
+    };
     group: {
       id: string;
       uid: string;
@@ -782,6 +785,17 @@
         <ButtonSecondary
           on:click={async () => {
             confirmingDelete = false;
+            if (event.registrationsCounts.total > 0) {
+              toasts.error(
+                "Impossible de supprimer l'évènement",
+                'Des places ont déjà été réservées',
+                {
+                  lifetime: 5000,
+                  showLifetime: true,
+                },
+              );
+              return;
+            }
             toasts.success('Évènement supprimé', `L'évènement ${event.title} a bien été supprimé`, {
               lifetime: 5000,
               showLifetime: true,
