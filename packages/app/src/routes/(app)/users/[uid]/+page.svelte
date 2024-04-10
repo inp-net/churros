@@ -48,21 +48,19 @@
 
   export let data: PageData;
   $: ({ UserProfile } = data);
-  $: ({ contributionOptions, me, user } = $UserProfile.data ?? {
-    contributionOptions: undefined,
-    me: undefined,
-    user: undefined,
-  });
-  $: isDeveloper =
+
+  type User = NonNullable<typeof $UserProfile.data>['user'];
+
+  $: isDeveloper = (user: User) =>
     $UserProfile.data?.codeContributors?.__typename === 'QueryCodeContributorsSuccess'
       ? $UserProfile.data.codeContributors.data.some((c) => c.uid === user?.uid)
       : false;
 
-  type UserTree = NonNullable<typeof user>['familyTree']['users'][number] & {
+  type UserTree = User['familyTree']['users'][number] & {
     children: UserTree[];
   };
 
-  function makeFamilyTree(familyTree: NonNullable<typeof user>['familyTree']): UserTree {
+  function makeFamilyTree(familyTree: User['familyTree']): UserTree {
     const findUser = (uid: string) => familyTree.users.find((u) => u.uid === uid);
 
     type Nesting = [string, Nesting[]];
@@ -84,6 +82,10 @@
     await goto(`/logout/?token=${cookies.token}`);
   }
 
+  const rolesBadgeOrdering = ['👑', '💰', '🌟', '📜'] as const;
+
+  type EmojiBadge = (typeof rolesBadgeOrdering)[number];
+
   function rolesBadge({
     president,
     treasurer,
@@ -94,222 +96,240 @@
     treasurer: boolean;
     vicePresident: boolean;
     secretary: boolean;
-  }): string {
+  }): EmojiBadge | '' {
     return president ? '👑' : treasurer ? '💰' : vicePresident ? '🌟' : secretary ? '📜' : '';
   }
 
-  $: roleBadge = user?.groups.some(({ president }) => president)
-    ? '👑'
-    : user?.groups.some(({ treasurer }) => treasurer)
-      ? '💰'
-      : user?.groups.some(({ vicePresident }) => vicePresident)
-        ? '🌟'
-        : user?.groups.some(({ secretary }) => secretary)
-          ? '📜'
-          : '';
+  $: roleBadge = (groups: Array<Parameters<typeof rolesBadge>[0]>) =>
+    groups.reduce(
+      (bestBadge, membership) => {
+        const badge = rolesBadge(membership);
+        if (!badge) return bestBadge;
+        if (!bestBadge) return badge;
+
+        return rolesBadgeOrdering.indexOf(badge) > rolesBadgeOrdering.indexOf(bestBadge)
+          ? badge
+          : bestBadge;
+      },
+      '' as EmojiBadge | '',
+    );
 
   const formatPhoneNumber = (phone: string) =>
     phone.replace(/^\+33(\d)(\d\d)(\d\d)(\d\d)(\d\d)$/, '0$1 $2 $3 $4 $5');
 
-  $: pictureFile = user?.pictureFile ? `${env.PUBLIC_STORAGE_URL}${user.pictureFile}` : '';
+  $: pictureFile = (user: { pictureFile: string }) =>
+    user.pictureFile ? `${env.PUBLIC_STORAGE_URL}${user.pictureFile}` : '';
 </script>
 
 <div class="content">
   {#if $UserProfile.errors}
     <p>Erreur: {$UserProfile.errors.map((e) => e.message).join(', ')}</p>
-  {:else if !user}
+  {:else if $UserProfile.fetching}
     <p>
       <LoadingSpinner /> Chargement…
     </p>
   {:else}
-    <header>
-      <div class="picture">
-        {#if roleBadge}
-          <div class="role-badge">
-            {roleBadge}
-          </div>
-        {/if}
+    {@const user = $UserProfile.data?.user}
+    {@const me = $UserProfile.data?.me}
+    {@const contributionOptions = $UserProfile.data?.contributionOptions}
+    {#if user && me}
+      <header>
+        <div class="picture">
+          {#if roleBadge(user.groups)}
+            <div class="role-badge">
+              {roleBadge(user.groups)}
+            </div>
+          {/if}
 
-        <img src={pictureFile} alt={user.fullName} />
-      </div>
+          <img src={pictureFile(user)} alt={user.fullName} />
+        </div>
 
-      <div class="identity">
-        <h1>
-          <div class="text">
-            {user.firstName}
-            {user.lastName}
-            {#if user.admin}<Badge title="Possède tous les droits" theme="info"><IconAdmin /></Badge
-              >
-            {/if}
-            {#if isDeveloper}<Badge title="A écrit du code pour Churros" theme="info">
-                <IconCode></IconCode>
-              </Badge>{/if}
-          </div>
+        <div class="identity">
+          <h1>
+            <div class="text">
+              {user.firstName}
+              {user.lastName}
+              {#if user.admin}<Badge title="Possède tous les droits" theme="info"
+                  ><IconAdmin /></Badge
+                >
+              {/if}
+              {#if isDeveloper(user)}<Badge title="A écrit du code pour Churros" theme="info">
+                  <IconCode></IconCode>
+                </Badge>{/if}
+            </div>
 
-          <div class="actions">
-            <ButtonShare />
-            {#if me?.uid === user.uid || me?.admin || me?.canEditUsers}
-              <ButtonGhost help="Modifier" href="/users/{user.uid}/edit/"><IconGear /></ButtonGhost>
-            {/if}
-            {#if me?.uid === user.uid}
-              <ButtonGhost help="Se déconnecter" on:click={logout}><IconLogout /></ButtonGhost>
-            {/if}
-          </div>
-        </h1>
-        <p class="username">
-          @{user.uid}
-        </p>
-        <p class="major">
-          {user.yearTier}A ({user.graduationYear}) ·
-          {#if user.major}
-            <a href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}/"
-              ><abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr></a
-            >
-            {#if user.minor}
-              ·
+            <div class="actions">
+              <ButtonShare />
+              {#if me?.uid === user.uid || me?.admin || me?.canEditUsers}
+                <ButtonGhost help="Modifier" href="/users/{user.uid}/edit/"
+                  ><IconGear /></ButtonGhost
+                >
+              {/if}
+              {#if me?.uid === user.uid}
+                <ButtonGhost help="Se déconnecter" on:click={logout}><IconLogout /></ButtonGhost>
+              {/if}
+            </div>
+          </h1>
+          <p class="username">
+            @{user.uid}
+          </p>
+          <p class="major">
+            {user.yearTier}A ({user.graduationYear}) ·
+            {#if user.major}
               <a
-                href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice
-                  ? '-fisa'
-                  : ''}#{user.minor.uid}"
-                ><abbr title="" use:tooltip={user.minor.name}>{user.minor.shortName}</abbr></a
+                href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice ? '-fisa' : ''}/"
+                ><abbr title="" use:tooltip={user.major.name}>{user.major.shortName}</abbr></a
               >
-            {/if}
-            · {#each user.major.schools as school}
-              <a class="school" href="/schools/{school.uid}">{school.name}</a>
+              {#if user.minor}
+                ·
+                <a
+                  href="/documents/{user.major.uid}/{user.yearTier}a{user.apprentice
+                    ? '-fisa'
+                    : ''}#{user.minor.uid}"
+                  ><abbr title="" use:tooltip={user.minor.name}>{user.minor.shortName}</abbr></a
+                >
+              {/if}
+              · {#each user.major.schools as school}
+                <a class="school" href="/schools/{school.uid}">{school.name}</a>
+              {/each}
+            {:else}Exté{/if}
+            {user.apprentice ? 'FISA' : ''}
+          </p>
+          <ul class="social-links nobullet">
+            {#each user.links as { name, value }}
+              <li>
+                <ButtonGhost href={value} title={name}>
+                  <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
+                </ButtonGhost>
+              </li>
             {/each}
-          {:else}Exté{/if}
-          {user.apprentice ? 'FISA' : ''}
-        </p>
-        <ul class="social-links nobullet">
-          {#each user.links as { name, value }}
-            <li>
-              <ButtonGhost href={value} title={name}>
-                <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
-              </ButtonGhost>
-            </li>
+          </ul>
+          <p class="bio" data-user-html>
+            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+            {@html user.descriptionHtml}
+          </p>
+          <div class="info">
+            <dl>
+              {#if user.nickname}
+                <dt>Surnom</dt>
+                <dd>{user.nickname}</dd>
+              {/if}
+              {#if user.contributesTo}
+                <dt>Cotisant·e</dt>
+                {#if user.contributesTo.length > 0}
+                  <dd>
+                    {user.contributesTo
+                      .filter((c) => c !== undefined)
+                      .map((c) => c?.name)
+                      .join(', ')}
+                  </dd>
+                {:else}
+                  <dd>Non</dd>
+                {/if}
+              {/if}
+              <dt>Email{user.otherEmails.length > 0 ? 's' : ''}</dt>
+              <dd class="is-list">
+                {#each [user.email, ...user.otherEmails] as email}
+                  <a href="mailto:{email}">{email}</a>
+                {/each}
+              </dd>
+              {#if user.phone}
+                <dt>Téléphone</dt>
+                <dd>
+                  <a href="tel:{user.phone}">{formatPhoneNumber(user.phone)}</a>
+                </dd>
+              {/if}
+              {#if user.birthday}
+                <dt>Anniversaire</dt>
+                <dd>{dateFormatter.format(user.birthday)}</dd>
+                <!-- TODO add to agenda -->
+              {/if}
+              {#if user.address}
+                <dt>Adresse</dt>
+                <dd>{user.address}</dd>
+                <!-- TODO go here with gmaps? -->
+              {/if}
+              <dt>Identifiant</dt>
+              <dd>{user.uid}</dd>
+            </dl>
+          </div>
+        </div>
+      </header>
+
+      {#if !me?.external && me?.uid === user.uid && ((user.pendingContributions?.length ?? 0) > 0 || (user.contributesTo?.length ?? 0) <= 0)}
+        <section class="contribution">
+          <h2>Cotisation</h2>
+          <p class="explain-contribution typo-details">
+            Cotiser, c'est contribuer à l'organisation de la vie associative de ton école. Elle te
+            permet d'être membre de clubs, de lister, d'économiser 60€ pour le WEI, et donne droit à
+            des places à tarif réduit sur tout les évènements de l'AE.
+          </p>
+
+          {#if contributionOptions && user.pendingContributions}
+            <div class="manage">
+              <AreaContribute {contributionOptions} pendingContributions={user.pendingContributions}
+              ></AreaContribute>
+            </div>
+          {/if}
+
+          <p class="typo-details">
+            Tu peux aussi payer par chèque ou espèces. Renseigne-toi auprès du BDE.
+          </p>
+        </section>
+      {/if}
+
+      {#if user.groups.length}
+        <section class="groups">
+          <h2>{user.groups.length === 1 ? 'Groupe' : 'Groupes'}</h2>
+          <CarouselGroups
+            groups={user.groups
+              .sort(byMemberGroupTitleImportance)
+              .map(({ group, title, ...membership }) => ({
+                ...group,
+                role: `${rolesBadge(membership)} ${title}`,
+              }))}
+          /> 
+        </section>
+      {:else if !me?.external && me?.uid === user.uid}
+        <section class="groups">
+          <h2>Groupes</h2>
+          <p class="typo-details">Tu n'es dans aucun groupe... 😢</p>
+          <ButtonSecondary href="/groups">Découvre les clubs de l'n7 !</ButtonSecondary>
+        </section>
+      {/if}
+
+      {#if user.familyTree.users.length >= 2}
+        <section class="family">
+          <h2>Famille</h2>
+
+          <div class="tree">
+            <TreePersons user={makeFamilyTree(user.familyTree)} highlightUid={user.uid} />
+          </div>
+        </section>
+      {/if}
+
+      <section class="articles">
+        <h2>Posts</h2>
+
+        <ul class="nobullet">
+          {#each user.articles.nodes as article}
+            {#if article}
+              <li>
+                <CardArticle href="/posts/{article.group.uid}/{article.uid}" {article} />
+              </li>
+            {:else}
+              <li class="loading">Chargement…</li>
+            {/if}
+          {:else}
+            <li>Aucun post</li>
           {/each}
         </ul>
-        <p class="bio" data-user-html>
-          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-          {@html user.descriptionHtml}
-        </p>
-        <div class="info">
-          <dl>
-            {#if user.nickname}
-              <dt>Surnom</dt>
-              <dd>{user.nickname}</dd>
-            {/if}
-            {#if user.contributesTo}
-              <dt>Cotisant·e</dt>
-              {#if user.contributesTo.length > 0}
-                <dd>
-                  {user.contributesTo
-                    .filter((c) => c !== undefined)
-                    .map((c) => c?.name)
-                    .join(', ')}
-                </dd>
-              {:else}
-                <dd>Non</dd>
-              {/if}
-            {/if}
-            <dt>Email{user.otherEmails.length > 0 ? 's' : ''}</dt>
-            <dd class="is-list">
-              {#each [user.email, ...user.otherEmails] as email}
-                <a href="mailto:{email}">{email}</a>
-              {/each}
-            </dd>
-            {#if user.phone}
-              <dt>Téléphone</dt>
-              <dd>
-                <a href="tel:{user.phone}">{formatPhoneNumber(user.phone)}</a>
-              </dd>
-            {/if}
-            {#if user.birthday}
-              <dt>Anniversaire</dt>
-              <dd>{dateFormatter.format(user.birthday)}</dd>
-              <!-- TODO add to agenda -->
-            {/if}
-            {#if user.address}
-              <dt>Adresse</dt>
-              <dd>{user.address}</dd>
-              <!-- TODO go here with gmaps? -->
-            {/if}
-            <dt>Identifiant</dt>
-            <dd>{user.uid}</dd>
-          </dl>
-        </div>
-      </div>
-    </header>
-
-    {#if !me?.external && me?.uid === user.uid && ((user.pendingContributions?.length ?? 0) > 0 || (user.contributesTo?.length ?? 0) <= 0)}
-      <section class="contribution">
-        <h2>Cotisation</h2>
-        <p class="explain-contribution typo-details">
-          Cotiser, c'est contribuer à l'organisation de la vie associative de ton école. Elle te
-          permet d'être membre de clubs, de lister, d'économiser 60€ pour le WEI, et donne droit à
-          des places à tarif réduit sur tout les évènements de l'AE.
-        </p>
-
-        {#if contributionOptions && user.pendingContributions}
-          <div class="manage">
-            <AreaContribute {contributionOptions} pendingContributions={user.pendingContributions}
-            ></AreaContribute>
-          </div>
-        {/if}
-
-        <p class="typo-details">
-          Tu peux aussi payer par chèque ou espèces. Renseigne-toi auprès du BDE.
-        </p>
       </section>
+    {:else}
+      <pre style:width="100vw">
+      {JSON.stringify($UserProfile, null, 2)}
+    </pre>
     {/if}
-
-    {#if user.groups.length}
-      <section class="groups">
-        <h2>{user.groups.length === 1 ? 'Groupe' : 'Groupes'}</h2>
-        <CarouselGroups
-          groups={user.groups
-            .sort(byMemberGroupTitleImportance)
-            .map(({ group, title, ...membership }) => ({
-              ...group,
-              role: `${rolesBadge(membership)} ${title}`,
-            }))}
-        />
-      </section>
-    {:else if !me?.external && me?.uid === user.uid}
-      <section class="groups">
-        <h2>Groupes</h2>
-        <p class="typo-details">Tu n'es dans aucun groupe... 😢</p>
-        <ButtonSecondary href="/groups">Découvre les clubs de l'n7 !</ButtonSecondary>
-      </section>
-    {/if}
-
-    {#if user.familyTree.users.length >= 2}
-      <section class="family">
-        <h2>Famille</h2>
-
-        <div class="tree">
-          <TreePersons user={makeFamilyTree(user.familyTree)} highlightUid={user.uid} />
-        </div>
-      </section>
-    {/if}
-
-    <section class="articles">
-      <h2>Posts</h2>
-
-      <ul class="nobullet">
-        {#each user.articles.nodes as article}
-          {#if article}
-            <li>
-              <CardArticle href="/posts/{article.group.uid}/{article.uid}" {article} />
-            </li>
-          {:else}
-            <li class="loading">Chargement…</li>
-          {/if}
-        {:else}
-          <li>Aucun post</li>
-        {/each}
-      </ul>
-    </section>
   {/if}
 </div>
 

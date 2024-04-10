@@ -1,7 +1,9 @@
+import { browser } from '$app/environment';
 import type { EventFrequency$options } from '$houdini';
 import { EventFrequency } from '$lib/zeus';
 import { format, isMonday, isToday, previousMonday } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
+import { readable } from 'svelte/store';
 
 export const dateTimeFormatter = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'full',
@@ -180,3 +182,16 @@ export function sortedByDate<
     return new Date(a[dateKey] as Date).valueOf() - new Date(b[dateKey] as Date).valueOf();
   });
 }
+
+export const now = readable<Date | null>(new Date(), (set) => {
+  // Server has no idea of the user's current time
+  if (!browser) set(null);
+
+  set(new Date());
+
+  const interval = setInterval(() => {
+    set(new Date());
+  }, 1000);
+
+  return () => clearInterval(interval);
+});

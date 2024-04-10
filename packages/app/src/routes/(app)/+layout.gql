@@ -1,4 +1,4 @@
-query AppLayout($loggedIn: Boolean!) {
+query AppLayout($loggedIn: LoggedIn!) {
   combinedChangelog(sort: Descending) @include(if: $loggedIn) {
     __typename
     ... on QueryCombinedChangelogSuccess {
@@ -10,8 +10,6 @@ query AppLayout($loggedIn: Boolean!) {
       message
     }
   }
-
-  echo(text: "loggedin!!!!") @include(if: $loggedIn)
 
   me @include(if: $loggedIn) {
     uid

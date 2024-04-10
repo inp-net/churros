@@ -1,6 +1,8 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
+  import { fragment, graphql, type OverlayQuickBooking } from '$houdini';
+  import { now } from '$lib/dates';
   import { addHours, formatDistanceToNow, isFuture, isWithinInterval, subMinutes } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
   import { swipe } from 'svelte-gestures';
@@ -10,7 +12,6 @@
   import IconClose from '~icons/mdi/close';
   import ButtonGhost from './ButtonGhost.svelte';
   import CardTicket from './CardTicket.svelte';
-  import { fragment, graphql, type OverlayQuickBooking } from '$houdini';
 
   export let booking: OverlayQuickBooking;
   $: QuickBooking = fragment(
@@ -32,9 +33,8 @@
     `,
   );
 
-  export let now: Date;
-
   function shouldShowBooking(
+    now: Date,
     hiddens: string[],
     registration: {
       id: string;
@@ -43,6 +43,8 @@
       ticket: { event: { startsAt: Date; endsAt: Date } };
     },
   ): boolean {
+    // Server does not now which quickbookings are hidden since the info is stored in localStorage
+    if (!browser) return false
     try {
       return (
         !hiddens.includes(registration.id) &&
@@ -65,12 +67,12 @@
   const touchAction = 'pan-y pinch-zoom' as unknown as 'pan-y';
 </script>
 
-{#if !$page.url.pathname.startsWith('/bookings') && QuickBooking}
+{#if !$page.url.pathname.startsWith('/bookings')}
   <!-- If the quick booking is not hidden and:
       - it starts in less than 30 mins; or
       - it ongoing; or 
       - was finished less than 2 hours ago -->
-  {#if shouldShowBooking($hiddenBookings, $QuickBooking)}
+  {#if $now && shouldShowBooking($now, $hiddenBookings, $QuickBooking)}
     <section
       in:slide={{ axis: 'y', duration: 100 }}
       use:swipe={{ touchAction }}

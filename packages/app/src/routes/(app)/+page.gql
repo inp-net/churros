@@ -1,4 +1,4 @@
-query HomeQuery($loggedIn: Boolean!) {
+query HomeQuery($loggedIn: LoggedIn!) {
   me @include(if: $loggedIn) {
     yearTier
     groups {

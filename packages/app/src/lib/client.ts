@@ -5,24 +5,6 @@ import { HoudiniClient } from '$houdini';
 import { redirectToLogin } from '$lib/session';
 import { UNAUTHORIZED_ERROR_MESSAGE } from '../../../api/src/lib/error.js';
 
-const isLoggedIn: ClientPlugin = () => {
-  return {
-    start(ctx, { next }) {
-      ctx.variables = { ...ctx.variables, loggedIn: !!ctx.session?.token };
-
-      // log the variables
-      // console.log(
-      //   `isLoggedIn plugin: session ${JSON.stringify(ctx.session)}, vars ${JSON.stringify(
-      //     ctx.variables,
-      //   )}`,
-      // );
-
-      // move onto the next step in the pipeline
-      next(ctx);
-    },
-  };
-};
-
 const unauthorizedErrorHandler: ClientPlugin = () => {
   return {
     end(ctx, { value: { errors }, resolve }) {
@@ -32,7 +14,7 @@ const unauthorizedErrorHandler: ClientPlugin = () => {
         errors?.some((e) => e.message === UNAUTHORIZED_ERROR_MESSAGE)
       ) {
         const url = new URL(window.location.href);
-        throw redirectToLogin(url.pathname, Object.fromEntries(url.searchParams.entries()));
+        throw redirectToLogin(url.pathname, url.searchParams);
       }
 
       resolve(ctx);
@@ -49,13 +31,14 @@ const logger: ClientPlugin = () => ({
 
 export default new HoudiniClient({
   url: env.PUBLIC_API_URL,
-  plugins: [logger, isLoggedIn, unauthorizedErrorHandler],
+  plugins: [logger, unauthorizedErrorHandler],
   fetchParams({ session, variables }) {
     // console.log(
     //   `fetching client params from token ${JSON.stringify(
     //     session?.token,
     //   )}, varaibles ${JSON.stringify(variables)}`,
     // );
+    console.log({ variables });
     return {
       headers: {
         Authorization: `Bearer ${session?.token}`,

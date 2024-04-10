@@ -1,4 +1,4 @@
-query GroupProfile($uid: String!, $isStudent: Boolean!) {
+query GroupProfile($uid: String!, $loggedIn: LoggedIn!) {
   me {
     uid
     id
@@ -14,6 +14,7 @@ query GroupProfile($uid: String!, $isStudent: Boolean!) {
     }
     external
   }
+
   group(uid: $uid) {
     id
     uid
@@ -26,14 +27,14 @@ query GroupProfile($uid: String!, $isStudent: Boolean!) {
     canCreateSubgroups
     canEditMembers
     canEditDetails
-    address @include(if: $isStudent)
+    address
     color
     description
     longDescriptionHtml
     website
     email
     groupId
-    roomIsOpen @include(if: $isStudent)
+    roomIsOpen 
     related {
       ...CardGroupGroup
     }
@@ -97,7 +98,7 @@ query GroupProfile($uid: String!, $isStudent: Boolean!) {
       value
       computedValue
     }
-    members @include(if: $isStudent) {
+    members @include(if: $loggedIn) {
       member {
         uid
         firstName

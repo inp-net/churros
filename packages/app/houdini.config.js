@@ -10,6 +10,19 @@ const config = {
       client: './src/lib/client',
     },
   },
+  types: {
+    User: {
+      resolve: {
+        queryField: 'user',
+        arguments: ({ uid }) => ({ uid }),
+      },
+    },
+    Article: {
+      resolve: {
+        queryField: 'article',
+      },
+    },
+  },
   scalars: {
     DateTime: {
       // the corresponding typescript type
@@ -40,6 +53,17 @@ const config = {
       },
       marshal(BooleanMap) {
         return JSON.stringify(BooleanMap);
+      },
+    },
+  },
+  features: {
+    runtimeScalars: {
+      LoggedIn: {
+        type: 'Boolean',
+        resolve: ({ session }) => {
+          console.log({ session });
+          return Boolean(session?.token);
+        },
       },
     },
   },

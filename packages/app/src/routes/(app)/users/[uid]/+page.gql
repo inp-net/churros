@@ -1,4 +1,4 @@
-query UserProfile($uid: String!) {
+query UserProfile($uid: String!, $loggedIn: LoggedIn!) {
   contributionOptions {
     name
     price
@@ -15,7 +15,7 @@ query UserProfile($uid: String!) {
     }
   }
 
-  me {
+  me @include(if: $loggedIn) {
     uid
     canEditUsers
     external
@@ -26,7 +26,7 @@ query UserProfile($uid: String!) {
     admin
     apprentice
     uid
-    address
+    address @include(if: $loggedIn)
     birthday
     createdAt
     description
@@ -39,7 +39,7 @@ query UserProfile($uid: String!) {
     nickname
     email
     otherEmails
-    phone
+    phone @include(if: $loggedIn)
     pictureFile
     groups {
       group {

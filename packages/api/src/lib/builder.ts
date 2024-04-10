@@ -4,6 +4,7 @@ import {
   context,
   decodeGlobalID,
   encodeGlobalID,
+  UnauthorizedError,
   type AuthContexts,
   type AuthScopes,
 } from '#lib';
@@ -24,7 +25,6 @@ import TracingPlugin, { isRootField, runFunction } from '@pothos/plugin-tracing'
 import ValidationPlugin from '@pothos/plugin-validation';
 import WithInputPlugin from '@pothos/plugin-with-input';
 import { GraphQLError, Kind } from 'graphql';
-import { UNAUTHORIZED_ERROR_MESSAGE } from './error.js';
 import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
@@ -70,7 +70,7 @@ export const builder = new SchemaBuilder<{
   errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma, exposeDescriptions: true },
   scopeAuthOptions: {
-    unauthorizedError: () => new GraphQLError(UNAUTHORIZED_ERROR_MESSAGE),
+    unauthorizedError: () => new UnauthorizedError(),
   },
   relayOptions: {
     clientMutationId: 'omit',

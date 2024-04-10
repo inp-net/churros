@@ -14,6 +14,7 @@
   import CardFeedEvent from '$lib/components/CardFeedEvent.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import InputToggle from '$lib/components/InputToggle.svelte';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import Modal from '$lib/components/Modal.svelte';
   import TreeGroups from '$lib/components/TreeGroups.svelte';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
@@ -140,7 +141,10 @@
   let joinModal: HTMLDialogElement;
 </script>
 
-{#if !group}
+{#if $GroupProfile.errors}
+  <p>Erreur: {$GroupProfile.errors.map((e) => e.message).join(', ')}</p>
+{:else if !group}
+  <LoadingSpinner />
   <p>Chargement…</p>
 {:else}
   <Modal bind:element={joinModal}>

@@ -138,7 +138,7 @@
 {/if}
 
 {#if $AppLayout.data?.me?.bookings?.nodes[0]}
-  <OverlayQuickBookings {now} booking={$AppLayout.data.me.bookings.nodes[0]}></OverlayQuickBookings>
+  <OverlayQuickBookings booking={$AppLayout.data.me.bookings.nodes[0]}></OverlayQuickBookings>
 {/if}
 
 <div class="layout">

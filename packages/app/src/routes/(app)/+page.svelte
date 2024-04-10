@@ -6,17 +6,16 @@
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-  import { onMount } from 'svelte';
   import type { PageData } from './$houdini';
 
   export let data: PageData;
   $: ({ HomeQuery } = data);
 
-  let selectedBirthdaysYearTier = 'all';
-  onMount(async () => {
-    const yearTier = $HomeQuery.data?.me?.yearTier;
-    selectedBirthdaysYearTier = yearTier ? (yearTier <= 3 ? yearTier.toString() : 'all') : 'all';
-  });
+  let defaultBirthdayTier = (yearTier: number | undefined) =>
+    yearTier ? (yearTier <= 3 ? yearTier.toString() : 'all') : 'all';
+
+  $: selectedBirthdaysYearTier = defaultBirthdayTier($HomeQuery.data?.me?.yearTier);
+
 </script>
 
 <h1>Mon feed</h1>

@@ -8,7 +8,6 @@
   export let small = false;
   export let inline = false;
   export let role = '';
-  export let pictureFile: string;
   export let href: string | undefined = undefined;
   export let highlighted = false;
   export let fullName: string;

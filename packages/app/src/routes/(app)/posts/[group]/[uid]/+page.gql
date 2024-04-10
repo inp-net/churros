@@ -1,100 +1,32 @@
-query PostPage($group: String!, $uid: String!, $loggedIn: Boolean!) {
+query PostPage($group: String!, $uid: String!, $loggedIn: LoggedIn!) {
   me @include(if: $loggedIn) {
     ...AreaCommentsMe
   }
-  article(uid: $uid, groupUid: $group) {
-    canEdit
-    id
-    uid
-    title
-    bodyHtml
-    visibility
-    publishedAt
-    notifiedAt
-    group {
-      id
-      uid
-      name
-      pictureFile
-      pictureFileDark
-    }
-    pictureFile
-    author {
-      id
-      firstName
-      fullName
-      lastName
-      pictureFile
-      uid
-      groups {
-        group {
-          name
-          uid
-        }
-        title
-      }
-    }
-    myReactions
-    reactionCounts
-    comments(first: 100) {
-      ...AreaComments
-    }
-    event {
+  group(uid: $group) {
+    article(slug: $uid) {
+      canEdit
       id
       uid
       title
-      startsAt
-      endsAt
-      frequency
-      recurringUntil
-      location
-      placesLeft
-      capacity
-      descriptionHtml
-      descriptionPreview
-      pictureFile
-      links {
-        name
-        computedValue
-      }
-      tickets {
+      bodyHtml
+      visibility
+      publishedAt
+      notifiedAt
+      group {
         id
         uid
-        registrations {
-          id
-          beneficiary
-          authorIsBeneficiary
-          beneficiaryUser {
-            uid
-            firstName
-            lastName
-            fullName
-          }
-          author {
-            uid
-          }
-          paid
-          ticket {
-            name
-          }
-        }
-        opensAt
-        closesAt
-        placesLeft
-        capacity
         name
-        descriptionHtml
-        price
-      }
-      group {
-        uid
         pictureFile
-        name
+        pictureFileDark
       }
+      pictureFile
       author {
-        uid
+        id
+        firstName
         fullName
+        lastName
         pictureFile
+        uid
         groups {
           group {
             name
@@ -103,11 +35,81 @@ query PostPage($group: String!, $uid: String!, $loggedIn: Boolean!) {
           title
         }
       }
-      contactMail
-    }
-    links {
-      name
-      computedValue
+      myReactions
+      reactionCounts
+      comments(first: 100) {
+        ...AreaComments
+      }
+      event {
+        id
+        uid
+        title
+        startsAt
+        endsAt
+        frequency
+        recurringUntil
+        location
+        placesLeft
+        capacity
+        descriptionHtml
+        descriptionPreview
+        pictureFile
+        links {
+          name
+          computedValue
+        }
+        tickets {
+          id
+          uid
+          registrations {
+            id
+            beneficiary
+            authorIsBeneficiary
+            beneficiaryUser {
+              uid
+              firstName
+              lastName
+              fullName
+            }
+            author {
+              uid
+            }
+            paid
+            ticket {
+              name
+            }
+          }
+          opensAt
+          closesAt
+          placesLeft
+          capacity
+          name
+          descriptionHtml
+          price
+        }
+        group {
+          uid
+          pictureFile
+          name
+        }
+        author {
+          uid
+          fullName
+          pictureFile
+          groups {
+            group {
+              name
+              uid
+            }
+            title
+          }
+        }
+        contactMail
+      }
+      links {
+        name
+        computedValue
+      }
     }
   }
 }
