@@ -1,0 +1,24 @@
+query SchoolPage($uid: String!) {
+  school(uid: $uid) {
+    uid
+    name
+    description
+    address
+    studentAssociations {
+      uid
+      name
+      description
+    }
+    services {
+      name
+      description
+      url
+      logo
+      logoSourceType
+      group {
+        pictureFile
+        pictureFileDark
+      }
+    }
+  }
+}

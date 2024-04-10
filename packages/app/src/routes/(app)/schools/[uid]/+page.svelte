@@ -1,12 +1,13 @@
 <script lang="ts">
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import CardService from '$lib/components/CardService.svelte';
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
   export let data: PageData;
 
-  const { school } = data;
+  $: ({ SchoolPage } = data);
 
   let warningToastId: string;
 
@@ -26,54 +27,61 @@
 </script>
 
 <div class="content">
-  <header>
-    <div class="picture">
-      <img src="/schools/{school.uid}.png" alt="{school.name} logo" />
-    </div>
+  {#if $SchoolPage.fetching}
+    <LoadingSpinner />
+  {:else if $SchoolPage.errors}
+    <p>Une erreur est survenue</p>
+  {:else if $SchoolPage.data?.school}
+    {@const school = $SchoolPage.data.school}
+    <header>
+      <div class="picture">
+        <img src="/schools/{school.uid}.png" alt="{school.name} logo" />
+      </div>
 
-    <div class="identity">
-      <h1>
-        {school.name}
-      </h1>
-      <h2>
-        {school.address}
-      </h2>
-    </div>
-  </header>
+      <div class="identity">
+        <h1>
+          {school.name}
+        </h1>
+        <h2>
+          {school.address}
+        </h2>
+      </div>
+    </header>
 
-  <section class="description">
-    <h2>Description</h2>
-    <div data-user-html>
-      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html school.description}
-    </div>
-  </section>
+    <section class="description">
+      <h2>Description</h2>
+      <div data-user-html>
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+        {@html school.description}
+      </div>
+    </section>
 
-  <section class="StudentAssociations">
-    <h2>Associations étudiantes</h2>
-    <div class="groups">
-      {#each school.studentAssociations as studentAssociation}
-        <a href={`/student-associations/${studentAssociation.uid ?? ''}/`}>
-          <div class="avatar">
-            <img
-              src="/student-associations/{studentAssociation.uid}.png"
-              alt={studentAssociation.name}
-            />
-          </div>
-          <div class="name">{studentAssociation.name}</div>
-        </a>
-      {/each}
-    </div>
-  </section>
+    <section class="StudentAssociations">
+      <h2>Associations étudiantes</h2>
+      <div class="groups">
+        {#each school.studentAssociations as studentAssociation}
+          <a href={`/student-associations/${studentAssociation.uid ?? ''}/`}>
+            <div class="avatar">
+              <img
+                src="/student-associations/{studentAssociation.uid}.png"
+                alt={studentAssociation.name}
+              />
+            </div>
+            <div class="name">{studentAssociation.name}</div>
+          </a>
+        {/each}
+      </div>
+    </section>
 
-  <section>
-    <h2>Services</h2>
-    <div class="services">
-      {#each school.services as service}
-        <CardService {service} small />
-      {/each}
-    </div>
-  </section>
+    <section>
+      <h2>Services</h2>
+      <div class="services">
+        {#each school.services as service}
+          <CardService {service} small />
+        {/each}
+      </div>
+    </section>
+  {/if}
 </div>
 
 <style lang="scss">
