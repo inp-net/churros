@@ -9,6 +9,7 @@
     'signups',
     'announcements',
     'backrooms',
+    'forms',
   ] as const;
 
   export const MOBILE_NAVIGATION_TABS = ['home', 'groups', 'events', 'services'] as const;
@@ -60,6 +61,7 @@
     if (starts('/backrooms') || starts('/logs')) return 'backrooms';
     if (starts('/reports')) return 'reports';
     if (starts('/announcements')) return 'announcements';
+    if (starts('/forms')) return 'forms';
     return 'home';
   }
 
@@ -253,8 +255,19 @@ The root layout is composed of several elements:
     scrollbar-width: thin;
   }
 
+  main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
   .contents-and-announcements:not(.fullsize) main {
     padding: 0 1rem;
+  }
+
+  #scrollable-area {
+    display: flex;
+    flex-direction: column;
   }
 
   :global(*::-webkit-scrollbar *) {

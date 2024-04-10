@@ -24,5 +24,6 @@ export const MODULES_COLORS: Record<string, string> = {
 	'student-associations': 'yellow',
 	ticketing: 'pink',
 	users: 'blue',
-	payments: 'yellow'
+	payments: 'yellow',
+	forms: 'magenta'
 };

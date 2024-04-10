@@ -29,8 +29,14 @@ export function aled(...o: unknown[]) {
 }
 
 /** Returns a temporary redirect object. */
-export const redirectToLogin = (to: string, searchParams: Record<string, string> = {}) =>
+export const redirectToLogin = (
+  to: string,
+  searchParams: URLSearchParams | Record<string, string> = {},
+) => {
+  if (searchParams instanceof URLSearchParams)
+    searchParams = Object.fromEntries(searchParams.entries());
   redirect(307, `/login?${new URLSearchParams({ to, ...searchParams }).toString()}`);
+};
 
 export const me = derived(page, ($page) => $page.data.me);
 

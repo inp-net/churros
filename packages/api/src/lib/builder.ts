@@ -22,6 +22,7 @@ import SmartSubscriptionsPlugin, {
 } from '@pothos/plugin-smart-subscriptions';
 import TracingPlugin, { isRootField, runFunction } from '@pothos/plugin-tracing';
 import ValidationPlugin from '@pothos/plugin-validation';
+import WithInputPlugin from '@pothos/plugin-with-input';
 import { GraphQLError, Kind } from 'graphql';
 import { UNAUTHORIZED_ERROR_MESSAGE } from './error.js';
 import { prisma } from './prisma.js';
@@ -60,10 +61,12 @@ export const builder = new SchemaBuilder<{
     ValidationPlugin,
     SmartSubscriptionsPlugin,
     DirectivePlugin,
+    WithInputPlugin,
   ],
   authScopes,
-  complexity: { limit: { complexity: 30_000, depth: 7, breadth: 200 } },
+  complexity: { limit: { complexity: 50_000, depth: 10, breadth: 200 } },
   defaultInputFieldRequiredness: true,
+  withInput: {},
   errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma, exposeDescriptions: true },
   scopeAuthOptions: {

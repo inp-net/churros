@@ -1,5 +1,6 @@
 import * as p from '@clack/prompts';
 import { PrismaClient } from '@prisma/client';
+import { type RuntimeDataModel } from '@prisma/client/runtime/library.js';
 import { glob } from 'glob';
 import { execSync } from 'node:child_process';
 import * as fs from 'node:fs';
@@ -9,11 +10,16 @@ const NEWLINE = '\n';
 
 const here = path.dirname(new URL(import.meta.url).pathname);
 
-const real_table_mapping: { [key: string]: string } = {
-  Uploader: 'User',
-  Member: 'User',
-  Author: 'User',
-};
+const prisma = new PrismaClient();
+const prismaRuntimeModel: RuntimeDataModel = await (prisma as any)._runtimeDataModel;
+const tableNames: Array<[symbol, string]> = Object.keys(prismaRuntimeModel.models)
+  .sort()
+  .map((name) => [Symbol(name), name]);
+
+function getRelationReferenceColumn(table: string, column: string): string {
+  return prismaRuntimeModel.models[table]!.fields.find((f) => f.name === column)!
+    .relationFromFields![0]!;
+}
 
 function ask<T>(answer: T | symbol): T {
   if (p.isCancel(answer)) {
@@ -64,9 +70,8 @@ function formatDateToYYYYMMDDHH(date: Date) {
   return formattedDate;
 }
 
-function tableAndColumn(dotPathedColumn: string): [string, string] {
-  const [table, column] = dotPathedColumn.split('.', 2) as [string, string];
-  return [table.charAt(0).toUpperCase() + table.slice(1), column];
+function splitDotPathed(dotPathedColumn: string): [string, string] {
+  return dotPathedColumn.split('.', 2) as [string, string];
 }
 
 function variableName(table: string, column: string): string {
@@ -80,7 +85,7 @@ function isDotPathed(column: string): boolean {
 function weightedTsvectorExpression(columnPath: string, weight: string): string {
   let columnExpression;
   if (isDotPathed(columnPath)) {
-    const [table, column] = tableAndColumn(columnPath);
+    const [table, column] = splitDotPathed(columnPath);
     columnExpression = variableName(table, column);
   } else {
     columnExpression = `NEW."${columnPath}"`;
@@ -108,21 +113,25 @@ function updateFunctionAndTrigger(
   const dotPathedColumns = Object.keys(columnsByWeight).filter((c) => c.includes('.'));
 
   const dotPathedDeclarations = dotPathedColumns.map(
-    (dotPathedColumn) => `${variableName(...tableAndColumn(dotPathedColumn))}: string = '';`,
+    (dotPathedColumn) => `${variableName(...splitDotPathed(dotPathedColumn))} text := '';`,
   );
 
+  const userTypedColumns = prismaRuntimeModel!.models[table]!.fields.filter((f: { type: string }) =>
+    ['User'].includes(f.type),
+  ).map((f: { name: string }) => f.name);
+
   const dotPathedDefinitions = dotPathedColumns.map((dotPathedColumn) => {
-    const [tab, column] = tableAndColumn(dotPathedColumn);
-    const realTab = real_table_mapping[tab] || tab;
-    return `${variableName(tab, column)} = (
+    const [parent, column] = splitDotPathed(dotPathedColumn);
+    const realTab = userTypedColumns.includes(parent) ? 'User' : parent;
+    return `${variableName(parent, column)} = (
             SELECT "${column}"
             FROM "${realTab}"
-            WHERE "${realTab}"."id" = NEW."${tab.toLowerCase()}Id"
+            WHERE "${realTab}"."id" = NEW."${getRelationReferenceColumn(table, parent)}"
         );`;
   });
 
   return `
--- ${table}
+-- ${table}.search updating
 CREATE OR REPLACE FUNCTION update_${table.toLowerCase()}_search() RETURNS TRIGGER AS $$
 DECLARE
     ${NEWLINE}${dotPathedDeclarations.join(NEWLINE)}
@@ -151,12 +160,6 @@ if (!areFilesGitClean('prisma/schema.prisma', 'src/lib/fulltextsearch.sql')) {
 }
 
 const fulltextsearchSQLFilePath = path.join(here, '..', 'src', 'lib', 'fulltextsearch.sql');
-
-const prisma = new PrismaClient();
-const prismaRuntimeModel: any = await (prisma as any)._runtimeDataModel;
-const tableNames: Array<[symbol, string]> = Object.keys(prismaRuntimeModel.models)
-  .sort()
-  .map((name) => [Symbol(name), name]);
 
 const tableName = ask(
   await p.select({
@@ -207,9 +210,24 @@ function mutatePrismaSchema(schemaPath: string, tableName: string) {
   execSync(`yarn prisma format`);
 }
 
-const columns: string[] = prismaRuntimeModel.models[tableName].fields
-  .filter((f: { type: string }) => ['String', 'Int', 'Float'].includes(f.type))
-  .map((f: { name: string }) => f.name);
+function scalarColumnNames(tableName: string) {
+  return prismaRuntimeModel.models[tableName]!.fields.filter((f: { type: string }) =>
+    ['String', 'Int', 'Float'].includes(f.type),
+  ).map((f: { name: string }) => f.name);
+}
+
+const columns: string[] = scalarColumnNames(tableName);
+
+const userTypedColumns: string[] = prismaRuntimeModel.models[tableName]!.fields.filter(
+  (f: { type: string }) => ['User'].includes(f.type),
+).map((f: { name: string }) => f.name);
+
+const eligibleColums = [
+  ...columns,
+  ...scalarColumnNames('User')
+    .filter((uc: string) => ['lastName', 'firstName', 'email', 'schoolEmail'].includes(uc))
+    .flatMap((uc: string) => userTypedColumns.map((c) => `${c}.${uc}`)),
+];
 
 p.note(
   "Chaque colonne est affectée d'un poids,\nqui va de 'A' (le plus fortement pondéré\n, par exemple un prénom pour une recherche de personnes)\n à 'D' (le moins fortement pondéré)",
@@ -218,14 +236,14 @@ let alreadySelected: string[] = [];
 const aWeightedColumns: string[] = ask(
   await p.multiselect({
     message: "Colonnes à pondérer avec le poids 'A' (le plus important)",
-    options: columns.map((value) => ({ value, label: value })),
+    options: eligibleColums.map((value) => ({ value, label: value })),
   }),
 );
 alreadySelected.push(...aWeightedColumns);
 const bWeightedColumns: string[] = ask(
   await p.multiselect({
     message: "Colonnes à pondérer avec le poids 'B' (peut être vide)",
-    options: columns
+    options: eligibleColums
       .filter((v) => !alreadySelected.includes(v))
       .map((value) => ({ value, label: value })),
     required: false,
@@ -235,7 +253,7 @@ alreadySelected.push(...bWeightedColumns);
 const cWeightedColumns: string[] = ask(
   await p.multiselect({
     message: "Colonnes à pondérer avec le poids 'C' (peut être vide)",
-    options: columns
+    options: eligibleColums
       .filter((v) => !alreadySelected.includes(v))
       .map((value) => ({ value, label: value })),
     required: false,
@@ -245,7 +263,7 @@ alreadySelected.push(...cWeightedColumns);
 const dWeightedColumns: string[] = ask(
   await p.multiselect({
     message: "Colonnes à pondérer avec le poids 'D' (peut être vide)",
-    options: columns
+    options: eligibleColums
       .filter((v) => !alreadySelected.includes(v))
       .map((value) => ({ value, label: value })),
     required: false,

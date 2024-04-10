@@ -11,6 +11,8 @@
   export let labelNull = 'Inconnu';
   export let alignRight = false;
   export let help = '';
+  export let name: string | undefined = undefined;
+  export let disabled = false;
   let previousValue: boolean | null | undefined = value;
 
   const getTriState = (target: HTMLInputElement) =>
@@ -41,6 +43,8 @@
   {#if ternary}
     <input
       type="checkbox"
+      {name}
+      {disabled}
       bind:this={checkboxElement}
       on:change={(event) => {
         event.preventDefault();
@@ -82,15 +86,17 @@
       </div>
     {/if}
   {:else}
-    <input on:change type="checkbox" bind:checked={value} />
+    <input on:change type="checkbox" bind:checked={value} {disabled} />
     <div class="checkbox" data-state={JSON.stringify(value)}>
       {#if value === true}
         <Check />
       {/if}
     </div>
-    <div class="labels">
-      {#if $$slots.default}<slot />{:else}{label}{/if}
-    </div>
+    {#if label}
+      <div class="labels">
+        {#if $$slots.default}<slot />{:else}{label}{/if}
+      </div>
+    {/if}
   {/if}
 </label>
 

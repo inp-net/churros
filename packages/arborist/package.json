@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
-    "@types/node": "^20.11.30",
+    "@types/node": "^20.12.2",
     "c8": "^9.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.3"

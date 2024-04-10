@@ -15,12 +15,12 @@
 	"devDependencies": {
 		"@centraverse/api": "workspace:^",
 		"@sveltejs/adapter-static": "^3.0.1",
-		"@sveltejs/kit": "^2.5.4",
+		"@sveltejs/kit": "^2.5.5",
 		"@sveltejs/vite-plugin-svelte": "^3.0.2",
-		"@types/eslint": "8.56.6",
+		"@types/eslint": "8.56.7",
 		"@types/lodash.throttle": "^4.1.9",
-		"@typescript-eslint/eslint-plugin": "^7.3.1",
-		"@typescript-eslint/parser": "^7.3.1",
+		"@typescript-eslint/eslint-plugin": "^7.4.0",
+		"@typescript-eslint/parser": "^7.4.0",
 		"eslint": "^8.57.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.35.1",
@@ -34,12 +34,12 @@
 		"remark-parse": "^11.0.0",
 		"remark-rehype": "^11.1.0",
 		"svelte": "^4.2.12",
-		"svelte-check": "^3.6.8",
+		"svelte-check": "^3.6.9",
 		"tslib": "^2.6.2",
 		"typescript": "^5.4.3",
 		"unified": "^11.0.4",
 		"vfile-matter": "^5.0.0",
-		"vite": "^5.2.3"
+		"vite": "^5.2.7"
 	},
 	"type": "module",
 	"volta": {

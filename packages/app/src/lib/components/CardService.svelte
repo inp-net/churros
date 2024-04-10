@@ -13,6 +13,7 @@
   import IconStatus from '~icons/mdi/checkbox-marked-circle-outline';
   import IconCoupon from '~icons/mdi/coupon';
   import IconDomainSwitch from '~icons/mdi/domain-switch';
+  import IconForms from '~icons/mdi/form-select';
   import IconGear from '~icons/mdi/gear';
   import IconGearOutline from '~icons/mdi/gear-outline';
   import IconGit from '~icons/mdi/git';
@@ -49,6 +50,7 @@
     'history': IconHistory,
     'bug-check': IconBugCheck,
     'services': IconServices,
+    'forms': IconForms,
   };
 
   export let service: CardService | undefined;

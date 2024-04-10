@@ -21,6 +21,8 @@
   import IconTerminal from '~icons/mdi/console';
   import IconBugOutline from '~icons/mdi/bug-outline';
   import IconBug from '~icons/mdi/bug';
+  import IconForms from '~icons/mdi/form';
+  import IconFormsOutline from '~icons/mdi/form-outline';
   import { beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import type { DESKTOP_NAVIGATION_TABS } from '../../routes/(app)/+layout.svelte';
@@ -149,6 +151,20 @@
         <IconBugOutline></IconBugOutline>
       {/if}
       <span>Mes signalements</span>
+    </a>
+
+    <a
+      href="/forms"
+      class="navigation-item"
+      class:current={!flyoutOpen && current === 'forms'}
+      class:disabled={flyoutOpen}
+    >
+      {#if current === 'forms'}
+        <IconForms></IconForms>
+      {:else}
+        <IconFormsOutline></IconFormsOutline>
+      {/if}
+      <span>Formulaires</span>
     </a>
   {/if}
 
@@ -282,6 +298,11 @@
     <a href="/events/create">
       <IconEvent />
       <span>Événement</span>
+    </a>
+
+    <a href="/forms/create">
+      <IconFormsOutline></IconFormsOutline>
+      <span>Formulaire</span>
     </a>
   </section>
 </div>

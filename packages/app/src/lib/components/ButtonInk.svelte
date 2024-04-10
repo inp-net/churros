@@ -10,6 +10,7 @@
   export let danger = false;
   export let loading = false;
   export let disabled = false;
+  export let newTab = false;
 </script>
 
 <svelte:element
@@ -18,10 +19,11 @@
   class="button-ink"
   class:danger
   class:inside-prose={insideProse}
-  {href}
+  href={disabled ? '#' : href}
   {...$$restProps}
   on:click
   role="button"
+  target={newTab ? '_blank' : undefined}
   tabindex="0"
   disabled={disabled || loading}
 >
@@ -53,6 +55,12 @@
     border: none;
     border-radius: var(--radius-inline);
     box-shadow: none;
+  }
+
+  /* <a> elements don't have disabled={false} -> (no attribute in DOM) treatment, so Svelte just stringifies it to false. We still wanna have disabled link buttons though. */
+  .button-ink[disabled]:not([disabled='false']) {
+    cursor: not-allowed;
+    color: var(--muted-text);
   }
 
   .button-ink.inside-prose {

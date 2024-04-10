@@ -31,7 +31,7 @@
       duplicatedFrom,
     } = $ReportDetails.data.issue}
     <p class="overtitle">
-      <ButtonBack go="..">Tout les signalements</ButtonBack>
+      <ButtonBack go="..">Tous les signalements</ButtonBack>
     </p>
     <h1>
       <span class="muted number">#{number}</span>

@@ -39,7 +39,7 @@
   {id}
   {...$$restProps}
   disabled={loading || disabled || undefined}
-  class:muted={loading || disabled}
+  class:muted={loading || (disabled && !success && !danger)}
   on:click
   role="button"
   {tabindex}
@@ -84,6 +84,10 @@
     cursor: not-allowed;
   }
 
+  .button-secondary:disabled:not(.muted) {
+    opacity: 0.75;
+  }
+
   .button-secondary.circle {
     padding: 0.5rem;
     font-size: 1.2em;
@@ -99,7 +103,7 @@
 
     /* color: var(--bg); */
     background: var(--secondary-bg);
-    border: var(--border-block) solid var(--secondary-hover-border);
+    border: var(--border-block) solid var(--secondary-hover-border, var(--secondary-bg));
   }
 
   .icon {

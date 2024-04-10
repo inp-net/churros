@@ -11,6 +11,7 @@
 
   export let showTooltip = false;
   export let visibility: Visibility | Visibility$options | undefined;
+  export let text = false;
 </script>
 
 <span
@@ -27,6 +28,9 @@
     <IconGlobe />
   {:else if visibility === Visibility.SchoolRestricted}
     <IconSchool></IconSchool>
+  {/if}
+  {#if text && visibility}
+    {DISPLAY_VISIBILITIES[visibility]}
   {/if}
 </span>
 

@@ -3,10 +3,8 @@
   import Badge from '$lib/components/Badge.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonCopyToClipboard from '$lib/components/ButtonCopyToClipboard.svelte';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonToggleShow from '$lib/components/ButtonToggleShow.svelte';
-  import Modal from '$lib/components/Modal.svelte';
   import { formatDateTime } from '$lib/dates';
   import { me } from '$lib/session';
   import { subscribe } from '$lib/subscriptions';
@@ -14,23 +12,18 @@
   import { zeus } from '$lib/zeus';
   import { LineChart, ScaleTypes } from '@carbon/charts-svelte';
   import '@carbon/charts-svelte/styles.css';
-  import { format } from 'date-fns';
-  import { onMount, tick } from 'svelte';
+  import { onMount } from 'svelte';
   import IconUsers from '~icons/mdi/account-multiple-outline';
-  import IconErrorCircle from '~icons/mdi/alert-circle-outline';
   import IconWarning from '~icons/mdi/alert-outline';
   import IconCalendar from '~icons/mdi/calendar-outline';
-  import IconClose from '~icons/mdi/close';
   import IconReset from '~icons/mdi/refresh';
-  import IconScrollLocked from '~icons/mdi/lock-outline';
-  import IconScrollUnlocked from '~icons/mdi/lock-open-outline';
   import ButtonToggleActiveApp from '../ButtonToggleActiveApp.svelte';
   import FormApp from '../FormApp.svelte';
   import type { PageData } from './$houdini';
-  import { tooltip } from '$lib/tooltip';
+  import LogsTable from './LogsTable.svelte';
 
   export let data: PageData;
-  $: ({ ThirdPartyAppDetails } = data);
+  $: ({ ThirdPartyAppDetails, Me } = data);
 
   let loading = false;
   $: app = $ThirdPartyAppDetails.data?.thirdPartyApp ?? {
@@ -49,60 +42,29 @@
   };
   $: ({ name, createdAt, faviconUrl, clientId, active, secretLength } = app);
 
-  $: logs = data.thirdPartyApp.logs.nodes;
+  $: logs = data.thirdPartyApp.logs.nodes.toReversed();
 
   let clientSecret: string | undefined;
   let clientSecretShown = true;
-  let shownLog: (typeof logs)[number] | undefined = undefined;
-  let autoscrollLogs = true;
-  let autoscrolling = false;
-  let logSectionElement: HTMLDivElement;
-  let logDetailsModalElement: HTMLDialogElement;
+  let scrollLogsToBottom: () => Promise<void>;
 
   onMount(() => {
     $subscribe(
       {
-        thirdPartyApp: [
-          { id: data.thirdPartyApp.id },
-          {
-            logs: [
-              { first: 100 },
-              {
-                nodes: { happenedAt: true, message: true, action: true },
-              },
-            ],
-          },
-        ],
+        thirdPartyApp: [{ id: data.thirdPartyApp.id }, { logs: _query.logs }],
       },
       async (response) => {
         const freshData = await response;
         if ('errors' in freshData) return;
         if (!freshData.thirdPartyApp?.logs) return;
         data.thirdPartyApp.logs.nodes = freshData.thirdPartyApp.logs.nodes.filter(notNull);
-        if (autoscrollLogs) {
-          await tick();
-          autoscrolling = true;
-          await tick();
-          logSectionElement.scrollTop = logSectionElement.scrollHeight;
-          await tick();
-          autoscrolling = false;
-        }
+        await scrollLogsToBottom();
       },
     );
   });
 
   function redact(textOrLength: string | number): string {
     return '\u2022'.repeat(typeof textOrLength === 'string' ? textOrLength.length : textOrLength);
-  }
-
-  function formatTimeSafe(date: Date): string {
-    try {
-      if (typeof date === 'string') return format(new Date(date), 'HH:mm');
-
-      return format(date, 'HH:mm');
-    } catch {
-      return '??:??';
-    }
   }
 
   async function rotateSecret() {
@@ -146,7 +108,7 @@
           description: app.description,
           name: app.name,
           ownerGroupUid: app.owner.uid,
-          website: app.website,
+          website: app.website || null,
         },
         { __typename: true },
       ],
@@ -162,104 +124,14 @@
     // ({ name, description, allowedRedirectUris, createdAt, faviconUrl, active, owner, website } =
     //   editApp);
 
-    // app = {
-    //   ...app,
-    //   ...editApp,
-    //   allowedRedirectUris: allowedRedirectUris.join(' '),
-    //   ownerGroup: owner,
-    // };
-  }
-
-  function prettyLogMessage(log: { message: string; action: string }): {
-    message: string;
-    theme: 'info' | 'danger' | 'muted';
-    code?: string;
-  } {
-    switch (log.action) {
-      case 'token/request': {
-        const { code, redirect_uri } = JSON.parse(log.message);
-        return { message: `Token demandé pour ${redirect_uri}`, theme: 'muted', code };
-      }
-      case 'token/ok': {
-        const { code } = JSON.parse(log.message);
-        return { message: `Token obtenu`, theme: 'info', code };
-      }
-      case 'token/error': {
-        const { err, authorizationCode } = JSON.parse(log.message);
-        return {
-          message: `Erreur lors de l'obtention du token: ${err}`,
-          theme: 'danger',
-          code: authorizationCode,
-        };
-      }
-      case 'authorize/error': {
-        const { message } = JSON.parse(log.message);
-        return { message: `Erreur lors de l'autorisation: ${message}`, theme: 'danger' };
-      }
-      case 'authorize/ok': {
-        const { code } = JSON.parse(log.message);
-        return { message: `Autorisation accordée, code donné`, theme: 'info', code };
-      }
-      // No default
-    }
-    return { message: log.action + ' ' + log.message, theme: 'info' };
-  }
-
-  function flattenObject(obj: Record<string, unknown>): Record<string, string> {
-    const result: Record<string, string> = {};
-    for (const [key, value] of Object.entries(obj)) {
-      if (typeof value === 'object') {
-        // prefix keys with parent key
-        Object.assign(
-          result,
-          ...Object.entries(flattenObject(value as Record<string, unknown>)).map(([k, v]) => ({
-            [`${key}.${k}`]: v,
-          })),
-        );
-        // Object.assign(result, flattenObject(value as Record<string, unknown>));
-      } else {
-        result[key] = String(value);
-      }
-    }
-    return result;
+    app = {
+      ...app,
+      ...editApp,
+      allowedRedirectUris: allowedRedirectUris.join(' '),
+      ownerGroup: owner,
+    };
   }
 </script>
-
-<Modal bind:element={logDetailsModalElement}>
-  <h1 class="modal-header">
-    Détails sur un log
-    <ButtonGhost
-      on:click={() => {
-        logDetailsModalElement.close();
-      }}><IconClose></IconClose></ButtonGhost
-    >
-  </h1>
-  {#if shownLog}
-    {@const obj = JSON.parse(shownLog.message)}
-    <p>
-      {formatDateTime(shownLog.happenedAt)}
-    </p>
-    {#if 'formData' in obj}
-      <h3>Données passées dans la requête en form-data</h3>
-      <dl class="formdata">
-        {#each Object.entries(obj.formData) as [key, value]}
-          <dt class="formdata-key"><pre>{key}</pre></dt>
-          <dd>{value}</dd>
-        {/each}
-      </dl>
-      <hr />
-      <h3>Autres données de débug</h3>
-    {/if}
-    <dl>
-      {#each Object.entries(flattenObject(obj)) as [key, value]}
-        {#if !key.startsWith('formData.')}
-          <dt><pre>{key}</pre></dt>
-          <dd>{value}</dd>
-        {/if}
-      {/each}
-    </dl>
-  {/if}
-</Modal>
 
 <main>
   <h1>
@@ -268,18 +140,29 @@
     {name}
   </h1>
   <section class="metadata">
-    <div class="status">
-      <Badge theme={active ? 'success' : 'warning'}
-        >{#if active}
-          Active
-        {:else}
-          En attente de validation
-        {/if}</Badge
-      >
-    </div>
-    {#if $me?.admin}
-      <ButtonToggleActiveApp {...app}></ButtonToggleActiveApp>
+    {#if $Me.admin}
+      <ButtonToggleActiveApp id={data.thirdPartyApp.id} bind:active={data.thirdPartyApp.active}
+      ></ButtonToggleActiveApp>
+    {:else}
+      <div class="status">
+        <Badge theme={active ? 'success' : 'warning'}
+          >{#if active}
+            Active
+          {:else}
+            En attente de validation
+          {/if}</Badge
+        >
+      </div>
     {/if}
+    <ButtonSecondary
+      disabled={app.allowedRedirectUris.length === 0}
+      newTab
+      href="/authorize?{new URLSearchParams({
+        client_id: clientId,
+        response_type: 'code',
+        redirect_uri: app.allowedRedirectUris[0],
+      })}">Tester</ButtonSecondary
+    >
     <div class="users">
       <IconUsers></IconUsers>
       {app.usersCount} utilisateur·ice·s
@@ -322,68 +205,7 @@
       </dd>
     </dl>
   </section>
-  <section class="logs" class:autoscroll={autoscrollLogs}>
-    <h2>Logs</h2>
-    <div
-      class="logs-table"
-      bind:this={logSectionElement}
-      on:scroll={() => {
-        if (autoscrolling) return;
-        autoscrollLogs =
-          logSectionElement.scrollHeight - logSectionElement.scrollTop <=
-          logSectionElement.clientHeight + 100
-            ? true
-            : false;
-      }}
-    >
-      <table>
-        {#each logs.reverse() as log}
-          {@const { message, theme, code } = prettyLogMessage(log)}
-          <tr
-            class={theme}
-            on:click={async () => {
-              shownLog = log;
-              await tick();
-              logDetailsModalElement.showModal();
-            }}
-          >
-            <td
-              >{#if theme === 'danger'}<IconErrorCircle></IconErrorCircle>{/if}
-            </td>
-            <td class="time">{formatTimeSafe(log.happenedAt)}</td>
-            <td class="requestid" use:tooltip={code ? `Requête pour le code ${code}` : undefined}>
-              {#if code}
-                {code.replace(/^churros_/, '').slice(0, 5)}
-              {/if}
-            </td>
-            <td>{message}</td>
-          </tr>
-        {/each}
-      </table>
-    </div>
-    <div class="toolbar">
-      <div class="info">
-        <div class="pulsing-red-dot"></div>
-        <span class="typo-field-label">Live</span>
-      </div>
-      <div class="actions">
-        <ButtonGhost
-          help="{autoscrollLogs ? 'Désactiver' : 'Activer'} le défilement automatique"
-          on:click={() => {
-            autoscrollLogs = !autoscrollLogs;
-            if (autoscrollLogs) logSectionElement.scrollTop = logSectionElement.scrollHeight;
-          }}
-        >
-          Défilement {#if autoscrollLogs}automatique{:else}manuel{/if}
-          {#if autoscrollLogs}
-            <IconScrollLocked></IconScrollLocked>
-          {:else}
-            <IconScrollUnlocked></IconScrollUnlocked>
-          {/if}
-        </ButtonGhost>
-      </div>
-    </div>
-  </section>
+  <LogsTable live bind:scrollToBottom={scrollLogsToBottom} {logs}></LogsTable>
   <section class="stats">
     <h2>Statistiques</h2>
     <LineChart
@@ -494,115 +316,5 @@
 
   .favicon {
     height: 1.2em;
-  }
-
-  h1.modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  dt.formdata-key {
-    text-transform: none;
-  }
-
-  dl.formdata {
-    display: grid;
-    grid-template-columns: min-content max-content;
-    align-items: center;
-  }
-
-  .logs {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .logs h2 {
-    margin-bottom: 1.5rem;
-  }
-
-  .logs .logs-table {
-    max-height: 50vh;
-    overflow: scroll;
-    scroll-behavior: smooth;
-  }
-
-  .logs .toolbar {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.25rem 0.5rem;
-    border-top: var(--border-block) solid var(--border);
-    transition: border-color 0.5s ease;
-  }
-
-  .logs.autoscroll .toolbar {
-    border-color: var(--muted-border);
-  }
-
-  .logs .toolbar .info {
-    display: flex;
-    gap: 0.5em;
-    align-items: center;
-  }
-
-  .logs .toolbar .info span {
-    font-weight: bold;
-  }
-
-  .logs td {
-    padding: 0.25rem 0;
-  }
-
-  .logs td.time,
-  .logs td.requestid {
-    font-family: var(--font-mono);
-  }
-
-  .logs td:not(:last-child) {
-    padding-right: 1rem;
-  }
-
-  .logs tr {
-    cursor: pointer;
-  }
-
-  .logs tr:hover,
-  .logs tr:focus-visible {
-    color: var(--hover-text);
-    background: var(--hover-bg);
-  }
-
-  .logs tr.danger {
-    font-weight: bold;
-    color: var(--danger-text);
-    background: var(--danger-bg);
-
-    &:hover,
-    &:focus-visible {
-      color: var(--danger-link);
-      background: var(--danger-bg);
-    }
-  }
-
-  .logs .pulsing-red-dot {
-    width: 1em;
-    height: 1em;
-    background: var(--danger-link);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0% {
-      opacity: 1;
-    }
-
-    50% {
-      opacity: 0;
-    }
-
-    100% {
-      opacity: 1;
-    }
   }
 </style>

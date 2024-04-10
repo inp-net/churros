@@ -9,9 +9,9 @@ import {
   type InputType,
   type ValueTypes,
 } from '../zeus/index';
-// @ts-expect-error Not typed
+// @ts-expect-error This file is not typed
 import extractFiles from 'extract-files/extractFiles.mjs';
-// @ts-expect-error Not typed
+// @ts-expect-error This file is not typed
 import isFile from 'extract-files/isExtractableFile.mjs';
 import { GraphQLError } from 'graphql';
 import { derived } from 'svelte/store';

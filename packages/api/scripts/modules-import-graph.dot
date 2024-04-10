@@ -3,13 +3,16 @@ strict digraph ImportGraph {
     "comments" -> "notifications";
     "comments" -> "documents";
     "curriculum" -> "documents";
+    "documents" -> "comments";
+    "events" -> "ticketing";
     "events" -> "notifications";
     "events" -> "users";
     "events" -> "payments";
     "events" -> "reactions";
-    "events" -> "ticketing";
     "events" -> "links";
-    "events" -> "groups";
+    "forms" -> "users";
+    "forms" -> "groups";
+    "forms" -> "events";
     "gitlab" -> "users";
     "groups" -> "links";
     "groups" -> "users";
@@ -24,4 +27,3 @@ strict digraph ImportGraph {
     "ticketing" -> "users";
     "users" -> "notifications";
     "users" -> "links";
-}

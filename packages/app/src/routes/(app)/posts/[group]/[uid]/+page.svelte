@@ -200,10 +200,10 @@
     width: 2.25rem;
     height: 2.25rem;
     overflow: hidden;
+    object-fit: contain;
     background: var(--bg);
     border: 2px solid var(--muted-border);
     border-radius: 50%;
-    object-fit: contain;
   }
 
   .group-link {
@@ -241,8 +241,8 @@
     width: 100%;
     margin: 0.5rem 0;
     overflow: hidden;
-    border-radius: var(--radius-block);
     object-fit: cover;
+    border-radius: var(--radius-block);
   }
 
   .event {
