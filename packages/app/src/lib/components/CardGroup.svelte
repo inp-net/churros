@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import { fragment, graphql, type CardGroupGroup } from '$houdini';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
@@ -27,7 +28,17 @@
   export let showSchool = false;
 </script>
 
-<a href={href || `/groups/${uid}`} title={name} class="group" draggable="false" on:click>
+<a
+  data-sveltekit-preload-data={$page.route.id === '/(app)/users/[uid]'
+    ? // TODO understand why, on this page specifically, preloading data for groups results in $UserProfile having fetching=false, data=null, errors=null.
+      'off'
+    : undefined}
+  href={href || `/groups/${uid}`}
+  title={name}
+  class="group"
+  draggable="false"
+  on:click
+>
   <div class="img">
     <img
       src={groupLogoSrc($isDark, { pictureFile, pictureFileDark })}
