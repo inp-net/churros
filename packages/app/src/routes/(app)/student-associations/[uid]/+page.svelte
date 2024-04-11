@@ -1,7 +1,7 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
   import BadgeSchool from '$lib/components/BadgeSchool.svelte';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import { tooltip } from '$lib/tooltip';
   import IconFacebook from '~icons/mdi/facebook-box';
   import { onDestroy, onMount, type SvelteComponent } from 'svelte';
@@ -16,6 +16,7 @@
   import { GroupType } from '$lib/zeus';
   import { toasts } from '$lib/toasts';
   import AreaContribute from '$lib/components/AreaContribute.svelte';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -42,7 +43,8 @@
 
   export let data: PageData;
 
-  const { studentAssociation } = data;
+  $: ({ StudentAssociationPage } = data);
+  $: studentAssociation = $StudentAssociationPage.data?.studentAssociation;
 
   let warningToastId: string;
 
@@ -58,99 +60,106 @@
 </script>
 
 <div class="content">
-  <header>
-    <div class="picture">
-      <img
-        src="/student-associations/{studentAssociation.uid}.png"
-        alt="{studentAssociation.name} logo"
-      />
-    </div>
-
-    <div class="identity">
-      <h1>
-        {studentAssociation.name}
-      </h1>
-
-      <BadgeSchool schools={[studentAssociation.school]} />
-
-      <ul class="social-links nobullet">
-        {#each studentAssociation.links.filter(({ value }) => Boolean(value)) as { name, value }}
-          <li>
-            <a href={value} use:tooltip={DISPLAY_SOCIAL_NETWORK[name]}>
-              <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
-            </a>
-          </li>
-        {/each}
-      </ul>
-    </div>
-  </header>
-
-  <div class="description-and-contribution">
-    <section class="description">
-      <h2>Description</h2>
-      <div data-user-html>
-        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-        {@html studentAssociation.description}
+  {#if $StudentAssociationPage.fetching}
+    Chargement…
+    <LoadingSpinner />
+  {:else if $StudentAssociationPage.errors}
+    <p>Une erreur est survenue</p>
+  {:else if studentAssociation}
+    <header>
+      <div class="picture">
+        <img
+          src="/student-associations/{studentAssociation.uid}.png"
+          alt="{studentAssociation.name} logo"
+        />
       </div>
-    </section>
-    <section class="contribute">
-      {#if data.me && !data.me.external}
-        <h2>Cotiser</h2>
-        {#if data.me.contributesTo.some((c) => c.uid === studentAssociation.uid)}
-          <p>Tu cotises pour {studentAssociation.name}. Merci!</p>
-        {:else}
-          <AreaContribute
-            {studentAssociation}
-            pendingContributions={data.me.pendingContributions}
-            contributionOptions={studentAssociation.contributionOptions}
-          />
-        {/if}
-      {/if}
-    </section>
-  </div>
 
-  <section class="student-association-sections">
-    <h2>Bureaux de l'association</h2>
-    {#each studentAssociation.groups.filter((group) => group.type === GroupType.StudentAssociationSection) as studentAssociationSection}
-      <a href="/groups/{studentAssociationSection.uid}/" class="group">
-        <div class="avatar">
-          <img
-            src="{env.PUBLIC_STORAGE_URL}{studentAssociationSection.pictureFile}"
-            alt={studentAssociationSection.name}
-          />
+      <div class="identity">
+        <h1>
+          {studentAssociation.name}
+        </h1>
+
+        <BadgeSchool schools={[studentAssociation.school]} />
+
+        <ul class="social-links nobullet">
+          {#each studentAssociation.links.filter(({ value }) => Boolean(value)) as { name, value }}
+            <li>
+              <a href={value} use:tooltip={DISPLAY_SOCIAL_NETWORK[name]}>
+                <svelte:component this={NAME_TO_ICON?.[name.toLowerCase()] ?? IconWebsite} />
+              </a>
+            </li>
+          {/each}
+        </ul>
+      </div>
+    </header>
+
+    <div class="description-and-contribution">
+      <section class="description">
+        <h2>Description</h2>
+        <div data-user-html>
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html studentAssociation.description}
         </div>
-        <div class="text">
-          <p class="name">
-            {studentAssociationSection.name}
-          </p>
-          {#if studentAssociationSection.description}
-            <p class="description">{studentAssociationSection.description}</p>
+      </section>
+      <section class="contribute">
+        {#if data.me && !data.me.external}
+          <h2>Cotiser</h2>
+          {#if data.me.contributesTo.some((c) => c.uid === studentAssociation.uid)}
+            <p>Tu cotises pour {studentAssociation.name}. Merci!</p>
+          {:else}
+            <AreaContribute
+              {studentAssociation}
+              pendingContributions={data.me.pendingContributions}
+              contributionOptions={studentAssociation.contributionOptions}
+            />
           {/if}
-        </div></a
-      >
-    {/each}
-  </section>
+        {/if}
+      </section>
+    </div>
 
-  <section class="clubs">
-    <h2>Associations et Clubs</h2>
-    <div class="groups">
-      {#each studentAssociation.groups.filter((group) => group.type === GroupType.Club || group.type === GroupType.Association) as group}
-        <a href="/groups/{group.uid}/" class="group">
+    <section class="student-association-sections">
+      <h2>Bureaux de l'association</h2>
+      {#each studentAssociation.groups.filter((group) => group.type === GroupType.StudentAssociationSection) as studentAssociationSection}
+        <a href="/groups/{studentAssociationSection.uid}/" class="group">
           <div class="avatar">
-            <img src="{env.PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} />
+            <img
+              src="{env.PUBLIC_STORAGE_URL}{studentAssociationSection.pictureFile}"
+              alt={studentAssociationSection.name}
+            />
           </div>
           <div class="text">
             <p class="name">
-              {group.name}
+              {studentAssociationSection.name}
             </p>
-            {#if group.description}
-              <p class="description">{group.description}</p>
+            {#if studentAssociationSection.description}
+              <p class="description">{studentAssociationSection.description}</p>
             {/if}
           </div></a
         >
       {/each}
-    </div>
-  </section>
+    </section>
+
+    <section class="clubs">
+      <h2>Associations et Clubs</h2>
+      <div class="groups">
+        {#each studentAssociation.groups.filter((group) => group.type === GroupType.Club || group.type === GroupType.Association) as group}
+          <a href="/groups/{group.uid}/" class="group">
+            <div class="avatar">
+              <img src="{env.PUBLIC_STORAGE_URL}{group.pictureFile}" alt={group.name} />
+            </div>
+            <div class="text">
+              <p class="name">
+                {group.name}
+              </p>
+              {#if group.description}
+                <p class="description">{group.description}</p>
+              {/if}
+            </div></a
+          >
+        {/each}
+      </div>
+    </section>
+  {/if}
 </div>
 
 <style lang="scss">

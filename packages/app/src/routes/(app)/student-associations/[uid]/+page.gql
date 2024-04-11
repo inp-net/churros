@@ -1,0 +1,48 @@
+query StudentAssociationPage($uid: String!, $loggedIn: LoggedIn!) {
+  me @include(if: $loggedIn) {
+    pendingContributions {
+      id
+      name
+    }
+    contributesTo {
+      uid
+    }
+    external
+  }
+  studentAssociation(uid: $uid) {
+    uid
+    name
+    description
+    school {
+      id
+      uid
+      name
+      color
+    }
+    links {
+      name
+      value
+    }
+    groups {
+      uid
+      name
+      type
+      description
+      pictureFile
+    }
+    contributionOptions @include(if: $loggedIn) {
+      id
+      price
+      offeredIn {
+        uid
+        name
+      }
+      paysFor {
+        id
+        name
+        uid
+      }
+      name
+    }
+  }
+}
