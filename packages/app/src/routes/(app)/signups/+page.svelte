@@ -1,24 +1,26 @@
 <script lang="ts">
   import IconEditPen2Line from '~icons/mdi/pencil';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import IconCheck from '~icons/mdi/check';
   import IconTrash from '~icons/mdi/delete-outline';
   import { zeus } from '$lib/zeus';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { tooltip } from '$lib/tooltip';
   import { toasts } from '$lib/toasts';
+  import { notNull } from '$lib/typing';
 
   export let data: PageData;
+
+  $: ({ SignupsPage } = data);
 
   // emails of registrations that are currently being accepted/refused
   let loadingRegistrations: string[] = [];
 
-  $: userCandidates = data.userCandidates.edges.map(({ node }) => node);
+  $: userCandidates = $SignupsPage.data?.userCandidates.nodes.filter(notNull);
 
   const removeRow = (email: string) => {
-    data.userCandidates.edges = data.userCandidates.edges.filter(
-      ({ node }) => node.email !== email,
-    );
+    if (!userCandidates) return;
+    userCandidates = userCandidates.filter((node) => node.email !== email);
   };
 
   async function decide(email: string, accept: boolean, why = ''): Promise<void> {
@@ -46,7 +48,7 @@
 
 <h1>Demandes d'inscription</h1>
 <ul class="nobullet registrations">
-  {#each userCandidates as { email, fullName, major, graduationYear }}
+  {#each userCandidates ?? [] as { email, fullName, major, graduationYear }}
     <li>
       <strong>{fullName}</strong>
       <span

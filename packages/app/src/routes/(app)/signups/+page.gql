@@ -1,0 +1,19 @@
+query SignupsPage {
+  userCandidates {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    nodes {
+      firstName
+      lastName
+      fullName
+      email
+      major {
+        name
+        shortName
+      }
+      graduationYear
+    }
+  }
+}
