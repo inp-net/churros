@@ -200,7 +200,7 @@ body {
 }
 
 [data-user-html] > {
-  p {
+  p:not(:last-child) {
     margin-bottom: 1em;
   }
 
