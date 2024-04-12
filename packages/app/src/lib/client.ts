@@ -1,8 +1,9 @@
 import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import type { ClientPlugin } from '$houdini';
-import { HoudiniClient } from '$houdini';
+import { HoudiniClient, subscription } from '$houdini';
 import { redirectToLogin } from '$lib/session';
+import { createClient } from 'graphql-ws';
 import { UNAUTHORIZED_ERROR_MESSAGE } from '../../../api/src/lib/error.js';
 
 const unauthorizedErrorHandler: ClientPlugin = () => {
@@ -29,16 +30,29 @@ const logger: ClientPlugin = () => ({
   },
 });
 
+const subscriptionPlugin = subscription(({ session }) =>
+  createClient({
+    url: env.PUBLIC_API_WEBSOCKET_URL,
+    connectionParams: () =>
+      session
+        ? {
+            headers: {
+              Authorization: `Bearer ${session.token}`,
+            },
+          }
+        : {},
+  }),
+);
+
 export default new HoudiniClient({
   url: env.PUBLIC_API_URL,
-  plugins: [logger, unauthorizedErrorHandler],
-  fetchParams({ session, variables }) {
+  plugins: [logger, subscriptionPlugin, unauthorizedErrorHandler],
+  fetchParams({ session }) {
     // console.log(
     //   `fetching client params from token ${JSON.stringify(
     //     session?.token,
     //   )}, varaibles ${JSON.stringify(variables)}`,
     // );
-    console.log({ variables });
     return {
       headers: {
         Authorization: `Bearer ${session?.token}`,

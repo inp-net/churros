@@ -19,13 +19,13 @@
   import { browser } from '$app/environment';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
+  import { graphql } from '$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ModalChangelog from '$lib/components/ModalChangelog.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
   import TopBar from '$lib/components/NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
-  import { subscribe } from '$lib/subscriptions';
   import { theme } from '$lib/theme.js';
   import { onMount } from 'svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
@@ -41,14 +41,6 @@
   let scrollableArea: HTMLElement;
 
   let scrolled = false;
-  let announcements = [] as Array<{
-    title: string;
-    bodyHtml: string;
-    warning: boolean;
-    id: string;
-  }>;
-
-  const now = new Date();
 
   function currentTabDesktop(url: URL): (typeof DESKTOP_NAVIGATION_TABS)[number] {
     const starts = (segment: string) => url.pathname.startsWith(segment);
@@ -94,32 +86,26 @@
   afterNavigate(async () => {
     scrollableArea.scrollTo(0, $scrollPositions[$page.url.pathname] ?? 0);
   });
+
+  const announcementsUpdates = graphql(`
+    subscription AnnouncementsNow {
+      announcementsNow {
+        id
+        title
+        bodyHtml
+        warning
+      }
+    }
+  `);
+
+  $: announcementsUpdates.listen();
+  $: announcements = $announcementsUpdates.data?.announcementsNow ?? [];
+
   onMount(() => {
     const scrollableArea = document.querySelector('#scrollable-area');
     scrollableArea!.addEventListener('scroll', () => {
       scrolled = scrollableArea!.scrollTop >= 3;
     });
-
-    $subscribe(
-      {
-        announcementsNow: {
-          id: true,
-          title: true,
-          bodyHtml: true,
-          warning: true,
-        },
-      },
-      async (data) => {
-        const freshData = await data;
-        if ('errors' in freshData) return;
-        announcements = freshData.announcementsNow.filter(Boolean) as Array<{
-          title: string;
-          bodyHtml: string;
-          warning: boolean;
-          id: string;
-        }>;
-      },
-    );
   });
 
   export const snapshot: Snapshot<number> = {
