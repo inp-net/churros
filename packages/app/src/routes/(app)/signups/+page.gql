@@ -4,7 +4,8 @@ query SignupsPage {
       hasNextPage
       endCursor
     }
-    nodes {
+    nodes @list(name: "List_userCandidates") {
+      id
       firstName
       lastName
       fullName

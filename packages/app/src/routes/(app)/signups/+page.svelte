@@ -1,54 +1,39 @@
 <script lang="ts">
-  import IconEditPen2Line from '~icons/mdi/pencil';
-  import type { PageData } from './$houdini';
+  import { graphql } from '$houdini';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
+  import { notNull } from '$lib/typing';
   import IconCheck from '~icons/mdi/check';
   import IconTrash from '~icons/mdi/delete-outline';
-  import { zeus } from '$lib/zeus';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { tooltip } from '$lib/tooltip';
-  import { toasts } from '$lib/toasts';
-  import { notNull } from '$lib/typing';
+  import IconEditPen2Line from '~icons/mdi/pencil';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
 
   $: ({ SignupsPage } = data);
-
-  // emails of registrations that are currently being accepted/refused
-  let loadingRegistrations: string[] = [];
-
   $: userCandidates = $SignupsPage.data?.userCandidates.nodes.filter(notNull);
 
-  const removeRow = (email: string) => {
-    if (!userCandidates) return;
-    userCandidates = userCandidates.filter((node) => node.email !== email);
-  };
-
-  async function decide(email: string, accept: boolean, why = ''): Promise<void> {
-    if (loadingRegistrations.includes(email)) return;
-
-    try {
-      loadingRegistrations.push(email);
-      let result = false;
-      if (accept) {
-        ({ acceptRegistration: result } = await $zeus.mutate({
-          acceptRegistration: [{ email }, true],
-        }));
-      } else {
-        ({ refuseRegistration: result } = await $zeus.mutate({
-          refuseRegistration: [{ email, reason: why }, true],
-        }));
+  const accept = graphql(`
+    mutation AcceptUserCandidate($email: String!) {
+      acceptRegistration(email: $email) {
+        ...List_userCandidates_remove
       }
-
-      if (result) removeRow(email);
-    } finally {
-      loadingRegistrations = loadingRegistrations.filter((e) => e !== email);
     }
-  }
+  `);
+
+  const deny = graphql(`
+    mutation DenyUserCandidate($email: String!, $reason: String!) {
+      refuseRegistration(email: $email, reason: $reason) {
+        ...List_userCandidates_remove
+      }
+    }
+  `);
 </script>
 
 <h1>Demandes d'inscription</h1>
 <ul class="nobullet registrations">
-  {#each userCandidates ?? [] as { email, fullName, major, graduationYear }}
+  {#each userCandidates ?? [] as { id, email, fullName, major, graduationYear } (id)}
     <li>
       <strong>{fullName}</strong>
       <span
@@ -61,7 +46,7 @@
         >
         <ButtonSecondary
           on:click={async () => {
-            await decide(email, true);
+            await accept.mutate({ email }, { optimisticResponse: { acceptRegistration: { id } } });
           }}
           icon={IconCheck}
         >
@@ -76,7 +61,10 @@
               return;
             }
 
-            await decide(email, false, reason);
+            await deny.mutate(
+              { email, reason },
+              { optimisticResponse: { refuseRegistration: { id } } },
+            );
           }}
           icon={IconTrash}
           danger
