@@ -7,9 +7,11 @@
   import { fieldErrorsToFormattedError } from '$lib/errors.js';
   import { zeus } from '$lib/zeus';
   import type { ZodFormattedError } from 'zod';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
+  $: ({ RegisterPage } = data);
+  $: schools = $RegisterPage.data?.schools ?? [];
 
   let email = $page.url.searchParams.get('email') ?? '';
   $: args = { email };
@@ -80,7 +82,7 @@
       on:change={() => {
         email = email.toLowerCase();
         domain = email.split('@')[1];
-        schoolDomain = data.schools
+        schoolDomain = schools
           .flatMap((s) => [s.internalMailDomain, ...s.aliasMailDomains])
           .includes(domain);
       }}

@@ -1,62 +1,33 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import Alert from '$lib/components/Alert.svelte';
-
-  import { fieldErrorsToFormattedError } from '$lib/errors.js';
-  import { saveSessionToken } from '$lib/session.js';
-  import { zeus } from '$lib/zeus.js';
   import { graphql } from '$houdini';
-  import type { ZodFormattedError } from 'zod';
-  import type { PageData } from './$types';
-  import InputField from '$lib/components/InputField.svelte';
-  import InputText from '$lib/components/InputText.svelte';
-  import InputSearchObject from '$lib/components/InputSearchObject.svelte';
-  import Fuse from 'fuse.js';
-  import InputNumber from '$lib/components/InputNumber.svelte';
-  import InputDate from '$lib/components/InputDate.svelte';
+  import Alert from '$lib/components/Alert.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import InputDate from '$lib/components/InputDate.svelte';
+  import InputField from '$lib/components/InputField.svelte';
+  import InputNumber from '$lib/components/InputNumber.svelte';
+  import InputSearchObject from '$lib/components/InputSearchObject.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import Fuse from 'fuse.js';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$houdini';
+  import { toasts } from '$lib/toasts';
+  import { saveSessionToken } from '$lib/session';
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
 
   export let data: PageData;
 
-  let {
-    address,
-    phone,
-    birthday,
-    firstName,
-    graduationYear = new Date().getFullYear() + 3,
-    lastName,
-    majorId,
-    cededImageRightsToTVn7,
-    apprentice,
-  } = data.userCandidate;
-  let password = '';
-  let passwordConfirmation = '';
+  $: ({ RegisterContinuePage } = data);
+  $: candidate = $RegisterContinuePage.data?.userCandidate;
+  $: schoolGroups = $RegisterContinuePage.data?.schoolGroups ?? [];
+  $: token = $page.url.searchParams.get('token');
 
-  // Waiting for https://github.com/graphql-editor/graphql-zeus/issues/262 to be fixed
-  graduationYear ??= new Date().getFullYear() + 3;
-
-  $: token = $page.url.searchParams.get('token')!;
-  $: args = {
-    token,
-    address,
-    birthday,
-    firstName,
-    graduationYear,
-    lastName,
-    majorId,
-    phone,
-    password,
-    passwordConfirmation,
-    cededImageRightsToTVn7,
-    apprentice,
-  };
-
-  let result: boolean | undefined;
+  let done = false;
   let loading = false;
-  let isStudent = Boolean(data.userCandidate.schoolUid);
-  let formErrors: ZodFormattedError<typeof args> | undefined;
-  $: Login = graphql(`
+  $: isStudent = Boolean(candidate?.schoolUid);
+
+  const login = graphql(`
     mutation Login($email: String!, $password: String!) {
       login(email: $email, password: $password) {
         ... on MutationLoginSuccess {
@@ -71,67 +42,50 @@
       }
     }
   `);
-  const register = async () => {
-    if (loading) return;
 
-    try {
+  const { form, enhance, capture, restore } = superForm(data.registerForm, {
+    onSubmit: ({ cancel }) => {
+      if (loading) cancel();
       loading = true;
-      const { completeRegistration } = await $zeus.mutate({
-        completeRegistration: [
-          args,
-          {
-            '__typename': true,
-            '...on MutationCompleteRegistrationSuccess': { data: true },
-            '...on Error': { message: true },
-            '...on ZodError': { message: true, fieldErrors: { path: true, message: true } },
-          },
-        ],
+    },
+    onResult: async ({ result }) => {
+      loading = false;
+      if (!candidate?.email || result.status !== 200) {
+        toasts.error("Une erreur est survenue lors de l'inscription.");
+        return;
+      }
+
+      done = true;
+
+      const { data, errors } = await login.mutate({
+        email: candidate.email,
+        password: $form.password,
       });
 
-      if (completeRegistration.__typename === 'ZodError') {
-        formErrors = fieldErrorsToFormattedError(completeRegistration.fieldErrors);
+      if (errors || !data?.login || !('data' in data.login)) {
+        toasts.error('Une erreur est survenue lors de la connexion automatique.');
+        await goto('/register');
         return;
       }
 
-      if (completeRegistration.__typename === 'Error') {
-        formErrors = { _errors: [completeRegistration.message] };
-        return;
-      }
+      saveSessionToken(document, data.login.data);
+      await goto('/welcome');
+    },
+  });
 
-      result = completeRegistration.data;
-
-      if (result) {
-        const login = await Login.mutate({
-          email: data.userCandidate.email,
-          password,
-        });
-        if (login.data?.login.__typename === 'MutationLoginSuccess') {
-          saveSessionToken(document, login.data.login.data);
-          // Hard refresh (invalidating is not possible because UserCandidate
-          // is deleted after registration, throwing a ZeusError)
-          location.href = '/welcome/';
-        }
-      }
-    } catch (error: unknown) {
-      formErrors = { _errors: [(error as Error).message ?? 'Une erreur est survenue'] };
-    } finally {
-      loading = false;
-    }
-  };
-
-  const asmajor = (x: unknown) => x as (typeof data)['schoolGroups'][number]['majors'][number];
+  export const snapshot = { capture, restore };
 </script>
 
 <h1>Finaliser mon inscription</h1>
 
-{#if result === undefined || result}
-  <form title="Finaliser mon inscription" on:submit|preventDefault={register}>
-    {#if data.userCandidate.emailValidated}
+{#if !done}
+  <form title="Finaliser mon inscription" method="POST" use:enhance action="?/register">
+    {#if candidate?.emailValidated}
       <Alert theme="success" inline>
         <strong>Votre inscription est en attente de validation manuelle.</strong><br />
         Cependant, vous pouvez toujours compléter ou corriger les informations ci-dessous.
       </Alert>
-    {:else if isStudent && data.userCandidate.schoolUid === null}
+    {:else if isStudent && candidate?.schoolUid === null}
       <Alert theme="warning" inline>
         <strong>
           Votre compte n'est pas encore lié à une école, votre inscription sera validée
@@ -142,33 +96,39 @@
         <a href="..">recommencer l'inscription</a> avec celle-ci.
       </Alert>
     {/if}
-    <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
-      <strong>{(formErrors?._errors ?? []).join(' ')}</strong>
-    </Alert>
+    <input type="hidden" name="token" value={token} />
     <div class="side-by-side">
       <InputText
+        name="firstName"
         label="Prénom"
-        errors={formErrors?.firstName?._errors}
         required
         maxlength={255}
-        bind:value={firstName}
+        bind:value={$form.firstName}
       />
       <InputText
+        name="lastName"
         label="Nom de famille"
-        errors={formErrors?.lastName?._errors}
         required
         maxlength={255}
-        bind:value={lastName}
+        bind:value={$form.lastName}
       />
     </div>
-    <InputCheckbox bind:value={isStudent} label="Je suis étudiant·e à Toulouse INP"></InputCheckbox>
+    <InputCheckbox
+      value={isStudent}
+      on:change={({ target }) => {
+        if (!(target instanceof HTMLInputElement)) return;
+        isStudent = target.checked;
+      }}
+      label="Je suis étudiant·e à Toulouse INP"
+    ></InputCheckbox>
     {#if isStudent}
       <div class="side-by-side">
         <InputField label="Filière">
           <InputSearchObject
+            name="majorId"
             search={(q) =>
               new Fuse(
-                data.schoolGroups.flatMap(({ majors }) => majors),
+                schoolGroups.flatMap(({ majors }) => majors),
                 {
                   keys: ['name', 'shortName'],
                   threshold: 0.3,
@@ -176,24 +136,18 @@
               )
                 .search(q)
                 .map(({ item }) => item)}
-            bind:value={majorId}
-            object={data.schoolGroups
+            bind:value={$form.majorId}
+            object={schoolGroups
               .flatMap(({ majors }) => majors)
-              .find((major) => major.id === majorId)}
+              .find((major) => major.id === $form.majorId)}
             labelKey="shortName"
           >
             <svelte:fragment slot="item" let:item>
-              {asmajor(item).shortName} · {asmajor(item)
-                .schools.map(({ name }) => name)
-                .join(', ')}
+              {item.shortName} · {item.schools.map(({ name }) => name).join(', ')}
             </svelte:fragment>
           </InputSearchObject>
         </InputField>
-        <InputNumber
-          bind:value={graduationYear}
-          label="Promotion"
-          errors={formErrors?.graduationYear?._errors}
-        />
+        <InputNumber name="graduationYear" bind:value={$form.graduationYear} label="Promotion" />
       </div>
     {/if}
 
@@ -201,31 +155,25 @@
       <InputText
         label="Mot de passe"
         hint="Au moins 8 caractères, mais 12 c'est mieux"
-        errors={formErrors?.password?._errors}
         type="password"
         required
         minlength={8}
-        bind:value={password}
+        name="password"
+        bind:value={$form.password}
       />
       <InputText
         label="Confirmer le mot de passe"
-        errors={formErrors?.passwordConfirmation?._errors}
         type="password"
         required
-        bind:value={passwordConfirmation}
-        on:input={() => {
-          if (passwordConfirmation === password) {
-            if (formErrors?.passwordConfirmation?._errors)
-              formErrors.passwordConfirmation._errors = [];
-          } else {
-            formErrors ??= { _errors: [] };
-            formErrors.passwordConfirmation ??= { _errors: [] };
-            formErrors.passwordConfirmation._errors = ['Les mots de passe ne correspondent pas.'];
-          }
-        }}
+        name="passwordConfirmation"
+        bind:value={$form.passwordConfirmation}
       />
     </div>
-    <InputCheckbox bind:value={cededImageRightsToTVn7} label="Je cède mon droit à l'image à TVn7" />
+    <InputCheckbox
+      bind:value={$form.cededImageRightsToTVn7}
+      name="imageRightsCededToTVn7"
+      label="Je cède mon droit à l'image à TVn7"
+    />
     <p class="typo-details">
       Cela revient à remplir et signer <a href="/cessation-droit-image-tvn7.pdf">ce document</a>
     </p>
@@ -234,23 +182,19 @@
       <p class="typo-details muted">
         Ces infos seront visibles par les autres élèves. Elles sont totalement facultatives.
       </p>
-      <InputDate
-        label="Date de naissance"
-        errors={formErrors?.birthday?._errors}
-        bind:value={birthday}
-      />
+      <InputDate name="birthday" label="Date de naissance" bind:value={$form.birthday} />
       <InputText
+        name="phone"
         label="Numéro de téléphone"
         type="tel"
-        errors={formErrors?.phone?._errors}
         maxlength={255}
-        bind:value={phone}
+        bind:value={$form.phone}
       />
       <InputText
+        name="address"
         label="Adresse postale"
-        errors={formErrors?.address?._errors}
         maxlength={255}
-        bind:value={address}
+        bind:value={$form.address}
       />
     </section>
     <section class="submit">

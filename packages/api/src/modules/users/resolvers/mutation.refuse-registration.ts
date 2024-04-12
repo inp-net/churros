@@ -1,15 +1,16 @@
 import { builder, prisma } from '#lib';
 
 import { createTransport } from 'nodemailer';
+import { UserCandidateType } from '../types/user-candidate.js';
 
 // TODO rename registration to reject-user-candidate
 
 builder.mutationField('refuseRegistration', (t) =>
-  t.field({
+  t.prismaField({
     authScopes: { canEditUsers: true },
-    type: 'Boolean',
+    type: UserCandidateType,
     args: { email: t.arg.string(), reason: t.arg.string() },
-    async resolve(_, { email, reason }, { user }) {
+    async resolve(query, _, { email, reason }, { user }) {
       const mailer = createTransport(process.env.SMTP_URL);
       await mailer.sendMail({
         to: email,
@@ -18,7 +19,7 @@ builder.mutationField('refuseRegistration', (t) =>
         text: `Votre inscription a été refusée pour la raison suivante:\n\n ${reason}\n\n Si vous pensez qu'il s'agit d'une erreur, répondez à ce mail.`,
         html: `<p>Votre inscription a été refusée pour la raison suivante:<br><br> ${reason}<br><br> Si vous pensez qu'il s'agit d'une erreur, répondez à ce mail</p>`,
       });
-      const candidate = await prisma.userCandidate.delete({ where: { email } });
+      const candidate = await prisma.userCandidate.delete({ ...query, where: { email } });
       await prisma.logEntry.create({
         data: {
           action: 'refuse',
@@ -28,7 +29,7 @@ builder.mutationField('refuseRegistration', (t) =>
           target: `token ${candidate.token}`,
         },
       });
-      return true;
+      return candidate;
     },
   }),
 );

@@ -1,37 +1,57 @@
-import { loadQuery } from '$lib/zeus.js';
-import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import { graphql } from '$houdini';
+import { superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import type { AfterLoadEvent, RegisterContinuePageVariables } from './$houdini';
+import { schemas } from './validation';
 
-export const load: PageLoad = async ({ fetch, url }) => {
-  const token = url.searchParams.get('token');
+export const _RegisterContinuePageVariables: RegisterContinuePageVariables = ({ url }) => ({
+  token: url.searchParams.get('token') ?? '',
+});
 
-  if (!token) throw redirect(307, '..');
+export const _houdini_load = graphql(`
+  query RegisterContinuePage($token: String!) {
+    userCandidate(token: $token) {
+      emailValidated
+      email
+      address
+      birthday
+      firstName
+      fullName
+      lastName
+      majorId
+      graduationYear
+      phone
+      schoolUid
+      cededImageRightsToTVn7
+      apprentice
+    }
 
-  return loadQuery(
+    schoolGroups {
+      names
+      majors {
+        id
+        name
+        shortName
+        schools {
+          name
+        }
+      }
+    }
+  }
+`);
+
+export async function _houdini_afterLoad({ data, event: { url } }: AfterLoadEvent) {
+  const candidate = data.RegisterContinuePage.userCandidate;
+  const registerForm = await superValidate(
     {
-      userCandidate: [
-        { token },
-        {
-          emailValidated: true,
-          email: true,
-          address: true,
-          birthday: true,
-          firstName: true,
-          fullName: true,
-          lastName: true,
-          majorId: true,
-          graduationYear: true,
-          phone: true,
-          schoolUid: true,
-          cededImageRightsToTVn7: true,
-          apprentice: true,
-        },
-      ],
-      schoolGroups: {
-        names: true,
-        majors: { id: true, name: true, shortName: true, schools: { name: true } },
-      },
+      ...candidate,
+      token: url.searchParams.get('token') ?? '',
     },
-    { fetch },
+    zod(schemas.register),
   );
-};
+
+  return {
+    ...data,
+    registerForm,
+  };
+}

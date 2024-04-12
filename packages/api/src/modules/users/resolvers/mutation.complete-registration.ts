@@ -8,43 +8,63 @@ import { completeRegistration } from '../index.js';
 // TODO rename registration to signup
 
 builder.mutationField('completeRegistration', (t) =>
-  t.field({
+  t.fieldWithInput({
     type: 'Boolean',
     errors: { types: [ZodError] },
-    args: {
-      token: t.arg.string(),
-      firstName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      lastName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      majorId: t.arg.id({ required: false }),
-      graduationYear: t.arg.int({ validate: { min: 1900, max: 2100 } }),
-      birthday: t.arg({ type: DateTimeScalar, required: false }),
-      phone: t.arg.string({ validate: { maxLength: 255 } }),
-      address: t.arg.string({ validate: { maxLength: 255 } }),
-      password: t.arg.string({ validate: { minLength: 8, maxLength: 255 } }),
-      passwordConfirmation: t.arg.string({ validate: {} }),
-      cededImageRightsToTVn7: t.arg.boolean(),
-      apprentice: t.arg.boolean(),
+    input: {
+      token: t.input.string(),
+      firstName: t.input.string({ validate: { minLength: 1, maxLength: 255 } }),
+      lastName: t.input.string({ validate: { minLength: 1, maxLength: 255 } }),
+      majorId: t.input.id({ required: false }),
+      graduationYear: t.input.int({
+        validate: { min: 1900, max: new Date().getFullYear() + 100 },
+        required: false,
+      }),
+      birthday: t.input.field({ type: DateTimeScalar, required: false }),
+      phone: t.input.string({ validate: { maxLength: 255 } }),
+      address: t.input.string({ validate: { maxLength: 255 } }),
+      password: t.input.string({ validate: { minLength: 8, maxLength: 255 } }),
+      passwordConfirmation: t.input.string({ validate: {} }),
+      cededImageRightsToTVn7: t.input.boolean(),
+      apprentice: t.input.boolean(),
     },
     validate: [
-      ({ password, passwordConfirmation }) => password === passwordConfirmation,
-      { path: ['passwordConfirmation'], message: 'Les mots de passe ne correspondent pas.' },
+      [
+        ({ input: { password, passwordConfirmation } }) => password === passwordConfirmation,
+        {
+          path: ['passwordConfirmation'],
+          message: 'Les mots de passe ne correspondent pas.',
+        },
+      ],
+      [
+        ({ input: { majorId, graduationYear } }) => !majorId || graduationYear,
+        {
+          path: ['graduationYear'],
+          message: 'Vous devez préciser votre promo si vous êtes un·e étudiant·e.',
+        },
+      ],
     ],
     async resolve(
       _,
       {
-        token,
-        firstName,
-        lastName,
-        majorId,
-        graduationYear,
-        address,
-        birthday,
-        phone,
-        password,
-        cededImageRightsToTVn7,
-        apprentice,
+        input: {
+          token,
+          firstName,
+          lastName,
+          majorId,
+          graduationYear,
+          address,
+          birthday,
+          phone,
+          password,
+          cededImageRightsToTVn7,
+          apprentice,
+        },
       },
     ) {
+      // TODO make graduationYear non required in prisma
+      graduationYear ??= new Date().getFullYear() + 4;
+
       await prisma.logEntry.create({
         data: {
           action: 'complete',

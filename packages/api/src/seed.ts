@@ -106,6 +106,7 @@ const schoolsData = [
     color: '#00ffff',
     description: 'École de l’Eau',
     address: '2 rue Charles Camichel, 31000 Toulouse', //generation par faker possible ???
+    internalMailDomain: 'etu.inp-n7.fr',
   },
   {
     name: 'FEU',
@@ -113,6 +114,7 @@ const schoolsData = [
     color: '#b22222',
     description: 'École de Feu',
     address: '2 rue Charles Camichel, 31000 Toulouse',
+    internalMailDomain: 'etu.inp-n7.fr',
   },
   {
     name: 'TERRE',
@@ -120,6 +122,7 @@ const schoolsData = [
     color: '#5e3f13',
     description: 'École de Terre',
     address: '2 rue Charles Camichel, 31000 Toulouse',
+    internalMailDomain: 'etu.inp-n7.fr',
   },
   {
     name: 'AIR',
@@ -127,8 +130,9 @@ const schoolsData = [
     color: '#d9eaff',
     description: 'École de l’Air',
     address: '2 rue Charles Camichel, 31000 Toulouse',
+    internalMailDomain: 'etu.toulouse-inp.fr',
   },
-];
+] satisfies Array<Prisma.SchoolCreateInput>;
 
 const servicesData = [
   {

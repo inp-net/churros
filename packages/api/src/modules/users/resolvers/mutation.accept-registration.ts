@@ -1,15 +1,18 @@
 import { builder, prisma } from '#lib';
 
-import { saveUser } from '../index.js';
+import { saveUser, UserCandidateType } from '../index.js';
 // TODO rename to accept-user-candidate
 
 builder.mutationField('acceptRegistration', (t) =>
-  t.field({
+  t.prismaField({
     authScopes: { canEditUsers: true },
-    type: 'Boolean',
+    type: UserCandidateType,
     args: { email: t.arg.string() },
-    async resolve(_, { email }, { user }) {
-      const candidate = await prisma.userCandidate.findUniqueOrThrow({ where: { email } });
+    async resolve(query, _, { email }, { user }) {
+      const candidate = await prisma.userCandidate.findUniqueOrThrow({
+        ...query,
+        where: { email },
+      });
       await prisma.logEntry.create({
         data: {
           action: 'accept',
@@ -20,7 +23,7 @@ builder.mutationField('acceptRegistration', (t) =>
         },
       });
       await saveUser(candidate);
-      return true;
+      return candidate;
     },
   }),
 );

@@ -25,6 +25,7 @@ import TracingPlugin, { isRootField, runFunction } from '@pothos/plugin-tracing'
 import ValidationPlugin from '@pothos/plugin-validation';
 import WithInputPlugin from '@pothos/plugin-with-input';
 import { GraphQLError, Kind } from 'graphql';
+import upperFirst from 'lodash.upperfirst';
 import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
@@ -66,7 +67,11 @@ export const builder = new SchemaBuilder<{
   authScopes,
   complexity: { limit: { complexity: 50_000, depth: 10, breadth: 200 } },
   defaultInputFieldRequiredness: true,
-  withInput: {},
+  withInput: {
+    typeOptions: {
+      name: ({ fieldName }) => `${upperFirst(fieldName)}Input`,
+    },
+  },
   errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma, exposeDescriptions: true },
   scopeAuthOptions: {

@@ -1,14 +1,11 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { Gif } from 'svelte-tenor';
+  import { env } from '$env/dynamic/public';
   import { arrayBufferToBase64 } from '$lib/base64';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { zeus } from '$lib/zeus';
   import party from 'party-js';
   import { onMount } from 'svelte';
-  import { zeus } from '$lib/zeus';
-  import { env } from '$env/dynamic/public';
-
-  $: me = $page.data.me!;
+  import { Gif } from 'svelte-tenor';
 
   onMount(() => {
     party.confetti(party.Rect.fromScreen(), { count: 100 });
@@ -84,7 +81,7 @@
         }}>Activer les notifs</ButtonSecondary
       >
     </li>
-    <li><ButtonSecondary href="/users/{me.uid}">Personnaliser ton profil</ButtonSecondary></li>
+    <li><ButtonSecondary href="/me">Personnaliser ton profil</ButtonSecondary></li>
     <li><ButtonSecondary href="/events/">Consulter les évènements à venir</ButtonSecondary></li>
     <li><ButtonSecondary href="/groups/">Découvrir la liste des clubs</ButtonSecondary></li>
   </ul>

@@ -14,11 +14,12 @@
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   export let object: T | undefined;
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-  export let value: V | undefined;
+  export let value: V | undefined | null;
   export let search: (query: string) => MaybePromise<T[]>;
   export let labelKey = 'name';
   export let valueKey = 'id';
   export let clearable = false;
+  export let name: string | undefined = undefined;
 
   export let placeholder = '';
 
@@ -28,6 +29,9 @@
 </script>
 
 <div class="input-container">
+  {#if name && value}
+    <input type="hidden" {name} {value} />
+  {/if}
   <div class="thumbnail">
     <slot name="thumbnail" {object}>
       {#if object?.pictureFile}

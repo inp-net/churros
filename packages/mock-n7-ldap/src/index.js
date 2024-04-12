@@ -30,6 +30,7 @@ const users = new Map(
 );
 
 console.log('Available users:', [...users.keys()].join(', '));
+console.log('Info: ', users);
 
 server.search('ou=people,dc=n7,dc=fr', (req, res, next) => {
   // Return all users when no filter is given
@@ -38,8 +39,10 @@ server.search('ou=people,dc=n7,dc=fr', (req, res, next) => {
     res.end();
   }
 
+  console.log(req.filter.value);
+
   // Process only one specific filter, refuse other filters
-  if (!(req.filter instanceof ldap.EqualityFilter) || req.filter.attribute !== 'supannaliaslogin') {
+  if (!(req.filter instanceof ldap.EqualityFilter) || req.filter.attribute !== 'supannAliasLogin') {
     next(new ldap.InsufficientAccessRightsError());
     return;
   }
