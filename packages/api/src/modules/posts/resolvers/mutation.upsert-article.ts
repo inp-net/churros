@@ -1,4 +1,4 @@
-import { builder, prisma, publish } from '#lib';
+import { builder, prisma, publish, UnauthorizedError } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { Visibility } from '@prisma/client';
@@ -11,7 +11,7 @@ builder.mutationField('upsertArticle', (t) =>
     errors: {},
     args: {
       id: t.arg.id({ required: false }),
-      authorId: t.arg.id(),
+      authorId: t.arg.id({ required: false }),
       groupId: t.arg.id(),
       title: t.arg.string({ validate: { minLength: 1 } }),
       body: t.arg.string(),
@@ -32,6 +32,8 @@ builder.mutationField('upsertArticle', (t) =>
       { id, eventId, visibility, authorId, groupId, title, body, publishedAt, links },
       { user },
     ) {
+      if (!user) throw new UnauthorizedError();
+      authorId ??= user.id;
       const old = await prisma.article.findUnique({ where: { id: id ?? '' } });
       const data = {
         // eslint-disable-next-line unicorn/no-null

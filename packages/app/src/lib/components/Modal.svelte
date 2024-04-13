@@ -1,7 +1,9 @@
 <script lang="ts">
   import { isDark } from '$lib/theme';
   import { createEventDispatcher, onMount } from 'svelte';
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{
+    'close-by-outside-click': undefined;
+  }>();
 
   export let element: HTMLDialogElement;
   export let open = false;

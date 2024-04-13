@@ -1,22 +1,17 @@
 <script lang="ts">
+  import { type InputEventEvent$data } from '$houdini';
+  import { zeus } from '$lib/zeus';
   import IconCheck from '~icons/mdi/check';
-  import { type Visibility, zeus } from '$lib/zeus';
   import InputPickObjects from './InputPickObjects.svelte';
+  import { browser } from '$app/environment';
 
-  type Event = {
-    id: string;
-    uid: string;
-    title: string;
-    pictureFile: string;
-    startsAt: Date;
-    visibility: Visibility;
-  };
   export let groupUid: string;
   export let allow: string[] = [];
   export let except: string[] = [];
-  export let event: Event | undefined = undefined;
-  export let suggestions: Event[] = [];
+  export let suggestions: InputEventEvent$data[] = [];
   export let clearable = false;
+
+  export let event: InputEventEvent$data | null;
 
   function allowed(uid: string) {
     const result =
@@ -47,29 +42,41 @@
   }
 </script>
 
-<InputPickObjects
-  options={suggestions}
-  {clearable}
-  {search}
-  pickerTitle="Choisir un évènement"
-  searchKeys={['title']}
-  bind:value={event}
->
-  <slot name="input" slot="input" let:value let:openPicker let:clear {value} {openPicker} {clear} />
-  <div
-    slot="item"
-    let:item
-    let:selected
-    let:disabled
-    class="suggestion"
-    class:selected
-    class:disabled
+<!-- the slot [name=input] makes the render fail with an obscure error on SSR -->
+{#if browser}
+  <InputPickObjects
+    options={suggestions}
+    {clearable}
+    {search}
+    pickerTitle="Choisir un évènement"
+    searchKeys={['title']}
+    bind:value={event}
   >
-    <div class="selected-badge" class:selected><IconCheck></IconCheck></div>
-    <img src={item.pictureFile} alt={item.title} />
-    <span class="name">{item.title}</span>
-  </div>
-</InputPickObjects>
+    <slot
+      name="input"
+      slot="input"
+      let:value
+      let:openPicker
+      let:clear
+      {value}
+      {openPicker}
+      {clear}
+    />
+    <div
+      slot="item"
+      let:item
+      let:selected
+      let:disabled
+      class="suggestion"
+      class:selected
+      class:disabled
+    >
+      <div class="selected-badge" class:selected><IconCheck></IconCheck></div>
+      <img src={item.pictureFile} alt={item.title} />
+      <span class="name">{item.title}</span>
+    </div>
+  </InputPickObjects>
+{/if}
 
 <style lang="scss">
   .suggestion {

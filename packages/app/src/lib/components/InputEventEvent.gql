@@ -1,0 +1,8 @@
+fragment InputEventEvent on Event {
+  id
+  uid
+  title
+  pictureFile
+  startsAt
+  visibility
+}

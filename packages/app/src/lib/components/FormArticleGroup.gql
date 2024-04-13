@@ -1,0 +1,25 @@
+fragment FormArticleGroup on Group @mask_disable {
+  id
+  uid
+  name
+  pictureFile
+  pictureFileDark
+  studentAssociation {
+    school {
+      name
+    }
+  }
+  children {
+    name
+    studentAssociation {
+      school {
+        name
+      }
+    }
+  }
+  events {
+    nodes {
+      ...InputEventEvent @mask_disable
+    }
+  }
+}

@@ -3,7 +3,7 @@ import { Visibility, type Article, type Group, type StudentAssociation } from '@
 
 export function canEditArticle(
   user: Context['user'],
-  { authorId, groupId }: { groupId: string; authorId: string | null },
+  { authorId, groupId }: { groupId: string; authorId: string | null | undefined },
 ) {
   if (!user) return false;
   return (
@@ -49,9 +49,9 @@ export function canSeeArticle(
     return userIsMemberOfGroupFamily || userisMemberOfThisGroup;
   }
 
-  if (article.visibility === Visibility.SchoolRestricted) {
+  if (article.visibility === Visibility.SchoolRestricted) 
     return user.major?.schools.some((s) => s.id === article.group.studentAssociation?.schoolId);
-  }
+  
 
   return false;
 }

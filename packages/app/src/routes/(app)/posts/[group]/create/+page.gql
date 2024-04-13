@@ -1,0 +1,5 @@
+query CreateGroupPostPage($group: String!) {
+  group(uid: $group) {
+    ...FormArticleGroup @mask_disable
+  }
+}

@@ -1,13 +1,16 @@
 <script lang="ts">
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import FormArticle from '$lib/components/FormArticle.svelte';
 
   export let data: PageData;
+  $: ({ CreateGroupPostPage } = data);
 </script>
 
 <div class="content">
   <h2>Nouveau post</h2>
-  <FormArticle bind:data />
+  {#if $CreateGroupPostPage.data?.group}
+    <FormArticle data={null} initialGroup={$CreateGroupPostPage.data.group} />
+  {/if}
 </div>
 
 <style>

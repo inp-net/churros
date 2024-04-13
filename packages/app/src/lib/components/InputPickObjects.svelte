@@ -17,7 +17,7 @@
   export let search: ((query: string) => MaybePromise<Array<{ item: T }>>) | undefined = undefined;
   // why the fuck does eslint think that T | undefined has somehow redundance ? T is $$Generic<{id: string}> and has no overlap with undefined whatsoever???
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-  export let value: T | undefined = undefined;
+  export let value: T | undefined | null = undefined;
   export let threshold: number | undefined = undefined;
   export let selection: T[] = [];
   export let options: T[];

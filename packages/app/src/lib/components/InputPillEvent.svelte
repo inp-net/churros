@@ -1,26 +1,18 @@
 <script lang="ts">
-  import IconClose from '~icons/mdi/close';
+  import { type InputEventEvent$data } from '$houdini';
   import IconEvent from '~icons/mdi/calendar-outline';
-  import type { Visibility } from '$lib/zeus';
+  import IconClose from '~icons/mdi/close';
   import ButtonGhost from './ButtonGhost.svelte';
   import InputEvent from './InputEvent.svelte';
 
-  type Event = {
-    id: string;
-    uid: string;
-    title: string;
-    pictureFile: string;
-    startsAt: Date;
-    visibility: Visibility;
-  };
   export let groupUid: string;
   export let allow: string[] = [];
   export let except: string[] = [];
-  export let event: Event | undefined = undefined;
-  export let suggestions: Event[] = [];
+  export let suggestions: InputEventEvent$data[] = [];
   export let clearable = false;
+  export let event: InputEventEvent$data | null;
 
-  const asEventType = (x: unknown) => x as Event;
+  const asEvent = (x: unknown): InputEventEvent$data => x as InputEventEvent$data;
 </script>
 
 <InputEvent {groupUid} {clearable} {allow} {except} {suggestions} bind:event>
@@ -31,7 +23,7 @@
       </span>
       <span class="text">
         {#if value}
-          {asEventType(value).title}
+          {asEvent(value).title}
         {:else}
           Évènement
         {/if}

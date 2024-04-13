@@ -1,141 +1,208 @@
 <script lang="ts">
-  import Alert from '$lib/components/Alert.svelte';
-  import { type EventFrequency, Visibility, zeus } from '$lib/zeus';
+  import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import { _articleQuery } from '../../routes/(app)/posts/[group]/[uid]/edit/+page';
-  import { DISPLAY_VISIBILITIES, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
-  import ButtonPrimary from './ButtonPrimary.svelte';
-  import IconSend from '~icons/mdi/send-outline';
-  import InputText from './InputText.svelte';
-  import InputLongText from './InputLongText.svelte';
+  import {
+    Visibility,
+    fragment,
+    graphql,
+    type ArticleForm,
+    type ArticleForm$data,
+    type FormArticleGroup,
+  } from '$houdini';
+  import Alert from '$lib/components/Alert.svelte';
   import InputLinks from '$lib/components/InputLinks.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import { toasts } from '$lib/toasts';
-  import InputVisibility from './InputVisibility.svelte';
-  import InputPillDate from './InputPillDate.svelte';
-  import InputGroups from './InputGroups.svelte';
-  import IconEvent from '~icons/mdi/calendar-outline';
-  import IconClose from '~icons/mdi/close';
-  import { me } from '$lib/session';
-  import ButtonBack from './ButtonBack.svelte';
+  import { DISPLAY_VISIBILITIES, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
+  import { toasts } from '$lib/toasts';
+  import { notNull } from '$lib/typing';
   import { isFuture, isPast } from 'date-fns';
-  import Modal from './Modal.svelte';
-  import LoadingSpinner from './LoadingSpinner.svelte';
+  import IconClose from '~icons/mdi/close';
+  import IconSend from '~icons/mdi/send-outline';
   import BadgeVisibility from './BadgeVisibility.svelte';
+  import ButtonBack from './ButtonBack.svelte';
+  import ButtonPrimary from './ButtonPrimary.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import InputGroups from './InputGroups.svelte';
+  import InputLongText from './InputLongText.svelte';
+  import InputPillDate from './InputPillDate.svelte';
   import InputPillEvent from './InputPillEvent.svelte';
+  import InputText from './InputText.svelte';
+  import InputVisibility from './InputVisibility.svelte';
+  import LoadingSpinner from './LoadingSpinner.svelte';
+  import Modal from './Modal.svelte';
 
-  export let afterGoTo: (article: (typeof data)['article']) => string = (article) =>
+  export let afterGoTo: (article: { uid: string; group: { uid: string } }) => string = (article) =>
     `/posts/${article.group.uid}/${article.uid}/`;
-  export let data: {
-    article: {
-      uid: string;
-      id: string;
-      title: string;
-      body: string;
-      visibility: Visibility;
-      group: {
-        uid: string;
-        name: string;
-        id: string;
-        pictureFile: string;
-        pictureFileDark: string;
-        studentAssociation?: { school: { name: string } } | undefined;
-        children: Array<{
-          name: string;
-          studentAssociation?: { school: { name: string } } | undefined;
-        }>;
-      };
-      author?: {
-        id: string;
-        firstName: string;
-        lastName: string;
-        pictureFile: string;
-        uid: string;
-        groups: Array<{
-          group: {
-            name: string;
-            uid: string;
-          };
-          title: string;
-        }>;
-      };
-      eventId?: string;
-      event?: {
-        id: string;
-        uid: string;
-        title: string;
-        startsAt: Date;
-        endsAt: Date;
-        visibility: Visibility;
-        pictureFile: string;
-        recurringUntil?: Date | undefined;
-        location: string;
-        frequency: EventFrequency;
-      };
-      links: Array<{ name: string; value: string }>;
-      publishedAt: Date;
-      pictureFile: string;
-    };
-  };
+
+  export let data: ArticleForm | null;
+  $: Article = fragment(
+    data,
+    graphql`
+      fragment ArticleForm on Article {
+        uid
+        id
+        title
+        body
+        visibility
+        group {
+          ...FormArticleGroup @mask_disable
+        }
+        author {
+          id
+          firstName
+          lastName
+          pictureFile
+          uid
+          groups {
+            group {
+              name
+              uid
+            }
+            title
+          }
+        }
+        event {
+          id
+          ...InputEventEvent @mask_disable
+        }
+        links {
+          name
+          value
+        }
+        publishedAt
+        pictureFile
+      }
+    `,
+  );
+
+  const notificationSendCountQuery = graphql(`
+    query NotificationSendCountForArticle($visibility: Visibility!, $groupUid: String!) {
+      notificationsSendCountForArticle(visibility: $visibility, groupUid: $groupUid)
+    }
+  `);
+
+  let notificationSendCount: number | undefined;
+
+  const groupOptions = graphql(`
+    query InputGroupOptions {
+      groups {
+        id
+        name
+        uid
+        pictureFile
+        pictureFileDark
+      }
+    }
+  `);
+
+  const upsertArticle = graphql(`
+    mutation UpsertArticle(
+      $id: ID!
+      $authorId: ID
+      $eventId: ID
+      $groupId: ID!
+      $title: String!
+      $body: String!
+      $publishedAt: DateTime!
+      $links: [LinkInput!]!
+      $visibility: Visibility!
+    ) {
+      upsertArticle(
+        id: $id
+        authorId: $authorId
+        eventId: $eventId
+        groupId: $groupId
+        title: $title
+        body: $body
+        publishedAt: $publishedAt
+        links: $links
+        visibility: $visibility
+      ) {
+        __typename
+        ... on MutationUpsertArticleSuccess {
+          data {
+            ...ArticleForm
+          }
+        }
+        ... on Error {
+          message
+        }
+      }
+    }
+  `);
+
+  const deleteArticle = graphql(`
+    mutation DeleteArticle($id: ID!) {
+      deleteArticle(id: $id)
+      deleteArticlePicture(id: $id)
+    }
+  `);
 
   let serverError = '';
-
   let confirmingDelete = false;
+  export let initialGroup: FormArticleGroup;
 
-  let { id, event, title, author, body, visibility, links, group } = data.article;
+  const EMPTY_ARTICLE: ArticleForm$data = {
+    author: null,
+    body: '',
+    event: null,
+    // @ts-expect-error TODO understand why @mask_disable does not work on fragment definition
+    group: initialGroup,
+    id: '',
+    links: [] as ArticleForm$data['links'],
+    pictureFile: '',
+    publishedAt: new Date(),
+    title: '',
+    uid: '',
+    visibility: Visibility.Private,
+  };
 
-  let publishLater: Date | undefined = isFuture(data.article.publishedAt)
-    ? data.article.publishedAt
+  $: ({ id, event, uid, title, author, body, visibility, links, group } =
+    $Article ?? EMPTY_ARTICLE);
+  $: publishLater = $Article
+    ? isFuture($Article.publishedAt)
+      ? $Article.publishedAt
+      : undefined
     : undefined;
-
   $: pastDate = publishLater === undefined ? false : isPast(publishLater);
 
   let loading = false;
-  const updateArticle = async () => {
+  const submit = async () => {
     if (loading) return;
+    if (!$Article) return;
     try {
       loading = true;
-      const { upsertArticle } = await $zeus.mutate({
-        upsertArticle: [
-          {
-            id,
-            authorId: (author ?? $me)!.id,
-            eventId: event?.id ?? '',
-            groupId: group.id,
-            title,
-            body,
-            publishedAt: (publishLater ?? data.article.publishedAt ?? new Date()).toISOString(),
-            links,
-            visibility,
-          },
-          {
-            '__typename': true,
-            '...on Error': { message: true },
-            '...on MutationUpsertArticleSuccess': {
-              data: _articleQuery,
-            },
-          },
-        ],
+      const result = await upsertArticle.mutate({
+        id: $Article.id,
+        authorId: author?.id,
+        eventId: event?.id,
+        groupId: group.id,
+        title,
+        body,
+        links,
+        visibility,
+        publishedAt: publishLater ?? new Date(),
       });
 
-      if (upsertArticle.__typename === 'Error') {
-        serverError = upsertArticle.message;
+      if (result.errors || !result.data) {
+        serverError = result.errors?.[0].message ?? 'Erreur inconnue';
+        return;
+      }
+
+      if (result.data.upsertArticle.__typename === 'Error') {
+        serverError = result.data.upsertArticle.message;
         return;
       }
 
       serverError = '';
-      data.article = upsertArticle.data;
-      ({ id, event, title, author, body, links, group, visibility } = data.article);
-      if (data.article.uid) {
+      if ($Article.uid) {
         toasts.success(
           `Ton article ${DISPLAY_VISIBILITIES[visibility].toLowerCase()} a bien été ${
             id ? 'modifié' : 'créé'
           }`,
         );
-        await goto(afterGoTo(data.article));
+        await goto(afterGoTo($Article));
       }
     } finally {
       loading = false;
@@ -151,17 +218,16 @@
   <div class="modal-content">
     <h1>Sûr·e de toi?</h1>
     <p>
-      Tu t'apprêtes à envoyer une notification à <strong
-        >plus de
+      Tu t'apprêtes à envoyer une notification à <strong>
         <span class="notified-count">
-          {#await $zeus.query( { notificationsSendCountForArticle: [{ visibility, groupUid: group.uid }, true] }, )}
-            <LoadingSpinner></LoadingSpinner>
-          {:then { notificationsSendCountForArticle }}
-            {notificationsSendCountForArticle}
-          {/await}
+          {#if notificationSendCount !== undefined}
+            plus de {notificationSendCount} personnes.
+          {:else}
+            beaucoup de personnes.
+          {/if}
         </span>
-        personnes</strong
-      >. Utilise plutôt la visibilité
+      </strong>
+      Utilise plutôt la visibilité
       <BadgeVisibility inline visibility={Visibility.GroupRestricted}></BadgeVisibility> si ça te paraît
       trop.
     </p>
@@ -172,7 +238,7 @@
           modalWarnNotifications.close();
         }}>Annuler</ButtonSecondary
       >
-      <ButtonSecondary icon={IconSend} on:click={updateArticle}>Envoyer</ButtonSecondary>
+      <ButtonSecondary icon={IconSend} on:click={submit}>Envoyer</ButtonSecondary>
     </div>
   </div>
 </Modal>
@@ -180,9 +246,16 @@
 <form
   class="form-article"
   on:submit|preventDefault={async () => {
-    if (!id && (visibility === Visibility.Public || visibility === Visibility.SchoolRestricted))
+    if (!id && (visibility === Visibility.Public || visibility === Visibility.SchoolRestricted)) {
+      const { data } = await notificationSendCountQuery.fetch({
+        variables: { visibility, groupUid: group.uid },
+      });
+      if (data?.notificationsSendCountForArticle !== undefined)
+        notificationSendCount = data.notificationsSendCountForArticle;
       modalWarnNotifications.showModal();
-    else await updateArticle();
+    } else {
+      await submit();
+    }
   }}
 >
   <h1>
@@ -194,11 +267,15 @@
       <InputLongText rich bind:value={body} label=""></InputLongText>
     </div>
     <section class="author">
-      {#if canChangeGroup}
-        {#await $zeus.query( { groups: [{}, { id: true, name: true, uid: true, pictureFile: true, pictureFileDark: true }] }, )}
+      {#if canChangeGroup && browser}
+        {#await groupOptions.fetch()}
           <LoadingSpinner></LoadingSpinner>
-        {:then { groups: options }}
-          <InputGroups required label="" {options} bind:group></InputGroups>
+        {:then { data }}
+          {#if data}
+            <InputGroups required label="" options={data.groups} bind:group></InputGroups>
+          {:else}
+            <Alert theme="danger">Impossible de charger les groupes</Alert>
+          {/if}
         {/await}
       {:else}
         <a href="/groups/{group.uid}" class="group-link">
@@ -209,19 +286,14 @@
       <InputVisibility bind:value={visibility}></InputVisibility>
     </section>
     <p class="explain-visibility">
-      {HELP_VISIBILITY_DYNAMIC([group, ...group.children])[visibility]}
+      {#if group.children}
+        {HELP_VISIBILITY_DYNAMIC([group, ...group.children])[visibility]}
+      {/if}
     </p>
   </div>
   <section class="pills">
-    {#await $zeus.query( { eventsOfGroup: [{ groupUid: group.uid }, { edges: { node: _articleQuery.event } }] }, )}
-      <ButtonSecondary loading icon={IconEvent}>Évènement</ButtonSecondary>
-    {:then { eventsOfGroup: { edges } }}
-      <InputPillEvent
-        suggestions={edges.map((n) => n.node)}
-        bind:event
-        groupUid={$page.params.group}
-      ></InputPillEvent>
-    {/await}
+    <InputPillEvent suggestions={group.events.nodes.filter(notNull)} bind:event groupUid={group.uid}
+    ></InputPillEvent>
     <InputPillDate after={new Date()} bind:value={publishLater}>Publier plus tard</InputPillDate>
   </section>
   <InputLinks label="Liens" bind:value={links} />
@@ -255,9 +327,9 @@
               lifetime: 5000,
               showLifetime: true,
               data: {
-                id: data.article.id,
+                id,
                 confirm: true,
-                gotoOnCancel: `${afterGoTo(data.article)}/edit/`.replaceAll('//', '/'),
+                gotoOnCancel: `${afterGoTo({ uid, group })}/edit/`.replaceAll('//', '/'),
               },
               labels: {
                 action: 'Annuler',
@@ -269,12 +341,9 @@
                 await goto(data.gotoOnCancel);
               },
               async closed({ data: { id, confirm } }) {
-                if (confirm) {
-                  await $zeus.mutate({
-                    deleteArticlePicture: [{ id }, true],
-                    deleteArticle: [{ id }, true],
-                  });
-                }
+                if (confirm) 
+                  await deleteArticle.mutate({ id });
+                
               },
             },
           );
@@ -291,7 +360,7 @@
       >
     {:else}
       <ButtonPrimary {loading} submits disabled={pastDate}>Enregistrer</ButtonPrimary>
-      {#if data.article.id}
+      {#if id}
         <ButtonSecondary
           danger
           on:click={() => {

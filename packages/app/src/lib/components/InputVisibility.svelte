@@ -1,11 +1,12 @@
 <script lang="ts">
   import { DISPLAY_VISIBILITIES, ORDER_VISIBILITIES } from '$lib/display';
   import IconChevronDown from '~icons/mdi/chevron-down';
-  import type { Visibility } from '$lib/zeus';
+  import type { Visibility as ZeusVisibility } from '$lib/zeus';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
   import { tooltip } from '$lib/tooltip';
+  import type { Visibility$options } from '$houdini';
 
-  export let value: Visibility;
+  export let value: ZeusVisibility | Visibility$options;
   export let name: string | undefined = undefined;
   export let disabled = false;
   export let help: string | undefined = undefined;
