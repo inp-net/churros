@@ -61,7 +61,7 @@
       pictureFileDark: string;
     }>;
     allowedPaymentMethods: PaymentMethod[];
-    registrationsCount?: number;
+    registrationsCount?: number | null | undefined;
   };
 
   export let allGroups: typeof ticket.openToGroups;

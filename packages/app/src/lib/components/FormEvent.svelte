@@ -83,7 +83,7 @@
             tickets: undefined,
             id: eraseFakeIds(tg.id),
           })),
-          tickets: allTickets.map((t) => ({
+            tickets: allTickets.map((t) => ({
             ...t,
             id: eraseFakeIds(t.id),
             openToGroups: t.openToGroups.map(({ uid }) => uid),
@@ -92,7 +92,8 @@
             autojoinGroups: t.autojoinGroups.map(({ uid }) => uid),
             groupName: event.ticketGroups.find((tg) => tg.tickets.map((t) => t.id).includes(t.id))
               ?.name,
-          })),
+            }))
+            .map(({ registrationsCount, ...ticket }) => ticket),
           title: event.title,
           visibility: event.visibility,
           frequency: event.frequency,
@@ -268,7 +269,6 @@
     autojoinGroups: [],
     // eslint-disable-next-line unicorn/no-null
     openToApprentices: null,
-    registrationsCount: 0,
     id,
   });
 
@@ -305,7 +305,7 @@
       pictureFile: string;
       pictureFileDark: string;
     }>;
-    registrationsCount?: number;
+    registrationsCount?: number | null | undefined;
   };
 
   export let redirectAfterSave: (uid: string, groupUid: string) => string = (uid, groupUid) =>
