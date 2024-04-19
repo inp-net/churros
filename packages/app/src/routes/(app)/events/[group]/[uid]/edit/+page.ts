@@ -103,6 +103,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             openToContributors: true,
             godsonLimit: true,
             onlyManagersCanProvide: true,
+            registrationsCount: true,
           },
           ticketGroups: {
             id: true,

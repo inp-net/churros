@@ -120,5 +120,10 @@ export const TicketType = builder.prismaNode('Ticket', {
       },
       complexity: 5,
     }),
+    registrationsCount: t.int({
+      async resolve({ id }) {
+        return prisma.registration.count({ where: { ticketId: id } });
+      },
+    }),
   }),
 });

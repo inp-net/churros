@@ -268,6 +268,7 @@
     autojoinGroups: [],
     // eslint-disable-next-line unicorn/no-null
     openToApprentices: null,
+    registrationsCount: 0,
     id,
   });
 
@@ -304,6 +305,7 @@
       pictureFile: string;
       pictureFileDark: string;
     }>;
+    registrationsCount?: number;
   };
 
   export let redirectAfterSave: (uid: string, groupUid: string) => string = (uid, groupUid) =>

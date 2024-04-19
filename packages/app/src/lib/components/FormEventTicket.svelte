@@ -18,6 +18,7 @@
   import InputLinks from './InputLinks.svelte';
   import InputGroups from './InputGroups.svelte';
   import InputSchools from './InputSchools.svelte';
+  import { toasts } from '$lib/toasts';
   const emit = createEventDispatcher();
 
   export let expandedTicketId = '';
@@ -60,6 +61,7 @@
       pictureFileDark: string;
     }>;
     allowedPaymentMethods: PaymentMethod[];
+    registrationsCount?: number;
   };
 
   export let allGroups: typeof ticket.openToGroups;
@@ -82,6 +84,17 @@
     <div class="actions">
       <ButtonSecondary
         on:click={() => {
+          if (ticket.registrationsCount ?? 0 > 0) {
+            toasts.error(
+              'Impossible de supprimer un billet',
+              'Il y a des réservations sur ce billet',
+              {
+                lifetime: 5000,
+                showLifetime: true,
+              },
+            );
+            return;
+          }
           expandedTicketId = '';
           emit('delete');
         }}
@@ -273,6 +286,17 @@
       <div class="actions">
         <ButtonSecondary
           on:click={() => {
+            if (ticket.registrationsCount ?? 0 > 0) {
+              toasts.error(
+                'Impossible de supprimer un billet',
+                'Il y a des réservations sur ce billet',
+                {
+                  lifetime: 5000,
+                  showLifetime: true,
+                },
+              );
+              return;
+            }
             expandedTicketId = '';
             emit('delete');
           }}
