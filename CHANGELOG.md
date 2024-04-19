@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Une évènement dont un billet a été shotgun ne peut plus être supprimé, de même, un billet ne peux plus être supprimé d'un évènement si il existe au moins un shotgun (#771) (!140)(@bardete)
+
 ## [1.56.6] - 2024-04-03
 
 ### Corrections
