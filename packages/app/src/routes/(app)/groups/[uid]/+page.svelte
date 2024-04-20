@@ -43,6 +43,9 @@
   import IconAdd from '~icons/mdi/plus';
   import IconTwitter from '~icons/mdi/twitter';
   import IconAnilist from '~icons/simple-icons/anilist';
+  import IconEye from '~icons/mdi/eye';
+  import IconDownload from '~icons/mdi/download-outline';
+  import IconEdit from '~icons/mdi/pencil-outline';
   import type { PageData } from './$types';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -328,6 +331,21 @@
     </section>
   {/if}
 
+  {#if meOnClubBoard}
+    <section class="gestionClub">
+      <h2>Administration du club</h2>
+      <div class="menu-button">
+        <div class="charte">
+          <ButtonSecondary href="" icon={IconEye}>Charte des clubs</ButtonSecondary>
+          {#if $me?.canEditGroups}
+            <ButtonSecondary herf="" icon={IconEdit}>Editer</ButtonSecondary>
+          {/if}
+        </div>
+        <ButtonSecondary href="" icon={IconDownload}>Fiche de passation</ButtonSecondary>
+      </div>
+    </section>
+  {/if}
+
   <section class="posts">
     <h2>
       Posts {#if canEditArticles}<ButtonSecondary href="/posts/{group.uid}/create/" icon={IconAdd}
@@ -472,6 +490,17 @@
   .board .more {
     display: flex;
     margin-top: 1rem;
+  }
+
+  .menu-button {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .charte {
+    display: flex;
+    gap: 0.8rem;
   }
 
   @media (min-width: 1000px) {
