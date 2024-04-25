@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { EventManagerType, ManagerOfEventInput } from '../index.js';
+import { EventManagerType, ManagerOfEventInput, canEditManagers } from '../index.js';
 // TODO remove
 
 builder.mutationField('upsertManagersOfEvent', (t) =>
@@ -15,11 +15,7 @@ builder.mutationField('upsertManagersOfEvent', (t) =>
         where: { id: eventId },
         include: { managers: true },
       });
-      return Boolean(
-        event.managers.some(
-          ({ userId, canEditPermissions }) => user?.id === userId && canEditPermissions,
-        ),
-      );
+      return canEditManagers(event, user);
     },
     async resolve(query, _, { eventId, managers }) {
       return prisma.event

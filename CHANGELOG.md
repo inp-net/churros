@@ -11,6 +11,190 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [1.56.6] - 2024-04-03
+
+### Corrections
+
+- Correction de quelques problèmes d'affichage dans la liste des réponses à un formulaire.
+
+### Améliorations
+
+- Les réponses les plus récentes sont maintenant affichées en premier dans la liste des réponses à un formulaire.
+- Il y a un bouton pour charger les réponses plus anciennes dans la liste des réponses à un formulaire.
+
+## [1.56.5] - 2024-04-02
+
+### Technique
+
+- Bug encore dans le check de userCanManageEvent
+
+## [1.56.4] - 2024-04-02
+
+### Technique
+
+- Bug dans le check de userCanManageEvent
+
+## [1.56.3] - 2024-04-02
+
+### Corrections
+
+- Correction d'une faute d'orthographe sur la page des rapport de bugs (@litschan)
+- Correction d'un bug qui empêchait de passer à la section suivante sans modifier sa réponse sur un formulaire qui n'autorise pas à modifier ses réponses
+
+### Sécurité
+
+- Il est maintenant impossible de voir les statistiques de réponses quand un formulaire est toujours ouvert et possède des questions anonymes
+
+## [1.56.2] - 2024-04-01
+
+### Technique
+
+- Fix manquait la searchbar dans la liste des réponses
+- Faire en sorte que les managers d'event qui peuvent scanner puisse voir tt les places
+- Fix manquait le fait de pouvoir submit une formsection sans questions
+
+## [1.56.1] - 2024-04-01
+
+### Technique
+
+- Ajout d'une dépendance manquante dans l'API
+
+## [1.56.0] - 2024-04-01
+
+### Améliorations
+
+- Pleins de nouvelles fonctionnalités pour les formulaires. On est prêt pour les votes de l'AE 👀
+
+## [1.55.0] - 2024-03-29
+
+### Corrections
+
+- Correction d'un bug qui rendait tout les QR codes reçus par mail invalides
+- Corrections de bugs d'affichages dans le panel de gestion d'un application tierce
+- Correction d'une erreur 500 lors de l'affichage du dialogue d'autorisation d'une application tierce si celle-ci n'a pas de favicon
+
+### Améliorations
+
+- Il y a maintenant un bouton pour tester le processus d'autorisation d'une application tierce
+
+## [1.54.2] - 2024-03-24
+
+### Technique
+
+- Correction de la variable d'env `ORIGIN`, qui était à `http://app`, ce qui empêchait les checks CSRF de SvelteKit sur les soumissions de formulaires de passer
+
+## [1.54.1] - 2024-03-24
+
+### Autres
+
+- C'est la fin des thèmes de listeux :/ Merci pour ces superbes campagnes!
+
+## [1.54.0] - 2024-03-24
+
+### Corrections
+
+- Correction d'un bug d'affichage sur firefox (@litschan)
+
+### Sécurité
+
+- Suppression des queries `node` et `nodes` de l'API
+
+### Nouveautés
+
+- Il y a maintenant un système de formulaires. Toute la partie création de formulaires n'existe pas encore, mais on peut dors et déjà répondre et voir les réponses à un formulaire. On sort déjà la fonctionnalité maintenant pour s'en servir pour les élections de la prochaine AE ^^
+
+## [1.53.1] - 2024-03-19
+
+### Corrections
+
+- Correction d'un bug qui faisait crash l'appli lors du téléchargement d'un billet en PDF
+
+## [1.53.0] - 2024-03-18
+
+### Nouveautés
+
+- Application tierces: il y a maintenant les logs pour faciliter le débuggage
+
+  ![](https://git.inpt.fr/inp-net/churros/uploads/01dd72a3fd862a2e4746f42033ae86cd/image.png)
+
+  ![](https://git.inpt.fr/inp-net/churros/uploads/d348a5485f482aa28c7847b4982ac4fd/2024-03-17-220335_hyprshot.png)
+
+## [1.52.0] - 2024-03-17
+
+### Nouveautés
+
+- Applications tierces: il y a maintenant des graphiques qui montrent l'utilisation de l'API et les atteintes au rate limiting
+
+### Corrections
+
+- Correction d'un bug qui empêchait de modifier un évènement une fois qu'il avait commencé
+- Un deuxième scan d'un même billet n'est plus considéré comme invalide si le premier scan a été effectué il y a moins de 2 secondes
+- Correction d'un bug qui empêchait parfois les non-managers avec permissions adéquates de voir l'onglet "Vérifier" sur la page d'un évènement (pas sûr que ça marche)
+
+### Améliorations
+
+- Le statut "Scanné" s'affiche maintenant sur les billets scannés
+
+### Technique
+
+- Churros fournit maintenant un [exporter Prometheus](https://prometheus.io/docs/instrumenting/exporters/) (non exposé à Internet, mais accessible dans le réseau du cluster kubernetes sur le port 9999 de l'API)
+
+## [1.51.0] - 2024-03-16
+
+### Nouveautés
+
+- Le thème Ber7ker est enfin disponible! (@elomarim & @soyerb)
+
+## [1.50.1] - 2024-03-12
+
+### Corrections
+
+- Correction d'un problème qui empêchait les extés à se créer un compte via le formulaire d'inscription (!126)(@bardete)(#857)
+
+## [1.50.0] - 2024-03-12
+
+### Corrections
+
+- Correction d'un problème qui empêchait l'affichage de billets ouverts aux extés pour des personnes non connectées sur un évènement non répertorié
+- La date de naissance n'est pas indiquée comme "Anniversaire" sur le profil (@litschan)
+- Certains contributeur·ice·s étaient manquant de la liste (@litschan)
+
+### Nouveautés
+
+- Ajout d'un débuggeur de thème pour créer plus facilement des thèmes pour Churros. Voir en bas de la page Autre services, la case "Theme debugger"
+
+## [1.49.0] - 2024-03-09
+
+### Nouveautés
+
+- Le thème de Pan7on est là! (@soyerb)
+
+### Corrections
+
+- Correction d'un bug qui affiché une place comme grisée sur la page d'un évènement (!121) (@bardete)
+
+### Technique
+
+- Les options de cotisations à une AE ne sont plus hardcodées dans le code de churros (!119) (@bardete)
+
+## [1.48.0] - 2024-03-01
+
+### Technique
+
+- OAuth: les URIs de redirection autorisées sont maintenant normalisées avant d'être comparées: utiliser une URI avec un `/` à la fin quand la liste contient la même sans ce `/` final fonctionne.
+
+### Corrections
+
+- Correction d'un bug dans le demandes de paiements Lydia quand un code de promotion est actif
+
+### Nouveautés
+
+- On peut désigner les développeur·euse·s d'un groupe pour leur donner accès à la gestion des applications tierces du groupe
+
+### Améliorations
+
+- On peut maintenant chercher par numéro de téléphone (#841)
+
 ## [1.47.1] - 2024-02-23
 
 ### Améliorations
@@ -22,6 +206,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Technique
 
 - OAuth: Ajout d'un champ `groupsNames` sur `/identity`
+- Login & Register: Les emails autorisés ne sont plus hardcodés dans le backend de l'application (étape pour l'ouverture à toulouse-inp)
+- Les contributeurs sont filtrés selon leur email enseeiht, ensiacet ou ensat et non plus enseeiht
+- Les passations enverront un mail au respo club de l'école concernée et non plus à celui de l'enseeiht
+- Les emails de contact généré par défaut à l'ouverture d'un club seront celles de l'école du créateur du club (aka respo clubs par exemple)
 
 ### Corrections
 
@@ -209,8 +397,27 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.47.1...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.56.6...main
 [1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
+[1.56.6]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.6
+[1.56.5]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.5
+[1.56.4]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.4
+[1.56.3]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.3
+[1.56.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.2
+[1.56.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.1
+[1.56.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.0
+[1.55.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.55.0
+[1.54.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.2
+[1.54.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.1
+[1.54.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.54.0
+[1.53.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.53.1
+[1.53.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.53.0
+[1.52.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.52.0
+[1.51.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.51.0
+[1.50.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.50.1
+[1.50.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.50.0
+[1.49.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.49.0
+[1.48.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.48.0
 [1.47.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.47.1
 [1.47.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.47.0
 [1.46.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.46.1

@@ -9,6 +9,7 @@
     'signups',
     'announcements',
     'backrooms',
+    'forms',
   ] as const;
 
   export const MOBILE_NAVIGATION_TABS = ['home', 'groups', 'events', 'services'] as const;
@@ -58,6 +59,7 @@
     if (starts('/backrooms') || starts('/logs')) return 'backrooms';
     if (starts('/reports')) return 'reports';
     if (starts('/announcements')) return 'announcements';
+    if (starts('/forms')) return 'forms';
     return 'home';
   }
 
@@ -183,6 +185,12 @@
       </section>
       <main>
         <slot />
+        {#if $theme == 'pan7on'}
+          <div class="pan7div"></div>
+        {/if}
+        {#if $theme == 'ber7ker'}
+          <div class="ber7div"></div>
+        {/if}
       </main>
     </div>
   </div>
@@ -210,6 +218,17 @@ The root layout is composed of several elements:
     - the page content
 - the bottom navbar (mobile only)
 */
+  .pan7div {
+    // Si cette div existe encore après les semaines de campagnes, moi Benjamin Soyer
+    // m'engage à laver les ecocups.
+    height: 3rem;
+  }
+
+  .ber7div {
+    // Si cette div existe encore après les semaines de campagnes, moi Benjamin Soyer
+    // je m'engage à trouver quelqu'un de ber7ker.
+    height: 6rem;
+  }
 
   .layout {
     display: grid;
@@ -238,8 +257,19 @@ The root layout is composed of several elements:
     scrollbar-width: thin;
   }
 
+  main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
   .contents-and-announcements:not(.fullsize) main {
     padding: 0 1rem;
+  }
+
+  #scrollable-area {
+    display: flex;
+    flex-direction: column;
   }
 
   :global(*::-webkit-scrollbar *) {

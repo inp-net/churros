@@ -2,11 +2,32 @@
   export let paid: boolean;
   export let cancelled: boolean;
   export let opposed: boolean;
+  export let verified: boolean = false;
   export let feminin = false;
+  export let free = false;
+
   import Badge from './Badge.svelte';
+  import IconDoubleCheck from '~icons/mdi/check-all';
+
+  $: ending = feminin ? 'e' : '';
+
+  $: word = opposed
+    ? `En opposition`
+    : cancelled
+      ? `Annulé${ending}`
+      : verified
+        ? `Scanné${ending}`
+        : paid
+          ? free
+            ? `Réservé${ending}`
+            : `Payé${ending}`
+          : `Non payé${ending}`;
 </script>
 
-<Badge class="payment-status" theme={opposed || cancelled ? 'danger' : paid ? 'success' : 'warning'}
-  >{#if opposed}En opposition{:else if cancelled}Annulé{#if feminin}e{/if}{:else if paid}Payé{#if feminin}e{/if}{:else}Non
-    payé{#if feminin}e{/if}{/if}</Badge
+<Badge
+  class="payment-status"
+  theme={opposed || cancelled ? 'danger' : paid || verified ? 'success' : 'warning'}
+  icon={verified && !opposed && !cancelled ? IconDoubleCheck : undefined}
+>
+  {word}</Badge
 >

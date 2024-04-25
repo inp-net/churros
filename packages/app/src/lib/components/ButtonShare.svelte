@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import GhostButton from './ButtonGhost.svelte';
-  import IconShare from '~icons/mdi/share-variant-outline';
-  import IconCopyLink from '~icons/mdi/clipboard-outline';
-  import ButtonInk from './ButtonInk.svelte';
-  import { toasts } from '$lib/toasts';
   import { browser } from '$app/environment';
+  import { page } from '$app/stores';
+  import { toasts } from '$lib/toasts';
+  import IconCopyLink from '~icons/mdi/clipboard-outline';
+  import IconShare from '~icons/mdi/share-variant-outline';
+  import GhostButton from './ButtonGhost.svelte';
+  import ButtonInk from './ButtonInk.svelte';
 
   export let white = false;
-  export let href = '';
+  export let url = '';
+  export let path = '';
   export let text = false;
 
   $: canShare = Boolean(browser && navigator.share !== undefined);
@@ -24,16 +25,17 @@
     return url.toString();
   }
 
+  $: finalUrl = url || (path ? new URL(path, $page.url)?.toString() : rewriteUrl($page.url));
+
   async function share() {
     try {
       await navigator.share({
-        url: href || rewriteUrl($page.url),
+        url: finalUrl,
         title: document.title,
         text: document.querySelector('meta[name=description]')?.getAttribute('content') ?? '',
       });
     } catch {
-      const url = href || rewriteUrl($page.url);
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(finalUrl);
       toasts.info('Lien copié dans le presse-papiers');
     }
   }

@@ -15,10 +15,9 @@ case $# in
 	help;
 	;;
     1)
-	env=$1
-        lastTag=`git for-each-ref refs/tags --sort=-v:refname --format='%(refname:short)' --count=1`
-        latest=${lastTag#v}
-	version=$latest
+	echo "Deploy on latest tag is managed by flux-system, nothing to do :)"
+	echo "thx @simonh & @dreumonte <3"
+	exit 0
         ;;
     2)
 	env=$1
@@ -50,16 +49,14 @@ cd $(realpath k8s)
 
 git pull --autostash
 
-sed -i "s@harbor.k8s.inpt.fr/net7/centraverse:.*@harbor.k8s.inpt.fr/net7/centraverse:$version@g" ${paths[@]}
+sed -i "s@harbor.k8s.inpt.fr/net7/centraverse:[\w.]+@harbor.k8s.inpt.fr/net7/centraverse:$version@g" ${paths[@]}
 
 git add ${paths[@]}
 
-git commit -m "churros: bump $env to $version"
+git commit -m "churros: set $env to $version"
 
 git push 
 
 kubectl apply -f .
 
 cd $realwd
-
-git push --tags

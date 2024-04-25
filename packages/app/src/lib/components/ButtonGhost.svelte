@@ -57,6 +57,11 @@
     border-radius: var(--radius-inline);
     outline: 0 solid var(--ring);
 
+    &.disabled {
+      cursor: not-allowed;
+      opacity: 0.75;
+    }
+
     &:not(.disabled) {
       cursor: pointer;
 

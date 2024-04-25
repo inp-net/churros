@@ -3,7 +3,10 @@
   import IconReset from '~icons/mdi/reload';
   import { tooltip } from '$lib/tooltip';
   import { format } from 'date-fns';
-  const emit = createEventDispatcher();
+  const emit = createEventDispatcher<{
+    action: undefined;
+    input: Event & { currentTarget: HTMLInputElement & EventTarget };
+  }>();
 
   export let type: HTMLInputElement['type'];
   export let value: string | number | Date | null | undefined;
@@ -209,7 +212,7 @@
   .wrapper:hover input,
   .wrapper:focus-within,
   .wrapper:focus-within input {
-    color: var(--hover-text);
+    color: var(--text);
     background: var(--hover-bg);
   }
 

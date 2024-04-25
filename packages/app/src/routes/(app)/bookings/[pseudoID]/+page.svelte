@@ -2,6 +2,7 @@
   import { dateTimeFormatter, formatDateTime } from '$lib/dates';
   import type { PageData } from './$types';
   import BackButton from '$lib/components/ButtonBack.svelte';
+  import party from 'party-js';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import IconCancel from '~icons/mdi/cancel';
@@ -16,6 +17,7 @@
   import { me } from '$lib/session';
   import { toasts } from '$lib/toasts';
   import AreaPaypalPayRegistration from '$lib/components/AreaPaypalPayRegistration.svelte';
+  import { subscribe } from '$lib/subscriptions';
 
   let confirmingCancellation = false;
   let paymentLoading = false;
@@ -24,6 +26,46 @@
 
   onMount(() => {
     if (data.markedAsPaid) toasts.success('Place payée', 'Ta place a bien été payée.');
+
+    $subscribe(
+      {
+        registration: [
+          { id: data.registration.id },
+          {
+            '__typename': true,
+            '...on Error': { message: true },
+            '...on SubscriptionRegistrationSuccess': {
+              data: {
+                opposed: true,
+                cancelled: true,
+                paid: true,
+                verified: true,
+              },
+            },
+          },
+        ],
+      },
+      async (result) => {
+        const freshData = await result;
+        if ('errors' in freshData) return;
+        if (freshData.registration.__typename === 'SubscriptionRegistrationSuccess') {
+          const { verified, ...rest } = freshData.registration.data as {
+            verified: boolean;
+            opposed: boolean;
+            cancelled: boolean;
+            paid: boolean;
+          };
+          if (verified && !data.registration.verified)
+            party.sparkles(party.Rect.fromScreen(), { count: 800 });
+
+          data.registration = {
+            ...data.registration,
+            verified,
+            ...rest,
+          };
+        }
+      },
+    );
   });
 
   async function cancelRegistration() {
@@ -68,7 +110,7 @@
 
   export let data: PageData;
 
-  const {
+  $: ({
     beneficiary,
     beneficiaryUser,
     authorIsBeneficiary,
@@ -76,13 +118,14 @@
     paid,
     opposed,
     cancelled,
+    verified,
     author,
     ticket,
     ticket: { links },
     id,
     createdAt,
     paymentMethod,
-  } = data.registration;
+  } = data.registration);
   $: code = id.replace(/^r:/, '').toUpperCase();
   let phone = $me?.phone ?? '';
   const { viewbox: qrcodeViewbox, path: qrcodePath } = data.registrationQRCode;
@@ -93,7 +136,14 @@
     <BackButton go=".." />
     Ma place
     <div class="payment-status">
-      <BadgePaymentStatus feminin {cancelled} {paid} {opposed} />
+      <BadgePaymentStatus
+        feminin
+        {cancelled}
+        {paid}
+        {opposed}
+        {verified}
+        free={ticket.basePrice === 0}
+      />
     </div>
   </h1>
 
@@ -387,6 +437,20 @@
 
     h1 + form {
       grid-area: pay;
+    }
+  }
+
+  @keyframes verified {
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.2);
+    }
+
+    100% {
+      transform: scale(1);
     }
   }
 </style>

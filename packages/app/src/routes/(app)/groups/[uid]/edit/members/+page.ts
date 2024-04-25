@@ -46,6 +46,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             canEditMembers: true,
             canEditArticles: true,
             canScanEvents: true,
+            isDeveloper: true,
           },
         },
       ],

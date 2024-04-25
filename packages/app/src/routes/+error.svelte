@@ -3,6 +3,7 @@
   import { page } from '$app/stores';
   import { onDestroy, onMount } from 'svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { me } from '$lib/session';
 
   let error: App.Error | null;
   let status: number;
@@ -38,11 +39,18 @@
   {:else if error}
     <h1>Erreur {status}</h1>
     <p class="errortext">{error.message}</p>
-    <ButtonSecondary
-      on:click={() => {
-        window.location.reload();
-      }}>Recharger</ButtonSecondary
-    >
+    <div class="actions">
+      <ButtonSecondary
+        on:click={() => {
+          window.location.reload();
+        }}>Recharger</ButtonSecondary
+      >
+      {#if !$me}
+        <ButtonSecondary href="/login?{new URLSearchParams({ to: $page.url.pathname })}"
+          >Se connecter</ButtonSecondary
+        >
+      {/if}
+    </div>
   {:else}
     <h1>Erreur {status}</h1>
     <p>C'est tout cassé.</p>
@@ -102,5 +110,11 @@
       font-size: 1.5rem;
       text-align: center;
     }
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
   }
 </style>

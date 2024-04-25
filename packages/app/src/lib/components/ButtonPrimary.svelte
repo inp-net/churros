@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tooltip } from '$lib/tooltip';
   import IconLoading from '~icons/mdi/loading';
   export let id = '';
   export let href: string | undefined = undefined;
@@ -6,6 +7,7 @@
   export let smaller = false;
   export let disabled = false;
   export let loading = false;
+  export let help: string | undefined = undefined;
 </script>
 
 <svelte:element
@@ -15,8 +17,9 @@
   {href}
   class="button-primary typo-big-button primary"
   class:smaller
-  disabled={disabled || loading}
+  disabled={disabled || loading || undefined}
   on:click
+  use:tooltip={help}
   type={submits ? 'submit' : 'button'}
   role="button"
   tabindex="0"

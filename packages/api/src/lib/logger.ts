@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { prisma, publish } from '#lib';
 
 export async function log(
   area: string,
@@ -18,4 +18,5 @@ export async function log(
       user: user ? { connect: { uid: user.uid } } : undefined,
     },
   });
+  if (area === 'oauth' && target) await publish(target, 'updated', message);
 }

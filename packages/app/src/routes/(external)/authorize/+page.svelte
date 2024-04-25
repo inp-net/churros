@@ -21,9 +21,11 @@
   <section class="churros-logo">
     <LogoChurros wordmark />
   </section>
-  <section class="logo">
-    <img src={faviconUrl} alt="Logo de {name}" />
-  </section>
+  {#if faviconUrl}
+    <section class="logo">
+      <img src={faviconUrl} alt="Logo de {name}" />
+    </section>
+  {/if}
   <h1>
     {name} souhaite accéder à ton compte Churros
   </h1>
@@ -83,8 +85,8 @@
     {#if owner.uid !== 'inp-net-inp'}
       <p class="more">
         {name} est un service tierce développé par <a href="/groups/{owner.uid}">{owner.name}</a>,
-        non affilié à Churros. Plus d'infos à
-        <a href={website}>{new URL(website).hostname}</a>
+        non affilié à Churros. {#if website}Plus d'infos à
+          <a href={website}>{new URL(website).hostname}</a>{/if}
       </p>
     {/if}
     <p class="technical muted">

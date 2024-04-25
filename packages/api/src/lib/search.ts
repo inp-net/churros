@@ -37,6 +37,7 @@ export type FullTextMatch<columns extends string[]> = {
 export async function fullTextSearch<
   Property extends string,
   Model extends Record<string, unknown> & { id: string },
+  Output extends { id: string },
   Highlights extends (keyof Model & string)[],
   FuzzyColumns extends (keyof Model & string)[],
   HTMLHighlights extends Highlights,
@@ -57,12 +58,12 @@ export async function fullTextSearch<
     highlight: Highlights;
     htmlHighlights: HTMLHighlights;
     additionalClauses?: Record<string, string>;
-    resolveObjects: (id: string[]) => Promise<Model[]> | Model[];
+    resolveObjects: (id: string[]) => Promise<Output[]> | Output[];
     property: Property;
   },
-): Promise<Array<SearchResult<Record<Property, Model>, Highlights>>> {
+): Promise<Array<SearchResult<Record<Property, Output>, Highlights>>> {
   // We select id, rank, similarity, and highlights, which are named highlights_<columns>
-  const selection = `"id", rank, similarity, ${highlightedColumns
+  const selection = `"id", rank, similarity${highlightedColumns.length > 0 ? ',' : ''} ${highlightedColumns
     .map((c) => `highlights_${c}`)
     .join(', ')}`;
 
@@ -94,7 +95,7 @@ export async function fullTextSearch<
       "${table}",
       ${similarityComputation} similarity,
       plainto_tsquery('french', $1) query,
-      nullif(ts_rank_cd("search", query), 0) rank,
+      nullif(ts_rank_cd("search", query), 0) rank${highlightedColumns.length > 0 ? ',' : ''}
       ${highlightsComputations}
     WHERE
       ${additionalFilters ? `(${additionalFilters}) AND ` : ''}
@@ -124,7 +125,7 @@ export async function fullTextSearch<
 
   return sortWithMatches(highlightProperties(objects, matches, htmlHighlights), matches).map(
     ({ object, ...match }) => ({ [property]: object, ...match }),
-  ) as Array<SearchResult<Record<Property, Model>, Highlights>>;
+  ) as Array<SearchResult<Record<Property, Output>, Highlights>>;
 }
 
 export function sortWithMatches<T extends { id: string }, C extends string[]>(

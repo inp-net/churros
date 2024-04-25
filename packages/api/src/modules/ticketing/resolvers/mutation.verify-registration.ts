@@ -1,8 +1,12 @@
-import { builder, prisma } from '#lib';
+import { builder, ensureHasIdPrefix, prisma, publish } from '#lib';
 
-import { userCanManageEvent } from '#permissions';
+import { differenceInSeconds } from 'date-fns';
 import { GraphQLError } from 'graphql';
-import { RegistrationVerificationResultType, RegistrationVerificationState } from '../index.js';
+import {
+  RegistrationVerificationResultType,
+  RegistrationVerificationState,
+  canScanBookings,
+} from '../index.js';
 // TODO rename to verify-booking.ts
 
 builder.mutationField('verifyRegistration', (t) =>
@@ -10,23 +14,19 @@ builder.mutationField('verifyRegistration', (t) =>
     type: RegistrationVerificationResultType,
     errors: {},
     args: {
-      id: t.arg.id(),
+      id: t.arg.id({ description: 'Identifiant de la place ou code de réservation' }),
       groupUid: t.arg.string(),
       eventUid: t.arg.string(),
     },
     async authScopes(_, { groupUid, eventUid }, { user }) {
-      const event = await prisma.event.findFirst({
+      const event = await prisma.event.findFirstOrThrow({
         where: { uid: eventUid, group: { uid: groupUid } },
         include: {
-          managers: {
-            include: {
-              user: true,
-            },
-          },
+          managers: true,
         },
       });
       if (!event) return false;
-      return userCanManageEvent(event, user, { canVerifyRegistrations: true });
+      return canScanBookings(event, user);
     },
     async resolve(query, { id, eventUid, groupUid }, { user }) {
       async function log(message: string, target?: string) {
@@ -44,7 +44,7 @@ builder.mutationField('verifyRegistration', (t) =>
       if (!user) throw new GraphQLError('Must be logged in to verify a registration');
 
       let registration = await prisma.registration.findUnique({
-        where: { id },
+        where: { id: ensureHasIdPrefix(id.trim().toLowerCase(), 'Registration') },
         include: {
           verifiedBy: true,
           ticket: {
@@ -81,7 +81,7 @@ builder.mutationField('verifyRegistration', (t) =>
       }
 
       // we check verifiedAt instead of verifiedBy in case the verifier deleted their account after verifying
-      if (registration.verifiedAt) {
+      if (registration.verifiedAt && differenceInSeconds(new Date(), registration.verifiedAt) > 2) {
         await log('Scan failed: registration already verified', registration.id);
         return {
           state: RegistrationVerificationState.AlreadyVerified,
@@ -94,7 +94,7 @@ builder.mutationField('verifyRegistration', (t) =>
           ...query,
           where: { id },
           data: {
-            verifiedAt: new Date(),
+            verifiedAt: registration.verifiedAt ?? new Date(),
             verifiedBy: { connect: { id: user.id } },
           },
           include: {
@@ -110,6 +110,7 @@ builder.mutationField('verifyRegistration', (t) =>
             },
           },
         });
+        publish(registration.id, 'updated', registration);
         await log('Scan successful', registration.id);
       } else {
         await log('Scan failed: registration not paid', registration.id);

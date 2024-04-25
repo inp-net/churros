@@ -17,6 +17,7 @@
   import { toasts } from '$lib/toasts';
   import { subscribe } from '$lib/subscriptions';
   import { page } from '$app/stores';
+  import IconForm from '~icons/mdi/form-select';
 
   export let data: PageData;
 
@@ -30,6 +31,7 @@
     capacity,
     reactionCounts,
     myReactions,
+    forms,
   } = data.event;
 
   $: placesLeft = data.event.placesLeft;
@@ -56,8 +58,12 @@
     );
   });
 
+  function notUndefined<T>(x: T | undefined): x is T {
+    return x !== undefined;
+  }
+
   $: usersRegistration = tickets
-    .flatMap((t) => t.registrations)
+    .flatMap((t) => t.registrations?.filter(notUndefined) ?? [])
     .filter(({ beneficiary, author }) => author?.uid === $me?.uid || beneficiary === $me?.uid);
 
   const bookingURL = (registrationId: string) =>
@@ -90,8 +96,15 @@
 {/if}
 
 <section class="description user-html">
-  {#if links.length > 0}
+  {#if links.length + forms.length > 0}
     <ul class="links nobullet">
+      {#each forms as form}
+        <li>
+          <ButtonSecondary icon={IconForm} href="/forms/{form.localId}/answer"
+            >{form.title}</ButtonSecondary
+          >
+        </li>
+      {/each}
       {#each links as link}
         <li>
           <ButtonSecondary href={link.computedValue}>{link.name}</ButtonSecondary>
@@ -193,7 +206,6 @@
   section {
     max-width: 1000px;
     padding: 0 1rem;
-    margin: 0 auto;
     margin-top: 2rem;
   }
 

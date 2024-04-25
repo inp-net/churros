@@ -11,6 +11,8 @@
   export let required = false;
   export let rich = false;
   export let placeholder = '';
+  export let name: string | undefined = undefined;
+  export let rows = 10;
 
   let element: HTMLTextAreaElement;
 
@@ -39,8 +41,9 @@
     bind:value
     on:input
     cols="30"
-    rows="10"
+    {rows}
     {maxlength}
+    {name}
     {...$$restProps}
     placeholder={placeholder + (submitShortcut ? '\nCtrl-Entrer pour envoyer' : '')}
   />
@@ -72,7 +75,7 @@
 
   textarea:hover,
   textarea:focus-within {
-    color: var(--hover-text);
+    color: var(--text);
     background: var(--hover-bg);
     border-color: var(--hover-border);
   }

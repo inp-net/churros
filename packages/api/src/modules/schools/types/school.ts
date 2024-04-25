@@ -11,5 +11,6 @@ export const SchoolType = builder.prismaObject('School', {
     address: t.exposeString('address'),
     services: t.relation('services'),
     internalMailDomain: t.exposeString('internalMailDomain'),
+    aliasMailDomains: t.exposeStringList('aliasMailDomains'),
   }),
 });

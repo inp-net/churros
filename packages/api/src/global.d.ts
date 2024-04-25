@@ -11,6 +11,10 @@ declare namespace NodeJS {
      */
     REDIS_URL: string;
     /**
+     * Prometheus pushgateway URL.
+     */
+    PROMETHEUS_URL: string;
+    /**
      * Public frontend origin.
      *
      * @example
@@ -25,6 +29,8 @@ declare namespace NodeJS {
     LDAP_SCHOOL: string;
     /** @see https://yarnpkg.com/advanced/lifecycle-scripts/#environment-variables */
     PROJECT_CWD: string;
+    PUBLIC_API_URL: string;
+    PUBLIC_STORAGE_URL: string;
     /**
      * SMTP options string.
      *
@@ -64,6 +70,9 @@ declare namespace NodeJS {
     PAYPAL_CLIENT_SECRET: string;
     PUBLIC_PAYPAL_API_BASE_URL: string;
     PUBLIC_SCHOOL_UID: string;
+    /** Google secrets */
+    GOOGLE_CLIENT_SECRET: string;
+    PUBLIC_GOOGLE_CLIENT_ID: string;
     /** Mailman secrets */
     MAILMAN_API_URL: string;
     MAILMAN_API_TOKEN: string;

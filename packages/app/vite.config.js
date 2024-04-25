@@ -27,5 +27,8 @@ export default mergeConfig(
   commonConfig,
   defineConfig({
     plugins: [sveltekit()],
+    ssr: {
+      noExternal: process.env.NODE_ENV === 'development' ? [] : ['@carbon/charts'],
+    },
   }),
 );

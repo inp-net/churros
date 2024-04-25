@@ -232,10 +232,10 @@
     width: 2rem;
     height: 2rem;
     overflow: hidden;
+    object-fit: contain;
     background: var(--bg);
     border: 2px solid var(--muted-border);
     border-radius: 50%;
-    object-fit: contain;
   }
 
   article:hover .group-logo {

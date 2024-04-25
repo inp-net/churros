@@ -1,3 +1,5 @@
+import { isAfter, isBefore } from 'date-fns';
+
 export const dateFromNumbers = (numbers: number[]) => {
   switch (dateFromNumbers.length) {
     case 0: {
@@ -51,6 +53,38 @@ export function formatDate(
   date: Date | undefined | null,
   style: Intl.DateTimeFormatOptions['dateStyle'] = 'long',
 ): string {
-  if (!date) return '';
-  return new Intl.DateTimeFormat('fr-FR', { dateStyle: style }).format(date);
+  try {
+    if (!date) return '';
+    if (typeof date === 'string') date = new Date(Date.parse(date));
+
+    return new Intl.DateTimeFormat('fr-FR', { dateStyle: style }).format(date);
+  } catch (error) {
+    console.error(error);
+    return '';
+  }
+}
+
+export function formatDateTime(
+  date: Date | undefined | null,
+  dateStyle: Intl.DateTimeFormatOptions['dateStyle'] = 'long',
+  timeStyle: Intl.DateTimeFormatOptions['timeStyle'] = 'medium',
+): string {
+  try {
+    if (!date) return '';
+    if (typeof date === 'string') date = new Date(Date.parse(date));
+
+    return new Intl.DateTimeFormat('fr-FR', { dateStyle, timeStyle }).format(date);
+  } catch (error) {
+    console.error(error);
+    return '';
+  }
+}
+
+export function isWithinPartialInterval(
+  date: Date,
+  { start, end }: { start?: Date | null; end?: Date | null },
+) {
+  if (start && !isAfter(date, start)) return false;
+  if (end && !isBefore(date, end)) return false;
+  return true;
 }

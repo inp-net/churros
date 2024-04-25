@@ -1,6 +1,7 @@
 import type { Context } from '#lib';
 import {
   authScopes,
+  context,
   decodeGlobalID,
   encodeGlobalID,
   type AuthContexts,
@@ -19,10 +20,12 @@ import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
 import SmartSubscriptionsPlugin, {
   subscribeOptionsFromIterator,
 } from '@pothos/plugin-smart-subscriptions';
-import TracingPlugin, { isRootField, wrapResolver } from '@pothos/plugin-tracing';
+import TracingPlugin, { isRootField, runFunction } from '@pothos/plugin-tracing';
 import ValidationPlugin from '@pothos/plugin-validation';
+import WithInputPlugin from '@pothos/plugin-with-input';
 import { GraphQLError, Kind } from 'graphql';
 import { prisma } from './prisma.js';
+import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
 
 export const builder = new SchemaBuilder<{
@@ -57,10 +60,12 @@ export const builder = new SchemaBuilder<{
     ValidationPlugin,
     SmartSubscriptionsPlugin,
     DirectivePlugin,
+    WithInputPlugin,
   ],
   authScopes,
-  complexity: { limit: { complexity: 30_000, depth: 7, breadth: 200 } },
+  complexity: { limit: { complexity: 50_000, depth: 10, breadth: 200 } },
   defaultInputFieldRequiredness: true,
+  withInput: {},
   errorOptions: { defaultTypes: [Error] },
   prisma: { client: prisma, exposeDescriptions: true },
   scopeAuthOptions: {
@@ -72,17 +77,34 @@ export const builder = new SchemaBuilder<{
     encodeGlobalID,
     decodeGlobalID,
     nodesOnConnection: true,
+    nodeQueryOptions: false,
+    nodesQueryOptions: false,
   },
   tracing: {
     default: (config) => isRootField(config),
-    wrap: (resolver, _options, config) =>
-      wrapResolver(resolver, (_error, duration) => {
-        console.info(
-          `Executed \u001B[36;1m${config.parentType}.${
-            config.name
-          }\u001B[0m in \u001B[36;1m${Number(duration.toPrecision(3))} ms\u001B[0m`,
-        );
-      }),
+    wrap: (resolver, _options, config) => async (source, args, ctx, info) => {
+      return runFunction(
+        () => resolver(source, args, ctx, info),
+        (_error, duration) => {
+          console.info(
+            `Executed \u001B[36;1m${config.parentType}.${
+              config.name
+            }\u001B[0m in \u001B[36;1m${Number(duration.toPrecision(3))} ms\u001B[0m`,
+          );
+          // Do not wait for prometheus counters before sending the response!
+          (async () => {
+            const { token, user } = await context(ctx);
+            updateQueryUsage({
+              queryType: config.parentType,
+              queryName: config.name,
+              token,
+              user: user?.id,
+              duration,
+            }).catch(console.error);
+          })();
+        },
+      );
+    },
   },
   smartSubscriptions: {
     ...subscribeOptionsFromIterator((name) => {

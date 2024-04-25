@@ -5,7 +5,6 @@
   "delete": true,
   "directory": [
     "./src/lib",
-    "./src/permissions",
     "./src/modules/announcements/resolvers",
     "./src/modules/announcements/types",
     "./src/modules/bar-weeks/resolvers",
@@ -24,6 +23,9 @@
     "./src/modules/events/resolvers",
     "./src/modules/events/types",
     "./src/modules/events/utils",
+    "./src/modules/forms/resolvers",
+    "./src/modules/forms/types",
+    "./src/modules/forms/utils",
     "./src/modules/gitlab/resolvers",
     "./src/modules/gitlab/types",
     "./src/modules/gitlab/utils",
@@ -39,6 +41,7 @@
     "./src/modules/links/utils",
     "./src/modules/logs/resolvers",
     "./src/modules/logs/types",
+    "./src/modules/mails/utils",
     "./src/modules/notifications/resolvers",
     "./src/modules/notifications/types",
     "./src/modules/notifications/utils",
@@ -64,6 +67,7 @@
     "./src/modules/ticketing/utils",
     "./src/modules/users/resolvers",
     "./src/modules/users/types",
-    "./src/modules/users/utils"
+    "./src/modules/users/utils",
+    "./src/permissions"
   ]
 }

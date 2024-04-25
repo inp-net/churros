@@ -53,6 +53,7 @@ module.exports = {
     'unicorn/prefer-top-level-await': 'off',
     'unicorn/prevent-abbreviations': 'off',
     'unicorn/no-empty-file': 'warn',
+    'unicorn/no-array-callback-reference': 'warn',
     'unicorn/prefer-spread': process.argv.includes('--fix') ? 'off' : 'warn',
   },
   overrides: [
@@ -66,6 +67,7 @@ module.exports = {
             allow: ['warn', 'error', 'info', 'group', 'groupEnd'],
           },
         ],
+        'unicorn/no-null': 'off',
       },
     },
     {
@@ -85,6 +87,7 @@ module.exports = {
         'unicorn/consistent-destructuring': 'off',
         'unicorn/no-useless-undefined': 'off',
         'unicorn/filename-case': 'off',
+        'unicorn/no-null': 'off',
         'no-console': [
           'error',
           {

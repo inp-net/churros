@@ -7,8 +7,12 @@
   import ButtonToggleShow from '$lib/components/ButtonToggleShow.svelte';
   import { formatDateTime } from '$lib/dates';
   import { me } from '$lib/session';
+  import { subscribe } from '$lib/subscriptions';
   import { toasts } from '$lib/toasts';
   import { zeus } from '$lib/zeus';
+  import { LineChart, ScaleTypes } from '@carbon/charts-svelte';
+  import '@carbon/charts-svelte/styles.css';
+  import { onMount } from 'svelte';
   import IconUsers from '~icons/mdi/account-multiple-outline';
   import IconWarning from '~icons/mdi/alert-outline';
   import IconCalendar from '~icons/mdi/calendar-outline';
@@ -17,10 +21,11 @@
   import FormApp from '../FormApp.svelte';
   import type { PageData } from './$types';
   import { _query } from './+page';
+  import LogsTable from './LogsTable.svelte';
 
   export let data: PageData;
   let loading = false;
-  let {
+  $: ({
     name,
     description,
     allowedRedirectUris,
@@ -31,18 +36,36 @@
     owner,
     website,
     secretLength,
-  } = data.thirdPartyApp;
+  } = data.thirdPartyApp);
 
-  let clientSecret: string | undefined;
-  let clientSecretShown = true;
-
-  let app = {
+  $: app = {
     name,
     description,
     allowedRedirectUris: allowedRedirectUris.join(' '),
     website,
     ownerGroup: owner,
   };
+
+  $: logs = data.thirdPartyApp.logs.nodes.toReversed();
+
+  let clientSecret: string | undefined;
+  let clientSecretShown = true;
+  let scrollLogsToBottom: () => Promise<void>;
+
+  onMount(() => {
+    $subscribe(
+      {
+        thirdPartyApp: [{ id: data.thirdPartyApp.id }, { logs: _query.logs }],
+      },
+      async (response) => {
+        const freshData = await response;
+        if ('errors' in freshData) return;
+        if (!freshData.thirdPartyApp?.logs) return;
+        data.thirdPartyApp.logs.nodes = freshData.thirdPartyApp.logs.nodes.filter(notNull);
+        await scrollLogsToBottom();
+      },
+    );
+  });
 
   function redact(textOrLength: string | number): string {
     return '\u2022'.repeat(typeof textOrLength === 'string' ? textOrLength.length : textOrLength);
@@ -73,6 +96,10 @@
     });
   }
 
+  function notNull<T>(value: T | null | undefined): value is T {
+    return value !== null;
+  }
+
   async function updateApp() {
     if (!app.ownerGroup) return;
     const { editApp } = await $zeus.mutate({
@@ -83,7 +110,7 @@
           description: app.description,
           name: app.name,
           ownerGroupUid: app.ownerGroup.uid,
-          website: app.website,
+          website: app.website || null,
         },
         _query,
       ],
@@ -115,18 +142,29 @@
     {name}
   </h1>
   <section class="metadata">
-    <div class="status">
-      <Badge theme={active ? 'success' : 'warning'}
-        >{#if active}
-          Active
-        {:else}
-          En attente de validation
-        {/if}</Badge
-      >
-    </div>
     {#if $me?.admin}
-      <ButtonToggleActiveApp {...data.thirdPartyApp}></ButtonToggleActiveApp>
+      <ButtonToggleActiveApp id={data.thirdPartyApp.id} bind:active={data.thirdPartyApp.active}
+      ></ButtonToggleActiveApp>
+    {:else}
+      <div class="status">
+        <Badge theme={active ? 'success' : 'warning'}
+          >{#if active}
+            Active
+          {:else}
+            En attente de validation
+          {/if}</Badge
+        >
+      </div>
     {/if}
+    <ButtonSecondary
+      disabled={allowedRedirectUris.length === 0}
+      newTab
+      href="/authorize?{new URLSearchParams({
+        client_id: clientId,
+        response_type: 'code',
+        redirect_uri: allowedRedirectUris[0],
+      })}">Tester</ButtonSecondary
+    >
     <div class="users">
       <IconUsers></IconUsers>
       {data.thirdPartyApp.usersCount} utilisateur·ice·s
@@ -169,6 +207,52 @@
       </dd>
     </dl>
   </section>
+  <LogsTable live bind:scrollToBottom={scrollLogsToBottom} {logs}></LogsTable>
+  <section class="stats">
+    <h2>Statistiques</h2>
+    <LineChart
+      data={data.thirdPartyApp?.apiUsage?.nodes.filter(notNull).map((node) => ({
+        group: node.queryName,
+        ...node,
+      })) ?? []}
+      options={{
+        title: "Requêtes d'API",
+        axes: {
+          bottom: {
+            title: 'Temps',
+            mapsTo: 'date',
+            scaleType: ScaleTypes.TIME,
+          },
+          left: {
+            title: "Nombre d'appels",
+            mapsTo: 'count',
+            scaleType: ScaleTypes.LINEAR,
+          },
+        },
+      }}
+    />
+    <LineChart
+      data={data.thirdPartyApp?.rateLimitHits?.nodes.filter(notNull).map((node) => ({
+        group: node.queryName,
+        ...node,
+      })) ?? []}
+      options={{
+        title: "Limites d'appels atteintes",
+        axes: {
+          bottom: {
+            title: 'Temps',
+            mapsTo: 'date',
+            scaleType: ScaleTypes.TIME,
+          },
+          left: {
+            title: "Pénalité d'attente (ms)",
+            mapsTo: 'count',
+            scaleType: ScaleTypes.LINEAR,
+          },
+        },
+      }}
+    ></LineChart>
+  </section>
   <section class="edit">
     <h2>Modifier</h2>
     <FormApp
@@ -190,13 +274,22 @@
   </section>
 </main>
 
-<style>
+<style lang="scss">
   main {
     display: flex;
     flex-direction: column;
     gap: 2rem;
     max-width: 800px;
     margin: 2rem auto;
+  }
+
+  :global(.stats) {
+    --cds-charts-font-family: var(--font-main) !important;
+  }
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  :global(.stats .cds--cc--title p.title) {
+    font-family: var(--font-main);
   }
 
   h1 {

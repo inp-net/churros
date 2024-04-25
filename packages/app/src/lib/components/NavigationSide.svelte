@@ -21,6 +21,8 @@
   import IconTerminal from '~icons/mdi/console';
   import IconBugOutline from '~icons/mdi/bug-outline';
   import IconBug from '~icons/mdi/bug';
+  import IconForms from '~icons/mdi/form';
+  import IconFormsOutline from '~icons/mdi/form-outline';
   import { beforeNavigate } from '$app/navigation';
   import { me } from '$lib/session';
   import { page } from '$app/stores';
@@ -134,6 +136,20 @@
         <IconBugOutline></IconBugOutline>
       {/if}
       <span>Mes signalements</span>
+    </a>
+
+    <a
+      href="/forms"
+      class="navigation-item"
+      class:current={!flyoutOpen && current === 'forms'}
+      class:disabled={flyoutOpen}
+    >
+      {#if current === 'forms'}
+        <IconForms></IconForms>
+      {:else}
+        <IconFormsOutline></IconFormsOutline>
+      {/if}
+      <span>Formulaires</span>
     </a>
   {/if}
 
@@ -268,6 +284,11 @@
       <IconEvent />
       <span>Événement</span>
     </a>
+
+    <a href="/forms/create">
+      <IconFormsOutline></IconFormsOutline>
+      <span>Formulaire</span>
+    </a>
   </section>
 </div>
 
@@ -318,7 +339,7 @@
 
   .current {
     color: var(--primary-link);
-    background-color: color-mix(in srgb, var(--primary-link) 15%, transparent);
+    background-color: color-mix(in srgb, var(--primary-link) 10%, transparent);
   }
 
   .flyout-backdrop:not(.open) {

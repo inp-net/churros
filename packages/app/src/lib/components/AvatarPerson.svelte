@@ -4,16 +4,22 @@
   import IconCanEditMembers from '~icons/mdi/account-edit-outline';
   import IconCanEditPosts from '~icons/mdi/text-box-edit-outline';
   import IconCanScanEvents from '~icons/mdi/qrcode';
+  import IconIsDeveloper from '~icons/mdi/code-braces';
   export let small = false;
   export let inline = false;
   export let fullName: string;
   export let role = '';
   export let pictureFile: string;
-  export let href: string;
+  export let href: string | undefined = undefined;
   export let highlighted = false;
   export let permissions:
     | undefined
-    | { canEditArticles: boolean; canEditMembers: boolean; canScanEvents: boolean } = undefined;
+    | {
+        canEditArticles: boolean;
+        canEditMembers: boolean;
+        canScanEvents: boolean;
+        isDeveloper: boolean;
+      } = undefined;
   const src = pictureFile.startsWith('https://')
     ? pictureFile
     : `${env.PUBLIC_STORAGE_URL}${pictureFile}`;
@@ -26,6 +32,7 @@
   class:highlighted
   class="person"
   {href}
+  {...$$restProps}
 >
   <div class="img">
     {#if pictureFile}
@@ -52,6 +59,11 @@
           <span title="Peut scanner des billets sur tout les évènements du groupe">
             {#if permissions.canScanEvents}
               <IconCanScanEvents />
+            {/if}
+          </span>
+          <span title="Est devéloppeur·euse pour le groupe">
+            {#if permissions.isDeveloper}
+              <IconIsDeveloper />
             {/if}
           </span>
         </span>
