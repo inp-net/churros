@@ -24,6 +24,12 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 
 (@bardete & @valliet pour une partie du back-end) (!127)
 
+### Corrections
+
+- Correction d'un bug qui affiche 0/0 quand il n'y a pas de limites de places sur les tickets d'un event (#885) (!138) (@bardete)
+- Correction d'un bug qui faisait que les posts d'un utilisateurs étaient visible sur son profil peu importe la visibilité (#730) (!139) (@bardete)
+- Correction de plusieurs bugs qui faisait qu'un post lié à un évènement était visible selon les règles de visibilités de l'article, même si l'on ne pouvait pas voir l'évènement (#850) (!139) (@bardete)
+
 ## [1.56.6] - 2024-04-03
 
 ### Corrections
