@@ -6,7 +6,7 @@
     description: string;
     allowedRedirectUris: string;
     website: string;
-    ownerGroup: Group | undefined;
+    owner: Group | undefined;
   };
 </script>
 
@@ -41,7 +41,7 @@
   <InputGroups
     required
     options={$me?.groups.filter((g) => isOnClubBoard(g) || g.isDeveloper).map((g) => g.group) ?? []}
-    bind:group={app.ownerGroup}
+    bind:group={app.owner}
     label="Groupe responsable de l'application"
   ></InputGroups>
   <section class="submit">
