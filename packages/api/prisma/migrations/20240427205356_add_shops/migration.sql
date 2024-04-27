@@ -184,6 +184,8 @@ CREATE TABLE "ShopItemOption" (
     "name" VARCHAR(255) NOT NULL,
     "shopItemId" TEXT NOT NULL,
     "options" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "required" BOOLEAN NOT NULL DEFAULT false,
+    "otherToggle" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "ShopItemOption_pkey" PRIMARY KEY ("id")
 );
@@ -205,6 +207,9 @@ CREATE TABLE "_PictureToShopItem" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ShopItem_groupId_uid_key" ON "ShopItem"("groupId", "uid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ShopItemAnswer_shopPaymentId_key" ON "ShopItemAnswer"("shopPaymentId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_PictureToShopItem_AB_unique" ON "_PictureToShopItem"("A", "B");
