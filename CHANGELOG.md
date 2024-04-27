@@ -11,6 +11,19 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Les boutiques sont enfin là ! Chaque groupe peut vendre les objets qu'il souhaite au prix qu'il souhaite. Vous êtes libre de choisir la méthode de paiement que vous voulez pour vos membres ! (Les paiements par Paypal ne sont pas disponibles pour l'instant mais le seront peut-être un jour). Pour découvrir votre nouveau canal de vente, vous pouvez vous rendre sur la page de votre club puis dans boutique, à droite (ou en dessous sur téléphone). Vous pouvez poster plusieurs images par produit, créer des items avec la visibilité que vous voulez, etc...
+  Un selecteur d'option (pour la taille et les couleurs par exemple) est disponible, vous avez la possibilité d'ajouter un champ "autre" ou de rendre un champ obligatoire.
+
+Sur ce, voila un avant goût !
+
+![Preview de la boutique](https://git.inpt.fr/inp-net/churros/uploads/81feeb4fa735fea2a812b969f89fa274/image.png)
+
+La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à nous le faire parvenir via la bulle rouge en haut à droite de l'appli en précisant Boutique au début de votre signalement, merci d'avance pour votre contribution :) !
+
+(@bardete & @valliet pour une partie du back-end) (!127)
+
 ### Corrections
 
 - Correction d'un bug qui affiche 0/0 quand il n'y a pas de limites de places sur les tickets d'un event (#885) (!138) (@bardete)

@@ -75,7 +75,7 @@ export async function updatePicture({
   identifier,
   propertyName = 'pictureFile',
 }: {
-  resource: 'article' | 'event' | 'user' | 'group' | 'student-association';
+  resource: 'article' | 'event' | 'user' | 'group' | 'student-association' | 'photos';
   folder: string;
   extension: 'png' | 'jpg';
   file: File;
@@ -142,7 +142,7 @@ export async function updatePicture({
     }
   }
 
-  if (pictureFile) {
+  if (pictureFile && resource !== 'photos') {
     try {
       await unlink(join(root, pictureFile));
     } catch {}
@@ -183,6 +183,14 @@ export async function updatePicture({
       await prisma.user.update({
         where: { uid: identifier },
         data: { [propertyName]: relative(root, path) },
+      });
+      break;
+    }
+
+    case 'photos': {
+      await prisma.picture.update({
+        where: { id: identifier },
+        data: { path: relative(root, path) },
       });
       break;
     }
