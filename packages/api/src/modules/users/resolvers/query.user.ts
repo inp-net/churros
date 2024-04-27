@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-
+import { prismaQueryAccessibleArticles } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { UserType } from '../index.js';
 
@@ -14,18 +14,19 @@ builder.queryField('user', (t) =>
         { message: "Vous devez fournir l'identifiant ou l'UID de l'utilisateur·ice" },
       ],
     ],
-    async resolve(query, _, { uid, id }) {
+    async resolve(query, _, { uid, id }, { user }) {
       if (!uid && !id)
         throw new GraphQLError("Vous devez fournir l'identifiant ou l'UID de l'utilisateur·ice");
-      const user = await prisma.user.findUnique({
+      const userToReturn = await prisma.user.findUnique({
         ...query,
         where: {
           id: id ?? undefined,
           uid: uid ?? undefined,
         },
+        include: { articles: { where: prismaQueryAccessibleArticles(user, 'wants') } },
       });
-      if (!user) throw new GraphQLError('Utilisateur·ice introuvable');
-      return user;
+      if (!userToReturn) throw new GraphQLError('Utilisateur·ice introuvable');
+      return userToReturn;
     },
   }),
 );

@@ -25,25 +25,12 @@
 
   export let data: PageData;
   let loading = false;
-  $: ({
-    name,
-    description,
-    allowedRedirectUris,
-    createdAt,
-    faviconUrl,
-    clientId,
-    active,
-    owner,
-    website,
-    secretLength,
-  } = data.thirdPartyApp);
 
-  $: app = {
-    name,
-    description,
-    allowedRedirectUris: allowedRedirectUris.join(' '),
-    website,
-    ownerGroup: owner,
+  $: appOnServer = data.thirdPartyApp;
+
+  let appWithEdits = {
+    ...data.thirdPartyApp,
+    allowedRedirectUris: data.thirdPartyApp.allowedRedirectUris.join(' '),
   };
 
   $: logs = data.thirdPartyApp.logs.nodes.toReversed();
@@ -101,36 +88,35 @@
   }
 
   async function updateApp() {
-    if (!app.ownerGroup) return;
-    const { editApp } = await $zeus.mutate({
-      editApp: [
-        {
-          id: data.thirdPartyApp.id,
-          allowedRedirectUris: app.allowedRedirectUris.split(' '),
-          description: app.description,
-          name: app.name,
-          ownerGroupUid: app.ownerGroup.uid,
-          website: app.website || null,
-        },
-        _query,
-      ],
-    });
+    if (!appWithEdits.owner) return;
+    try {
+      const { editApp } = await $zeus.mutate({
+        editApp: [
+          {
+            id: data.thirdPartyApp.id,
+            allowedRedirectUris: appWithEdits.allowedRedirectUris.split(' '),
+            description: appWithEdits.description,
+            name: appWithEdits.name,
+            ownerGroupUid: appWithEdits.owner.uid,
+            website: appWithEdits.website || null,
+          },
+          _query,
+        ],
+      });
 
-    if (active && !editApp.active) {
-      await toasts.warn(
-        'Validation nécéssaire',
-        "L'application est de nouveau en attente de validation",
-      );
-    }
+      if (appWithEdits.active && !editApp.active) {
+        await toasts.warn(
+          'Validation nécéssaire',
+          "L'application est de nouveau en attente de validation",
+        );
+      }
 
-    ({ name, description, allowedRedirectUris, createdAt, faviconUrl, active, owner, website } =
-      editApp);
+      appOnServer = structuredClone(editApp);
+    } catch {}
 
-    app = {
-      ...app,
-      ...editApp,
-      allowedRedirectUris: allowedRedirectUris.join(' '),
-      ownerGroup: owner,
+    appWithEdits = {
+      ...appOnServer,
+      allowedRedirectUris: appOnServer.allowedRedirectUris.join(' '),
     };
   }
 </script>
@@ -138,17 +124,17 @@
 <main>
   <h1>
     <ButtonBack go="../"></ButtonBack>
-    <img src={faviconUrl} alt="" class="favicon" />
-    {name}
+    <img src={appWithEdits.faviconUrl} alt="" class="favicon" />
+    {appWithEdits.name}
   </h1>
   <section class="metadata">
     {#if $me?.admin}
-      <ButtonToggleActiveApp id={data.thirdPartyApp.id} bind:active={data.thirdPartyApp.active}
+      <ButtonToggleActiveApp id={data.thirdPartyApp.id} bind:active={appWithEdits.active}
       ></ButtonToggleActiveApp>
     {:else}
       <div class="status">
-        <Badge theme={active ? 'success' : 'warning'}
-          >{#if active}
+        <Badge theme={appWithEdits.active ? 'success' : 'warning'}
+          >{#if appWithEdits.active}
             Active
           {:else}
             En attente de validation
@@ -157,21 +143,23 @@
       </div>
     {/if}
     <ButtonSecondary
-      disabled={allowedRedirectUris.length === 0}
+      disabled={appWithEdits.allowedRedirectUris.length === 0}
       newTab
       href="/authorize?{new URLSearchParams({
-        client_id: clientId,
+        client_id: appWithEdits.clientId,
         response_type: 'code',
-        redirect_uri: allowedRedirectUris[0],
+        redirect_uri: appWithEdits.allowedRedirectUris[0],
       })}">Tester</ButtonSecondary
     >
     <div class="users">
       <IconUsers></IconUsers>
       {data.thirdPartyApp.usersCount} utilisateur·ice·s
     </div>
-    <div class="date"><IconCalendar></IconCalendar> Créée le {formatDateTime(createdAt)}</div>
+    <div class="date">
+      <IconCalendar></IconCalendar> Créée le {formatDateTime(appWithEdits.createdAt)}
+    </div>
   </section>
-  {#if !active}
+  {#if !appWithEdits.active}
     <section class="inactive">
       <IconWarning></IconWarning>
       <p class="explain">
@@ -184,8 +172,8 @@
     <dl>
       <dt><code> client_id </code></dt>
       <dd>
-        <code>{clientId}</code>
-        <ButtonCopyToClipboard text={clientId}></ButtonCopyToClipboard>
+        <code>{appWithEdits.clientId}</code>
+        <ButtonCopyToClipboard text={appWithEdits.clientId}></ButtonCopyToClipboard>
       </dd>
       <dt><code>client_secret</code></dt>
       <dd>
@@ -198,7 +186,7 @@
           >
         {:else}
           <code>
-            {redact(secretLength)}
+            {redact(appWithEdits.secretLength)}
           </code>
           <ButtonSecondary icon={IconReset} danger on:click={rotateSecret}
             >Regénérer</ButtonSecondary
@@ -266,7 +254,7 @@
         }
       }}
       {loading}
-      bind:app
+      bind:app={appWithEdits}
     >
       Si les URIs de redirection sont modifiées, un·e administrateur·rice devra valider les
       changements, et l'application sera désactivée jusqu'à validation.

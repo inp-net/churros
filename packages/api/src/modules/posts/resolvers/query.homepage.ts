@@ -1,7 +1,6 @@
 // TODO rename to articles
 import { builder, prisma, subscriptionName } from '#lib';
-
-import { prismaQueryAccessibleArticles } from '#permissions';
+import { prismaQueryAccessibleArticles, prismaQueryVisibleEvents } from '#permissions';
 import { Visibility } from '@prisma/client';
 import { ArticleType } from '../index.js';
 
@@ -18,14 +17,33 @@ builder.queryField('homepage', (t) =>
       if (!user) {
         return prisma.article.findMany({
           ...query,
-          where: { publishedAt: { lte: new Date() }, visibility: Visibility.Public },
+          where: {
+            publishedAt: { lte: new Date() },
+            visibility: Visibility.Public,
+            OR: [
+              { eventId: null },
+              { AND: [{ eventId: { not: null } }, { event: { visibility: Visibility.Public } }] },
+            ],
+          },
           orderBy: { publishedAt: 'desc' },
         });
       }
 
       return prisma.article.findMany({
         ...query,
-        where: prismaQueryAccessibleArticles(user, 'wants'),
+        where: {
+          AND: [
+            prismaQueryAccessibleArticles(user, 'wants'),
+            {
+              OR: [
+                { eventId: null },
+                {
+                  AND: [{ eventId: { not: null } }, { event: prismaQueryVisibleEvents(user) }],
+                },
+              ],
+            },
+          ],
+        },
         orderBy: { publishedAt: 'desc' },
       });
     },

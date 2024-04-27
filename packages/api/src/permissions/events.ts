@@ -174,6 +174,7 @@ export async function userCanAccessEvent(
         .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
         .then((groups) => groups.flat());
 
+      if (user.groups.some(({ group }) => event.groupId === group.id)) return true;
       return Boolean(
         ancestors.some(({ id }) =>
           [event.groupId, ...event.coOrganizers.map((g) => g.id)].includes(id),
