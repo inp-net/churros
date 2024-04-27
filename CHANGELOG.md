@@ -11,6 +11,9 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+- Correction d'un bug qui faisait que les posts d'un utilisateurs étaient visible sur son profil peu importe la visibilité (#730) (!139) (@bardete)
+- Correction de plusieurs bugs qui faisait qu'un post lié à un évènement était visible selon les règles de visibilités de l'article, même si l'on ne pouvait pas voir l'évènement (#850) (!139) (@bardete)
+
 ## [1.56.6] - 2024-04-03
 
 ### Corrections
