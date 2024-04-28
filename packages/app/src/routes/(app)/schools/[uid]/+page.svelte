@@ -3,6 +3,9 @@
   import CardService from '$lib/components/CardService.svelte';
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
+  import { me } from '$lib/session';
+  import IconEdit from '~icons/mdi/edit-outline';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
 
   export let data: PageData;
 
@@ -35,6 +38,9 @@
       <h1>
         {school.name}
       </h1>
+      {#if $me?.admin}
+        <ButtonGhost href="./edit/" icon={IconEdit} />
+      {/if}
       <h2>
         {school.address}
       </h2>
