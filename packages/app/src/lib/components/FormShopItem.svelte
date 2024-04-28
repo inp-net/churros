@@ -128,17 +128,17 @@
       ],
     });
 
-    await $zeus.mutate({
-      upsertShopOptions: [
-        {
-          shopItemId: data.id,
-          itemOptions: data.itemOptions,
-          // Add missing property 'itemOptions' to the type definition
-          // e.g. itemOptions: string[] | Variable<any, string>;
-        },
-        true,
-      ],
-    });
+    if (upsertShopItem.__typename === 'MutationUpsertShopItemSuccess') {
+      await $zeus.mutate({
+        upsertShopOptions: [
+          {
+            shopItemId: data.id || upsertShopItem.data.id,
+            itemOptions: data.itemOptions,
+          },
+          true,
+        ],
+      });
+    }
 
     if (upsertShopItem.__typename === 'Error') {
       serverError = upsertShopItem.message;
