@@ -35,12 +35,14 @@
     </div>
 
     <div class="identity">
-      <h1>
-        {school.name}
-      </h1>
-      {#if $me?.admin}
-        <ButtonGhost href="./edit/" icon={IconEdit} />
-      {/if}
+      <div class="school-header">
+        <h1>
+          {school.name}
+        </h1>
+        {#if $me?.admin}
+          <ButtonGhost href="./edit/"><IconEdit /></ButtonGhost>
+        {/if}
+      </div>
       <h2>
         {school.address}
       </h2>
@@ -89,6 +91,12 @@
     gap: 2rem;
     padding: 0 1rem;
     margin: 0 auto;
+  }
+
+  .school-header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
   }
 
   header {
