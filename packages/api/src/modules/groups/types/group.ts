@@ -92,5 +92,6 @@ export const GroupType = builder.prismaNode('Group', {
     root: t.relation('familyRoot', { nullable: true }),
     familyChildren: t.relation('familyChildren'),
     related: t.relation('related'),
+    shopItems: t.relation('shopItems'),
   }),
 });

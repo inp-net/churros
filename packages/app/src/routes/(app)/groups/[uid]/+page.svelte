@@ -43,7 +43,9 @@
   import IconAdd from '~icons/mdi/plus';
   import IconTwitter from '~icons/mdi/twitter';
   import IconAnilist from '~icons/simple-icons/anilist';
+  import IconStore from '~icons/mdi/store';
   import type { PageData } from './$types';
+  import ShopItem from '$lib/components/ShopItem.svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -96,6 +98,7 @@
   $: myPermissions = $me?.groups?.find(({ group: { uid } }) => uid === group.uid);
 
   $: ({ group } = data);
+  $: ShopItems = data.itemsOfGroup;
 
   $: canEditDetails = Boolean(
     $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups,
@@ -182,8 +185,9 @@
       <h1>
         {group.name}
         <ButtonShare />
+        <ButtonGhost help="Accéder à la boutique" href="./shop/"><IconStore /></ButtonGhost>
         {#if canEditDetails}
-          <ButtonGhost help="Modifier les infos" href="./edit"><IconGear /></ButtonGhost>
+          <ButtonGhost help="Modifier les infos" href="./edit/"><IconGear /></ButtonGhost>
         {/if}
 
         {#if group?.members?.find(({ member: { uid } }) => uid === $me?.uid)}
@@ -327,7 +331,17 @@
       {/if}
     </section>
   {/if}
-
+  <section class="shop">
+    <h2>
+      Boutique
+      <ButtonSecondary href="./shop/" icon={IconStore}>Voir</ButtonSecondary>
+    </h2>
+    <div class="shoppreview">
+      {#each ShopItems.slice(0, 6) as shopItem}
+        <ShopItem {shopItem} small={true} />
+      {/each}
+    </div>
+  </section>
   <section class="posts">
     <h2>
       Posts {#if canEditArticles}<ButtonSecondary href="/posts/{group.uid}/create/" icon={IconAdd}
@@ -474,6 +488,15 @@
     margin-top: 1rem;
   }
 
+  .shoppreview {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    flex-grow: 1;
+    gap: 1em;
+    flex-wrap: wrap;
+  }
+
   @media (min-width: 1000px) {
     section h2 {
       justify-content: start;
@@ -486,7 +509,7 @@
 
     .content {
       display: grid;
-      grid-template-areas: 'header header' 'description posts' 'board posts' 'subgroups events' 'related events';
+      grid-template-areas: 'header header' 'description shoppreview' 'board posts' 'subgroups events' 'related events';
       grid-template-columns: 50% 50%;
       column-gap: 5rem;
       justify-content: start;

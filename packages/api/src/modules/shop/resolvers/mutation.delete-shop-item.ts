@@ -1,0 +1,55 @@
+import { builder, prisma } from '#lib';
+import { userIsOnBoardOf } from '#permissions';
+import { GraphQLError } from 'graphql';
+import { unlink } from 'node:fs/promises';
+import path from 'node:path';
+
+builder.mutationField('deleteShopItem', (t) =>
+  t.field({
+    type: 'Boolean',
+    errors: {},
+    args: {
+      itemId: t.arg.id(),
+      groupUid: t.arg.string(),
+    },
+    authScopes: (_, { groupUid }, { user }) =>
+      Boolean(user?.admin || userIsOnBoardOf(user, groupUid)),
+    async resolve(_, { itemId }, { user }) {
+      const shopItem = await prisma.shopItem.findUniqueOrThrow({
+        where: { id: itemId },
+        include: {
+          shopPayments: true,
+          pictures: true,
+        },
+      });
+
+      if (!shopItem) throw new GraphQLError('Item not found');
+
+      if (shopItem.shopPayments && shopItem.shopPayments.length > 0)
+        throw new GraphQLError('You cannot delete an item where someone has placed an order on');
+
+      //Delete all pictures of the item if there are any (let's save some Giga-Octets)
+      const root = new URL(process.env.STORAGE).pathname;
+      for (const picture of shopItem.pictures) {
+        await unlink(path.join(root, picture.path));
+        await prisma.picture.delete({ where: { id: picture.id } });
+      }
+
+      await prisma.shopItem.delete({
+        where: { id: itemId },
+      });
+
+      await prisma.logEntry.create({
+        data: {
+          area: 'group',
+          action: 'delete',
+          target: itemId,
+          message: `Suppression de l'article ${shopItem.name} par ${user?.uid}`,
+          user: user ? { connect: { id: user.id } } : undefined,
+        },
+      });
+
+      return true;
+    },
+  }),
+);

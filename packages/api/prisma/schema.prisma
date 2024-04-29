@@ -80,6 +80,7 @@ model User {
   bannedFromEvents          Event[]                    @relation("bannedFromEvents")
   reactions                 Reaction[]
   allowedApps               ThirdPartyApp[]
+  shopPayments              ShopPayment[]
   formAnswers               Answer[]
   createdForms              Form[]
   completedForms            Form[]                     @relation("completedForms")
@@ -426,6 +427,7 @@ model Group {
   tickets                Ticket[]            @relation("openTo")
   barWeeks               BarWeek[]
   services               Service[]
+  shopItems         ShopItem[]
   restrictedFormSections FormSection[]       @relation("restrictedTo")
 
   notifications          Notification[]
@@ -626,7 +628,7 @@ model Registration {
 
   lydiaTransaction  LydiaTransaction?
   paypalTransaction PaypalTransaction?
-  ticket            Ticket             @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  ticket            Ticket            @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   author            User?              @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   verifiedBy        User?              @relation(name: "verifiedBy", fields: [verifiedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   verifiedAt        DateTime?
@@ -672,10 +674,11 @@ model LydiaAccount {
   name                 String               @default("") @db.VarChar(255)
   privateToken         String               @default("") @db.VarChar(255)
   vendorToken          String               @default("") @db.VarChar(255)
+  studentAssociationId String?
   events               Event[]
   studentAssociation   StudentAssociation?  @relation(fields: [studentAssociationId], references: [id])
-  studentAssociationId String?
   ContributionOption   ContributionOption[]
+  shopItems            ShopItem[]
 
   @@unique([privateToken, vendorToken, groupId])
 }
@@ -686,6 +689,8 @@ model LydiaTransaction {
   phoneNumber                      String        @default("") @db.VarChar(255)
   registrationId                   String?       @unique
   registration                     Registration? @relation(fields: [registrationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  shopPaymentId                    String?       @unique
+  shopPayment                      ShopPayment?  @relation(fields: [shopPaymentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   requestId                        String?
   requestUuid                      String?
   transactionId                    String?
@@ -934,6 +939,75 @@ model Promotion {
   validOn    Ticket[]
 
   priceOverride Int
+}
+
+model Picture {
+  id        String     @id @default(dbgenerated("nanoid('picfile:')"))
+  path      String     @db.VarChar(255)
+  position  Int        @default(0)
+  ShopItems ShopItem[]
+}
+
+model ShopItem {
+  id                    String          @id @default(dbgenerated("nanoid('shopitem:')"))
+  uid                   String
+  name                  String          @db.VarChar(255)
+  price                 Float           @default(0)
+  stock                 Int             @default(0)
+  max                   Int             @default(0)
+  visibility            Visibility      @default(Private)
+  archived              Boolean         @default(false)
+  description           String          @default("") @db.Text
+  startsAt              DateTime?
+  endsAt                DateTime?
+  lydiaAccountId        String?
+  groupId               String
+  group                 Group           @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  allowedPaymentMethods PaymentMethod[] @default([])
+  pictures              Picture[]
+  shopPayments          ShopPayment[]
+  lydiaAccount          LydiaAccount?   @relation(fields: [lydiaAccountId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  itemOptions           ShopItemOption[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([groupId, uid])
+}
+
+model ShopPayment {
+  id            String        @id @default(dbgenerated("nanoid('shoppayment:')"))
+  shopItemId    String
+  userId        String
+  paid          Boolean       @default(false)
+  quantity      Int           @default(1)
+  totalPrice    Float
+  paymentMethod PaymentMethod
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  shopItem         ShopItem          @relation(fields: [shopItemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  lydiaTransaction LydiaTransaction?
+  shopItemAnswer   ShopItemAnswer?    
+  }
+
+model ShopItemOption {
+  id            String @id @default(dbgenerated("nanoid('shopitemoption:')"))
+  name          String @db.VarChar(255)
+  shopItemId    String
+  options       String[] @default([])
+  shopItem      ShopItem @relation(fields: [shopItemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  required      Boolean @default(false)
+  otherToggle  Boolean @default(false)
+}
+
+model ShopItemAnswer {
+  id                String   @id @default(dbgenerated("nanoid('shopitemanswer:')"))
+  shopPaymentId     String
+  option            String[] @default([])
+  shopPayment       ShopPayment @relation(fields: [shopPaymentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@unique([shopPaymentId])
 }
 
 model Form {

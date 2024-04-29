@@ -1,6 +1,6 @@
 .kaniko:
   image:
-    name: gcr.io/kaniko-project/executor:v1.21.1-debug
+    name: gcr.io/kaniko-project/executor:debug
     entrypoint: ['']
   before_script:
     - echo $HARBOR_CONFIG_JSON

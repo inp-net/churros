@@ -75,7 +75,7 @@
 
   textarea:hover,
   textarea:focus-within {
-    color: var(--primary-hover-text);
+    color: var(--text);
     background: var(--hover-bg);
     border-color: var(--hover-border);
   }
