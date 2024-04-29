@@ -1,8 +1,9 @@
 import { builder, prisma } from '#lib';
+import { SchoolType } from '../index.js';
 
 builder.mutationField('updateSchool', (t) =>
   t.field({
-    type: 'School',
+    type: SchoolType,
     args: {
       uid: t.arg.string(),
       name: t.arg.string(),
