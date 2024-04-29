@@ -11,6 +11,11 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Les commandes d'une boutique sont des composants ce qui évite des conflits quand il y a plusieurs commandes (!141) (@bardete) (#907)
+- Correction d'un bug qui redirigeait en cas de paiement lydia sur la page d'un item avant que l'utilisateur n'ait pu payer (!141) (@bardete)
+
 ## [1.57.0] - 2024-04-28
 
 ### Nouveautés
