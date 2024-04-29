@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Les admins peuvent maintenant modifier les pages des écoles via une nouvelle route `/edit/` cela permet d'ajouter dans la db les emails etu de chaque écoles réglant ainsi les problèmes à l'inscription qu'on a depuis quelques semaines (!142) (@bardete) (#878)
+
 ## [1.57.0] - 2024-04-28
 
 ### Nouveautés
