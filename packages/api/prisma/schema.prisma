@@ -332,6 +332,9 @@ model StudentAssociation {
   name        String  @unique @db.VarChar(255)
   links       Link[]
   pictureFile String  @default("") @db.VarChar(255)
+  allPrezMailingList String @default("") @db.VarChar(255)
+  allTrezMailingList String @default("") @db.VarChar(255)
+  allBoardMailingList String @default("") @db.VarChar(255)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
