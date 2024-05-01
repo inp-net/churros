@@ -11,6 +11,11 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+
+### Sécurité
+
+- Les clubs ne sont plus autorisés à modifier leur type (@litschan)
+
 ### Corrections
 
 - Les commandes d'une boutique sont des composants ce qui évite des conflits quand il y a plusieurs commandes (!141) (@bardete) (#907)
