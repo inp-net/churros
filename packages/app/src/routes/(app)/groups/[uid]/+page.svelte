@@ -336,12 +336,16 @@
       <h2>Administration du club</h2>
       <div class="menu-button">
         <div class="charte">
-          <ButtonSecondary href="" icon={IconEye}>Charte des clubs</ButtonSecondary>
+          <ButtonSecondary href="/Charte_des_clubs_2022_2023.pdf" icon={IconEye}
+            >Charte des clubs</ButtonSecondary
+          >
           {#if $me?.canEditGroups}
             <ButtonSecondary herf="" icon={IconEdit}>Editer</ButtonSecondary>
           {/if}
         </div>
-        <ButtonSecondary href="" icon={IconDownload}>Fiche de passation</ButtonSecondary>
+        <div>
+          <ButtonSecondary href="" icon={IconDownload}>Fiche de passation</ButtonSecondary>
+        </div>
       </div>
     </section>
   {/if}
@@ -495,7 +499,7 @@
   .menu-button {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.6rem;
   }
 
   .charte {
