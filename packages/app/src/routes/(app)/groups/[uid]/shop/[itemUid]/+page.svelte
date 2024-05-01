@@ -82,6 +82,7 @@
     if (upsertShopPayment.__typename === 'MutationUpsertShopPaymentSuccess') {
       if (method === PaymentMethod.Lydia) {
         shopPaymentId = upsertShopPayment.data.id;
+        paying = true;
       } else {
         await goto(
           '?' +
@@ -93,7 +94,6 @@
         paying = false;
       }
     }
-    paying = false;
     if (upsertShopPayment.__typename === 'MutationUpsertShopPaymentSuccess' && !paying)
       await goto('../orders/');
   }
@@ -210,7 +210,6 @@
               if (paidShopPayment.__typename === 'Error') {
                 serverError = paidShopPayment.message;
                 paymentLoading = false;
-
                 return;
               } else {
                 await goto('../orders/');
