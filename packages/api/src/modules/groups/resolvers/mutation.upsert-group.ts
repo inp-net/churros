@@ -134,6 +134,20 @@ builder.mutationField('upsertGroup', (t) =>
 
       if (parentUid === oldGroup?.uid) throw new GraphQLError('Group cannot be its own parent');
 
+      if (oldGroup) {
+        const oldStudentAssociation = await prisma.studentAssociation.findUnique({
+          where: { id: oldGroup.studentAssociationId ?? '' },
+        });
+
+        if (
+          !(user.canEditGroups || user.admin) &&
+          (oldGroup?.type != type ||
+            (oldStudentAssociation && oldStudentAssociation.uid != studentAssociationUid))
+        )
+          // Non admin users aren't allowed to change attached ae and group type
+          throw new GraphQLError("Vous n'êtes pas autorisé à modifer ces paramètres.");
+      }
+
       const data = {
         type,
         selfJoinable,

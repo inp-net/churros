@@ -11,9 +11,21 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+
 ### Technique
 
 - Les admins peuvent maintenant modifier les pages des écoles via une nouvelle route `/edit/` cela permet d'ajouter dans la db les emails etu de chaque écoles réglant ainsi les problèmes à l'inscription qu'on a depuis quelques semaines (!142) (@bardete) (#878)
+
+
+### Sécurité
+
+- Les clubs ne sont plus autorisés à modifier leur type (@litschan)
+
+### Corrections
+
+- Les commandes d'une boutique sont des composants ce qui évite des conflits quand il y a plusieurs commandes (!141) (@bardete) (#907)
+- Correction d'un bug qui redirigeait en cas de paiement lydia sur la page d'un item avant que l'utilisateur n'ait pu payer (!141) (@bardete)
+
 
 ## [1.57.0] - 2024-04-28
 
