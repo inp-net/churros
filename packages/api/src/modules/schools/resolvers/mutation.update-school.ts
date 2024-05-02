@@ -7,8 +7,8 @@ builder.mutationField('updateSchool', (t) =>
     args: {
       uid: t.arg.string(),
       name: t.arg.string(),
-      address: t.arg.string(),
-      description: t.arg.string(),
+      address: t.arg.string({ required: false }),
+      description: t.arg.string({ required: false }),
       internalMailDomain: t.arg.string(),
       aliasMailDomains: t.arg.stringList(),
     },
@@ -33,8 +33,8 @@ builder.mutationField('updateSchool', (t) =>
         where: { uid },
         data: {
           name,
-          address,
-          description,
+          address: address ?? undefined,
+          description: description ?? undefined,
           internalMailDomain,
           aliasMailDomains,
         },
