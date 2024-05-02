@@ -3,12 +3,12 @@ import pdfMakePrinter from 'pdfmake';
 import type { TFontDictionary } from 'pdfmake/interfaces';
 import { api } from './express.js';
 
-console.info('Serving PDF generation of handover /print-handover/:group.uid'); //A changer ??
-api.get('/print-handover/:group.uid', async (req, res) => {
+console.info('Serving PDF generation of handover /print-handover/:uid'); //A changer ??
+api.get('/print-handover/:uid', async (req, res) => {
   //recup l'id car on a que l'uid accessible (TODO : Faire un truc plus propre ?)
   const group = await prisma.group.findFirst({
     where: {
-      uid: req.params.group,
+      uid: req.params.uid,
     },
   });
   const id = group?.id;
@@ -29,7 +29,7 @@ api.get('/print-handover/:group.uid', async (req, res) => {
   });
 
   //plusieurs secrétaire possible dans un bureau
-  const secretary = await prisma.groupMember.findMany({
+  const secretaries = await prisma.groupMember.findMany({
     where: {
       groupId: id,
       secretary: true,
@@ -37,7 +37,7 @@ api.get('/print-handover/:group.uid', async (req, res) => {
   });
 
   //Plusieurs trez dans un brueau
-  const treasurer = await prisma.groupMember.findMany({
+  const treasurers = await prisma.groupMember.findMany({
     where: {
       groupId: id,
       treasurer: true,
@@ -45,13 +45,13 @@ api.get('/print-handover/:group.uid', async (req, res) => {
   });
 
   //Obligation d'avoir un Président et un Trésorier, si on les trouve pas erreur 404
-  if (!president || !treasurer) return res.status(404).send('Not found');
+  if (!president || !treasurers) return res.status(404).send('Not found');
 
   const contentPDF = {
     info: {
       //c'est fucked up c'est pour dire tg au precommit
       vicePresidents,
-      secretary,
+      secretaries,
       title: 'Fiche de passation - ' + group?.uid,
     },
     content: ['Coucou les amis'],
@@ -64,6 +64,8 @@ api.get('/print-handover/:group.uid', async (req, res) => {
   res.setHeader('Content-Disposition', `filename="${encodeURIComponent(filestem)}.pdf"`);
   pdf.pipe(res);
   pdf.end();
+
+  return pdf;
 });
 
 const fonts: TFontDictionary = {

@@ -340,11 +340,13 @@
             >Charte des clubs</ButtonSecondary
           >
           {#if $me?.canEditGroups}
-            <ButtonSecondary herf="" icon={IconEdit}>Editer</ButtonSecondary>
+            <ButtonSecondary icon={IconEdit}>Editer</ButtonSecondary>
           {/if}
         </div>
         <div>
-          <ButtonSecondary href="" icon={IconDownload}>Fiche de passation</ButtonSecondary>
+          <ButtonSecondary data-sveltekit-reload href="../{group.uid}.pdf" icon={IconDownload}
+            >Fiche de passation</ButtonSecondary
+          >
         </div>
       </div>
     </section>
