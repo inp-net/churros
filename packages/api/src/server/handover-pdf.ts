@@ -1,4 +1,6 @@
 import { prisma } from '#lib';
+import pdfMakePrinter from 'pdfmake';
+import type { TFontDictionary } from 'pdfmake/interfaces';
 import { api } from './express.js';
 
 console.info('Serving PDF generation of handover /print-handover/:group.uid'); //A changer ??
@@ -45,6 +47,36 @@ api.get('/print-handover/:group.uid', async (req, res) => {
   //Obligation d'avoir un Président et un Trésorier, si on les trouve pas erreur 404
   if (!president || !treasurer) return res.status(404).send('Not found');
 
-  //Pour pas que le script de precommit me clc ptdrrrr cette ligne n'a pas de sens
-  if (!vicePresidents && !secretary && !treasurer) return 0;
+  const contentPDF = {
+    info: {
+      //c'est fucked up c'est pour dire tg au precommit
+      vicePresidents,
+      secretary,
+      title: 'Fiche de passation - ' + group?.uid,
+    },
+    content: ['Coucou les amis'],
+  };
+  const printer = new pdfMakePrinter(fonts);
+  const pdf = printer.createPdfKitDocument(contentPDF);
+
+  const filestem = `Fiche passation - ${group?.uid}`;
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `filename="${encodeURIComponent(filestem)}.pdf"`);
+  pdf.pipe(res);
+  pdf.end();
 });
+
+const fonts: TFontDictionary = {
+  SpaceGrotesk: {
+    normal: 'static/fonts/SpaceGrotesk-Regular.woff',
+    bold: 'static/fonts/SpaceGrotesk-Bold.woff',
+    italics: 'static/fonts/SpaceGrotesk-Italic.woff',
+    bolditalics: 'static/fonts/SpaceGrotesk-BoldItalic.woff',
+  },
+  SpaceMono: {
+    normal: 'static/fonts/SpaceMono-Regular.woff',
+    bold: 'static/fonts/SpaceMono-Bold.woff',
+    italics: 'static/fonts/SpaceMono-Italic.woff',
+    bolditalics: 'static/fonts/SpaceMono-BoldItalic.woff',
+  },
+};
