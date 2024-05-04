@@ -75,7 +75,7 @@ export async function updatePicture({
   identifier,
   propertyName = 'pictureFile',
 }: {
-  resource: 'article' | 'event' | 'user' | 'group' | 'student-association' | 'photos';
+  resource: 'article' | 'event' | 'user' | 'group' | 'school' | 'student-association' | 'photos';
   folder: string;
   extension: 'png' | 'jpg';
   file: File;
@@ -137,6 +137,15 @@ export async function updatePicture({
       break;
     }
 
+    case 'school': {
+      const result = await prisma.school.findUniqueOrThrow({
+        where: { id: identifier },
+        select: { [propertyName]: true },
+      });
+      pictureFile = result[propertyName] as unknown as string;
+      break;
+    }
+
     default: {
       break;
     }
@@ -191,6 +200,14 @@ export async function updatePicture({
       await prisma.picture.update({
         where: { id: identifier },
         data: { path: relative(root, path) },
+      });
+      break;
+    }
+
+    case 'school': {
+      await prisma.school.update({
+        where: { id: identifier },
+        data: { [propertyName]: relative(root, path) },
       });
       break;
     }

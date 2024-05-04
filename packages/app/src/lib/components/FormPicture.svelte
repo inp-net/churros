@@ -14,13 +14,16 @@
     User: 'Photo de profil',
     Article: 'Photo du post',
     Event: 'Photo de l’événement',
+    School: 'Logo de l’école',
   };
 
   export let rectangular = false;
-  export let objectName: 'Group' | 'User' | 'Article' | 'Event';
+  export let objectName: 'Group' | 'User' | 'Article' | 'Event' | 'School';
   export let dark = false;
   export let object: { pictureFile: string; uid: string; id: string; pictureFileDark?: string };
   export let alt = '';
+
+  $: filepath = object.pictureFile;
   const pictureFilePropertyName: 'pictureFile' | 'pictureFileDark' =
     objectName === 'Group' && dark ? 'pictureFileDark' : 'pictureFile';
   $: ({ uid, id } = object);
@@ -49,7 +52,7 @@
       toasts.success(`${LEGENDS[objectName]} mis${objectName === 'Group' ? '' : 'e'} à jour`);
       // Add a timestamp to the URL to force the browser to reload the image
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      object[pictureFilePropertyName] = `${result[`update${objectName}Picture`]}?v=${Date.now()}`;
+      filepath = `${result[`update${objectName}Picture`]}?v=${Date.now()}`;
     } finally {
       // `updating` is set to false when the image loads
     }
@@ -79,15 +82,17 @@
 <form data-object={objectName.toLowerCase()} on:submit|preventDefault>
   <InputField label="{LEGENDS[objectName]}{dark ? ' (Thème sombre)' : ''}">
     <div class="wrapper">
-      <img
-        class:rectangular
-        style:object-fit={objectName === 'Group' ? 'contain' : 'cover'}
-        on:load={() => {
-          updating = false;
-        }}
-        src="{env.PUBLIC_STORAGE_URL}{object[pictureFilePropertyName]}"
-        alt={LEGENDS[objectName]}
-      />
+      {#key filepath}
+        <img
+          class:rectangular
+          style:object-fit={objectName === 'Group' ? 'contain' : 'cover'}
+          on:load={() => {
+            updating = false;
+          }}
+          src="{env.PUBLIC_STORAGE_URL}{filepath}"
+          alt={LEGENDS[objectName]}
+        />
+      {/key}
       <div class="actions">
         <FileInput
           bind:inputElement

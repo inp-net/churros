@@ -257,6 +257,7 @@ model School {
   aliasMailDomains   String[] @default([]) @db.VarChar(255)
   description        String   @default("") @db.Text
   address            String   @default("") @db.VarChar(255)
+  pictureFile       String    @default("") @db.VarChar(255)
 
   majors              Major[]              @relation("MajorToSchool")
   majorsLdapSchool    Major[]              @relation("ldapSchool")

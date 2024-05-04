@@ -31,7 +31,7 @@
 <div class="content">
   <header>
     <div class="picture">
-      <img src="/schools/{school.uid}.png" alt="{school.name} logo" />
+      <img src={school.pictureFile} alt="{school.name} logo" />
     </div>
 
     <div class="identity">

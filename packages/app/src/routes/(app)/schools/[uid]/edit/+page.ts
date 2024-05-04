@@ -13,12 +13,14 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
       school: [
         params,
         {
+          id: true,
           uid: true,
           name: true,
           description: true,
           address: true,
           internalMailDomain: true,
           aliasMailDomains: true,
+          pictureFile: true,
         },
       ],
     },
