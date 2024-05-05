@@ -15,11 +15,15 @@
   import InputGroups from './InputGroups.svelte';
   import InputStudentAssociations from './InputStudentAssociations.svelte';
   import { me } from '$lib/session';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import IconCancel from '~icons/mdi/cancel';
 
   export let data: PageData;
   export let creatingSubgroup = false;
 
   let serverError = '';
+
+  let confirmingDeletion = false;
 
   let {
     address,
@@ -96,6 +100,17 @@
       loading = false;
     }
   };
+
+  async function deleteGroup() {
+    const uid = data.group.uid;
+    try {
+      await $zeus.mutate({
+        deleteGroup: [{ uid }, true],
+      });
+    } catch (error: unknown) {
+      toasts.error(`Impossible de  supprimer ce groupe`, error?.toString());
+    }
+  }
 </script>
 
 {#await $zeus.query({ groups: [{}, clubQuery.parent] })}
@@ -148,6 +163,32 @@
     <section class="submit">
       <ButtonPrimary submits {loading}>Sauvegarder</ButtonPrimary>
     </section>
+
+    {#if $me?.canEditGroups || $me?.groups.some(({ group, president }) => president && group.uid === data.group.uid)}
+      <section class="delete">
+        {#if !confirmingDeletion}
+          <ButtonSecondary
+            danger
+            on:click={() => {
+              confirmingDeletion = true;
+            }}
+            ><IconCancel />
+            Supprimer le groupe</ButtonSecondary
+          >
+        {:else}
+          <Alert theme="danger">
+            <div class="confirm-cancellation">
+              <h2>Es-tu sûr·e ?</h2>
+              <p>
+                Il n'est pas possible de revenir en arrière. Le groupe sera supprimé définitivement
+                ainsi que toutes les données associées
+              </p>
+              <ButtonPrimary on:click={deleteGroup}>Oui, je confirme</ButtonPrimary>
+            </div>
+          </Alert>
+        {/if}
+      </section>
+    {/if}
   </form>
 {/await}
 
@@ -156,10 +197,19 @@
     display: flex;
     flex-flow: column wrap;
     gap: 2rem;
+    justify-self: center;
+    width: min-content;
+    min-width: 550px;
   }
 
   section.submit {
     display: flex;
+    justify-content: center;
+  }
+
+  section.delete {
+    display: flex;
+    flex-grow: 1;
     justify-content: center;
   }
 
