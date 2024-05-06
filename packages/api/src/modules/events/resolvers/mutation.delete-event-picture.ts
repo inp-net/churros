@@ -17,7 +17,8 @@ builder.mutationField('deleteEventPicture', (t) =>
       return Boolean(
         // Who can edit this event?
         // The author
-        user?.id === event.authorId ||
+        user?.admin ||
+          user?.id === event.authorId ||
           // Other authors of the group
           user?.groups.some(
             ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId,
