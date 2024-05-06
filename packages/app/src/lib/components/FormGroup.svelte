@@ -164,7 +164,7 @@
       <ButtonPrimary submits {loading}>Sauvegarder</ButtonPrimary>
     </section>
 
-    {#if $me?.canEditGroups || $me?.groups.some(({ group, president }) => president && group.uid === data.group.uid)}
+    {#if data.group.uid && ($me?.canEditGroups || $me?.groups.some(({ group, president }) => president && group.uid === data.group.uid))}
       <section class="delete">
         {#if !confirmingDeletion}
           <ButtonSecondary
@@ -181,7 +181,8 @@
               <h2>Es-tu sûr·e ?</h2>
               <p>
                 Il n'est pas possible de revenir en arrière. Le groupe sera supprimé définitivement
-                ainsi que toutes les données associées
+                ainsi que toutes les données associées (membres, bureau, évènements et posts
+                associés, ...)
               </p>
               <ButtonPrimary on:click={deleteGroup}>Oui, je confirme</ButtonPrimary>
             </div>
