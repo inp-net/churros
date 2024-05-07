@@ -21,6 +21,9 @@
   export let data: PageData;
   export let creatingSubgroup = false;
 
+  export let afterGoTo: (article: (typeof data)['group']) => string = (group) =>
+    `/groups/${group.uid}/`;
+
   let serverError = '';
 
   let confirmingDeletion = false;
@@ -102,14 +105,41 @@
   };
 
   async function deleteGroup() {
-    const uid = data.group.uid;
-    try {
-      await $zeus.mutate({
-        deleteGroup: [{ uid }, true],
-      });
-    } catch (error: unknown) {
-      toasts.error(`Impossible de  supprimer ce groupe`, error?.toString());
-    }
+    toasts.success(
+      `Groupe ${data.group.name.slice(0, 20)}${data.group.name.length >= 20 ? '…' : ''} supprimé`,
+      '',
+      {
+        lifetime: 5000,
+        showLifetime: true,
+        data: {
+          id: data.group.id,
+          confirm: true,
+          gotoOnCancel: `${afterGoTo(data.group)}/edit/`.replaceAll('//', '/'),
+        },
+        labels: {
+          action: 'Annuler',
+          close: 'OK',
+        },
+        async action({ data, id }) {
+          data.confirm = false;
+          await toasts.remove(id);
+          await goto(data.gotoOnCancel);
+        },
+        async closed({ data: { confirm } }) {
+          if (confirm) {
+            const uid = data.group.uid;
+            try {
+              await $zeus.mutate({
+                deleteGroup: [{ uid }, true],
+              });
+            } catch (error: unknown) {
+              toasts.error(`Impossible de  supprimer ce groupe`, error?.toString());
+            }
+          }
+        },
+      },
+    );
+    await goto('/');
   }
 </script>
 
@@ -185,6 +215,11 @@
                 associés, ...)
               </p>
               <ButtonPrimary on:click={deleteGroup}>Oui, je confirme</ButtonPrimary>
+              <ButtonSecondary
+                on:click={() => {
+                  confirmingDeletion = false;
+                }}>Annuler</ButtonSecondary
+              >
             </div>
           </Alert>
         {/if}
