@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, purgeUserSessions } from '#lib';
 
 /** Deletes a group. */
 builder.mutationField('deleteGroup', (t) =>
@@ -21,6 +21,7 @@ builder.mutationField('deleteGroup', (t) =>
           user: { connect: { id: user?.id } },
         },
       });
+      purgeUserSessions(user!.uid);
       return true;
     },
   }),
