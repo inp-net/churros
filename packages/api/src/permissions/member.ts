@@ -28,6 +28,7 @@ export function userIsTreasurerOf(user: Context['user'], groupUid: string): bool
     user?.groups.some(({ group: { uid }, treasurer }) => uid === groupUid && treasurer),
   );
 }
+
 export function userIsOnBoardOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
     user?.groups.some(
@@ -35,6 +36,7 @@ export function userIsOnBoardOf(user: Context['user'], groupUid: string): boolea
     ),
   );
 }
+
 export function userIsMemberOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(user?.groups.some(({ group: { uid } }) => uid === groupUid));
 }
@@ -43,4 +45,14 @@ export function userIsDeveloperOf(user: Context['user'], groupUid: string): bool
   return Boolean(
     user?.groups.some(({ group: { uid }, isDeveloper }) => groupUid === uid && isDeveloper),
   );
+}
+
+export function userIsAdminOf(
+  user: Context['user'],
+  studentAssociationId: string | null = null,
+): boolean {
+  if (user?.admin) return true;
+  if (!studentAssociationId) return false;
+
+  return Boolean(user?.adminOfStudentAssociations.some(({ id }) => id === studentAssociationId));
 }

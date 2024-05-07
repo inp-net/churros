@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import { userIsOnBoardOf } from '#permissions';
+import { userIsAdminOf, userIsOnBoardOf } from '#permissions';
 import { GraphQLError } from 'graphql';
 import slug from 'slug';
 import { BarWeekType } from '../index.js';
@@ -16,10 +16,20 @@ builder.mutationField('upsertBarWeek', (t) =>
       description: t.arg.string(),
       groupsUids: t.arg({ type: ['String'] }),
     },
-    authScopes(_, {}, { user }) {
+    async authScopes(_, { groupsUids }, { user }) {
       // Only members of a certain group(s) can upsert a bar week
       const foyGroupsUids = process.env['FOY_GROUPS']?.split(',') ?? [];
-      return Boolean(user?.admin || foyGroupsUids.some((uid) => userIsOnBoardOf(user, uid)));
+
+      // get studentAssociationId from group
+      const group = await prisma.group.findMany({
+        where: { uid: { in: groupsUids } },
+        select: { studentAssociationId: true },
+      });
+
+      return Boolean(
+        group.some(({ studentAssociationId }) => userIsAdminOf(user, studentAssociationId)) ||
+          foyGroupsUids.some((uid) => userIsOnBoardOf(user, uid)),
+      );
     },
     async resolve(query, _, { id, startsAt, endsAt, description, groupsUids }, { user }) {
       // Check if ends at date is after starts at date
