@@ -49,10 +49,16 @@ export function userIsDeveloperOf(user: Context['user'], groupUid: string): bool
 
 export function userIsAdminOf(
   user: Context['user'],
-  studentAssociationId: string | null = null,
+  studentAssociationId: string[] | string | null = null,
 ): boolean {
   if (user?.admin) return true;
   if (!studentAssociationId) return false;
 
-  return Boolean(user?.adminOfStudentAssociations.some(({ id }) => id === studentAssociationId));
+  return Boolean(
+    user?.adminOfStudentAssociations.some(({ id }) => {
+      return Array.isArray(studentAssociationId)
+        ? studentAssociationId.includes(id)
+        : studentAssociationId === id;
+    }),
+  );
 }

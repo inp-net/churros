@@ -21,13 +21,16 @@ builder.mutationField('upsertBarWeek', (t) =>
       const foyGroupsUids = process.env['FOY_GROUPS']?.split(',') ?? [];
 
       // get studentAssociationId from group
-      const group = await prisma.group.findMany({
+      const groups = await prisma.group.findMany({
         where: { uid: { in: groupsUids } },
         select: { studentAssociationId: true },
       });
+      const studentAssociationIds = groups.flatMap(
+        (group) => group.studentAssociationId,
+      ) as string[];
 
       return Boolean(
-        group.some(({ studentAssociationId }) => userIsAdminOf(user, studentAssociationId)) ||
+        userIsAdminOf(user, studentAssociationIds) ||
           foyGroupsUids.some((uid) => userIsOnBoardOf(user, uid)),
       );
     },

@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, flattenOjectIntoArray, prisma } from '#lib';
 import { userIsAdminOf, userIsOnBoardOf } from '#permissions';
 
 builder.mutationField('deleteBarWeek', (t) =>
@@ -12,11 +12,11 @@ builder.mutationField('deleteBarWeek', (t) =>
       // get studentAssociationId from barWeek
       const { groups } = (await prisma.barWeek.findFirst({
         where: { id },
-        include: { groups: { select: { studentAssociationId: true } } },
+        select: { groups: { select: { studentAssociationId: true } } },
       })) ?? { groups: [] };
 
       return Boolean(
-        groups.some(({ studentAssociationId }) => userIsAdminOf(user, studentAssociationId)) ||
+        userIsAdminOf(user, flattenOjectIntoArray(groups)) ||
           foyGroupsUids.some((uid) => userIsOnBoardOf(user, uid)),
       );
     },
