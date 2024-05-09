@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import type { LydiaTransaction } from '@prisma/client';
+import type { LydiaAccount, LydiaTransaction, ShopItem, ShopPayment } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import {
   LydiaTransactionState,
@@ -103,5 +103,70 @@ export async function cancelLydiaTransaction(transaction: LydiaTransaction, vend
       request_id: transaction.requestId,
       vendor_token: vendorToken,
     }),
+  });
+}
+
+export async function payShopPaymentViaLydia(
+  phone: string,
+  shopPayment: ShopPayment & {
+    shopItem: ShopItem & { lydiaAccount: LydiaAccount | null };
+    lydiaTransaction: LydiaTransaction | null;
+  },
+): Promise<void> {
+  if (!shopPayment.shopItem.lydiaAccount) throw new Error('Lydia account not found');
+  // Check if transaction was already paid for, in that case mark registration as paid
+  if (shopPayment.lydiaTransaction?.requestId && shopPayment.lydiaTransaction.requestUuid) {
+    const state = await checkLydiaTransaction(shopPayment.lydiaTransaction);
+    if (state === LydiaTransactionState.Paid) {
+      await prisma.logEntry.create({
+        data: {
+          action: 'fallback mark as paid',
+          area: 'lydia',
+          message: 'Transaction was already paid for, marking registration as paid',
+          target: shopPayment.id,
+        },
+      });
+      await prisma.shopPayment.update({
+        where: { id: shopPayment.id },
+        data: {
+          paid: true,
+        },
+      });
+      return;
+    }
+  }
+
+  let transaction = shopPayment.lydiaTransaction;
+  // Check if a lydia transaction already exists
+  if (!transaction) {
+    // Create a lydia transaction
+    transaction = await prisma.lydiaTransaction.create({
+      data: {
+        shopPayment: { connect: { id: shopPayment.id } },
+        phoneNumber: phone,
+      },
+    });
+  }
+
+  // Cancel the previous transaction
+  if (transaction.requestId && transaction.requestUuid) {
+    // Cancel the previous transaction
+    await cancelLydiaTransaction(transaction, shopPayment.shopItem.lydiaAccount.vendorToken);
+  }
+
+  const requestDetails = await sendLydiaPaymentRequest(
+    shopPayment.shopItem.name,
+    shopPayment.shopItem.price * shopPayment.quantity,
+    phone,
+    shopPayment.shopItem.lydiaAccount.vendorToken,
+  );
+
+  // Update the lydia transaction
+  await prisma.lydiaTransaction.update({
+    where: { id: transaction.id },
+    data: {
+      phoneNumber: phone,
+      ...requestDetails,
+    },
   });
 }

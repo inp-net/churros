@@ -12,11 +12,11 @@
     description: '',
     website: '',
     allowedRedirectUris: '',
-    ownerGroup: undefined as Group | undefined,
+    owner: undefined as Group | undefined,
   };
 
   async function createApp() {
-    if (!app.ownerGroup) {
+    if (!app.owner) {
       await toasts.error(
         "Impossible de créer l'application",
         "Tu dois choisir un groupe responsable de l'application",
@@ -31,7 +31,7 @@
             allowedRedirectUris: app.allowedRedirectUris.split(' '),
             name: app.name,
             description: app.description,
-            ownerGroupUid: app.ownerGroup.uid,
+            ownerGroupUid: app.owner.uid,
           },
           {
             client_id: true,

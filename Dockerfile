@@ -50,6 +50,9 @@ COPY --from=builder /app/packages/api/package.json /app/packages/api/
 # Install dependencies
 RUN yarn workspaces focus @centraverse/api --production
 
+# Copy prisma client script
+COPY packages/api/prisma-client.sh /app/prisma-client.sh
+
 # Copy entrypoint
 COPY packages/api/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
