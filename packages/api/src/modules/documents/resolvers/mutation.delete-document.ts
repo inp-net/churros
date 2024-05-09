@@ -1,7 +1,8 @@
-import { builder, log, prisma } from '#lib';
+import { builder, flattenOjectIntoArray, log, prisma } from '#lib';
 
 import { rm, rmdir } from 'node:fs/promises';
 import path, { dirname } from 'node:path';
+import { userIsAdminOf } from '../../../permissions/index.js';
 
 builder.mutationField('deleteDocument', (t) =>
   t.field({
@@ -10,11 +11,23 @@ builder.mutationField('deleteDocument', (t) =>
       id: t.arg.id(),
     },
     async authScopes(_, { id }, { user }) {
-      const author = await prisma.document.findUnique({
+      const document = await prisma.document.findUnique({
         where: { id },
-        select: { uploaderId: true },
+        select: {
+          uploaderId: true,
+          subject: {
+            select: {
+              majors: {
+                select: { schools: { select: { studentAssociations: { select: { id: true } } } } },
+              },
+            },
+          },
+        },
       });
-      return Boolean(user?.admin || user?.id === author?.uploaderId);
+      return Boolean(
+        userIsAdminOf(user, flattenOjectIntoArray(document?.subject)) ||
+          user?.id === document?.uploaderId,
+      );
     },
     async resolve(_, { id }, { user }) {
       const document = await prisma.document.findUniqueOrThrow({ where: { id } });
