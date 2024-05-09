@@ -1,8 +1,8 @@
 import { builder, flattenOjectIntoArray, prisma } from '#lib';
 
+import { userIsAdminOf } from '#permissions';
 import { unlinkSync } from 'node:fs';
 import { join } from 'node:path';
-import { userIsAdminOf } from '../../../permissions/index.js';
 
 builder.mutationField('deleteDocumentFile', (t) =>
   t.field({

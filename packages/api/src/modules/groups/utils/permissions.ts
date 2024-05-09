@@ -1,6 +1,6 @@
 import type { Context } from '#lib';
+import { onBoard } from '#permissions';
 import { GroupType, Prisma, type Group, type StudentAssociation } from '@prisma/client';
-import { onBoard } from '../../../permissions/member.js';
 
 export const requiredPrismaIncludesForPermissions = {
   studentAssociation: true,
@@ -92,7 +92,7 @@ export function canEditGroup(
       // Or we removed it
       !newGroup.parentUid ||
       // Or we changed it, but the user can edit the new parent group
-      (newParentGroup && canEditGroup(user, newParentGroup, undefined)))
+      (newParentGroup && canEditGroup(user, newParentGroup)))
   )
     return true;
 

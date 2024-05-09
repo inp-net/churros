@@ -1,5 +1,5 @@
 import { builder, flattenOjectIntoArray, log, prisma, publish } from '#lib';
-import { userIsAdminOf } from '../../../permissions/index.js';
+import { userIsAdminOf } from '#permissions';
 
 builder.mutationField('deleteComment', (t) =>
   t.field({

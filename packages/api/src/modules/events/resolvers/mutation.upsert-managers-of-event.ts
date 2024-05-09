@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { EventManagerType, ManagerOfEventInput, canEditManagers } from '../index.js';
+import { canEditManagers, EventManagerType, ManagerOfEventInput } from '../index.js';
 // TODO remove
 
 builder.mutationField('upsertManagersOfEvent', (t) =>
@@ -13,8 +13,9 @@ builder.mutationField('upsertManagersOfEvent', (t) =>
     async authScopes(_, { eventId }, { user }) {
       const event = await prisma.event.findUniqueOrThrow({
         where: { id: eventId },
-        include: { managers: true },
+        include: { managers: true, group: true },
       });
+
       return canEditManagers(event, user);
     },
     async resolve(query, _, { eventId, managers }) {

@@ -1,9 +1,9 @@
 import { builder, flattenOjectIntoArray, prisma } from '#lib';
 
+import { userIsAdminOf } from '#permissions';
 import dichotomid from 'dichotomid';
 import { GraphQLError } from 'graphql';
 import slug from 'slug';
-import { userIsAdminOf } from '../../../permissions/index.js';
 import { DocumentType, DocumentTypeEnum } from '../index.js';
 
 builder.mutationField('upsertDocument', (t) =>

@@ -21,7 +21,7 @@ builder.queryField('registrationsOfEvent', (t) =>
     async authScopes(_, { eventUid, groupUid }, { user }) {
       const event = await prisma.event.findFirst({
         where: { uid: eventUid, group: { uid: groupUid } },
-        include: { managers: true },
+        include: { managers: true, group: true },
       });
       if (!event) return false;
       return canSeeBookings(event, user);

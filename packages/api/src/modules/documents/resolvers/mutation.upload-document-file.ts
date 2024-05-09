@@ -1,8 +1,8 @@
 import { builder, flattenOjectIntoArray, prisma } from '#lib';
 import { FileScalar } from '#modules/global';
+import { userIsAdminOf } from '#permissions';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, relative } from 'node:path';
-import { userIsAdminOf } from '../../../permissions/index.js';
 import { documentFilePath } from '../index.js';
 
 builder.mutationField('uploadDocumentFile', (t) =>

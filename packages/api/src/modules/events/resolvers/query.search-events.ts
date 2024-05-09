@@ -1,6 +1,6 @@
 import { builder, fullTextSearch, prisma } from '#lib';
 import {} from '#modules/global';
-import { prismaQueryVisibleEvents } from '../../../permissions/events.js';
+import { prismaQueryVisibleEvents } from '#permissions';
 import { EventSearchResultType } from '../index.js';
 
 builder.queryField('searchEvents', (t) =>

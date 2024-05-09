@@ -1,5 +1,5 @@
 import { builder, flattenOjectIntoArray, prisma } from '#lib';
-import { userIsAdminOf } from '../../../permissions/index.js';
+import { userIsAdminOf } from '#permissions';
 
 // TODO find a better name, idk what
 

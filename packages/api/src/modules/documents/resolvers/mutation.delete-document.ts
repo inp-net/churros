@@ -1,8 +1,8 @@
 import { builder, flattenOjectIntoArray, log, prisma } from '#lib';
 
+import { userIsAdminOf } from '#permissions';
 import { rm, rmdir } from 'node:fs/promises';
 import path, { dirname } from 'node:path';
-import { userIsAdminOf } from '../../../permissions/index.js';
 
 builder.mutationField('deleteDocument', (t) =>
   t.field({
