@@ -4,16 +4,12 @@ const apiUrl = process.env.MAILMAN_API_URL as unknown as string;
 const apiToken = process.env.MAILMAN_API_TOKEN as unknown as string;
 
 export async function removeMemberFromGroupMailingList(groupId: string, email: string) {
-  const group = await prisma.group.findUniqueOrThrow({
+  const { mailingList } = await prisma.group.findUniqueOrThrow({
     where: { id: groupId },
-    select: {
-      uid: true,
-      studentAssociation: { select: { school: { select: { internalMailDomain: true } } } },
-    },
+    select: { mailingList: true },
   });
 
-  const mailing = `${group.uid.replace(/-n7\b/, '')}@list.${group.studentAssociation?.school.internalMailDomain}`;
-  await removeMemberFromMailingList(mailing, email);
+  await removeMemberFromMailingList(mailingList, email);
 }
 
 async function removeMemberFromMailingList(mailing: string, email: string) {
@@ -25,9 +21,9 @@ async function removeMemberFromMailingList(mailing: string, email: string) {
 }
 
 export async function updateMemberBoardLists(memberID: string, groupId: string) {
-  const { studentAssociation } = await prisma.group.findUniqueOrThrow({
+  const { studentAssociation, studentAssociationId } = await prisma.group.findUniqueOrThrow({
     where: { id: groupId },
-    include: {
+    select: {
       studentAssociation: {
         select: {
           allPrezMailingList: true,
@@ -35,6 +31,7 @@ export async function updateMemberBoardLists(memberID: string, groupId: string) 
           allBoardMailingList: true,
         },
       },
+      studentAssociationId: true,
     },
   });
 
@@ -59,7 +56,10 @@ export async function updateMemberBoardLists(memberID: string, groupId: string) 
             { treasurer: true },
             { secretary: true },
           ],
-          group: { OR: [{ type: 'Association' }, { type: 'Club' }] },
+          group: {
+            OR: [{ type: 'Association' }, { type: 'Club' }],
+            studentAssociationId: studentAssociationId,
+          },
         },
       },
     },
@@ -68,7 +68,13 @@ export async function updateMemberBoardLists(memberID: string, groupId: string) 
     where: {
       id: memberID,
       groups: {
-        some: { president: true, group: { OR: [{ type: 'Association' }, { type: 'Club' }] } },
+        some: {
+          president: true,
+          group: {
+            OR: [{ type: 'Association' }, { type: 'Club' }],
+            studentAssociationId: studentAssociationId,
+          },
+        },
       },
     },
   });
@@ -76,7 +82,13 @@ export async function updateMemberBoardLists(memberID: string, groupId: string) 
     where: {
       id: memberID,
       groups: {
-        some: { treasurer: true, group: { OR: [{ type: 'Association' }, { type: 'Club' }] } },
+        some: {
+          treasurer: true,
+          group: {
+            OR: [{ type: 'Association' }, { type: 'Club' }],
+            studentAssociationId: studentAssociationId,
+          },
+        },
       },
     },
   });
@@ -84,24 +96,19 @@ export async function updateMemberBoardLists(memberID: string, groupId: string) 
   if (nbBoard === 0) removeMemberFromMailingList(allBoardMailingList, email);
   else if (nbBoard >= 1) addMemberToMailingList(allBoardMailingList, email);
 
-  if (nbPrez === 0) removeMemberFromMailingList(allTrezMailingList, email);
-  else if (nbPrez >= 1) addMemberToMailingList(allTrezMailingList, email);
+  if (nbPrez === 0) removeMemberFromMailingList(allPrezMailingList, email);
+  else if (nbPrez >= 1) addMemberToMailingList(allPrezMailingList, email);
 
-  if (nbTrez === 0) removeMemberFromMailingList(allPrezMailingList, email);
-  else if (nbTrez >= 1) addMemberToMailingList(allPrezMailingList, email);
+  if (nbTrez === 0) removeMemberFromMailingList(allTrezMailingList, email);
+  else if (nbTrez >= 1) addMemberToMailingList(allTrezMailingList, email);
 }
 
 export async function addMemberToGroupMailingList(groupId: string, email: string) {
-  const group = await prisma.group.findUniqueOrThrow({
+  const { mailingList } = await prisma.group.findUniqueOrThrow({
     where: { uid: groupId },
-    select: {
-      uid: true,
-      studentAssociation: { select: { school: { select: { internalMailDomain: true } } } },
-    },
+    select: { mailingList: true },
   });
-
-  const mailingId = `${group.uid.replace(/-n7\b/, '')}.list.${group.studentAssociation?.school.internalMailDomain}`;
-  await addMemberToMailingList(mailingId, email);
+  await addMemberToMailingList(mailingList, email);
 }
 
 async function addMemberToMailingList(mailingId: string, email: string) {

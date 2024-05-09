@@ -403,6 +403,7 @@ model Group {
   address         String @default("") @db.VarChar(255)
   description     String @default("") @db.VarChar(255)
   email           String @default("") @db.VarChar(255)
+  mailingList     String @default("") @db.VarChar(255)
   longDescription String @default("")
   website         String @default("") @db.VarChar(255)
   ldapUid         String @default("") @db.VarChar(255)

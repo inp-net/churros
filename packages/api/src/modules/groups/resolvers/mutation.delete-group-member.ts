@@ -28,7 +28,7 @@ builder.mutationField('deleteGroupMember', (t) =>
 
       if (type === 'Club' || type === 'Association' || type === 'StudentAssociationSection') {
         await removeMemberFromGroupMailingList(groupId, email);
-        await updateMemberBoardLists(memberId);
+        await updateMemberBoardLists(memberId, groupId);
       }
 
       purgeUserSessions(uid);
