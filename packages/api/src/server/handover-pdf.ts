@@ -10,15 +10,20 @@ function boardMemberBuildInfo(
     lastName: string;
     birthday: string;
     phone: string;
+    email: string;
   }[],
+  rightPos: number,
 ) {
-  const body = [];
-
-  for (const boardMember of boardMembers) {
+  const body: string[][] = [];
+  for (let i = rightPos; i < boardMembers.length; i = i + 2) {
     body.push(
-      { text: boardMember?.title, style: 'header' },
-      { text: ['Nom', boardMember?.firstName] },
-      { text: ['Prénom    ', boardMember?.lastName], margin: [0, 0, 0, 20] },
+      [boardMembers[i]!.title, ''],
+      ['Nom', boardMembers[i]!.firstName],
+      ['Prénom    ', boardMembers[i]!.lastName],
+      ['Date de naissance', boardMembers[i]!.birthday],
+      ['Téléphone', boardMembers[i]!.phone],
+      ['Email', boardMembers[i]!.email],
+      ['', ''],
     );
   }
   return body;
@@ -104,38 +109,58 @@ api.get('/print-handover/:uid', async (req, res) => {
         text: [`${boardMembers.length}\n`],
       },
       {
+        columnGap: 10,
         columns: [
           {
-            columns: [
+            layout: 'noBorders', // optional
+            table: {
+              headerRows: 1,
+              heights: 8,
+              width: [50, 50],
+              body: boardMemberBuildInfo(boardMembers, 0),
+            },
+          },
+          {
+            layout: 'noBorders', // optional
+            table: {
+              headerRows: 1,
+              heights: 8,
+              width: [70, 70],
+              body: boardMemberBuildInfo(boardMembers, 1),
+            },
+          },
+        ],
+        fontSize: 10,
+      },
+      {
+        text: [
+          'Le nouveau bureau (président et trésorier), signataire, est officiellement responsable du club et du compte bancaire associé.',
+        ],
+        margin: [0, 20, 0, 40],
+      },
+      {
+        layout: 'noBorders',
+        table: {
+          body: [
+            [
+              { text: ['Le président de l’AEn7, \n Simon Gournet'], alignment: 'center' },
+              { text: ['Le trésorier de l’AEn7, \n Eliott Rousset'], alignment: 'center' },
               {
-                text: ['Nom\n', 'Prénom\n', 'Date de naissance\n', 'Téléphone\n', 'Mail\n'],
+                text: [
+                  `Le président du club Photo7, \n ${boardMembers[0]?.firstName} ${boardMembers[0]?.lastName}`,
+                ],
+                alignment: 'center',
               },
               {
                 text: [
-                  //`${president?.lastName}\n`,
-                  //`${president?.firstName}\n`,
-                  //`${president?.birthday}\n`,
-                  //`${president?.phone}\n`,
+                  `Le trésorier du club Photo7, \n ${boardMembers[1]?.firstName} ${boardMembers[1]?.lastName}`,
                 ],
+                alignment: 'center',
               },
             ],
-            fontSize: 11,
-          },
-          {
-            text: [
-              //`Nom : ${treasurers[0]?.lastName}`
-            ],
-          },
-        ],
-      },
-      {
-        layout: 'noBorders', // optional
-        table: {
-          // headers are automatically repeated if the table spans over multiple pages
-          // you can declare how many rows should be treated as headers
-          headerRows: 1,
-          body: [boardMemberBuildInfo(boardMembers)],
+          ],
         },
+        fontSize: 10,
       },
     ],
     defaultStyle: {
@@ -143,7 +168,7 @@ api.get('/print-handover/:uid', async (req, res) => {
     },
   };
 
-  const printer = new pdfMakePrinter(fonts);
+  const printer = new pdfMakePrinter(fontes);
   const pdf = printer.createPdfKitDocument(contentPDF);
 
   const filestem = `Fiche passation - ${group?.uid}`;
@@ -155,7 +180,7 @@ api.get('/print-handover/:uid', async (req, res) => {
   return pdf;
 });
 
-const fonts: TFontDictionary = {
+const fontes: TFontDictionary = {
   SpaceMono: {
     normal: 'static/fonts/SpaceMono-Regular.woff',
     bold: 'static/fonts/SpaceMono-Bold.woff',
