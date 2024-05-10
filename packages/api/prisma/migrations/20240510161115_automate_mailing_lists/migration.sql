@@ -78,6 +78,9 @@ ALTER TABLE "PasswordReset" ALTER COLUMN "id" SET DEFAULT nanoid('passreset:');
 ALTER TABLE "PaypalTransaction" ALTER COLUMN "id" SET DEFAULT nanoid('paypalpayment:');
 
 -- AlterTable
+ALTER TABLE "Picture" ALTER COLUMN "id" SET DEFAULT nanoid('picfile:');
+
+-- AlterTable
 ALTER TABLE "Promotion" ALTER COLUMN "id" SET DEFAULT nanoid('promo:');
 
 -- AlterTable
@@ -100,7 +103,22 @@ ALTER COLUMN "aliasMailDomains" SET DEFAULT ARRAY[]::VARCHAR(255)[];
 ALTER TABLE "Service" ALTER COLUMN "id" SET DEFAULT nanoid('service:');
 
 -- AlterTable
-ALTER TABLE "StudentAssociation" ALTER COLUMN "id" SET DEFAULT nanoid('ae:');
+ALTER TABLE "ShopItem" ALTER COLUMN "id" SET DEFAULT nanoid('shopitem:');
+
+-- AlterTable
+ALTER TABLE "ShopItemAnswer" ALTER COLUMN "id" SET DEFAULT nanoid('shopitemanswer:');
+
+-- AlterTable
+ALTER TABLE "ShopItemOption" ALTER COLUMN "id" SET DEFAULT nanoid('shopitemoption:');
+
+-- AlterTable
+ALTER TABLE "ShopPayment" ALTER COLUMN "id" SET DEFAULT nanoid('shoppayment:');
+
+-- AlterTable
+ALTER TABLE "StudentAssociation" ADD COLUMN     "allBoardMailingList" VARCHAR(255) NOT NULL DEFAULT '',
+ADD COLUMN     "allPrezMailingList" VARCHAR(255) NOT NULL DEFAULT '',
+ADD COLUMN     "allTrezMailingList" VARCHAR(255) NOT NULL DEFAULT '',
+ALTER COLUMN "id" SET DEFAULT nanoid('ae:');
 
 -- AlterTable
 ALTER TABLE "Subject" ALTER COLUMN "id" SET DEFAULT nanoid('subj:');
