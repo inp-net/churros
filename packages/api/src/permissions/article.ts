@@ -1,4 +1,9 @@
 import { Visibility, type Prisma } from '@prisma/client';
+import type { Context } from '../lib/index.js';
+import {
+  prismaGroupFilterForStudentAssociationAdmins,
+  prismaGroupFilterForStudentAssociationGroupsEditors,
+} from '../modules/users/index.js';
 
 /**
  * Articles that the given user can see
@@ -13,11 +18,24 @@ import { Visibility, type Prisma } from '@prisma/client';
  * @returns a Prisma.ArticleWhereInput, an object to pass inside of a `where` field in a prisma query
  */
 export function prismaQueryAccessibleArticles(
-  user: { uid: string; canEditGroups: boolean } | undefined,
+  user: Context['user'],
   level: 'can' | 'wants',
 ): Prisma.ArticleWhereInput {
   // Get the user's groups and their ancestors
-  if (user?.canEditGroups && level === 'can') return {};
+  if (user?.admin && level === 'can') return {};
+
+  if (user?.adminOfStudentAssociations.length && level === 'can') {
+    return {
+      group: prismaGroupFilterForStudentAssociationAdmins(user),
+    };
+  }
+
+  if (user?.canEditGroups.length && level === 'can') {
+    return {
+      group: prismaGroupFilterForStudentAssociationGroupsEditors(user),
+    };
+  }
+
   return {
     OR: [
       {

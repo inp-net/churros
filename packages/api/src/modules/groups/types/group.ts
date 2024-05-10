@@ -2,7 +2,7 @@ import { builder, prisma, toHtml } from '#lib';
 
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { canEditGroup, GroupEnumType } from '../index.js';
-import { requiredPrismaIncludesForPermissions } from '../utils/permissions.js';
+import { requiredPrismaIncludesForPermissions } from '../utils/index.js';
 
 export const GroupType = builder.prismaNode('Group', {
   id: { field: 'id' },
@@ -94,11 +94,11 @@ export const GroupType = builder.prismaNode('Group', {
     root: t.relation('familyRoot', { nullable: true }),
     familyChildren: t.relation('familyChildren'),
     related: t.relation('related'),
-    shopItems: t.relation('shopItems'),shopItems: t.relation('shopItems'),
+    shopItems: t.relation('shopItems'),
     canEditDetails: t.boolean({
       description: "Vrai si l'utilisateur·ice connecté·e peut modifier les informations du groupe",
       resolve: async (group, _, { user }) => {
-        return canEditGroup(user, group, undefined);
+        return canEditGroup(user, group);
       },
     }),
   }),

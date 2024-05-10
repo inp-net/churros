@@ -1,5 +1,5 @@
 import type { Context } from '#lib';
-import { onBoard } from '#permissions';
+import { onBoard, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 import { GroupType, Prisma, type Group, type StudentAssociation } from '@prisma/client';
 
 export const requiredPrismaIncludesForPermissions = {
@@ -33,13 +33,9 @@ export function canCreateGroup(
   },
 ): boolean {
   if (!user) return false;
-  if (user.admin) return true;
-  if (user.canEditGroups) return true;
-  if (
-    studentAssociationUid &&
-    user.adminOfStudentAssociations.some((association) => association.uid === studentAssociationUid)
-  )
-    return true;
+  if (userIsAdminOf(user, studentAssociationUid ?? null)) return true;
+  if (userIsGroupEditorOf(user, studentAssociationUid ?? null)) return true;
+
   if (
     parentUid &&
     ALLOWED_SUBGROUP_TYPES.includes(type) &&
@@ -67,7 +63,8 @@ export function canEditGroup(
         type: GroupType;
         parentUid?: string | null | undefined;
       }
-    | undefined,
+    | undefined
+    | null = null,
   newParentGroup:
     | null
     | (Group & {
@@ -76,6 +73,7 @@ export function canEditGroup(
       }) = null,
 ) {
   if (!user) return false;
+
   if (newGroup === undefined) {
     newGroup = {
       studentAssociationUid: existingGroup.studentAssociation?.uid,
@@ -83,20 +81,25 @@ export function canEditGroup(
       parentUid: existingGroup.parent?.uid,
     };
   }
+
   if (
     userIsOnGroupBoard(user, existingGroup) &&
     // Regular club members cannot change the student association
-    equalOrBothNotProvided(existingGroup.studentAssociation?.uid, newGroup.studentAssociationUid) &&
+    equalOrBothNotProvided(
+      existingGroup.studentAssociation?.uid,
+      newGroup?.studentAssociationUid,
+    ) &&
     // Either the parent group stayed the same
-    (equalOrBothNotProvided(existingGroup.parent?.uid, newGroup.parentUid) ||
+    (equalOrBothNotProvided(existingGroup.parent?.uid, newGroup?.parentUid) ||
       // Or we removed it
-      !newGroup.parentUid ||
+      !newGroup?.parentUid ||
       // Or we changed it, but the user can edit the new parent group
       (newParentGroup && canEditGroup(user, newParentGroup)))
   )
     return true;
 
   if (
+    newGroup &&
     canCreateGroup(user, newGroup) &&
     canCreateGroup(user, {
       studentAssociationUid: existingGroup.studentAssociation?.uid,
@@ -115,7 +118,7 @@ export function userIsOnGroupBoard(user: Context['user'], group: { uid: string }
   );
 }
 
-/** Allows passing to functions either only the groups' uids or IDs */
+/** Allows passing to function either only the groups' uids or IDs */
 function groupsAreTheSame<G extends { id: string } | { uid: string }>(
   group: G,
   otherGroup: G,

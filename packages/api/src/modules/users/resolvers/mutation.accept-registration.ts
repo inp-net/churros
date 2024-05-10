@@ -2,7 +2,7 @@ import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 
 import { saveUser } from '../index.js';
-import { prismaUserFilterForStudentAssociationAdmins } from '../utils/permissions.js';
+import { prismaUserFilterForStudentAssociationAdmins } from '../utils/index.js';
 // TODO rename to accept-user-candidate
 
 builder.mutationField('acceptRegistration', (t) =>

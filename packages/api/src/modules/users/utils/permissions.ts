@@ -45,3 +45,18 @@ export function prismaGroupFilterForStudentAssociationAdmins(user: NonNullable<C
     },
   } as const;
 }
+
+export function prismaGroupFilterForStudentAssociationGroupsEditors(
+  user: NonNullable<Context['user']>,
+) {
+  if (user.admin) return {};
+  return {
+    studentAssociation: {
+      groupsEditors: {
+        some: {
+          id: user.id,
+        },
+      },
+    },
+  } as const;
+}
