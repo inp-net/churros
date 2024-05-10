@@ -23,6 +23,7 @@ builder.mutationField('verifyRegistration', (t) =>
         where: { uid: eventUid, group: { uid: groupUid } },
         include: {
           managers: true,
+          group: true,
         },
       });
       if (!event) return false;

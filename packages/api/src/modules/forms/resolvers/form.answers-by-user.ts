@@ -4,9 +4,9 @@ import { resolveArrayConnection, resolveOffsetConnection } from '@pothos/plugin-
 import type { Answer, User } from '@prisma/client';
 import groupBy from 'lodash.groupby';
 import { answerTypePrismaIncludes } from '../types/answer.js';
-import { AnswersOfUserType } from '../types/answers-of-user.js';
 import { FormType } from '../types/form.js';
-import { canSeeAllAnswers } from '../utils/permissions.js';
+import { AnswersOfUserType } from '../types/index.js';
+import { canSeeAllAnswers } from '../utils/index.js';
 
 builder.prismaObjectField(FormType, 'answersByUser', (t) =>
   t.connection({
@@ -65,7 +65,7 @@ builder.prismaObjectField(FormType, 'answersByUser', (t) =>
         );
       }
 
-      return resolveOffsetConnection({ args: connectionArgs }, async ({ limit, offset }) => {
+      return await resolveOffsetConnection({ args: connectionArgs }, async ({ limit, offset }) => {
         const answers = await prisma.answer.findMany({
           ...query,
           where: {
@@ -80,8 +80,7 @@ builder.prismaObjectField(FormType, 'answersByUser', (t) =>
             ...answerTypePrismaIncludes,
           },
         });
-        const result = groupAndSort(answers);
-        return result;
+        return groupAndSort(answers);
       });
     },
   }),

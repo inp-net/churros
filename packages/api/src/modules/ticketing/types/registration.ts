@@ -25,6 +25,7 @@ export const RegistrationType = builder.prismaNode('Registration', {
         return prisma.user.findUnique({ where: { uid: beneficiary } });
       },
     }),
+
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     verifiedAt: t.expose('verifiedAt', { type: DateTimeScalar, nullable: true }),
