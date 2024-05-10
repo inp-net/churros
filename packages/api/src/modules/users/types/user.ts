@@ -12,6 +12,7 @@ export const UserType = builder.prismaNode('User', {
   ],
   include: {
     adminOfStudentAssociations: true,
+    canEditGroups: true,
   },
   fields: (t) => ({
     majorId: t.exposeID('majorId', { nullable: true }),
@@ -79,13 +80,12 @@ export const UserType = builder.prismaNode('User', {
         "Vrai si cette personne est administratrice d'au moins une association étudiante",
       resolve: ({ adminOfStudentAssociations }) => adminOfStudentAssociations.length > 0,
     }),
-    canEditGroups: t.boolean({
-      resolve: ({ admin, canEditGroups }) => admin || canEditGroups,
-      authScopes: { admin: true, $granted: 'me' },
-    }),
-    canEditUsers: t.boolean({
-      resolve: ({ admin, canEditUsers }) => admin || canEditUsers,
-      authScopes: { admin: true, $granted: 'me' },
+    canEditGroup: t.boolean({
+      description: 'Vrai si cette personne peut éditer le groupe donné',
+      args: { groupUid: t.arg.string({ description: 'UID du groupe' }) },
+      resolve: async ({ canEditGroups }, { groupUid }) => {
+        return canEditGroups.some((a) => a.uid === groupUid);
+      },
     }),
     canAccessDocuments: t.boolean({
       resolve: ({ admin, canAccessDocuments }) => admin || canAccessDocuments,

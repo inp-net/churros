@@ -6,9 +6,24 @@ import { UserCandidateType } from '../index.js';
 builder.queryField('userCandidateByEmail', (t) =>
   t.prismaField({
     type: UserCandidateType,
-    authScopes: { canEditUsers: true },
+    authScopes: { admin: true, studentAssociationAdmin: true },
     args: { email: t.arg.string() },
-    resolve: async (query, _, { email }) =>
-      prisma.userCandidate.findUniqueOrThrow({ ...query, where: { email } }),
+    resolve: async (query, _, { email }, { user }) =>
+      prisma.userCandidate.findUniqueOrThrow({
+        ...query,
+        where: {
+          email,
+          ...(user?.admin
+            ? {}
+            : // only return signups for the student association the user is admin of
+              {
+                major: {
+                  schools: {
+                    some: { studentAssociations: { some: { admins: { some: { id: user?.id } } } } },
+                  },
+                },
+              }),
+        },
+      }),
   }),
 );

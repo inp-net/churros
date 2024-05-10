@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import { GroupMemberType } from '../../groups/types/group-member.js';
+import { GroupMemberType } from '../../groups/index.js';
 import { UserType } from '../types/user.js';
 
 builder.prismaObjectField(UserType, 'boardMemberships', (t) =>

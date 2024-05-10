@@ -1,5 +1,12 @@
-import { builder, prisma, purgeUserSessions, resetLdapUserPassword } from '#lib';
+import {
+  builder,
+  flattenOjectIntoArray,
+  prisma,
+  purgeUserSessions,
+  resetLdapUserPassword,
+} from '#lib';
 
+import { userIsAdminOf } from '#permissions';
 import { CredentialType as PrismaCredentialType } from '@prisma/client';
 import { hash, verify } from 'argon2';
 import { GraphQLError } from 'graphql';
@@ -15,8 +22,19 @@ builder.mutationField('resetPassword', (t) =>
       newPassword: t.arg.string(),
       disconnectAll: t.arg.boolean(),
     },
-    authScopes(_, { uid }, { user }) {
-      const result = Boolean(user?.admin || uid === user?.uid);
+    async authScopes(_, { uid }, { user }) {
+      const studentAssociationIds = flattenOjectIntoArray(
+        await prisma.user.findUniqueOrThrow({
+          where: { id: user?.id },
+          select: {
+            major: {
+              select: { schools: { select: { studentAssociations: { select: { id: true } } } } },
+            },
+          },
+        }),
+      );
+
+      const result = Boolean(userIsAdminOf(user, studentAssociationIds) || uid === user?.uid);
       if (!result) {
         console.error(
           `Cannot edit password: ${uid} =?= ${user?.uid ?? '<none>'} OR ${JSON.stringify(
@@ -40,8 +58,9 @@ builder.mutationField('resetPassword', (t) =>
         },
       });
 
-      if (newPassword.length < 8)
+      if (newPassword.length < 8) 
         throw new GraphQLError('Le mot de passe doit faire au moins 8 caractères');
+      
 
       for (const credential of userEdited.credentials.filter(
         (c) => c.type === PrismaCredentialType.Password,

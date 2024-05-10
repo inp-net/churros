@@ -6,7 +6,7 @@ import { saveUser } from '../index.js';
 builder.mutationField('updateUserCandidate', (t) =>
   t.field({
     type: 'Boolean',
-    authScopes: { canEditUsers: true },
+    authScopes: { admin: true, studentAssociationAdmin: true },
     errors: { types: [ZodError] },
     args: {
       register: t.arg.boolean(),

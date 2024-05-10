@@ -2,13 +2,13 @@ import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 
 import { createTransport } from 'nodemailer';
-import { prismaUserFilterForStudentAssociationAdmins } from '../utils/permissions.js';
+import { prismaUserFilterForStudentAssociationAdmins } from '../utils/index.js';
 
 // TODO rename registration to reject-user-candidate
 
 builder.mutationField('refuseRegistration', (t) =>
   t.field({
-    authScopes: { canEditUsers: true, studentAssociationAdmin: true },
+    authScopes: { studentAssociationAdmin: true },
     type: 'Boolean',
     args: { email: t.arg.string(), reason: t.arg.string() },
     async resolve(_, { email, reason }, { user }) {
@@ -17,9 +17,7 @@ builder.mutationField('refuseRegistration', (t) =>
       let candidate = await prisma.userCandidate.findUnique({
         where: { email, ...prismaUserFilterForStudentAssociationAdmins(user) },
       });
-      if (!candidate) {
-        throw new GraphQLError('Candidat·e introuvable');
-      }
+      if (!candidate) throw new GraphQLError('Candidat·e introuvable');
 
       const mailer = createTransport(process.env.SMTP_URL);
       await mailer.sendMail({
