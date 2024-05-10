@@ -270,9 +270,7 @@
     <section class="groups">
       <h2>Groupes</h2>
       <p class="typo-details">Tu n'es dans aucun groupe... 😢</p>
-      <ButtonSecondary href="/groups"
-        >Découvre les clubs de l'{user.major.schools[0].name} !</ButtonSecondary
-      >
+      <ButtonSecondary href="/groups">Découvre les clubs !</ButtonSecondary>
     </section>
   {/if}
 
