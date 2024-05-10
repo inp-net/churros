@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma, purgeUserSessions } from '#lib';
+import { builder, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
 import { userIsAdminOf, userIsGroupEditorOf } from '../../../permissions/index.js';
 import { removeMemberFromGroupMailingList, updateMemberBoardLists } from '#modules/mails';
 
@@ -11,7 +11,7 @@ builder.mutationField('deleteGroupMember', (t) =>
       groupId: t.arg.id(),
     },
     async authScopes(_, { memberId, groupId }, { user }) {
-      const studentAssociationIds = flattenOjectIntoArray(
+      const studentAssociationIds = objectValuesFlat(
         await prisma.group.findUniqueOrThrow({
           where: { id: groupId },
           select: { studentAssociationId: true },

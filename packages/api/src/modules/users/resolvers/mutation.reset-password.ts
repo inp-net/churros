@@ -1,10 +1,4 @@
-import {
-  builder,
-  flattenOjectIntoArray,
-  prisma,
-  purgeUserSessions,
-  resetLdapUserPassword,
-} from '#lib';
+import { builder, objectValuesFlat, prisma, purgeUserSessions, resetLdapUserPassword } from '#lib';
 
 import { userIsAdminOf } from '#permissions';
 import { CredentialType as PrismaCredentialType } from '@prisma/client';
@@ -23,7 +17,7 @@ builder.mutationField('resetPassword', (t) =>
       disconnectAll: t.arg.boolean(),
     },
     async authScopes(_, { uid }, { user }) {
-      const studentAssociationIds = flattenOjectIntoArray(
+      const studentAssociationIds = objectValuesFlat(
         await prisma.user.findUniqueOrThrow({
           where: { id: user?.id },
           select: {
@@ -58,9 +52,8 @@ builder.mutationField('resetPassword', (t) =>
         },
       });
 
-      if (newPassword.length < 8) 
+      if (newPassword.length < 8)
         throw new GraphQLError('Le mot de passe doit faire au moins 8 caractères');
-      
 
       for (const credential of userEdited.credentials.filter(
         (c) => c.type === PrismaCredentialType.Password,

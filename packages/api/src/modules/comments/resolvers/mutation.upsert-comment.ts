@@ -1,8 +1,8 @@
 import {
   TYPENAMES_TO_ID_PREFIXES,
   builder,
-  flattenOjectIntoArray,
   log,
+  objectValuesFlat,
   prisma,
   publish,
   yearTier,
@@ -26,14 +26,14 @@ builder.mutationField('upsertComment', (t) =>
       let studentAssociationIds: string[] = [];
 
       if (articleId) {
-        studentAssociationIds = flattenOjectIntoArray(
+        studentAssociationIds = objectValuesFlat(
           await prisma.article.findUnique({
             where: { id: articleId },
             select: { group: { select: { studentAssociationId: true } } },
           }),
         );
       } else if (documentId) {
-        studentAssociationIds = flattenOjectIntoArray(
+        studentAssociationIds = objectValuesFlat(
           await prisma.document.findUnique({
             where: { id: documentId },
             select: {

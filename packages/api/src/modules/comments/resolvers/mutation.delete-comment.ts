@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, log, prisma, publish } from '#lib';
+import { builder, log, objectValuesFlat, prisma, publish } from '#lib';
 import { userIsAdminOf } from '#permissions';
 
 builder.mutationField('deleteComment', (t) =>
@@ -33,7 +33,7 @@ builder.mutationField('deleteComment', (t) =>
       });
 
       return Boolean(
-        userIsAdminOf(user, flattenOjectIntoArray(comment?.document || comment?.article)) ||
+        userIsAdminOf(user, objectValuesFlat(comment?.document || comment?.article)) ||
           comment?.authorId === user?.id,
       );
     },

@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 import { userIsAdminOf } from '#permissions';
 
 builder.mutationField('deleteEvent', (t) =>
@@ -13,7 +13,7 @@ builder.mutationField('deleteEvent', (t) =>
         include: { managers: true, group: true },
       });
       return Boolean(
-        userIsAdminOf(user, flattenOjectIntoArray(event.group)) ||
+        userIsAdminOf(user, objectValuesFlat(event.group)) ||
           event.managers.some(({ userId, canEdit }) => userId === user?.id && canEdit),
       );
     },

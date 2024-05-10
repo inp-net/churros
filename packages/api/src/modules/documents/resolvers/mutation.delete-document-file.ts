@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
 import { userIsAdminOf } from '#permissions';
 import { unlinkSync } from 'node:fs';
@@ -25,8 +25,7 @@ builder.mutationField('deleteDocumentFile', (t) =>
         },
       });
       return Boolean(
-        userIsAdminOf(user, flattenOjectIntoArray(document.subject)) ||
-          document.uploaderId === user?.id,
+        userIsAdminOf(user, objectValuesFlat(document.subject)) || document.uploaderId === user?.id,
       );
     },
     async resolve(_, { documentId, filename }) {

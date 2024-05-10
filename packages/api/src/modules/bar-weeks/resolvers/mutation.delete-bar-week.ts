@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 import { userIsAdminOf, userIsOnBoardOf } from '#permissions';
 
 builder.mutationField('deleteBarWeek', (t) =>
@@ -16,7 +16,7 @@ builder.mutationField('deleteBarWeek', (t) =>
       })) ?? { groups: [] };
 
       return Boolean(
-        userIsAdminOf(user, flattenOjectIntoArray(groups)) ||
+        userIsAdminOf(user, objectValuesFlat(groups)) ||
           foyGroupsUids.some((uid) => userIsOnBoardOf(user, uid)),
       );
     },

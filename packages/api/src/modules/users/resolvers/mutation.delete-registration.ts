@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 import { userIsAdminOf } from '../../../permissions/index.js';
 
 builder.mutationField('deleteRegistration', (t) =>
@@ -8,7 +8,7 @@ builder.mutationField('deleteRegistration', (t) =>
       id: t.arg.id(),
     },
     async authScopes(_, { id }, { user }) {
-      const studentAssociationId = flattenOjectIntoArray(
+      const studentAssociationId = objectValuesFlat(
         await prisma.registration.findMany({
           where: { id },
           select: {

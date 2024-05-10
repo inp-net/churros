@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
 import { userIsAdminOf } from '#permissions';
 import { unlink } from 'node:fs/promises';
@@ -17,7 +17,7 @@ builder.mutationField('deleteEventPicture', (t) =>
       });
 
       return Boolean(
-        userIsAdminOf(user, flattenOjectIntoArray(event.group)) ||
+        userIsAdminOf(user, objectValuesFlat(event.group)) ||
           // Who can edit this event?
           // The author
           user?.id === event.authorId ||

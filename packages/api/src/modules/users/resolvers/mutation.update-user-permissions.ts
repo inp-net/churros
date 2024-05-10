@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma, purgeUserSessions } from '#lib';
+import { builder, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
 
 import { userIsAdminOf } from '#permissions';
 import { UserType } from '../index.js';
@@ -14,7 +14,7 @@ builder.mutationField('updateUserPermissions', (t) =>
       canAccessDocuments: t.arg.boolean(),
     },
     async authScopes(_, { uid }, { user }) {
-      const studentAssociationIds = flattenOjectIntoArray(
+      const studentAssociationIds = objectValuesFlat(
         await prisma.user.findUniqueOrThrow({
           where: { uid },
           select: {

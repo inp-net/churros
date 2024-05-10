@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, log, prisma } from '#lib';
+import { builder, log, objectValuesFlat, prisma } from '#lib';
 
 import { userIsAdminOf, userIsGroupEditorOf, userIsMemberOf } from '#permissions';
 // TODO rename to update-group-room-open-state
@@ -14,7 +14,7 @@ builder.mutationField('updateRoomOpenState', (t) =>
       }),
     },
     async authScopes(_, { groupUid }, { user }) {
-      const studentAssociationIds = flattenOjectIntoArray(
+      const studentAssociationIds = objectValuesFlat(
         await prisma.group.findUniqueOrThrow({
           where: { uid: groupUid },
           select: { studentAssociationId: true },

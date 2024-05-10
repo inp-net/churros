@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
 import { userIsAdminOf } from '#permissions';
 import dichotomid from 'dichotomid';
@@ -21,7 +21,7 @@ builder.mutationField('upsertDocument', (t) =>
       type: t.arg({ type: DocumentTypeEnum, required: true }),
     },
     async authScopes(_, { subjectUid }, { user }) {
-      const studentAssociationIds: string[] = flattenOjectIntoArray(
+      const studentAssociationIds: string[] = objectValuesFlat(
         await prisma.subject.findFirst({
           where: {
             uid: subjectUid,

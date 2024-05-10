@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
 import { NotificationChannel } from '@prisma/client';
 import { userIsAdminOf } from '../../../permissions/index.js';
@@ -11,7 +11,7 @@ builder.mutationField('updateNotificationSettings', (t) =>
       enabledChannels: t.arg({ type: [NotificationChannel] }),
     },
     async authScopes(_, { uid }, { user }) {
-      const studentAssociationIds = flattenOjectIntoArray(
+      const studentAssociationIds = objectValuesFlat(
         await prisma.user.findUniqueOrThrow({
           where: { id: user?.id },
           select: {

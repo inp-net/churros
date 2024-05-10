@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 import { FileScalar } from '#modules/global';
 import { userIsAdminOf } from '#permissions';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -27,8 +27,7 @@ builder.mutationField('uploadDocumentFile', (t) =>
         },
       });
       return Boolean(
-        userIsAdminOf(user, flattenOjectIntoArray(document.subject)) ||
-          document.uploaderId === user?.id,
+        userIsAdminOf(user, objectValuesFlat(document.subject)) || document.uploaderId === user?.id,
       );
     },
     async resolve(_, { documentId, file, solution }) {

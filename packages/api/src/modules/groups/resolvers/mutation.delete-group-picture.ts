@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
 import { unlink } from 'node:fs/promises';
 import path from 'node:path';
@@ -10,7 +10,7 @@ builder.mutationField('deleteGroupPicture', (t) =>
     type: 'Boolean',
     args: { uid: t.arg.string(), dark: t.arg.boolean() },
     async authScopes(_, { uid }, { user }) {
-      const studentAssociationIds = flattenOjectIntoArray(
+      const studentAssociationIds = objectValuesFlat(
         await prisma.group.findUniqueOrThrow({
           where: { uid },
           select: { studentAssociationId: true },

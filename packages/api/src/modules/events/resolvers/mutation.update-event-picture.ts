@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma, updatePicture } from '#lib';
+import { builder, objectValuesFlat, prisma, updatePicture } from '#lib';
 import { FileScalar } from '#modules/global';
 import { userIsAdminOf } from '#permissions';
 import { canEdit } from '../utils/index.js';
@@ -15,7 +15,7 @@ builder.mutationField('updateEventPicture', (t) =>
         where: { id },
         include: { managers: true, group: true },
       });
-      return userIsAdminOf(user, flattenOjectIntoArray(event.group)) || canEdit(event, user);
+      return userIsAdminOf(user, objectValuesFlat(event.group)) || canEdit(event, user);
     },
     async resolve(_, { id, file }) {
       return updatePicture({

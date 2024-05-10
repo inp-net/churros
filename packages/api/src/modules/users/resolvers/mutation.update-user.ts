@@ -1,11 +1,4 @@
-import {
-  builder,
-  flattenOjectIntoArray,
-  log,
-  markAsContributor,
-  prisma,
-  purgeUserSessions,
-} from '#lib';
+import { builder, log, markAsContributor, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { GraphQLError } from 'graphql';
@@ -43,7 +36,7 @@ builder.mutationField('updateUser', (t) =>
       contributesWith: t.arg({ type: ['ID'], required: false }),
     },
     async authScopes(_, { uid }, { user }) {
-      const studentAssociationIds = flattenOjectIntoArray(
+      const studentAssociationIds = objectValuesFlat(
         await prisma.user.findUniqueOrThrow({
           where: { id: user?.id },
           select: {
@@ -91,7 +84,7 @@ builder.mutationField('updateUser', (t) =>
         },
       });
 
-      const userIsAdmin = userIsAdminOf(user, flattenOjectIntoArray(targetUser.major));
+      const userIsAdmin = userIsAdminOf(user, objectValuesFlat(targetUser.major));
 
       if (phone) {
         const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
@@ -149,7 +142,7 @@ builder.mutationField('updateUser', (t) =>
       if (
         changingContributesWith &&
         contributesWith &&
-        userIsAdminOf(user, flattenOjectIntoArray(targetUser.major))
+        userIsAdminOf(user, objectValuesFlat(targetUser.major))
       ) {
         await prisma.contribution.deleteMany({
           where: {

@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma, updatePicture } from '#lib';
+import { builder, objectValuesFlat, prisma, updatePicture } from '#lib';
 import { FileScalar } from '#modules/global';
 import { userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 
@@ -12,7 +12,7 @@ builder.mutationField('updateGroupPicture', (t) =>
       dark: t.arg.boolean(),
     },
     async authScopes(_, { uid }, { user }) {
-      const studentAssociationIds = flattenOjectIntoArray(
+      const studentAssociationIds = objectValuesFlat(
         await prisma.group.findUniqueOrThrow({
           where: { uid },
           select: { studentAssociationId: true },

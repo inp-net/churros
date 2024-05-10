@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
 import { userIsAdminOf } from '#permissions';
 import { GodparentRequestType } from '../index.js';
@@ -33,7 +33,7 @@ builder.queryField('godparentRequest', (t) =>
       });
       if (!request) return false;
       return Boolean(
-        userIsAdminOf(user, flattenOjectIntoArray(request.godparent)) ||
+        userIsAdminOf(user, objectValuesFlat(request.godparent)) ||
           [request.godchildId, request.godparentId].includes(user.id),
       );
     },

@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 import { userIsAdminOf } from '#permissions';
 
 builder.mutationField('deleteEventManager', (t) =>
@@ -19,7 +19,7 @@ builder.mutationField('deleteEventManager', (t) =>
 
       // Other managers that have the canEditPermissions permission, or admins, can delete managers
       return Boolean(
-        userIsAdminOf(currentUser, flattenOjectIntoArray(event.group)) ||
+        userIsAdminOf(currentUser, objectValuesFlat(event.group)) ||
           event.managers.some(
             ({ userId, canEditPermissions }) => currentUser?.id === userId && canEditPermissions,
           ),

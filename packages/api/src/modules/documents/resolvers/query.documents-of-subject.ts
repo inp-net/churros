@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
 import { userIsAdminOf } from '#permissions';
 import { DocumentType } from '../index.js';
@@ -14,7 +14,7 @@ builder.queryField('documentsOfSubject', (t) =>
       forApprentices: t.arg.boolean({ required: true }),
     },
     async authScopes(_, { subjectUid }, { user }) {
-      const studentAssociationIds: string[] = flattenOjectIntoArray(
+      const studentAssociationIds: string[] = objectValuesFlat(
         await prisma.subject.findFirst({
           where: {
             uid: subjectUid,

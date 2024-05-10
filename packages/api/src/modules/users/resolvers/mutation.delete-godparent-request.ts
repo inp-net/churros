@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 import { notify } from '#modules/notifications';
 import { userIsAdminOf } from '#permissions';
 import { NotificationChannel } from '@prisma/client';
@@ -35,7 +35,7 @@ builder.mutationField('deleteGodparentRequest', (t) =>
         },
       });
       if (!user) return false;
-      if (userIsAdminOf(user, flattenOjectIntoArray(request.godparent))) return true;
+      if (userIsAdminOf(user, objectValuesFlat(request.godparent))) return true;
       if (!request) return false;
       if (accept) {
         // Only the godparent can accept requests from godchildren

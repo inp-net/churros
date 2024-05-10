@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 import { userIsAdminOf } from '#permissions';
 
 // TODO find a better name, idk what
@@ -25,8 +25,7 @@ builder.mutationField('setDocumentFileIsSolution', (t) =>
         },
       });
       return Boolean(
-        userIsAdminOf(user, flattenOjectIntoArray(document.subject)) ||
-          document.uploaderId === user?.id,
+        userIsAdminOf(user, objectValuesFlat(document.subject)) || document.uploaderId === user?.id,
       );
     },
     async resolve(_, { documentId, filename, isSolution }) {

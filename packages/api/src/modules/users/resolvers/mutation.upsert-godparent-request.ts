@@ -1,4 +1,4 @@
-import { builder, flattenOjectIntoArray, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
 import { notify } from '#modules/notifications';
 import { userIsAdminOf } from '#permissions';
@@ -16,7 +16,7 @@ builder.mutationField('upsertGodparentRequest', (t) =>
       godparentUid: t.arg.string(),
     },
     async authScopes(_, { godchildUid }, { user }) {
-      const studentAssociations = flattenOjectIntoArray(
+      const studentAssociations = objectValuesFlat(
         await prisma.user.findUniqueOrThrow({
           where: { uid: godchildUid },
           select: {
