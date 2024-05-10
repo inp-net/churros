@@ -1,10 +1,6 @@
-import { prisma, type Context } from '#lib';
-import { userIsOnBoardOf } from '#permissions';
+import { prisma } from '#lib';
 import type { Major, User } from '@prisma/client';
 import { userIsStudentOfSchool } from './school.js';
-
-export const userCanEditBarWeeks = (user: Context['user']): boolean =>
-  user?.admin || user?.canEditGroups || FOY_GROUPS_UIDS.some((uid) => userIsOnBoardOf(user, uid));
 
 export const userCanSeeBarWeek = (
   user: User,
