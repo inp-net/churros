@@ -321,7 +321,7 @@ const contributionOptions = await prisma.contributionOption.findMany({
 const usersData = [
   { firstName: 'Annie', lastName: 'Versaire', admin: true }, //Unique compte de la DB qui possède les droits admin
   { firstName: 'Bernard', lastName: 'Tichaut', canEditGroups: true }, //Unique compte "respo club"
-  { firstName: 'Camille', lastName: 'Honnête', canEditUsers: true },
+  { firstName: 'Camille', lastName: 'Honnête' },
   { firstName: 'Denis', lastName: 'Chon' },
   { firstName: 'Élie', lastName: 'Coptère' },
   { firstName: 'Fred', lastName: 'Voyage' },

@@ -44,6 +44,8 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   picfile: 'Picture',
   shopitem: 'ShopItem',
   shoppayment: 'ShopPayment',
+  shopitemoption: 'ShopItemOption',
+  shopitemanswer: 'ShopItemAnswer',
   form: 'Form',
   formsection: 'FormSection',
   formjump: 'FormJump',

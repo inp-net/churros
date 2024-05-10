@@ -7,7 +7,7 @@ import { prismaUserFilterForStudentAssociationAdmins } from '../utils/permission
 
 builder.mutationField('acceptRegistration', (t) =>
   t.field({
-    authScopes: { canEditUsers: true, studentAssociationAdmin: true },
+    authScopes: { admin: true, studentAssociationAdmin: true },
     type: 'Boolean',
     args: { email: t.arg.string() },
     async resolve(_, { email }, { user }) {
@@ -16,9 +16,7 @@ builder.mutationField('acceptRegistration', (t) =>
       const candidate = await prisma.userCandidate.findUnique({
         where: { email, ...prismaUserFilterForStudentAssociationAdmins(user) },
       });
-      if (!candidate) {
-        throw new GraphQLError('Candidat·e introuvable');
-      }
+      if (!candidate) throw new GraphQLError('Candidat·e introuvable');
 
       await prisma.logEntry.create({
         data: {
