@@ -192,7 +192,7 @@ function normalizePermissions({
 }): void {
   if (!user) return;
 
-  const permissionOnGroups = new Set([
+  const permissionOnStudentAssociation = new Set([
     ...user.canEditGroups.flatMap((studentAssociation) => studentAssociation.id),
     ...user.groups.map((group) => group.studentAssociationId),
   ]);
@@ -202,14 +202,14 @@ function normalizePermissions({
     canEditMembers:
       membership.canEditMembers ||
       onBoard(membership) ||
-      permissionOnGroups.has(membership.studentAssociationId),
+      permissionOnStudentAssociation.has(membership.studentAssociationId),
     canEditArticles:
       membership.canEditArticles ||
       onBoard(membership) ||
-      permissionOnGroups.has(membership.studentAssociationId),
+      permissionOnStudentAssociation.has(membership.studentAssociationId),
     canScanEvents:
       membership.canScanEvents ||
       onBoard(membership) ||
-      permissionOnGroups.has(membership.studentAssociationId),
+      permissionOnStudentAssociation.has(membership.studentAssociationId),
   }));
 }
