@@ -187,7 +187,7 @@
       <span>Formulaire</span>
     </a>
 
-    {#if $me?.admin || $me?.canEditUsers || $me?.studentAssociationAdmin}
+    {#if $me?.admin || $me?.studentAssociationAdmin}
       <a href="/signups">
         <IconPeople />
         <span>Inscriptions</span>

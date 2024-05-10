@@ -167,7 +167,7 @@
     <span>Les autres services</span>
   </a>
 
-  {#if $me?.admin || $me?.studentAssociationAdmin || $me?.canEditUsers}
+  {#if $me?.admin || $me?.studentAssociationAdmin}
     <a
       href="/signups"
       class="navigation-item"
