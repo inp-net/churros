@@ -2,7 +2,7 @@ import { builder, prisma } from '#lib';
 
 import { mappedGetAncestors } from 'arborist';
 import { GroupType } from '../index.js';
-import { requiredPrismaIncludesForPermissions } from '../utils/permissions.js';
+import { requiredPrismaIncludesForPermissions } from '../utils/index.js';
 
 // Because it's too hard for Pothos to correctly type recursive data loading,
 // we declare the field after the type

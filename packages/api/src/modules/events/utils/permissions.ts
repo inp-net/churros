@@ -1,14 +1,14 @@
 import { type Context } from '#lib';
 import { canScanBookings } from '#modules/ticketing';
-import { onBoard, userIsAdminOf } from '#permissions';
+import { onBoard, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 import type { Event, EventManager, Group } from '@prisma/client';
 
 export function canEdit(
-  event: Event & { managers: EventManager[]; group: Group },
+  event: Event & { managers: EventManager[]; group: { studentAssociationId: string | null } },
   user: Context['user'],
 ) {
   if (userIsAdminOf(user, event.group.studentAssociationId)) return true;
-  if (user?.canEditGroups) return true;
+  if (userIsGroupEditorOf(user, event.group.studentAssociationId)) return true;
   if (event.authorId === user?.id) return true;
 
   const membership = user?.groups.find(({ group }) => group.id === event.groupId);

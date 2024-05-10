@@ -62,3 +62,25 @@ export function userIsAdminOf(
     }),
   );
 }
+
+/**
+ * Check if a user has permission to edit a group
+ *
+ * @param user
+ * @param studentAssociationId the id of the student association that the group belongs to
+ */
+export function userIsGroupEditorOf(
+  user: Context['user'],
+  studentAssociationId: string[] | string | null,
+): boolean {
+  if (user?.admin) return true;
+  if (!studentAssociationId) return false;
+
+  return Boolean(
+    user?.canEditGroups.some(({ id: GroupEditorStudentAssociationIds }) => {
+      return Array.isArray(studentAssociationId)
+        ? studentAssociationId.includes(GroupEditorStudentAssociationIds)
+        : studentAssociationId === GroupEditorStudentAssociationIds;
+    }),
+  );
+}
