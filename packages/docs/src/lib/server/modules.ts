@@ -188,7 +188,9 @@ export async function getAllModules() {
 		await Promise.all(
 			(await readdir('../api/src/modules')).map(async (folder) => getModule(folder))
 		)
-	).sort((a, b) => MODULES_ORDER.indexOf(a.name) - MODULES_ORDER.indexOf(b.name));
+	)
+		.filter((m) => m.mutations.length + m.queries.length + m.subscriptions.length > 0)
+		.sort((a, b) => MODULES_ORDER.indexOf(a.name) - MODULES_ORDER.indexOf(b.name));
 }
 
 let allResolvers: ResolverFromFilesystem[] = [];
