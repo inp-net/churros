@@ -3,39 +3,59 @@ import pdfMakePrinter from 'pdfmake';
 import type { TFontDictionary } from 'pdfmake/interfaces';
 import { api } from './express.js';
 
+type textElement = {
+  text: string | undefined;
+  bold?: boolean;
+  fontSize?: number;
+  margin?: number[];
+};
+
+const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
+  dateStyle: 'full',
+});
+
 function boardMemberBuildInfo(
   boardMembers: {
-    title: string;
     firstName: string;
     lastName: string;
-    birthday: string;
+    birthday: Date | null;
     phone: string;
     email: string;
+    title?: string;
   }[],
   rightPos: number,
 ) {
-  const body: string[][] = [];
+  
+  const body: textElement[][] = [];
+  // Impair pour le tableau de gauche, pair pour celui de droite
   for (let i = rightPos; i < boardMembers.length; i = i + 2) {
+    // On ajoute les infos de chaque membre du bureau dans l'un des tableaux
     body.push(
-      [boardMembers[i]!.title, ''],
-      ['Nom', boardMembers[i]!.firstName],
-      ['Prénom    ', boardMembers[i]!.lastName],
-      ['Date de naissance', boardMembers[i]!.birthday],
-      ['Téléphone', boardMembers[i]!.phone],
-      ['Email', boardMembers[i]!.email],
-      ['', ''],
+      [{text: (boardMembers[i]?.title != undefined ? boardMembers[i]?.title : ""), bold: true, fontSize: 16, margin: [0, 0, 0, 5] }, {text : ''}],
+      [{text: 'Nom'}, {text: boardMembers[i]?.firstName}],
+      [{text: 'Prénom'}, {text: boardMembers[i]?.lastName}],
+      [{text: 'Date de naissance'}, {text: boardMembers[i]?.birthday != null ? dateFormatter.format((boardMembers[i]?.birthday!)) : "" }],
+      [{text:'Téléphone'}, {text: boardMembers[i]?.phone}],
+      [{text:'Email', margin: [0, 0, 0, 15]}, {text:boardMembers[i]?.email}],
+
     );
   }
   return body;
 }
 
-console.info('Serving PDF generation of handover /print-handover/:uid'); //A changer ??
+console.info('Serving PDF generation of handover /print-handover/:uid');
 api.get('/print-handover/:uid', async (req, res) => {
   //recup l'id car on a que l'uid accessible (TODO : Faire un truc plus propre ?)
   const group = await prisma.group.findFirst({
+    //w
     where: {
       uid: req.params.uid,
     },
+    select: {
+      id: true,
+      uid: true,
+      name: true,
+    }
   });
   const id = group?.id;
   //récupération de l'ensemble des membres du bureau
@@ -85,11 +105,13 @@ api.get('/print-handover/:uid', async (req, res) => {
     },
     content: [
       {
+        //TODO : Changer l'image en fonction de l'école
         image: '../app/static/student-associations/aen7_black.png',
         width: 150,
         margin: [0, 0, 0, 10],
       },
       {
+        //info sur l'école, la encore faut les déhardcoder
         text: [
           'Association des élèves de l’ENSEEIHT\n',
           '2 rue Charles Camichel\n',
@@ -98,12 +120,14 @@ api.get('/print-handover/:uid', async (req, res) => {
           'E-mail : bde@bde.enseeiht.fr\n',
         ],
         margin: [0, 0, 0, 20],
+        lineHeight: 1.4,
       },
       {
         columnGap: 10,
         columns: [
+          //Tableau de gauche pour les infos sur les membres du bureau
           {
-            layout: 'noBorders', // optional
+            layout: 'noBorders',
             table: {
               headerRows: 1,
               heights: 8,
@@ -111,8 +135,9 @@ api.get('/print-handover/:uid', async (req, res) => {
               body: boardMemberBuildInfo(boardMembers, 0),
             },
           },
+          //tableau de droite
           {
-            layout: 'noBorders', // optional
+            layout: 'noBorders',
             table: {
               headerRows: 1,
               heights: 8,
@@ -127,24 +152,25 @@ api.get('/print-handover/:uid', async (req, res) => {
         text: [
           'Le nouveau bureau (président et trésorier), signataire, est officiellement responsable du club et du compte bancaire associé.',
         ],
-        margin: [0, 20, 0, 40],
+        margin: [0, 30, 0, 100],
       },
       {
         layout: 'noBorders',
         table: {
           body: [
-            [
-              { text: ['Le président de l’AEn7, \n Simon Gournet'], alignment: 'center' },
-              { text: ['Le trésorier de l’AEn7, \n Eliott Rousset'], alignment: 'center' },
+            [ 
+              //TODO : Déhardcoder les noms le jour où on aura les infos sur les prez et trésorier AE
+              { text: ['Le président de l’AEn7, \n Pablo Arbona'], alignment: 'center' },
+              { text: ['Le trésorier de l’AEn7, \n Raphael Registo'], alignment: 'center' },
               {
                 text: [
-                  `Le président du club Photo7, \n ${boardMembers[0]?.firstName} ${boardMembers[0]?.lastName}`,
+                  `Le président du club ${group?.name}, \n ${boardMembers[0]?.firstName} ${boardMembers[0]?.lastName}`,
                 ],
                 alignment: 'center',
               },
               {
                 text: [
-                  `Le trésorier du club Photo7, \n ${boardMembers[1]?.firstName} ${boardMembers[1]?.lastName}`,
+                  `Le trésorier du club ${group?.name}, \n ${boardMembers[1]?.firstName} ${boardMembers[1]?.lastName}`,
                 ],
                 alignment: 'center',
               },
@@ -159,7 +185,8 @@ api.get('/print-handover/:uid', async (req, res) => {
     },
   };
 
-  const printer = new pdfMakePrinter(fontes);
+  const printer = new pdfMakePrinter(fonts);
+  // @ts-expect-error pdfmake est typé bizarrement, la génération fonctionne
   const pdf = printer.createPdfKitDocument(contentPDF);
 
   const filestem = `Fiche passation - ${group?.uid}`;
@@ -171,7 +198,7 @@ api.get('/print-handover/:uid', async (req, res) => {
   return pdf;
 });
 
-const fontes: TFontDictionary = {
+const fonts: TFontDictionary = {
   Helvetica: {
     normal: 'Helvetica',
     bold: 'Helvetica-Bold',
