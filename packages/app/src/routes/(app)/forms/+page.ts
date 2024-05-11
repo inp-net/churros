@@ -20,7 +20,7 @@ export const _formNodeQuery = Selector('Form')({
 export async function load({ fetch, parent, url }) {
   const { me } = await parent();
   if (!me) redirectToLogin(url.pathname, url.searchParams);
-  const { allForms, myForms } = await loadQuery(
+  const { allForms, forms: myForms } = await loadQuery(
     {
       ...(me?.admin
         ? {
@@ -32,12 +32,12 @@ export async function load({ fetch, parent, url }) {
             ],
           }
         : {}),
-      myForms: [{}, { nodes: _formNodeQuery }],
+      forms: [{}, { nodes: _formNodeQuery }],
     },
     { fetch, parent },
   );
 
   return {
-    forms: uniqBy([...(allForms?.nodes ?? []), ...myForms?.nodes], 'id'),
+    forms: uniqBy([...(allForms?.nodes ?? []), ...(myForms?.nodes ?? [])], 'id'),
   };
 }
