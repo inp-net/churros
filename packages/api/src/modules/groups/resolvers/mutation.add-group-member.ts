@@ -81,9 +81,9 @@ builder.mutationField('addGroupMember', (t) =>
         });
         return groupMember;
       } catch (error: unknown) {
-        if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') 
+        if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002')
           throw new GraphQLError(`@${uid} est déjà dans ${groupUid}`);
-        
+
         throw error;
       }
     },

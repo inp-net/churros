@@ -28,26 +28,46 @@ import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
 
-export const builder = new SchemaBuilder<{
+interface PothosTypes {
   AuthContexts: AuthContexts;
   AuthScopes: AuthScopes;
   Context: Context;
   DefaultInputFieldRequiredness: true;
   PrismaTypes: PrismaTypes;
   Scalars: {
-    DateTime: { Input: Date; Output: Date };
-    File: { Input: never; Output: File };
-    ID: { Input: string; Output: string };
-    Counts: { Input: Record<string, number>; Output: Record<string, number> };
-    BooleanMap: { Input: Record<string, boolean>; Output: Record<string, boolean> };
+    DateTime: {
+      Input: Date;
+      Output: Date;
+    };
+    File: {
+      Input: never;
+      Output: File;
+    };
+    ID: {
+      Input: string;
+      Output: string;
+    };
+    Counts: {
+      Input: Record<string, number>;
+      Output: Record<string, number>;
+    };
+    BooleanMap: {
+      Input: Record<string, boolean>;
+      Output: Record<string, boolean>;
+    };
   };
   Directives: {
     rateLimit: {
       locations: 'OBJECT' | 'FIELD_DEFINITION';
-      args: { limit: number; duration: number };
+      args: {
+        limit: number;
+        duration: number;
+      };
     };
   };
-}>({
+}
+
+export const builder = new SchemaBuilder<PothosTypes>({
   plugins: [
     ComplexityPlugin,
     DataloaderPlugin,

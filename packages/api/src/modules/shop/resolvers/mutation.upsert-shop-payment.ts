@@ -126,10 +126,14 @@ builder.mutationField('upsertShopPayment', (t) =>
         if (option.required && answers[Number.parseInt(i)] === '')
           throw new GraphQLError('Un champ requis est manquant');
 
-        if (!option.otherToggle && !option.options.includes(answers[Number.parseInt(i)] as string))
-          {throw new GraphQLError(
+        if (
+          !option.otherToggle &&
+          !option.options.includes(answers[Number.parseInt(i)] as string)
+        ) {
+          throw new GraphQLError(
             "Petit malin, tu n'as pas le droit d'inventer ta propre réponse ici",
-          );}
+          );
+        }
       }
 
       if (answers.some((answer) => answer.length > 255)) throw new GraphQLError('Texte trop long');

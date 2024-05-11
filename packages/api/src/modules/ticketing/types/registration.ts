@@ -16,13 +16,13 @@ export const RegistrationType = builder.prismaNode('Registration', {
     ticketId: t.exposeID('ticketId'),
     authorId: t.exposeID('authorId', { nullable: true }),
     beneficiary: t.exposeString('beneficiary'),
-    beneficiaryUser: t.field({
+    beneficiaryUser: t.prismaField({
       type: UserType,
       nullable: true,
-      async resolve({ beneficiary }) {
+      async resolve(query, { beneficiary }) {
         // eslint-disable-next-line unicorn/no-null
         if (!beneficiary) return null;
-        return prisma.user.findUnique({ where: { uid: beneficiary } });
+        return prisma.user.findUnique({ ...query, where: { uid: beneficiary } });
       },
     }),
 

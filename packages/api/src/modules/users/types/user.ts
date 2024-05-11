@@ -1,7 +1,7 @@
 import { builder, toHtml, yearTier } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { NotificationChannel } from '@prisma/client';
-import { FamilyTree, fullName, getFamilyTree } from '../index.js';
+import { fullName } from '../index.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -115,12 +115,6 @@ export const UserType = builder.prismaNode('User', {
     godchildren: t.relation('godchildren'),
     outgoingGodparentRequests: t.relation('outgoingGodparentRequests'),
     incomingGodparentRequests: t.relation('incomingGodparentRequests'),
-    familyTree: t.field({
-      type: FamilyTree,
-      async resolve({ id, godparentId }) {
-        return getFamilyTree({ id, godparentId: godparentId ?? undefined });
-      },
-    }),
     emailChangeRequests: t.relation('emailChanges', {
       authScopes: { $granted: 'me' },
     }),

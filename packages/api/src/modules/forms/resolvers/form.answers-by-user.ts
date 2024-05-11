@@ -1,5 +1,4 @@
 import { builder, fullTextSearch, prisma } from '#lib';
-import { queryFromInfo } from '@pothos/plugin-prisma';
 import { resolveArrayConnection, resolveOffsetConnection } from '@pothos/plugin-relay';
 import type { Answer, User } from '@prisma/client';
 import groupBy from 'lodash.groupby';
@@ -22,14 +21,7 @@ builder.prismaObjectField(FormType, 'answersByUser', (t) =>
         required: false,
       }),
     },
-    async resolve(form, { q, ...connectionArgs }, context, info) {
-      // this is not working, and pothos fails to include required fields for use in authScopes, the type system is tricked into thinking that they are properly included though.
-      const query = queryFromInfo({
-        context,
-        info,
-        path: ['answers'],
-      });
-
+    async resolve(form, { q, ...connectionArgs }) {
       if (q) {
         const searchResults = await fullTextSearch('User', q, {
           property: 'user',
@@ -37,9 +29,13 @@ builder.prismaObjectField(FormType, 'answersByUser', (t) =>
             prisma.user.findMany({
               where: { id: { in: ids } },
               include: {
+                adminOfStudentAssociations: true,
+                canEditGroups: true,
                 formAnswers: {
                   include: {
-                    createdBy: true,
+                    createdBy: {
+                      include: { adminOfStudentAssociations: true, canEditGroups: true },
+                    },
                     ...answerTypePrismaIncludes,
                   },
                   where: { question: { section: { formId: form.id } } },
@@ -67,7 +63,6 @@ builder.prismaObjectField(FormType, 'answersByUser', (t) =>
 
       return await resolveOffsetConnection({ args: connectionArgs }, async ({ limit, offset }) => {
         const answers = await prisma.answer.findMany({
-          ...query,
           where: {
             createdById: { not: null },
             question: { section: { formId: form.id } },
@@ -76,7 +71,12 @@ builder.prismaObjectField(FormType, 'answersByUser', (t) =>
           take: limit,
           skip: offset,
           include: {
-            createdBy: true,
+            createdBy: {
+              include: {
+                adminOfStudentAssociations: true,
+                canEditGroups: true,
+              },
+            },
             ...answerTypePrismaIncludes,
           },
         });
