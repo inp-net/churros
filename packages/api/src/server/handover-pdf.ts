@@ -53,6 +53,14 @@ api.get('/print-handover/:uid', async (req, res) => {
         },
       },
     },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      birthday: true,
+      phone: true,
+      email: true,
+    },
   });
 
   const boardMembers = [];
@@ -71,19 +79,6 @@ api.get('/print-handover/:uid', async (req, res) => {
     boardMembers.push({ ...user, ...element });
   }
 
-  //Obligation d'avoir un Président et un Trésorier, si on les trouve pas erreur 404
-  //if (!president || !treasurers) return res.status(404).send('Not found');
-
-  /*
-  let rightMemberColumn = new Array;
-  let leftMemberColumn = new Array;
-
-  //Génération des 2 colonnes des membres du PDF
-  for(let i = 0; i < boardMembers.length; i = i+2) {
-    leftMemberColumn.push(boardMembers[i]);
-    rightMemberColumn.push(boardMembers[i+1]);
-  }*/
-
   const contentPDF = {
     info: {
       title: 'Fiche de passation - ' + group?.uid,
@@ -101,12 +96,8 @@ api.get('/print-handover/:uid', async (req, res) => {
           '31071 Toulouse\n',
           'Tél. : 05 61 58 82 19\n',
           'E-mail : bde@bde.enseeiht.fr\n',
-          boardMembers[0]?.title,
         ],
         margin: [0, 0, 0, 20],
-      },
-      {
-        text: [`${boardMembers.length}\n`],
       },
       {
         columnGap: 10,
@@ -164,7 +155,7 @@ api.get('/print-handover/:uid', async (req, res) => {
       },
     ],
     defaultStyle: {
-      font: 'SpaceMono',
+      font: 'Helvetica',
     },
   };
 
@@ -181,10 +172,10 @@ api.get('/print-handover/:uid', async (req, res) => {
 });
 
 const fontes: TFontDictionary = {
-  SpaceMono: {
-    normal: 'static/fonts/SpaceMono-Regular.woff',
-    bold: 'static/fonts/SpaceMono-Bold.woff',
-    italics: 'static/fonts/SpaceMono-Italic.woff',
-    bolditalics: 'static/fonts/SpaceMono-BoldItalic.woff',
+  Helvetica: {
+    normal: 'Helvetica',
+    bold: 'Helvetica-Bold',
+    italics: 'Helvetica-Oblique',
+    bolditalics: 'Helvetica-BoldOblique',
   },
 };
