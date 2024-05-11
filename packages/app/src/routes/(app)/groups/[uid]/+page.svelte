@@ -103,11 +103,7 @@
   $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || meOnClubBoard);
   $: canEditEvents = canEditArticles;
   $: canEditMembers = Boolean(
-    $me?.admin ||
-      myPermissions?.canEditMembers ||
-      meOnClubBoard ||
-      $me?.canEditGroups ||
-      $me?.canEditUsers,
+    $me?.admin || myPermissions?.canEditMembers || meOnClubBoard || $me?.canEditGroups,
   );
 
   const joinGroup = async (groupUid: string) => {
@@ -488,10 +484,9 @@
   .shoppreview {
     display: flex;
     flex: 0 0 auto;
-    flex-direction: row;
+    flex-flow: row wrap;
     flex-grow: 1;
     gap: 1em;
-    flex-wrap: wrap;
   }
 
   @media (min-width: 1000px) {

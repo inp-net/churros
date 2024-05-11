@@ -81,6 +81,11 @@ export function canEditGroup(
       parentUid: existingGroup.parent?.uid,
     };
   }
+  if (
+    userIsAdminOf(user, existingGroup.studentAssociationId) &&
+    userIsAdminOf(user, newGroup?.studentAssociationUid)
+  )
+    return true;
 
   if (
     userIsOnGroupBoard(user, existingGroup) &&
