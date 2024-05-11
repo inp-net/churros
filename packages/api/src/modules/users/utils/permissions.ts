@@ -60,3 +60,19 @@ export function prismaGroupFilterForStudentAssociationGroupsEditors(
     },
   } as const;
 }
+
+export function canBeEdited(
+  user: {
+    id: string;
+    major: { schools: Array<{ studentAssociations: Array<{ id: string }> }> } | null;
+  },
+  me: NonNullable<Context['user']>,
+) {
+  return (
+    me.admin ||
+    user.id === me.id ||
+    me.adminOfStudentAssociations.some((a) =>
+      user.major?.schools.some((s) => s.studentAssociations.some((sa) => sa.id === a.id)),
+    )
+  );
+}

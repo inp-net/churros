@@ -1,7 +1,7 @@
-import { builder, toHtml, yearTier } from '#lib';
+import { builder, prisma, toHtml, yearTier } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { NotificationChannel } from '@prisma/client';
-import { fullName } from '../index.js';
+import { canBeEdited, fullName } from '../index.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -74,6 +74,23 @@ export const UserType = builder.prismaNode('User', {
       args: { studentAssociation: t.arg.string({ description: "UID de l'association étudiante" }) },
       resolve: ({ adminOfStudentAssociations }, { studentAssociation }) =>
         adminOfStudentAssociations.some((a) => a.uid === studentAssociation),
+    }),
+    canBeEdited: t.boolean({
+      async resolve({ id }, _, { user: me }) {
+        // id = ID de cet user
+        // user = l'user connecté
+        if (!me) return false;
+        const user = await prisma.user.findUniqueOrThrow({
+          where: { id },
+          select: {
+            id: true,
+            major: {
+              select: { schools: { select: { studentAssociations: { select: { id: true } } } } },
+            },
+          },
+        });
+        return canBeEdited(user, me);
+      },
     }),
     studentAssociationAdmin: t.boolean({
       description:
