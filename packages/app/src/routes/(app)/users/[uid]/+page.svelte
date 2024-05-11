@@ -136,7 +136,7 @@
 
         <div class="actions">
           <ButtonShare />
-          {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
+          {#if $me?.uid === user.uid || $me?.admin || data.user.canBeEdited}
             <ButtonGhost help="Modifier" href="/users/{user.uid}/edit/">
               <IconGear />
             </ButtonGhost>

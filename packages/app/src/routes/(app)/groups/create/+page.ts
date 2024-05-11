@@ -4,7 +4,10 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent }) => {
   const { me } = await parent();
-  if (!me) redirectToLogin('/groups/create');
+  if (!me) {
+    redirectToLogin('/groups/create');
+    return;
+  }
 
   return {
     ...(await loadQuery(
