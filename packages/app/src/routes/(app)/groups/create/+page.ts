@@ -2,12 +2,9 @@ import { redirectToLogin } from '$lib/session';
 import { GroupType, loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent }) => {
+export const load: PageLoad = async ({ fetch, parent, url }) => {
   const { me } = await parent();
-  if (!me) {
-    redirectToLogin('/groups/create');
-    return;
-  }
+  if (!me) throw redirectToLogin(url.pathname);
 
   const data = await loadQuery(
     {
