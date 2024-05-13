@@ -109,10 +109,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
       __alias: {
         userPermissions: me.admin
           ? {
-              user: [
-                params,
-                { admin: true, canEditUsers: true, canEditGroups: true, canAccessDocuments: true },
-              ],
+              user: [params, { admin: true, canAccessDocuments: true }],
             }
           : {},
       },
@@ -127,8 +124,6 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
       me: {
         uid: true,
         admin: true,
-        canEditGroups: true,
-        canEditUsers: true,
         credentials: {
           id: true,
           name: true,

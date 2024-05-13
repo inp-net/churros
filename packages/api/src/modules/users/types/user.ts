@@ -99,9 +99,17 @@ export const UserType = builder.prismaNode('User', {
     }),
     canEditGroup: t.boolean({
       description: 'Vrai si cette personne peut éditer le groupe donné',
-      args: { groupUid: t.arg.string({ description: 'UID du groupe' }) },
-      resolve: async ({ canEditGroups }, { groupUid }) => {
-        return canEditGroups.some((a) => a.uid === groupUid);
+      args: { uid: t.arg.string({ description: 'UID du groupe' }) },
+      resolve: async ({ adminOfStudentAssociations, canEditGroups }, { uid: groupUid }) => {
+        const { studentAssociationId } = await prisma.group.findUniqueOrThrow({
+          where: { uid: groupUid },
+          select: { studentAssociationId: true },
+        });
+
+        return (
+          (adminOfStudentAssociations?.some((a) => a.id === studentAssociationId) ?? false) ||
+          (canEditGroups?.some((a) => a.uid === groupUid) ?? false)
+        );
       },
     }),
     canAccessDocuments: t.boolean({
