@@ -16,7 +16,6 @@ export const sessionUserQuery = () =>
     fullName: true,
     admin: true,
     external: true,
-    canEditGroups: true,
     canAccessDocuments: true,
     studentAssociationAdmin: true,
     yearTier: true,
