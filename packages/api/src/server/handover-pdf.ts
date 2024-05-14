@@ -10,44 +10,30 @@ type textElement = {
   margin?: number[];
 };
 
+type boardMemberType = {
+  id: string,
+  firstName: string;
+  lastName: string;
+  title?: string;
+  birthday: Date | null;
+  phone: string;
+  email: string;
+  groups: {
+    president: boolean;
+    treasurer: boolean;
+    vicePresident: boolean;
+    secretary: boolean;
+  }[];
+}
+
 const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'full',
 });
-
-function boardMemberBuildInfo(
-  boardMembers: {
-    firstName: string;
-    lastName: string;
-    birthday: Date | null;
-    phone: string;
-    email: string;
-    title?: string;
-  }[],
-  rightPos: number,
-) {
-  
-  const body: textElement[][] = [];
-  // Impair pour le tableau de gauche, pair pour celui de droite
-  for (let i = rightPos; i < boardMembers.length; i = i + 2) {
-    // On ajoute les infos de chaque membre du bureau dans l'un des tableaux
-    body.push(
-      [{text: (boardMembers[i]?.title != undefined ? boardMembers[i]?.title : ""), bold: true, fontSize: 16, margin: [0, 0, 0, 5] }, {text : ''}],
-      [{text: 'Nom'}, {text: boardMembers[i]?.firstName}],
-      [{text: 'Prénom'}, {text: boardMembers[i]?.lastName}],
-      [{text: 'Date de naissance'}, {text: boardMembers[i]?.birthday != null ? dateFormatter.format((boardMembers[i]?.birthday!)) : "" }],
-      [{text:'Téléphone'}, {text: boardMembers[i]?.phone}],
-      [{text:'Email', margin: [0, 0, 0, 15]}, {text:boardMembers[i]?.email}],
-
-    );
-  }
-  return body;
-}
 
 console.info('Serving PDF generation of handover /print-handover/:uid');
 api.get('/print-handover/:uid', async (req, res) => {
   //recup l'id car on a que l'uid accessible (TODO : Faire un truc plus propre ?)
   const group = await prisma.group.findFirst({
-    //w
     where: {
       uid: req.params.uid,
     },
@@ -59,7 +45,7 @@ api.get('/print-handover/:uid', async (req, res) => {
   });
   const id = group?.id;
   //récupération de l'ensemble des membres du bureau
-  const boardMembersUser = await prisma.user.findMany({
+  let boardMembersUser = await prisma.user.findMany({
     where: {
       groups: {
         some: {
@@ -80,10 +66,22 @@ api.get('/print-handover/:uid', async (req, res) => {
       birthday: true,
       phone: true,
       email: true,
+      groups: {
+        where: {
+          groupId: id,
+        },
+        select: {
+          president: true,
+          treasurer: true,
+          vicePresident: true,
+          secretary: true,
+        },
+      }
     },
   });
 
-  const boardMembers = [];
+  const boardMembers = []
+  boardMembersUser = sortMemberByRole(boardMembersUser);
 
   for (const element of boardMembersUser) {
     const user = await prisma.groupMember.findFirst({
@@ -150,7 +148,7 @@ api.get('/print-handover/:uid', async (req, res) => {
       },
       {
         text: [
-          'Le nouveau bureau (président et trésorier), signataire, est officiellement responsable du club et du compte bancaire associé.',
+          'Le·a président·e et trésorier·ère signataires sont officiellement responsables du club et du compte bancaire associé',
         ],
         margin: [0, 30, 0, 100],
       },
@@ -160,17 +158,17 @@ api.get('/print-handover/:uid', async (req, res) => {
           body: [
             [ 
               //TODO : Déhardcoder les noms le jour où on aura les infos sur les prez et trésorier AE
-              { text: ['Le président de l’AEn7, \n Pablo Arbona'], alignment: 'center' },
-              { text: ['Le trésorier de l’AEn7, \n Raphael Registo'], alignment: 'center' },
+              { text: ['Le·a président·e de l’AEn7, \n Pablo Arbona'], alignment: 'center' },
+              { text: ['Le·a trésorier·e de l’AEn7, \n Raphael Registo'], alignment: 'center' },
               {
                 text: [
-                  `Le président du club ${group?.name}, \n ${boardMembers[0]?.firstName} ${boardMembers[0]?.lastName}`,
+                  `Le·a président·e du club ${group?.name}, \n ${boardMembers[0]?.firstName} ${boardMembers[0]?.lastName}`,
                 ],
                 alignment: 'center',
               },
               {
                 text: [
-                  `Le trésorier du club ${group?.name}, \n ${boardMembers[1]?.firstName} ${boardMembers[1]?.lastName}`,
+                  `Le·a trésorier·e du club ${group?.name}, \n ${boardMembers[1]?.firstName} ${boardMembers[1]?.lastName}`,
                 ],
                 alignment: 'center',
               },
@@ -206,3 +204,38 @@ const fonts: TFontDictionary = {
     bolditalics: 'Helvetica-BoldOblique',
   },
 };
+
+function boardMemberBuildInfo(
+  boardMembers: boardMemberType[],
+  rightPos: number,
+) {
+  
+  const body: textElement[][] = [];
+  // Impair pour le tableau de gauche, pair pour celui de droite
+  for (let i = rightPos; i < boardMembers.length; i = i + 2) {
+    // On ajoute les infos de chaque membre du bureau dans l'un des tableaux
+    body.push(
+      [{text: (boardMembers[i]?.title != undefined ? boardMembers[i]?.title : ""), bold: true, fontSize: 16, margin: [0, 0, 0, 5] }, {text : ''}],
+      [{text: 'Nom'}, {text: boardMembers[i]?.firstName}],
+      [{text: 'Prénom'}, {text: boardMembers[i]?.lastName}],
+      [{text: 'Date de naissance'}, {text: boardMembers[i]?.birthday != null ? dateFormatter.format((boardMembers[i]?.birthday!)) : "" }],
+      [{text:'Téléphone'}, {text: boardMembers[i]?.phone}],
+      [{text:'Email', margin: [0, 0, 0, 15]}, {text:boardMembers[i]?.email}],
+
+    );
+  }
+  return body;
+}
+
+//Fonction de tri des membres du bureau en fonction de leur rôles. Prez > Trez > VP > Secrétaire
+function sortMemberByRole(boardMembers: boardMemberType[]) {
+  //recup tout les membres du bureau selon leur rôles
+  const sortedMembers : boardMemberType[] = [];
+  const presidentList = boardMembers.filter((member) => member.groups[0]?.president);
+  const treasurerList = boardMembers.filter((member) => member.groups[0]?.treasurer);
+  const vicePresidentList = boardMembers.filter((member) => member.groups[0]?.vicePresident);
+  const secretaryList = boardMembers.filter((member) => member.groups[0]?.secretary);
+
+  //renvoie la liste des membres dans l'ordre Prez > Trez > VP > Secrétaire
+  return sortedMembers.concat(presidentList, treasurerList, vicePresidentList, secretaryList);
+}
