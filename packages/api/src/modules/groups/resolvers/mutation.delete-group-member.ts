@@ -26,10 +26,8 @@ builder.mutationField('deleteGroupMember', (t) =>
         select: { type: true },
       });
 
-      if (type === 'Club' || type === 'Association' || type === 'StudentAssociationSection') {
-        await removeMemberFromGroupMailingList(groupId, email);
-        await updateMemberBoardLists(memberId, groupId);
-      }
+      await removeMemberFromGroupMailingList(groupId, email);
+      await updateMemberBoardLists(memberId, groupId, type);
 
       purgeUserSessions(uid);
       await prisma.groupMember.delete({ where: { groupId_memberId: { groupId, memberId } } });

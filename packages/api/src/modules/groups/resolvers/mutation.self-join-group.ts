@@ -40,17 +40,11 @@ builder.mutationField('selfJoinGroup', (t) =>
         },
       });
 
-      const { type } = await prisma.group.findUniqueOrThrow({
-        where: { uid: groupUid },
-        select: { type: true },
+      const { email } = await prisma.user.findUniqueOrThrow({
+        where: { uid },
+        select: { email: true },
       });
-      if (type === 'Club' || type === 'Association') {
-        const { email } = await prisma.user.findUniqueOrThrow({
-          where: { uid },
-          select: { email: true },
-        });
-        await addMemberToGroupMailingList(groupUid, email);
-      }
+      await addMemberToGroupMailingList(groupUid, email);
 
       await prisma.logEntry.create({
         data: {

@@ -107,12 +107,7 @@ builder.mutationField('upsertGroupMember', (t) =>
         include: { member: true },
       });
 
-      if (
-        group.type === 'Club' ||
-        group.type === 'Association' ||
-        group.type === 'StudentAssociationSection'
-      )
-        await updateMemberBoardLists(memberId, groupId);
+      await updateMemberBoardLists(memberId, groupId, group.type);
 
       await prisma.logEntry.create({
         data: {

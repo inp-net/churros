@@ -1,4 +1,5 @@
 import { prisma } from '#lib';
+import { GroupType } from '@prisma/client';
 
 const apiUrl = process.env.MAILMAN_API_URL as unknown as string;
 const apiToken = process.env.MAILMAN_API_TOKEN as unknown as string;
@@ -8,6 +9,8 @@ export async function removeMemberFromGroupMailingList(groupId: string, email: s
     where: { id: groupId },
     select: { mailingList: true },
   });
+
+  if (!mailingList) return;
 
   await removeMemberFromMailingList(mailingList, email);
 }
@@ -20,7 +23,19 @@ async function removeMemberFromMailingList(mailing: string, email: string) {
   });
 }
 
-export async function updateMemberBoardLists(memberID: string, groupId: string) {
+const GROUP_TYPES_WITH_BOARDS = new Set<GroupType>([
+  GroupType.Club,
+  GroupType.Association,
+  GroupType.StudentAssociationSection,
+]);
+
+export async function updateMemberBoardLists(
+  memberID: string,
+  groupId: string,
+  groupType: GroupType,
+) {
+  if (!GROUP_TYPES_WITH_BOARDS.has(groupType)) return;
+
   const { studentAssociation, studentAssociationId } = await prisma.group.findUniqueOrThrow({
     where: { id: groupId },
     select: {
@@ -108,6 +123,9 @@ export async function addMemberToGroupMailingList(groupId: string, email: string
     where: { uid: groupId },
     select: { mailingList: true },
   });
+
+  if (!mailingList) return;
+
   await addMemberToMailingList(mailingList, email);
 }
 
