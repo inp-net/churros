@@ -21,6 +21,7 @@ import '#modules/groups';
 import '#modules/health-checks';
 import '#modules/links';
 import '#modules/logs';
+import '#modules/mails';
 import '#modules/notifications';
 import '#modules/oauth';
 import '#modules/payments';

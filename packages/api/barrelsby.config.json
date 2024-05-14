@@ -41,6 +41,7 @@
     "./src/modules/links/utils",
     "./src/modules/logs/resolvers",
     "./src/modules/logs/types",
+    "./src/modules/mails/utils",
     "./src/modules/notifications/resolvers",
     "./src/modules/notifications/types",
     "./src/modules/notifications/utils",
