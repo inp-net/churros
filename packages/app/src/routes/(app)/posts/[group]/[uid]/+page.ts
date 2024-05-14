@@ -1,4 +1,4 @@
-import { Selector, loadQuery } from '$lib/zeus.js';
+import { loadQuery, Selector } from '$lib/zeus.js';
 import type { PageLoad } from './$types';
 
 export const _articleQuery = Selector('Article')({
@@ -105,10 +105,18 @@ export const _articleQuery = Selector('Article')({
   },
 });
 
-export const load: PageLoad = async ({ fetch, params, parent }) =>
-  loadQuery(
+export const load: PageLoad = async ({ fetch, params, parent }) => {
+  const { canEditGroup, token } = await parent();
+
+  const { article } = await loadQuery(
     {
       article: [{ uid: params.uid, groupUid: params.group }, _articleQuery],
     },
-    { fetch, parent },
+    { fetch, token },
   );
+
+  return {
+    article,
+    canEditGroup,
+  };
+};

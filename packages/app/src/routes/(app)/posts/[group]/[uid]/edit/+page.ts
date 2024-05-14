@@ -53,8 +53,9 @@ export const _articleQuery = Selector('Article')({
 });
 
 export const load: PageLoad = async ({ fetch, params, parent, url }) => {
-  const { me } = await parent();
+  const { me, canEditGroup } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
+
   const { article } = await loadQuery(
     {
       article: [{ uid: params.uid, groupUid: params.group }, _articleQuery],
@@ -63,7 +64,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   );
 
   const canEdit =
-    me.canEditGroups ||
+    canEditGroup ||
     me.groups.some(
       ({ canEditArticles, group }) => group.id === article.group.id && canEditArticles,
     );
