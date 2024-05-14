@@ -72,8 +72,17 @@ export const UserType = builder.prismaNode('User', {
     adminOf: t.boolean({
       description: "Vrai si cette personne est administratrice de l'association étudiante donnée",
       args: { studentAssociation: t.arg.string({ description: "UID de l'association étudiante" }) },
-      resolve: ({ adminOfStudentAssociations }, { studentAssociation }) =>
-        adminOfStudentAssociations.some((a) => a.uid === studentAssociation),
+      resolve: async ({ id }, { studentAssociation }) => {
+        const user = await prisma.user.findUniqueOrThrow({
+          where: { id },
+          select: {
+            id: true,
+            adminOfStudentAssociations: { select: { uid: true } },
+            canEditGroups: { select: { uid: true } },
+          },
+        });
+        return user.adminOfStudentAssociations.some((a) => a.uid === studentAssociation);
+      },
     }),
     canBeEdited: t.boolean({
       async resolve({ id }, _, { user: me }) {
@@ -100,15 +109,24 @@ export const UserType = builder.prismaNode('User', {
     canEditGroup: t.boolean({
       description: 'Vrai si cette personne peut éditer le groupe donné',
       args: { uid: t.arg.string({ description: 'UID du groupe' }) },
-      resolve: async ({ adminOfStudentAssociations, canEditGroups }, { uid: groupUid }) => {
+      resolve: async ({ id }, { uid: groupUid }) => {
         const { studentAssociationId } = await prisma.group.findUniqueOrThrow({
           where: { uid: groupUid },
           select: { studentAssociationId: true },
         });
 
+        const user = await prisma.user.findUniqueOrThrow({
+          where: { id },
+          select: {
+            id: true,
+            adminOfStudentAssociations: { select: { id: true } },
+            canEditGroups: { select: { uid: true } },
+          },
+        });
+
         return (
-          (adminOfStudentAssociations?.some((a) => a.id === studentAssociationId) ?? false) ||
-          (canEditGroups?.some((a) => a.uid === groupUid) ?? false)
+          (user.adminOfStudentAssociations?.some((a) => a.id === studentAssociationId) ?? false) ||
+          (user.canEditGroups?.some((a) => a.uid === groupUid) ?? false)
         );
       },
     }),
