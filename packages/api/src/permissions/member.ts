@@ -71,7 +71,7 @@ export function userIsAdminOf(
  */
 export function userIsGroupEditorOf(
   user: Context['user'],
-  studentAssociationId: string[] | string | null,
+  studentAssociationId: string[] | string | undefined | null,
 ): boolean {
   if (user?.admin) return true;
   if (!studentAssociationId) return false;

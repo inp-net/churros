@@ -103,7 +103,7 @@
   $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || meOnClubBoard);
   $: canEditEvents = canEditArticles;
   $: canEditMembers = Boolean(
-    $me?.admin || myPermissions?.canEditMembers || meOnClubBoard || $me?.canEditGroups,
+    $me?.admin || myPermissions?.canEditMembers || meOnClubBoard || data.canEditGroup,
   );
 
   const joinGroup = async (groupUid: string) => {
@@ -224,7 +224,7 @@
             {group.address}
             {#if $me && !$me.external}
               <!-- Pour éviter que les gens exté voient l'ouverture des salles. -->
-              {#if $me?.canEditGroups || $me?.groups.some((g) => g.group.uid === group.uid)}
+              {#if data.canEditGroup || $me?.groups.some((g) => g.group.uid === group.uid)}
                 <InputToggle
                   label={group.roomIsOpen ? 'Ouverte' : 'Fermée'}
                   value={group.roomIsOpen}

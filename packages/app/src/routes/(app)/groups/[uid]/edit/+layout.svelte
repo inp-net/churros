@@ -26,7 +26,7 @@
 <div class="content">
   <h1><ButtonBack go={currentTab === '' ? '..' : '../..'} /> Éditer {group.name}</h1>
 
-  {#if $me?.admin || $me?.canEditGroups || $me?.groups.some(({ group: { uid }, canEditMembers, ...perms }) => uid === group.uid && (isOnClubBoard(perms) || canEditMembers))}
+  {#if $me?.admin || data.canEditGroup || $me?.groups.some(({ group: { uid }, canEditMembers, ...perms }) => uid === group.uid && (isOnClubBoard(perms) || canEditMembers))}
     <NavigationTabs
       tabs={['', 'members', 'bank-accounts'].map((tab) => ({
         name: TABS[askeyofTABS(tab)],

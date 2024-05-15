@@ -4,11 +4,11 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, parent, url }) => {
-  const { me, token } = await parent();
+  const { me, token, canEditGroup } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
 
   if (
-    !me.canEditGroups &&
+    !canEditGroup &&
     !me.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === params.uid)
   )
     throw redirect(307, '.');

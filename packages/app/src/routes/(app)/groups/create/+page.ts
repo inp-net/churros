@@ -34,5 +34,5 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
     related: [],
   };
 
-  return { ...data, lydiaAccountsOfGroup: [], group };
+  return { ...data, lydiaAccountsOfGroup: [], group, canEditGroup: true };
 };

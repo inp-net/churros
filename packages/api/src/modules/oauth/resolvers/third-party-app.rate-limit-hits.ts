@@ -1,9 +1,8 @@
 import { builder, prisma, prometheusClient } from '#lib';
 import { resolveArrayConnection } from '@pothos/plugin-relay';
 import { addWeeks, minutesToSeconds } from 'date-fns';
-import { ApiRateLimitHitType } from '../types/api-rate-limit-hits.js';
-import { ThirdPartyApp } from '../types/third-party-app.js';
-import { canManageThirdPartyApp } from '../utils/permissions.js';
+import { ApiRateLimitHitType, ThirdPartyApp } from '../types/index.js';
+import { canManageThirdPartyApp } from '../utils/index.js';
 
 builder.prismaObjectField(ThirdPartyApp, 'rateLimitHits', (t) =>
   t.connection({

@@ -60,6 +60,7 @@ export function canEditGroup(
   newGroup:
     | {
         studentAssociationUid?: string | null | undefined;
+        studentAssociationId?: string | null | undefined;
         type: GroupType;
         parentUid?: string | null | undefined;
       }
@@ -76,14 +77,22 @@ export function canEditGroup(
 
   if (newGroup === undefined) {
     newGroup = {
+      studentAssociationId: existingGroup.studentAssociation?.id,
       studentAssociationUid: existingGroup.studentAssociation?.uid,
       type: existingGroup.type,
       parentUid: existingGroup.parent?.uid,
     };
   }
+
   if (
     userIsAdminOf(user, existingGroup.studentAssociationId) &&
-    userIsAdminOf(user, newGroup?.studentAssociationUid)
+    userIsAdminOf(user, newGroup?.studentAssociationId)
+  )
+    return true;
+
+  if (
+    userIsGroupEditorOf(user, existingGroup.studentAssociationId) &&
+    userIsGroupEditorOf(user, newGroup?.studentAssociationId)
   )
     return true;
 

@@ -130,6 +130,20 @@ export const UserType = builder.prismaNode('User', {
         );
       },
     }),
+    canEditGroups: t.boolean({
+      description: 'Vrai si cette personne peut éditer des groupes',
+      resolve: async ({ id }) => {
+        const user = await prisma.user.findUniqueOrThrow({
+          where: { id },
+          select: {
+            id: true,
+            canEditGroups: { select: { uid: true } },
+          },
+        });
+
+        return user.canEditGroups.length > 0;
+      },
+    }),
     canAccessDocuments: t.boolean({
       resolve: ({ admin, canAccessDocuments }) => admin || canAccessDocuments,
       authScopes: { admin: true, $granted: 'me' },
