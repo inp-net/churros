@@ -1,6 +1,6 @@
-import { builder, log, prisma } from '#lib';
+import { builder, log, objectValuesFlat, prisma } from '#lib';
 
-import { userIsMemberOf } from '#permissions';
+import { userIsAdminOf, userIsGroupEditorOf, userIsMemberOf } from '#permissions';
 // TODO rename to update-group-room-open-state
 
 builder.mutationField('updateRoomOpenState', (t) =>
@@ -13,8 +13,19 @@ builder.mutationField('updateRoomOpenState', (t) =>
         description: 'Vrai si on veut indiquer que le local est maintenant ouvert ',
       }),
     },
-    authScopes(_, { groupUid }, { user }) {
-      return Boolean(user?.canEditGroups || userIsMemberOf(user, groupUid));
+    async authScopes(_, { groupUid }, { user }) {
+      const studentAssociationIds = objectValuesFlat(
+        await prisma.group.findUniqueOrThrow({
+          where: { uid: groupUid },
+          select: { studentAssociationId: true },
+        }),
+      );
+
+      return Boolean(
+        userIsAdminOf(user, studentAssociationIds) ||
+          userIsGroupEditorOf(user, studentAssociationIds) ||
+          userIsMemberOf(user, groupUid),
+      );
     },
     async resolve(_, { groupUid, openRoom }, { user }) {
       const { roomIsOpen } = await prisma.group.update({

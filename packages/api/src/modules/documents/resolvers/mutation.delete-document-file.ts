@@ -1,5 +1,6 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
+import { userIsAdminOf } from '#permissions';
 import { unlinkSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -13,8 +14,19 @@ builder.mutationField('deleteDocumentFile', (t) =>
     async authScopes(_, { documentId }, { user }) {
       const document = await prisma.document.findUniqueOrThrow({
         where: { id: documentId },
+        include: {
+          subject: {
+            select: {
+              majors: {
+                select: { schools: { select: { studentAssociations: { select: { id: true } } } } },
+              },
+            },
+          },
+        },
       });
-      return Boolean(user?.admin || document.uploaderId === user?.id);
+      return Boolean(
+        userIsAdminOf(user, objectValuesFlat(document.subject)) || document.uploaderId === user?.id,
+      );
     },
     async resolve(_, { documentId, filename }) {
       const document = await prisma.document.findUniqueOrThrow({

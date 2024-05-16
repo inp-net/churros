@@ -1,6 +1,7 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
 import { NotificationChannel } from '@prisma/client';
+import { userIsAdminOf } from '../../../permissions/index.js';
 
 builder.mutationField('updateNotificationSettings', (t) =>
   t.field({
@@ -9,8 +10,19 @@ builder.mutationField('updateNotificationSettings', (t) =>
       uid: t.arg.string(),
       enabledChannels: t.arg({ type: [NotificationChannel] }),
     },
-    authScopes(_, { uid }, { user }) {
-      return Boolean(user?.canEditUsers || uid === user?.uid);
+    async authScopes(_, { uid }, { user }) {
+      const studentAssociationIds = objectValuesFlat(
+        await prisma.user.findUniqueOrThrow({
+          where: { id: user?.id },
+          select: {
+            major: {
+              select: { schools: { select: { studentAssociations: { select: { id: true } } } } },
+            },
+          },
+        }),
+      );
+
+      return Boolean(userIsAdminOf(user, studentAssociationIds) || uid === user?.uid);
     },
     async resolve(_query, { uid, enabledChannels }) {
       const { enabledNotificationChannels } = await prisma.user.update({

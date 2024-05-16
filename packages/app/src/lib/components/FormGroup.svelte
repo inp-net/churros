@@ -102,7 +102,7 @@
   <p class="loading muted">Chargement...</p>
 {:then { groups: allGroups }}
   <form on:submit|preventDefault={submit}>
-    {#if !creatingSubgroup && ($me?.admin || $me?.canEditGroups)}
+    {#if !creatingSubgroup && ($me?.admin || data.canEditGroup)}
       <InputSelectOne
         label="Type de groupe"
         required

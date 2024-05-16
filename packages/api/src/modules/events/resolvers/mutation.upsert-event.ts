@@ -52,7 +52,7 @@ builder.mutationField('upsertEvent', (t) =>
 
       const event = await prisma.event.findUniqueOrThrow({
         where: { id },
-        include: { managers: true },
+        include: { managers: true, group: { select: { studentAssociationId: true } } },
       });
       return canEdit(event, user);
     },

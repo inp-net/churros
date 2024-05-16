@@ -7,7 +7,10 @@
 </script>
 
 <div class="content">
-  <h1><ButtonBack /> Création d'un groupe</h1>
+  <h1>
+    <ButtonBack />
+    Création d'un groupe
+  </h1>
 
   <FormGroup bind:data />
 </div>

@@ -6,6 +6,13 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   const { me } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
+  const { user } = await loadQuery(
+    {
+      user: [params, { canBeEdited: true }],
+    },
+    { fetch, parent },
+  );
+
   const data = await loadQuery(
     {
       contributionOptions: {
@@ -20,6 +27,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
         params,
         {
           admin: true,
+          canBeEdited: true,
           apprentice: true,
           uid: true,
           address: true,
@@ -80,7 +88,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
             },
           },
           ...(me.uid === params.uid ? { pendingContributions: { name: true, id: true } } : {}),
-          ...(me.canEditUsers || me.uid === params.uid
+          ...(user.canBeEdited
             ? {
                 contributesTo: {
                   name: true,

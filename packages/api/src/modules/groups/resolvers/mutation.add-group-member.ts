@@ -2,6 +2,7 @@ import { builder, prisma, purgeUserSessions } from '#lib';
 
 import { addMemberToGroupMailingList } from '#modules/mails';
 import { fullName } from '#modules/users';
+import { userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { GraphQLError } from 'graphql';
 import { GroupMemberType, membersNeedToPayForTheStudentAssociation } from '../index.js';
@@ -27,13 +28,12 @@ builder.mutationField('addGroupMember', (t) =>
       });
       const group = await prisma.group.findUniqueOrThrow({
         where: { uid: groupUid },
-        include: { studentAssociation: true },
       });
 
       if (
         membersNeedToPayForTheStudentAssociation(group) &&
         !member.contributions.some(({ option: { paysFor } }) =>
-          paysFor.some(({ id }) => id === group.studentAssociation?.id),
+          paysFor.some(({ id }) => id === group?.studentAssociationId),
         )
       ) {
         // pas cotisant
@@ -41,7 +41,9 @@ builder.mutationField('addGroupMember', (t) =>
       }
 
       return Boolean(
-        user?.canEditGroups || user?.groups.some(({ group }) => group.uid === groupUid),
+        userIsAdminOf(user, group?.studentAssociationId) ||
+          userIsGroupEditorOf(user, group?.studentAssociationId) ||
+          user?.groups.some(({ group }) => group.uid === groupUid),
       );
     },
     async resolve(query, _, { groupUid, uid, title }, { user }) {
@@ -81,6 +83,7 @@ builder.mutationField('addGroupMember', (t) =>
       } catch (error: unknown) {
         if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002')
           throw new GraphQLError(`@${uid} est déjà dans ${groupUid}`);
+
         throw error;
       }
     },

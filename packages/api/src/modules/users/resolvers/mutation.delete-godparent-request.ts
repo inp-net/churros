@@ -1,6 +1,6 @@
-import { builder, prisma } from '#lib';
-
+import { builder, objectValuesFlat, prisma } from '#lib';
 import { notify } from '#modules/notifications';
+import { userIsAdminOf } from '#permissions';
 import { NotificationChannel } from '@prisma/client';
 import { fullName } from '../index.js';
 
@@ -14,13 +14,28 @@ builder.mutationField('deleteGodparentRequest', (t) =>
       accept: t.arg.boolean(),
     },
     async authScopes(_, { id, accept }, { user }) {
-      if (!user) return false;
-      if (user.admin || user.canEditUsers) return true;
-      const request = await prisma.godparentRequest.findUnique({
-        where: {
-          id,
+      const request = await prisma.godparentRequest.findUniqueOrThrow({
+        where: { id },
+        select: {
+          godchildId: true,
+          godparentId: true,
+          godparent: {
+            select: {
+              major: {
+                select: {
+                  schools: {
+                    select: {
+                      studentAssociations: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       });
+      if (!user) return false;
+      if (userIsAdminOf(user, objectValuesFlat(request.godparent))) return true;
       if (!request) return false;
       if (accept) {
         // Only the godparent can accept requests from godchildren

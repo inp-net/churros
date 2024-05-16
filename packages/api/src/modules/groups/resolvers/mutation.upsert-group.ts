@@ -1,7 +1,5 @@
 import { builder, log, prisma, purgeUserSessions } from '#lib';
 import { LinkInput } from '#modules/links';
-import { onBoard } from '#permissions';
-import * as PrismaTypes from '@prisma/client';
 import { getDescendants, hasCycle } from 'arborist';
 import { GraphQLError } from 'graphql';
 import {
@@ -10,6 +8,20 @@ import {
   createGroupUid,
   membersNeedToPayForTheStudentAssociation,
 } from '../index.js';
+import { canCreateGroup, canEditGroup } from '../utils/permissions.js';
+
+/*
+ TODO split into:
+  - upsertGroup
+  - changeGroupStudentAssociation (can also remove)
+  - changeParentGroup (can also remove)
+
+  This would prevent confusion around null (ie removing) vs undefined (ie not changing), the distinction does not exist in GraphQL
+
+  And would also make the code for canEditGroup more manageable
+
+  This would also allow us to (maybe?) change the contact email automatically when the student association changes (unless it is already set to sth different than the old student association's email)
+ */
 
 /** Upserts a group. */
 builder.mutationField('upsertGroup', (t) =>
@@ -33,30 +45,43 @@ builder.mutationField('upsertGroup', (t) =>
       selfJoinable: t.arg.boolean(),
       related: t.arg({ type: ['String'] }),
     },
-    async authScopes(_, { uid, parentUid, type }, { user }) {
+    async authScopes(_, { uid, ...args }, { user }) {
       if (!user) return false;
       const creating = !uid;
-      const parentGroup = await prisma.group.findUnique({
-        where: { uid: parentUid ?? '' },
-        include: { members: true },
+      if (creating) return canCreateGroup(user, args);
+      const group = await prisma.group.findUnique({
+        where: { uid },
+        include: {
+          studentAssociation: true,
+          parent: true,
+        },
       });
-      // allow board of parent group to create subgroups
-      if (creating) {
-        return Boolean(
-          user?.canEditGroups ||
-            (type === PrismaTypes.GroupType.Group &&
-              parentGroup?.members.some(
-                ({ memberId, ...permissions }) => memberId === user?.id && onBoard(permissions),
-              )),
-        );
+      if (!group) return false;
+      const newParentGroup = args.parentUid
+        ? await prisma.group.findUniqueOrThrow({
+            where: { uid: args.parentUid },
+            include: {
+              studentAssociation: true,
+              parent: true,
+            },
+          })
+        : null;
+
+      let newGroup;
+      if (args?.studentAssociationUid) {
+        const newStudentAssociation = await prisma.studentAssociation.findUnique({
+          where: { uid: args.studentAssociationUid },
+          select: { id: true },
+        });
+        newGroup = {
+          studentAssociationId: newStudentAssociation?.id,
+          ...args,
+        };
+      } else {
+        newGroup = args;
       }
 
-      return Boolean(
-        user?.canEditGroups ||
-          (user?.groups ?? []).some(
-            ({ group, ...permissions }) => group.uid === uid && onBoard(permissions),
-          ),
-      );
+      return canEditGroup(user, group, newGroup, newParentGroup);
     },
     // eslint-disable-next-line complexity
     async resolve(

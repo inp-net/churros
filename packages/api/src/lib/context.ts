@@ -11,6 +11,7 @@ import {
   type GroupMember,
   type Major,
   type School,
+  type StudentAssociation,
   type User,
 } from '@prisma/client';
 import { GraphQLError } from 'graphql';
@@ -30,6 +31,8 @@ const sessions = new Map<
     groups: Array<GroupMember & { group: Group }>;
     major: null | (Major & { schools: School[] });
     managedEvents: Array<EventManager & { event: Event & { group: Group } }>;
+    adminOfStudentAssociations: StudentAssociation[];
+    canEditGroups: StudentAssociation[];
   }
 >();
 
@@ -48,6 +51,8 @@ export const getUserFromThirdPartyToken = async (token: string) => {
             groups: { include: { group: true } },
             managedEvents: { include: { event: { include: { group: true } } } },
             major: { include: { schools: true } },
+            adminOfStudentAssociations: true,
+            canEditGroups: true,
           },
         },
       },
@@ -64,7 +69,9 @@ export const getUserFromThirdPartyToken = async (token: string) => {
 
   const { owner } = credential;
 
-  normalizePermissions(owner);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  normalizePermissions({ user: owner });
 
   return {
     ...owner,
@@ -88,6 +95,8 @@ const getUser = async (token: string) => {
             groups: { include: { group: true } },
             managedEvents: { include: { event: { include: { group: true } } } },
             major: { include: { schools: true } },
+            adminOfStudentAssociations: true,
+            canEditGroups: true,
           },
         },
       },
@@ -112,7 +121,9 @@ const getUser = async (token: string) => {
   const { user } = credential;
 
   // Normalize permissions
-  normalizePermissions(user);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  normalizePermissions({ user: user });
 
   // When the in memory store grows too big, delete some sessions
   if (sessions.size > 10_000)
@@ -160,28 +171,45 @@ export const context = async ({ request, ...rest }: YogaInitialContext) => {
  * Normalizes the permissions of a user based on its roles.
  * @param user the user to modify in-place
  */
-function normalizePermissions(user: {
-  groups: {
-    president: boolean;
-    treasurer: boolean;
-    vicePresident: boolean;
-    secretary: boolean;
-    canEditMembers: boolean;
-    canEditArticles: boolean;
-    canScanEvents: boolean;
-  }[];
-  admin: boolean;
-  canEditUsers: boolean;
-  canEditGroups: boolean;
-  canAccessDocuments: boolean;
+function normalizePermissions({
+  user,
+}: {
+  user: {
+    groups: (Group & {
+      president: boolean;
+      treasurer: boolean;
+      vicePresident: boolean;
+      secretary: boolean;
+      canEditMembers: boolean;
+      canEditArticles: boolean;
+      canScanEvents: boolean;
+    })[];
+    admin: boolean;
+    canAccessDocuments: boolean;
+    canEditGroups: StudentAssociation[];
+    adminOfStudentAssociations: StudentAssociation[];
+  };
 }): void {
   if (!user) return;
-  user.canEditGroups ||= user.admin;
-  user.canEditUsers ||= user.admin;
+
+  const permissionOnStudentAssociation = new Set([
+    ...user.canEditGroups.flatMap((studentAssociation) => studentAssociation.id),
+    ...user.groups.map((group) => group.studentAssociationId),
+  ]);
+
   user.groups = user.groups.map((membership) => ({
     ...membership,
-    canEditMembers: membership.canEditMembers || onBoard(membership),
-    canEditArticles: membership.canEditArticles || onBoard(membership),
-    canScanEvents: membership.canScanEvents || onBoard(membership),
+    canEditMembers:
+      membership.canEditMembers ||
+      onBoard(membership) ||
+      permissionOnStudentAssociation.has(membership.studentAssociationId),
+    canEditArticles:
+      membership.canEditArticles ||
+      onBoard(membership) ||
+      permissionOnStudentAssociation.has(membership.studentAssociationId),
+    canScanEvents:
+      membership.canScanEvents ||
+      onBoard(membership) ||
+      permissionOnStudentAssociation.has(membership.studentAssociationId),
   }));
 }

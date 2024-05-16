@@ -1,4 +1,5 @@
-import { builder, log, prisma, publish } from '#lib';
+import { builder, log, objectValuesFlat, prisma, publish } from '#lib';
+import { userIsAdminOf } from '#permissions';
 
 builder.mutationField('deleteComment', (t) =>
   t.field({
@@ -7,8 +8,34 @@ builder.mutationField('deleteComment', (t) =>
       id: t.arg.id(),
     },
     async authScopes(_, { id }, { user }) {
-      const comment = await prisma.comment.findUnique({ where: { id } });
-      return Boolean(user?.admin || comment?.authorId === user?.id);
+      const comment = await prisma.comment.findUnique({
+        where: { id },
+        include: {
+          article: { select: { group: { select: { studentAssociationId: true } } } },
+          document: {
+            select: {
+              subject: {
+                select: {
+                  minors: {
+                    select: {
+                      majors: {
+                        select: {
+                          schools: { select: { studentAssociations: { select: { id: true } } } },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return Boolean(
+        userIsAdminOf(user, objectValuesFlat(comment?.document || comment?.article)) ||
+          comment?.authorId === user?.id,
+      );
     },
     async resolve(_query, { id }) {
       const repliesCount = await prisma.comment.count({ where: { inReplyToId: id } });

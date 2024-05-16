@@ -37,7 +37,7 @@
 </script>
 
 <section class="search">
-  <h1>Formulaires</h1>
+  <h1>Mes formulaires</h1>
   <InputSearchQuery bind:q={$q} on:search={async () => {}} />
 </section>
 

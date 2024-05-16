@@ -5,9 +5,8 @@ export interface AuthScopes {
   loggedIn: boolean;
   student: boolean;
   admin: boolean;
-  canEditUsers: boolean;
-  canEditGroups: boolean;
   canAccessDocuments: boolean;
+  studentAssociationAdmin: boolean;
 }
 
 export interface AuthContexts {
@@ -19,8 +18,7 @@ export const authScopes = ({ user }: Context) => ({
   loggedIn: Boolean(user),
   student: Boolean(user?.majorId),
   admin: Boolean(user?.admin),
-  canEditGroups: Boolean(user?.admin || user?.canEditGroups),
-  canEditUsers: Boolean(user?.admin || user?.canEditUsers),
+  studentAssociationAdmin: Boolean(user?.adminOfStudentAssociations.length),
   canAccessDocuments: Boolean(user?.admin || user?.canAccessDocuments),
 });
 

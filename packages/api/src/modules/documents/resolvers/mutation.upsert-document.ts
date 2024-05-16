@@ -1,5 +1,6 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
+import { userIsAdminOf } from '#permissions';
 import dichotomid from 'dichotomid';
 import { GraphQLError } from 'graphql';
 import slug from 'slug';
@@ -19,8 +20,27 @@ builder.mutationField('upsertDocument', (t) =>
       subjectForApprentices: t.arg.boolean({ required: true }),
       type: t.arg({ type: DocumentTypeEnum, required: true }),
     },
-    authScopes(_, {}, { user }) {
-      return Boolean(user?.admin || user?.canAccessDocuments);
+    async authScopes(_, { subjectUid }, { user }) {
+      const studentAssociationIds: string[] = objectValuesFlat(
+        await prisma.subject.findFirst({
+          where: {
+            uid: subjectUid,
+          },
+          select: {
+            minors: {
+              select: {
+                majors: {
+                  select: {
+                    schools: { select: { studentAssociations: { select: { id: true } } } },
+                  },
+                },
+              },
+            },
+          },
+        }),
+      );
+
+      return Boolean(userIsAdminOf(user, studentAssociationIds) || user?.canAccessDocuments);
     },
     async resolve(
       query,

@@ -1,5 +1,6 @@
 import { builder, prisma } from '#lib';
 import { PaymentMethodEnum, payShopPaymentViaLydia } from '#modules/payments';
+import { userIsOnBoardOf } from '#permissions';
 import {
   PaymentMethod as PaymentMethodPrisma,
   type LydiaAccount,
@@ -8,7 +9,6 @@ import {
   type ShopPayment,
 } from '@prisma/client';
 import { GraphQLError } from 'graphql';
-import { userIsOnBoardOf } from '../../../permissions/member.js';
 import { ShopPaymentType } from '../index.js';
 
 builder.mutationField('paidShopPayment', (t) =>

@@ -100,17 +100,10 @@
   $: ({ group } = data);
   $: ShopItems = data.itemsOfGroup;
 
-  $: canEditDetails = Boolean(
-    $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups,
-  );
   $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || meOnClubBoard);
   $: canEditEvents = canEditArticles;
   $: canEditMembers = Boolean(
-    $me?.admin ||
-      myPermissions?.canEditMembers ||
-      meOnClubBoard ||
-      $me?.canEditGroups ||
-      $me?.canEditUsers,
+    $me?.admin || myPermissions?.canEditMembers || meOnClubBoard || data.canEditGroup,
   );
 
   const joinGroup = async (groupUid: string) => {
@@ -186,7 +179,7 @@
         {group.name}
         <ButtonShare />
         <ButtonGhost help="Accéder à la boutique" href="./shop/"><IconStore /></ButtonGhost>
-        {#if canEditDetails}
+        {#if group.canEditDetails}
           <ButtonGhost help="Modifier les infos" href="./edit/"><IconGear /></ButtonGhost>
         {/if}
 
@@ -231,7 +224,7 @@
             {group.address}
             {#if $me && !$me.external}
               <!-- Pour éviter que les gens exté voient l'ouverture des salles. -->
-              {#if $me?.canEditGroups || $me?.groups.some((g) => g.group.uid === group.uid)}
+              {#if data.canEditGroup || $me?.groups.some((g) => g.group.uid === group.uid)}
                 <InputToggle
                   label={group.roomIsOpen ? 'Ouverte' : 'Fermée'}
                   value={group.roomIsOpen}
@@ -491,10 +484,9 @@
   .shoppreview {
     display: flex;
     flex: 0 0 auto;
-    flex-direction: row;
+    flex-flow: row wrap;
     flex-grow: 1;
     gap: 1em;
-    flex-wrap: wrap;
   }
 
   @media (min-width: 1000px) {

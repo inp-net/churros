@@ -49,42 +49,42 @@ model User {
   latestVersionSeenInChangelog String                @default("0.0.0")
 
   // Permissions
-  admin              Boolean @default(false)
-  canEditUsers       Boolean @default(false)
-  canEditGroups      Boolean @default(false)
-  canAccessDocuments Boolean @default(false)
+  admin              Boolean              @default(false)
+  canEditGroups      StudentAssociation[] @relation("studentAssociationGroupsEditor")
+  canAccessDocuments Boolean              @default(false)
 
   // Relationships
-  articles                  Article[]
-  groups                    GroupMember[]
-  credentials               Credential[]
-  Reservation               Registration[]             @relation("author")
-  managedEvents             EventManager[]
-  logs                      LogEntry[]
-  events                    Event[]
-  notificationSubscriptions NotificationSubscription[]
-  notifications             Notification[]
-  godparent                 User?                      @relation("mentorship", fields: [godparentId], references: [id]) // Le parrain ou la marraine
-  godchildren               User[]                     @relation("mentorship") // Les filleul(e)s
-  incomingGodparentRequests GodparentRequest[]         @relation("godparent")
-  outgoingGodparentRequests GodparentRequest[]         @relation("godchild")
-  passwordResets            PasswordReset[]
-  emailChanges              EmailChange[]
-  Announcement              Announcement[]
-  contributions             Contribution[]
-  verifications             Registration[]             @relation("verifiedBy")
-  oppositions               Registration[]             @relation("opposedBy")
-  cancellations             Registration[]             @relation("cancelledBy")
-  documents                 Document[]
-  comments                  Comment[]
-  bannedFromEvents          Event[]                    @relation("bannedFromEvents")
-  reactions                 Reaction[]
-  allowedApps               ThirdPartyApp[]
-  shopPayments              ShopPayment[]
-  formAnswers               Answer[]
-  createdForms              Form[]
-  completedForms            Form[]                     @relation("completedForms")
-  partiallyCompletedForms   Form[]                     @relation("partiallyCompletedForms")
+  articles                   Article[]
+  groups                     GroupMember[]
+  credentials                Credential[]
+  Reservation                Registration[]             @relation("author")
+  managedEvents              EventManager[]
+  logs                       LogEntry[]
+  events                     Event[]
+  notificationSubscriptions  NotificationSubscription[]
+  notifications              Notification[]
+  godparent                  User?                      @relation("mentorship", fields: [godparentId], references: [id]) // Le parrain ou la marraine
+  godchildren                User[]                     @relation("mentorship") // Les filleul(e)s
+  incomingGodparentRequests  GodparentRequest[]         @relation("godparent")
+  outgoingGodparentRequests  GodparentRequest[]         @relation("godchild")
+  passwordResets             PasswordReset[]
+  emailChanges               EmailChange[]
+  Announcement               Announcement[]
+  contributions              Contribution[]
+  verifications              Registration[]             @relation("verifiedBy")
+  oppositions                Registration[]             @relation("opposedBy")
+  cancellations              Registration[]             @relation("cancelledBy")
+  documents                  Document[]
+  comments                   Comment[]
+  bannedFromEvents           Event[]                    @relation("bannedFromEvents")
+  reactions                  Reaction[]
+  allowedApps                ThirdPartyApp[]
+  shopPayments               ShopPayment[]
+  formAnswers                Answer[]
+  createdForms               Form[]
+  completedForms             Form[]                     @relation("completedForms")
+  partiallyCompletedForms    Form[]                     @relation("partiallyCompletedForms")
+  adminOfStudentAssociations StudentAssociation[]       @relation("studentAssociationAdmins")
 
   // For full-text search
   search                    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -257,7 +257,7 @@ model School {
   aliasMailDomains   String[] @default([]) @db.VarChar(255)
   description        String   @default("") @db.Text
   address            String   @default("") @db.VarChar(255)
-  pictureFile       String    @default("") @db.VarChar(255)
+  pictureFile        String   @default("") @db.VarChar(255)
 
   majors              Major[]              @relation("MajorToSchool")
   majorsLdapSchool    Major[]              @relation("ldapSchool")
@@ -346,6 +346,8 @@ model StudentAssociation {
   lydiaAccounts       LydiaAccount[]
   contributionOptions ContributionOption[]
   services            Service[]
+  admins              User[]               @relation("studentAssociationAdmins")
+  groupsEditors       User[]               @relation("studentAssociationGroupsEditor")
 }
 
 model Contribution {
@@ -432,7 +434,7 @@ model Group {
   tickets                Ticket[]            @relation("openTo")
   barWeeks               BarWeek[]
   services               Service[]
-  shopItems         ShopItem[]
+  shopItems              ShopItem[]
   restrictedFormSections FormSection[]       @relation("restrictedTo")
 
   notifications          Notification[]
@@ -633,7 +635,7 @@ model Registration {
 
   lydiaTransaction  LydiaTransaction?
   paypalTransaction PaypalTransaction?
-  ticket            Ticket            @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  ticket            Ticket             @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   author            User?              @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   verifiedBy        User?              @relation(name: "verifiedBy", fields: [verifiedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   verifiedAt        DateTime?
@@ -722,7 +724,7 @@ model PaypalTransaction {
   registration   Registration?            @relation(fields: [registrationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   status         PayPalTransactionStatus?
 
-  /// PayPal's order ID. 
+  /// PayPal's order ID.
   orderId   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -859,7 +861,7 @@ model Document {
   subject       Subject?     @relation(fields: [subjectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   subjectId     String?
   type          DocumentType
-  paperPaths    String[] // le sujet 
+  paperPaths    String[] // le sujet
   solutionPaths String[] // la correction
 
   uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -954,24 +956,24 @@ model Picture {
 }
 
 model ShopItem {
-  id                    String          @id @default(dbgenerated("nanoid('shopitem:')"))
+  id                    String           @id @default(dbgenerated("nanoid('shopitem:')"))
   uid                   String
-  name                  String          @db.VarChar(255)
-  price                 Float           @default(0)
-  stock                 Int             @default(0)
-  max                   Int             @default(0)
-  visibility            Visibility      @default(Private)
-  archived              Boolean         @default(false)
-  description           String          @default("") @db.Text
+  name                  String           @db.VarChar(255)
+  price                 Float            @default(0)
+  stock                 Int              @default(0)
+  max                   Int              @default(0)
+  visibility            Visibility       @default(Private)
+  archived              Boolean          @default(false)
+  description           String           @default("") @db.Text
   startsAt              DateTime?
   endsAt                DateTime?
   lydiaAccountId        String?
   groupId               String
-  group                 Group           @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  allowedPaymentMethods PaymentMethod[] @default([])
+  group                 Group            @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  allowedPaymentMethods PaymentMethod[]  @default([])
   pictures              Picture[]
   shopPayments          ShopPayment[]
-  lydiaAccount          LydiaAccount?   @relation(fields: [lydiaAccountId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  lydiaAccount          LydiaAccount?    @relation(fields: [lydiaAccountId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   itemOptions           ShopItemOption[]
 
   createdAt DateTime @default(now())
@@ -994,24 +996,25 @@ model ShopPayment {
   shopItem         ShopItem          @relation(fields: [shopItemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   lydiaTransaction LydiaTransaction?
-  shopItemAnswer   ShopItemAnswer?    
-  }
+  shopItemAnswer   ShopItemAnswer?
+}
 
 model ShopItemOption {
-  id            String @id @default(dbgenerated("nanoid('shopitemoption:')"))
-  name          String @db.VarChar(255)
-  shopItemId    String
-  options       String[] @default([])
-  shopItem      ShopItem @relation(fields: [shopItemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  required      Boolean @default(false)
-  otherToggle  Boolean @default(false)
+  id          String   @id @default(dbgenerated("nanoid('shopitemoption:')"))
+  name        String   @db.VarChar(255)
+  shopItemId  String
+  options     String[] @default([])
+  shopItem    ShopItem @relation(fields: [shopItemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  required    Boolean  @default(false)
+  otherToggle Boolean  @default(false)
 }
 
 model ShopItemAnswer {
-  id                String   @id @default(dbgenerated("nanoid('shopitemanswer:')"))
-  shopPaymentId     String
-  option            String[] @default([])
-  shopPayment       ShopPayment @relation(fields: [shopPaymentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id            String      @id @default(dbgenerated("nanoid('shopitemanswer:')"))
+  shopPaymentId String
+  option        String[]    @default([])
+  shopPayment   ShopPayment @relation(fields: [shopPaymentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
   @@unique([shopPaymentId])
 }
 

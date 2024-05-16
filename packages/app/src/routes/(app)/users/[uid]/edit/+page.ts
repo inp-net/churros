@@ -89,11 +89,18 @@ export const _userQuery = Selector('User')({
     },
   },
   enabledNotificationChannels: true,
+  canBeEdited: true,
 });
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
   const { me } = await parent();
-  if (params.uid !== me?.uid && !me?.canEditUsers) throw redirect(307, '..');
+  const { user } = await loadQuery(
+    {
+      user: [params, { canBeEdited: true }],
+    },
+    { fetch, parent },
+  );
+  if (!user.canBeEdited || !me) throw redirect(307, '..');
 
   const result = await loadQuery(
     {
@@ -102,10 +109,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
       __alias: {
         userPermissions: me.admin
           ? {
-              user: [
-                params,
-                { admin: true, canEditUsers: true, canEditGroups: true, canAccessDocuments: true },
-              ],
+              user: [params, { admin: true, canAccessDocuments: true }],
             }
           : {},
       },
@@ -120,8 +124,6 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
       me: {
         uid: true,
         admin: true,
-        canEditGroups: true,
-        canEditUsers: true,
         credentials: {
           id: true,
           name: true,
@@ -147,7 +149,6 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     ...result,
     user: {
       ...result.user,
-      // eslint-disable-next-line unicorn/no-null
       birthday: result.user.birthday ?? null,
     },
   };
