@@ -1,7 +1,7 @@
-import { builder, prisma, purgeUserSessions } from '#lib';
+import { builder, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
 
 import { updateMemberBoardLists } from '#modules/mails';
-import { onBoard } from '#permissions';
+import { onBoard, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 import { createTransport } from 'nodemailer';
 import { GroupMemberType } from '../index.js';
 
@@ -24,11 +24,23 @@ builder.mutationField('upsertGroupMember', (t) =>
       canScanEvents: t.arg.boolean(),
       isDeveloper: t.arg.boolean(),
     },
-    authScopes: (_, { groupId }, { user }) =>
-      Boolean(
-        user?.canEditGroups ||
+    async authScopes(_, { groupId }, { user }) {
+      let studentAssociation: string[] | null = null;
+      if (groupId) {
+        studentAssociation = objectValuesFlat(
+          await prisma.group.findUnique({
+            where: { id: groupId },
+            select: { studentAssociation: true },
+          }),
+        );
+      }
+
+      return Boolean(
+        userIsAdminOf(user, studentAssociation) ||
+          userIsGroupEditorOf(user, studentAssociation) ||
           user?.groups.some(({ group, canEditMembers }) => canEditMembers && group.id === groupId),
-      ),
+      );
+    },
     async resolve(
       query,
       _,

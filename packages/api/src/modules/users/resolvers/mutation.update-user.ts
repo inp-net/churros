@@ -1,8 +1,9 @@
-import { builder, log, markAsContributor, prisma, purgeUserSessions } from '#lib';
+import { builder, log, markAsContributor, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { GraphQLError } from 'graphql';
 import { phone as parsePhoneNumber } from 'phone';
+import { userIsAdminOf } from '../../../permissions/index.js';
 import { UserType, requestEmailChange } from '../index.js';
 
 /** Updates a user. */
@@ -34,8 +35,19 @@ builder.mutationField('updateUser', (t) =>
       }),
       contributesWith: t.arg({ type: ['ID'], required: false }),
     },
-    authScopes(_, { uid }, { user }) {
-      return user?.canEditUsers || uid === user?.uid;
+    async authScopes(_, { uid }, { user }) {
+      const studentAssociationIds = objectValuesFlat(
+        await prisma.user.findUniqueOrThrow({
+          where: { id: user?.id },
+          select: {
+            major: {
+              select: { schools: { select: { studentAssociations: { select: { id: true } } } } },
+            },
+          },
+        }),
+      );
+
+      return userIsAdminOf(user, studentAssociationIds) || uid === user?.uid;
     },
     async resolve(
       query,
@@ -63,7 +75,16 @@ builder.mutationField('updateUser', (t) =>
       { user },
     ) {
       if (!user) throw new GraphQLError('Connexion requise');
-      const targetUser = await prisma.user.findUniqueOrThrow({ where: { uid } });
+      const targetUser = await prisma.user.findUniqueOrThrow({
+        where: { uid },
+        include: {
+          major: {
+            select: { schools: { select: { studentAssociations: { select: { id: true } } } } },
+          },
+        },
+      });
+
+      const userIsAdmin = userIsAdminOf(user, objectValuesFlat(targetUser.major));
 
       if (phone) {
         const { isValid, phoneNumber } = parsePhoneNumber(phone, { country: 'FRA' });
@@ -114,11 +135,15 @@ builder.mutationField('updateUser', (t) =>
         await requestEmailChange(email, targetUser.id);
       }
 
-      if (!(user.canEditUsers || user.admin) && changingGraduationYear)
+      if (!userIsAdmin && changingGraduationYear)
         throw new GraphQLError('Not authorized to change graduation year');
 
       purgeUserSessions(uid);
-      if (changingContributesWith && contributesWith && (user.canEditUsers || user.admin)) {
+      if (
+        changingContributesWith &&
+        contributesWith &&
+        userIsAdminOf(user, objectValuesFlat(targetUser.major))
+      ) {
         await prisma.contribution.deleteMany({
           where: {
             user: { uid },
@@ -156,8 +181,8 @@ builder.mutationField('updateUser', (t) =>
           address,
           phone,
           birthday,
-          firstName: user.canEditUsers || user.admin ? firstName : targetUser.firstName,
-          lastName: user.canEditUsers || user.admin ? lastName : targetUser.lastName,
+          firstName: userIsAdmin ? firstName : targetUser.firstName,
+          lastName: userIsAdmin ? lastName : targetUser.lastName,
           cededImageRightsToTVn7,
           apprentice,
           links: { deleteMany: {}, createMany: { data: links } },

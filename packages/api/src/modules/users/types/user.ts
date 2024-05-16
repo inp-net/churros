@@ -1,7 +1,7 @@
-import { builder, toHtml, yearTier } from '#lib';
+import { builder, prisma, toHtml, yearTier } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { NotificationChannel } from '@prisma/client';
-import { FamilyTree, fullName, getFamilyTree } from '../index.js';
+import { canBeEdited, fullName } from '../index.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -10,6 +10,10 @@ export const UserType = builder.prismaNode('User', {
     ...(id === user?.id ? ['me'] : []),
     ...(majorId ? ['student'] : []),
   ],
+  include: {
+    adminOfStudentAssociations: true,
+    canEditGroups: true,
+  },
   fields: (t) => ({
     majorId: t.exposeID('majorId', { nullable: true }),
     uid: t.exposeString('uid'),
@@ -64,17 +68,81 @@ export const UserType = builder.prismaNode('User', {
     cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
     apprentice: t.exposeBoolean('apprentice'),
 
-    // Permissions are only visible to admins
-    admin: t.exposeBoolean('admin', {
-      // authScopes: { admin: true, $granted: 'me' },
+    admin: t.exposeBoolean('admin'),
+    adminOf: t.boolean({
+      description: "Vrai si cette personne est administratrice de l'association étudiante donnée",
+      args: { studentAssociation: t.arg.string({ description: "UID de l'association étudiante" }) },
+      resolve: async ({ id }, { studentAssociation }) => {
+        const user = await prisma.user.findUniqueOrThrow({
+          where: { id },
+          select: {
+            id: true,
+            adminOfStudentAssociations: { select: { uid: true } },
+            canEditGroups: { select: { uid: true } },
+          },
+        });
+        return user.adminOfStudentAssociations.some((a) => a.uid === studentAssociation);
+      },
+    }),
+    canBeEdited: t.boolean({
+      async resolve({ id }, _, { user: me }) {
+        // id = ID de cet user
+        // user = l'user connecté
+        if (!me) return false;
+        const user = await prisma.user.findUniqueOrThrow({
+          where: { id },
+          select: {
+            id: true,
+            major: {
+              select: { schools: { select: { studentAssociations: { select: { id: true } } } } },
+            },
+          },
+        });
+        return canBeEdited(user, me);
+      },
+    }),
+    studentAssociationAdmin: t.boolean({
+      description:
+        "Vrai si cette personne est administratrice d'au moins une association étudiante",
+      resolve: ({ adminOfStudentAssociations }) => adminOfStudentAssociations.length > 0,
+    }),
+    canEditGroup: t.boolean({
+      description: 'Vrai si cette personne peut éditer le groupe donné',
+      args: { uid: t.arg.string({ description: 'UID du groupe' }) },
+      resolve: async ({ id }, { uid: groupUid }) => {
+        const { studentAssociationId } = await prisma.group.findUniqueOrThrow({
+          where: { uid: groupUid },
+          select: { studentAssociationId: true },
+        });
+
+        const user = await prisma.user.findUniqueOrThrow({
+          where: { id },
+          select: {
+            id: true,
+            adminOfStudentAssociations: { select: { id: true } },
+            canEditGroups: { select: { uid: true } },
+          },
+        });
+
+        return (
+          (user.adminOfStudentAssociations?.some((a) => a.id === studentAssociationId) ?? false) ||
+          (user.canEditGroups?.some((a) => a.uid === groupUid) ?? false)
+        );
+      },
     }),
     canEditGroups: t.boolean({
-      resolve: ({ admin, canEditGroups }) => admin || canEditGroups,
-      authScopes: { admin: true, $granted: 'me' },
-    }),
-    canEditUsers: t.boolean({
-      resolve: ({ admin, canEditUsers }) => admin || canEditUsers,
-      authScopes: { admin: true, $granted: 'me' },
+      description: 'Vrai si cette personne peut éditer des groupes',
+      resolve: async ({ id }) => {
+        const user = await prisma.user.findUniqueOrThrow({
+          where: { id },
+          select: {
+            id: true,
+            canEditGroups: { select: { uid: true } },
+          },
+        });
+
+        return user.canEditGroups.length > 0;
+      },
     }),
     canAccessDocuments: t.boolean({
       resolve: ({ admin, canAccessDocuments }) => admin || canAccessDocuments,
@@ -104,12 +172,6 @@ export const UserType = builder.prismaNode('User', {
     godchildren: t.relation('godchildren'),
     outgoingGodparentRequests: t.relation('outgoingGodparentRequests'),
     incomingGodparentRequests: t.relation('incomingGodparentRequests'),
-    familyTree: t.field({
-      type: FamilyTree,
-      async resolve({ id, godparentId }) {
-        return getFamilyTree({ id, godparentId: godparentId ?? undefined });
-      },
-    }),
     emailChangeRequests: t.relation('emailChanges', {
       authScopes: { $granted: 'me' },
     }),

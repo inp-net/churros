@@ -11,11 +11,11 @@ import {
 } from '#permissions';
 import { PaymentMethod } from '@prisma/client';
 import { EventFrequencyType, eventCapacity } from '../index.js';
-import { canEdit, canEditManagers, canSeeBookings } from '../utils/permissions.js';
+import { canEdit, canEditManagers, canSeeBookings } from '../utils/index.js';
 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
-  include: { managers: true },
+  include: { managers: true, group: true },
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),

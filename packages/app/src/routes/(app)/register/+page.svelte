@@ -20,7 +20,7 @@
   domain = email.split('@')[1];
   let formErrors: ZodFormattedError<typeof args> | undefined;
   const register = async () => {
-    if (domain.includes('etu') && !schoolDomain) return;
+    if (domain.includes('etu') && !schoolDomainIsValid) return;
     if (loading) return;
 
     try {
@@ -57,7 +57,7 @@
     }
   };
 
-  let schoolDomain = true;
+  let schoolDomainIsValid = true;
 </script>
 
 <h1>Inscription</h1>
@@ -68,7 +68,7 @@
       <strong>{(formErrors?._errors ?? []).join(' ')} </strong>
     </Alert>
 
-    {#if domain.includes('etu') && !schoolDomain}
+    {#if domain.includes('etu') && !schoolDomainIsValid}
       <Alert theme="danger">Vérifiez l'adresse mail: elle doît terminer par @etu.***.fr</Alert>
     {/if}
     <InputText
@@ -80,7 +80,7 @@
       on:change={() => {
         email = email.toLowerCase();
         domain = email.split('@')[1];
-        schoolDomain = data.schools
+        schoolDomainIsValid = data.schools
           .flatMap((s) => [s.internalMailDomain, ...s.aliasMailDomains])
           .includes(domain);
       }}

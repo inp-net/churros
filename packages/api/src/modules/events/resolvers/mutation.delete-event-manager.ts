@@ -1,4 +1,5 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
+import { userIsAdminOf } from '#permissions';
 
 builder.mutationField('deleteEventManager', (t) =>
   t.field({
@@ -7,7 +8,7 @@ builder.mutationField('deleteEventManager', (t) =>
     async authScopes(_, { eventId, user }, { user: currentUser }) {
       const event = await prisma.event.findUnique({
         where: { id: eventId },
-        include: { author: true, managers: true },
+        include: { author: true, managers: true, group: true },
       });
 
       // Admins can delete managers if the upstream event does not exist anymore
@@ -18,7 +19,7 @@ builder.mutationField('deleteEventManager', (t) =>
 
       // Other managers that have the canEditPermissions permission, or admins, can delete managers
       return Boolean(
-        currentUser?.admin ||
+        userIsAdminOf(currentUser, objectValuesFlat(event.group)) ||
           event.managers.some(
             ({ userId, canEditPermissions }) => currentUser?.id === userId && canEditPermissions,
           ),

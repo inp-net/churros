@@ -1,5 +1,14 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, log, prisma, publish, yearTier } from '#lib';
+import {
+  TYPENAMES_TO_ID_PREFIXES,
+  builder,
+  log,
+  objectValuesFlat,
+  prisma,
+  publish,
+  yearTier,
+} from '#lib';
 import { notify } from '#modules/notifications';
+import { userIsAdminOf } from '#permissions';
 import { NotificationChannel, type User } from '@prisma/client';
 import { CommentType } from '../index.js';
 
@@ -13,9 +22,41 @@ builder.mutationField('upsertComment', (t) =>
       articleId: t.arg.id({ required: false }),
       inReplyToId: t.arg.id({ required: false }),
     },
-    authScopes(_, { articleId, documentId }, { user }) {
+    async authScopes(_, { articleId, documentId }, { user }) {
+      let studentAssociationIds: string[] = [];
+
+      if (articleId) {
+        studentAssociationIds = objectValuesFlat(
+          await prisma.article.findUnique({
+            where: { id: articleId },
+            select: { group: { select: { studentAssociationId: true } } },
+          }),
+        );
+      } else if (documentId) {
+        studentAssociationIds = objectValuesFlat(
+          await prisma.document.findUnique({
+            where: { id: documentId },
+            select: {
+              subject: {
+                select: {
+                  minors: {
+                    select: {
+                      majors: {
+                        select: {
+                          schools: { select: { studentAssociations: { select: { id: true } } } },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          }),
+        );
+      }
+
       return Boolean(
-        user?.admin ||
+        userIsAdminOf(user, studentAssociationIds) ||
           // TODO only allow for articles the user can see
           articleId /* && true */ ||
           (documentId && user?.canAccessDocuments),

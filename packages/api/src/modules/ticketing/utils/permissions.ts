@@ -1,17 +1,16 @@
 import type { Context } from '#lib';
-import type { Event, EventManager } from '@prisma/client';
+import { userIsAdminOf } from '#permissions';
+import type { Event, EventManager, Group } from '@prisma/client';
 
 export function canScanBookings(
-  event: Event & { managers: EventManager[] },
+  event: Event & { managers: EventManager[]; group: Group },
   user: Context['user'],
 ) {
-  if (user?.admin) return true;
+  if (userIsAdminOf(user, event.group.studentAssociationId)) return true;
 
   const membership = user?.groups.find(({ group }) => group.id === event.groupId);
   if (membership?.canScanEvents) return true;
 
   const managementship = event.managers.find((m) => m.userId === user?.id);
-  if (managementship?.canVerifyRegistrations) return true;
-
-  return false;
+  return !!managementship?.canVerifyRegistrations;
 }

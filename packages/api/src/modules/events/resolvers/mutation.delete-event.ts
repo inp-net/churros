@@ -1,4 +1,5 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
+import { userIsAdminOf } from '#permissions';
 
 builder.mutationField('deleteEvent', (t) =>
   t.field({
@@ -9,10 +10,11 @@ builder.mutationField('deleteEvent', (t) =>
     async authScopes(_, { id }, { user }) {
       const event = await prisma.event.findUniqueOrThrow({
         where: { id },
-        include: { managers: true },
+        include: { managers: true, group: true },
       });
       return Boolean(
-        user?.admin || event.managers.some(({ userId, canEdit }) => userId === user?.id && canEdit),
+        userIsAdminOf(user, objectValuesFlat(event.group)) ||
+          event.managers.some(({ userId, canEdit }) => userId === user?.id && canEdit),
       );
     },
     async resolve(_, { id }, { user }) {

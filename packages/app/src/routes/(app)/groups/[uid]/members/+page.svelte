@@ -14,11 +14,7 @@
   $: clubBoard = group.members?.filter((m) => isOnClubBoard(m));
   $: onClubBoard = clubBoard.some(({ member }) => member.uid === $me?.uid);
   $: canEditMembers = Boolean(
-    $me?.admin ||
-      myPermissions?.canEditMembers ||
-      onClubBoard ||
-      $me?.canEditGroups ||
-      $me?.canEditUsers,
+    $me?.admin || myPermissions?.canEditMembers || onClubBoard || data.canEditGroup,
   );
   $: myPermissions = $me?.groups.find(({ group: { uid } }) => uid === group.uid);
 

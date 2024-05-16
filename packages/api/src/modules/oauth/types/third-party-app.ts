@@ -1,5 +1,5 @@
 import { builder, prisma, removeIdPrefix } from '#lib';
-import { userIsOnBoardOf } from '../../../permissions/member.js';
+import { userIsOnBoardOf } from '#permissions';
 import { CLIENT_SECRET_LENGTH } from '../index.js';
 
 export const ThirdPartyApp = builder.prismaObject('ThirdPartyApp', {

@@ -1,5 +1,6 @@
-import { builder, prisma, updatePicture } from '#lib';
+import { builder, objectValuesFlat, prisma, updatePicture } from '#lib';
 import { FileScalar } from '#modules/global';
+import { userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 
 /** Update the club's picture */
 builder.mutationField('updateGroupPicture', (t) =>
@@ -10,8 +11,19 @@ builder.mutationField('updateGroupPicture', (t) =>
       file: t.arg({ type: FileScalar }),
       dark: t.arg.boolean(),
     },
-    authScopes: (_, { uid }, { user }) =>
-      Boolean(user?.canEditGroups || user?.groups.some(({ group }) => group.uid === uid)),
+    async authScopes(_, { uid }, { user }) {
+      const studentAssociationIds = objectValuesFlat(
+        await prisma.group.findUniqueOrThrow({
+          where: { uid },
+          select: { studentAssociationId: true },
+        }),
+      );
+      return Boolean(
+        userIsAdminOf(user, studentAssociationIds) ||
+          userIsGroupEditorOf(user, studentAssociationIds) ||
+          user?.groups.some(({ group }) => group.uid === uid),
+      );
+    },
     async resolve(_, { uid, file, dark }, { user }) {
       const picture = updatePicture({
         resource: 'group',

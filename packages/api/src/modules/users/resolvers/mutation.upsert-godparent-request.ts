@@ -1,6 +1,7 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
 import { notify } from '#modules/notifications';
+import { userIsAdminOf } from '#permissions';
 import { NotificationChannel } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { GodparentRequestType, fullName, getFamilyTree } from '../index.js';
@@ -14,8 +15,28 @@ builder.mutationField('upsertGodparentRequest', (t) =>
       godchildUid: t.arg.string(),
       godparentUid: t.arg.string(),
     },
-    authScopes(_, { godchildUid }, { user }) {
-      if (godchildUid !== user?.uid) return Boolean(user?.admin || user?.canEditUsers);
+    async authScopes(_, { godchildUid }, { user }) {
+      const studentAssociations = objectValuesFlat(
+        await prisma.user.findUniqueOrThrow({
+          where: { uid: godchildUid },
+          select: {
+            major: {
+              select: {
+                schools: {
+                  select: {
+                    studentAssociations: {
+                      select: {
+                        id: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }),
+      );
+      if (godchildUid !== user?.uid) return Boolean(userIsAdminOf(user, studentAssociations));
       return Boolean(user);
     },
     async resolve(query, _, { id, godparentUid, godchildUid }, { user }) {

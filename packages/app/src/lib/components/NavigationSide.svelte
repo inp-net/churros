@@ -167,7 +167,7 @@
     <span>Les autres services</span>
   </a>
 
-  {#if $me?.admin || $me?.canEditUsers}
+  {#if $me?.admin || $me?.studentAssociationAdmin}
     <a
       href="/signups"
       class="navigation-item"
@@ -249,14 +249,14 @@
   role="presentation"
 >
   <section class="flyout" class:open={flyoutOpen}>
-    {#if $me?.admin}
+    {#if $me?.admin || $me?.studentAssociationAdmin}
       <a href="/bar-weeks">
         <IconBarWeek />
         <span>Semaine de bar</span>
       </a>
     {/if}
 
-    {#if $me?.admin || $me?.canEditGroups}
+    {#if $me?.admin || $me?.canEditGroups || $me?.studentAssociationAdmin}
       <a href="/groups/create">
         <IconGroupOutline />
         <span>Groupe</span>

@@ -4,7 +4,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent, params, url }) => {
-  const { me } = await parent();
+  const { me, canEditGroup } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
   const data = await loadQuery(
     {
@@ -194,7 +194,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
   );
 
   const canEdit =
-    me.canEditGroups ||
+    canEditGroup ||
     Boolean(
       me.groups.some(
         ({ group, canEditArticles }) => canEditArticles && group.id === data.event.group.id,

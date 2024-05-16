@@ -12,6 +12,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
           ? // Authenticated query
             {
               id: true,
+              canEditDetails: true,
               uid: true,
               type: true,
               name: true,

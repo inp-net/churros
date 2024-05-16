@@ -24,8 +24,16 @@ export const _clubQuery = Selector('Group')({
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
   const { me, token } = await parent();
+
+  const { user: currentUser } = await loadQuery(
+    {
+      user: [{ id: me?.id }, { canEditGroup: [{ uid: params.uid }, true] }],
+    },
+    { fetch, token },
+  );
+
   if (
-    !me?.canEditGroups &&
+    !currentUser?.canEditGroup &&
     !me?.groups.some(({ group, ...perms }) => group.uid === params.uid && isOnClubBoard(perms))
   )
     throw redirect(307, '..');
