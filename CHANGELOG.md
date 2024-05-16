@@ -22,6 +22,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Sécurité
 
 - Les clubs ne sont plus autorisés à modifier leur type (@litschan)
+- Création de droit admins et editions des groupes par AE (!144) (@dreumonte & @simonh & @lebihae)
 
 ### Corrections
 
