@@ -45,7 +45,9 @@
   import IconAnilist from '~icons/simple-icons/anilist';
   import IconEye from '~icons/mdi/eye';
   import IconDownload from '~icons/mdi/download-outline';
+  import IconStore from '~icons/mdi/store';
   import type { PageData } from './$types';
+  import ShopItem from '$lib/components/ShopItem.svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -98,18 +100,12 @@
   $: myPermissions = $me?.groups?.find(({ group: { uid } }) => uid === group.uid);
 
   $: ({ group } = data);
+  $: ShopItems = data.itemsOfGroup;
 
-  $: canEditDetails = Boolean(
-    $me?.admin || clubBoard?.some(({ member }) => member.uid === $me?.uid) || $me?.canEditGroups,
-  );
   $: canEditArticles = Boolean($me?.admin || myPermissions?.canEditArticles || meOnClubBoard);
   $: canEditEvents = canEditArticles;
   $: canEditMembers = Boolean(
-    $me?.admin ||
-      myPermissions?.canEditMembers ||
-      meOnClubBoard ||
-      $me?.canEditGroups ||
-      $me?.canEditUsers,
+    $me?.admin || myPermissions?.canEditMembers || meOnClubBoard || data.canEditGroup,
   );
 
   const joinGroup = async (groupUid: string) => {
@@ -184,8 +180,9 @@
       <h1>
         {group.name}
         <ButtonShare />
-        {#if canEditDetails}
-          <ButtonGhost help="Modifier les infos" href="./edit"><IconGear /></ButtonGhost>
+        <ButtonGhost help="Accéder à la boutique" href="./shop/"><IconStore /></ButtonGhost>
+        {#if group.canEditDetails}
+          <ButtonGhost help="Modifier les infos" href="./edit/"><IconGear /></ButtonGhost>
         {/if}
 
         {#if group?.members?.find(({ member: { uid } }) => uid === $me?.uid)}
@@ -229,7 +226,7 @@
             {group.address}
             {#if $me && !$me.external}
               <!-- Pour éviter que les gens exté voient l'ouverture des salles. -->
-              {#if $me?.canEditGroups || $me?.groups.some((g) => g.group.uid === group.uid)}
+              {#if data.canEditGroup || $me?.groups.some((g) => g.group.uid === group.uid)}
                 <InputToggle
                   label={group.roomIsOpen ? 'Ouverte' : 'Fermée'}
                   value={group.roomIsOpen}
@@ -349,6 +346,17 @@
     </section>
   {/if}
 
+  <section class="shop">
+    <h2>
+      Boutique
+      <ButtonSecondary href="./shop/" icon={IconStore}>Voir</ButtonSecondary>
+    </h2>
+    <div class="shoppreview">
+      {#each ShopItems.slice(0, 6) as shopItem}
+        <ShopItem {shopItem} small={true} />
+      {/each}
+    </div>
+  </section>
   <section class="posts">
     <h2>
       Posts {#if canEditArticles}<ButtonSecondary href="/posts/{group.uid}/create/" icon={IconAdd}
@@ -503,6 +511,12 @@
   .admin-button {
     display: flex;
     margin: 0.3rem;
+  .shoppreview {
+    display: flex;
+    flex: 0 0 auto;
+    flex-flow: row wrap;
+    flex-grow: 1;
+    gap: 1em;
   }
 
   @media (min-width: 1000px) {
@@ -517,7 +531,7 @@
 
     .content {
       display: grid;
-      grid-template-areas: 'header header' 'description posts' 'board posts' 'subgroups events' 'related events';
+      grid-template-areas: 'header header' 'description shoppreview' 'board posts' 'subgroups events' 'related events';
       grid-template-columns: 50% 50%;
       column-gap: 5rem;
       justify-content: start;

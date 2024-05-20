@@ -50,6 +50,7 @@
   type Nesting = [string, Nesting[]];
   $: familyNesting = JSON.parse(data.user.familyTree.nesting) as Nesting;
   type UserTree = (typeof data.user.familyTree.users)[number] & { children: UserTree[] };
+
   function makeFamilyTree(nesting: Nesting): UserTree {
     const findUser = (uid: string) => data.user.familyTree.users.find((u) => u.uid === uid);
 
@@ -113,7 +114,7 @@
         </div>
       {/if}
 
-      <img src={pictureFile} alt={user.fullName} />
+      <img alt={user.fullName} src={pictureFile} />
     </div>
 
     <div class="identity">
@@ -121,20 +122,29 @@
         <div class="text">
           {user.firstName}
           {user.lastName}
-          {#if user.admin}<Badge title="Possède tous les droits" theme="info"><IconAdmin /></Badge>
+          {#if user.admin}
+            <Badge title="Possède tous les droits" theme="info">
+              <IconAdmin />
+            </Badge>
           {/if}
-          {#if isDeveloper}<Badge title="A écrit du code pour Churros" theme="info">
+          {#if isDeveloper}
+            <Badge title="A écrit du code pour Churros" theme="info">
               <IconCode></IconCode>
-            </Badge>{/if}
+            </Badge>
+          {/if}
         </div>
 
         <div class="actions">
           <ButtonShare />
-          {#if $me?.uid === user.uid || $me?.admin || $me?.canEditUsers}
-            <ButtonGhost help="Modifier" href="/users/{user.uid}/edit/"><IconGear /></ButtonGhost>
+          {#if $me?.uid === user.uid || $me?.admin || data.user.canBeEdited}
+            <ButtonGhost help="Modifier" href="/users/{user.uid}/edit/">
+              <IconGear />
+            </ButtonGhost>
           {/if}
           {#if $me?.uid === user.uid}
-            <ButtonGhost help="Se déconnecter" on:click={logout}><IconLogout /></ButtonGhost>
+            <ButtonGhost help="Se déconnecter" on:click={logout}>
+              <IconLogout />
+            </ButtonGhost>
           {/if}
         </div>
       </h1>
@@ -156,10 +166,12 @@
               ><abbr title="" use:tooltip={user.minor.name}>{user.minor.shortName}</abbr></a
             >
           {/if}
-          · {#each user.major.schools as school}
+          ·
+          {#each user.major.schools as school}
             <a class="school" href="/schools/{school.uid}">{school.name}</a>
           {/each}
-        {:else}Exté{/if}
+        {:else}Exté
+        {/if}
         {user.apprentice ? 'FISA' : ''}
       </p>
       <ul class="social-links nobullet">
@@ -258,7 +270,7 @@
     <section class="groups">
       <h2>Groupes</h2>
       <p class="typo-details">Tu n'es dans aucun groupe... 😢</p>
-      <ButtonSecondary href="/groups">Découvre les clubs de l'n7 !</ButtonSecondary>
+      <ButtonSecondary href="/groups">Découvre les clubs !</ButtonSecondary>
     </section>
   {/if}
 

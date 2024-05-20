@@ -1,5 +1,6 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 import { FileScalar } from '#modules/global';
+import { userIsAdminOf } from '#permissions';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, relative } from 'node:path';
 import { documentFilePath } from '../index.js';
@@ -15,8 +16,19 @@ builder.mutationField('uploadDocumentFile', (t) =>
     async authScopes(_, { documentId }, { user }) {
       const document = await prisma.document.findUniqueOrThrow({
         where: { id: documentId },
+        include: {
+          subject: {
+            select: {
+              majors: {
+                select: { schools: { select: { studentAssociations: { select: { id: true } } } } },
+              },
+            },
+          },
+        },
       });
-      return Boolean(user?.admin || document.uploaderId === user?.id);
+      return Boolean(
+        userIsAdminOf(user, objectValuesFlat(document.subject)) || document.uploaderId === user?.id,
+      );
     },
     async resolve(_, { documentId, file, solution }) {
       const document = await prisma.document.findUniqueOrThrow({

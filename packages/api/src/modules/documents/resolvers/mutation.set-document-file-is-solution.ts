@@ -1,4 +1,5 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
+import { userIsAdminOf } from '#permissions';
 
 // TODO find a better name, idk what
 
@@ -13,8 +14,19 @@ builder.mutationField('setDocumentFileIsSolution', (t) =>
     async authScopes(_, { documentId }, { user }) {
       const document = await prisma.document.findUniqueOrThrow({
         where: { id: documentId },
+        include: {
+          subject: {
+            select: {
+              majors: {
+                select: { schools: { select: { studentAssociations: { select: { id: true } } } } },
+              },
+            },
+          },
+        },
       });
-      return Boolean(user?.admin || document.uploaderId === user?.id);
+      return Boolean(
+        userIsAdminOf(user, objectValuesFlat(document.subject)) || document.uploaderId === user?.id,
+      );
     },
     async resolve(_, { documentId, filename, isSolution }) {
       const document = await prisma.document.findUniqueOrThrow({

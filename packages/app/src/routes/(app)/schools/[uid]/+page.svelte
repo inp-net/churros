@@ -3,6 +3,9 @@
   import CardService from '$lib/components/CardService.svelte';
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
+  import { me } from '$lib/session';
+  import IconEdit from '~icons/mdi/edit-outline';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
 
   export let data: PageData;
 
@@ -28,13 +31,18 @@
 <div class="content">
   <header>
     <div class="picture">
-      <img src="/schools/{school.uid}.png" alt="{school.name} logo" />
+      <img src={school.pictureFile} alt="{school.name} logo" />
     </div>
 
     <div class="identity">
-      <h1>
-        {school.name}
-      </h1>
+      <div class="school-header">
+        <h1>
+          {school.name}
+        </h1>
+        {#if $me?.admin}
+          <ButtonGhost href="./edit/"><IconEdit /></ButtonGhost>
+        {/if}
+      </div>
       <h2>
         {school.address}
       </h2>
@@ -83,6 +91,12 @@
     gap: 2rem;
     padding: 0 1rem;
     margin: 0 auto;
+  }
+
+  .school-header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
   }
 
   header {

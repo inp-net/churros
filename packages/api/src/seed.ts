@@ -320,8 +320,8 @@ const contributionOptions = await prisma.contributionOption.findMany({
 //User rigolo de l'ancienne DB de test, que personne y touche on en est fier.
 const usersData = [
   { firstName: 'Annie', lastName: 'Versaire', admin: true }, //Unique compte de la DB qui possède les droits admin
-  { firstName: 'Bernard', lastName: 'Tichaut', canEditGroups: true }, //Unique compte "respo club"
-  { firstName: 'Camille', lastName: 'Honnête', canEditUsers: true },
+  { firstName: 'Bernard', lastName: 'Tichaut' },
+  { firstName: 'Camille', lastName: 'Honnête' },
   { firstName: 'Denis', lastName: 'Chon' },
   { firstName: 'Élie', lastName: 'Coptère' },
   { firstName: 'Fred', lastName: 'Voyage' },
@@ -891,6 +891,46 @@ await prisma.thirdPartyApp.create({
       set: ['https://wiki.inpt.fr', 'http://localhost:5000'],
     },
     owner: { connect: { id: thirdPartyAppClub.id } },
+  },
+});
+
+await prisma.shopItem.create({
+  data: {
+    uid: 'boules-quies',
+    name: 'Boules quies',
+    description: 'Acheter des boules quies pour pas entendre Téo',
+    price: 10,
+    stock: 0,
+    max: 5,
+    visibility: Visibility.Public,
+    group: { connect: { uid: 'ski' } },
+  },
+});
+
+await prisma.shopItem.create({
+  data: {
+    uid: 'server',
+    name: 'Server',
+    description: 'Atom 2 duo',
+    price: 100_000,
+    stock: 1,
+    max: 5,
+    visibility: Visibility.GroupRestricted,
+    group: { connect: { uid: 'ski' } },
+  },
+});
+
+await prisma.shopItem.create({
+  data: {
+    uid: 'rechauffement',
+    name: 'Réchauffement Climatique',
+    description:
+      "Acheter un peu de réchauffement climatique, c'est gratuit et on en a en trop ! ![](https://jancovici.com/wp-content/uploads/2016/10/GES_graph13_en.png)",
+    price: 0,
+    stock: 0,
+    max: 0,
+    visibility: Visibility.Public,
+    group: { connect: { uid: 'bdd-ae-eau-2022' } },
   },
 });
 

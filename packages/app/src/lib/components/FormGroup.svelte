@@ -14,6 +14,7 @@
   import { toasts } from '$lib/toasts';
   import InputGroups from './InputGroups.svelte';
   import InputStudentAssociations from './InputStudentAssociations.svelte';
+  import { me } from '$lib/session';
 
   export let data: PageData;
   export let creatingSubgroup = false;
@@ -101,7 +102,7 @@
   <p class="loading muted">Chargement...</p>
 {:then { groups: allGroups }}
   <form on:submit|preventDefault={submit}>
-    {#if !creatingSubgroup}
+    {#if !creatingSubgroup && ($me?.admin || data.canEditGroup)}
       <InputSelectOne
         label="Type de groupe"
         required

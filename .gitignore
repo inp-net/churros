@@ -33,6 +33,7 @@ packages/api/scripts/frappe-dump-raw.json
 packages/api/scripts/frappe-documents/
 
 .env
+.eslintcache
 packages/*/.env
 
 # Ignore jetbrains ide files

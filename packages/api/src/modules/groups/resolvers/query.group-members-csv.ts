@@ -1,4 +1,5 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
+import { userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 
 // TODO rename to group.members-csv
 
@@ -9,13 +10,23 @@ builder.queryField('groupMembersCsv', (t) =>
     args: {
       groupUid: t.arg.string(),
     },
-    authScopes: (_, { groupUid }, { user }) =>
-      Boolean(
-        user?.canEditGroups ||
+    async authScopes(_, { groupUid }, { user }) {
+      const studentAssociationIds = objectValuesFlat(
+        await prisma.group.findUniqueOrThrow({
+          where: { uid: groupUid },
+          select: { studentAssociationId: true },
+        }),
+      );
+
+      return Boolean(
+        userIsAdminOf(user, studentAssociationIds) ||
+          userIsGroupEditorOf(user, studentAssociationIds) ||
           user?.groups.some(
             ({ group, canEditMembers }) => canEditMembers && group.uid === groupUid,
           ),
-      ),
+      );
+    },
+
     async resolve(_query, { groupUid }) {
       const group = await prisma.group.findUniqueOrThrow({
         where: { uid: groupUid },

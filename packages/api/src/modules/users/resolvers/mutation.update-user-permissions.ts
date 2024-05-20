@@ -1,23 +1,46 @@
-import { builder, prisma, purgeUserSessions } from '#lib';
+import { builder, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
 
+import { userIsAdminOf } from '#permissions';
 import { UserType } from '../index.js';
 
+/**
+ * @TODO: implement can edit groups and studentAssociationsAdmin
+ */
 builder.mutationField('updateUserPermissions', (t) =>
   t.prismaField({
     type: UserType,
     args: {
       uid: t.arg.string(),
-      canEditGroups: t.arg.boolean(),
-      canEditUsers: t.arg.boolean(),
       canAccessDocuments: t.arg.boolean(),
     },
-    authScopes: (_, {}, { user }) => Boolean(user?.admin),
-    async resolve(query, _, { uid, canEditGroups, canEditUsers, canAccessDocuments }, { user }) {
+    async authScopes(_, { uid }, { user }) {
+      const studentAssociationIds = objectValuesFlat(
+        await prisma.user.findUniqueOrThrow({
+          where: { uid },
+          select: {
+            major: {
+              select: {
+                schools: {
+                  select: {
+                    studentAssociations: {
+                      select: { id: true },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }),
+      );
+
+      return userIsAdminOf(user, studentAssociationIds);
+    },
+    async resolve(query, _, { uid, canAccessDocuments }, { user }) {
       purgeUserSessions(uid);
       const userUpdated = await prisma.user.update({
         ...query,
         where: { uid },
-        data: { canEditGroups, canEditUsers, canAccessDocuments },
+        data: { canAccessDocuments },
       });
       await prisma.logEntry.create({
         data: {
@@ -25,8 +48,6 @@ builder.mutationField('updateUserPermissions', (t) =>
           action: 'update',
           target: userUpdated.id,
           message: `Updated user ${userUpdated.uid} permissions: ${JSON.stringify({
-            canEditGroups,
-            canEditUsers,
             canAccessDocuments,
           })}`,
           user: { connect: { id: user?.id } },

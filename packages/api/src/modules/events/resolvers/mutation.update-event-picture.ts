@@ -1,6 +1,7 @@
-import { builder, prisma, updatePicture } from '#lib';
+import { builder, objectValuesFlat, prisma, updatePicture } from '#lib';
 import { FileScalar } from '#modules/global';
-import { canEdit } from '../utils/permissions.js';
+import { userIsAdminOf } from '#permissions';
+import { canEdit } from '../utils/index.js';
 
 builder.mutationField('updateEventPicture', (t) =>
   t.field({
@@ -12,9 +13,9 @@ builder.mutationField('updateEventPicture', (t) =>
     async authScopes(_, { id }, { user }) {
       const event = await prisma.event.findUniqueOrThrow({
         where: { id },
-        include: { managers: true },
+        include: { managers: true, group: true },
       });
-      return canEdit(event, user);
+      return userIsAdminOf(user, objectValuesFlat(event.group)) || canEdit(event, user);
     },
     async resolve(_, { id, file }) {
       return updatePicture({

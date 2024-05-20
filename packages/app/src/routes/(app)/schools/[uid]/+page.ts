@@ -11,6 +11,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
           name: true,
           description: true,
           address: true,
+          pictureFile: true,
           studentAssociations: {
             uid: true,
             name: true,

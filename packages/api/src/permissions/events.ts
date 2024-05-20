@@ -1,8 +1,8 @@
 import type { Context } from '#lib';
 import { prisma } from '#lib';
 
-import { userCanManageEvent } from '#permissions';
-import type { Prisma } from '@prisma/client';
+import { userCanManageEvent, userIsAdminOf } from '#permissions';
+import type { Group, Prisma } from '@prisma/client';
 import * as PrismaTypes from '@prisma/client';
 import { mappedGetAncestors } from 'arborist';
 
@@ -125,7 +125,7 @@ export async function userCanAccessEvent(
           uid: string;
           studentAssociation?: null | { school: { uid: string } };
         }>;
-        group: {
+        group: Group & {
           studentAssociation?: null | { school: { uid: string } };
         };
         managers: Array<{
@@ -140,7 +140,7 @@ export async function userCanAccessEvent(
     | null,
   user: Context['user'],
 ): Promise<boolean> {
-  if (user?.admin) return true;
+  if (userIsAdminOf(user, event?.group.studentAssociationId)) return true;
 
   if (event?.tickets.some(({ openToExternal }) => openToExternal !== false)) return true;
 
@@ -174,6 +174,7 @@ export async function userCanAccessEvent(
         .then((groups) => mappedGetAncestors(groups, user.groups, { mappedKey: 'groupId' }))
         .then((groups) => groups.flat());
 
+      if (user.groups.some(({ group }) => event.groupId === group.id)) return true;
       return Boolean(
         ancestors.some(({ id }) =>
           [event.groupId, ...event.coOrganizers.map((g) => g.id)].includes(id),

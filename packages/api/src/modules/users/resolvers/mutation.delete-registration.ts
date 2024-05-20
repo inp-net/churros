@@ -1,4 +1,5 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
+import { userIsAdminOf } from '../../../permissions/index.js';
 
 builder.mutationField('deleteRegistration', (t) =>
   t.field({
@@ -6,8 +7,28 @@ builder.mutationField('deleteRegistration', (t) =>
     args: {
       id: t.arg.id(),
     },
-    authScopes(_, {}, { user }) {
-      return Boolean(user?.admin);
+    async authScopes(_, { id }, { user }) {
+      const studentAssociationId = objectValuesFlat(
+        await prisma.registration.findMany({
+          where: { id },
+          select: {
+            ticket: {
+              select: {
+                event: {
+                  select: {
+                    group: {
+                      select: {
+                        studentAssociationId: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }),
+      );
+      return Boolean(userIsAdminOf(user, studentAssociationId));
     },
     async resolve(_, { id }, { user }) {
       // const registration = await prisma.registration.findFirstOrThrow({

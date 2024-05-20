@@ -1,5 +1,6 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
+import { userIsAdminOf } from '#permissions';
 import { DocumentType } from '../index.js';
 // TODO rename to subject.documents
 
@@ -12,8 +13,27 @@ builder.queryField('documentsOfSubject', (t) =>
       yearTier: t.arg.int({ required: true }),
       forApprentices: t.arg.boolean({ required: true }),
     },
-    authScopes(_, {}, { user }) {
-      return Boolean(user?.admin || user?.canAccessDocuments);
+    async authScopes(_, { subjectUid }, { user }) {
+      const studentAssociationIds: string[] = objectValuesFlat(
+        await prisma.subject.findFirst({
+          where: {
+            uid: subjectUid,
+          },
+          select: {
+            minors: {
+              select: {
+                majors: {
+                  select: {
+                    schools: { select: { studentAssociations: { select: { id: true } } } },
+                  },
+                },
+              },
+            },
+          },
+        }),
+      );
+
+      return Boolean(userIsAdminOf(user, studentAssociationIds) || user?.canAccessDocuments);
     },
     async resolve(query, _, { subjectUid, yearTier, forApprentices }) {
       /* eslint-disable unicorn/no-null */

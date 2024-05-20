@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { me } from '$lib/session';
   import { toasts } from '$lib/toasts';
   import { Selector, zeus } from '$lib/zeus';
   import Fuse from 'fuse.js';
@@ -30,6 +29,7 @@
     graduationYear: true,
     phone: true,
     birthday: true,
+    canBeEdited: true,
     minor: { id: true, name: true, yearTier: true, shortName: true },
     major: {
       id: true,
@@ -84,6 +84,7 @@
       apprentice: boolean;
       contributesWith: Array<{ id: string; name: string }>;
       cededImageRightsToTVn7: boolean;
+      canBeEdited: boolean;
     };
   };
 
@@ -112,7 +113,6 @@
       otherEmails,
       apprentice,
       // See https://github.com/graphql-editor/graphql-zeus/issues/262
-      // eslint-disable-next-line unicorn/no-null
       birthday = null,
       contributesWith,
       major,
@@ -137,7 +137,7 @@
     value: data.user.links.find((link) => link.name === name)?.value ?? '',
   }));
 
-  $: canEditContributions = Boolean($me?.canEditUsers);
+  $: canEditContributions = Boolean(data.user.canBeEdited);
 
   let loading = false;
   const updateUser = async () => {
@@ -155,9 +155,7 @@
             links: links.filter((l) => Boolean(l.value) && l.value.trim() !== '#'),
             address,
             graduationYear,
-            // eslint-disable-next-line unicorn/no-null
             majorId: major?.id ?? null,
-            // eslint-disable-next-line unicorn/no-null
             minorId: minor?.id ?? null,
             phone,
             apprentice,
@@ -206,15 +204,17 @@
       label="Prénom"
       maxlength={255}
       bind:value={firstName}
-      hint={$me?.canEditUsers ? '' : "Pour modifier votre nom d'usage, contactez un administrateur"}
-      disabled={!$me?.canEditUsers || undefined}
+      hint={data.user.canBeEdited
+        ? ''
+        : "Pour modifier votre nom d'usage, contactez un administrateur"}
+      disabled={!data.user.canBeEdited || undefined}
     />
     <InputText
       required
       label="Nom de famille"
       maxlength={255}
       bind:value={lastName}
-      disabled={!$me?.canEditUsers || undefined}
+      disabled={!data.user.canBeEdited || undefined}
     />
     <InputText label="Surnom" maxlength={255} bind:value={nickname} />
   </div>

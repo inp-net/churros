@@ -11,6 +11,45 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Les appartenances aux mailing lists de clubs et aux mailing lists `all_bureau`, `all_trez` et `all_prez` sont maintenant gérées automatiquement en fonction des appartenances aux groupes (@simonh)
+
+### Technique
+
+- Les admins peuvent maintenant modifier les pages des écoles via une nouvelle route `/edit/` cela permet d'ajouter dans la db les emails etu de chaque écoles réglant ainsi les problèmes à l'inscription qu'on a depuis quelques semaines (!142) (@bardete) (#878)
+
+### Sécurité
+
+- Les clubs ne sont plus autorisés à modifier leur type (@litschan)
+- Création de droit admins et editions des groupes par AE (!144) (@dreumonte & @simonh & @lebihae)
+
+### Corrections
+
+- Les commandes d'une boutique sont des composants ce qui évite des conflits quand il y a plusieurs commandes (!141) (@bardete) (#907)
+- Correction d'un bug qui redirigeait en cas de paiement lydia sur la page d'un item avant que l'utilisateur n'ait pu payer (!141) (@bardete)
+
+## [1.57.0] - 2024-04-28
+
+### Nouveautés
+
+- Les boutiques sont enfin là ! Chaque groupe peut vendre les objets qu'il souhaite au prix qu'il souhaite. Vous êtes libre de choisir la méthode de paiement que vous voulez pour vos membres ! (Les paiements par Paypal ne sont pas disponibles pour l'instant mais le seront peut-être un jour). Pour découvrir votre nouveau canal de vente, vous pouvez vous rendre sur la page de votre club puis dans boutique, à droite (ou en dessous sur téléphone). Vous pouvez poster plusieurs images par produit, créer des items avec la visibilité que vous voulez, etc...
+  Un selecteur d'option (pour la taille et les couleurs par exemple) est disponible, vous avez la possibilité d'ajouter un champ "autre" ou de rendre un champ obligatoire.
+
+Sur ce, voila un avant goût !
+
+![Preview de la boutique](https://git.inpt.fr/inp-net/churros/uploads/81feeb4fa735fea2a812b969f89fa274/image.png)
+
+La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à nous le faire parvenir via la bulle rouge en haut à droite de l'appli en précisant Boutique au début de votre signalement, merci d'avance pour votre contribution :) !
+
+(@bardete & @valliet pour une partie du back-end) (!127)
+
+### Corrections
+
+- Correction d'un bug qui affiche 0/0 quand il n'y a pas de limites de places sur les tickets d'un event (#885) (!138) (@bardete)
+- Correction d'un bug qui faisait que les posts d'un utilisateurs étaient visible sur son profil peu importe la visibilité (#730) (!139) (@bardete)
+- Correction de plusieurs bugs qui faisait qu'un post lié à un évènement était visible selon les règles de visibilités de l'article, même si l'on ne pouvait pas voir l'évènement (#850) (!139) (@bardete)
+
 ## [1.56.6] - 2024-04-03
 
 ### Corrections
@@ -397,8 +436,9 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.56.6...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.57.0...main
 [1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
+[1.57.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.57.0
 [1.56.6]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.6
 [1.56.5]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.5
 [1.56.4]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.56.4

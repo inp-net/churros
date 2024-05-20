@@ -1,14 +1,28 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
 import { unlink } from 'node:fs/promises';
 import path from 'node:path';
+import { userIsAdminOf, userIsGroupEditorOf } from '../../../permissions/index.js';
 
 /** Delete the club's picture */
 builder.mutationField('deleteGroupPicture', (t) =>
   t.field({
     type: 'Boolean',
     args: { uid: t.arg.string(), dark: t.arg.boolean() },
-    authScopes: (_, { uid }, { user }) => Boolean(user?.canEditGroups || uid === user?.uid),
+    async authScopes(_, { uid }, { user }) {
+      const studentAssociationIds = objectValuesFlat(
+        await prisma.group.findUniqueOrThrow({
+          where: { uid },
+          select: { studentAssociationId: true },
+        }),
+      );
+
+      return Boolean(
+        userIsAdminOf(user, studentAssociationIds) ||
+          userIsGroupEditorOf(user, studentAssociationIds) ||
+          uid === user?.uid,
+      );
+    },
     async resolve(_, { uid, dark }, { user }) {
       const { pictureFile } = await prisma.group.findUniqueOrThrow({
         where: { uid },

@@ -1,5 +1,6 @@
-import { builder, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma } from '#lib';
 
+import { userIsAdminOf } from '#permissions';
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -12,12 +13,14 @@ builder.mutationField('deleteEventPicture', (t) =>
     async authScopes(_, { id }, { user }) {
       const event = await prisma.event.findUniqueOrThrow({
         where: { id },
+        include: { group: true },
       });
 
       return Boolean(
-        // Who can edit this event?
-        // The author
-        user?.id === event.authorId ||
+        userIsAdminOf(user, objectValuesFlat(event.group)) ||
+          // Who can edit this event?
+          // The author
+          user?.id === event.authorId ||
           // Other authors of the group
           user?.groups.some(
             ({ groupId, canEditArticles }) => canEditArticles && groupId === event.groupId,

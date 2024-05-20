@@ -4,7 +4,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, parent, url }) => {
-  const { me } = await parent();
+  const { me, canEditGroup } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
 
   const { group } = await loadQuery(
@@ -33,7 +33,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   );
 
   if (
-    !me.canEditGroups &&
+    !canEditGroup &&
     !group.members.some(({ canEditArticles, member }) => member.uid === me.uid && canEditArticles)
   )
     throw redirect(307, '/posts/create');

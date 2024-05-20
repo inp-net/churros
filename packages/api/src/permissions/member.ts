@@ -28,6 +28,7 @@ export function userIsTreasurerOf(user: Context['user'], groupUid: string): bool
     user?.groups.some(({ group: { uid }, treasurer }) => uid === groupUid && treasurer),
   );
 }
+
 export function userIsOnBoardOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
     user?.groups.some(
@@ -35,6 +36,7 @@ export function userIsOnBoardOf(user: Context['user'], groupUid: string): boolea
     ),
   );
 }
+
 export function userIsMemberOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(user?.groups.some(({ group: { uid } }) => uid === groupUid));
 }
@@ -42,5 +44,43 @@ export function userIsMemberOf(user: Context['user'], groupUid: string): boolean
 export function userIsDeveloperOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
     user?.groups.some(({ group: { uid }, isDeveloper }) => groupUid === uid && isDeveloper),
+  );
+}
+
+export function userIsAdminOf(
+  user: Context['user'],
+  studentAssociationId: string[] | string | null = null,
+): boolean {
+  if (user?.admin) return true;
+  if (!studentAssociationId) return false;
+
+  return Boolean(
+    user?.adminOfStudentAssociations.some(({ id }) => {
+      return Array.isArray(studentAssociationId)
+        ? studentAssociationId.includes(id)
+        : studentAssociationId === id;
+    }),
+  );
+}
+
+/**
+ * Check if a user has permission to edit a group
+ *
+ * @param user
+ * @param studentAssociationId the id of the student association that the group belongs to
+ */
+export function userIsGroupEditorOf(
+  user: Context['user'],
+  studentAssociationId: string[] | string | undefined | null,
+): boolean {
+  if (user?.admin) return true;
+  if (!studentAssociationId) return false;
+
+  return Boolean(
+    user?.canEditGroups.some(({ id: GroupEditorStudentAssociationIds }) => {
+      return Array.isArray(studentAssociationId)
+        ? studentAssociationId.includes(GroupEditorStudentAssociationIds)
+        : studentAssociationId === GroupEditorStudentAssociationIds;
+    }),
   );
 }
