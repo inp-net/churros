@@ -45,7 +45,6 @@
   import IconAnilist from '~icons/simple-icons/anilist';
   import IconEye from '~icons/mdi/eye';
   import IconDownload from '~icons/mdi/download-outline';
-  import IconEdit from '~icons/mdi/pencil-outline';
   import type { PageData } from './$types';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -331,19 +330,17 @@
     </section>
   {/if}
 
-  {#if meOnClubBoard}
-    <section class="gestionClub">
+  <!-- Onglet de gestion du club disponible uniquement pour les respo clubs et les membres du bureau -->
+  {#if meOnClubBoard || $me?.canEditGroups}
+    <section class="club-gestion">
       <h2>Administration du club</h2>
       <div class="menu-button">
-        <div class="charte">
-          <ButtonSecondary href="/Charte_des_clubs_2022_2023.pdf" icon={IconEye}
+        <div class="admin-button">
+          <ButtonSecondary href="/charte_des_clubs.pdf" icon={IconEye}
             >Charte des clubs</ButtonSecondary
           >
-          {#if $me?.canEditGroups}
-            <ButtonSecondary icon={IconEdit}>Editer</ButtonSecondary>
-          {/if}
         </div>
-        <div>
+        <div class="admin-button">
           <ButtonSecondary data-sveltekit-reload href="../{group.uid}.pdf" icon={IconDownload}
             >Fiche de passation</ButtonSecondary
           >
@@ -499,14 +496,13 @@
   }
 
   .menu-button {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
+    display: inline-flex;
+    flex-direction: row;
   }
 
-  .charte {
+  .admin-button {
     display: flex;
-    gap: 0.8rem;
+    margin: 0.3rem;
   }
 
   @media (min-width: 1000px) {
