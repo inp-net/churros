@@ -511,6 +511,9 @@
   .admin-button {
     display: flex;
     margin: 0.3rem;
+
+  }
+
   .shoppreview {
     display: flex;
     flex: 0 0 auto;
