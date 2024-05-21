@@ -3,7 +3,6 @@ import type { Event, Registration, Ticket, User } from '@prisma/client';
 import pdfMakePrinter from 'pdfmake';
 import type { TFontDictionary } from 'pdfmake/interfaces';
 import { api } from './express.js';
-
 console.info(`Serving PDF generation of bookings /print-booking/:pseudoID`);
 api.get('/print-booking/:pseudoID', async (req, res) => {
   const id = `r:${req.params.pseudoID.toLowerCase()}`;

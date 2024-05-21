@@ -43,6 +43,8 @@
   import IconAdd from '~icons/mdi/plus';
   import IconTwitter from '~icons/mdi/twitter';
   import IconAnilist from '~icons/simple-icons/anilist';
+  import IconEye from '~icons/mdi/eye';
+  import IconDownload from '~icons/mdi/download-outline';
   import IconStore from '~icons/mdi/store';
   import type { PageData } from './$types';
   import ShopItem from '$lib/components/ShopItem.svelte';
@@ -324,6 +326,26 @@
       {/if}
     </section>
   {/if}
+
+  <!-- Onglet de gestion du club disponible uniquement pour les respo clubs et les membres du bureau -->
+  {#if meOnClubBoard || $me?.canEditGroups}
+    <section class="club-gestion">
+      <h2>Administration du club</h2>
+      <div class="menu-button">
+        <div class="admin-button">
+          <ButtonSecondary href="/charte_des_clubs.pdf" icon={IconEye}
+            >Charte des clubs</ButtonSecondary
+          >
+        </div>
+        <div class="admin-button">
+          <ButtonSecondary data-sveltekit-reload href="../{group.uid}.pdf" icon={IconDownload}
+            >Fiche de passation</ButtonSecondary
+          >
+        </div>
+      </div>
+    </section>
+  {/if}
+
   <section class="shop">
     <h2>
       Boutique
@@ -479,6 +501,17 @@
   .board .more {
     display: flex;
     margin-top: 1rem;
+  }
+
+  .menu-button {
+    display: inline-flex;
+    flex-direction: row;
+  }
+
+  .admin-button {
+    display: flex;
+    margin: 0.3rem;
+
   }
 
   .shoppreview {
