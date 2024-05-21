@@ -27,7 +27,8 @@ export function startApiServer() {
   import('./gdpr.js');
   import('./log.js');
   import('./oauth.js');
-  import('./pdf.js');
+  import('./booking-pdf.js');
+  import('./handover-pdf.js');
   import('./storage.js');
 
   const apiServer = api.listen(4000, () => {
