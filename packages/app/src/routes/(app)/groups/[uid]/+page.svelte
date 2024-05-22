@@ -180,7 +180,6 @@
       <h1>
         {group.name}
         <ButtonShare />
-        <ButtonGhost help="Accéder à la boutique" href="./shop/"><IconStore /></ButtonGhost>
         {#if group.canEditDetails}
           <ButtonGhost help="Modifier les infos" href="./edit/"><IconGear /></ButtonGhost>
         {/if}
@@ -511,7 +510,6 @@
   .admin-button {
     display: flex;
     margin: 0.3rem;
-
   }
 
   .shoppreview {
