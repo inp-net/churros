@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Everyone is dc=n7 :)
+
 ## [1.58.2] - 2024-05-22
 
 ### Technique
