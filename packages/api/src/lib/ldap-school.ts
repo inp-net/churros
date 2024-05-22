@@ -67,7 +67,7 @@ export const findSchoolUser = async (
       },
 ): Promise<
   | (LdapUser & {
-      schoolServer: schoolServer;
+      schoolServer: string;
       major?: string | undefined;
       graduationYear?: number;
       apprentice?: boolean;
@@ -215,5 +215,9 @@ export const findSchoolUser = async (
     }),
   ) as unknown as LdapUser;
 
-  return { ...user, schoolServer: schoolServer, ...parseN7ApprenticeAndMajor(ldapObject.groups) };
+  return {
+    ...user,
+    schoolServer: schoolServer.server,
+    ...parseN7ApprenticeAndMajor(ldapObject.groups),
+  };
 };
