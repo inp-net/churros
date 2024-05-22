@@ -2,7 +2,6 @@
 import { fromYearTier } from '#lib';
 import bunyan from 'bunyan';
 import ldap from 'ldapjs';
-import { nanoid } from 'nanoid';
 
 const logger = bunyan.createLogger({ name: 'CRI INP ldap', level: 'debug' });
 
@@ -73,23 +72,10 @@ export const findSchoolUser = async (
   let ldapFilter = '';
   let schoolServer: string | undefined;
   if ('email' in searchBy) {
-    if (searchBy.email === 'quoicoubeh@ewen.works') {
-      return {
-        schoolServer: 'inp',
-        schoolEmail: `rick.astley.${nanoid()}@etu.inp-n7.fr`,
-        schoolUid: 'n7',
-        apprentice: false,
-        firstName: 'Rick',
-        lastName: 'Astley',
-        graduationYear: 2026,
-        major: 'SN',
-      };
-    }
-
     const [emailLogin, emailDomain] = searchBy.email.split('@') as [string, string];
 
     if (!emailDomain) throw new Error('Invalid email address');
-    console.log(emailDomain);
+
     schoolServer = schoolLdapSettings.emailDomains[emailDomain];
     if (!schoolServer || !schoolLdapSettings.servers[schoolServer]) return;
     const { filterAttribute, wholeEmail } = schoolLdapSettings.servers[schoolServer]!;
@@ -108,7 +94,6 @@ export const findSchoolUser = async (
   const ldapObject = await new Promise<
     { groups: string[] | undefined; attrs: Record<string, string | undefined> } | undefined
   >((resolve, reject) => {
-    // console.log(`Searching for ou=people,dc=n7,dc=fr with ${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}`);
     client.bind('', '', (err) => {
       if (err) console.log(err);
     });
@@ -118,7 +103,6 @@ export const findSchoolUser = async (
         scope: 'sub',
         filter: ldapFilter,
       },
-      // {filter: `uid=elebihan`},
       (error, results) => {
         console.log(results);
         if (error) {
