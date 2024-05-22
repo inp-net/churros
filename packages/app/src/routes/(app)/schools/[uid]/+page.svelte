@@ -6,6 +6,7 @@
   import { me } from '$lib/session';
   import IconEdit from '~icons/mdi/edit-outline';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import { env } from '$env/dynamic/public';
 
   export let data: PageData;
 
@@ -64,7 +65,7 @@
         <a href={`/student-associations/${studentAssociation.uid ?? ''}/`}>
           <div class="avatar">
             <img
-              src="/student-associations/{studentAssociation.uid}.png"
+              src="${env.PUBLIC_STORAGE_URL}school/{studentAssociation.uid}.png"
               alt={studentAssociation.name}
             />
           </div>
