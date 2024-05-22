@@ -11,6 +11,11 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Correction de l'url de la source de l'image d'une école (pour le bon tag src cette fois)
+- Passation : correction de l'image static...
+
 ## [1.58.1] - 2024-05-22
 
 ### Corrections
