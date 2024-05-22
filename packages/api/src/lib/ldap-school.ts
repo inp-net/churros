@@ -12,17 +12,12 @@ export interface LdapUser {
   lastName?: string;
 }
 
-interface schoolServer {
-  server: string;
-  dc: string | null;
-}
-
 export const schoolLdapSettings = JSON.parse(process.env.LDAP_SCHOOL) as {
   servers: Record<
     string,
     { url: string; filterAttribute: string; wholeEmail: boolean; attributesMap: LdapUser }
   >;
-  emailDomains: Record<string, schoolServer>;
+  emailDomains: Record<string, string>;
 };
 
 function parseN7ApprenticeAndMajor(groups: string[] | undefined):
@@ -63,7 +58,7 @@ export const findSchoolUser = async (
         lastName: string;
         graduationYear: number;
         major: { shortName: string };
-        schoolServer: schoolServer;
+        schoolServer: string;
       },
 ): Promise<
   | (LdapUser & {
@@ -75,15 +70,15 @@ export const findSchoolUser = async (
   | undefined
 > => {
   let ldapFilter = '';
-  let schoolServer: schoolServer | undefined;
+  let schoolServer: string | undefined;
   if ('email' in searchBy) {
     const [emailLogin, emailDomain] = searchBy.email.split('@') as [string, string];
 
     if (!emailDomain) throw new Error('Invalid email address');
 
     schoolServer = schoolLdapSettings.emailDomains[emailDomain];
-    if (!schoolServer || !schoolLdapSettings.servers[schoolServer.server]) return;
-    const { filterAttribute, wholeEmail } = schoolLdapSettings.servers[schoolServer.server]!;
+    if (!schoolServer || !schoolLdapSettings.servers[schoolServer]) return;
+    const { filterAttribute, wholeEmail } = schoolLdapSettings.servers[schoolServer]!;
     ldapFilter = `${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}`;
   } else {
     schoolServer = searchBy.schoolServer;
@@ -92,7 +87,7 @@ export const findSchoolUser = async (
     )}))`;
   }
 
-  const { url, attributesMap } = schoolLdapSettings.servers[schoolServer.server]!;
+  const { url, attributesMap } = schoolLdapSettings.servers[schoolServer]!;
 
   const client = ldap.createClient({ url, log: logger });
 
@@ -103,7 +98,7 @@ export const findSchoolUser = async (
       if (err) console.log(err);
     });
     client.search(
-      `ou=people,dc=${schoolServer?.dc},dc=fr`,
+      'ou=people,dc=n7,dc=fr',
       {
         scope: 'sub',
         filter: ldapFilter,
@@ -215,9 +210,7 @@ export const findSchoolUser = async (
     }),
   ) as unknown as LdapUser;
 
-  return {
-    ...user,
-    schoolServer: schoolServer.server,
-    ...parseN7ApprenticeAndMajor(ldapObject.groups),
-  };
+  const result = { ...user, schoolServer, ...parseN7ApprenticeAndMajor(ldapObject.groups) };
+
+  return result;
 };

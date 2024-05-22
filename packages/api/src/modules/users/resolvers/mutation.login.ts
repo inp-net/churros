@@ -242,10 +242,7 @@ export async function login(
                 lastName: user.lastName,
                 graduationYear: user.graduationYear,
                 major: user.major,
-                schoolServer: {
-                  server: 'inp',
-                  dc: user.major.ldapSchoolUid,
-                },
+                schoolServer: 'inp',
               });
             }
 
