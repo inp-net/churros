@@ -32,7 +32,7 @@
 <div class="content">
   <header>
     <div class="picture">
-      <img src={school.pictureFile} alt="{school.name} logo" />
+      <img src="${env.PUBLIC_STORAGE_URL}{school.pictureFile}" alt="{school.name} logo" />
     </div>
 
     <div class="identity">
@@ -65,7 +65,7 @@
         <a href={`/student-associations/${studentAssociation.uid ?? ''}/`}>
           <div class="avatar">
             <img
-              src="${env.PUBLIC_STORAGE_URL}school/{studentAssociation.uid}.png"
+              src="/student-associations/{studentAssociation.uid}.png"
               alt={studentAssociation.name}
             />
           </div>
