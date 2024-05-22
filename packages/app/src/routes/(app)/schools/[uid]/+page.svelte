@@ -32,7 +32,7 @@
 <div class="content">
   <header>
     <div class="picture">
-      <img src="${env.PUBLIC_STORAGE_URL}{school.pictureFile}" alt="{school.name} logo" />
+      <img src="{env.PUBLIC_STORAGE_URL}{school.pictureFile}" alt="{school.name} logo" />
     </div>
 
     <div class="identity">
