@@ -1,15 +1,23 @@
 # Changelog
 
-Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), avec les sections suivantes:
+Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), avec les sections suivantes :
 
 - `Nouveautés` pour les nouvelles fonctionnalités.
 - `Corrections` pour les corrections de bugs.
 - `Améliorations` pour les améliorations de fonctionnalités existantes.
 - `Autres` pour les changements qui ne sont pas des nouvelles fonctionnalités ou des corrections de bugs.
 - `Sécurité` pour les mises à jour de sécurité.
-- `Technique` pour les changements techniques. Il n'apparaîtront pas dans la popup de notes de mises à jour.
+- `Technique` pour les changements techniques. Ils n'apparaîtront pas dans le popup de notes de mises à jour.
 
 ## [Unreleased]
+
+### Corrections
+
+- Correction de l'url de la source de l'image d'une école
+
+### Technique
+
+- On peut configurer le dc dans l'env pour la recherche d'un utilisateur dans le ldap école
 
 ## [1.58.0] - 2024-05-21
 
