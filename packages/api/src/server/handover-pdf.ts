@@ -145,7 +145,7 @@ api.get('/print-handover/:uid', async (req, res) => {
     content: [
       {
         //TODO : Changer l'image en fonction de l'école
-        image: '../app/static/student-associations/aen7_black.png',
+        image: 'static/aen7_black.png',
         width: 150,
         margin: [0, 0, 0, 10],
       },
