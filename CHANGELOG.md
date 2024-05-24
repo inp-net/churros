@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Hot fix : correction des permissions qui donnait canEditGroup à tout le monde
+
 ## [1.58.3] - 2024-05-22
 
 ### Technique

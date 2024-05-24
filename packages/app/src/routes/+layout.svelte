@@ -83,7 +83,7 @@
 </script>
 
 <svelte:head>
-  <title>AEn7</title>
+  <title>Churros</title>
   <script
     defer
     src="https://stats.ewen.works/js/script.pageview-props.outbound-links.js"

@@ -126,8 +126,9 @@ const getUser = async (token: string) => {
   normalizePermissions({ user: user });
 
   // When the in memory store grows too big, delete some sessions
-  if (sessions.size > 10_000)
+  if (sessions.size > 10_000) 
     for (const [i, token] of [...sessions.keys()].entries()) if (i % 2) sessions.delete(token);
+  
 
   sessions.set(token, {
     ...user,
@@ -194,7 +195,7 @@ function normalizePermissions({
 
   const permissionOnStudentAssociation = new Set([
     ...user.canEditGroups.flatMap((studentAssociation) => studentAssociation.id),
-    ...user.groups.map((group) => group.studentAssociationId),
+    ...user.adminOfStudentAssociations.flatMap((studentAssociation) => studentAssociation.id),
   ]);
 
   user.groups = user.groups.map((membership) => ({
@@ -202,14 +203,14 @@ function normalizePermissions({
     canEditMembers:
       membership.canEditMembers ||
       onBoard(membership) ||
-      permissionOnStudentAssociation.has(membership.studentAssociationId),
+      permissionOnStudentAssociation.has(membership.studentAssociationId ?? ''),
     canEditArticles:
       membership.canEditArticles ||
       onBoard(membership) ||
-      permissionOnStudentAssociation.has(membership.studentAssociationId),
+      permissionOnStudentAssociation.has(membership.studentAssociationId ?? ''),
     canScanEvents:
       membership.canScanEvents ||
       onBoard(membership) ||
-      permissionOnStudentAssociation.has(membership.studentAssociationId),
+      permissionOnStudentAssociation.has(membership.studentAssociationId ?? ''),
   }));
 }
