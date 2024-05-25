@@ -1,6 +1,6 @@
+import { GOOGLE_WALLET_CLASS, registerGoogleWalletClass } from './lib/google-wallet.js';
 import { writeSchema } from './schema.js';
 import { startApiServer } from './server/express.js';
-import { GOOGLE_WALLET_CLASS, registerGoogleWalletClass } from './server/google-wallet.js';
 import { lydiaWebhook } from './server/lydia.js';
 import { maintenance } from './server/maintenance.js';
 import { rescheduleNotifications } from './server/notifications-rescheduler.js';

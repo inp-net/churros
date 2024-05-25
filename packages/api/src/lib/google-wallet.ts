@@ -1,7 +1,7 @@
+import { fullName } from '#modules/users';
 import type { Event, Group, Registration, User } from '@prisma/client';
-import { auth, type JWTInput } from 'google-auth-library';
-import { splitID } from '../lib/global-id.js';
-import { fullName } from '../modules/users/utils/names.js';
+import { GoogleAuth, type JWTInput } from 'google-auth-library';
+import { splitID } from './global-id.js';
 
 const GOOGLE_WALLET_ISSUER_ID = process.env.PUBLIC_GOOGLE_WALLET_ISSUER_ID;
 export const GOOGLE_WALLET_CLASS_ID = `${GOOGLE_WALLET_ISSUER_ID}.churros_generic`;
@@ -19,86 +19,88 @@ function noLocalhostURL(path: string, base: string): URL {
   return result;
 }
 
-export const GOOGLE_WALLET_OBJECT = (
+export function makeGoogleWalletObject(
   event: Event & { group: Group },
   registration: Registration & { author: User | null },
-) => ({
-  id: `${GOOGLE_WALLET_ISSUER_ID}.churros_event_${splitID(registration.id)[1]}`,
-  classId: `${GOOGLE_WALLET_ISSUER_ID}.churros_event`,
-  logo: {
-    sourceUri: {
-      uri: noLocalhostURL('android-chrome-512x512.png', process.env.FRONTEND_ORIGIN).toString(),
-    },
-    contentDescription: {
-      defaultValue: {
-        language: 'fr-FR',
-        value: `Logo de Churros`,
+) {
+  return {
+    id: `${GOOGLE_WALLET_ISSUER_ID}.churros_event_${splitID(registration.id)[1]}`,
+    classId: `${GOOGLE_WALLET_ISSUER_ID}.churros_event`,
+    logo: {
+      sourceUri: {
+        uri: noLocalhostURL('android-chrome-512x512.png', process.env.FRONTEND_ORIGIN).toString(),
+      },
+      contentDescription: {
+        defaultValue: {
+          language: 'fr-FR',
+          value: `Logo de Churros`,
+        },
       },
     },
-  },
-  cardTitle: {
-    defaultValue: {
-      language: 'fr-FR',
-      value: 'Churros',
-    },
-  },
-  subheader: {
-    defaultValue: {
-      language: 'fr-FR',
-      value: event.location || 'Place pour',
-    },
-  },
-  header: {
-    defaultValue: {
-      language: 'fr-FR',
-      value: event.title,
-    },
-  },
-  textModulesData: [
-    {
-      id: 'date',
-      header: 'Date',
-      body: new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' }).format(event.startsAt),
-    },
-    {
-      id: 'time',
-      header: 'Heure',
-      body: new Intl.DateTimeFormat('fr-FR', { timeStyle: 'short' }).format(event.startsAt),
-    },
-    {
-      id: 'beneficiary',
-      header: 'Place pour',
-      body:
-        registration.beneficiary ||
-        fullName(
-          registration.author ?? {
-            firstName: '??',
-            lastName: '??',
-          },
-        ),
-    },
-  ],
-  barcode: {
-    type: 'QR_CODE',
-    value: registration.id,
-    alternateText: splitID(registration.id)[1].toUpperCase(),
-  },
-  // hexBackgroundColor: event.group.color,
-  hexBackgroundColor: '#ffffff',
-  heroImage: {
-    sourceUri: {
-      uri: event.pictureFile
-        ? noLocalhostURL(event.pictureFile, process.env.PUBLIC_STORAGE_URL).toString()
-        : noLocalhostURL('android-chrome-512x512.png', process.env.FRONTEND_ORIGIN).toString(),
-    },
-    contentDescription: {
+    cardTitle: {
       defaultValue: {
         language: 'fr-FR',
-        value: "Image de l'évènement",
+        value: 'Churros',
       },
     },
-  },
-});
+    subheader: {
+      defaultValue: {
+        language: 'fr-FR',
+        value: event.location || 'Place pour',
+      },
+    },
+    header: {
+      defaultValue: {
+        language: 'fr-FR',
+        value: event.title,
+      },
+    },
+    textModulesData: [
+      {
+        id: 'date',
+        header: 'Date',
+        body: new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' }).format(event.startsAt),
+      },
+      {
+        id: 'time',
+        header: 'Heure',
+        body: new Intl.DateTimeFormat('fr-FR', { timeStyle: 'short' }).format(event.startsAt),
+      },
+      {
+        id: 'beneficiary',
+        header: 'Place pour',
+        body:
+          registration.beneficiary ||
+          fullName(
+            registration.author ?? {
+              firstName: '??',
+              lastName: '??',
+            },
+          ),
+      },
+    ],
+    barcode: {
+      type: 'QR_CODE',
+      value: registration.id,
+      alternateText: splitID(registration.id)[1].toUpperCase(),
+    },
+    // hexBackgroundColor: event.group.color,
+    hexBackgroundColor: '#ffffff',
+    heroImage: {
+      sourceUri: {
+        uri: event.pictureFile
+          ? noLocalhostURL(event.pictureFile, process.env.PUBLIC_STORAGE_URL).toString()
+          : noLocalhostURL('android-chrome-512x512.png', process.env.FRONTEND_ORIGIN).toString(),
+      },
+      contentDescription: {
+        defaultValue: {
+          language: 'fr-FR',
+          value: "Image de l'évènement",
+        },
+      },
+    },
+  };
+}
 
 export const GOOGLE_WALLET_CLASS = {
   id: `${GOOGLE_WALLET_ISSUER_ID}.churros_event`,
@@ -162,15 +164,18 @@ export async function registerGoogleWalletClass(data: typeof GOOGLE_WALLET_CLASS
     console.error('Could not parse credentials for Google Wallet issuer service account');
     return '';
   }
-  const httpClient = auth.fromJSON(credentials);
-  httpClient.scopes = 'https://www.googleapis.com/auth/wallet_object.issuer';
+  const httpClient = new GoogleAuth({
+    credentials,
+    scopes: 'https://www.googleapis.com/auth/wallet_object.issuer',
+  });
   try {
     // Check if the class exists already
     await httpClient.request({
       url: `${baseUrl}/genericClass/${data.id}`,
       method: 'GET',
     });
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     if (error?.response?.status === 404) {
       // Class does not exist
       // Create it now
