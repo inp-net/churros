@@ -73,6 +73,9 @@ declare namespace NodeJS {
     /** Google secrets */
     GOOGLE_CLIENT_SECRET: string;
     PUBLIC_GOOGLE_CLIENT_ID: string;
+    PUBLIC_GOOGLE_WALLET_ISSUER_ID: string;
+
+    GOOGLE_WALLET_ISSUER_KEY: string;
     /** Mailman secrets */
     MAILMAN_API_URL: string;
     MAILMAN_API_TOKEN: string;

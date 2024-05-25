@@ -1,5 +1,6 @@
 import { writeSchema } from './schema.js';
 import { startApiServer } from './server/express.js';
+import { genericClass, registerGoogleWalletClass } from './server/google-wallet.js';
 import { lydiaWebhook } from './server/lydia.js';
 import { maintenance } from './server/maintenance.js';
 import { rescheduleNotifications } from './server/notifications-rescheduler.js';
@@ -21,3 +22,5 @@ prometheusServer.listen(9999, () => {
 
 await writeSchema();
 await rescheduleNotifications({ dryRun: true });
+const id = await registerGoogleWalletClass(genericClass);
+console.info(`Registered Google Wallet pass class ${id}`);
