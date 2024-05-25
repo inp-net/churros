@@ -458,7 +458,6 @@ __metadata:
     extract-files: "npm:^13.0.0"
     glob: "npm:^10.3.12"
     google-auth-library: "npm:^9.10.0"
-    google-wallet: "npm:^1.0.18"
     googleapis: "npm:105.0.0"
     graph-cycles: "npm:^3.0.0"
     graphql: "npm:^16.8.1"
@@ -8164,7 +8163,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:^9.0.0, google-auth-library@npm:^9.10.0":
+"google-auth-library@npm:^9.10.0":
   version: 9.10.0
   resolution: "google-auth-library@npm:9.10.0"
   dependencies:
@@ -8200,15 +8199,6 @@ __metadata:
   bin:
     gp12-pem: build/src/bin/gp12-pem.js
   checksum: 10c0/2cd15077cb2179306870223c65b49d38f0860bd8cc60da8072cc632c9aad8cb7e61e46e63d72e8ef3fca27ad9e6b8870db6cc809839f279382d9cc4d891a9a7b
-  languageName: node
-  linkType: hard
-
-"google-wallet@npm:^1.0.18":
-  version: 1.0.18
-  resolution: "google-wallet@npm:1.0.18"
-  dependencies:
-    google-auth-library: "npm:^9.0.0"
-  checksum: 10c0/162b5d98fb3c316c49f853ac0931a5502da96aeb351f05c78a143939aed95b87a8110401c29334e0105121fa45de769a866675929f1b39323f3057ced2cbee0c
   languageName: node
   linkType: hard
 

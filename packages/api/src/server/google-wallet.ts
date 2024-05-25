@@ -1,10 +1,10 @@
-import { GenericClient, type GenericClass } from 'google-wallet/lib/esm/generic';
+import { auth } from 'google-auth-library';
 
 const GOOGLE_WALLET_ISSUER_ID = process.env.PUBLIC_GOOGLE_WALLET_ISSUER_ID;
 export const GOOGLE_WALLET_CLASS_ID = `${GOOGLE_WALLET_ISSUER_ID}.churros_generic`;
 
-// const baseUrl = 'https://walletobjects.googleapis.com/walletobjects/v1';
-export const genericClass: GenericClass = {
+const baseUrl = 'https://walletobjects.googleapis.com/walletobjects/v1';
+export const genericClass = {
   id: GOOGLE_WALLET_CLASS_ID,
   classTemplateInfo: {
     cardTemplateOverride: {
@@ -107,38 +107,27 @@ export const genericClass: GenericClass = {
 
 const credentials = JSON.parse(process.env.GOOGLE_WALLET_ISSUER_KEY);
 
-// export async function registerGoogleWalletClass(data: typeof genericClass): Promise<string> {
-//   const httpClient = auth.fromJSON(credentials);
-//   httpClient.scopes = 'https://www.googleapis.com/auth/wallet_object.issuer';
-//   console.log('registering..');
-//   try {
-//     // Check if the class exists already
-//     await httpClient.request({
-//       url: `${baseUrl}/genericClass/${data.id}`,
-//       method: 'GET',
-//     });
-//   } catch (error) {
-//     if (error?.response?.status === 404) {
-//       // Class does not exist
-//       // Create it now
-//       await httpClient.request({
-//         url: `${baseUrl}/genericClass`,
-//         method: 'POST',
-//         data: genericClass,
-//       });
-//     } else {
-//       console.error(error);
-//     }
-//   }
-//   return data.id;
-// }
-
 export async function registerGoogleWalletClass(data: typeof genericClass): Promise<string> {
-  const client = new GenericClient(credentials);
-  const classExists = Boolean(
-    await client.getClass(process.env.PUBLIC_GOOGLE_WALLET_ISSUER_ID, 'churros_generic'),
-  );
-
-  await (classExists ? client.patchClass(data) : client.createClass(data));
+  const httpClient = auth.fromJSON(credentials);
+  httpClient.scopes = 'https://www.googleapis.com/auth/wallet_object.issuer';
+  try {
+    // Check if the class exists already
+    await httpClient.request({
+      url: `${baseUrl}/genericClass/${data.id}`,
+      method: 'GET',
+    });
+  } catch (error) {
+    if (error?.response?.status === 404) {
+      // Class does not exist
+      // Create it now
+      await httpClient.request({
+        url: `${baseUrl}/genericClass`,
+        method: 'POST',
+        data: genericClass,
+      });
+    } else {
+      console.error(error);
+    }
+  }
   return data.id;
 }

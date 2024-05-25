@@ -32,7 +32,6 @@
     "extract-files": "^13.0.0",
     "glob": "^10.3.12",
     "google-auth-library": "^9.10.0",
-    "google-wallet": "^1.0.18",
     "googleapis": "105.0.0",
     "graphql": "^16.8.1",
     "graphql-rate-limit-directive": "^2.0.5",
