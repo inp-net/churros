@@ -4,7 +4,6 @@ import { GoogleAuth, type JWTInput } from 'google-auth-library';
 import { splitID } from './global-id.js';
 
 const GOOGLE_WALLET_ISSUER_ID = process.env.PUBLIC_GOOGLE_WALLET_ISSUER_ID;
-export const GOOGLE_WALLET_CLASS_ID = `${GOOGLE_WALLET_ISSUER_ID}.churros_generic`;
 
 const baseUrl = 'https://walletobjects.googleapis.com/walletobjects/v1';
 
