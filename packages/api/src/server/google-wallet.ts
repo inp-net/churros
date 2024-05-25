@@ -1,11 +1,107 @@
-import { auth } from 'google-auth-library';
+import type { Event, Group, Registration, User } from '@prisma/client';
+import { auth, type JWTInput } from 'google-auth-library';
+import { splitID } from '../lib/global-id.js';
+import { fullName } from '../modules/users/utils/names.js';
 
 const GOOGLE_WALLET_ISSUER_ID = process.env.PUBLIC_GOOGLE_WALLET_ISSUER_ID;
 export const GOOGLE_WALLET_CLASS_ID = `${GOOGLE_WALLET_ISSUER_ID}.churros_generic`;
 
 const baseUrl = 'https://walletobjects.googleapis.com/walletobjects/v1';
-export const genericClass = {
-  id: GOOGLE_WALLET_CLASS_ID,
+
+// Google Wallet does not like localhost URLs, so we replace localhost:* with churros.inpt.fr, even in dev.
+function noLocalhostURL(path: string, base: string): URL {
+  const result = new URL(path, base);
+  if (result.hostname === 'localhost') {
+    result.hostname = 'churros.inpt.fr';
+    result.port = '';
+  }
+
+  return result;
+}
+
+export const GOOGLE_WALLET_OBJECT = (
+  event: Event & { group: Group },
+  registration: Registration & { author: User | null },
+) => ({
+  id: `${GOOGLE_WALLET_ISSUER_ID}.churros_event_${splitID(registration.id)[1]}`,
+  classId: `${GOOGLE_WALLET_ISSUER_ID}.churros_event`,
+  logo: {
+    sourceUri: {
+      uri: noLocalhostURL('android-chrome-512x512.png', process.env.FRONTEND_ORIGIN).toString(),
+    },
+    contentDescription: {
+      defaultValue: {
+        language: 'fr-FR',
+        value: `Logo de Churros`,
+      },
+    },
+  },
+  cardTitle: {
+    defaultValue: {
+      language: 'fr-FR',
+      value: 'Churros',
+    },
+  },
+  subheader: {
+    defaultValue: {
+      language: 'fr-FR',
+      value: event.location || 'Place pour',
+    },
+  },
+  header: {
+    defaultValue: {
+      language: 'fr-FR',
+      value: event.title,
+    },
+  },
+  textModulesData: [
+    {
+      id: 'date',
+      header: 'Date',
+      body: new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' }).format(event.startsAt),
+    },
+    {
+      id: 'time',
+      header: 'Heure',
+      body: new Intl.DateTimeFormat('fr-FR', { timeStyle: 'short' }).format(event.startsAt),
+    },
+    {
+      id: 'beneficiary',
+      header: 'Place pour',
+      body:
+        registration.beneficiary ||
+        fullName(
+          registration.author ?? {
+            firstName: '??',
+            lastName: '??',
+          },
+        ),
+    },
+  ],
+  barcode: {
+    type: 'QR_CODE',
+    value: registration.id,
+    alternateText: splitID(registration.id)[1].toUpperCase(),
+  },
+  // hexBackgroundColor: event.group.color,
+  hexBackgroundColor: '#ffffff',
+  heroImage: {
+    sourceUri: {
+      uri: event.pictureFile
+        ? noLocalhostURL(event.pictureFile, process.env.PUBLIC_STORAGE_URL).toString()
+        : noLocalhostURL('android-chrome-512x512.png', process.env.FRONTEND_ORIGIN).toString(),
+    },
+    contentDescription: {
+      defaultValue: {
+        language: 'fr-FR',
+        value: "Image de l'évènement",
+      },
+    },
+  },
+});
+
+export const GOOGLE_WALLET_CLASS = {
+  id: `${GOOGLE_WALLET_ISSUER_ID}.churros_event`,
   classTemplateInfo: {
     cardTemplateOverride: {
       cardRowTemplateInfos: [
@@ -15,7 +111,7 @@ export const genericClass = {
               firstValue: {
                 fields: [
                   {
-                    fieldPath: 'object.textModulesData["points"]',
+                    fieldPath: "object.textModulesData['date']",
                   },
                 ],
               },
@@ -24,7 +120,29 @@ export const genericClass = {
               firstValue: {
                 fields: [
                   {
-                    fieldPath: 'object.textModulesData["contacts"]',
+                    fieldPath: "object.textModulesData['time']",
+                  },
+                ],
+              },
+            },
+          },
+        },
+        {
+          twoItems: {
+            startItem: {
+              firstValue: {
+                fields: [
+                  {
+                    fieldPath: "object.textModulesData['beneficiary']",
+                  },
+                ],
+              },
+            },
+            endItem: {
+              firstValue: {
+                fields: [
+                  {
+                    fieldPath: "object.textModulesData['ticket']",
                   },
                 ],
               },
@@ -33,81 +151,17 @@ export const genericClass = {
         },
       ],
     },
-    detailsTemplateOverride: {
-      detailsItemInfos: [
-        {
-          item: {
-            firstValue: {
-              fields: [
-                {
-                  fieldPath: 'class.imageModulesData["event_banner"]',
-                },
-              ],
-            },
-          },
-        },
-        {
-          item: {
-            firstValue: {
-              fields: [
-                {
-                  fieldPath: 'class.textModulesData["game_overview"]',
-                },
-              ],
-            },
-          },
-        },
-        {
-          item: {
-            firstValue: {
-              fields: [
-                {
-                  fieldPath: 'class.linksModuleData.uris["official_site"]',
-                },
-              ],
-            },
-          },
-        },
-      ],
-    },
-  },
-  imageModulesData: [
-    {
-      mainImage: {
-        sourceUri: {
-          uri: 'https://storage.googleapis.com/wallet-lab-tools-codelab-artifacts-public/google-io-2021-card.png',
-        },
-        contentDescription: {
-          defaultValue: {
-            language: 'en-US',
-            value: 'Google I/O 2022 Banner',
-          },
-        },
-      },
-      id: 'event_banner',
-    },
-  ],
-  textModulesData: [
-    {
-      header: 'Gather points meeting new people at Google I/O',
-      body: 'Join the game and accumulate points in this badge by meeting other attendees in the event.',
-      id: 'game_overview',
-    },
-  ],
-  linksModuleData: {
-    uris: [
-      {
-        uri: 'https://io.google/2022/',
-        description: "Official I/O '22 Site",
-        id: 'official_site',
-      },
-    ],
   },
 };
 
-const credentials = JSON.parse(process.env.GOOGLE_WALLET_ISSUER_KEY);
-
-export async function registerGoogleWalletClass(data: typeof genericClass): Promise<string> {
+export async function registerGoogleWalletClass(data: typeof GOOGLE_WALLET_CLASS): Promise<string> {
+  let credentials: JWTInput;
+  try {
+    credentials = JSON.parse(process.env.GOOGLE_WALLET_ISSUER_KEY);
+  } catch {
+    console.error('Could not parse credentials for Google Wallet issuer service account');
+    return '';
+  }
   const httpClient = auth.fromJSON(credentials);
   httpClient.scopes = 'https://www.googleapis.com/auth/wallet_object.issuer';
   try {
@@ -123,7 +177,7 @@ export async function registerGoogleWalletClass(data: typeof genericClass): Prom
       await httpClient.request({
         url: `${baseUrl}/genericClass`,
         method: 'POST',
-        data: genericClass,
+        data,
       });
     } else {
       console.error(error);

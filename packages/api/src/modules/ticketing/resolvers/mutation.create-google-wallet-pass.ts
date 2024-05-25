@@ -1,6 +1,7 @@
 import { builder, makeGlobalID, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken';
+import { GOOGLE_WALLET_OBJECT } from '../../../server/google-wallet.js';
 
 builder.mutationField('createGoogleWalletPass', (t) =>
   t.string({
@@ -13,65 +14,11 @@ builder.mutationField('createGoogleWalletPass', (t) =>
         where: {
           id: makeGlobalID('Registration', code.toLowerCase()),
         },
+        include: { ticket: { include: { event: { include: { group: true } } } }, author: true },
       });
       if (!booking) throw new GraphQLError('Réservation introuvable');
 
       const credentials = JSON.parse(process.env.GOOGLE_WALLET_ISSUER_KEY);
-      const issuerId = process.env.PUBLIC_GOOGLE_WALLET_ISSUER_ID;
-      const objectSuffix = `${code.replaceAll(/[^\w.-]/g, '_')}`;
-      const objectId = `${issuerId}.${objectSuffix}`;
-      const classId = `${issuerId}.churros_generic`;
-
-      const genericObject = {
-        id: `${objectId}`,
-        classId: classId,
-        genericType: 'GENERIC_TYPE_UNSPECIFIED',
-        hexBackgroundColor: '#4285f4',
-        logo: {
-          sourceUri: {
-            uri: 'https://storage.googleapis.com/wallet-lab-tools-codelab-artifacts-public/pass_google_logo.jpg',
-          },
-        },
-        cardTitle: {
-          defaultValue: {
-            language: 'en',
-            value: "Google I/O '22",
-          },
-        },
-        subheader: {
-          defaultValue: {
-            language: 'en',
-            value: 'Attendee',
-          },
-        },
-        header: {
-          defaultValue: {
-            language: 'en',
-            value: 'Alex McJacobs',
-          },
-        },
-        barcode: {
-          type: 'QR_CODE',
-          value: `${objectId}`,
-        },
-        heroImage: {
-          sourceUri: {
-            uri: 'https://storage.googleapis.com/wallet-lab-tools-codelab-artifacts-public/google-io-hero-demo-only.jpg',
-          },
-        },
-        textModulesData: [
-          //   {
-          //     header: 'POINTS',
-          //     body: '1234',
-          //     id: 'points',
-          //   },
-          //   {
-          //     header: 'CONTACTS',
-          //     body: '20',
-          //     id: 'contacts',
-          //   },
-        ],
-      };
 
       const claims = {
         iss: credentials.client_email,
@@ -79,7 +26,7 @@ builder.mutationField('createGoogleWalletPass', (t) =>
         origins: [],
         typ: 'savetowallet',
         payload: {
-          genericObjects: [genericObject],
+          genericObjects: [GOOGLE_WALLET_OBJECT(booking.ticket.event, booking)],
         },
       };
 

@@ -126,9 +126,8 @@ const getUser = async (token: string) => {
   normalizePermissions({ user: user });
 
   // When the in memory store grows too big, delete some sessions
-  if (sessions.size > 10_000) 
+  if (sessions.size > 10_000)
     for (const [i, token] of [...sessions.keys()].entries()) if (i % 2) sessions.delete(token);
-  
 
   sessions.set(token, {
     ...user,

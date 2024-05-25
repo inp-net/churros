@@ -1,6 +1,6 @@
 import { builder, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
-import { userIsAdminOf, userIsGroupEditorOf } from '../../../permissions/index.js';
 import { removeMemberFromGroupMailingList, updateMemberBoardLists } from '#modules/mails';
+import { userIsAdminOf, userIsGroupEditorOf } from '../../../permissions/index.js';
 
 /** Removes a member from a group. */
 builder.mutationField('deleteGroupMember', (t) =>
