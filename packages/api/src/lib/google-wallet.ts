@@ -23,8 +23,8 @@ export function makeGoogleWalletObject(
   registration: Registration & { author: User | null },
 ) {
   return {
-    id: `${GOOGLE_WALLET_ISSUER_ID}.churros_event_${splitID(registration.id)[1]}`,
-    classId: `${GOOGLE_WALLET_ISSUER_ID}.churros_event`,
+    id: `${GOOGLE_WALLET_CLASS.id}_${splitID(registration.id)[1]}`,
+    classId: GOOGLE_WALLET_CLASS.id,
     logo: {
       sourceUri: {
         uri: noLocalhostURL('android-chrome-512x512.png', process.env.FRONTEND_ORIGIN).toString(),
