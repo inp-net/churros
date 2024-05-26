@@ -4837,11 +4837,13 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^7.4.0"
     "@typescript-eslint/parser": "npm:^7.4.0"
     dotenv-cli: "npm:^7.4.1"
+    dotenv-parser-serializer: "patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch"
     eslint: "npm:^8.57.0"
     eslint-config-prettier: "npm:^9.1.0"
     eslint-plugin-svelte: "npm:^2.35.1"
     eslint-plugin-unicorn: "npm:^51.0.1"
     husky: "npm:^9.0.11"
+    kleur: "npm:^4.1.5"
     lint-staged: "npm:^15.2.2"
     postcss-html: "npm:^1.6.0"
     prettier: "npm:^3.2.5"
@@ -6462,6 +6464,20 @@ __metadata:
   version: 10.0.0
   resolution: "dotenv-expand@npm:10.0.0"
   checksum: 10c0/298f5018e29cfdcb0b5f463ba8e8627749103fbcf6cf81c561119115754ed582deee37b49dfc7253028aaba875ab7aea5fa90e5dac88e511d009ab0e6677924e
+  languageName: node
+  linkType: hard
+
+"dotenv-parser-serializer@npm:1.0.2":
+  version: 1.0.2
+  resolution: "dotenv-parser-serializer@npm:1.0.2"
+  checksum: 10c0/73775416d8897579f9d41fb29f9af67095aca427fec34b1c33cd40125328282d57674b1503b6a0d85a330dd7b13dfd7f525a81de8444ddd68a36ca260fad70c8
+  languageName: node
+  linkType: hard
+
+"dotenv-parser-serializer@patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch":
+  version: 1.0.2
+  resolution: "dotenv-parser-serializer@patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch::version=1.0.2&hash=2d05ee"
+  checksum: 10c0/d2b81494f7a97d948d60cb6dfbb0b8ae437aa7026faf254bd0d406d70101d5377d9e685eef1f5bd861eceb6894e1870bc0de33142312c874106f929f41a8c258
   languageName: node
   linkType: hard
 

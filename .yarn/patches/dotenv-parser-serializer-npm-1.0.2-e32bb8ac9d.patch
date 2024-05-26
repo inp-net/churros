@@ -1,0 +1,58 @@
+diff --git a/lib/parse.js b/lib/parse.js
+index 28b0a5f6153c86c04c0a93f8bf7f60f9e34bdfd0..246723673136ab8d69dfda7b5a902a4f0252f8dc 100644
+--- a/lib/parse.js
++++ b/lib/parse.js
+@@ -23,13 +23,13 @@ const TOKENS = {
+   AlphaNumUChar: [/[a-zA-Z0-9_]/],
+ 
+   String: {
+-    $or: ['UnquotedString', 'EmptyString', 'QuotedString']
++    $or: ['UnquotedString', 'EmptyString', 'QuotedString', 'SingleQuotedString']
+   },
+ 
+   UnquotedString: [{ type: 'SafeChar', flatten: true }, { type: 'UnquotedStringChars', optional: true, flatten: true }],
+ 
+   // any char except newline and ", " is reserved for future quoted strings.
+-  SafeChar: [/[^\n"]/],
++  SafeChar: [/[^\n"']/],
+   UnquotedStringChars: [/[^\\\n]/, { type: 'UnquotedStringChars', optional: true, flatten: true }],
+ 
+   // TODO: This type should not exist, but QuotedString[1].optional does not work. this is a hotfix.
+@@ -39,7 +39,13 @@ const TOKENS = {
+   QuotedStringChar: {
+     $or: ['UnescapedQuotedStringChar', 'EscapedChars']
+   },
++  SingleQuotedString: ["'", { type: 'SingleQuotedStringChars', optional: true }, "'"],
++  SingleQuotedStringChars: [{ type: 'SingleQuotedStringChar', flatten: true }, { type: 'SingleQuotedStringChars', optional: true, flatten: true }],
++  SingleQuotedStringChar: {
++    $or: ['UnescapedSingleQuotedStringChar', 'EscapedChars']
++  },
+   UnescapedQuotedStringChar: [/[^\\"]/],
++  UnescapedSingleQuotedStringChar: [/[^\\']/],
+   EscapedChars: {
+     replacer(val) {
+       switch (val[0]) {
+diff --git a/lib/serialize.js b/lib/serialize.js
+index 6976bf339f97dad7675209ff20dbcd6a06ec0954..571724b009683078dba7461f8c72e7603909d96e 100644
+--- a/lib/serialize.js
++++ b/lib/serialize.js
+@@ -21,10 +21,17 @@ function serialize(obj) {
+       }
+     }
+ 
+-    serializedEntry += `${key}=${JSON.stringify(value)}`;
++    serializedEntry += `${key}=${serializeString(value)}`;
+ 
+     serializedDoc.push(serializedEntry);
+   }
+ 
+-  return serializedDoc.join('\n\n');
++  return serializedDoc.join('\n');
++}
++
++function serializeString(val) {
++  if (val.includes('\n') && !val.includes("'")) {
++    return `'${val}'`;
++  }
++  return JSON.stringify(val)
+ }

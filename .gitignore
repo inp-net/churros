@@ -45,3 +45,4 @@ bubblewrap/
 buildinfo.ts
 packages/api/static/CHANGELOG.md
 wiki/
+.env.bak
