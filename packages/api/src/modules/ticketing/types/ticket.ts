@@ -2,7 +2,7 @@ import { builder, prisma, subscriptionName, toHtml } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum, priceWithPromotionsApplied as actualPrice } from '#modules/payments';
 import { PaymentMethod } from '@prisma/client';
-import { placesLeft } from '../index.js';
+import { fullName, placesLeft } from '../index.js';
 
 export const TicketType = builder.prismaNode('Ticket', {
   id: { field: 'id' },
@@ -17,7 +17,7 @@ export const TicketType = builder.prismaNode('Ticket', {
     fullName: t.string({
       description: "Full name, including the ticket group's name if any",
       resolve({ name, group }) {
-        return group ? `${group.name} - ${name}` : name;
+        return fullName(group, name);
       },
     }),
     description: t.exposeString('description'),

@@ -76,5 +76,11 @@ declare namespace NodeJS {
     /** Mailman secrets */
     MAILMAN_API_URL: string;
     MAILMAN_API_TOKEN: string;
+    /** HelloAsso client ID, see https://admin.helloasso.com/net7/integrations */
+    PUBLIC_HELLOASSO_CLIENT_ID: string;
+    /**
+     * See https://admin.helloasso.com/net7/integrations
+     */
+    HELLOASSO_CLIENT_SECRET: string;
   }
 }

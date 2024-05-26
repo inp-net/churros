@@ -26,3 +26,10 @@ export async function createTicketUid({
   );
   return `${base}${n > 1 ? `-${n}` : ''}`;
 }
+
+export function fullName(
+  group: { id: string; eventId: string; name: string; capacity: number } | null,
+  name: string,
+) {
+  return group ? `${group.name} - ${name}` : name;
+}
