@@ -142,7 +142,6 @@ function isSensitive(value: string): boolean {
     return Math.round(str.length * (Math.log(alphabetSize(str)) / Math.log(2)));
   };
 
-  console.info(`Entropy of ${value}: ${entropy(value)}`);
   return entropy(value) > 200;
 }
 

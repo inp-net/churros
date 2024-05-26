@@ -41,10 +41,9 @@
   "packageManager": "yarn@4.2.2",
   "private": true,
   "scripts": {
-    "build": "yarn cp-env && yarn generate-buildinfo && yarn workspaces foreach --exclude @centraverse/docs --interlaced --topological-dev -Apv run build",
-    "update-env": "touch empty; git merge-file --theirs .env empty .env.example; rm empty",
+    "build": "yarn sync-with-example-dotenv && yarn cp-env && yarn generate-buildinfo && yarn workspaces foreach --exclude @centraverse/docs --interlaced --topological-dev -Apv run build",
     "cp-env": "test -f .env || cp .env.example .env && cp .env packages/api/ && cp .env packages/app/",
-    "dev": "yarn cp-env && docker compose up -d && yarn dotenv -- yarn workspaces foreach -Apiv run dev",
+    "dev": "yarn sync-with-example-dotenv && yarn cp-env && docker compose up -d && yarn dotenv -- yarn workspaces foreach -Apiv run dev",
     "format": "prettier . --write --ignore-unknown",
     "lint": "eslint . --cache=true & stylelint '**/*.{css,scss,svelte}' &",
     "lintfix": "eslint --fix --cache=true . & stylelint --fix '**/*.{css,scss,svelte}' &",
@@ -55,7 +54,8 @@
     "start": "docker compose up -d && yarn workspaces foreach -Apiv run start",
     "triage": "xdg-open 'https://git.inpt.fr/inp-net/churros/-/issues/?sort=created_date&state=opened&not[label_name][]=importance:urgent&not[label_name][]=importance:high&not[label_name][]=importance:medium&not[label_name][]=importance:low&not[label_name][]=importance:rockbottom&not[label_name][]=difficulty:braindead&not[label_name][]=difficulty:easy&not[label_name][]=difficulty:moderate&not[label_name][]=difficulty:hard&not[label_name][]=difficulty:unknown'",
     "release": "release-it && yarn workspace @centraverse/api copy-changelog",
-    "generate-buildinfo": "yarn tsx scripts/generate-buildinfo.ts"
+    "generate-buildinfo": "yarn tsx scripts/generate-buildinfo.ts",
+    "sync-with-example-dotenv": "yarn tsx scripts/sync-with-example-dotenv.ts"
   },
   "volta": {
     "node": "20.6.1",
