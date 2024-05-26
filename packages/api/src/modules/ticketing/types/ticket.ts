@@ -41,7 +41,7 @@ export const TicketType = builder.prismaNode('Ticket', {
     fullName: t.string({
       description: "Full name, including the ticket group's name if any",
       resolve({ name, group }) {
-        return group ? `${group.name} - ${name}` : name;
+        return fullName(group, name);
       },
     }),
     description: t.exposeString('description'),

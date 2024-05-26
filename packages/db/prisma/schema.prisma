@@ -573,6 +573,7 @@ model Event {
   forms            Form[]
   sharedBy         User[]         @relation("shares")
   applicableOffers Promotion[]
+  helloAssoEventSlug String         @default("") @db.VarChar(255)
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -705,6 +706,7 @@ enum PaymentMethod {
   Cash
   External
   Other
+  HelloAsso
 }
 
 /// A log entry is a log of an action that happened on the website

@@ -110,6 +110,12 @@ declare global {
       APPLE_WALLET_PASS_TYPE_ID: string;
       /** Get it from https://developer.apple.com/account */
       APPLE_WALLET_TEAM_ID: string;
+    /** HelloAsso client ID, see https://admin.helloasso.com/net7/integrations */
+    PUBLIC_HELLOASSO_CLIENT_ID: string;
+    /**
+     * See https://admin.helloasso.com/net7/integrations
+     */
+    HELLOASSO_CLIENT_SECRET: string;
     }
   }
 
