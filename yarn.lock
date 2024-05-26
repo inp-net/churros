@@ -464,6 +464,7 @@ __metadata:
     graphql-scalars: "npm:^1.23.0"
     graphql-ws: "npm:^5.16.0"
     graphql-yoga: "npm:^5.3.0"
+    helloasso: "npm:^0.0.1"
     helmet: "npm:^7.1.0"
     html-to-text: "npm:^9.0.5"
     image-type: "npm:^5.2.0"
@@ -8684,6 +8685,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"helloasso@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "helloasso@npm:0.0.1"
+  dependencies:
+    dotenv: "npm:^16.4.5"
+    oauth2: "npm:^0.0.1"
+  peerDependencies:
+    typescript: ^5.0.0
+  checksum: 10c0/e34ad1cd9517e6d7a7e12301de39d74e064a6fe9de15c2a94fbc6c45754e0361179c83d9095f4ab2a1399f4afb19da1a7aec0359158920b88250da423195be10
+  languageName: node
+  linkType: hard
+
 "helmet@npm:^7.1.0":
   version: 7.1.0
   resolution: "helmet@npm:7.1.0"
@@ -11762,6 +11775,13 @@ __metadata:
   version: 2.2.7
   resolution: "nwsapi@npm:2.2.7"
   checksum: 10c0/44be198adae99208487a1c886c0a3712264f7bbafa44368ad96c003512fed2753d4e22890ca1e6edb2690c3456a169f2a3c33bfacde1905cf3bf01c7722464db
+  languageName: node
+  linkType: hard
+
+"oauth2@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "oauth2@npm:0.0.1"
+  checksum: 10c0/113e5b61aea2cdc0bc82bc51722dbd9e6a9804ecd45ee1b72fbe7af269b4936a7d4bed2c0001d94bd0bab105f66b18f4c9ef709308987791ac0bd27835b9542a
   languageName: node
   linkType: hard
 
