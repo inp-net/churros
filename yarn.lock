@@ -6487,8 +6487,8 @@ __metadata:
 
 "dotenv-parser-serializer@patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch":
   version: 1.0.2
-  resolution: "dotenv-parser-serializer@patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch::version=1.0.2&hash=2d05ee"
-  checksum: 10c0/d2b81494f7a97d948d60cb6dfbb0b8ae437aa7026faf254bd0d406d70101d5377d9e685eef1f5bd861eceb6894e1870bc0de33142312c874106f929f41a8c258
+  resolution: "dotenv-parser-serializer@patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch::version=1.0.2&hash=7086df"
+  checksum: 10c0/1629505f70846e5c09fcbf1dc75a428e424ffea29103b0986600f3c1e1a3e3c0214c73a68a4204893d4ebdeace0621d432db6cd6dd3d08fb8184e80e859a690a
   languageName: node
   linkType: hard
 
