@@ -896,6 +896,7 @@ __metadata:
     graphql-ws: "npm:^5.16.0"
     graphql-yoga: "npm:^5.7.0"
     handlebars: "npm:^4.7.8"
+    helloasso: "npm:^0.0.4"
     helmet: "npm:^8.0.0"
     html-to-text: "npm:^9.0.5"
     i18next: "npm:^23.15.1"
@@ -12791,6 +12792,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"helloasso@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "helloasso@npm:0.0.4"
+  dependencies:
+    dotenv: "npm:^16.4.5"
+    oauth2: "npm:^0.0.1"
+  peerDependencies:
+    typescript: ^5.0.0
+  checksum: 10c0/c89a40cb24d9dc1b92906736b89968e71f774d20b5c9e47484699c9bfea112a322a461ddf1bebbb850b1bb7b6e8f39527ec8d74cb62beaf89a7791b476070796
+  languageName: node
+  linkType: hard
+
 "helmet@npm:^8.0.0":
   version: 8.0.0
   resolution: "helmet@npm:8.0.0"
@@ -17287,6 +17300,13 @@ __metadata:
   version: 0.9.0
   resolution: "oauth-sign@npm:0.9.0"
   checksum: 10c0/fc92a516f6ddbb2699089a2748b04f55c47b6ead55a77cd3a2cbbce5f7af86164cb9425f9ae19acfd066f1ad7d3a96a67b8928c6ea946426f6d6c29e448497c2
+  languageName: node
+  linkType: hard
+
+"oauth2@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "oauth2@npm:0.0.1"
+  checksum: 10c0/113e5b61aea2cdc0bc82bc51722dbd9e6a9804ecd45ee1b72fbe7af269b4936a7d4bed2c0001d94bd0bab105f66b18f4c9ef709308987791ac0bd27835b9542a
   languageName: node
   linkType: hard
 

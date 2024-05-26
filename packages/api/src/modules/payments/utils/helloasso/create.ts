@@ -2,19 +2,25 @@ import type { Event, Ticket, TicketGroup } from '@prisma/client';
 import { fullName } from '../../../ticketing/utils/naming.js';
 import { client, defaultOrganization } from './auth.js';
 
+/**
+ * Will not work until we become a HelloAsso partner (partenariats@helloasso.org)
+ * Because it requires the FormAdministration privilege on the clientId
+ * @param event
+ * @returns the event's slug
+ */
 export async function createHelloAssoEvent(
   event: Event & { tickets: Array<Ticket & { group: TicketGroup | null }> },
 ): Promise<string> {
   const org = await defaultOrganization();
   const result = await client
-    .call(`/v5/${org}/forms/Event/action/quick-create`, {}, 'POST', {
+    .call(`/v5/organizations/${org}/forms/Event/action/quick-create`, {}, 'POST', {
       tierList: event.tickets.map((ticket) => ({
         label: fullName(ticket.group, ticket.name),
         price: ticket.price,
       })),
       description: event.description,
       title: event.title,
-      activityTypeId: 1,
+      // activityTypeId: 1,
       place: {
         name: event.location,
       },

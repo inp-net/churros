@@ -11,5 +11,5 @@ export const client = new HelloAsso({
  */
 export async function defaultOrganization(): Promise<string> {
   const organizations = await client.call('/v5/users/me/organizations').then((r) => r.json());
-  return organizations[0]!.slug;
+  return organizations[0]!.organizationSlug;
 }
