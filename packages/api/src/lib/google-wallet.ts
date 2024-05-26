@@ -159,8 +159,8 @@ export async function registerGoogleWalletClass(data: typeof GOOGLE_WALLET_CLASS
   let credentials: JWTInput;
   try {
     credentials = JSON.parse(process.env.GOOGLE_WALLET_ISSUER_KEY);
-  } catch {
-    console.error('Could not parse credentials for Google Wallet issuer service account');
+  } catch (error) {
+    console.error(`Could not parse credentials for Google Wallet issuer service account: ${error}`);
     return '';
   }
   const httpClient = new GoogleAuth({
