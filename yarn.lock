@@ -464,7 +464,7 @@ __metadata:
     graphql-scalars: "npm:^1.23.0"
     graphql-ws: "npm:^5.16.0"
     graphql-yoga: "npm:^5.3.0"
-    helloasso: "npm:^0.0.3"
+    helloasso: "npm:^0.0.4"
     helmet: "npm:^7.1.0"
     html-to-text: "npm:^9.0.5"
     image-type: "npm:^5.2.0"
@@ -8685,15 +8685,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"helloasso@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "helloasso@npm:0.0.3"
+"helloasso@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "helloasso@npm:0.0.4"
   dependencies:
     dotenv: "npm:^16.4.5"
     oauth2: "npm:^0.0.1"
   peerDependencies:
     typescript: ^5.0.0
-  checksum: 10c0/2f3985d4ee5e119157808e52dfd0ebe7c64819837fe30860bcbba1f09ab81589e7b45b5ff4723540dc941ca54b11eb9363336bc2ca7af358effdcd63af9c7bec
+  checksum: 10c0/c89a40cb24d9dc1b92906736b89968e71f774d20b5c9e47484699c9bfea112a322a461ddf1bebbb850b1bb7b6e8f39527ec8d74cb62beaf89a7791b476070796
   languageName: node
   linkType: hard
 
