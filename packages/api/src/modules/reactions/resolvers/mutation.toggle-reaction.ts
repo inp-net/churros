@@ -1,44 +1,32 @@
-import { builder, prisma } from '#lib';
+import { builder, decodeGlobalID, prisma } from '#lib';
 
 import { log } from '../../../lib/logger.js';
+import { REACTABLE_TYPES } from '../utils/reactables.js';
 
 builder.mutationField('toggleReaction', (t) =>
   t.boolean({
     args: {
       emoji: t.arg.string({ validate: { maxLength: 2 } }),
-      documentId: t.arg.id({ required: false }),
-      articleId: t.arg.id({ required: false }),
-      commentId: t.arg.id({ required: false }),
-      eventId: t.arg.id({ required: false }),
+      target: t.arg.id({ required: true }),
     },
-    authScopes(_, { documentId, articleId, commentId, eventId }, { user }) {
+    authScopes(_, {}, { user }) {
       if (!user) return false;
       return Boolean(
-        user?.admin ||
-          // TODO only allow for articles the user can see
-          articleId /* && true */ ||
-          // TODO only allow for events the user can see
-          eventId /* && true */ ||
-          // TODO only allow for comments on stuff the user can see
-          commentId /* && true */ ||
-          (documentId && user?.canAccessDocuments),
+        true,
+        // TODO only allow for objects the user can see
       );
     },
-    async resolve(_query, { emoji, documentId, articleId, commentId, eventId }, { user }) {
-      await log(
-        'reactions',
-        'toggle',
-        { emoji },
-        commentId || documentId || articleId || eventId || '<nothing>',
-        user,
-      );
+    async resolve(_query, { emoji, target }, { user }) {
+      await log('reactions', 'toggle', { emoji }, target || '<nothing>', user);
+      const targetType = decodeGlobalID(target).typename;
+      //@ts-expect-error see https://github.com/microsoft/TypeScript/issues/26255
+      if (!REACTABLE_TYPES.includes(targetType))
+        throw new Error(`Impossible de réagir à un objet de type ${targetType}`);
+
       const reaction = await prisma.reaction.findFirst({
         where: {
           emoji,
-          documentId,
-          articleId,
-          commentId,
-          eventId,
+          [`${targetType.toLowerCase()}Id`]: target,
           authorId: user!.id,
         },
       });
@@ -46,10 +34,7 @@ builder.mutationField('toggleReaction', (t) =>
         await prisma.reaction.deleteMany({
           where: {
             emoji,
-            documentId,
-            articleId,
-            commentId,
-            eventId,
+            [`${targetType.toLowerCase()}Id`]: target,
             authorId: user!.id,
           },
         });
@@ -59,10 +44,7 @@ builder.mutationField('toggleReaction', (t) =>
       await prisma.reaction.create({
         data: {
           emoji,
-          document: documentId ? { connect: { id: documentId } } : undefined,
-          article: articleId ? { connect: { id: articleId } } : undefined,
-          comment: commentId ? { connect: { id: commentId } } : undefined,
-          event: eventId ? { connect: { id: eventId } } : undefined,
+          [`${targetType.toLowerCase()}Id`]: target,
           author: { connect: { id: user!.id } },
         },
       });

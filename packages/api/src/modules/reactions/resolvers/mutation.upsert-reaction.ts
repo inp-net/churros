@@ -1,6 +1,5 @@
-import { builder, prisma } from '#lib';
-
-import { log } from '../../../lib/logger.js';
+import { builder, decodeGlobalID, log, prisma } from '#lib';
+import { REACTABLE_TYPES } from '../utils/reactables.js';
 
 // TODO rename to mutation.react and mutation.remove-reaction (or mutation.unreact ?)
 
@@ -9,36 +8,30 @@ builder.mutationField('upsertReaction', (t) =>
     args: {
       id: t.arg.id({ required: false }),
       emoji: t.arg.string({ validate: { maxLength: 2 } }),
-      documentId: t.arg.id({ required: false }),
-      articleId: t.arg.id({ required: false }),
-      commentId: t.arg.id({ required: false }),
-      eventId: t.arg.id({ required: false }),
+      target: t.arg.id({ required: true }),
     },
-    authScopes(_, { articleId, documentId, eventId }, { user }) {
+    authScopes(_, {}, { user }) {
       if (!user) return false;
       return Boolean(
-        user?.admin ||
-          // TODO only allow for articles the user can see
-          articleId /* && true */ ||
-          // TODO only allow for events the user can see
-          eventId /* && true */ ||
-          (documentId && user?.canAccessDocuments),
+        true,
+        // TODO only allow for objects the user can see
       );
     },
-    async resolve(query, { id, emoji, documentId, articleId, commentId, eventId }, { user }) {
+    async resolve(query, { id, emoji, target }, { user }) {
+      const targetType = decodeGlobalID(target).typename;
+      //@ts-expect-error see https://github.com/microsoft/TypeScript/issues/26255
+      if (!REACTABLE_TYPES.includes(targetType))
+        throw new Error(`Impossible de réagir à un objet de type ${targetType}`);
       const upsertData = {
         emoji,
-        document: documentId ? { connect: { id: documentId } } : undefined,
-        article: articleId ? { connect: { id: articleId } } : undefined,
-        comment: commentId ? { connect: { id: commentId } } : undefined,
-        event: eventId ? { connect: { id: eventId } } : undefined,
+        [`${targetType.toLowerCase()}Id`]: target,
       };
 
       await log(
         'reactions',
         id ? 'edit-reaction' : 'react',
         upsertData,
-        id || commentId || documentId || articleId || '<nothing>',
+        target || '<nothing>',
         user,
       );
 
@@ -60,7 +53,7 @@ builder.mutationField('upsertReaction', (t) =>
       });
 
       return prisma.reaction.count({
-        where: { emoji, documentId, articleId, commentId, eventId },
+        where: { emoji, [targetType.toLowerCase() + 'Id']: target },
       });
     },
   }),
