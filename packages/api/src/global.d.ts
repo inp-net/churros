@@ -117,6 +117,12 @@ declare global {
       PUBLIC_API_ORIGIN_WEB: string;
       FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY: string;
       PUBLIC_APP_PACKAGE_ID: string;
+    /** HelloAsso client ID, see https://admin.helloasso.com/net7/integrations */
+    PUBLIC_HELLOASSO_CLIENT_ID: string;
+    /**
+     * See https://admin.helloasso.com/net7/integrations
+     */
+    HELLOASSO_CLIENT_SECRET: string;
     }
   }
 
