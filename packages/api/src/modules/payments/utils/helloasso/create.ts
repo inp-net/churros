@@ -18,6 +18,7 @@ export async function createHelloAssoEvent(
       place: {
         name: event.location,
       },
+      banner: new URL(event.pictureFile, process.env.PUBLIC_STORAGE_URL).toString(),
       startDate: event.startsAt,
       saleStartDate: earliestDate(event.tickets.map((t) => t.opensAt)),
       saleEndDate: lastDate(event.tickets.map((t) => t.closesAt)),
