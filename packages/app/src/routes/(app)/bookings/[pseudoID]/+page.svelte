@@ -190,7 +190,7 @@
   {#if !cancelled}
     <section class="action-buttons">
       <ButtonSecondary data-sveltekit-reload href="../{code}.pdf" icon={IconDownload}
-        >Imprimer / Télécharger en PDF</ButtonSecondary
+        >PDF</ButtonSecondary
       >
       {#if $debugging}
         <ButtonAddToGoogleWallet
@@ -323,9 +323,16 @@
   section.action-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+
+    /* see https://developers.google.com/wallet/generic/resources/brand-guidelines#clear-space */
+    gap: 10px;
     align-items: center;
     justify-content: center;
+  }
+
+  section.action-buttons :global(> .button-secondary) {
+    /* to make all buttons the same height as the "add to wallet" button */
+    height: 55px;
   }
 
   .qrcode {
