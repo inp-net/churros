@@ -1,0 +1,11 @@
+<mj-section>
+  <mj-column width="100%">
+    <mj-divider />
+    <mj-text align="center">
+      <a href="{{env.FRONTEND_ORIGIN}}">Churros</a> par <a href="https://net7.dev">net7</a>
+    </mj-text>
+    <mj-text align="center">
+      Contactez-nous en répondant à ce mail ou en écrivant à <a href="mailto:{{env.PUBLIC_SUPPORT_EMAIL}}">{{env.PUBLIC_SUPPORT_EMAIL}}</a>
+    </mj-text>
+  </mj-column>
+</mj-section>
