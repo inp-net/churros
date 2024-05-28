@@ -121,12 +121,14 @@ export const UserType = builder.prismaNode('User', {
             id: true,
             adminOfStudentAssociations: { select: { id: true } },
             canEditGroups: { select: { id: true } },
+            admin: true,
           },
         });
 
         return (
           (user.adminOfStudentAssociations?.some((a) => a.id === studentAssociationId) ?? false) ||
-          (user.canEditGroups?.some((a) => a.id === studentAssociationId) ?? false)
+          (user.canEditGroups?.some((a) => a.id === studentAssociationId) ?? false) ||
+          user.admin
         );
       },
     }),

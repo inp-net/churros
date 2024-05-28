@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
     !canEditGroup &&
     !me.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === params.uid)
   )
-    throw redirect(307, '.');
+    throw redirect(307, '..');
 
   return loadQuery(
     {
