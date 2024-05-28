@@ -23,7 +23,7 @@
   export let object: { pictureFile: string; uid: string; id: string; pictureFileDark?: string };
   export let alt = '';
 
-  $: filepath = object.pictureFile;
+  $: filepath = dark ? object.pictureFileDark : object.pictureFile;
   const pictureFilePropertyName: 'pictureFile' | 'pictureFileDark' =
     objectName === 'Group' && dark ? 'pictureFileDark' : 'pictureFile';
   $: ({ uid, id } = object);
