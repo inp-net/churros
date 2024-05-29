@@ -12,18 +12,22 @@ export type MailProps = {
     beneficiary: string | null;
   };
   'form-answers': {
-    answers: string;
+    title: string;
+    answersDate: string;
+    answers: Array<{
+      questionTitle: string;
+      answerString: string;
+    }>;
+    linkToAnswers: string;
+    formId: string;
   };
   'group-board-updated': {
-    updates: Array<{
-      role: string;
-      oldFullName: string;
-      newFullName: string;
-    }>;
+    groupName: string;
+    memberFullName: string;
+    rolesText: string;
   };
   'reset-password': {
-    fullName: string;
-    resetPasswordUrl: string;
+    resetLink: string;
   };
   'signup-accepted': {
     fullName: string;
@@ -32,15 +36,17 @@ export type MailProps = {
     fullName: string;
   };
   'signup-rejected': {
-    fullName: string;
-    rejectionReason: string;
+    reason: string;
   };
   'signup-verify-mail': {
     fullName: string;
     url: string;
   };
   'verify-mail': {
-    fullName: string;
+    url: string;
+  };
+  'welcome': {
+    url: string;
   };
 };
 
