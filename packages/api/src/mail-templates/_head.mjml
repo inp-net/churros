@@ -1,0 +1,5 @@
+<mj-font name="Space Grotesk" href="{{env.FRONTEND_ORIGIN}}/fonts.css" />
+<mj-attributes>
+  <mj-all font-family="Space Grotesk, sans-serif" />
+  <mj-button background-color="#1d4ed8" color="#ffffff" font-weight="bold" border-radius="24px" />
+</mj-attributes>

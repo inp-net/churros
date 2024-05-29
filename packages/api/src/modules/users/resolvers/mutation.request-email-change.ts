@@ -1,10 +1,7 @@
-import { builder, prisma } from '#lib';
-
+import { builder, prisma, sendMail } from '#lib';
 import { GraphQLError } from 'graphql';
-import { createTransport } from 'nodemailer';
 
 export async function requestEmailChange(email: string, userId: string): Promise<void> {
-  const transporter = createTransport(process.env.SMTP_URL);
   const request = await prisma.emailChange.create({
     data: {
       user: { connect: { id: userId } },
@@ -17,15 +14,7 @@ export async function requestEmailChange(email: string, userId: string): Promise
     process.env.FRONTEND_ORIGIN,
   );
 
-  await transporter.sendMail({
-    from: process.env.PUBLIC_CONTACT_EMAIL,
-    to: email,
-    subject: `Validation de votre adresse e-mail`,
-    html: `
-        <p><a href="${url.toString()}">Validez votre adresse e-mail</a></p>
-        `,
-    text: `Validez votre adresse e-mail sur ${url.toString()}`,
-  });
+  await sendMail('verify-mail', email, { url: url.toString() }, {});
 }
 
 builder.mutationField('requestEmailChange', (t) =>

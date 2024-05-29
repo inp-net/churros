@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Améliorations
+
+- Les mails sont jolis maintenant :)
+
 ## [1.58.5] - 2024-05-29
 
 ### Technique

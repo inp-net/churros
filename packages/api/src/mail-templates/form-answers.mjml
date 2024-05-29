@@ -1,0 +1,45 @@
+<mjml>
+  <mj-head>
+    <mj-title>Tes réponses à {{title}}</mj-title>
+    <mj-include path="./_head.mjml"></mj-include>
+  </mj-head>
+  <mj-body>
+    <mj-include path="./_header.mjml"></mj-include>
+
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          <h1>Tes réponses à {{title}}</h1>
+        </mj-text>
+        <mj-text>
+          <p>Réponses du {{ answersDate }}</p>
+          <ul>
+            {{#each answers}}
+              <li>
+                <strong>{{ this.questionTitle }}</strong>: {{ this.answer }}
+              </li>
+            {{/each}}
+          </ul>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-button href="{{linkToAnswers}}">
+          Modifier mes réponses
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          <pre>{{formId}}</pre>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="./_footer.mjml"></mj-include>
+  </mj-body>
+</mjml>

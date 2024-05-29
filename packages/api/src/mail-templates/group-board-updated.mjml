@@ -1,0 +1,38 @@
+<mjml>
+  <mj-head>
+    <mj-title>Bureau de {{groupName}} modifié</mj-title>
+    <mj-include path="./_head.mjml"></mj-include>
+  </mj-head>
+  <mj-body>
+    <mj-include path="./_header.mjml"></mj-include>
+
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          <h1>Bureau de {{groupName}} modifié</h1>
+        </mj-text>
+        <mj-text>
+          <a href="{{memberProfileLink}}">{{memberFullname}}</a> a maintenant les rôles suivants:
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-text align="center">
+          <p>{{rolesText}}</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          <p>(avant, iel avait les rôles {{rolesText}})</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="./_footer.mjml"></mj-include>
+  </mj-body>
+</mjml>

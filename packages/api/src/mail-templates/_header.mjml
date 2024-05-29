@@ -1,0 +1,5 @@
+<mj-section>
+  <mj-column>
+    <mj-image height="64px" src="{{env.FRONTEND_ORIGIN}}/wordmark.svg" alt="Churros" />
+  </mj-column>
+</mj-section>
