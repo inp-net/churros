@@ -103,13 +103,13 @@
   $: ShopItems = data.itemsOfGroup;
 
   $: canEditArticles = Boolean(
-    $me?.admin || myPermissions?.canEditArticles || meOnClubBoard || data.canEditGroup,
+    myPermissions?.canEditArticles || meOnClubBoard || data.canEditGroup,
   );
   $: canEditEvents = canEditArticles;
   $: canEditMembers = Boolean(
-    $me?.admin || myPermissions?.canEditMembers || meOnClubBoard || data.canEditGroup,
+    myPermissions?.canEditMembers || meOnClubBoard || data.canEditGroup,
   );
-  $: canEditDetails = Boolean($me?.admin || group?.canEditDetails || data.canEditGroup);
+  $: canEditDetails = Boolean(group?.canEditDetails || data.canEditGroup);
 
   const joinGroup = async (groupUid: string) => {
     if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
