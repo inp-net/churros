@@ -29,7 +29,6 @@
         <mj-text>Montre le QR code pour rentrer.</mj-text>
       </mj-column>
       <mj-column width="66%">
-        <!-- TODO: use https://github.com/typpo/mjml-qr-code instead -->
         <mj-image src="cid:qrcode" alt="{{bookingCode}}" />
       </mj-column>
     </mj-section>
