@@ -1,0 +1,38 @@
+<mjml>
+  <mj-head>
+    <mj-title>Inscription refusée</mj-title>
+    <mj-include path="./_head.mjml"></mj-include>
+  </mj-head>
+  <mj-body>
+    <mj-include path="./_header.mjml"></mj-include>
+
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          <h1>Inscription refusée</h1>
+        </mj-text>
+        <mj-text>
+          Votre inscription a été refusée pour la raison suivante:
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-text align="center">
+          {{reason}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          Si vous pensez qu'il s'agit d'une erreur, répondez à ce mail
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="./_footer.mjml"></mj-include>
+  </mj-body>
+</mjml>

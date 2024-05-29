@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { prisma, sendMail } from '#lib';
 import {
   CredentialType,
   type Major,
@@ -6,7 +6,6 @@ import {
   type User,
   type UserCandidate,
 } from '@prisma/client';
-import { createTransport } from 'nodemailer';
 import { createUid } from './uid.js';
 
 export const saveUser = async ({
@@ -60,18 +59,12 @@ export const saveUser = async ({
 
   await prisma.userCandidate.delete({ where: { id } });
 
-  const url = new URL('/welcome/', process.env.FRONTEND_ORIGIN);
-  await createTransport(process.env.SMTP_URL).sendMail({
-    subject: `Bienvenue sur Churros!`,
-    to: email,
-    from: process.env.PUBLIC_SUPPORT_EMAIL,
-    html: `
-<p>
-  <a href="${url.toString()}">Bienvenue sur Churros!</a>
-</p>
-`,
-    text: `Bienvenue sur Churros ! Ça se passe ici : ${url.toString()}`,
-  });
+  await sendMail(
+    'welcome',
+    email,
+    { url: new URL('/welcome/', process.env.FRONTEND_ORIGIN).toString() },
+    {},
+  );
 
   return user;
 };

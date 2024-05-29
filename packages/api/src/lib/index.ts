@@ -15,6 +15,7 @@ export * from './google.js';
 export * from './ldap-school.js';
 export * from './ldap.js';
 export * from './logger.js';
+export * from './mail.js';
 export * from './markdown.js';
 export * from './pictures.js';
 export * from './prisma.js';
