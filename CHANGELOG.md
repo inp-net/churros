@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Hot fix : correction du fait que tout le monde avait accès à l'édition des clubs
+
 ## [1.58.4] - 2024-05-24
 
 ### Technique
