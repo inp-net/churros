@@ -603,8 +603,8 @@ __metadata:
     graphql: "npm:^16.8.1"
     graphql-ws: "npm:^5.16.0"
     graphql-zeus: "npm:^5.3.3"
-    houdini: "npm:1.2.46"
-    houdini-svelte: "npm:1.2.46"
+    houdini: "npm:1.2.47"
+    houdini-svelte: "npm:1.2.47"
     html-to-text: "npm:^9.0.5"
     html5-qrcode: "npm:^2.3.8"
     ics: "npm:^3.7.2"
@@ -9807,27 +9807,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"houdini-svelte@npm:1.2.46":
-  version: 1.2.46
-  resolution: "houdini-svelte@npm:1.2.46"
+"houdini-svelte@npm:1.2.47":
+  version: 1.2.47
+  resolution: "houdini-svelte@npm:1.2.47"
   dependencies:
     "@kitql/helpers": "npm:^0.8.2"
     "@sveltejs/kit": "npm:^1.9.3"
     ast-types: "npm:^0.16.1"
     estree-walker: "npm:^3.0.1"
     graphql: "npm:^15.8.0"
-    houdini: "npm:^1.2.46"
+    houdini: "npm:^1.2.47"
     recast: "npm:^0.23.1"
     rollup: "npm:^3.7.4"
     svelte: "npm:^3.57.0"
     vite: "npm:^4.1.1"
-  checksum: 10c0/be228428bd356808cd70d471a0723cb25fb8b4df67f056e5d0bd814c1daa5e7a887414a2b36f386e183dce895ef6b512c762132b2e6fdb612b67a579ca056189
+  checksum: 10c0/3bf490f076b08e346325c9abbe803dd9623b579518b85d3513edfbd0bfa649596cc24e395798e65a5084bfb839e92cd44ffbe17114ceb380f6fa16e2b54240f2
   languageName: node
   linkType: hard
 
-"houdini@npm:1.2.46, houdini@npm:^1.2.46":
-  version: 1.2.46
-  resolution: "houdini@npm:1.2.46"
+"houdini@npm:1.2.47, houdini@npm:^1.2.47":
+  version: 1.2.47
+  resolution: "houdini@npm:1.2.47"
   dependencies:
     "@babel/parser": "npm:^7.23.9"
     "@clack/prompts": "npm:^0.6.3"
@@ -9856,7 +9856,7 @@ __metadata:
     vite-plugin-watch-and-run: "npm:^1.3.2"
   bin:
     houdini: build/cmd-esm/index.js
-  checksum: 10c0/e219e7c29685038247ebd2d02bc398ebc6ea61b5dfe8b6ef6a6e62343e7a98bc395ce1d35d6ad6cb15f097c884ee1bc174753210aa30574ed7174543cc66182c
+  checksum: 10c0/7b25baad082d85fba88500ebb1f05af7c9056536717e4f416b8dabf3c369c8edea79f7372fafccf261b5ca1d30d333fb29f2d02f0db14c694a4f82ba3ae722b0
   languageName: node
   linkType: hard
 
