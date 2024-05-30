@@ -19,7 +19,6 @@
   import AreaPaypalPayRegistration from '$lib/components/AreaPaypalPayRegistration.svelte';
   import { subscribe } from '$lib/subscriptions';
   import ButtonAddToGoogleWallet from '$lib/components/ButtonAddToGoogleWallet.svelte';
-  import { debugging } from '$lib/debugging';
 
   let confirmingCancellation = false;
   let paymentLoading = false;
@@ -192,16 +191,14 @@
       <ButtonSecondary data-sveltekit-reload href="../{code}.pdf" icon={IconDownload}
         >PDF</ButtonSecondary
       >
-      {#if $debugging}
-        <ButtonAddToGoogleWallet
-          on:click={async () => {
-            const { createGoogleWalletPass } = await $zeus.mutate({
-              createGoogleWalletPass: [{ code }, true],
-            });
-            window.location.href = createGoogleWalletPass;
-          }}
-        />
-      {/if}
+      <ButtonAddToGoogleWallet
+        on:click={async () => {
+          const { createGoogleWalletPass } = await $zeus.mutate({
+            createGoogleWalletPass: [{ code }, true],
+          });
+          window.location.href = createGoogleWalletPass;
+        }}
+      />
     </section>
   {/if}
 
