@@ -18,6 +18,8 @@
   import { toasts } from '$lib/toasts';
   import AreaPaypalPayRegistration from '$lib/components/AreaPaypalPayRegistration.svelte';
   import { subscribe } from '$lib/subscriptions';
+  import ButtonAddToGoogleWallet from '$lib/components/ButtonAddToGoogleWallet.svelte';
+  import { debugging } from '$lib/debugging';
 
   let confirmingCancellation = false;
   let paymentLoading = false;
@@ -186,10 +188,20 @@
   {/if}
 
   {#if !cancelled}
-    <section class="print">
+    <section class="action-buttons">
       <ButtonSecondary data-sveltekit-reload href="../{code}.pdf" icon={IconDownload}
-        >Imprimer / Télécharger en PDF</ButtonSecondary
+        >PDF</ButtonSecondary
       >
+      {#if $debugging}
+        <ButtonAddToGoogleWallet
+          on:click={async () => {
+            const { createGoogleWalletPass } = await $zeus.mutate({
+              createGoogleWalletPass: [{ code }, true],
+            });
+            window.location.href = createGoogleWalletPass;
+          }}
+        />
+      {/if}
     </section>
   {/if}
 
@@ -308,10 +320,19 @@
     margin-left: auto;
   }
 
-  section.print {
+  section.action-buttons {
     display: flex;
+    flex-wrap: wrap;
+
+    /* see https://developers.google.com/wallet/generic/resources/brand-guidelines#clear-space */
+    gap: 10px;
     align-items: center;
     justify-content: center;
+  }
+
+  section.action-buttons :global(> .button-secondary) {
+    /* to make all buttons the same height as the "add to wallet" button */
+    height: 55px;
   }
 
   .qrcode {
@@ -398,12 +419,12 @@
   @media (min-width: 1000px) {
     .content {
       display: grid;
-      grid-template-areas: 'header header' 'pay pay' 'print print' 'links links' 'qrcode details' 'qrcode cancel' 'fineprint fineprint';
+      grid-template-areas: 'header header' 'pay pay' 'actions actions' 'links links' 'qrcode details' 'qrcode cancel' 'fineprint fineprint';
       max-width: 1000px;
     }
 
-    section.print {
-      grid-area: print;
+    section.action-buttons {
+      grid-area: actions;
     }
 
     section.links {

@@ -106,9 +106,7 @@
     myPermissions?.canEditArticles || meOnClubBoard || data.canEditGroup,
   );
   $: canEditEvents = canEditArticles;
-  $: canEditMembers = Boolean(
-    myPermissions?.canEditMembers || meOnClubBoard || data.canEditGroup,
-  );
+  $: canEditMembers = Boolean(myPermissions?.canEditMembers || meOnClubBoard || data.canEditGroup);
   $: canEditDetails = Boolean(group?.canEditDetails || data.canEditGroup);
 
   const joinGroup = async (groupUid: string) => {

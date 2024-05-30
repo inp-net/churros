@@ -1,5 +1,5 @@
 diff --git a/lib/parse.js b/lib/parse.js
-index 28b0a5f6153c86c04c0a93f8bf7f60f9e34bdfd0..246723673136ab8d69dfda7b5a902a4f0252f8dc 100644
+index 28b0a5f6153c86c04c0a93f8bf7f60f9e34bdfd0..be394866f3efabb04f6a8386778c1fdcd6e93593 100644
 --- a/lib/parse.js
 +++ b/lib/parse.js
 @@ -23,13 +23,13 @@ const TOKENS = {
@@ -25,10 +25,10 @@ index 28b0a5f6153c86c04c0a93f8bf7f60f9e34bdfd0..246723673136ab8d69dfda7b5a902a4f
 +  SingleQuotedString: ["'", { type: 'SingleQuotedStringChars', optional: true }, "'"],
 +  SingleQuotedStringChars: [{ type: 'SingleQuotedStringChar', flatten: true }, { type: 'SingleQuotedStringChars', optional: true, flatten: true }],
 +  SingleQuotedStringChar: {
-+    $or: ['UnescapedSingleQuotedStringChar', 'EscapedChars']
++    $or: ['UnescapedSingleQuotedStringChar']
 +  },
    UnescapedQuotedStringChar: [/[^\\"]/],
-+  UnescapedSingleQuotedStringChar: [/[^\\']/],
++  UnescapedSingleQuotedStringChar: [/[^']/],
    EscapedChars: {
      replacer(val) {
        switch (val[0]) {

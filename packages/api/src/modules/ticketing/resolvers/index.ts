@@ -4,6 +4,7 @@
 
 export * from './mutation.cancel-registration.js';
 export * from './mutation.check-if-registration-is-paid.js';
+export * from './mutation.create-google-wallet-pass.js';
 export * from './mutation.delete-ticket-group.js';
 export * from './mutation.delete-ticket.js';
 export * from './mutation.oppose-registration.js';
