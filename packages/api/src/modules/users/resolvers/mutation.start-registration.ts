@@ -1,8 +1,8 @@
-import { builder, findSchoolUser, fromYearTier, prisma } from '#lib';
+import { builder, findSchoolUser, fromYearTier, prisma, sendMail } from '#lib';
 
 import { nanoid } from 'nanoid';
-import { createTransport } from 'nodemailer';
 import { ZodError } from 'zod';
+import { fullName } from '../utils/names.js';
 /** Registers a new user. */
 builder.mutationField('startRegistration', (t) =>
   t.field({
@@ -66,17 +66,18 @@ export const register = async (email: string): Promise<boolean> => {
   const url = new URL('/register/continue', process.env.FRONTEND_ORIGIN);
   url.searchParams.append('token', token);
 
-  await createTransport(process.env.SMTP_URL).sendMail({
-    to: email,
-    from: process.env.PUBLIC_SUPPORT_EMAIL,
-    subject: `Finaliser mon inscription sur Churros`,
-    html: `
-<p>
-  <a href="${url.toString()}">Finaliser mon inscription</a>
-</p>
-`,
-    text: `Finaliser mon inscription sur ${url.toString()}`,
-  });
+  await sendMail(
+    'signup-verify-mail',
+    email,
+    {
+      fullName: fullName({
+        firstName: schoolUser?.firstName ?? '',
+        lastName: schoolUser?.lastName ?? '',
+      }).trim(),
+      url: url.toString(),
+    },
+    {},
+  );
 
   return true;
 };

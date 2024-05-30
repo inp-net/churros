@@ -10,9 +10,8 @@ import {
 import ldap from 'ldapjs';
 import { createTransport } from 'nodemailer';
 import { HealthCheck } from '../index.js';
-// TODO maybe rename to query.check-health ?
-// TODO centralize the mailer object in #lib
 
+// TODO maybe rename to query.check-health ?
 builder.queryField('healthcheck', (t) =>
   t.field({
     type: HealthCheck,

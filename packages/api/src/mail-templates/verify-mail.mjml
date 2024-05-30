@@ -1,0 +1,27 @@
+<mjml>
+  <mj-head>
+    <mj-title>Validation de votre adresse e-mail</mj-title>
+    <mj-include path="./_head.mjml"></mj-include>
+  </mj-head>
+  <mj-body>
+    <mj-include path="./_header.mjml"></mj-include>
+
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          <h1>Validation de votre adresse e-mail</h1>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-button href="{{url}}">
+          Valide ton adresse e-mail
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="./_footer.mjml"></mj-include>
+  </mj-body>
+</mjml>

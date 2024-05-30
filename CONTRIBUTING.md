@@ -61,6 +61,17 @@ Parmis d'autres choses, sont notamment lancés:
 
 [Voir le wiki](https://git.inpt.fr/inp-net/churros/-/wikis) pour se familiariser avec l'architecture du projet.
 
+### Résolution de problèmes
+
+#### J'ai `git pull` et maintenant la base de données démarre plus
+
+Il est possible que la version de postgres ait été mise à jour et que donc la bdd que tu as en local n'est plus compatible. Il faut dans ce cas détruire le volume et re-créer la db:
+
+```bash
+docker compose down -v
+yarn reset
+```
+
 ### Merge requests
 
 Pour effectuer vos changements puis les proposer:

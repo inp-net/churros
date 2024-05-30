@@ -1,8 +1,7 @@
-import { builder, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
-
+import { builder, objectValuesFlat, prisma, purgeUserSessions, sendMail } from '#lib';
 import { updateMemberBoardLists } from '#modules/mails';
+import { fullName } from '#modules/users';
 import { onBoard, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
-import { createTransport } from 'nodemailer';
 import { GroupMemberType } from '../index.js';
 
 // TODO centralize the mailer object in #lib instead of creating it here
@@ -59,7 +58,12 @@ builder.mutationField('upsertGroupMember', (t) =>
       },
       { user: me },
     ) {
-      const group = await prisma.group.findUniqueOrThrow({ where: { id: groupId } });
+      const group = await prisma.group.findUniqueOrThrow({
+        where: { id: groupId },
+        include: {
+          studentAssociation: true,
+        },
+      });
       const { uid } = await prisma.user.findUniqueOrThrow({
         where: { id: memberId },
         select: { uid: true },
@@ -143,24 +147,19 @@ builder.mutationField('upsertGroupMember', (t) =>
         boardKeys.some((k) => groupMember[k] !== oldMember[k]) &&
         group.type === 'Club'
       ) {
-        // TODO send notification too
-        const school = await prisma.school.findUnique({
-          where: { id: group.schoolId ?? undefined },
-        });
-        const mailer = createTransport(process.env.SMTP_URL);
-        await mailer.sendMail({
-          from: process.env.PUBLIC_CONTACT_EMAIL,
-          to: `respos-clubs@bde.${school?.name.toLowerCase()}.fr`,
-          subject: `Bureau de ${group.name} modifié`,
-          text: `${groupMember.member.firstName} ${groupMember.member.lastName} (@${
-            groupMember.member.uid
-          }) a maintenant les rôles ${rolesText(groupMember)} (avant: ${rolesText(oldMember)})`,
-          html: `<a href="${process.env.FRONTEND_ORIGIN}/@${groupMember.member.uid}">${
-            groupMember.member.firstName
-          } ${groupMember.member.lastName} (@${
-            groupMember.member.uid
-          })</a> a maintenant les rôles ${rolesText(groupMember)} (avant: ${rolesText(oldMember)})`,
-        });
+        // TODO store in DB
+        const resposClubMail = `respos-clubs@${group.studentAssociation?.allBoardMailingList.split('@')[1]}`;
+
+        await sendMail(
+          'group-board-updated',
+          resposClubMail,
+          {
+            groupName: group.name,
+            memberFullName: fullName(groupMember.member),
+            rolesText: rolesText(groupMember),
+          },
+          {},
+        );
       }
 
       return groupMember;

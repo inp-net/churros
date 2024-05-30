@@ -1,0 +1,6 @@
+{
+  "env": {
+    "FRONTEND_ORIGIN": "http://localhost:5173",
+    "PUBLIC_SUPPORT_EMAIL": "support@localhost"
+  }
+}

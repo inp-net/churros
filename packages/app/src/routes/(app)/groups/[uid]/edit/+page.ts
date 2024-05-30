@@ -1,4 +1,3 @@
-import { isOnClubBoard } from '$lib/permissions';
 import { redirectToLogin } from '$lib/session';
 import { loadQuery, Selector } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
@@ -51,8 +50,14 @@ export const _clubQuery = Selector('Group')({
 });
 
 export const load: PageLoad = async ({ fetch, params, url, parent }) => {
-  const { me, token } = await parent();
+  const { me, token, canEditGroup } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
+
+  if (
+    !canEditGroup &&
+    !me.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === params.uid)
+  )
+    throw redirect(307, '..');
 
   return loadQuery(
     {

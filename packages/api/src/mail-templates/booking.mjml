@@ -1,0 +1,49 @@
+<mjml>
+  <mj-head>
+    <mj-title>
+      {{#if beneficiary}}
+        Place pour {{beneficiary}} à {{eventTitle}}
+      {{else}}
+        Ta place pour {{eventTitle}}
+      {{/if}}
+    </mj-title>
+    <mj-include path="./_head.mjml" />
+  </mj-head>
+  <mj-body>
+    <mj-include path="./_header.mjml" />
+
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          Ta place pour {{eventTitle}} a bien été réservée.
+        </mj-text>
+        <mj-button href="{{bookingLink}}">
+          Accéder à ma place
+        </mj-button>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column width="33%">
+        <mj-text>Montre le QR code pour rentrer.</mj-text>
+      </mj-column>
+      <mj-column width="66%">
+        <mj-image src="cid:qrcode" alt="{{bookingCode}}" />
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          En cas de problème, ton code de réservation est le:
+        </mj-text>
+        <mj-text font-size="24px" align="center">
+          <code>{{bookingCode}}</code>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="./_footer.mjml" />
+  </mj-body>
+</mjml>

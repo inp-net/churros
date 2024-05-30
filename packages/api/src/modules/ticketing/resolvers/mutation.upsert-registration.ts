@@ -1,4 +1,4 @@
-import { builder, log, prisma, publish } from '#lib';
+import { builder, log, prisma, publish, sendMail } from '#lib';
 
 import { PaymentMethodEnum } from '#modules/payments';
 import {
@@ -10,7 +10,6 @@ import {
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { isFuture, isPast } from 'date-fns';
 import { GraphQLError } from 'graphql';
-import { createTransport } from 'nodemailer';
 import * as qrcode from 'qrcode';
 import { RegistrationType, placesLeft } from '../index.js';
 // TODO rename to book.ts
@@ -280,27 +279,24 @@ builder.mutationField('upsertRegistration', (t) =>
 
         const recipient = user?.email ?? authorEmail;
         if (!recipient) throw new GraphQLError('No recipient found to send email to.');
-        const mailer = createTransport(process.env.SMTP_URL);
-        await mailer.sendMail({
-          to: recipient,
-          from: process.env.PUBLIC_SUPPORT_EMAIL,
-          attachments: [
-            {
-              filename: `qrcode-${pseudoID.toLowerCase()}.png`,
-              content: qrcodeBuffer,
-              cid: 'qrcode',
+        await sendMail(
+          'booking',
+          recipient,
+          {
+            beneficiary: beneficiary ?? null,
+            bookingCode: pseudoID,
+            eventTitle: ticket.event.title,
+            bookingLink: new URL(`/bookings/${pseudoID}`, process.env.FRONTEND_ORIGIN).toString(),
+          },
+          {
+            attachments: {
+              qrcode: {
+                filename: `qrcode-${pseudoID.toLowerCase()}.png`,
+                content: qrcodeBuffer,
+              },
             },
-          ],
-          subject: beneficiary
-            ? `Place pour ${beneficiary} à ${ticket.event.title}`
-            : `Ta place pour ${ticket.event.title}`,
-          html: `<p>Ta place pour ${ticket.event.title} a bien été réservée.</p>
-          <p>Montre le QR code pour rentrer.</p>
-          <img src="cid:qrcode" alt="${pseudoID}" />
-          <p>En cas de problème, ton code de réservation est le:</p>
-          <p style="font-size: 32px; text-align: center;" align="center" size="32px"><code>${pseudoID}</code></p><p><a href="https://churros.inpt.fr/bookings/${pseudoID}">Accéder à ma place</a></p>`,
-          text: `Ton code de réservation est le ${pseudoID}`,
-        });
+          },
+        );
       }
 
       return registration;
