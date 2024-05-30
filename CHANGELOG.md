@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Il y a maintenant un bouton pour ajouter une réservation à Google Wallet! Le support d'Apple Wallet arrivera plus tard
+
 ### Améliorations
 
 - Les mails sont jolis maintenant :)
