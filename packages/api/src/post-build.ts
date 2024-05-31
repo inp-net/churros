@@ -2,7 +2,7 @@ const start = performance.now();
 
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { isMJMLTemplateFilename, mailTemplatesDirectory } from './mail-templates/props.js';
+import { mailTemplatesDirectory } from './mail-templates/props.js';
 import { writeSchema } from './schema.js';
 await writeSchema();
 
@@ -17,7 +17,7 @@ const templatesDestinationDirectory = mailTemplatesDirectory.replace('src/', 'bu
 
 await Promise.all(
   templates.map(async (template) => {
-    if (!isMJMLTemplateFilename(template)) return;
+    if (path.extname(template) !== '.mjml') return;
     await writeFile(
       path.join(templatesDestinationDirectory, template),
       await readFile(path.join(mailTemplatesDirectory, template), 'utf8'),
