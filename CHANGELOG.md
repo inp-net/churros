@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Inclusion des templates mails dans le code compilé
+
 ## [1.59.0] - 2024-05-30
 
 ### Nouveautés
