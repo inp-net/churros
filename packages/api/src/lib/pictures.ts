@@ -74,6 +74,8 @@ export async function updatePicture({
   file,
   identifier,
   propertyName = 'pictureFile',
+  silent = false,
+  root = new URL(process.env.STORAGE).pathname,
 }: {
   resource: 'article' | 'event' | 'user' | 'group' | 'school' | 'student-association' | 'photos';
   folder: string;
@@ -81,13 +83,13 @@ export async function updatePicture({
   file: File;
   identifier: string;
   propertyName?: string;
+  silent?: boolean;
+  root?: string;
 }): Promise<string> {
   const buffer = await file.arrayBuffer().then((array) => Buffer.from(array));
   const type = await imageType(buffer);
   if (!type || !supportedExtensions.includes(type.ext))
     throw new GraphQLError('File format not supported');
-
-  const root = new URL(process.env.STORAGE).pathname;
 
   // Delete the existing picture
   let pictureFile = '';
@@ -159,7 +161,7 @@ export async function updatePicture({
 
   const path = join(root, folder, `${identifier}.${extension}`);
   await mkdir(dirname(path), { recursive: true });
-  console.info(`Compressing picture to ${path}`);
+  if (!silent) console.info(`Compressing picture to ${path}`);
   await compressPhoto(buffer, path, extensionToFormat[extension], {
     square: ['user', 'group'].includes(resource),
   });

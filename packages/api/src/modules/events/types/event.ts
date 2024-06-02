@@ -59,6 +59,9 @@ export const EventType = builder.prismaNode('Event', {
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
+    pictureURL: t.string({
+      resolve: ({ pictureFile }) => new URL(pictureFile, process.env.PUBLIC_STORAGE_URL).toString(),
+    }),
     reactions: t.relation('reactions'),
     mySoonestShotgunOpensAt: t.field({
       type: DateTimeScalar,
