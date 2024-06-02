@@ -31,6 +31,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
           description: true,
           frequency: true,
           recurringUntil: true,
+          includeInKiosk: true,
           group: {
             id: true,
             uid: true,

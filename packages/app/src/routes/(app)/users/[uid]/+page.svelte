@@ -20,6 +20,7 @@
   import IconAnilist from '~icons/simple-icons/anilist';
   import IconGithub from '~icons/mdi/github';
   import IconHackernews from '~icons/mdi/hackernews';
+  import IconBot from '~icons/mdi/robot-outline';
   import TreePersons from '$lib/components/TreePersons.svelte';
   import Badge from '$lib/components/Badge.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
@@ -130,6 +131,11 @@
           {#if isDeveloper}
             <Badge title="A écrit du code pour Churros" theme="info">
               <IconCode></IconCode>
+            </Badge>
+          {/if}
+          {#if user.bot}
+            <Badge title="Ce compte est un bot, et pas une personne" theme="info">
+              <IconBot />
             </Badge>
           {/if}
         </div>

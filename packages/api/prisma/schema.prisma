@@ -47,6 +47,7 @@ model User {
   cededImageRightsToTVn7       Boolean               @default(false)
   enabledNotificationChannels  NotificationChannel[] @default([Articles, Shotguns, Permissions, GroupBoard, GodparentRequests, Comments, Other])
   latestVersionSeenInChangelog String                @default("0.0.0")
+  bot                          Boolean               @default(false)
 
   // Permissions
   admin              Boolean              @default(false)
@@ -327,16 +328,16 @@ model ThirdPartyApp {
 
 /// There is one student association per school
 model StudentAssociation {
-  id          String  @id @default(dbgenerated("nanoid('ae:')"))
-  uid         String? @unique @db.VarChar(255)
-  description String  @default("") @db.Text
-  schoolId    String
-  name        String  @unique @db.VarChar(255)
-  links       Link[]
-  pictureFile String  @default("") @db.VarChar(255)
-  allPrezMailingList String @default("") @db.VarChar(255)
-  allTrezMailingList String @default("") @db.VarChar(255)
-  allBoardMailingList String @default("") @db.VarChar(255)
+  id                  String  @id @default(dbgenerated("nanoid('ae:')"))
+  uid                 String? @unique @db.VarChar(255)
+  description         String  @default("") @db.Text
+  schoolId            String
+  name                String  @unique @db.VarChar(255)
+  links               Link[]
+  pictureFile         String  @default("") @db.VarChar(255)
+  allPrezMailingList  String  @default("") @db.VarChar(255)
+  allTrezMailingList  String  @default("") @db.VarChar(255)
+  allBoardMailingList String  @default("") @db.VarChar(255)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -528,6 +529,7 @@ model Event {
   pictureFile    String         @default("") @db.VarChar(255)
   managers       EventManager[]
   author         User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  includeInKiosk Boolean        @default(false)
   group          Group          @relation(fields: [groupId], references: [id])
   coOrganizers   Group[]        @relation("coOrganizer")
   tickets        Ticket[]

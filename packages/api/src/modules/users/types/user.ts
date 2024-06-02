@@ -44,6 +44,10 @@ export const UserType = builder.prismaNode('User', {
         return !majorId;
       },
     }),
+    bot: t.exposeBoolean('bot', {
+      description:
+        'Vrai si cet utilisateur est un bot (i.e. ne représente pas une personne physique)',
+    }),
     latestVersionSeenInChangelog: t.exposeString('latestVersionSeenInChangelog'),
 
     // Profile details
