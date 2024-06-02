@@ -45,9 +45,8 @@
   $: creating = !event.id;
   $: pastDateStart = event.startsAt === undefined ? false : isPast(event.startsAt);
   $: isNotValidDate = creating && (!endsAtAfterStartsAt || pastDateStart);
-  $: if (![Visibility.Public, Visibility.SchoolRestricted].includes(event.visibility)) 
+  $: if (![Visibility.Public, Visibility.SchoolRestricted].includes(event.visibility))
     event.includeInKiosk = false;
-  
 
   $: canEditManagers =
     !event.uid ||
@@ -528,7 +527,6 @@
         help="Pour par exemple afficher sur des télés"
         label="Include dans le mode kiosque"
         disabled={![Visibility.Public, Visibility.SchoolRestricted].includes(event.visibility)}
-        initial={[Visibility.Public, Visibility.SchoolRestricted].includes(event.visibility)}
         bind:value={event.includeInKiosk}
       ></InputCheckbox>
       <InputLongText rich label="Description" bind:value={event.description} />
