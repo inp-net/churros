@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Un mode kiosk accessible à `/kisosk?user=...&password=...` avec `...` le @ d'un compte de bot (cf mutation `createBot`) et son mot de passe
+
 ## [1.59.1] - 2024-05-31
 
 ### Technique
