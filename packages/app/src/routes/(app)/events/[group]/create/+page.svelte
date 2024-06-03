@@ -36,6 +36,7 @@
     startsAt: undefined,
     title: '',
     visibility: Visibility.Private,
+    includeInKiosk: false,
     frequency: EventFrequency.Once,
     recurringUntil: undefined,
     pictureFile: '',

@@ -1,7 +1,10 @@
 <script lang="ts">
   import { tooltip } from '$lib/tooltip';
+  import { createEventDispatcher } from 'svelte';
   import Check from '~icons/mdi/check';
   import Close from '~icons/mdi/close';
+
+  export const dispatch = createEventDispatcher<{ willChange: Event }>();
 
   export let ternary = false;
   export let value: boolean | null | undefined;
@@ -39,6 +42,7 @@
   class="input-checkbox"
   class:ternary
   class:align-right={alignRight}
+  class:disabled
 >
   {#if ternary}
     <input
@@ -48,6 +52,7 @@
       bind:this={checkboxElement}
       on:change={(event) => {
         event.preventDefault();
+        dispatch('willChange', event);
         if (!(event?.target instanceof HTMLInputElement)) return;
         if (previousValue === null) {
           setTriState(event.target, true);
@@ -167,6 +172,10 @@
     gap: 0.5rem;
     align-items: center;
     cursor: pointer;
+  }
+
+  label.disabled {
+    opacity: 0.5;
   }
 
   label:not(.nolabel) {

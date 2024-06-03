@@ -59,6 +59,12 @@ export const EventType = builder.prismaNode('Event', {
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
+    pictureURL: t.string({
+      resolve: ({ pictureFile }) => new URL(pictureFile, process.env.PUBLIC_STORAGE_URL).toString(),
+    }),
+    includeInKiosk: t.exposeBoolean('includeInKiosk', {
+      description: "Vrai si l'évènement doit apparaître dans le mode kiosque",
+    }),
     reactions: t.relation('reactions'),
     mySoonestShotgunOpensAt: t.field({
       type: DateTimeScalar,

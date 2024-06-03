@@ -58,6 +58,27 @@ export async function compressPhoto(
 }
 
 /**
+ * Computes the path to a given picture (where it would be stored using `updatePicture`)
+ * @param folder Where to store the picture, relative to the storage root
+ * @param extension The extension of the picture
+ * @param identifier The identifier of the resource (most often the UID or the ID of the resource)
+ * @returns The path to the picture, relative to the storage root
+ */
+export function pictureDestinationFile({
+  folder,
+  extension,
+  identifier,
+  root = new URL(process.env.STORAGE).pathname,
+}: {
+  folder: string;
+  extension: 'png' | 'jpg';
+  identifier: string;
+  root?: string;
+}) {
+  return join(root, folder, `${identifier}.${extension}`);
+}
+
+/**
  * Stores (or replaces) a picture associated with a resource
  * @param resource The resource to update the picture for
  * @param folder Where to store the picture, relative to the storage root
@@ -74,6 +95,8 @@ export async function updatePicture({
   file,
   identifier,
   propertyName = 'pictureFile',
+  silent = false,
+  root = new URL(process.env.STORAGE).pathname,
 }: {
   resource: 'article' | 'event' | 'user' | 'group' | 'school' | 'student-association' | 'photos';
   folder: string;
@@ -81,13 +104,13 @@ export async function updatePicture({
   file: File;
   identifier: string;
   propertyName?: string;
+  silent?: boolean;
+  root?: string;
 }): Promise<string> {
   const buffer = await file.arrayBuffer().then((array) => Buffer.from(array));
   const type = await imageType(buffer);
   if (!type || !supportedExtensions.includes(type.ext))
     throw new GraphQLError('File format not supported');
-
-  const root = new URL(process.env.STORAGE).pathname;
 
   // Delete the existing picture
   let pictureFile = '';
@@ -157,9 +180,9 @@ export async function updatePicture({
     } catch {}
   }
 
-  const path = join(root, folder, `${identifier}.${extension}`);
+  const path = pictureDestinationFile({ folder, extension, identifier, root });
   await mkdir(dirname(path), { recursive: true });
-  console.info(`Compressing picture to ${path}`);
+  if (!silent) console.info(`Compressing picture to ${path}`);
   await compressPhoto(buffer, path, extensionToFormat[extension], {
     square: ['user', 'group'].includes(resource),
   });

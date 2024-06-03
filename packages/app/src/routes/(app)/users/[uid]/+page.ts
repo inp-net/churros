@@ -45,6 +45,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           otherEmails: true,
           phone: true,
           pictureFile: true,
+          bot: true,
           groups: {
             group: { uid: true, name: true, color: true, pictureFile: true, pictureFileDark: true },
             member: {

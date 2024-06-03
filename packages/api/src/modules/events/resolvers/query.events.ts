@@ -15,11 +15,16 @@ builder.queryField('events', (t) =>
       upcomingShotguns: t.arg.boolean({ required: false }),
       noLinkedArticles: t.arg.boolean({ required: false }),
       pastRecurring: t.arg.boolean({ required: false }),
+      kiosk: t.arg.boolean({
+        required: false,
+        description:
+          "N'include seulement les évènements qui veulent être inclus dans l'affichage kiosque",
+      }),
     },
     async resolve(
       query,
       _,
-      { future, past, upcomingShotguns, noLinkedArticles, pastRecurring },
+      { future, past, upcomingShotguns, noLinkedArticles, pastRecurring, kiosk },
       { user },
     ) {
       future = future ?? false;
@@ -40,6 +45,8 @@ builder.queryField('events', (t) =>
           endsAt: { lte: endOfDay(new Date()) },
         };
       }
+
+      if (kiosk) constraints.includeInKiosk = true;
 
       if (noLinkedArticles) {
         constraints.articles = {

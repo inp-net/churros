@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { prisma, updatePicture } from '#lib';
 import { fakerFR } from '@faker-js/faker';
 import {
   CredentialType,
@@ -12,12 +12,28 @@ import {
 import { hash } from 'argon2';
 import { format } from 'date-fns';
 import dichotomid from 'dichotomid';
+import { existsSync, readdirSync, statSync } from 'node:fs';
+import { rm } from 'node:fs/promises';
+import path from 'node:path';
 import { exit } from 'node:process';
 import slug from 'slug';
 import { tqdm } from 'ts-tqdm';
+import { pictureDestinationFile } from './lib/pictures.js';
 
 const faker = fakerFR; //j'avais la flemme de faire des FakerFRFR.machin partout
 faker.seed(5); //seed de génération de la DB, pour générer une DB avec de nouvelles données il suffit juste de changer la valeur de la seed
+
+const storageRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../storage/');
+
+console.info(`Cleaning storage root ${storageRoot}`);
+for (const folder of ['events']) {
+  if (!existsSync(path.join(storageRoot, folder))) continue;
+  await Promise.all(
+    readdirSync(path.join(storageRoot, folder))
+      .filter((file) => statSync(path.join(storageRoot, folder, file)).isFile())
+      .map(async (file) => rm(path.join(storageRoot, folder, file))),
+  );
+}
 
 const numberUserDB: number = 500; //Nombre d'utilisateur dans la DB de test
 const numberEvent: number = 50; //Nombre d'événement créer dans la DB
@@ -69,6 +85,22 @@ function randomTime(date: Date, hoursIn: Generator<number>): Date {
     randomChoice([...hoursIn]),
     Math.floor(Math.random() * 60),
   );
+}
+
+// download a random placeholder image from unsplash with the given width and height
+// return a File object (for use with updatePicture)
+async function downloadRandomImage(width: number, height: number): Promise<File> {
+  const url = `https://source.unsplash.com/random/${width}x${height}`;
+  const response = await fetch(url);
+  const blob = await response.blob();
+  return new File([blob], path.basename(new URL(response.url).pathname), { type: 'image/jpeg' });
+}
+
+// download a random placeholder of a person's photo, using thispersondoesnotexist.com
+// so no real actual people, but realistic AI-generated photos of people
+async function downloadRandomPeoplePhoto(): Promise<File> {
+  const response = await fetch('https://thispersondoesnotexist.com');
+  return new File([await response.blob()], 'profile.jpeg', { type: 'image/jpeg' });
 }
 
 const createUid = async ({ firstName, lastName }: { firstName: string; lastName: string }) => {
@@ -272,7 +304,7 @@ const studentAssociations = await prisma.studentAssociation.findMany({ include: 
 
 for (const asso of studentAssociations) {
   for (const name of ['FOY', 'BDE', 'BDD', 'BDA', 'BDS']) {
-    await prisma.group.create({
+    const { uid, id } = await prisma.group.create({
       data: {
         name,
         uid: slug(name + ' ' + asso.name),
@@ -293,6 +325,31 @@ for (const asso of studentAssociations) {
         },
       },
     });
+
+    if (faker.datatype.boolean(0.8)) {
+      const destinationPath = pictureDestinationFile({
+        folder: 'groups',
+        extension: 'png',
+        identifier: uid,
+        root: storageRoot,
+      });
+      await (existsSync(destinationPath)
+        ? prisma.group.update({
+            where: { id },
+            data: {
+              pictureFile: path.relative(storageRoot, destinationPath),
+            },
+          })
+        : updatePicture({
+            extension: 'png',
+            folder: 'groups',
+            identifier: uid,
+            resource: 'group',
+            file: await downloadRandomImage(400, 400),
+            silent: true,
+            root: storageRoot,
+          }));
+    }
   }
 }
 
@@ -373,7 +430,7 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
     where: { id: faker.helpers.arrayElement(minors).id },
   });
 
-  await prisma.user.create({
+  const { uid } = await prisma.user.create({
     data: {
       ...data,
       uid: await createUid(data),
@@ -415,7 +472,71 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
       canAccessDocuments: true,
     },
   });
+
+  if (faker.datatype.boolean(0.65)) {
+    const destinationPath = pictureDestinationFile({
+      folder: 'users',
+      extension: 'jpg',
+      identifier: uid,
+      root: storageRoot,
+    });
+
+    await (existsSync(destinationPath)
+      ? prisma.user.update({
+          where: { uid },
+          data: {
+            pictureFile: path.relative(storageRoot, destinationPath),
+          },
+        })
+      : updatePicture({
+          extension: 'jpg',
+          folder: 'users',
+          identifier: uid,
+          resource: 'user',
+          file: await downloadRandomPeoplePhoto(),
+          silent: true,
+          root: storageRoot,
+        }));
+  }
 }
+
+for (const school of await prisma.school.findMany()) {
+  const major = await prisma.major.findFirst({
+    where: {
+      schools: {
+        some: {
+          id: school.id,
+        },
+      },
+    },
+  });
+
+  if (!major) {
+    console.warn(
+      `School ${school.uid} has no associated majors. Skipping kiosk bot account creation.`,
+    );
+    continue;
+  }
+
+  await prisma.user.create({
+    data: {
+      uid: `kiosk-${major.uid}`,
+      email: `kiosk-${major.uid}@local`,
+      firstName: `Kiosk`,
+      lastName: major.name,
+      graduationYear: 0,
+      major: { connect: { id: major.id } },
+      bot: true,
+      credentials: {
+        create: {
+          type: 'Password',
+          value: await hash('kioskmode'),
+        },
+      },
+    },
+  });
+}
+
 const users = await prisma.user.findMany();
 
 const numberSubject: number = 10;
@@ -482,7 +603,7 @@ const clubsData = [
 
 console.info('Creating groups');
 for (const [i, group] of tqdm([...clubsData.entries()])) {
-  const { id: groupId } = await prisma.group.create({
+  const { id: groupId, uid } = await prisma.group.create({
     data: {
       ...group,
       uid: slug(group.name),
@@ -534,6 +655,22 @@ for (const [i, group] of tqdm([...clubsData.entries()])) {
       familyRoot: { connect: { id: groupId } },
     },
   });
+  if (faker.datatype.boolean(0.8)) {
+    await prisma.group.update({
+      where: { id: groupId },
+      data: {
+        pictureFile: await updatePicture({
+          extension: 'png',
+          folder: 'groups',
+          identifier: uid,
+          resource: 'group',
+          file: await downloadRandomImage(400, 400),
+          silent: true,
+          root: storageRoot,
+        }),
+      },
+    });
+  }
 }
 
 let IntégrationGroup = await prisma.group.create({
@@ -737,7 +874,7 @@ console.info('Creating events');
 for (const element of tqdm(selectedClub)) {
   const eventName = faker.lorem.words(3);
   const capacityEvent = faker.number.int({ min: 30, max: 300 });
-  await prisma.event.create({
+  const { id } = await prisma.event.create({
     data: {
       contactMail: 'hey@ewen.works',
       description: 'Ceci est un événement',
@@ -747,6 +884,8 @@ for (const element of tqdm(selectedClub)) {
         eventDate.getMonth(),
         eventDate.getDate() + faker.number.int({ min: 0, max: 7 }),
       ),
+      location: faker.datatype.boolean(0.85) ? faker.location.streetAddress() : '',
+      includeInKiosk: faker.datatype.boolean(0.85),
       uid: slug(eventName),
       title: eventName,
       group: { connect: { id: element!.id } },
@@ -808,6 +947,23 @@ for (const element of tqdm(selectedClub)) {
       tickets: true,
     },
   });
+
+  if (faker.datatype.boolean(0.45)) {
+    await prisma.event.update({
+      where: { id },
+      data: {
+        pictureFile: await updatePicture({
+          extension: 'jpg',
+          folder: 'events',
+          resource: 'event',
+          file: await downloadRandomImage(800, 600),
+          identifier: id,
+          silent: true,
+          root: storageRoot,
+        }),
+      },
+    });
+  }
 }
 
 const events = await prisma.event.findMany({ include: { tickets: true } });
