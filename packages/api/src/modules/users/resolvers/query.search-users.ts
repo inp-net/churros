@@ -13,7 +13,7 @@ builder.queryField('searchUsers', (t) =>
   }),
 );
 export async function searchUsers(q: string, similarityCutoff = 0.08) {
-  return await fullTextSearch('User', q, {
+  const users = await fullTextSearch('User', q, {
     property: 'user',
     resolveObjects: (ids) => prisma.user.findMany({ where: { id: { in: ids } } }),
     similarityCutoff,
@@ -21,4 +21,6 @@ export async function searchUsers(q: string, similarityCutoff = 0.08) {
     highlight: ['description'],
     htmlHighlights: ['description'],
   });
+
+  return users.filter(({ user }) => !user.bot);
 }

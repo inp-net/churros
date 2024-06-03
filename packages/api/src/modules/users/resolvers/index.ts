@@ -4,6 +4,7 @@
 
 export * from './mutation.accept-registration.js';
 export * from './mutation.complete-registration.js';
+export * from './mutation.create-bot.js';
 export * from './mutation.create-password-reset.js';
 export * from './mutation.delete-godchild.js';
 export * from './mutation.delete-godparent-request.js';
