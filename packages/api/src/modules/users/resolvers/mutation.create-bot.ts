@@ -1,4 +1,5 @@
 import { builder, prisma } from '#lib';
+import { hash } from 'argon2';
 import { UserType } from '../types/user.js';
 
 builder.mutationField('createBot', (t) =>
@@ -8,6 +9,7 @@ builder.mutationField('createBot', (t) =>
       major: t.arg.string({ description: 'UID de la filière', required: false }),
       uid: t.arg.string({ description: 'UID du compte bot' }),
       name: t.arg.string({ description: 'Nom du compte bot' }),
+      password: t.arg.string({ description: 'Mot de passe du compte bot' }),
     },
     async authScopes(_, { major }, { user }) {
       if (!user) return false;
@@ -29,7 +31,7 @@ builder.mutationField('createBot', (t) =>
         majorStudentAssociations.some((m) => m.id === a.id),
       );
     },
-    async resolve(query, _, { major, uid, name }) {
+    async resolve(query, _, { major, uid, name, password }) {
       return prisma.user.create({
         ...query,
         data: {
@@ -40,6 +42,12 @@ builder.mutationField('createBot', (t) =>
           major: major ? { connect: { uid: major } } : undefined,
           email: `${uid}@local`,
           graduationYear: 0,
+          credentials: {
+            create: {
+              type: 'Password',
+              value: await hash(password),
+            },
+          },
         },
       });
     },

@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Améliorations
+
+- Possibilité de créer un mot de passe lors de la création d'un compte bot
+
 ## [1.60.0] - 2024-06-03
 
 ### Nouveautés
