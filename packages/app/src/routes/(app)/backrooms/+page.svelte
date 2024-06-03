@@ -2,8 +2,14 @@
   import CardService from '$lib/components/CardService.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-
+  import IconTelevision from '~icons/mdi/television';
   import { page } from '$app/stores';
+  import { zeus } from '$lib/zeus';
+  import InputStudentAssociations, {
+    type StudentAssociation,
+  } from '$lib/components/InputStudentAssociations.svelte';
+
+  let kioskReloadStudentAssociation: StudentAssociation | undefined = undefined;
 
   let path = '/';
 </script>
@@ -45,6 +51,22 @@
           url: '/forms',
         }}
       />
+    </li>
+    <li>
+      <InputStudentAssociations
+        label="AE à reload"
+        bind:association={kioskReloadStudentAssociation}
+      />
+      {#if kioskReloadStudentAssociation}
+        <ButtonSecondary
+          on:click={async () => {
+            await $zeus.mutate({
+              kioskReload: [{ studentAssociation: kioskReloadStudentAssociation?.uid ?? '' }, true],
+            });
+          }}
+          icon={IconTelevision}>Reload {kioskReloadStudentAssociation.name} kiosk</ButtonSecondary
+        >
+      {/if}
     </li>
   </ul>
 
