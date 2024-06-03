@@ -1,37 +1,36 @@
 <script lang="ts">
-  import IconPlus from '~icons/mdi/plus';
-  import { nanoid } from 'nanoid';
-  import DateInput from './InputDate.svelte';
-  import IconClose from '~icons/mdi/close';
-  import { type PaymentMethod, Visibility, zeus, EventFrequency, Selector } from '$lib/zeus';
   import { goto } from '$app/navigation';
-  import Alert from './Alert.svelte';
   import {
     DISPLAY_EVENT_FREQUENCY,
     DISPLAY_MANAGER_PERMISSION_LEVELS,
     DISPLAY_VISIBILITIES,
     HELP_VISIBILITY_DYNAMIC,
   } from '$lib/display';
-  import InputText from './InputText.svelte';
-  import InputNumber from './InputNumber.svelte';
-  import InputLongText from './InputLongText.svelte';
-  import InputSelectOne from './InputSelectOne.svelte';
+  import { me } from '$lib/session';
+  import { toasts } from '$lib/toasts';
+  import { EventFrequency, Selector, Visibility, zeus, type PaymentMethod } from '$lib/zeus';
+  import { isPast } from 'date-fns';
+  import { nanoid } from 'nanoid';
+  import { createEventDispatcher } from 'svelte';
+  import IconClose from '~icons/mdi/close';
+  import IconPlus from '~icons/mdi/plus';
+  import Alert from './Alert.svelte';
+  import AvatarPerson from './AvatarPerson.svelte';
+  import ButtonPrimary from './ButtonPrimary.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import FormEventTicket from './FormEventTicket.svelte';
-  import ButtonPrimary from './ButtonPrimary.svelte';
-  import { createEventDispatcher } from 'svelte';
-  import InputPerson from './InputPerson.svelte';
   import FormPicture from './FormPicture.svelte';
-  import { me } from '$lib/session';
-  import AvatarPerson from './AvatarPerson.svelte';
-  import InputLinks from './InputLinks.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
-  import InputDate from './InputDate.svelte';
-  import { toasts } from '$lib/toasts';
+  import { default as DateInput, default as InputDate } from './InputDate.svelte';
   import InputGroups from './InputGroups.svelte';
+  import InputLinks from './InputLinks.svelte';
+  import InputLongText from './InputLongText.svelte';
   import InputLydiaAccounts from './InputLydiaAccounts.svelte';
+  import InputNumber from './InputNumber.svelte';
+  import InputPerson from './InputPerson.svelte';
+  import InputSelectOne from './InputSelectOne.svelte';
+  import InputText from './InputText.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
-  import { isPast } from 'date-fns';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
@@ -46,6 +45,8 @@
   $: creating = !event.id;
   $: pastDateStart = event.startsAt === undefined ? false : isPast(event.startsAt);
   $: isNotValidDate = creating && (!endsAtAfterStartsAt || pastDateStart);
+  $: if (![Visibility.Public, Visibility.SchoolRestricted].includes(event.visibility))
+    event.includeInKiosk = false;
 
   $: canEditManagers =
     !event.uid ||
@@ -78,6 +79,7 @@
           links: event.links,
           location: event.location,
           startsAt: event.startsAt,
+          includeInKiosk: event.includeInKiosk,
           ticketGroups: event.ticketGroups.map((tg) => ({
             ...tg,
             tickets: undefined,
@@ -129,6 +131,7 @@
               description: true,
               startsAt: true,
               endsAt: true,
+              includeInKiosk: true,
               location: true,
               visibility: true,
               frequency: true,
@@ -331,6 +334,7 @@
       capacity: number;
       tickets: Ticket[];
     }>;
+    includeInKiosk: boolean;
     contactMail: string;
     beneficiary?:
       | undefined
@@ -519,10 +523,15 @@
         bind:value={event.visibility}
         options={DISPLAY_VISIBILITIES}
       />
+      <InputCheckbox
+        help="Pour par exemple afficher sur des télés"
+        label="Include dans le mode kiosque"
+        disabled={![Visibility.Public, Visibility.SchoolRestricted].includes(event.visibility)}
+        bind:value={event.includeInKiosk}
+      ></InputCheckbox>
       <InputLongText rich label="Description" bind:value={event.description} />
       <InputLinks label="Liens" bind:value={event.links} />
       <div class="side-by-side">
-        <!-- -->
         <DateInput required label="Début" time bind:value={event.startsAt} />
         <DateInput required label="Fin" time bind:value={event.endsAt} />
       </div>

@@ -42,6 +42,7 @@ builder.queryField('birthdays', (t) =>
         ...query,
         where: {
           uid: { in: usersNonflat.flat().map((u) => u.uid) },
+          bot: false,
           major: {
             schools: {
               some: {

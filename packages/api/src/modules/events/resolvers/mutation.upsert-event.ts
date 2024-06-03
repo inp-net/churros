@@ -1,9 +1,9 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, publish, pubsub, subscriptionName } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { TicketGroupInput, TicketInput, createTicketUid } from '#modules/ticketing';
 import * as PrismaTypes from '@prisma/client';
-import { EventFrequency, GroupType } from '@prisma/client';
+import { EventFrequency, GroupType, Visibility } from '@prisma/client';
 import { isBefore } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import omit from 'lodash.omit';
@@ -41,6 +41,10 @@ builder.mutationField('upsertEvent', (t) =>
       managers: t.arg({ type: [ManagerOfEventInput] }),
       bannedUsers: t.arg.stringList({ description: 'List of user uids' }),
       coOrganizers: t.arg.stringList({ description: 'List of group uids' }),
+      includeInKiosk: t.arg.boolean({
+        required: false,
+        description: "Include l'évènement dans l'affichage du mode kiosque",
+      }),
     },
     async authScopes(_, { id, groupUid }, { user }) {
       const creating = !id;
@@ -78,6 +82,7 @@ builder.mutationField('upsertEvent', (t) =>
         coOrganizers,
         bannedUsers,
         recurringUntil,
+        includeInKiosk,
       },
       { user },
     ) {
@@ -100,7 +105,7 @@ builder.mutationField('upsertEvent', (t) =>
       );
 
       const oldEvent = id
-        ? await prisma.event.findUnique({ where: { id }, include: { managers: true } })
+        ? await prisma.event.findUnique({ where: { id }, include: { managers: true, group: true } })
         : undefined;
 
       if (id && !oldEvent) throw new Error(`Event ${id} does not exist`);
@@ -126,6 +131,7 @@ builder.mutationField('upsertEvent', (t) =>
           recurringUntil,
           startsAt,
           endsAt,
+          includeInKiosk: includeInKiosk ?? false,
           managers: {
             create: managers.map((manager) => ({
               user: { connect: { uid: manager.userUid } },
@@ -153,6 +159,7 @@ builder.mutationField('upsertEvent', (t) =>
           recurringUntil,
           startsAt,
           endsAt,
+          includeInKiosk: includeInKiosk ?? false,
           coOrganizers: {
             connect: connectFromListOfUids(coOrganizers),
           },
@@ -315,6 +322,47 @@ builder.mutationField('upsertEvent', (t) =>
       });
 
       if (shotgunChanged) await scheduleShotgunNotifications(finalEvent, { dryRun: false });
+
+      publish(result.id, 'updated', {});
+
+      // Reload kiosks when:
+      // The new event wants to be included
+      // The old event was included
+      // This allows reloading when:
+      // 1. New events are added
+      // 2. Existing events are removed/added
+      if (finalEvent.includeInKiosk || oldEvent?.includeInKiosk) {
+        const majorsToReload = await prisma.major.findMany({
+          // if the old event was public or the new event is public, reload all
+          where: [finalEvent.visibility, oldEvent?.visibility].includes(Visibility.Public)
+            ? {}
+            : {
+                schools: {
+                  some: {
+                    studentAssociations: {
+                      some: {
+                        id: {
+                          in: [
+                            ...(finalEvent.group.studentAssociationId
+                              ? [finalEvent.group.studentAssociationId]
+                              : []),
+                            ...(oldEvent?.group?.studentAssociationId
+                              ? [oldEvent.group.studentAssociationId]
+                              : []),
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+          select: { uid: true },
+        });
+        for (const major of majorsToReload) {
+          console.info(`Reloading kiosk for major ${major.uid}`);
+          pubsub.publish(subscriptionName('KioskReload', 'updated', major.uid));
+        }
+      }
 
       return result;
     },
