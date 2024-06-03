@@ -1,14 +1,17 @@
+<script lang="ts" context="module">
+  export type StudentAssociation = {
+    id: string;
+    uid?: string;
+    name: string;
+  };
+</script>
+
 <script lang="ts">
   import InputField from './InputField.svelte';
   import IconCheck from '~icons/mdi/check';
   import InputPickObjects from './InputPickObjects.svelte';
   import { zeus } from '$lib/zeus';
 
-  type StudentAssociation = {
-    id: string;
-    uid?: string;
-    name: string;
-  };
   export let clearButtonLabel = 'Effacer';
   export let label: string;
   export let disallowed: StudentAssociation[] = [];
