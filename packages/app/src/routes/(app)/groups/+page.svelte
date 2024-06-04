@@ -10,16 +10,32 @@
 
   export let data: PageData;
 
+  const studentAssociations = data.studentAssociations.filter((sa) =>
+    $me?.major?.schools.flatMap((s) => s.uid).includes(sa?.school.uid ?? ''),
+  );
+  const studentAssociationsIds = new Set(studentAssociations.map((sa) => sa?.uid));
+
   const listTrees = createForest(
-    data.groups.filter((g) => g.type === GroupType.List),
+    data.groups.filter(
+      (g) =>
+        g.type === GroupType.List && studentAssociationsIds.has(g.studentAssociation?.uid),
+    ),
     { idKey: 'groupId' },
   );
   const studentAssociationSections = createForest(
-    data.groups.filter((g) => g.type === GroupType.StudentAssociationSection),
+    data.groups.filter(
+      (g) =>
+        g.type === GroupType.StudentAssociationSection &&
+        studentAssociationsIds.has(g.studentAssociation?.uid),
+    ),
     { idKey: 'groupId' },
   );
   const clubsAssos = createForest(
-    data.groups.filter((g) => [GroupType.Association, GroupType.Club].includes(g.type)),
+    data.groups.filter(
+      (g) =>
+        [GroupType.Association, GroupType.Club].includes(g.type) &&
+        studentAssociationsIds.has(g.studentAssociation?.uid),
+    ),
     { idKey: 'groupId' },
   );
 
@@ -48,7 +64,7 @@
 {#if data.studentAssociations}
   <h2>Tes AEs</h2>
   <ul class="nobullet student-associations">
-    {#each assertNoUndefineds(data.studentAssociations) as { name, uid, id } (id)}
+    {#each assertNoUndefineds(studentAssociations) as { name, uid, id } (id)}
       <li>
         <CardGroup
           href="/student-associations/{uid}"
