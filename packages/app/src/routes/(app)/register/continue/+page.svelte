@@ -124,7 +124,7 @@
         <strong>Votre inscription est en attente de validation manuelle.</strong><br />
         Cependant, vous pouvez toujours compléter ou corriger les informations ci-dessous.
       </Alert>
-    {:else if isStudent && data.userCandidate.schoolUid === null}
+    {:else if isStudent && data.userCandidate.schoolUid === null && !data.userCandidate.usingQuickSignup}
       <Alert theme="warning" inline>
         <strong>
           Votre compte n'est pas encore lié à une école, votre inscription sera validée

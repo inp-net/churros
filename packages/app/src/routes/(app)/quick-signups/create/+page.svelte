@@ -17,7 +17,6 @@
   <h1>Créer un lien d'inscription rapide</h1>
 
   <form
-    action="?/create"
     on:submit|preventDefault={async () => {
       if (!school) return;
       const {
@@ -26,7 +25,7 @@
         createQuickSignup: [{ validUntil, school: school.uid }, { code: true }],
       });
 
-      await goto(`../qr/${code}`);
+      await goto(`../manage#${code}`);
     }}
   >
     <InputSchools required label="École" bind:school></InputSchools>

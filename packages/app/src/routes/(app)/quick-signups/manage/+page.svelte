@@ -9,6 +9,7 @@
   import type { PageData } from './$types';
   import { zeus } from '$lib/zeus';
   import { toasts } from '$lib/toasts';
+  import { page } from '$app/stores';
 
   export let data: PageData;
 </script>
@@ -33,8 +34,8 @@
       </thead>
       <tbody>
         {#each data.quickSignups.nodes ?? [] as { code, validUntil, school } (code)}
-          <tr>
-            <td><a href="/register/{code}"><code>{code}</code></a></td>
+          <tr id={code} class:highlighted={$page.url.hash === `#${code}`}>
+            <td><a href="#{code}"><code>{code}</code></a></td>
             <td><AvatarSchool {...school}></AvatarSchool></td>
             <td
               >{#if validUntil}{formatDateTime(validUntil)}{:else}—{/if}</td
@@ -72,7 +73,16 @@
     padding: 0.5rem;
   }
 
-  tr:not(:hover) :global(.button-secondary) {
+  tr {
+    border-radius: var(--radius-block);
+  }
+
+  tr.highlighted {
+    color: var(--primary-text);
+    background-color: var(--primary-bg);
+  }
+
+  tr:not(:hover, .highlighted) :global(.button-secondary) {
     display: none;
   }
 </style>

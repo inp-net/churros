@@ -34,6 +34,10 @@ export const UserCandidateType = builder.prismaNode('UserCandidate', {
     phone: t.exposeString('phone'),
     cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
     apprentice: t.exposeBoolean('apprentice'),
+    usingQuickSignup: t.boolean({
+      description: "Vrai si l'utilisateur a été créé via un lien d'inscription rapide.",
+      resolve: ({ quickSignupId }) => Boolean(quickSignupId),
+    }),
 
     major: t.relation('major', { nullable: true }),
   }),
