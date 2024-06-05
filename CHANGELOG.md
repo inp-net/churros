@@ -13,7 +13,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [1.61.0] - 2024-06-05
 
-## Nouveautés
+### Nouveautés
 
 - Ajout d'un système de QR codes d'inscription rapides pour la rentrée quand tout le monde a pas encore accès à son mail étu
 
