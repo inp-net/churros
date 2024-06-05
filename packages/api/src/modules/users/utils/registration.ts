@@ -6,6 +6,7 @@ import {
   type User,
   type UserCandidate,
 } from '@prisma/client';
+import { quickSignupIsValidFor } from './quick-signup.js';
 import { createUid } from './uid.js';
 
 export const saveUser = async ({
@@ -72,8 +73,20 @@ export const saveUser = async ({
 export const completeRegistration = async (
   candidate: UserCandidate,
 ): Promise<(User & { major?: null | (Major & { ldapSchool?: School | null }) }) | undefined> => {
-  // If the user has no school email, it must be manually accepted, except if the account is marked as external (i.e. no major given)
-  if (!candidate.schoolEmail && candidate.majorId) return undefined;
+  // If the user has no school email, it must be manually accepted, except
+  // if the account is marked as external (i.e. no major given) or
+  // if the quickSignup used is valid for that major
+  if (!candidate.schoolEmail && candidate.majorId) {
+    if (!candidate.quickSignupId) return undefined;
+    const quickSignup = await prisma.quickSignup.findUnique({
+      where: { id: candidate.quickSignupId },
+      include: {
+        school: { include: { majors: true } },
+      },
+    });
+    if (!quickSignup) return undefined;
+    if (!quickSignupIsValidFor(quickSignup, candidate.majorId)) return undefined;
+  }
 
   return saveUser(candidate);
 };

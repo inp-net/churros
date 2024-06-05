@@ -53,6 +53,16 @@
       />
     </li>
     <li>
+      <CardService
+        service={{
+          name: 'Inscription rapides',
+          logo: 'signups',
+          logoSourceType: 'Icon',
+          url: '/quick-signups/manage',
+        }}
+      />
+    </li>
+    <li>
       <InputStudentAssociations
         label="AE à reload"
         bind:association={kioskReloadStudentAssociation}

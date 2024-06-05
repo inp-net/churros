@@ -136,7 +136,9 @@ model UserCandidate {
   birthday DateTime?
   phone    String    @default("") @db.VarChar(255)
 
-  cededImageRightsToTVn7 Boolean @default(false)
+  cededImageRightsToTVn7 Boolean      @default(false)
+  usingQuickSignup       QuickSignup? @relation(fields: [quickSignupId], references: [id])
+  quickSignupId          String?
 
   @@unique([schoolServer, schoolUid])
 }
@@ -161,6 +163,16 @@ model EmailChange {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId    String
   pending   Boolean   @default(true)
+}
+
+model QuickSignup {
+  id         String          @id @default(dbgenerated("nanoid('quicksignup:', 6)"))
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  validUntil DateTime
+  school     School          @relation(fields: [schoolId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  schoolId   String
+  candidates UserCandidate[]
 }
 
 // Enum for the different kinds of logos
@@ -266,6 +278,7 @@ model School {
   accessibleTickets   Ticket[]
   contributionOptions ContributionOption[]
   services            Service[]
+  quickSignups        QuickSignup[]
 }
 
 enum CredentialType {
