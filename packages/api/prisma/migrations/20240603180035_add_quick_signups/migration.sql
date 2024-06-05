@@ -143,7 +143,7 @@ ALTER COLUMN "id" SET DEFAULT nanoid('candidate:');
 
 -- CreateTable
 CREATE TABLE "QuickSignup" (
-    "id" TEXT NOT NULL DEFAULT nanoid('quicksignup:'),
+    "id" TEXT NOT NULL DEFAULT nanoid('quicksignup:', 6),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "validUntil" TIMESTAMP(3) NOT NULL,

@@ -13,5 +13,8 @@ export const SchoolType = builder.prismaObject('School', {
     internalMailDomain: t.exposeString('internalMailDomain'),
     aliasMailDomains: t.exposeStringList('aliasMailDomains'),
     pictureFile: t.exposeString('pictureFile'),
+    pictureURL: t.string({
+      resolve: ({ pictureFile }) => new URL(pictureFile, process.env.PUBLIC_STORAGE_URL).toString(),
+    }),
   }),
 });

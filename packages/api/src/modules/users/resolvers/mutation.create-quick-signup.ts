@@ -1,6 +1,7 @@
 import { builder, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { QuickSignupType } from '../types/quick-signup.js';
+import { cleanInvalidQuickSignups } from '../utils/quick-signup.js';
 
 builder.mutationField('createQuickSignup', (t) =>
   t.prismaField({
@@ -17,6 +18,7 @@ builder.mutationField('createQuickSignup', (t) =>
       return user.adminOfStudentAssociations.some((a) => a.schoolId === school?.id);
     },
     async resolve(query, _, { validUntil, school }) {
+      await cleanInvalidQuickSignups();
       return prisma.quickSignup.create({
         ...query,
         data: {

@@ -12,7 +12,7 @@
   export let data: PageData;
 
   let email = $page.url.searchParams.get('email') ?? '';
-  const quickSignupCode = $page.url.searchParams.get('quickSignup');
+  const quickSignupCode = $page.params.quickSignupCode;
   $: args = { email, quickSignupCode };
 
   let result: boolean | undefined;

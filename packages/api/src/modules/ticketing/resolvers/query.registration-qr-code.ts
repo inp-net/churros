@@ -1,7 +1,7 @@
 import { builder } from '#lib';
 
+import { QRCodeType } from '#modules/global';
 import * as qrcode from 'qr-code-generator-lib';
-import { QRCodeType } from '../index.js';
 // TODO rename to booking.qr-code
 
 builder.queryField('registrationQRCode', (t) =>
