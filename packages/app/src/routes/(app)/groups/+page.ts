@@ -8,8 +8,8 @@ export const load: PageLoad = async ({ fetch, parent }) => {
       ...(me
         ? {
             studentAssociations: [
-              { canContributeOnly: true },
-              { uid: true, name: true, description: true, id: true },
+              {},
+              { uid: true, name: true, description: true, id: true, school: { uid: true } },
             ],
           }
         : {}),
