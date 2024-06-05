@@ -1,4 +1,4 @@
-import { builder, findSchoolUser, fromYearTier, prisma, sendMail } from '#lib';
+import { builder, findSchoolUser, fromYearTier, makeGlobalID, prisma, sendMail } from '#lib';
 
 import { nanoid } from 'nanoid';
 import { ZodError } from 'zod';
@@ -20,12 +20,25 @@ builder.mutationField('startRegistration', (t) =>
           ],
         },
       }),
+      quickSignupCode: t.arg.string({
+        required: false,
+        description:
+          "Code d'inscription rapide, pour s'inscrire sans mail étudiant et sans validation manuelle. Voir QuickSignupType.",
+      }),
     },
-    resolve: async (_, { email }) => register(email),
+    resolve: async (_, { email, quickSignupCode }) => register(email, quickSignupCode ?? undefined),
   }),
 );
 
-export const register = async (email: string): Promise<boolean> => {
+export const register = async (email: string, quickSignupCode?: string): Promise<boolean> => {
+  const quickSignup = quickSignupCode
+    ? await prisma.quickSignup.findUnique({
+        where: {
+          id: makeGlobalID('QuickSignup', quickSignupCode),
+        },
+      })
+    : undefined;
+
   const schoolUser = await findSchoolUser({ email });
 
   const major = await prisma.major.findFirst({
@@ -50,7 +63,11 @@ export const register = async (email: string): Promise<boolean> => {
       })
     : await prisma.userCandidate.upsert({
         where: { email },
-        create: { email, token: nanoid() },
+        create: {
+          email,
+          token: nanoid(),
+          usingQuickSignup: quickSignup ? { connect: { id: quickSignup.id } } : undefined,
+        },
         update: {},
       });
 
