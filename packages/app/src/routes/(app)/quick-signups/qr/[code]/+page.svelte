@@ -29,6 +29,9 @@
 
   .qrcode {
     max-height: 70vh;
+    padding: 1rem;
+    background-color: white;
+    border-radius: var(--radius-block);
   }
 
   p.link {
