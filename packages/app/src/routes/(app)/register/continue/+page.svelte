@@ -163,7 +163,7 @@
               new Fuse(
                 data.schoolGroups.flatMap(({ majors }) => majors),
                 {
-                  keys: ['name', 'shortName'],
+                  keys: ['name', 'shortName', 'schools.name'],
                   threshold: 0.3,
                 },
               )
