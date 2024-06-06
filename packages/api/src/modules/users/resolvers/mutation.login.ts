@@ -216,8 +216,8 @@ export async function login(
 
   for (const { value, userId } of credentials) {
     if (await argon2.verify(value, password)) {
-      // If the user has credentials, consider writing them to our LDAP
-      if (process.env['NODE_ENV'] !== 'development' && user.credentials.length >= 0) {
+      // If the user has credentials, consider writing them to our LDAP (except bots)
+      if (process.env['NODE_ENV'] !== 'development' && user.credentials.length >= 0 && !user.bot) {
         // Check if they are not already in our LDAP
         try {
           const ldapUser = await queryLdapUser(user.uid);
