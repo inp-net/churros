@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Les comptes de bots ne sont plus synchronisés vers le LDAP interne
+
 ## [1.61.0] - 2024-06-05
 
 ### Nouveautés
