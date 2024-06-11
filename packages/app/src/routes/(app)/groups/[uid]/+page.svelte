@@ -328,7 +328,7 @@
   {/if}
 
   <!-- Onglet de gestion du club disponible uniquement pour les respo clubs et les membres du bureau -->
-  {#if meOnClubBoard || $me?.canEditGroups}
+  {#if meOnClubBoard || $me?.canEditGroups || $me?.admin}
     <section class="club-gestion">
       <h2>Administration du club</h2>
       <div class="menu-button">
