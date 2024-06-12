@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Hot fix : correction d'un bug qui affichait une erreur 500 sur un event public pour une personne non connectée
+
 ## [1.61.1] - 2024-06-09
 
 ### Technique
