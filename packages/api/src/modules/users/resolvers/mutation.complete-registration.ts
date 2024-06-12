@@ -94,7 +94,7 @@ builder.mutationField('completeRegistration', (t) =>
           (needsVerification ? `a fait une demande d'inscription` : `s'est inscrit·e!`),
         data: {
           channel: NotificationChannel.Other,
-          goto: needsVerification ? '/signups' : `/user/${user.uid}`,
+          goto: needsVerification ? '/signups' : `/@${user.uid}`,
           group: undefined,
         },
       });
