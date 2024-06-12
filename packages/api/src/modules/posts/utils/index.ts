@@ -3,4 +3,5 @@
  */
 
 export * from './notifications.js';
+export * from './permissions.js';
 export * from './uid.js';

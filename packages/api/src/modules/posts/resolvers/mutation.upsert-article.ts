@@ -2,7 +2,9 @@ import { builder, prisma, publish } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { Visibility } from '@prisma/client';
+import { GraphQLError } from 'graphql';
 import { ArticleType, createUid, scheduleNewArticleNotification } from '../index.js';
+import { canEditArticle } from '../utils/permissions.js';
 
 builder.mutationField('upsertArticle', (t) =>
   t.prismaField({
@@ -34,23 +36,9 @@ builder.mutationField('upsertArticle', (t) =>
       }
 
       const article = await prisma.article.findUniqueOrThrow({ where: { id } });
+      if (!article) throw new GraphQLError('Post non trouvé');
 
-      return (
-        // Spoofing is disallowed
-        ((authorId === user.id &&
-          // To set their-self or remove the author, the user must be allowed to write articles
-          authorId === article.authorId) ||
-          user.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
-          )) &&
-        // Who can edit this article?
-        // The author
-        (user.id === article.authorId ||
-          // Other authors of the group
-          user.groups.some(
-            ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
-          ))
-      );
+      return canEditArticle(article, { authorId, groupId }, user);
     },
     async resolve(
       query,

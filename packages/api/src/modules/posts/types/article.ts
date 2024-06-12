@@ -1,5 +1,6 @@
 import { builder, htmlToText, prisma, subscriptionName, toHtml } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
+import { canEditArticle } from '../utils/permissions.js';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
@@ -29,6 +30,12 @@ export const ArticleType = builder.prismaNode('Article', {
     author: t.relation('author', { nullable: true }),
     group: t.relation('group'),
     links: t.relation('links'),
+    canBeEdited: t.boolean({
+      description:
+        "Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)",
+      resolve: ({ authorId, groupId }, _, { user }) =>
+        canEditArticle({ authorId, groupId }, { authorId, groupId }, user),
+    }),
     myReactions: t.field({
       type: 'BooleanMap',
       async resolve({ id }, _, { user }) {

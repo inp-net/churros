@@ -9,6 +9,7 @@ export const _articleQuery = Selector('Article')({
   visibility: true,
   publishedAt: true,
   notifiedAt: true,
+  canBeEdited: true,
   group: {
     id: true,
     uid: true,
@@ -17,15 +18,6 @@ export const _articleQuery = Selector('Article')({
     pictureFileDark: true,
   },
   pictureFile: true,
-  author: {
-    id: true,
-    firstName: true,
-    fullName: true,
-    lastName: true,
-    pictureFile: true,
-    uid: true,
-    groups: { group: { name: true, uid: true }, title: true },
-  },
   myReactions: true,
   reactionCounts: true,
   comments: [
@@ -90,12 +82,6 @@ export const _articleQuery = Selector('Article')({
       uid: true,
       pictureFile: true,
       name: true,
-    },
-    author: {
-      uid: true,
-      fullName: true,
-      pictureFile: true,
-      groups: { group: { name: true, uid: true }, title: true },
     },
     contactMail: true,
   },

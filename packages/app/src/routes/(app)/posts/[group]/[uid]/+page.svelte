@@ -5,7 +5,6 @@
   import IconGear from '~icons/mdi/gear-outline';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { formatEventDates } from '$lib/dates';
-  import { me } from '$lib/session';
   import type { PageData } from './$types';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
@@ -24,7 +23,6 @@
 
   export let data: PageData;
   let {
-    author,
     publishedAt,
     links,
     title,
@@ -37,17 +35,11 @@
     myReactions,
     reactionCounts,
     notifiedAt,
+    canBeEdited,
   } = data.article;
 
   let liked = myReactions['❤️'];
   let likes = reactionCounts['❤️'] ?? 0;
-
-  $: canEditThisArticle =
-    data.canEditGroup ||
-    (Boolean(author?.id === $me?.id) &&
-      $me?.groups.some(
-        ({ canEditArticles, group }) => group.id === data.article.group.id && canEditArticles,
-      ));
 </script>
 
 <div class="page" class:future={isFuture(publishedAt)}>
@@ -74,7 +66,7 @@
       <span class="date">
         {intlFormatDistance(publishedAt, new Date())}
       </span>
-      {#if notifiedAt && canEditThisArticle}
+      {#if notifiedAt && canBeEdited}
         <span
           class="notified"
           use:tooltip={`Notifications envoyées ${formatDistance(notifiedAt, new Date(), {
@@ -118,7 +110,7 @@
         </ul>
       {/if}
       <div class="actions">
-        {#if canEditThisArticle}
+        {#if canBeEdited}
           <ButtonGhost help="Gérer" href="./edit"><IconGear></IconGear></ButtonGhost>
         {/if}
         <ButtonShare></ButtonShare>
