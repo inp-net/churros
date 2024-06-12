@@ -10,15 +10,14 @@
 
   export let data: PageData;
 
-  const studentAssociations = data.studentAssociations.filter((sa) =>
+  const studentAssociations = data.studentAssociations?.filter((sa) =>
     $me?.major?.schools.flatMap((s) => s.uid).includes(sa?.school.uid ?? ''),
   );
-  const studentAssociationsIds = new Set(studentAssociations.map((sa) => sa?.uid));
+  const studentAssociationsIds = new Set(studentAssociations?.map((sa) => sa?.uid));
 
   const listTrees = createForest(
     data.groups.filter(
-      (g) =>
-        g.type === GroupType.List && studentAssociationsIds.has(g.studentAssociation?.uid),
+      (g) => g.type === GroupType.List && studentAssociationsIds.has(g.studentAssociation?.uid),
     ),
     { idKey: 'groupId' },
   );
@@ -36,6 +35,10 @@
         [GroupType.Association, GroupType.Club].includes(g.type) &&
         studentAssociationsIds.has(g.studentAssociation?.uid),
     ),
+    { idKey: 'groupId' },
+  );
+  const allClubsAssos = createForest(
+    data.groups.filter((g) => [GroupType.Association, GroupType.Club].includes(g.type)),
     { idKey: 'groupId' },
   );
 
@@ -75,34 +78,43 @@
       </li>
     {/each}
   </ul>
+
+  <h2>Les bureaux de tes AEs</h2>
+  <ul class="nobullet">
+    {#each studentAssociationSections as group}
+      <li>
+        <Group showSchool={hasMultipleSchools} {group} />
+      </li>
+    {/each}
+  </ul>
+
+  <h2>Clubs et assos</h2>
+  <ul class="nobullet">
+    {#each clubsAssos as group}
+      <li>
+        <Group showSchool={hasMultipleSchools} {group} />
+      </li>
+    {/each}
+  </ul>
+
+  <h2>Les listes</h2>
+  <ul class="nobullet">
+    {#each listTrees.sort((a, b) => findNumber(a) - findNumber(b)).reverse() as group}
+      <li>
+        <Group showSchool={hasMultipleSchools} {group} />
+      </li>
+    {/each}
+  </ul>
+{:else}
+  <h2>Découvre nos Clubs et Assos</h2>
+  <ul class="nobullet">
+    {#each allClubsAssos as group}
+      <li>
+        <Group showSchool={hasMultipleSchools} {group} />
+      </li>
+    {/each}
+  </ul>
 {/if}
-
-<h2>Les bureaux de tes AEs</h2>
-<ul class="nobullet">
-  {#each studentAssociationSections as group}
-    <li>
-      <Group showSchool={hasMultipleSchools} {group} />
-    </li>
-  {/each}
-</ul>
-
-<h2>Clubs et assos</h2>
-<ul class="nobullet">
-  {#each clubsAssos as group}
-    <li>
-      <Group showSchool={hasMultipleSchools} {group} />
-    </li>
-  {/each}
-</ul>
-
-<h2>Les listes</h2>
-<ul class="nobullet">
-  {#each listTrees.sort((a, b) => findNumber(a) - findNumber(b)).reverse() as group}
-    <li>
-      <Group showSchool={hasMultipleSchools} {group} />
-    </li>
-  {/each}
-</ul>
 
 <style>
   h2 {
