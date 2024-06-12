@@ -11,6 +11,11 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug empêchant de voir un post en étant déconnecté quand celui-ci comporte des places accessible aux extés
+- Cliquer sur une notification de nouvelle inscription emmène maintenant bien sur la page de profil de la personne inscrite
+
 ## [1.61.2] - 2024-06-12
 
 ### Technique
