@@ -1,8 +1,7 @@
-import { builder, prisma, subscriptionName, toHtml } from '#lib';
+import { builder, prisma, toHtml } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum, priceWithPromotionsApplied as actualPrice } from '#modules/payments';
 import { PaymentMethod } from '@prisma/client';
-import { placesLeft } from '../index.js';
 
 export const TicketType = builder.prismaNode('Ticket', {
   id: { field: 'id' },
@@ -100,25 +99,6 @@ export const TicketType = builder.prismaNode('Ticket', {
         });
         return godsonLimit - registrationsOfUser.length;
       },
-    }),
-    placesLeft: t.int({
-      subscribe(subs, { id }) {
-        subs.register(subscriptionName(id));
-      },
-      async resolve({ id }) {
-        const ticket = await prisma.ticket.findUnique({
-          where: { id },
-          include: {
-            registrations: true,
-            group: { include: { tickets: { include: { registrations: true } } } },
-          },
-        });
-        if (!ticket) return 0;
-        const places = placesLeft(ticket);
-        if (places === Number.POSITIVE_INFINITY) return -1;
-        return places;
-      },
-      complexity: 5,
     }),
   }),
 });

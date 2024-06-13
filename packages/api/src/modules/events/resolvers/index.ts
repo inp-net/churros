@@ -22,3 +22,4 @@ export * from './query.events.js';
 export * from './query.registrations-of-event.js';
 export * from './query.search-events.js';
 export * from './subscription.kiosk-reload.js';
+export * from './ticket.places-left.js';

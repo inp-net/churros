@@ -39,7 +39,7 @@
     uid: string;
     opensAt?: Date;
     closesAt?: Date;
-    placesLeft: number;
+    placesLeft?: number | undefined | null;
     capacity: number;
   }>;
 

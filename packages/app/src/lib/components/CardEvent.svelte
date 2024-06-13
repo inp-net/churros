@@ -26,7 +26,7 @@
   export let endsAt: Date;
   export let location: string;
   export let capacity: number;
-  export let placesLeft: number;
+  export let placesLeft: number | undefined = undefined;
   export let frequency: EventFrequency;
   export let recurringUntil: Date | undefined = undefined;
   export let tickets: Array<{
@@ -35,7 +35,7 @@
     uid: string;
     opensAt?: Date;
     closesAt?: Date;
-    placesLeft: number;
+    placesLeft?: number | null;
     capacity: number;
   }>;
   export let href: string;
@@ -169,7 +169,7 @@
     {#if shotgunsStart}
       <section class="shotgun">
         <h4 class="typo-field-label">Shotgun</h4>
-        {#if shotgunning}
+        {#if shotgunning && placesLeft !== null && placesLeft !== undefined}
           <p>
             {#if placesLeft + capacity === Number.POSITIVE_INFINITY}
               Places illimitées

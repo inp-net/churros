@@ -11,7 +11,7 @@ import {
 } from '#permissions';
 import { PaymentMethod } from '@prisma/client';
 import { EventFrequencyType, eventCapacity } from '../index.js';
-import { canEdit, canEditManagers, canSeeBookings } from '../utils/index.js';
+import { canEdit, canEditManagers, canSeeBookings, canSeePlacesLeftCount } from '../utils/index.js';
 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
@@ -66,6 +66,9 @@ export const EventType = builder.prismaNode('Event', {
       description: "Vrai si l'évènement doit apparaître dans le mode kiosque",
     }),
     reactions: t.relation('reactions'),
+    showPlacesLeft: t.exposeBoolean('showPlacesLeft', {
+      description: 'Vrai si le nombre de places restantes doit être affiché',
+    }),
     mySoonestShotgunOpensAt: t.field({
       type: DateTimeScalar,
       nullable: true,
@@ -173,10 +176,13 @@ export const EventType = builder.prismaNode('Event', {
       },
     }),
     placesLeft: t.int({
+      nullable: true,
       subscribe: (subs, { id }) => {
         subs.register(subscriptionName(id));
       },
-      async resolve({ id }) {
+      async resolve(event, _, { user }) {
+        const { id } = event;
+
         const registrations = await prisma.registration.findMany({
           where: { ticket: { event: { id } } },
         });
@@ -194,12 +200,15 @@ export const EventType = builder.prismaNode('Event', {
           },
         });
 
-        const placesLeft = Math.max(
+        let placesLeft = Math.max(
           0,
           eventCapacity(tickets, ticketGroups) -
             registrations.filter((r) => !r.cancelledAt && !r.opposedAt).length,
         );
-        return placesLeft === Number.POSITIVE_INFINITY ? -1 : placesLeft;
+
+        if (placesLeft === Number.POSITIVE_INFINITY) placesLeft = -1;
+
+        return canSeePlacesLeftCount(event, user, placesLeft) ? placesLeft : null;
       },
     }),
     registrationsCounts: t.field({

@@ -45,6 +45,10 @@ builder.mutationField('upsertEvent', (t) =>
         required: false,
         description: "Include l'évènement dans l'affichage du mode kiosque",
       }),
+      showPlacesLeft: t.arg.boolean({
+        required: false,
+        description: "Affiche le nombre de places restantes dans l'évènement",
+      }),
     },
     async authScopes(_, { id, groupUid }, { user }) {
       const creating = !id;
@@ -83,6 +87,7 @@ builder.mutationField('upsertEvent', (t) =>
         bannedUsers,
         recurringUntil,
         includeInKiosk,
+        showPlacesLeft,
       },
       { user },
     ) {
@@ -129,6 +134,7 @@ builder.mutationField('upsertEvent', (t) =>
           visibility,
           frequency,
           recurringUntil,
+          showPlacesLeft: showPlacesLeft ?? false,
           startsAt,
           endsAt,
           includeInKiosk: includeInKiosk ?? false,
@@ -160,6 +166,7 @@ builder.mutationField('upsertEvent', (t) =>
           startsAt,
           endsAt,
           includeInKiosk: includeInKiosk ?? false,
+          showPlacesLeft: showPlacesLeft ?? false,
           coOrganizers: {
             connect: connectFromListOfUids(coOrganizers),
           },
