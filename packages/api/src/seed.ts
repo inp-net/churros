@@ -89,8 +89,8 @@ function randomTime(date: Date, hoursIn: Generator<number>): Date {
 
 // download a random placeholder image from unsplash with the given width and height
 // return a File object (for use with updatePicture)
-async function downloadRandomImage(width: number, height: number): Promise<File> {
-  const url = `https://source.unsplash.com/random/${width}x${height}`;
+async function downloadRandomImage(width: number, height: number, seed: string): Promise<File> {
+  const url = `https://picsum.photos/seed/${seed}/${width}/${height}`;
   const response = await fetch(url);
   const blob = await response.blob();
   return new File([blob], path.basename(new URL(response.url).pathname), { type: 'image/jpeg' });
@@ -345,7 +345,7 @@ for (const asso of studentAssociations) {
             folder: 'groups',
             identifier: uid,
             resource: 'group',
-            file: await downloadRandomImage(400, 400),
+            file: await downloadRandomImage(400, 400, uid),
             silent: true,
             root: storageRoot,
           }));
@@ -664,7 +664,7 @@ for (const [i, group] of tqdm([...clubsData.entries()])) {
           folder: 'groups',
           identifier: uid,
           resource: 'group',
-          file: await downloadRandomImage(400, 400),
+          file: await downloadRandomImage(400, 400, uid),
           silent: true,
           root: storageRoot,
         }),
@@ -956,7 +956,7 @@ for (const element of tqdm(selectedClub)) {
           extension: 'jpg',
           folder: 'events',
           resource: 'event',
-          file: await downloadRandomImage(800, 600),
+          file: await downloadRandomImage(800, 600, id),
           identifier: id,
           silent: true,
           root: storageRoot,
@@ -1146,12 +1146,12 @@ for (let i = 0; i < 10; i++) {
             : type === 'Scale'
               ? { set: [faker.lorem.word(), faker.lorem.word()] }
               : undefined,
-          allowedFiletypes:
-            type === 'FileUpload'
-              ? Array.from({ length: faker.helpers.rangeToNumber({ min: 1, max: 10 }) })
-                  .fill(0)
-                  .map(() => faker.system.mimeType())
-              : undefined,
+          allowedFiletypes: undefined,
+          // type === 'FileUpload'
+          //   ? Array.from({ length: faker.helpers.rangeToNumber({ min: 1, max: 10 }) })
+          //       .fill(0)
+          //       .map(() => faker.system.mimeType())
+          //   : undefined,
           allowOptionOther:
             type === 'SelectOne' || type === 'SelectMultiple'
               ? faker.datatype.boolean(0.3)
@@ -1196,10 +1196,10 @@ for (let i = 0; i < 10; i++) {
                     value = [faker.lorem.sentence()];
                     break;
                   }
-                  case 'FileUpload': {
-                    value = [faker.system.fileName()];
-                    break;
-                  }
+                  // case 'FileUpload': {
+                  //   value = [faker.system.fileName()];
+                  //   break;
+                  // }
                   case 'LongText': {
                     value = [faker.lorem.paragraph()];
                     break;

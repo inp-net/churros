@@ -110,7 +110,7 @@ export async function updatePicture({
   const buffer = await file.arrayBuffer().then((array) => Buffer.from(array));
   const type = await imageType(buffer);
   if (!type || !supportedExtensions.includes(type.ext))
-    throw new GraphQLError('File format not supported');
+    throw new GraphQLError(`File format ${type?.ext ?? '(unknown)'} not supported`);
 
   // Delete the existing picture
   let pictureFile = '';
