@@ -28,8 +28,8 @@
   },
   "devDependencies": {
     "tsc": "^2.0.4",
-    "tsx": "^4.7.1",
-    "typescript": "^5.4.3"
+    "tsx": "^4.15.5",
+    "typescript": "^5.4.5"
   },
   "release-it": {
     "git": false,
