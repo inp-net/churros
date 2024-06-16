@@ -1,8 +1,8 @@
 diff --git a/runtime/library.d.ts b/runtime/library.d.ts
-index db2376031abc92a42072ae77958b6e201dbed07e..38f09574d4e8a8606f6b3e074d32556f9fca0309 100644
+index c5aef502e9786b3519757f7710e614509d8ef1cb..0aceb0f115bf36b0751b8dcb01f23a0db07d9112 100644
 --- a/runtime/library.d.ts
 +++ b/runtime/library.d.ts
-@@ -2658,7 +2658,7 @@ export declare type Return<T> = T extends (...args: any[]) => infer R ? R : T;
+@@ -2689,7 +2689,7 @@ export declare type Return<T> = T extends (...args: any[]) => infer R ? R : T;
  
  declare type Runtime = "edge-routine" | "workerd" | "deno" | "lagon" | "react-native" | "netlify" | "electron" | "node" | "bun" | "edge-light" | "fastly" | "unknown";
  
