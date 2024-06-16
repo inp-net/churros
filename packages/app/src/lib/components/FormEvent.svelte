@@ -80,6 +80,7 @@
           location: event.location,
           startsAt: event.startsAt,
           includeInKiosk: event.includeInKiosk,
+          showPlacesLeft: event.showPlacesLeft,
           ticketGroups: event.ticketGroups.map((tg) => ({
             ...tg,
             tickets: undefined,
@@ -132,6 +133,7 @@
               startsAt: true,
               endsAt: true,
               includeInKiosk: true,
+              showPlacesLeft: true,
               location: true,
               visibility: true,
               frequency: true,
@@ -335,6 +337,7 @@
       tickets: Ticket[];
     }>;
     includeInKiosk: boolean;
+    showPlacesLeft: boolean;
     contactMail: string;
     beneficiary?:
       | undefined
@@ -603,6 +606,12 @@
             </ButtonSecondary>
           </div>
         </h2>
+        <section class="tickets-global-options">
+          <InputCheckbox
+            label="Afficher le nombre de places restantes"
+            bind:value={event.showPlacesLeft}
+          />
+        </section>
         <!-- Tickets inside of groups -->
         {#if event.tickets.length + event.ticketGroups.length <= 0}
           <p class="empty">Aucun billet</p>
@@ -876,6 +885,14 @@
     width: 100%;
     height: 100%;
     text-align: center;
+  }
+
+  section.tickets-global-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
   }
 
   h2 {

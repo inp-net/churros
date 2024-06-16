@@ -51,3 +51,14 @@ export function canCreateEvent(group: Group, user: Context['user']) {
 
   return false;
 }
+
+export function canSeePlacesLeftCount(
+  event: Event & {
+    managers: Array<EventManager>;
+    group: Group;
+  },
+  user: Context['user'],
+  placesLeft: number,
+) {
+  return placesLeft === 0 || event.showPlacesLeft || canSeeBookings(event, user);
+}
