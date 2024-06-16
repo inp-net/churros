@@ -34,6 +34,11 @@
     forms,
   } = data.event;
 
+  /**
+   * List of ticket IDs that received new data from the websocket connection
+   */
+  let updatedTicketsIds: string[] = [];
+
   $: placesLeft = data.event.placesLeft;
   $: tickets = data.ticketsOfEvent;
 
@@ -49,11 +54,16 @@
         const freshData = await eventData;
         if ('errors' in freshData) return;
         if (!freshData.event) return;
-        data.event.placesLeft = freshData.event.placesLeft;
+        data.event.placesLeft = freshData.event.placesLeft as unknown as number | undefined;
+        // @ts-expect-error dunnot what is happening here, but typing with zeus and $subscribe is kinda cursed anyway
         data.ticketsOfEvent = data.ticketsOfEvent.map((t) => {
-          const freshTicket = freshData.event?.tickets.find((t2) => t2?.id === t.id) ?? {};
+          const freshTicket = freshData.event?.tickets.find((t2) => t2?.id === t.id);
+          if (freshTicket?.placesLeft !== t.placesLeft) updatedTicketsIds.push(t.id);
           return { ...t, ...freshTicket };
         });
+        setTimeout(() => {
+          updatedTicketsIds = [];
+        }, 500);
       },
     );
   });
@@ -126,15 +136,15 @@
 {#if tickets.length > 0}
   <section class="tickets">
     <h2>
-      Places <span class="places">
-        {#if placesLeft === Number.POSITIVE_INFINITY || capacity === 0}
-          Illimitées
-        {:else}
-          <span class="left">{placesLeft} restante{placesLeft > 1 ? 's' : ''}</span><span
-            class="capacity">{capacity}</span
-          >
-        {/if}
-      </span>
+      Places {#if placesLeft !== undefined && placesLeft !== null}<span class="places">
+          {#if placesLeft === Number.POSITIVE_INFINITY || capacity === 0}
+            Illimitées
+          {:else}
+            <span class="left">{placesLeft} restante{placesLeft > 1 ? 's' : ''}</span><span
+              class="capacity">{capacity}</span
+            >
+          {/if}
+        </span>{/if}
     </h2>
 
     <ul class="nobullet">

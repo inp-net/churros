@@ -19,7 +19,7 @@
   export let group: undefined | { name: string } = undefined;
   export let descriptionHtml: string;
   export let name: string;
-  export let placesLeft: number;
+  export let placesLeft: number | null | undefined = undefined;
   export let capacity: number;
   export let uid: string;
   export let price: number;
@@ -126,6 +126,8 @@
       <span class="places">
         {#if placesLeft === -1 || placesLeft === Number.POSITIVE_INFINITY}
           Illimité
+        {:else if placesLeft === null}
+          {capacity} places
         {:else}
           <span class="left">{placesLeft}</span><span class="capacity">{capacity}</span>
         {/if}
@@ -136,8 +138,8 @@
       <div class="price">
         {#if shotgunning}
           <ButtonSecondary
-            help={placesLeft !== -1 && placesLeft <= 0 ? 'Plus de places :/' : ''}
-            disabled={placesLeft !== -1 && placesLeft <= 0}
+            help={placesLeft === 0 ? 'Plus de places :/' : ''}
+            disabled={placesLeft === 0}
             href="/events/{event.group.uid}/{event.uid}/book/{uid}"
           >
             Réserver

@@ -540,6 +540,7 @@ model Event {
   frequency      EventFrequency @default(Once)
   recurringUntil DateTime?
   pictureFile    String         @default("") @db.VarChar(255)
+  showPlacesLeft Boolean        @default(true)
   managers       EventManager[]
   author         User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   includeInKiosk Boolean        @default(false)
