@@ -11,6 +11,14 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Possibilité de cacher le nombre places restantes à un évènement
+
+### Technique
+
+- Les users ne sont plus synchronisés avec le LDAP à la connexion
+
 ## [1.61.3] - 2024-06-13
 
 ### Corrections
