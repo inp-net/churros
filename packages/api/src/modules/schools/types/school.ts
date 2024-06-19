@@ -1,6 +1,8 @@
 import { builder } from '#lib';
+import { PicturedInterface } from '#modules/global';
 
 export const SchoolType = builder.prismaObject('School', {
+  interfaces: [PicturedInterface],
   fields: (t) => ({
     id: t.exposeID('id'),
     uid: t.exposeString('uid'),
@@ -13,8 +15,5 @@ export const SchoolType = builder.prismaObject('School', {
     internalMailDomain: t.exposeString('internalMailDomain'),
     aliasMailDomains: t.exposeStringList('aliasMailDomains'),
     pictureFile: t.exposeString('pictureFile'),
-    pictureURL: t.string({
-      resolve: ({ pictureFile }) => new URL(pictureFile, process.env.PUBLIC_STORAGE_URL).toString(),
-    }),
   }),
 });

@@ -1,0 +1,81 @@
+query PagePostDetail($group: String!, $uid: String!) {
+  article(uid: $uid, groupUid: $group) {
+    id
+    uid
+    title
+    bodyHtml
+    visibility
+    publishedAt
+    notifiedAt
+    canBeEdited
+    group {
+      id
+      uid
+      name
+      pictureFile
+      pictureFileDark
+    }
+    pictureFile
+    myReactions
+    reactionCounts
+    ...AreaComments
+    event {
+      id
+      uid
+      title
+      startsAt
+      endsAt
+      frequency
+      recurringUntil
+      location
+      placesLeft
+      capacity
+      descriptionHtml
+      descriptionPreview
+      pictureFile
+      links {
+        name
+        computedValue
+      }
+      tickets {
+        id
+        uid
+        opensAt
+        closesAt
+        placesLeft
+        capacity
+        name
+        descriptionHtml
+        price
+        registrations {
+          id
+          beneficiary
+          authorIsBeneficiary
+          beneficiaryUser {
+            uid
+            firstName
+            lastName
+            fullName
+          }
+          author {
+            uid
+          }
+          paid
+          ticket {
+            name
+          }
+        }
+      }
+      group {
+        uid
+        pictureFile
+        name
+      }
+      contactMail
+    }
+    links {
+      name
+      computedValue
+    }
+  }
+}

@@ -1,9 +1,10 @@
 import { builder, log, objectValuesFlat, prisma, publish } from '#lib';
+import { CommentType } from '#modules/comments/types';
 import { userIsAdminOf } from '#permissions';
 
 builder.mutationField('deleteComment', (t) =>
-  t.field({
-    type: 'Boolean',
+  t.prismaField({
+    type: CommentType,
     args: {
       id: t.arg.id(),
     },
@@ -37,27 +38,24 @@ builder.mutationField('deleteComment', (t) =>
           comment?.authorId === user?.id,
       );
     },
-    async resolve(_query, { id }) {
+    async resolve(query, _, { id }) {
       const repliesCount = await prisma.comment.count({ where: { inReplyToId: id } });
       await log('comments', 'delete', { repliesCount }, id);
 
-      let articleId: string | null | undefined;
-      let documentId: string | null | undefined;
+      const comment = await (repliesCount > 0
+        ? prisma.comment.update({
+            ...query,
+            where: { id },
+            data: { body: '_Commentaire supprimé_', author: { disconnect: true } },
+          })
+        : prisma.comment.delete({
+            ...query,
+            where: { id },
+          }));
 
-      if (repliesCount > 0) {
-        ({ articleId, documentId } = await prisma.comment.update({
-          where: { id },
-          data: { body: '_Commentaire supprimé_', author: { disconnect: true } },
-        }));
-      } else {
-        ({ articleId, documentId } = await prisma.comment.delete({
-          where: { id },
-        }));
-      }
+      publish(id, 'deleted', id, comment.articleId ?? comment.documentId ?? undefined);
 
-      publish(id, 'deleted', id, articleId ?? documentId ?? undefined);
-
-      return true;
+      return comment;
     },
   }),
 );

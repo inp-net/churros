@@ -1,6 +1,7 @@
 <script lang="ts">
   import { DISPLAY_VISIBILITIES } from '$lib/display';
   import { Visibility } from '$lib/zeus';
+  import type { Visibility$options } from '$houdini';
   import IconLock from '~icons/mdi/lock-outline';
   import IconSchool from '~icons/mdi/school-outline';
   import IconCommunity from '~icons/mdi/account-group-outline';
@@ -9,7 +10,7 @@
   import { tooltip } from '$lib/tooltip';
 
   export let showTooltip = false;
-  export let visibility: Visibility | undefined;
+  export let visibility: Visibility | Visibility$options | undefined;
   export let text = false;
 </script>
 

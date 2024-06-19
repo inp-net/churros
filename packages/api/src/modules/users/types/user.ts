@@ -1,11 +1,12 @@
 import { builder, prisma, toHtml, yearTier } from '#lib';
-import { DateTimeScalar } from '#modules/global';
+import { DateTimeScalar, PicturedInterface } from '#modules/global';
 import { NotificationChannel } from '@prisma/client';
 import { canBeEdited, fullName } from '../index.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
   id: { field: 'id' },
+  interfaces: [PicturedInterface],
   grantScopes: ({ id, majorId }, { user }) => [
     ...(id === user?.id ? ['me'] : []),
     ...(majorId ? ['student'] : []),

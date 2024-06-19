@@ -1,12 +1,14 @@
 import { builder, prisma, toHtml } from '#lib';
 
 import { prismaQueryAccessibleArticles } from '#permissions';
+import { PicturedInterface } from '../../global/types/pictured.js';
 import { canEditGroup, GroupEnumType } from '../index.js';
 import { requiredPrismaIncludesForPermissions } from '../utils/index.js';
 
 export const GroupType = builder.prismaNode('Group', {
   id: { field: 'id' },
   include: requiredPrismaIncludesForPermissions,
+  interfaces: [PicturedInterface],
   fields: (t) => ({
     // Because `id` is a Relay id, expose `groupId` as the real db id
     groupId: t.exposeID('id'),

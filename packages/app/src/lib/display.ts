@@ -84,7 +84,7 @@ function naturalJoin(items: string[]): string {
 }
 
 export const HELP_VISIBILITY_DYNAMIC: (
-  groups: Array<{ name: string; studentAssociation?: { school: { name: string } } }>,
+  groups: Array<{ name: string; studentAssociation?: null | { school: { name: string } } }>,
 ) => Record<Visibility, string> = (groups) => ({
   Public: `Visible par tous (même sans être connecté)`,
   GroupRestricted: `Visible par les membres de ${naturalJoin([

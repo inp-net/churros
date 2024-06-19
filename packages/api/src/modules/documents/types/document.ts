@@ -1,10 +1,14 @@
 import { builder, toHtml } from '#lib';
-import { CommentType } from '#modules/comments';
+import { CommentType, CommentableInterface, CommentsConnectionType } from '#modules/comments';
 import { DateTimeScalar } from '#modules/global';
 import { DocumentTypeEnum } from '../index.js';
 
 export const DocumentType = builder.prismaNode('Document', {
   id: { field: 'id' },
+  interfaces: [
+    // @ts-expect-error dunno why it complainnns
+    CommentableInterface,
+  ],
   fields: (t) => ({
     uid: t.exposeString('uid'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
@@ -27,12 +31,16 @@ export const DocumentType = builder.prismaNode('Document', {
     }),
     uploader: t.relation('uploader', { nullable: true }),
     uploaderId: t.exposeID('uploaderId', { nullable: true }),
-    comments: t.relatedConnection('comments', {
-      cursor: 'id',
-      type: CommentType,
-      query: {
-        orderBy: { createdAt: 'asc' },
+    comments: t.relatedConnection(
+      'comments',
+      {
+        cursor: 'id',
+        type: CommentType,
+        query: {
+          orderBy: { createdAt: 'asc' },
+        },
       },
-    }),
+      CommentsConnectionType,
+    ),
   }),
 });

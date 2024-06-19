@@ -1,0 +1,10 @@
+projects:
+  default:
+    schema:
+      - packages/app/schema.graphql
+      - packages/app/$houdini/graphql/schema.graphql
+    documents:
+      - packages/app/**/*.gql
+      - packages/app/**/*.svelte
+      - packages/app/**/*.ts
+      - packages/app/$houdini/graphql/documents.gql

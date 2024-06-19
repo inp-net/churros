@@ -15,6 +15,7 @@
     "google-auth-library": "^9.7.0",
     "graphql": "^16.8.1",
     "graphql-ws": "^5.16.0",
+    "houdini": "^1.2.47",
     "html-to-text": "^9.0.5",
     "html5-qrcode": "^2.3.8",
     "ics": "^3.7.2",
@@ -78,7 +79,7 @@
   },
   "private": true,
   "scripts": {
-    "build": "node src/scripts/generate-dotenv-service-worker.js && svelte-kit sync & yarn zeus && yarn check --threshold warning && vite build",
+    "build": "node src/scripts/generate-dotenv-service-worker.js && svelte-kit sync && yarn zeus && houdini generate && yarn check --threshold warning && vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "clean": "git clean -Xdf .",
     "dev": "yarn run -T generate-buildinfo && yarn zeus && wait-port 4000 && vite dev --host",

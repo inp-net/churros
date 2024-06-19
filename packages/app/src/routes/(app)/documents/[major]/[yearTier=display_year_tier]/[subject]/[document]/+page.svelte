@@ -47,7 +47,7 @@
     const { upsertComment } = await $zeus.mutate({
       upsertComment: [
         {
-          documentId: document.id,
+          resourceId: document.id,
           ...(comment ?? newComment),
         },
         {
@@ -70,7 +70,7 @@
   }
   async function removeComment(id: string) {
     await $zeus.mutate({
-      deleteComment: [{ id }, true],
+      deleteComment: [{ id }, { id: true }],
     });
     window.location.reload();
   }
@@ -79,7 +79,7 @@
       upsertComment: [
         {
           id,
-          documentId: document.id,
+          resourceId: document.id,
           body,
         },
         {

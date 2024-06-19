@@ -4,6 +4,7 @@
   import type { Visibility } from '$lib/zeus';
   import ButtonGhost from './ButtonGhost.svelte';
   import InputEvent from './InputEvent.svelte';
+  import type { Visibility$options } from '$houdini';
 
   type Event = {
     id: string;
@@ -11,12 +12,12 @@
     title: string;
     pictureFile: string;
     startsAt: Date;
-    visibility: Visibility;
+    visibility: Visibility | Visibility$options;
   };
   export let groupUid: string;
   export let allow: string[] = [];
   export let except: string[] = [];
-  export let event: Event | undefined = undefined;
+  export let event: Event | undefined | null = undefined;
   export let suggestions: Event[] = [];
   export let clearable = false;
 

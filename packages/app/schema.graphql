@@ -1,0 +1,4712 @@
+"""
+Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
+"""
+type Announcement implements Node {
+  body: String!
+  bodyHtml: String!
+  by: User
+  createdAt: DateTime!
+  endsAt: DateTime!
+  id: ID!
+  startsAt: DateTime!
+  title: String!
+  updatedAt: DateTime!
+  userId: ID
+  warning: Boolean!
+}
+
+"""
+Une réponse à un formulaire. Les réponses peuvent être de plusieurs types différents (en fonction de la question).
+"""
+interface Answer {
+  answerString: String!
+
+  """
+  Réservation associée à la réponse
+  """
+  booking: Registration
+  checkboxIsMarked: Boolean
+
+  """
+  Date de création de la réponse
+  """
+  createdAt: DateTime!
+
+  """
+  Utilisateur ayant répondu à la question
+  """
+  createdBy: User
+
+  """
+  Formulaire auquel appartient la question
+  """
+  form: Form!
+
+  """
+  Préfixe de l'identifiant: `answer:`
+  """
+  id: ID!
+  question: Question!
+
+  """
+  Section du formulaire auquel appartient la question
+  """
+  section: FormSection!
+
+  """
+  Date de dernière mise à jour de la réponse
+  """
+  updatedAt: DateTime!
+}
+
+"""
+Réponse de type `Date` (voir [`QuestionKind`](#QuestionKind))
+"""
+type AnswerDate implements Answer {
+  answerString: String!
+
+  """
+  Réservation associée à la réponse
+  """
+  booking: Registration
+  checkboxIsMarked: Boolean
+
+  """
+  Date de création de la réponse
+  """
+  createdAt: DateTime!
+
+  """
+  Utilisateur ayant répondu à la question
+  """
+  createdBy: User
+
+  """
+  Formulaire auquel appartient la question
+  """
+  form: Form!
+
+  """
+  Préfixe de l'identifiant: `answer:`
+  """
+  id: ID!
+
+  """
+  Question à laquelle la réponse est associée
+  """
+  question: QuestionScalar!
+
+  """
+  Réponse donnée, brute (sous forme de texte)
+  """
+  rawValue: String
+
+  """
+  Section du formulaire auquel appartient la question
+  """
+  section: FormSection!
+
+  """
+  Date de dernière mise à jour de la réponse
+  """
+  updatedAt: DateTime!
+
+  """
+  Réponse donnée
+  """
+  value: DateTime
+}
+
+"""
+Réponse de type `FileUpload` (voir [`QuestionKind`](#QuestionKind))
+"""
+type AnswerFileUpload implements Answer {
+  answerString: String!
+
+  """
+  Réservation associée à la réponse
+  """
+  booking: Registration
+  checkboxIsMarked: Boolean
+
+  """
+  Date de création de la réponse
+  """
+  createdAt: DateTime!
+
+  """
+  Utilisateur ayant répondu à la question
+  """
+  createdBy: User
+
+  """
+  Formulaire auquel appartient la question
+  """
+  form: Form!
+
+  """
+  Préfixe de l'identifiant: `answer:`
+  """
+  id: ID!
+
+  """
+  Question à laquelle la réponse est associée
+  """
+  question: QuestionFileUpload!
+
+  """
+  Section du formulaire auquel appartient la question
+  """
+  section: FormSection!
+
+  """
+  Date de dernière mise à jour de la réponse
+  """
+  updatedAt: DateTime!
+
+  """
+  Réponse donnée
+  """
+  value: String
+}
+
+input AnswerInput {
+  """
+  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
+
+  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
+  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
+  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
+  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
+  """
+  answer: [String!]!
+
+  """
+  ID de la question à laquelle répondre
+  """
+  question: ID!
+}
+
+"""
+Réponse de type `LongText` (voir [`QuestionKind`](#QuestionKind))
+"""
+type AnswerLongText implements Answer {
+  answerString: String!
+
+  """
+  Réservation associée à la réponse
+  """
+  booking: Registration
+  checkboxIsMarked: Boolean
+
+  """
+  Date de création de la réponse
+  """
+  createdAt: DateTime!
+
+  """
+  Utilisateur ayant répondu à la question
+  """
+  createdBy: User
+
+  """
+  Formulaire auquel appartient la question
+  """
+  form: Form!
+
+  """
+  Préfixe de l'identifiant: `answer:`
+  """
+  id: ID!
+
+  """
+  Question à laquelle la réponse est associée
+  """
+  question: QuestionScalar!
+
+  """
+  Section du formulaire auquel appartient la question
+  """
+  section: FormSection!
+
+  """
+  Date de dernière mise à jour de la réponse
+  """
+  updatedAt: DateTime!
+
+  """
+  Réponse donnée
+  """
+  value: String
+}
+
+"""
+Réponse de type `Number` (voir [`QuestionKind`](#QuestionKind))
+"""
+type AnswerNumber implements Answer {
+  answerString: String!
+
+  """
+  Réservation associée à la réponse
+  """
+  booking: Registration
+  checkboxIsMarked: Boolean
+
+  """
+  Date de création de la réponse
+  """
+  createdAt: DateTime!
+
+  """
+  Utilisateur ayant répondu à la question
+  """
+  createdBy: User
+
+  """
+  Formulaire auquel appartient la question
+  """
+  form: Form!
+
+  """
+  Préfixe de l'identifiant: `answer:`
+  """
+  id: ID!
+
+  """
+  Question à laquelle la réponse est associée
+  """
+  question: QuestionScalar!
+
+  """
+  Section du formulaire auquel appartient la question
+  """
+  section: FormSection!
+
+  """
+  Date de dernière mise à jour de la réponse
+  """
+  updatedAt: DateTime!
+
+  """
+  Réponse donnée
+  """
+  value: Float
+}
+
+"""
+Réponse de type `Scale` (voir [`QuestionKind`](#QuestionKind))
+"""
+type AnswerScale implements Answer {
+  answerString: String!
+
+  """
+  Réservation associée à la réponse
+  """
+  booking: Registration
+  checkboxIsMarked: Boolean
+
+  """
+  Date de création de la réponse
+  """
+  createdAt: DateTime!
+
+  """
+  Utilisateur ayant répondu à la question
+  """
+  createdBy: User
+
+  """
+  Formulaire auquel appartient la question
+  """
+  form: Form!
+
+  """
+  Préfixe de l'identifiant: `answer:`
+  """
+  id: ID!
+
+  """
+  Réponse donnée, entre 0 et 1
+  """
+  normalizedValue: Float
+
+  """
+  Question à laquelle la réponse est associée
+  """
+  question: QuestionScale!
+
+  """
+  Section du formulaire auquel appartient la question
+  """
+  section: FormSection!
+
+  """
+  Date de dernière mise à jour de la réponse
+  """
+  updatedAt: DateTime!
+
+  """
+  Réponse donnée
+  """
+  value: Int
+}
+
+type AnswerSearchResult {
+  answer: Answer!
+  id: ID!
+  rank: Float
+  similarity: Float!
+}
+
+"""
+Réponse de type `SelectMultiple` (voir [`QuestionKind`](#QuestionKind))
+"""
+type AnswerSelectMultiple implements Answer {
+  answerString: String!
+
+  """
+  Réservation associée à la réponse
+  """
+  booking: Registration
+  checkboxIsMarked: Boolean
+
+  """
+  Date de création de la réponse
+  """
+  createdAt: DateTime!
+
+  """
+  Utilisateur ayant répondu à la question
+  """
+  createdBy: User
+
+  """
+  Formulaire auquel appartient la question
+  """
+  form: Form!
+
+  """
+  Préfixe de l'identifiant: `answer:`
+  """
+  id: ID!
+
+  """
+  Question à laquelle la réponse est associée
+  """
+  question: QuestionSelectMultiple!
+
+  """
+  Section du formulaire auquel appartient la question
+  """
+  section: FormSection!
+
+  """
+  Date de dernière mise à jour de la réponse
+  """
+  updatedAt: DateTime!
+
+  """
+  Réponse donnée
+  """
+  value: [String!]
+}
+
+"""
+Réponse de type `SelectOne` (voir [`QuestionKind`](#QuestionKind))
+"""
+type AnswerSelectOne implements Answer {
+  answerString: String!
+
+  """
+  Réservation associée à la réponse
+  """
+  booking: Registration
+  checkboxIsMarked: Boolean
+
+  """
+  Date de création de la réponse
+  """
+  createdAt: DateTime!
+
+  """
+  Utilisateur ayant répondu à la question
+  """
+  createdBy: User
+
+  """
+  Formulaire auquel appartient la question
+  """
+  form: Form!
+
+  """
+  Préfixe de l'identifiant: `answer:`
+  """
+  id: ID!
+
+  """
+  Question à laquelle la réponse est associée
+  """
+  question: QuestionSelectOne!
+
+  """
+  Section du formulaire auquel appartient la question
+  """
+  section: FormSection!
+
+  """
+  Date de dernière mise à jour de la réponse
+  """
+  updatedAt: DateTime!
+
+  """
+  Réponse donnée
+  """
+  value: String
+}
+
+"""
+Réponse de type `Text` (voir [`QuestionKind`](#QuestionKind))
+"""
+type AnswerText implements Answer {
+  answerString: String!
+
+  """
+  Réservation associée à la réponse
+  """
+  booking: Registration
+  checkboxIsMarked: Boolean
+
+  """
+  Date de création de la réponse
+  """
+  createdAt: DateTime!
+
+  """
+  Utilisateur ayant répondu à la question
+  """
+  createdBy: User
+
+  """
+  Formulaire auquel appartient la question
+  """
+  form: Form!
+
+  """
+  Préfixe de l'identifiant: `answer:`
+  """
+  id: ID!
+
+  """
+  Question à laquelle la réponse est associée
+  """
+  question: QuestionScalar!
+
+  """
+  Section du formulaire auquel appartient la question
+  """
+  section: FormSection!
+
+  """
+  Date de dernière mise à jour de la réponse
+  """
+  updatedAt: DateTime!
+
+  """
+  Réponse donnée
+  """
+  value: String
+}
+
+"""
+Réponse de type `Time` (voir [`QuestionKind`](#QuestionKind))
+"""
+type AnswerTime implements Answer {
+  answer: Answer!
+  answerString: String!
+
+  """
+  Réservation associée à la réponse
+  """
+  booking: Registration
+  checkboxIsMarked: Boolean
+
+  """
+  Date de création de la réponse
+  """
+  createdAt: DateTime!
+
+  """
+  Utilisateur ayant répondu à la question
+  """
+  createdBy: User
+
+  """
+  Formulaire auquel appartient la question
+  """
+  form: Form!
+
+  """
+  Préfixe de l'identifiant: `answer:`
+  """
+  id: ID!
+
+  """
+  Question à laquelle la réponse est associée
+  """
+  question: QuestionScalar!
+
+  """
+  Réponse donnée, brute (sous forme de texte)
+  """
+  rawValue: String
+
+  """
+  Section du formulaire auquel appartient la question
+  """
+  section: FormSection!
+
+  """
+  Date de dernière mise à jour de la réponse
+  """
+  updatedAt: DateTime!
+
+  """
+  Réponse donnée
+  """
+  value: DateTime
+}
+
+"""
+Formats d'export des réponses
+"""
+enum AnswersExportFormats {
+  """
+  Format CSV (séparateur de colonnes: virgule, séparateur de lignes: saut de ligne)
+  """
+  CSV
+
+  """
+  Format TSV (séparateur de colonnes: tabulation, séparateur de lignes: saut de ligne)
+  """
+  TSV
+}
+
+"""
+Représente toutes les réponses d'un·e utilisateur·ice à un formulaire. Pratique pour grouper les réponses afin de les afficher dans un tableau
+"""
+type AnswersOfUser {
+  answers: [Answer!]!
+
+  """
+  Correspond à la date de dernière réponse parmis les réponses
+  """
+  date: DateTime!
+  user: User!
+}
+
+"""
+Des données temporelles pour construire des graphiques d'atteintes de rate limiting. La résolution temporelle est d'une minute.
+"""
+type ApiRateLimitHits {
+  """
+  Le nombre d'erreurs de rate-limiting à cette date
+  """
+  count: Int!
+
+  """
+  La date à laquelle les requêtes ont été faites
+  """
+  date: DateTime!
+
+  """
+  Le nom de la query ou mutation ou subscription
+  """
+  queryName: String!
+
+  """
+  Le type de requête effectuée
+  """
+  queryType: String!
+  timestamp: Int!
+  user: User
+}
+
+"""
+Des données temporelles pour construire des graphiques d'utilisation de l'API au cours du temps. La résolution temporelle est d'une minute.
+"""
+type ApiUsage {
+  """
+  Le nombre de requêtes faites à cette date
+  """
+  count: Int!
+
+  """
+  La date à laquelle les requêtes ont été faites
+  """
+  date: DateTime!
+
+  """
+  Le nom de la query ou mutation ou subscription
+  """
+  queryName: String!
+
+  """
+  Le type de requête effectuée
+  """
+  queryType: ApiUsageQueryType!
+  timestamp: Int!
+  user: User
+}
+
+"""
+Type de requête effectuée sur l'API
+"""
+enum ApiUsageQueryType {
+  """
+  Modification de données, ou autre action diverses
+  """
+  Mutation
+
+  """
+  Récupération de données
+  """
+  Query
+
+  """
+  Abonnement à des données pour être informé en temps réel des changements
+  """
+  Subscription
+}
+
+"""
+An article is a post in a group
+"""
+type Article implements Commentable & Node & Pictured {
+  author: User
+  authorId: ID
+  body: String!
+  bodyHtml: String!
+  bodyPreview: String!
+
+  """
+  Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
+  """
+  canBeEdited: Boolean!
+  comments(after: String, before: String, first: Int, last: Int): CommentsConnection!
+  createdAt: DateTime!
+  event: Event
+  eventId: ID
+  group: Group!
+  groupId: ID!
+  id: ID!
+  links: [Link!]!
+  myReactions: BooleanMap!
+  notifiedAt: DateTime
+  pictureFile: String!
+
+  """
+  Le nom du fichier de l'image, en thème sombre
+  """
+  pictureFileDark: String!
+
+  """
+  L'URL publique de l'image
+  """
+  pictureURL(
+    """
+    Utiliser l'image en thème sombre
+    """
+    dark: Boolean! = false
+  ): String!
+  published: Boolean!
+  publishedAt: DateTime!
+  reactionCounts: Counts!
+  title: String!
+  uid: String!
+  visibility: Visibility!
+}
+
+type ArticleSearchResultType {
+  article: Article!
+  highlightedTitle: String!
+  id: ID!
+  rank: Float
+  similarity: Float!
+}
+
+"""
+A bar week is a week during which some groups takeover the bar staff
+"""
+type BarWeek implements Node {
+  description: String!
+  descriptionHtml: String!
+  endsAt: DateTime!
+  groups: [Group!]!
+  id: ID!
+  startsAt: DateTime!
+  uid: String!
+}
+
+scalar BooleanMap
+
+type BuildInfo {
+  """
+  Le hash du commit utilisé pour build l'API
+  """
+  commit: String!
+
+  """
+  La version actuelle de l'API (et de l'application)
+  """
+  version: String!
+}
+
+"""
+A release in the changelog
+"""
+type ChangelogRelease {
+  """
+  The changes of the release, grouped by category
+  """
+  changes: ReleaseChangesMaps!
+
+  """
+  The date of the release
+  """
+  date: DateTime
+
+  """
+  A short description of the release
+  """
+  description: String!
+
+  """
+  A short description of the release, in HTML. Safe from XSS.
+  """
+  descriptionHtml: String!
+
+  """
+  The version of the release
+  """
+  version: String!
+}
+
+type Comment implements Node {
+  author: User
+  authorId: ID
+  body: String!
+  bodyHtml: String!
+  createdAt: DateTime!
+  document: Document
+  documentId: ID
+  id: ID!
+  inReplyTo: Comment
+  inReplyToId: ID
+  replies: [Comment!]!
+  updatedAt: DateTime!
+}
+
+"""
+Une resource pouvant être commentée par les utilisateur·ice·s
+"""
+interface Commentable {
+  comments(after: String, before: String, first: Int, last: Int): CommentsConnection!
+
+  """
+  L’identifiant de la resource commentée
+  """
+  id: ID!
+}
+
+type CommentsConnection {
+  edges: [CommentsEdge]!
+  nodes: [Comment]!
+  pageInfo: PageInfo!
+}
+
+type CommentsEdge {
+  cursor: String!
+  node: Comment!
+}
+
+type ContributionOption {
+  descriptionHtml: String!
+  id: ID!
+  name: String!
+  offeredIn: School!
+  paysFor: [StudentAssociation!]!
+  price: Float!
+}
+
+scalar Counts
+
+"""
+A credential is a way to authenticate a user
+"""
+type Credential {
+  active: Boolean!
+  createdAt: DateTime!
+  expiresAt: DateTime
+  id: ID!
+  name: String!
+  token: String!
+  type: CredentialType!
+  user: User!
+  userAgent: String!
+}
+
+enum CredentialType {
+  Google
+  Password
+  Token
+}
+
+type DatabaseHealthCheck {
+  prisma: Boolean!
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+type Document implements Commentable & Node {
+  comments(after: String, before: String, first: Int, last: Int): CommentsConnection!
+  createdAt: DateTime!
+  description: String!
+  descriptionHtml: String!
+  id: ID!
+
+  """
+  Liste de chemins vers les fichiers représentant le sujet (ou la fiche de révision)
+  """
+  paperPaths: [String!]!
+  schoolYear: Int!
+
+  """
+  Liste de chemins vers les fichiers représentant la correction.
+  """
+  solutionPaths: [String!]!
+  subject: Subject
+  subjectId: ID
+  title: String!
+  type: DocumentType!
+  uid: String!
+  updatedAt: DateTime!
+  uploader: User
+  uploaderId: ID
+}
+
+type DocumentSearchResult {
+  document: Document!
+  id: ID!
+  rank: Int
+  similarity: Float!
+}
+
+enum DocumentType {
+  CourseNotes
+  CourseSlides
+  Exam
+  Exercises
+  GradedExercises
+  Miscellaneous
+  Practical
+  PracticalExam
+  Summary
+}
+
+"""
+A email validation request
+"""
+type EmailChange {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  pending: Boolean!
+  updatedAt: DateTime!
+  user: User!
+  userId: ID!
+}
+
+"""
+The most basic error object, based on the base JavaScript Error object.
+"""
+type Error implements ErrorInterface {
+  message: String!
+}
+
+"""
+Basic interface for all error types to implement.
+"""
+interface ErrorInterface {
+  message: String!
+}
+
+type EvenSearchResult {
+  event: Event!
+  highlightedTitle: String!
+  id: ID!
+  rank: Float
+  similarity: Float!
+}
+
+"""
+An event is a date, time and place, as well as an optional ticket
+"""
+type Event implements Node & Pictured {
+  articles: [Article!]!
+  author: User
+  authorId: ID
+  bannedUsers: [User!]!
+  beneficiary: LydiaAccount
+
+  """
+  L'utilisateur·ice connecté·e peut modifier cet évènement
+  """
+  canEdit: Boolean!
+
+  """
+  L'utilisateur·ice connecté·e peut ajouter, enlever ou modifier les droits des managers de cet évènement
+  """
+  canEditManagers: Boolean!
+
+  """
+  L'utilisateur·ice connecté·e peut scanner les réservations de cet évènement
+  """
+  canScanBookings: Boolean!
+
+  """
+  L'utilisateur·ice connecté·e peut voir toutes les réservations de cet évènement
+  """
+  canSeeBookings: Boolean!
+  capacity: Int!
+  coOrganizers: [Group!]!
+  contactMail: String!
+  description: String!
+  descriptionHtml: String!
+  descriptionPreview: String!
+  endsAt: DateTime!
+
+  """
+  Formulaires associés à l'événement
+  """
+  forms: [Form!]!
+  frequency: EventFrequency!
+  group: Group!
+  groupId: ID!
+  id: ID!
+
+  """
+  Vrai si l'évènement doit apparaître dans le mode kiosque
+  """
+  includeInKiosk: Boolean!
+  links: [Link!]!
+  location: String!
+  lydiaAccountId: ID
+  managers: [EventManager!]!
+  myReactions: BooleanMap!
+  mySoonestShotgunOpensAt: DateTime
+  pictureFile: String!
+
+  """
+  Le nom du fichier de l'image, en thème sombre
+  """
+  pictureFileDark: String!
+
+  """
+  L'URL publique de l'image
+  """
+  pictureURL(
+    """
+    Utiliser l'image en thème sombre
+    """
+    dark: Boolean! = false
+  ): String!
+  placesLeft: Int!
+  profitsBreakdown: ProfitsBreakdown!
+  reactionCounts: Counts!
+  reactions: [Reaction!]!
+  recurringUntil: DateTime
+  registrationsCounts: RegistrationsCounts!
+  startsAt: DateTime!
+  ticketGroups: [TicketGroup!]!
+  tickets: [Ticket!]!
+  title: String!
+  uid: String!
+  visibility: Visibility!
+}
+
+enum EventFrequency {
+  Biweekly
+  Monthly
+  Once
+  Weekly
+}
+
+"""
+An event manager is a user that can scan tickets, and may be able to manage the event
+"""
+type EventManager {
+  canEdit: Boolean!
+  canEditPermissions: Boolean!
+  canVerifyRegistrations: Boolean!
+  event: Event!
+  power: EventManagerPowerLevel!
+  user: User!
+}
+
+enum EventManagerPowerLevel {
+  Edit
+  EditPermissions
+  ReadOnly
+  ScanTickets
+}
+
+type FamilyTree {
+  nesting: String!
+  users: [User!]!
+}
+
+scalar File
+
+"""
+Un formulaire
+"""
+type Form implements Node {
+  """
+  Nombre de réponses au formulaire
+  """
+  answerCount: Int!
+
+  """
+  Réponses au formulaire
+  """
+  answers(after: String, before: String, first: Int, last: Int): FormAnswersConnection!
+
+  """
+  Réponses au formulaire, groupées par utilisateur·ice. Ne contient pas de réponses dont l'utilisateur·ice est inconnu·e.
+  """
+  answersByUser(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    """
+    Recherche par utilisateur·ice
+    """
+    q: String
+  ): FormAnswersByUserConnection!
+
+  """
+  Export des réponses au formulaires dans un format
+  """
+  answersExport(
+    """
+    Format à utiliser
+    """
+    format: AnswersExportFormats! = CSV
+  ): String!
+
+  """
+  Indique si l'utilisateur peut répondre au formulaire.
+  """
+  canAnswer: Boolean!
+
+  """
+  Indique si l'utilisateur peut éditer le formulaire.
+  """
+  canEdit: Boolean!
+
+  """
+  Indique si l'utilisateur·ice peut modifier ses réponses au formulaire.
+  """
+  canModifyAnswers: Boolean!
+
+  """
+  Indique si l'utilisateur peut voir les statistiques des réponses au formulaire.
+  """
+  canSeeAnswerStats: Boolean!
+
+  """
+  Indique si l'utilisateur peut voir les réponses au formulaire.
+  """
+  canSeeAnswers: Boolean!
+
+  """
+  Indique si l'utilisateur peut cocher ou décocher les cases à cocher à côté des réponses au formulaire.
+  """
+  canSetCheckboxes: Boolean!
+  checkboxesAreEnabled: Boolean!
+
+  """
+  Date de fermeture du formulaire.
+  """
+  closesAt: DateTime
+
+  """
+  Date de création du formulaire
+  """
+  createdAt: DateTime!
+
+  """
+  Utilisateur ayant créé le formulaire
+  """
+  createdBy: User
+
+  """
+  Description en Markdown du formulaire.
+  """
+  description: String
+
+  """
+  Description en HTML du formulaire.
+  """
+  descriptionHtml: String!
+
+  """
+  Événement associé au formulaire
+  """
+  event: Event
+
+  """
+  Groupe auquel le formulaire est associé
+  """
+  group: Group
+
+  """
+  Vrai si le formulaire comporte des sections
+  """
+  hasSections: Boolean!
+
+  """
+  Préfixe de l'identifiant: `form:`
+  """
+  id: ID!
+
+  """
+  L'URL du Google Sheet des réponses lié à ce formulaire. Voir `createLinkedGoogleSheet` pour créer un Google Sheet lié au formulaire.
+  """
+  linkedGoogleSheetUrl: String
+
+  """
+  Identifiant local du formulaire
+  """
+  localId: String!
+
+  """
+  Réponses de l'utilisateur·ice connecté·e à ce formulaire
+  """
+  myAnswers: [Answer!]!
+
+  """
+  Date d'ouverture du formulaire.
+  """
+  opensAt: DateTime
+
+  """
+  Questions du formulaire. Liste de toutes les questions, peut importe la section dans laquelle elles se trouvent.
+  """
+  questions(after: String, before: String, first: Int, last: Int): FormQuestionsConnection!
+  searchAnswers(
+    """
+    La recherche
+    """
+    q: String!
+    similarityCutoff: Float
+  ): [AnswerSearchResult!]!
+
+  """
+  Une section du formulaire.
+  """
+  section(
+    """
+    Identifiant (local ou global) de la section
+    """
+    id: String
+  ): FormSection!
+
+  """
+  Sections du formulaire. Un formulaire contient toujours au moins une section (sauf s'il n'y a aucune question). Uniquement accessible par celleux qui peuvent modifier le formulaire. Utiliser `nextSection` pour afficher une section dans le but d'y répondre.
+  """
+  sections: [FormSection!]!
+  title: String!
+
+  """
+  Date de dernière mise à jour du formulaire
+  """
+  updatedAt: DateTime!
+
+  """
+  Visibilité du formulaire
+  """
+  visibility: Visibility!
+}
+
+type FormAnswersByUserConnection {
+  edges: [FormAnswersByUserConnectionEdge]!
+  nodes: [AnswersOfUser]!
+  pageInfo: PageInfo!
+}
+
+type FormAnswersByUserConnectionEdge {
+  cursor: String!
+  node: AnswersOfUser!
+}
+
+type FormAnswersConnection {
+  edges: [FormAnswersConnectionEdge]!
+  nodes: [Answer]!
+  pageInfo: PageInfo!
+}
+
+type FormAnswersConnectionEdge {
+  cursor: String!
+  node: Answer!
+}
+
+type FormQuestionsConnection {
+  edges: [FormQuestionsConnectionEdge]!
+  nodes: [Question]!
+  pageInfo: PageInfo!
+}
+
+type FormQuestionsConnectionEdge {
+  cursor: String!
+  node: Question!
+}
+
+type FormSearchResult {
+  form: Form!
+  highlightedDescription: String!
+  id: ID!
+  rank: Float
+  similarity: Float!
+}
+
+"""
+Une section d'un formulaire. Les sections sont utiles pour séparer les questions en plusieurs parties, dont certaines peuvent être affichées selon des réponses à des questions précédentes
+"""
+type FormSection {
+  """
+  Réponses à cette section
+  """
+  answers(after: String, before: String, first: Int, last: Int): FormSectionAnswersConnection!
+
+  """
+  Description en Markdown de la section
+  """
+  description: String!
+
+  """
+  Description en HTML de la section
+  """
+  descriptionHtml: String!
+
+  """
+  Formulaire auquel appartient la section
+  """
+  form: Form!
+  id: ID!
+
+  """
+  Identifiant local de la section du formulaire
+  """
+  localId: String!
+
+  """
+  Section suivante dans le formulaire, si il y en a une. (Sinon, c'est que c'est la dernière section). Dépend du fait que des sections soit cachées à l'utilisateur (voir `restrictedToGroups`), ou que une répond à une question provoque le passaage à une autre section (voir `goToSection`)
+  """
+  nextSection: FormSection
+
+  """
+  Ordre de la section dans le formulaire
+  """
+  order: Int!
+
+  """
+  Questions dans section
+  """
+  questions: [Question!]!
+
+  """
+  Si non vide, seul·e·s les membres des groupes spécifiés peuvent accéder à cette section.
+  """
+  restrictedToGroups: [Group!]!
+
+  """
+  Titre de la section
+  """
+  title: String!
+}
+
+type FormSectionAnswersConnection {
+  edges: [FormSectionAnswersConnectionEdge]!
+  nodes: [Answer]!
+  pageInfo: PageInfo!
+}
+
+type FormSectionAnswersConnectionEdge {
+  cursor: String!
+  node: Answer!
+}
+
+"""
+Requests to become someone's godchild. Gets deleted once the request has been accepted (or denied). godchild is the requester, godparent is the requested.
+"""
+type GodparentRequest {
+  createdAt: DateTime!
+  godchild: User!
+  godparent: User!
+  id: ID!
+  updatedAt: DateTime!
+}
+
+"""
+A group is a collection of users
+"""
+type Group implements Node & Pictured {
+  address: String!
+
+  """
+  All the ancestors of this group, from the current group to the root.
+  """
+  ancestors: [Group!]!
+  articles: [Article!]!
+  boardMembers: [GroupMember!]!
+
+  """
+  Vrai si l'utilisateur·ice connecté·e peut modifier les informations du groupe
+  """
+  canEditDetails: Boolean!
+  children: [Group!]!
+  coOrganizedEvents: [Event!]!
+  color: String!
+  description: String!
+  email: String!
+  events(after: String, before: String, first: Int, last: Int): GroupEventsConnection!
+  familyChildren: [Group!]!
+
+  """
+  Helper field to get a whole tree without processing all groups\nTo be set to the group's id itself for root groups.
+  """
+  familyId: ID
+
+  """
+  Formulaires associés au groupe
+  """
+  forms: [Form!]!
+  groupId: ID!
+  id: ID!
+  ldapUid: String!
+  links: [Link!]!
+  longDescription: String!
+  longDescriptionHtml: String!
+  members: [GroupMember!]!
+  name: String!
+  ownEvents: [Event!]!
+
+  """
+  Parent group, from which this group inherits its permissions
+  """
+  parent: Group
+  parentId: ID
+  pictureFile: String!
+  pictureFileDark: String!
+
+  """
+  L'URL publique de l'image
+  """
+  pictureURL(
+    """
+    Utiliser l'image en thème sombre
+    """
+    dark: Boolean! = false
+  ): String!
+  president: GroupMember
+
+  """
+  Related clubs
+  """
+  related: [Group!]!
+  roomIsOpen: Boolean!
+
+  """
+  Family root, only created for performance reasons
+  """
+  root: Group
+  secretaries: [GroupMember!]!
+  selfJoinable: Boolean!
+  services: [Service!]!
+  shopItems: [ShopItem!]!
+  studentAssociation: StudentAssociation
+  treasurers: [GroupMember!]!
+  type: GroupType!
+  uid: String!
+  vicePresidents: [GroupMember!]!
+  website: String!
+}
+
+type GroupEventsConnection {
+  edges: [GroupEventsConnectionEdge]!
+  nodes: [Event]!
+  pageInfo: PageInfo!
+}
+
+type GroupEventsConnectionEdge {
+  cursor: String!
+  node: Event!
+}
+
+"""
+The intermediate model between users and groups
+"""
+type GroupMember {
+  canEditArticles: Boolean!
+  canEditMembers: Boolean!
+  canScanEvents: Boolean!
+  createdAt: DateTime!
+  group: Group!
+  groupId: ID!
+  isDeveloper: Boolean!
+  member: User!
+  memberId: ID!
+  president: Boolean!
+  secretary: Boolean!
+  title: String!
+  treasurer: Boolean!
+  vicePresident: Boolean!
+}
+
+type GroupSearchResult {
+  group: Group!
+  highlightedDescription: String!
+  id: ID!
+  rank: Float
+  similarity: Float!
+}
+
+enum GroupType {
+  Association
+  Club
+  Group
+  Integration
+  List
+  StudentAssociationSection
+}
+
+"""
+Results of a health self-check
+"""
+type HealthCheck {
+  database: DatabaseHealthCheck!
+  ldap: LdapHealthCheck!
+  mail: MailHealthCheck!
+  redis: RedisHealthCheck!
+}
+
+"""
+A Gitlab issue
+"""
+type Issue {
+  body: String!
+  bodyHtml: String!
+  comments: [IssueComment!]!
+  deployedIn: String!
+
+  """
+  Expressed from 0 to 1
+  """
+  difficulty: Float
+  duplicatedFrom: Int
+
+  """
+  Expressed from 0 to 1
+  """
+  importance: Float
+  number: Int!
+  state: IssueState!
+
+  """
+  The date at which the issue was submitted
+  """
+  submittedAt: DateTime!
+  title: String!
+  url: String!
+}
+
+"""
+A Gitlab issue comment
+"""
+type IssueComment {
+  """
+  The date at which the comment was added
+  """
+  addedAt: DateTime!
+  authorAvatarUrl: String!
+  authorGitlabUrl: String!
+  authorName: String!
+  body: String!
+  bodyHtml: String!
+}
+
+enum IssueState {
+  Closed
+  Deployed
+  Open
+}
+
+type LdapHealthCheck {
+  """
+  Whether the LDAP internal client is ready
+  """
+  internal: Boolean!
+
+  """
+  Whether the LDAP school client is ready
+  """
+  school: Boolean!
+}
+
+"""
+A single external link
+"""
+type Link implements Node {
+  computedValue: String!
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  value: String!
+}
+
+input LinkInput {
+  name: String!
+  value: String!
+}
+
+"""
+A log entry is a log of an action that happened on the website
+"""
+type LogEntry implements Node {
+  action: String!
+  area: String!
+  happenedAt: DateTime!
+  id: ID!
+  message: String!
+  target: String
+  user: User
+}
+
+enum LogoSourceType {
+  ExternalLink
+  GroupLogo
+  Icon
+  InternalLink
+}
+
+"""
+A Lydia account
+"""
+type LydiaAccount {
+  events: [Event!]!
+  group: Group
+  groupId: ID
+  id: ID!
+  name: String!
+  studentAssociation: StudentAssociation
+  studentAssociationId: ID
+}
+
+type MailHealthCheck {
+  """
+  Whether the SMTP client is ready
+  """
+  smtp: Boolean!
+}
+
+"""
+A school syllabus
+"""
+type Major {
+  id: ID!
+  ldapSchool: School
+  minors: [Minor!]!
+  name: String!
+  schools: [School!]!
+  shortName: String!
+  subjects: [Subject!]!
+  uid: String!
+}
+
+input ManagerOfEventInput {
+  canEdit: Boolean!
+  canEditPermissions: Boolean!
+  canVerifyRegistrations: Boolean!
+  userUid: String!
+}
+
+type Minor implements Node {
+  id: ID!
+  majors: [Major!]!
+  name: String!
+  shortName: String!
+  subjects: [Subject!]!
+  uid: String!
+  users: [User!]!
+  yearTier: Int!
+}
+
+type Mutation {
+  acceptRegistration(email: String!): Boolean!
+
+  """
+  Marks the user as having seen the given version's changelog.
+  """
+  acknowledgeChangelog(version: String! = "1.62.0"): Boolean!
+
+  """
+  Activate a third-party app. Only admins can do this.
+  """
+  activateApp(
+    """
+    The app's ID
+    """
+    id: ID!
+  ): Boolean!
+  addGroupMember(groupUid: String!, title: String!, uid: String!): MutationAddGroupMemberResult!
+
+  """
+  Répondre à une question de type `FileUpload` en uploadant un fichier
+  """
+  answerFileQuestion(
+    """
+    Fichier à uploader
+    """
+    answer: File!
+
+    """
+    ID de la question à laquelle répondre
+    """
+    question: ID!
+  ): AnswerFileUpload!
+  answerFormSection(
+    answers: [AnswerInput!]!
+
+    """
+    ID de la section du formulaire
+    """
+    section: ID!
+  ): MutationAnswerFormSectionResult!
+
+  """
+  Authorize a third-party client to access the user's data.
+  Returns an access code.
+
+  Use the frontend's /authorize endpoint instead of this, as it requires already being logged-in.
+
+  Do a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:
+
+  - `<clientId>`: The client ID of the app. See registerApp to get this.
+  - `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`
+  - `<state>`: A random string generated from personal information used to prevent CSRF attacks.
+
+  Use that code to get an access token with /token:
+
+  Do a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:
+
+  - `grant_type`: `authorization_code`
+  - `code`: The code returned by this endpoint
+  - `client_id`: The client ID of the app
+  - `client_secret`: The client secret of the app
+  - `redirect_uri`: The redirect URI used in this request
+  """
+  authorize(
+    """
+    The client ID of the app. See registerApp to get this.
+    """
+    clientId: String!
+
+    """
+    The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`
+    """
+    redirectUri: String!
+  ): MutationAuthorizeResult!
+  cancelPendingContribution(optionId: ID!): Boolean!
+  cancelRegistration(id: ID!): MutationCancelRegistrationResult!
+  checkIfRegistrationIsPaid(id: ID!): Boolean!
+  claimPromotionCode(code: String!): Boolean!
+  completeRegistration(
+    address: String!
+    apprentice: Boolean!
+    birthday: DateTime
+    cededImageRightsToTVn7: Boolean!
+    firstName: String!
+    graduationYear: Int!
+    lastName: String!
+    majorId: ID
+    password: String!
+    passwordConfirmation: String!
+    phone: String!
+    token: String!
+  ): MutationCompleteRegistrationResult!
+  contribute(optionId: ID!, phone: String!): MutationContributeResult!
+  createBot(
+    """
+    UID de la filière
+    """
+    major: String
+
+    """
+    Nom du compte bot
+    """
+    name: String!
+
+    """
+    Mot de passe du compte bot
+    """
+    password: String!
+
+    """
+    UID du compte bot
+    """
+    uid: String!
+  ): User!
+  createGitlabIssue(description: String!, isBug: Boolean!, title: String!): Int!
+
+  """
+  Créer un pass Google Wallet pour une réservation donnée. Renvoie l'URL a utiliser pour ajouter le pass à Google Wallet.
+  """
+  createGoogleWalletPass(
+    """
+    Code de la réservation
+    """
+    code: String!
+  ): String!
+
+  """
+  Crée une feuille Google Sheets (si elle n'existe pas déjà) qui contiendra les réponses au formulaire (et sera mise à jour automatiquement). Renvoie l'URL de la feuille Google Sheets.
+  """
+  createLinkedGoogleSheet(
+    """
+    L'identifiant du formulaire
+    """
+    form: ID!
+  ): String!
+  createPasswordReset(email: String!): MutationCreatePasswordResetResult!
+
+  """
+  Créer un lien d'inscription rapide
+  """
+  createQuickSignup(
+    """
+    UID de l'école
+    """
+    school: String!
+
+    """
+    Date de validité du lien
+    """
+    validUntil: DateTime!
+  ): QuickSignup!
+
+  """
+  Deactivate a third-party app. Only admins can do this.
+  """
+  deactivateApp(
+    """
+    The app's ID
+    """
+    id: ID!
+  ): Boolean!
+  deleteAnnouncement(id: ID!): Boolean!
+  deleteArticle(id: ID!): Boolean!
+  deleteArticlePicture(id: ID!): Boolean!
+  deleteBarWeek(id: ID!): Boolean!
+  deleteComment(id: ID!): Comment!
+  deleteDocument(id: ID!): Boolean!
+  deleteDocumentFile(documentId: ID!, filename: String!): Boolean!
+  deleteEvent(id: ID!): Boolean!
+  deleteEventManager(eventId: ID!, user: String!): Boolean!
+  deleteEventPicture(id: ID!): Boolean!
+  deleteGodchild(godchildUid: String!, parentUid: String!): Boolean!
+
+  """
+  Deletes a pending godparent request. If accept is true, the request will be accepted (and the godparent of the requester will be changed), otherwise it will be rejected (the godparent of the requester won't be changed)
+  """
+  deleteGodparentRequest(accept: Boolean!, id: ID!): GodparentRequest!
+  deleteGroup(uid: String!): Boolean!
+  deleteGroupMember(groupId: ID!, memberId: ID!): Boolean!
+  deleteGroupPicture(dark: Boolean!, uid: String!): Boolean!
+  deleteItemPicture(groupUid: String!, itemId: String!, pictureId: String!): Boolean!
+  deleteNotificationSubscription(endpoint: String!): Boolean!
+  deleteQuickSignup(code: String!): QuickSignup!
+  deleteReaction(
+    articleId: ID
+    commentId: ID
+    documentId: ID
+    emoji: String!
+    eventId: ID
+  ): Boolean!
+  deleteRegistration(id: ID!): Boolean!
+  deleteSchoolPicture(id: String!): String!
+  deleteShopItem(groupUid: String!, itemId: ID!): MutationDeleteShopItemResult!
+  deleteShopOption(optionIds: [String!]!): Boolean!
+  deleteTicket(id: ID!): Boolean!
+  deleteTicketGroup(id: ID!): Boolean!
+  deleteToken(id: ID!): Boolean!
+  deleteUserPicture(uid: String!): Boolean!
+
+  """
+  Update a third-party app's details
+  """
+  editApp(
+    allowedRedirectUris: [String!]
+    description: String
+
+    """
+    The app's ID
+    """
+    id: ID!
+    name: String
+    ownerGroupUid: String
+    website: String
+  ): ThirdPartyApp!
+  finishPaypalRegistrationPayment(orderId: String!): MutationFinishPaypalRegistrationPaymentResult!
+  kioskReload(
+    """
+    UID de l'AE sur laquelle on veut indiquer que les kiosques concernés doivent être re-chargés
+    """
+    studentAssociation: String!
+  ): Boolean!
+
+  """
+  Logs a user in and returns a session token.
+  """
+  login(clientId: String, email: String!, password: String!): MutationLoginResult!
+
+  """
+  Logs a user out and invalidates the session token.
+  """
+  logout: Boolean!
+
+  """
+  Envoie une copie des réponses de l'utilisateur·ice connecté·e à ce formulaire par email. Renvoie l'adresse mail à laquelle les réponses ont été envoyées.
+  """
+  mailFormAnswers(
+    """
+    ID du formulaire
+    """
+    formId: ID!
+  ): MutationMailFormAnswersResult!
+  mergeDocuments(from: [ID!]!, into: ID!): Document!
+  opposeRegistration(id: ID!): MutationOpposeRegistrationResult!
+
+  """
+  When paying with Paypal, returns the order id for a capture to finish the payment
+  """
+  paidRegistration(
+    beneficiary: String
+    paymentMethod: PaymentMethod
+    phone: String
+    regId: ID!
+  ): MutationPaidRegistrationResult!
+  paidShopPayment(
+    paymentMethod: PaymentMethod
+    phone: String
+    shopPaymentId: ID!
+  ): MutationPaidShopPaymentResult!
+  refuseRegistration(email: String!, reason: String!): Boolean!
+
+  """
+  Register a third-party OAuth2 client. Returns the client secret. The client secret cannot be retrieved at any other time. Use refreshAppSecret to rotate your client secret.
+  """
+  registerApp(
+    """
+    Allowed redirect URIs.
+    """
+    allowedRedirectUris: [String!]!
+
+    """
+    The app's description
+    """
+    description: String!
+
+    """
+    The app's name
+    """
+    name: String!
+
+    """
+    The UID of  the group that made this app
+    """
+    ownerGroupUid: String!
+
+    """
+    URL to the website of the app. Used, amongst other things, to get the icon.
+    """
+    website: String!
+  ): ThirdPartyAppRegistrationResponse!
+
+  """
+  Enregistrer un token OAuth2 Google pour l'utilisateur connecté.
+  """
+  registerGoogleCredential(
+    """
+    Le code d'authorisation
+    """
+    code: String!
+  ): MutationRegisterGoogleCredentialResult!
+  renameSession(id: ID!, name: String!): Boolean!
+  requestEmailChange(email: String!): MutationRequestEmailChangeResult!
+  resetPassword(
+    disconnectAll: Boolean!
+    newPassword: String!
+    oldPassword: String!
+    uid: String!
+  ): MutationResetPasswordResult!
+
+  """
+  Révoque l'accès d'une application au compte utilisateur connecté. Renvoie `true` si l'opération a réussi.
+  """
+  revokeAuthorization(
+    """
+    Identifiant de l'application
+    """
+    clientId: String!
+  ): Boolean!
+
+  """
+  Rotate a third-party app's secret
+  """
+  rotateAppSecret(
+    """
+    The app's ID
+    """
+    id: ID!
+  ): String!
+  selfJoinGroup(groupUid: String!, uid: String!): GroupMember!
+
+  """
+  Envoie une notification à l'utilisateur connecté. Limité à une notification par heure. Si l'utilisateur a désactivé les notifications de type “Autres” pour le groupe responsable du [client OAuth](/oauth) faisant la requête, la notification ne lui sera pas envoyée.
+  """
+  sendNotification(
+    """
+    Corps de la notification.
+    """
+    body: String!
+
+    """
+    Titre de la notification. Sera préfixé par “[Nom de l'application]” quand la mutation est appelée par un [client OAuth](/oauth).
+    """
+    title: String!
+  ): Boolean!
+  setDocumentFileIsSolution(documentId: ID!, filename: String!, isSolution: Boolean!): Boolean!
+
+  """
+  Coche ou décoche la case à cocher à côté des réponses à un formulaire pour un·e utilisateur·ice.
+  """
+  setFormAnswersCheckbox(
+    """
+    Vrai pour cocher la case, faux pour la décocher
+    """
+    checked: Boolean!
+
+    """
+    L'ID du formulaire
+    """
+    form: String!
+
+    """
+    ID de l'utilisateur·ice
+    """
+    userId: ID!
+  ): Form!
+  startRegistration(
+    email: String!
+
+    """
+    Code d'inscription rapide, pour s'inscrire sans mail étudiant et sans validation manuelle. Voir QuickSignupType.
+    """
+    quickSignupCode: String
+  ): MutationStartRegistrationResult!
+  syncUserLdap(uid: String!): Boolean!
+  testNotification(subscriptionEndpoint: String!): Boolean!
+  toggleReaction(
+    articleId: ID
+    commentId: ID
+    documentId: ID
+    emoji: String!
+    eventId: ID
+  ): Boolean!
+  updateArticlePicture(file: File!, id: ID!): String!
+  updateEventPicture(file: File!, id: ID!): String!
+  updateGroupPicture(dark: Boolean!, file: File!, uid: String!): String!
+  updateItemPicture(file: File!, groupUid: String!, itemId: String!): Picture!
+  updateNotificationSettings(
+    enabledChannels: [NotificationChannel!]!
+    uid: String!
+  ): [NotificationChannel!]!
+
+  """
+  Changer si la salle d'un groupe est fermée ou ouvert
+  """
+  updateRoomOpenState(
+    """
+    L'uid du groupe
+    """
+    groupUid: String!
+
+    """
+    Vrai si on veut indiquer que le local est maintenant ouvert
+    """
+    openRoom: Boolean!
+  ): Boolean!
+  updateSchool(
+    address: String
+    aliasMailDomains: [String!]!
+    description: String
+    internalMailDomain: String!
+    name: String!
+    uid: String!
+  ): School!
+  updateSchoolPicture(file: File!, id: String!): String!
+  updateStudentAssociationPicture(file: File!, uid: String!): String!
+  updateSubjectsExamDates: Boolean!
+  updateUser(
+    address: String!
+    apprentice: Boolean!
+    birthday: DateTime
+    cededImageRightsToTVn7: Boolean!
+    contributesWith: [ID!]
+    description: String!
+    email: String!
+    firstName: String!
+
+    """
+    An empty string removes the godparent. Passing null (or undefined) does not update the godparent. An uid sets the godparent to that uid.
+    """
+    godparentUid: String
+    graduationYear: Int
+    lastName: String!
+    links: [LinkInput!]!
+    majorId: ID
+    minorId: ID
+    nickname: String!
+    otherEmails: [String!]!
+    phone: String!
+    uid: String!
+  ): MutationUpdateUserResult!
+  updateUserCandidate(
+    address: String!
+    birthday: DateTime
+    cededImageRightsToTVn7: Boolean!
+    email: String!
+    firstName: String!
+    graduationYear: Int!
+    lastName: String!
+    majorId: ID!
+    phone: String!
+    register: Boolean!
+  ): MutationUpdateUserCandidateResult!
+  updateUserPermissions(canAccessDocuments: Boolean!, uid: String!): User!
+  updateUserPicture(file: File!, uid: String!): String!
+  uploadDocumentFile(documentId: ID!, file: File!, solution: Boolean!): String!
+  upsertAnnouncement(
+    body: String!
+    endsAt: DateTime!
+    id: ID
+    startsAt: DateTime!
+    title: String!
+    warning: Boolean!
+  ): Announcement!
+  upsertArticle(
+    authorId: ID!
+    body: String!
+    eventId: ID
+    groupId: ID!
+    id: ID
+    links: [LinkInput!]!
+    publishedAt: DateTime!
+    title: String!
+    visibility: Visibility!
+  ): MutationUpsertArticleResult!
+  upsertBarWeek(
+    description: String!
+    endsAt: DateTime!
+    groupsUids: [String!]!
+    id: ID
+    startsAt: DateTime!
+  ): MutationUpsertBarWeekResult!
+  upsertComment(body: String!, id: ID, inReplyToId: ID, resourceId: ID): Comment!
+  upsertDocument(
+    description: String!
+    id: ID
+    schoolYear: Int!
+    subjectForApprentices: Boolean!
+    subjectUid: String!
+    subjectYearTier: Int
+    title: String!
+    type: DocumentType!
+  ): MutationUpsertDocumentResult!
+  upsertEvent(
+    """
+    List of user uids
+    """
+    bannedUsers: [String!]!
+
+    """
+    List of group uids
+    """
+    coOrganizers: [String!]!
+    contactMail: String!
+    description: String!
+    endsAt: DateTime!
+    frequency: EventFrequency!
+    groupUid: String!
+    id: String
+
+    """
+    Include l'évènement dans l'affichage du mode kiosque
+    """
+    includeInKiosk: Boolean
+    links: [LinkInput!]!
+    location: String!
+    lydiaAccountId: String
+    managers: [ManagerOfEventInput!]!
+    recurringUntil: DateTime
+    startsAt: DateTime!
+    ticketGroups: [TicketGroupInput!]!
+    tickets: [TicketInput!]!
+    title: String!
+    visibility: Visibility!
+  ): MutationUpsertEventResult!
+
+  """
+  Crée ou met à jour un formulaire. À la création, une section de formulaire vide sans titre est automatiquement créée. C'est pratique pour les formulaires sans section.
+  """
+  upsertForm(input: MutationUpsertFormInput!): Form!
+
+  """
+  Crée ou met à jour une section de formulaire.
+  """
+  upsertFormSection(input: MutationUpsertFormSectionInput!): FormSection!
+  upsertGodparentRequest(
+    godchildUid: String!
+    godparentUid: String!
+    id: ID
+  ): MutationUpsertGodparentRequestResult!
+  upsertGroup(
+    address: String!
+    color: String!
+    description: String!
+    email: String
+    links: [LinkInput!]!
+    longDescription: String!
+    name: String!
+    parentUid: String
+    related: [String!]!
+    schoolUid: String
+    selfJoinable: Boolean!
+    studentAssociationUid: String
+    type: GroupType!
+    uid: String
+    website: String!
+  ): MutationUpsertGroupResult!
+  upsertGroupMember(
+    canEditArticles: Boolean!
+    canEditMembers: Boolean!
+    canScanEvents: Boolean!
+    groupId: ID!
+    isDeveloper: Boolean!
+    memberId: ID!
+    president: Boolean!
+    secretary: Boolean!
+    title: String!
+    treasurer: Boolean!
+    vicePresident: Boolean!
+  ): GroupMember!
+  upsertLydiaAccount(
+    groupUid: String!
+    id: ID
+    name: String!
+    privateToken: String!
+    vendorToken: String!
+  ): LydiaAccount!
+  upsertManagersOfEvent(eventId: ID!, managers: [ManagerOfEventInput!]!): [EventManager!]!
+  upsertNotificationSubscription(
+    endpoint: String!
+    expiresAt: DateTime
+    keys: NotificationSubscriptionKeysInput!
+    name: String!
+  ): NotificationSubscription!
+
+  """
+  Crée ou met à jour une question.
+  """
+  upsertQuestion(input: MutationUpsertQuestionInput!): Question!
+  upsertReaction(
+    articleId: ID
+    commentId: ID
+    documentId: ID
+    emoji: String!
+    eventId: ID
+    id: ID
+  ): Int!
+  upsertRegistration(
+    authorEmail: String
+    beneficiary: String
+    id: ID
+    paid: Boolean!
+    paymentMethod: PaymentMethod
+    ticketId: ID!
+  ): MutationUpsertRegistrationResult!
+  upsertService(
+    description: String!
+    groupUid: String
+    id: ID
+    importance: Int = 0
+    logo: String!
+    logoSourceType: LogoSourceType!
+    name: String!
+    schoolUid: String
+    studentAssociationUid: String
+    url: String!
+  ): MutationUpsertServiceResult!
+  upsertShopItem(
+    description: String!
+    endsAt: DateTime
+    groupUid: String!
+    id: ID
+    lydiaAccounId: String
+    max: Int!
+    name: String!
+    paymentMethods: [PaymentMethod!]!
+    price: Float!
+    startsAt: DateTime
+    stock: Int!
+    visibility: Visibility!
+  ): MutationUpsertShopItemResult!
+  upsertShopOptions(itemOptions: [ShopItemOptionInput!]!, shopItemId: String!): Boolean!
+  upsertShopPayment(
+    answers: [String!]!
+    id: ID
+    paymentMethod: String
+    phone: String
+    quantity: Int!
+    shopItemId: String!
+    userUid: String!
+  ): MutationUpsertShopPaymentResult!
+  upsertTicketGroup(
+    capacity: Int!
+    eventId: ID!
+    id: ID
+    name: String!
+    tickets: [ID!]!
+  ): TicketGroup!
+  usePasswordReset(newPassword: String!, token: String!): MutationUsePasswordResetResult!
+  validateEmail(token: String!): MutationValidateEmailResult!
+  verifyRegistration(
+    eventUid: String!
+    groupUid: String!
+
+    """
+    Identifiant de la place ou code de réservation
+    """
+    id: ID!
+  ): MutationVerifyRegistrationResult!
+}
+
+union MutationAddGroupMemberResult = Error | MutationAddGroupMemberSuccess
+
+type MutationAddGroupMemberSuccess {
+  data: GroupMember!
+}
+
+union MutationAnswerFormSectionResult = Error | MutationAnswerFormSectionSuccess
+
+type MutationAnswerFormSectionSuccess {
+  data: [Answer!]!
+}
+
+union MutationAuthorizeResult = Error | MutationAuthorizeSuccess | OAuth2Error
+
+type MutationAuthorizeSuccess {
+  data: String!
+}
+
+union MutationCancelRegistrationResult = Error | MutationCancelRegistrationSuccess
+
+type MutationCancelRegistrationSuccess {
+  data: Boolean!
+}
+
+union MutationCompleteRegistrationResult = Error | MutationCompleteRegistrationSuccess | ZodError
+
+type MutationCompleteRegistrationSuccess {
+  data: Boolean!
+}
+
+union MutationContributeResult = Error | MutationContributeSuccess
+
+type MutationContributeSuccess {
+  data: Boolean!
+}
+
+union MutationCreatePasswordResetResult = Error | MutationCreatePasswordResetSuccess
+
+type MutationCreatePasswordResetSuccess {
+  data: Boolean!
+}
+
+union MutationDeleteShopItemResult = Error | MutationDeleteShopItemSuccess
+
+type MutationDeleteShopItemSuccess {
+  data: Boolean!
+}
+
+union MutationFinishPaypalRegistrationPaymentResult =
+  | Error
+  | MutationFinishPaypalRegistrationPaymentSuccess
+
+type MutationFinishPaypalRegistrationPaymentSuccess {
+  data: Boolean!
+}
+
+union MutationLoginResult = Error | MutationLoginSuccess
+
+type MutationLoginSuccess {
+  data: Credential!
+}
+
+union MutationMailFormAnswersResult = Error | MutationMailFormAnswersSuccess
+
+type MutationMailFormAnswersSuccess {
+  data: String!
+}
+
+union MutationOpposeRegistrationResult = Error | MutationOpposeRegistrationSuccess
+
+type MutationOpposeRegistrationSuccess {
+  data: Boolean!
+}
+
+union MutationPaidRegistrationResult = Error | MutationPaidRegistrationSuccess
+
+type MutationPaidRegistrationSuccess {
+  data: String!
+}
+
+union MutationPaidShopPaymentResult = Error | MutationPaidShopPaymentSuccess
+
+type MutationPaidShopPaymentSuccess {
+  data: ShopPayment!
+}
+
+union MutationRegisterGoogleCredentialResult = Error | MutationRegisterGoogleCredentialSuccess
+
+type MutationRegisterGoogleCredentialSuccess {
+  data: Boolean!
+}
+
+union MutationRequestEmailChangeResult = Error | MutationRequestEmailChangeSuccess
+
+type MutationRequestEmailChangeSuccess {
+  data: Boolean!
+}
+
+union MutationResetPasswordResult = Error | MutationResetPasswordSuccess
+
+type MutationResetPasswordSuccess {
+  data: Boolean!
+}
+
+union MutationStartRegistrationResult = Error | MutationStartRegistrationSuccess | ZodError
+
+type MutationStartRegistrationSuccess {
+  data: Boolean!
+}
+
+union MutationUpdateUserCandidateResult = Error | MutationUpdateUserCandidateSuccess | ZodError
+
+type MutationUpdateUserCandidateSuccess {
+  data: Boolean!
+}
+
+union MutationUpdateUserResult = Error | MutationUpdateUserSuccess
+
+type MutationUpdateUserSuccess {
+  data: User!
+}
+
+union MutationUpsertArticleResult = Error | MutationUpsertArticleSuccess
+
+type MutationUpsertArticleSuccess {
+  data: Article!
+}
+
+union MutationUpsertBarWeekResult = Error | MutationUpsertBarWeekSuccess
+
+type MutationUpsertBarWeekSuccess {
+  data: BarWeek!
+}
+
+union MutationUpsertDocumentResult = Error | MutationUpsertDocumentSuccess
+
+type MutationUpsertDocumentSuccess {
+  data: Document!
+}
+
+union MutationUpsertEventResult = Error | MutationUpsertEventSuccess
+
+type MutationUpsertEventSuccess {
+  data: Event!
+}
+
+input MutationUpsertFormInput {
+  closesAt: DateTime
+  description: String! = ""
+
+  """
+  Identifiant de l'événement à associer au formulaire
+  """
+  eventId: ID
+
+  """
+  UID du groupe auquel le formulaire est associé.
+  """
+  group: String
+
+  """
+  Identifiant du formulaire à mettre à jour. Si non fourni, un nouveau formulaire sera créé.
+  """
+  id: ID
+  opensAt: DateTime
+  title: String!
+  visibility: Visibility! = Unlisted
+}
+
+input MutationUpsertFormSectionInput {
+  description: String! = ""
+
+  """
+  Identifiant du formulaire auquel associer la section. Il n'es pas possible de changer le formulaire auquel une section est associée, si id est fourni, ce paramètre est ignoré. L'ID peut être local
+  """
+  formId: String!
+
+  """
+  Identifiant de la section à mettre à jour. Si non fourni, une nouvelle section sera créée.
+  """
+  id: ID
+
+  """
+  Position de la section dans le formulaire. Si non spécifié, la section est ajoutée à la fin du formulaire
+  """
+  order: Int
+  title: String!
+}
+
+union MutationUpsertGodparentRequestResult = Error | MutationUpsertGodparentRequestSuccess
+
+type MutationUpsertGodparentRequestSuccess {
+  data: GodparentRequest!
+}
+
+union MutationUpsertGroupResult = Error | MutationUpsertGroupSuccess
+
+type MutationUpsertGroupSuccess {
+  data: Group!
+}
+
+input MutationUpsertQuestionInput {
+  """
+  Indique si la question doit avoir une option "Autre"
+  """
+  allowOptionOther: Boolean! = false
+
+  """
+  Types de fichiers autorisés pour les questions de type `FileUpload`
+  """
+  allowedFiletypes: [String!]
+
+  """
+  Indique si les réponses à la question sont anonymes
+  """
+  anonymous: Boolean!
+
+  """
+  Valeur par défaut de la question. Voir `AnswerInput.answer` pour le format.
+  """
+  default: [String!]! = []
+  description: String! = ""
+
+  """
+  Identifiant du formulaire auquel associer la question. Il n'es pas possible de changer le formulaire auquel une question est associée, si id est fourni, ce paramètre est ignoré.
+  """
+  formId: ID
+
+  """
+  Identifiant de la question à mettre à jour. Si non fourni, une nouvelle question sera créée.
+  """
+  id: ID
+
+  """
+  Indique si la question est obligatoire
+  """
+  mandatory: Boolean!
+  options: [QuestionOptionInput!]
+
+  """
+  Position de la question dans la section. Si non spécifié, rajoute la question à la fin de la section.
+  """
+  order: Int
+  scale: QuestionScaleInput
+
+  """
+  Identifiant de la section de formulaire à laquelle associer la question. Si non fourni, la question est rajoutée à une section à titre vide, qui est créée au besoin. Pratique pour les formulaires plus simples sans section.
+  """
+  sectionId: ID
+  title: String!
+  type: QuestionKind!
+}
+
+union MutationUpsertRegistrationResult = Error | MutationUpsertRegistrationSuccess
+
+type MutationUpsertRegistrationSuccess {
+  data: Registration!
+}
+
+union MutationUpsertServiceResult = Error | MutationUpsertServiceSuccess
+
+type MutationUpsertServiceSuccess {
+  data: Service!
+}
+
+union MutationUpsertShopItemResult = Error | MutationUpsertShopItemSuccess
+
+type MutationUpsertShopItemSuccess {
+  data: ShopItem!
+}
+
+union MutationUpsertShopPaymentResult = Error | MutationUpsertShopPaymentSuccess
+
+type MutationUpsertShopPaymentSuccess {
+  data: ShopPayment!
+}
+
+union MutationUsePasswordResetResult = Error | MutationUsePasswordResetSuccess
+
+type MutationUsePasswordResetSuccess {
+  data: Boolean!
+}
+
+union MutationValidateEmailResult = Error | MutationValidateEmailSuccess
+
+type MutationValidateEmailSuccess {
+  data: Boolean!
+}
+
+union MutationVerifyRegistrationResult = Error | MutationVerifyRegistrationSuccess
+
+type MutationVerifyRegistrationSuccess {
+  data: RegistrationVerificationResult!
+}
+
+interface Node {
+  id: ID!
+}
+
+"""
+An error raised when a resource does not exist.
+"""
+type NotFoundError implements ErrorInterface {
+  message: String!
+}
+
+"""
+A notification is a push notification that was sent to a user
+"""
+type Notification implements Node {
+  actions: [Link!]!
+  body: String!
+  channel: NotificationChannel!
+  createdAt: DateTime!
+  goto: String!
+  group: Group
+  groupId: ID
+  id: ID!
+  imageFile: String!
+  subscription: NotificationSubscription!
+  subscriptionId: ID!
+  timestamp: DateTime
+  title: String!
+  updatedAt: DateTime!
+  vibrate: [Int!]!
+}
+
+enum NotificationChannel {
+  Articles
+  Comments
+  GodparentRequests
+  GroupBoard
+  Other
+  Permissions
+  Shotguns
+}
+
+"""
+A NotificationSubscription stores a user's subscription to push notifications on a user agent
+"""
+type NotificationSubscription {
+  createdAt: DateTime!
+  endpoint: String!
+  expiresAt: DateTime
+  id: ID!
+  name: String!
+  owner: User!
+  ownerId: ID!
+  updatedAt: DateTime!
+}
+
+input NotificationSubscriptionKeysInput {
+  auth: String!
+  p256dh: String!
+}
+
+type OAuth2Error {
+  code: OAuth2ErrorCode!
+  message: String!
+}
+
+"""
+OAuth2 error codes, see RFC 6749 § 4.1.2.1
+"""
+enum OAuth2ErrorCode {
+  access_denied
+  invalid_request
+  invalid_scope
+  server_error
+  temporarily_unavailable
+  unauthorized_client
+  unsupported_response_type
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+enum PaymentMethod {
+  Card
+  Cash
+  Check
+  Lydia
+  Other
+  PayPal
+  Transfer
+}
+
+type Picture {
+  id: ID!
+  path: String!
+  position: Int!
+}
+
+"""
+Une ressource qui possède une image associée
+"""
+interface Pictured {
+  """
+  Le nom du fichier de l'image
+  """
+  pictureFile: String!
+
+  """
+  Le nom du fichier de l'image, en thème sombre
+  """
+  pictureFileDark: String!
+
+  """
+  L'URL publique de l'image
+  """
+  pictureURL(
+    """
+    Utiliser l'image en thème sombre
+    """
+    dark: Boolean! = false
+  ): String!
+}
+
+type ProfitsBreakdown {
+  byPaymentMethod: ProfitsBreakdownByPaymentMethod!
+  byTicket: [ProfitsBreakdownByTicket!]!
+  total: Float!
+}
+
+type ProfitsBreakdownByPaymentMethod {
+  Card: Float!
+  Cash: Float!
+  Check: Float!
+  Lydia: Float!
+  Other: Float!
+  PayPal: Float!
+  Transfer: Float!
+}
+
+type ProfitsBreakdownByTicket {
+  amount: Float!
+  id: ID!
+}
+
+enum PromotionType {
+  SIMPPS
+}
+
+type QRCode {
+  path: String!
+  viewbox: String!
+}
+
+type Query {
+  """
+  Get all OAuth2 clients. Only admins can do this.
+  """
+  allApps: [ThirdPartyApp!]!
+
+  """
+  Récupère tous les formulaires. Réservé aux admins.
+  """
+  allForms(after: String, before: String, first: Int, last: Int): QueryAllFormsConnection!
+  allUsers(after: String, before: String, first: Int, last: Int): QueryAllUsersConnection!
+  announcement(id: ID!): Announcement!
+  announcements(after: String, before: String, first: Int, last: Int): QueryAnnouncementsConnection!
+  announcementsNow: [Announcement!]!
+  article(groupUid: String!, uid: String!): Article!
+  barWeek(uid: String!): BarWeek!
+  barWeekNow(now: DateTime!): BarWeek!
+  barWeeks: [BarWeek!]!
+  birthdays(activeOnly: Boolean, now: DateTime, width: Int): [User!]!
+
+  """
+  Retourne des informations sur le build actuel de l'API
+  """
+  buildInfo: BuildInfo!
+  changelog(
+    """
+    The version to request a changelog for. Defaults to the current version (1.62.0).
+    """
+    version: String
+  ): ChangelogRelease!
+  codeContributors: QueryCodeContributorsResult!
+
+  """
+  A changelog for multiple versions.
+  Be careful, this range is (from, to]. I.e. **the first version is excluded, and the last is included**.
+  This is way more useful for querying a range of versions for a changelog, but not the usual way ranges are defined.
+  """
+  combinedChangelog(
+    """
+    The version to start from, **exclusive**. Leave empty to start from the latest version the user has seen
+    """
+    from: String
+    sort: SortDirection! = Ascending
+
+    """
+    The version to end at, **inclusive**. Leave empty to end at the current version (1.62.0).
+    """
+    to: String! = "1.62.0"
+  ): QueryCombinedChangelogResult!
+  contributionOptions: [ContributionOption!]!
+  document(
+    documentUid: String!
+    subjectForApprentices: Boolean!
+    subjectUid: String!
+    subjectYearTier: Int!
+  ): Document!
+  documents(after: String, before: String, first: Int, last: Int): QueryDocumentsConnection!
+  documentsOfSubject(
+    after: String
+    before: String
+    first: Int
+    forApprentices: Boolean!
+    last: Int
+    subjectUid: String!
+    yearTier: Int!
+  ): QueryDocumentsOfSubjectConnection!
+  event(groupUid: String!, uid: String!): Event!
+  eventManager(eventId: ID!, user: String!): EventManager!
+  events(
+    after: String
+    before: String
+    first: Int
+    future: Boolean
+
+    """
+    N'include seulement les évènements qui veulent être inclus dans l'affichage kiosque
+    """
+    kiosk: Boolean
+    last: Int
+    noLinkedArticles: Boolean
+    past: Boolean
+    pastRecurring: Boolean
+    upcomingShotguns: Boolean
+  ): QueryEventsConnection!
+  eventsInWeek(today: DateTime!): [Event!]!
+  eventsOfGroup(
+    after: String
+    before: String
+    first: Int
+    groupUid: String!
+    last: Int
+  ): QueryEventsOfGroupConnection!
+  existsInSchoolLdap(email: String!): Boolean!
+
+  """
+  Récupère un formulaire. On peut utiliser une subscription pour avoir la mise à jour en temps réel des réponses au formulaire.
+  """
+  form(
+    """
+    Identifiant local (sans le préfixe `form:`) du formulaire
+    """
+    localId: String!
+  ): Form
+
+  """
+  Récupère les formulaires visibles par l'utilisateur·ice connecté·e.
+  """
+  forms(after: String, before: String, first: Int, last: Int): QueryFormsConnection!
+  godparentRequest(id: ID!): GodparentRequest!
+  godparentRequests: [GodparentRequest!]!
+  group(uid: String!): Group!
+  groupMembersCsv(groupUid: String!): QueryGroupMembersCsvResult!
+  groups(types: [GroupType!]): [Group!]!
+  healthcheck: HealthCheck!
+
+  """
+  Gets the homepage articles, customized if the user is logged in.
+  """
+  homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
+  issue(number: Int!): Issue!
+  issuesByUser: [Issue!]!
+  itemsOfGroup(
+    after: String
+    before: String
+    first: Int
+    groupId: String!
+    last: Int
+  ): QueryItemsOfGroupConnection!
+  kioskReload: Boolean!
+  logs(after: String, before: String, first: Int, last: Int): QueryLogsConnection!
+  lydiaAccount(id: ID!): LydiaAccount!
+  lydiaAccounts: [LydiaAccount!]!
+  lydiaAccountsOfGroup(uid: String!): [LydiaAccount!]!
+  major(uid: String!): Major!
+  majors: [Major!]!
+  me: User!
+  minor(id: ID!): Minor!
+  minors(after: String, before: String, first: Int, last: Int): QueryMinorsConnection!
+  minorsOfMajor(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    uid: String!
+  ): QueryMinorsOfMajorConnection!
+  myApps: [ThirdPartyApp!]!
+  notification(id: ID!): Notification!
+  notificationSubscription(endpoint: String!): NotificationSubscription!
+  notificationSubscriptions: [NotificationSubscription!]!
+  notifications(
+    after: String
+    before: String
+    channels: [NotificationChannel!] = []
+    first: Int
+    groupUids: [String!] = []
+    last: Int
+    subscriptionEndpoint: ID
+  ): QueryNotificationsConnection!
+
+  """
+  Returns how many people will be notified if an article of the given visibility and group is created.
+  """
+  notificationsSendCountForArticle(groupUid: String!, visibility: Visibility!): Int!
+  orders(groupUid: String): [ShopPayment!]!
+  quickSignups(after: String, before: String, first: Int, last: Int): QueryQuickSignupsConnection!
+  reaction(id: ID!): Reaction!
+  reactions(after: String, before: String, first: Int, last: Int): QueryReactionsConnection!
+  registration(id: ID!): QueryRegistrationResult!
+  registrationOfUser(beneficiary: String, eventUid: String!): Registration!
+
+  """
+  Returns an SVG path of the QR Code for the given registration
+  """
+  registrationQRCode(id: ID!): QRCode!
+  registrationsCsv(eventUid: String!, groupUid: String!): QueryRegistrationsCsvResult!
+  registrationsOfEvent(
+    after: String
+    before: String
+    eventUid: String!
+    first: Int
+    groupUid: String!
+    last: Int
+  ): QueryRegistrationsOfEventConnection!
+  registrationsOfUser(
+    after: String
+    before: String
+    first: Int
+    forUserOnly: Boolean
+    last: Int
+    userUid: String!
+  ): QueryRegistrationsOfUserConnection!
+  registrationsOfUserForEvent(
+    eventUid: String!
+    groupUid: String!
+    userUid: String!
+  ): QueryRegistrationsOfUserForEventResult!
+  school(uid: String!): School!
+  schoolGroups: [SchoolGroup!]!
+  schools: [School!]!
+  searchArticles(groupUid: String, q: String!): [ArticleSearchResultType!]!
+  searchDocuments(
+    forApprentices: Boolean!
+    majorUid: String!
+    q: String!
+    yearTier: Int!
+  ): [DocumentSearchResult!]!
+  searchEvents(groupUid: String, q: String!): [EvenSearchResult!]!
+
+  """
+  Recherche des formulaires
+  """
+  searchForms(
+    """
+    La recherche
+    """
+    q: String!
+    similarityCutoff: Float
+  ): [FormSearchResult!]!
+  searchGroups(q: String!, similarityCutoff: Float): [GroupSearchResult!]!
+  searchRegistrations(
+    eventUid: String!
+    groupUid: String!
+    q: String!
+  ): [RegistrationSearchResult!]!
+  searchUsers(q: String!, similarityCutoff: Float): [UserSearchResult!]!
+  service(id: ID!): Service!
+  services(groupUid: String, schoolUid: String, studentAssociationUid: String): [Service!]!
+  shopItem(itemUid: String!): ShopItem!
+  shopPayments(shopItemId: ID!): [ShopPayment!]!
+  studentAssociation(uid: String!): StudentAssociation!
+  studentAssociations(canContributeOnly: Boolean): [StudentAssociation!]!
+  subject(forApprentices: Boolean!, uid: String!, yearTier: Int!): Subject!
+  subjects: [Subject!]!
+  subjectsOfMajor(forApprentices: Boolean, uid: String!, yearTier: Int): [Subject!]!
+  subjectsOfMinor(uid: String!, yearTier: Int!): [Subject!]!
+  thirdPartyApp(
+    """
+    The third party app's client_id. The 'app:' id prefix is optional.
+    """
+    id: ID!
+  ): ThirdPartyApp!
+  ticket(id: ID!): Ticket!
+  ticketByUid(eventUid: String!, groupUid: String!, uid: String!): Ticket!
+  ticketGroup(id: ID!): TicketGroup!
+  ticketsOfEvent(eventUid: String!, groupUid: String!): [Ticket!]!
+  upcomingChangelog: QueryUpcomingChangelogResult!
+  user(id: ID, uid: String): User!
+  userByEmail(email: String!): User!
+  userCandidate(token: String!): UserCandidate!
+  userCandidateByEmail(email: String!): UserCandidate!
+  userCandidates(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): QueryUserCandidatesConnection!
+  userServices: [Service!]!
+}
+
+type QueryAllFormsConnection {
+  edges: [QueryAllFormsConnectionEdge]!
+  nodes: [Form]!
+  pageInfo: PageInfo!
+}
+
+type QueryAllFormsConnectionEdge {
+  cursor: String!
+  node: Form!
+}
+
+type QueryAllUsersConnection {
+  edges: [QueryAllUsersConnectionEdge]!
+  nodes: [User]!
+  pageInfo: PageInfo!
+}
+
+type QueryAllUsersConnectionEdge {
+  cursor: String!
+  node: User!
+}
+
+type QueryAnnouncementsConnection {
+  edges: [QueryAnnouncementsConnectionEdge]!
+  nodes: [Announcement]!
+  pageInfo: PageInfo!
+}
+
+type QueryAnnouncementsConnectionEdge {
+  cursor: String!
+  node: Announcement!
+}
+
+union QueryCodeContributorsResult = Error | QueryCodeContributorsSuccess
+
+type QueryCodeContributorsSuccess {
+  data: [User!]!
+}
+
+union QueryCombinedChangelogResult = Error | QueryCombinedChangelogSuccess
+
+type QueryCombinedChangelogSuccess {
+  data: [ChangelogRelease!]!
+}
+
+type QueryDocumentsConnection {
+  edges: [QueryDocumentsConnectionEdge]!
+  nodes: [Document]!
+  pageInfo: PageInfo!
+}
+
+type QueryDocumentsConnectionEdge {
+  cursor: String!
+  node: Document!
+}
+
+type QueryDocumentsOfSubjectConnection {
+  edges: [QueryDocumentsOfSubjectConnectionEdge]!
+  nodes: [Document]!
+  pageInfo: PageInfo!
+}
+
+type QueryDocumentsOfSubjectConnectionEdge {
+  cursor: String!
+  node: Document!
+}
+
+type QueryEventsConnection {
+  edges: [QueryEventsConnectionEdge]!
+  nodes: [Event]!
+  pageInfo: PageInfo!
+}
+
+type QueryEventsConnectionEdge {
+  cursor: String!
+  node: Event!
+}
+
+type QueryEventsOfGroupConnection {
+  edges: [QueryEventsOfGroupConnectionEdge]!
+  nodes: [Event]!
+  pageInfo: PageInfo!
+}
+
+type QueryEventsOfGroupConnectionEdge {
+  cursor: String!
+  node: Event!
+}
+
+type QueryFormsConnection {
+  edges: [QueryFormsConnectionEdge]!
+  nodes: [Form]!
+  pageInfo: PageInfo!
+}
+
+type QueryFormsConnectionEdge {
+  cursor: String!
+  node: Form!
+}
+
+union QueryGroupMembersCsvResult = Error | QueryGroupMembersCsvSuccess
+
+type QueryGroupMembersCsvSuccess {
+  data: String!
+}
+
+type QueryHomepageConnection {
+  edges: [QueryHomepageConnectionEdge]!
+  nodes: [Article]!
+  pageInfo: PageInfo!
+}
+
+type QueryHomepageConnectionEdge {
+  cursor: String!
+  node: Article!
+}
+
+type QueryItemsOfGroupConnection {
+  edges: [QueryItemsOfGroupConnectionEdge]!
+  nodes: [ShopItem]!
+  pageInfo: PageInfo!
+}
+
+type QueryItemsOfGroupConnectionEdge {
+  cursor: String!
+  node: ShopItem!
+}
+
+type QueryLogsConnection {
+  edges: [QueryLogsConnectionEdge]!
+  nodes: [LogEntry]!
+  pageInfo: PageInfo!
+}
+
+type QueryLogsConnectionEdge {
+  cursor: String!
+  node: LogEntry!
+}
+
+type QueryMinorsConnection {
+  edges: [QueryMinorsConnectionEdge]!
+  nodes: [Minor]!
+  pageInfo: PageInfo!
+}
+
+type QueryMinorsConnectionEdge {
+  cursor: String!
+  node: Minor!
+}
+
+type QueryMinorsOfMajorConnection {
+  edges: [QueryMinorsOfMajorConnectionEdge]!
+  nodes: [Minor]!
+  pageInfo: PageInfo!
+}
+
+type QueryMinorsOfMajorConnectionEdge {
+  cursor: String!
+  node: Minor!
+}
+
+type QueryNotificationsConnection {
+  edges: [QueryNotificationsConnectionEdge]!
+  nodes: [Notification]!
+  pageInfo: PageInfo!
+}
+
+type QueryNotificationsConnectionEdge {
+  cursor: String!
+  node: Notification!
+}
+
+type QueryQuickSignupsConnection {
+  edges: [QueryQuickSignupsConnectionEdge]!
+  nodes: [QuickSignup]!
+  pageInfo: PageInfo!
+}
+
+type QueryQuickSignupsConnectionEdge {
+  cursor: String!
+  node: QuickSignup!
+}
+
+type QueryReactionsConnection {
+  edges: [QueryReactionsConnectionEdge]!
+  nodes: [Reaction]!
+  pageInfo: PageInfo!
+}
+
+type QueryReactionsConnectionEdge {
+  cursor: String!
+  node: Reaction!
+}
+
+union QueryRegistrationResult = Error | QueryRegistrationSuccess
+
+type QueryRegistrationSuccess {
+  data: Registration!
+}
+
+union QueryRegistrationsCsvResult = Error | QueryRegistrationsCsvSuccess
+
+type QueryRegistrationsCsvSuccess {
+  data: String!
+}
+
+type QueryRegistrationsOfEventConnection {
+  edges: [QueryRegistrationsOfEventConnectionEdge]!
+  nodes: [Registration]!
+  pageInfo: PageInfo!
+}
+
+type QueryRegistrationsOfEventConnectionEdge {
+  cursor: String!
+  node: Registration!
+}
+
+type QueryRegistrationsOfUserConnection {
+  edges: [QueryRegistrationsOfUserConnectionEdge]!
+  nodes: [Registration]!
+  pageInfo: PageInfo!
+}
+
+type QueryRegistrationsOfUserConnectionEdge {
+  cursor: String!
+  node: Registration!
+}
+
+union QueryRegistrationsOfUserForEventResult = Error | QueryRegistrationsOfUserForEventSuccess
+
+type QueryRegistrationsOfUserForEventSuccess {
+  data: [Registration!]!
+}
+
+union QueryUpcomingChangelogResult = Error | QueryUpcomingChangelogSuccess
+
+type QueryUpcomingChangelogSuccess {
+  data: ChangelogRelease!
+}
+
+type QueryUserCandidatesConnection {
+  edges: [QueryUserCandidatesConnectionEdge]!
+  nodes: [UserCandidate]!
+  pageInfo: PageInfo!
+}
+
+type QueryUserCandidatesConnectionEdge {
+  cursor: String!
+  node: UserCandidate!
+}
+
+"""
+Une question dans un formulaire
+"""
+interface Question {
+  """
+  Indique si la réponse à la question est anonyme. Si oui, les personnes pouvant voir les réponses ne pouront jamais savoir la réponse d'une personne à la question
+  """
+  anonymous: Boolean!
+  answers(
+    after: String
+    before: String
+
+    """
+    Récupérer uniquement les réponses d'un utilisateur, par son uid.
+    """
+    by: String
+    first: Int
+    last: Int
+  ): QuestionAnswersConnection!
+
+  """
+  La réponse par défaut à cette question. Même si le résultat est bien de type Answer, le champ `id` est vide
+  """
+  defaultAnswer: Answer
+
+  """
+  Description en Markdown de la question
+  """
+  description: String!
+
+  """
+  Description en HTML de la question
+  """
+  descriptionHtml: String!
+
+  """
+  Préfixe d'identifiant: question:
+  """
+  id: ID!
+
+  """
+  Indique si la question est obligatoire
+  """
+  mandatory: Boolean!
+
+  """
+  La réponse de l'utilisateur·ice connecté·e à cette question
+  """
+  myAnswer: Answer
+
+  """
+  Ordre de la question dans la section
+  """
+  order: Int!
+
+  """
+  Section du formulaire dans laquelle est la question
+  """
+  section: FormSection!
+
+  """
+  Titre de la question
+  """
+  title: String!
+
+  """
+  Nombre total de réponses à cette question
+  """
+  totalAnswers: Int!
+
+  """
+  Type de la question
+  """
+  type: QuestionKind!
+}
+
+type QuestionAnswersConnection {
+  edges: [QuestionAnswersConnectionEdge]!
+  nodes: [Answer]!
+  pageInfo: PageInfo!
+}
+
+type QuestionAnswersConnectionEdge {
+  cursor: String!
+  node: Answer!
+}
+
+"""
+Question de type `FileUpload`
+"""
+type QuestionFileUpload implements Question {
+  """
+  Types de fichiers autorisés pour les questions de type `File`. Null si la question n'est pas de type `File`.
+  """
+  allowedFileTypes: [String!]
+
+  """
+  Indique si la réponse à la question est anonyme. Si oui, les personnes pouvant voir les réponses ne pouront jamais savoir la réponse d'une personne à la question
+  """
+  anonymous: Boolean!
+  answers(
+    after: String
+    before: String
+
+    """
+    Récupérer uniquement les réponses d'un utilisateur, par son uid.
+    """
+    by: String
+    first: Int
+    last: Int
+  ): QuestionAnswersConnection!
+
+  """
+  La réponse par défaut à cette question. Même si le résultat est bien de type Answer, le champ `id` est vide
+  """
+  defaultAnswer: Answer
+
+  """
+  Description en Markdown de la question
+  """
+  description: String!
+
+  """
+  Description en HTML de la question
+  """
+  descriptionHtml: String!
+
+  """
+  Préfixe d'identifiant: question:
+  """
+  id: ID!
+
+  """
+  Indique si la question est obligatoire
+  """
+  mandatory: Boolean!
+
+  """
+  La réponse de l'utilisateur·ice connecté·e à cette question
+  """
+  myAnswer: Answer
+
+  """
+  Ordre de la question dans la section
+  """
+  order: Int!
+
+  """
+  Section du formulaire dans laquelle est la question
+  """
+  section: FormSection!
+
+  """
+  Titre de la question
+  """
+  title: String!
+
+  """
+  Nombre total de réponses à cette question
+  """
+  totalAnswers: Int!
+
+  """
+  Type de la question
+  """
+  type: QuestionKind!
+}
+
+"""
+Le type de question
+"""
+enum QuestionKind {
+  """
+  La réponse est une date, sans heure associée.
+  """
+  Date
+
+  """
+  La réponse est un fichier mis en ligne par l'utilisateur·ice.
+  """
+  FileUpload
+
+  """
+  La réponse est un texte long.
+  """
+  LongText
+
+  """
+  La réponse est un nombre, potentiellement à virgule.
+  """
+  Number
+
+  """
+  La réponse est un nombre entier entre deux bornes
+  """
+  Scale
+
+  """
+  La réponse est une ou plusieurs options parmi une liste.
+  """
+  SelectMultiple
+
+  """
+  La réponse est une des options parmi une liste.
+  """
+  SelectOne
+
+  """
+  La réponse est un texte court.
+  """
+  Text
+
+  """
+  La réponse est un temps  (heures, minute et seconde), sans date associée.
+  """
+  Time
+}
+
+"""
+Choix pour les questions de type `SelectOne` ou `SelectMultiple`
+"""
+input QuestionOptionInput {
+  """
+  ID de la question vers laquelle sauter si ce choix est sélectionné
+  """
+  jump: ID
+
+  """
+  Choix
+  """
+  value: String!
+}
+
+"""
+Question de type `Text`, `Number`, `Date`, `Time` ou `LongText`
+"""
+type QuestionScalar implements Question {
+  """
+  Indique si la réponse à la question est anonyme. Si oui, les personnes pouvant voir les réponses ne pouront jamais savoir la réponse d'une personne à la question
+  """
+  anonymous: Boolean!
+  answers(
+    after: String
+    before: String
+
+    """
+    Récupérer uniquement les réponses d'un utilisateur, par son uid.
+    """
+    by: String
+    first: Int
+    last: Int
+  ): QuestionAnswersConnection!
+
+  """
+  La réponse par défaut à cette question. Même si le résultat est bien de type Answer, le champ `id` est vide
+  """
+  defaultAnswer: Answer
+
+  """
+  Description en Markdown de la question
+  """
+  description: String!
+
+  """
+  Description en HTML de la question
+  """
+  descriptionHtml: String!
+
+  """
+  Préfixe d'identifiant: question:
+  """
+  id: ID!
+
+  """
+  Indique si la question est obligatoire
+  """
+  mandatory: Boolean!
+
+  """
+  La réponse de l'utilisateur·ice connecté·e à cette question
+  """
+  myAnswer: Answer
+
+  """
+  Ordre de la question dans la section
+  """
+  order: Int!
+
+  """
+  Section du formulaire dans laquelle est la question
+  """
+  section: FormSection!
+
+  """
+  Titre de la question
+  """
+  title: String!
+
+  """
+  Nombre total de réponses à cette question
+  """
+  totalAnswers: Int!
+
+  """
+  Type de la question
+  """
+  type: QuestionKind!
+}
+
+"""
+Question de type `Scale`
+"""
+type QuestionScale implements Question {
+  """
+  Indique si la réponse à la question est anonyme. Si oui, les personnes pouvant voir les réponses ne pouront jamais savoir la réponse d'une personne à la question
+  """
+  anonymous: Boolean!
+
+  """
+  Compte le nombre total de réponses pour chaque option. Retourne un `StringToIntMapping` où les clés sont les options et les valeurs sont le nombre de réponses pour l'option.
+  """
+  answerCounts: [StringToIntMapping!]!
+  answers(
+    after: String
+    before: String
+
+    """
+    Récupérer uniquement les réponses d'un utilisateur, par son uid.
+    """
+    by: String
+    first: Int
+    last: Int
+  ): QuestionAnswersConnection!
+
+  """
+  La réponse par défaut à cette question. Même si le résultat est bien de type Answer, le champ `id` est vide
+  """
+  defaultAnswer: Answer
+
+  """
+  Description en Markdown de la question
+  """
+  description: String!
+
+  """
+  Description en HTML de la question
+  """
+  descriptionHtml: String!
+
+  """
+  Préfixe d'identifiant: question:
+  """
+  id: ID!
+
+  """
+  Liste des labels pour les valeurs possibles
+  """
+  labels: [String!]!
+
+  """
+  Indique si la question est obligatoire
+  """
+  mandatory: Boolean!
+
+  """
+  Valeur maximale
+  """
+  maximum: Int!
+
+  """
+  Label de la valeur maximale
+  """
+  maximumLabel: String!
+
+  """
+  Valeur minimale
+  """
+  minimum: Int!
+
+  """
+  Label de la valeur minimale
+  """
+  minimumLabel: String!
+
+  """
+  La réponse de l'utilisateur·ice connecté·e à cette question
+  """
+  myAnswer: Answer
+
+  """
+  Liste des valeurs possibles
+  """
+  options: [Int!]!
+
+  """
+  Ordre de la question dans la section
+  """
+  order: Int!
+
+  """
+  Section du formulaire dans laquelle est la question
+  """
+  section: FormSection!
+
+  """
+  Titre de la question
+  """
+  title: String!
+
+  """
+  Nombre total de réponses à cette question
+  """
+  totalAnswers: Int!
+
+  """
+  Type de la question
+  """
+  type: QuestionKind!
+}
+
+"""
+Options supplémentaires pour les questions de type `Scale`
+"""
+input QuestionScaleInput {
+  """
+  Valeur maximale
+  """
+  maximum: Int!
+
+  """
+  Label de la valeur maximale
+  """
+  maximumLabel: String
+
+  """
+  Valeur minimale
+  """
+  minimum: Int!
+
+  """
+  Label de la valeur minimale
+  """
+  minimumLabel: String
+}
+
+"""
+Question de type `SelectMultiple`
+"""
+type QuestionSelectMultiple implements Question {
+  """
+  Indique si la question de type `SelectOne` ou `SelectMultiple` permet une option "Autre", que l'utilisateur·ice peut remplir sans contrainte.
+  """
+  allowOptionsOther: Boolean!
+
+  """
+  Indique si la réponse à la question est anonyme. Si oui, les personnes pouvant voir les réponses ne pouront jamais savoir la réponse d'une personne à la question
+  """
+  anonymous: Boolean!
+
+  """
+  Compte le nombre total de réponses pour chaque option. Retourne un `StringToIntMapping` où les clés sont les options et les valeurs sont le nombre de réponses pour l'option.
+  """
+  answerCounts: [StringToIntMapping!]!
+  answers(
+    after: String
+    before: String
+
+    """
+    Récupérer uniquement les réponses d'un utilisateur, par son uid.
+    """
+    by: String
+    first: Int
+    last: Int
+  ): QuestionAnswersConnection!
+
+  """
+  La réponse par défaut à cette question. Même si le résultat est bien de type Answer, le champ `id` est vide
+  """
+  defaultAnswer: Answer
+
+  """
+  Description en Markdown de la question
+  """
+  description: String!
+
+  """
+  Description en HTML de la question
+  """
+  descriptionHtml: String!
+
+  """
+  Préfixe d'identifiant: question:
+  """
+  id: ID!
+
+  """
+  Indique si la question est obligatoire
+  """
+  mandatory: Boolean!
+
+  """
+  La réponse de l'utilisateur·ice connecté·e à cette question
+  """
+  myAnswer: Answer
+
+  """
+  Uniquement pertinent pour les questions de type `SelectOne` ou `SelectMultiple`
+  """
+  options: [String!]!
+
+  """
+  Ordre de la question dans la section
+  """
+  order: Int!
+
+  """
+  Section du formulaire dans laquelle est la question
+  """
+  section: FormSection!
+
+  """
+  Titre de la question
+  """
+  title: String!
+
+  """
+  Nombre total de réponses à cette question
+  """
+  totalAnswers: Int!
+
+  """
+  Type de la question
+  """
+  type: QuestionKind!
+}
+
+"""
+Question de type `SelectOne`
+"""
+type QuestionSelectOne implements Question {
+  """
+  Indique si la question de type `SelectOne` ou `SelectMultiple` permet une option "Autre", que l'utilisateur·ice peut remplir sans contrainte.
+  """
+  allowOptionsOther: Boolean!
+
+  """
+  Indique si la réponse à la question est anonyme. Si oui, les personnes pouvant voir les réponses ne pouront jamais savoir la réponse d'une personne à la question
+  """
+  anonymous: Boolean!
+
+  """
+  Compte le nombre total de réponses pour chaque option. Retourne un `StringToIntMapping` où les clés sont les options et les valeurs sont le nombre de réponses pour l'option.
+  """
+  answerCounts: [StringToIntMapping!]!
+  answers(
+    after: String
+    before: String
+
+    """
+    Récupérer uniquement les réponses d'un utilisateur, par son uid.
+    """
+    by: String
+    first: Int
+    last: Int
+  ): QuestionAnswersConnection!
+
+  """
+  La réponse par défaut à cette question. Même si le résultat est bien de type Answer, le champ `id` est vide
+  """
+  defaultAnswer: Answer
+
+  """
+  Description en Markdown de la question
+  """
+  description: String!
+
+  """
+  Description en HTML de la question
+  """
+  descriptionHtml: String!
+
+  """
+  Dans le même ordre que `options`, contient le groupe si l'option porte exactement le nom du groupe, ou null si aucun groupe ne correspond. Pratique pour les questions où l'on demande à choisir entre plusieurs groupes (comme les votes de listes par ex.)
+  """
+  groups: [Group]!
+
+  """
+  Préfixe d'identifiant: question:
+  """
+  id: ID!
+
+  """
+  Correspondances entre les réponses à cette question et les sections du formulaire à sauter vers. Dans le même ordre que `options`. Quand un élément est null, la section suivante n'est pas modifiée
+  """
+  jumps: [FormSection]!
+
+  """
+  Indique si la question est obligatoire
+  """
+  mandatory: Boolean!
+
+  """
+  La réponse de l'utilisateur·ice connecté·e à cette question
+  """
+  myAnswer: Answer
+
+  """
+  Uniquement pertinent pour les questions de type `SelectOne` ou `SelectMultiple`
+  """
+  options: [String!]!
+
+  """
+  Ordre de la question dans la section
+  """
+  order: Int!
+
+  """
+  Section du formulaire dans laquelle est la question
+  """
+  section: FormSection!
+
+  """
+  Titre de la question
+  """
+  title: String!
+
+  """
+  Nombre total de réponses à cette question
+  """
+  totalAnswers: Int!
+
+  """
+  Type de la question
+  """
+  type: QuestionKind!
+}
+
+"""
+Lien d'inscription rapide, qui permet de créer un compte étudiant sans adresse mail étudiante et sans validation manuelle
+"""
+type QuickSignup implements Node {
+  code: String!
+  createdAt: DateTime!
+
+  """
+  Vrai si le lien est expiré
+  """
+  expired: Boolean!
+  id: ID!
+  school: School!
+  schoolId: ID!
+  updatedAt: DateTime!
+  validUntil: DateTime!
+}
+
+type Reaction implements Node {
+  author: User
+  authorId: ID
+  comment: Comment
+  commentId: ID
+  createdAt: DateTime!
+  document: Document
+  documentId: ID
+  emoji: String!
+  id: ID!
+  updatedAt: DateTime!
+}
+
+type RedisHealthCheck {
+  """
+  Whether the Redis publisher client is ready
+  """
+  publish: Boolean!
+
+  """
+  Whether the Redis subscriber client is ready
+  """
+  subscribe: Boolean!
+}
+
+"""
+A reservation is a user's registration for a ticket
+"""
+type Registration implements Node {
+  author: User
+  authorEmail: String!
+  authorId: ID
+  authorIsBeneficiary: Boolean!
+  beneficiary: String!
+  beneficiaryUser: User
+  cancelled: Boolean!
+  cancelledAt: DateTime
+  cancelledBy: User
+  code: String!
+  createdAt: DateTime!
+  id: ID!
+  opposed: Boolean!
+  opposedAt: DateTime
+  opposedBy: User
+  paid: Boolean!
+  paymentMethod: PaymentMethod
+  ticket: Ticket!
+  ticketId: ID!
+  updatedAt: DateTime!
+  verified: Boolean!
+  verifiedAt: DateTime
+  verifiedBy: User
+}
+
+type RegistrationSearchResult {
+  highlightedBeneficiary: String!
+  id: ID!
+  rank: Float
+  registration: Registration!
+  similarity: Float!
+}
+
+type RegistrationVerificationResult {
+  registration: Registration
+  state: RegistrationVerificationState!
+}
+
+enum RegistrationVerificationState {
+  AlreadyVerified
+  NotFound
+  NotPaid
+  Ok
+  Opposed
+  OtherEvent
+}
+
+type RegistrationsCounts {
+  cancelled: Float!
+  paid: Float!
+  total: Float!
+  unpaidLydia: Float!
+  verified: Float!
+}
+
+"""
+A change in the changelog
+"""
+type ReleaseChange {
+  """
+  The authors of the change
+  """
+  authors: [String!]!
+  html: String!
+
+  """
+  Issues linked to the change
+  """
+  issues: [Int!]!
+
+  """
+  Merge requests linked to the change
+  """
+  mergeRequests: [Int!]!
+
+  """
+  People who created the issues (gave the idea, reported the bug, etc.)
+  """
+  reporters: [String!]!
+
+  """
+  The text of the change
+  """
+  text: String!
+}
+
+"""
+Changes in the changelog, grouped by category
+"""
+type ReleaseChangesMaps {
+  """
+  New features
+  """
+  added: [ReleaseChange!]!
+
+  """
+  What was fixed
+  """
+  fixed: [ReleaseChange!]!
+
+  """
+  What was improved
+  """
+  improved: [ReleaseChange!]!
+
+  """
+  Miscalleanous changes
+  """
+  other: [ReleaseChange!]!
+
+  """
+  Security changes
+  """
+  security: [ReleaseChange!]!
+
+  """
+  Technical changes
+  """
+  technical: [ReleaseChange!]!
+}
+
+type School implements Pictured {
+  address: String!
+  aliasMailDomains: [String!]!
+  color: String!
+  description: String!
+  id: ID!
+  internalMailDomain: String!
+  name: String!
+  pictureFile: String!
+
+  """
+  Le nom du fichier de l'image, en thème sombre
+  """
+  pictureFileDark: String!
+
+  """
+  L'URL publique de l'image
+  """
+  pictureURL(
+    """
+    Utiliser l'image en thème sombre
+    """
+    dark: Boolean! = false
+  ): String!
+  services: [Service!]!
+  studentAssociations: [StudentAssociation!]!
+  uid: String!
+}
+
+type SchoolGroup {
+  majors: [Major!]!
+  names: [String!]!
+}
+
+input SchoolInput {
+  color: String!
+  id: ID
+  name: String!
+}
+
+"""
+A service
+"""
+type Service {
+  description: String!
+  group: Group
+  id: ID!
+  importance: Int!
+  logo: String!
+  logoSourceType: LogoSourceType!
+  name: String!
+  school: School
+  studentAssociation: StudentAssociation
+  url: String!
+}
+
+type ShopItem {
+  createdAt: DateTime!
+  description: String!
+  descriptionHtml: String!
+  endsAt: DateTime
+  group: Group!
+  id: ID!
+  itemOptions: [ShopItemOption!]!
+  lydiaAccount: LydiaAccount
+  max: Int!
+  name: String!
+  paymentMethods: [PaymentMethod!]!
+  pictures: [Picture!]!
+  price: Float!
+  shopPayments: [ShopPayment!]!
+  startsAt: DateTime
+  stock: Int!
+  stockLeft: Int!
+  uid: String!
+  updatedAt: DateTime!
+  visibility: Visibility!
+}
+
+type ShopItemAnswer {
+  id: ID!
+  options: [String!]!
+  shopPayment: ShopPayment!
+  shopPaymentId: String!
+}
+
+type ShopItemOption {
+  id: ID!
+  name: String!
+  options: [String!]!
+  otherToggle: Boolean!
+  required: Boolean!
+  shopItem: ShopItem!
+}
+
+input ShopItemOptionInput {
+  id: String!
+  name: String!
+  options: [String!]!
+  otherToggle: Boolean!
+  required: Boolean!
+}
+
+type ShopPayment {
+  createdAt: DateTime!
+  id: ID!
+  paid: Boolean!
+  paymentMethod: PaymentMethod!
+  quantity: Int!
+  shopItem: ShopItem!
+  shopItemAnswer: ShopItemAnswer!
+  totalPrice: Float!
+  updatedAt: DateTime!
+  user: User!
+}
+
+enum SortDirection {
+  Ascending
+  Descending
+}
+
+"""
+Associe une clé à une valeur de type nombre entier
+"""
+type StringToIntMapping {
+  """
+  Clé de la paire
+  """
+  key: String!
+
+  """
+  Valeur de la paire
+  """
+  value: Int!
+}
+
+"""
+There is one student association per school
+"""
+type StudentAssociation implements Pictured {
+  contributionOptions: [ContributionOption!]!
+  createdAt: DateTime!
+  description: String!
+  groups: [Group!]!
+  id: ID!
+  links: [Link!]!
+  name: String!
+  pictureFile: String!
+
+  """
+  Le nom du fichier de l'image, en thème sombre
+  """
+  pictureFileDark: String!
+
+  """
+  L'URL publique de l'image
+  """
+  pictureURL(
+    """
+    Utiliser l'image en thème sombre
+    """
+    dark: Boolean! = false
+  ): String!
+  school: School!
+  schoolId: ID!
+  uid: String
+  updatedAt: DateTime!
+}
+
+type Subject {
+  apogeeCode: String
+  documents(after: String, before: String, first: Int, last: Int): SubjectDocumentsConnection!
+  documentsCount: Int!
+  emoji: String!
+  forApprentices: Boolean!
+  id: ID!
+  links: [Link!]!
+  majors: [Major!]!
+  minors: [Minor!]!
+  name: String!
+  nextExamAt: DateTime
+  semester: Int
+  shortName: String!
+  uid: String!
+  unit: TeachingUnit
+  unitId: ID
+  yearTier: Int
+}
+
+type SubjectDocumentsConnection {
+  edges: [SubjectDocumentsConnectionEdge]!
+  nodes: [Document]!
+  pageInfo: PageInfo!
+}
+
+type SubjectDocumentsConnectionEdge {
+  cursor: String!
+  node: Document!
+}
+
+type Subscription {
+  announcementsNow: [Announcement!]!
+  article(groupUid: String!, uid: String!): Article!
+  event(groupUid: String!, uid: String!): Event!
+
+  """
+  Récupère un formulaire. On peut utiliser une subscription pour avoir la mise à jour en temps réel des réponses au formulaire.
+  """
+  form(
+    """
+    Identifiant local (sans le préfixe `form:`) du formulaire
+    """
+    localId: String!
+  ): Form
+
+  """
+  Gets the homepage articles, customized if the user is logged in.
+  """
+  homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
+  kioskReload: Boolean!
+  registration(id: ID!): SubscriptionRegistrationResult!
+  thirdPartyApp(
+    """
+    The third party app's client_id. The 'app:' id prefix is optional.
+    """
+    id: ID!
+  ): ThirdPartyApp!
+}
+
+union SubscriptionRegistrationResult = Error | SubscriptionRegistrationSuccess
+
+type SubscriptionRegistrationSuccess {
+  data: Registration!
+}
+
+type TeachingUnit {
+  apogeeCode: String
+  id: ID!
+  name: String!
+  shortName: String!
+  subjects: [Subject!]!
+}
+
+"""
+A third-party OAuth2 client
+"""
+type ThirdPartyApp {
+  active: Boolean!
+  allowedRedirectUris: [String!]!
+  apiUsage(after: String, before: String, first: Int, last: Int): ThirdPartyAppApiUsageConnection!
+  clientId: String!
+  createdAt: DateTime!
+  description: String!
+  faviconUrl: String!
+  id: ID!
+
+  """
+  Logs de connexion de l'application tierce, utile pour débugger des problèmes. Mise à jour en temps réel disponible via une subscription sur la query `thirdPartyApp`.
+  """
+  logs(after: String, before: String, first: Int, last: Int): ThirdPartyAppLogsConnection!
+  name: String!
+  owner: Group!
+  rateLimitHits(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ThirdPartyAppRateLimitHitsConnection!
+  secretLength: Int!
+  updatedAt: DateTime
+  users(after: String, before: String, first: Int, last: Int): ThirdPartyAppUsersConnection!
+  usersCount: Int!
+  website: String!
+}
+
+type ThirdPartyAppApiUsageConnection {
+  edges: [ThirdPartyAppApiUsageConnectionEdge]!
+  nodes: [ApiUsage]!
+  pageInfo: PageInfo!
+}
+
+type ThirdPartyAppApiUsageConnectionEdge {
+  cursor: String!
+  node: ApiUsage!
+}
+
+type ThirdPartyAppLogsConnection {
+  edges: [ThirdPartyAppLogsConnectionEdge]!
+  nodes: [LogEntry]!
+  pageInfo: PageInfo!
+}
+
+type ThirdPartyAppLogsConnectionEdge {
+  cursor: String!
+  node: LogEntry!
+}
+
+type ThirdPartyAppRateLimitHitsConnection {
+  edges: [ThirdPartyAppRateLimitHitsConnectionEdge]!
+  nodes: [ApiRateLimitHits]!
+  pageInfo: PageInfo!
+}
+
+type ThirdPartyAppRateLimitHitsConnectionEdge {
+  cursor: String!
+  node: ApiRateLimitHits!
+}
+
+type ThirdPartyAppRegistrationResponse {
+  client_id: String!
+  client_secret: String!
+}
+
+type ThirdPartyAppUsersConnection {
+  edges: [ThirdPartyAppUsersConnectionEdge]!
+  nodes: [User]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ThirdPartyAppUsersConnectionEdge {
+  cursor: String!
+  node: User!
+}
+
+"""
+A ticket is a way to register for an event. May include a price and conditions.
+"""
+type Ticket implements Node {
+  allowedPaymentMethods: [PaymentMethod!]!
+  autojoinGroups: [Group!]!
+  basePrice: Float!
+  capacity: Int!
+  closesAt: DateTime
+  description: String!
+  descriptionHtml: String!
+  event: Event!
+  eventId: ID!
+
+  """
+  Full name, including the ticket group's name if any
+  """
+  fullName: String!
+  godsonLimit: Int!
+  group: TicketGroup
+  id: ID!
+  links: [Link!]!
+  name: String!
+  onlyManagersCanProvide: Boolean!
+  openToAlumni: Boolean
+  openToApprentices: Boolean
+  openToContributors: Boolean
+  openToExternal: Boolean
+  openToGroups: [Group!]!
+  openToMajors: [Major!]!
+  openToPromotions: [Int!]!
+  openToSchools: [School!]!
+  opensAt: DateTime
+  placesLeft: Int!
+  price: Float!
+  registrations: [Registration!]!
+  remainingGodsons: Int!
+  ticketGroupId: ID
+  uid: String!
+}
+
+"""
+A ticket group allows for conditions on multiple tickets, such as an upper limit on the sum of registrations in the sub-tickets
+"""
+type TicketGroup implements Node {
+  capacity: Int!
+  event: Event!
+  eventId: ID!
+  id: ID!
+  name: String!
+  tickets: [Ticket!]!
+}
+
+input TicketGroupInput {
+  capacity: Int!
+  id: ID
+  name: String!
+}
+
+input TicketInput {
+  allowedPaymentMethods: [PaymentMethod!]!
+  autojoinGroups: [String!]!
+  capacity: Int!
+  closesAt: DateTime
+  description: String!
+  godsonLimit: Int!
+  groupName: String
+  id: ID
+  links: [LinkInput!]!
+  name: String!
+  onlyManagersCanProvide: Boolean!
+  openToAlumni: Boolean
+  openToApprentices: Boolean
+  openToContributors: Boolean
+  openToExternal: Boolean
+  openToGroups: [String!]!
+  openToMajors: [String!]!
+  openToPromotions: [Int!]!
+  openToSchools: [String!]!
+  opensAt: DateTime
+  price: Float!
+}
+
+"""
+Users are the people who use the app
+"""
+type User implements Node & Pictured {
+  address: String!
+  admin: Boolean!
+
+  """
+  Vrai si cette personne est administratrice de l'association étudiante donnée
+  """
+  adminOf(
+    """
+    UID de l'association étudiante
+    """
+    studentAssociation: String!
+  ): Boolean!
+  allowedApps: [ThirdPartyApp!]!
+
+  """
+  Formulaires complètement répondus par l'utilisateur
+  """
+  answeredForms(after: String, before: String, first: Int, last: Int): UserAnsweredFormsConnection!
+  apprentice: Boolean!
+  articles(after: String, before: String, first: Int, last: Int): UserArticlesConnection!
+
+  """
+  Applications tierces autorisées à accéder à ce compte utilisateur
+  """
+  authorizedApps: [ThirdPartyApp!]!
+  birthday: DateTime
+
+  """
+  Les affiliations de l'utilisateur à des groupes dont iel est au bureau
+  """
+  boardMemberships: [GroupMember!]!
+
+  """
+  Vrai si cet utilisateur est un bot (i.e. ne représente pas une personne physique)
+  """
+  bot: Boolean!
+  canAccessDocuments: Boolean!
+  canBeEdited: Boolean!
+
+  """
+  Vrai si cette personne peut éditer le groupe donné
+  """
+  canEditGroup(
+    """
+    UID du groupe
+    """
+    uid: String!
+  ): Boolean!
+
+  """
+  Vrai si cette personne peut éditer des groupes
+  """
+  canEditGroups: Boolean!
+  cededImageRightsToTVn7: Boolean!
+  contributesTo: [StudentAssociation!]!
+  contributesWith: [ContributionOption!]!
+  createdAt: DateTime!
+  credentials: [Credential!]!
+  description: String!
+  descriptionHtml: String!
+  email: String!
+  emailChangeRequests: [EmailChange!]!
+  enabledNotificationChannels: [NotificationChannel!]!
+  external: Boolean!
+  familyTree: FamilyTree!
+  firstName: String!
+  fullName: String!
+  godchildren: [User!]!
+  godparent: User
+  graduationYear: Int!
+  groups: [GroupMember!]!
+  id: ID!
+  incomingGodparentRequests: [GodparentRequest!]!
+  lastName: String!
+  latestVersionSeenInChangelog: String!
+  links: [Link!]!
+  major: Major
+  majorId: ID
+  managedEvents: [EventManager!]!
+  minor: Minor
+  nickname: String!
+  otherEmails: [String!]!
+  outgoingGodparentRequests: [GodparentRequest!]!
+
+  """
+  Formulaires partiellement répondus par l'utilisateur
+  """
+  partiallyAnsweredForms(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): UserPartiallyAnsweredFormsConnection!
+  pendingContributions: [ContributionOption!]!
+  phone: String!
+  pictureFile: String!
+
+  """
+  Le nom du fichier de l'image, en thème sombre
+  """
+  pictureFileDark: String!
+
+  """
+  L'URL publique de l'image
+  """
+  pictureURL(
+    """
+    Utiliser l'image en thème sombre
+    """
+    dark: Boolean! = false
+  ): String!
+  schoolUid: String
+
+  """
+  Vrai si cette personne est administratrice d'au moins une association étudiante
+  """
+  studentAssociationAdmin: Boolean!
+  uid: String!
+  yearTier: Int!
+}
+
+type UserAnsweredFormsConnection {
+  edges: [UserAnsweredFormsConnectionEdge]!
+  nodes: [Form]!
+  pageInfo: PageInfo!
+}
+
+type UserAnsweredFormsConnectionEdge {
+  cursor: String!
+  node: Form!
+}
+
+type UserArticlesConnection {
+  edges: [UserArticlesConnectionEdge]!
+  nodes: [Article]!
+  pageInfo: PageInfo!
+}
+
+type UserArticlesConnectionEdge {
+  cursor: String!
+  node: Article!
+}
+
+"""
+UserCandidates are users in the registration process
+"""
+type UserCandidate implements Node {
+  address: String!
+  apprentice: Boolean!
+  birthday: DateTime
+  cededImageRightsToTVn7: Boolean!
+  createdAt: DateTime
+  email: String!
+  emailValidated: Boolean!
+  firstName: String!
+  fullName: String!
+  graduationYear: Int
+  id: ID!
+  lastName: String!
+  major: Major
+  majorId: ID
+  phone: String!
+  schoolEmail: String
+  schoolServer: String
+  schoolUid: String
+
+  """
+  Vrai si l'utilisateur a été créé via un lien d'inscription rapide.
+  """
+  usingQuickSignup: Boolean!
+}
+
+type UserPartiallyAnsweredFormsConnection {
+  edges: [UserPartiallyAnsweredFormsConnectionEdge]!
+  nodes: [Form]!
+  pageInfo: PageInfo!
+}
+
+type UserPartiallyAnsweredFormsConnectionEdge {
+  cursor: String!
+  node: Form!
+}
+
+type UserSearchResult {
+  highlightedDescription: String!
+  id: ID!
+  rank: Float
+  similarity: Float!
+  user: User!
+}
+
+enum Visibility {
+  GroupRestricted
+  Private
+  Public
+  SchoolRestricted
+  Unlisted
+}
+
+"""
+A validation error, as a list of field errors.
+"""
+type ZodError implements ErrorInterface {
+  fieldErrors: [ZodFieldError!]!
+  message: String!
+}
+
+"""
+A validation issue for a field.
+"""
+type ZodFieldError {
+  message: String!
+  path: [String!]!
+}

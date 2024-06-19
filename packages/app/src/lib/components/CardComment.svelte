@@ -31,7 +31,7 @@
   export let createdAt: Date;
   export let updatedAt: Date | undefined | null = undefined;
   export let body: string;
-  export let replyingTo = { body: '', inReplyToId: '' };
+  export let replyingTo = { body: '', inReplyToId: null as string | null };
   export let replies: Array<{
     id: string;
     bodyHtml: string;

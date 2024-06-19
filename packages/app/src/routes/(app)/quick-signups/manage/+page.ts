@@ -14,7 +14,7 @@ export async function load({ fetch, parent, url }) {
             code: true,
             validUntil: true,
             expired: true,
-            school: { uid: true, name: true, pictureURL: true, color: true },
+            school: { uid: true, name: true, pictureURL: [{ dark: false }, true], color: true },
           },
         },
       ],
