@@ -43,7 +43,7 @@ export async function load({ fetch, url }) {
             startsAt: true,
             endsAt: true,
             location: true,
-            pictureURL: true,
+            pictureURL: [{ dark: false }, true],
             group: {
               id: true,
               name: true,

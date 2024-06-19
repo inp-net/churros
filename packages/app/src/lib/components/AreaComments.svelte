@@ -55,7 +55,7 @@
   }
   async function removeComment(id: string) {
     await $zeus.mutate({
-      deleteComment: [{ id }, true],
+      deleteComment: [{ id }, { id: true }],
     });
     window.location.reload();
   }

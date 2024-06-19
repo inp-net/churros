@@ -7,6 +7,7 @@ export * from './mutation.delete-article-picture.js';
 export * from './mutation.delete-article.js';
 export * from './mutation.update-article-picture.js';
 export * from './mutation.upsert-article.js';
+export * from './post.comments.js';
 export * from './query.article.js';
 export * from './query.homepage.js';
 export * from './query.search-articles.js';

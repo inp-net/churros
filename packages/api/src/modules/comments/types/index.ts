@@ -3,3 +3,5 @@
  */
 
 export * from './comment.js';
+export * from './commentable.js';
+export * from './comments-connection.js';

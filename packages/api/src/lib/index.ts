@@ -9,6 +9,7 @@ export * from './context.js';
 export * from './csv.js';
 export * from './date.js';
 export * from './env.js';
+export * from './error.js';
 export * from './errors.js';
 export * from './global-id.js';
 export * from './google-wallet.js';

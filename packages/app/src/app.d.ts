@@ -13,6 +13,10 @@ declare namespace App {
     mobile: boolean;
     token?: string;
   }
+
+  interface Session {
+    token?: string;
+  }
 }
 
 declare module 'simple-svelte-autocomplete';

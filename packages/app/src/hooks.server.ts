@@ -1,3 +1,4 @@
+import { setSession } from '$houdini';
 import { aled, sessionUserQuery } from '$lib/session';
 import { chain } from '$lib/zeus';
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit';
@@ -21,6 +22,10 @@ export const handle: Handle = async ({ event, resolve }) => {
   event.locals.mobile = Boolean(
     event.request.headers.get('User-Agent')?.toLowerCase().includes('mobile'),
   );
+
+  setSession(event, {
+    token: event.locals.token,
+  });
 
   const response = await resolve(event);
 

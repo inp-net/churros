@@ -75,8 +75,8 @@
 <style>
   fieldset {
     display: flex;
-    flex-wrap: wrap;
     flex-grow: 1;
+    flex-wrap: wrap;
     padding: 0;
     margin: 0;
     border: none;
@@ -86,11 +86,11 @@
     display: block;
     width: 100%;
     padding: 0.5rem 1rem;
-    border: none;
     color: var(--text);
-    background: var(--bg);
     appearance: none;
     cursor: pointer;
+    background: var(--bg);
+    border: none;
     border-radius: var(--radius-block);
   }
 
@@ -104,9 +104,9 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    border-radius: var(--radius-block);
     color: var(--text);
     background: var(--bg);
     border: var(--border-block) solid var(--border);
+    border-radius: var(--radius-block);
   }
 </style>

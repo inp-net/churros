@@ -1,7 +1,8 @@
 import { builder } from '#lib';
-import { DateTimeScalar } from '#modules/global';
+import { DateTimeScalar, PicturedInterface } from '#modules/global';
 
 export const StudentAssociationType = builder.prismaObject('StudentAssociation', {
+  interfaces: [PicturedInterface],
   fields: (t) => ({
     id: t.exposeID('id'),
     uid: t.exposeString('uid', { nullable: true }),

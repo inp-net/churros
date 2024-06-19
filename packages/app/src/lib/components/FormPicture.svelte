@@ -8,6 +8,7 @@
   import InputField from './InputField.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import { toasts } from '$lib/toasts';
+  import { graphql } from '$houdini';
 
   export const LEGENDS = {
     Group: 'Logo du groupe',
@@ -16,6 +17,13 @@
     Event: 'Photo de l’événement',
     School: 'Logo de l’école',
   };
+
+  graphql(`
+    fragment FormPicture on Pictured {
+      pictureFile
+      pictureFileDark
+    }
+  `);
 
   export let rectangular = false;
   export let objectName: 'Group' | 'User' | 'Article' | 'Event' | 'School';

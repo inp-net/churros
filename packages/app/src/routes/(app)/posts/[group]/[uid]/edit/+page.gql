@@ -1,0 +1,7 @@
+query PagePostEdit($group: String!, $uid: String!) {
+  article(uid: $uid, groupUid: $group) {
+    id, uid
+    ...FormPicture @mask_disable
+    ...FormArticle
+  }
+}

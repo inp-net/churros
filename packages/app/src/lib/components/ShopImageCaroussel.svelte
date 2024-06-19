@@ -96,6 +96,7 @@
   .arrow.left {
     left: 0.5em;
   }
+
   .no-image {
     display: flex;
     align-items: center;

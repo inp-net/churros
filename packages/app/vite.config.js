@@ -1,4 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite';
+import houdini from 'houdini/vite';
 import { fileURLToPath } from 'node:url';
 import icons from 'unplugin-icons/vite';
 import { defineConfig, mergeConfig } from 'vite';
@@ -26,7 +27,7 @@ export const commonConfig = defineConfig({
 export default mergeConfig(
   commonConfig,
   defineConfig({
-    plugins: [sveltekit()],
+    plugins: [houdini(), sveltekit()],
     ssr: {
       noExternal: process.env.NODE_ENV === 'development' ? [] : ['@carbon/charts'],
     },

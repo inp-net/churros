@@ -1,14 +1,17 @@
 <script lang="ts">
-  import type { PageData } from './$types';
-  import PostDetails from '$lib/components/FormArticle.svelte';
+  import type { PageData } from './$houdini';
+  import FormArticle from '$lib/components/FormArticle.houdini.svelte';
   import FormPicture from '$lib/components/FormPicture.svelte';
 
   export let data: PageData;
+  $: ({ PagePostEdit } = data);
 </script>
 
 <div class="content">
-  <FormPicture rectangular objectName="Article" bind:object={data.article} />
-  <PostDetails bind:data />
+  {#if $PagePostEdit.data}
+    <FormPicture rectangular objectName="Article" object={$PagePostEdit.data.article} />
+    <FormArticle article={$PagePostEdit.data.article} />
+  {/if}
 </div>
 
 <style>

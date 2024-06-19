@@ -1,194 +1,235 @@
 <script lang="ts">
-  import Alert from '$lib/components/Alert.svelte';
-  import { type EventFrequency, Visibility, zeus, Selector } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { DISPLAY_VISIBILITIES, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
-  import ButtonPrimary from './ButtonPrimary.svelte';
-  import IconSend from '~icons/mdi/send-outline';
-  import InputText from './InputText.svelte';
-  import InputLongText from './InputLongText.svelte';
+  import { fragment, graphql, type FormArticle } from '$houdini';
+  import Alert from '$lib/components/Alert.svelte';
   import InputLinks from '$lib/components/InputLinks.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
+  import { DISPLAY_VISIBILITIES, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
+  import { groupLogoSrc } from '$lib/logos';
+  import { me } from '$lib/session';
+  import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
-  import InputVisibility from './InputVisibility.svelte';
-  import InputPillDate from './InputPillDate.svelte';
-  import InputGroups from './InputGroups.svelte';
+  import { zeusVisibility } from '$lib/typing';
+  import { Visibility, zeus } from '$lib/zeus';
+  import { isFuture, isPast } from 'date-fns';
   import IconEvent from '~icons/mdi/calendar-outline';
   import IconClose from '~icons/mdi/close';
-  import { me } from '$lib/session';
-  import ButtonBack from './ButtonBack.svelte';
-  import { groupLogoSrc } from '$lib/logos';
-  import { isDark } from '$lib/theme';
-  import { isFuture, isPast } from 'date-fns';
-  import Modal from './Modal.svelte';
-  import LoadingSpinner from './LoadingSpinner.svelte';
+  import IconSend from '~icons/mdi/send-outline';
   import BadgeVisibility from './BadgeVisibility.svelte';
+  import ButtonBack from './ButtonBack.svelte';
+  import ButtonPrimary from './ButtonPrimary.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import InputGroups from './InputGroups.svelte';
+  import InputLongText from './InputLongText.svelte';
+  import InputPillDate from './InputPillDate.svelte';
   import InputPillEvent from './InputPillEvent.svelte';
+  import InputText from './InputText.svelte';
+  import InputVisibility from './InputVisibility.houdini.svelte';
+  import LoadingSpinner from './LoadingSpinner.svelte';
+  import Modal from './Modal.svelte';
 
-  const _articleQuery = Selector('Article')({
-    id: true,
-    uid: true,
-    title: true,
-    body: true,
-    bodyHtml: true,
-    visibility: true,
-    group: {
-      uid: true,
-      name: true,
-      id: true,
-      pictureFile: true,
-      pictureFileDark: true,
-      studentAssociation: { school: { name: true } },
-      children: {
-        name: true,
-        studentAssociation: { school: { name: true } },
-      },
-    },
-    author: {
-      firstName: true,
-      fullName: true,
-      lastName: true,
-      id: true,
-      pictureFile: true,
-      uid: true,
-      groups: { group: { name: true, uid: true }, title: true },
-    },
-    event: {
-      id: true,
-      uid: true,
-      title: true,
-      startsAt: true,
-      endsAt: true,
-      pictureFile: true,
-      visibility: true,
-      recurringUntil: true,
-      frequency: true,
-      location: true,
-    },
-    eventId: true,
-    links: {
-      name: true,
-      value: true,
-    },
-    publishedAt: true,
-    pictureFile: true,
-  });
-
-  export let afterGoTo: (article: (typeof data)['article']) => string = (article) =>
+  export let afterGoTo: (article: { group: { uid: string }; uid: string }) => string = (article) =>
     `/posts/${article.group.uid}/${article.uid}/`;
-  export let data: {
-    article: {
-      uid: string;
-      id: string;
-      title: string;
-      body: string;
-      visibility: Visibility;
-      group: {
-        uid: string;
-        name: string;
-        id: string;
-        pictureFile: string;
-        pictureFileDark: string;
-        studentAssociation?: { school: { name: string } } | undefined;
-        children: Array<{
-          name: string;
-          studentAssociation?: { school: { name: string } } | undefined;
-        }>;
-      };
-      author?: {
-        id: string;
-        firstName: string;
-        lastName: string;
-        pictureFile: string;
-        uid: string;
-        groups: Array<{
-          group: {
-            name: string;
-            uid: string;
-          };
-          title: string;
-        }>;
-      };
-      eventId?: string;
-      event?: {
-        id: string;
-        uid: string;
-        title: string;
-        startsAt: Date;
-        endsAt: Date;
-        visibility: Visibility;
-        pictureFile: string;
-        recurringUntil?: Date | undefined;
-        location: string;
-        frequency: EventFrequency;
-      };
-      links: Array<{ name: string; value: string }>;
-      publishedAt: Date;
-      pictureFile: string;
-    };
-  };
+
+  export let article: FormArticle;
+  $: data = fragment(
+    article,
+    graphql(`
+      fragment FormArticle on Article {
+        uid
+        id
+        title
+        body
+        visibility
+        group {
+          uid
+          name
+          id
+          pictureFile
+          pictureFileDark
+          studentAssociation {
+            school {
+              name
+            }
+          }
+          children {
+            name
+            studentAssociation {
+              school {
+                name
+              }
+            }
+          }
+        }
+        author {
+          id
+          firstName
+          lastName
+          pictureFile
+          uid
+          groups {
+            group {
+              name
+              uid
+            }
+            title
+          }
+        }
+        eventId
+        event {
+          id
+          uid
+          title
+          startsAt
+          endsAt
+          visibility
+          pictureFile
+          recurringUntil
+          location
+          frequency
+        }
+        links {
+          computedValue
+          value
+          name
+        }
+        publishedAt
+        pictureFile
+      }
+    `),
+  );
+
+  $: ({ id, event, title, author, body, visibility, links, group } = $data);
 
   let serverError = '';
 
   let confirmingDelete = false;
 
-  let { id, event, title, author, body, visibility, links, group } = data.article;
-
-  let publishLater: Date | undefined = isFuture(data.article.publishedAt)
-    ? data.article.publishedAt
-    : undefined;
+  let publishLater: Date | undefined = isFuture($data.publishedAt) ? $data.publishedAt : undefined;
 
   $: pastDate = publishLater === undefined ? false : isPast(publishLater);
 
-  let loading = false;
-  const updateArticle = async () => {
-    if (loading) return;
-    try {
-      loading = true;
-      const { upsertArticle } = await $zeus.mutate({
-        upsertArticle: [
-          {
-            id,
-            authorId: (author ?? $me)!.id,
-            eventId: event?.id ?? '',
-            groupId: group.id,
-            title,
-            body,
-            publishedAt: (publishLater ?? data.article.publishedAt ?? new Date()).toISOString(),
-            links,
-            visibility,
-          },
-          {
-            '__typename': true,
-            '...on Error': { message: true },
-            '...on MutationUpsertArticleSuccess': {
-              data: _articleQuery,
-            },
-          },
-        ],
+  const loading = false;
+  // const updateArticle = async () => {
+  //   if (loading) return;
+  //   try {
+  //     loading = true;
+  //     const { upsertArticle } = await $zeus.mutate({
+  //       upsertArticle: [
+  //         {
+  //           id,
+  //           authorId: (author ?? $me)!.id,
+  //           eventId: event?.id ?? '',
+  //           groupId: group.id,
+  //           title,
+  //           body,
+  //           publishedAt: (publishLater ?? $data.publishedAt ?? new Date()).toISOString(),
+  //           links,
+  //           visibility,
+  //         },
+  //         {
+  //           '__typename': true,
+  //           '...on Error': { message: true },
+  //           '...on MutationUpsertArticleSuccess': {
+  //             data: _articleQuery,
+  //           },
+  //         },
+  //       ],
+  //     });
+
+  //     if (upsertArticle.__typename === 'Error') {
+  //       serverError = upsertArticle.message;
+  //       return;
+  //     }
+
+  //     serverError = '';
+  //     $data = upsertArticle.data;
+  //     ({ id, event, title, author, body, links, group, visibility } = $data);
+  //     if ($data.uid) {
+  //       toasts.success(
+  //         `Ton article ${DISPLAY_VISIBILITIES[visibility].toLowerCase()} a bien été ${
+  //           id ? 'modifié' : 'créé'
+  //         }`,
+  //       );
+  //       await goto(afterGoTo($data));
+  //     }
+  //   } finally {
+  //     loading = false;
+  //   }
+  // };
+
+  async function updateArticle() {
+    await graphql(`
+      mutation UpdateArticle(
+        $id: ID!
+        $authorId: ID!
+        $eventId: ID
+        $groupId: ID!
+        $title: String!
+        $body: String!
+        $publishedAt: DateTime!
+        $links: [LinkInput!]!
+        $visibility: Visibility!
+      ) {
+        upsertArticle(
+          id: $id
+          authorId: $authorId
+          eventId: $eventId
+          groupId: $groupId
+          title: $title
+          body: $body
+          publishedAt: $publishedAt
+          links: $links
+          visibility: $visibility
+        ) {
+          ... on Error {
+            message
+          }
+          ... on MutationUpsertArticleSuccess {
+            data {
+              uid
+              group {
+                uid
+              }
+              ...FormArticle
+            }
+          }
+        }
+      }
+    `)
+      .mutate({
+        id,
+        authorId: (author ?? $me!).id,
+        eventId: event?.id,
+        groupId: group.id,
+        title,
+        body,
+        publishedAt: publishLater ?? $data.publishedAt ?? new Date(),
+        links,
+        visibility,
+      })
+      .then(({ data, errors }) => {
+        if (!data) {
+          serverError = errors?.map((e) => e.message).join(', ') ?? 'Erreur inattendue';
+          return;
+        }
+
+        if (data.upsertArticle.__typename === 'Error') {
+          serverError = data.upsertArticle.message;
+          return;
+        }
+
+        serverError = '';
+        if (data.upsertArticle.data.uid) {
+          toasts.success(
+            `Ton article ${DISPLAY_VISIBILITIES[visibility].toLowerCase()} a bien été ${
+              id ? 'modifié' : 'créé'
+            }`,
+          );
+          goto(afterGoTo(data.upsertArticle.data));
+        }
       });
-
-      if (upsertArticle.__typename === 'Error') {
-        serverError = upsertArticle.message;
-        return;
-      }
-
-      serverError = '';
-      data.article = upsertArticle.data;
-      ({ id, event, title, author, body, links, group, visibility } = data.article);
-      if (data.article.uid) {
-        toasts.success(
-          `Ton article ${DISPLAY_VISIBILITIES[visibility].toLowerCase()} a bien été ${
-            id ? 'modifié' : 'créé'
-          }`,
-        );
-        await goto(afterGoTo(data.article));
-      }
-    } finally {
-      loading = false;
-    }
-  };
+  }
 
   $: canChangeGroup = !id;
 
@@ -202,7 +243,7 @@
       Tu t'apprêtes à envoyer une notification à <strong
         >plus de
         <span class="notified-count">
-          {#await $zeus.query( { notificationsSendCountForArticle: [{ visibility, groupUid: group.uid }, true] }, )}
+          {#await $zeus.query( { notificationsSendCountForArticle: [{ visibility: zeusVisibility(visibility), groupUid: group.uid }, true] }, )}
             <LoadingSpinner></LoadingSpinner>
           {:then { notificationsSendCountForArticle }}
             {notificationsSendCountForArticle}
@@ -261,14 +302,10 @@
     </p>
   </div>
   <section class="pills">
-    {#await $zeus.query( { eventsOfGroup: [{ groupUid: group.uid }, { edges: { node: _articleQuery.event } }] }, )}
+    {#await $zeus.query( { eventsOfGroup: [{ groupUid: group.uid }, { nodes: { id: true, uid: true, title: true, pictureFile: true, startsAt: true, visibility: true } }] }, )}
       <ButtonSecondary loading icon={IconEvent}>Évènement</ButtonSecondary>
-    {:then { eventsOfGroup: { edges } }}
-      <InputPillEvent
-        suggestions={edges.map((n) => n.node)}
-        bind:event
-        groupUid={$page.params.group}
-      ></InputPillEvent>
+    {:then { eventsOfGroup: { nodes } }}
+      <InputPillEvent suggestions={nodes} bind:event groupUid={$page.params.group}></InputPillEvent>
     {/await}
     <InputPillDate after={new Date()} bind:value={publishLater}>Publier plus tard</InputPillDate>
   </section>
@@ -303,9 +340,9 @@
               lifetime: 5000,
               showLifetime: true,
               data: {
-                id: data.article.id,
+                id: $data.id,
                 confirm: true,
-                gotoOnCancel: `${afterGoTo(data.article)}/edit/`.replaceAll('//', '/'),
+                gotoOnCancel: `${afterGoTo($data)}/edit/`.replaceAll('//', '/'),
               },
               labels: {
                 action: 'Annuler',
@@ -339,7 +376,7 @@
       >
     {:else}
       <ButtonPrimary {loading} submits disabled={pastDate}>Enregistrer</ButtonPrimary>
-      {#if data.article.id}
+      {#if $data.id}
         <ButtonSecondary
           danger
           on:click={() => {

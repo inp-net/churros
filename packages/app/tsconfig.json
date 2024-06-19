@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "types": ["unplugin-icons/types/svelte"]
+    "types": ["unplugin-icons/types/svelte"],
+    "rootDirs": [".", "./.svelte-kit/types", "./$houdini/types"]
   }
 }

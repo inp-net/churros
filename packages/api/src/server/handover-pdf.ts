@@ -264,7 +264,7 @@ function boardMemberBuildInfo(boardMembers: boardMemberType[], rightPos: number)
     body.push(
       [
         {
-          text: boardMembers[i]?.title != undefined ? boardMembers[i]?.title : '',
+          text: boardMembers[i]?.title == undefined ? '' : boardMembers[i]?.title,
           bold: true,
           fontSize: 16,
           margin: [0, 0, 0, 5],
@@ -276,10 +276,7 @@ function boardMemberBuildInfo(boardMembers: boardMemberType[], rightPos: number)
       [
         { text: 'Date de naissance' },
         {
-          text:
-            boardMembers[i]?.birthday != null
-              ? dateFormatter.format(boardMembers[i]?.birthday!)
-              : '',
+          text: boardMembers[i]?.birthday ? dateFormatter.format(boardMembers[i]!.birthday!) : '',
         },
       ],
       [{ text: 'Téléphone' }, { text: boardMembers[i]?.phone }],

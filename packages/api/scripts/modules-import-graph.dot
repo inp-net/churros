@@ -1,4 +1,5 @@
 strict digraph ImportGraph {
+    "comments" -> "comments";
     "comments" -> "notifications";
     "curriculum" -> "documents";
     "documents" -> "comments";
@@ -17,6 +18,8 @@ strict digraph ImportGraph {
     "groups" -> "users";
     "oauth" -> "users";
     "posts" -> "notifications";
+    "posts" -> "comments";
+    "posts" -> "posts";
     "posts" -> "links";
     "schools" -> "curriculum";
     "shop" -> "payments";

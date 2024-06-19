@@ -72,8 +72,6 @@ export const saveSessionToken = (
     expiresAt?: Date | null;
   },
 ) => {
-  window.localStorage.removeItem('isReallyLoggedout');
-  aled('session.ts: setting token cookie', { token, expiresAt });
   document.cookie = cookie.serialize('token', token, {
     expires: expiresAt ? new Date(expiresAt) : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     path: '/',
@@ -97,7 +95,4 @@ export const redirectToLogin = (
   redirect(307, `/login?${new URLSearchParams({ to, ...searchParams }).toString()}`);
 };
 
-export const me = derived(page, ($page) => {
-  aled('session.ts: me = derived(page, $page)', $page.data);
-  return $page.data.me;
-});
+export const me = derived(page, ($page) => $page.data.me);

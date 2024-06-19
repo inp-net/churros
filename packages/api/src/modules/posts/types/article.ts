@@ -1,9 +1,15 @@
-import { builder, htmlToText, prisma, subscriptionName, toHtml } from '#lib';
-import { DateTimeScalar, VisibilityEnum } from '#modules/global';
+import { builder, htmlToText, prisma, toHtml } from '#lib';
+import { CommentableInterface } from '#modules/comments';
+import { DateTimeScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
 import { canEditArticle } from '../utils/permissions.js';
 
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
+  interfaces: [
+    // @ts-expect-error dunno why it complainnns
+    CommentableInterface,
+    PicturedInterface,
+  ],
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
@@ -63,17 +69,6 @@ export const ArticleType = builder.prismaNode('Article', {
           (counts, { emoji }) => ({ ...counts, [emoji]: (counts[emoji] ?? 0) + 1 }),
           {},
         );
-      },
-    }),
-    comments: t.relatedConnection('comments', {
-      cursor: 'id',
-      query: {
-        orderBy: { createdAt: 'asc' },
-      },
-      subscribe(subscriptions, { id }) {
-        subscriptions.register(subscriptionName('Comment', 'created', id));
-        subscriptions.register(subscriptionName('Comment', 'updated', id));
-        subscriptions.register(subscriptionName('Comment', 'deleted', id));
       },
     }),
     event: t.relation('event', { nullable: true }),

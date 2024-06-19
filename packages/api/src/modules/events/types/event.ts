@@ -1,5 +1,5 @@
 import { builder, htmlToText, prisma, soonest, subscriptionName, toHtml } from '#lib';
-import { DateTimeScalar, VisibilityEnum } from '#modules/global';
+import { DateTimeScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
 import { ProfitsBreakdownType } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar } from '#modules/reactions';
 import { RegistrationsCountsType, TicketType, canScanBookings } from '#modules/ticketing';
@@ -16,6 +16,7 @@ import { canEdit, canEditManagers, canSeeBookings, canSeePlacesLeftCount } from 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
   include: { managers: true, group: true },
+  interfaces: [PicturedInterface],
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
@@ -59,9 +60,6 @@ export const EventType = builder.prismaNode('Event', {
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
-    pictureURL: t.string({
-      resolve: ({ pictureFile }) => new URL(pictureFile, process.env.PUBLIC_STORAGE_URL).toString(),
-    }),
     includeInKiosk: t.exposeBoolean('includeInKiosk', {
       description: "Vrai si l'évènement doit apparaître dans le mode kiosque",
     }),

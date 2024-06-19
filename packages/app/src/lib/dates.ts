@@ -1,6 +1,18 @@
+import type { EventFrequency$options, Visibility$options } from '$houdini';
 import { EventFrequency } from '$lib/zeus';
 import { format, isMonday, isToday, previousMonday } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
+
+function safeFormatting<T>(func: (arg: T) => string): (arg: T) => string {
+  return (arg) => {
+    try {
+      return func(arg);
+    } catch (error) {
+      console.error(error);
+      return '';
+    }
+  };
+}
 
 export const dateTimeFormatter = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'full',
@@ -11,15 +23,13 @@ export const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'full',
 });
 
-export const formatDateTime = (date: unknown) => dateTimeFormatter.format(new Date(date as Date));
-export const formatDate = (date: unknown) => {
-  try {
-    return dateFormatter.format(new Date(date as Date));
-  } catch (error) {
-    console.error(error);
-    return '';
-  }
-};
+export const formatDateTime = safeFormatting((date: unknown) =>
+  dateTimeFormatter.format(new Date(date as Date)),
+);
+
+export const formatDate = safeFormatting((date: unknown) =>
+  dateFormatter.format(new Date(date as Date)),
+);
 
 export const formatTime = (date: unknown) =>
   new Intl.DateTimeFormat('fr-FR', {
@@ -93,10 +103,10 @@ export function formatOpenAtRange(startsAt: Date, endsAt: Date): string {
 }
 
 export function formatEventDates(
-  frequency: EventFrequency,
+  frequency: EventFrequency | EventFrequency$options,
   startsAt: Date,
   endsAt: Date,
-  recurringUntil: Date | undefined,
+  recurringUntil: Date | undefined | null,
 ): string {
   try {
     switch (frequency) {
@@ -121,7 +131,11 @@ export function formatEventDates(
   }
 }
 
-export function formatRecurrence(frequency: EventFrequency, startsAt: Date, endsAt: Date): string {
+export function formatRecurrence(
+  frequency: EventFrequency | Visibility$options,
+  startsAt: Date,
+  endsAt: Date,
+): string {
   switch (frequency) {
     case EventFrequency.Biweekly: {
       return `Toutes les deux semaines de ${format(startsAt, 'HH:mm')} à ${format(

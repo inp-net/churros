@@ -5,11 +5,13 @@ import {
   objectValuesFlat,
   prisma,
   publish,
+  splitID,
   yearTier,
 } from '#lib';
 import { notify } from '#modules/notifications';
 import { userIsAdminOf } from '#permissions';
 import { NotificationChannel, type User } from '@prisma/client';
+import { GraphQLError } from 'graphql';
 import { CommentType } from '../index.js';
 
 builder.mutationField('upsertComment', (t) =>
@@ -18,32 +20,47 @@ builder.mutationField('upsertComment', (t) =>
     args: {
       id: t.arg.id({ required: false }),
       body: t.arg.string({ validate: { minLength: 1 } }),
-      documentId: t.arg.id({ required: false }),
-      articleId: t.arg.id({ required: false }),
+      resourceId: t.arg.id({ required: false }),
       inReplyToId: t.arg.id({ required: false }),
     },
-    async authScopes(_, { articleId, documentId }, { user }) {
-      let studentAssociationIds: string[] = [];
+    validate: [
+      [
+        ({ resourceId, id }) => Boolean(id || resourceId),
+        {
+          message:
+            'Vous devez spécifier le commentaire à modifier ou la resource sur laquelle créer le commentaire',
+        },
+      ],
+    ],
+    async authScopes(_, { id }, { user }) {
+      if (!user) return false;
+      if (user.admin) return true;
 
-      if (articleId) {
-        studentAssociationIds = objectValuesFlat(
-          await prisma.article.findUnique({
-            where: { id: articleId },
-            select: { group: { select: { studentAssociationId: true } } },
-          }),
-        );
-      } else if (documentId) {
-        studentAssociationIds = objectValuesFlat(
-          await prisma.document.findUnique({
-            where: { id: documentId },
-            select: {
-              subject: {
-                select: {
-                  minors: {
-                    select: {
-                      majors: {
-                        select: {
-                          schools: { select: { studentAssociations: { select: { id: true } } } },
+      if (id) {
+        const comment = await prisma.comment.findUnique({
+          where: { id },
+          select: {
+            author: {
+              select: {
+                id: true,
+                major: {
+                  select: {
+                    schools: { select: { studentAssociations: { select: { id: true } } } },
+                  },
+                },
+              },
+            },
+            article: { select: { group: { select: { studentAssociationId: true } } } },
+            document: {
+              select: {
+                subject: {
+                  select: {
+                    minors: {
+                      select: {
+                        majors: {
+                          select: {
+                            schools: { select: { studentAssociations: { select: { id: true } } } },
+                          },
                         },
                       },
                     },
@@ -51,38 +68,50 @@ builder.mutationField('upsertComment', (t) =>
                 },
               },
             },
-          }),
-        );
+          },
+        });
+
+        // Who can edit this commment?
+        if (!comment) throw new GraphQLError('Commentaire introuvable');
+        // - The author
+        if (comment.author?.id === user.id) return true;
+        // - Student association admins of the author or the resource on which the comment is
+        if (userIsAdminOf(user, objectValuesFlat(comment))) return true;
+        return false;
       }
 
-      return Boolean(
-        userIsAdminOf(user, studentAssociationIds) ||
-          // TODO only allow for articles the user can see
-          articleId /* && true */ ||
-          (documentId && user?.canAccessDocuments),
-      );
+      // TODO only allow for articles the user can see
+      return true;
     },
-    async resolve(query, _, { id, body, documentId, articleId, inReplyToId }, { user }) {
-      const upsertData = {
-        body,
-        document: documentId ? { connect: { id: documentId } } : undefined,
-        article: articleId ? { connect: { id: articleId } } : undefined,
-        inReplyTo: inReplyToId
-          ? { connect: { id: inReplyToId, documentId, articleId } }
-          : undefined,
-      };
+    async resolve(query, _, { id, body, resourceId, inReplyToId }, { user }) {
+      const connection: {} | { articleId: string } | { documentId: string } = resourceId
+        ? {
+            [splitID(resourceId)[0] === 'Document' ? 'documentId' : 'articleId']: resourceId,
+          }
+        : {};
+
       await log(
         'comments',
         id ? 'edit' : inReplyToId ? 'reply' : 'comment',
-        upsertData,
-        id || inReplyToId || documentId || articleId || '<nothing>',
+        { id, body, resourceId, inReplyToId, connection },
+        resourceId || id || inReplyToId,
         user,
       );
+
       const comment = await prisma.comment.upsert({
         ...query,
         where: { id: id ?? '' },
-        create: { ...upsertData, author: { connect: { id: user!.id } } },
-        update: upsertData,
+        create: {
+          body,
+          inReplyToId,
+          ...connection,
+          authorId: user!.id,
+        },
+        update: {
+          body,
+          inReplyToId,
+          ...connection,
+        },
         include: {
           author: true,
           inReplyTo: { include: { author: true } },
