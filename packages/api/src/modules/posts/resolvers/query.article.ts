@@ -15,13 +15,17 @@ builder.queryField('article', (t) =>
       const article = await prisma.article.findFirstOrThrow({
         ...query,
         where: {
-          ...prismaQueryAccessibleArticles(user, 'can'),
-          uid,
-          group: { uid: groupUid },
-          OR: [
-            { eventId: null },
+          AND: [
+            prismaQueryAccessibleArticles(user, 'can'),
             {
-              AND: [{ eventId: { not: null } }, { event: prismaQueryVisibleEvents(user) }],
+              uid,
+              group: { uid: groupUid },
+              OR: [
+                { eventId: null },
+                {
+                  AND: [{ eventId: { not: null } }, { event: prismaQueryVisibleEvents(user) }],
+                },
+              ],
             },
           ],
         },

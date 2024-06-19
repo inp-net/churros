@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Sécurité
+
+- Un bug permettait à n'importe qui d'accéder à un post (peut importe sa visibilité) par son lien quand le post n'était pas lié à un évènement.
+
 ## [1.62.0] - 2024-06-18
 
 ### Nouveautés
