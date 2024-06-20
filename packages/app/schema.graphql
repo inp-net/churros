@@ -1408,6 +1408,7 @@ type Group implements Node & Pictured {
   links: [Link!]!
   longDescription: String!
   longDescriptionHtml: String!
+  mailingList: String!
   members: [GroupMember!]!
   name: String!
   ownEvents: [Event!]!
@@ -2213,6 +2214,7 @@ type Mutation {
     email: String
     links: [LinkInput!]!
     longDescription: String!
+    mailingList: String
     name: String!
     parentUid: String
     related: [String!]!

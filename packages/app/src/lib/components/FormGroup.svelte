@@ -26,6 +26,7 @@
     description,
     color,
     email,
+    mailingList,
     longDescription,
     website,
     name,
@@ -65,6 +66,7 @@
             color,
             description,
             email: email || undefined,
+            mailingList: mailingList || undefined,
             links: links.filter((l) => Boolean(l.value)),
             longDescription,
             website,
@@ -132,6 +134,7 @@
     <!-- TODO colors ? -->
     <InputText label="Salle" maxlength={255} bind:value={address} />
     <InputText label="Email" type="email" maxlength={255} bind:value={email} />
+    <InputText label="Mailing list" type="email" maxlength={255} bind:value={mailingList} />
     <InputText label="Site web" type="url" maxlength={255} bind:value={website} />
     <InputSocialLinks label="Réseaux sociaux" bind:value={links} />
     {#if !creatingSubgroup}

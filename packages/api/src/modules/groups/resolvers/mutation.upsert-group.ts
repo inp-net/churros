@@ -40,6 +40,7 @@ builder.mutationField('upsertGroup', (t) =>
       description: t.arg.string({ validate: { maxLength: 255 } }),
       website: t.arg.string({ validate: { maxLength: 255 } }),
       email: t.arg.string({ validate: { email: true }, required: false }),
+      mailingList: t.arg.string({ validate: { email: true }, required: false }),
       longDescription: t.arg.string(),
       links: t.arg({ type: [LinkInput] }),
       selfJoinable: t.arg.boolean(),
@@ -99,6 +100,7 @@ builder.mutationField('upsertGroup', (t) =>
         website,
         studentAssociationUid,
         email,
+        mailingList,
         longDescription,
         links,
         related,
@@ -183,6 +185,7 @@ builder.mutationField('upsertGroup', (t) =>
         description,
         website,
         email: email ?? undefined,
+        mailingList: mailingList ?? undefined,
         longDescription,
       };
 

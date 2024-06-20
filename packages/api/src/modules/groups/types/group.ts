@@ -21,6 +21,7 @@ export const GroupType = builder.prismaNode('Group', {
     address: t.exposeString('address'),
     description: t.exposeString('description'),
     email: t.exposeString('email'),
+    mailingList: t.exposeString('mailingList'),
     longDescription: t.exposeString('longDescription'),
     longDescriptionHtml: t.string({
       resolve: async ({ longDescription }) => toHtml(longDescription),
