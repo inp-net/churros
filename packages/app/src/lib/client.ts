@@ -12,6 +12,7 @@ const unauthorizedErrorHandler: ClientPlugin = () => {
       if (
         browser &&
         !ctx.variables?.loggedIn &&
+        ctx.artifact.name.startsWith('Page') &&
         errors?.some((e) => e.message === UNAUTHORIZED_ERROR_MESSAGE)
       ) {
         const url = new URL(window.location.href);

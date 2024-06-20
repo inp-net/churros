@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug sur 1.63.1-rc.0 qui provoquait la redirection à la page de connexion depuis la page d'accueil lorsqu'on n'était pas connecté
+
 ## [1.63.1-rc.0] - 2024-06-20
 
 ### Améliorations
