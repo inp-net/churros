@@ -1,0 +1,19 @@
+query Birthdays($width: Int = 0) {
+  me {
+    yearTier
+  }
+  birthdays(activeOnly: true, width: $width) {
+    fullName
+    pictureFile
+    uid
+    birthday
+    yearTier
+    major {
+      name
+      shortName
+      schools {
+        uid
+      }
+    }
+  }
+}

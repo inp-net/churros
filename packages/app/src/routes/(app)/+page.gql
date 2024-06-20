@@ -1,0 +1,46 @@
+query PageHomeFeed {
+  homepage(first: 5) @paginate {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      node {
+        id
+        uid
+        title
+        bodyHtml
+        bodyPreview
+        body
+        visibility
+        publishedAt
+        pictureFile
+        reactionCounts
+        myReactions
+        group {
+          uid
+          name
+          pictureFile
+          pictureFileDark
+        }
+        links {
+          value
+          computedValue
+          name
+        }
+        event {
+          group {
+            uid
+          }
+          title
+          pictureFile
+          uid
+          location
+          startsAt
+          endsAt
+          frequency
+          recurringUntil
+        }
+      }
+    }
+  }
+}

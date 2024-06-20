@@ -10,6 +10,7 @@ const config = {
       client: './src/lib/client',
     },
   },
+  defaultPaginateMode: 'Infinite',
   types: {
     User: {
       resolve: {

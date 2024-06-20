@@ -3,13 +3,19 @@
   import IconForward from '~icons/mdi/chevron-right';
   import IconBackward from '~icons/mdi/chevron-left';
   import CardGroup from './CardGroup.svelte';
-  export let groups: Array<{
-    name: string;
-    pictureFile: string;
-    pictureFileDark: string;
-    uid: string;
-    role?: string;
-  }>;
+  import { PendingValue } from '$houdini';
+  import CardGroupPending from '$lib/components/CardGroupPending.svelte';
+
+  export let groups: Array<
+    | typeof PendingValue
+    | {
+        name: string;
+        pictureFile: string;
+        pictureFileDark: string;
+        uid: string;
+        role?: string;
+      }
+  >;
 
   let nbGroups: number;
   export let go: (groupUid: string) => string = (uid) => `/groups/${uid}`;
@@ -114,8 +120,12 @@
     role="listbox"
     tabindex="-1"
   >
-    {#each groups as { uid, ...rest }}
-      <CardGroup on:click={handleClick} href={go(uid)} {...rest} />
+    {#each groups as group}
+      {#if group === PendingValue}
+        <CardGroupPending></CardGroupPending>
+      {:else}
+        <CardGroup on:click={handleClick} href={go(group.uid)} {...group} />
+      {/if}
     {/each}
   </div>
   {#if offset > 0}
