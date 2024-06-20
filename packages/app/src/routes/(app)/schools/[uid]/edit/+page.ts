@@ -18,7 +18,7 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
           name: true,
           description: true,
           address: true,
-          internalMailDomain: true,
+          studentMailDomain: true,
           aliasMailDomains: true,
           pictureFile: true,
         },

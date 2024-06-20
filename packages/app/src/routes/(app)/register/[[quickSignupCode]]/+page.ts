@@ -5,7 +5,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
   return loadQuery(
     {
       schools: {
-        internalMailDomain: true,
+        studentMailDomain: true,
         aliasMailDomains: true,
       },
     },

@@ -266,7 +266,7 @@ model School {
   uid                String   @unique @db.VarChar(255)
   name               String   @db.VarChar(255)
   color              String   @db.VarChar(7)
-  internalMailDomain String   @default("") @db.VarChar(255)
+  studentMailDomain  String   @default("") @db.VarChar(255)
   aliasMailDomains   String[] @default([]) @db.VarChar(255)
   description        String   @default("") @db.Text
   address            String   @default("") @db.VarChar(255)
@@ -351,6 +351,7 @@ model StudentAssociation {
   allPrezMailingList  String  @default("") @db.VarChar(255)
   allTrezMailingList  String  @default("") @db.VarChar(255)
   allBoardMailingList String  @default("") @db.VarChar(255)
+  internalMailDomain  String  @default("") @db.VarChar(255)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -82,7 +82,7 @@
         email = email.toLowerCase();
         domain = email.split('@')[1];
         schoolDomainIsValid = data.schools
-          .flatMap((s) => [s.internalMailDomain, ...s.aliasMailDomains])
+          .flatMap((s) => [s.studentMailDomain, ...s.aliasMailDomains])
           .includes(domain);
       }}
       maxlength={255}

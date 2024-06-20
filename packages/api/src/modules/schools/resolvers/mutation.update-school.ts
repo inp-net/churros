@@ -9,7 +9,7 @@ builder.mutationField('updateSchool', (t) =>
       name: t.arg.string(),
       address: t.arg.string({ required: false }),
       description: t.arg.string({ required: false }),
-      internalMailDomain: t.arg.string(),
+      studentMailDomain: t.arg.string(),
       aliasMailDomains: t.arg.stringList(),
     },
     async authScopes(_, {}, { user }) {
@@ -17,7 +17,7 @@ builder.mutationField('updateSchool', (t) =>
     },
     async resolve(
       _,
-      { uid, name, address, description, internalMailDomain, aliasMailDomains },
+      { uid, name, address, description, studentMailDomain, aliasMailDomains },
       { user },
     ) {
       await prisma.logEntry.create({
@@ -35,7 +35,7 @@ builder.mutationField('updateSchool', (t) =>
           name,
           address: address ?? undefined,
           description: description ?? undefined,
-          internalMailDomain,
+          studentMailDomain,
           aliasMailDomains,
         },
       });

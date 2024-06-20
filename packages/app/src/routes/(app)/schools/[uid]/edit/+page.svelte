@@ -13,7 +13,7 @@
   export let data: PageData;
   const initialData = structuredClone(data);
 
-  let internalMailDomain = data.school.internalMailDomain;
+  let studentMailDomain = data.school.studentMailDomain;
   let aliasMailDomains: string[] = data.school.aliasMailDomains;
   async function save() {
     const { updateSchool } = await $zeus.mutate({
@@ -23,7 +23,7 @@
           name: data.school.name,
           address: data.school.address,
           description: data.school.description,
-          internalMailDomain,
+          studentMailDomain,
           aliasMailDomains,
         },
         {
@@ -61,10 +61,10 @@
         après le '@') est l'un des domaines suivants seront attribués à cette école.
       </p>
       <InputText
-        label="Domaine mail pricipal"
+        label="Domaine mail étudiant"
         maxlength={255}
         required="true"
-        bind:value={internalMailDomain}
+        bind:value={studentMailDomain}
       />
       <InputList label="Autres domaines mails" bind:value={aliasMailDomains} />
     </GroupInput>

@@ -46,7 +46,7 @@ export async function login(
   const schools = await prisma.school.findMany();
   const schoolDomain = schools.map((school) => [
     school.uid,
-    [school.internalMailDomain, ...school.aliasMailDomains],
+    [school.studentMailDomain, ...school.aliasMailDomains],
   ]);
   const schoolDomains = schoolDomain.flatMap(([_, domains]) => domains);
   const [_, domain] = email.split('@', 2);

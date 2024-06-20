@@ -469,7 +469,7 @@ async function createLdapUser(
     displayName: `${user.firstName} ${user.lastName}`,
     ecole: `o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`,
 
-    mail: `${user.uid}@${user.major.ldapSchool.internalMailDomain}`,
+    mail: `${user.uid}@${user.major.ldapSchool.studentMailDomain}`,
 
     filiere: `ou=${user.major.uid},ou=filieres,o=${user.major.ldapSchool.uid},${LDAP_BASE_DN}`,
     genre: 404,

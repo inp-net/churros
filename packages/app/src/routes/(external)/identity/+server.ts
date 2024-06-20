@@ -13,7 +13,7 @@ export const GET = async ({ fetch, request }) => {
         admin: true,
         major: {
           ldapSchool: {
-            internalMailDomain: true,
+            studentMailDomain: true,
           },
         },
         groups: {
@@ -34,7 +34,7 @@ export const GET = async ({ fetch, request }) => {
   const data = {
     ...me,
     fullName: me.fullName.slice(0, 255),
-    ldapInternalEmail: `${me.uid}@${me.major?.ldapSchool?.internalMailDomain ?? 'external'}`,
+    ldapInternalEmail: `${me.uid}@${me.major?.ldapSchool?.studentMailDomain ?? 'external'}`,
     groupsUids: me.groups.map((g) => g.group.uid),
     groupsNames: me.groups.map((g) => g.group.name),
   };

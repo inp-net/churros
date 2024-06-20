@@ -148,7 +148,7 @@ builder.mutationField('upsertGroupMember', (t) =>
         group.type === 'Club'
       ) {
         // TODO store in DB
-        const resposClubMail = `respos-clubs@${group.studentAssociation?.allBoardMailingList.split('@')[1]}`;
+        const resposClubMail = `respos-clubs@${group.studentAssociation?.internalMailDomain}`;
 
         await sendMail(
           'group-board-updated',
