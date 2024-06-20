@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Améliorations
+
+- Il y a maintenant du défilement infini sur les posts de la page d'accueil, et elle devrait être plus rapide à charger également :)
+
 ## [1.63.0] - 2024-06-20
 
 ### Sécurité
