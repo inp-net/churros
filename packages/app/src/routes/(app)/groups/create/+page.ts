@@ -25,6 +25,7 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
     address: '',
     description: '',
     email: `contact@bde.${me.major?.schools[0].name.toLowerCase()}.fr`,
+    mailingList: '',
     longDescription: '',
     website: '',
     links: [],
