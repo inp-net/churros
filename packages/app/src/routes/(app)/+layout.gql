@@ -1,0 +1,14 @@
+query AppLayout($version: String!, $loggedIn: LoggedIn!) {
+  me @include(if: $loggedIn) {
+    ...NavigationSide
+    ...NavigationTop
+
+    bookings(forUserOnly: true, first: 5) {
+      ...OverlayQuickBookings
+    }
+  }
+
+  combinedChangelog(sort: Descending, to: $version) {
+    ...ModalChangelog
+  }
+}

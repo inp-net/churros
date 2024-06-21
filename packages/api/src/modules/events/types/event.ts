@@ -1,7 +1,7 @@
 import { builder, htmlToText, prisma, soonest, subscriptionName, toHtml } from '#lib';
 import { DateTimeScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
 import { ProfitsBreakdownType } from '#modules/payments';
-import { BooleanMapScalar, CountsScalar } from '#modules/reactions';
+import { BooleanMapScalar, CountsScalar, ReactableInterface } from '#modules/reactions';
 import { RegistrationsCountsType, TicketType, canScanBookings } from '#modules/ticketing';
 import {
   getTicketsWithConstraints,
@@ -16,7 +16,11 @@ import { canEdit, canEditManagers, canSeeBookings, canSeePlacesLeftCount } from 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
   include: { managers: true, group: true },
-  interfaces: [PicturedInterface],
+  interfaces: [
+    PicturedInterface,
+    //@ts-expect-error dunno why it complainnns
+    ReactableInterface,
+  ],
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
@@ -63,7 +67,6 @@ export const EventType = builder.prismaNode('Event', {
     includeInKiosk: t.exposeBoolean('includeInKiosk', {
       description: "Vrai si l'évènement doit apparaître dans le mode kiosque",
     }),
-    reactions: t.relation('reactions'),
     showPlacesLeft: t.exposeBoolean('showPlacesLeft', {
       description: 'Vrai si le nombre de places restantes doit être affiché',
     }),
@@ -122,6 +125,32 @@ export const EventType = builder.prismaNode('Event', {
 
         const accessibleTickets = tickets.filter((t) => userCanSeeTicket(t, userWithContributions));
         return soonest(...accessibleTickets.map((t) => t.opensAt));
+      },
+    }),
+    reacted: t.boolean({
+      args: { emoji: t.arg.string() },
+      async resolve({ id }, { emoji }, { user }) {
+        if (!user) return false;
+        return Boolean(
+          await prisma.reaction.findFirst({
+            where: {
+              eventId: id,
+              emoji,
+              authorId: user.id,
+            },
+          }),
+        );
+      },
+    }),
+    reactions: t.int({
+      args: { emoji: t.arg.string() },
+      async resolve({ id }, { emoji }) {
+        return prisma.reaction.count({
+          where: {
+            eventId: id,
+            emoji,
+          },
+        });
       },
     }),
     myReactions: t.field({

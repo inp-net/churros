@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Houdinification de quelques composants de plus :)
+
 ## [1.63.1-rc.1] - 2024-06-20
 
 ### Corrections

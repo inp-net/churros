@@ -1,9 +1,9 @@
-import { builder, prisma } from '#lib';
-
-import { log } from '../../../lib/logger.js';
+import { builder, log, prisma } from '#lib';
+import { ReactableInterface } from '#modules/reactions/types';
 
 builder.mutationField('toggleReaction', (t) =>
-  t.boolean({
+  t.field({
+    type: ReactableInterface,
     args: {
       emoji: t.arg.string({ validate: { maxLength: 2 } }),
       documentId: t.arg.id({ required: false }),
@@ -32,6 +32,16 @@ builder.mutationField('toggleReaction', (t) =>
         commentId || documentId || articleId || eventId || '<nothing>',
         user,
       );
+      const count = await prisma.reaction.count({
+        where: {
+          emoji,
+          documentId,
+          articleId,
+          commentId,
+          eventId,
+        },
+      });
+
       const reaction = await prisma.reaction.findFirst({
         where: {
           emoji,
@@ -40,6 +50,12 @@ builder.mutationField('toggleReaction', (t) =>
           commentId,
           eventId,
           authorId: user!.id,
+        },
+        include: {
+          article: true,
+          comment: true,
+          document: true,
+          event: true,
         },
       });
       if (reaction) {
@@ -53,10 +69,15 @@ builder.mutationField('toggleReaction', (t) =>
             authorId: user!.id,
           },
         });
-        return false;
+        return {
+          id: articleId || commentId || documentId || eventId || '',
+          reacted: false,
+          reactions: count - 1,
+          ...(reaction.article ?? reaction.comment ?? reaction.document ?? reaction.event),
+        };
       }
 
-      await prisma.reaction.create({
+      const { article, comment, document, event } = await prisma.reaction.create({
         data: {
           emoji,
           document: documentId ? { connect: { id: documentId } } : undefined,
@@ -65,8 +86,19 @@ builder.mutationField('toggleReaction', (t) =>
           event: eventId ? { connect: { id: eventId } } : undefined,
           author: { connect: { id: user!.id } },
         },
+        include: {
+          article: true,
+          comment: true,
+          document: true,
+          event: true,
+        },
       });
-      return true;
+      return {
+        id: articleId || commentId || documentId || eventId || '',
+        reacted: true,
+        reactions: count + 1,
+        ...(article ?? comment ?? document ?? event),
+      };
     },
   }),
 );

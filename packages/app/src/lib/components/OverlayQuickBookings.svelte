@@ -1,6 +1,8 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
+  import { fragment, graphql, type OverlayQuickBookings } from '$houdini';
+  import { notNull } from '$lib/typing';
   import { addHours, formatDistanceToNow, isFuture, isWithinInterval, subMinutes } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
   import { swipe } from 'svelte-gestures';
@@ -11,25 +13,30 @@
   import ButtonGhost from './ButtonGhost.svelte';
   import CardTicket from './CardTicket.svelte';
 
-  type Registration = {
-    id: string;
-    code: unknown;
-    beneficiary: string;
-    authorIsBeneficiary: boolean;
-    paid: boolean;
-    cancelled: boolean;
-    opposed: boolean;
-    author?: { fullName: string } | undefined;
-    authorEmail: string;
-    beneficiaryUser?: { fullName: string } | undefined;
-    ticket: {
-      name: string;
-      event: { pictureFile: string; title: string; startsAt: Date; endsAt: Date };
-    };
-  };
-
-  export let registrationsOfUser: { edges: Array<{ node: Registration }> };
   export let now: Date;
+
+  type Registration = NonNullable<(typeof $data.nodes)[number]>;
+  export let bookings: OverlayQuickBookings;
+  $: data = fragment(
+    bookings,
+    graphql(`
+      fragment OverlayQuickBookings on UserBookingsConnection {
+        nodes {
+          ...CardTicket
+          code
+          id
+          cancelled
+          opposed
+          ticket {
+            event {
+              startsAt
+              endsAt
+            }
+          }
+        }
+      }
+    `),
+  );
 
   function shouldShowBooking(hiddens: string[], registration: Registration): boolean {
     try {
@@ -54,13 +61,13 @@
   const touchAction = 'pan-y pinch-zoom' as unknown as 'pan-y';
 </script>
 
-{#if registrationsOfUser?.edges.length > 0 && !$page.url.pathname.startsWith('/bookings')}
-  {@const registration = registrationsOfUser.edges[0].node}
+{#if $data.nodes.filter(notNull).length > 0 && !$page.url.pathname.startsWith('/bookings')}
+  {@const booking = $data.nodes.filter(notNull)[0]}
   <!-- If the quick booking is not hidden and:
       - it starts in less than 30 mins; or
       - it ongoing; or 
       - was finished less than 2 hours ago -->
-  {#if shouldShowBooking($hiddenBookings, registration)}
+  {#if shouldShowBooking($hiddenBookings, booking)}
     <section
       in:slide={{ axis: 'y', duration: 100 }}
       use:swipe={{ touchAction }}
@@ -78,29 +85,29 @@
 
         target.style.transform = `translateX(${movementX > 0 ? '+' : '-'}100vw)`;
         setTimeout(() => {
-          $hiddenBookings = [...$hiddenBookings, registration.id];
+          $hiddenBookings = [...$hiddenBookings, booking.id];
         }, 500);
       }}
       class="quick-booking"
     >
       <p class="hint">
         <strong>
-          C'est {#if isFuture(registration.ticket.event.startsAt)}
-            dans {formatDistanceToNow(registration.ticket.event.startsAt, {
+          C'est {#if isFuture(booking.ticket.event.startsAt)}
+            dans {formatDistanceToNow(booking.ticket.event.startsAt, {
               locale: fr,
             }).replace('environ ', '')}{:else}maintenant{/if}! Voici ta place
         </strong>
         <span class="dismiss">
           <ButtonGhost
             on:click={() => {
-              $hiddenBookings = [...$hiddenBookings, registration.id];
+              $hiddenBookings = [...$hiddenBookings, booking.id];
             }}
           >
             <IconClose></IconClose>
           </ButtonGhost>
         </span>
       </p>
-      <CardTicket floating href="/bookings/{registration.code}" {...registration}></CardTicket>
+      <CardTicket floating href="/bookings/{booking.code}" {booking}></CardTicket>
     </section>
   {/if}
 {/if}

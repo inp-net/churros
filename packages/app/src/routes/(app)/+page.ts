@@ -1,4 +1,4 @@
-import { load_Birthdays, load_MyGroups, load_PageHomeFeed, loadAll } from '$houdini';
+import { loadAll, load_Birthdays, load_MyGroups, load_PageHomeFeed } from '$houdini';
 
 export const ssr = true;
 

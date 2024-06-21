@@ -2,14 +2,6 @@ import { builder } from '#lib';
 import { CommentType } from '#modules/comments';
 import { CommentsConnectionType } from './comments-connection.js';
 
-// export class Commentable {
-//   comments: typeof CommentsConnectionType.$inferType;
-
-//   constructor(comments: typeof CommentsConnectionType.$inferType) {
-//     this.comments = comments;
-//   }
-// }
-
 interface Commentable {
   comments: typeof CommentsConnectionType.$inferType;
   id: string;
@@ -31,7 +23,3 @@ export const CommentableInterface = builder.interfaceRef<Commentable>('Commentab
     ),
   }),
 });
-
-// export const CommentableType = builder.unionType('Commentable', {
-//   types: [],
-// });

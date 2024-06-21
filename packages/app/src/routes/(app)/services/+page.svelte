@@ -6,11 +6,15 @@
   import { me } from '$lib/session';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
 
-  const { userServices, codeContributors } = data;
+  $: ({ PageServices } = data);
+  $: ({ codeContributors, userServices } = $PageServices.data ?? {
+    codeContributors: { __typename: 'Error', message: 'Loading...' },
+    userServices: [],
+  });
 </script>
 
 <div class="content">
@@ -57,7 +61,7 @@
         alt="net7"
       />
     </a>
-    {#if codeContributors.__typename === 'Error'}
+    {#if 'message' in codeContributors}
       <span class="credits">
         Impossible de récupérer les contributeurs: {codeContributors.message}
       </span>

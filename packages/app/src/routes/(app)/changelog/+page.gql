@@ -1,0 +1,22 @@
+query PageChangelog($latestVersion: String!) {
+  upcomingChangelog {
+    ... on QueryUpcomingChangelogSuccess {
+      data {
+        ...ModalChangelogRelease @mask_disable
+      }
+    }
+    ... on Error {
+      message
+    }
+  }
+  combinedChangelog(sort: Descending, from: "0.0.0", to: $latestVersion) {
+    ... on QueryCombinedChangelogSuccess {
+      data {
+        ...ModalChangelogRelease @mask_disable
+      }
+    }
+    ... on Error {
+      message
+    }
+  }
+}

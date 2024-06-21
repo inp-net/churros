@@ -1,35 +1,38 @@
 <script lang="ts">
-  import BadgeVisibility from '$lib/components/BadgeVisibility.svelte';
   import { env } from '$env/dynamic/public';
-  import IconNotifications from '~icons/mdi/bell-outline';
-  import IconGear from '~icons/mdi/gear-outline';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { formatEventDates } from '$lib/dates';
-  import type { PageData } from './$houdini';
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
-  import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import { graphql } from '$houdini';
   import AreaComments from '$lib/components/AreaComments.houdini.svelte';
-  import IconHeart from '~icons/mdi/heart-outline';
-  import IconHeartFilled from '~icons/mdi/heart';
-  import IconInfo from '~icons/mdi/information-outline';
-  import { isFuture, intlFormatDistance, formatDistance } from 'date-fns';
+  import BadgeVisibility from '$lib/components/BadgeVisibility.svelte';
+  import ButtonBack from '$lib/components/ButtonBack.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import { formatEventDates } from '$lib/dates';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
-  import fr from 'date-fns/locale/fr/index.js';
   import { tooltip } from '$lib/tooltip';
-  import { graphql } from '$houdini';
+  import { formatDistance, intlFormatDistance, isFuture } from 'date-fns';
+  import fr from 'date-fns/locale/fr/index.js';
+  import IconNotifications from '~icons/mdi/bell-outline';
+  import IconGear from '~icons/mdi/gear-outline';
+  import IconHeartFilled from '~icons/mdi/heart';
+  import IconHeart from '~icons/mdi/heart-outline';
+  import IconInfo from '~icons/mdi/information-outline';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
   $: ({ PagePostDetail } = data);
 
-  $: likes = $PagePostDetail.data?.article.reactionCounts['❤️'] ?? 0;
-  $: liked = $PagePostDetail.data?.article.myReactions['❤️'] ?? false;
-
   const ToggleLike = graphql(`
-    mutation ToggleLike($articleId: ID!) {
-      toggleReaction(articleId: $articleId, emoji: "❤️")
+    mutation PagePostDetail_ToggleLike($articleId: ID!) {
+      toggleReaction(articleId: $articleId, emoji: "❤️") {
+        ... on Article {
+          id
+          liked: reacted(emoji: "❤️")
+          likes: reactions(emoji: "❤️")
+        }
+      }
     }
   `);
 </script>
@@ -61,6 +64,8 @@
     event,
     notifiedAt,
     canBeEdited,
+    likes,
+    liked,
   } = $PagePostDetail.data.article}
   <div class="page" class:future={isFuture(publishedAt)}>
     <h1>
@@ -143,10 +148,14 @@
             on:click={async () => {
               try {
                 const result = await ToggleLike.mutate({ articleId: id });
-                liked = Boolean(result.data?.toggleReaction);
-                likes += liked ? 1 : -1;
-                // myReactions['❤️'] = toggleReaction;
-                // if (likes !== undefined) reactionCounts['❤️'] += toggleReaction ? 1 : -1;
+                if (!result.data) {
+                  toasts.error(
+                    'Impossible de réagir',
+                    result.errors
+                      ? result.errors.map((e) => e.message).join(', ')
+                      : 'Erreur inconnue',
+                  );
+                }
               } catch (error) {
                 toasts.error('Impossible de réagir', error?.toString());
               }

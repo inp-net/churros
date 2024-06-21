@@ -1,26 +1,36 @@
 <script lang="ts">
-  import IconIssue from '~icons/mdi/chat-alert-outline';
-  import IconNotif from '~icons/mdi/bell-outline';
-  import IconNotifFilled from '~icons/mdi/bell';
-  import IconSearch from '~icons/mdi/search';
-  import IconAccount from '~icons/mdi/account-circle-outline';
-
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import { me } from '$lib/session';
-  import { env } from '$env/dynamic/public';
-  import { page } from '$app/stores';
-  import { zeus } from '$lib/zeus';
-  import ButtonBack from './ButtonBack.svelte';
-  import { formatDate } from '$lib/dates';
-  import ButtonGhost from './ButtonGhost.svelte';
-  import { afterNavigate } from '$app/navigation';
-  import LogoChurros from './LogoChurros.svelte';
   import { browser } from '$app/environment';
-  import ModalReportIssue from './ModalReportIssue.svelte';
+  import { afterNavigate } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { env } from '$env/dynamic/public';
+  import { fragment, graphql, type NavigationTop } from '$houdini';
+  import { formatDate } from '$lib/dates';
   import { theme } from '$lib/theme';
+  import { zeus } from '$lib/zeus';
+  import IconAccount from '~icons/mdi/account-circle-outline';
+  import IconNotifFilled from '~icons/mdi/bell';
+  import IconNotif from '~icons/mdi/bell-outline';
+  import IconIssue from '~icons/mdi/chat-alert-outline';
+  import IconSearch from '~icons/mdi/search';
+  import ButtonBack from './ButtonBack.svelte';
+  import ButtonGhost from './ButtonGhost.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import LogoChurros from './LogoChurros.svelte';
+  import ModalReportIssue from './ModalReportIssue.svelte';
 
   export let scrolled = false;
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
+
+  export let user: NavigationTop | null;
+  $: data = fragment(
+    user,
+    graphql(`
+      fragment NavigationTop on User {
+        pictureFile
+        uid
+      }
+    `),
+  );
 
   let deviceWidth = browser ? window.innerWidth : 500;
 
@@ -85,7 +95,7 @@
         }}
         style="color:red"><IconIssue /></ButtonGhost
       >
-      {#if $me}
+      {#if $data}
         <ButtonGhost href="/notifications/" help="Notifications" style="color:var(--nav-text)">
           {#if $page.url.pathname === '/notifications/'}
             <IconNotifFilled />
@@ -95,9 +105,13 @@
         <ButtonGhost href="/search/" help="Rechercher" style="color:var(--nav-text)"
           ><IconSearch /></ButtonGhost
         >
-        <ButtonGhost href="/users/{$me?.uid}" help="Mon profil" style="color:var(--nav-text)">
-          {#if $me.pictureFile}
-            <img class="profilepic" src="{env.PUBLIC_STORAGE_URL}{$me.pictureFile}" alt="Profil" />
+        <ButtonGhost href="/users/{$data.uid}" help="Mon profil" style="color:var(--nav-text)">
+          {#if $data.pictureFile}
+            <img
+              class="profilepic"
+              src="{env.PUBLIC_STORAGE_URL}{$data.pictureFile}"
+              alt="Profil"
+            />
           {:else}
             <IconAccount />
           {/if}

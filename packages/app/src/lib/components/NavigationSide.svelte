@@ -1,33 +1,33 @@
 <script lang="ts">
-  import IconHomeOutline from '~icons/mdi/home-outline';
-  import IconPeople from '~icons/mdi/account-add-outline';
+  import { beforeNavigate } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { fragment, graphql, type NavigationSide } from '$houdini';
+  import { scrollToTop } from '$lib/scroll';
   import IconPeopleFilled from '~icons/mdi/account-add';
-  import IconSettings from '~icons/mdi/cog-outline';
-  import IconLogout from '~icons/mdi/logout';
-  import IconHome from '~icons/mdi/home';
-  import IconAddCircleOutline from '~icons/mdi/plus-circle-outline';
-  import IconAddCircle from '~icons/mdi/plus-circle';
-  import IconCalendarOutline from '~icons/mdi/calendar-blank-outline';
-  import IconCalendar from '~icons/mdi/calendar';
-  import IconDotsCircleOutline from '~icons/mdi/dots-horizontal-circle-outline';
-  import IconDotsCircle from '~icons/mdi/dots-horizontal-circle';
+  import IconPeople from '~icons/mdi/account-add-outline';
   import IconGroup from '~icons/mdi/account-group';
   import IconGroupOutline from '~icons/mdi/account-group-outline';
   import IconBarWeek from '~icons/mdi/beer-outline';
-  import IconAnnouncement from '~icons/mdi/bullhorn-outline';
-  import IconAnnouncementFilled from '~icons/mdi/bullhorn';
-  import IconArticle from '~icons/mdi/newspaper';
-  import IconEvent from '~icons/mdi/calendar-plus';
-  import IconTerminal from '~icons/mdi/console';
-  import IconBugOutline from '~icons/mdi/bug-outline';
   import IconBug from '~icons/mdi/bug';
+  import IconBugOutline from '~icons/mdi/bug-outline';
+  import IconAnnouncementFilled from '~icons/mdi/bullhorn';
+  import IconAnnouncement from '~icons/mdi/bullhorn-outline';
+  import IconCalendar from '~icons/mdi/calendar';
+  import IconCalendarOutline from '~icons/mdi/calendar-blank-outline';
+  import IconEvent from '~icons/mdi/calendar-plus';
+  import IconSettings from '~icons/mdi/cog-outline';
+  import IconTerminal from '~icons/mdi/console';
+  import IconDotsCircle from '~icons/mdi/dots-horizontal-circle';
+  import IconDotsCircleOutline from '~icons/mdi/dots-horizontal-circle-outline';
   import IconForms from '~icons/mdi/form';
   import IconFormsOutline from '~icons/mdi/form-outline';
-  import { beforeNavigate } from '$app/navigation';
-  import { me } from '$lib/session';
-  import { page } from '$app/stores';
+  import IconHome from '~icons/mdi/home';
+  import IconHomeOutline from '~icons/mdi/home-outline';
+  import IconLogout from '~icons/mdi/logout';
+  import IconArticle from '~icons/mdi/newspaper';
+  import IconAddCircle from '~icons/mdi/plus-circle';
+  import IconAddCircleOutline from '~icons/mdi/plus-circle-outline';
   import type { DESKTOP_NAVIGATION_TABS } from '../../routes/(app)/+layout.svelte';
-  import { scrollToTop } from '$lib/scroll';
   import LogoFrappe from './LogoFrappe.svelte';
 
   export let current: (typeof DESKTOP_NAVIGATION_TABS)[number];
@@ -36,6 +36,21 @@
   beforeNavigate(() => {
     flyoutOpen = false;
   });
+
+  export let user: NavigationSide | null;
+  $: data = fragment(
+    user,
+    graphql(`
+      fragment NavigationSide on User {
+        uid
+        external
+        canAccessDocuments
+        canEditGroups
+        admin
+        studentAssociationAdmin
+      }
+    `),
+  );
 </script>
 
 <nav
@@ -78,7 +93,7 @@
     <span>Clubs</span>
   </a>
 
-  {#if $me && !$me.external}
+  {#if $data && !$data.external}
     <button
       class="navigation-item"
       class:current={flyoutOpen}
@@ -108,7 +123,7 @@
     {/if}
     <span>Événements</span>
   </a>
-  {#if $me?.canAccessDocuments}
+  {#if $data?.canAccessDocuments}
     <a
       class="navigation-item"
       href="/frappe"
@@ -123,7 +138,7 @@
       <span>La Frappe</span>
     </a>
   {/if}
-  {#if $me}
+  {#if $data}
     <a
       href="/reports"
       class="navigation-item"
@@ -167,7 +182,7 @@
     <span>Les autres services</span>
   </a>
 
-  {#if $me?.admin || $me?.studentAssociationAdmin}
+  {#if $data?.admin || $data?.studentAssociationAdmin}
     <a
       href="/signups"
       class="navigation-item"
@@ -182,7 +197,7 @@
       <span>Inscriptions</span>
     </a>
   {/if}
-  {#if $me?.admin}
+  {#if $data?.admin}
     <a
       href="/announcements"
       class="navigation-item"
@@ -208,7 +223,7 @@
   {/if}
 
   <section class="bottom">
-    {#if $me}
+    {#if $data}
       <a
         href="/logout?token={$page.data.token}"
         class="navigation-item"
@@ -218,8 +233,8 @@
         <span>Se déconnecter</span>
       </a>
     {/if}
-    {#if $me}
-      <a href="/users/{$me.uid}/edit" class="navigation-item">
+    {#if $data}
+      <a href="/users/{$data.uid}/edit" class="navigation-item">
         <IconSettings></IconSettings>
         <span>Réglages</span>
       </a>
@@ -249,21 +264,21 @@
   role="presentation"
 >
   <section class="flyout" class:open={flyoutOpen}>
-    {#if $me?.admin || $me?.studentAssociationAdmin}
+    {#if $data?.admin || $data?.studentAssociationAdmin}
       <a href="/bar-weeks">
         <IconBarWeek />
         <span>Semaine de bar</span>
       </a>
     {/if}
 
-    {#if $me?.admin || $me?.canEditGroups || $me?.studentAssociationAdmin}
+    {#if $data?.admin || $data?.canEditGroups || $data?.studentAssociationAdmin}
       <a href="/groups/create">
         <IconGroupOutline />
         <span>Groupe</span>
       </a>
     {/if}
 
-    {#if $me?.admin}
+    {#if $data?.admin}
       <a href="/announcements/create">
         <IconAnnouncement />
         <span>Annonce</span>

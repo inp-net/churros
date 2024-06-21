@@ -20,6 +20,7 @@
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import type { PageData } from './$houdini';
   import ModalChangelog from '$lib/components/ModalChangelog.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
@@ -33,12 +34,14 @@
   import IconClose from '~icons/mdi/close';
   import Snowflake from '~icons/mdi/snowflake';
   import '../../design/app.scss';
-  import type { PageData, Snapshot } from './$types';
+  import type { Snapshot } from './$types';
 
   export let data: PageData;
-  let scrollableArea: HTMLElement;
+  $: ({ AppLayout } = data);
 
+  let scrollableArea: HTMLElement;
   let scrolled = false;
+
   let announcements = [] as Array<{
     title: string;
     bodyHtml: string;
@@ -129,22 +132,26 @@
 
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
+
+  let changelogAcknowledged = false;
 </script>
 
-{#if data.combinedChangelog.length > 0}
+{#if !changelogAcknowledged && $AppLayout.data?.combinedChangelog}
   <ModalChangelog
     on:acknowledge={() => {
-      data.combinedChangelog = [];
+      changelogAcknowledged = true;
     }}
     open
-    log={data.combinedChangelog}
+    log={$AppLayout.data?.combinedChangelog}
   />
 {/if}
 
-<OverlayQuickBookings {now} registrationsOfUser={data.registrationsOfUser}></OverlayQuickBookings>
+{#if $AppLayout.data?.me}
+  <OverlayQuickBookings {now} bookings={$AppLayout.data.me.bookings}></OverlayQuickBookings>
+{/if}
 
 <div class="layout">
-  <TopBar {scrolled} />
+  <TopBar {scrolled} user={$AppLayout.data?.me ?? null} />
 
   {#if $theme === 'noel'}
     {#each { length: 100 } as _}
@@ -155,7 +162,7 @@
   {/if}
 
   <div class="page-and-sidenav">
-    <NavigationSide current={currentTabDesktop($page.url)} />
+    <NavigationSide current={currentTabDesktop($page.url)} user={$AppLayout.data?.me ?? null} />
     <div
       id="scrollable-area"
       class="contents-and-announcements"

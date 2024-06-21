@@ -168,13 +168,17 @@
       <ButtonGhost
         on:click={async () => {
           try {
-            ({ toggleReaction: liked } = await $zeus.mutate({
+            ({
+              toggleReaction: { reacted: liked },
+            } = await $zeus.mutate({
               toggleReaction: [
                 {
                   articleId: id,
                   emoji: '❤️',
                 },
-                true,
+                {
+                  reacted: [{ emoji: '❤️' }, true],
+                },
               ],
             }));
             if (likes !== undefined) likes += liked ? 1 : -1;
