@@ -2,5 +2,10 @@ bot:
   rules:
     - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
   stage: build # TODO move to stage: test when houdinification is complete
-  image: harbor.inpt.fr/net7_public/churros-git-bot:latest
-  script: bundle exec churros_git_bot $CI_PROJECT_ID $CI_MERGE_REQUEST_IID $CI_PROJECT_URL
+  image:
+    name: harbor.k8s.inpt.fr/net7_public/churros-git-bot:latest
+    entrypoint:
+      - /usr/bin/env
+  script:
+    - cd /app
+    - bundle exec churros_git_bot $CI_PROJECT_ID $CI_MERGE_REQUEST_IID $CI_PROJECT_URL

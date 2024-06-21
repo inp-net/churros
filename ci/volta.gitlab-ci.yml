@@ -16,6 +16,9 @@
 build:
   stage: build
   extends: .volta
+  # see https://gitlab.com/gitlab-org/gitlab/-/issues/194129
+  rules:
+    - if: '$CI'
   script:
     - yarn build
 
