@@ -1,7 +1,7 @@
 import { type Context } from '#lib';
 import { canScanBookings } from '#modules/ticketing';
 import { onBoard, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
-import type { Event, EventManager, Group } from '@prisma/client';
+import type { Event, EventManager, Group } from '@centraverse/db/prisma';
 
 export function canEdit(
   event: Event & { managers: EventManager[]; group: { studentAssociationId: string | null } },

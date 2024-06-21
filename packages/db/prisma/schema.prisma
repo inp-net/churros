@@ -7,8 +7,9 @@ generator client {
 // See https://pothos-graphql.dev/docs/plugins/prisma#setup
 generator pothos {
   provider     = "prisma-pothos-types"
+  clientOutput = "@centraverse/db/prisma"
   output       = "../src/pothos/index.d.ts"
-  clientOutput = "../client"
+  prismaUtils  = true
 }
 
 datasource db {

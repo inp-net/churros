@@ -1,7 +1,7 @@
 // TODO rename to articles
 import { builder, prisma, subscriptionName } from '#lib';
 import { prismaQueryAccessibleArticles, prismaQueryVisibleEvents } from '#permissions';
-import { Visibility } from '@prisma/client';
+import { Visibility } from '@centraverse/db/prisma';
 import { ArticleType } from '../index.js';
 
 builder.queryField('homepage', (t) =>

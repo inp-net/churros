@@ -1,4 +1,4 @@
-import { PrismaClient, PromotionType, type Event, type Group } from '@prisma/client';
+import { PrismaClient, PromotionType, type Event, type Group } from '@centraverse/db/prisma';
 
 function usage(): never {
   console.error(

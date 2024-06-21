@@ -1,6 +1,6 @@
 import { builder, fullTextSearch, prisma } from '#lib';
+import type { Answer, User } from '@centraverse/db/prisma';
 import { resolveArrayConnection, resolveOffsetConnection } from '@pothos/plugin-relay';
-import type { Answer, User } from '@prisma/client';
 import groupBy from 'lodash.groupby';
 import { answerTypePrismaIncludes } from '../types/answer.js';
 import { FormType } from '../types/form.js';

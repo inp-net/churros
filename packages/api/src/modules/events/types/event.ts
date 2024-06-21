@@ -9,7 +9,7 @@ import {
   prismaQueryAccessibleArticles,
   userCanSeeTicket,
 } from '#permissions';
-import { PaymentMethod } from '@prisma/client';
+import { PaymentMethod } from '@centraverse/db/prisma';
 import { EventFrequencyType, eventCapacity } from '../index.js';
 import { canEdit, canEditManagers, canSeeBookings, canSeePlacesLeftCount } from '../utils/index.js';
 

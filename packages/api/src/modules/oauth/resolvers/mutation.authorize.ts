@@ -6,7 +6,7 @@ import {
   prisma,
   updateCreatedTokensCount,
 } from '#lib';
-import { ThirdPartyCredentialType } from '@prisma/client';
+import { ThirdPartyCredentialType } from '@centraverse/db/prisma';
 import { GraphQLError } from 'graphql';
 import { OAuth2Error, OAuth2ErrorCode, generateThirdPartyToken, normalizeUrl } from '../index.js';
 // TODO rename to authorize-third-party-app

@@ -1,4 +1,4 @@
-import type { User } from '@prisma/client';
+import type { User } from '@centraverse/db/prisma';
 import type { Context } from './context.js';
 
 export interface AuthScopes {

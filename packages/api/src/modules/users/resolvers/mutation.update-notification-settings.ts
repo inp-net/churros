@@ -1,6 +1,6 @@
 import { builder, objectValuesFlat, prisma } from '#lib';
 
-import { NotificationChannel } from '@prisma/client';
+import { NotificationChannel } from '@centraverse/db/prisma';
 import { userIsAdminOf } from '../../../permissions/index.js';
 
 builder.mutationField('updateNotificationSettings', (t) =>

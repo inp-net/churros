@@ -3,7 +3,7 @@ import { builder, prisma, purgeUserSessions } from '#lib';
 import { addMemberToGroupMailingList } from '#modules/mails';
 import { fullName } from '#modules/users';
 import { userIsAdminOf, userIsGroupEditorOf } from '#permissions';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
+import { PrismaClientKnownRequestError } from '@centraverse/db/prisma/runtime/library';
 import { GraphQLError } from 'graphql';
 import { GroupMemberType, membersNeedToPayForTheStudentAssociation } from '../index.js';
 

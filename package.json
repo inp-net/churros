@@ -43,7 +43,7 @@
   "packageManager": "yarn@4.2.2",
   "private": true,
   "scripts": {
-    "build": "yarn cp-env && yarn generate-buildinfo && yarn workspaces foreach --exclude @centraverse/docs --interlaced --topological-dev -Apv run build",
+    "build": "yarn cp-env && yarn generate-buildinfo && yarn dotenv -- yarn workspaces foreach --exclude @centraverse/docs --interlaced --topological-dev -Apv run build",
     "cp-env": "test -f .env || cp .env.example .env && cp .env packages/api/ && cp .env packages/app/",
     "dev": "yarn sync-with-example-dotenv && yarn cp-env && docker compose up -d && yarn dotenv -- yarn workspaces foreach -Apiv run dev",
     "format": "prettier . --write --ignore-unknown",

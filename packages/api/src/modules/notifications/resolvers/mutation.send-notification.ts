@@ -2,7 +2,7 @@ import { builder, inDevelopment, isThirdPartyToken, prisma } from '#lib';
 import {
   NotificationChannel as NotificationChannelPrisma,
   ThirdPartyCredentialType,
-} from '@prisma/client';
+} from '@centraverse/db/prisma';
 import { notify, type PushNotification } from '../index.js';
 
 builder.mutationField('sendNotification', (t) =>

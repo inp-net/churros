@@ -1,6 +1,6 @@
 import type { Context } from '#lib';
 import { onBoard, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
-import { GroupType, Prisma, type Group, type StudentAssociation } from '@prisma/client';
+import { GroupType, Prisma, type Group, type StudentAssociation } from '@centraverse/db/prisma';
 
 export const requiredPrismaIncludesForPermissions = {
   studentAssociation: true,

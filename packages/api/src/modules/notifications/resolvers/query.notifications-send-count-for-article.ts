@@ -1,6 +1,9 @@
 import { builder, prisma } from '#lib';
 import { VisibilityEnum } from '#modules/global';
-import { NotificationChannel as NotificationChannelPrisma, Visibility } from '@prisma/client';
+import {
+  NotificationChannel as NotificationChannelPrisma,
+  Visibility,
+} from '@centraverse/db/prisma';
 import { userUniqueSubscriptionsCount } from '../index.js';
 // TODO rename to article.notification-send-count
 

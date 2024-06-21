@@ -38,8 +38,8 @@ const { rateLimitDirectiveTransformer } = rateLimitDirective({
   keyGenerator: (dargs, src, args, ctx: Context, info) => {
     return `${ctx.user?.uid}:${defaultKeyGenerator(dargs, src, args, ctx, info)}`;
   },
-  onLimit(response, dargs, src, args, ctx, info) {
-    updateRateLimitHit({
+  async onLimit(response, dargs, src, args, ctx, info) {
+    await updateRateLimitHit({
       queryName: info.fieldName,
       queryType: info.parentType.name,
       token: ctx.token,

@@ -1,4 +1,4 @@
-import { Visibility, type Prisma } from '@prisma/client';
+import { Visibility, type Prisma } from '@centraverse/db/prisma';
 import type { Context } from '../lib/index.js';
 import {
   prismaGroupFilterForStudentAssociationAdmins,

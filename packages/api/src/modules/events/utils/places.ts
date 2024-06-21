@@ -1,4 +1,4 @@
-import type { Ticket, TicketGroup } from '@prisma/client';
+import type { Ticket, TicketGroup } from '@centraverse/db/prisma';
 
 export function eventCapacity(
   tickets: Array<Ticket & { group: TicketGroup | null }>,

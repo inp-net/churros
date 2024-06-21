@@ -1,6 +1,12 @@
 import { prisma } from '#lib';
+import {
+  type Group,
+  type GroupMember,
+  type Major,
+  type School,
+  type User,
+} from '@centraverse/db/prisma';
 import type { MaybePromise } from '@pothos/core';
-import { type Group, type GroupMember, type Major, type School, type User } from '@prisma/client';
 import { Cron } from 'croner';
 import { nanoid } from 'nanoid';
 import type { PushNotification } from './push-notification.js';

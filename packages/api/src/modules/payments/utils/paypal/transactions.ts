@@ -1,4 +1,4 @@
-import { PayPalTransactionStatus } from '@prisma/client';
+import { PayPalTransactionStatus } from '@centraverse/db/prisma';
 
 const { PUBLIC_PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PUBLIC_PAYPAL_API_BASE_URL } = process.env;
 

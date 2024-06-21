@@ -1,5 +1,5 @@
 import { builder, prisma, type SearchResult } from '#lib';
-import type { Answer } from '@prisma/client';
+import type { Answer } from '@centraverse/db/prisma';
 import { AnswerType } from './answer.js';
 
 export const AnswerSearchResultType = builder

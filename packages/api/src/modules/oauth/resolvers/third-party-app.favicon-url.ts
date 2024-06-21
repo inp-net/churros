@@ -1,5 +1,5 @@
 import { builder, prisma, splitID } from '#lib';
-import type { ThirdPartyApp as ThirdPartyAppPrisma } from '@prisma/client';
+import type { ThirdPartyApp as ThirdPartyAppPrisma } from '@centraverse/db/prisma';
 import { createWriteStream } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import * as https from 'node:https';

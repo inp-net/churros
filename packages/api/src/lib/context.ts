@@ -1,7 +1,6 @@
 import { prisma } from '#lib';
 import { fullName } from '#modules/users';
 import { onBoard } from '#permissions';
-import type { YogaInitialContext } from '@graphql-yoga/node';
 import {
   CredentialType,
   ThirdPartyCredentialType,
@@ -13,7 +12,8 @@ import {
   type School,
   type StudentAssociation,
   type User,
-} from '@prisma/client';
+} from '@centraverse/db/prisma';
+import type { YogaInitialContext } from '@graphql-yoga/node';
 import { GraphQLError } from 'graphql';
 import { isThirdPartyToken } from './auth.js';
 import { yearTier } from './date.js';

@@ -1,8 +1,8 @@
 import { prisma } from '#lib';
 
 import { serverCanSendNotificationToUser } from '#permissions';
+import { Prisma, type NotificationSubscription, type User } from '@centraverse/db/prisma';
 import type { MaybePromise } from '@pothos/core';
-import { Prisma, type NotificationSubscription, type User } from '@prisma/client';
 import webpush, { WebPushError } from 'web-push';
 import { setVapidDetails } from '../index.js';
 import type { PushNotification } from './push-notification.js';
