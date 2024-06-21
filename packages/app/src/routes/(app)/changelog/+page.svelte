@@ -5,17 +5,26 @@
     COLOR_THEME_BY_CHANGELOG_CATEGORY,
     BULLET_EMOJI_BY_CHANGELOG_CATEGORY,
   } from '$lib/components/ModalChangelog.svelte';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import { me } from '$lib/session';
 
   export let data: PageData;
+  $: ({ PageChangelog } = data);
+  $: upcomingChangelog =
+    $PageChangelog.data?.upcomingChangelog && 'data' in $PageChangelog.data.upcomingChangelog
+      ? $PageChangelog.data.upcomingChangelog.data
+      : undefined;
+  $: combinedChangelog =
+    $PageChangelog.data?.combinedChangelog && 'data' in $PageChangelog.data.combinedChangelog
+      ? $PageChangelog.data.combinedChangelog.data
+      : [];
 
   type Category = (typeof ORDER_CHANGELOG_CATEGORIES)[number];
 
   function changesByCategory(
-    version: Omit<(typeof data.combinedChangelog)[number], 'description'>,
-  ): Array<[Category, (typeof data.combinedChangelog)[number]['changes'][Category]]> {
+    version: Omit<(typeof combinedChangelog)[number], 'description'>,
+  ): Array<[Category, (typeof combinedChangelog)[number]['changes'][Category]]> {
     const isDev = $me?.groups.some((g) => g.group.uid === 'devs');
     // @ts-expect-error classic case of Object.entries being too dumb. using a "as" cast causes a syntax error for the Svelte parser for some reason
     return Object.entries(version.changes)
@@ -27,11 +36,11 @@
 <main>
   <h1>Changelog</h1>
 
-  {#if data.upcomingChangelog && changesByCategory(data.upcomingChangelog).length > 0}
+  {#if upcomingChangelog && changesByCategory(upcomingChangelog).length > 0}
     <Alert theme="default">
       <details>
         <summary> Prochainement </summary>
-        {#each changesByCategory(data.upcomingChangelog) as [category, changes]}
+        {#each changesByCategory(upcomingChangelog) as [category, changes]}
           <h3 class={COLOR_THEME_BY_CHANGELOG_CATEGORY[category]}>
             {DISPLAY_CHANGELOG_CATEGORIES.get(category)}
           </h3>
@@ -53,7 +62,7 @@
     </Alert>
   {/if}
 
-  {#each data.combinedChangelog as version}
+  {#each combinedChangelog as version}
     <h2 id="v{version.version}">
       Version {version.version}
       {#if version.date}

@@ -1,15 +1,17 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
+  import InputText from '$lib/components/InputText.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { closestMonday } from '$lib/dates';
+  import { notNull } from '$lib/typing';
   import { format } from 'date-fns';
-  import type { PageData } from './$types';
-  import { me } from '$lib/session';
-  import { goto } from '$app/navigation';
-  import InputText from '$lib/components/InputText.svelte';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
+  $: ({ PageBookings } = data);
+
   let code = '';
 </script>
 
@@ -21,11 +23,11 @@
   ]}
 />
 
-{#if $me}
+{#if $PageBookings.data?.me}
   <ul class="nobullet">
-    {#each data.registrationsOfUser?.edges ?? [] as { node, node: { id } }}
+    {#each $PageBookings.data.me.bookings.nodes.filter(notNull) as booking (booking.id)}
       <li>
-        <CardTicket href="/bookings/{id.replace(/^r:/, '')}/" {...node} />
+        <CardTicket href="/bookings/{booking.code}/" {booking} />
       </li>
     {/each}
   </ul>

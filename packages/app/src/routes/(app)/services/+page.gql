@@ -1,0 +1,27 @@
+query PageServices {
+  userServices {
+    name
+    url
+    description
+    logo
+    logoSourceType
+    id
+    group {
+      pictureFile
+      pictureFileDark
+    }
+  }
+
+  codeContributors {
+    __typename
+    ... on Error {
+      message
+    }
+
+    ... on QueryCodeContributorsSuccess {
+      data {
+        id
+      }
+    }
+  }
+}

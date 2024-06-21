@@ -1,12 +1,12 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
-  import type { EventFrequency$options, Visibility$options } from '$houdini';
+  import { Visibility, fragment, graphql, type CardArticle } from '$houdini';
   import { formatEventDates } from '$lib/dates';
   import { DISPLAY_VISIBILITIES } from '$lib/display';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
-  import { Visibility, zeus, type EventFrequency } from '$lib/zeus';
+  import { zeusVisibility } from '$lib/typing';
   import { intlFormatDistance, isFuture } from 'date-fns';
   import IconHeartFilled from '~icons/mdi/heart';
   import IconHeart from '~icons/mdi/heart-outline';
@@ -14,34 +14,78 @@
   import ButtonGhost from './ButtonGhost.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
-  import { zeusVisibility } from '$lib/typing';
 
-  export let id: string;
-  export let likes: number | undefined = undefined;
-  export let liked = false;
-  export let event:
-    | {
-        title: string;
-        href: string;
-        pictureFile: string;
-        location: string;
-        startsAt: Date;
-        endsAt: Date;
-        frequency: EventFrequency | EventFrequency$options;
-        recurringUntil?: Date | undefined | null;
+  const ToggleLike = graphql(`
+    mutation CardArticle_ToggleLike($articleId: ID!) {
+      toggleReaction(articleId: $articleId, emoji: "❤️") {
+        ... on Article {
+          ...CardArticle
+        }
       }
-    | undefined = undefined;
-  export let visibility: Visibility | Visibility$options | undefined = undefined;
-  export let title: string;
-  export let href: string;
-  export let bodyPreview: string;
-  export let publishedAt: Date;
-  export let links: Array<{ value: string; name: string; computedValue: string }> = [];
-  export let group: { uid: string; name: string; pictureFile: string; pictureFileDark: string };
-  export let author: { uid: string; fullName: string; pictureFile: string } | undefined = undefined;
-  export let img: { src: string; alt?: string; width?: number; height?: number } | undefined =
-    undefined;
+    }
+  `);
+
+  export let article: CardArticle;
+  $: data = fragment(
+    article,
+    graphql(`
+      fragment CardArticle on Article {
+        id
+        title
+        bodyPreview
+        publishedAt
+        pictureURL
+        liked: reacted(emoji: "❤️")
+        likes: reactions(emoji: "❤️")
+        links {
+          computedValue
+          name
+        }
+        group {
+          uid
+          name
+          pictureFile
+          pictureFileDark
+        }
+        author {
+          uid
+          fullName
+          pictureFile
+        }
+        event {
+          title
+          uid
+          group {
+            uid
+          }
+          pictureFile
+          location
+          startsAt
+          endsAt
+          frequency
+          recurringUntil
+        }
+        visibility
+      }
+    `),
+  );
+  $: ({
+    id,
+    title,
+    bodyPreview,
+    publishedAt,
+    liked,
+    likes,
+    links,
+    group,
+    author,
+    event,
+    visibility,
+    pictureURL,
+  } = $data);
+
   export let hideGroup = false;
+  export let href: string;
 
   $: authorSrc = hideGroup
     ? author
@@ -81,10 +125,10 @@
           <span class="date">
             {intlFormatDistance(publishedAt, new Date())}
           </span>
-          {#if visibility && ![Visibility.Public, Visibility.SchoolRestricted].includes(zeusVisibility(visibility))}
+          {#if visibility && visibility !== Visibility.Public && visibility !== Visibility.SchoolRestricted}
             <span class="visibility">
               <IndicatorVisibility {visibility}></IndicatorVisibility>
-              {DISPLAY_VISIBILITIES[visibility]}
+              {DISPLAY_VISIBILITIES[zeusVisibility(visibility)]}
             </span>
           {/if}
         </header>
@@ -94,7 +138,7 @@
         </p>
         {#if event}
           <a
-            href={event.href}
+            href="/events/{event.group.uid}/{event.uid}"
             class="event"
             style:background-image="url({env.PUBLIC_STORAGE_URL}{event.pictureFile})"
           >
@@ -111,8 +155,8 @@
               </p>
             </div>
           </a>
-        {:else if img}
-          <img {...img} alt={img.alt ?? `Image de ${title}`} class="image" />
+        {:else if pictureURL}
+          <img src={pictureURL} alt="Image de {title}" class="image" />
         {/if}
         {#if links.length > 0}
           <ul class="links nobullet">
@@ -130,23 +174,14 @@
     <section class="likes">
       <ButtonGhost
         on:click={async () => {
-          try {
-            ({
-              toggleReaction: { reacted: liked },
-            } = await $zeus.mutate({
-              toggleReaction: [
-                {
-                  articleId: id,
-                  emoji: '❤️',
-                },
-                {
-                  reacted: [{ emoji: '❤️' }, true],
-                },
-              ],
-            }));
-            if (likes !== undefined) likes += liked ? 1 : -1;
-          } catch (error) {
-            toasts.error('Impossible de réagir', error?.toString());
+          const result = await ToggleLike.mutate({
+            articleId: id,
+          });
+          if (!result.data) {
+            toasts.error(
+              'Impossible de réagir',
+              result.errors ? result.errors.map((e) => e.message).join(', ') : 'Erreur inconnue',
+            );
           }
         }}
       >

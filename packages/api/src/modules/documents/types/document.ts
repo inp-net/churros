@@ -1,6 +1,7 @@
-import { builder, toHtml } from '#lib';
+import { builder, prisma, toHtml } from '#lib';
 import { CommentType, CommentableInterface, CommentsConnectionType } from '#modules/comments';
 import { DateTimeScalar } from '#modules/global';
+import { ReactableInterface } from '#modules/reactions';
 import { DocumentTypeEnum } from '../index.js';
 
 export const DocumentType = builder.prismaNode('Document', {
@@ -8,6 +9,8 @@ export const DocumentType = builder.prismaNode('Document', {
   interfaces: [
     // @ts-expect-error dunno why it complainnns
     CommentableInterface,
+    // @ts-expect-error dunno why it complainnns
+    ReactableInterface,
   ],
   fields: (t) => ({
     uid: t.exposeString('uid'),
@@ -42,5 +45,31 @@ export const DocumentType = builder.prismaNode('Document', {
       },
       CommentsConnectionType,
     ),
+    reacted: t.boolean({
+      args: { emoji: t.arg.string() },
+      async resolve({ id }, { emoji }, { user }) {
+        if (!user) return false;
+        return Boolean(
+          await prisma.reaction.findFirst({
+            where: {
+              documentId: id,
+              emoji,
+              authorId: user.id,
+            },
+          }),
+        );
+      },
+    }),
+    reactions: t.int({
+      args: { emoji: t.arg.string() },
+      async resolve({ id }, { emoji }) {
+        return prisma.reaction.count({
+          where: {
+            documentId: id,
+            emoji,
+          },
+        });
+      },
+    }),
   }),
 });

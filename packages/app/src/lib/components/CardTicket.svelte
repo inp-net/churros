@@ -3,18 +3,51 @@
   import IconCancelled from '~icons/mdi/cancel';
   import CashClock from '~icons/mdi/cash-clock';
   import { env } from '$env/dynamic/public';
+  import { fragment, graphql, type CardTicket } from '$houdini';
 
   export let href: string;
-  export let ticket: { name: string; event: { pictureFile: string; title: string } };
-  export let beneficiary: string;
-  export let beneficiaryUser: undefined | { fullName: string } = undefined;
-  export let authorIsBeneficiary: boolean;
-  export let author: undefined | { fullName: string } = undefined;
-  export let authorEmail: string;
-  export let paid: boolean;
-  export let cancelled: boolean;
-
   export let floating = false;
+
+  export let booking: CardTicket;
+  $: data = fragment(
+    booking,
+    graphql(`
+      fragment CardTicket on Registration {
+        id
+        code
+        beneficiary
+        authorIsBeneficiary
+        paid
+        cancelled
+        opposed
+        author {
+          fullName
+        }
+        authorEmail
+        beneficiaryUser {
+          fullName
+        }
+        ticket {
+          name
+          event {
+            pictureFile
+            title
+          }
+        }
+      }
+    `),
+  );
+
+  $: ({
+    ticket,
+    author,
+    authorEmail,
+    beneficiary,
+    beneficiaryUser,
+    cancelled,
+    paid,
+    authorIsBeneficiary,
+  } = $data);
 </script>
 
 <a

@@ -1,24 +1,26 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
-  import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
-  import Toast from '$lib/components/Toast.svelte';
+  import AnalyticsTracker from '$lib/components/AnalyticsTracker.svelte';
   import ModalThemeVariables from '$lib/components/ModalThemeVariables.svelte';
+  import Toast from '$lib/components/Toast.svelte';
   import { debugging, themeDebugger } from '$lib/debugging';
-  import { isPWA } from '$lib/pwa';
-  import { me } from '$lib/session';
-  import { isDark, theme } from '$lib/theme.js';
+  import { theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
   import '../design/app.scss';
+  import type { LayoutData } from './$houdini';
+
+  export let data: LayoutData;
+  $: ({ RootLayout } = data);
 
   onMount(() => {
-    if (!$me && !localStorage.getItem('isReallyLoggedout')) {
-      localStorage.setItem('isReallyLoggedout', 'true');
-      window.location.reload();
-    } else if ($me) {
-      localStorage.removeItem('isReallyLoggedout');
-    }
+    // if (!$me && !localStorage.getItem('isReallyLoggedout')) {
+    //   localStorage.setItem('isReallyLoggedout', 'true');
+    //   window.location.reload();
+    // } else if ($me) {
+    //   localStorage.removeItem('isReallyLoggedout');
+    // }
 
     debugging.subscribe(($debugging) => {
       document.documentElement.classList.toggle('rainbow-logo', $debugging);
@@ -84,25 +86,7 @@
 
 <svelte:head>
   <title>Churros</title>
-  <script
-    defer
-    src="https://stats.ewen.works/js/script.pageview-props.outbound-links.js"
-    data-domain="churros.inpt.fr"
-  ></script>
-  <script
-    async
-    src="https://stats.inpt.fr/script.js"
-    data-website-id="e3bd5b08-b0a3-47ff-a274-1df9ba831c3e"
-    data-domains="churros.inpt.fr"
-    data-loggedin={$me ? 'true' : 'false'}
-    data-theme={$theme}
-    data-darkmode={$isDark ? 'true' : 'false'}
-    data-version={CURRENT_VERSION}
-    data-commit={CURRENT_COMMIT}
-    data-user-major={$me?.major?.shortName ?? '(none)'}
-    data-user-year-tier={$me?.yearTier ? `${$me.yearTier}A` : '(none)'}
-    data-context={isPWA() ? 'pwa' : 'browser'}
-  ></script>
+  <AnalyticsTracker user={$RootLayout.data?.me ?? null} />
 </svelte:head>
 
 {#if browser}

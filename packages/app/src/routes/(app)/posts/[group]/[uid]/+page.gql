@@ -16,8 +16,8 @@ query PagePostDetail($group: String!, $uid: String!) {
       pictureFileDark
     }
     pictureFile
-    myReactions
-    reactionCounts
+    liked: reacted(emoji: "❤️")
+    likes: reactions(emoji: "❤️")
     ...AreaComments
     event {
       id

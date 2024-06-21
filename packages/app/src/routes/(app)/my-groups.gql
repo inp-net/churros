@@ -1,5 +1,5 @@
-query MyGroups {
-  me @loading {
+query MyGroups($loggedIn: LoggedIn!) {
+  me @loading @include(if: $loggedIn) {
     groups @loading(count: 3) {
       group @loading {
         name

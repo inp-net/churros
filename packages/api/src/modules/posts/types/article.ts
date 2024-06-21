@@ -1,6 +1,7 @@
 import { builder, htmlToText, prisma, toHtml } from '#lib';
 import { CommentableInterface } from '#modules/comments';
 import { DateTimeScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
+import { ReactableInterface } from '#modules/reactions';
 import { canEditArticle } from '../utils/permissions.js';
 
 export const ArticleType = builder.prismaNode('Article', {
@@ -9,6 +10,8 @@ export const ArticleType = builder.prismaNode('Article', {
     // @ts-expect-error dunno why it complainnns
     CommentableInterface,
     PicturedInterface,
+    // @ts-expect-error dunno why it complainnns
+    ReactableInterface,
   ],
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
@@ -41,6 +44,32 @@ export const ArticleType = builder.prismaNode('Article', {
         "Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)",
       resolve: ({ authorId, groupId }, _, { user }) =>
         canEditArticle({ authorId, groupId }, { authorId, groupId }, user),
+    }),
+    reacted: t.boolean({
+      args: { emoji: t.arg.string() },
+      async resolve({ id }, { emoji }, { user }) {
+        if (!user) return false;
+        return Boolean(
+          await prisma.reaction.findFirst({
+            where: {
+              articleId: id,
+              emoji,
+              authorId: user.id,
+            },
+          }),
+        );
+      },
+    }),
+    reactions: t.int({
+      args: { emoji: t.arg.string() },
+      async resolve({ id }, { emoji }) {
+        return prisma.reaction.count({
+          where: {
+            articleId: id,
+            emoji,
+          },
+        });
+      },
     }),
     myReactions: t.field({
       type: 'BooleanMap',

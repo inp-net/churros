@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import CardArticle from '$lib/components/CardArticle.svelte';
+  import CardArticle from '$lib/components/CardArticle.houdini.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import { infinitescroll } from '$lib/scroll';
@@ -10,7 +9,7 @@
   import type { PageData } from './$houdini';
 
   export let data: PageData;
-  $: ({ PageHomeFeed, MyGroups, Birthdays } = data);
+  $: ({ PageHomeFeed, Birthdays, MyGroups } = data);
 
   let selectedBirthdaysYearTier = 'all';
 
@@ -29,7 +28,7 @@
 
 <h1>Mon feed</h1>
 
-{#if $MyGroups.data}
+{#if $MyGroups.data?.me}
   <section class="groups">
     <CarouselGroups groups={$MyGroups.data.me.groups.map(({ group }) => group) ?? []} />
   </section>
@@ -70,18 +69,8 @@
 {/if}
 
 <section class="articles" use:infinitescroll={async () => await PageHomeFeed.loadNextPage()}>
-  {#each $PageHomeFeed.data?.homepage?.edges.filter(notNull) ?? [] as { node: item } (item.id)}
-    {@const { id, uid, pictureFile, group, reactionCounts, myReactions, event, ...rest } = item}
-    <CardArticle
-      {...rest}
-      {id}
-      {group}
-      likes={reactionCounts['❤️'] ?? 0}
-      liked={myReactions['❤️']}
-      event={event ? { href: `/events/${event.group.uid}/${event.uid}`, ...event } : undefined}
-      href="/posts/{group.uid}/{uid}/"
-      img={pictureFile ? { src: `${env.PUBLIC_STORAGE_URL}${pictureFile}` } : undefined}
-    />
+  {#each $PageHomeFeed.data?.homepage?.edges.filter(notNull) ?? [] as { node: article } (article.id)}
+    <CardArticle {article} href="/posts/{article.group.uid}/{article.uid}/" />
   {/each}
   <div class="scroll-end">
     {#if $PageHomeFeed.pageInfo.hasNextPage}

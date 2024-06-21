@@ -27,35 +27,80 @@
 </script>
 
 <script lang="ts">
-  import Modal from './Modal.svelte';
-  import LogoChurros from './LogoChurros.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
+  import { fragment, graphql, type ModalChangelog } from '$houdini';
   import { DISPLAY_CHANGELOG_CATEGORIES, ORDER_CHANGELOG_CATEGORIES } from '$lib/display';
-  import { zeus } from '$lib/zeus';
   import { createEventDispatcher } from 'svelte';
-  import { toasts } from '$lib/toasts';
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import LogoChurros from './LogoChurros.svelte';
+  import Modal from './Modal.svelte';
 
   const dispatch = createEventDispatcher();
 
   export let open: boolean;
-  export let log: Array<{
-    date?: Date | undefined;
-    version: string;
-    description: string;
-    changes: Record<
-      (typeof ORDER_CHANGELOG_CATEGORIES)[number],
-      Array<{
-        html: string;
-        issues: number[];
-      }>
-    >;
-  }>;
+
+  graphql(`
+    fragment ModalChangelogChange on ReleaseChange {
+      authors
+      issues
+      mergeRequests
+      reporters
+      html
+    }
+  `);
+
+  graphql(`
+    fragment ModalChangelogRelease on ChangelogRelease {
+      version
+      date
+      description
+      changes {
+        added {
+          ...ModalChangelogChange @mask_disable
+        }
+        fixed {
+          ...ModalChangelogChange @mask_disable
+        }
+        improved {
+          ...ModalChangelogChange @mask_disable
+        }
+        other {
+          ...ModalChangelogChange @mask_disable
+        }
+        security {
+          ...ModalChangelogChange @mask_disable
+        }
+        technical {
+          ...ModalChangelogChange @mask_disable
+        }
+      }
+    }
+  `);
+
+  export let log: ModalChangelog | null;
+  $: data = fragment(
+    log,
+    graphql(`
+      fragment ModalChangelog on QueryCombinedChangelogResult {
+        ... on Error {
+          message
+        }
+
+        ... on QueryCombinedChangelogSuccess {
+          data {
+            ...ModalChangelogRelease @mask_disable
+          }
+        }
+      }
+    `),
+  );
+  $: changes = $data && 'data' in $data ? $data.data : [];
+
   let element: HTMLDialogElement;
 
-  function flattenVersions(versions: typeof log) {
+  function flattenVersions(versions: typeof changes) {
     const byCategory = Object.fromEntries(
       ORDER_CHANGELOG_CATEGORIES.map((c) => [c, []]),
-    ) as unknown as (typeof log)[number]['changes'];
+    ) as unknown as (typeof changes)[number]['changes'];
 
     for (const version of versions) {
       for (const category of ORDER_CHANGELOG_CATEGORIES) {
@@ -65,15 +110,15 @@
     }
 
     return [...Object.entries(byCategory)] as Array<
-      [(typeof ORDER_CHANGELOG_CATEGORIES)[number], (typeof log)[number]['changes']['added']]
+      [(typeof ORDER_CHANGELOG_CATEGORIES)[number], (typeof changes)[number]['changes']['added']]
     >;
   }
 
-  function totalChangesCount(versions: typeof log) {
+  function totalChangesCount(versions: typeof changes) {
     return flattenVersions(versions).reduce((acc, [_, changes]) => acc + changes.length, 0);
   }
 
-  function versionRange(versions: typeof log): { first: string; last: string } {
+  function versionRange(versions: typeof changes): { first: string; last: string } {
     return {
       first: versions.at(-1)?.version ?? '',
       last: versions[0]?.version ?? '',
@@ -82,35 +127,25 @@
 
   async function acknowledge() {
     dispatch('acknowledge');
-    window.umami.track('acknowledge-changelog', { versionRange: versionRange(log) });
-    const {
-      me: { latestVersionSeenInChangelog },
-    } = await $zeus.query({
-      me: {
-        latestVersionSeenInChangelog: true,
-      },
-    });
-    if (latestVersionSeenInChangelog === '0.0.0')
-      toasts.info("Tu peux toujours consulter les mises à jour dans 'les autres services' ;)");
+    window.umami.track('acknowledge-changelog', { versionRange: versionRange(changes) });
 
-    await $zeus.mutate({
-      acknowledgeChangelog: [
-        {
-          version: versionRange(log).last,
-        },
-        true,
-      ],
+    await graphql(`
+      mutation AcknowledgeChangelog($version: String!) {
+        acknowledgeChangelog(version: $version)
+      }
+    `).mutate({
+      version: versionRange(changes).last,
     });
   }
 </script>
 
 <Modal
-  open={open && totalChangesCount(log) > 0}
+  open={open && totalChangesCount(changes) > 0}
   maxWidth="800px"
   bind:element
   on:close-by-outside-click={acknowledge}
 >
-  {@const { first, last } = versionRange(log)}
+  {@const { first, last } = versionRange(changes)}
   <section class="centered">
     <LogoChurros wordmark />
     <h1>Quoi de neuf?</h1>
@@ -122,13 +157,13 @@
       {/if}
     </p>
   </section>
-  {#each flattenVersions(log) as [category, changes]}
-    {#if changes.length > 0}
+  {#each flattenVersions(changes) as [category, changesOfCategory]}
+    {#if changesOfCategory.length > 0}
       <h2 class={COLOR_THEME_BY_CHANGELOG_CATEGORY[category]}>
         {DISPLAY_CHANGELOG_CATEGORIES.get(category)}
       </h2>
       <ul style:list-style-type="'{BULLET_EMOJI_BY_CHANGELOG_CATEGORY[category]} '">
-        {#each changes as change}
+        {#each changesOfCategory as change}
           <li>
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             {@html change.html}
