@@ -7,3 +7,4 @@ include:
   - ci/volta.gitlab-ci.yml
   - ci/docker.gitlab-ci.yml
   - ci/sast.gitlab-ci.yml
+  - ci/bot.gitlab-ci.yml
