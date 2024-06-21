@@ -13,9 +13,9 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [1.63.1] - 2024-06-21
 
-### Technique
+### Améliorations
 
-- Houdinification de quelques composants de plus :)
+- La page d'accueil et la page d'un post devraient être plus rapide qu'avant
 
 ## [1.63.1-rc.1] - 2024-06-20
 
