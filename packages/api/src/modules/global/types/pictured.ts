@@ -23,11 +23,11 @@ export const PicturedInterface = builder.interfaceRef<Pictured>('Pictured').impl
         }),
       },
       resolve: ({ pictureFile, pictureFileDark }, { dark }) => {
+        const filepath = dark ? pictureFileDark || pictureFile : pictureFile;
+        if (!filepath) return '';
+
         const result = new URL(process.env.PUBLIC_STORAGE_URL);
-        result.pathname = path.join(
-          result.pathname,
-          dark ? pictureFileDark || pictureFile : pictureFile,
-        );
+        result.pathname = path.join(result.pathname, filepath);
         return result.toString();
       },
     }),
