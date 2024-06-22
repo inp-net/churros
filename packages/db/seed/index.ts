@@ -25,7 +25,10 @@ const prisma = new PrismaClient();
 const faker = fakerFR;
 faker.seed(5);
 
-const storageRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../storage/');
+const storageRoot = path.resolve(
+  path.dirname(new URL(import.meta.url).pathname),
+  '../../api/storage/',
+);
 
 console.info(`Cleaning storage root ${storageRoot}`);
 for (const folder of ['events']) {
