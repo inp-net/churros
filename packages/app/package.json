@@ -82,7 +82,7 @@
     "build": "node src/scripts/generate-dotenv-service-worker.js && svelte-kit sync && yarn zeus && houdini generate && yarn check --threshold warning && vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "clean": "git clean -Xdf .",
-    "dev": "yarn run -T generate-buildinfo && yarn zeus && wait-port 4000 && vite dev --host",
+    "dev": "yarn run -T generate-buildinfo --stub && yarn zeus && wait-port 4000 && vite dev --host",
     "preview": "vite preview",
     "start": "node ./build/index.js",
     "zeus": "zeus ../api/build/schema.graphql ./src --es --subscriptions"
