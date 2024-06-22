@@ -1,5 +1,6 @@
 import * as KeepAChangelog from 'keep-a-changelog';
 import { readFile } from 'node:fs/promises';
+import * as SemVer from 'semver';
 import { type ChangelogRelease, type ReleaseChangesMap } from '../index.js';
 
 export const UpcomingVersion = Symbol('UpcomingVersion');
@@ -20,9 +21,22 @@ class ChurrosRelease extends KeepAChangelog.Release {
 }
 
 export async function changelogFromFile(fileContents?: string) {
-  return KeepAChangelog.parser(fileContents ?? (await readFile('static/CHANGELOG.md', 'utf8')), {
-    releaseCreator: (version, date, changes) => new ChurrosRelease(version, date, changes),
-  });
+  const parsed = KeepAChangelog.parser(
+    fileContents ?? (await readFile('static/CHANGELOG.md', 'utf8')),
+    {
+      releaseCreator: (version, date, changes) => new ChurrosRelease(version, date, changes),
+    },
+  );
+
+  // Ignore invalid versions and pre-releases
+  parsed.releases = parsed.releases.filter(
+    (release) =>
+      release.version &&
+      SemVer.valid(release.version) &&
+      SemVer.prerelease(release.version) === null,
+  );
+
+  return parsed;
 }
 
 export function findReleaseInChangelog(
