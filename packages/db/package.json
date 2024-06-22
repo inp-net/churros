@@ -18,6 +18,9 @@
     "prisma": "^5.15.1",
     "typescript": "^5.5.2"
   },
+  "prisma": {
+    "seed": "tsx ./seed/index.ts"
+  },
   "files": [
     "src",
     "README.md"

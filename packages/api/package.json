@@ -133,9 +133,6 @@
     "#modules/*": "./build/src/modules/*/index.js",
     "#permissions": "./build/src/permissions/index.js"
   },
-  "prisma": {
-    "seed": "tsx ./src/seed.ts"
-  },
   "private": true,
   "scripts": {
     "format-at": "prettier --write --ignore-unknown",
