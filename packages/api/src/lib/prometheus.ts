@@ -90,6 +90,6 @@ export async function updateCreatedTokensCount({ token, user }: { token: string;
 }
 
 export const prometheusClient = new PrometheusDriver({
-  endpoint: process.env.PROMETHEUS_URL,
+  endpoint: process.env.PROMETHEUS_URL || 'http://localhost:9090',
   baseURL: '/api/v1',
 });
