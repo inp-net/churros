@@ -1,4 +1,6 @@
 import { env } from '$env/dynamic/public';
+import { PendingValue } from '$houdini';
+import { loaded } from '$lib/loading';
 
 /**
  * Get the complete path to the group's picture
@@ -8,8 +10,12 @@ import { env } from '$env/dynamic/public';
  */
 export function groupLogoSrc(
   $isDark: boolean,
-  group: { pictureFile: string; pictureFileDark: string },
+  group: {
+    pictureFile: string | typeof PendingValue;
+    pictureFileDark: string | typeof PendingValue;
+  },
 ): string {
+  if (!loaded(group.pictureFile) || !loaded(group.pictureFileDark)) return '';
   const prefix = (path: string) =>
     path.startsWith('//') ? path.replace('//', '/') : `${env.PUBLIC_STORAGE_URL}${path}`;
 

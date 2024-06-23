@@ -1,12 +1,10 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import { env } from '$env/dynamic/public';
-  import { fragment, graphql, type NavigationTop } from '$houdini';
+  import { fragment, graphql, type NavigationTop, type NavigationTopCurrentEvent } from '$houdini';
   import { formatDate } from '$lib/dates';
   import { theme } from '$lib/theme';
-  import { zeus } from '$lib/zeus';
   import IconAccount from '~icons/mdi/account-circle-outline';
   import IconNotifFilled from '~icons/mdi/bell';
   import IconNotif from '~icons/mdi/bell-outline';
@@ -19,7 +17,8 @@
   import ModalReportIssue from './ModalReportIssue.svelte';
 
   export let scrolled = false;
-  $: scanningTickets = $page.url.pathname.endsWith('/scan/');
+  let deviceWidth = browser ? window.innerWidth : 500;
+  let reportIssueDialogElement: HTMLDialogElement;
 
   export let user: NavigationTop | null;
   $: data = fragment(
@@ -32,24 +31,18 @@
     `),
   );
 
-  let deviceWidth = browser ? window.innerWidth : 500;
+  export let event: NavigationTopCurrentEvent | null;
+  $: currentEvent = fragment(
+    event,
+    graphql(`
+      fragment NavigationTopCurrentEvent on Event {
+        title
+        startsAt
+      }
+    `),
+  );
 
-  let currentEvent: undefined | { title: string; startsAt: Date } = undefined;
-  let reportIssueDialogElement: HTMLDialogElement;
-
-  afterNavigate(async () => {
-    if ($page.url.pathname.endsWith('/scan/')) {
-      try {
-        const { event } = await $zeus.query({
-          event: [
-            { uid: $page.params.uid, groupUid: $page.params.group },
-            { title: true, startsAt: true },
-          ],
-        });
-        currentEvent = event;
-      } catch {}
-    }
-  });
+  $: scanningTickets = Boolean($currentEvent);
 </script>
 
 <svelte:window
@@ -65,8 +58,8 @@
     <div class="current-event">
       <ButtonBack />
       <div class="event-name">
-        <h1>{currentEvent?.title ?? 'Chargement…'}</h1>
-        <p>{currentEvent ? formatDate(currentEvent.startsAt) : 'Chargement…'}</p>
+        <h1>{$currentEvent?.title ?? 'Chargement…'}</h1>
+        <p>{$currentEvent ? formatDate($currentEvent.startsAt) : 'Chargement…'}</p>
       </div>
     </div>
   {:else}

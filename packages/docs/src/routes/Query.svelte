@@ -87,6 +87,21 @@
 		</section>
 	{/if}
 
+	{#if query.isDeprecated}
+		<section class="deprecated">
+			<p class="subtitle">Déprécié</p>
+			{#if query.deprecationReason}
+				{#await markdownToHtml(query.deprecationReason, $page.data.allResolvers)}
+					<p>{query.deprecationReason}</p>
+				{:then deprecationReason}
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+					{@html deprecationReason}
+				{:catch}
+					<p>{query.deprecationReason}</p>
+				{/await}
+			{/if}
+		</section>
+	{/if}
 	{#if query.args.length > 0}
 		<section class="args">
 			<p class="subtitle">Arguments</p>

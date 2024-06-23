@@ -1,6 +1,6 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
-  import { graphql } from '$houdini';
+  import { PendingValue, graphql } from '$houdini';
   import AreaComments from '$lib/components/AreaComments.houdini.svelte';
   import BadgeVisibility from '$lib/components/BadgeVisibility.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
@@ -12,7 +12,7 @@
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
-  import { formatDistance, intlFormatDistance, isFuture } from 'date-fns';
+  import { subMinutes, formatDistance, intlFormatDistance, isPast } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
   import IconNotifications from '~icons/mdi/bell-outline';
   import IconGear from '~icons/mdi/gear-outline';
@@ -20,6 +20,8 @@
   import IconHeart from '~icons/mdi/heart-outline';
   import IconInfo from '~icons/mdi/information-outline';
   import type { PageData } from './$houdini';
+  import { allLoaded, loaded, loading } from '$lib/loading';
+  import LoadingText from '$lib/components/LoadingText.svelte';
 
   export let data: PageData;
   $: ({ PagePostDetail } = data);
@@ -35,13 +37,17 @@
       }
     }
   `);
+
+  function publishedYet(post: { publishedAt: Date | typeof PendingValue }) {
+    return loaded(post.publishedAt) ? isPast(post.publishedAt) : true;
+  }
+
+  function groupPageHref(group: { uid: string | typeof PendingValue }): string {
+    return loaded(group.uid) ? `/groups/${group.uid}` : '#';
+  }
 </script>
 
-{#if $PagePostDetail.fetching}
-  <div class="page">
-    <h1>Chargement…</h1>
-  </div>
-{:else if $PagePostDetail.errors}
+{#if $PagePostDetail.errors}
   <div class="page">
     <h1>Oops!</h1>
     <p>Une erreur est survenue:</p>
@@ -61,37 +67,52 @@
     visibility,
     group,
     pictureFile,
-    event,
     notifiedAt,
+    event,
     canBeEdited,
     likes,
     liked,
   } = $PagePostDetail.data.article}
-  <div class="page" class:future={isFuture(publishedAt)}>
+  <div class="page" class:future={publishedYet({ publishedAt })}>
     <h1>
       <ButtonBack></ButtonBack>
-      {title}
+      <LoadingText value={title}>Lorem ipsum dolor sit amet</LoadingText>
     </h1>
-    {#if isFuture(publishedAt)}
+    {#if !publishedYet({ publishedAt })}
       <div class="unpublished warning typo-details">
         <IconInfo></IconInfo> Ce post n'est pas encore publié
       </div>
     {/if}
     <div class="content">
       <div class="description" data-user-html>
-        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-        {@html bodyHtml}
+        {#if loaded(bodyHtml)}
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html bodyHtml}
+        {:else}
+          <LoadingText lines={10} tag="p"></LoadingText>
+        {/if}
       </div>
       <section class="author">
-        <a href="/groups/{group.uid}" class="group-link">
-          <img src={groupLogoSrc($isDark, group)} alt={group.name} class="group-logo" />
+        <a href={groupPageHref(group)} class="group-link">
+          <img
+            src={groupLogoSrc($isDark, group)}
+            alt={loading(group.name, '')}
+            class="group-logo"
+            class:loading={!loaded(group.name)}
+          />
         </a>
-        <a href="/groups/{group.uid}" class="group">{group.name}</a>
+        <a href={groupPageHref(group)} class="group">
+          <LoadingText value={group.name}>LoremIps</LoadingText>
+        </a>
         <span class="separator">·</span>
         <span class="date">
-          {intlFormatDistance(publishedAt, new Date())}
+          {#if loaded(publishedAt)}
+            {intlFormatDistance(publishedAt, new Date())}
+          {:else}
+            <LoadingText>{intlFormatDistance(subMinutes(new Date(), 7), new Date())}</LoadingText>
+          {/if}
         </span>
-        {#if notifiedAt && canBeEdited}
+        {#if loaded(notifiedAt) && notifiedAt && canBeEdited}
           <span
             class="notified"
             use:tooltip={`Notifications envoyées ${formatDistance(notifiedAt, new Date(), {
@@ -107,7 +128,7 @@
         {/if}
         <BadgeVisibility {visibility} />
       </section>
-      {#if event}
+      {#if event && allLoaded(event)}
         <a
           href="/events/{event.group.uid}/{event.uid}"
           class="event"
@@ -126,26 +147,30 @@
             </p>
           </div>
         </a>
-      {:else if pictureFile}
-        <img src="{env.PUBLIC_STORAGE_URL}{pictureFile}" alt="Image de {title}" class="image" />
+      {:else if loaded(pictureFile) && pictureFile}
+        <img
+          src="{env.PUBLIC_STORAGE_URL}{pictureFile}"
+          alt="Image de {loading(title, '')}"
+          class="image"
+        />
       {/if}
       <section class="links-and-actions">
-        {#if links.length > 0}
-          <ul class="links nobullet">
-            {#each links as { name, computedValue }}
-              <li>
-                <ButtonSecondary href={computedValue}>{name}</ButtonSecondary>
-              </li>
-            {/each}
-          </ul>
-        {/if}
+        <ul class="links nobullet">
+          {#each links.filter(allLoaded) as { name, computedValue }}
+            <li>
+              <ButtonSecondary href={computedValue}>{name}</ButtonSecondary>
+            </li>
+          {/each}
+        </ul>
         <div class="actions">
-          {#if canBeEdited}
+          {#if loaded(canBeEdited) && canBeEdited}
             <ButtonGhost help="Gérer" href="./edit"><IconGear></IconGear></ButtonGhost>
           {/if}
           <ButtonShare></ButtonShare>
           <ButtonGhost
+            disabled={!loaded(id)}
             on:click={async () => {
+              if (!loaded(id)) return;
               try {
                 const result = await ToggleLike.mutate({ articleId: id });
                 if (!result.data) {
@@ -162,14 +187,14 @@
             }}
           >
             <div class="like-button-inner">
-              <span class="like-icon" class:filled={liked}>
-                {#if liked}
+              <span class="like-icon" class:filled={loading(liked, false)}>
+                {#if loading(liked, false)}
                   <IconHeartFilled></IconHeartFilled>
                 {:else}
                   <IconHeart></IconHeart>
                 {/if}
               </span>
-              {likes}
+              <LoadingText value={likes}>678</LoadingText>
             </div>
           </ButtonGhost>
         </div>
@@ -177,7 +202,10 @@
 
       <section class="comments">
         <h2>Commentaires</h2>
-        <AreaComments comments={$PagePostDetail.data.article}></AreaComments>
+        <AreaComments
+          user={'me' in $PagePostDetail.data ? $PagePostDetail.data.me ?? null : null}
+          comments={$PagePostDetail.data.article}
+        ></AreaComments>
       </section>
     </div>
   </div>
@@ -221,6 +249,10 @@
     background: var(--bg);
     border: 2px solid var(--muted-border);
     border-radius: 50%;
+  }
+
+  .group-logo.loading {
+    background: var(--muted-bg);
   }
 
   .group-link {

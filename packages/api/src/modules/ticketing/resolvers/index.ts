@@ -17,6 +17,7 @@ export * from './query.registration-qr-code.js';
 export * from './query.registration.js';
 export * from './query.registrations-csv.js';
 export * from './query.registrations-of-user-for-event.js';
+export * from './query.registrations-of-user.js';
 export * from './query.search-registrations.js';
 export * from './query.ticket-by-uid.js';
 export * from './query.ticket-group.js';

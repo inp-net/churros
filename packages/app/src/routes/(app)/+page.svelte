@@ -70,13 +70,13 @@
 
 <section class="articles" use:infinitescroll={async () => await PageHomeFeed.loadNextPage()}>
   {#each $PageHomeFeed.data?.homepage?.edges.filter(notNull) ?? [] as { node: article } (article.id)}
-    <CardArticle {article} href="/posts/{article.group.uid}/{article.uid}/" />
+    <CardArticle {article} />
   {/each}
   <div class="scroll-end">
     {#if $PageHomeFeed.pageInfo.hasNextPage}
-      Chargement...
+      <CardArticle article={null} />
     {:else}
-      Plus de posts à afficher!
+      <p class="no-more-posts">Plus de posts à afficher!</p>
       <!-- TODO défi d'inté??? -->
     {/if}
   </div>
@@ -102,7 +102,7 @@
     margin: 2rem auto 0;
   }
 
-  section.articles .scroll-end {
+  section.articles .no-more-posts {
     margin-top: 1rem;
     text-align: center;
   }

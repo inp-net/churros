@@ -1,25 +1,29 @@
-query PagePostDetail($group: String!, $uid: String!) {
-  article(uid: $uid, groupUid: $group) {
-    id
-    uid
-    title
-    bodyHtml
-    visibility
-    publishedAt
-    notifiedAt
-    canBeEdited
-    group {
+query PagePostDetail($group: String!, $uid: String!, $loggedIn: LoggedIn!) {
+  me @include(if: $loggedIn) @loading {
+    ...AreaCommentsUser @loading
+  }
+
+  article(uid: $uid, groupUid: $group) @loading {
+    id @loading
+    uid @loading
+    title @loading
+    bodyHtml @loading
+    visibility @loading
+    publishedAt @loading
+    notifiedAt @loading
+    canBeEdited @loading
+    group @loading(cascade: true) {
       id
       uid
       name
       pictureFile
       pictureFileDark
     }
-    pictureFile
-    liked: reacted(emoji: "❤️")
-    likes: reactions(emoji: "❤️")
+    pictureFile @loading
+    liked: reacted(emoji: "❤️") @loading
+    likes: reactions(emoji: "❤️") @loading
     ...AreaComments
-    event {
+    event @loading {
       id
       uid
       title
@@ -73,7 +77,7 @@ query PagePostDetail($group: String!, $uid: String!) {
       }
       contactMail
     }
-    links {
+    links @loading(count: 0) {
       name
       computedValue
     }

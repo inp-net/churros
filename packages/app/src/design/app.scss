@@ -266,3 +266,21 @@ a.user-mention:focus-visible {
   color: var(--primary-hover-text) !important;
   background-color: var(--primary-hover-bg) !important;
 }
+
+.skeleton-effect-wave {
+  mask-image: linear-gradient(to right, transparent 0%, black 25%, black 75%, transparent 100%);
+  mask-repeat: repeat;
+  mask-position: 50% top;
+  mask-size: 200% 100%;
+  animation: skeleton-effect-wave 1s infinite;
+}
+
+@keyframes skeleton-effect-wave {
+  0% {
+    mask-position: 50% top;
+  }
+
+  100% {
+    mask-position: -150% top;
+  }
+}
