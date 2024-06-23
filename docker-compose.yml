@@ -15,6 +15,7 @@ services:
     ports:
       - 6379:6379
 
+  # peut être commenté pour alléger la charge du serveur de développement, si l'on est pas en train de tester des choses qui dépendent de prometheus
   prometheus:
     image: prom/prometheus
     ports:
