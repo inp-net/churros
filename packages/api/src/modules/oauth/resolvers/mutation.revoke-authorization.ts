@@ -31,9 +31,6 @@ builder.mutationField('revokeAuthorization', (t) =>
         where: {
           ownerId: user.id,
           clientId,
-          type: {
-            in: ['AccessToken', 'AuthorizationCode'],
-          },
         },
       });
       await prisma.user.update({
