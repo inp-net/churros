@@ -41,7 +41,7 @@ const variables = {
 
 function singlequotes(literal: string): string {
   if ((literal.match(/"/g) || []).length !== 2) return literal;
-  return `'${literal.replace(/"/g, "'")}'`;
+  return `'${literal.replace(/"/g, '')}'`;
 }
 
 function constDeclaration(
