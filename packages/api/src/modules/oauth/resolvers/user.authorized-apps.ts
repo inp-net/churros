@@ -13,9 +13,9 @@ builder.prismaObjectField(UserType, 'authorizedApps', (t) =>
       return prisma.thirdPartyApp.findMany({
         ...query,
         where: {
-          credentials: {
+          users: {
             some: {
-              ownerId: user.id,
+              id: user.id,
             },
           },
         },
