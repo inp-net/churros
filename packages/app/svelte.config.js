@@ -2,7 +2,11 @@ import adapter from '@sveltejs/adapter-node';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import preprocess from 'svelte-preprocess';
-import { CURRENT_VERSION } from './src/lib/buildinfo.js';
+
+// @generated buildinfo
+const CURRENT_COMMIT = 'dev';
+const CURRENT_VERSION = 'dev';
+// end generated buildinfo
 
 const here = dirname(new URL(import.meta.url).pathname);
 
@@ -25,7 +29,7 @@ const config = {
     },
     version: {
       pollInterval: 30e3,
-      name: CURRENT_VERSION,
+      name: CURRENT_VERSION || CURRENT_COMMIT,
     },
   },
 };
