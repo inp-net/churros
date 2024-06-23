@@ -11,6 +11,14 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug qui empêchait de révoquer l'accès à un service tiers
+
+### Technique
+
+- Récupération de l'IP et du User-Agent dans l'exporteur Prometheus dans le cas de requêtes non authentifiées
+
 ## [1.64.0] - 2024-06-23
 
 ### Corrections
