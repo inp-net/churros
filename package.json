@@ -40,7 +40,7 @@
     "typescript": "^5.4.3"
   },
   "license": "AGPL-3.0-only",
-  "packageManager": "yarn@4.2.2",
+  "packageManager": "yarn@4.3.1",
   "private": true,
   "scripts": {
     "build": "yarn cp-env && yarn generate-buildinfo && yarn workspaces foreach --exclude @centraverse/docs --interlaced --topological-dev -Apv run build",
