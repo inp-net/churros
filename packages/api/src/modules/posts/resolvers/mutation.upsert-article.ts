@@ -1,4 +1,4 @@
-import { builder, prisma, publish } from '#lib';
+import { builder, prisma, publish, UnauthorizedError } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { Visibility } from '@prisma/client';
@@ -12,7 +12,7 @@ builder.mutationField('upsertArticle', (t) =>
     errors: {},
     args: {
       id: t.arg.id({ required: false }),
-      authorId: t.arg.id(),
+      authorId: t.arg.id({ required: false }),
       groupId: t.arg.id(),
       title: t.arg.string({ validate: { minLength: 1 } }),
       body: t.arg.string(),
@@ -38,7 +38,7 @@ builder.mutationField('upsertArticle', (t) =>
       const article = await prisma.article.findUniqueOrThrow({ where: { id } });
       if (!article) throw new GraphQLError('Post non trouvé');
 
-      return canEditArticle(article, { authorId, groupId }, user);
+      return canEditArticle(article, { authorId: authorId ?? user.id, groupId }, user);
     },
     async resolve(
       query,
@@ -46,13 +46,14 @@ builder.mutationField('upsertArticle', (t) =>
       { id, eventId, visibility, authorId, groupId, title, body, publishedAt, links },
       { user },
     ) {
+      if (!user) throw new UnauthorizedError();
       const old = await prisma.article.findUnique({ where: { id: id ?? '' } });
       const data = {
         // eslint-disable-next-line unicorn/no-null
         notifiedAt: null,
         author: {
           connect: {
-            id: authorId,
+            id: authorId ?? user.id,
           },
         },
         group: {
