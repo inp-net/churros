@@ -39,12 +39,17 @@ const variables = {
   CURRENT_VERSION: tag,
 };
 
+function singlequotes(literal: string): string {
+  if ((literal.match(/"/g) || []).length !== 2) return literal;
+  return `'${literal.replace(/"/g, "'")}'`;
+}
+
 function constDeclaration(
   name: string,
   value: unknown,
   { typescript = true, exported = true } = {},
 ) {
-  return `${exported ? 'export ' : ''}const ${name} = ${JSON.stringify(value)}${typescript ? ' as string' : ''};`;
+  return `${exported ? 'export ' : ''}const ${name} = ${singlequotes(JSON.stringify(value))}${typescript ? ' as string' : ''};`;
 }
 
 function replaceBetweenLines(start: string, end: string, replacement: string, contents: string) {
