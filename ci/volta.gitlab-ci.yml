@@ -19,6 +19,9 @@ build:
   rules:
     # wishing that gilab adds $CI_MERGE_REQUEST_DRAFT one day...
     - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME && $CI_MERGE_REQUEST_TITLE !~ /^Draft: /'
+    # prevents branch pipeline when a merge request pipeline will be created, see https://docs.gitlab.com/ee/ci/yaml/workflow.html#switch-between-branch-pipelines-and-merge-request-pipelines
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   script:
     - yarn build
