@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- OAuth: Ajout de `wikiGroupNames` sur `/identity` parce que WikiJS est pas assez flexible…
+
 ## [1.64.0-rc.1] - 2024-06-23
 
 ### Corrections
