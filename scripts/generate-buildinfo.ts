@@ -78,7 +78,7 @@ await Promise.all(
     await writeFile(
       filepath,
       isolated
-        ? declarations.join('\n')
+        ? declarations.join('\n') + '\n'
         : replaceBetweenLines(
             GENERATED_START_MARKER,
             GENERATED_END_MARKER,
