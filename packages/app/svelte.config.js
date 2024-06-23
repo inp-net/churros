@@ -29,7 +29,7 @@ const config = {
     },
     version: {
       pollInterval: 30e3,
-      name: CURRENT_VERSION || CURRENT_COMMIT,
+      name: CURRENT_VERSION === 'dev' ? undefined : CURRENT_VERSION || CURRENT_COMMIT,
     },
   },
 };
