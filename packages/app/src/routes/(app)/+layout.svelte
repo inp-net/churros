@@ -20,11 +20,10 @@
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import type { PageData } from './$houdini';
   import ModalChangelog from '$lib/components/ModalChangelog.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
-  import TopBar from '$lib/components/NavigationTop.svelte';
+  import NavigationTop from '$lib/components/NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
   import { subscribe } from '$lib/subscriptions';
   import { theme } from '$lib/theme.js';
@@ -34,6 +33,7 @@
   import IconClose from '~icons/mdi/close';
   import Snowflake from '~icons/mdi/snowflake';
   import '../../design/app.scss';
+  import type { PageData } from './$houdini';
   import type { Snapshot } from './$types';
 
   export let data: PageData;
@@ -151,7 +151,11 @@
 {/if}
 
 <div class="layout">
-  <TopBar {scrolled} user={$AppLayout.data?.me ?? null} />
+  <NavigationTop
+    {scrolled}
+    user={$AppLayout.data?.me ?? null}
+    event={$AppLayout.data?.scanningEvent ?? null}
+  />
 
   {#if $theme === 'noel'}
     {#each { length: 100 } as _}

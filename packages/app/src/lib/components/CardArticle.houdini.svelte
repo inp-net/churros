@@ -1,19 +1,24 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
-  import { Visibility, fragment, graphql, type CardArticle } from '$houdini';
+  import {
+    PendingValue,
+    fragment,
+    graphql,
+    type CardArticle,
+    type CardArticle$data,
+  } from '$houdini';
   import { formatEventDates } from '$lib/dates';
-  import { DISPLAY_VISIBILITIES } from '$lib/display';
+  import { allLoaded, loaded, loading, onceLoaded } from '$lib/loading';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
-  import { zeusVisibility } from '$lib/typing';
-  import { intlFormatDistance, isFuture } from 'date-fns';
+  import { intlFormatDistance, isFuture, subMinutes } from 'date-fns';
   import IconHeartFilled from '~icons/mdi/heart';
   import IconHeart from '~icons/mdi/heart-outline';
   import IconInfo from '~icons/mdi/information-outline';
+  import BadgeVisibility from './BadgeVisibility.svelte';
   import ButtonGhost from './ButtonGhost.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
-  import IndicatorVisibility from './IndicatorVisibility.svelte';
+  import LoadingText from './LoadingText.svelte';
 
   const ToggleLike = graphql(`
     mutation CardArticle_ToggleLike($articleId: ID!) {
@@ -25,12 +30,13 @@
     }
   `);
 
-  export let article: CardArticle;
+  export let article: CardArticle | null;
   $: data = fragment(
     article,
     graphql(`
-      fragment CardArticle on Article {
+      fragment CardArticle on Article @loading {
         id
+        uid
         title
         bodyPreview
         publishedAt
@@ -50,7 +56,7 @@
         author {
           uid
           fullName
-          pictureFile
+          pictureURL
         }
         event {
           title
@@ -58,7 +64,7 @@
           group {
             uid
           }
-          pictureFile
+          pictureURL
           location
           startsAt
           endsAt
@@ -79,25 +85,68 @@
     links,
     group,
     author,
+    uid,
     event,
     visibility,
     pictureURL,
-  } = $data);
+  } =
+    $data ??
+    ({
+      __typename: PendingValue,
+      id: PendingValue,
+      title: PendingValue,
+      bodyPreview: PendingValue,
+      publishedAt: PendingValue,
+      liked: PendingValue,
+      likes: PendingValue,
+      links: [],
+      group: {
+        id: PendingValue,
+        uid: PendingValue,
+        name: PendingValue,
+        pictureFile: PendingValue,
+        pictureFileDark: PendingValue,
+      },
+      author: {
+        id: PendingValue,
+        uid: PendingValue,
+        fullName: PendingValue,
+        pictureURL: PendingValue,
+      },
+      uid: PendingValue,
+      event: {
+        id: PendingValue,
+        title: PendingValue,
+        uid: PendingValue,
+        group: { id: PendingValue, uid: PendingValue },
+        pictureURL: PendingValue,
+        location: PendingValue,
+        startsAt: PendingValue,
+        endsAt: PendingValue,
+        frequency: PendingValue,
+        recurringUntil: PendingValue,
+      },
+      visibility: PendingValue,
+      pictureURL: PendingValue,
+    } as CardArticle$data));
 
   export let hideGroup = false;
-  export let href: string;
+  export let href: string | undefined = undefined;
+  $: href ??= loaded(uid) && loaded(group.uid) ? `/posts/${group.uid}/${uid}` : '#';
 
   $: authorSrc = hideGroup
-    ? author
-      ? `${env.PUBLIC_STORAGE_URL}${author?.pictureFile}`
+    ? allLoaded(author) && author
+      ? author.pictureURL
       : ''
     : groupLogoSrc($isDark, group);
 
-  $: authorHref = hideGroup && author ? `/users/${author.uid}` : `/groups/${group.uid}`;
+  $: authorHref =
+    hideGroup && allLoaded(author) && allLoaded(group) ? `/@${author?.uid ?? group.uid}` : '';
+  $: notPublishedYet = onceLoaded(publishedAt, isFuture, false);
 </script>
 
-<div class="post-outer" class:future={isFuture(publishedAt)}>
-  {#if isFuture(publishedAt)}
+<div class="post-outer" class:future={notPublishedYet}>
+  {#if notPublishedYet}
     <div class="unpublished warning typo-details">
       <IconInfo></IconInfo> Ce post n'est pas encore publié
     </div>
@@ -106,41 +155,50 @@
     <article class="post">
       <a href={authorHref} class="group-link">
         {#if authorSrc}
-          <img src={authorSrc} alt={group.name} class="group-logo" />
+          <img src={authorSrc} alt={loading(group.name, '')} class="group-logo" />
         {:else}
-          <div class="group-logo no-logo"></div>
+          <div
+            class:loading={!allLoaded(group)}
+            class:skeleton-effect-wave={!allLoaded(group)}
+            class="group-logo no-logo"
+          ></div>
         {/if}
       </a>
 
       <div class="content">
         <header>
-          {#if hideGroup && author}
-            <a href={authorHref} class="group">{author.fullName}</a>
-          {:else if !hideGroup}
-            <a href={authorHref} class="group">{group.name}</a>
-          {/if}
+          <a href={authorHref} class="group">
+            <LoadingText
+              value={loaded(author?.fullName) && loaded(group.name)
+                ? hideGroup && author
+                  ? author.fullName
+                  : group.name
+                : PendingValue}>LoremIpsu</LoadingText
+            >
+          </a>
           {#if !hideGroup || author}
             <span class="separator">·</span>
           {/if}
           <span class="date">
-            {intlFormatDistance(publishedAt, new Date())}
+            {#if loaded(publishedAt)}
+              {intlFormatDistance(publishedAt, new Date())}
+            {:else}
+              <LoadingText>{intlFormatDistance(subMinutes(new Date(), 5), new Date())}</LoadingText>
+            {/if}
           </span>
-          {#if visibility && visibility !== Visibility.Public && visibility !== Visibility.SchoolRestricted}
-            <span class="visibility">
-              <IndicatorVisibility {visibility}></IndicatorVisibility>
-              {DISPLAY_VISIBILITIES[zeusVisibility(visibility)]}
-            </span>
-          {/if}
+          <span class="visibility">
+            <BadgeVisibility {visibility} />
+          </span>
         </header>
-        <h2 class="title">{title}</h2>
+        <h2 class="title"><LoadingText value={title}>Lorem ipsum dolor sit amet</LoadingText></h2>
         <p class="description">
-          {bodyPreview}
+          <LoadingText value={bodyPreview} lines={3} />
         </p>
-        {#if event}
+        {#if event && allLoaded(event)}
           <a
             href="/events/{event.group.uid}/{event.uid}"
             class="event"
-            style:background-image="url({env.PUBLIC_STORAGE_URL}{event.pictureFile})"
+            style:background-image="url({event.pictureURL})"
           >
             <div class="content">
               <h2>{event.title}</h2>
@@ -155,12 +213,12 @@
               </p>
             </div>
           </a>
-        {:else if pictureURL}
-          <img src={pictureURL} alt="Image de {title}" class="image" />
+        {:else if loaded(pictureURL) && pictureURL}
+          <img src={pictureURL} alt="Image de {loading(title, '')}" class="image" />
         {/if}
-        {#if links.length > 0}
+        {#if links.some(allLoaded)}
           <ul class="links nobullet">
-            {#each links as { name, computedValue }}
+            {#each links.filter(allLoaded) as { name, computedValue }}
               <li>
                 <ButtonSecondary href={computedValue}>{name}</ButtonSecondary>
               </li>
@@ -173,7 +231,9 @@
   {#if likes !== undefined}
     <section class="likes">
       <ButtonGhost
+        disabled={!loaded(id)}
         on:click={async () => {
+          if (!loaded(id)) return;
           const result = await ToggleLike.mutate({
             articleId: id,
           });
@@ -186,14 +246,14 @@
         }}
       >
         <div class="inner">
-          <span class="icon" class:filled={liked}>
-            {#if liked}
+          <span class="icon" class:filled={loading(liked, false)}>
+            {#if loading(liked, false)}
               <IconHeartFilled></IconHeartFilled>
             {:else}
               <IconHeart></IconHeart>
             {/if}
           </span>
-          {likes}
+          <LoadingText value={likes}>999</LoadingText>
         </div>
       </ButtonGhost>
     </section>
@@ -237,6 +297,10 @@
     background: var(--bg);
     border: 2px solid var(--muted-border);
     border-radius: 50%;
+  }
+
+  .group-logo.loading {
+    background: var(--muted-text);
   }
 
   .group-link {

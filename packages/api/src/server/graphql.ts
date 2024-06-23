@@ -1,4 +1,4 @@
-import { context, customErrorMap } from '#lib';
+import { context, customErrorMap, inDevelopment } from '#lib';
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
 import { Prisma } from '@prisma/client';
 import { createFetch } from '@whatwg-node/fetch';
@@ -9,6 +9,9 @@ import { schema } from '../schema.js';
 import { api } from './express.js';
 
 z.setErrorMap(customErrorMap);
+
+// Don't commit with a value other than 0 pls, use it for testing only
+const SIMULATED_RESPONSE_DELAY_TIME_MS = 0;
 
 const yoga = createYoga({
   schema,
@@ -49,7 +52,7 @@ const yoga = createYoga({
       const cause = (error as GraphQLError).originalError;
 
       // These are user errors, no need to take special care of them
-      if (cause instanceof Prisma.NotFoundError)
+      if (cause instanceof Prisma.PrismaClientKnownRequestError && cause.code === 'P2025')
         return new GraphQLError(cause.message, { extensions: { http: { status: 404 } } });
 
       if (cause instanceof ForbiddenError)
@@ -80,7 +83,12 @@ const yoga = createYoga({
 });
 
 console.info(`Serving GraphQL API on /graphql`);
-api.use('/graphql', async (req, res) => yoga(req, res));
+api.use('/graphql', async (req, res) => {
+  if (inDevelopment() && SIMULATED_RESPONSE_DELAY_TIME_MS > 0)
+    await new Promise((resolve) => setTimeout(resolve, SIMULATED_RESPONSE_DELAY_TIME_MS));
+
+  yoga(req, res);
+});
 
 api.get('/', (_req, res) => {
   res.send(`<!DOCTYPE html>

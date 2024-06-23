@@ -5,11 +5,15 @@
   import IconCanEditPosts from '~icons/mdi/text-box-edit-outline';
   import IconCanScanEvents from '~icons/mdi/qrcode';
   import IconIsDeveloper from '~icons/mdi/code-braces';
+  import type { PendingValue } from '$houdini';
+  import { loading, onceLoaded } from '$lib/loading';
+  import LoadingText from '$lib/components/LoadingText.svelte';
+
   export let small = false;
   export let inline = false;
-  export let fullName: string;
+  export let fullName: string | typeof PendingValue;
   export let role = '';
-  export let pictureFile: string;
+  export let pictureFile: string | typeof PendingValue;
   export let href: string | undefined = undefined;
   export let highlighted = false;
   export let permissions:
@@ -20,9 +24,12 @@
         canScanEvents: boolean;
         isDeveloper: boolean;
       } = undefined;
-  const src = pictureFile.startsWith('https://')
-    ? pictureFile
-    : `${env.PUBLIC_STORAGE_URL}${pictureFile}`;
+
+  $: src = onceLoaded(
+    pictureFile,
+    (file) => (file.startsWith('https://') ? file : `${env.PUBLIC_STORAGE_URL}${file}`),
+    '',
+  );
 </script>
 
 <svelte:element
@@ -36,14 +43,14 @@
 >
   <div class="img">
     {#if pictureFile}
-      <img {src} alt={fullName} />
+      <img {src} alt={loading(fullName, '')} />
     {:else}
       <IconUser />
     {/if}
   </div>
   <div class="desc">
     <p class="text name">
-      {fullName}
+      <LoadingText value={fullName}>Annie Versaire</LoadingText>
       {#if permissions && Object.values(permissions).some(Boolean)}
         <span class="permissions">
           <span title="Peut modifier les membres du groupe">

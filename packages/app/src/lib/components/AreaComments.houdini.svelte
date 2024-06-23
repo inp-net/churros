@@ -1,8 +1,8 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { fragment, graphql, type AreaComments } from '$houdini';
+  import { fragment, graphql, type AreaComments, type AreaCommentsUser } from '$houdini';
   import CardComment from '$lib/components/CardComment.svelte';
-  import { me } from '$lib/session';
+  import { loaded } from '$lib/loading';
   import { notNull } from '$lib/typing';
   import Alert from './Alert.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
@@ -23,14 +23,28 @@
     }
   `);
 
+  export let userExternalHref: string | undefined = undefined;
+  export let user: AreaCommentsUser | null;
+  $: me = fragment(
+    user,
+    graphql(`
+      fragment AreaCommentsUser on User @loading {
+        id
+        fullName
+        pictureFile
+        uid
+      }
+    `),
+  );
+
   export let comments: AreaComments;
   $: data = fragment(
     comments,
     graphql(`
       fragment AreaComments on Commentable {
-        id
-        comments(first: 30) {
-          nodes @list(name: "List_AreaComments") {
+        id @loading
+        comments(first: 30) @loading(count: 3) {
+          nodes @list(name: "List_AreaComments") @loading {
             ...AreaCommentsComment @mask_disable
           }
         }
@@ -44,6 +58,7 @@
   let replyingTo: { body: string; inReplyToId: string | null } = { body: '', inReplyToId: null };
 
   async function addComment(comment: { body: string; inReplyToId: string | null }) {
+    if (!loaded($data.id)) return;
     await graphql(`
       mutation AddComment($body: String!, $inReplyToId: ID, $resourceId: ID!) {
         upsertComment(body: $body, inReplyToId: $inReplyToId, resourceId: $resourceId) {
@@ -87,7 +102,7 @@
   <CardComment
     bodyHtml=""
     bind:body={newComment.body}
-    author={$me}
+    author={{ ...$me, externalHref: userExternalHref }}
     id=""
     canReply={false}
     createdAt={new Date()}
@@ -100,7 +115,10 @@
   ></CardComment>
 
   <ul class="nobullet comments">
-    {#each $data.comments.nodes.filter(notNull).filter(({ inReplyToId }) => !inReplyToId) as node}
+    {#each $data.comments.nodes
+      .filter(notNull)
+      .filter(loaded)
+      .filter(({ inReplyToId }) => !inReplyToId || !loaded(inReplyToId)) as comment}
       <li class="comment">
         <CardComment
           bind:replyingTo
@@ -111,10 +129,11 @@
           on:delete={async ({ detail: id }) => {
             await removeComment(id);
           }}
-          {...node}
+          {...comment}
           replies={$data.comments.nodes
             .filter(notNull)
-            .filter((node) => node.inReplyToId === node.id)}
+            .filter((reply) => loaded(reply) && reply.inReplyToId === comment.id)
+            .filter(loaded)}
         />
       </li>
     {/each}

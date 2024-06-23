@@ -1,9 +1,9 @@
 query PageHomeFeed {
-  homepage(first: 5) @paginate {
+  homepage(first: 5) @paginate @loading {
     pageInfo {
       hasNextPage
     }
-    edges {
+    edges @loading(count: 5) {
       node {
         id
         uid

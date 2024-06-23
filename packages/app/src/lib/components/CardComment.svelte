@@ -15,6 +15,8 @@
   import { me } from '$lib/session';
   import ButtonGhost from './ButtonGhost.svelte';
   import { removeIdPrefix } from '$lib/typenames';
+  import type { PendingValue } from '$houdini';
+  import { onceLoaded } from '$lib/loading';
 
   const dispatch = createEventDispatcher();
 
@@ -27,7 +29,12 @@
   export let author:
     | null
     | undefined
-    | { uid: string; fullName: string; pictureFile: string; externalHref?: string } = undefined;
+    | {
+        uid: string | typeof PendingValue;
+        fullName: string | typeof PendingValue;
+        pictureFile: string | typeof PendingValue;
+        externalHref?: string;
+      } = undefined;
   export let createdAt: Date;
   export let updatedAt: Date | undefined | null = undefined;
   export let body: string;
@@ -46,7 +53,12 @@
 <article class="comment" class:creating>
   <div class="metadata">
     {#if author}
-      <AvatarPerson small href={author.externalHref ?? `/users/${author.uid}`} {...author} />
+      <AvatarPerson
+        small
+        href={author.externalHref ?? onceLoaded(author.uid, (uid) => `/users/${uid}`, '#')}
+        fullName={author.fullName}
+        pictureFile={author.pictureFile}
+      />
     {:else}
       <AvatarPerson small pictureFile="" href="" fullName="???" />
     {/if}
