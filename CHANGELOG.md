@@ -11,8 +11,18 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug qui faisait apparaître des images cassées sur tout les posts n'ayant ni évènement lié ni image
+- Les _pre-releases_ ne sont plus affichées dans le changelog
+
+### Améliorations
+
+- La page d'accueil et la page d'un post affichent maintenant les écrans de chargement avec des éléments d'interface (type "skeleton UI")
+
 ### Technique
 
+- API: Dépréciation de la query `registrationsOfUser`. Remplacé par `user(uid: ...).bookings`.
 - OAuth: Ajout de `wikiGroupNames` sur `/identity` parce que WikiJS est pas assez flexible…
 
 ## [1.64.0-rc.1] - 2024-06-23
