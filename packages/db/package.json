@@ -15,8 +15,11 @@
     "prisma": "^5.15.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "@pothos/core": "^3.41.2",
     "@pothos/plugin-prisma": "^3.65.2",
     "@prisma/client": "^5.15.1",
+    "graphql": "^16.8.1",
     "npm-run-all2": "^6.2.0",
     "typescript": "^5.5.2"
   },
