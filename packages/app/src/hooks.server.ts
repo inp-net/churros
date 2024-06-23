@@ -5,9 +5,16 @@ import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 
 export const handle: Handle = async ({ event, resolve }) => {
+  const tokenFromAuthorizationHeader = (event.request.headers.get('Authorization') ?? '').replace(
+    /^Bearer /,
+    '',
+  );
   const cookieData = cookie.parse(event.request.headers.get('Cookie') ?? '');
   aled('hooks.server.ts: handle: parsed cookie from tokens', cookieData);
-  const { token } = cookieData;
+  const { token: tokenFromCookies } = cookieData;
+
+  const token = tokenFromAuthorizationHeader || tokenFromCookies;
+
   if (token) {
     try {
       const { me } = await chain(fetch, { token })('query')({

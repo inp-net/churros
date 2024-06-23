@@ -1,35 +1,36 @@
-import { loadQuery } from '$lib/zeus.js';
+import { graphql, load_PageIdentity } from '$houdini';
+import { error } from '@sveltejs/kit';
+import { get } from 'svelte/store';
 
-export const GET = async ({ fetch, request }) => {
-  const authorization = request.headers.get('Authorization') ?? '';
-  const { me } = await loadQuery(
-    {
-      me: {
-        uid: true,
-        fullName: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        admin: true,
-        major: {
-          ldapSchool: {
-            studentMailDomain: true,
-          },
-        },
-        groups: {
-          group: { uid: true, name: true },
-        },
-      },
-    },
-    {
-      fetch,
-      parent: async () => ({
-        mobile: false,
-        token: authorization?.replace(/^Bearer /, ''),
-        me: undefined,
-      }),
-    },
-  );
+graphql(`
+  query PageIdentity {
+    me {
+      uid
+      fullName
+      firstName
+      lastName
+      email
+      admin
+      major {
+        ldapSchool {
+          studentMailDomain
+        }
+      }
+      groups {
+        group {
+          uid
+          name
+        }
+      }
+    }
+  }
+`);
+
+export const GET = async (event) => {
+  const { PageIdentity } = await load_PageIdentity({ event });
+  const me = get(PageIdentity).data?.me;
+
+  if (!me) error(401, 'Unauthorized');
 
   const data = {
     ...me,
