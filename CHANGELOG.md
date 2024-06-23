@@ -11,6 +11,11 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug qui faisait apparaître des images cassées sur tout les posts n'ayant ni évènement lié ni image
+- Les _pre-releases_ ne sont plus affichées dans le changelog
+
 ## [1.63.1] - 2024-06-21
 
 ### Améliorations
