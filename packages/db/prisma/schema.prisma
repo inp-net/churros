@@ -68,7 +68,6 @@ model User {
   logs                       LogEntry[]
   events                     Event[]
   notificationSubscriptions  NotificationSubscription[]
-  notifications              Notification[]
   godparent                  User?                      @relation("mentorship", fields: [godparentId], references: [id]) // Le parrain ou la marraine
   godchildren                User[]                     @relation("mentorship") // Les filleul(e)s
   incomingGodparentRequests  GodparentRequest[]         @relation("godparent")
@@ -217,24 +216,26 @@ model Link {
   createdAt DateTime @default(now())
 
   // All resources that can have links
-  User                 User?               @relation(fields: [userId], references: [id])
-  userId               String?
-  StudentAssociation   StudentAssociation? @relation(fields: [studentAssociationId], references: [id])
-  studentAssociationId String?
-  Group                Group?              @relation(fields: [groupId], references: [id])
-  groupId              String?
-  Article              Article?            @relation(fields: [articleId], references: [id])
-  articleId            String?
-  Event                Event?              @relation(fields: [eventId], references: [id])
-  eventId              String?
-  Ticket               Ticket?             @relation(fields: [ticketId], references: [id])
-  ticketId             String?
-  Notification         Notification?       @relation(fields: [notificationId], references: [id])
-  notificationId       String?
-  Subject              Subject?            @relation(fields: [subjectId], references: [id])
-  subjectId            String?
+  User                    User?                  @relation(fields: [userId], references: [id])
+  userId                  String?
+  StudentAssociation      StudentAssociation?    @relation(fields: [studentAssociationId], references: [id])
+  studentAssociationId    String?
+  Group                   Group?                 @relation(fields: [groupId], references: [id])
+  groupId                 String?
+  Article                 Article?               @relation(fields: [articleId], references: [id])
+  articleId               String?
+  Event                   Event?                 @relation(fields: [eventId], references: [id])
+  eventId                 String?
+  Ticket                  Ticket?                @relation(fields: [ticketId], references: [id])
+  ticketId                String?
+  Subject                 Subject?               @relation(fields: [subjectId], references: [id])
+  subjectId               String?
+  ScheduledNotification   ScheduledNotification? @relation(fields: [scheduledNotificationId], references: [id])
+  scheduledNotificationId String?
+  SentNotification        SentNotification?      @relation(fields: [sentNotificationId], references: [id])
+  sentNotificationId      String?
 
-  @@unique([name, userId, studentAssociationId, groupId, articleId, eventId, ticketId, notificationId, subjectId])
+  @@unique([name, userId, studentAssociationId, groupId, articleId, eventId, ticketId, scheduledNotificationId, subjectId])
 }
 
 /// A school syllabus
@@ -461,15 +462,15 @@ model Group {
   shopItems              ShopItem[]
   restrictedFormSections FormSection[]       @relation("restrictedTo")
 
-  notifications          Notification[]
   groupId                String?
   ticketGroupId          String?
-  joinedByBookingTickets Ticket[]       @relation("autojoin")
+  joinedByBookingTickets Ticket[] @relation("autojoin")
 
   // For full-text search
-  search         Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
-  thirdPartyApps ThirdPartyApp[]
-  forms          Form[]
+  search                 Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  thirdPartyApps         ThirdPartyApp[]
+  forms                  Form[]
+  scheduledNotifications ScheduledNotification[]
 
   @@index([search], type: Gin)
 }
@@ -512,11 +513,12 @@ model Article {
   links       Link[]
   comments    Comment[]
 
-  author    User?      @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  group     Group      @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  event     Event?     @relation(fields: [eventId], references: [id])
-  eventId   String?
-  reactions Reaction[]
+  author                 User?                   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  group                  Group                   @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  event                  Event?                  @relation(fields: [eventId], references: [id])
+  eventId                String?
+  reactions              Reaction[]
+  scheduledNotifications ScheduledNotification[]
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -534,36 +536,37 @@ enum EventFrequency {
 
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
-  id             String         @id @default(dbgenerated("nanoid('e:')"))
-  authorId       String?
-  groupId        String
-  contactMail    String
-  beneficiary    LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
-  description    String         @db.Text
-  uid            String         @db.VarChar(255)
-  title          String         @db.VarChar(255)
-  startsAt       DateTime
-  endsAt         DateTime
-  notifiedAt     DateTime?      @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
-  location       String         @default("") @db.VarChar(255)
-  visibility     Visibility
-  frequency      EventFrequency @default(Once)
-  recurringUntil DateTime?
-  pictureFile    String         @default("") @db.VarChar(255)
-  showPlacesLeft Boolean        @default(true)
-  managers       EventManager[]
-  author         User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  includeInKiosk Boolean        @default(false)
-  group          Group          @relation(fields: [groupId], references: [id])
-  coOrganizers   Group[]        @relation("coOrganizer")
-  tickets        Ticket[]
-  ticketGroups   TicketGroup[]
-  articles       Article[]
-  lydiaAccountId String?
-  links          Link[]
-  bannedUsers    User[]         @relation("bannedFromEvents")
-  reactions      Reaction[]
-  forms          Form[]
+  id                     String                  @id @default(dbgenerated("nanoid('e:')"))
+  authorId               String?
+  groupId                String
+  contactMail            String
+  beneficiary            LydiaAccount?           @relation(fields: [lydiaAccountId], references: [id])
+  description            String                  @db.Text
+  uid                    String                  @db.VarChar(255)
+  title                  String                  @db.VarChar(255)
+  startsAt               DateTime
+  endsAt                 DateTime
+  notifiedAt             DateTime?               @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
+  location               String                  @default("") @db.VarChar(255)
+  visibility             Visibility
+  frequency              EventFrequency          @default(Once)
+  recurringUntil         DateTime?
+  pictureFile            String                  @default("") @db.VarChar(255)
+  showPlacesLeft         Boolean                 @default(true)
+  managers               EventManager[]
+  author                 User?                   @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  includeInKiosk         Boolean                 @default(false)
+  group                  Group                   @relation(fields: [groupId], references: [id])
+  coOrganizers           Group[]                 @relation("coOrganizer")
+  tickets                Ticket[]
+  ticketGroups           TicketGroup[]
+  articles               Article[]
+  lydiaAccountId         String?
+  links                  Link[]
+  bannedUsers            User[]                  @relation("bannedFromEvents")
+  reactions              Reaction[]
+  forms                  Form[]
+  scheduledNotifications ScheduledNotification[]
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -768,39 +771,67 @@ model BarWeek {
 
 /// A NotificationSubscription stores a user's subscription to push notifications on a user agent
 model NotificationSubscription {
-  id            String         @id @default(dbgenerated("nanoid('notifsub:')"))
-  name          String         @default("") @db.VarChar(255)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id            String             @id @default(dbgenerated("nanoid('notifsub:')"))
+  name          String             @default("") @db.VarChar(255)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  owner         User               @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   ownerId       String
-  endpoint      String         @unique
+  endpoint      String             @unique
   expiresAt     DateTime?
   authKey       String
   p256dhKey     String
-  notifications Notification[]
+  notifications SentNotification[]
 }
 
-/// A notification is a push notification that was sent to a user
-model Notification {
+/// A push notification that was sent to a user
+model SentNotification {
   id             String                   @id @default(dbgenerated("nanoid('notif:')"))
-  createdAt      DateTime                 @default(now())
-  updatedAt      DateTime                 @updatedAt
-  timestamp      DateTime?
+  sentAt         DateTime
   subscription   NotificationSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   subscriptionId String
-  image          String                   @default("")
-  actions        Link[]
-  title          String                   @db.VarChar(255)
-  imageFile      String                   @default("")
-  body           String                   @db.Text
-  vibrate        Int[]                    @default([])
-  group          Group?                   @relation(fields: [groupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  groupId        String?
-  channel        NotificationChannel      @default(Other)
-  user           User?                    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  userId         String?
-  goto           String                   @default("")
+
+  // Notification data
+  title       String              @db.VarChar(255)
+  body        String              @db.Text
+  goto        String              @default("")
+  pictureFile String              @default("")
+  actions     Link[]
+  channel     NotificationChannel @default(Other)
+}
+
+/// A notification that is scheduled for a push.
+/// The people that can be notified are computed at push time, based on user preferences (enabled notification channels).
+model ScheduledNotification {
+  id                             String   @id @default(dbgenerated("nanoid('schednotif:')"))
+  createdAt                      DateTime @default(now())
+  updatedAt                      DateTime @updatedAt
+  scheduledTo                    DateTime
+  // Only send to group members
+  groupMembersOnly               Boolean  @default(false)
+  // Only send to students that are in the group's student association's school
+  studentAssociationStudentsOnly Boolean  @default(false)
+
+  // Notification data
+  title       String              @db.VarChar(255)
+  body        String              @db.Text
+  goto        String              @default("")
+  pictureFile String              @default("")
+  actions     Link[]
+  channel     NotificationChannel @default(Other)
+
+  // Metadata
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  groupId String?
+  vibrate Int[]   @default([])
+
+  // Linked resources
+  // essential to update the scheduled notification when the corresponding resource changes
+  // e.g. an event that was scheduled to be notified is deleted, the scheduled notification should be dropped too
+  event     Event?   @relation(fields: [eventId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  eventId   String?
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  articleId String?
 }
 
 /// A NotificationChannel represents the different kinds of reasons why you might receive a notification: a shotgun just opened, etc.
@@ -811,7 +842,10 @@ enum NotificationChannel {
   GroupBoard
   GodparentRequests
   Comments
-  Other // should't be used too much
+  Signups
+
+  /// should't be used too much
+  Other
 }
 
 /// Announcement is a way to get a message accross the entire site, such as for maintenance announcements.

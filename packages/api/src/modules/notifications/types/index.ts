@@ -5,4 +5,5 @@
 export * from './notification-channel.js';
 export * from './notification-subscription-keys-input.js';
 export * from './notification-subscription.js';
-export * from './notification.js';
+export * from './scheduled-notifications.js';
+export * from './sent-notification.js';

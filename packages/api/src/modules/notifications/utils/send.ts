@@ -86,31 +86,27 @@ export async function notify<U extends User>(
             },
           },
         );
-        await prisma.notification.create({
+        await prisma.sentNotification.create({
           data: {
             subscription: {
               connect: {
                 id,
               },
             },
-            timestamp: notif.timestamp ? new Date(notif.timestamp) : new Date(),
+            sentAt: notif.timestamp ? new Date(notif.timestamp) : new Date(),
             actions: {
               createMany: {
-                data: (notif.actions ?? [])
-                  .filter(({ action }) => /^https?:\/\//.test(action))
-                  .map(({ action, title }) => ({
-                    value: action,
-                    name: title,
-                  })),
+                data: (notif.actions ?? []).map(({ action, title }) => ({
+                  value: action,
+                  name: title,
+                })),
               },
             },
             title: notif.title,
             body: notif.body,
-            imageFile: notif.image,
-            vibrate: notif.vibrate,
+            pictureFile: notif.image,
             goto: notif.data.goto,
             channel: notif.data.channel,
-            ...(notif.data.group ? { group: { connect: { uid: notif.data.group } } } : {}),
           },
         });
         sentSubscriptions.push(subscription);

@@ -30,7 +30,7 @@ export async function scheduleShotgunNotifications(
 ): Promise<[Cron | boolean, Cron | boolean] | undefined> {
   if (tickets.length === 0) return;
   if (notifiedAt) return;
-  const soonDate = (date: Date) => subMinutes(date, 10);
+  const soonDate = (date: Date) => subMinutes(date, 2);
 
   const opensAt = new Date(
     Math.min(...tickets.map(({ opensAt }) => opensAt?.valueOf() ?? Number.POSITIVE_INFINITY)),
