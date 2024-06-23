@@ -17,7 +17,6 @@ echo '
 '
 
 echo 'Running migrations...'
-yarn prisma generate
 yarn prisma migrate deploy
 echo 'Migrated!'
 
