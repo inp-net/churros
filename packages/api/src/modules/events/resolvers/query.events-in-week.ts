@@ -1,7 +1,7 @@
 import { builder, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { prismaQueryVisibleEvents } from '#permissions';
-import { EventFrequency, Visibility, type Event } from '@prisma/client';
+import { EventFrequency, Visibility, type Event } from '@centraverse/db/prisma';
 import {
   addDays,
   differenceInDays,

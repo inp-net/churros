@@ -18,6 +18,9 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Technique
 
 - Récupération de l'IP et du User-Agent dans l'exporteur Prometheus dans le cas de requêtes non authentifiées
+- Prisma a maintenant un pacakge dédié, ce qui permet d'importer le client prisma dans des projets autres que l'API
+- La CI/CD est censé être plus rapide maintenant, car les dépendances sont installées en cache et l'app ne devrait être build qu'une seule fois
+- Kaniko devrait être plus rapide maintenant avec le cache des différentes layers (en théorie)
 
 ## [1.64.0] - 2024-06-23
 

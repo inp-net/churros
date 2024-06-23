@@ -1,6 +1,6 @@
 import { builder, type SearchResult } from '#lib';
 
-import type { Registration } from '@prisma/client';
+import type { Registration } from '@centraverse/db/prisma';
 
 // TODO rename to booking-search-result
 

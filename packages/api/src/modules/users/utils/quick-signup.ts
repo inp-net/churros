@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import type { Major, QuickSignup, School } from '@prisma/client';
+import type { Major, QuickSignup, School } from '@centraverse/db/prisma';
 import { isFuture } from 'date-fns';
 
 export function quickSignupIsValidFor(

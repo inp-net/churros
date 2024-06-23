@@ -7,7 +7,7 @@ import {
   userCanManageEvent,
   userCanSeeTicket,
 } from '#permissions';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
+import { PrismaClientKnownRequestError } from '@centraverse/db/prisma/runtime/library';
 import { isFuture, isPast } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import * as qrcode from 'qrcode';

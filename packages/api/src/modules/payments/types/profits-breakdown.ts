@@ -1,6 +1,6 @@
 import { builder } from '#lib';
 
-import { PaymentMethod } from '@prisma/client';
+import { PaymentMethod } from '@centraverse/db/prisma';
 
 // TODO not in ticketing cuz it'll be re-used for shops maybe?
 // although the byTicket is specific to ticketing so... idk

@@ -1,7 +1,7 @@
 import { builder, prisma, publish, UnauthorizedError } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
-import { Visibility } from '@prisma/client';
+import { Visibility } from '@centraverse/db/prisma';
 import { GraphQLError } from 'graphql';
 import { ArticleType, createUid, scheduleNewArticleNotification } from '../index.js';
 import { canEditArticle } from '../utils/permissions.js';

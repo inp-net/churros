@@ -1,6 +1,6 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
 
-import { CredentialType as CredentialPrismaType } from '@prisma/client';
+import { CredentialType as CredentialPrismaType } from '@centraverse/db/prisma';
 
 builder.mutationField('logout', (t) =>
   t.authField({

@@ -1,14 +1,4 @@
-import { prisma, updatePicture } from '#lib';
 import { fakerFR } from '@faker-js/faker';
-import {
-  CredentialType,
-  DocumentType,
-  GroupType,
-  LogoSourceType,
-  QuestionKind,
-  Visibility,
-  type Prisma,
-} from '@prisma/client';
 import { hash } from 'argon2';
 import { format } from 'date-fns';
 import dichotomid from 'dichotomid';
@@ -18,12 +8,27 @@ import path from 'node:path';
 import { exit } from 'node:process';
 import slug from 'slug';
 import { tqdm } from 'ts-tqdm';
-import { pictureDestinationFile } from './lib/pictures.js';
+import { pictureDestinationFile, updatePicture } from '../../api/src/lib/pictures.js';
+import {
+  CredentialType,
+  DocumentType,
+  GroupType,
+  LogoSourceType,
+  PrismaClient,
+  QuestionKind,
+  Visibility,
+  type Prisma,
+} from '../src/client/default.js';
 
-const faker = fakerFR; //j'avais la flemme de faire des FakerFRFR.machin partout
-faker.seed(5); //seed de génération de la DB, pour générer une DB avec de nouvelles données il suffit juste de changer la valeur de la seed
+const prisma = new PrismaClient();
 
-const storageRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../storage/');
+const faker = fakerFR;
+faker.seed(5);
+
+const storageRoot = path.resolve(
+  path.dirname(new URL(import.meta.url).pathname),
+  '../../api/storage/',
+);
 
 console.info(`Cleaning storage root ${storageRoot}`);
 for (const folder of ['events']) {

@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import { userIsOnBoardOf } from '#permissions';
-import { Visibility } from '@prisma/client';
+import { Visibility } from '@centraverse/db/prisma';
 import { GraphQLError } from 'graphql';
 import { ShopItemType } from '../index.js';
 

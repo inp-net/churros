@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import { CredentialType } from '@prisma/client';
+import { CredentialType } from '@centraverse/db/prisma';
 import { api } from './express.js';
 
 // Poor man's GDPR data download

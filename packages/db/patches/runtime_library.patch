@@ -1,0 +1,11 @@
+--- src/client/runtime/library.d.ts	2024-06-21 22:55:29.159781395 +0200
++++ src/client/runtime/newlibrary.d.ts	2024-06-21 22:59:01.767197330 +0200
+@@ -2689,7 +2689,7 @@
+ 
+ declare type Runtime = "edge-routine" | "workerd" | "deno" | "lagon" | "react-native" | "netlify" | "electron" | "node" | "bun" | "edge-light" | "fastly" | "unknown";
+ 
+-declare type RuntimeDataModel = {
++export declare type RuntimeDataModel = {
+     readonly models: Record<string, RuntimeModel>;
+     readonly enums: Record<string, RuntimeEnum>;
+     readonly types: Record<string, RuntimeModel>;

@@ -1,6 +1,6 @@
 import { builder, prisma, toHtml, yearTier } from '#lib';
 import { DateTimeScalar, PicturedInterface } from '#modules/global';
-import { NotificationChannel } from '@prisma/client';
+import { NotificationChannel } from '@centraverse/db/prisma';
 import { canBeEdited, fullName } from '../index.js';
 
 /** Represents a user, mapped on the underlying database object. */

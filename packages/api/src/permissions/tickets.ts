@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '@centraverse/db/prisma';
 
 export function userCanSeeTicket(
   {

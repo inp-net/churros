@@ -1,6 +1,13 @@
 /* eslint-disable complexity */
 import { log } from '#lib';
-import type { Group, GroupMember, Major, School, StudentAssociation, User } from '@prisma/client';
+import type {
+  Group,
+  GroupMember,
+  Major,
+  School,
+  StudentAssociation,
+  User,
+} from '@centraverse/db/prisma';
 import ldap from 'ldapjs';
 import crypto from 'node:crypto';
 

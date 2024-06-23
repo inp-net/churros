@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import { GroupType } from '@prisma/client';
+import { GroupType } from '@centraverse/db/prisma';
 
 const apiUrl = process.env.MAILMAN_API_URL as unknown as string;
 const apiToken = process.env.MAILMAN_API_TOKEN as unknown as string;

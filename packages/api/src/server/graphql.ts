@@ -1,6 +1,6 @@
 import { context, customErrorMap, inDevelopment } from '#lib';
+import { Prisma } from '@centraverse/db/prisma';
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
-import { Prisma } from '@prisma/client';
 import { createFetch } from '@whatwg-node/fetch';
 import { GraphQLError } from 'graphql';
 import { createYoga } from 'graphql-yoga';

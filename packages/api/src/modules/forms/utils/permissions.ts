@@ -10,7 +10,7 @@ import {
   type Prisma,
   type Question,
   type StudentAssociation,
-} from '@prisma/client';
+} from '@centraverse/db/prisma';
 import { GraphQLError } from 'graphql';
 
 export const requiredIncludesForPermissions = {

@@ -1,0 +1,50 @@
+{
+  "name": "@centraverse/db",
+  "packageManager": "yarn@4.2.2",
+  "scripts": {
+    "prisma": "prisma",
+    "generate": "run-s \"generate:*\"",
+    "generate:prisma": "prisma generate",
+    "generate:patch": "patch src/client/runtime/library.d.ts < patches/runtime_library.patch",
+    "migrate": "prisma migrate dev",
+    "studio": "prisma studio",
+    "format": "prettier --write .",
+    "lint": "eslint --fix ."
+  },
+  "dependencies": {
+    "prisma": "^5.15.1"
+  },
+  "devDependencies": {
+    "@pothos/plugin-prisma": "^3.65.2",
+    "@prisma/client": "^5.15.1",
+    "npm-run-all2": "^6.2.0",
+    "typescript": "^5.5.2"
+  },
+  "prisma": {
+    "seed": "tsx ./seed/index.ts"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "type": "module",
+  "exports": {
+    "./prisma": {
+      "import": {
+        "default": "./src/client/default.js",
+        "types": "./src/client/default.d.ts"
+      }
+    },
+    "./prisma/runtime/library": {
+      "import": {
+        "default": "./src/client/runtime/library.js",
+        "types": "./src/client/runtime/library.d.ts"
+      }
+    },
+    "./pothos": {
+      "import": {
+        "types": "./src/pothos/index.d.ts"
+      }
+    }
+  }
+}

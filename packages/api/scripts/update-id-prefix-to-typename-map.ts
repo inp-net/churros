@@ -24,7 +24,7 @@ const repoRoot = (await execSync(`git rev-parse --show-toplevel`)).toString().tr
 
 const readFrom = path.join(
   path.dirname(import.meta.url.replace(/^file:/, '')).replace('build/', ''),
-  '../prisma/schema.prisma',
+  '../../db/prisma/schema.prisma',
 );
 const lines = readFileSync(readFrom, 'utf8').split('\n');
 

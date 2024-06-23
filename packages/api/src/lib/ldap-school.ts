@@ -12,7 +12,7 @@ export interface LdapUser {
   lastName?: string;
 }
 
-export const schoolLdapSettings = JSON.parse(process.env.LDAP_SCHOOL) as {
+export const schoolLdapSettings = JSON.parse(process.env.LDAP_SCHOOL || '{}') as {
   servers: Record<
     string,
     { url: string; filterAttribute: string; wholeEmail: boolean; attributesMap: LdapUser }

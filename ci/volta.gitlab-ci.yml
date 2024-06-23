@@ -26,8 +26,7 @@ pages:
   stage: deploy
   extends: .volta
   needs:
-    - deploy_api
-    - deploy_app
+    - deploy
   only:
     - tags
   variables:

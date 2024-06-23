@@ -1,4 +1,4 @@
-import type { QuestionKind } from '@prisma/client';
+import type { QuestionKind } from '@centraverse/db/prisma';
 import { GraphQLError } from 'graphql';
 
 export const REDACTED_ANSWER = '•'.repeat(10);

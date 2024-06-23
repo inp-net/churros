@@ -15,7 +15,7 @@ import {
 } from '../mail-templates/props.js';
 
 const compiledTemplates = await precompileTemplates();
-const mailer = createTransport(process.env.SMTP_URL);
+const mailer = createTransport(process.env.SMTP_URL || 'smtp://localhost');
 
 /**
  * Maps attachments to their CIDs

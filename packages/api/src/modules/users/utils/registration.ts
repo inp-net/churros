@@ -5,7 +5,7 @@ import {
   type School,
   type User,
   type UserCandidate,
-} from '@prisma/client';
+} from '@centraverse/db/prisma';
 import { quickSignupIsValidFor } from './quick-signup.js';
 import { createUid } from './uid.js';
 

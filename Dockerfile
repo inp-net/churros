@@ -2,7 +2,7 @@ FROM node:20-alpine as builder
 
 WORKDIR /app
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git patch
 
 COPY yarn.lock /app/
 COPY .yarnrc.yml /app/
@@ -20,7 +20,7 @@ RUN rm -rf packages/oauth-client
 
 RUN yarn install
 RUN yarn generate-buildinfo
-RUN yarn workspaces foreach --exclude @centraverse/docs --interlaced --topological-dev -Apv run build
+RUN yarn workspaces foreach -Rt --from '{@centraverse/api,@centraverse/app}' run build
 
 
 FROM node:20-alpine as base
@@ -32,6 +32,9 @@ COPY .yarnrc.yml /app/
 COPY .yarn/ /app/.yarn/
 COPY package.json /app/
 
+# Dependencies
+COPY --from=builder /app/node_modules/ /app/node_modules/
+
 # Builded arborist
 COPY --from=builder /app/packages/arborist/ /app/packages/arborist/
 
@@ -40,10 +43,15 @@ FROM base as api
 
 WORKDIR /app
 
+
+# Prisma migration
+COPY --from=builder /app/packages/db/prisma/ /app/packages/db/prisma/
+COPY --from=builder /app/packages/db/src/ /app/packages/db/src/
+COPY --from=builder /app/packages/db/package.json /app/packages/db/
+
 # Builded api
 COPY --from=builder /app/packages/api/build/src/ /app/packages/api/build/src/
 COPY --from=builder /app/packages/api/build/schema.graphql /app/packages/api/build/schema.graphql
-COPY --from=builder /app/packages/api/prisma/ /app/packages/api/prisma/
 COPY --from=builder /app/packages/api/static/ /app/packages/api/static/
 COPY --from=builder /app/packages/api/package.json /app/packages/api/
 

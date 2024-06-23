@@ -1,7 +1,7 @@
 import { builder, objectValuesFlat, prisma, purgeUserSessions, resetLdapUserPassword } from '#lib';
 
 import { userIsAdminOf } from '#permissions';
-import { CredentialType as PrismaCredentialType } from '@prisma/client';
+import { CredentialType as PrismaCredentialType } from '@centraverse/db/prisma';
 import { hash, verify } from 'argon2';
 import { GraphQLError } from 'graphql';
 // TODO rename to change-password

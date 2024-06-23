@@ -10,7 +10,7 @@ import {
 } from '#lib';
 import { notify } from '#modules/notifications';
 import { userIsAdminOf } from '#permissions';
-import { NotificationChannel, type User } from '@prisma/client';
+import { NotificationChannel, type User } from '@centraverse/db/prisma';
 import { GraphQLError } from 'graphql';
 import { CommentType } from '../index.js';
 

@@ -7,7 +7,7 @@ import {
   type LydiaTransaction,
   type ShopItem,
   type ShopPayment,
-} from '@prisma/client';
+} from '@centraverse/db/prisma';
 import { GraphQLError } from 'graphql';
 import { ShopPaymentType } from '../index.js';
 

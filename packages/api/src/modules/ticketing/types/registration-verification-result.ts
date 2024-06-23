@@ -1,6 +1,6 @@
 import { builder } from '#lib';
 
-import type { Registration, User } from '@prisma/client';
+import type { Registration, User } from '@centraverse/db/prisma';
 import {
   RegistrationType,
   RegistrationVerificationState,

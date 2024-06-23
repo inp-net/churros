@@ -1,9 +1,11 @@
 {
   "name": "@centraverse/api",
   "dependencies": {
+    "@centraverse/db": "workspace:^",
     "@envelop/core": "^5.0.0",
     "@graphql-yoga/node": "^3.9.1",
     "@graphql-yoga/redis-event-target": "^3.0.0",
+    "@inp-net/ldap7": "^1.0.4",
     "@pothos/core": "3.41.0",
     "@pothos/plugin-complexity": "^3.13.0",
     "@pothos/plugin-dataloader": "^3.18.1",
@@ -17,7 +19,6 @@
     "@pothos/plugin-tracing": "^0.5.8",
     "@pothos/plugin-validation": "^3.10.1",
     "@pothos/plugin-with-input": "^3.10.1",
-    "@prisma/client": "patch:@prisma/client@npm%3A5.11.0#~/.yarn/patches/@prisma-client-npm-5.11.0-2b6837f715.patch",
     "@types/qrcode": "^1.5.5",
     "arborist": "workspace:^",
     "argon2": "^0.40.1",
@@ -120,6 +121,7 @@
     "glob": "^10.3.12",
     "graph-cycles": "^3.0.0",
     "nodemon": "^3.1.0",
+    "npm-run-all2": "^6.2.0",
     "prettier": "^3.2.5",
     "ts-tqdm": "^0.8.6",
     "tsx": "^4.7.1",
@@ -131,14 +133,17 @@
     "#modules/*": "./build/src/modules/*/index.js",
     "#permissions": "./build/src/permissions/index.js"
   },
-  "prisma": {
-    "seed": "tsx ./src/seed.ts"
-  },
   "private": true,
   "scripts": {
     "format-at": "prettier --write --ignore-unknown",
     "format": "yarn format-at .",
-    "build": "prisma generate && yarn patch -u @prisma/client && yarn copy-changelog && tsx ./scripts/update-id-prefix-to-typename-map.ts && yarn barrelize && tsc && tsx ./src/post-build.ts",
+    "build": "run-s \"build:*\"",
+    "build:prisma": "yarn workspace @centraverse/db run generate",
+    "build:changelog": "run-s copy-changelog",
+    "build:typenames": "tsx ./scripts/update-id-prefix-to-typename-map.ts",
+    "build:barrelize": "run-s barrelize",
+    "build:api": "tsc",
+    "build:post": "tsx ./src/post-build.ts",
     "copy-changelog": "cp ../../CHANGELOG.md ./static/CHANGELOG.md",
     "clean": "git clean -Xdf .",
     "dev": "yarn tsx ./scripts/update-mail-templates-type.ts && yarn barrelize && yarn run -T generate-buildinfo --stub && NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",

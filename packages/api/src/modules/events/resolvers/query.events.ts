@@ -1,7 +1,7 @@
 import { builder, prisma } from '#lib';
 
 import { prismaQueryVisibleEvents } from '#permissions';
-import { Visibility, type Prisma } from '@prisma/client';
+import { Visibility, type Prisma } from '@centraverse/db/prisma';
 import { endOfDay, startOfDay } from 'date-fns';
 import { EventType, findNextRecurringEvent } from '../index.js';
 

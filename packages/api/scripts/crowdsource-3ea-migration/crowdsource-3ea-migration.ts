@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@centraverse/db/prisma';
 import { readFile, writeFile } from 'node:fs/promises';
 
 const p = new PrismaClient();

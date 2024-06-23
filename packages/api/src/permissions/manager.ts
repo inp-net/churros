@@ -1,6 +1,6 @@
 import { type Context } from '#lib';
 
-import type { Event } from '@prisma/client';
+import type { Event } from '@centraverse/db/prisma';
 
 export function userCanManageEvent(
   event: Event & {

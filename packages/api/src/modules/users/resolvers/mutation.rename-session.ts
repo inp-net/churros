@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { CredentialType as CredentialPrismaType } from '@prisma/client';
+import { CredentialType as CredentialPrismaType } from '@centraverse/db/prisma';
 
 // TODO third party apps also have tokens, a "Session" type should be created
 // so that third party apps' sessions (authorizations) can also be revoked

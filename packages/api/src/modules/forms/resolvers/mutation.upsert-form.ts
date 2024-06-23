@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
-import { Visibility } from '@prisma/client';
+import { Visibility } from '@centraverse/db/prisma';
 import { GraphQLError } from 'graphql';
 import omit from 'lodash.omit';
 import { FormType } from '../types/form.js';

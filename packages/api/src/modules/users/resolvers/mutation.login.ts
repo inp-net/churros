@@ -1,7 +1,7 @@
 import { builder, ensureHasIdPrefix, prisma } from '#lib';
 
-import type { Prisma } from '@prisma/client';
-import { CredentialType as CredentialPrismaType } from '@prisma/client';
+import type { Prisma } from '@centraverse/db/prisma';
+import { CredentialType as CredentialPrismaType } from '@centraverse/db/prisma';
 import * as argon2 from 'argon2';
 import { GraphQLError } from 'graphql';
 import { nanoid } from 'nanoid';

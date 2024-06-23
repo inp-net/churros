@@ -1,11 +1,15 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "postgresqlExtensions"]
+  output          = "../src/client"
 }
 
 // See https://pothos-graphql.dev/docs/plugins/prisma#setup
 generator pothos {
-  provider = "prisma-pothos-types"
+  provider     = "prisma-pothos-types"
+  clientOutput = "@centraverse/db/prisma"
+  output       = "../src/pothos/index.d.ts"
+  prismaUtils  = true
 }
 
 datasource db {
@@ -262,15 +266,15 @@ model Minor {
 }
 
 model School {
-  id                 String   @id @default(dbgenerated("nanoid('school:')"))
-  uid                String   @unique @db.VarChar(255)
-  name               String   @db.VarChar(255)
-  color              String   @db.VarChar(7)
-  studentMailDomain  String   @default("") @db.VarChar(255)
-  aliasMailDomains   String[] @default([]) @db.VarChar(255)
-  description        String   @default("") @db.Text
-  address            String   @default("") @db.VarChar(255)
-  pictureFile        String   @default("") @db.VarChar(255)
+  id                String   @id @default(dbgenerated("nanoid('school:')"))
+  uid               String   @unique @db.VarChar(255)
+  name              String   @db.VarChar(255)
+  color             String   @db.VarChar(7)
+  studentMailDomain String   @default("") @db.VarChar(255)
+  aliasMailDomains  String[] @default([]) @db.VarChar(255)
+  description       String   @default("") @db.Text
+  address           String   @default("") @db.VarChar(255)
+  pictureFile       String   @default("") @db.VarChar(255)
 
   majors              Major[]              @relation("MajorToSchool")
   majorsLdapSchool    Major[]              @relation("ldapSchool")

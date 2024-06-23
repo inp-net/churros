@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@centraverse/db/prisma';
 import { readFileSync } from 'fs';
 
 const p = new PrismaClient();

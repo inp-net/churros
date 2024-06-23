@@ -1,6 +1,6 @@
+import { PrismaClient } from '@centraverse/db/prisma';
+import { type RuntimeDataModel } from '@centraverse/db/prisma/runtime/library';
 import * as p from '@clack/prompts';
-import { PrismaClient } from '@prisma/client';
-import { type RuntimeDataModel } from '@prisma/client/runtime/library.js';
 import { glob } from 'glob';
 import { execSync } from 'node:child_process';
 import * as fs from 'node:fs';

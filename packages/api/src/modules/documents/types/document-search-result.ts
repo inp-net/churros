@@ -1,6 +1,6 @@
 import { builder, type SearchResult } from '#lib';
 
-import { type Document } from '@prisma/client';
+import { type Document } from '@centraverse/db/prisma';
 
 export const DocumentSearchResultType = builder
   .objectRef<SearchResult<{ document: Document }>>('DocumentSearchResult')

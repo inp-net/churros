@@ -1,6 +1,6 @@
 import { prisma } from '#lib';
 import { scheduleNotification } from '#modules/notifications';
-import { NotificationChannel, Visibility } from '@prisma/client';
+import { NotificationChannel, Visibility } from '@centraverse/db/prisma';
 import { mappedGetAncestors } from 'arborist';
 import type Cron from 'croner';
 
