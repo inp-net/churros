@@ -24,6 +24,7 @@ import TracingPlugin, { isRootField, runFunction } from '@pothos/plugin-tracing'
 import ValidationPlugin from '@pothos/plugin-validation';
 import WithInputPlugin from '@pothos/plugin-with-input';
 import { GraphQLError, Kind } from 'graphql';
+import { default as parseUserAgent } from 'ua-parser-js';
 import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
@@ -114,11 +115,17 @@ export const builder = new SchemaBuilder<PothosTypes>({
           // Do not wait for prometheus counters before sending the response!
           (async () => {
             const { token, user } = await context(ctx);
+            const ua = parseUserAgent(ctx.request.headers.get('User-Agent') ?? '');
+            const ip = ctx.request.headers.get('X-Real-Ip');
+
             updateQueryUsage({
               queryType: config.parentType,
               queryName: config.name,
               token,
-              user: user?.id,
+              user:
+                user?.id ||
+                (ua.browser.name ? `${ua.browser.name}/${ua.browser.version || '?'}` : ua.ua) +
+                  (ip ? ` @${ip}` : ''),
               duration,
             }).catch(console.error);
           })();
