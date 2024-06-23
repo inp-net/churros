@@ -2,6 +2,7 @@ import adapter from '@sveltejs/adapter-node';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import preprocess from 'svelte-preprocess';
+import { CURRENT_VERSION } from './src/lib/buildinfo.js';
 
 const here = dirname(new URL(import.meta.url).pathname);
 
@@ -21,6 +22,10 @@ const config = {
     adapter: adapter(),
     alias: {
       $houdini: resolve(here, '$houdini'),
+    },
+    version: {
+      pollInterval: 30e3,
+      name: CURRENT_VERSION,
     },
   },
 };

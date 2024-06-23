@@ -1,6 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
+  import { updated } from '$app/stores';
   import AnalyticsTracker from '$lib/components/AnalyticsTracker.svelte';
   import ModalThemeVariables from '$lib/components/ModalThemeVariables.svelte';
   import Toast from '$lib/components/Toast.svelte';
@@ -33,10 +34,15 @@
     remove: () => void;
   };
 
-  beforeNavigate(async () => {
+  beforeNavigate(async ({ willUnload, to }) => {
     const { NProgress } = window as unknown as Window & { NProgress: NProgress };
 
     NProgress.start();
+
+    // See https://kit.svelte.dev/docs/configuration#version
+    if ($updated && !willUnload && to?.url) 
+      location.href = to.url.href;
+    
   });
 
   afterNavigate(async () => {
