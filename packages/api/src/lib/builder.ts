@@ -115,8 +115,8 @@ export const builder = new SchemaBuilder<PothosTypes>({
           // Do not wait for prometheus counters before sending the response!
           (async () => {
             const { token, user } = await context(ctx);
-            const ua = parseUserAgent(ctx.request.headers.get('User-Agent') ?? '');
-            const ip = ctx.request.headers.get('X-Real-Ip');
+            const ua = parseUserAgent(ctx.request?.headers.get('User-Agent') ?? '');
+            const ip = ctx.request?.headers.get('X-Real-Ip');
 
             updateQueryUsage({
               queryType: config.parentType,
