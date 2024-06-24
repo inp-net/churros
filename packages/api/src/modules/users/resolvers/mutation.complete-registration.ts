@@ -70,7 +70,10 @@ builder.mutationField('completeRegistration', (t) =>
             cededImageRightsToTVn7,
             apprentice,
           },
-          include: { major: true },
+          include: {
+            major: { include: { schools: true } },
+            usingQuickSignup: { include: { school: { include: { majors: true } } } },
+          },
         }),
       );
       const userOrCandidate: (typeof user | UserCandidate) & { major?: Major | undefined | null } =

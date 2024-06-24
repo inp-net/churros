@@ -16,6 +16,9 @@ export async function load({ fetch, url }) {
           '...on MutationLoginSuccess': {
             data: { token: true },
           },
+          '...on AwaitingValidationError': {
+            message: true,
+          },
           '...on Error': {
             message: true,
           },

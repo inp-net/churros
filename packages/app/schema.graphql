@@ -736,6 +736,10 @@ type ArticleSearchResultType {
   similarity: Float!
 }
 
+type AwaitingValidationError {
+  message: String!
+}
+
 """
 A bar week is a week during which some groups takeover the bar staff
 """
@@ -2120,6 +2124,10 @@ type Mutation {
     lastName: String!
     majorId: ID!
     phone: String!
+
+    """
+    Inscrire définitivement l'utilisateur·ice si vrai. Si faux, mettre à jour la demande d'inscription sans créer de compte
+    """
     register: Boolean!
   ): MutationUpdateUserCandidateResult!
   updateUserPermissions(canAccessDocuments: Boolean!, uid: String!): User!
@@ -2398,7 +2406,7 @@ type MutationFinishPaypalRegistrationPaymentSuccess {
   data: Boolean!
 }
 
-union MutationLoginResult = Error | MutationLoginSuccess
+union MutationLoginResult = AwaitingValidationError | Error | MutationLoginSuccess
 
 type MutationLoginSuccess {
   data: Credential!

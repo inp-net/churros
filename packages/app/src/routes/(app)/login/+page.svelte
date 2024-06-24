@@ -53,6 +53,13 @@
         return;
       }
 
+      if (login.__typename === 'AwaitingValidationError') {
+        errorMessages = [
+          "Ton compte n'a pas encore été validé par l'équipe d'administration de ton AE. Encore un peu de patience 😉",
+        ];
+        return;
+      }
+
       saveSessionToken(document, login.data);
       await redirect();
     } finally {

@@ -17,7 +17,11 @@ export function resolveSchoolMail(
   return null;
 }
 
-function resolveSchoolMailForSchool(mail: string, school: School): string | null {
+export function isSchoolEmail(mail: string, major: Major & { schools: School[] }): boolean {
+  return resolveSchoolMail(mail, major) !== null;
+}
+
+export function resolveSchoolMailForSchool(mail: string, school: School): string | null {
   if (mailDomainsMatch(mail, school.studentMailDomain)) return mail;
 
   if (school.aliasMailDomains.some((alias) => mailDomainsMatch(mail, alias)))
@@ -26,15 +30,15 @@ function resolveSchoolMailForSchool(mail: string, school: School): string | null
   return null;
 }
 
-function replaceMailDomainPart(mail: string, newDomain: string): string {
+export function replaceMailDomainPart(mail: string, newDomain: string): string {
   return mail.split('@')[0] + '@' + newDomain;
 }
 
-function mailDomainsMatch(email: string, domain: string) {
+export function mailDomainsMatch(email: string, domain: string) {
   return mailDomain(email) === domain.toLowerCase().trim();
 }
 
-function mailDomain(mail: string): string {
+export function mailDomain(mail: string): string {
   const domain = mail.split('@')[1];
   if (!domain) throw new Error(`Invalid email address: ${mail}`);
 
