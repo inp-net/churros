@@ -26,18 +26,36 @@
 
     try {
       loadingRegistrations.push(email);
-      let result = false;
+      let ok = false;
       if (accept) {
-        ({ acceptRegistration: result } = await $zeus.mutate({
-          acceptRegistration: [{ email }, true],
-        }));
+        const { acceptRegistration: result } = await $zeus.mutate({
+          acceptRegistration: [
+            { email },
+            {
+              '__typename': true,
+              '...on Error': { message: true },
+              '...on MutationAcceptRegistrationSuccess': {
+                data: {
+                  email: true,
+                },
+              },
+            },
+          ],
+        });
+
+        if (result.__typename === 'Error') 
+          toasts.error("Erreur lors de l'acceptation de l'inscription", result.message);
+         else 
+          ok = true;
+        
       } else {
-        ({ refuseRegistration: result } = await $zeus.mutate({
+        const { refuseRegistration: result } = await $zeus.mutate({
           refuseRegistration: [{ email, reason: why }, true],
-        }));
+        });
+        ok = result;
       }
 
-      if (result) removeRow(email);
+      if (ok) removeRow(email);
     } catch (error) {
       toasts.error("Erreur lors de la décision de l'inscription", error?.toString() ?? '');
     } finally {

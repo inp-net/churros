@@ -1671,7 +1671,7 @@ type Minor implements Node {
 }
 
 type Mutation {
-  acceptRegistration(email: String!): Boolean!
+  acceptRegistration(email: String!): MutationAcceptRegistrationResult!
 
   """
   Marks the user as having seen the given version's changelog.
@@ -2334,6 +2334,12 @@ type Mutation {
     """
     id: ID!
   ): MutationVerifyRegistrationResult!
+}
+
+union MutationAcceptRegistrationResult = Error | MutationAcceptRegistrationSuccess
+
+type MutationAcceptRegistrationSuccess {
+  data: User!
 }
 
 union MutationAddGroupMemberResult = Error | MutationAddGroupMemberSuccess
