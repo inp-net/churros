@@ -1,10 +1,9 @@
 import { builder, createLdapUser, prisma, yearTier } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { NotificationChannel, type Major, type UserCandidate } from '@centraverse/db/prisma';
-import { hash } from 'argon2';
 import { ZodError } from 'zod';
 import { notify } from '../../notifications/utils/send.js';
-import { completeRegistration } from '../index.js';
+import { completeRegistration, hashPassword } from '../index.js';
 // TODO rename registration to signup
 
 builder.mutationField('completeRegistration', (t) =>
@@ -49,11 +48,9 @@ builder.mutationField('completeRegistration', (t) =>
         data: {
           action: 'complete',
           area: 'signups',
-
           message: `Complétion de l'inscription de ${firstName} ${lastName} ${yearTier(
             graduationYear,
           ).toString()}A ${phone}`,
-
           target: `token ${token}`,
         },
       });
@@ -69,7 +66,7 @@ builder.mutationField('completeRegistration', (t) =>
             graduationYear,
             lastName,
             phone,
-            password: await hash(password),
+            password: await hashPassword(password),
             cededImageRightsToTVn7,
             apprentice,
           },

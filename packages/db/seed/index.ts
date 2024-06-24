@@ -1,5 +1,4 @@
 import { fakerFR } from '@faker-js/faker';
-import { hash } from 'argon2';
 import { format } from 'date-fns';
 import dichotomid from 'dichotomid';
 import { existsSync, readdirSync, statSync } from 'node:fs';
@@ -19,6 +18,9 @@ import {
   Visibility,
   type Prisma,
 } from '../src/client/default.js';
+
+// XXX: will break if we change the hashing algorithm (abstracted away in api package but not here)
+import { hash } from 'argon2';
 
 const prisma = new PrismaClient();
 

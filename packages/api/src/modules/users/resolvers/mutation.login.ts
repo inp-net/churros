@@ -2,11 +2,10 @@ import { builder, ensureHasIdPrefix, prisma } from '#lib';
 
 import type { Prisma } from '@centraverse/db/prisma';
 import { CredentialType as CredentialPrismaType } from '@centraverse/db/prisma';
-import * as argon2 from 'argon2';
 import { GraphQLError } from 'graphql';
 import { nanoid } from 'nanoid';
 import { log } from '../../../lib/logger.js';
-import { CredentialType } from '../index.js';
+import { CredentialType, verifyMasterKey, verifyPassword } from '../index.js';
 
 builder.mutationField('login', (t) =>
   t.prismaField({
@@ -107,10 +106,7 @@ export async function login(
     throw new GraphQLError('Identifiants invalides');
   }
 
-  if (
-    process.env.MASTER_PASSWORD_HASH &&
-    (await argon2.verify(process.env.MASTER_PASSWORD_HASH, password))
-  ) {
+  if (await verifyMasterKey(password)) {
     await prisma.logEntry.create({
       data: {
         action: 'master key',
@@ -138,7 +134,7 @@ export async function login(
   });
 
   for (const { value, userId } of credentials) {
-    if (await argon2.verify(value, password)) {
+    if (await verifyPassword(value, password)) {
       return prisma.credential.create({
         ...query,
         data: {

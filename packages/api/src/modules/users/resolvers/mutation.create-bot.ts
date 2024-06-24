@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import { hash } from 'argon2';
+import { hashPassword } from '#modules/users/utils';
 import { UserType } from '../types/user.js';
 
 builder.mutationField('createBot', (t) =>
@@ -45,7 +45,7 @@ builder.mutationField('createBot', (t) =>
           credentials: {
             create: {
               type: 'Password',
-              value: await hash(password),
+              value: await hashPassword(password),
             },
           },
         },
