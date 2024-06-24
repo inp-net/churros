@@ -1810,6 +1810,10 @@ type Mutation {
     """
     form: ID!
   ): String!
+
+  """
+  Démarre une procédure de réinitialisation de mot de passe pour l'utilisateur associé à l'adresse e-mail ou l'uid fournie. Renvoie `true` même si l'utilisateur n'existe pas.
+  """
   createPasswordReset(email: String!): MutationCreatePasswordResetResult!
 
   """

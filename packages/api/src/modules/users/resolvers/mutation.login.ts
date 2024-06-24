@@ -10,8 +10,8 @@ import { nanoid } from 'nanoid';
 import {
   AwaitingValidationError,
   CredentialType,
+  emailLoginPrismaClauses,
   needsManualValidation,
-  replaceMailDomainPart,
   verifyMasterKey,
   verifyPassword,
 } from '../index.js';
@@ -55,36 +55,9 @@ export async function login(
   },
 ) {
   const schools = await prisma.school.findMany();
-  const schoolDomainsPerSchool = Object.fromEntries(
-    schools.map((school) => [school.uid, [school.studentMailDomain, ...school.aliasMailDomains]]),
-  );
-  const schoolDomains = Object.values(schoolDomainsPerSchool);
-  const [_, domain] = email.split('@', 2);
-  const uidOrEmail = email.trim().toLowerCase();
-  //Ici on définit les clauses du prisma pour chercher un utilisateur, soit par uid ou par email dans le cas ou il rentre l'un des deux
-  //De plus si l'utilisateur est dans une école, on cherche aussi par email dans les domaines de l'école ou cas ou il rentre un un alias de son école au lieu du bon mail
-  //Le if sert à vérifier que le premier domaine est inclus dans les écoles (car on ne doit pas remplacer un mail genre @ewen.works ou n'importe quel domaine avec un @etu.inp-n7.fr)
-  let prismaClauses: Prisma.UserWhereInput[] = [{ uid: uidOrEmail }, { email: uidOrEmail }];
-
-  if (domain && schoolDomains.flat().includes(domain)) {
-    prismaClauses = [
-      ...prismaClauses,
-      ...Object.entries(schoolDomainsPerSchool).map(
-        ([schoolUid, domains]) =>
-          ({
-            //ici on map pour chaque école si l'utilisateur est dans l'école et on remplace le mail par TOUS les domaines de l'école
-            //On fait ça pour que si l'utilisateur rentre un alias de son mail, on le trouve quand même
-            major: { schools: { some: { uid: schoolUid } } },
-            email: {
-              in: domains.map((domain) => replaceMailDomainPart(uidOrEmail, domain)),
-            },
-          }) satisfies Prisma.UserWhereInput,
-      ),
-    ];
-  }
+  const { clauses: prismaClauses, uidOrEmail } = emailLoginPrismaClauses(schools, email);
   const user = await prisma.user.findFirst({
     where: { OR: prismaClauses },
-
     include: {
       credentials: {
         where: {
