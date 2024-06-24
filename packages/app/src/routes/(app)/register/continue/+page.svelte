@@ -121,17 +121,17 @@
   <form title="Finaliser mon inscription" on:submit|preventDefault={register}>
     {#if data.userCandidate.emailValidated}
       <Alert theme="success" inline>
-        <strong>Votre inscription est en attente de validation manuelle.</strong><br />
-        Cependant, vous pouvez toujours compléter ou corriger les informations ci-dessous.
+        <strong>Ton inscription est en attente de validation par ton AE.</strong><br />
+        Tu peux toujours corriger des informations en attendant.
       </Alert>
     {:else if isStudent && data.userCandidate.schoolUid === null && !data.userCandidate.usingQuickSignup}
       <Alert theme="warning" inline>
         <strong>
-          Votre compte n'est pas encore lié à une école, votre inscription sera validée
-          manuellement.
+          Tu n'a pas renseigné ton adresse e-mail universitaire. Une personne de l'équipe
+          d'administration de ton AE devra valider manuellement ton inscription.
         </strong>
         <br />
-        Si vous possédez une adresse universitaire, vous pouvez
+        Si tu as accès à toi boîte mail universitaire, tu peux
         <a href="..">recommencer l'inscription</a> avec celle-ci.
       </Alert>
     {/if}
@@ -254,8 +254,8 @@
   <Alert theme="success">
     <h3>Demande enregistrée&nbsp;!</h3>
     <p>
-      Votre inscription sera validée manuellement et vous recevrez un email une fois votre compte
-      validé.
+      Tu recevra un email une fois que ton compte sera validé par l'équipe d'administration de ton
+      AE.
     </p>
     <p><a href="/">Retourner à l'accueil.</a></p>
   </Alert>
