@@ -1,5 +1,5 @@
 /* @generated from schema by /packages/api/scripts/update-id-prefix-to-typename-map.ts */
-const ID_PREFIXES_TO_TYPENAMES = {
+export const ID_PREFIXES_TO_TYPENAMES = {
   u: 'User',
   godparentreq: 'GodparentRequest',
   candidate: 'UserCandidate',
@@ -66,10 +66,14 @@ export function removeIdPrefix(
   return id.replace(`${TYPENAMES_TO_ID_PREFIXES[typename]}:`, '');
 }
 
+export function hasIdPrefix(typename: keyof typeof TYPENAMES_TO_ID_PREFIXES, id: string): boolean {
+  return id.startsWith(`${TYPENAMES_TO_ID_PREFIXES[typename]}:`);
+}
+
 export function ensureIdPrefix(
   typename: keyof typeof TYPENAMES_TO_ID_PREFIXES,
   id: string,
 ): string {
-  if (id.startsWith(`${TYPENAMES_TO_ID_PREFIXES[typename]}:`)) return id;
+  if (hasIdPrefix(typename, id)) return id;
   return `${TYPENAMES_TO_ID_PREFIXES[typename]}:${id}`;
 }

@@ -73,5 +73,4 @@ function updateInFile(filename: string, exported: boolean): void {
 }
 
 updateInFile('../src/lib/global-id.ts', true);
-updateInFile('../../app/src/routes/(app)/bookings/[pseudoID]/+page.server.ts', false);
-updateInFile('../../app/src/lib/typenames.ts', false);
+updateInFile('../../app/src/lib/typenames.ts', true);

@@ -4,6 +4,7 @@
 
 export * from './names.js';
 export * from './password-resets.js';
+export * from './passwords.js';
 export * from './permissions.js';
 export * from './quick-signup.js';
 export * from './registration.js';

@@ -7,6 +7,7 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { tooltip } from '$lib/tooltip';
   import { toasts } from '$lib/toasts';
+  import { removeIdPrefix } from '$lib/typenames';
 
   export let data: PageData;
 
@@ -43,11 +44,9 @@
           ],
         });
 
-        if (result.__typename === 'Error') 
+        if (result.__typename === 'Error')
           toasts.error("Erreur lors de l'acceptation de l'inscription", result.message);
-         else 
-          ok = true;
-        
+        else ok = true;
       } else {
         const { refuseRegistration: result } = await $zeus.mutate({
           refuseRegistration: [{ email, reason: why }, true],
@@ -66,8 +65,8 @@
 
 <h1>Demandes d'inscription</h1>
 <ul class="nobullet registrations">
-  {#each userCandidates as { email, fullName, major, graduationYear }}
-    <li>
+  {#each userCandidates as { email, fullName, major, graduationYear, id }}
+    <li id={removeIdPrefix('UserCandidate', id)}>
       <strong>{fullName}</strong>
       <span
         >{email} · {#if major}<abbr title="" use:tooltip={major.name}>{major.shortName}</abbr
