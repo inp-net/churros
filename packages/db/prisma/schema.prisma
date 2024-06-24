@@ -27,6 +27,7 @@ model User {
   // School details
   schoolServer String? @db.VarChar(255)
   schoolUid    String? @db.VarChar(255)
+  // email of the user from the school's LDAP
   schoolEmail  String? @db.VarChar(255)
 
   // Mandatory profile details

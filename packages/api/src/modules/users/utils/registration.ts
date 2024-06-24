@@ -2,37 +2,48 @@ import { prisma, sendMail } from '#lib';
 import {
   CredentialType,
   type Major,
+  type Prisma,
   type School,
   type User,
   type UserCandidate,
 } from '@centraverse/db/prisma';
 import { quickSignupIsValidFor } from './quick-signup.js';
+import { resolveSchoolMail } from './school-emails.js';
 import { createUid } from './uid.js';
 
-export const saveUser = async ({
-  id,
-  email,
-  firstName,
-  lastName,
-  majorId,
-  graduationYear,
-  password,
-  address,
-  birthday,
-  phone,
-  schoolEmail,
-  apprentice,
-  schoolServer,
-  schoolUid,
-  cededImageRightsToTVn7,
-}: UserCandidate): Promise<
-  undefined | (User & { major?: null | (Major & { ldapSchool?: School | null }) })
-> => {
+export const saveUser = async (
+  {
+    id,
+    email,
+    firstName,
+    lastName,
+    majorId,
+    graduationYear,
+    password,
+    address,
+    birthday,
+    phone,
+    schoolEmail,
+    apprentice,
+    schoolServer,
+    schoolUid,
+    cededImageRightsToTVn7,
+  }: UserCandidate,
+  returnPrismaQuery: {
+    include?: Prisma.UserCandidateInclude;
+    select?: Prisma.UserCandidateSelect;
+  } = {},
+): Promise<User & { major?: null | (Major & { ldapSchool?: School | null }) }> => {
+  const major = majorId
+    ? await prisma.major.findUniqueOrThrow({ where: { id: majorId }, include: { schools: true } })
+    : null;
   // Create a user profile
+  const resolvedStudentEmail = major ? resolveSchoolMail(email, major) : null;
   const user = await prisma.user.create({
+    ...returnPrismaQuery,
     data: {
       uid: await createUid({ firstName, lastName }),
-      email,
+      email: resolvedStudentEmail ?? email,
       graduationYear: graduationYear!,
       firstName,
       lastName,
