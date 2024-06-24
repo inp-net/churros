@@ -29,6 +29,7 @@
   import IconAddCircleOutline from '~icons/mdi/plus-circle-outline';
   import type { DESKTOP_NAVIGATION_TABS } from '../../routes/(app)/+layout.svelte';
   import LogoFrappe from './LogoFrappe.svelte';
+  import { loaded } from '$lib/loading';
 
   export let current: (typeof DESKTOP_NAVIGATION_TABS)[number];
   let flyoutOpen = false;
@@ -41,7 +42,7 @@
   $: data = fragment(
     user,
     graphql(`
-      fragment NavigationSide on User {
+      fragment NavigationSide on User @loading {
         uid
         external
         canAccessDocuments
@@ -233,7 +234,7 @@
         <span>Se déconnecter</span>
       </a>
     {/if}
-    {#if $data}
+    {#if $data && loaded($data.uid)}
       <a href="/users/{$data.uid}/edit" class="navigation-item">
         <IconSettings></IconSettings>
         <span>Réglages</span>

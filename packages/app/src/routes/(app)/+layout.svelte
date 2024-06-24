@@ -153,6 +153,7 @@
 <div class="layout">
   <NavigationTop
     {scrolled}
+    userIsLoading={$AppLayout.fetching}
     user={$AppLayout.data?.me ?? null}
     event={$AppLayout.data?.scanningEvent ?? null}
   />

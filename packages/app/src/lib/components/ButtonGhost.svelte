@@ -10,6 +10,7 @@
   export let href = '';
   export let tight = false;
   export let inline = false;
+  export let loading = false;
 </script>
 
 <svelte:element
@@ -28,10 +29,25 @@
   use:tooltip={help}
   class="button-ghost {danger ? 'danger' : ''} {success ? 'success' : ''} {$$restProps.class}"
   on:click
-  on:mousedown><slot /></svelte:element
+  on:mousedown
+  class:skeleton-effect-wave={loading}
 >
+  {#if loading}
+    <div class="loading-blackout"><slot /></div>
+  {:else}
+    <slot />
+  {/if}
+</svelte:element>
 
 <style lang="scss">
+  .button-ghost.skeleton-effect-wave {
+    background: var(--muted-border);
+  }
+
+  .loading-blackout {
+    opacity: 0;
+  }
+
   .button-ghost.danger,
   .button-ghost.success {
     color: var(--link);
@@ -40,10 +56,10 @@
   .button-ghost {
     --bg: transparent;
 
-    all: unset;
     flex-shrink: 0;
     width: max-content;
     padding: 0.25em;
+    font-size: 1em;
 
     &.tight {
       padding: 0;

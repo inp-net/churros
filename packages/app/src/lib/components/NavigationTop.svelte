@@ -1,9 +1,9 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import { env } from '$env/dynamic/public';
   import { fragment, graphql, type NavigationTop, type NavigationTopCurrentEvent } from '$houdini';
   import { formatDate } from '$lib/dates';
+  import { loaded, loading, onceLoaded } from '$lib/loading';
   import { theme } from '$lib/theme';
   import IconAccount from '~icons/mdi/account-circle-outline';
   import IconNotifFilled from '~icons/mdi/bell';
@@ -20,12 +20,14 @@
   let deviceWidth = browser ? window.innerWidth : 500;
   let reportIssueDialogElement: HTMLDialogElement;
 
+  export let userIsLoading = false;
+
   export let user: NavigationTop | null;
   $: data = fragment(
     user,
     graphql(`
-      fragment NavigationTop on User {
-        pictureFile
+      fragment NavigationTop on User @loading {
+        pictureURL
         uid
       }
     `),
@@ -35,7 +37,7 @@
   $: currentEvent = fragment(
     event,
     graphql(`
-      fragment NavigationTopCurrentEvent on Event {
+      fragment NavigationTopCurrentEvent on Event @loading {
         title
         startsAt
       }
@@ -88,7 +90,7 @@
         }}
         style="color:red"><IconIssue /></ButtonGhost
       >
-      {#if $data}
+      {#if $data || userIsLoading}
         <ButtonGhost href="/notifications/" help="Notifications" style="color:var(--nav-text)">
           {#if $page.url.pathname === '/notifications/'}
             <IconNotifFilled />
@@ -98,13 +100,14 @@
         <ButtonGhost href="/search/" help="Rechercher" style="color:var(--nav-text)"
           ><IconSearch /></ButtonGhost
         >
-        <ButtonGhost href="/users/{$data.uid}" help="Mon profil" style="color:var(--nav-text)">
-          {#if $data.pictureFile}
-            <img
-              class="profilepic"
-              src="{env.PUBLIC_STORAGE_URL}{$data.pictureFile}"
-              alt="Profil"
-            />
+        <ButtonGhost
+          loading={!$data || ($data && !loaded($data.uid)) || !loaded($data.pictureURL)}
+          href={onceLoaded($data?.uid, (uid) => `/users/${uid}`, '')}
+          help="Mon profil"
+          style="color:var(--nav-text)"
+        >
+          {#if $data?.pictureURL}
+            <img class="profilepic" src={loading($data.pictureURL, '')} alt="Moi" />
           {:else}
             <IconAccount />
           {/if}

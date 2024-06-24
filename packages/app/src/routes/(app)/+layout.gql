@@ -5,11 +5,11 @@ query AppLayout(
   $eventUid: String!
   $scanningEvent: Boolean!
 ) {
-  me @include(if: $loggedIn) {
+  me @include(if: $loggedIn) @loading {
     ...NavigationSide
     ...NavigationTop
 
-    bookings(forUserOnly: true, first: 5) {
+    bookings(forUserOnly: true, first: 5) @loading(count: 0) {
       ...OverlayQuickBookings
     }
   }
@@ -18,7 +18,7 @@ query AppLayout(
     ...ModalChangelog
   }
 
-  scanningEvent: event(groupUid: $groupUid, uid: $eventUid) @include(if: $scanningEvent) {
-    ...NavigationTopCurrentEvent
+  scanningEvent: event(groupUid: $groupUid, uid: $eventUid) @include(if: $scanningEvent) @loading {
+    ...NavigationTopCurrentEvent @loading
   }
 }
