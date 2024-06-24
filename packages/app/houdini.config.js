@@ -10,6 +10,7 @@ const config = {
       client: './src/lib/client',
     },
   },
+  defaultCachePolicy: 'NoCache',
   defaultPaginateMode: 'Infinite',
   types: {
     User: {
