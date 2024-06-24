@@ -142,7 +142,7 @@ export const builder = new SchemaBuilder<PothosTypes>({
 });
 
 // The frontend can sometimes make bursts of requests, so we add a grace window to the rate limits to prevent failures. Real attacks attempt DDOS for longer than this grace window, so it should be safe.
-const rateLimitGraceWindow = 30; /* seconds */
+const rateLimitGraceWindow = 60; /* seconds */
 const rateLimit = (limit: number, duration: number) => ({
   rateLimit: { limit: limit * rateLimitGraceWindow, duration: duration * rateLimitGraceWindow },
 });
