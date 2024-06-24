@@ -9,7 +9,10 @@ builder.mutationField('updateUserCandidate', (t) =>
     authScopes: { admin: true, studentAssociationAdmin: true },
     errors: { types: [ZodError] },
     args: {
-      register: t.arg.boolean(),
+      register: t.arg.boolean({
+        description:
+          "Inscrire définitivement l'utilisateur·ice si vrai. Si faux, mettre à jour la demande d'inscription sans créer de compte",
+      }),
       email: t.arg.string(),
       firstName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       lastName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
