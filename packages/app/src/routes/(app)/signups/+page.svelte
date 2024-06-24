@@ -38,6 +38,8 @@
       }
 
       if (result) removeRow(email);
+    } catch (error) {
+      toasts.error("Erreur lors de la décision de l'inscription", error?.toString() ?? '');
     } finally {
       loadingRegistrations = loadingRegistrations.filter((e) => e !== email);
     }
