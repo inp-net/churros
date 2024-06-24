@@ -91,6 +91,7 @@
             {
               '__typename': true,
               '...on Error': { message: true },
+              '...on AwaitingValidationError': { message: true },
               '...on MutationLoginSuccess': {
                 data: { token: true, expiresAt: true, user: sessionUserQuery() },
               },

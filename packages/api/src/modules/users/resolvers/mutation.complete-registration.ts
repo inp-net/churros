@@ -85,7 +85,30 @@ builder.mutationField('completeRegistration', (t) =>
 
       const needsVerification = !user;
 
-      await notify(await prisma.user.findMany({ where: { admin: true } }), {
+      const adminsResponsibleForThisSignup = await prisma.user.findMany({
+        where: {
+          OR: [
+            { admin: true },
+            ...(userOrCandidate.majorId
+              ? [
+                  {
+                    adminOfStudentAssociations: {
+                      some: {
+                        school: {
+                          majors: {
+                            some: { id: userOrCandidate.majorId },
+                          },
+                        },
+                      },
+                    },
+                  },
+                ]
+              : []),
+          ],
+        },
+      });
+
+      await notify(adminsResponsibleForThisSignup, {
         title: needsVerification ? `Inscription en attente de validation` : `Nouvelle inscription!`,
         body:
           `${userOrCandidate.email} (${userOrCandidate.firstName} ${userOrCandidate.lastName}, ${
