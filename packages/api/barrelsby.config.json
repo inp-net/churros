@@ -48,8 +48,6 @@
     "./src/modules/oauth/resolvers",
     "./src/modules/oauth/types",
     "./src/modules/oauth/utils",
-    "./src/modules/pages/resolvers",
-    "./src/modules/pages/types",
     "./src/modules/payments/resolvers",
     "./src/modules/payments/types",
     "./src/modules/payments/utils",
