@@ -138,34 +138,44 @@ const createUid = async ({ firstName, lastName }: { firstName: string; lastName:
   return `${base}${n > 1 ? n : ''}`;
 };
 
-const schoolsData = [
+const schoolsData: Prisma.SchoolCreateInput[] = [
   {
     name: 'EAU',
     uid: 'o',
     color: '#00ffff',
     description: 'École de l’Eau',
-    address: '2 rue Charles Camichel, 31000 Toulouse', //generation par faker possible ???
+    address: faker.location.streetAddress(), //generation par faker possible ???
   },
   {
     name: 'FEU',
     uid: 'feu',
     color: '#b22222',
     description: 'École de Feu',
-    address: '2 rue Charles Camichel, 31000 Toulouse',
+    address: faker.location.streetAddress(),
+    studentMailDomain: 'etu.inp-n7.fr',
+    aliasMailDomains: ['etu.toulouse-inp.fr'],
   },
   {
     name: 'TERRE',
     uid: '3',
     color: '#5e3f13',
     description: 'École de Terre',
-    address: '2 rue Charles Camichel, 31000 Toulouse',
+    address: faker.location.streetAddress(),
+    studentMailDomain: faker.internet.domainName(),
+    aliasMailDomains: Array.from({ length: faker.number.int({ min: 0, max: 3 }) }).map(
+      faker.internet.domainName,
+    ),
   },
   {
     name: 'AIR',
     uid: 'air',
     color: '#d9eaff',
     description: 'École de l’Air',
-    address: '2 rue Charles Camichel, 31000 Toulouse',
+    address: faker.location.streetAddress(),
+    studentMailDomain: faker.internet.domainName(),
+    aliasMailDomains: Array.from({ length: faker.number.int({ min: 0, max: 3 }) }).map(
+      faker.internet.domainName,
+    ),
   },
 ];
 
