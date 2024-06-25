@@ -10,6 +10,7 @@ export const load: PageLoad = async ({ fetch, parent }) =>
           pageInfo: { hasNextPage: true, endCursor: true },
           edges: {
             node: {
+              id: true,
               firstName: true,
               lastName: true,
               fullName: true,

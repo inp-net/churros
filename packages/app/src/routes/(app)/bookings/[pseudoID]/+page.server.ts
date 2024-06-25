@@ -1,75 +1,20 @@
+import { ensureIdPrefix, hasIdPrefix, removeIdPrefix } from '$lib/typenames';
 import { Selector, loadQuery, makeMutation } from '$lib/zeus';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-/* @generated from schema by /packages/api/scripts/update-id-prefix-to-typename-map.ts */
-const ID_PREFIXES_TO_TYPENAMES = {
-  u: 'User',
-  godparentreq: 'GodparentRequest',
-  candidate: 'UserCandidate',
-  passreset: 'PasswordReset',
-  emailchange: 'EmailChange',
-  quicksignup: 'QuickSignup',
-  service: 'Service',
-  link: 'Link',
-  major: 'Major',
-  minor: 'Minor',
-  school: 'School',
-  credential: 'Credential',
-  token: 'ThirdPartyCredential',
-  app: 'ThirdPartyApp',
-  ae: 'StudentAssociation',
-  contribution: 'Contribution',
-  contributionoption: 'ContributionOption',
-  g: 'Group',
-  a: 'Article',
-  e: 'Event',
-  tg: 'TicketGroup',
-  t: 'Ticket',
-  r: 'Registration',
-  log: 'LogEntry',
-  lydia: 'LydiaAccount',
-  lydiapayment: 'LydiaTransaction',
-  paypalpayment: 'PaypalTransaction',
-  barweek: 'BarWeek',
-  notifsub: 'NotificationSubscription',
-  notif: 'Notification',
-  ann: 'Announcement',
-  ue: 'TeachingUnit',
-  subj: 'Subject',
-  doc: 'Document',
-  comment: 'Comment',
-  reac: 'Reaction',
-  promocode: 'PromotionCode',
-  promo: 'Promotion',
-  picfile: 'Picture',
-  shopitem: 'ShopItem',
-  shoppayment: 'ShopPayment',
-  shopitemoption: 'ShopItemOption',
-  shopitemanswer: 'ShopItemAnswer',
-  form: 'Form',
-  formsection: 'FormSection',
-  formjump: 'FormJump',
-  question: 'Question',
-  answer: 'Answer',
-} as const;
-/* end @generated from schema */
-
-function reverseMap<K extends string, V extends string>(obj: Record<K, V>): Record<V, K> {
-  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [v, k])) as unknown as Record<V, K>;
-}
-
 export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
-  if (params.pseudoID.startsWith(reverseMap(ID_PREFIXES_TO_TYPENAMES).Registration + ':')) {
+  if (hasIdPrefix('Registration', params.pseudoID)) {
     throw redirect(
       301,
-      url.pathname.replace(params.pseudoID, params.pseudoID.split(':')[1]!.toUpperCase()),
+      url.pathname.replace(
+        params.pseudoID,
+        removeIdPrefix('Registration', params.pseudoID).toUpperCase(),
+      ),
     );
   }
 
-  const id = `${
-    reverseMap(ID_PREFIXES_TO_TYPENAMES).Registration
-  }:${params.pseudoID.toLowerCase()}`;
+  const id = ensureIdPrefix('Registration', params.pseudoID.toLowerCase());
 
   let markedAsPaid = false;
   ({ checkIfRegistrationIsPaid: markedAsPaid } = await makeMutation(

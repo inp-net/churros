@@ -5,7 +5,7 @@ import { prismaUserFilterForStudentAssociationAdmins } from '../utils/index.js';
 // TODO rename registration to reject-user-candidate
 builder.mutationField('refuseRegistration', (t) =>
   t.field({
-    authScopes: { studentAssociationAdmin: true },
+    authScopes: { studentAssociationAdmin: true, admin: true },
     type: 'Boolean',
     args: { email: t.arg.string(), reason: t.arg.string() },
     async resolve(_, { email, reason }, { user }) {

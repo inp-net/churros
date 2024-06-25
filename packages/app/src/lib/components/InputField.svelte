@@ -1,10 +1,13 @@
 <script lang="ts">
   import IconAlertCircle from '~icons/mdi/alert-circle';
   import IconInfoCircle from '~icons/mdi/information';
+  import IconWarningCircle from '~icons/mdi/warning';
+  import IconSucessCircle from '~icons/mdi/check-circle';
   import { tooltip } from '$lib/tooltip';
 
   export let label: string;
   export let hint = '';
+  export let hintStyle: 'muted' | 'warning' | 'success' = 'muted';
   export let id: string | undefined = undefined;
   export let required = false;
   export let errors: string[] | undefined = [];
@@ -27,9 +30,18 @@
         </span>
       {/each}
     {:else if hint}
-      <span class="hint">
-        <IconInfoCircle aria-hidden="true" />
-        {hint}
+      <span class="hint {hintStyle}">
+        {#if hintStyle === 'warning'}
+          <IconWarningCircle aria-hidden="true" />
+        {:else if hintStyle === 'success'}
+          <IconSucessCircle aria-hidden="true" />
+        {:else}
+          <IconInfoCircle aria-hidden="true" />
+        {/if}
+        <span class="hint-content">
+          {hint}
+          <slot name="hint" />
+        </span>
       </span>
     {/if}
     <slot />
@@ -77,5 +89,13 @@
 
   .hint {
     color: var(--muted);
+  }
+
+  .hint.warning {
+    color: var(--warning-link);
+  }
+
+  .hint.success {
+    color: var(--success-link);
   }
 </style>

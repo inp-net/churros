@@ -6,6 +6,7 @@
   export let type = 'text';
   export let name: string | undefined = undefined;
   export let hint = '';
+  export let hintStyle: 'muted' | 'warning' | 'success' = 'muted';
   export let errors: string[] | undefined = [];
   export let initial: string | undefined = undefined;
   export let placeholder: string | undefined = undefined;
@@ -20,7 +21,7 @@
   export let element: HTMLInputElement | undefined = undefined;
 </script>
 
-<InputField {hint} {errors} {label} {...$$restProps}>
+<InputField {hintStyle} {hint} {errors} {label} {...$$restProps}>
   <BaseInputText
     {type}
     bind:value
@@ -42,4 +43,5 @@
   >
     <slot name="before" slot="before" />
   </BaseInputText>
+  <slot name="hint" slot="hint" />
 </InputField>

@@ -736,6 +736,10 @@ type ArticleSearchResultType {
   similarity: Float!
 }
 
+type AwaitingValidationError {
+  message: String!
+}
+
 """
 A bar week is a week during which some groups takeover the bar staff
 """
@@ -1671,7 +1675,7 @@ type Minor implements Node {
 }
 
 type Mutation {
-  acceptRegistration(email: String!): Boolean!
+  acceptRegistration(email: String!): MutationAcceptRegistrationResult!
 
   """
   Marks the user as having seen the given version's changelog.
@@ -1806,6 +1810,10 @@ type Mutation {
     """
     form: ID!
   ): String!
+
+  """
+  Démarre une procédure de réinitialisation de mot de passe pour l'utilisateur associé à l'adresse e-mail ou l'uid fournie. Renvoie `true` même si l'utilisateur n'existe pas.
+  """
   createPasswordReset(email: String!): MutationCreatePasswordResetResult!
 
   """
@@ -2120,6 +2128,10 @@ type Mutation {
     lastName: String!
     majorId: ID!
     phone: String!
+
+    """
+    Inscrire définitivement l'utilisateur·ice si vrai. Si faux, mettre à jour la demande d'inscription sans créer de compte
+    """
     register: Boolean!
   ): MutationUpdateUserCandidateResult!
   updateUserPermissions(canAccessDocuments: Boolean!, uid: String!): User!
@@ -2336,6 +2348,12 @@ type Mutation {
   ): MutationVerifyRegistrationResult!
 }
 
+union MutationAcceptRegistrationResult = Error | MutationAcceptRegistrationSuccess
+
+type MutationAcceptRegistrationSuccess {
+  data: User!
+}
+
 union MutationAddGroupMemberResult = Error | MutationAddGroupMemberSuccess
 
 type MutationAddGroupMemberSuccess {
@@ -2392,7 +2410,7 @@ type MutationFinishPaypalRegistrationPaymentSuccess {
   data: Boolean!
 }
 
-union MutationLoginResult = Error | MutationLoginSuccess
+union MutationLoginResult = AwaitingValidationError | Error | MutationLoginSuccess
 
 type MutationLoginSuccess {
   data: Credential!
@@ -4713,6 +4731,11 @@ type UserCandidate implements Node {
   cededImageRightsToTVn7: Boolean!
   createdAt: DateTime
   email: String!
+
+  """
+  Vrai si l'email est une adresse email d'étudiant.
+  """
+  emailIsSchoolEmail: Boolean!
   emailValidated: Boolean!
   firstName: String!
   fullName: String!
@@ -4721,6 +4744,21 @@ type UserCandidate implements Node {
   lastName: String!
   major: Major
   majorId: ID
+
+  """
+  Vrai si l'utilisateur aura besoin d'une validation manuelle à la fin de l'inscription. Null si la notion n'a pas encore de sens. Si la filière n'a pas encore été renseignée, retourne vrai seulement si l'inscription devra être validée manuellement si une filière (peut importe laquelle) est choisie. Voir `needsManualValidationForMajor` pour être plus précis
+  """
+  needsManualValidation: Boolean
+
+  """
+  Vrai si l'utilisateur aura besoin d'une validation manuelle à la fin de l'inscription si iel choisi cette filière. Null si la notion n'a pas encore de sens.
+  """
+  needsManualValidationForMajor(
+    """
+    L'UID de la filière
+    """
+    major: String!
+  ): Boolean
   phone: String!
   schoolEmail: String
   schoolServer: String

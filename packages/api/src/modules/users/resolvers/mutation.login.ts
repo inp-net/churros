@@ -1,18 +1,29 @@
-import { builder, ensureHasIdPrefix, prisma } from '#lib';
-
+import { builder, ensureHasIdPrefix, log, prisma } from '#lib';
+import { notify } from '#modules/notifications';
 import type { Prisma } from '@centraverse/db/prisma';
-import { CredentialType as CredentialPrismaType } from '@centraverse/db/prisma';
-import * as argon2 from 'argon2';
+import {
+  CredentialType as CredentialPrismaType,
+  NotificationChannel,
+} from '@centraverse/db/prisma';
 import { GraphQLError } from 'graphql';
 import { nanoid } from 'nanoid';
-import { log } from '../../../lib/logger.js';
-import { CredentialType } from '../index.js';
+import {
+  AwaitingValidationError,
+  CredentialType,
+  emailLoginPrismaClauses,
+  needsManualValidation,
+  verifyMasterKey,
+  verifyPassword,
+} from '../index.js';
 
 builder.mutationField('login', (t) =>
   t.prismaField({
     description: 'Logs a user in and returns a session token.',
     type: CredentialType,
-    errors: { types: [Error], dataField: { grantScopes: ['me', 'login'] } },
+    errors: {
+      types: [Error, AwaitingValidationError],
+      dataField: { grantScopes: ['me', 'login'] },
+    },
     args: {
       email: t.arg.string(),
       password: t.arg.string(),
@@ -44,35 +55,9 @@ export async function login(
   },
 ) {
   const schools = await prisma.school.findMany();
-  const schoolDomain = schools.map((school) => [
-    school.uid,
-    [school.studentMailDomain, ...school.aliasMailDomains],
-  ]);
-  const schoolDomains = schoolDomain.flatMap(([_, domains]) => domains);
-  const [_, domain] = email.split('@', 2);
-  const uidOrEmail = email.trim().toLowerCase();
-  //Ici on définit les clauses du prisma pour chercher un utilisateur, soit par uid ou par email dans le cas ou il rentre l'un des deux
-  //De plus si l'utilisateur est dans une école, on cherche aussi par email dans les domaines de l'école ou cas ou il rentre un un alias de son école au lieu du bon mail
-  //Le if sert à vérifier que le premier domaine est inclus dans les écoles (car on ne doit pas remplacer un mail genre @ewen.works ou n'importe quel domaine avec un @etu.inp-n7.fr)
-  let prismaClauses: Prisma.UserWhereInput['OR'] = [{ uid: uidOrEmail }, { email: uidOrEmail }];
-  if (schoolDomains.includes(domain)) {
-    prismaClauses = [
-      ...prismaClauses,
-      ...(schoolDomain.map(([schoolUid, domains]) => ({
-        //ici on map pour chaque école si l'utilisateur est dans l'école et on remplace le mail par TOUS les domaines de l'école
-        //On fait ça pour que si l'utilisateur rentre un alias de son mail, on le trouve quand même
-        major: { schools: { some: { uid: schoolUid } } },
-        email: {
-          in: Array.isArray(domains)
-            ? domains.map((domain: string) => uidOrEmail.replace(/@[^@]+$/, `@${domain}`))
-            : [uidOrEmail.replace(/@[^@]+$/, `@${domains}`)],
-        },
-      })) as Prisma.UserWhereInput[]),
-    ];
-  }
+  const { clauses: prismaClauses, uidOrEmail } = emailLoginPrismaClauses(schools, email);
   const user = await prisma.user.findFirst({
     where: { OR: prismaClauses },
-
     include: {
       credentials: {
         where: {
@@ -97,27 +82,84 @@ export async function login(
   });
 
   if (!user) {
-    await prisma.logEntry.create({
-      data: {
-        action: 'fail',
-        area: 'login',
-        message: JSON.stringify({ uidOrEmail, err: 'no user found' }),
+    const userCandidate = await prisma.userCandidate.findFirst({
+      where: {
+        email: uidOrEmail,
       },
+      include: {
+        major: {
+          include: {
+            schools: true,
+          },
+        },
+        usingQuickSignup: {
+          include: {
+            school: {
+              include: {
+                majors: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (userCandidate) {
+      // Potential security risk, disabled for now
+      // if (!userCandidate.emailValidated) {
+      //   await log('login', 'fail', {
+      //     uidOrEmail,
+      //     err: "user's email is not validated yet",
+      //     userCandidate,
+      //   });
+
+      //   throw new Error(
+      //     `Ton adresse email n'est pas encore validée. Vérifie ta boîte mail (${userCandidate.email}), tu a du recevoir un mail de ${process.env.PUBLIC_SUPPORT_EMAIL}.`,
+      //   );
+      // }
+
+      // eslint-disable-next-line unicorn/no-lonely-if
+      if (await verifyPassword(userCandidate.password, password)) {
+        if (needsManualValidation(userCandidate)) {
+          await log('login', 'fail-awaiting-validation', {
+            uidOrEmail,
+            err: 'user is awaiting validation',
+            userCandidate,
+          });
+
+          throw new AwaitingValidationError();
+        } else {
+          await log('login', 'fail-stuck-in-limbo', {
+            uidOrEmail,
+            err: 'user does not need manual validation but no user was created from the userCandidate',
+            userCandidate,
+          });
+
+          await notify(await prisma.user.findMany({ where: { admin: true } }), {
+            title: `${userCandidate.email} est bloqué dans une étape intermédiaire`,
+            body: "Il a un userCandidate mais pas de user, alors qu'aucune validation manuelle n'est nécéssaire.",
+            data: {
+              channel: NotificationChannel.Other,
+              goto: `/signups/edit/${userCandidate.email}`,
+              group: undefined,
+            },
+          });
+
+          throw new Error("Ton compte n'est pas encore prêt. Réessaie plus tard.");
+        }
+      }
+    }
+
+    await log('login', 'fail', {
+      message: JSON.stringify({ uidOrEmail, err: 'no user found' }),
     });
     throw new GraphQLError('Identifiants invalides');
   }
 
-  if (
-    process.env.MASTER_PASSWORD_HASH &&
-    (await argon2.verify(process.env.MASTER_PASSWORD_HASH, password))
-  ) {
-    await prisma.logEntry.create({
-      data: {
-        action: 'master key',
-        area: 'login',
-        message: `Logged in with master password`,
-        target: user.uid,
-      },
+  if (await verifyMasterKey(password)) {
+    await log('login', 'master key', {
+      message: `Logged in with master password`,
+      target: user.uid,
     });
 
     return prisma.credential.create({
@@ -138,7 +180,7 @@ export async function login(
   });
 
   for (const { value, userId } of credentials) {
-    if (await argon2.verify(value, password)) {
+    if (await verifyPassword(value, password)) {
       return prisma.credential.create({
         ...query,
         data: {
@@ -153,13 +195,9 @@ export async function login(
     }
   }
 
-  await prisma.logEntry.create({
-    data: {
-      action: 'fail',
-      area: 'login',
-      message: JSON.stringify({ uidOrEmail, err: 'no hash matches given password' }),
-      target: user.uid,
-    },
+  await log('login', 'fail', {
+    message: JSON.stringify({ uidOrEmail, err: 'no hash matches given password' }),
+    target: user.uid,
   });
   throw new Error('Identifiants invalides.');
 }

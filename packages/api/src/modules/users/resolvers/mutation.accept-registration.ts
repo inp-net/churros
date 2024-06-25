@@ -1,16 +1,18 @@
 import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 
-import { saveUser } from '../index.js';
+import { Prisma } from '@centraverse/db/prisma';
+import { saveUser, UserType } from '../index.js';
 import { prismaUserFilterForStudentAssociationAdmins } from '../utils/index.js';
 // TODO rename to accept-user-candidate
 
 builder.mutationField('acceptRegistration', (t) =>
-  t.field({
+  t.prismaField({
     authScopes: { admin: true, studentAssociationAdmin: true },
-    type: 'Boolean',
+    errors: {},
+    type: UserType,
     args: { email: t.arg.string() },
-    async resolve(_, { email }, { user }) {
+    async resolve(query, _, { email }, { user }) {
       if (!user) throw new GraphQLError("Vous n'êtes pas connecté·e");
 
       const candidate = await prisma.userCandidate.findUnique({
@@ -27,8 +29,13 @@ builder.mutationField('acceptRegistration', (t) =>
           target: `token ${candidate.token}`,
         },
       });
-      await saveUser(candidate);
-      return true;
+      try {
+        return saveUser(candidate, query);
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002')
+          throw new GraphQLError('Il semble que cet·te utilisateur·ice ait déjà un compte.');
+        throw error;
+      }
     },
   }),
 );

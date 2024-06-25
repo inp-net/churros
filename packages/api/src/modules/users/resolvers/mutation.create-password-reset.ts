@@ -1,4 +1,5 @@
-import { builder, prisma, sendMail } from '#lib';
+import { builder, log, prisma, sendMail } from '#lib';
+import { emailLoginPrismaClauses } from '#modules/users/utils';
 import { addSeconds } from 'date-fns';
 import { PASSWORD_RESET_EXPIRES_AFTER } from '../utils/password-resets.js';
 
@@ -6,14 +7,27 @@ import { PASSWORD_RESET_EXPIRES_AFTER } from '../utils/password-resets.js';
 builder.mutationField('createPasswordReset', (t) =>
   t.field({
     type: 'Boolean',
+    description:
+      "Démarre une procédure de réinitialisation de mot de passe pour l'utilisateur associé à l'adresse e-mail ou l'uid fournie. Renvoie `true` même si l'utilisateur n'existe pas.",
     errors: {},
     args: {
       email: t.arg.string(),
     },
     async resolve(_, { email }) {
+      const schools = await prisma.school.findMany();
+      const owner = await prisma.user.findFirst({
+        where: {
+          OR: emailLoginPrismaClauses(schools, email).clauses,
+        },
+      });
+      if (!owner) return true;
       const result = await prisma.passwordReset.create({
         data: {
-          user: { connect: { email } },
+          user: {
+            connect: {
+              id: owner.id,
+            },
+          },
           expiresAt: addSeconds(new Date(), PASSWORD_RESET_EXPIRES_AFTER),
         },
       });
@@ -32,13 +46,11 @@ builder.mutationField('createPasswordReset', (t) =>
         {},
       );
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'password-reset',
-          action: 'create',
-          target: result.id,
-          message: `Created password reset for ${email}`,
-        },
+      await log('password-reset', 'create', {
+        target: result.id,
+        owner,
+        url,
+        message: `Created password reset for ${email}`,
       });
       return true;
     },

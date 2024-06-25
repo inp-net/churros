@@ -1,8 +1,8 @@
 import { builder, objectValuesFlat, prisma, purgeUserSessions, resetLdapUserPassword } from '#lib';
+import { hashPassword, verifyPassword } from '#modules/users/utils';
 
 import { userIsAdminOf } from '#permissions';
 import { CredentialType as PrismaCredentialType } from '@centraverse/db/prisma';
-import { hash, verify } from 'argon2';
 import { GraphQLError } from 'graphql';
 // TODO rename to change-password
 
@@ -58,7 +58,7 @@ builder.mutationField('resetPassword', (t) =>
       for (const credential of userEdited.credentials.filter(
         (c) => c.type === PrismaCredentialType.Password,
       )) {
-        if (await verify(credential.value, oldPassword)) {
+        if (await verifyPassword(credential.value, oldPassword)) {
           await prisma.user.update({
             where: { id: userEdited.id },
             data: {
@@ -66,7 +66,7 @@ builder.mutationField('resetPassword', (t) =>
                 delete: { id: credential.id },
                 create: {
                   type: PrismaCredentialType.Password,
-                  value: await hash(newPassword),
+                  value: await hashPassword(newPassword),
                 },
               },
             },

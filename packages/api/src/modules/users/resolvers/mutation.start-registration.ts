@@ -39,7 +39,7 @@ export const register = async (email: string, quickSignupCode?: string): Promise
       })
     : undefined;
 
-  const schoolUser = await findSchoolUser({ email });
+  const schoolUser = await findSchoolUser({ email }).catch(() => null);
 
   const major = await prisma.major.findFirst({
     where: {

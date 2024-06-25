@@ -2,37 +2,49 @@ import { prisma, sendMail } from '#lib';
 import {
   CredentialType,
   type Major,
+  type Prisma,
+  type QuickSignup,
   type School,
   type User,
   type UserCandidate,
 } from '@centraverse/db/prisma';
 import { quickSignupIsValidFor } from './quick-signup.js';
+import { isSchoolEmailForMajor, resolveSchoolMail } from './school-emails.js';
 import { createUid } from './uid.js';
 
-export const saveUser = async ({
-  id,
-  email,
-  firstName,
-  lastName,
-  majorId,
-  graduationYear,
-  password,
-  address,
-  birthday,
-  phone,
-  schoolEmail,
-  apprentice,
-  schoolServer,
-  schoolUid,
-  cededImageRightsToTVn7,
-}: UserCandidate): Promise<
-  undefined | (User & { major?: null | (Major & { ldapSchool?: School | null }) })
-> => {
+export const saveUser = async (
+  {
+    id,
+    email,
+    firstName,
+    lastName,
+    majorId,
+    graduationYear,
+    password,
+    address,
+    birthday,
+    phone,
+    schoolEmail,
+    apprentice,
+    schoolServer,
+    schoolUid,
+    cededImageRightsToTVn7,
+  }: UserCandidate,
+  returnPrismaQuery: {
+    include?: Prisma.UserCandidateInclude;
+    select?: Prisma.UserCandidateSelect;
+  } = {},
+): Promise<User & { major?: null | (Major & { ldapSchool?: School | null }) }> => {
+  const major = majorId
+    ? await prisma.major.findUniqueOrThrow({ where: { id: majorId }, include: { schools: true } })
+    : null;
   // Create a user profile
+  const resolvedStudentEmail = major ? resolveSchoolMail(email, major) : null;
   const user = await prisma.user.create({
+    ...returnPrismaQuery,
     data: {
       uid: await createUid({ firstName, lastName }),
-      email,
+      email: resolvedStudentEmail ?? email,
       graduationYear: graduationYear!,
       firstName,
       lastName,
@@ -71,22 +83,33 @@ export const saveUser = async ({
 };
 
 export const completeRegistration = async (
-  candidate: UserCandidate,
+  candidate: UserCandidate & {
+    usingQuickSignup: null | (QuickSignup & { school: School & { majors: Major[] } });
+    major: null | (Major & { schools: School[] });
+  },
 ): Promise<(User & { major?: null | (Major & { ldapSchool?: School | null }) }) | undefined> => {
-  // If the user has no school email, it must be manually accepted, except
-  // if the account is marked as external (i.e. no major given) or
-  // if the quickSignup used is valid for that major
-  if (!candidate.schoolEmail && candidate.majorId) {
-    if (!candidate.quickSignupId) return undefined;
-    const quickSignup = await prisma.quickSignup.findUnique({
-      where: { id: candidate.quickSignupId },
-      include: {
-        school: { include: { majors: true } },
-      },
-    });
-    if (!quickSignup) return undefined;
-    if (!quickSignupIsValidFor(quickSignup, candidate.majorId)) return undefined;
-  }
-
+  if (needsManualValidation(candidate)) return undefined;
   return saveUser(candidate);
 };
+
+/**
+ *
+ * @param candidate the candidate
+ * @throws if the email is not validated yet (answering this question as no meaning at this point)
+ */
+export function needsManualValidation(
+  candidate: UserCandidate & {
+    usingQuickSignup: (QuickSignup & { school: School & { majors: Major[] } }) | null;
+    major: (Major & { schools: School[] }) | null;
+  },
+): boolean {
+  if (!candidate.emailValidated) throw new Error('Email not validated yet');
+  if (!candidate.major) return false;
+  if (isSchoolEmailForMajor(candidate.email, candidate.major)) return false;
+  if (
+    candidate.usingQuickSignup &&
+    quickSignupIsValidFor(candidate.usingQuickSignup, candidate.major.id)
+  )
+    return false;
+  return true;
+}
