@@ -9,7 +9,7 @@ import {
   type UserCandidate,
 } from '@centraverse/db/prisma';
 import { quickSignupIsValidFor } from './quick-signup.js';
-import { isSchoolEmail, resolveSchoolMail } from './school-emails.js';
+import { isSchoolEmailForMajor, resolveSchoolMail } from './school-emails.js';
 import { createUid } from './uid.js';
 
 export const saveUser = async (
@@ -102,10 +102,10 @@ export function needsManualValidation(
     usingQuickSignup: (QuickSignup & { school: School & { majors: Major[] } }) | null;
     major: (Major & { schools: School[] }) | null;
   },
-): boolean | null {
+): boolean {
   if (!candidate.emailValidated) throw new Error('Email not validated yet');
   if (!candidate.major) return false;
-  if (isSchoolEmail(candidate.email, candidate.major)) return false;
+  if (isSchoolEmailForMajor(candidate.email, candidate.major)) return false;
   if (
     candidate.usingQuickSignup &&
     quickSignupIsValidFor(candidate.usingQuickSignup, candidate.major.id)

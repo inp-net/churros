@@ -125,7 +125,7 @@
         <strong>Ton inscription est en attente de validation par ton AE.</strong><br />
         Tu peux toujours corriger des informations en attendant.
       </Alert>
-    {:else if isStudent && data.userCandidate.schoolUid === null && !data.userCandidate.usingQuickSignup}
+    {:else if isStudent && data.userCandidate.needsManualValidation}
       <Alert theme="warning" inline>
         <strong>
           Tu n'a pas renseigné ton adresse e-mail universitaire. Une personne de l'équipe

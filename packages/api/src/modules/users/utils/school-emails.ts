@@ -17,8 +17,12 @@ export function resolveSchoolMail(
   return null;
 }
 
-export function isSchoolEmail(mail: string, major: Major & { schools: School[] }): boolean {
+export function isSchoolEmailForMajor(mail: string, major: Major & { schools: School[] }): boolean {
   return resolveSchoolMail(mail, major) !== null;
+}
+
+export function isSchoolEmail(mail: string, schools: School[]): boolean {
+  return schools.some((school) => resolveSchoolMailForSchool(mail, school) !== null);
 }
 
 export function resolveSchoolMailForSchool(mail: string, school: School): string | null {

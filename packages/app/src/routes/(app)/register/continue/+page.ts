@@ -26,6 +26,7 @@ export const load: PageLoad = async ({ fetch, url }) => {
           cededImageRightsToTVn7: true,
           apprentice: true,
           usingQuickSignup: true,
+          needsManualValidation: true,
         },
       ],
       schoolGroups: {
