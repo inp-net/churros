@@ -1,5 +1,6 @@
 import { builder, htmlToText, prisma, soonest, subscriptionName, toHtml } from '#lib';
 import { DateTimeScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
+import { LogType } from '#modules/logs';
 import { ProfitsBreakdownType } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar, ReactableInterface } from '#modules/reactions';
 import { RegistrationsCountsType, TicketType, canScanBookings } from '#modules/ticketing';
@@ -11,7 +12,13 @@ import {
 } from '#permissions';
 import { PaymentMethod } from '@centraverse/db/prisma';
 import { EventFrequencyType, eventCapacity } from '../index.js';
-import { canEdit, canEditManagers, canSeeBookings, canSeePlacesLeftCount } from '../utils/index.js';
+import {
+  canEdit,
+  canEditManagers,
+  canSeeBookings,
+  canSeeEventLogs,
+  canSeePlacesLeftCount,
+} from '../utils/index.js';
 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
@@ -275,6 +282,25 @@ export const EventType = builder.prismaNode('Event', {
       description:
         "L'utilisateur·ice connecté·e peut voir toutes les réservations de cet évènement",
       resolve: (event, _, { user }) => canSeeBookings(event, user),
+    }),
+    canSeeLogs: t.boolean({
+      description: "L'utilsateur·ice connecté·e peut voir les logs de cet évènement",
+      resolve: (event, _, { user }) => canSeeEventLogs(event, user),
+    }),
+    logs: t.prismaConnection({
+      description:
+        'Logs concernant cet évènement. Ne contient pas les logs concernant les réservations.',
+      type: LogType,
+      cursor: 'id',
+      authScopes: (event, _, { user }) => canSeeEventLogs(event, user),
+      resolve: async (query, { id }) =>
+        prisma.logEntry.findMany({
+          ...query,
+          where: {
+            area: 'event',
+            target: id,
+          },
+        }),
     }),
     profitsBreakdown: t.field({
       type: ProfitsBreakdownType,

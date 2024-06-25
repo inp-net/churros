@@ -93,7 +93,7 @@ const dotFileContent = generateDotFile(importGraph);
 fs.writeFileSync(path.join(here, 'modules-import-graph.dot'), dotFileContent);
 
 const analysis = analyzeGraph(importGraph);
-for (const cycle of analysis.cycles) {
+for (const cycle of analysis.cycles.filter((cycle) => cycle.length > 1)) {
   console.log(`\x1b[1;31mCycle detected: ${cycle.join(' -> ')}\x1b[0m`);
 }
 

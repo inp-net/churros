@@ -1,4 +1,4 @@
-import { builder, prisma, publish, pubsub, subscriptionName } from '#lib';
+import { builder, log, prisma, publish, pubsub, subscriptionName } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { TicketGroupInput, TicketInput, createTicketUid } from '#modules/ticketing';
@@ -318,15 +318,7 @@ builder.mutationField('upsertEvent', (t) =>
         },
       });
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'event',
-          action: id ? 'update' : 'create',
-          target: event.id,
-          message: `${id ? 'Updated' : 'Created'} event ${event.id}: ${JSON.stringify(finalEvent)}`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('event', id ? 'update' : 'create', finalEvent, event.id, user);
 
       if (shotgunChanged) await scheduleShotgunNotifications(finalEvent, { dryRun: false });
 

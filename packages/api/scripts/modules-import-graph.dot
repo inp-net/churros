@@ -8,11 +8,12 @@ strict digraph ImportGraph {
     "events" -> "ticketing";
     "events" -> "notifications";
     "events" -> "users";
+    "events" -> "links";
+    "events" -> "logs";
     "events" -> "payments";
     "events" -> "reactions";
-    "events" -> "links";
-    "forms" -> "groups";
     "forms" -> "users";
+    "forms" -> "groups";
     "forms" -> "events";
     "gitlab" -> "users";
     "groups" -> "links";

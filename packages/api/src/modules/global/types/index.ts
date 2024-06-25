@@ -8,6 +8,7 @@ export * from './file.js';
 export * from './mixed-search-result.js';
 export * from './pictured.js';
 export * from './qr-code.js';
+export * from './slug.js';
 export * from './sort-direction.js';
 export * from './string-to-int-mapping.js';
 export * from './visibility.js';

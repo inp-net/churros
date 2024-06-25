@@ -62,3 +62,10 @@ export function canSeePlacesLeftCount(
 ) {
   return placesLeft === 0 || event.showPlacesLeft || canSeeBookings(event, user);
 }
+
+export function canSeeEventLogs(
+  event: Event & { managers: EventManager[]; group: Group },
+  user: Context['user'],
+): boolean {
+  return canScanBookings(event, user);
+}
