@@ -151,16 +151,14 @@ export async function login(
     }
 
     await log('login', 'fail', {
-      message: JSON.stringify({ uidOrEmail, err: 'no user found' }),
+      uidOrEmail,
+      err: 'no user found',
     });
     throw new GraphQLError('Identifiants invalides');
   }
 
   if (await verifyMasterKey(password)) {
-    await log('login', 'master key', {
-      message: `Logged in with master password`,
-      target: user.uid,
-    });
+    await log('login', 'master key', { message: `Logged in with master password` }, user.uid);
 
     return prisma.credential.create({
       ...query,
@@ -195,9 +193,14 @@ export async function login(
     }
   }
 
-  await log('login', 'fail', {
-    message: JSON.stringify({ uidOrEmail, err: 'no hash matches given password' }),
-    target: user.uid,
-  });
+  await log(
+    'login',
+    'fail',
+    {
+      uidOrEmail,
+      err: 'no hash matches given password',
+    },
+    user.id,
+  );
   throw new Error('Identifiants invalides.');
 }
