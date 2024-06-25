@@ -1,0 +1,15 @@
+import { builder } from '#lib';
+import { StudentAssociationType } from '#modules/student-associations';
+import { canListStudentAssociationPages } from '../utils/permissions.js';
+
+builder.prismaObjectFields(StudentAssociationType, (t) => ({
+  canListPages: t.field({
+    type: 'Boolean',
+    description: "L'utilisateur·ice connecté·e peut lister les pages de l'AE",
+    resolve: ({ id }, _, { user }) => canListStudentAssociationPages(user, id),
+  }),
+  pages: t.relation('pages', {
+    description: "Les pages associées à l'AE",
+    authScopes: async ({ id }, _, { user }) => canListStudentAssociationPages(user, id),
+  }),
+}));

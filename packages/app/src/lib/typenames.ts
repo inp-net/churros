@@ -48,6 +48,7 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   formjump: 'FormJump',
   question: 'Question',
   answer: 'Answer',
+  page: 'Page',
 } as const;
 /* end @generated from schema */
 

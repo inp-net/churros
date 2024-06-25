@@ -3,7 +3,7 @@
 import { builder } from '#lib';
 import { GraphQLError } from 'graphql';
 
-// TODO rename to reaction-counts
+// TODO turn into object
 export const CountsScalar = builder.scalarType('Counts', {
   serialize(o) {
     return JSON.stringify(o);
