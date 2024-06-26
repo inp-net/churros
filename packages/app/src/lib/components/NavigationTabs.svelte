@@ -1,10 +1,28 @@
 <script lang="ts">
-  export let tabs: Array<{ name: string; href: string }> = [];
+  import { pushState } from '$app/navigation';
+  import { page } from '$app/stores';
+
+  export let tabs: Array<{ name: string; href: string; active?: boolean }> = [];
+  const pagestate = $page.state;
 </script>
 
 <ul>
-  {#each tabs as { href, name }}
-    <li class:active={href === '.'}><a {href}>{name}</a></li>
+  {#each tabs as { href, name, active }}
+    <li class:active={active || href === '.'}>
+      <svelte:element
+        this={href.startsWith('#') ? 'span' : 'a'}
+        role="tab"
+        tabindex="0"
+        class="tab-link"
+        href={href.startsWith('#') ? undefined : href}
+        on:click={href.startsWith('#')
+          ? (event) => {
+              event.preventDefault();
+              pushState(href, { ...pagestate, currentTab: href });
+            }
+          : undefined}>{name}</svelte:element
+      >
+    </li>
   {/each}
 </ul>
 
@@ -21,8 +39,9 @@
     list-style: none;
   }
 
-  a {
+  .tab-link {
     text-decoration: none;
+    cursor: pointer;
   }
 
   li {

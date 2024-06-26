@@ -1,20 +1,11 @@
 query PageGroupCustomPageEdit($uid: String!, $page: String!) {
   group(uid: $uid) @loading {
     page(path: $page) @loading(cascade: true) {
-      body
-      title
-      updatedAt
       canBeEdited
-      path
-      group @required {
+      group {
         uid
       }
-      lastAuthor {
-        uid
-        pictureURL
-        pictureFile
-        fullName
-      }
+      ...FormPage
     }
   }
 }

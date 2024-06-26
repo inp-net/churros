@@ -3143,6 +3143,11 @@ type Query {
   orders(groupUid: String): [ShopPayment!]!
 
   """
+  Récupérer une page par son identifiant. Voir aussi `Group.page` et `StudentAssociation.page` pour des queries plus ergonomiques
+  """
+  page(id: ID!): Page!
+
+  """
   Récupère toutes les pages existantes. Réservé aux administrateur·ice.s.
   """
   pages(after: String, before: String, first: Int, last: Int): QueryPagesConnection!

@@ -1,0 +1,19 @@
+mutation DeletePage($id: ID!) {
+  deletePage(id: $id) {
+    ... on Error {
+      message
+    }
+    ... on MutationDeletePageSuccess {
+      data {
+        title
+        id @Page_delete
+      }
+    }
+    ... on ZodError {
+      fieldErrors {
+        message
+        path
+      }
+    }
+  }
+}

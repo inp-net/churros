@@ -1,23 +1,52 @@
 <script lang="ts">
-  import { PendingValue } from '$houdini';
+  import { goto } from '$app/navigation';
+  import { DeletePageStore, PendingValue } from '$houdini';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
+  import ModalConfirmDelete from '$lib/components/ModalConfirmDelete.svelte';
   import { formatDate } from '$lib/dates';
   import { allLoaded, loaded, loading } from '$lib/loading';
+  import { mutationResultToast } from '$lib/mutations';
   import { subDays } from 'date-fns';
   import IconDelete from '~icons/mdi/delete-outline';
   import IconEdit from '~icons/mdi/pencil-outline';
   import type { PageData } from './$houdini';
+
   export let data: PageData;
   $: ({ PageGroupCustomPage } = data);
+
+  let openDeletionConfirmation: () => void;
 </script>
+
+<svelte:head>
+  {#if $PageGroupCustomPage.data?.group.page && loaded($PageGroupCustomPage.data.group.page.title)}
+    <title>{$PageGroupCustomPage.data.group.page.title}</title>
+  {/if}
+</svelte:head>
 
 <div class="content">
   {#if $PageGroupCustomPage.data?.group.page}
     {@const page = $PageGroupCustomPage.data.group.page}
+    {#if loaded(page.id) && loaded(page.path)}
+      <ModalConfirmDelete
+        on:confirm={async () => {
+          if (!loaded(page.id) || !loaded(page.group.uid)) return;
+          const result = await new DeletePageStore().mutate({ id: page.id });
+          mutationResultToast(
+            'deletePage',
+            ({ title }) => `Page “${title}” supprimée`,
+            'Erreur lors de la suppression',
+            result,
+          );
+          await goto(`/groups/${page.group.uid}`);
+        }}
+        bind:open={openDeletionConfirmation}
+        typeToConfirm={page.path}
+      ></ModalConfirmDelete>
+    {/if}
     <h1>
       <ButtonBack></ButtonBack>
       <LoadingText value={page.title}>Lorem ipsum dolor sit amet, consequitur jsp</LoadingText>
@@ -49,10 +78,10 @@
     <section class="actions">
       <ButtonShare></ButtonShare>
       {#if loaded(page.group.uid) && loaded(page.path) && loading(page.canBeEdited, false)}
-        <ButtonGhost help="Modifier" href="/groups/{page.group.uid}/pages/edit/{page.path}">
+        <ButtonGhost help="Modifier" href="/groups/{page.group.uid}/edit/pages/{page.path}">
           <IconEdit></IconEdit>
         </ButtonGhost>
-        <ButtonGhost help="Supprimer" href="/groups/{page.group.uid}/pages/delete/{page.path}">
+        <ButtonGhost help="Supprimer" on:click={() => openDeletionConfirmation()}>
           <IconDelete></IconDelete>
         </ButtonGhost>
       {/if}
@@ -70,6 +99,19 @@
 </div>
 
 <style>
+  .content {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.5rem;
+    align-items: center;
+  }
+
   section.actions {
     display: flex;
     flex-wrap: wrap;

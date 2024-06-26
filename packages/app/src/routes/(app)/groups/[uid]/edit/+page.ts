@@ -15,6 +15,7 @@ export const _clubQuery = Selector('Group')({
   description: true,
   website: true,
   email: true,
+  canListPages: true,
   mailingList: true,
   pictureFile: true,
   pictureFileDark: true,

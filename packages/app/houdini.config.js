@@ -30,6 +30,11 @@ const config = {
         queryField: 'comment',
       },
     },
+    Page: {
+      resolve: {
+        queryField: 'page',
+      },
+    },
   },
   scalars: {
     DateTime: {

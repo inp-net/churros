@@ -1,6 +1,7 @@
 query PageGroupCustomPage($uid: String!, $page: String!) {
   group(uid: $uid) @loading {
     page(path: $page) @loading(cascade: true) {
+      id
       bodyHtml
       title
       updatedAt

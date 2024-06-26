@@ -13,13 +13,15 @@ function simulatingLoadingState(): boolean {
   return dev && SIMULATE_LOADING_STATE;
 }
 
+export type MaybeLoading<T> = T | typeof PendingValue;
+
 /**
  * Provide a fallback value if the value is PendingValue
  * @param value the value
  * @param fallback the fallback to use if value is PendingValue
  * @returns the value or the fallback
  */
-export function loading<T>(value: T | typeof PendingValue, fallback: T): T {
+export function loading<T>(value: MaybeLoading<T>, fallback: T): T {
   if (simulatingLoadingState()) return fallback;
   return value === PendingValue ? fallback : value;
 }
@@ -32,13 +34,13 @@ type AllLoaded<T> = T extends object
       ? never
       : T;
 
-export function loaded<T>(value: T | typeof PendingValue): value is T {
+export function loaded<T>(value: MaybeLoading<T>): value is T {
   if (simulatingLoadingState()) return false;
   return value !== PendingValue;
 }
 
 export function onceLoaded<I, O>(
-  value: I | typeof PendingValue,
+  value: MaybeLoading<I>,
   compute: (loadedValue: I) => O,
   fallback: O,
 ): O {

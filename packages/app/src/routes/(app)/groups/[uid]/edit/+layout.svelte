@@ -10,13 +10,19 @@
     '': 'Infos',
     'members': 'Membres',
     'bank-accounts': 'Bancaire',
+    'pages': 'Pages',
   } as const;
 
   export let data: PageData;
 
   $: ({ group } = data);
 
-  $: pathLeaf = $page.url.pathname.replace(/\/$/, '').split('/').pop() || '';
+  $: pathLeaf =
+    $page.route.id
+      ?.replace(/\/$/, '')
+      .split('/')
+      .filter((p) => !p.includes('['))
+      .pop() || '';
 
   $: currentTab = pathLeaf in TABS ? (pathLeaf as keyof typeof TABS) : '';
 
@@ -28,10 +34,13 @@
 
   {#if $me?.admin || data.canEditGroup || $me?.groups.some(({ group: { uid }, canEditMembers, ...perms }) => uid === group.uid && (isOnClubBoard(perms) || canEditMembers))}
     <NavigationTabs
-      tabs={['', 'members', 'bank-accounts'].map((tab) => ({
-        name: TABS[askeyofTABS(tab)],
-        href: currentTab === tab ? '.' : currentTab === '' ? `./${tab}` : `../${tab}`,
-      }))}
+      tabs={['', 'members', 'pages', 'bank-accounts']
+        .filter((tab) => (tab === 'pages' ? data.group.canListPages : true))
+        .map((tab) => ({
+          name: TABS[askeyofTABS(tab)],
+          href: `/groups/${group.uid}/edit/${tab}`,
+          active: currentTab === tab,
+        }))}
     />
   {/if}
 
@@ -46,6 +55,7 @@
   }
 
   .content {
+    width: 100%;
     max-width: 1000px;
     padding: 0 1rem;
     margin: 0 auto;

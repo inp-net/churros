@@ -16,7 +16,20 @@ builder.prismaObjectField(GroupType, 'page', (t) =>
     resolve: (query, { id }, { path }) =>
       prisma.page.findFirst({
         ...query,
-        where: { groupId: id, path: path.replaceAll(/^\/|\/$/g, '') },
+        where: {
+          groupId: id,
+          path: {
+            in: [withTrailingSlash(path), withoutTrailingSlash(path)],
+          },
+        },
       }),
   }),
 );
+
+function withTrailingSlash(path: string) {
+  return path.endsWith('/') ? path : `${path}/`;
+}
+
+function withoutTrailingSlash(path: string) {
+  return path.endsWith('/') ? path.slice(0, -1) : path;
+}

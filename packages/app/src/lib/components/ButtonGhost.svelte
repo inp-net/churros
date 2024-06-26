@@ -70,6 +70,10 @@
       padding: 0;
     }
 
+    &:not(.inline) {
+      display: flex;
+    }
+
     color: var(--text);
     word-wrap: break-word;
     white-space: normal;
