@@ -42,7 +42,7 @@ builder.mutationField('deletePage', (t) =>
         },
       });
 
-      return Boolean(existingPage && canEditPage(user, existingPage));
+      return Boolean(existingPage && canEditPage(existingPage, user));
     },
     async resolve(query, _, args, { user }) {
       if (!user) throw new UnauthorizedError();
