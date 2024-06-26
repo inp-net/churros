@@ -11,6 +11,7 @@
   export let data: PageData;
   $: ({ PageHomeFeed, Birthdays, MyGroups } = data);
 
+  let defaultBirthdaysSection = '';
   let selectedBirthdaysYearTier = 'all';
 
   $: shownBirthdays =
@@ -22,7 +23,10 @@
 
   $: {
     const yearTier = $Birthdays.data?.me?.yearTier;
-    selectedBirthdaysYearTier = yearTier ? (yearTier <= 3 ? yearTier.toString() : 'all') : 'all';
+    defaultBirthdaysSection = yearTier ? (yearTier <= 3 ? yearTier.toString() : 'all') : 'all';
+    if (selectedBirthdaysYearTier === 'all') 
+      selectedBirthdaysYearTier = defaultBirthdaysSection;
+    
   }
 </script>
 
