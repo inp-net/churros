@@ -42,6 +42,20 @@ for (const folder of ['events']) {
   );
 }
 
+async function randomMember(groupId: string) {
+  return faker.helpers.arrayElement(
+    await prisma.user.findMany({
+      where: {
+        groups: {
+          some: {
+            groupId,
+          },
+        },
+      },
+    }),
+  );
+}
+
 const numberUserDB: number = 500; //Nombre d'utilisateur dans la DB de test
 const numberEvent: number = 50; //Nombre d'événement créer dans la DB
 
@@ -357,15 +371,23 @@ for (const asso of studentAssociations) {
               pictureFile: path.relative(storageRoot, destinationPath),
             },
           })
-        : updatePicture({
-            extension: 'png',
-            folder: 'groups',
-            identifier: uid,
-            resource: 'group',
-            file: await downloadRandomImage(400, 400, uid),
-            silent: true,
-            root: storageRoot,
-          }));
+        : downloadRandomImage(400, 400, uid)
+            .then((file) =>
+              updatePicture({
+                extension: 'png',
+                folder: 'groups',
+                identifier: uid,
+                resource: 'group',
+                file,
+                silent: true,
+                root: storageRoot,
+              }),
+            )
+            .catch((error) =>
+              console.warn(
+                `Could not download random image: ${error}. This is not critical, seeding will continue`,
+              ),
+            ));
     }
   }
 }
@@ -498,24 +520,52 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
       root: storageRoot,
     });
 
-    await (existsSync(destinationPath)
-      ? prisma.user.update({
-          where: { uid },
-          data: {
-            pictureFile: path.relative(storageRoot, destinationPath),
-          },
-        })
-      : updatePicture({
-          extension: 'jpg',
-          folder: 'users',
-          identifier: uid,
-          resource: 'user',
-          file: await downloadRandomPeoplePhoto(),
-          silent: true,
-          root: storageRoot,
-        }));
+    await downloadRandomPeoplePhoto()
+      .then(async (file) =>
+        existsSync(destinationPath)
+          ? prisma.user.update({
+              where: { uid },
+              data: {
+                pictureFile: path.relative(storageRoot, destinationPath),
+              },
+            })
+          : updatePicture({
+              extension: 'jpg',
+              folder: 'users',
+              identifier: uid,
+              resource: 'user',
+              file,
+              silent: true,
+              root: storageRoot,
+            }),
+      )
+      .catch((error) =>
+        console.warn(
+          `Could not download random image: ${error}. This is not critical, seeding will continue`,
+        ),
+      );
   }
 }
+
+// Créer des admins par AE
+await Promise.all(
+  studentAssociations.map(
+    async (ae) =>
+      await prisma.studentAssociation.update({
+        where: { id: ae.id },
+        data: {
+          admins: {
+            connect: faker.helpers
+              .arrayElements(await prisma.user.findMany({ where: { admin: false } }), {
+                min: 1,
+                max: 5,
+              })
+              .map((u) => ({ id: u.id })),
+          },
+        },
+      }),
+  ),
+);
 
 for (const school of await prisma.school.findMany()) {
   const major = await prisma.major.findFirst({
@@ -673,20 +723,28 @@ for (const [i, group] of tqdm([...clubsData.entries()])) {
     },
   });
   if (faker.datatype.boolean(0.8)) {
-    await prisma.group.update({
-      where: { id: groupId },
-      data: {
-        pictureFile: await updatePicture({
-          extension: 'png',
-          folder: 'groups',
-          identifier: uid,
-          resource: 'group',
-          file: await downloadRandomImage(400, 400, uid),
-          silent: true,
-          root: storageRoot,
+    await downloadRandomImage(400, 400, uid)
+      .then(async (file) =>
+        prisma.group.update({
+          where: { id: groupId },
+          data: {
+            pictureFile: await updatePicture({
+              extension: 'png',
+              folder: 'groups',
+              identifier: uid,
+              resource: 'group',
+              file,
+              silent: true,
+              root: storageRoot,
+            }),
+          },
         }),
-      },
-    });
+      )
+      .catch((error) =>
+        console.warn(
+          `Could not download random image: ${error}. This is not critical, seeding will continue`,
+        ),
+      );
   }
 }
 
@@ -966,20 +1024,28 @@ for (const element of tqdm(selectedClub)) {
   });
 
   if (faker.datatype.boolean(0.45)) {
-    await prisma.event.update({
-      where: { id },
-      data: {
-        pictureFile: await updatePicture({
-          extension: 'jpg',
-          folder: 'events',
-          resource: 'event',
-          file: await downloadRandomImage(800, 600, id),
-          identifier: id,
-          silent: true,
-          root: storageRoot,
+    await downloadRandomImage(800, 600, id)
+      .then(async (file) =>
+        prisma.event.update({
+          where: { id },
+          data: {
+            pictureFile: await updatePicture({
+              extension: 'jpg',
+              folder: 'events',
+              resource: 'event',
+              file,
+              identifier: id,
+              silent: true,
+              root: storageRoot,
+            }),
+          },
         }),
-      },
-    });
+      )
+      .catch((error) =>
+        console.warn(
+          `Could not download random image: ${error}. This is not critical, seeding will continue`,
+        ),
+      );
   }
 }
 
@@ -1249,5 +1315,62 @@ for (let i = 0; i < 10; i++) {
     }
   }
 }
+
+async function randomPage() {
+  const linkToGroup = faker.datatype.boolean();
+  const page = await prisma.page.create({
+    data: {
+      body: faker.lorem.paragraphs(3),
+      path: Array.from({ length: faker.number.int({ min: 0, max: 5 }) })
+        .map(() => slug(faker.lorem.word()))
+        .join('/'),
+      title: faker.lorem.sentence(),
+      createdAt: faker.date.past(),
+      ...(linkToGroup
+        ? {
+            group: {
+              connect: { id: faker.helpers.arrayElement(await prisma.group.findMany()).id },
+            },
+          }
+        : {
+            studentAssociation: {
+              connect: {
+                id: faker.helpers.arrayElement(await prisma.studentAssociation.findMany()).id,
+              },
+            },
+          }),
+    },
+  });
+
+  return prisma.page.update({
+    where: { id: page.id },
+    data: {
+      lastAuthorId: page.groupId
+        ? // eslint-disable-next-line unicorn/no-await-expression-member
+          (await randomMember(page.groupId)).id
+        : faker.helpers.arrayElement(
+            await prisma.user.findMany({
+              where: {
+                adminOfStudentAssociations: {
+                  some: {
+                    id: page.studentAssociationId!,
+                  },
+                },
+              },
+            }),
+          ).id,
+    },
+  });
+}
+
+await Promise.all(
+  Array.from({ length: 30 }).map(async () => {
+    try {
+      await randomPage();
+    } catch {
+      await randomPage().catch(console.error);
+    }
+  }),
+);
 
 exit(0);
