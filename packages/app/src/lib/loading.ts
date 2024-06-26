@@ -44,7 +44,7 @@ export function onceLoaded<I, O>(
   compute: (loadedValue: I) => O,
   fallback: O,
 ): O {
-  return value === PendingValue ? fallback : compute(value);
+  return loaded(value) ? compute(value) : fallback;
 }
 
 // @ts-expect-error don't know how to fix the 'T could be instanciated with a type that is unrelated to AllLoaded' error
@@ -54,7 +54,7 @@ export function allLoaded<T>(value: T): value is AllLoaded<T> {
   else if (typeof value === 'object' && value !== null)
     return Object.values(value).every((item) => allLoaded(item));
 
-  return value !== PendingValue;
+  return loaded(value);
 }
 
 export const LOREM_IPSUM = `Lorem ipsum dolor sit amet. A impedit beatae sed nostrum voluptatem

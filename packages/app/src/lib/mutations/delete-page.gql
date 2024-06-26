@@ -6,7 +6,7 @@ mutation DeletePage($id: ID!) {
     ... on MutationDeletePageSuccess {
       data {
         title
-        id @Page_delete
+        id @PagesEdge_delete
       }
     }
     ... on ZodError {

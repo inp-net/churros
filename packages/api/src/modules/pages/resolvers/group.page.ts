@@ -1,6 +1,7 @@
 import { builder, prisma } from '#lib';
 import { GroupType } from '#modules/groups';
 import { PageType } from '#modules/pages/types';
+import { withTrailingSlash, withoutTrailingSlash } from '../utils/paths.js';
 
 builder.prismaObjectField(GroupType, 'page', (t) =>
   t.prismaField({
@@ -25,11 +26,3 @@ builder.prismaObjectField(GroupType, 'page', (t) =>
       }),
   }),
 );
-
-function withTrailingSlash(path: string) {
-  return path.endsWith('/') ? path : `${path}/`;
-}
-
-function withoutTrailingSlash(path: string) {
-  return path.endsWith('/') ? path.slice(0, -1) : path;
-}

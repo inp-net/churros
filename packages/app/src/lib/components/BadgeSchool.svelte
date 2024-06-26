@@ -1,18 +1,25 @@
 <script lang="ts">
+  import { loading, onceLoaded, type MaybeLoading } from '$lib/loading';
+  import LoadingText from '$lib/components/LoadingText.svelte';
+
   // @ts-expect-error Untyped lib
   import isDarkColor from 'is-dark-color';
 
-  export let schools: Array<{ name: string; color: string; uid: string }>;
+  export let schools: Array<{
+    name: MaybeLoading<string>;
+    color: MaybeLoading<string>;
+    uid: MaybeLoading<string>;
+  }>;
 </script>
 
 <span class="badge">
   {#each schools as { name, color, uid }}
     <a
-      href={`/schools/${uid}`}
-      style:--bg={color}
-      style:--text={isDarkColor(color) ? 'white' : 'black'}
+      href={onceLoaded(uid, (uid) => `/schools/${uid}`, '')}
+      style:--bg={loading(color, '')}
+      style:--text={onceLoaded(color, isDarkColor, false) ? 'white' : 'black'}
     >
-      {name}
+      <LoadingText value={name}>Lorem</LoadingText>
     </a>
   {/each}
 </span>

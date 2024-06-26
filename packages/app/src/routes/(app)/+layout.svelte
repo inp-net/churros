@@ -146,7 +146,7 @@
   />
 {/if}
 
-{#if $AppLayout.data?.me}
+{#if $AppLayout.data?.me?.bookings}
   <OverlayQuickBookings {now} bookings={$AppLayout.data.me.bookings}></OverlayQuickBookings>
 {/if}
 

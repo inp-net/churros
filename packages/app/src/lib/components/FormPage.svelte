@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { DeletePageStore, fragment, graphql, PendingValue, type FormPage } from '$houdini';
+  import { fragment, graphql, PendingValue, type FormPage } from '$houdini';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
@@ -9,11 +8,10 @@
   import InputLongText from '$lib/components/InputLongText.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
-  import ModalConfirmDelete from '$lib/components/ModalConfirmDelete.svelte';
+  import ModalDeleteCustomPage from '$lib/components/ModalDeleteCustomPage.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { formatDate } from '$lib/dates';
   import { allLoaded, loaded, loading, onceLoaded, type MaybeLoading } from '$lib/loading';
-  import { mutationResultToast } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
   import type { Snapshot } from '@sveltejs/kit';
   import { subDays } from 'date-fns';
@@ -36,14 +34,18 @@
     pageItem,
     graphql(`
       fragment FormPage on Page @loading(cascade: true) {
+        ...ModalDeleteCustomPage @loading
         id
         body
         bodyHtml
         title
+        path
         updatedAt
         canBeEdited
-        path
-        group @required {
+        group {
+          uid
+        }
+        studentAssociation {
           uid
         }
         lastAuthor {
@@ -87,26 +89,14 @@
   }
 
   $: if ($data && allLoaded($data) && !title && !body) ({ title, body, bodyHtml } = $data);
+  $: linkedResource = $data?.group ? 'groups' : 'student-associations';
+  // @ts-expect-error can't figure out why .studentAssocaition specifically is 'not present' on $data when it clearly is. It even works, linkedResourceUid gets the right value.
+  $: linkedResourceUid = $data?.group?.uid ?? $data?.studentAssociation!.uid;
 </script>
 
 {#if $data}
-  {#if loaded($data.id) && loaded($data.path)}
-    <ModalConfirmDelete
-      on:confirm={async () => {
-        if (!loaded($data.id) || !loaded($data.group.uid)) return;
-        const result = await new DeletePageStore().mutate({ id: $data.id });
-        mutationResultToast(
-          'deletePage',
-          ({ title }) => `Page “${title}” supprimée`,
-          'Erreur lors de la suppression',
-          result,
-        );
-        await goto('../');
-      }}
-      bind:open={openDeletionConfirmation}
-      typeToConfirm={$data.path}
-    ></ModalConfirmDelete>
-  {/if}
+  <!-- @ts-expect-error same weird behavior as for linkedResourceUid, it thinks the fragment does not exist -->
+  <ModalDeleteCustomPage bind:openDeletionConfirmation customPage={$data}></ModalDeleteCustomPage>
   <form
     on:submit|preventDefault={async () => {
       if (!allLoaded(page)) return;
@@ -117,7 +107,12 @@
   >
     <h1>
       <slot name="before-title">
-        <ButtonBack go={allLoaded($data) ? `/groups/${$data.group.uid}/${$data.path}` : ''}
+        <ButtonBack
+          go={onceLoaded(
+            linkedResourceUid,
+            (uid) => onceLoaded($data.path, (path) => `/${linkedResource}/${uid}/${path}`, ''),
+            '',
+          )}
         ></ButtonBack>
       </slot>
       <div class="title-input">
@@ -168,7 +163,7 @@
     <section class="actions">
       <ButtonSecondary
         icon={IconBack}
-        href={onceLoaded($data.group.uid, (uid) => `/groups/${uid}/edit/pages`, '')}
+        href={onceLoaded(linkedResourceUid, (uid) => `/${linkedResource}/${uid}/edit/pages`, '')}
         >Toutes les pages</ButtonSecondary
       >
       <ButtonSecondary icon={IconDelete} danger on:click={() => openDeletionConfirmation()}>
@@ -180,6 +175,13 @@
 {/if}
 
 <style>
+  h1 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 1rem;
+  }
+
   .title-input {
     flex: 1;
   }

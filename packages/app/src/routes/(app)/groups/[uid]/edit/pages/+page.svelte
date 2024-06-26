@@ -1,21 +1,17 @@
 <script lang="ts">
-  import { graphql } from '$houdini';
-  import IconAdd from '~icons/mdi/plus';
-  import IconEdit from '~icons/mdi/pencil-outline';
-  import IconSee from '~icons/mdi/eye-outline';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import slugify from 'slugify';
-  import Card from '$lib/components/Card.svelte';
-  import LoadingText from '$lib/components/LoadingText.svelte';
-  import Modal from '$lib/components/Modal.svelte';
-  import { loaded, onceLoaded } from '$lib/loading';
-  import InputText from '$lib/components/InputText.svelte';
-  import type { PageData } from './$houdini';
-  import { page } from '$app/stores';
-  import { mutationResultToast } from '$lib/mutations';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { graphql } from '$houdini';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import ListManageCustomPages from '$lib/components/ListManageCustomPages.svelte';
+  import Modal from '$lib/components/Modal.svelte';
+  import { mutationResultToast } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
+  import slugify from 'slugify';
+  import IconAdd from '~icons/mdi/plus';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
   $: ({ PageGroupCustomPageList } = data);
@@ -38,7 +34,6 @@
             group {
               uid
             }
-            ...List_Pages_insert @allLists
           }
         }
       }
@@ -66,11 +61,13 @@
       mutationResultToast('upsertPage', 'Page créée', 'Impossible de créer la page', result);
       if (result.data?.upsertPage && 'data' in result.data.upsertPage) {
         const page = result.data.upsertPage.data;
-        if (page.group)
-          {await goto(`/groups/${page.group.uid}/edit/pages/${page.path}`);}
-        else {toasts.error(
+        if (page.group) {
+          await goto(`/groups/${page.group.uid}/edit/pages/${page.path}`);
+        } else {
+          toasts.error(
             'Page créée, mais impossible de la retrouver dans la liste des pages du groupe',
-          );}
+          );
+        }
       }
     }}
   >
@@ -91,29 +88,8 @@
     >
   </h2>
   {#if $PageGroupCustomPageList.data?.group.pages}
-    {@const pages = $PageGroupCustomPageList.data.group.pages}
-    <ul class="nobullet">
-      {#each pages.filter((p) => loaded(p.id)) as page (page.id)}
-        {#if loaded(page.id)}
-          <Card
-            class="page-item"
-            element="li"
-            href={onceLoaded(page.path, (path) => `./${path}`, `#${page.id}`)}
-          >
-            <div class="text">
-              <p><code>{page.path}</code></p>
-              <h2><LoadingText value={page.title}>Lorem ipsum dolor sit amet</LoadingText></h2>
-            </div>
-            <div class="actions">
-              {#if loaded(page.path)}
-                <ButtonSecondary icon={IconEdit} href="./{page.path}">Modifier</ButtonSecondary>
-                <ButtonSecondary icon={IconSee} href="../../{page.path}">Voir</ButtonSecondary>
-              {/if}
-            </div>
-          </Card>
-        {/if}
-      {/each}
-    </ul>
+    {@const group = $PageGroupCustomPageList.data.group}
+    <ListManageCustomPages {group}></ListManageCustomPages>
   {/if}
 </div>
 
@@ -122,11 +98,5 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
-
-  ul :global(.card-content) {
-    display: flex;
-    flex-flow: column wrap;
-    gap: 1rem;
   }
 </style>

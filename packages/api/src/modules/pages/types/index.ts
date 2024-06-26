@@ -3,3 +3,4 @@
  */
 
 export * from './page.js';
+export * from './pages-connection.js';

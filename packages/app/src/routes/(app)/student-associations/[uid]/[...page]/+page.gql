@@ -1,14 +1,14 @@
-query PageGroupCustomPage($uid: String!, $page: String!) {
-  group(uid: $uid) @loading {
+query PageStudentAssociationCustomPage($uid: String!, $page: String!) {
+  studentAssociation(uid: $uid) @loading {
     page(path: $page) @loading(cascade: true) {
-      ...ModalDeleteCustomPage
+      ...ModalDeleteCustomPage @loading
       id
       bodyHtml
       title
       updatedAt
       canBeEdited
       path
-      group @required {
+      studentAssociation @required {
         uid
       }
       lastAuthor {

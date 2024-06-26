@@ -275,6 +275,10 @@ a.user-mention:focus-visible {
   animation: skeleton-effect-wave 1s infinite;
 }
 
+div.skeleton-effect-wave {
+  background-color: var(--skeleton-ui-bg) 
+}
+
 @keyframes skeleton-effect-wave {
   0% {
     mask-position: 50% top;

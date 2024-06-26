@@ -25,8 +25,7 @@
 
     &,
     & * {
-      color: var(--muted-text);
-      color: color-mix(in srgb, var(--muted-text) 50%, var(--bg));
+      color: var(--skeleton-ui-bg);
       letter-spacing: -0.03em;
     }
   }

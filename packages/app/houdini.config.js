@@ -35,6 +35,21 @@ const config = {
         queryField: 'page',
       },
     },
+    StudentAssociation: {
+      resolve: {
+        queryField: 'studentAssociation',
+        arguments: ({ uid }) => ({ uid }),
+      },
+    },
+    Group: {
+      resolve: {
+        queryField: 'group',
+        arguments: ({ uid }) => ({ uid }),
+      },
+    },
+    PagesEdge: {
+      keys: ['cursor'],
+    },
   },
   scalars: {
     DateTime: {

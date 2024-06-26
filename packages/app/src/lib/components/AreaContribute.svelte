@@ -1,34 +1,68 @@
 <script lang="ts">
-  import { me } from '$lib/session.js';
+  import {
+    fragment,
+    graphql,
+    PendingValue,
+    type AreaContribute_StudentAssociation,
+    type AreaContribute_User,
+  } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { zeus } from '$lib/zeus';
   import InputText from '$lib/components/InputText.svelte';
+  import LoadingText from '$lib/components/LoadingText.svelte';
+  import { allLoaded, loaded, onceLoaded } from '$lib/loading';
+  import { me } from '$lib/session.js';
+  import { zeus } from '$lib/zeus';
 
-  export let studentAssociation: undefined | { name: string } = undefined;
+  function formatPrice(amount: number): string {
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+  }
 
-  export let contributionOptions: Array<{
-    id: string;
-    name: string;
-    price: number;
-    paysFor: Array<{
-      id: string;
-      name: string;
-    }>;
-    offeredIn: { uid: string; name: string };
-  }>;
-
-  export let pendingContributions: Array<
-    | {
-        id: string;
-        name: string;
+  export let studentAssociation: AreaContribute_StudentAssociation;
+  $: data = fragment(
+    studentAssociation,
+    graphql(`
+      fragment AreaContribute_StudentAssociation on StudentAssociation @loading {
+        name
+        contributionOptions {
+          id
+          name
+          price
+          paysFor {
+            id
+            name
+          }
+          offeredIn {
+            uid
+            name
+          }
+        }
       }
-    | undefined
-  >;
+    `),
+  );
+
+  export let user: AreaContribute_User | null;
+  $: Me = fragment(
+    user,
+    graphql(`
+      fragment AreaContribute_User on User @loading {
+        phone
+        major {
+          schools {
+            uid
+          }
+        }
+        pendingContributions {
+          id
+          name
+        }
+      }
+    `),
+  );
 
   let contributeServerError = '';
   let contributeLoading: string | undefined = undefined;
-  let contributePhone = $me?.phone ?? '';
+  $: contributePhone = onceLoaded($Me?.phone, (phone) => phone ?? '', '');
 
   async function contribute(optionId: string) {
     contributeLoading = optionId;
@@ -56,7 +90,7 @@
   }
 
   function optionOfferedToUser(optionId: string) {
-    const option = contributionOptions.find((o) => o.id === optionId);
+    const option = $data.contributionOptions.find((o) => o.id === optionId);
     if (!option) return false;
     return $me?.major?.schools.some((school) => option.offeredIn.uid === school.uid);
   }
@@ -80,35 +114,37 @@
 <div class="area-contributions">
   <InputText type="tel" label="Numéro de téléphone" bind:value={contributePhone} />
   <ul class="nobullet options">
-    {#each contributionOptions.filter((o) => optionOfferedToUser(o.id)) as { name, price, id }}
-      {@const pendingContribution = pendingContributions.find((c) => c?.id === id)}
+    {#each $data.contributionOptions.filter((o) => loaded(o.id) && optionOfferedToUser(o.id)) as { name, price, id } (id)}
+      {@const pendingContribution = $Me?.pendingContributions.find((c) => c?.id === id)}
       <li>
         <ButtonSecondary
           danger={Boolean(pendingContribution)}
           loading={contributeLoading === id}
           on:click={async () => {
+            if (!allLoaded(pendingContribution) || !loaded(id)) return;
             await (pendingContribution
               ? cancelContribution(pendingContribution.id)
               : contribute(id));
           }}
         >
           {#if pendingContribution}
-            Annuler la demande pour {name}
+            Annuler la demande pour <LoadingText value={name}>Lorem ipsum</LoadingText>
           {:else}
-            {name}
-            <strong class="price"
-              >{new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
-                price,
-              )}</strong
-            >
+            <LoadingText value={name}>Lorem ipsum</LoadingText>
+            <strong class="price">
+              <LoadingText value={loaded(price) ? formatPrice(price) : PendingValue}
+                >10 €</LoadingText
+              >
+            </strong>
           {/if}
         </ButtonSecondary>
       </li>
     {:else}
       <li class="empty">
-        Tu ne peux pas cotiser {#if studentAssociation}pour {studentAssociation.name}{/if}
-      </li>
-    {/each}
+        Tu ne peux pas cotiser {#if $data}pour <LoadingText value={$data.name}
+            >Lorem ipsum</LoadingText
+          >{/if}
+      </li>{/each}
   </ul>
   {#if contributeServerError}
     <Alert theme="danger">{contributeServerError}</Alert>

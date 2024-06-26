@@ -14,21 +14,21 @@
   import type { PageData } from './$houdini';
 
   export let data: PageData;
-  $: ({ PageGroupCustomPage } = data);
+  $: ({ PageStudentAssociationCustomPage } = data);
 
   let openDeletionConfirmation: () => void;
 </script>
 
 <svelte:head>
-  {#if $PageGroupCustomPage.data?.group.page && loaded($PageGroupCustomPage.data.group.page.title)}
-    <title>{$PageGroupCustomPage.data.group.page.title}</title>
+  {#if $PageStudentAssociationCustomPage.data?.studentAssociation.page && loaded($PageStudentAssociationCustomPage.data.studentAssociation.page.title)}
+    <title>{$PageStudentAssociationCustomPage.data.studentAssociation.page.title}</title>
   {/if}
 </svelte:head>
 
 <div class="content">
-  {#if $PageGroupCustomPage.data?.group.page}
-    {@const page = $PageGroupCustomPage.data.group.page}
-    <ModalDeleteCustomPage bind:openDeletionConfirmation {page} />
+  {#if $PageStudentAssociationCustomPage.data?.studentAssociation.page}
+    {@const page = $PageStudentAssociationCustomPage.data.studentAssociation.page}
+    <ModalDeleteCustomPage bind:openDeletionConfirmation customPage={page}></ModalDeleteCustomPage>
     <h1>
       <ButtonBack></ButtonBack>
       <LoadingText value={page.title}>Lorem ipsum dolor sit amet, consequitur jsp</LoadingText>
@@ -59,8 +59,11 @@
 
     <section class="actions">
       <ButtonShare></ButtonShare>
-      {#if loaded(page.group.uid) && loaded(page.path) && loading(page.canBeEdited, false)}
-        <ButtonGhost help="Modifier" href="/groups/{page.group.uid}/edit/pages/{page.path}">
+      {#if loaded(page.studentAssociation.uid) && loaded(page.path) && loading(page.canBeEdited, false)}
+        <ButtonGhost
+          help="Modifier"
+          href="/student-associations/{page.studentAssociation.uid}/edit/pages/{page.path}"
+        >
           <IconEdit></IconEdit>
         </ButtonGhost>
         <ButtonGhost help="Supprimer" on:click={() => openDeletionConfirmation()}>
@@ -68,10 +71,10 @@
         </ButtonGhost>
       {/if}
     </section>
-  {:else if $PageGroupCustomPage.errors}
+  {:else if $PageStudentAssociationCustomPage.errors}
     <h1>Oops!</h1>
     <ul>
-      {#each $PageGroupCustomPage.errors as { message }}
+      {#each $PageStudentAssociationCustomPage.errors as { message }}
         <li>{message}</li>
       {/each}
     </ul>

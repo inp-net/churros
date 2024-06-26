@@ -46,7 +46,7 @@
 
 <style lang="scss">
   .button-ghost.skeleton-effect-wave {
-    background: var(--muted-border);
+    background: var(--skeleton-ui-bg);
   }
 
   .loading-blackout {

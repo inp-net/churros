@@ -1,7 +1,7 @@
 import { builder, log, prisma, UnauthorizedError } from '#lib';
 import { GroupType } from '#modules/groups';
 import { PageType } from '#modules/pages/types';
-import { canEditPage } from '#modules/pages/utils';
+import { canEditPage, withoutTrailingSlash } from '#modules/pages/utils';
 import { StudentAssociationType } from '#modules/student-associations';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
@@ -110,7 +110,7 @@ builder.mutationField('upsertPage', (t) =>
         : null;
       const studentAssociation = input.studentAssociation
         ? await prisma.studentAssociation.findUnique({
-            where: { id: input.studentAssociation },
+            where: { uid: input.studentAssociation },
           })
         : null;
 
@@ -119,6 +119,7 @@ builder.mutationField('upsertPage', (t) =>
 
       const prismaData = {
         ...input,
+        path: withoutTrailingSlash(input.path),
         title: input.title.trim(),
         group: group ? { connect: { id: group.id } } : undefined,
         studentAssociation: studentAssociation
@@ -131,13 +132,16 @@ builder.mutationField('upsertPage', (t) =>
         ...query,
         where: group
           ? {
-              groupId_path: { groupId: group.id, path: input.path },
+              groupId_path: {
+                groupId: group.id,
+                path: withoutTrailingSlash(input.path),
+              },
             }
           : {
               studentAssociationId_path: {
                 // if check above ensures that, if group is falsy, studentAssociation exists
                 studentAssociationId: studentAssociation!.id,
-                path: input.path,
+                path: withoutTrailingSlash(input.path),
               },
             },
         create: prismaData,

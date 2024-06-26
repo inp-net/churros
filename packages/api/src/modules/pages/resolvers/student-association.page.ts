@@ -1,6 +1,7 @@
 import { builder, prisma } from '#lib';
 import { PageType } from '#modules/pages/types';
 import { StudentAssociationType } from '#modules/student-associations';
+import { withTrailingSlash, withoutTrailingSlash } from '../utils/paths.js';
 
 builder.prismaObjectField(StudentAssociationType, 'page', (t) =>
   t.prismaField({
@@ -14,6 +15,14 @@ builder.prismaObjectField(StudentAssociationType, 'page', (t) =>
     },
     nullable: true,
     resolve: (query, { id }, { path }) =>
-      prisma.page.findFirst({ ...query, where: { studentAssociationId: id, path } }),
+      prisma.page.findFirst({
+        ...query,
+        where: {
+          studentAssociationId: id,
+          path: {
+            in: [withTrailingSlash(path), withoutTrailingSlash(path)],
+          },
+        },
+      }),
   }),
 );
