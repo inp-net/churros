@@ -2854,6 +2854,11 @@ type Page {
   Contenu de la page, converti en HTML. Protégé contre les attaques XSS.
   """
   bodyHtml: String!
+
+  """
+  L'utilisateur·ice connecté·e peut modifier ou supprimer cette page
+  """
+  canBeEdited: Boolean!
   createdAt: DateTime!
 
   """

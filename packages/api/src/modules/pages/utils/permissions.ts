@@ -36,11 +36,11 @@ export function canEditStudentAssociationPages(
 }
 
 export function canEditPage(
-  user: Context['user'],
   page: {
     group: null | Group;
     studentAssociation: null | StudentAssociation;
   },
+  user: Context['user'],
 ): boolean {
   if (!user) return false;
 

@@ -4,6 +4,10 @@ import path from 'node:path/posix';
 export const PageType = builder.prismaObject('Page', {
   description:
     "Une page écrite par un·e utilisateur·rice, servant par exemple à présenter les partenariats d'une AE sur une page dédiée.",
+  include: {
+    group: true,
+    studentAssociation: true,
+  },
   fields: (t) => ({
     id: t.exposeID('id'),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),

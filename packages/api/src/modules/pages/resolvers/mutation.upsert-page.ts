@@ -21,6 +21,13 @@ builder.prismaObjectField(StudentAssociationType, 'canEditPages', (t) =>
   }),
 );
 
+builder.prismaObjectField(PageType, 'canBeEdited', (t) =>
+  t.boolean({
+    description: "L'utilisateur·ice connecté·e peut modifier ou supprimer cette page",
+    resolve: (page, _, { user }) => canEditPage(page, user),
+  }),
+);
+
 builder.mutationField('upsertPage', (t) =>
   t.prismaField({
     type: PageType,
@@ -83,14 +90,17 @@ builder.mutationField('upsertPage', (t) =>
         },
       });
 
-      if (existingPage && !canEditPage(user, existingPage)) return false;
+      if (existingPage && !canEditPage(existingPage, user)) return false;
 
-      return canEditPage(user, {
-        group: group ? await prisma.group.findUnique({ where: { uid: group } }) : null,
-        studentAssociation: studentAssociation
-          ? await prisma.studentAssociation.findUnique({ where: { uid: studentAssociation } })
-          : null,
-      });
+      return canEditPage(
+        {
+          group: group ? await prisma.group.findUnique({ where: { uid: group } }) : null,
+          studentAssociation: studentAssociation
+            ? await prisma.studentAssociation.findUnique({ where: { uid: studentAssociation } })
+            : null,
+        },
+        user,
+      );
     },
     async resolve(query, _, input, { user }) {
       if (!user) throw new UnauthorizedError();
