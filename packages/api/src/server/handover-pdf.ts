@@ -1,4 +1,5 @@
 import { prisma } from '#lib';
+import type { School } from '@prisma/client';
 import pdfMakePrinter from 'pdfmake';
 import type { TFontDictionary } from 'pdfmake/interfaces';
 import { api } from './express.js';
@@ -26,6 +27,11 @@ type boardMemberType = {
   }[];
 };
 
+let school: School | null;
+const boardMembers: boardMemberType[] = [];
+let studentAssociationPresident: { firstName: string; lastName: string } | null;
+let studentAssociationTreasurer: { firstName: string; lastName: string } | null;
+
 const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'full',
 });
@@ -41,101 +47,153 @@ api.get('/print-handover/:uid', async (req, res) => {
       id: true,
       uid: true,
       name: true,
-    },
-  });
-  const id = group?.id;
-
-  const AE = await prisma.group.findFirst({
-    where: {
-      uid: 'bde-n7',
-    },
-    select: {
-      id: true,
+      studentAssociationId: true,
     },
   });
 
-  //récupération de l'ensemble des membres du bureau
-  let boardMembersUser = await prisma.user.findMany({
-    where: {
-      groups: {
-        some: {
-          groupId: id,
-          OR: [
-            { president: true },
-            { vicePresident: true },
-            { secretary: true },
-            { treasurer: true },
-          ],
-        },
-      },
-    },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      birthday: true,
-      phone: true,
-      email: true,
-      groups: {
-        where: {
-          groupId: id,
-        },
-        select: {
-          president: true,
-          treasurer: true,
-          vicePresident: true,
-          secretary: true,
-        },
-      },
-    },
-  });
+  //Vérification qu'on a bien récup un groupe
+  if (group === null) {
+    res.status(502).send("Erreur : Le groupe n'a pas été trouvé");
+    return;
+  } else if (group.studentAssociationId === null) {
+    // Verification que le groupe est bien associé à une asso étudiante associé au groupe
+    res.status(502).send("Erreur : L'AE assosié au groupe n'a pas été trouvé");
+    return;
+  } else {
+    //Si un groupe et une AE est trouvé, on peut générer le PDF
 
-  const studentAssociationPresident = await prisma.user.findFirst({
-    where: {
-      groups: {
-        some: {
-          groupId: AE?.id,
-          president: true,
-        },
-      },
-    },
-    select: {
-      firstName: true,
-      lastName: true,
-    },
-  });
-
-  //On en select qu'un seul car on a besoin que d'un pour la fiche
-  const studentAssociationTreasurer = await prisma.user.findFirst({
-    where: {
-      groups: {
-        some: {
-          groupId: AE?.id,
-          treasurer: true,
-        },
-      },
-    },
-    select: {
-      firstName: true,
-      lastName: true,
-    },
-  });
-
-  const boardMembers = [];
-  boardMembersUser = sortMemberByRole(boardMembersUser);
-
-  for (const element of boardMembersUser) {
-    const user = await prisma.groupMember.findFirst({
+    //Recup les infos sur l'école
+    school = await prisma.school.findFirst({
       where: {
-        groupId: id,
-        memberId: element?.id,
-      },
-      select: {
-        title: true,
+        studentAssociations: {
+          some: {
+            id: group.studentAssociationId,
+          },
+        },
       },
     });
 
-    boardMembers.push({ ...user, ...element });
+    const AE = await prisma.group.findFirst({
+      where: {
+        uid: 'bde-n7',
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    //récupération de l'ensemble des membres du bureau
+    let boardMembersUser = await prisma.user.findMany({
+      where: {
+        groups: {
+          some: {
+            groupId: group.id,
+            OR: [
+              { president: true },
+              { vicePresident: true },
+              { secretary: true },
+              { treasurer: true },
+            ],
+          },
+        },
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        birthday: true,
+        phone: true,
+        email: true,
+        groups: {
+          where: {
+            groupId: group.id,
+          },
+          select: {
+            president: true,
+            treasurer: true,
+            vicePresident: true,
+            secretary: true,
+          },
+        },
+      },
+    });
+
+    studentAssociationPresident = await prisma.user.findFirst({
+      where: {
+        groups: {
+          some: {
+            groupId: AE?.id,
+            president: true,
+          },
+        },
+      },
+      select: {
+        firstName: true,
+        lastName: true,
+      },
+    });
+
+    if (studentAssociationPresident === null) {
+      res
+        .status(502)
+        .send(
+          "Erreur : L'AE au club associé n'a pas de président, génération de la fiche impossible",
+        );
+      return;
+    }
+
+    //On en select qu'un seul car on a besoin que d'un pour la fiche
+    studentAssociationTreasurer = await prisma.user.findFirst({
+      where: {
+        groups: {
+          some: {
+            groupId: AE?.id,
+            treasurer: true,
+          },
+        },
+      },
+      select: {
+        firstName: true,
+        lastName: true,
+      },
+    });
+
+    if (studentAssociationTreasurer === null) {
+      res
+        .status(502)
+        .send(
+          "Erreur : L'AE au club associé n'a aps de trésorier, génération de la fiche impossible",
+        );
+      return;
+    }
+
+    const clubPresident = boardMembersUser.filter((member) => member.groups[0]?.president);
+    const clubTreasurer = boardMembersUser.filter((member) => member.groups[0]?.treasurer);
+
+    if (clubPresident.length === 0 || clubTreasurer.length === 0) {
+      res.status(502).send('Erreur : Ce club ne possède pas un trésorier et un président');
+      return;
+    }
+    boardMembersUser = sortMemberByRole(boardMembersUser);
+
+    for (const element of boardMembersUser) {
+      const user = await prisma.groupMember.findFirst({
+        where: {
+          groupId: group.id,
+          memberId: element?.id,
+        },
+        select: {
+          title: true,
+        },
+      });
+
+      boardMembers.push({ ...user, ...element });
+    }
+
+    if (school === null) {
+      res.status(502).send("Erreur : L'école n'a pas été trouvé");
+      return;
+    }
   }
 
   const contentPDF = {
@@ -143,24 +201,7 @@ api.get('/print-handover/:uid', async (req, res) => {
       title: 'Fiche de passation - ' + group?.uid,
     },
     content: [
-      {
-        //TODO : Changer l'image en fonction de l'école
-        image: 'static/aen7_black.png',
-        width: 150,
-        margin: [0, 0, 0, 10],
-      },
-      {
-        //info sur l'école, la encore faut les déhardcoder
-        text: [
-          'Association des élèves de l’ENSEEIHT\n',
-          '2 rue Charles Camichel\n',
-          '31071 Toulouse\n',
-          'Tél. : 05 61 58 82 19\n',
-          'E-mail : bde@bde.enseeiht.fr\n',
-        ],
-        margin: [0, 0, 0, 20],
-        lineHeight: 1.4,
-      },
+      buildHeaderDocumentInformation(school!),
       {
         columnGap: 10,
         columns: [
@@ -297,4 +338,23 @@ function sortMemberByRole(boardMembers: boardMemberType[]) {
 
   //renvoie la liste des membres dans l'ordre Prez > Trez > VP > Secrétaire
   return sortedMembers.concat(presidentList, treasurerList, vicePresidentList, secretaryList);
+}
+
+function buildHeaderDocumentInformation(school: School) {
+  const headerContent = [];
+  if (school.pictureFile !== '') {
+    headerContent.push({
+      image: school.pictureFile,
+      width: 150,
+      margin: [0, 0, 0, 10],
+    });
+  }
+
+  headerContent.push({
+    text: [`Association des élèves ${school?.name}\n`, `${school?.address}\n`],
+    margin: [0, 0, 0, 20],
+    lineHeight: 1.4,
+  });
+
+  return headerContent;
 }
