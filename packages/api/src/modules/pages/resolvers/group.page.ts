@@ -14,6 +14,9 @@ builder.prismaObjectField(GroupType, 'page', (t) =>
     },
     nullable: true,
     resolve: (query, { id }, { path }) =>
-      prisma.page.findFirst({ ...query, where: { groupId: id, path } }),
+      prisma.page.findFirst({
+        ...query,
+        where: { groupId: id, path: path.replaceAll(/^\/|\/$/g, '') },
+      }),
   }),
 );
