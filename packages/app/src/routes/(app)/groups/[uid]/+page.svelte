@@ -95,6 +95,9 @@
   });
 
   $: clubBoard = group.members?.filter((m) => isOnClubBoard(m));
+  $: president = clubBoard?.find((member) => member.president);
+  $: treasurer = clubBoard?.find((member) => member.treasurer);
+
   $: meOnClubBoard = Boolean(clubBoard?.some(({ member }) => member.uid === $me?.uid));
 
   $: myPermissions = $me?.groups?.find(({ group: { uid } }) => uid === group.uid);
@@ -338,8 +341,16 @@
           >
         </div>
         <div class="admin-button">
-          <ButtonSecondary data-sveltekit-reload href="../{group.uid}.pdf" icon={IconDownload}
-            >Fiche de passation</ButtonSecondary
+          <ButtonSecondary
+            data-sveltekit-reload
+            href="../{group.uid}.pdf"
+            icon={IconDownload}
+            disabled={president === undefined || treasurer === undefined}
+            title={president === undefined || treasurer === undefined
+              ? 'Veuillez nommer un président et un trésorier '
+              : ''}
+          >
+            Fiche de passation</ButtonSecondary
           >
         </div>
       </div>
