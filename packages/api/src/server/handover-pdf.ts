@@ -28,7 +28,7 @@ type boardMemberType = {
 };
 
 let school: School | null;
-const boardMembers: boardMemberType[] = [];
+let boardMembers: boardMemberType[] = [];
 let studentAssociationPresident: { firstName: string; lastName: string } | null;
 let studentAssociationTreasurer: { firstName: string; lastName: string } | null;
 
@@ -38,7 +38,10 @@ const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
 
 console.info('Serving PDF generation of handover /print-handover/:uid');
 api.get('/print-handover/:uid', async (req, res) => {
-  //recup l'id car on a que l'uid accessible (TODO : Faire un truc plus propre ?)
+  // Reset du tableau de membres du bureau, evite d'avoir des bugs de doublon (bruh??)
+  boardMembers = [];
+
+  //recup le groupe qu'on etudie car on a que l'uid accessible (TODO : Faire un truc plus propre ?)
   const group = await prisma.group.findFirst({
     where: {
       uid: req.params.uid,
@@ -174,6 +177,7 @@ api.get('/print-handover/:uid', async (req, res) => {
       res.status(502).send('Erreur : Ce club ne possède pas un trésorier et un président');
       return;
     }
+
     boardMembersUser = sortMemberByRole(boardMembersUser);
 
     for (const element of boardMembersUser) {
@@ -194,6 +198,8 @@ api.get('/print-handover/:uid', async (req, res) => {
       res.status(502).send("Erreur : L'école n'a pas été trouvé");
       return;
     }
+
+    //console.info('boardMmeberFin', boardMembers)
   }
 
   const contentPDF = {
@@ -239,7 +245,6 @@ api.get('/print-handover/:uid', async (req, res) => {
         table: {
           body: [
             [
-              //TODO : Déhardcoder les noms le jour où on aura les infos sur les prez et trésorier AE
               {
                 text: [
                   `Le·a président·e de l’AEn7, \n ${studentAssociationPresident?.firstName} ${studentAssociationPresident?.lastName}`,
