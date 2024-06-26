@@ -10,13 +10,13 @@ import * as path from 'node:path';
 const NEWLINE = '\n';
 
 let argvTable = '';
-let argvFields: string[][] = [[], [], [], []];
+let argvFields: [string[], string[], string[], string[]] = [[], [], [], []];
 const argv = process.argv.slice(2);
-if (argv.length >= 1) argvTable = argv[0];
-if (argv.length >= 2) argvFields[0] = argv[1].split(',');
-if (argv.length >= 3) argvFields[1] = argv[2].split(',');
-if (argv.length >= 4) argvFields[2] = argv[3].split(',');
-if (argv.length >= 5) argvFields[3] = argv[4].split(',');
+if (argv.length >= 1) argvTable = argv[0]!;
+if (argv.length >= 2) argvFields[0] = argv[1]!.split(',');
+if (argv.length >= 3) argvFields[1] = argv[2]!.split(',');
+if (argv.length >= 4) argvFields[2] = argv[3]!.split(',');
+if (argv.length >= 5) argvFields[3] = argv[4]!.split(',');
 
 const here = path.dirname(new URL(import.meta.url).pathname);
 
