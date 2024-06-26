@@ -2,6 +2,7 @@ import { builder, log, prisma, UnauthorizedError } from '#lib';
 import { PageType } from '#modules/pages/types';
 import { canEditPage } from '#modules/pages/utils';
 import type { InputFieldRef, InputShapeFromFields } from '@pothos/core';
+import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
 
 builder.mutationField('deletePage', (t) =>
@@ -45,10 +46,21 @@ builder.mutationField('deletePage', (t) =>
     },
     async resolve(query, _, args, { user }) {
       if (!user) throw new UnauthorizedError();
+      const { id } = await prisma.page
+        .findFirstOrThrow({
+          where: prismaWhereClause(args),
+          include: {
+            group: true,
+            studentAssociation: true,
+          },
+        })
+        .catch(() => {
+          throw new GraphQLError('Page introuvable');
+        });
 
       const result = await prisma.page.delete({
         ...query,
-        where: prismaWhereClause(args),
+        where: { id },
         include: {
           group: true,
           studentAssociation: true,
