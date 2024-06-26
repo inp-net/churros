@@ -198,8 +198,6 @@ api.get('/print-handover/:uid', async (req, res) => {
       res.status(502).send("Erreur : L'école n'a pas été trouvé");
       return;
     }
-
-    //console.info('boardMmeberFin', boardMembers)
   }
 
   const contentPDF = {
