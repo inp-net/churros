@@ -1,4 +1,9 @@
 import { browser } from '$app/environment';
+import { afterNavigate, beforeNavigate } from '$app/navigation';
+import { page } from '$app/stores';
+import { onMount } from 'svelte';
+import { syncToLocalStorage } from 'svelte-store2storage';
+import { get, writable, type Writable } from 'svelte/store';
 
 export function scrollToTop(): void {
   if (!browser) return;
@@ -73,3 +78,32 @@ export const infinitescroll = (container: HTMLElement, callback: () => Promise<v
     destroy: () => disconnect(),
   };
 };
+
+export function setupScrollPositionRestorer(
+  scrollableArea: HTMLElement,
+  onScroll: (scrolled: boolean) => void,
+) {
+  /**
+   * Stores scrollTop of scrollableArea per URL
+   */
+  const scrollPositions: Writable<Record<string, number>> = writable({});
+  if (browser) syncToLocalStorage(scrollPositions, 'scroll_positions');
+
+  beforeNavigate(() => {
+    scrollPositions.set({
+      ...get(scrollPositions),
+      [get(page).url.pathname]: scrollableArea.scrollTop,
+    });
+  });
+
+  afterNavigate(async () => {
+    scrollableArea.scrollTo(0, get(scrollPositions)[get(page).url.pathname] ?? 0);
+  });
+
+  onMount(() => {
+    const scrollableArea = document.querySelector('#scrollable-area');
+    scrollableArea!.addEventListener('scroll', () => {
+      onScroll(scrollableArea!.scrollTop >= 3);
+    });
+  });
+}

@@ -18,7 +18,7 @@
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
   }
 
-  export let studentAssociation: AreaContribute_StudentAssociation;
+  export let studentAssociation: AreaContribute_StudentAssociation | null;
   $: data = fragment(
     studentAssociation,
     graphql(`
@@ -90,7 +90,7 @@
   }
 
   function optionOfferedToUser(optionId: string) {
-    const option = $data.contributionOptions.find((o) => o.id === optionId);
+    const option = $data?.contributionOptions.find((o) => o.id === optionId);
     if (!option) return false;
     return $me?.major?.schools.some((school) => option.offeredIn.uid === school.uid);
   }
@@ -114,7 +114,7 @@
 <div class="area-contributions">
   <InputText type="tel" label="Numéro de téléphone" bind:value={contributePhone} />
   <ul class="nobullet options">
-    {#each $data.contributionOptions.filter((o) => loaded(o.id) && optionOfferedToUser(o.id)) as { name, price, id } (id)}
+    {#each ($data?.contributionOptions ?? []).filter((o) => loaded(o.id) && optionOfferedToUser(o.id)) as { name, price, id } (id)}
       {@const pendingContribution = $Me?.pendingContributions.find((c) => c?.id === id)}
       <li>
         <ButtonSecondary

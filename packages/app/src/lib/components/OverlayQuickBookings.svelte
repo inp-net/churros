@@ -16,7 +16,7 @@
   export let now: Date;
 
   type Registration = NonNullable<(typeof $data.nodes)[number]>;
-  export let bookings: OverlayQuickBookings;
+  export let bookings: OverlayQuickBookings | null;
   $: data = fragment(
     bookings,
     graphql(`
@@ -61,8 +61,8 @@
   const touchAction = 'pan-y pinch-zoom' as unknown as 'pan-y';
 </script>
 
-{#if $data.nodes.filter(notNull).length > 0 && !$page.url.pathname.startsWith('/bookings')}
-  {@const booking = $data.nodes.filter(notNull)[0]}
+{#if $data && $data.nodes.some(notNull) && !$page.url.pathname.startsWith('/bookings')}
+  {@const booking = $data.nodes.find(notNull)}
   <!-- If the quick booking is not hidden and:
       - it starts in less than 30 mins; or
       - it ongoing; or 

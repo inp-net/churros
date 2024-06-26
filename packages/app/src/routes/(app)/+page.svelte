@@ -73,7 +73,7 @@
 {/if}
 
 <section class="articles" use:infinitescroll={async () => await PageHomeFeed.loadNextPage()}>
-  {#each $PageHomeFeed.data?.homepage?.edges.filter(notNull) ?? [] as { node: article } (article.id)}
+  {#each $PageHomeFeed.data?.homepage?.edges.filter(notNull) ?? [] as { node: article }}
     <CardArticle {article} />
   {/each}
   <div class="scroll-end">
