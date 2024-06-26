@@ -1,5 +1,6 @@
 <script lang="ts">
   import { PendingValue } from '$houdini';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
@@ -10,7 +11,6 @@
   import IconDelete from '~icons/mdi/delete-outline';
   import IconEdit from '~icons/mdi/pencil-outline';
   import type { PageData } from './$houdini';
-  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   export let data: PageData;
   $: ({ PageGroupCustomPage } = data);
 </script>

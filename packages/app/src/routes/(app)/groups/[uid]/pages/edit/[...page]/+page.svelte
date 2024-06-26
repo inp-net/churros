@@ -20,9 +20,8 @@
     $PageGroupCustomPageEdit.data &&
     allLoaded($PageGroupCustomPageEdit.data) &&
     $PageGroupCustomPageEdit.data.group.page
-  ) 
+  )
     ({ title, body } = $PageGroupCustomPageEdit.data.group.page);
-  
 </script>
 
 <div class="content">
