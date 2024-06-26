@@ -1175,7 +1175,9 @@ model Answer {
 /// A user-defined markdown page, useful for custom pages, only liked to student associations for now.
 model Page {
   id                   String              @id @default(dbgenerated("nanoid('page:')"))
-  path                 String              @unique @db.VarChar(255)
+
+  // Paths are unique per linked resource, final URL of the page should therefore be namespaced
+  path                 String              @db.VarChar(255)
   title                String              @db.VarChar(255)
   body                 String              @db.Text
   createdAt            DateTime            @default(now())
@@ -1189,8 +1191,6 @@ model Page {
   /// Paths to files that are included on that page (relative to the storage root as always)
   files                String[]
 
-  // Paths are unique per linked resource
-  // Final URL of the page should therefore be namespaced
   @@unique([studentAssociationId, path])
   @@unique([groupId, path])
 }
