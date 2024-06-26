@@ -255,6 +255,7 @@
 
   header .picture {
     --size: 7rem;
+
     width: var(--size);
     height: var(--size);
   }

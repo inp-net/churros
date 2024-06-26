@@ -1,4 +1,3 @@
-
 export function withTrailingSlash(path: string) {
   return path.endsWith('/') ? path : `${path}/`;
 }

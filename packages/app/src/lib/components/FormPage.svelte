@@ -178,8 +178,8 @@
   h1 {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
     column-gap: 1rem;
+    align-items: center;
   }
 
   .title-input {

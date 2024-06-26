@@ -29,9 +29,9 @@
 <style>
   h1 {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
     column-gap: 1rem;
+    align-items: center;
   }
 
   ul :global(.card-content) {

@@ -31,10 +31,11 @@
 
   let scrollableArea: HTMLElement;
   let scrolled = false;
-  $: if (scrollableArea)
-    {setupScrollPositionRestorer(scrollableArea, (isScrolled) => {
+  $: if (scrollableArea) {
+    setupScrollPositionRestorer(scrollableArea, (isScrolled) => {
       scrolled = isScrolled;
-    });}
+    });
+  }
 
   const now = new Date();
 

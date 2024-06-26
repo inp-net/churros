@@ -49,17 +49,10 @@
     `),
   );
 
-  $: console.log({
-    sa: $StudentAssociation,
-    g: $Group,
-  });
-
   $: pages =
     $StudentAssociation.data || $Group.data
       ? ($StudentAssociation.data ?? $Group.data)!.pages.edges.map((e) => e?.node).filter(notNull)
       : [];
-
-  $: console.log({ pages, sad: $StudentAssociation.data, gd: $Group.data });
 </script>
 
 <ul class="nobullet">
