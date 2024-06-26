@@ -65,7 +65,6 @@
       {/each}
     </ul>
   {:else}
-    <!-- TODO handle in +page.ts by throwing error(404) instead -->
     Cette page n'existe pas (ou plus)
   {/if}
 </div>
