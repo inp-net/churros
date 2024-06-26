@@ -273,3 +273,19 @@ createdby_lastName = (
 END $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER update_answer_search_trigger before INSERT OR UPDATE ON "Answer" FOR EACH ROW EXECUTE PROCEDURE update_answer_search();
+
+-- Page.search updating
+CREATE OR REPLACE FUNCTION update_page_search() RETURNS TRIGGER AS $$
+DECLARE
+    
+
+BEGIN
+    
+
+
+    NEW."search" := setweight(to_tsvector('french', coalesce(NEW."path"::text, '')), 'A') || setweight(to_tsvector('french', coalesce(NEW."title"::text, '')), 'B') || setweight(to_tsvector('french', coalesce(NEW."id"::text, '')), 'C');
+
+    RETURN NEW;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_page_search_trigger before INSERT OR UPDATE ON "Page" FOR EACH ROW EXECUTE PROCEDURE update_page_search();

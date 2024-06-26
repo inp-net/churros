@@ -140,6 +140,7 @@
     "format-at": "prettier --write --ignore-unknown",
     "format": "yarn format-at .",
     "build": "run-s \"build:*\"",
+    "prisma": "yarn workspace @centraverse/db run prisma",
     "build:prisma": "yarn workspace @centraverse/db run generate",
     "build:changelog": "run-s copy-changelog",
     "build:typenames": "tsx ./scripts/update-id-prefix-to-typename-map.ts",

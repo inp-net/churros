@@ -1,4 +1,5 @@
 import { PrismaClient } from '@centraverse/db/prisma';
+// @ts-expect-error using a private API
 import { type RuntimeDataModel } from '@centraverse/db/prisma/runtime/library';
 import * as p from '@clack/prompts';
 import { glob } from 'glob';
@@ -7,6 +8,15 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 const NEWLINE = '\n';
+
+let argvTable = '';
+let argvFields: string[][] = [[], [], [], []];
+const argv = process.argv.slice(2);
+if (argv.length >= 1) argvTable = argv[0];
+if (argv.length >= 2) argvFields[0] = argv[1].split(',');
+if (argv.length >= 3) argvFields[1] = argv[2].split(',');
+if (argv.length >= 4) argvFields[2] = argv[3].split(',');
+if (argv.length >= 5) argvFields[3] = argv[4].split(',');
 
 const here = path.dirname(new URL(import.meta.url).pathname);
 
@@ -151,9 +161,9 @@ CREATE TRIGGER update_${table.toLowerCase()}_search_trigger before INSERT OR UPD
 
 p.intro("Ajout d'une colonne auto-gérée pour la recherche full-text dans PostgreSQL");
 
-if (!areFilesGitClean('prisma/schema.prisma', 'src/lib/fulltextsearch.sql')) {
+if (!areFilesGitClean('../db/prisma/schema.prisma', 'src/lib/fulltextsearch.sql')) {
   p.log.error(
-    "Les fichiers packages/api/prisma/schema.prisma et/ou packages/api/src/lib/fulltextsearch.sql ont été modifiés.\nMerci de commit (ou d'annuler les changements) avant de lancer ce script.",
+    "Les fichiers packages/db/prisma/schema.prisma et/ou packages/api/src/lib/fulltextsearch.sql ont été modifiés.\nMerci de commit (ou d'annuler les changements) avant de lancer ce script.",
   );
   p.outro('Bye!');
   process.exit(1);
@@ -161,16 +171,18 @@ if (!areFilesGitClean('prisma/schema.prisma', 'src/lib/fulltextsearch.sql')) {
 
 const fulltextsearchSQLFilePath = path.join(here, '..', 'src', 'lib', 'fulltextsearch.sql');
 
-const tableName = ask(
-  await p.select({
-    message: 'Table à laquelle ajouter le support',
-    options: tableNames.map(([value, label]) => ({ value, label })),
-    maxItems: 10,
-  }),
-)
-  .toString()
-  .replace(/Symbol\((.*)\)/, '$1')
-  .trim();
+const tableName =
+  argvTable ||
+  ask(
+    await p.select({
+      message: 'Table à laquelle ajouter le support',
+      options: tableNames.map(([value, label]) => ({ value, label })),
+      maxItems: 10,
+    }),
+  )
+    .toString()
+    .replace(/Symbol\((.*)\)/, '$1')
+    .trim();
 
 function mutatePrismaSchema(schemaPath: string, tableName: string) {
   p.log.step(`Ajout du champ tsvector à ${tableName} dans le schéma (${schemaPath})`);
@@ -233,42 +245,54 @@ p.note(
   "Chaque colonne est affectée d'un poids,\nqui va de 'A' (le plus fortement pondéré\n, par exemple un prénom pour une recherche de personnes)\n à 'D' (le moins fortement pondéré)",
 );
 let alreadySelected: string[] = [];
-const aWeightedColumns: string[] = ask(
-  await p.multiselect({
-    message: "Colonnes à pondérer avec le poids 'A' (le plus important)",
-    options: eligibleColums.map((value) => ({ value, label: value })),
-  }),
-);
+const aWeightedColumns: string[] =
+  argvFields[0].length > 0
+    ? argvFields[0]
+    : ask(
+        await p.multiselect({
+          message: "Colonnes à pondérer avec le poids 'A' (le plus important)",
+          options: eligibleColums.map((value) => ({ value, label: value })),
+        }),
+      );
 alreadySelected.push(...aWeightedColumns);
-const bWeightedColumns: string[] = ask(
-  await p.multiselect({
-    message: "Colonnes à pondérer avec le poids 'B' (peut être vide)",
-    options: eligibleColums
-      .filter((v) => !alreadySelected.includes(v))
-      .map((value) => ({ value, label: value })),
-    required: false,
-  }),
-);
+const bWeightedColumns: string[] =
+  argvFields[1].length > 0
+    ? argvFields[1]
+    : ask(
+        await p.multiselect({
+          message: "Colonnes à pondérer avec le poids 'B' (peut être vide)",
+          options: eligibleColums
+            .filter((v) => !alreadySelected.includes(v))
+            .map((value) => ({ value, label: value })),
+          required: false,
+        }),
+      );
 alreadySelected.push(...bWeightedColumns);
-const cWeightedColumns: string[] = ask(
-  await p.multiselect({
-    message: "Colonnes à pondérer avec le poids 'C' (peut être vide)",
-    options: eligibleColums
-      .filter((v) => !alreadySelected.includes(v))
-      .map((value) => ({ value, label: value })),
-    required: false,
-  }),
-);
+const cWeightedColumns: string[] =
+  argvFields[2].length > 0
+    ? argvFields[2]
+    : ask(
+        await p.multiselect({
+          message: "Colonnes à pondérer avec le poids 'C' (peut être vide)",
+          options: eligibleColums
+            .filter((v) => !alreadySelected.includes(v))
+            .map((value) => ({ value, label: value })),
+          required: false,
+        }),
+      );
 alreadySelected.push(...cWeightedColumns);
-const dWeightedColumns: string[] = ask(
-  await p.multiselect({
-    message: "Colonnes à pondérer avec le poids 'D' (peut être vide)",
-    options: eligibleColums
-      .filter((v) => !alreadySelected.includes(v))
-      .map((value) => ({ value, label: value })),
-    required: false,
-  }),
-);
+const dWeightedColumns: string[] =
+  argvFields[3].length > 0
+    ? argvFields[3]
+    : ask(
+        await p.multiselect({
+          message: "Colonnes à pondérer avec le poids 'D' (peut être vide)",
+          options: eligibleColums
+            .filter((v) => !alreadySelected.includes(v))
+            .map((value) => ({ value, label: value })),
+          required: false,
+        }),
+      );
 
 function pascalToSnake(pascalCased: string): string {
   return pascalCased
@@ -277,34 +301,36 @@ function pascalToSnake(pascalCased: string): string {
     .replace(/^_/, '');
 }
 
-const prismaSchemaPath = path.resolve(path.join(here, '..', 'prisma', 'schema.prisma'));
+const prismaSchemaPath = path.resolve(path.join(here, '..', '..', 'db', 'prisma', 'schema.prisma'));
 mutatePrismaSchema(prismaSchemaPath, tableName);
 
+const migrationName = `${pascalToSnake(tableName)}_add_fulltext_search`;
 p.log.step('Création de la migration');
-let cmd = `yarn prisma migrate dev --create-only --name ${pascalToSnake(tableName)}_add_fulltext_search`;
+let cmd = `yarn prisma migrate dev --create-only --name ${migrationName}`;
 p.log.info('$ ' + cmd);
 execSync(cmd, { stdio: 'inherit' });
 
+const migrationFilesGlobPattern = path.join(
+  path.dirname(prismaSchemaPath),
+  'migrations',
+  formatDateToYYYYMMDDHH(new Date()) + '*',
+  'migration.sql',
+);
 // find filepath in here/prisma/migrations/
 // that matches (today)*/migration.sql
 
-const migrationFilePathCandidates = await glob(
-  path.join(
-    here,
-    '..',
-    'prisma',
-    'migrations',
-    formatDateToYYYYMMDDHH(new Date()) + '*',
-    'migration.sql',
-  ),
+const migrationFilePathCandidates = await glob(migrationFilesGlobPattern);
+
+const migrationFilePath = migrationFilePathCandidates.find((f) =>
+  f.endsWith(`${migrationName}/migration.sql`),
 );
 
-if (migrationFilePathCandidates.length !== 1) {
-  p.log.error('Impossible de trouver le fichier de migration créé');
+if (!migrationFilePath) {
+  p.log.error(
+    `Impossible de trouver le fichier de migration créé parmi ${migrationFilesGlobPattern}`,
+  );
   process.exit(1);
 }
-
-const migrationFilePath = migrationFilePathCandidates[0]!;
 
 p.log.step(`Ajout du code SQL dans ${migrationFilePath}`);
 

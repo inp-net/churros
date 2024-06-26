@@ -1174,23 +1174,26 @@ model Answer {
 
 /// A user-defined markdown page, useful for custom pages, only liked to student associations for now.
 model Page {
-  id                   String              @id @default(dbgenerated("nanoid('page:')"))
+  id String @id @default(dbgenerated("nanoid('page:')"))
 
   // Paths are unique per linked resource, final URL of the page should therefore be namespaced
-  path                 String              @db.VarChar(255)
-  title                String              @db.VarChar(255)
-  body                 String              @db.Text
-  createdAt            DateTime            @default(now())
-  updatedAt            DateTime            @updatedAt
-  lastAuthor           User?               @relation(fields: [lastAuthorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  path                 String                  @db.VarChar(255)
+  title                String                  @db.VarChar(255)
+  body                 String                  @db.Text
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+  lastAuthor           User?                   @relation(fields: [lastAuthorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   lastAuthorId         String?
-  studentAssociation   StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  studentAssociation   StudentAssociation?     @relation(fields: [studentAssociationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   studentAssociationId String?
-  group                Group?              @relation(fields: [groupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  group                Group?                  @relation(fields: [groupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   groupId              String?
   /// Paths to files that are included on that page (relative to the storage root as always)
   files                String[]
+  // For full-text search
+  search               Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@unique([studentAssociationId, path])
   @@unique([groupId, path])
+  @@index([search], type: Gin)
 }
