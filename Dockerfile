@@ -19,6 +19,7 @@ RUN rm -rf packages/mock-n7-ldap pack
 RUN rm -rf packages/oauth-client
 
 RUN yarn install
+RUN yarn cp-env
 RUN yarn generate-buildinfo
 
 # truc temporaire bien guez pour comprendre pk il manque des vars d'env
