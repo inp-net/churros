@@ -3,7 +3,7 @@
   import { DeletePageStore, fragment, graphql, type ModalDeleteCustomPage } from '$houdini';
   import ModalConfirmDelete from '$lib/components/ModalConfirmDelete.svelte';
   import { loaded, type MaybeLoading } from '$lib/loading';
-  import { mutationResultToast } from '$lib/mutations';
+  import { toasts } from '$lib/toasts';
 
   export let customPage: ModalDeleteCustomPage | null;
   $: data = fragment(
@@ -34,7 +34,7 @@
     on:confirm={async () => {
       if (!loaded($data.id) || !loaded(resourceUid)) return;
       const result = await new DeletePageStore().mutate({ id: $data.id });
-      mutationResultToast(
+      toasts.mutation(
         'deletePage',
         ({ title }) => `Page “${title}” supprimée`,
         'Erreur lors de la suppression',

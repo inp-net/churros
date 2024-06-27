@@ -24,9 +24,7 @@
   $: {
     const yearTier = $Birthdays.data?.me?.yearTier;
     defaultBirthdaysSection = yearTier ? (yearTier <= 3 ? yearTier.toString() : 'all') : 'all';
-    if (selectedBirthdaysYearTier === 'all') 
-      selectedBirthdaysYearTier = defaultBirthdaysSection;
-    
+    if (selectedBirthdaysYearTier === 'all') selectedBirthdaysYearTier = defaultBirthdaysSection;
   }
 </script>
 

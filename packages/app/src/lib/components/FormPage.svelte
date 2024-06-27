@@ -22,7 +22,6 @@
     onceLoaded,
     type MaybeLoading,
   } from '$lib/loading';
-  import { mutationResultToast } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
   import type { Snapshot } from '@sveltejs/kit';
   import { subDays } from 'date-fns';
@@ -229,7 +228,7 @@
               Array.from(files ?? []).map(async (file) => {
                 if (!loaded($data.id)) return;
                 const result = await AddFile.mutate({ id: $data.id, file });
-                mutationResultToast(
+                toasts.mutation(
                   'addFileToPage',
                   `${file.name} ajouté`,
                   `Impossible d'ajouter ${file.name}`,

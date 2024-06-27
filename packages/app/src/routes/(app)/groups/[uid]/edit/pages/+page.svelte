@@ -7,7 +7,6 @@
   import InputText from '$lib/components/InputText.svelte';
   import ListManageCustomPages from '$lib/components/ListManageCustomPages.svelte';
   import Modal from '$lib/components/Modal.svelte';
-  import { mutationResultToast } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
   import slugify from 'slugify';
   import IconAdd from '~icons/mdi/plus';
@@ -58,7 +57,7 @@
         path: newPagePath,
         title: newPageTitle,
       });
-      mutationResultToast('upsertPage', 'Page créée', 'Impossible de créer la page', result);
+      toasts.mutation('upsertPage', 'Page créée', 'Impossible de créer la page', result);
       if (result.data?.upsertPage && 'data' in result.data.upsertPage) {
         const page = result.data.upsertPage.data;
         if (page.group) {

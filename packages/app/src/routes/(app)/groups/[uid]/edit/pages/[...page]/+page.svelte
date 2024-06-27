@@ -4,7 +4,7 @@
   import { page } from '$app/stores';
   import { graphql } from '$houdini';
   import FormPage from '$lib/components/FormPage.svelte';
-  import { mutationResultToast } from '$lib/mutations';
+  import { toasts } from '$lib/toasts';
   import type { Snapshot } from '@sveltejs/kit';
   import type { PageData } from './$houdini';
   export let data: PageData;
@@ -48,7 +48,7 @@
           title,
           body,
         });
-        mutationResultToast(
+        toasts.mutation(
           'upsertPage',
           'Modifications enregistrées',
           'Impossible de sauvegarder les modifications',
