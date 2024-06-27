@@ -26,8 +26,8 @@ build:
     - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    # [ci skip] functionality
-    - if: $CI_COMMIT_MESSAGE =~ /\[ci skip\]/
+    # put CI: Skip in commit desc to skip the build
+    - if: '$CI_COMMIT_DESCRIPTION =~ /CI: Skip/i'
       when: never
   script:
     - yarn build
