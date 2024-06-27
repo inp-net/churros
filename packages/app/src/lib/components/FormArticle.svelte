@@ -237,7 +237,9 @@
     if (!id && (visibility === Visibility.Public || visibility === Visibility.SchoolRestricted)) {
       modalWarnNotifications.showModal();
       track('post-visibility-warning-shown');
-    } else {await updateArticle();}
+    } else {
+      await updateArticle();
+    }
   }}
 >
   <h1>

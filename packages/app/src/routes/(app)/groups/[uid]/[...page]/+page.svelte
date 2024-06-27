@@ -28,7 +28,7 @@
 <div class="content">
   {#if $PageGroupCustomPage.data?.group.page}
     {@const page = $PageGroupCustomPage.data.group.page}
-    <ModalDeleteCustomPage bind:openDeletionConfirmation {page} />
+    <ModalDeleteCustomPage bind:openDeletionConfirmation customPage={page} />
     <h1>
       <ButtonBack></ButtonBack>
       <LoadingText value={page.title}>Lorem ipsum dolor sit amet, consequitur jsp</LoadingText>

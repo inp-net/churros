@@ -44,7 +44,8 @@
       {pageItem}
       saveChanges={async ({ title, body }) => {
         const result = await Update.mutate({
-          ...$page.params,
+          uid: $page.params.uid,
+          page: $page.params.page,
           title,
           body,
         });

@@ -15,7 +15,7 @@
 
   export let now: Date;
 
-  type Registration = NonNullable<(typeof $data.nodes)[number]>;
+  type Registration = NonNullable<NonNullable<typeof $data>['nodes'][number]>;
   export let bookings: OverlayQuickBookings | null;
   $: data = fragment(
     bookings,
@@ -67,7 +67,7 @@
       - it starts in less than 30 mins; or
       - it ongoing; or 
       - was finished less than 2 hours ago -->
-  {#if shouldShowBooking($hiddenBookings, booking)}
+  {#if booking && shouldShowBooking($hiddenBookings, booking)}
     <section
       in:slide={{ axis: 'y', duration: 100 }}
       use:swipe={{ touchAction }}

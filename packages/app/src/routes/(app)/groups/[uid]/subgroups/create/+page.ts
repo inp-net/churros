@@ -16,6 +16,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
           pictureFileDark: true,
           website: true,
           email: true,
+          canListPages: true,
           mailingList: true,
           children: {
             name: true,

@@ -8,7 +8,7 @@
   import IconWebsite from '~icons/mdi/earth';
   import { dateFormatter } from '$lib/dates.js';
   import { me } from '$lib/session.js';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import IconFacebook from '~icons/mdi/facebook-box';
   import type { SvelteComponent } from 'svelte';
   import IconInstagram from '~icons/mdi/instagram';
@@ -47,6 +47,7 @@
   };
 
   export let data: PageData;
+  $: ({ PageUserAreaContribute } = data);
 
   type Nesting = [string, Nesting[]];
   $: familyNesting = JSON.parse(data.user.familyTree.nesting) as Nesting;
@@ -251,7 +252,11 @@
         </div>
       {/each}
       <div class="manage">
-        <AreaContribute {contributionOptions} pendingContributions={user.pendingContributions}
+        <AreaContribute
+          studentAssociation={$PageUserAreaContribute.data?.user?.major?.schools
+            .at(0)
+            ?.studentAssociations.at(0) ?? null}
+          user={$PageUserAreaContribute.data?.user ?? null}
         ></AreaContribute>
       </div>
 

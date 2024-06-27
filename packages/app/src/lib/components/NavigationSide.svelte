@@ -2,7 +2,9 @@
   import { beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql, type NavigationSide } from '$houdini';
+  import { loaded } from '$lib/loading';
   import { scrollToTop } from '$lib/scroll';
+  import type { DESKTOP_NAVIGATION_TABS } from '$lib/tabs';
   import IconPeopleFilled from '~icons/mdi/account-add';
   import IconPeople from '~icons/mdi/account-add-outline';
   import IconGroup from '~icons/mdi/account-group';
@@ -27,9 +29,7 @@
   import IconArticle from '~icons/mdi/newspaper';
   import IconAddCircle from '~icons/mdi/plus-circle';
   import IconAddCircleOutline from '~icons/mdi/plus-circle-outline';
-  import type { DESKTOP_NAVIGATION_TABS } from '../../routes/(app)/+layout.svelte';
   import LogoFrappe from './LogoFrappe.svelte';
-  import { loaded } from '$lib/loading';
 
   export let current: (typeof DESKTOP_NAVIGATION_TABS)[number];
   let flyoutOpen = false;

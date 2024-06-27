@@ -86,7 +86,7 @@
       >Créer une page</ButtonSecondary
     >
   </h2>
-  {#if $PageGroupCustomPageList.data?.group.pages}
+  {#if $PageGroupCustomPageList.data?.group}
     {@const group = $PageGroupCustomPageList.data.group}
     <ListManageCustomPages {group}></ListManageCustomPages>
   {/if}
