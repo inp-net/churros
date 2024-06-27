@@ -22,12 +22,17 @@ if (!stub && process.argv.length >= 3) targets = process.argv.slice(2);
 console.info(`Injecting build info into ${targets.join(', ')}`);
 
 async function git(args: string): Promise<string> {
-  const { stdout } = await execa('git', args.split(' '));
+  const additionalConfig = {
+    // see https://stackoverflow.com/a/22634649/9943464
+    'versionsort.suffix': '-alpha -beta -pre -rc',
+  };
+  const { stdout } = await execa('git', [
+    '-c',
+    ...Object.entries(additionalConfig).map(([k, v]) => `${k}='${v}'`),
+    ...args.split(' '),
+  ]);
   return stdout;
 }
-
-// see https://stackoverflow.com/a/22634649/9943464
-await git(`config versionsort.suffix '-alpha -beta -pre -rc'`);
 
 const hash = stub ? 'dev' : await git('rev-parse HEAD').then((hash) => hash.trim());
 const toplevel = await git('rev-parse --show-toplevel');
