@@ -1,0 +1,22 @@
+query PageStudentAssociationCustomPage($uid: String!, $page: String!) {
+  studentAssociation(uid: $uid) @loading {
+    page(path: $page) @loading(cascade: true) {
+      ...ModalDeleteCustomPage @loading
+      id
+      bodyHtml
+      title
+      updatedAt
+      canBeEdited
+      path
+      studentAssociation @required {
+        uid
+      }
+      lastAuthor {
+        uid
+        pictureURL
+        pictureFile
+        fullName
+      }
+    }
+  }
+}

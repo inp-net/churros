@@ -1,28 +1,27 @@
 <script lang="ts">
-  import IconHomeOutline from '~icons/mdi/home-outline';
+  import { beforeNavigate } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { scrollToTop } from '$lib/scroll';
+  import { me } from '$lib/session';
+  import type { MOBILE_NAVIGATION_TABS } from '$lib/tabs';
+  import { theme } from '$lib/theme';
+  import { tooltip } from '$lib/tooltip';
   import IconPeople from '~icons/mdi/account-add-outline';
-  import IconHome from '~icons/mdi/home';
-  import IconAddCircleOutline from '~icons/mdi/plus-circle-outline';
-  import IconAddCircle from '~icons/mdi/plus-circle';
-  import IconCalendarOutline from '~icons/mdi/calendar-blank-outline';
-  import IconCalendar from '~icons/mdi/calendar';
-  import IconDotsCircleOutline from '~icons/mdi/dots-horizontal-circle-outline';
-  import IconDotsCircle from '~icons/mdi/dots-horizontal-circle';
   import IconGroup from '~icons/mdi/account-group';
   import IconGroupOutline from '~icons/mdi/account-group-outline';
-  import IconForms from '~icons/mdi/format-list-bulleted';
-
   import IconBarWeek from '~icons/mdi/beer-outline';
   import IconAnnouncement from '~icons/mdi/bullhorn-outline';
-  import IconArticle from '~icons/mdi/newspaper';
+  import IconCalendar from '~icons/mdi/calendar';
+  import IconCalendarOutline from '~icons/mdi/calendar-blank-outline';
   import IconEvent from '~icons/mdi/calendar-plus';
-  import { beforeNavigate } from '$app/navigation';
-  import { me } from '$lib/session';
-  import { page } from '$app/stores';
-  import { tooltip } from '$lib/tooltip';
-  import type { MOBILE_NAVIGATION_TABS } from '../../routes/(app)/+layout.svelte';
-  import { scrollToTop } from '$lib/scroll';
-  import { theme } from '$lib/theme';
+  import IconDotsCircle from '~icons/mdi/dots-horizontal-circle';
+  import IconDotsCircleOutline from '~icons/mdi/dots-horizontal-circle-outline';
+  import IconForms from '~icons/mdi/format-list-bulleted';
+  import IconHome from '~icons/mdi/home';
+  import IconHomeOutline from '~icons/mdi/home-outline';
+  import IconArticle from '~icons/mdi/newspaper';
+  import IconAddCircle from '~icons/mdi/plus-circle';
+  import IconAddCircleOutline from '~icons/mdi/plus-circle-outline';
   import LogoFrappe from './LogoFrappe.svelte';
 
   export let current: (typeof MOBILE_NAVIGATION_TABS)[number];

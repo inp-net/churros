@@ -990,6 +990,11 @@ type Event implements Node & Pictured & Reactable {
   L'utilisateur·ice connecté·e peut voir toutes les réservations de cet évènement
   """
   canSeeBookings: Boolean!
+
+  """
+  L'utilsateur·ice connecté·e peut voir les logs de cet évènement
+  """
+  canSeeLogs: Boolean!
   capacity: Int!
   coOrganizers: [Group!]!
   contactMail: String!
@@ -1013,6 +1018,11 @@ type Event implements Node & Pictured & Reactable {
   includeInKiosk: Boolean!
   links: [Link!]!
   location: String!
+
+  """
+  Logs concernant cet évènement. Ne contient pas les logs concernant les réservations.
+  """
+  logs(after: String, before: String, first: Int, last: Int): EventLogsConnection!
   lydiaAccountId: ID
   managers: [EventManager!]!
   myReactions: BooleanMap!
@@ -1058,6 +1068,17 @@ enum EventFrequency {
   Monthly
   Once
   Weekly
+}
+
+type EventLogsConnection {
+  edges: [EventLogsConnectionEdge]!
+  nodes: [LogEntry]!
+  pageInfo: PageInfo!
+}
+
+type EventLogsConnectionEdge {
+  cursor: String!
+  node: LogEntry!
 }
 
 """
@@ -1396,6 +1417,16 @@ type Group implements Node & Pictured {
   Vrai si l'utilisateur·ice connecté·e peut modifier les informations du groupe
   """
   canEditDetails: Boolean!
+
+  """
+  L'utilisateur·ice connecté·e peut éditer (créer ou modifier) les pages du groupe
+  """
+  canEditPages: Boolean!
+
+  """
+  L'utilisateur·ice connecté·e peut lister les pages du groupe
+  """
+  canListPages: Boolean!
   children: [Group!]!
   coOrganizedEvents: [Event!]!
   color: String!
@@ -1423,6 +1454,21 @@ type Group implements Node & Pictured {
   members: [GroupMember!]!
   name: String!
   ownEvents: [Event!]!
+
+  """
+  La page associée au groupe
+  """
+  page(
+    """
+    Le chemin de la page. Ce n'est pas le chemin complet, mais celui qui est local au groupe. Voir `Page` pour plus d'informations.
+    """
+    path: String!
+  ): Page
+
+  """
+  Les pages associées au groupe
+  """
+  pages(after: String, before: String, first: Int, last: Int): PagesConnection!
 
   """
   Parent group, from which this group inherits its permissions
@@ -1691,6 +1737,11 @@ type Mutation {
     """
     id: ID!
   ): Boolean!
+
+  """
+  Ajouter un fichier à une page. Permet notamment d'ajouter des images pour s'en servir dans le contenu de la page.
+  """
+  addFileToPage(file: File!, page: ID!): MutationAddFileToPageResult!
   addGroupMember(groupUid: String!, title: String!, uid: String!): MutationAddGroupMemberResult!
 
   """
@@ -1861,6 +1912,31 @@ type Mutation {
   deleteGroupPicture(dark: Boolean!, uid: String!): Boolean!
   deleteItemPicture(groupUid: String!, itemId: String!, pictureId: String!): Boolean!
   deleteNotificationSubscription(endpoint: String!): Boolean!
+
+  """
+  Supprime une page existante. On peut renseigner l'identifiant de la page ou son chemin ainsi que son groupe ou AE d'appartenance.
+  """
+  deletePage(
+    """
+    L'UID du groupe auquel la page appartient
+    """
+    group: String
+
+    """
+    L'identifiant de la page à supprimer
+    """
+    id: ID
+
+    """
+    Le chemin de la page à supprimer
+    """
+    path: String
+
+    """
+    L'UID de l'AE à laquelle la page appartient
+    """
+    studentAssociation: String
+  ): MutationDeletePageResult!
   deleteQuickSignup(code: String!): QuickSignup!
   deleteReaction(
     articleId: ID
@@ -1978,6 +2054,11 @@ type Mutation {
     """
     code: String!
   ): MutationRegisterGoogleCredentialResult!
+
+  """
+  Supprimer un fichier d'une page.
+  """
+  removeFileFromPage(filename: String!, page: ID!): MutationRemoveFileFromPageResult!
   renameSession(id: ID!, name: String!): Boolean!
   requestEmailChange(email: String!): MutationRequestEmailChangeResult!
   resetPassword(
@@ -2273,6 +2354,36 @@ type Mutation {
   ): NotificationSubscription!
 
   """
+  Crée ou met à jour une page.
+  """
+  upsertPage(
+    """
+    Le corps de la page. Supporte le markdown
+    """
+    body: String!
+
+    """
+    L'UID du groupe auquel la page appartient
+    """
+    group: String
+
+    """
+    Le chemin de la page. Si la page existe déjà, elle sera mise à jour. Sinon, une nouvelle page sera créée. Ne peut contenir que des caractères alphanumériques, des tirets, des tirets du bas et des slashes. Fait pour être utilisé dans des URLs.
+    """
+    path: String!
+
+    """
+    L'UID de l'AE à laquelle la page appartient
+    """
+    studentAssociation: String
+
+    """
+    Le titre de la page
+    """
+    title: String!
+  ): MutationUpsertPageResult!
+
+  """
   Crée ou met à jour une question.
   """
   upsertQuestion(input: MutationUpsertQuestionInput!): Question!
@@ -2354,6 +2465,12 @@ type MutationAcceptRegistrationSuccess {
   data: User!
 }
 
+union MutationAddFileToPageResult = Error | MutationAddFileToPageSuccess | ZodError
+
+type MutationAddFileToPageSuccess {
+  data: Page!
+}
+
 union MutationAddGroupMemberResult = Error | MutationAddGroupMemberSuccess
 
 type MutationAddGroupMemberSuccess {
@@ -2394,6 +2511,12 @@ union MutationCreatePasswordResetResult = Error | MutationCreatePasswordResetSuc
 
 type MutationCreatePasswordResetSuccess {
   data: Boolean!
+}
+
+union MutationDeletePageResult = Error | MutationDeletePageSuccess | ZodError
+
+type MutationDeletePageSuccess {
+  data: Page!
 }
 
 union MutationDeleteShopItemResult = Error | MutationDeleteShopItemSuccess
@@ -2444,6 +2567,12 @@ union MutationRegisterGoogleCredentialResult = Error | MutationRegisterGoogleCre
 
 type MutationRegisterGoogleCredentialSuccess {
   data: Boolean!
+}
+
+union MutationRemoveFileFromPageResult = Error | MutationRemoveFileFromPageSuccess | ZodError
+
+type MutationRemoveFileFromPageSuccess {
+  data: Page!
 }
 
 union MutationRequestEmailChangeResult = Error | MutationRequestEmailChangeSuccess
@@ -2553,6 +2682,12 @@ union MutationUpsertGroupResult = Error | MutationUpsertGroupSuccess
 
 type MutationUpsertGroupSuccess {
   data: Group!
+}
+
+union MutationUpsertPageResult = Error | MutationUpsertPageSuccess | ZodError
+
+type MutationUpsertPageSuccess {
+  data: Page!
 }
 
 input MutationUpsertQuestionInput {
@@ -2728,11 +2863,80 @@ enum OAuth2ErrorCode {
   unsupported_response_type
 }
 
+"""
+Une page écrite par un·e utilisateur·rice, servant par exemple à présenter les partenariats d'une AE sur une page dédiée.
+"""
+type Page {
+  """
+  Contenu de la page. Supporte la syntaxe Markdown.
+  """
+  body: String!
+
+  """
+  Contenu de la page, converti en HTML. Protégé contre les attaques XSS.
+  """
+  bodyHtml: String!
+
+  """
+  L'utilisateur·ice connecté·e peut modifier ou supprimer cette page
+  """
+  canBeEdited: Boolean!
+  createdAt: DateTime!
+
+  """
+  Chemin vers les fichiers inclus sur la page, par exmple des images. Voir filesURLs pour obtenir les URLs de ces fichiers.
+  """
+  files: [String!]!
+
+  """
+  URLs vers les fichiers inclus sur la page.
+  """
+  filesURLs: [String!]!
+
+  """
+  Groupe auquel appartient la page. Peut être null si la page n'appartient à aucun groupe.
+  """
+  group: Group
+  id: ID!
+
+  """
+  Dernier·ère utilisateur·rice ayant modifié la page. Peut être null si la page n'a jamais été modifiée, ou que l'utilisateur·ice en question a été supprimé·e.
+  """
+  lastAuthor: User
+
+  """
+  Chemin vers la page. Doit être unique _par AE ou groupe_. L'URL finale sera donc préfixée d'une certaine manière pour éviter les collisions.
+  """
+  path: String!
+
+  """
+  Association étudiante à laquelle appartient la page. Peut être null si la page n'appartient à aucune association.
+  """
+  studentAssociation: StudentAssociation
+
+  """
+  Titre de la page.
+  """
+  title: String!
+  updatedAt: DateTime!
+}
+
 type PageInfo {
   endCursor: String
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
   startCursor: String
+}
+
+type PagesConnection {
+  edges: [PagesEdge]!
+  nodes: [Page]!
+  pageInfo: PageInfo!
+}
+
+type PagesEdge {
+  cursor: String!
+  node: Page!
 }
 
 enum PaymentMethod {
@@ -2970,6 +3174,16 @@ type Query {
   """
   notificationsSendCountForArticle(groupUid: String!, visibility: Visibility!): Int!
   orders(groupUid: String): [ShopPayment!]!
+
+  """
+  Récupérer une page par son identifiant. Voir aussi `Group.page` et `StudentAssociation.page` pour des queries plus ergonomiques
+  """
+  page(id: ID!): Page!
+
+  """
+  Récupère toutes les pages existantes. Réservé aux administrateur·ice.s.
+  """
+  pages(after: String, before: String, first: Int, last: Int): QueryPagesConnection!
   quickSignups(after: String, before: String, first: Int, last: Int): QueryQuickSignupsConnection!
   reaction(id: ID!): Reaction!
   reactions(after: String, before: String, first: Int, last: Int): QueryReactionsConnection!
@@ -3005,6 +3219,16 @@ type Query {
     groupUid: String!
     userUid: String!
   ): QueryRegistrationsOfUserForEventResult!
+
+  """
+  Rendu de markdown en HTML. Demande a être authentifié·e pour éviter tout abus.
+  """
+  renderMarkdown(
+    """
+    Le markdown à rendre en HTML
+    """
+    markdown: String!
+  ): String!
   school(uid: String!): School!
   schoolGroups: [SchoolGroup!]!
   schools: [School!]!
@@ -3238,6 +3462,17 @@ type QueryNotificationsConnection {
 type QueryNotificationsConnectionEdge {
   cursor: String!
   node: Notification!
+}
+
+type QueryPagesConnection {
+  edges: [QueryPagesConnectionEdge]!
+  nodes: [Page]!
+  pageInfo: PageInfo!
+}
+
+type QueryPagesConnectionEdge {
+  cursor: String!
+  node: Page!
 }
 
 type QueryQuickSignupsConnection {
@@ -4284,13 +4519,43 @@ type StringToIntMapping {
 There is one student association per school
 """
 type StudentAssociation implements Pictured {
+  """
+  L'utilisateur·ice connecté·e peut éditer (créer ou modifier) les pages de l'AE
+  """
+  canEditPages: Boolean!
+
+  """
+  L'utilisateur·ice connecté·e peut lister les pages de l'AE
+  """
+  canListPages: Boolean!
   contributionOptions: [ContributionOption!]!
   createdAt: DateTime!
   description: String!
-  groups: [Group!]!
+  groups(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    types: [GroupType!]
+  ): StudentAssociationGroupsConnection!
   id: ID!
   links: [Link!]!
   name: String!
+
+  """
+  La page associée à l'AE
+  """
+  page(
+    """
+    Le chemin de la page. Ce n'est pas le chemin complet, mais celui qui est local à l'AE. Voir `Page` pour plus d'informations.
+    """
+    path: String!
+  ): Page
+
+  """
+  Les pages associées à l'AE
+  """
+  pages(after: String, before: String, first: Int, last: Int): PagesConnection!
   pictureFile: String!
 
   """
@@ -4311,6 +4576,17 @@ type StudentAssociation implements Pictured {
   schoolId: ID!
   uid: String
   updatedAt: DateTime!
+}
+
+type StudentAssociationGroupsConnection {
+  edges: [StudentAssociationGroupsConnectionEdge]!
+  nodes: [Group]!
+  pageInfo: PageInfo!
+}
+
+type StudentAssociationGroupsConnectionEdge {
+  cursor: String!
+  node: Group!
 }
 
 type Subject {

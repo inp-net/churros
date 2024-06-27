@@ -32,6 +32,7 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
     pictureFile: '',
     pictureFileDark: '',
     selfJoinable: false,
+    canListPages: true,
     related: [],
   };
 

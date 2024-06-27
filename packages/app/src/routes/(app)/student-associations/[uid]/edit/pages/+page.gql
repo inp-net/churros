@@ -1,0 +1,5 @@
+query PageStudentAssociationListPages($uid: String!) {
+  studentAssociation(uid: $uid) @loading(cascade: true) {
+    ...ListManageCustomPages_StudentAssociation
+  }
+}

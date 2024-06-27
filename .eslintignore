@@ -18,3 +18,5 @@ packages/app/static/vendor/
 # svelte-kit's generated .tsconfig explicitly excludes it now, so we need to create another tsconfig just for this, apparently
 packages/app/src/service-worker.ts 
 packages/app/$houdini/
+
+packages/db/

@@ -13,13 +13,15 @@ function simulatingLoadingState(): boolean {
   return dev && SIMULATE_LOADING_STATE;
 }
 
+export type MaybeLoading<T> = T | typeof PendingValue;
+
 /**
  * Provide a fallback value if the value is PendingValue
  * @param value the value
  * @param fallback the fallback to use if value is PendingValue
  * @returns the value or the fallback
  */
-export function loading<T>(value: T | typeof PendingValue, fallback: T): T {
+export function loading<T>(value: MaybeLoading<T>, fallback: T): T {
   if (simulatingLoadingState()) return fallback;
   return value === PendingValue ? fallback : value;
 }
@@ -32,17 +34,26 @@ type AllLoaded<T> = T extends object
       ? never
       : T;
 
-export function loaded<T>(value: T | typeof PendingValue): value is T {
+export function loaded<T>(value: MaybeLoading<T>): value is T {
   if (simulatingLoadingState()) return false;
   return value !== PendingValue;
 }
 
 export function onceLoaded<I, O>(
-  value: I | typeof PendingValue,
+  value: MaybeLoading<I>,
   compute: (loadedValue: I) => O,
   fallback: O,
 ): O {
-  return value === PendingValue ? fallback : compute(value);
+  return loaded(value) ? compute(value) : fallback;
+}
+
+export function onceAllLoaded<T extends unknown[], O>(
+  values: { [K in keyof T]: MaybeLoading<T[K]> },
+  compute: (...loadedValues: T) => O,
+  fallback: O,
+): O {
+  if (values.every(loaded)) return compute(...(values as T));
+  return fallback;
 }
 
 // @ts-expect-error don't know how to fix the 'T could be instanciated with a type that is unrelated to AllLoaded' error
@@ -52,7 +63,12 @@ export function allLoaded<T>(value: T): value is AllLoaded<T> {
   else if (typeof value === 'object' && value !== null)
     return Object.values(value).every((item) => allLoaded(item));
 
-  return value !== PendingValue;
+  return loaded(value);
+}
+
+export function mapLoading<T>(value: MaybeLoading<T>, mapping: (value: T) => T): MaybeLoading<T> {
+  if (loaded(value)) return mapping(value);
+  return PendingValue;
 }
 
 export const LOREM_IPSUM = `Lorem ipsum dolor sit amet. A impedit beatae sed nostrum voluptatem

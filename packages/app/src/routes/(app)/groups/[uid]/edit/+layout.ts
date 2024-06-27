@@ -5,10 +5,11 @@ export const load: LayoutLoad = async ({ parent, fetch, params }) =>
   loadQuery(
     {
       group: [
-        params,
+        { uid: params.uid },
         Selector('Group')({
           uid: true,
           name: true,
+          canListPages: true,
         }),
       ],
     },

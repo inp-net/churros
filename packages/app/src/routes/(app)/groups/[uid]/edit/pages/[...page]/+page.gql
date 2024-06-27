@@ -1,0 +1,11 @@
+query PageGroupCustomPageEdit($uid: String!, $page: String!) {
+  group(uid: $uid) @loading {
+    page(path: $page) @loading(cascade: true) {
+      canBeEdited
+      group {
+        uid
+      }
+      ...FormPage
+    }
+  }
+}

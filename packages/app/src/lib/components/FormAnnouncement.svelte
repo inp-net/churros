@@ -1,13 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { zeus } from '$lib/zeus';
-  import { isPast } from 'date-fns';
+  import Alert from './Alert.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputDate from './InputDate.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputText from './InputText.svelte';
-  import Alert from './Alert.svelte';
 
   export let data: {
     title: string;
@@ -24,8 +23,7 @@
     data.startsAt === undefined || data.endsAt === undefined
       ? true
       : data.startsAt.getTime() > data.endsAt.getTime();
-  $: pastDateStart = data.startsAt === undefined ? false : isPast(data.startsAt);
-  $: isNotValidDate = startsAtAfterEndsAt || pastDateStart;
+  $: dateIsInvalid = startsAtAfterEndsAt;
 
   async function saveChanges() {
     loading = true;
@@ -65,18 +63,13 @@
   <InputCheckbox bind:value={data.warning} label="Avertissement" />
 
   <section class="submit">
-    <ButtonPrimary {loading} submits disabled={isNotValidDate}>Sauvegarder</ButtonPrimary>
+    <ButtonPrimary {loading} submits disabled={dateIsInvalid}>Sauvegarder</ButtonPrimary>
   </section>
 </form>
 <section class="errors">
   {#if startsAtAfterEndsAt}
     <Alert theme="danger">
       Impossible de programmer l'évenement : La date de fin est avant celle du début.
-    </Alert>
-  {/if}
-  {#if pastDateStart}
-    <Alert theme="danger">
-      Impossible de programmer l'événement : La date indiquée est déjà passé.
     </Alert>
   {/if}
 </section>

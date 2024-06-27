@@ -3,7 +3,7 @@ import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
-  const { me } = await parent();
+  const { me, canListPages } = await parent();
   const data = await loadQuery(
     {
       group: [
@@ -289,6 +289,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     group: {
       ...data.group,
       members: data.group.members?.sort(byMemberGroupTitleImportance),
+      canListPages,
     },
     itemsOfGroup: itemsOfGroup.itemsOfGroup.edges.map(({ node }) => node),
   };

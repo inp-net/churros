@@ -30,6 +30,26 @@ const config = {
         queryField: 'comment',
       },
     },
+    Page: {
+      resolve: {
+        queryField: 'page',
+      },
+    },
+    StudentAssociation: {
+      resolve: {
+        queryField: 'studentAssociation',
+        arguments: ({ uid }) => ({ uid }),
+      },
+    },
+    Group: {
+      resolve: {
+        queryField: 'group',
+        arguments: ({ uid }) => ({ uid }),
+      },
+    },
+    PagesEdge: {
+      keys: ['cursor'],
+    },
   },
   scalars: {
     DateTime: {
@@ -61,6 +81,13 @@ const config = {
       },
       marshal(BooleanMap) {
         return JSON.stringify(BooleanMap);
+      },
+    },
+    File: {
+      type: 'File',
+      marshal: (x) => x,
+      unmarshal: () => {
+        throw new Error('Cannot unmarshal File scalar');
       },
     },
   },

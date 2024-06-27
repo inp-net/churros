@@ -95,7 +95,7 @@
 			>{/if}{:else if typ.kind === 'SCALAR'}<span class="type scalar">{typ.name}</span
 		>{:else if typ.kind === 'UNION'}{#if typ.name?.endsWith('Result') && underlyingType}<span
 				class="type errorable"
-				><a class="type errorable" href="/#types/special/results-type">Result</a>&lt;<svelte:self
+				><a class="type errorable" href="/#types/special/result">Result</a>&lt;<svelte:self
 					{inline}
 					{noExpandEnums}
 					{nullable}

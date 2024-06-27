@@ -40,9 +40,7 @@
     NProgress.start();
 
     // See https://kit.svelte.dev/docs/configuration#version
-    if ($updated && !willUnload && to?.url) 
-      location.href = to.url.href;
-    
+    if ($updated && !willUnload && to?.url) location.href = to.url.href;
   });
 
   afterNavigate(async () => {

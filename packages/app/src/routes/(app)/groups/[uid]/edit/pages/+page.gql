@@ -1,0 +1,5 @@
+query PageGroupCustomPageList($uid: String!) {
+  group(uid: $uid) @loading(cascade: true) {
+    ...ListManageCustomPages_Group
+  }
+}

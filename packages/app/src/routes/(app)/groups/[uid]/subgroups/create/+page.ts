@@ -16,6 +16,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
           pictureFileDark: true,
           website: true,
           email: true,
+          canListPages: true,
           mailingList: true,
           children: {
             name: true,
@@ -55,6 +56,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
       address: '',
       description: '',
       email,
+      canListPages: true,
       mailingList: '',
       longDescription: '',
       website,

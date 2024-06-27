@@ -1,0 +1,22 @@
+query PageGroupCustomPage($uid: String!, $page: String!) {
+  group(uid: $uid) @loading {
+    page(path: $page) @loading(cascade: true) {
+      ...ModalDeleteCustomPage
+      id
+      bodyHtml
+      title
+      updatedAt
+      canBeEdited
+      path
+      group @required {
+        uid
+      }
+      lastAuthor {
+        uid
+        pictureURL
+        pictureFile
+        fullName
+      }
+    }
+  }
+}

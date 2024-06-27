@@ -1,0 +1,11 @@
+query PageStudentAssociationCustomPageEdit($uid: String!, $page: String!) {
+  studentAssociation(uid: $uid) @loading(cascade: true) {
+    page(path: $page) @loading(cascade: true) {
+      canBeEdited
+      studentAssociation {
+        uid
+      }
+      ...FormPage
+    }
+  }
+}

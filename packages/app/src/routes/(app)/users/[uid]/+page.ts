@@ -1,9 +1,26 @@
+import { graphql, load_PageUserAreaContribute } from '$houdini';
 import { redirectToLogin } from '$lib/session';
 import { byMemberGroupTitleImportance } from '$lib/sorting';
 import { loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, params, parent, url }) => {
+graphql(`
+  query PageUserAreaContribute($uid: String!, $loggedIn: Boolean!) {
+    user(uid: $uid) @include(if: $loggedIn) {
+      ...AreaContribute_User
+      major {
+        schools {
+          studentAssociations {
+            ...AreaContribute_StudentAssociation
+          }
+        }
+      }
+    }
+  }
+`);
+
+export const load: PageLoad = async (event) => {
+  const { fetch, params, parent, url } = event;
   const { me } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
   const { user } = await loadQuery(
@@ -131,6 +148,10 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   );
 
   return {
+    ...(await load_PageUserAreaContribute({
+      event,
+      variables: { uid: params.uid, loggedIn: true },
+    })),
     ...data,
     user: {
       ...data.user,

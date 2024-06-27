@@ -7,3 +7,5 @@ packages/api/storage/
 packages/app/$houdini/
 .venv/
 *.mjml
+packages/db/
+!packages/db/**/*.prisma

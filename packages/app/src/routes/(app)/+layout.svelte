@@ -1,127 +1,26 @@
-<script lang="ts" context="module">
-  export const DESKTOP_NAVIGATION_TABS = [
-    'home',
-    'groups',
-    'events',
-    'documents',
-    'reports',
-    'services',
-    'signups',
-    'announcements',
-    'backrooms',
-    'forms',
-  ] as const;
-
-  export const MOBILE_NAVIGATION_TABS = ['home', 'groups', 'events', 'services'] as const;
-</script>
-
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
+  import { graphql } from '$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ModalChangelog from '$lib/components/ModalChangelog.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
   import NavigationTop from '$lib/components/NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
-  import { subscribe } from '$lib/subscriptions';
+  import { setupScrollPositionRestorer } from '$lib/scroll';
+  import { currentTabDesktop, currentTabMobile } from '$lib/tabs';
   import { theme } from '$lib/theme.js';
-  import { onMount } from 'svelte';
-  import { syncToLocalStorage } from 'svelte-store2storage';
-  import { writable, type Writable } from 'svelte/store';
   import IconClose from '~icons/mdi/close';
   import Snowflake from '~icons/mdi/snowflake';
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
   import type { Snapshot } from './$types';
+  import { writable } from 'svelte/store';
+  import { syncToLocalStorage } from 'svelte-store2storage';
 
   export let data: PageData;
   $: ({ AppLayout } = data);
-
-  let scrollableArea: HTMLElement;
-  let scrolled = false;
-
-  let announcements = [] as Array<{
-    title: string;
-    bodyHtml: string;
-    warning: boolean;
-    id: string;
-  }>;
-
-  const now = new Date();
-
-  function currentTabDesktop(url: URL): (typeof DESKTOP_NAVIGATION_TABS)[number] {
-    const starts = (segment: string) => url.pathname.startsWith(segment);
-
-    if (starts('/groups')) return 'groups';
-    if (starts('/week') || starts('/booking') || starts('/events')) return 'events';
-    if (starts('/services')) return 'services';
-    if (starts('/documents')) return 'documents';
-    if (starts('/signups')) return 'signups';
-    if (starts('/backrooms') || starts('/logs')) return 'backrooms';
-    if (starts('/reports')) return 'reports';
-    if (starts('/announcements')) return 'announcements';
-    if (starts('/forms')) return 'forms';
-    return 'home';
-  }
-
-  function currentTabMobile(url: URL): (typeof MOBILE_NAVIGATION_TABS)[number] {
-    const tab = currentTabDesktop(url);
-    for (const mobileTab of MOBILE_NAVIGATION_TABS) if (mobileTab === tab) return tab;
-
-    return 'services';
-  }
-
-  function pageIsFullsize(url: URL) {
-    const fragments = url.pathname.split('/');
-    return fragments[1] === 'club' && fragments[3] === 'event';
-  }
-
-  function announcementHiddenByUser(id: string): boolean {
-    if (!browser) return true;
-    return Boolean(window.localStorage.getItem(`hideAnnouncement${id}`));
-  }
-  /**
-   * Stores scrollTop of scrollableArea per URL
-   */
-  const scrollPositions: Writable<Record<string, number>> = writable({});
-  if (browser) syncToLocalStorage(scrollPositions, 'scroll_positions');
-
-  beforeNavigate(() => {
-    $scrollPositions[$page.url.pathname] = scrollableArea.scrollTop;
-  });
-
-  afterNavigate(async () => {
-    scrollableArea.scrollTo(0, $scrollPositions[$page.url.pathname] ?? 0);
-  });
-  onMount(() => {
-    const scrollableArea = document.querySelector('#scrollable-area');
-    scrollableArea!.addEventListener('scroll', () => {
-      scrolled = scrollableArea!.scrollTop >= 3;
-    });
-
-    $subscribe(
-      {
-        announcementsNow: {
-          id: true,
-          title: true,
-          bodyHtml: true,
-          warning: true,
-        },
-      },
-      async (data) => {
-        const freshData = await data;
-        if ('errors' in freshData) return;
-        announcements = freshData.announcementsNow.filter(Boolean) as Array<{
-          title: string;
-          bodyHtml: string;
-          warning: boolean;
-          id: string;
-        }>;
-      },
-    );
-  });
 
   export const snapshot: Snapshot<number> = {
     capture: () => scrollableArea.scrollTop,
@@ -129,6 +28,39 @@
       scrollableArea.scrollTo(0, y);
     },
   };
+
+  let scrollableArea: HTMLElement;
+  let scrolled = false;
+  $: if (scrollableArea) {
+    setupScrollPositionRestorer(scrollableArea, (isScrolled) => {
+      scrolled = isScrolled;
+    });
+  }
+
+  const now = new Date();
+
+  function pageIsFullsize(url: URL) {
+    const fragments = url.pathname.split('/');
+    return fragments[1] === 'club' && fragments[3] === 'event';
+  }
+
+  function announcementHiddenByUser(id: string, hiddenAnnouncements: string[]): boolean {
+    return !browser || hiddenAnnouncements.includes(id);
+  }
+  const hiddenAnnouncements = writable<string[]>([]);
+  if (browser) syncToLocalStorage(hiddenAnnouncements, 'hidden_announcements');
+
+  const announcements = graphql(`
+    subscription AnnoncementUpdates {
+      announcementsNow {
+        id
+        title
+        bodyHtml
+        warning
+      }
+    }
+  `);
+  $: announcements.listen();
 
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
@@ -146,7 +78,7 @@
   />
 {/if}
 
-{#if $AppLayout.data?.me}
+{#if $AppLayout.data?.me?.bookings}
   <OverlayQuickBookings {now} bookings={$AppLayout.data.me.bookings}></OverlayQuickBookings>
 {/if}
 
@@ -175,8 +107,8 @@
       bind:this={scrollableArea}
     >
       <section class="announcements fullsize">
-        {#if !scanningTickets && !showingTicket}
-          {#each announcements.filter(({ id }) => !announcementHiddenByUser(id)) as { title, bodyHtml, warning, id } (id)}
+        {#if !scanningTickets && !showingTicket && $announcements.data?.announcementsNow}
+          {#each $announcements.data?.announcementsNow.filter(({ id }) => !announcementHiddenByUser(id, $hiddenAnnouncements)) as { title, bodyHtml, warning, id } (id)}
             <article class="announcement {warning ? 'warning' : 'primary'}">
               <div class="text">
                 <strong>{title}</strong>
@@ -187,8 +119,7 @@
               </div>
               <ButtonGhost
                 on:click={() => {
-                  window.localStorage.setItem(`hideAnnouncement${id}`, 'true');
-                  announcements = announcements.filter((a) => a.id !== id);
+                  $hiddenAnnouncements = [...$hiddenAnnouncements, id];
                 }}><IconClose /></ButtonGhost
               >
             </article>
