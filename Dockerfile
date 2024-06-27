@@ -20,6 +20,11 @@ RUN rm -rf packages/oauth-client
 
 RUN yarn install
 RUN yarn generate-buildinfo
+
+# truc temporaire bien guez pour comprendre pk il manque des vars d'env
+RUN apk add bash
+RUN bash -c printenv
+
 RUN yarn workspaces foreach -Rt --from '{@centraverse/api,@centraverse/app}' run build
 
 
