@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- La CI/CD ne met plus en cache et les builds api/app sont de nouveau splittés, car kaniko ne supporte pas les symlinks, qui sont nécéssaire à yarn pour installer des dépendances dans un workspace
+
 ## [1.65.0-rc.0] - 2024-06-27
 
 ### Nouveautés
