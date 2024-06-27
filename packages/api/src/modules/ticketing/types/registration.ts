@@ -2,7 +2,7 @@ import { TYPENAMES_TO_ID_PREFIXES, builder, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum } from '#modules/payments';
 import { UserType, fullName } from '#modules/users';
-import { authorIsBeneficiary } from '../index.js';
+import { authorIsBeneficiary, preprocessBeneficiary } from '../index.js';
 // TODO rename to booking
 
 export const RegistrationType = builder.prismaNode('Registration', {
@@ -22,7 +22,10 @@ export const RegistrationType = builder.prismaNode('Registration', {
       async resolve(query, { beneficiary }) {
         // eslint-disable-next-line unicorn/no-null
         if (!beneficiary) return null;
-        return prisma.user.findUnique({ ...query, where: { uid: beneficiary } });
+        return prisma.user.findUnique({
+          ...query,
+          where: { uid: preprocessBeneficiary(beneficiary) },
+        });
       },
     }),
 

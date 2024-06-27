@@ -11,3 +11,7 @@ export function authorIsBeneficiary(
     authorEmail === author.email
   );
 }
+
+export function preprocessBeneficiary(beneficiary: string) {
+  return beneficiary.replace(/^@/, '').trim().toLowerCase();
+}

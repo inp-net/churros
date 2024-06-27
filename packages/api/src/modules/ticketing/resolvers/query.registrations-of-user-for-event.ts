@@ -1,7 +1,6 @@
 import { builder, prisma } from '#lib';
-
 import { userCanManageEvent } from '#permissions';
-import { RegistrationType } from '../index.js';
+import { RegistrationType, preprocessBeneficiary } from '../index.js';
 // TODO rename to user.bookings-for-event; and also create a query event.bookings-of-user
 // maybe there's a better way to do this kind of "triple coupling", idk.
 // sth like user.(sth like "participant-of", user.events could be amibiguous with user.managed-events).bookings
@@ -53,7 +52,7 @@ builder.queryField('registrationsOfUserForEvent', (t) =>
               },
             },
             {
-              beneficiary: userUid,
+              beneficiary: preprocessBeneficiary(userUid),
             },
             { authorEmail: user.email },
           ],

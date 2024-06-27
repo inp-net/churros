@@ -11,12 +11,13 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
-### Amélioations
+### Améliorations
 
 - Il est maintenant possible de faire une demande de réinitialisation de mot de passe en fournissant un email universitaire équivalent à celui enregistré pour l'utilisateur·ice en question (domaines mails alias)
 - Les messages d'explication concernant la validation manuelle d'inscriptions sont maintenant plus clairs
 - L'étape de renseignement de l'adresse e-mail à l'inscription peut détecter les fautes de frappe pour les adresses étudiantes.
 - Tenter de se connecter avec un compte qui est en attente de validation manuelle affiche maintenant un message d'erreur explicatif
+- Quand on prend une place pour quelqu'un d'autre, renseigner son @ Churros en incluant le `@` au début fonctionne maintenant.
 
 ### Corrections
 
