@@ -24,6 +24,7 @@ export * from './prisma.js';
 export * from './prometheus.js';
 export * from './pubsub.js';
 export * from './qrcode.js';
+export * from './ratelimit.js';
 export * from './search.js';
 export * from './urls.js';
 export * from './user-names.js';

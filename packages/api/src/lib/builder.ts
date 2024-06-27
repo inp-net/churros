@@ -1,4 +1,4 @@
-import type { Context } from '#lib';
+import type { Context, RateLimitDirective } from '#lib';
 import {
   authScopes,
   context,
@@ -28,8 +28,9 @@ import { default as parseUserAgent } from 'ua-parser-js';
 import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
+import { setDefaultRateLimits } from './ratelimit.js';
 
-interface PothosTypes {
+export interface PothosTypes {
   AuthContexts: AuthContexts;
   AuthScopes: AuthScopes;
   Context: Context;
@@ -58,13 +59,7 @@ interface PothosTypes {
     };
   };
   Directives: {
-    rateLimit: {
-      locations: 'OBJECT' | 'FIELD_DEFINITION';
-      args: {
-        limit: number;
-        duration: number;
-      };
-    };
+    rateLimit: RateLimitDirective;
   };
 }
 
@@ -141,29 +136,7 @@ export const builder = new SchemaBuilder<PothosTypes>({
   },
 });
 
-// The frontend can sometimes make bursts of requests, so we add a grace window to the rate limits to prevent failures. Real attacks attempt DDOS for longer than this grace window, so it should be safe.
-const rateLimitGraceWindow = 60; /* seconds */
-const rateLimit = (limit: number, duration: number) => ({
-  rateLimit: { limit: limit * rateLimitGraceWindow, duration: duration * rateLimitGraceWindow },
-});
-
-builder.queryType({
-  directives: {
-    ...rateLimit(20, 1),
-  },
-});
-
-builder.mutationType({
-  directives: {
-    ...rateLimit(20, 10),
-  },
-});
-
-builder.subscriptionType({
-  directives: {
-    ...rateLimit(10, 30),
-  },
-});
+setDefaultRateLimits(builder);
 
 // Parse GraphQL IDs as strings
 const id = (builder.configStore.getInputTypeRef('ID') as BuiltinScalarRef<string, string>).type;
