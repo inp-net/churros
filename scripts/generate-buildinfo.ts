@@ -27,7 +27,8 @@ async function git(args: string): Promise<string> {
 }
 
 // see https://stackoverflow.com/a/22634649/9943464
-await git('config versionsort.suffix -alpha -beta -pre -rc');
+await git(`git config versionsort.suffix '-alpha -beta -pre -rc'`);
+
 const hash = stub ? 'dev' : await git('rev-parse HEAD').then((hash) => hash.trim());
 const toplevel = await git('rev-parse --show-toplevel');
 const tag = stub
