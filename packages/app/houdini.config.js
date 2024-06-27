@@ -83,6 +83,13 @@ const config = {
         return JSON.stringify(BooleanMap);
       },
     },
+    File: {
+      type: 'File',
+      marshal: (x) => x,
+      unmarshal: () => {
+        throw new Error('Cannot unmarshal File scalar');
+      },
+    },
   },
   features: {
     runtimeScalars: {

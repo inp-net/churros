@@ -28,11 +28,13 @@
   class:disabled
   class:inline
   class:tight
+  class:danger
+  class:success
   {disabled}
   {type}
   {href}
   use:tooltip={help}
-  class="button-ghost {danger ? 'danger' : ''} {success ? 'success' : ''} {$$restProps.class}"
+  class="button-ghost {$$restProps.class}"
   on:click
   on:mousedown
   class:skeleton-effect-wave={loading}

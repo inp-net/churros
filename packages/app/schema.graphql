@@ -1737,6 +1737,11 @@ type Mutation {
     """
     id: ID!
   ): Boolean!
+
+  """
+  Ajouter un fichier à une page. Permet notamment d'ajouter des images pour s'en servir dans le contenu de la page.
+  """
+  addFileToPage(file: File!, page: ID!): MutationAddFileToPageResult!
   addGroupMember(groupUid: String!, title: String!, uid: String!): MutationAddGroupMemberResult!
 
   """
@@ -2049,6 +2054,11 @@ type Mutation {
     """
     code: String!
   ): MutationRegisterGoogleCredentialResult!
+
+  """
+  Supprimer un fichier d'une page.
+  """
+  removeFileFromPage(filename: String!, page: ID!): MutationRemoveFileFromPageResult!
   renameSession(id: ID!, name: String!): Boolean!
   requestEmailChange(email: String!): MutationRequestEmailChangeResult!
   resetPassword(
@@ -2455,6 +2465,12 @@ type MutationAcceptRegistrationSuccess {
   data: User!
 }
 
+union MutationAddFileToPageResult = Error | MutationAddFileToPageSuccess | ZodError
+
+type MutationAddFileToPageSuccess {
+  data: Page!
+}
+
 union MutationAddGroupMemberResult = Error | MutationAddGroupMemberSuccess
 
 type MutationAddGroupMemberSuccess {
@@ -2551,6 +2567,12 @@ union MutationRegisterGoogleCredentialResult = Error | MutationRegisterGoogleCre
 
 type MutationRegisterGoogleCredentialSuccess {
   data: Boolean!
+}
+
+union MutationRemoveFileFromPageResult = Error | MutationRemoveFileFromPageSuccess | ZodError
+
+type MutationRemoveFileFromPageSuccess {
+  data: Page!
 }
 
 union MutationRequestEmailChangeResult = Error | MutationRequestEmailChangeSuccess

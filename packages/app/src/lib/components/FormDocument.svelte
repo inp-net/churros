@@ -5,7 +5,7 @@
   import IconDelete from '~icons/mdi/delete-outline';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
-  import InputFile from './InputFile.svelte';
+  import InputFile, { fileListOf } from './InputFile.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputNumber from './InputNumber.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
@@ -141,12 +141,6 @@
         subject?.uid ?? 'all'
       }/${upsertDocument.data.uid}`,
     );
-  }
-
-  function fileListOf(files: File[]): FileList {
-    const filelist = new DataTransfer();
-    for (const file of files) filelist.items.add(file);
-    return filelist.files;
   }
 
   const newFilesSolutions: Record<string, boolean> = {};

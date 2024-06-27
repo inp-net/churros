@@ -1,5 +1,12 @@
 import { toasts } from '$lib/toasts';
 
+/**
+ * Shows an appropriate toast. Returns true if the mutation was successful.
+ * @param mutationName
+ * @param successMessage
+ * @param errorMessage
+ * @param param3
+ */
 export function mutationResultToast<MutationName extends string, SuccessData>(
   mutationName: MutationName,
   successMessage: string | ((data: SuccessData) => string),
@@ -22,7 +29,7 @@ export function mutationResultToast<MutationName extends string, SuccessData>(
         }
     > | null;
   },
-) {
+): boolean {
   if (data?.[mutationName]) {
     const result = data[mutationName];
     if (result && 'data' in result) {

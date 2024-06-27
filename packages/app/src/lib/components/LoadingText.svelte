@@ -3,13 +3,16 @@
   import { PendingValue } from '$houdini';
   import { LOREM_IPSUM, loaded } from '$lib/loading';
 
-  export let tag: 'span' | 'p' | `h${1 | 2 | 3 | 4 | 5 | 6}` = 'span';
+  export let tag: 'code' | 'span' | 'p' | `h${1 | 2 | 3 | 4 | 5 | 6}` = 'span';
   export let lines: number | undefined = undefined;
   export let value: string | number | typeof PendingValue = PendingValue;
 </script>
 
 {#if !loaded(value)}
-  <svelte:element this={tag} {...$$restProps} class="skeleton-text skeleton-effect-wave"
+  <svelte:element
+    this={tag === 'code' ? 'span' : tag}
+    {...$$restProps}
+    class="skeleton-text skeleton-effect-wave"
     ><slot>{LOREM_IPSUM.split('\n').slice(0, lines).join('\n')}</slot></svelte:element
   >
 {:else}

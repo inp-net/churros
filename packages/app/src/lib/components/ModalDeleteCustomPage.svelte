@@ -5,7 +5,7 @@
   import { loaded, type MaybeLoading } from '$lib/loading';
   import { mutationResultToast } from '$lib/mutations';
 
-  export let customPage: ModalDeleteCustomPage;
+  export let customPage: ModalDeleteCustomPage | null;
   $: data = fragment(
     customPage,
     graphql(`
@@ -22,15 +22,14 @@
     `),
   );
 
-  $: isLinkedToGroup = Boolean($data.group);
-  $: resourceUid = (
-    isLinkedToGroup ? $data.group!.uid : $data.studentAssociation!.uid
-  ) as MaybeLoading<string>;
+  $: isLinkedToGroup = Boolean($data?.group);
+  $: resourceUid = ((isLinkedToGroup ? $data?.group!.uid : $data?.studentAssociation!.uid) ??
+    '') as MaybeLoading<string>;
 
   export let openDeletionConfirmation: () => void;
 </script>
 
-{#if loaded($data.id) && loaded($data.path)}
+{#if $data && loaded($data.id) && loaded($data.path)}
   <ModalConfirmDelete
     on:confirm={async () => {
       if (!loaded($data.id) || !loaded(resourceUid)) return;

@@ -57,6 +57,11 @@ export function allLoaded<T>(value: T): value is AllLoaded<T> {
   return loaded(value);
 }
 
+export function mapLoading<T>(value: MaybeLoading<T>, mapping: (value: T) => T): MaybeLoading<T> {
+  if (loaded(value)) return mapping(value);
+  return PendingValue;
+}
+
 export const LOREM_IPSUM = `Lorem ipsum dolor sit amet. A impedit beatae sed nostrum voluptatem
 ut omnis aliquid et galisum quaerat. Est sunt voluptatem aut porro iste et tempora voluptatem
 aut pariatur minima sed omnis cumque est iusto fugit vel rerum magni. 33 ducimus nesciunt ut

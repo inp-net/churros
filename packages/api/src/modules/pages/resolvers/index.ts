@@ -4,7 +4,9 @@
 
 export * from './group.page.js';
 export * from './group.pages.js';
+export * from './mutation.add-file-to-page.js';
 export * from './mutation.delete-page.js';
+export * from './mutation.remove-file-from-page.js';
 export * from './mutation.upsert-page.js';
 export * from './query.page.js';
 export * from './query.pages.js';

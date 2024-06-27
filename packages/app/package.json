@@ -28,6 +28,7 @@
     "lodash.groupby": "^4.6.0",
     "lodash.omit": "^4.5.0",
     "lodash.throttle": "^4.1.1",
+    "mime": "^4.0.3",
     "nanoid": "^5.0.6",
     "party-js": "^2.2.0",
     "qr-code-generator-lib": "^1.0.1",
