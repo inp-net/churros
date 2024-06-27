@@ -136,7 +136,7 @@ builder.mutationField('updateUser', (t) =>
       }
 
       if (!userIsAdmin && changingGraduationYear)
-        throw new GraphQLError('Not authorized to change graduation year');
+        throw new GraphQLError('Demande au bureau de ton AE pour changer de promo');
 
       purgeUserSessions(uid);
       if (
