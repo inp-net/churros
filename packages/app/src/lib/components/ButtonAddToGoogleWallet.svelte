@@ -1,4 +1,8 @@
-<button on:click>
+<script lang="ts">
+  import { umamiAttributes } from '$lib/analytics';
+</script>
+
+<button on:click {...umamiAttributes('add-to-google-wallet')}>
   <svg width="199" height="55" viewBox="0 0 199 55" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="0.5" y="0.5" width="198" height="54" rx="27" fill="#1F1F1F" />
     <path

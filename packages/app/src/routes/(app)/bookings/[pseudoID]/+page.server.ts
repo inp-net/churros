@@ -79,6 +79,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
                 },
                 links: {
                   computedValue: true,
+                  value: true,
                   name: true,
                 },
                 event: {

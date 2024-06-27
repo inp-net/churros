@@ -25,6 +25,7 @@
   import LoadingSpinner from './LoadingSpinner.svelte';
   import BadgeVisibility from './BadgeVisibility.svelte';
   import InputPillEvent from './InputPillEvent.svelte';
+  import { track } from '$lib/analytics';
 
   const _articleQuery = Selector('Article')({
     id: true,
@@ -215,12 +216,17 @@
     </p>
     <div class="actions">
       <ButtonSecondary
+        track="post-visibility-warning-backoff"
         icon={IconClose}
         on:click={() => {
           modalWarnNotifications.close();
         }}>Annuler</ButtonSecondary
       >
-      <ButtonSecondary icon={IconSend} on:click={updateArticle}>Envoyer</ButtonSecondary>
+      <ButtonSecondary
+        track="post-visibility-warning-confirm"
+        icon={IconSend}
+        on:click={updateArticle}>Envoyer</ButtonSecondary
+      >
     </div>
   </div>
 </Modal>
@@ -228,9 +234,10 @@
 <form
   class="form-article"
   on:submit|preventDefault={async () => {
-    if (!id && (visibility === Visibility.Public || visibility === Visibility.SchoolRestricted))
+    if (!id && (visibility === Visibility.Public || visibility === Visibility.SchoolRestricted)) {
       modalWarnNotifications.showModal();
-    else await updateArticle();
+      track('post-visibility-warning-shown');
+    } else {await updateArticle();}
   }}
 >
   <h1>

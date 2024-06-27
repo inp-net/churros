@@ -1,4 +1,4 @@
-import { browser } from '$app/environment';
+import { track } from '$lib/analytics';
 import { minutesToMilliseconds } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { get, writable } from 'svelte/store';
@@ -88,12 +88,10 @@ export const toasts = {
         3000 + minutesToMilliseconds(wordsCount / 300),
       ...options,
     };
-    if (browser && window.umami) {
-      window.umami.track('error-toast-shown', {
-        title,
-        body,
-      });
-    }
+    track('error-toast-shown', {
+      title,
+      body,
+    });
     return toasts.add<T>('error', title, body, options);
   },
   debug<T>(title: string, body = '', options?: ToastOptions<T>): string | undefined {

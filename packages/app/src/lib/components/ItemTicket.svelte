@@ -138,6 +138,8 @@
       <div class="price">
         {#if shotgunning}
           <ButtonSecondary
+            track="book"
+            trackData={{ event: `${event.group.uid}/${event.uid}`, ticket: uid }}
             help={placesLeft === 0 ? 'Plus de places :/' : ''}
             disabled={placesLeft === 0}
             href="/events/{event.group.uid}/{event.uid}/book/{uid}"

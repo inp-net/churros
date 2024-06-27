@@ -27,6 +27,7 @@
   import InputVisibility from './InputVisibility.houdini.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
   import Modal from './Modal.svelte';
+  import { track } from '$lib/analytics';
 
   export let afterGoTo: (article: { group: { uid: string }; uid: string }) => string = (article) =>
     `/posts/${article.group.uid}/${article.uid}/`;
@@ -256,12 +257,17 @@
     </p>
     <div class="actions">
       <ButtonSecondary
+        track="post-visibility-warning-backoff"
         icon={IconClose}
         on:click={() => {
           modalWarnNotifications.close();
         }}>Annuler</ButtonSecondary
       >
-      <ButtonSecondary icon={IconSend} on:click={updateArticle}>Envoyer</ButtonSecondary>
+      <ButtonSecondary
+        track="post-visibility-warning-confirm"
+        icon={IconSend}
+        on:click={updateArticle}>Envoyer</ButtonSecondary
+      >
     </div>
   </div>
 </Modal>
@@ -269,9 +275,10 @@
 <form
   class="form-article"
   on:submit|preventDefault={async () => {
-    if (!id && (visibility === Visibility.Public || visibility === Visibility.SchoolRestricted))
+    if (!id && (visibility === Visibility.Public || visibility === Visibility.SchoolRestricted)) {
       modalWarnNotifications.showModal();
-    else await updateArticle();
+      track('post-visibiliy-warning-shown', { visibility });
+    } else {await updateArticle();}
   }}
 >
   <h1>

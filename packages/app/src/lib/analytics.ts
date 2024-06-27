@@ -1,3 +1,5 @@
+import { browser } from '$app/environment';
+
 export function umamiAttributes(event: string, data?: Record<string, number | string>) {
   return {
     'data-umami-event': event,
@@ -8,6 +10,10 @@ export function umamiAttributes(event: string, data?: Record<string, number | st
       ]),
     ),
   };
+}
+
+export function track(event: string, data?: Record<string, number | string>) {
+  if (browser && window.umami) window.umami.track(event, data);
 }
 
 function toKebabCase(str: string) {

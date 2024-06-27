@@ -33,6 +33,7 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import LogoChurros from './LogoChurros.svelte';
   import Modal from './Modal.svelte';
+  import { track } from '$lib/analytics';
 
   const dispatch = createEventDispatcher();
 
@@ -127,7 +128,7 @@
 
   async function acknowledge() {
     dispatch('acknowledge');
-    window.umami.track('acknowledge-changelog', { versionRange: versionRange(changes) });
+    track('acknowledge-changelog', { versionRange: versionRange(changes) });
 
     await graphql(`
       mutation AcknowledgeChangelog($version: String!) {

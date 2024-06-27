@@ -1,24 +1,25 @@
 <script lang="ts">
-  import { dateTimeFormatter, formatDateTime } from '$lib/dates';
-  import type { PageData } from './$types';
-  import BackButton from '$lib/components/ButtonBack.svelte';
-  import party from 'party-js';
-  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import IconCancel from '~icons/mdi/cancel';
-  import IconDownload from '~icons/mdi/download-outline';
+  import { track } from '$lib/analytics';
   import Alert from '$lib/components/Alert.svelte';
-  import { PaymentMethod, zeus } from '$lib/zeus';
-  import InputText from '$lib/components/InputText.svelte';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import AreaPaypalPayRegistration from '$lib/components/AreaPaypalPayRegistration.svelte';
   import BadgePaymentStatus from '$lib/components/BadgePaymentStatus.svelte';
+  import ButtonAddToGoogleWallet from '$lib/components/ButtonAddToGoogleWallet.svelte';
+  import BackButton from '$lib/components/ButtonBack.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import { dateTimeFormatter, formatDateTime } from '$lib/dates';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { me } from '$lib/session';
-  import { toasts } from '$lib/toasts';
-  import AreaPaypalPayRegistration from '$lib/components/AreaPaypalPayRegistration.svelte';
   import { subscribe } from '$lib/subscriptions';
-  import ButtonAddToGoogleWallet from '$lib/components/ButtonAddToGoogleWallet.svelte';
+  import { toasts } from '$lib/toasts';
+  import { PaymentMethod, zeus } from '$lib/zeus';
+  import party from 'party-js';
+  import { onMount } from 'svelte';
+  import IconCancel from '~icons/mdi/cancel';
+  import IconDownload from '~icons/mdi/download-outline';
+  import type { PageData } from './$types';
 
   let confirmingCancellation = false;
   let paymentLoading = false;
@@ -26,7 +27,10 @@
   let paying = false;
 
   onMount(() => {
-    if (data.markedAsPaid) toasts.success('Place payée', 'Ta place a bien été payée.');
+    if (data.markedAsPaid) {
+      toasts.success('Place payée', 'Ta place a bien été payée.');
+      track('booking-page-paid-toast-shown');
+    }
 
     $subscribe(
       {
@@ -158,7 +162,11 @@
         bind:value={phone}
       />
       <section class="submit">
-        <ButtonPrimary loading={paymentLoading} submits
+        <ButtonPrimary
+          track="booking-pay-from-qrcode"
+          trackData={{ by: 'lydia' }}
+          loading={paymentLoading}
+          submits
           >Payer {Intl.NumberFormat('fr-FR', {
             style: 'currency',
             currency: 'EUR',
@@ -172,6 +180,8 @@
   {:else if !paid && paymentMethod === PaymentMethod.PayPal}
     {#if !paying}
       <ButtonPrimary
+        track="booking-pay-from-qrcode"
+        trackData={{ by: 'paypal' }}
         loading={paymentLoading}
         on:click={() => {
           paying = true;
@@ -217,8 +227,12 @@
 
   {#if links}
     <section class="links">
-      {#each links as { computedValue, name }}
-        <ButtonSecondary href={computedValue}>{name}</ButtonSecondary>
+      {#each links as { computedValue, value, name }}
+        <ButtonSecondary
+          track="link-click-from-booking"
+          trackData={{ url: value }}
+          href={computedValue}>{name}</ButtonSecondary
+        >
       {/each}
     </section>
   {/if}
@@ -259,6 +273,7 @@
     <section class="cancel">
       {#if !confirmingCancellation}
         <ButtonSecondary
+          track="booking-cancel-start"
           danger
           on:click={async () => {
             if (paid) confirmingCancellation = true;
@@ -276,7 +291,9 @@
               (s'il en reste) si tu veux de nouveau en réserver une. Le remboursement n'est pas
               systématique, contacte l'organisation pour savoir si tu sera remboursé·e.
             </p>
-            <ButtonPrimary on:click={cancelRegistration}>Oui, je confirme</ButtonPrimary>
+            <ButtonPrimary track="booking-cancel-confirm" on:click={cancelRegistration}
+              >Oui, je confirme</ButtonPrimary
+            >
           </div>
         </Alert>
       {/if}

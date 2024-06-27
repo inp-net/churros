@@ -196,11 +196,11 @@
 
         {#if registration?.paymentMethod === PaymentMethod.Lydia}
           <p>Rends-toi sur ton application Lydia pour régler le paiement.</p>
-          <ButtonPrimary href="/bookings/{$page.url.searchParams.get('done')}"
+          <ButtonPrimary track="booking-done" href="/bookings/{$page.url.searchParams.get('done')}"
             >C'est payé!</ButtonPrimary
           >
         {:else}
-          <ButtonPrimary href="/bookings/{$page.url.searchParams.get('done')}"
+          <ButtonPrimary track="booking-done" href="/bookings/{$page.url.searchParams.get('done')}"
             >Mon billet</ButtonPrimary
           >
         {/if}
@@ -249,6 +249,7 @@
           {#each allowedPaymentMethods as method}
             <li>
               <ButtonSecondary
+                track="booking-choose-payment-method"
                 loading={choosingPaymentMethodLoading === method}
                 disabled={Boolean(choosingPaymentMethodLoading)}
                 icon={PAYMENT_METHODS_ICONS[method]}
@@ -297,7 +298,9 @@
             bind:value={paymentDetails.phone}
           />
           <section class="submit">
-            <ButtonPrimary loading={paymentLoading} submits>Payer {price}€</ButtonPrimary>
+            <ButtonPrimary track="pay-by-lydia" loading={paymentLoading} submits
+              >Payer {price}€</ButtonPrimary
+            >
           </section>
         </form>
       {:else if chosenPaymentMethod === PaymentMethod.PayPal}
