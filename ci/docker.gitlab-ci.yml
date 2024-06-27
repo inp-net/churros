@@ -6,7 +6,7 @@
     - echo $HARBOR_CONFIG_JSON
     - cp $HARBOR_CONFIG_JSON /kaniko/.docker/config.json
 
-deploy:
+deploy_api:
   extends: .kaniko
   stage: deploy
   needs:
@@ -20,9 +20,19 @@ deploy:
       --dockerfile "$CI_PROJECT_DIR/Dockerfile"
       --target "api"
       --destination "$HARBOR_REGISTRY_IMAGE/api:$CI_COMMIT_TAG"
+
+deploy_app:
+  extends: .kaniko
+  stage: deploy
+  needs:
+    - build
+  only:
+    - tags
+  script:
     - /kaniko/executor
       --skip-unused-stages
       --context "$CI_PROJECT_DIR"
       --dockerfile "$CI_PROJECT_DIR/Dockerfile"
       --target "app"
       --destination "$HARBOR_REGISTRY_IMAGE/app:$CI_COMMIT_TAG"
+

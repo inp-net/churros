@@ -39,7 +39,7 @@ pages:
   stage: deploy
   extends: .volta
   needs:
-    - deploy
+    - deploy_api
   only:
     - tags
   variables:

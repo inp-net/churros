@@ -38,9 +38,6 @@ COPY .yarnrc.yml /app/
 COPY .yarn/ /app/.yarn/
 COPY package.json /app/
 
-# Dependencies
-COPY --from=builder /app/node_modules/ /app/node_modules/
-
 # Builded arborist
 COPY --from=builder /app/packages/arborist/ /app/packages/arborist/
 
