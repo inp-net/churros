@@ -15,18 +15,12 @@ deploy:
     - tags
   script:
     - /kaniko/executor
-      --cache=true
-      --cache-copy-layers
-      --cache-run-layers
       --skip-unused-stages
       --context "$CI_PROJECT_DIR"
       --dockerfile "$CI_PROJECT_DIR/Dockerfile"
       --target "api"
       --destination "$HARBOR_REGISTRY_IMAGE/api:$CI_COMMIT_TAG"
     - /kaniko/executor
-      --cache=true
-      --cache-copy-layers
-      --cache-run-layers
       --skip-unused-stages
       --context "$CI_PROJECT_DIR"
       --dockerfile "$CI_PROJECT_DIR/Dockerfile"
