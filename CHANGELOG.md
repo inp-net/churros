@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Les _pages web_ sont disponibles! Ça permet à un groupe ou une AE de créer des pages web, pratique pour par exemple parler des partenariats d'une AE (genre réductions de prix), héberger les status d'une asso, etc. Pour découvrir ça, se rendre sur la page de modification de son groupe, il y a maintenant un onglet "Pages". Pour les AEs, c'est depuis la page d'une AE puis "Gérer les pages".
+
 ### Améliorations
 
 - Il est maintenant possible de faire une demande de réinitialisation de mot de passe en fournissant un email universitaire équivalent à celui enregistré pour l'utilisateur·ice en question (domaines mails alias)
@@ -30,6 +34,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Prisma a maintenant un pacakge dédié, ce qui permet d'importer le client prisma dans des projets autres que l'API
 - La CI/CD est censé être plus rapide maintenant, car les dépendances sont installées en cache et l'app ne devrait être build qu'une seule fois
 - Kaniko devrait être plus rapide maintenant avec le cache des différentes layers (en théorie)
+- Nouvelle query `renderMarkdown`. Sert pour prévisualiser le markdown de la nouvelle fonctionnalité, les pages web.
 
 ## [1.64.0] - 2024-06-23
 
