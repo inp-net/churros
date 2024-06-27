@@ -149,13 +149,13 @@ const rateLimit = (limit: number, duration: number) => ({
 
 builder.queryType({
   directives: {
-    ...rateLimit(3, 1),
+    ...rateLimit(20, 1),
   },
 });
 
 builder.mutationType({
   directives: {
-    ...rateLimit(5, 10),
+    ...rateLimit(20, 10),
   },
 });
 
