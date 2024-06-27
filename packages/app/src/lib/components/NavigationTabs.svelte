@@ -4,6 +4,14 @@
 
   export let tabs: Array<{ name: string; href: string; active?: boolean }> = [];
   const pagestate = $page.state;
+
+  function onTabClick(href: string): undefined | ((event: MouseEvent) => void) {
+    if (!href.startsWith('#')) return;
+    return (event: MouseEvent) => {
+      event.preventDefault();
+      pushState(href, { ...pagestate, currentTab: href });
+    };
+  }
 </script>
 
 <ul>
@@ -15,12 +23,7 @@
         tabindex="0"
         class="tab-link"
         href={href.startsWith('#') ? undefined : href}
-        on:click={href.startsWith('#')
-          ? (event) => {
-              event.preventDefault();
-              pushState(href, { ...pagestate, currentTab: href });
-            }
-          : undefined}>{name}</svelte:element
+        on:click={onTabClick(href)}>{name}</svelte:element
       >
     </li>
   {/each}

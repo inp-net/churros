@@ -56,6 +56,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
       address: '',
       description: '',
       email,
+      canListPages: true,
       mailingList: '',
       longDescription: '',
       website,

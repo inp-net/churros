@@ -19,6 +19,7 @@
     loaded,
     loading,
     mapLoading,
+    onceAllLoaded,
     onceLoaded,
     type MaybeLoading,
   } from '$lib/loading';
@@ -307,7 +308,11 @@
       >
       <ButtonSecondary
         icon={IconGoToView}
-        href={onceLoaded(linkedResourceUid, (uid) => `/${linkedResource}/${uid}/${$data.path}`, '')}
+        href={onceAllLoaded(
+          [linkedResourceUid, $data.path],
+          (uid, path) => `/${linkedResource}/${uid}/${path}`,
+          '',
+        )}
         >Voir la page
       </ButtonSecondary>
       <ButtonSecondary icon={IconDelete} danger on:click={() => openDeletionConfirmation()}>

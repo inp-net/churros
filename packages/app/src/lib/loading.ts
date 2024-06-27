@@ -47,6 +47,15 @@ export function onceLoaded<I, O>(
   return loaded(value) ? compute(value) : fallback;
 }
 
+export function onceAllLoaded<T extends unknown[], O>(
+  values: { [K in keyof T]: MaybeLoading<T[K]> },
+  compute: (...loadedValues: T) => O,
+  fallback: O,
+): O {
+  if (values.every(loaded)) return compute(...(values as T));
+  return fallback;
+}
+
 // @ts-expect-error don't know how to fix the 'T could be instanciated with a type that is unrelated to AllLoaded' error
 export function allLoaded<T>(value: T): value is AllLoaded<T> {
   if (simulatingLoadingState()) return false;

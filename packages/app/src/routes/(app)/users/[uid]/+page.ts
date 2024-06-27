@@ -32,6 +32,14 @@ export const load: PageLoad = async (event) => {
 
   const data = await loadQuery(
     {
+      contributionOptions: {
+        name: true,
+        price: true,
+        id: true,
+        descriptionHtml: true,
+        paysFor: { name: true, id: true, uid: true },
+        offeredIn: { name: true, id: true, uid: true },
+      },
       user: [
         params,
         {
@@ -140,7 +148,10 @@ export const load: PageLoad = async (event) => {
   );
 
   return {
-    ...(await load_PageUserAreaContribute({ event, variables: { uid: params.uid } })),
+    ...(await load_PageUserAreaContribute({
+      event,
+      variables: { uid: params.uid, loggedIn: true },
+    })),
     ...data,
     user: {
       ...data.user,
