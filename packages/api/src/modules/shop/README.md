@@ -1,3 +1,3 @@
 # Boutique
 
-TODO: Écrire la documentation du module
+Système de boutique permettant aux groupes de mettre en vente des produits.
