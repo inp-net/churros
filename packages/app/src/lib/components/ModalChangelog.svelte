@@ -128,7 +128,7 @@
 
   async function acknowledge() {
     dispatch('acknowledge');
-    track('acknowledge-changelog', { versionRange: versionRange(changes) });
+    track('acknowledge-changelog', versionRange(changes));
 
     await graphql(`
       mutation AcknowledgeChangelog($version: String!) {
