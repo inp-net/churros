@@ -42,11 +42,21 @@
 </script>
 
 {#if text}
-  <ButtonInk on:click={share} icon={canShare ? IconShare : IconCopyLink}
+  <ButtonInk
+    track="share"
+    trackData={{ url }}
+    on:click={share}
+    icon={canShare ? IconShare : IconCopyLink}
     >{#if canShare}Partager{:else}Copier le lien{/if}</ButtonInk
   >
 {:else}
-  <GhostButton help="Partager" on:click={share} darkShadow={white}>
+  <GhostButton
+    track="share"
+    trackData={{ url }}
+    help="Partager"
+    on:click={share}
+    darkShadow={white}
+  >
     <IconShare color={white ? 'white' : undefined} />
   </GhostButton>
 {/if}

@@ -1,7 +1,11 @@
 <script lang="ts">
+  import { umamiAttributes } from '$lib/analytics';
   import { tooltip } from '$lib/tooltip';
   import type { SvelteComponent } from 'svelte';
   import IconSpinner from '~icons/mdi/loading';
+
+  export let track = '';
+  export let trackData: Record<string, string | number> = {};
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let icon: typeof SvelteComponent<any> | undefined = undefined;
@@ -24,6 +28,7 @@
 
 <svelte:element
   this={href ? 'a' : 'button'}
+  {...umamiAttributes(track, trackData)}
   target={newTab ? '_blank' : undefined}
   type={submits ? 'submit' : 'button'}
   use:tooltip={help || undefined}

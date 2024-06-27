@@ -1,6 +1,10 @@
 <script lang="ts">
   import type { SvelteComponent } from 'svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
+  import { umamiAttributes } from '$lib/analytics';
+
+  export let track = '';
+  export let trackData: Record<string, string | number> = {};
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let icon: typeof SvelteComponent<any> | undefined = undefined;
@@ -15,6 +19,7 @@
 
 <svelte:element
   this={href ? 'a' : 'button'}
+  {...umamiAttributes(track, trackData)}
   type={submits ? 'submit' : 'button'}
   class="button-ink"
   class:danger

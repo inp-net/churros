@@ -1,5 +1,9 @@
 <script lang="ts">
+  import { umamiAttributes } from '$lib/analytics';
   import { tooltip } from '$lib/tooltip';
+
+  export let track = '';
+  export let trackData: Record<string, string | number> = {};
 
   export let type: 'button' | 'reset' | 'submit' = 'button';
   export let darkShadow = false;
@@ -15,6 +19,7 @@
 
 <svelte:element
   this={href ? 'a' : 'button'}
+  {...umamiAttributes(track, trackData)}
   role="button"
   tabindex="0"
   title={help}

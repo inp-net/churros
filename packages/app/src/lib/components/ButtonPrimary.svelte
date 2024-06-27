@@ -1,6 +1,11 @@
 <script lang="ts">
+  import { umamiAttributes } from '$lib/analytics';
   import { tooltip } from '$lib/tooltip';
   import IconLoading from '~icons/mdi/loading';
+
+  export let track = '';
+  export let trackData: Record<string, string | number> = {};
+
   export let id = '';
   export let href: string | undefined = undefined;
   export let submits = false;
@@ -12,6 +17,7 @@
 
 <svelte:element
   this={href ? 'a' : 'button'}
+  {...umamiAttributes(track, trackData)}
   {id}
   class:loading
   {href}
