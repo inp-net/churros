@@ -1,16 +1,15 @@
 <script lang="ts">
-  import groupBy from 'lodash.groupby';
-  import IconChevronDown from '~icons/mdi/chevron-down';
-  import type { PageData } from './$types';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import CalendarDay from '$lib/components/CalendarDay.svelte';
-  import { compareAsc, format, isFuture, isToday, parse, parseISO } from 'date-fns';
-  import { closestMonday } from '$lib/dates';
-  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
-  import { Gif } from 'svelte-tenor';
+  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import { compareAsc, format, isFuture, isToday, parse, parseISO } from 'date-fns';
+  import groupBy from 'lodash.groupby';
+  import { Gif } from 'svelte-tenor';
+  import IconChevronDown from '~icons/mdi/chevron-down';
+  import type { PageData } from './$types';
 
   export let data: PageData;
   let expandedEventId: string | undefined = undefined;
@@ -45,7 +44,7 @@
 <div class="content">
   <NavigationTabs
     tabs={[
-      { name: 'Semaine', href: `../week/${format(closestMonday(new Date()), 'yyyy-MM-dd')}` },
+      // { name: 'Semaine', href: `../week/${format(closestMonday(new Date()), 'yyyy-MM-dd')}` },
       { name: 'Planning', href: '.' },
       { name: 'Mes places', href: '/bookings' },
     ]}

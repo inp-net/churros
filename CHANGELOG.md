@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Autres
+
+- La page d'évènements par semaine est momentanément désactivée
+
 ## [1.65.0] - 2024-06-28
 
 ### Nouveautés

@@ -4,9 +4,7 @@
   import CardTicket from '$lib/components/CardTicket.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
-  import { closestMonday } from '$lib/dates';
   import { notNull } from '$lib/typing';
-  import { format } from 'date-fns';
   import type { PageData } from './$houdini';
 
   export let data: PageData;
@@ -17,7 +15,7 @@
 
 <NavigationTabs
   tabs={[
-    { name: 'Semaine', href: `/events/week/${format(closestMonday(new Date()), 'yyyy-MM-dd')}` },
+    // { name: 'Semaine', href: `/events/week/${format(closestMonday(new Date()), 'yyyy-MM-dd')}` },
     { name: 'Planning', href: '/events/planning' },
     { name: 'Mes places', href: '.' },
   ]}
