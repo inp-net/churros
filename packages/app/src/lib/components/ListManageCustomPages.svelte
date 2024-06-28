@@ -49,6 +49,8 @@
     `),
   );
 
+  export let newPageDialog: HTMLDialogElement;
+
   $: pages =
     $StudentAssociation.data || $Group.data
       ? ($StudentAssociation.data ?? $Group.data)!.pages.edges.map((e) => e?.node).filter(notNull)
@@ -83,6 +85,28 @@
         </div>
       </Card>
     {/if}
+  {:else}
+    {#if newPageDialog}
+      <Card dashedBorder class="page-item" element="li">
+        <div class="empty">
+          <!-- TODO trouver un GIF qui va bien... -->
+          <!-- {#if !prefersReducedMotion()}
+            <Gif
+              gif={{
+                width: 120,
+                height: 120,
+                description: '',
+                gif: '',
+                id: '',
+              }}
+            ></Gif>
+          {/if} -->
+          <h2>C'est plutôt vide ici…</h2>
+          <ButtonSecondary on:click={() => newPageDialog.showModal()}>Crée une page</ButtonSecondary
+          >
+        </div>
+      </Card>
+    {/if}
   {/each}
 </ul>
 
@@ -91,5 +115,16 @@
     display: flex;
     flex-flow: column wrap;
     gap: 1rem;
+  }
+
+  .empty {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 5rem 0;
+    text-align: center;
   }
 </style>

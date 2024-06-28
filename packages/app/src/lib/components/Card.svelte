@@ -1,8 +1,15 @@
 <script>
   export let element = 'article';
+  export let dashedBorder = false;
 </script>
 
-<svelte:element this={element} {...$$restProps} class="card" on:submit|preventDefault>
+<svelte:element
+  this={element}
+  {...$$restProps}
+  class="card"
+  class:dashed-border={dashedBorder}
+  on:submit|preventDefault
+>
   <slot name="header" />
   <div class="card-content"><slot /></div>
   <slot name="footer" />
@@ -14,6 +21,11 @@
     background-color: var(--card-bg, var(--bg));
     border-radius: var(--radius-block);
     box-shadow: var(--shadow);
+  }
+
+  .card.dashed-border {
+    border: var(--border-block) dashed var(--border);
+    box-shadow: none;
   }
 
   .card-content {
