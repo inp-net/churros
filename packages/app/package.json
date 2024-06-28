@@ -2,6 +2,7 @@
   "name": "@centraverse/app",
   "dependencies": {
     "@carbon/charts-svelte": "^1.15.5",
+    "@graphql-tools/utils": "^10.2.2",
     "@iconify-json/logos": "^1.1.42",
     "@paypal/paypal-js": "^8.0.4",
     "@sveltejs/vite-plugin-svelte": "^3.1.1",

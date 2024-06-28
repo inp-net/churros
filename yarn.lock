@@ -553,6 +553,7 @@ __metadata:
     "@babel/core": "npm:^7.24.3"
     "@carbon/charts-svelte": "npm:^1.15.5"
     "@centraverse/api": "workspace:^"
+    "@graphql-tools/utils": "npm:^10.2.2"
     "@iconify-json/logos": "npm:^1.1.42"
     "@iconify-json/material-symbols": "npm:^1.1.76"
     "@iconify-json/mdi": "npm:^1.1.64"

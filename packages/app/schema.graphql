@@ -1720,6 +1720,9 @@ type Minor implements Node {
   yearTier: Int!
 }
 
+"""
+- **Rate limit:** 1200 / 10 minutes
+"""
 type Mutation {
   acceptRegistration(email: String!): MutationAcceptRegistrationResult!
 
@@ -2091,6 +2094,8 @@ type Mutation {
 
   """
   Envoie une notification à l'utilisateur connecté. Limité à une notification par heure. Si l'utilisateur a désactivé les notifications de type “Autres” pour le groupe responsable du [client OAuth](/oauth) faisant la requête, la notification ne lui sera pas envoyée.
+
+  - **Rate limit:** 1/heure
   """
   sendNotification(
     """
@@ -3010,6 +3015,9 @@ type QRCode {
   viewbox: String!
 }
 
+"""
+- **Rate limit:** 1200/minute
+"""
 type Query {
   """
   Get all OAuth2 clients. Only admins can do this.
@@ -3123,6 +3131,10 @@ type Query {
   group(uid: String!): Group!
   groupMembersCsv(groupUid: String!): QueryGroupMembersCsvResult!
   groups(types: [GroupType!]): [Group!]!
+
+  """
+  - **Rate limit:** 5/seconde
+  """
   healthcheck: HealthCheck!
 
   """
@@ -3145,6 +3157,10 @@ type Query {
   lydiaAccountsOfGroup(uid: String!): [LydiaAccount!]!
   major(uid: String!): Major!
   majors: [Major!]!
+
+  """
+  - **Rate limit:** 6000/minute
+  """
   me: User!
   minor(id: ID!): Minor!
   minors(after: String, before: String, first: Int, last: Int): QueryMinorsConnection!
@@ -4620,6 +4636,9 @@ type SubjectDocumentsConnectionEdge {
   node: Document!
 }
 
+"""
+- **Rate limit:** 600 / 10 minutes
+"""
 type Subscription {
   announcementsNow: [Announcement!]!
   article(groupUid: String!, uid: String!): Article!
