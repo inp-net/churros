@@ -11,6 +11,30 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Les _pages web_ sont disponibles! Ça permet à un groupe ou une AE de créer des pages web, pratique pour par exemple parler des partenariats d'une AE (genre réductions de prix), héberger les status d'une asso, etc. Pour découvrir ça, se rendre sur la page de modification de son groupe, il y a maintenant un onglet "Pages". Pour les AEs, c'est depuis la page d'une AE puis "Gérer les pages".
+
+### Améliorations
+
+- Il est maintenant possible de faire une demande de réinitialisation de mot de passe en fournissant un email universitaire équivalent à celui enregistré pour l'utilisateur·ice en question (domaines mails alias)
+- Les messages d'explication concernant la validation manuelle d'inscriptions sont maintenant plus clairs
+- L'étape de renseignement de l'adresse e-mail à l'inscription peut détecter les fautes de frappe pour les adresses étudiantes.
+- Tenter de se connecter avec un compte qui est en attente de validation manuelle affiche maintenant un message d'erreur explicatif
+- Quand on prend une place pour quelqu'un d'autre, renseigner son @ Churros en incluant le `@` au début fonctionne maintenant.
+
+### Corrections
+
+- Correction de bugs autour de l'inscription avec une adresse e-mail étudiante
+- Correction d'un bug qui empêchait de révoquer l'accès à un service tiers
+
+### Technique
+
+- Les rate limits sont maintenant mentionnées dans la documentation de l'API
+- Récupération de l'IP et du User-Agent dans l'exporteur Prometheus dans le cas de requêtes non authentifiées
+- Prisma a maintenant un pacakge dédié, ce qui permet d'importer le client prisma dans des projets autres que l'API
+- Nouvelle query `renderMarkdown`. Sert pour prévisualiser le markdown de la nouvelle fonctionnalité, les pages web.
+
 ## [1.65.0-rc.1] - 2024-06-27
 
 ### Technique
