@@ -16,5 +16,5 @@ echo '
 ------------------------------------------------------------------------------------------------------------------------
 '
 
-echo 'Starting centraverse app...'
-yarn workspace @centraverse/app start
+echo 'Starting churros app...'
+yarn workspace @churros/app start

@@ -1,6 +1,6 @@
 import { builder, type SearchResult } from '#lib';
 
-import type { Article } from '@centraverse/db/prisma';
+import type { Article } from '@churros/db/prisma';
 
 // TODO rename to article-search-result
 

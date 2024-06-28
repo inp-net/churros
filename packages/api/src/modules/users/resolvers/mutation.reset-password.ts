@@ -2,7 +2,7 @@ import { builder, objectValuesFlat, prisma, purgeUserSessions, resetLdapUserPass
 import { hashPassword, verifyPassword } from '#modules/users/utils';
 
 import { userIsAdminOf } from '#permissions';
-import { CredentialType as PrismaCredentialType } from '@centraverse/db/prisma';
+import { CredentialType as PrismaCredentialType } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 // TODO rename to change-password
 

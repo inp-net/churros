@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import type { Prisma } from '@centraverse/db/prisma';
+import type { Prisma } from '@churros/db/prisma';
 export const HIGHLIGHTER_OPTIONS = 'StartSel=<mark>, StopSel=</mark>';
 
 export type SearchResult<

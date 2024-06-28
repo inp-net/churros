@@ -1,4 +1,4 @@
-import type { Major, User } from '@centraverse/db/prisma';
+import type { Major, User } from '@churros/db/prisma';
 
 export function userIsStudentOfSchool(user: User, school: { majors: Major[] }): boolean {
   return school.majors.some((major) => userIsStudentOfMajor(user, major));

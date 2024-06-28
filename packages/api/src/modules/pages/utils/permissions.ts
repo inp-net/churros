@@ -1,6 +1,6 @@
 import type { Context } from '#lib';
 import { userIsDeveloperOf, userIsOnBoardOf } from '#permissions';
-import type { Group, StudentAssociation } from '@centraverse/db/prisma';
+import type { Group, StudentAssociation } from '@churros/db/prisma';
 
 export function canListStudentAssociationPages(
   user: Context['user'],

@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import type { LydiaAccount } from '@centraverse/db/prisma';
+import type { LydiaAccount } from '@churros/db/prisma';
 import { LydiaAccountType } from '../index.js';
 // TODO remove, getting _all_ lydia accounts is useless
 builder.queryField('lydiaAccounts', (t) =>

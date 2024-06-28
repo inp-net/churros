@@ -3,7 +3,7 @@
   "*.{css,scss,svelte}": "stylelint --fix",
   "*": "prettier --write --ignore-unknown",
   "packages/api/**/*.ts": [
-    "yarn workspace @centraverse/api barrelize",
+    "yarn workspace @churros/api barrelize",
     "git add packages/api/src/modules/**/index.ts packages/api/barrelsby.config.json",
     "eslint --fix"
   ]

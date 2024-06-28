@@ -1,7 +1,7 @@
 import { builder, prisma } from '#lib';
 
 import { prismaQueryVisibleEvents } from '#permissions';
-import { Visibility } from '@centraverse/db/prisma';
+import { Visibility } from '@churros/db/prisma';
 import { EventType } from '../index.js';
 // TODO rename to group.events
 

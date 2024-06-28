@@ -1,5 +1,5 @@
 {
-  "name": "@centraverse/app",
+  "name": "@churros/app",
   "dependencies": {
     "@carbon/charts-svelte": "^1.15.5",
     "@graphql-tools/utils": "^10.2.2",
@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.3",
-    "@centraverse/api": "workspace:^",
+    "@churros/api": "workspace:^",
     "@iconify-json/material-symbols": "^1.1.76",
     "@iconify-json/mdi": "^1.1.64",
     "@iconify-json/simple-icons": "^1.1.97",

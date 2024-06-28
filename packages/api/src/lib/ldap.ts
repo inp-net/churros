@@ -7,7 +7,7 @@ import type {
   School,
   StudentAssociation,
   User,
-} from '@centraverse/db/prisma';
+} from '@churros/db/prisma';
 import ldap from 'ldapjs';
 import crypto from 'node:crypto';
 
@@ -651,11 +651,11 @@ async function createLdapClub(
 }
 
 export {
-  LDAP_BIND_DN,
   connectLdap,
   createLdapClub,
   createLdapGroup,
   createLdapUser,
+  LDAP_BIND_DN,
   queryLdapUser,
   resetLdapUserPassword,
 };

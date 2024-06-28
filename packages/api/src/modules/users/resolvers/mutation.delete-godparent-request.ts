@@ -1,7 +1,7 @@
 import { builder, objectValuesFlat, prisma } from '#lib';
 import { notify } from '#modules/notifications';
 import { userIsAdminOf } from '#permissions';
-import { NotificationChannel } from '@centraverse/db/prisma';
+import { NotificationChannel } from '@churros/db/prisma';
 import { fullName } from '../index.js';
 
 builder.mutationField('deleteGodparentRequest', (t) =>

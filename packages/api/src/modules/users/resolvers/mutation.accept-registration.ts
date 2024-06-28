@@ -1,7 +1,7 @@
 import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 
-import { Prisma } from '@centraverse/db/prisma';
+import { Prisma } from '@churros/db/prisma';
 import { saveUser, UserType } from '../index.js';
 import { prismaUserFilterForStudentAssociationAdmins } from '../utils/index.js';
 // TODO rename to accept-user-candidate

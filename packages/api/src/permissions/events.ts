@@ -2,8 +2,8 @@ import type { Context } from '#lib';
 import { prisma } from '#lib';
 
 import { userCanManageEvent, userIsAdminOf } from '#permissions';
-import type { Group, Prisma } from '@centraverse/db/prisma';
-import * as PrismaTypes from '@centraverse/db/prisma';
+import type { Group, Prisma } from '@churros/db/prisma';
+import * as PrismaTypes from '@churros/db/prisma';
 import { mappedGetAncestors } from 'arborist';
 
 export function prismaQueryVisibleEvents(

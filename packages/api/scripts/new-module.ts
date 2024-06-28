@@ -102,8 +102,8 @@ TODO: Écrire la documentation du module
 );
 
 p.log.step('Génération des barrels (fichiers index.ts)');
-p.log.info(`$ yarn workspace @centraverse/api barrelize`);
-execSync(`yarn workspace @centraverse/api barrelize`);
+p.log.info(`$ yarn workspace @churros/api barrelize`);
+execSync(`yarn workspace @churros/api barrelize`);
 
 p.log.step('Mise à jour de packages/api/src/schema.ts');
 await writeFile(

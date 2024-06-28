@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import type { Major, User } from '@centraverse/db/prisma';
+import type { Major, User } from '@churros/db/prisma';
 import { userIsStudentOfSchool } from './school.js';
 
 export const userCanSeeBarWeek = (

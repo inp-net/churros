@@ -1,4 +1,4 @@
-import type { Page } from '@centraverse/db/prisma';
+import type { Page } from '@churros/db/prisma';
 import path from 'node:path/posix';
 
 export function withTrailingSlash(path: string) {

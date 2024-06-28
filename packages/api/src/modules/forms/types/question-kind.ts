@@ -1,5 +1,5 @@
 import { builder } from '#lib';
-import { QuestionKind } from '@centraverse/db/prisma';
+import { QuestionKind } from '@churros/db/prisma';
 
 export const QuestionKindType = builder.enumType(QuestionKind, {
   description: 'Le type de question',

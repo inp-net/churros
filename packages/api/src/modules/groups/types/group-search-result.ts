@@ -1,6 +1,6 @@
 import { builder, type SearchResult } from '#lib';
 
-import type { Group } from '@centraverse/db/prisma';
+import type { Group } from '@churros/db/prisma';
 
 export const GroupSearchResultType = builder
   .objectRef<SearchResult<{ group: Group }, ['description']>>('GroupSearchResult')

@@ -1,4 +1,4 @@
-import { EventFrequency, type Event as EventPrisma } from '@centraverse/db/prisma';
+import { EventFrequency, type Event as EventPrisma } from '@churros/db/prisma';
 import {
   addMonths,
   addWeeks,

@@ -1,6 +1,6 @@
-# @centraverse/app
+# @churros/app
 
-This package contains the application of Centraverse. It's a [Progressive Web App](https://en.wikipedia.org/wiki/Progressive_web_app) written in written in [TypeScript](https://www.typescriptlang.org/) and [Svelte](https://svelte.dev/) with [SvelteKit](https://kit.svelte.dev/).
+This package contains the application of Churros. It's a [Progressive Web App](https://en.wikipedia.org/wiki/Progressive_web_app) written in written in [TypeScript](https://www.typescriptlang.org/) and [Svelte](https://svelte.dev/) with [SvelteKit](https://kit.svelte.dev/).
 
 You should read [the API's readme](../api/README.md) first.
 

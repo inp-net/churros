@@ -7,7 +7,7 @@ import {
   type AuthContexts,
   type AuthScopes,
 } from '#lib';
-import type PrismaTypes from '@centraverse/db/pothos';
+import type PrismaTypes from '@churros/db/pothos';
 import SchemaBuilder, { type BuiltinScalarRef } from '@pothos/core';
 import ComplexityPlugin from '@pothos/plugin-complexity';
 import DataloaderPlugin from '@pothos/plugin-dataloader';

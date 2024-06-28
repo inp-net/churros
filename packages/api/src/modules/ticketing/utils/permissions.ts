@@ -1,6 +1,6 @@
 import type { Context } from '#lib';
 import { userIsAdminOf } from '#permissions';
-import type { Event, EventManager, Group } from '@centraverse/db/prisma';
+import type { Event, EventManager, Group } from '@churros/db/prisma';
 
 export function canScanBookings(
   event: Event & { managers: EventManager[]; group: Group },

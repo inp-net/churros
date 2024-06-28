@@ -1,6 +1,6 @@
 import { builder, type SearchResult } from '#lib';
 import {} from '#modules/global';
-import type { User } from '@centraverse/db/prisma';
+import type { User } from '@churros/db/prisma';
 import {} from '../index.js';
 
 export const UserSearchResultType = builder

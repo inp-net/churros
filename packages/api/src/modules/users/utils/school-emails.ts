@@ -1,4 +1,4 @@
-import type { Major, School } from '@centraverse/db/prisma';
+import type { Major, School } from '@churros/db/prisma';
 
 /**
  * Resolve a mail into its school mail. Retun null if the given mail is not a valid school email address for the given major.

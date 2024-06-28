@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import type { Event, Registration, Ticket, User } from '@centraverse/db/prisma';
+import type { Event, Registration, Ticket, User } from '@churros/db/prisma';
 import pdfMakePrinter from 'pdfmake';
 import type { TFontDictionary } from 'pdfmake/interfaces';
 import { api } from './express.js';

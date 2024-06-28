@@ -1,3 +1,3 @@
-import { PrismaClient } from '@centraverse/db/prisma';
+import { PrismaClient } from '@churros/db/prisma';
 
 export const prisma = new PrismaClient();
