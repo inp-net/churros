@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import type { School } from '@prisma/client';
+import type { School } from '@centraverse/db/prisma';
 import pdfMakePrinter from 'pdfmake';
 import type { TFontDictionary } from 'pdfmake/interfaces';
 import { api } from './express.js';
