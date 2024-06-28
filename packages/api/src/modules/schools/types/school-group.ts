@@ -1,7 +1,7 @@
 import { builder } from '#lib';
 import { MajorType } from '#modules/curriculum';
 
-import type { Major } from '@centraverse/db/prisma';
+import type { Major } from '@churros/db/prisma';
 
 // TODO remove or rename at least, don't really know what it's supposed to represent
 

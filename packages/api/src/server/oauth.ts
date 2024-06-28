@@ -1,6 +1,6 @@
 import { ensureHasIdPrefix, isLocalNetwork, log, prisma } from '#lib';
 import { OAuth2ErrorCode, generateThirdPartyToken, normalizeUrl } from '#modules/oauth';
-import { ThirdPartyCredentialType } from '@centraverse/db/prisma';
+import { ThirdPartyCredentialType } from '@churros/db/prisma';
 import { verify } from 'argon2';
 import bodyParser from 'body-parser';
 import { z } from 'zod';

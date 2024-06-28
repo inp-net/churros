@@ -1,6 +1,6 @@
 import { builder } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import * as PrismaTypes from '@centraverse/db/prisma';
+import * as PrismaTypes from '@churros/db/prisma';
 import { CredentialEnumType } from '../index.js';
 // TODO rename to Token (password are not exposed in the API anyway)
 

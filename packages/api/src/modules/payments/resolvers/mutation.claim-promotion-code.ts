@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { PromotionType } from '@centraverse/db/prisma';
+import { PromotionType } from '@churros/db/prisma';
 import { isFuture } from 'date-fns';
 import { GraphQLError } from 'graphql';
 

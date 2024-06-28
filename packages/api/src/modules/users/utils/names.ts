@@ -1,4 +1,4 @@
-import type { Prisma, School } from '@centraverse/db/prisma';
+import type { Prisma, School } from '@churros/db/prisma';
 import { replaceMailDomainPart } from './school-emails.js';
 
 export function fullName(user: { firstName: string; lastName: string; nickname?: string }) {

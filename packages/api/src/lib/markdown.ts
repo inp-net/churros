@@ -48,7 +48,7 @@ export const toHtml = async (
       .then((s) =>
         options?.linkifyGitlabItems
           ? String(s).replaceAll(
-              /https:\/\/git.inpt.fr\/inp-net\/(?:churros|centraverse)\/(?:-\/)?issues\/(\d+)/g,
+              /https:\/\/git.inpt.fr\/inp-net\/churros\/(?:-\/)?issues\/(\d+)/g,
               '/reports/$1',
             )
           : String(s),

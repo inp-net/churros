@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { NotificationChannel as NotificationChannelPrisma } from '@centraverse/db/prisma';
+import { NotificationChannel as NotificationChannelPrisma } from '@churros/db/prisma';
 import { notify } from '../index.js';
 
 builder.mutationField('testNotification', (t) =>

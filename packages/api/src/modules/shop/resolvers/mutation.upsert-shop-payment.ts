@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import { onBoard } from '#permissions';
-import { PaymentMethod as PaymentMethodPrisma, Visibility } from '@centraverse/db/prisma';
+import { PaymentMethod as PaymentMethodPrisma, Visibility } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { ShopPaymentType } from '../index.js';
 

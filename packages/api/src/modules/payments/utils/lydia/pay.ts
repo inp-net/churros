@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import type { LydiaAccount, LydiaTransaction, ShopItem, ShopPayment } from '@centraverse/db/prisma';
+import type { LydiaAccount, LydiaTransaction, ShopItem, ShopPayment } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import {
   LydiaTransactionState,

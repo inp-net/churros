@@ -1,6 +1,6 @@
 import { builder, prisma, purgeUserSessions } from '#lib';
 
-import { CredentialType as CredentialPrismaType } from '@centraverse/db/prisma';
+import { CredentialType as CredentialPrismaType } from '@churros/db/prisma';
 
 // TODO merge with mutation.logout
 

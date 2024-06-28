@@ -1,4 +1,4 @@
-# @centraverse/docs
+# @churros/docs
 
 Auto-generated documentation for Churros' API.
 

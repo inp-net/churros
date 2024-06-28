@@ -12,7 +12,7 @@ import {
   type School,
   type StudentAssociation,
   type User,
-} from '@centraverse/db/prisma';
+} from '@churros/db/prisma';
 import type { YogaInitialContext } from '@graphql-yoga/node';
 import { GraphQLError } from 'graphql';
 import { isThirdPartyToken } from './auth.js';

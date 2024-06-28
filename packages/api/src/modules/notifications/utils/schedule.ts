@@ -5,7 +5,7 @@ import {
   type Major,
   type School,
   type User,
-} from '@centraverse/db/prisma';
+} from '@churros/db/prisma';
 import type { MaybePromise } from '@pothos/core';
 import { Cron } from 'croner';
 import { nanoid } from 'nanoid';

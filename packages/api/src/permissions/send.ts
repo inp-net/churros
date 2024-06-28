@@ -1,4 +1,4 @@
-import type { NotificationChannel as NotificationChannelPrisma } from '@centraverse/db/prisma';
+import type { NotificationChannel as NotificationChannelPrisma } from '@churros/db/prisma';
 
 export function serverCanSendNotificationToUser(
   subscriptionOwner: { enabledNotificationChannels: NotificationChannelPrisma[] },

@@ -1,5 +1,5 @@
 {
-  "name": "@centraverse/mock-n7-ldap",
+  "name": "@churros/mock-n7-ldap",
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
     "ldapjs": "^3.0.7"

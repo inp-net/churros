@@ -1,10 +1,7 @@
 import { builder, ensureHasIdPrefix, log, prisma } from '#lib';
 import { notify } from '#modules/notifications';
-import type { Prisma } from '@centraverse/db/prisma';
-import {
-  CredentialType as CredentialPrismaType,
-  NotificationChannel,
-} from '@centraverse/db/prisma';
+import type { Prisma } from '@churros/db/prisma';
+import { CredentialType as CredentialPrismaType, NotificationChannel } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { nanoid } from 'nanoid';
 import {

@@ -1,6 +1,6 @@
-import { PrismaClient } from '@centraverse/db/prisma';
-// run yarn workspace @centraverse/db generate:patch if you get a type error here
-import { type RuntimeDataModel } from '@centraverse/db/prisma/runtime/library';
+import { PrismaClient } from '@churros/db/prisma';
+// run yarn workspace @churros/db generate:patch if you get a type error here
+import { type RuntimeDataModel } from '@churros/db/prisma/runtime/library';
 import * as p from '@clack/prompts';
 import { glob } from 'glob';
 import { execSync } from 'node:child_process';

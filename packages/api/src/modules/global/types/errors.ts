@@ -1,5 +1,5 @@
 import { builder } from '#lib';
-import { Prisma } from '@centraverse/db/prisma';
+import { Prisma } from '@churros/db/prisma';
 import { ZodError, type ZodFormattedError } from 'zod';
 
 const ErrorInterface = builder.interfaceRef<Error>('ErrorInterface').implement({

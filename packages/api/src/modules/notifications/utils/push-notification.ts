@@ -1,4 +1,4 @@
-import type { NotificationChannel } from '@centraverse/db/prisma';
+import type { NotificationChannel } from '@churros/db/prisma';
 
 export type PushNotification = {
   title: string;

@@ -1,7 +1,7 @@
 {
-  "name": "@centraverse/api",
+  "name": "@churros/api",
   "dependencies": {
-    "@centraverse/db": "workspace:^",
+    "@churros/db": "workspace:^",
     "@envelop/core": "^5.0.0",
     "@graphql-tools/utils": "^10.2.2",
     "@graphql-yoga/node": "^3.9.1",
@@ -140,8 +140,8 @@
     "format-at": "prettier --write --ignore-unknown",
     "format": "yarn format-at .",
     "build": "run-s \"build:*\"",
-    "prisma": "yarn workspace @centraverse/db run prisma",
-    "build:prisma": "yarn workspace @centraverse/db run generate",
+    "prisma": "yarn workspace @churros/db run prisma",
+    "build:prisma": "yarn workspace @churros/db run generate",
     "build:changelog": "run-s copy-changelog",
     "build:typenames": "tsx ./scripts/update-id-prefix-to-typename-map.ts",
     "build:barrelize": "run-s barrelize",

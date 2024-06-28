@@ -1,7 +1,7 @@
 import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, resetLdapUserPassword } from '#lib';
 import { hashPassword } from '#modules/users/utils';
 
-import { CredentialType as PrismaCredentialType } from '@centraverse/db/prisma';
+import { CredentialType as PrismaCredentialType } from '@churros/db/prisma';
 // TODO maybe rename to reset-password
 // OR merge with mutation.change-password
 

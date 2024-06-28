@@ -21,5 +21,5 @@ yarn prisma migrate deploy
 echo 'Migrated!'
 
 
-echo 'Starting centraverse api...'
-yarn workspace @centraverse/api start
+echo 'Starting churros api...'
+yarn workspace @churros/api start

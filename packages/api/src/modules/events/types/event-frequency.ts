@@ -1,6 +1,6 @@
 import { builder } from '#lib';
 
-import { EventFrequency } from '@centraverse/db/prisma';
+import { EventFrequency } from '@churros/db/prisma';
 
 export const EventFrequencyType = builder.enumType(EventFrequency, {
   name: 'EventFrequency',

@@ -7,7 +7,7 @@ import {
   payEventRegistrationViaPaypal,
 } from '#modules/payments';
 import { userCanAccessEvent, userCanManageEvent } from '#permissions';
-import { PaymentMethod as PaymentMethodPrisma } from '@centraverse/db/prisma';
+import { PaymentMethod as PaymentMethodPrisma } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { placesLeft } from '../index.js';
 // TODO rename to pay-booking.ts

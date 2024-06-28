@@ -46,10 +46,10 @@ pages:
     PUBLIC_API_URL: https://churros.inpt.fr/graphql
     PUBLIC_API_WEBSOCKET_URL: wss://churros.inpt.fr/graphql
   script:
-    - yarn workspace @centraverse/docs install --immutable
-    - yarn workspace @centraverse/docs create-dotenv
+    - yarn workspace @churros/docs install --immutable
+    - yarn workspace @churros/docs create-dotenv
     - yarn generate-buildinfo
-    - yarn workspace @centraverse/docs build
+    - yarn workspace @churros/docs build
     - mv packages/docs/build public
   artifacts:
     paths:

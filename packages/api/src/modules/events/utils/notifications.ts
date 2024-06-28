@@ -12,7 +12,7 @@ import {
   type School,
   type Ticket,
   type User,
-} from '@centraverse/db/prisma';
+} from '@churros/db/prisma';
 import type Cron from 'croner';
 import { format, subMinutes } from 'date-fns';
 

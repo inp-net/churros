@@ -1,5 +1,5 @@
 import { builder, type SearchResult } from '#lib';
-import type { Form } from '@centraverse/db/prisma';
+import type { Form } from '@churros/db/prisma';
 import { FormType } from './form.js';
 
 export const FormSearchResultType = builder

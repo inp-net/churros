@@ -1,5 +1,5 @@
 import { fullName } from '#modules/users';
-import type { Event, Group, Registration, User } from '@centraverse/db/prisma';
+import type { Event, Group, Registration, User } from '@churros/db/prisma';
 import { GoogleAuth, type JWTInput } from 'google-auth-library';
 import { splitID } from './global-id.js';
 

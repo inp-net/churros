@@ -7,7 +7,7 @@ import {
   type School,
   type User,
   type UserCandidate,
-} from '@centraverse/db/prisma';
+} from '@churros/db/prisma';
 import { quickSignupIsValidFor } from './quick-signup.js';
 import { isSchoolEmailForMajor, resolveSchoolMail } from './school-emails.js';
 import { createUid } from './uid.js';

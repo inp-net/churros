@@ -1,5 +1,5 @@
 {
-  "name": "@centraverse/db",
+  "name": "@churros/db",
   "packageManager": "yarn@4.2.2",
   "scripts": {
     "prisma": "prisma",

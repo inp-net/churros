@@ -1,5 +1,5 @@
 {
-	"name": "@centraverse/docs",
+	"name": "@churros/docs",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -13,7 +13,7 @@
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
-		"@centraverse/api": "workspace:^",
+		"@churros/api": "workspace:^",
 		"@sveltejs/adapter-static": "^3.0.1",
 		"@sveltejs/kit": "^2.5.5",
 		"@sveltejs/vite-plugin-svelte": "^3.0.2",

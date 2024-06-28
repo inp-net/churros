@@ -26,7 +26,7 @@ RUN yarn generate-buildinfo
 RUN apk add bash
 RUN bash -c printenv
 
-RUN yarn workspaces foreach -Rt --from '{@centraverse/api,@centraverse/app}' run build
+RUN yarn workspaces foreach -Rt --from '{@churros/api,@churros/app}' run build
 
 
 FROM node:20-alpine as base
@@ -59,7 +59,7 @@ COPY --from=builder /app/packages/api/static/ /app/packages/api/static/
 COPY --from=builder /app/packages/api/package.json /app/packages/api/
 
 # Install dependencies
-RUN yarn workspaces focus @centraverse/api --production
+RUN yarn workspaces focus @churros/api --production
 
 # Copy prisma client script
 COPY packages/api/prisma-client.sh /app/prisma-client.sh
@@ -80,7 +80,7 @@ COPY --from=builder /app/packages/app/build/ /app/packages/app/build/
 COPY --from=builder /app/packages/app/package.json /app/packages/app/
 
 # Install dependencies
-RUN yarn workspaces focus @centraverse/app --production
+RUN yarn workspaces focus @churros/app --production
 
 # Copy entrypoint
 COPY packages/app/entrypoint.sh /app/entrypoint.sh

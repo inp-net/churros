@@ -1,6 +1,6 @@
 import { builder, createLdapUser, prisma, yearTier } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import { NotificationChannel, type Major, type UserCandidate } from '@centraverse/db/prisma';
+import { NotificationChannel, type Major, type UserCandidate } from '@churros/db/prisma';
 import { ZodError } from 'zod';
 import { notify } from '../../notifications/utils/send.js';
 import { completeRegistration, hashPassword } from '../index.js';

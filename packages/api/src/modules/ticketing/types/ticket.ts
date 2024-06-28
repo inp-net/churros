@@ -1,7 +1,7 @@
 import { builder, prisma, toHtml } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum, priceWithPromotionsApplied as actualPrice } from '#modules/payments';
-import { PaymentMethod } from '@centraverse/db/prisma';
+import { PaymentMethod } from '@churros/db/prisma';
 
 export const TicketType = builder.prismaNode('Ticket', {
   id: { field: 'id' },

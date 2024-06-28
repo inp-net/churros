@@ -1,5 +1,5 @@
 import { context, customErrorMap, inDevelopment } from '#lib';
-import { Prisma } from '@centraverse/db/prisma';
+import { Prisma } from '@churros/db/prisma';
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
 import { createFetch } from '@whatwg-node/fetch';
 import { GraphQLError } from 'graphql';
@@ -96,15 +96,15 @@ api.get('/', (_req, res) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Centraverse API</title>
+  <title>Churros API</title>
   <style>body { font-family: system-ui, sans serif; } a { color: #1d4ed8; }</style>
 </head>
 <body>
-  <h1>Centraverse API</h1>
+  <h1>Churros API</h1>
   <p><strong><a href="${new URL(process.env.FRONTEND_ORIGIN).toString()}">
     Retourner à l'accueil</a></strong></p>
   <p><a href="/graphql">GraphiQL (pour les développeurs et les curieux)</a></p>
-  <p><a href="https://git.inpt.fr/inp-net/centraverse">Code source</a></p>
+  <p><a href="https://git.inpt.fr/inp-net/churros">Code source</a></p>
 </body>
 </html>`);
 });

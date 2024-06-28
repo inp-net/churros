@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import type { LydiaTransaction } from '@centraverse/db/prisma';
+import type { LydiaTransaction } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { createHash } from 'node:crypto';
 

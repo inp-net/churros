@@ -2,7 +2,7 @@ import { builder, prisma, toHtml } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { PaymentMethodEnum } from '#modules/payments';
 import { onBoard } from '#permissions';
-import { Visibility } from '@centraverse/db/prisma';
+import { Visibility } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 
 export const ShopItemType = builder.prismaObject('ShopItem', {

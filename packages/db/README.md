@@ -1,1 +1,1 @@
-# @centraverse/db
+# @churros/db

@@ -1,6 +1,6 @@
 import { builder, type SearchResult } from '#lib';
 
-import type { Event } from '@centraverse/db/prisma';
+import type { Event } from '@churros/db/prisma';
 
 export const EventSearchResultType = builder
   .objectRef<SearchResult<{ event: Event }, ['description', 'title']>>('EvenSearchResult')

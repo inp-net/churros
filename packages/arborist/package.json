@@ -18,7 +18,7 @@
     "index.ts",
     "package.json"
   ],
-  "homepage": "https://git.inpt.fr/inp-net/centraverse/-/tree/main/packages/arborist",
+  "homepage": "https://git.inpt.fr/inp-net/churros/-/tree/main/packages/arborist",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
