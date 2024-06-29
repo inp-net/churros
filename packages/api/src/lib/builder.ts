@@ -118,6 +118,7 @@ export const builder = new SchemaBuilder<PothosTypes>({
             const ip = ctx.request?.headers.get('X-Real-Ip');
 
             updateQueryUsage({
+              operationName: ctx.params?.operationName,
               queryType: config.parentType,
               queryName: config.name,
               token,

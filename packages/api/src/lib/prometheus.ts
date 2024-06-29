@@ -5,14 +5,14 @@ import { prisma } from './prisma.js';
 const queriesHistogram = new Histogram({
   name: 'query_duration_ms',
   help: 'Duration of queries',
-  labelNames: ['query_type', 'oauth_client', 'user_id', 'query_name'],
+  labelNames: ['query_type', 'oauth_client', 'user_id', 'query_name', 'operation_name'],
   buckets: [1, 5, 10, 30, 50, 100, 200, 500, 1000],
 });
 
 const rateLimitsHistogram = new Histogram({
   name: 'rate_limit_hit_penalty_ms',
   help: 'Duration of rate limit hits (time before trying again)',
-  labelNames: ['query_type', 'oauth_client', 'user_id', 'query_name'],
+  labelNames: ['query_type', 'oauth_client', 'user_id', 'query_name', 'operation_name'],
   buckets: [1, 5, 10, 30, 50, 100, 200, 500, 1000],
 });
 
@@ -28,12 +28,14 @@ export async function updateQueryUsage({
   queryType,
   token,
   user,
+  operationName,
 }: {
   queryType: string;
   queryName: string;
-  token: string | undefined;
-  user: string | undefined;
+  token?: string;
+  user?: string;
   duration: number;
+  operationName?: string;
 }) {
   const app = token
     ? await prisma.thirdPartyCredential.findFirst({
@@ -43,6 +45,7 @@ export async function updateQueryUsage({
 
   queriesHistogram
     .labels({
+      operation_name: operationName ?? '',
       query_name: queryName,
       query_type: queryType,
       oauth_client: app?.clientId ?? '',
@@ -57,12 +60,14 @@ export async function updateRateLimitHit({
   queryType,
   user,
   tryAgainInMs,
+  operationName,
 }: {
   queryType: string;
   queryName: string;
-  token: string | undefined;
-  user: string | undefined;
+  token?: string;
+  user?: string;
   tryAgainInMs: number;
+  operationName?: string;
 }) {
   const app = token
     ? await prisma.thirdPartyCredential.findFirst({ where: { value: token } })
@@ -74,6 +79,7 @@ export async function updateRateLimitHit({
       query_type: queryType,
       oauth_client: app?.clientId ?? '',
       user_id: user ?? '',
+      operation_name: operationName ?? '',
     })
     .observe(tryAgainInMs);
 }
