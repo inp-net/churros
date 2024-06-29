@@ -1,5 +1,5 @@
-import { builder, prisma } from '#lib';
-import { DateTimeScalar } from '#modules/global';
+import { builder, freeUidValidator, prisma } from '#lib';
+import { DateTimeScalar, UIDScalar } from '#modules/global';
 import { ZodError } from 'zod';
 import { saveUser } from '../index.js';
 
@@ -14,6 +14,7 @@ builder.mutationField('updateUserCandidate', (t) =>
           "Inscrire définitivement l'utilisateur·ice si vrai. Si faux, mettre à jour la demande d'inscription sans créer de compte",
       }),
       email: t.arg.string(),
+      uid: t.arg({ type: UIDScalar, validate: [freeUidValidator], description: 'Le @ souhaité' }),
       firstName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       lastName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       majorId: t.arg.id(),
@@ -31,6 +32,7 @@ builder.mutationField('updateUserCandidate', (t) =>
         firstName,
         lastName,
         majorId,
+        uid,
         graduationYear,
         address,
         birthday,
@@ -43,6 +45,7 @@ builder.mutationField('updateUserCandidate', (t) =>
         data: {
           address,
           birthday,
+          uid,
           firstName,
           majorId,
           graduationYear,

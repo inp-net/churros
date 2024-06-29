@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import { fullName, isSchoolEmail, needsManualValidation } from '../index.js';
+import { createUid, fullName, isSchoolEmail, needsManualValidation } from '../index.js';
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserCandidateType = builder.prismaNode('UserCandidate', {
@@ -62,8 +62,14 @@ export const UserCandidateType = builder.prismaNode('UserCandidate', {
         return fullName(user);
       },
     }),
+    uid: t.exposeString('uid'),
+    suggestedUid: t.string({
+      resolve: createUid,
+    }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar, nullable: true }),
-    graduationYear: t.exposeInt('graduationYear', { nullable: true }),
+    graduationYear: t.int({
+      resolve: ({ graduationYear }) => graduationYear ?? new Date().getFullYear() + 3,
+    }),
 
     // School details
     schoolServer: t.exposeString('schoolServer', { nullable: true }),

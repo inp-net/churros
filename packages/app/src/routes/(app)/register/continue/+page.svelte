@@ -1,108 +1,93 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
-
-  import { fieldErrorsToFormattedError } from '$lib/errors.js';
-  import { saveSessionToken, sessionUserQuery } from '$lib/session.js';
-  import { zeus } from '$lib/zeus.js';
-  import type { ZodFormattedError } from 'zod';
-  import type { PageData } from './$types';
-  import InputField from '$lib/components/InputField.svelte';
-  import InputText from '$lib/components/InputText.svelte';
-  import InputSearchObject from '$lib/components/InputSearchObject.svelte';
-  import Fuse from 'fuse.js';
-  import InputNumber from '$lib/components/InputNumber.svelte';
-  import InputDate from '$lib/components/InputDate.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import InputDate from '$lib/components/InputDate.svelte';
+  import InputField from '$lib/components/InputField.svelte';
+  import InputNumber from '$lib/components/InputNumber.svelte';
+  import InputSearchObject from '$lib/components/InputSearchObject.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import InputUid from '$lib/components/InputUID.svelte';
+  import { fieldErrorsToFormattedError } from '$lib/errors.js';
+  import { saveSessionToken } from '$lib/session.js';
+  import { toasts } from '$lib/toasts';
+  import Fuse from 'fuse.js';
+  import type { ZodFormattedError } from 'zod';
+  import { Login } from '../../login/mutations';
+  import type { PageData } from './$houdini';
+  import { CompleteSignup } from './mutations';
 
   export let data: PageData;
+  $: ({ PageSignupContinue } = data);
 
-  let {
-    address,
-    phone,
-    birthday,
-    firstName,
-    graduationYear = new Date().getFullYear() + 3,
-    lastName,
-    majorId,
-    cededImageRightsToTVn7,
-    apprentice,
-  } = data.userCandidate;
+  let candidate = {
+    address: '',
+    phone: '',
+    birthday: null as Date | null,
+    graduationYear: new Date().getFullYear() + 3,
+    firstName: '',
+    lastName: '',
+    majorId: null as string | null,
+    cededImageRightsToTVn7: false,
+    apprentice: false,
+    uid: '',
+    suggestedUid: '',
+    needsManualValidation: null as boolean | null,
+    emailValidated: false,
+  };
+
+  $: if ($PageSignupContinue.data?.userCandidate)
+    candidate = $PageSignupContinue.data.userCandidate;
+
+  $: schoolGroups = $PageSignupContinue.data?.schoolGroups ?? [];
+
+  $: uid = candidate.uid || candidate.suggestedUid;
   let password = '';
   let passwordConfirmation = '';
 
-  // Waiting for https://github.com/graphql-editor/graphql-zeus/issues/262 to be fixed
-  graduationYear ??= new Date().getFullYear() + 3;
-
   $: token = $page.url.searchParams.get('token')!;
   $: args = {
+    ...candidate,
+    uid,
     token,
-    address,
-    birthday,
-    firstName,
-    graduationYear,
-    lastName,
-    majorId,
-    phone,
     password,
     passwordConfirmation,
-    cededImageRightsToTVn7,
-    apprentice,
+    // address,
+    // birthday,
+    // firstName,
+    // graduationYear,
+    // lastName,
+    // majorId,
+    // phone,
+    // cededImageRightsToTVn7,
+    // apprentice,
   };
 
   let result: boolean | undefined;
   let loading = false;
-  let isStudent = Boolean(data.userCandidate.schoolUid);
+  $: isStudent = Boolean($PageSignupContinue.data?.userCandidate?.majorId);
   let formErrors: ZodFormattedError<typeof args> | undefined;
   const register = async () => {
     if (loading) return;
 
     try {
       loading = true;
-      const { completeRegistration } = await $zeus.mutate({
-        completeRegistration: [
-          args,
-          {
-            '__typename': true,
-            '...on MutationCompleteRegistrationSuccess': { data: true },
-            '...on Error': { message: true },
-            '...on ZodError': { message: true, fieldErrors: { path: true, message: true } },
-          },
-        ],
-      });
+      const result = await CompleteSignup.mutate(args);
 
-      if (completeRegistration.__typename === 'ZodError') {
-        formErrors = fieldErrorsToFormattedError(completeRegistration.fieldErrors);
+      if (!toasts.mutation('completeRegistration', '', "Impossible de s'inscrire", result)) {
+        if (result.data?.completeRegistration && 'fieldErrors' in result.data.completeRegistration)
+          formErrors = fieldErrorsToFormattedError(result.data.completeRegistration.fieldErrors);
         return;
       }
 
-      if (completeRegistration.__typename === 'Error') {
-        formErrors = { _errors: [completeRegistration.message] };
-        return;
-      }
-
-      result = completeRegistration.data;
-
-      if (result) {
-        const { login } = await $zeus.mutate({
-          login: [
-            { email: data.userCandidate.email, password },
-            {
-              '__typename': true,
-              '...on Error': { message: true },
-              '...on AwaitingValidationError': { message: true },
-              '...on MutationLoginSuccess': {
-                data: { token: true, expiresAt: true, user: sessionUserQuery() },
-              },
-            },
-          ],
+      if ('uid' in result.data.completeRegistration.data) {
+        const login = await Login.mutate({
+          emailOrUid: result.data.completeRegistration.data.uid,
+          password,
         });
-
-        if (login.__typename === 'MutationLoginSuccess') {
-          saveSessionToken(document, login.data);
-          // Hard refresh (invalidating is not possible because UserCandidate
-          // is deleted after registration, throwing a ZeusError)
+        if (toasts.mutation('login', '', 'Impossible de se connecter', login)) {
+          saveSessionToken(document, login.data.login.data);
           location.href = '/welcome/';
         }
       }
@@ -113,19 +98,20 @@
     }
   };
 
-  const asmajor = (x: unknown) => x as (typeof data)['schoolGroups'][number]['majors'][number];
+  const asmajor = (x: unknown) =>
+    x as NonNullable<typeof $PageSignupContinue.data>['schoolGroups'][number]['majors'][number];
 </script>
 
 <h1>Finaliser mon inscription</h1>
 
 {#if result === undefined || result}
   <form title="Finaliser mon inscription" on:submit|preventDefault={register}>
-    {#if data.userCandidate.emailValidated}
+    {#if candidate.emailValidated}
       <Alert theme="success" inline>
         <strong>Ton inscription est en attente de validation par ton AE.</strong><br />
         Tu peux toujours corriger des informations en attendant.
       </Alert>
-    {:else if isStudent && data.userCandidate.needsManualValidation}
+    {:else if isStudent && candidate.needsManualValidation}
       <Alert theme="warning" inline>
         <strong>
           Tu n'a pas renseigné ton adresse e-mail universitaire. Une personne de l'équipe
@@ -145,16 +131,17 @@
         errors={formErrors?.firstName?._errors}
         required
         maxlength={255}
-        bind:value={firstName}
+        bind:value={candidate.firstName}
       />
       <InputText
         label="Nom de famille"
         errors={formErrors?.lastName?._errors}
         required
         maxlength={255}
-        bind:value={lastName}
+        bind:value={candidate.lastName}
       />
     </div>
+    <InputUid errors={formErrors?.uid?._errors} bind:value={candidate.uid} label="Ton @"></InputUid>
     <InputCheckbox bind:value={isStudent} label="Je suis étudiant·e à Toulouse INP"></InputCheckbox>
     {#if isStudent}
       <div class="side-by-side">
@@ -162,7 +149,7 @@
           <InputSearchObject
             search={(q) =>
               new Fuse(
-                data.schoolGroups.flatMap(({ majors }) => majors),
+                schoolGroups.flatMap(({ majors }) => majors),
                 {
                   keys: ['name', 'shortName', 'schools.name'],
                   threshold: 0.3,
@@ -170,10 +157,10 @@
               )
                 .search(q)
                 .map(({ item }) => item)}
-            bind:value={majorId}
-            object={data.schoolGroups
+            bind:value={candidate.majorId}
+            object={schoolGroups
               .flatMap(({ majors }) => majors)
-              .find((major) => major.id === majorId)}
+              .find((major) => major.id === candidate.majorId)}
             labelKey="shortName"
           >
             <svelte:fragment slot="item" let:item>
@@ -184,7 +171,7 @@
           </InputSearchObject>
         </InputField>
         <InputNumber
-          bind:value={graduationYear}
+          bind:value={candidate.graduationYear}
           label="Promotion"
           errors={formErrors?.graduationYear?._errors}
         />
@@ -219,7 +206,10 @@
         }}
       />
     </div>
-    <InputCheckbox bind:value={cededImageRightsToTVn7} label="Je cède mon droit à l'image à TVn7" />
+    <InputCheckbox
+      bind:value={candidate.cededImageRightsToTVn7}
+      label="Je cède mon droit à l'image à TVn7"
+    />
     <p class="typo-details">
       Cela revient à remplir et signer <a target="_blank" href="/cessation-droit-image-tvn7.pdf"
         >ce document</a
@@ -233,20 +223,20 @@
       <InputDate
         label="Date de naissance"
         errors={formErrors?.birthday?._errors}
-        bind:value={birthday}
+        bind:value={candidate.birthday}
       />
       <InputText
         label="Numéro de téléphone"
         type="tel"
         errors={formErrors?.phone?._errors}
         maxlength={255}
-        bind:value={phone}
+        bind:value={candidate.phone}
       />
       <InputText
         label="Adresse postale"
         errors={formErrors?.address?._errors}
         maxlength={255}
-        bind:value={address}
+        bind:value={candidate.address}
       />
     </section>
     <section class="submit">

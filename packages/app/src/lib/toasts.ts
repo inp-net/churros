@@ -38,7 +38,13 @@ type ToastOptions<T> = {
 export const toasts = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...writable([] as Array<Toast<any>>),
-  add<T>(type: Toast<T>['type'], title: string, body = '', options?: ToastOptions<T>): string {
+  add<T>(
+    type: Toast<T>['type'],
+    title: string,
+    body = '',
+    options?: ToastOptions<T>,
+  ): string | undefined {
+    if (!title) return;
     const { labels, data, closed, action, ...rest } = options ?? {
       labels: { action: '', close: '' },
       data: undefined,
@@ -71,16 +77,16 @@ export const toasts = {
       },
     ]);
   },
-  warn<T>(title: string, body = '', options?: ToastOptions<T>): string {
+  warn<T>(title: string, body = '', options?: ToastOptions<T>): string | undefined {
     return toasts.add<T>('warning', title, body, options);
   },
-  info<T>(title: string, body = '', options?: ToastOptions<T>): string {
+  info<T>(title: string, body = '', options?: ToastOptions<T>): string | undefined {
     return toasts.add<T>('info', title, body, options);
   },
-  success<T>(title: string, body = '', options?: ToastOptions<T>): string {
+  success<T>(title: string, body = '', options?: ToastOptions<T>): string | undefined {
     return toasts.add<T>('success', title, body, options);
   },
-  error<T>(title: string, body = '', options?: ToastOptions<T>): string {
+  error<T>(title: string, body = '', options?: ToastOptions<T>): string | undefined {
     const wordsCount = body.split(' ').length + title.split(' ').length;
     options = {
       lifetime:
@@ -109,10 +115,7 @@ export const toasts = {
     mutationName: MutationName,
     successMessage: string | ((data: SuccessData) => string),
     errorMessage: string,
-    {
-      errors,
-      data,
-    }: {
+    result: {
       errors?: Array<{ message: string }> | null;
       data?: Record<
         MutationName,
@@ -125,9 +128,13 @@ export const toasts = {
         | {
             fieldErrors: Array<{ path: string[]; message: string }>;
           }
+        | {
+            __typename: `${string}don't match this${string}`;
+          }
       > | null;
     },
-  ): boolean {
+  ): result is typeof result & { data: Record<MutationName, { data: SuccessData }> } {
+    const { data, errors } = result;
     if (data?.[mutationName]) {
       const result = data[mutationName];
       if (result && 'data' in result) {
@@ -146,7 +153,9 @@ export const toasts = {
                   `${path.map((part) => (/\d+/.test(part) ? (Number.parseInt(part) + 1).toString() : part)).join(': ')}: ${message}`,
               )
               .join('\n')
-          : result.message,
+          : 'message' in result
+            ? result.message
+            : '',
       );
       return false;
     }

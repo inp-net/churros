@@ -12,9 +12,9 @@
   type MaybePromise<T> = T | Promise<T>;
 
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-  export let object: T | undefined;
+  export let object: T | undefined | null;
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-  export let value: V | undefined;
+  export let value: V | undefined | null;
   export let search: (query: string) => MaybePromise<T[]>;
   export let labelKey = 'name';
   export let valueKey = 'id';

@@ -57,6 +57,10 @@ export interface PothosTypes {
       Input: Record<string, boolean>;
       Output: Record<string, boolean>;
     };
+    UID: {
+      Input: string;
+      Output: string;
+    };
   };
   Directives: {
     rateLimit: RateLimitDirective;

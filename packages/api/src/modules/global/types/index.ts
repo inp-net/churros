@@ -10,5 +10,6 @@ export * from './pictured.js';
 export * from './qr-code.js';
 export * from './sort-direction.js';
 export * from './string-to-int-mapping.js';
+export * from './uid.js';
 export * from './visibility.js';
 export * from './zod-error.js';

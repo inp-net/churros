@@ -1,4 +1,9 @@
 """
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -836,6 +841,8 @@ type CommentsEdge {
   cursor: String!
   node: Comment!
 }
+
+union CompleteSignupResult = User | UserCandidate
 
 type ContributionOption {
   descriptionHtml: String!
@@ -1820,6 +1827,7 @@ type Mutation {
     passwordConfirmation: String!
     phone: String!
     token: String!
+    uid: UID!
   ): MutationCompleteRegistrationResult!
   contribute(optionId: ID!, phone: String!): MutationContributeResult!
   createBot(
@@ -2202,7 +2210,7 @@ type Mutation {
     nickname: String!
     otherEmails: [String!]!
     phone: String!
-    uid: String!
+    uid: UID!
   ): MutationUpdateUserResult!
   updateUserCandidate(
     address: String!
@@ -2219,6 +2227,11 @@ type Mutation {
     Inscrire définitivement l'utilisateur·ice si vrai. Si faux, mettre à jour la demande d'inscription sans créer de compte
     """
     register: Boolean!
+
+    """
+    Le @ souhaité
+    """
+    uid: UID!
   ): MutationUpdateUserCandidateResult!
   updateUserPermissions(canAccessDocuments: Boolean!, uid: String!): User!
   updateUserPicture(file: File!, uid: String!): String!
@@ -2312,24 +2325,7 @@ type Mutation {
     godparentUid: String!
     id: ID
   ): MutationUpsertGodparentRequestResult!
-  upsertGroup(
-    address: String!
-    color: String!
-    description: String!
-    email: String
-    links: [LinkInput!]!
-    longDescription: String!
-    mailingList: String
-    name: String!
-    parentUid: String
-    related: [String!]!
-    schoolUid: String
-    selfJoinable: Boolean!
-    studentAssociationUid: String
-    type: GroupType!
-    uid: String
-    website: String!
-  ): MutationUpsertGroupResult!
+  upsertGroup(input: UpsertGroupInput!, uid: UID!): MutationUpsertGroupResult!
   upsertGroupMember(
     canEditArticles: Boolean!
     canEditMembers: Boolean!
@@ -2503,7 +2499,7 @@ type MutationCancelRegistrationSuccess {
 union MutationCompleteRegistrationResult = Error | MutationCompleteRegistrationSuccess | ZodError
 
 type MutationCompleteRegistrationSuccess {
-  data: Boolean!
+  data: CompleteSignupResult!
 }
 
 union MutationContributeResult = Error | MutationContributeSuccess
@@ -3294,6 +3290,11 @@ type Query {
   ticketByUid(eventUid: String!, groupUid: String!, uid: String!): Ticket!
   ticketGroup(id: ID!): TicketGroup!
   ticketsOfEvent(eventUid: String!, groupUid: String!): [Ticket!]!
+
+  """
+  Vérifie si un identifiant (un “@” dans l'interface) est disponible
+  """
+  uidIsAvailable(uid: UID!): Boolean!
   upcomingChangelog: QueryUpcomingChangelogResult!
   user(id: ID, uid: String): User!
   userByEmail(email: String!): User!
@@ -4852,6 +4853,34 @@ input TicketInput {
 }
 
 """
+A field whose value matches /^[\w-]{3,255}$/.
+"""
+scalar UID
+
+input UpsertGroupInput {
+  address: String!
+  color: String!
+  description: String!
+  email: String
+  links: [LinkInput!]!
+  longDescription: String!
+  mailingList: String
+  name: String!
+  parentUid: String
+  related: [String!]!
+  schoolUid: String
+  selfJoinable: Boolean!
+  studentAssociationUid: String
+  type: GroupType!
+
+  """
+  Ne sert qu'à la création du groupe. Il est impossible de modifier un uid existant
+  """
+  uid: UID
+  website: String!
+}
+
+"""
 Users are the people who use the app
 """
 type User implements Node & Pictured {
@@ -5034,7 +5063,7 @@ type UserCandidate implements Node {
   emailValidated: Boolean!
   firstName: String!
   fullName: String!
-  graduationYear: Int
+  graduationYear: Int!
   id: ID!
   lastName: String!
   major: Major
@@ -5058,6 +5087,8 @@ type UserCandidate implements Node {
   schoolEmail: String
   schoolServer: String
   schoolUid: String
+  suggestedUid: String!
+  uid: String!
 
   """
   Vrai si l'utilisateur a été créé via un lien d'inscription rapide.

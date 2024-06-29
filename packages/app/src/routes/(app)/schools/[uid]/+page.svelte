@@ -21,7 +21,7 @@
       {
         lifetime: Number.POSITIVE_INFINITY,
       },
-    );
+    )!;
   });
 
   onDestroy(async () => {

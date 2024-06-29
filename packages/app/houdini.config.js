@@ -90,6 +90,16 @@ const config = {
         throw new Error('Cannot unmarshal File scalar');
       },
     },
+    UID: {
+      type: 'string',
+      marshal: (x) => {
+        if (!/[\w-]{3,255}/.test(x)) {
+          throw new Error('Identifiant invalide');
+        }
+        return x;
+      },
+      unmarshal: (x) => x,
+    },
   },
   features: {
     runtimeScalars: {

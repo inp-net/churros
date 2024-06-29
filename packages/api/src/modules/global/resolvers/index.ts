@@ -5,3 +5,4 @@
 export * from './query.build-info.js';
 export * from './query.render-markdown.js';
 export * from './query.search.js';
+export * from './query.uid-is-available.js';

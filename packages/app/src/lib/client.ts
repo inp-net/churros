@@ -4,7 +4,7 @@ import type { ClientPlugin } from '$houdini';
 import { HoudiniClient, subscription } from '$houdini';
 import { redirectToLogin } from '$lib/session';
 import { createClient } from 'graphql-ws';
-import { UNAUTHORIZED_ERROR_MESSAGE } from '../../../api/src/lib/error.js';
+import { UNAUTHORIZED_ERROR_MESSAGE } from '../../../api/src/lib/errors.js';
 
 const unauthorizedErrorHandler: ClientPlugin = () => {
   return {

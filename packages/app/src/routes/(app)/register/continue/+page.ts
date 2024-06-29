@@ -1,39 +1,46 @@
-import { loadQuery } from '$lib/zeus.js';
+import { graphql, loadAll } from '$houdini';
+import { load_PageSignupContinue } from '$houdini/plugins/houdini-svelte/stores/PageSignupContinue.js';
 import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, url }) => {
-  const token = url.searchParams.get('token');
+graphql(`
+  query PageSignupContinue($token: String!) {
+    userCandidate(token: $token) {
+      emailValidated
+      email
+      address
+      birthday
+      uid
+      suggestedUid
+      firstName
+      fullName
+      lastName
+      majorId
+      graduationYear
+      phone
+      schoolUid
+      cededImageRightsToTVn7
+      apprentice
+      usingQuickSignup
+      needsManualValidation
+    }
+    schoolGroups {
+      names
+      majors {
+        id
+        name
+        shortName
+        schools {
+          name
+        }
+      }
+    }
+  }
+`);
 
-  if (!token) throw redirect(307, '..');
+export async function load(event) {
+  const token = event.url.searchParams.get('token');
 
-  return loadQuery(
-    {
-      userCandidate: [
-        { token },
-        {
-          emailValidated: true,
-          email: true,
-          address: true,
-          birthday: true,
-          firstName: true,
-          fullName: true,
-          lastName: true,
-          majorId: true,
-          graduationYear: true,
-          phone: true,
-          schoolUid: true,
-          cededImageRightsToTVn7: true,
-          apprentice: true,
-          usingQuickSignup: true,
-          needsManualValidation: true,
-        },
-      ],
-      schoolGroups: {
-        names: true,
-        majors: { id: true, name: true, shortName: true, schools: { name: true } },
-      },
-    },
-    { fetch },
-  );
-};
+  if (!token) redirect(307, '..');
+
+  return loadAll(load_PageSignupContinue({ event, variables: { token } }));
+}

@@ -4,10 +4,11 @@
   import IconWarningCircle from '~icons/mdi/warning';
   import IconSucessCircle from '~icons/mdi/check-circle';
   import { tooltip } from '$lib/tooltip';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
   export let label: string;
   export let hint = '';
-  export let hintStyle: 'muted' | 'warning' | 'success' = 'muted';
+  export let hintStyle: 'muted' | 'warning' | 'success' | 'loading' = 'muted';
   export let id: string | undefined = undefined;
   export let required = false;
   export let errors: string[] | undefined = [];
@@ -31,7 +32,9 @@
       {/each}
     {:else if hint}
       <span class="hint {hintStyle}">
-        {#if hintStyle === 'warning'}
+        {#if hintStyle === 'loading'}
+          <LoadingSpinner />
+        {:else if hintStyle === 'warning'}
           <IconWarningCircle aria-hidden="true" />
         {:else if hintStyle === 'success'}
           <IconSucessCircle aria-hidden="true" />

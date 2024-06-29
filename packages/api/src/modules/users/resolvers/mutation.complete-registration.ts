@@ -1,19 +1,28 @@
-import { builder, createLdapUser, prisma, yearTier } from '#lib';
-import { DateTimeScalar } from '#modules/global';
-import { NotificationChannel, type Major, type UserCandidate } from '@churros/db/prisma';
+import { builder, createLdapUser, freeUidValidator, prisma, yearTier } from '#lib';
+import { DateTimeScalar, UIDScalar } from '#modules/global';
+import { notify } from '#modules/notifications';
+import { NotificationChannel, Prisma, type Major, type UserCandidate } from '@churros/db/prisma';
+import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
-import { notify } from '../../notifications/utils/send.js';
-import { completeRegistration, hashPassword } from '../index.js';
+import { completeRegistration, hashPassword, UserCandidateType, UserType } from '../index.js';
 // TODO rename registration to signup
 
 builder.mutationField('completeRegistration', (t) =>
   t.field({
-    type: 'Boolean',
+    type: builder.unionType('CompleteSignupResult', {
+      types: [UserCandidateType, UserType],
+      resolveType: (value) =>
+        Object.hasOwn(value, 'usingQuickSignup') ? UserCandidateType : UserType,
+    }),
     errors: { types: [ZodError] },
     args: {
       token: t.arg.string(),
       firstName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       lastName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
+      uid: t.arg({
+        type: UIDScalar,
+        validate: [freeUidValidator],
+      }),
       majorId: t.arg.id({ required: false }),
       graduationYear: t.arg.int({ validate: { min: 1900, max: 2100 } }),
       birthday: t.arg({ type: DateTimeScalar, required: false }),
@@ -35,6 +44,7 @@ builder.mutationField('completeRegistration', (t) =>
         firstName,
         lastName,
         majorId,
+        uid,
         graduationYear,
         address,
         birthday,
@@ -59,6 +69,7 @@ builder.mutationField('completeRegistration', (t) =>
           where: { token },
           data: {
             emailValidated: true,
+            uid,
             address,
             birthday,
             firstName,
@@ -75,7 +86,12 @@ builder.mutationField('completeRegistration', (t) =>
             usingQuickSignup: { include: { school: { include: { majors: true } } } },
           },
         }),
-      );
+      ).catch((error) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025')
+          throw new GraphQLError("Cette demande d'inscription déjà complétée ou inexistante.");
+
+        throw error;
+      });
       const userOrCandidate: (typeof user | UserCandidate) & { major?: Major | undefined | null } =
         user ??
         (await prisma.userCandidate.findUniqueOrThrow({
@@ -130,7 +146,7 @@ builder.mutationField('completeRegistration', (t) =>
         }
       }
 
-      return user !== undefined;
+      return userOrCandidate;
     },
   }),
 );

@@ -10,11 +10,11 @@ import {
 } from '@churros/db/prisma';
 import { quickSignupIsValidFor } from './quick-signup.js';
 import { isSchoolEmailForMajor, resolveSchoolMail } from './school-emails.js';
-import { createUid } from './uid.js';
 
 export const saveUser = async (
   {
     id,
+    uid,
     email,
     firstName,
     lastName,
@@ -43,7 +43,7 @@ export const saveUser = async (
   const user = await prisma.user.create({
     ...returnPrismaQuery,
     data: {
-      uid: await createUid({ firstName, lastName }),
+      uid,
       email: resolvedStudentEmail ?? email,
       graduationYear: graduationYear!,
       firstName,
