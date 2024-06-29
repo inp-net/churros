@@ -47,11 +47,13 @@ builder.mutationField('upsertPage', (t) =>
                 'Ne peut contenir que des caractères alphanumériques, des tirets, des tirets du bas et des slashes.',
             },
           ],
+          minLength: 1,
+          maxLength: 255,
         },
       }),
       title: t.arg.string({
         description: 'Le titre de la page',
-        validate: { minLength: 1 },
+        validate: { minLength: 1, maxLength: 255 },
       }),
       body: t.arg.string({
         description: 'Le corps de la page. Supporte le markdown',
