@@ -34,7 +34,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     aled('hooks.server.ts: handle: deleting invalid token');
     response.headers.append(
       'Set-Cookie',
-      cookie.serialize('token', '', { expires: new Date(0), path: '/', sameSite: 'strict' }),
+      cookie.serialize('token', '', { expires: new Date(0), path: '/', sameSite: 'lax' }),
     );
   }
 
