@@ -2325,7 +2325,7 @@ type Mutation {
     godparentUid: String!
     id: ID
   ): MutationUpsertGodparentRequestResult!
-  upsertGroup(input: UpsertGroupInput!, uid: UID!): MutationUpsertGroupResult!
+  upsertGroup(input: UpsertGroupInput!, uid: UID): MutationUpsertGroupResult!
   upsertGroupMember(
     canEditArticles: Boolean!
     canEditMembers: Boolean!
@@ -2679,7 +2679,7 @@ type MutationUpsertGodparentRequestSuccess {
   data: GodparentRequest!
 }
 
-union MutationUpsertGroupResult = Error | MutationUpsertGroupSuccess
+union MutationUpsertGroupResult = Error | MutationUpsertGroupSuccess | ZodError
 
 type MutationUpsertGroupSuccess {
   data: Group!
@@ -4537,6 +4537,16 @@ There is one student association per school
 """
 type StudentAssociation implements Pictured {
   """
+  Si l'utilsateur·ice courant·e peut créer des groupes rattachés à cette AE
+  """
+  canCreateGroups(
+    """
+    Quel type de groupe l'on souhaiterait créer. Si non spécifié, renvoie vrai si l'on peut créer au moins un type de groupe
+    """
+    type: GroupType
+  ): Boolean!
+
+  """
   L'utilisateur·ice connecté·e peut éditer (créer ou modifier) les pages de l'AE
   """
   canEditPages: Boolean!
@@ -4555,6 +4565,11 @@ type StudentAssociation implements Pictured {
     last: Int
     types: [GroupType!]
   ): StudentAssociationGroupsConnection!
+
+  """
+  Nombre de groupes reliés à cette AE
+  """
+  groupsCount: Int!
   id: ID!
   links: [Link!]!
   name: String!
@@ -4859,18 +4874,18 @@ scalar UID
 
 input UpsertGroupInput {
   address: String!
-  color: String!
+  color: String
   description: String!
   email: String
   links: [LinkInput!]!
   longDescription: String!
   mailingList: String
   name: String!
-  parentUid: String
+  parent: UID
   related: [String!]!
-  schoolUid: String
+  school: UID
   selfJoinable: Boolean!
-  studentAssociationUid: String
+  studentAssociation: UID
   type: GroupType!
 
   """

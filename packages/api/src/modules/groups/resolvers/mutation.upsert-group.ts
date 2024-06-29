@@ -3,6 +3,7 @@ import { UIDScalar } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { getDescendants, hasCycle } from 'arborist';
 import { GraphQLError } from 'graphql';
+import { ZodError } from 'zod';
 import { GroupEnumType, GroupType, membersNeedToPayForTheStudentAssociation } from '../index.js';
 import { canCreateGroup, canEditGroup } from '../utils/permissions.js';
 
@@ -29,11 +30,11 @@ const UpsertGroupInput = builder.inputType('UpsertGroupInput', {
         "Ne sert qu'à la création du groupe. Il est impossible de modifier un uid existant",
     }),
     type: t.field({ type: GroupEnumType }),
-    parentUid: t.string({ required: false }),
-    schoolUid: t.string({ required: false }),
-    studentAssociationUid: t.string({ required: false }),
+    parent: t.field({ type: UIDScalar, required: false }),
+    school: t.field({ type: UIDScalar, required: false }),
+    studentAssociation: t.field({ type: UIDScalar, required: false }),
     name: t.string({ validate: { maxLength: 255 } }),
-    color: t.string({ validate: { regex: /#[\dA-Fa-f]{6}/ } }),
+    color: t.string({ required: false, validate: { regex: /#[\dA-Fa-f]{6}/ } }),
     address: t.string({ validate: { maxLength: 255 } }),
     description: t.string({ validate: { maxLength: 255 } }),
     website: t.string({ validate: { maxLength: 255 } }),
@@ -50,18 +51,18 @@ const UpsertGroupInput = builder.inputType('UpsertGroupInput', {
 builder.mutationField('upsertGroup', (t) =>
   t.prismaField({
     type: GroupType,
-    errors: {},
+    errors: { types: [ZodError, Error] },
     args: {
-      uid: t.arg({ type: UIDScalar, required: true }),
+      uid: t.arg({ type: UIDScalar, required: false }),
       input: t.arg({ type: UpsertGroupInput }),
     },
     validate: [
       [
-        ({ uid, input }) => Boolean(uid && input.uid),
+        ({ uid, input }) => !(uid && input.uid),
         { message: "Impossible de modifier l'@ d'un groupe existant" },
       ],
       [
-        ({ uid, input }) => Boolean(!uid && !input.uid),
+        ({ uid, input }) => !(!uid && !input.uid),
         {
           message:
             'Use uid to choose which group to update or input.uid to create a new group with that uid',
@@ -80,9 +81,9 @@ builder.mutationField('upsertGroup', (t) =>
         },
       });
       if (!group) return false;
-      const newParentGroup = input.parentUid
+      const newParentGroup = input.parent
         ? await prisma.group.findUniqueOrThrow({
-            where: { uid: input.parentUid },
+            where: { uid: input.parent },
             include: {
               studentAssociation: true,
               parent: true,
@@ -91,9 +92,9 @@ builder.mutationField('upsertGroup', (t) =>
         : null;
 
       let newGroup;
-      if (input?.studentAssociationUid) {
+      if (input?.studentAssociation) {
         const newStudentAssociation = await prisma.studentAssociation.findUnique({
-          where: { uid: input.studentAssociationUid },
+          where: { uid: input.studentAssociation },
           select: { id: true },
         });
         newGroup = {
@@ -116,13 +117,13 @@ builder.mutationField('upsertGroup', (t) =>
           selfJoinable,
           uid: newUid,
           type,
-          parentUid,
+          parent: parentUid,
           name,
           color,
           address,
           description,
           website,
-          studentAssociationUid,
+          studentAssociation: studentAssociationUid,
           email,
           mailingList,
           longDescription,
@@ -204,7 +205,7 @@ builder.mutationField('upsertGroup', (t) =>
         type,
         selfJoinable,
         name,
-        color,
+        color: color ?? undefined,
         familyRoot: familyId ? { connect: { id: familyId } } : undefined,
         address,
         description,
@@ -219,6 +220,7 @@ builder.mutationField('upsertGroup', (t) =>
         where: { uid: oldUid ?? '' },
         create: {
           ...data,
+          color: color ?? '',
           links: { create: links },
           uid: newUid!,
           related: { connect: related.map((uid) => ({ uid })) },

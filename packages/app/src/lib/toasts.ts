@@ -1,4 +1,10 @@
 import { track } from '$lib/analytics';
+import {
+  mutationErrorMessages,
+  mutationSucceeded,
+  type MutationResult,
+  type SucceededMutationResult,
+} from '$lib/errors';
 import { minutesToMilliseconds } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { get, writable } from 'svelte/store';
@@ -112,57 +118,21 @@ export const toasts = {
    * @param param3
    */
   mutation<MutationName extends string, SuccessData>(
-    mutationName: MutationName,
+    mutationName: NoInfer<MutationName>,
     successMessage: string | ((data: SuccessData) => string),
     errorMessage: string,
-    result: {
-      errors?: Array<{ message: string }> | null;
-      data?: Record<
-        MutationName,
-        | {
-            data: SuccessData;
-          }
-        | {
-            message: string;
-          }
-        | {
-            fieldErrors: Array<{ path: string[]; message: string }>;
-          }
-        | {
-            __typename: `${string}don't match this${string}`;
-          }
-      > | null;
-    },
-  ): result is typeof result & { data: Record<MutationName, { data: SuccessData }> } {
-    const { data, errors } = result;
-    if (data?.[mutationName]) {
-      const result = data[mutationName];
-      if (result && 'data' in result) {
-        toasts.success(
-          typeof successMessage === 'function' ? successMessage(result.data) : successMessage,
-        );
-        return true;
-      }
-
-      toasts.error(
-        errorMessage,
-        result && 'fieldErrors' in result
-          ? result.fieldErrors
-              .map(
-                ({ path, message }) =>
-                  `${path.map((part) => (/\d+/.test(part) ? (Number.parseInt(part) + 1).toString() : part)).join(': ')}: ${message}`,
-              )
-              .join('\n')
-          : 'message' in result
-            ? result.message
-            : '',
+    result: MutationResult<MutationName, SuccessData>,
+  ): result is SucceededMutationResult<MutationName, SuccessData> {
+    if (mutationSucceeded(mutationName, result)) {
+      toasts.success(
+        typeof successMessage === 'function'
+          ? successMessage(result.data[mutationName].data)
+          : successMessage,
       );
-      return false;
+      return true;
     }
-    toasts.error(
-      errorMessage,
-      errors ? errors.map(({ message }) => message).join('\n') : 'Erreur inconnue',
-    );
+
+    toasts.error(errorMessage, mutationErrorMessages(mutationName, result).join('; '));
     return false;
   },
   async remove(id: string) {

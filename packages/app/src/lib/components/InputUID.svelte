@@ -7,8 +7,10 @@
   export let label: string;
   export let hint =
     'Composé de lettres, chiffres, - et _. Choisis-le bien, tu ne pourras pas le modifier par la suite ;)';
-  export let errors: string[] | undefined;
+  export let errors: string[] | undefined = undefined;
   let uidAvailabilityErrors: string[] = [];
+  export let unavailable: boolean = false;
+  $: unavailable = uidAvailabilityErrors.length > 0;
 
   async function runUidCheck(uid: string) {
     uidIsAvailable = null;
@@ -20,9 +22,8 @@
         return r.json();
       }));
 
-      if (!uidIsAvailable && uidAvailabilityErrors.length === 0) 
+      if (!uidIsAvailable && uidAvailabilityErrors.length === 0)
         uidAvailabilityErrors = [`@${uid} est indisponible.`];
-      
     } catch {
       uidAvailabilityErrors = [
         'Impossible de vérifier la disponibilité de cet @. Réessaye plus tard.',
