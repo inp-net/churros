@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import CalendarDay from '$lib/components/CalendarDay.svelte';
-  import CardEvent from '$lib/components/CardEvent.houdini.svelte';
+  import CardEvent from '$lib/components/CardEvent.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';

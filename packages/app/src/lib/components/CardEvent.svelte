@@ -1,81 +1,78 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
-  import AvatarPerson from './AvatarPerson.svelte';
-  import { formatDuration, formatRelative, intervalToDuration, isFuture, isPast } from 'date-fns';
-  import IconLocation from '~icons/mdi/location-outline';
-  import IconWhen from '~icons/mdi/calendar-outline';
+  import { goto } from '$app/navigation';
+  import { EventFrequency, fragment, graphql, type CardEvent } from '$houdini';
+  import LoadingText from '$lib/components/LoadingText.svelte';
   import { formatDateTime, formatEventDates, formatRecurrence } from '$lib/dates';
+  import { allLoaded, loaded, loading, onceLoaded } from '$lib/loading';
+  import { formatDuration, formatRelative, intervalToDuration, isFuture, isPast } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
   import { onDestroy, onMount } from 'svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import IconGear from '~icons/mdi/gear-outline';
+  import IconWhen from '~icons/mdi/calendar-outline';
   import ChevronUp from '~icons/mdi/chevron-up';
-  import { goto } from '$app/navigation';
-  import ButtonInk from './ButtonInk.svelte';
   import IconDots from '~icons/mdi/dots-horizontal';
-  import { EventFrequency } from '../../zeus';
+  import IconGear from '~icons/mdi/gear-outline';
+  import IconLocation from '~icons/mdi/location-outline';
+  import ButtonInk from './ButtonInk.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
   export let collapsible = false;
-  export let expandedEventId: string | undefined = undefined;
-  export let id: string;
-  $: collapsed = collapsible && expandedEventId !== id;
-  export let pictureFile: string;
-  export let title: string;
-  export let descriptionPreview: string;
-  export let startsAt: Date;
-  export let endsAt: Date;
-  export let location: string;
-  export let capacity: number;
-  export let placesLeft: number | undefined = undefined;
-  export let frequency: EventFrequency;
-  export let recurringUntil: Date | undefined = undefined;
-  export let tickets: Array<{
-    name: string;
-    price: number;
-    uid: string;
-    opensAt?: Date;
-    closesAt?: Date;
-    placesLeft?: number | null;
-    capacity: number;
-  }>;
   export let href: string;
-  export let author:
-    | {
-        uid: string;
-        pictureFile: string;
-        fullName: string;
-        groups: Array<{
-          title: string;
-          group: {
-            name: string;
-            uid: string;
-          };
-        }>;
+  export let expandedEventId: string | undefined = undefined;
+  $: collapsed = collapsible && expandedEventId !== $data?.id;
+
+  export let event: CardEvent;
+  $: data = fragment(
+    event,
+    graphql(`
+      fragment CardEvent on Event @loading {
+        id
+        pictureURL
+        title
+        descriptionPreview
+        startsAt
+        endsAt
+        location
+        capacity
+        placesLeft
+        frequency
+        recurringUntil
+        tickets {
+          uid
+          name
+          price
+          opensAt
+          closesAt
+          placesLeft
+          capacity
+        }
+        canEdit
       }
-    | undefined = undefined;
-  export let group: {
-    name: string;
-    uid: string;
-    pictureFile: string;
-  };
-  export let canEdit: boolean | undefined = false;
+    `),
+  );
 
-  let shotgunsStart: Date | undefined;
-  let shotgunsEnd: Date | undefined;
+  let shotgunsStart: Date | null;
+  let shotgunsEnd: Date | null;
 
-  if (tickets[0]) shotgunsStart = tickets[0].opensAt;
+  $: ({ tickets } = $data);
 
-  for (const ticket of tickets) {
-    if (ticket.opensAt && (shotgunsStart === undefined || ticket.opensAt < shotgunsStart))
-      shotgunsStart = ticket.opensAt;
+  function updateShotgunDates(tickets: (typeof $data)['tickets']) {
+    if (!allLoaded(tickets)) return;
+    if (tickets[0]) shotgunsStart = tickets[0].opensAt;
+
+    for (const ticket of tickets) {
+      if (ticket.opensAt && (!shotgunsStart || ticket.opensAt < shotgunsStart))
+        shotgunsStart = ticket.opensAt;
+    }
+
+    if (tickets[0]) shotgunsEnd = tickets[0].closesAt;
+
+    for (const ticket of tickets) {
+      if (ticket.closesAt && (!shotgunsEnd || ticket.closesAt > shotgunsEnd))
+        shotgunsEnd = ticket.closesAt;
+    }
   }
 
-  if (tickets[0]) shotgunsEnd = tickets[0].closesAt;
-
-  for (const ticket of tickets) {
-    if (ticket.closesAt && (shotgunsEnd === undefined || ticket.closesAt > shotgunsEnd))
-      shotgunsEnd = ticket.closesAt;
-  }
+  $: updateShotgunDates(tickets);
 
   // Est-ce que le shotgun est en cours ? Mis à jour toutes les secondes
   $: shotgunning =
@@ -127,51 +124,66 @@
   on:keypress={gotoEventIfNotLink}
 >
   <section
-    class:has-picture={Boolean(pictureFile)}
+    class:has-picture={Boolean($data.pictureURL)}
     class="title"
-    style:color={pictureFile ? 'white' : 'var(--text)'}
-    style:background-image={pictureFile
-      ? `linear-gradient(rgb(0 0 0 / var(--alpha)), rgb(0 0 0 / var(--alpha))), url('${env.PUBLIC_STORAGE_URL}${pictureFile}') `
-      : undefined}
+    style:color={loaded($data.pictureURL) && $data.pictureURL ? 'white' : 'var(--text)'}
+    style:background-image={onceLoaded(
+      $data.pictureURL,
+      (url) =>
+        url
+          ? `linear-gradient(rgb(0 0 0 / var(--alpha)), rgb(0 0 0 / var(--alpha))), url('${url}') `
+          : undefined,
+      undefined,
+    )}
   >
-    <a class="title-link" {href}><h2 class="title-text">{title}</h2></a>
+    <a class="title-link" {href}
+      ><h2 class="title-text">
+        <LoadingText value={$data.title}>Lorem ipsum dolor</LoadingText>
+      </h2></a
+    >
     {#if collapsible}
       <button
         class="expand-collapse chevron-up {collapsed ? 'collapsed' : ''}"
         on:click={() => {
-          expandedEventId = collapsed ? id : '';
+          if (!loaded($data.id)) return;
+          expandedEventId = collapsed ? $data.id : '';
         }}><ChevronUp /></button
       >
     {/if}
   </section>
   <section class="content {collapsed ? 'collapsed' : ''}">
     <section class="desc">
-      {descriptionPreview}
+      <LoadingText value={$data.descriptionPreview} lines={2}></LoadingText>
       <ButtonInk insideProse {href} icon={IconDots}>Voir plus</ButtonInk>
     </section>
     <section class="schedule">
       <h4 class="typo-field-label">Évènement</h4>
       <p>
         <IconWhen />
-        {#if frequency === EventFrequency.Once}
-          {formatEventDates(frequency, startsAt, endsAt, recurringUntil)}
+        {#if !loaded($data.startsAt) || !loaded($data.endsAt) || !loaded($data.frequency) || !loaded($data.recurringUntil)}
+          <LoadingText>Dans 3 jours</LoadingText>
+        {:else if $data.frequency === EventFrequency.Once}
+          {formatEventDates($data)}
         {:else}
-          {formatRecurrence(frequency, startsAt, endsAt)}
+          {formatRecurrence($data.frequency, $data.startsAt, $data.endsAt)}
         {/if}
       </p>
-      {#if location}
-        <p><IconLocation /> {location}</p>
+      {#if $data.location}
+        <p>
+          <IconLocation />
+          <LoadingText value={$data.location}>Lorem ipsum dolor sit amet</LoadingText>
+        </p>
       {/if}
     </section>
 
     <!-- Je vois pas pourquoi il y en aurait pas mais dans la db c'est possible -->
     <!-- uwun: si ya pas de billets :p -->
-    {#if shotgunsStart}
+    {#if shotgunsStart && loaded($data.placesLeft) && loaded($data.capacity)}
       <section class="shotgun">
         <h4 class="typo-field-label">Shotgun</h4>
-        {#if shotgunning && placesLeft !== null && placesLeft !== undefined}
+        {#if shotgunning && $data.placesLeft !== null && $data.placesLeft !== null}
           <p>
-            {#if placesLeft + capacity === Number.POSITIVE_INFINITY}
+            {#if $data.placesLeft + $data.capacity === Number.POSITIVE_INFINITY}
               Places illimitées
             {:else}
               <!-- <strong>
@@ -184,10 +196,15 @@
           <div class="places">
             {#each tickets as { uid, name, price }}
               <div class="link">
-                <ButtonSecondary tabindex={collapsed ? -1 : undefined} href={`${href}/book/${uid}`}>
+                <ButtonSecondary
+                  tabindex={collapsed ? -1 : undefined}
+                  href={onceLoaded(uid, (uid) => `${href}/book/${uid}`, '')}
+                >
                   <strong>
-                    {name}
-                    <span class="ticket-price">{price} €</span>
+                    <LoadingText value={name}>Billet</LoadingText>
+                    <span class="ticket-price">
+                      <LoadingText value={price}>10</LoadingText> €
+                    </span>
                   </strong>
                 </ButtonSecondary>
               </div>
@@ -218,17 +235,7 @@
       </section>
     {/if}
 
-    <!-- Pas d'auteur si le bonhomme supprime son compte-->
-    {#if author}
-      <section class="author">
-        <AvatarPerson
-          href="/users/{author.uid}"
-          role={author.groups.find((g) => g.group.uid === group.uid)?.title ?? ''}
-          {...author}
-        />
-      </section>
-    {/if}
-    {#if canEdit}
+    {#if loading($data.canEdit, false)}
       <div class="button-admin">
         <ButtonSecondary href={href + '/edit/'}><IconGear /></ButtonSecondary>
       </div>
