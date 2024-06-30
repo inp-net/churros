@@ -37,6 +37,7 @@ builder.mutationField('completeRegistration', (t) =>
       ({ password, passwordConfirmation }) => password === passwordConfirmation,
       { path: ['passwordConfirmation'], message: 'Les mots de passe ne correspondent pas.' },
     ],
+    // @ts-expect-error FIXME typescript can't infer that the return type is a union
     async resolve(
       _,
       {
