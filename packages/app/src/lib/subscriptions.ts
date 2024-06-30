@@ -39,6 +39,8 @@ function renderQuery(query: Record<string, unknown> | object): string {
 }
 
 const chainedSubscriptions = <Q extends ValueTypes['Subscription']>(q: Q) =>
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   chain(fetch, {})('subscription', { scalars })(q);
 
 export function _suscribeWithToken<Query extends ValueTypes['Subscription']>(
