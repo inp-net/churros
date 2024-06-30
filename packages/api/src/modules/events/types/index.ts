@@ -7,4 +7,5 @@ export * from './event-manager-power-level.js';
 export * from './event-manager.js';
 export * from './event-search-result.js';
 export * from './event.js';
+export * from './events-by-day.js';
 export * from './manager-of-event-input.js';

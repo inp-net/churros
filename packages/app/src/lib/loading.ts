@@ -66,7 +66,10 @@ export function allLoaded<T>(value: T): value is AllLoaded<T> {
   return loaded(value);
 }
 
-export function mapLoading<T>(value: MaybeLoading<T>, mapping: (value: T) => T): MaybeLoading<T> {
+export function mapLoading<T, O>(
+  value: MaybeLoading<T>,
+  mapping: (value: T) => O,
+): MaybeLoading<O> {
   if (loaded(value)) return mapping(value);
   return PendingValue;
 }

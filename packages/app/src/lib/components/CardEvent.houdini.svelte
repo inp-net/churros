@@ -19,14 +19,14 @@
   export let collapsible = false;
   export let href: string;
   export let expandedEventId: string | undefined = undefined;
-  export let id: string;
-  $: collapsed = collapsible && expandedEventId !== id;
+  $: collapsed = collapsible && expandedEventId !== $data?.id;
 
   export let event: CardEvent;
   $: data = fragment(
     event,
     graphql(`
       fragment CardEvent on Event @loading {
+        id
         pictureURL
         title
         descriptionPreview
@@ -155,7 +155,8 @@
       <button
         class="expand-collapse chevron-up {collapsed ? 'collapsed' : ''}"
         on:click={() => {
-          expandedEventId = collapsed ? id : '';
+          if (!loaded($data.id)) return;
+          expandedEventId = collapsed ? $data.id : '';
         }}><ChevronUp /></button
       >
     {/if}
@@ -177,8 +178,11 @@
           {formatRecurrence($data.frequency, $data.startsAt, $data.endsAt)}
         {/if}
       </p>
-      {#if location}
-        <p><IconLocation /> {location}</p>
+      {#if $data.location}
+        <p>
+          <IconLocation />
+          <LoadingText value={$data.location}>Lorem ipsum dolor sit amet</LoadingText>
+        </p>
       {/if}
     </section>
 

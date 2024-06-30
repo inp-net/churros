@@ -827,6 +827,20 @@ enum EventManagerPowerLevel {
   ScanTickets
 }
 
+type EventsByDay {
+  date: DateTime!
+
+  """
+  Évènements qui ont lieu (commencent) à ce jour
+  """
+  happening: [Event!]!
+
+  """
+  Évènements qui ont leur premier shotgun à ce jour
+  """
+  shotgunning: [Event!]!
+}
+
 type FamilyTree {
   nesting: String!
   users: [User!]!
@@ -2360,6 +2374,21 @@ type Query {
     pastRecurring: Boolean
     upcomingShotguns: Boolean
   ): QueryEventsConnection!
+
+  """
+  Tout les évènements, regroupés par date (de début). Les curseurs (before, after) peuvent être des dates au format YYYY-MM-DD
+  """
+  eventsByDay(
+    after: String
+    before: String
+    first: Int
+
+    """
+    N'include seulement les évènements qui veulent être inclus dans l'affichage kiosque
+    """
+    kiosk: Boolean
+    last: Int
+  ): QueryEventsByDayConnection!
   eventsInWeek(today: DateTime!): [Event!]!
   eventsOfGroup(after: String, before: String, first: Int, groupUid: String!, last: Int): QueryEventsOfGroupConnection!
   existsInSchoolLdap(email: String!): Boolean!
@@ -2553,6 +2582,17 @@ type QueryDocumentsOfSubjectConnection {
 type QueryDocumentsOfSubjectConnectionEdge {
   cursor: String!
   node: Document!
+}
+
+type QueryEventsByDayConnection {
+  edges: [QueryEventsByDayConnectionEdge]!
+  nodes: [EventsByDay]!
+  pageInfo: PageInfo!
+}
+
+type QueryEventsByDayConnectionEdge {
+  cursor: String!
+  node: EventsByDay!
 }
 
 type QueryEventsConnection {

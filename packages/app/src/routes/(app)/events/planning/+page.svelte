@@ -1,38 +1,28 @@
 <script lang="ts">
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import CalendarDay from '$lib/components/CalendarDay.svelte';
-  import CardEvent from '$lib/components/CardEvent.svelte';
+  import CardEvent from '$lib/components/CardEvent.houdini.svelte';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import LoadingText from '$lib/components/LoadingText.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+  import { allLoaded, loaded, loading, mapLoading, onceAllLoaded } from '$lib/loading';
   import { groupLogoSrc } from '$lib/logos';
+  import { infinitescroll } from '$lib/scroll';
   import { isDark } from '$lib/theme';
-  import { compareAsc, format, isFuture, isToday, parse, parseISO } from 'date-fns';
-  import groupBy from 'lodash.groupby';
+  import { notNull } from '$lib/typing';
+  import { format } from 'date-fns';
   import { Gif } from 'svelte-tenor';
   import IconChevronDown from '~icons/mdi/chevron-down';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
+  $: ({ PageEventsPlanning } = data);
+
   let expandedEventId: string | undefined = undefined;
+  let openedShotgunsList: Date | undefined = undefined;
 
-  $: events = data.events?.edges.map((e) => e?.node);
-
-  $: groupedByDate = groupBy(events, (e) => (e?.startsAt ? format(e?.startsAt, 'yyyy-MM-dd') : ''));
-
-  $: groupedByShotgun = groupBy(events, (e) =>
-    e.mySoonestShotgunOpensAt ? format(e.mySoonestShotgunOpensAt, 'yyyy-MM-dd') : '',
-  );
-
-  $: shownDays = [...new Set([...Object.keys(groupedByDate), ...Object.keys(groupedByShotgun)])]
-    .filter((dateString) => {
-      if (!dateString) return false;
-      const date = parse(dateString, 'yyyy-MM-dd', new Date());
-      return isFuture(date) || isToday(date);
-    })
-    .sort();
-
-  let openedShotgunsList: string | undefined = undefined;
-
-  function handleClickOnShotgunListHeader(day: string, e: Event) {
+  function handleClickOnShotgunListHeader(day: Date, e: Event) {
     if (!(e.target instanceof HTMLElement)) return;
     if (e.target.closest('a, button')) return;
 
@@ -49,101 +39,124 @@
       { name: 'Mes places', href: '/bookings' },
     ]}
   />
-
-  <div class="days">
-    {#if shownDays.length === 0 || events.length === 0}
-      <div class="empty">
-        <Gif
-          gif={{
-            id: '27616552',
-            description: 'John Travolta confused',
-            width: 220,
-            height: 220,
-            gif: 'https://media.tenor.com/EbyOKpncujQAAAAi/john-travolta-tra-jt-transparent.gif',
-          }}
-        />
-        <p>Aucun événement à venir</p>
-      </div>
-    {/if}
-    {#each shownDays as day}
-      {@const eventsOfDay = groupedByDate[day]}
-      <section class="day">
-        <CalendarDay
-          showMonth={parseISO(day).getMonth() !== new Date().getMonth()}
-          day={parseISO(day)}
-        />
-        <div class="shotguns-and-events">
-          {#if groupedByShotgun[day]?.length > 0}
-            {@const shotguns = groupedByShotgun[day]}
-            <div class="shotguns" class:open={openedShotgunsList === day}>
-              <!-- svelte-ignore a11y-click-events-have-key-events -->
-              <!-- svelte-ignore a11y-no-static-element-interactions -->
-              <header
-                on:click={(e) => {
-                  handleClickOnShotgunListHeader(day, e);
-                }}
-              >
-                <ul class="groups nobullet">
-                  {#each new Set(shotguns.map((s) => s.group.uid)) as groupUid}
+  <MaybeError result={$PageEventsPlanning} let:data={{ eventsByDay }}>
+    <!-- waiting for https://github.com/sveltejs/svelte/pull/8637 -->
+    {@const events = eventsByDay}
+    <div class="days" use:infinitescroll={async () => await PageEventsPlanning.loadNextPage()}>
+      {#each events.edges.filter(notNull) as { node: { date, happening, shotgunning } }}
+        <section class="day">
+          <CalendarDay
+            showMonth={loaded(date) && date.getMonth() !== new Date().getMonth()}
+            day={date}
+          />
+          <div class="shotguns-and-events">
+            {#if shotgunning.length > 0}
+              <div class="shotguns" class:open={loaded(date) && openedShotgunsList === date}>
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <header
+                  on:click={(e) => {
+                    if (!loaded(date)) return;
+                    handleClickOnShotgunListHeader(date, e);
+                  }}
+                >
+                  <ul class="groups nobullet">
+                    {#each new Set(shotgunning.map((s) => s.group.uid)) as groupUid}
+                      <li>
+                        <img
+                          class="group-logo"
+                          src={groupLogoSrc(
+                            $isDark,
+                            shotgunning.find((s) => s.group.uid === groupUid)?.group ?? {
+                              pictureFile: '',
+                              pictureFileDark: '',
+                            },
+                          )}
+                          alt={loading(groupUid, '')}
+                        />
+                      </li>
+                    {/each}
+                  </ul>
+                  {shotgunning.length} shotgun{shotgunning.length > 1 ? 's' : ''}
+                  <ButtonGhost
+                    on:click={() => {
+                      if (!loaded(date)) return;
+                      openedShotgunsList = openedShotgunsList === date ? undefined : date;
+                    }}
+                  >
+                    <IconChevronDown></IconChevronDown>
+                  </ButtonGhost>
+                </header>
+                <ul class="nobullet shotguns-list">
+                  {#each shotgunning as shotgun}
                     <li>
                       <img
                         class="group-logo"
-                        src={groupLogoSrc(
-                          $isDark,
-                          shotguns.find((s) => s.group.uid === groupUid)?.group ?? {
-                            pictureFile: '',
-                            pictureFileDark: '',
-                          },
-                        )}
-                        alt={groupUid}
+                        src={groupLogoSrc($isDark, shotgun.group)}
+                        alt={loading(shotgun.group.name, '')}
                       />
+                      {#if allLoaded(shotgun)}
+                        <a href="/events/{shotgun.group.uid}/{shotgun.uid}">{shotgun.title}</a>
+                      {:else}
+                        <LoadingText>Lorem ipsum</LoadingText>
+                      {/if}
+                      {#if shotgun.mySoonestShotgunOpensAt}
+                        <strong
+                          ><LoadingText
+                            value={mapLoading(shotgun.mySoonestShotgunOpensAt, (date) =>
+                              format(date, 'HH:mm'),
+                            )}>00:00</LoadingText
+                          ></strong
+                        >
+                      {/if}
                     </li>
                   {/each}
                 </ul>
-                {shotguns.length} shotgun{shotguns.length > 1 ? 's' : ''}
-                <ButtonGhost
-                  on:click={() => {
-                    openedShotgunsList = openedShotgunsList === day ? undefined : day;
-                  }}
-                >
-                  <IconChevronDown></IconChevronDown>
-                </ButtonGhost>
-              </header>
-              <ul class="nobullet shotguns-list">
-                {#each shotguns as shotgun}
+              </div>
+            {/if}
+            {#if happening.length > 0}
+              <ul class="nobullet events-of-day">
+                {#each happening as event}
                   <li>
-                    <img
-                      class="group-logo"
-                      src={groupLogoSrc($isDark, shotgun.group)}
-                      alt={shotgun.group.name}
-                    />
-                    <a href="/events/{shotgun.group.uid}/{shotgun.uid}">{shotgun.title}</a>
-                    {#if shotgun.mySoonestShotgunOpensAt}
-                      <strong>{format(shotgun.mySoonestShotgunOpensAt, 'HH:mm')}</strong>
+                    {#if event}
+                      <CardEvent
+                        bind:expandedEventId
+                        collapsible
+                        href={onceAllLoaded(
+                          [event.group.uid, event.uid],
+                          (groupUid, uid) => `/events/${groupUid}/${uid}`,
+                          '',
+                        )}
+                        {event}
+                      />
                     {/if}
                   </li>
                 {/each}
               </ul>
-            </div>
-          {/if}
-          {#if eventsOfDay?.length > 0}
-            <ul class="nobullet events-of-day">
-              {#each eventsOfDay.sort( (a, b) => compareAsc(a.startsAt, b.startsAt), ) as event (event.id)}
-                <li>
-                  <CardEvent
-                    bind:expandedEventId
-                    collapsible
-                    href="/events/{event.group.uid}/{event.uid}"
-                    {...event}
-                  />
-                </li>
-              {/each}
-            </ul>
-          {/if}
+            {/if}
+          </div>
+        </section>
+        {#if $PageEventsPlanning.pageInfo.hasNextPage}
+          <section class="loading">
+            <LoadingSpinner></LoadingSpinner>
+          </section>
+        {/if}
+      {:else}
+        <div class="empty">
+          <Gif
+            gif={{
+              id: '27616552',
+              description: 'John Travolta confused',
+              width: 220,
+              height: 220,
+              gif: 'https://media.tenor.com/EbyOKpncujQAAAAi/john-travolta-tra-jt-transparent.gif',
+            }}
+          />
+          <p>Aucun événement à venir</p>
         </div>
-      </section>
-    {/each}
-  </div>
+      {/each}
+    </div>
+  </MaybeError>
 </div>
 
 <style>
@@ -265,6 +278,12 @@
     margin-top: 2rem;
     margin-bottom: 4rem;
     text-align: center;
+  }
+
+  section.loading {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
   }
 
   :global(.gif) {

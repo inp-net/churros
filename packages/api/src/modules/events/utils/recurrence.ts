@@ -12,7 +12,7 @@ import {
   setYear,
 } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
-export function findNextRecurringEvent(event: EventPrisma): EventPrisma {
+export function findNextRecurringEvent<T extends EventPrisma>(event: T): T {
   const today = utcToZonedTime(new Date(), 'Europe/Berlin');
   const { startsAt, endsAt, frequency, recurringUntil } = event;
   let newStartsAt = startsAt;
