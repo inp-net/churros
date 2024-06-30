@@ -74,7 +74,7 @@ function generateDotFile(graph: ImportGraph): string {
   const dotLines = [
     'strict digraph ImportGraph {',
     ...(options.all ? Array.from(graph).map(([node]) => `    "${node}";`) : []),
-    ...graph.flatMap(([from, edges]) => edges.map((to) => `    "${from}" -> "${to}";`)),
+    ...graph.flatMap(([from, edges]) => edges.map((to) => `    "${from}" -> "${to}";`)).sort(),
     '}',
   ];
   return dotLines.join('\n');

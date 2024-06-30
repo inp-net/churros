@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import { DateTimeScalar, PicturedInterface } from '#modules/global';
-import { GroupEnumType, GroupType } from '#modules/groups';
+import { GroupEnumType, GroupType, canCreateGroup } from '#modules/groups';
 
 export const StudentAssociationType = builder.prismaObject('StudentAssociation', {
   interfaces: [PicturedInterface],
@@ -52,5 +52,41 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
     // }),
     contributionOptions: t.relation('contributionOptions'),
     pictureFile: t.exposeString('pictureFile'),
+    groupsCount: t.int({
+      description: 'Nombre de groupes reliés à cette AE',
+      resolve: async ({ id }) => {
+        return prisma.group.count({
+          where: {
+            studentAssociationId: id,
+          },
+        });
+      },
+    }),
+    canCreateGroups: t.boolean({
+      description: "Si l'utilsateur·ice courant·e peut créer des groupes rattachés à cette AE",
+      args: {
+        type: t.arg({
+          type: GroupEnumType,
+          required: false,
+          description:
+            "Quel type de groupe l'on souhaiterait créer. Si non spécifié, renvoie vrai si l'on peut créer au moins un type de groupe",
+        }),
+      },
+      resolve: async ({ uid }, { type }, { user }) => {
+        if (type) {
+          return canCreateGroup(user, {
+            studentAssociationUid: uid,
+            type,
+          });
+        }
+
+        return Object.values(GroupEnumType).some((type) =>
+          canCreateGroup(user, {
+            studentAssociationUid: uid,
+            type,
+          }),
+        );
+      },
+    }),
   }),
 });

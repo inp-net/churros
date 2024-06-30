@@ -1,4 +1,4 @@
-import { builder, htmlToText, prisma, soonest, subscriptionName, toHtml } from '#lib';
+import { builder, htmlToText, prisma, subscriptionName, toHtml } from '#lib';
 import { DateTimeScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
 import { LogType } from '#modules/logs';
 import { ProfitsBreakdownType } from '#modules/payments';
@@ -22,7 +22,7 @@ import {
 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
-  include: { managers: true, group: true },
+  include: { managers: true, group: true, tickets: true },
   interfaces: [
     PicturedInterface,
     //@ts-expect-error dunno why it complainnns
@@ -77,63 +77,7 @@ export const EventType = builder.prismaNode('Event', {
     showPlacesLeft: t.exposeBoolean('showPlacesLeft', {
       description: 'Vrai si le nombre de places restantes doit être affiché',
     }),
-    mySoonestShotgunOpensAt: t.field({
-      type: DateTimeScalar,
-      nullable: true,
-      async resolve({ id }, _, { user }) {
-        if (!user) return;
-        const tickets = await prisma.ticket.findMany({
-          where: { event: { id } },
-          include: {
-            openToGroups: true,
-            openToSchools: true,
-            openToMajors: true,
-            event: {
-              include: {
-                managers: { include: { user: true } },
-                bannedUsers: true,
-                group: {
-                  include: {
-                    studentAssociation: true,
-                  },
-                },
-              },
-            },
-          },
-        });
 
-        const userWithContributions = await prisma.user.findUniqueOrThrow({
-          where: { id: user?.id },
-          include: {
-            groups: {
-              include: { group: true },
-            },
-            major: {
-              include: {
-                schools: true,
-              },
-            },
-            contributions: {
-              include: {
-                option: {
-                  include: {
-                    offeredIn: true,
-                    paysFor: {
-                      include: {
-                        school: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        });
-
-        const accessibleTickets = tickets.filter((t) => userCanSeeTicket(t, userWithContributions));
-        return soonest(...accessibleTickets.map((t) => t.opensAt));
-      },
-    }),
     reacted: t.boolean({
       args: { emoji: t.arg.string() },
       async resolve({ id }, { emoji }, { user }) {

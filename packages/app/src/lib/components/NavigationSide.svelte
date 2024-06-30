@@ -30,8 +30,10 @@
   import IconAddCircle from '~icons/mdi/plus-circle';
   import IconAddCircleOutline from '~icons/mdi/plus-circle-outline';
   import LogoFrappe from './LogoFrappe.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
 
   export let current: (typeof DESKTOP_NAVIGATION_TABS)[number];
+  export let openNewGroupModal: () => void;
   let flyoutOpen = false;
 
   beforeNavigate(() => {
@@ -273,10 +275,10 @@
     {/if}
 
     {#if $data?.admin || $data?.canEditGroups || $data?.studentAssociationAdmin}
-      <a href="/groups/create">
+      <ButtonGhost on:click={openNewGroupModal}>
         <IconGroupOutline />
         <span>Groupe</span>
-      </a>
+      </ButtonGhost>
     {/if}
 
     {#if $data?.admin}
@@ -308,7 +310,7 @@
   </section>
 </div>
 
-<style>
+<style lang="scss">
   nav {
     display: flex;
     flex-direction: column;
@@ -421,7 +423,7 @@
     font-size: 0.8rem;
   }
 
-  @media (max-width: 899px) {
+  @media (max-width: $breakpoint-navbar-side) {
     nav {
       display: none;
     }

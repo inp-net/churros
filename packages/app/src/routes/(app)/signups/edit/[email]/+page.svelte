@@ -92,7 +92,7 @@
     try {
       const { updateUserCandidate } = await $zeus.mutate({
         updateUserCandidate: [
-          { register, ...args },
+          { register, ...args, uid: null }, // TODO support changing the requested UID (once this file has been houdinified)
           {
             '__typename': true,
             '...on MutationUpdateUserCandidateSuccess': { data: true },

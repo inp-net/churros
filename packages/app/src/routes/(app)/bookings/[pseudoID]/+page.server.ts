@@ -1,5 +1,5 @@
 import { ensureIdPrefix, hasIdPrefix, removeIdPrefix } from '$lib/typenames';
-import { Selector, loadQuery, makeMutation } from '$lib/zeus';
+import { loadQuery, makeMutation } from '$lib/zeus';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
@@ -41,7 +41,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
         {
           id,
         },
-        Selector('Registration')({
+        {
           '__typename': true,
           '...on Error': {
             message: true,
@@ -91,7 +91,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
               },
             },
           },
-        }),
+        },
       ],
     },
     {

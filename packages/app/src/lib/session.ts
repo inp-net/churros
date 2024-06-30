@@ -1,4 +1,5 @@
 import { page } from '$app/stores';
+import { graphql, type SessionToken$data } from '$houdini';
 import { redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 import { derived } from 'svelte/store';
@@ -61,21 +62,22 @@ export const sessionUserQuery = () =>
 
 export type SessionUser = PropsType<typeof sessionUserQuery, 'User'>;
 
+graphql(`
+  fragment SessionToken on Credential {
+    token
+    expiresAt
+  }
+`);
+
 /** Saves `token` as a cookie. */
 export const saveSessionToken = (
   document: { cookie: string },
-  {
-    token,
-    expiresAt,
-  }: {
-    token: string;
-    expiresAt?: Date | null;
-  },
+  { token, expiresAt }: SessionToken$data,
 ) => {
   document.cookie = cookie.serialize('token', token, {
     expires: expiresAt ? new Date(expiresAt) : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     path: '/',
-    sameSite: 'strict',
+    sameSite: 'lax',
   });
 };
 

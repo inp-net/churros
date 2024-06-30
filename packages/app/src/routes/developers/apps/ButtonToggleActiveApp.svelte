@@ -7,11 +7,17 @@
   export let active: boolean;
 
   async function toggleActive() {
-    await $zeus.mutate({
-      [active ? 'deactivateApp' : 'activateApp']: [{ id }, true],
-    });
+    await $zeus.mutate(
+      active
+        ? {
+            deactivateApp: [{ id }, true],
+          }
+        : {
+            activateApp: [{ id }, true],
+          },
+    );
     active = !active;
-    await toasts.success('Opération effectuée avec succès');
+    toasts.success('Opération effectuée avec succès');
   }
 </script>
 

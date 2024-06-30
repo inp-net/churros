@@ -1,14 +1,15 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
-  import IconAdd from '~icons/mdi/add';
-  import FileInput from '$lib/components/InputFile.svelte';
-  import IconTrash from '~icons/mdi/delete';
-  import { $ as Zvar, zeus } from '$lib/zeus';
-  import IconEdit from '~icons/mdi/pencil';
-  import InputField from './InputField.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import { toasts } from '$lib/toasts';
   import { graphql } from '$houdini';
+  import FileInput from '$lib/components/InputFile.svelte';
+  import { toasts } from '$lib/toasts';
+  import { zeus } from '$lib/zeus';
+  import IconAdd from '~icons/mdi/add';
+  import IconTrash from '~icons/mdi/delete';
+  import IconEdit from '~icons/mdi/pencil';
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import { deleteObjectPicture, mutateObjectPicture } from './FormPicture.tsunsafe';
+  import InputField from './InputField.svelte';
 
   export const LEGENDS = {
     Group: 'Logo du groupe',
@@ -44,23 +45,12 @@
     if (updating) return;
     try {
       updating = true;
-      const result = await $zeus.mutate(
-        {
-          [`update${objectName}Picture`]: [
-            {
-              ...(['Group', 'User'].includes(objectName) ? { uid } : { id }),
-              ...(objectName === 'Group' ? { dark } : {}),
-              file: Zvar('file', 'File!'),
-            },
-            true,
-          ],
-        },
-        { variables: { file: files[0] } },
-      );
+      const result = await mutateObjectPicture($zeus, objectName, id, uid, dark, files[0]);
+      /* @ts-enable */
       toasts.success(`${LEGENDS[objectName]} mis${objectName === 'Group' ? '' : 'e'} à jour`);
       // Add a timestamp to the URL to force the browser to reload the image
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      filepath = `${result[`update${objectName}Picture`]}?v=${Date.now()}`;
+      filepath = `${result}?v=${Date.now()}`;
     } finally {
       // `updating` is set to false when the image loads
     }
@@ -71,15 +61,7 @@
     if (deleting) return;
     try {
       deleting = true;
-      const deleted = await $zeus.mutate({
-        [`delete${objectName}Picture`]: [
-          {
-            ...(['Group', 'User'].includes(objectName) ? { uid } : { id }),
-            ...(objectName === 'Group' ? { dark } : {}),
-          },
-          true,
-        ],
-      });
+      const deleted = await deleteObjectPicture($zeus, objectName, id, uid, dark);
       if (deleted) object[pictureFilePropertyName] = '';
     } finally {
       deleting = false;

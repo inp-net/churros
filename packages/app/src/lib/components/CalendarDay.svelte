@@ -1,26 +1,36 @@
 <script lang="ts">
-  import { isSameDay } from 'date-fns';
+  import { mapLoading, onceLoaded, type MaybeLoading } from '$lib/loading';
+  import LoadingText from './LoadingText.svelte';
+  import { isToday } from 'date-fns';
 
-  export let day: Date;
+  export let day: MaybeLoading<Date>;
   export let showMonth = false;
 </script>
 
-<div class="calendar-day" class:today={isSameDay(day, new Date())}>
-  <span class="day-name"
-    >{day
-      .toLocaleDateString('default', {
-        weekday: 'short',
-      })
-      .replace(/\.$/, '')}</span
-  >
+<div class="calendar-day" class:today={onceLoaded(day, isToday, false)}>
+  <span class="day-name">
+    <LoadingText
+      value={mapLoading(day, (day) =>
+        day
+          .toLocaleDateString('default', {
+            weekday: 'short',
+          })
+          .replace(/\.$/, ''),
+      )}>{new Date().toLocaleDateString('default', { weekday: 'short' })}</LoadingText
+    >
+  </span>
   <span class="day-number">
-    {day.getDate()}
+    <LoadingText value={mapLoading(day, (day) => day.getDate())}>13</LoadingText>
   </span>
   {#if showMonth}
     <span class="month-name"
-      >{day.toLocaleDateString('default', {
-        month: 'short',
-      })}</span
+      ><LoadingText
+        value={mapLoading(day, (day) =>
+          day.toLocaleDateString('default', {
+            month: 'short',
+          }),
+        )}>{new Date().toLocaleDateString('default', { month: 'short' })}</LoadingText
+      ></span
     >
   {/if}
 </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { graphql } from '$houdini';
@@ -18,6 +19,7 @@
   import type { Snapshot } from './$types';
   import { writable } from 'svelte/store';
   import { syncToLocalStorage } from 'svelte-store2storage';
+  import { allLoaded } from '$lib/loading';
 
   export let data: PageData;
   $: ({ AppLayout } = data);
@@ -65,7 +67,21 @@
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
   $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
 
+  // Select which student association to create groups linked to.
+  // We get all the student associations the logged-in user can create groups on,
+  // and we get the one which has the most groups existing
+  $: creatingGroupLinkedTo =
+    $AppLayout.data?.me?.major?.schools
+      .filter((s) => allLoaded(s))
+      .flatMap((s) => s.studentAssociations)
+      .filter((ae) => ae.canCreateGroups)
+      .sort((a, b) => a.groupsCount - b.groupsCount)
+      .toReversed()
+      .at(0)?.uid ?? null;
+
   let changelogAcknowledged = false;
+
+  let newGroupDialog: HTMLDialogElement;
 </script>
 
 {#if !changelogAcknowledged && $AppLayout.data?.combinedChangelog}
@@ -77,6 +93,9 @@
     log={$AppLayout.data?.combinedChangelog}
   />
 {/if}
+
+<ModalCreateGroup studentAssociation={creatingGroupLinkedTo} bind:element={newGroupDialog}
+></ModalCreateGroup>
 
 {#if $AppLayout.data?.me?.bookings}
   <OverlayQuickBookings {now} bookings={$AppLayout.data.me.bookings}></OverlayQuickBookings>
@@ -99,7 +118,11 @@
   {/if}
 
   <div class="page-and-sidenav">
-    <NavigationSide current={currentTabDesktop($page.url)} user={$AppLayout.data?.me ?? null} />
+    <NavigationSide
+      openNewGroupModal={() => newGroupDialog.showModal()}
+      current={currentTabDesktop($page.url)}
+      user={$AppLayout.data?.me ?? null}
+    />
     <div
       id="scrollable-area"
       class="contents-and-announcements"
@@ -138,7 +161,10 @@
     </div>
   </div>
 
-  <NavigationBottom current={currentTabMobile($page.url)} />
+  <NavigationBottom
+    openNewGroupModal={() => newGroupDialog.showModal()}
+    current={currentTabMobile($page.url)}
+  />
 </div>
 
 <style lang="scss">

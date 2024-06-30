@@ -1,6 +1,7 @@
 <script lang="ts">
   import { beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import { scrollToTop } from '$lib/scroll';
   import { me } from '$lib/session';
   import type { MOBILE_NAVIGATION_TABS } from '$lib/tabs';
@@ -25,6 +26,7 @@
   import LogoFrappe from './LogoFrappe.svelte';
 
   export let current: (typeof MOBILE_NAVIGATION_TABS)[number];
+  export let openNewGroupModal: () => void;
   let flyoutOpen = false;
 
   beforeNavigate(() => {
@@ -153,10 +155,10 @@
     {/if}
 
     {#if $me?.admin || $me?.canEditGroups || $me?.studentAssociationAdmin}
-      <a href="/groups/create">
+      <ButtonGhost on:click={openNewGroupModal}>
         <IconGroupOutline />
         <span>Groupe</span>
-      </a>
+      </ButtonGhost>
     {/if}
 
     {#if $me?.admin}

@@ -6,7 +6,7 @@
   export let type = 'text';
   export let name: string | undefined = undefined;
   export let hint = '';
-  export let hintStyle: 'muted' | 'warning' | 'success' = 'muted';
+  export let hintStyle: 'muted' | 'warning' | 'loading' | 'success' = 'muted';
   export let errors: string[] | undefined = [];
   export let initial: string | undefined = undefined;
   export let placeholder: string | undefined = undefined;

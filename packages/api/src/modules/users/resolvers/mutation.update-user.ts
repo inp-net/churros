@@ -1,9 +1,9 @@
 import { builder, log, markAsContributor, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
-import { DateTimeScalar } from '#modules/global';
+import { DateTimeScalar, UIDScalar } from '#modules/global';
 import { LinkInput } from '#modules/links';
+import { userIsAdminOf } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { phone as parsePhoneNumber } from 'phone';
-import { userIsAdminOf } from '../../../permissions/index.js';
 import { UserType, requestEmailChange } from '../index.js';
 
 /** Updates a user. */
@@ -12,7 +12,7 @@ builder.mutationField('updateUser', (t) =>
     type: UserType,
     errors: {},
     args: {
-      uid: t.arg.string(),
+      uid: t.arg({ type: UIDScalar }),
       firstName: t.arg.string(),
       lastName: t.arg.string(),
       majorId: t.arg.id({ required: false }),

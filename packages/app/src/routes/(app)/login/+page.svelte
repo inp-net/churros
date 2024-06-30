@@ -61,7 +61,7 @@
         return;
       }
 
-      saveSessionToken(document, login.data);
+      saveSessionToken(document, { ...login.data, expiresAt: login.data.expiresAt ?? null });
       await redirect();
     } finally {
       loading = false;

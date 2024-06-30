@@ -2,7 +2,7 @@ import { redirectToLogin } from '$lib/session';
 import { Selector, loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const _notificationsQuery = Selector('Notification')({
+export const _notificationsQuery = Selector('QueryNotificationsConnection')({
   pageInfo: { hasNextPage: true, startCursor: true },
   edges: {
     cursor: true,

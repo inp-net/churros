@@ -8,6 +8,15 @@ query AppLayout(
   me @include(if: $loggedIn) @loading {
     ...NavigationSide
     ...NavigationTop
+    major {
+      schools {
+        studentAssociations {
+          groupsCount
+          uid
+          canCreateGroups
+        }
+      }
+    }
 
     bookings(forUserOnly: true, first: 5) @loading(count: 0) {
       ...OverlayQuickBookings

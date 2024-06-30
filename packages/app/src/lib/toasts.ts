@@ -1,4 +1,10 @@
 import { track } from '$lib/analytics';
+import {
+  mutationErrorMessages,
+  mutationSucceeded,
+  type MutationResult,
+  type SucceededMutationResult,
+} from '$lib/errors';
 import { minutesToMilliseconds } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { get, writable } from 'svelte/store';
@@ -38,7 +44,13 @@ type ToastOptions<T> = {
 export const toasts = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...writable([] as Array<Toast<any>>),
-  add<T>(type: Toast<T>['type'], title: string, body = '', options?: ToastOptions<T>): string {
+  add<T>(
+    type: Toast<T>['type'],
+    title: string,
+    body = '',
+    options?: ToastOptions<T>,
+  ): string | undefined {
+    if (!title) return;
     const { labels, data, closed, action, ...rest } = options ?? {
       labels: { action: '', close: '' },
       data: undefined,
@@ -71,16 +83,16 @@ export const toasts = {
       },
     ]);
   },
-  warn<T>(title: string, body = '', options?: ToastOptions<T>): string {
+  warn<T>(title: string, body = '', options?: ToastOptions<T>): string | undefined {
     return toasts.add<T>('warning', title, body, options);
   },
-  info<T>(title: string, body = '', options?: ToastOptions<T>): string {
+  info<T>(title: string, body = '', options?: ToastOptions<T>): string | undefined {
     return toasts.add<T>('info', title, body, options);
   },
-  success<T>(title: string, body = '', options?: ToastOptions<T>): string {
+  success<T>(title: string, body = '', options?: ToastOptions<T>): string | undefined {
     return toasts.add<T>('success', title, body, options);
   },
-  error<T>(title: string, body = '', options?: ToastOptions<T>): string {
+  error<T>(title: string, body = '', options?: ToastOptions<T>): string | undefined {
     const wordsCount = body.split(' ').length + title.split(' ').length;
     options = {
       lifetime:
@@ -106,54 +118,21 @@ export const toasts = {
    * @param param3
    */
   mutation<MutationName extends string, SuccessData>(
-    mutationName: MutationName,
+    mutationName: NoInfer<MutationName>,
     successMessage: string | ((data: SuccessData) => string),
     errorMessage: string,
-    {
-      errors,
-      data,
-    }: {
-      errors?: Array<{ message: string }> | null;
-      data?: Record<
-        MutationName,
-        | {
-            data: SuccessData;
-          }
-        | {
-            message: string;
-          }
-        | {
-            fieldErrors: Array<{ path: string[]; message: string }>;
-          }
-      > | null;
-    },
-  ): boolean {
-    if (data?.[mutationName]) {
-      const result = data[mutationName];
-      if (result && 'data' in result) {
-        toasts.success(
-          typeof successMessage === 'function' ? successMessage(result.data) : successMessage,
-        );
-        return true;
-      }
-
-      toasts.error(
-        errorMessage,
-        result && 'fieldErrors' in result
-          ? result.fieldErrors
-              .map(
-                ({ path, message }) =>
-                  `${path.map((part) => (/\d+/.test(part) ? (Number.parseInt(part) + 1).toString() : part)).join(': ')}: ${message}`,
-              )
-              .join('\n')
-          : result.message,
+    result: MutationResult<MutationName, SuccessData>,
+  ): result is SucceededMutationResult<MutationName, SuccessData> {
+    if (mutationSucceeded(mutationName, result)) {
+      toasts.success(
+        typeof successMessage === 'function'
+          ? successMessage(result.data[mutationName].data)
+          : successMessage,
       );
-      return false;
+      return true;
     }
-    toasts.error(
-      errorMessage,
-      errors ? errors.map(({ message }) => message).join('\n') : 'Erreur inconnue',
-    );
+
+    toasts.error(errorMessage, mutationErrorMessages(mutationName, result).join('; '));
     return false;
   },
   async remove(id: string) {

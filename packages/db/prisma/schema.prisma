@@ -120,6 +120,7 @@ model GodparentRequest {
 /// UserCandidates are users in the registration process
 model UserCandidate {
   id        String   @id @default(dbgenerated("nanoid('candidate:')"))
+  uid       String   @db.VarChar(255) @default("")
   createdAt DateTime @default(now())
 
   email          String  @unique @db.VarChar(255)
@@ -258,7 +259,7 @@ model Minor {
   id        String    @id @default(dbgenerated("nanoid('minor:')"))
   name      String
   shortName String    @default("")
-  uid       String
+  uid       String // TODO rename to slug, since this is _not_ a universally unique uid
   majors    Major[]
   yearTier  Int
   subjects  Subject[]
@@ -500,7 +501,7 @@ model Article {
   id          String     @id @default(dbgenerated("nanoid('a:')"))
   authorId    String?
   groupId     String
-  uid         String     @db.VarChar(255)
+  uid         String     @db.VarChar(255) // TODO rename to slug, and possibly remove (use the local id in the URL)
   title       String     @db.VarChar(255)
   body        String     @db.Text
   published   Boolean    @default(false)
@@ -540,7 +541,7 @@ model Event {
   contactMail    String
   beneficiary    LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
   description    String         @db.Text
-  uid            String         @db.VarChar(255)
+  uid            String         @db.VarChar(255) // TODO rename to slug, and possibly remove (use the local id in the URL)
   title          String         @db.VarChar(255)
   startsAt       DateTime
   endsAt         DateTime
@@ -610,7 +611,7 @@ model TicketGroup {
 /// A ticket is a way to register for an event. May include a price and conditions.
 model Ticket {
   id                    String          @id @default(dbgenerated("nanoid('t:')"))
-  uid                   String
+  uid                   String // TODO rename to slug, and possibly remove (use the local id in the URL)
   eventId               String
   ticketGroupId         String?
   name                  String          @db.VarChar(255)
@@ -759,7 +760,7 @@ model PaypalTransaction {
 /// A bar week is a week during which some groups takeover the bar staff
 model BarWeek {
   id          String   @id @default(dbgenerated("nanoid('barweek:')"))
-  uid         String   @unique
+  uid         String   @unique // TODO rename to slug, and possibly remove (use the local id in the URL)
   groups      Group[]
   startsAt    DateTime
   endsAt      DateTime
@@ -839,7 +840,7 @@ model TeachingUnit {
 model Subject {
   id             String        @id @default(dbgenerated("nanoid('subj:')"))
   name           String
-  uid            String
+  uid            String // TODO rename to slug, since this is _not_ a universally unique uid
   shortName      String        @default("") @db.VarChar(255)
   yearTier       Int?
   forApprentices Boolean       @default(false)
@@ -876,7 +877,7 @@ enum DocumentType {
 
 model Document {
   id         String   @id @default(dbgenerated("nanoid('doc:')"))
-  uid        String
+  uid        String // TODO rename to slug, since this is _not_ a universally unique uid
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   schoolYear Int // stored using the school year start's year
@@ -983,7 +984,7 @@ model Picture {
 
 model ShopItem {
   id                    String           @id @default(dbgenerated("nanoid('shopitem:')"))
-  uid                   String
+  uid                   String // TODO rename to slug, since this is _not_ a universally unique uid
   name                  String           @db.VarChar(255)
   price                 Float            @default(0)
   stock                 Int              @default(0)

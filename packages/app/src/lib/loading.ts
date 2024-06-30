@@ -47,11 +47,11 @@ export function onceLoaded<I, O>(
   return loaded(value) ? compute(value) : fallback;
 }
 
-export function onceAllLoaded<T extends unknown[], O>(
+export function onceAllLoaded<T extends unknown[], O, FO>(
   values: { [K in keyof T]: MaybeLoading<T[K]> },
   compute: (...loadedValues: T) => O,
-  fallback: O,
-): O {
+  fallback: FO,
+): O | FO {
   if (values.every(loaded)) return compute(...(values as T));
   return fallback;
 }
@@ -66,7 +66,10 @@ export function allLoaded<T>(value: T): value is AllLoaded<T> {
   return loaded(value);
 }
 
-export function mapLoading<T>(value: MaybeLoading<T>, mapping: (value: T) => T): MaybeLoading<T> {
+export function mapLoading<T, O>(
+  value: MaybeLoading<T>,
+  mapping: (value: T) => O,
+): MaybeLoading<O> {
   if (loaded(value)) return mapping(value);
   return PendingValue;
 }

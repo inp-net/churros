@@ -1,13 +1,10 @@
-import { builder, log, prisma, purgeUserSessions } from '#lib';
+import { builder, freeUidValidator, log, prisma, purgeUserSessions } from '#lib';
+import { UIDScalar } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { getDescendants, hasCycle } from 'arborist';
 import { GraphQLError } from 'graphql';
-import {
-  GroupEnumType,
-  GroupType,
-  createGroupUid,
-  membersNeedToPayForTheStudentAssociation,
-} from '../index.js';
+import { ZodError } from 'zod';
+import { GroupEnumType, GroupType, membersNeedToPayForTheStudentAssociation } from '../index.js';
 import { canCreateGroup, canEditGroup } from '../utils/permissions.js';
 
 /*
@@ -23,33 +20,59 @@ import { canCreateGroup, canEditGroup } from '../utils/permissions.js';
   This would also allow us to (maybe?) change the contact email automatically when the student association changes (unless it is already set to sth different than the old student association's email)
  */
 
+const UpsertGroupInput = builder.inputType('UpsertGroupInput', {
+  fields: (t) => ({
+    uid: t.field({
+      required: false,
+      type: UIDScalar,
+      validate: [freeUidValidator],
+      description:
+        "Ne sert qu'à la création du groupe. Il est impossible de modifier un uid existant",
+    }),
+    type: t.field({ type: GroupEnumType }),
+    parent: t.field({ type: UIDScalar, required: false }),
+    school: t.field({ type: UIDScalar, required: false }),
+    studentAssociation: t.field({ type: UIDScalar, required: false }),
+    name: t.string({ validate: { maxLength: 255 } }),
+    color: t.string({ required: false, validate: { regex: /#[\dA-Fa-f]{6}/ } }),
+    address: t.string({ validate: { maxLength: 255 } }),
+    description: t.string({ validate: { maxLength: 255 } }),
+    website: t.string({ validate: { maxLength: 255 } }),
+    email: t.string({ validate: { email: true }, required: false }),
+    mailingList: t.string({ validate: { email: true }, required: false }),
+    longDescription: t.string(),
+    links: t.field({ type: [LinkInput] }),
+    selfJoinable: t.boolean(),
+    related: t.field({ type: ['String'] }),
+  }),
+});
+
 /** Upserts a group. */
 builder.mutationField('upsertGroup', (t) =>
   t.prismaField({
     type: GroupType,
-    errors: {},
+    errors: { types: [ZodError, Error] },
     args: {
-      uid: t.arg.string({ required: false }),
-      type: t.arg({ type: GroupEnumType }),
-      parentUid: t.arg.string({ required: false }),
-      schoolUid: t.arg.string({ required: false }),
-      studentAssociationUid: t.arg.string({ required: false }),
-      name: t.arg.string({ validate: { maxLength: 255 } }),
-      color: t.arg.string({ validate: { regex: /#[\dA-Fa-f]{6}/ } }),
-      address: t.arg.string({ validate: { maxLength: 255 } }),
-      description: t.arg.string({ validate: { maxLength: 255 } }),
-      website: t.arg.string({ validate: { maxLength: 255 } }),
-      email: t.arg.string({ validate: { email: true }, required: false }),
-      mailingList: t.arg.string({ validate: { email: true }, required: false }),
-      longDescription: t.arg.string(),
-      links: t.arg({ type: [LinkInput] }),
-      selfJoinable: t.arg.boolean(),
-      related: t.arg({ type: ['String'] }),
+      uid: t.arg({ type: UIDScalar, required: false }),
+      input: t.arg({ type: UpsertGroupInput }),
     },
-    async authScopes(_, { uid, ...args }, { user }) {
+    validate: [
+      [
+        ({ uid, input }) => !(uid && input.uid),
+        { message: "Impossible de modifier l'@ d'un groupe existant" },
+      ],
+      [
+        ({ uid, input }) => !(!uid && !input.uid),
+        {
+          message:
+            'Use uid to choose which group to update or input.uid to create a new group with that uid',
+        },
+      ],
+    ],
+    async authScopes(_, { uid, input }, { user }) {
       if (!user) return false;
       const creating = !uid;
-      if (creating) return canCreateGroup(user, args);
+      if (creating) return canCreateGroup(user, input);
       const group = await prisma.group.findUnique({
         where: { uid },
         include: {
@@ -58,9 +81,9 @@ builder.mutationField('upsertGroup', (t) =>
         },
       });
       if (!group) return false;
-      const newParentGroup = args.parentUid
+      const newParentGroup = input.parent
         ? await prisma.group.findUniqueOrThrow({
-            where: { uid: args.parentUid },
+            where: { uid: input.parent },
             include: {
               studentAssociation: true,
               parent: true,
@@ -69,17 +92,17 @@ builder.mutationField('upsertGroup', (t) =>
         : null;
 
       let newGroup;
-      if (args?.studentAssociationUid) {
+      if (input?.studentAssociation) {
         const newStudentAssociation = await prisma.studentAssociation.findUnique({
-          where: { uid: args.studentAssociationUid },
+          where: { uid: input.studentAssociation },
           select: { id: true },
         });
         newGroup = {
           studentAssociationId: newStudentAssociation?.id,
-          ...args,
+          ...input,
         };
       } else {
-        newGroup = args;
+        newGroup = input;
       }
 
       return canEditGroup(user, group, newGroup, newParentGroup);
@@ -89,21 +112,24 @@ builder.mutationField('upsertGroup', (t) =>
       query,
       _,
       {
-        uid,
-        selfJoinable,
-        type,
-        parentUid,
-        name,
-        color,
-        address,
-        description,
-        website,
-        studentAssociationUid,
-        email,
-        mailingList,
-        longDescription,
-        links,
-        related,
+        uid: oldUid,
+        input: {
+          selfJoinable,
+          uid: newUid,
+          type,
+          parent: parentUid,
+          name,
+          color,
+          address,
+          description,
+          website,
+          studentAssociation: studentAssociationUid,
+          email,
+          mailingList,
+          longDescription,
+          links,
+          related,
+        },
       },
       { user },
     ) {
@@ -121,7 +147,7 @@ builder.mutationField('upsertGroup', (t) =>
       //   - if we are creating the group, we don't need to change its children since it has none
       //
       let familyId;
-      const oldGroup = await prisma.group.findUnique({ where: { uid: uid ?? '' } });
+      const oldGroup = await prisma.group.findUnique({ where: { uid: oldUid ?? '' } });
       if (parentUid === null || parentUid === undefined || parentUid === '') {
         // First case (null): the group does not have a parent anymore.
         // Set both the parent and the root to the group itself.
@@ -179,7 +205,7 @@ builder.mutationField('upsertGroup', (t) =>
         type,
         selfJoinable,
         name,
-        color,
+        color: color ?? undefined,
         familyRoot: familyId ? { connect: { id: familyId } } : undefined,
         address,
         description,
@@ -191,11 +217,12 @@ builder.mutationField('upsertGroup', (t) =>
 
       const group = await prisma.group.upsert({
         ...query,
-        where: { uid: uid ?? '' },
+        where: { uid: oldUid ?? '' },
         create: {
           ...data,
+          color: color ?? '',
           links: { create: links },
-          uid: await createGroupUid(name),
+          uid: newUid!,
           related: { connect: related.map((uid) => ({ uid })) },
           parent:
             parentUid === null || parentUid === undefined ? {} : { connect: { uid: parentUid } },
@@ -241,7 +268,7 @@ builder.mutationField('upsertGroup', (t) =>
         purgeUserSessions(user.uid);
       }
 
-      await log('groups', uid ? 'update' : 'create', group, group.uid, user);
+      await log('groups', oldUid ? 'update' : 'create', group, group.uid, user);
       return group;
     },
   }),

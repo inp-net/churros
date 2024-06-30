@@ -54,7 +54,7 @@
   onMount(() => {
     warningToastId = toasts.warn('Page en bêta', "Les pages d'AEs ne sont pas encore finiolées", {
       lifetime: Number.POSITIVE_INFINITY,
-    });
+    })!;
   });
 
   onDestroy(async () => {

@@ -49,6 +49,12 @@ export function soonest(...dates: Array<Date | null | undefined>): Date | undefi
   return new Date(Math.min(...validDates.map((date) => date.valueOf())));
 }
 
+export function latest(...dates: Array<Date | null | undefined>): Date | undefined {
+  const validDates = dates.filter(Boolean) as Date[];
+  if (validDates.length === 0) return undefined;
+  return new Date(Math.max(...validDates.map((date) => date.valueOf())));
+}
+
 export function formatDate(
   date: Date | undefined | null,
   style: Intl.DateTimeFormatOptions['dateStyle'] = 'long',
